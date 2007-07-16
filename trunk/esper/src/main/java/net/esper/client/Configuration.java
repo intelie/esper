@@ -625,6 +625,9 @@ public class Configuration implements ConfigurationOperations {
     	imports.add("java.util.*");
     }
 
+    /**
+     * Enumeration of different resolution styles for resolving property names.
+     */
     public static enum PropertyResolutionStyle
     {
         /**
@@ -649,6 +652,10 @@ public class Configuration implements ConfigurationOperations {
          */
         DISTINCT_CASE_INSENSITIVE;
 
+        /**
+         * Returns the default property resolution style.
+         * @return is the case-sensitive resolution
+         */
         public static PropertyResolutionStyle getDefault()
         {
             return CASE_SENSITIVE; 

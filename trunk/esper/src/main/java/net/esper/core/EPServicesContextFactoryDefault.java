@@ -17,6 +17,8 @@ import net.esper.schedule.SchedulingService;
 import net.esper.schedule.SchedulingServiceProvider;
 import net.esper.util.JavaClassHelper;
 import net.esper.util.ManagedReadWriteLock;
+import net.esper.timer.TimerService;
+import net.esper.timer.TimerServiceImpl;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -54,11 +56,18 @@ public class EPServicesContextFactoryDefault implements EPServicesContextFactory
 
         OutputConditionFactory outputConditionFactory = new OutputConditionFactoryDefault();
 
+        long msecTimerResolution = configSnapshot.getEngineDefaults().getThreading().getInternalTimerMsecResolution();
+        if (msecTimerResolution <= 0)
+        {
+            throw new ConfigurationException("Timer resolution configuration not set to a valid value, expecting a non-zero value");
+        }
+        TimerService timerService = new TimerServiceImpl(msecTimerResolution);
+
         // New services context
         EPServicesContext services = new EPServicesContext(epServiceProvider.getURI(), schedulingService,
                 eventAdapterService, engineImportService, engineSettingsService, databaseConfigService, plugInViews,
                 new StatementLockFactoryImpl(), eventProcessingRWLock, null, jndiContext, statementContextFactory,
-                plugInPatternObj, outputConditionFactory);
+                plugInPatternObj, outputConditionFactory, timerService);
 
         // Circular dependency
         StatementLifecycleSvc statementLifecycleSvc = new StatementLifecycleSvcImpl(epServiceProvider, services);
@@ -91,7 +100,7 @@ public class EPServicesContextFactoryDefault implements EPServicesContextFactory
             }
         }
         eventAdapterService.setClassLegacyConfigs(classLegacyInfo);
-        eventAdapterService.setDefaultPropertyResolutionStyle(configSnapshot.getEngineDefaults().getEventMeta().getPropertyResolutionStyle());
+        eventAdapterService.setDefaultPropertyResolutionStyle(configSnapshot.getEngineDefaults().getEventMeta().getClassPropertyResolutionStyle());
 
         // Add from the configuration the Java event class aliases
         Map<String, String> javaClassAliases = configSnapshot.getJavaClassAliases();

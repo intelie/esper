@@ -17,15 +17,29 @@ import java.util.Timer;
  */
 public final class TimerServiceImpl implements TimerService
 {
+    private final long msecTimerResolution;
     private TimerCallback timerCallback;
     private Timer timer;
     private EQLTimerTask timerTask;
 
     /**
      * Constructor.
+     * @param msecTimerResolution is the millisecond resolution or interval the internal timer thread
+     * processes schedules
      */
-    protected TimerServiceImpl()
+    public TimerServiceImpl(long msecTimerResolution)
     {
+        this.msecTimerResolution = msecTimerResolution;
+    }
+
+    /**
+     * Returns the timer resolution.
+     * @return the millisecond resolution or interval the internal timer thread
+     * processes schedules
+     */
+    public long getMsecTimerResolution()
+    {
+        return msecTimerResolution;
     }
 
     public void setCallback(TimerCallback timerCallback)
@@ -43,7 +57,7 @@ public final class TimerServiceImpl implements TimerService
 
         if (log.isDebugEnabled())
         {
-            log.debug(".startInternalClock Starting internal clock daemon thread, resolution=" + INTERNAL_CLOCK_RESOLUTION_MSEC);
+            log.debug(".startInternalClock Starting internal clock daemon thread, resolution=" + msecTimerResolution);
         }
 
         if (timerCallback == null)
@@ -54,8 +68,8 @@ public final class TimerServiceImpl implements TimerService
         timer = new Timer(true);        // Timer started as a deamon thread
         timerTask = new EQLTimerTask(timerCallback);
 
-        // With no delay start every INTERNAL_CLOCK_RESOLUTION_MSEC
-        timer.scheduleAtFixedRate(timerTask, 0, INTERNAL_CLOCK_RESOLUTION_MSEC);
+        // With no delay start every internal
+        timer.scheduleAtFixedRate(timerTask, 0, msecTimerResolution);
     }
 
     public final void stopInternalClock(boolean warnIfNotStarted)

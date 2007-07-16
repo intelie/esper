@@ -43,11 +43,19 @@ public class BeanEventAdapter implements BeanEventTypeFactory
         this.classToLegacyConfigs.putAll(classToLegacyConfigs);
     }
 
+    /**
+     * Sets the default property resolution style for Java class properties.
+     * @param defaultPropertyResolutionStyle resolution style
+     */
     public void setDefaultPropertyResolutionStyle(Configuration.PropertyResolutionStyle defaultPropertyResolutionStyle)
     {
         this.defaultPropertyResolutionStyle = defaultPropertyResolutionStyle;
     }
 
+    /**
+     * Gets the default property resolution style for Java class properties. 
+     * @return resolution style
+     */
     public Configuration.PropertyResolutionStyle getDefaultPropertyResolutionStyle()
     {
         return defaultPropertyResolutionStyle;

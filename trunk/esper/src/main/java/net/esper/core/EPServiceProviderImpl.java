@@ -191,7 +191,7 @@ public class EPServiceProviderImpl implements EPServiceProviderSPI
         EPAdministratorImpl admin = new EPAdministratorImpl(services, configOps);
 
         // Start clocking
-        if (!configSnapshot.getEngineDefaults().getThreading().isExternalTimer())
+        if (configSnapshot.getEngineDefaults().getThreading().isInternalTimerEnabled())
         {
             services.getTimerService().startInternalClock();
         }

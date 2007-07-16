@@ -28,7 +28,10 @@ public class BeanEventType implements EventType
     private FastClass fastClass;
     private Set<EventType> deepSuperTypes;
     private Configuration.PropertyResolutionStyle propertyResolutionStyle;
-    private Map<String, List<SimplePropertyInfo>> smartPropertyTable;
+
+    private Map<String, List<SimplePropertyInfo>> simpleSmartPropertyTable;
+    private Map<String, List<SimplePropertyInfo>> indexedSmartPropertyTable;
+    private Map<String, List<SimplePropertyInfo>> mappedSmartPropertyTable;
 
     /**
      * Constructor takes a java bean class as an argument.
@@ -89,6 +92,10 @@ public class BeanEventType implements EventType
         return clazz;
     }
 
+    /**
+     * Returns the property resolution style.
+     * @return property resolution style
+     */
     public Configuration.PropertyResolutionStyle getPropertyResolutionStyle()
     {
         return propertyResolutionStyle;
@@ -133,7 +140,31 @@ public class BeanEventType implements EventType
      */
     public final EventPropertyDescriptor getMappedProperty(String propertyName)
     {
-        return mappedPropertyDescriptors.get(propertyName);
+        if (this.getPropertyResolutionStyle() == Configuration.PropertyResolutionStyle.CASE_SENSITIVE)
+        {
+            return mappedPropertyDescriptors.get(propertyName);
+        }
+        if (this.getPropertyResolutionStyle() == Configuration.PropertyResolutionStyle.CASE_INSENSITIVE)
+        {
+            List<SimplePropertyInfo> propertyInfos = mappedSmartPropertyTable.get(propertyName.toLowerCase());
+            return propertyInfos != null
+                    ? propertyInfos.get(0).getDescriptor()
+                    : null;
+        }
+        if (this.getPropertyResolutionStyle() == Configuration.PropertyResolutionStyle.DISTINCT_CASE_INSENSITIVE)
+        {
+            List<SimplePropertyInfo> propertyInfos = mappedSmartPropertyTable.get(propertyName.toLowerCase());
+            if (propertyInfos != null)
+            {
+                if (propertyInfos.size() != 1 )
+                {
+                    throw new EPException( "Unable to determine which property to use for \"" + propertyName + "\" because more than one property matched");
+                }
+
+                return propertyInfos.get(0).getDescriptor();
+            }
+        }
+        return null;
     }
 
     /**
@@ -143,7 +174,31 @@ public class BeanEventType implements EventType
      */
     public final EventPropertyDescriptor getIndexedProperty(String propertyName)
     {
-        return indexedPropertyDescriptors.get(propertyName);
+        if (this.getPropertyResolutionStyle() == Configuration.PropertyResolutionStyle.CASE_SENSITIVE)
+        {
+            return indexedPropertyDescriptors.get(propertyName);
+        }
+        if (this.getPropertyResolutionStyle() == Configuration.PropertyResolutionStyle.CASE_INSENSITIVE)
+        {
+            List<SimplePropertyInfo> propertyInfos = indexedSmartPropertyTable.get(propertyName.toLowerCase());
+            return propertyInfos != null
+                    ? propertyInfos.get(0).getDescriptor()
+                    : null;
+        }
+        if (this.getPropertyResolutionStyle() == Configuration.PropertyResolutionStyle.DISTINCT_CASE_INSENSITIVE)
+        {
+            List<SimplePropertyInfo> propertyInfos = indexedSmartPropertyTable.get(propertyName.toLowerCase());
+            if (propertyInfos != null)
+            {
+                if (propertyInfos.size() != 1 )
+                {
+                    throw new EPException( "Unable to determine which property to use for \"" + propertyName + "\" because more than one property matched");
+                }
+
+                return propertyInfos.get(0).getDescriptor();
+            }
+        }
+        return null;
     }
 
     public String[] getPropertyNames()
@@ -197,10 +252,12 @@ public class BeanEventType implements EventType
         this.mappedPropertyDescriptors = new HashMap<String, EventPropertyDescriptor>();
         this.indexedPropertyDescriptors = new HashMap<String, EventPropertyDescriptor>();
 
-        this.smartPropertyTable =
-            usesSmartResolutionStyle()
-                ? new HashMap<String, List<SimplePropertyInfo>>()
-                : null;
+        if (usesSmartResolutionStyle())
+        {
+            simpleSmartPropertyTable = new HashMap<String, List<SimplePropertyInfo>>();
+            mappedSmartPropertyTable = new HashMap<String, List<SimplePropertyInfo>>();
+            indexedSmartPropertyTable = new HashMap<String, List<SimplePropertyInfo>>();
+        }
 
         if ((optionalLegacyDef == null) ||
             (optionalLegacyDef.getCodeGeneration() != ConfigurationEventTypeLegacy.CodeGeneration.DISABLED))
@@ -247,11 +304,11 @@ public class BeanEventType implements EventType
                 {
                     // Find the property in the smart property table
                     String smartPropertyName = propertyName.toLowerCase();
-                    List<SimplePropertyInfo> propertyInfoList = smartPropertyTable.get(smartPropertyName);
+                    List<SimplePropertyInfo> propertyInfoList = simpleSmartPropertyTable.get(smartPropertyName);
                     if (propertyInfoList == null)
                     {
                         propertyInfoList = new ArrayList<SimplePropertyInfo>();
-                        smartPropertyTable.put(smartPropertyName, propertyInfoList);
+                        simpleSmartPropertyTable.put(smartPropertyName, propertyInfoList);
                     }
                     
                     // Enter the property into the smart property list
@@ -262,10 +319,43 @@ public class BeanEventType implements EventType
             else if (desc.getPropertyType().equals(EventPropertyType.MAPPED))
             {
                 mappedPropertyDescriptors.put(propertyName, desc);
+
+                // Recognize that there may be properties with overlapping case-insentitive names
+                if (usesSmartResolutionStyle())
+                {
+                    // Find the property in the smart property table
+                    String smartPropertyName = propertyName.toLowerCase();
+                    List<SimplePropertyInfo> propertyInfoList = mappedSmartPropertyTable.get(smartPropertyName);
+                    if (propertyInfoList == null)
+                    {
+                        propertyInfoList = new ArrayList<SimplePropertyInfo>();
+                        mappedSmartPropertyTable.put(smartPropertyName, propertyInfoList);
+                    }
+
+                    // Enter the property into the smart property list
+                    SimplePropertyInfo propertyInfo = new SimplePropertyInfo(desc.getReturnType(), null, desc);
+                    propertyInfoList.add(propertyInfo);
+                }
             }
             else if (desc.getPropertyType().equals(EventPropertyType.INDEXED))
             {
                 indexedPropertyDescriptors.put(propertyName, desc);
+
+                if (usesSmartResolutionStyle())
+                {
+                    // Find the property in the smart property table
+                    String smartPropertyName = propertyName.toLowerCase();
+                    List<SimplePropertyInfo> propertyInfoList = indexedSmartPropertyTable.get(smartPropertyName);
+                    if (propertyInfoList == null)
+                    {
+                        propertyInfoList = new ArrayList<SimplePropertyInfo>();
+                        indexedSmartPropertyTable.put(smartPropertyName, propertyInfoList);
+                    }
+
+                    // Enter the property into the smart property list
+                    SimplePropertyInfo propertyInfo = new SimplePropertyInfo(desc.getReturnType(), null, desc);
+                    propertyInfoList.add(propertyInfo);
+                }
             }
         }
 
@@ -394,7 +484,7 @@ public class BeanEventType implements EventType
                 return propertyInfo;
             }
 
-            simplePropertyInfoList = smartPropertyTable.get(propertyName.toLowerCase());
+            simplePropertyInfoList = simpleSmartPropertyTable.get(propertyName.toLowerCase());
             return
                 simplePropertyInfoList != null
                     ? simplePropertyInfoList.get(0)
@@ -408,7 +498,7 @@ public class BeanEventType implements EventType
                 return propertyInfo;
             }
 
-            simplePropertyInfoList = smartPropertyTable.get(propertyName.toLowerCase());
+            simplePropertyInfoList = simpleSmartPropertyTable.get(propertyName.toLowerCase());
             if ( simplePropertyInfoList != null )
             {
                 if (simplePropertyInfoList.size() != 1 )
@@ -423,12 +513,21 @@ public class BeanEventType implements EventType
         return null;
     }
 
+    /**
+     * Descriptor caching the getter, class and property info.
+     */
     public class SimplePropertyInfo
     {
         private Class clazz;
-        public EventPropertyGetter getter;
-        public EventPropertyDescriptor descriptor;
+        private EventPropertyGetter getter;
+        private EventPropertyDescriptor descriptor;
 
+        /**
+         * Ctor.
+         * @param clazz is the class
+         * @param getter is the getter
+         * @param descriptor is the property info
+         */
         public SimplePropertyInfo(Class clazz, EventPropertyGetter getter, EventPropertyDescriptor descriptor)
         {
             this.clazz = clazz;
@@ -436,16 +535,28 @@ public class BeanEventType implements EventType
             this.descriptor = descriptor;
         }
 
+        /**
+         * Returns the return type.
+         * @return return type
+         */
         public Class getClazz()
         {
             return clazz;
         }
 
+        /**
+         * Returns the getter.
+         * @return getter
+         */
         public EventPropertyGetter getGetter()
         {
             return getter;
         }
 
+        /**
+         * Returns the property info.
+         * @return property info
+         */
         public EventPropertyDescriptor getDescriptor()
         {
             return descriptor;

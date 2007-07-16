@@ -60,6 +60,10 @@ public class EventAdapterServiceImpl implements EventAdapterService
         beanEventAdapter.setClassToLegacyConfigs(classToLegacyConfigs);
     }
 
+    /**
+     * Sets the default property resolution style.
+     * @param defaultPropertyResolutionStyle is the default style
+     */
     public void setDefaultPropertyResolutionStyle(Configuration.PropertyResolutionStyle defaultPropertyResolutionStyle)
     {
         beanEventAdapter.setDefaultPropertyResolutionStyle(defaultPropertyResolutionStyle);

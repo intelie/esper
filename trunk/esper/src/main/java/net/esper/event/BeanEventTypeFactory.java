@@ -22,5 +22,9 @@ public interface BeanEventTypeFactory
      */
     public BeanEventType createBeanType(String alias, Class clazz);
 
+    /**
+     * Returns the default property resolution style.
+     * @return property resolution style
+     */
     public Configuration.PropertyResolutionStyle getDefaultPropertyResolutionStyle();
 }

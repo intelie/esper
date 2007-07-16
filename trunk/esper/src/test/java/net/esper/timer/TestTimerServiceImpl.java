@@ -13,13 +13,13 @@ public class TestTimerServiceImpl extends TestCase
     public void setUp()
     {
         callback = new SupportTimerCallback();
-        service = new TimerServiceImpl();
+        service = new TimerServiceImpl(100);
         service.setCallback(callback);
     }
 
     public void testClocking()
     {
-        final int RESOLUTION = TimerServiceImpl.INTERNAL_CLOCK_RESOLUTION_MSEC;
+        final int RESOLUTION = (int) service.getMsecTimerResolution();
 
         // Wait .55 sec
         assertTrue(callback.getAndResetCount() == 0);
@@ -36,7 +36,7 @@ public class TestTimerServiceImpl extends TestCase
         service.startInternalClock();
         sleep(RESOLUTION / 10);
         assertTrue(callback.getAndResetCount() == 1);
-        sleep(TimerServiceImpl.INTERNAL_CLOCK_RESOLUTION_MSEC * 20);
+        sleep(service.getMsecTimerResolution() * 20);
         int count = callback.getAndResetCount();
         log.debug(".testClocking count=" + count);
         assertTrue(count >= 19);

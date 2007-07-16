@@ -13,11 +13,6 @@ package net.esper.timer;
 public interface TimerService
 {
     /**
-     * Resolution in milliseconds of the internal clock.
-     */
-    public static int INTERNAL_CLOCK_RESOLUTION_MSEC = 100;
-
-    /**
      * Set the callback method to invoke for clock ticks.
      * @param timerCallback is the callback
      */

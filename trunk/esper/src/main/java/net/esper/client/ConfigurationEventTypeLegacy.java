@@ -150,11 +150,19 @@ public class ConfigurationEventTypeLegacy
         fieldProperties.add(new LegacyFieldPropDesc(name, accessorField));
     }
 
+    /**
+     * Returns the type's property resolution style to use.
+     * @return property resolution style
+     */
     public Configuration.PropertyResolutionStyle getPropertyResolutionStyle()
     {
         return propertyResolutionStyle;
     }
 
+    /**
+     * Sets the type's property resolution style to use.
+     * @param propertyResolutionStyle is the property resolution style to use for the type
+     */
     public void setPropertyResolutionStyle(Configuration.PropertyResolutionStyle propertyResolutionStyle)
     {
         this.propertyResolutionStyle = propertyResolutionStyle;

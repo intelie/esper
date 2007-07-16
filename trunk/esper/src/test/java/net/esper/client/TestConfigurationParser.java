@@ -24,6 +24,21 @@ public class TestConfigurationParser extends TestCase
         assertFileConfig(config);
     }
 
+    public void testEngineDefaults()
+    {
+        config = new Configuration();
+        
+        assertTrue(config.getEngineDefaults().getThreading().isInsertIntoDispatchPreserveOrder());
+        assertTrue(config.getEngineDefaults().getThreading().isListenerDispatchPreserveOrder());
+        assertEquals(1000, config.getEngineDefaults().getThreading().getListenerDispatchTimeout());
+        assertTrue(config.getEngineDefaults().getThreading().isInternalTimerEnabled());
+        assertEquals(100, config.getEngineDefaults().getThreading().getInternalTimerMsecResolution());
+
+        assertEquals(Configuration.PropertyResolutionStyle.CASE_SENSITIVE, config.getEngineDefaults().getEventMeta().getClassPropertyResolutionStyle());
+
+        assertTrue(config.getEngineDefaults().getViewResources().isShareViews());
+    }
+
     protected static void assertFileConfig(Configuration config)
     {
         // assert alias for class
@@ -74,6 +89,7 @@ public class TestConfigurationParser extends TestCase
         assertEquals(1, legacy.getMethodProperties().size());
         assertEquals("myAccessorMethod", legacy.getMethodProperties().get(0).getAccessorMethodName());
         assertEquals("mymethodprop", legacy.getMethodProperties().get(0).getName());
+        assertEquals(Configuration.PropertyResolutionStyle.CASE_INSENSITIVE, legacy.getPropertyResolutionStyle());
 
         // assert database reference - data source config
         assertEquals(2, config.getDatabaseReferences().size());
@@ -168,5 +184,9 @@ public class TestConfigurationParser extends TestCase
         assertFalse(config.getEngineDefaults().getThreading().isInsertIntoDispatchPreserveOrder());
         assertFalse(config.getEngineDefaults().getThreading().isListenerDispatchPreserveOrder());
         assertEquals(2000, config.getEngineDefaults().getThreading().getListenerDispatchTimeout());
+        assertFalse(config.getEngineDefaults().getThreading().isInternalTimerEnabled());
+        assertEquals(1234567, config.getEngineDefaults().getThreading().getInternalTimerMsecResolution());
+        assertFalse(config.getEngineDefaults().getViewResources().isShareViews());
+        assertEquals(Configuration.PropertyResolutionStyle.DISTINCT_CASE_INSENSITIVE, config.getEngineDefaults().getEventMeta().getClassPropertyResolutionStyle());
     }
 }

@@ -88,6 +88,7 @@
 			</xs:sequence>
 			<xs:attribute name="accessor-style" type="accessorStyleEnum" use="optional"/>
 			<xs:attribute name="code-generation" type="codeGenerationEnum" use="optional"/>
+			<xs:attribute name="property-resolution-style" type="propertyResolutionStyleEnum" use="optional"/>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="method-property">
@@ -113,6 +114,13 @@
 		<xs:restriction base="xs:token">
 			<xs:enumeration value="enabled"/>
 			<xs:enumeration value="disabled"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="propertyResolutionStyleEnum">
+		<xs:restriction base="xs:token">
+			<xs:enumeration value="case_sensitive"/>
+			<xs:enumeration value="case_insensitive"/>
+			<xs:enumeration value="distinct_case_insensitive"/>
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:element name="database-reference">
@@ -244,6 +252,8 @@
 		<xs:complexType>
 			<xs:sequence>
 				<xs:element ref="threading" minOccurs="0"/>
+				<xs:element ref="event-meta" minOccurs="0"/>
+				<xs:element ref="view-resources" minOccurs="0"/>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
@@ -253,6 +263,16 @@
 				<xs:sequence>
 					<xs:element ref="listener-dispatch" minOccurs="0"/>
 					<xs:element ref="insert-into-dispatch" minOccurs="0"/>
+					<xs:element ref="internal-timer" minOccurs="0"/>
+				</xs:sequence>
+			</xs:choice>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="event-meta">
+		<xs:complexType>
+			<xs:choice>
+				<xs:sequence>
+					<xs:element ref="class-property-resolution" minOccurs="0"/>
 				</xs:sequence>
 			</xs:choice>
 		</xs:complexType>
@@ -266,6 +286,31 @@
 	<xs:element name="insert-into-dispatch">
 		<xs:complexType>
 			<xs:attribute name="preserve-order" type="xs:boolean" use="required"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="internal-timer">
+		<xs:complexType>
+			<xs:attribute name="enabled" type="xs:boolean" use="required"/>
+			<xs:attribute name="msec-resolution" type="xs:long" use="required"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="class-property-resolution">
+		<xs:complexType>
+			<xs:attribute name="style" type="propertyResolutionStyleEnum" use="required"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="view-resources">
+		<xs:complexType>
+			<xs:choice>
+				<xs:sequence>
+					<xs:element ref="share-views" minOccurs="0"/>
+				</xs:sequence>
+			</xs:choice>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="share-views">
+		<xs:complexType>
+			<xs:attribute name="value" type="xs:boolean" use="required"/>
 		</xs:complexType>
 	</xs:element>
 </xs:schema>

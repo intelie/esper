@@ -21,7 +21,6 @@ import net.esper.filter.FilterService;
 import net.esper.filter.FilterServiceProvider;
 import net.esper.schedule.SchedulingService;
 import net.esper.timer.TimerService;
-import net.esper.timer.TimerServiceProvider;
 import net.esper.util.ManagedReadWriteLock;
 import net.esper.view.ViewService;
 import net.esper.view.ViewServiceProvider;
@@ -75,6 +74,7 @@ public final class EPServicesContext
      * @param engineEnvContext is engine environment/directory information for use with adapters and external env
      * @param plugInPatternObjects resolves plug-in pattern objects
      * @param outputConditionFactory factory for output condition objects
+     * @param timerService is the timer service
      */
     public EPServicesContext(String engineURI,
                              SchedulingService schedulingService,
@@ -89,7 +89,8 @@ public final class EPServicesContext
                              EngineEnvContext engineEnvContext,
                              StatementContextFactory statementContextFactory,
                              PluggableObjectCollection plugInPatternObjects,
-                             OutputConditionFactory outputConditionFactory)
+                             OutputConditionFactory outputConditionFactory,
+                             TimerService timerService)
     {
         this.engineURI = engineURI;
         this.schedulingService = schedulingService;
@@ -98,7 +99,7 @@ public final class EPServicesContext
         this.engineSettingsService = engineSettingsService;
         this.databaseConfigService = databaseConfigService;
         this.filterService = FilterServiceProvider.newService();
-        this.timerService = TimerServiceProvider.newService();
+        this.timerService = timerService;
         this.emitService = EmitServiceProvider.newService();
         this.dispatchService = DispatchServiceProvider.newService();
         this.viewService = ViewServiceProvider.newService();

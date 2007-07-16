@@ -209,10 +209,21 @@ class ConfigurationParser {
         
         String accessorStyle = xmldomElement.getAttributes().getNamedItem("accessor-style").getTextContent();
         String codeGeneration = xmldomElement.getAttributes().getNamedItem("code-generation").getTextContent();
+        String propertyResolution = xmldomElement.getAttributes().getNamedItem("property-resolution-style").getTextContent();
 
         ConfigurationEventTypeLegacy legacyDesc = new ConfigurationEventTypeLegacy();
-        legacyDesc.setAccessorStyle(ConfigurationEventTypeLegacy.AccessorStyle.valueOf(accessorStyle.toUpperCase()));
-        legacyDesc.setCodeGeneration(ConfigurationEventTypeLegacy.CodeGeneration.valueOf(codeGeneration.toUpperCase()));
+        if (accessorStyle != null)
+        {
+            legacyDesc.setAccessorStyle(ConfigurationEventTypeLegacy.AccessorStyle.valueOf(accessorStyle.toUpperCase()));
+        }
+        if (codeGeneration != null)
+        {
+            legacyDesc.setCodeGeneration(ConfigurationEventTypeLegacy.CodeGeneration.valueOf(codeGeneration.toUpperCase()));
+        }
+        if (propertyResolution != null)
+        {
+            legacyDesc.setPropertyResolutionStyle(Configuration.PropertyResolutionStyle.valueOf(propertyResolution.toUpperCase()));
+        }
         configuration.addEventTypeAlias(aliasName, className, legacyDesc);
 
         ElementIterator propertyNodeIterator = new ElementIterator(xmldomElement.getChildNodes());
@@ -249,7 +260,6 @@ class ConfigurationParser {
         }
     }
 
-    @SuppressWarnings({"ObjectAllocationInLoop"})
     private static void handleDatabaseRefs(Configuration configuration, Element parentNode)
     {
         NodeList dbRefNodes = parentNode.getElementsByTagName("database-reference");
@@ -413,12 +423,20 @@ class ConfigurationParser {
             Element subElement = nodeIterator.next();
             if (subElement.getNodeName().equals("threading"))
             {
-                handleEngineSettingsDefaultsThreading(configuration, subElement);
+                handleDefaultsThreading(configuration, subElement);
+            }
+            if (subElement.getNodeName().equals("event-meta"))
+            {
+                handleDefaultsEventMeta(configuration, subElement);
+            }
+            if (subElement.getNodeName().equals("view-resources"))
+            {
+                handleDefaultsViewResources(configuration, subElement);
             }
         }
     }
 
-    private static void handleEngineSettingsDefaultsThreading(Configuration configuration, Element parentElement)
+    private static void handleDefaultsThreading(Configuration configuration, Element parentElement)
     {
         ElementIterator nodeIterator = new ElementIterator(parentElement.getChildNodes());
         while (nodeIterator.hasNext())
@@ -438,6 +456,45 @@ class ConfigurationParser {
                 String preserveOrderText = subElement.getAttributes().getNamedItem("preserve-order").getTextContent();
                 Boolean preserveOrder = Boolean.parseBoolean(preserveOrderText);
                 configuration.getEngineDefaults().getThreading().setInsertIntoDispatchPreserveOrder(preserveOrder);
+            }
+            if (subElement.getNodeName().equals("internal-timer"))
+            {
+                String enabledText = subElement.getAttributes().getNamedItem("enabled").getTextContent();
+                Boolean enabled = Boolean.parseBoolean(enabledText);
+                String msecResolutionText = subElement.getAttributes().getNamedItem("msec-resolution").getTextContent();
+                Long msecResolution = Long.parseLong(msecResolutionText);
+                configuration.getEngineDefaults().getThreading().setInternalTimerEnabled(enabled);
+                configuration.getEngineDefaults().getThreading().setInternalTimerMsecResolution(msecResolution);
+            }
+        }
+    }
+
+    private static void handleDefaultsViewResources(Configuration configuration, Element parentElement)
+    {
+        ElementIterator nodeIterator = new ElementIterator(parentElement.getChildNodes());
+        while (nodeIterator.hasNext())
+        {
+            Element subElement = nodeIterator.next();
+            if (subElement.getNodeName().equals("share-views"))
+            {
+                String valueText = subElement.getAttributes().getNamedItem("value").getTextContent();
+                Boolean value = Boolean.parseBoolean(valueText);
+                configuration.getEngineDefaults().getViewResources().setShareViews(value);
+            }
+        }
+    }
+
+    private static void handleDefaultsEventMeta(Configuration configuration, Element parentElement)
+    {
+        ElementIterator nodeIterator = new ElementIterator(parentElement.getChildNodes());
+        while (nodeIterator.hasNext())
+        {
+            Element subElement = nodeIterator.next();
+            if (subElement.getNodeName().equals("class-property-resolution"))
+            {
+                String styleText = subElement.getAttributes().getNamedItem("style").getTextContent();
+                Configuration.PropertyResolutionStyle value = Configuration.PropertyResolutionStyle.valueOf(styleText.toUpperCase());
+                configuration.getEngineDefaults().getEventMeta().setClassPropertyResolutionStyle(value);
             }
         }
     }
