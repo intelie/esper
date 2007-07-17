@@ -1,0 +1,462 @@
+<?xml version="1.0"?>
+<faqs id="Solution-Patterns" title="Solution Patterns">
+
+  <part id="general">
+  	<title>General</title>
+  	
+    <faq id="throughput-1">
+      <question>How do I measure the rate of arrival of events in a given time period?</question>
+      <answer>
+        <p>
+          The time batch window of 1 second as shown below produces an event each second with the count of the number of events
+          in the batch.
+        </p>
+	<div class="source"><pre>select count(*) as cnt from MarketDataEvent.win:time_batch(1 second)</pre></div>      
+      </answer>
+    </faq>    
+
+    <faq id="throughput-2">
+      <question>How do I measure the rate of arrival of events in a given time period per another category?</question>
+      <answer>
+        <p>
+          We can solve this problem by grouping the events in the window per the category. The below example uses 'feed' as the category.
+        </p>
+	<div class="source"><pre>select feed, count(*) as cnt from MarketDataEvent.win:time_batch(1 second) group by feed</pre></div>      
+      </answer>
+    </faq>    
+    
+    <faq id="correlate">
+      <question>How do I correlate events arriving in 2 or more streams?</question>
+      <answer>
+        <p>
+          The join of event streams looks very similar to joins in SQL. To bind data in the streams together, across streams, 
+          we identify keys to join on. 
+        </p>
+        <p>
+          The below example specifies the 'accountNumber' field as the only join key. In this example we hold the last
+          30 seconds of events for each stream.
+        </p>
+	<div class="source"><pre>select fraud.accountNumber as accntNum, withdraw.amount as amount         
+from FraudWarningEvent.win:time(30 sec) as fraud,
+     WithdrawalEvent.win:time(30 sec) as withdraw
+where fraud.accountNumber = withdraw.accountNumber</pre></div>      
+      </answer>
+    </faq>    
+
+    <faq id="missing">
+      <question>How do I find missing events arriving in 2 or more streams that are correlated?</question>
+      <answer>
+        <p>
+          As in SQL we can use outer joins to generate a result even if one or more of the correlated events are not 
+          found in a stream. Usually we want to generate the result after a certain time or after a
+          certain number of events have been received, indicating that a correlated event is truly missing.          
+        </p>
+        <p>
+	  In this example we are looking for a withdrawal event without a login event for the same account number after 60 seconds.
+        </p>
+        <p>
+	  We join withdrawal events with login events looking for login events that do not exist (account number is null).
+	  We want to get notified as these events leave the 60-second time window.
+        </p>
+	<div class="source"><pre>select withdraw.accountNumber as accntNum, withdraw.amount as amount         
+from WithdrawalEvent.win:time(60 sec) as withdraw
+     left outer join
+     LoginEvent.win:time(60 sec) as login
+on fraud.accountNumber = withdraw.accountNumber
+where login.accountNumber = null</pre></div>      
+      </answer>
+    </faq>    
+
+    <faq id="correlate-2">
+      <question>How do I correlate events arriving out-of-order?</question>
+      <answer>
+		<p>
+			Let's assume we have three different types of events, all having a common attribute
+			'exchangeId'. Let's call the events start, finished and aborted.
+		</p>						
+		<p>
+			Let's expect exactly one start event and multiple finished or aborted
+			events for every exchange_id. The start event may happen after the
+			finished or aborted events, but they all happen within say 30
+			seconds per exchangeId.
+		</p>			
+		<p>
+			There are multiple possible answers to this problem. One solution can be an outer join using time windows, and looking at the remove stream since we care about the composite events when a start event leaves the time window after 30 sec, when the other events for the same exchange id have accumulated. 
+		</p>
+
+<div class="source"><pre>select rstream * from
+  StartEvent.win:time(30 sec) start
+    left outer join
+  AbortedEvent.win:time(30 sec) abort
+    on about.exchangeId = start.exchangeId
+    left outer join
+  FinishedEvent.win:time(30 sec) finished
+    on finished.exchangeId = start.exchangeId</pre></div>
+
+		<p>
+			In the example above, every time a StartEvent leaves the time window it takes with it all aborted and finished events. The abort property will be null if no abort occurred.
+		</p>
+
+		<p>
+			Another solution is shown next using patterns to detect out-of-order events.
+		</p>
+
+      </answer>
+    </faq>    
+
+    <faq id="correlate-3">
+      <question>How do I use patterns to correlate events arriving in-order or out-of-order?</question>
+      <answer>
+        <p>
+          The prior discussion focused on 3 kinds of events: start, finished and aborted.
+        </p>
+
+		<p>
+			A second possible solution can be found in using patterns. If one doesn't really care about processing the multiple aborted events and simply wants to get a failed or finished indication when the first aborted event or finished event is encountered, then a simpler approach can be specifying a pattern for each interesting combinations, some of which are shown below.
+		</p>
+			
+<div class="source"><pre>select * from pattern [every s=StartEvent -> 
+  a=AbortedEvent(exchangeId = s.echangeId) where timer:within(30 sec)]
+</pre></div>
+
+		<p>
+			The above pattern simply looks for aborted transactions and reacts to the first aborted event coming in after a start event.
+			The pattern to detect finished transactions, i.e. where no abort occurred, should look about like this:
+		</p>
+  
+<div class="source"><pre>select * from pattern [every s=StartEvent -> 
+  (f=FinishedEvent(exchangeId = s.echangeId) where timer:within(30 sec)
+    and not AbortedEvent(exchangeId = s.echangeId) where timer:within(30 sec)]
+</pre></div>
+  
+		<p>
+			To detect out-of-order events, the pattern can certainly be reversed:
+		</p>
+<div class="source"><pre>select * from pattern [every a=AbortedEvent -> 
+  s=StartEvent(exchangeId = s.echangeId) where timer:within(30 sec)]
+</pre></div>
+  
+      </answer>
+    </faq>    
+
+    <faq id="correlate_pattern_similar_properties">
+      <question>How do I correlate 3 events in a time window in which events have similar properties?</question>
+      <answer>
+		<p>
+			My application needs to match 3 events which occur within a time window where 3 different users submit trades with
+similar properties. The properties that must have the same value for each of the 3 events matched is currency and direction.
+The pattern is to match only if all 3 events have a different user. The time window should be 10 minutes long.
+		</p>
+
+		<p>
+			The pattern that solves this problem is shown below. It uses the timer:within pattern guard to limit
+			the lifetime of each active sub-expression to 10 minutes.
+		</p>
+		
+<div class="source"><pre>every trade1=Trade(userId in ('U1000','U1001','U1002') ) ->
+  (trade2=Trade(userId in ('U1000','U1001','U1002') and
+     userId != trade1.userId and ccypair = trade1.ccypair and direction = trade1.direction) ->
+   trade3=Trade(userId in ('U1000','U1001','U1002') and 
+     userId not in (trade1.userId, trade2.userId) and
+     ccypair = trade1.ccypair and direction = trade1.direction))
+  ) where timer:within(10 min)
+</pre></div>    
+      </answer>
+    </faq>    
+
+    <faq id="window-per-category">
+      <question>How do I keep a separate window of events per category and compute aggregates for each category's window?</question>
+      <answer>
+        <p>
+          I have one or more categories and for each of these categories I need to keep a separate window of events.
+        </p>
+        <p>
+          In the statement below we have stock tick events for which we want to compute the average price of the last 10 
+          stock tick events per symbol. Notice we are not using the last 10 events overall, we are looking at the last 10 events per symbol.
+        </p>
+	<div class="source"><pre>select symbol, avg(price) as avgPrice from StockTick.std:groupby('symbol').win:length(10)</pre></div>      
+        <p>
+          We can also specify multiple categories:
+        </p>
+	<div class="source"><pre>select symbol, location, avg(price) as avgPrice from StockTick.std:groupby({'symbol','location'}).win:length(10)</pre></div>
+      </answer>
+    </faq>    
+
+    <faq id="stagger-statements">
+      <question>How do I use results of one statement in another statement?</question>
+      <answer>
+        <p>
+          Use the <em>insert into</em> syntax to use the events generated by one statement as input to another statement.
+        </p>
+        <p>
+          We can first compute the number of events arriving within 1 second, then use that number to perform additional 
+          aggregation. Here we compute for the last 30 seconds the maximum and minimum rate per feed.
+        </p>
+
+	<div class="source"><pre>insert into TicksPerSecond select feed, count(*) as cnt from MarketDataEvent.win:time_batch(1 second) group by feed
+	
+select feed, max(cnt) as maxCount, min(cnt) as minCount from TicksPerSecond.win:time(30 sec) group by feed</pre></div>
+      </answer>
+    </faq>    
+
+    <faq id="throughput-3">
+      <question>How do I reduce the rate of event output by my statement? How do I get frequent but not continuous results?</question>
+      <answer>
+        <p>
+          Use output rate limiting to stabilize or reduce the rate at which rows are output from a query, by outputting rows
+          at a specified time or row-based interval.
+        </p>
+        <p>
+          The example below limits the otherwise continuous output to an output row every 5 seconds. The output contains 
+          the feed and average volume per feed of the last 60 seconds of market data events.
+        </p>
+	<div class="source"><pre>select feed, avg(volume) as cnt from MarketDataEvent.win:time(60 sec) group by feed output every 5 seconds</pre></div>      
+      </answer>
+    </faq>    
+
+    <faq id="absence-1">
+      <question>How do I detect the absence of an event?</question>
+      <answer>
+        <p>
+          Use a pattern to detect the absence of an event. The below pattern fires if an event A is not followed by an event B
+          within 10 seconds.
+        </p>
+	    <div class="source"><pre>select * from pattern [every EventA -> (timer:interval(10 sec) and not EventB)]</pre></div>      
+
+        <p>
+    	  Outer joins are also a good way to detect missing events. A solution with an outer join was discussed above.
+        </p>
+      </answer>
+    </faq>    
+
+    <faq id="absence-2">
+      <question>How do I detect the absence of an event and the presence of an event arriving too late?</question>
+      <answer>
+        <p>
+          Let's say we want to detect 2 situations:
+		  a) A Down event is not followed by an Up event, i.e. the Up event for the same equipment id is not coming in within 1 minute
+		  b) A Down event is followed by an Up event 30 seconds or more after the Down event, for the same equipment id as the Up event
+		  		  
+        </p>
+	    <div class="source"><pre>select * from pattern [
+  every down=MyEvent(text='down') ->
+  (
+    (timer:interval(1 min) and not up=MyEvent(text='Up', equipmentId=a.equipmentId))
+      or
+    ( (timer:interval(30 sec) and not MyEvent(text='Up', equipmentId=a.equipmentId))
+        -> up=MyEvent(text='Up', equipmentId=a.equipmentId) where timer:within(30 seconds)
+    )]
+</pre></div>    
+      </answer>
+    </faq>    
+
+   <faq id="absence-3">
+      <question>How do I report at a regular interval without any incoming events?</question>
+      <answer>
+        <p>
+          Let's say we want to have our listener get invoked every 5 seconds, and select the last value, if any, from a stream.          
+        </p>
+	    <div class="source"><pre>select (select price from MarketData.std:lastevent()) as price 
+from pattern [every timer:interval(5 sec)]
+</pre></div>    
+        <p>
+          The pattern fires every 5 seconds causing the sub-select to take place, returning null if no MarketData events have come in,
+          or returning the price column of the last MarketData event.
+        </p>
+      </answer>
+    </faq>    
+ 
+    <faq id="triple-bottom-pattern">
+      <question>How do I detect something really complex, like a triple-bottom pattern?</question>
+      <answer>
+      	<p>
+      		The triple-bottom pattern is out of the world of stock trading and is described in <a href="http://www.thestockbandit.com/Triple-bottom.htm">Triple-Bottom Pattern</a> in detail.
+      	</p>
+        <p>
+			The problem can be broken down: First, how does one identify bottom price points among a stream of market data events?
+			Second, once the individual bottom price points are identified, how does one detect an occurrence of 3 bottom price points, whose value is within approximation of each other, and that are spaced out over time in a pattern?
+		</p>
+        <p>
+			The first problem is an event streaming processing problem, I believe. The stream of events is market data that contains price points for the NIFTY index over time. I'll attempt to define a bottom price point as follows: If the average price for the last 5 days is 15% lower then the average price over a period of say 60 days, then the minimum price during that 5 days is a single bottom price point. Of course the number of days and percentages are parameters to figure out and get right.
+		</p>
+			
+<div class="source"><pre>-- The query to determine the average price for the last 60 days:
+insert into AvgPriceLast60Days
+select avg(price) as avgPrice
+from MarketData.win:time(60 days)
+output every 10 minutes
+</pre></div>    
+
+<div class="source"><pre>-- The query to determine the average price for the last 5 days:
+insert into AvgPriceLast5Days
+select avg(price) as avgPrice, min(price) as minPrice
+from MarketData.win:time(5 days)
+output every 10 minutes
+</pre></div>    
+
+<div class="source"><pre>-- Compare the last average prices for each:
+insert into BottomPriceEvent
+select minPrice as bottomPrice 
+from AvgPriceLast60Days.std:last() as LastAvg60Days,
+     AvgPriceLast5Days.std:last() as LastAvg5Days
+where LastAvg60Days.avgPrice * 0.85 > LastAvg5Days.avgPrice
+output first every 1 day
+</pre></div>    
+
+		<p>
+			The last statement populates the "BottomPriceEvent" event stream as a stream of higher-level events in which each event represents a bottom price point.
+		</p>
+		<p>
+			The second part of the problem requires detecting 3 bottom price points whose values are within a given range of each other, and that have a certain temporal relationship with each other. Let's assume that the bottom price points should be within 5% each other. Let's also assume we are looking for bottom price points spaced at least 10 days apart from each other, but within 30 days of the prior bottom price point.
+		</p>
+
+<div class="source"><pre>-- The pattern to detect the triple-bottom:
+insert into TripeBottomPattern
+select * from pattern [every a=ButtomPriceEvent 
+  -> timer:interval(10 days) 
+  -> ButtomPriceEvent(minPrice between 0.95*a.minPrice and 1.05*a.minPrice) where timer:within(30 days)
+  -> timer:interval(10 days) 
+  -> ButtomPriceEvent(minPrice between 0.95*a.minPrice and 1.05*a.minPrice) where timer:within(30 days)]
+</pre></div>    
+
+		<p>
+			Finally, the resulting TripeBottomPattern event stream created by the last statement is the higher-level complex events representing that a triple-bottom pattern has been detected. 
+        </p>
+
+		<p>
+			An additional interesting problem is that the stream and pattern queries are rather long-running continuous queries, since they need to run over days and month. That may requires persisting events, and/or using simulated time by playing back past events into the engine.
+        </p>
+      </answer>
+    </faq>    
+
+    <faq id="pull-push-api">
+      <question>Can I use an UpdateListener to listen to events and the iterator-based pull-API together?</question>
+      <answer>
+		<p>
+			UpdateListener and iterator can be used together. An update listener implementation can also itself query the same statement or 
+			another statement's iterator, as the engine guarantees the iterators are up-to-date before calling update listeners even across statements.
+		</p>			
+		<p>
+			The iterator can also be used to query for no matches. You should find the iterator to have minimal overhead 
+			depending on the type of statement iterated on, the overhead for patterns statements specifically is negligible.
+		</p>
+      </answer>
+    </faq>    
+
+    <faq id="stop-insert">
+      <question>How do I stop an insert after a period of time?</question>
+      <answer>
+		<p>
+			Assume we only want to receive the first 10 minutes of an incoming event stream and then stop receiving data from that stream.
+		</p>
+
+		<p>
+			The timer:within pattern guard function can serve here to stop the stream after a given amount of time,
+			as the next statement shows:
+		</p>
+		
+<div class="source"><pre>insert into PackageNotifyEvent
+select myevent.uid as uid, 'HOME' as loc, 'ARRIVED' as status 
+from pattern[every myevent=TrackingEvent where timer:within(10 min)]
+</pre></div>    
+      </answer>
+    </faq>    
+
+    <faq id="regexp-filter">
+      <question>Can I use a regular expression (regexp) within a filter?</question>
+      <answer>
+		<p>
+			Yes a regular expression can be used as part of a filter expression. Pretty much any expression is allowed within event filter expressions other then
+			aggregation functions and the previous or prior function.
+		</p>
+
+<div class="source"><pre>select * from pattern[every myevent=TrackingEvent(event.uid regexp '^a-b-.*' 
+  and event.lat in [40.1:40.2] and event.lon in [-74.1:-74.0])]
+</pre></div>    
+      </answer>
+    </faq>    
+
+    <faq id="remove_duplicates">
+      <question>How can I remove duplicates? What if I want to form pairs of events where each pair is a unique combination of the latest event of two streams?</question>
+      <answer>
+		<p>
+			I'm trying to detect pairs of events correlated by a "type" value and a unique "device" value.  
+			Then based on this pair of events, I'd like to find the maximum "measurement" value and the corresponding "confidence" 
+			for the one with the max "measurement" value.  Here's my event object:
+		</p>
+			
+		<div class="source"><pre>class Sensor {
+	long id;
+	String type;
+	String device;
+	Double measurement;
+	Double confidence;
+}</pre></div>    
+		<p>
+			I'll know in advance the set of possible device values, but the Sensor events can happen in any order, and two or more Sensor event 
+			for the same device might occur before a Sensor event for the other device occurs. Thus if a Sensor event for the same device occurs 
+			before a Sensor event for the other device, then the second Sensor event would replace the first Sensor event for that device of the 
+			same type.  In other words, the last event for a particular device of a given type is the one that should be used in the calculation of the maximum.
+		</p>
+		<p>
+			The computation would be the maximum value of the 'measurement' property between A and B.  
+			Also, the 'confidence' value would correspond to the value from the event with the maximum 'measurement' property.
+		</p>
+		<p>
+			A sample input and output:
+		</p>
+
+		<div class="source"><pre>Sensor[id=1,type='Temperature',device='A',measurement=51,confidence=94.5]
+Sensor[id=2,type='Temperature',device='A',measurement=57,confidence=95.5]
+Sensor[id=3,type='Humidity',device='B',measurement=29,confidence=67.5]
+Sensor[id=4,type='Temperature',device='B',measurement=55,confidence=88.0]
+Sensor[id=5,type='Temperature',device='B',measurement=65,confidence=85.0]
+Sensor[id=6,type='Temperature',device='B',measurement=49,confidence=87.0]
+Sensor[id=7,type='Temperature',device='A',measurement=51,confidence=99.5]</pre></div>    
+		<p>
+			For output, one would expect the following:
+		</p>
+
+<div class="source"><pre>// First output event pairs events with id=2 and id=4 and chooses the values from id=2
+MaxReading[type='Temperature',device='A',measurement=57,confidence=95.5]
+// Second output event pairs events with id=6 and id=7, since the event with id=6
+// replaces the one with id=5, the event with id=5 is never compared against the
+// event with id=7
+MaxReading[type='Temperature',device='A',measurement=51,confidence=99.5]</pre></div>
+
+		<p>
+			One possible solution builds pairs of events using a join:
+		</p>
+<div class="source"><pre>// Create pairs of device A and B events
+  insert into Pair
+  select * from Sensor(device='A').std:lastevent() as a, Sensor(device='B').std:lastevent() as b
+  where a.type = b.type
+</pre></div>
+
+		<p>
+			From the resulting stream we remove those pairs in which either event was seen before, leaving unique pairs:
+		</p>
+<div class="source"><pre>  // Fast way of declaring the stream type, could also be done via config API or XML
+  insert into PairDuplicatesRemoved select * from Pair(1=2)
+       
+  // Remove duplicate pairs where either sensor event is from the prior pair
+  insert into PairDuplicatesRemoved
+  select * from Pair
+  where a.id != (select a.id from PairDuplicatesRemoved.std:lastevent())
+    and b.id != (select b.id from PairDuplicatesRemoved.std:lastevent())</pre></div>
+
+		<p>
+			Last, select the maximum measurement value between the pair of sensor events and the corresponding confidence and device:
+		</p>
+<div class="source"><pre>select a.type,
+       max(a.measurement, b.measurement) as measurement,
+       case when a.measurement > b.measurement then a.confidence else b.confidence end as confidence,
+       case when a.measurement > b.measurement then a.device else b.device end as device
+       from PairDuplicatesRemoved</pre></div>
+
+      </answer>
+    </faq>    
+
+  </part>
+
+</faqs>

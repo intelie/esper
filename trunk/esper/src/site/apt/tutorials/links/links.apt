@@ -1,0 +1,44 @@
+Technology Links
+~~~~~~~~~~~~~~
+
+  The CEP website is an excellent source for more material, at {{http://www.complexevents.com/}}
+  
+  There is also a discussion group on Yahoo for CEP, see {{http://groups.yahoo.com/group/CEP-Interest/}}
+  
+  The Event Stream Processing resource site {{http://www.eventstreamprocessing.com/}}
+    
+  Read about CEP in WikiPedia at {{http://en.wikipedia.org/wiki/Complex_event_processing}}
+  
+  Read about ESP in WikiPedia at {{http://en.wikipedia.org/wiki/Event_Stream_Processing_%28ESP%29}}
+  
+  The book {{{http://www.amazon.com/gp/product/0201727897/104-9839765-5431907?v=glance&n=283155}The Power of Events}} by David Luckham, from Stanford University, a book on CEP. 
+  
+  Esper Release 1.0 news announcement on {{{http://www.infoq.com/news/Esper--ESP-CEP}InfoQ}}
+    
+  Blogs about CEP and ESP..
+  
+   * {{http://www.rulecore.com/espblog}}
+   
+   * {{http://cep.weblogger.com/stories/storyReader$157}}
+   
+   []
+
+
+  Influential papers (not comprehensive) :
+  
+   * {{{http://www.cs.brown.edu/~ugur/8rulesSigRec.pdf}The 8 requirements of Real-time Stream Processing}} by Stonebraker et. al. 
+   
+   * {{{http://www.infospheres.caltech.edu/crisis_web/pdf/dataflow.pdf}Delta-dataflow networks for Event Stream Processing}} by Rajit Manohar and K. Mani Chandy
+   
+   * {{{http://dbpubs.stanford.edu:8090/pub/2002-57}An Abstract Semantics and Concrete Language for Continuous Queries over Streams and Relations}} by Arasu et. al.
+
+   []
+   
+  
+  Relevant university research (not comprehensive) :
+  
+   * {{{http://pavg.stanford.edu/rapide/}The Stanford Rapide(TM) Project}}
+   
+   * {{{http://www.cs.brown.edu/research/borealis/public/}Borealis - Distributed Stream Processing Engine}} by Brandeis, Brown and MIT universities
+   
+   []

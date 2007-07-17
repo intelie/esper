@@ -1,0 +1,36 @@
+package net.esper.support.client;
+
+import net.esper.client.Configuration;
+
+import java.lang.reflect.Method;
+
+public class SupportConfigFactory
+{
+    private static final String TEST_CONFIG_FACTORY_CLASS = "TEST_CONFIG_FACTORY_CLASS";
+
+    public static Configuration getConfiguration()
+    {
+        Configuration config;
+        String configFactoryClass = System.getProperty(TEST_CONFIG_FACTORY_CLASS);
+        if (configFactoryClass != null)
+        {
+            try
+            {
+                Class clazz = Class.forName(configFactoryClass);
+                Object instance = clazz.newInstance();
+                Method m = clazz.getMethod("getConfiguration");
+                Object result = m.invoke(instance);
+                config = (Configuration) result;
+            }
+            catch (Exception e)
+            {
+                throw new RuntimeException("Error using configuration factory class '" + configFactoryClass + "'", e);
+            }
+        }
+        else
+        {
+            config = new Configuration();
+        }
+        return config;
+    }
+}
