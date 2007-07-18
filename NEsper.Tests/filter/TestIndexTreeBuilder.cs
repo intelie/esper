@@ -11,6 +11,7 @@ using System.Collections.Generic;
 
 using NUnit.Framework;
 
+using net.esper.client;
 using net.esper.compat;
 using net.esper.events;
 using net.esper.support.bean;
@@ -31,6 +32,8 @@ namespace net.esper.filter
 	    [SetUp]
 	    public void SetUp()
 	    {
+	        PropertyResolutionStyleHelper.DefaultPropertyResolutionStyle = PropertyResolutionStyle.CASE_INSENSITIVE;   
+
 	        SupportBean testBean = new SupportBean();
 	        testBean.SetIntPrimitive(50);
 	        testBean.SetDoublePrimitive(0.5);

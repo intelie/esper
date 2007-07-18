@@ -7,6 +7,7 @@ using net.esper.compat;
 using net.esper.client;
 using net.esper.eql.core;
 using net.esper.events;
+using net.esper.util;
 
 namespace net.esper.eql.expression
 {
@@ -68,7 +69,7 @@ namespace net.esper.eql.expression
                 {
                     throw new IllegalStateException("ExprStaticMethodNode has not been validated");
                 }
-                return staticMethod.ReturnType;
+                return TypeHelper.GetBoxedType(staticMethod.ReturnType);
             }
         }
 

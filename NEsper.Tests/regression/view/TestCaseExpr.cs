@@ -21,6 +21,8 @@ namespace net.esper.regression.view
         [SetUp]
         public virtual void setUp()
         {
+            PropertyResolutionStyleHelper.DefaultPropertyResolutionStyle = PropertyResolutionStyle.CASE_INSENSITIVE;
+
             testListener = new SupportUpdateListener();
             epService = EPServiceProviderManager.GetDefaultProvider();
             epService.Initialize();
@@ -150,7 +152,7 @@ namespace net.esper.regression.view
               " when 14 then System.Convert.ToString(floatBoxed) " +
               " when 15 then System.Convert.ToString(doublePrimitive) " +
               " when 16 then System.Convert.ToString(doubleBoxed) " +
-              " when 17 then str " +
+              " when 17 then string " +
               " else 'x' end as p1 " +
               " from " + typeof(SupportBean).FullName + ".win:length(1)";
 

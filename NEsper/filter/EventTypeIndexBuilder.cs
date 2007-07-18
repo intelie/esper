@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Threading;
 
 using net.esper.compat;
@@ -45,34 +44,33 @@ namespace net.esper.filter
             FilterHandleSetNode rootNode = eventTypeIndex[eventType];
 
             // Make sure we have a root node
-            if (rootNode == null)
+            using (new MonitorLock(callbacksLock))
             {
-                Monitor.Enter( callbacksLock );
-                rootNode = eventTypeIndex[eventType];
                 if (rootNode == null)
                 {
-                    rootNode = new FilterHandleSetNode();
-                    eventTypeIndex.Add(eventType, rootNode);
+                    rootNode = eventTypeIndex[eventType];
+                    if (rootNode == null)
+                    {
+                        rootNode = new FilterHandleSetNode();
+                        eventTypeIndex.Add(eventType, rootNode);
+                    }
                 }
-                Monitor.Exit( callbacksLock );
-            }
 
-            // Make sure the filter callback doesn't already exist
-            Monitor.Enter( callbacksLock );
-            if (callbacks.ContainsKey(filterCallback))
-            {
-                Monitor.Exit( callbacksLock );
-                throw new IllegalStateException("Callback for filter specification already exists in collection");
+                // Make sure the filter callback doesn't already exist
+                if (callbacks.ContainsKey(filterCallback))
+                {
+                    throw new IllegalStateException("Callback for filter specification already exists in collection");
+                }
             }
-            Monitor.Exit( callbacksLock );
 
             // Now add to tree
             IndexTreeBuilder treeBuilder = new IndexTreeBuilder();
             IndexTreePath path = treeBuilder.Add(filterValueSet, filterCallback, rootNode);
 
-            Monitor.Enter( callbacksLock );
-            callbacks[filterCallback] = new Pair<EventType, IndexTreePath>(eventType, path);
-            Monitor.Exit( callbacksLock );
+            using (new MonitorLock(callbacksLock))
+            {
+                callbacks[filterCallback] = new Pair<EventType, IndexTreePath>(eventType, path);
+            }
         }
 
         /// <summary> Remove a filter callback from the given index node.</summary>
@@ -80,9 +78,12 @@ namespace net.esper.filter
         /// </param>
         public void Remove(FilterHandle filterCallback)
         {
-            Monitor.Enter( callbacksLock );
-            Pair<EventType, IndexTreePath> pair = callbacks.Fetch( filterCallback, null ) ;
-            Monitor.Exit( callbacksLock );
+            Pair<EventType, IndexTreePath> pair;
+
+            using (new MonitorLock(callbacksLock))
+            {
+                pair = callbacks.Fetch(filterCallback, null);
+            }
 
             if (pair == null)
             {
@@ -96,9 +97,10 @@ namespace net.esper.filter
             treeBuilder.Remove(filterCallback, pair.Second, rootNode);
 
             // Remove from callbacks list
-            Monitor.Enter(callbacksLock);
-            callbacks.Remove(filterCallback);
-            Monitor.Exit(callbacksLock);
+            using (new MonitorLock(callbacksLock))
+            {
+                callbacks.Remove(filterCallback);
+            }
         }
     }
 }

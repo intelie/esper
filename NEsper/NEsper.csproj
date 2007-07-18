@@ -109,6 +109,7 @@
     <Compile Include="collection\UniformPair.cs" />
     <Compile Include="collection\ViewUpdatedCollection.cs" />
     <Compile Include="compat\ArrayHelper.cs" />
+    <Compile Include="compat\BaseLock.cs" />
     <Compile Include="compat\C5CollectionWrapper.cs" />
     <Compile Include="compat\CollectionHelper.cs" />
     <Compile Include="compat\DateTimeHelper.cs" />
@@ -118,6 +119,7 @@
     <Compile Include="compat\HashDictionary.cs" />
     <Compile Include="compat\HashSet.cs" />
     <Compile Include="compat\ELinkedList.cs" />
+    <Compile Include="compat\MonitorLock.cs" />
     <Compile Include="compat\SynchronizedSet.cs" />
     <Compile Include="compat\TreeDictionary.cs" />
     <Compile Include="compat\TreeSet.cs" />

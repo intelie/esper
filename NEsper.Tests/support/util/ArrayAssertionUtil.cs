@@ -81,6 +81,21 @@ namespace net.esper.support.util
         /// <summary>
         /// Widens an enumeration a specific type to an enumeration of generic objects.
         /// </summary>
+        /// <param name="enumerable">The enumerable.</param>
+        /// <returns></returns>
+        /// <typeparam name="T"></typeparam>
+
+        public static IEnumerator<Object> WidenEnumerable<T>( IEnumerable<T> enumerable )
+        {
+            return
+                enumerable != null
+                    ? WidenEnumerator(enumerable.GetEnumerator())
+                    : NullEnumerator();
+        }
+
+        /// <summary>
+        /// Widens an enumeration a specific type to an enumeration of generic objects.
+        /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="enumerator"></param>
         /// <returns></returns>
@@ -123,10 +138,7 @@ namespace net.esper.support.util
         public static void AreEqualExactOrder(IEnumerator<EventBean> values, EventBean[] expectedValues)
         {
             IList<EventBean> eventBeanList = expectedValues;
-            IEnumerator<Object> eventBeanEnum =
-                eventBeanList != null
-                    ? WidenEnumerator(eventBeanList.GetEnumerator())
-                    : NullEnumerator();
+            IEnumerator<Object> eventBeanEnum = WidenEnumerable(eventBeanList);
 
             AreEqualExactOrder(
                 WidenEnumerator(values),
@@ -142,8 +154,8 @@ namespace net.esper.support.util
         public static void AreEqualExactOrder<T>(IEnumerable<T> values, IEnumerable<T> expected)
         {
             AreEqualExactOrder(
-                WidenEnumerator(values.GetEnumerator()),
-                WidenEnumerator(expected.GetEnumerator()));
+                WidenEnumerable(values),
+                WidenEnumerable(expected));
         }
 
         /// <summary>
@@ -156,7 +168,7 @@ namespace net.esper.support.util
         {
             AreEqualExactOrder(
                 values.GetEnumerator(),
-                WidenEnumerator(expected.GetEnumerator()));
+                WidenEnumerable(expected));
         }
 
 	    /// <summary>
@@ -205,11 +217,12 @@ namespace net.esper.support.util
             List<T> list1 = new List<T>(expected);
             List<T> list2 = new List<T>(result);
 
-            list1.Sort();
-            list2.Sort();
-
             Assert.AreEqual( list1.Count, list2.Count, "length mismatch");
-            AreEqualExactOrder(list1, list2);
+
+            foreach( T item in list1 )
+            {
+                Assert.IsTrue(list2.Remove(item), item + " not found in resultant set");
+            }
         }
 
 	    public static void AreEqualAnyOrder<T>(T[] expected, T[] result)

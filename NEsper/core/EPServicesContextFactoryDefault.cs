@@ -192,25 +192,19 @@ namespace net.esper.core
 	        foreach (string property in properties.Keys)
 	        {
 	            string typeName = properties.Fetch(property);
-	            if (typeName == "string")
-	            {
-	                typeName = typeof(string).FullName;
-	            }
 
 	            // use the boxed type for primitives
 	            string boxedTypeName = TypeHelper.GetBoxedTypeName(typeName);
 
-	            Type type = null;
 	            try
 	            {
-	                type = Type.GetType(boxedTypeName, true);
-	            }
+	                Type type = TypeHelper.ResolveType(boxedTypeName);
+                    propertyTypes[property] = type;
+                }
                 catch (TypeLoadException ex)
 	            {
 	                throw new EventAdapterException("Unable to load type '" + boxedTypeName + "', class not found", ex);
 	            }
-
-	            propertyTypes[(String) property] = type;
 	        }
 	        return propertyTypes;
 	    }

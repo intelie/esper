@@ -42,7 +42,7 @@ namespace net.esper.regression.view
 	    [Test]
 	    public void testSumOneView()
 	    {
-	        String viewExpr = "select Sum(longBoxed) as mySum " +
+	        String viewExpr = "select sum(longBoxed) as mySum " +
 	                          "from " + typeof(SupportBean).FullName + ".win:time(10 sec)";
 	        selectTestView = epService.EPAdministrator.CreateEQL(viewExpr);
 	        selectTestView.AddListener(listener);

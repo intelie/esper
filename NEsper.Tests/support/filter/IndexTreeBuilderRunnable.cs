@@ -23,7 +23,7 @@ namespace net.esper.support.filter
 {
 	public class IndexTreeBuilderRunnable : Runnable
 	{
-		protected readonly static Random random = new Random((int) DateTimeHelper.CurrentTimeMillis);
+	    protected static readonly Random random = new Random(System.Diagnostics.Process.GetCurrentProcess().Id);
 
 	    private FilterHandleSetNode topNode;
         private IList<FilterSpecCompiled> testFilterSpecs;

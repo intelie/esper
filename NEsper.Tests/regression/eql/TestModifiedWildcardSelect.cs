@@ -149,7 +149,7 @@ namespace net.esper.regression.eql
 		public void testCombinedProperties()
 		{
 			String eventName = typeof(SupportBeanCombinedProps).FullName;
-			String text = "select *, indexed[0].Mapped('0ma').value||indexed[0].Mapped('0mb').value as concat from " + eventName + ".win:length(5)";
+			String text = "select *, indexed[0].mapped('0ma').value||indexed[0].mapped('0mb').value as concat from " + eventName + ".win:length(5)";
 
 			EPStatement statement = epService.EPAdministrator.CreateEQL(text);
 			statement.AddListener(listener);
@@ -246,13 +246,13 @@ namespace net.esper.regression.eql
 			SendCombinedProps();
 			EventBean _eventBean = listener.LastNewData[0];
 
-	        Assert.AreEqual("0ma0", _eventBean["indexed[0].Mapped('0ma').value"]);
-	        Assert.AreEqual("0ma1", _eventBean["indexed[0].Mapped('0mb').value"]);
-	        Assert.AreEqual("1ma0", _eventBean["indexed[1].Mapped('1ma').value"]);
-	        Assert.AreEqual("1ma1", _eventBean["indexed[1].Mapped('1mb').value"]);
+	        Assert.AreEqual("0ma0", _eventBean["indexed[0].mapped('0ma').value"]);
+	        Assert.AreEqual("0ma1", _eventBean["indexed[0].mapped('0mb').value"]);
+	        Assert.AreEqual("1ma0", _eventBean["indexed[1].mapped('1ma').value"]);
+	        Assert.AreEqual("1ma1", _eventBean["indexed[1].mapped('1mb').value"]);
 
-	        Assert.AreEqual("0ma0", _eventBean["array[0].Mapped('0ma').value"]);
-	        Assert.AreEqual("1ma1", _eventBean["array[1].Mapped('1mb').value"]);
+	        Assert.AreEqual("0ma0", _eventBean["array[0].mapped('0ma').value"]);
+	        Assert.AreEqual("1ma1", _eventBean["array[1].mapped('1mb').value"]);
 
 	        Assert.AreEqual("0ma00ma1", _eventBean["concat"]);
 		}

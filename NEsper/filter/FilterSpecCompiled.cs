@@ -132,7 +132,7 @@ namespace net.esper.filter
                 {
                     return false;
                 }
-                else if (Object.Equals(iterOne.Current, iterOther.Current))
+                else if (!Object.Equals(iterOne.Current, iterOther.Current))
                 {
                     return false;
                 }

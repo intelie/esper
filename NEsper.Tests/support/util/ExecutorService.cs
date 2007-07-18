@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
+using net.esper.compat;
 
 namespace net.esper.support.util
 {
@@ -15,6 +16,7 @@ namespace net.esper.support.util
         private readonly Object futuresMonitor;
         private readonly List<FutureImpl> futuresPending;
         private bool isActive;
+        private bool isShutdown;
 
         public int NumExecuted
         {
@@ -31,6 +33,7 @@ namespace net.esper.support.util
             futuresMonitor = new Object();
             futuresPending = new List<FutureImpl>();
             isActive = true;
+            isShutdown = false;
             numExecuted = 0;
         }
 
@@ -50,7 +53,15 @@ namespace net.esper.support.util
                 }
             }
 
-            futuresPending.Remove(future);
+            lock (futuresMonitor)
+            {
+                futuresPending.Remove(future);
+                if (futuresPending.Count == 0)
+                {
+                    Monitor.PulseAll(futuresMonitor);
+                }
+            }
+
         }
 
         /// <summary>
@@ -60,6 +71,11 @@ namespace net.esper.support.util
         /// <returns></returns>
         public Future Submit(Runnable runnable)
         {
+            if ( isShutdown )
+            {
+                throw new IllegalStateException("ExecutorService is shutdown");
+            }
+
             FutureRunnableImpl future = new FutureRunnableImpl();
             future.Runnable = runnable;
             futuresPending.Add(future);
@@ -77,6 +93,11 @@ namespace net.esper.support.util
         /// <returns></returns>
         public Future Submit(Callable callable)
         {
+            if (isShutdown)
+            {
+                throw new IllegalStateException("ExecutorService is shutdown");
+            }
+
             FutureCallbackImpl future = new FutureCallbackImpl();
             future.Callable = callable;
             futuresPending.Add(future);
@@ -91,7 +112,9 @@ namespace net.esper.support.util
         /// </summary>
         public void Shutdown()
         {
-            isActive = false;
+            // Mark the executor as inactive so that we
+            // don't take any new callables.
+            isShutdown = true;
         }
 
         /// <summary>
@@ -107,6 +130,8 @@ namespace net.esper.support.util
                     Monitor.Wait(futuresMonitor, timeout);
                 }
             }
+
+            isActive = false;
         }
     }
 

@@ -494,11 +494,11 @@ namespace net.esper.core
 	            }
 
 	            // Streams event types are the original stream types with the stream zero the subselect stream
-	            LinkedDictionary<String, EventType> namesAndTypes = new LinkedDictionary<String, EventType>();
-	            namesAndTypes.Put(subexpressionStreamName, eventType);
+	            List<KeyValuePair<String, EventType>> namesAndTypes = new List<KeyValuePair<String, EventType>>();
+	            namesAndTypes.Add(new KeyValuePair<string, EventType>(subexpressionStreamName, eventType));
 	            for (int i = 0; i < outerEventTypes.Length; i++)
 	            {
-	                namesAndTypes.Put(outerStreamNames[i], outerEventTypes[i]);
+	                namesAndTypes.Add(new KeyValuePair<string, EventType>(outerStreamNames[i], outerEventTypes[i]));
 	            }
 	            StreamTypeService subselectTypeService = new StreamTypeServiceImpl(namesAndTypes, true, true);
 	            ViewResourceDelegate viewResourceDelegateSubselect = new ViewResourceDelegateImpl(new ViewFactoryChain[] {viewFactoryChain});

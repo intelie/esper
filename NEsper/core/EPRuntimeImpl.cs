@@ -313,21 +313,19 @@ namespace net.esper.core
             ManagedReadWriteLock lockObj = services.EventProcessingRWLock;
             
             // Acquire main processing lock which locks out statement management
-            lockObj.AcquireReadLock();
-            try
-	        {
-	            ProcessMatches(eventBean);
-            }
-            catch (SystemException ex)
+            using (new ReaderLock(lockObj))
             {
-                throw new EPException(ex);
+                try
+                {
+                    ProcessMatches(eventBean);
+                }
+                catch (Exception ex)
+                {
+                    throw new EPException(ex);
+                }
             }
-            finally
-            {
-                lockObj.ReleaseReadLock();
-            }
-			
-		    // Dispatch results to listeners
+
+            // Dispatch results to listeners
 	        Dispatch();
 
 	        // Work off the event queue if any events accumulated in there via a route()
@@ -385,25 +383,22 @@ namespace net.esper.core
 	        // We want to stay in this order for allowing the engine lock as a second-order lock to the
 	        // services own lock, if it has one.
 	        services.SchedulingService.EvaluateLock();
-	        services.EventProcessingRWLock.AcquireReadLock();
-	        try
-	        {
-	            services.SchedulingService.Evaluate(handles);
-	        }
-	        finally
-	        {
-	            services.EventProcessingRWLock.ReleaseReadLock();
-	            services.SchedulingService.EvaluateUnLock();
-	        }
 
-	        services.EventProcessingRWLock.AcquireReadLock();
-	        try
+            try
+            {
+                using (new ReaderLock(services.EventProcessingRWLock))
+                {
+                    services.SchedulingService.Evaluate(handles);
+                }
+            }
+            finally
+            {
+                services.SchedulingService.EvaluateUnLock();
+            }
+
+            using(new ReaderLock(services.EventProcessingRWLock))
 	        {
 	            ProcessScheduleHandles(handles);
-	        }
-	        finally
-	        {
-				services.EventProcessingRWLock.ReleaseReadLock();
 	        }
 	    }
 
@@ -523,14 +518,9 @@ namespace net.esper.core
                     eventBean = services.EventAdapterService.AdapterForBean(_event);
                 }
 
-                services.EventProcessingRWLock.AcquireReadLock();
-	            try
+                using(new ReaderLock(services.EventProcessingRWLock))
 	            {
 	                ProcessMatches(eventBean);
-	            }
-	            finally
-	            {
-	                services.EventProcessingRWLock.ReleaseReadLock();
 	            }
 
                 Dispatch();
@@ -575,17 +565,17 @@ namespace net.esper.core
 	            }
 
 	            handle.StatementLock.AcquireLock(services.StatementLockFactory);
-	            try
-	            {
-	                handleCallback.FilterCallback.MatchFound(_event);
-	                
-	                // internal join processing, if applicable
-	                handle.InternalDispatch();
-	            }
-	            finally
-	            {
-	                handleCallback.EpStatementHandle.StatementLock.ReleaseLock(services.StatementLockFactory);
-	            }
+                try
+                {
+                    handleCallback.FilterCallback.MatchFound(_event);
+
+                    // internal join processing, if applicable
+                    handle.InternalDispatch();
+                }
+                finally
+                {
+                    handleCallback.EpStatementHandle.StatementLock.ReleaseLock(services.StatementLockFactory);
+                }
 	        }
 	        matches.Clear();
 	        if (stmtCallbacks.Count == 0)

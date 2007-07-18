@@ -9,9 +9,13 @@ namespace net.esper.compat
 	public class LockConstants
 	{
         /// <summary>
+        /// Number of milliseconds until monitor locks timeout
+        /// </summary>
+        public const int MonitorTimeout = 5000;
+        /// <summary>
         /// Number of milliseconds until read locks timeout
         /// </summary>
-		public const int ReaderTimeout = 50000 ;
+		public const int ReaderTimeout = 5000 ;
         /// <summary>
         /// Number of milliseconds until write locks timeout
         /// </summary>

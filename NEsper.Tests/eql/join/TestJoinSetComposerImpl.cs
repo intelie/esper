@@ -98,7 +98,7 @@ namespace net.esper.eql.join
             foreach (EventBean _event in events)
             {
                 buf.Append(delimiter);
-                buf.Append(((SupportBean)_event.Underlying).GetString());
+                buf.Append(((SupportBean)_event.Underlying).String);
                 delimiter = "|";
             }
             return buf.ToString();

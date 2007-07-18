@@ -50,9 +50,9 @@ namespace net.esper.regression.eql
 	            double percent = 0.25 + i;
 	            int id = i % 5;
 
-	            String text = "select symbol, Min(price) " +
+	            String text = "select symbol, min(price) " +
 	                    "from MD(id='${id}').win:time(${secondsWindowSpan})\n" +
-	                    "having price >= Min(price) * ${percent}";
+	                    "having price >= min(price) * ${percent}";
 
 	            text = text.Replace("${id}", Convert.ToString(id));
 	            text = text.Replace("${secondsWindowSpan}", Convert.ToString(secondsWindowSpan));

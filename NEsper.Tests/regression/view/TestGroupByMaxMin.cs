@@ -82,7 +82,7 @@ namespace net.esper.regression.view
 	    public void testMinNoGroupHaving()
 	    {
 	        String stmtText = "select symbol from " + typeof(SupportMarketDataBean).FullName + ".win:time(5 sec) " +
-	                          "having volume > Min(volume) * 1.3";
+	                          "having volume > min(volume) * 1.3";
 
 	        selectTestView = epService.EPAdministrator.CreateEQL(stmtText);
 	        selectTestView.AddListener(testListener);
@@ -105,8 +105,8 @@ namespace net.esper.regression.view
 	    [Test]
 	    public void testMinNoGroupSelectHaving()
 	    {
-	        String stmtText = "select symbol, Min(volume) as mymin from " + typeof(SupportMarketDataBean).FullName + ".win:length(5) " +
-	                          "having volume > Min(volume) * 1.3";
+	        String stmtText = "select symbol, min(volume) as mymin from " + typeof(SupportMarketDataBean).FullName + ".win:length(5) " +
+	                          "having volume > min(volume) * 1.3";
 
 	        selectTestView = epService.EPAdministrator.CreateEQL(stmtText);
 	        selectTestView.AddListener(testListener);

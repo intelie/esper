@@ -139,7 +139,7 @@ namespace net.esper.events
 	        tests.Add(new PropTestDesc("google('x')", false, null, false, null));
 	        tests.Add(new PropTestDesc("mapped('x')", true, typeof(String), true, null));
 	        tests.Add(new PropTestDesc("mapped('x').x", false, null, false, null));
-	        tests.Add(new PropTestDesc("mapProperty", true, typeof(IDataDictionary), true, objComplex.MapProperty));
+	        tests.Add(new PropTestDesc("mapProperty", true, typeof(Properties), true, objComplex.MapProperty));
 	        RunTest(tests, eventTypeComplex, eventComplex);
 
 	        tests = new List<PropTestDesc>();
@@ -160,16 +160,16 @@ namespace net.esper.events
 	        tests.Add(new PropTestDesc("array.mapped", false, null, false, null));
 	        tests.Add(new PropTestDesc("array[0]", true, nestedOne, true, objCombined.Array[0]));
 	        tests.Add(new PropTestDesc("array[1].mapped", false, null, false, null));
-	        tests.Add(new PropTestDesc("array[1].Mapped('x')", true, nestedTwo, true, objCombined.Array[1].GetMapped("x")));
-	        tests.Add(new PropTestDesc("array[1].Mapped('1mb')", true, nestedTwo, true, objCombined.Array[1].GetMapped("1mb")));
-	        tests.Add(new PropTestDesc("indexed[1].Mapped('x')", true, nestedTwo, true, objCombined.GetIndexed(1).GetMapped("x")));
-	        tests.Add(new PropTestDesc("indexed[1].Mapped('x').value", true, typeof(String), true, null));
-	        tests.Add(new PropTestDesc("indexed[1].Mapped('1mb')", true, nestedTwo, true, objCombined.GetIndexed(1).GetMapped("1mb")));
-	        tests.Add(new PropTestDesc("indexed[1].Mapped('1mb').value", true, typeof(String), true, objCombined.GetIndexed(1).GetMapped("1mb").Value));
-            tests.Add(new PropTestDesc("array[1].mapprop", true, typeof(IDataDictionary), true, objCombined.GetIndexed(1).GetMapProp()));
-	        tests.Add(new PropTestDesc("array[1].Mapprop('a')", false, null, false, null));
-	        tests.Add(new PropTestDesc("array[1].Mapprop('a').value", false, null, false, null));
-	        tests.Add(new PropTestDesc("indexed[1].mapprop", true, typeof(IDataDictionary), true, objCombined.GetIndexed(1).GetMapProp()));
+	        tests.Add(new PropTestDesc("array[1].mapped('x')", true, nestedTwo, true, objCombined.Array[1].GetMapped("x")));
+	        tests.Add(new PropTestDesc("array[1].mapped('1mb')", true, nestedTwo, true, objCombined.Array[1].GetMapped("1mb")));
+	        tests.Add(new PropTestDesc("indexed[1].mapped('x')", true, nestedTwo, true, objCombined.GetIndexed(1).GetMapped("x")));
+	        tests.Add(new PropTestDesc("indexed[1].mapped('x').value", true, typeof(String), true, null));
+	        tests.Add(new PropTestDesc("indexed[1].mapped('1mb')", true, nestedTwo, true, objCombined.GetIndexed(1).GetMapped("1mb")));
+	        tests.Add(new PropTestDesc("indexed[1].mapped('1mb').value", true, typeof(String), true, objCombined.GetIndexed(1).GetMapped("1mb").Value));
+            tests.Add(new PropTestDesc("array[1].mapprop", true, typeof(DataDictionary), true, objCombined.GetIndexed(1).GetMapProp()));
+	        tests.Add(new PropTestDesc("array[1].mapprop('a')", false, null, false, null));
+	        tests.Add(new PropTestDesc("array[1].mapprop('a').value", false, null, false, null));
+	        tests.Add(new PropTestDesc("indexed[1].mapprop", true, typeof(DataDictionary), true, objCombined.GetIndexed(1).GetMapProp()));
 	        RunTest(tests, eventTypeNested, eventNested);
 
 	        TryInvalidIsProperty(eventTypeComplex, "x[");

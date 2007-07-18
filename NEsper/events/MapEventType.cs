@@ -22,7 +22,7 @@ namespace net.esper.events
         /// </returns>
         virtual public Type UnderlyingType
         {
-            get { return typeof(System.Collections.IDictionary); }
+            get { return typeof(IDataDictionary); }
         }
 
         /// <summary>
@@ -151,7 +151,7 @@ namespace net.esper.events
 
 	        // Take apart the nested property into a map key and a nested value class property name
 	        String propertyMap = propertyName.Substring(0, index);
-	        String propertyNested = propertyName.Substring(index + 1, propertyName.Length);
+            String propertyNested = propertyName.Substring(index + 1);
 
 	        Type result = types.Fetch(propertyMap);
 	        if (result == null)

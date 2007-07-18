@@ -31,6 +31,7 @@ namespace net.esper.regression.view
 	    [SetUp]
 	    public void SetUp()
 	    {
+            PropertyResolutionStyleHelper.DefaultPropertyResolutionStyle = PropertyResolutionStyle.CASE_INSENSITIVE;
 	        testListener = new SupportUpdateListener();
 	        epService = EPServiceProviderManager.GetDefaultProvider();
 	        epService.Initialize();
@@ -39,7 +40,7 @@ namespace net.esper.regression.view
 	    [Test]
 	    public void testCoalesceBeans()
 	    {
-	        TryCoalesceBeans("select Coalesce(a.string, b.string) as myString, Coalesce(a, b) as myBean" +
+	        TryCoalesceBeans("select coalesce(a.string, b.string) as myString, coalesce(a, b) as myBean" +
 	                          " from pattern [every (a=" + typeof(SupportBean).FullName + "(string='s0') or b=" + typeof(SupportBean).FullName + "(string='s1'))]");
 
 	        TryCoalesceBeans("SELECT COALESCE(a.string, b.string) AS myString, COALESCE(a, b) AS myBean" +
@@ -234,7 +235,7 @@ namespace net.esper.regression.view
 
 	    private void SetUpMinMax()
 	    {
-	        String viewExpr = "select Max(longBoxed, intBoxed) as myMax, " +
+	        String viewExpr = "select max(longBoxed, intBoxed) as myMax, " +
 	                                 "max(longBoxed, intBoxed, shortBoxed) as myMaxEx," +
 	                                 "min(longBoxed, intBoxed) as myMin," +
 	                                 "min(longBoxed, intBoxed, shortBoxed) as myMinEx" +

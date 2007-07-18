@@ -7,7 +7,6 @@ using net.esper.events;
 using net.esper.support.bean;
 using net.esper.support.util;
 
-using NUnit.Core;
 using NUnit.Framework;
 
 namespace net.esper.regression.events
@@ -21,6 +20,8 @@ namespace net.esper.regression.events
         [SetUp]
         public virtual void setUp()
         {
+            PropertyResolutionStyleHelper.DefaultPropertyResolutionStyle = PropertyResolutionStyle.CASE_INSENSITIVE;
+            
             EDictionary<String, String> mappedProperty = new HashDictionary<String, String>();
             mappedProperty.Put("key1", "value1");
             mappedProperty.Put("key2", "value2");
@@ -61,13 +62,13 @@ namespace net.esper.regression.events
         [Test]
         public void testJavaBeanAccessor()
         {
-            tryJavaBeanAccessor(ConfigurationEventTypeLegacy.CodeGenerationEnum.ENABLED);
+            tryAccessor(ConfigurationEventTypeLegacy.CodeGenerationEnum.ENABLED);
         }
 
         [Test]
         public void testJavaBeanAccessorNoCodeGen()
         {
-            tryJavaBeanAccessor(ConfigurationEventTypeLegacy.CodeGenerationEnum.DISABLED);
+            tryAccessor(ConfigurationEventTypeLegacy.CodeGenerationEnum.DISABLED);
         }
 
         [Test]
@@ -238,7 +239,7 @@ namespace net.esper.regression.events
             }
         }
 
-        public virtual void tryJavaBeanAccessor(ConfigurationEventTypeLegacy.CodeGenerationEnum codeGeneration)
+        public virtual void tryAccessor(ConfigurationEventTypeLegacy.CodeGenerationEnum codeGeneration)
         {
             Configuration config = new Configuration();
 
@@ -272,7 +273,7 @@ namespace net.esper.regression.events
 
             foreach (String name in _items)
             {
-                Assert.AreEqual(typeof(int), eventType.GetPropertyType(name));
+                Assert.AreEqual(typeof(int?), eventType.GetPropertyType(name));
                 Assert.AreEqual(10, listener.LastNewData[0][name]);
             }
         }

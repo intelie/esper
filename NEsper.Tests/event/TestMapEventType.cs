@@ -59,7 +59,7 @@ namespace net.esper.events
 	        Assert.AreEqual(typeof(int), eventType.GetPropertyType("mySupportBean.intPrimitive"));
 	        Assert.AreEqual(typeof(String), eventType.GetPropertyType("myComplexBean.nested.nestedValue"));
 	        Assert.AreEqual(typeof(int), eventType.GetPropertyType("myComplexBean.indexed[1]"));
-	        Assert.AreEqual(typeof(String), eventType.GetPropertyType("myComplexBean.Mapped('a')"));
+	        Assert.AreEqual(typeof(String), eventType.GetPropertyType("myComplexBean.mapped('a')"));
 	        Assert.AreEqual(null, eventType.GetPropertyType("myNullType"));
 
 	        Assert.IsNull(eventType.GetPropertyType("dummy"));
@@ -82,7 +82,7 @@ namespace net.esper.events
 	        Assert.IsTrue(eventType.IsProperty("mySupportBean.intPrimitive"));
 	        Assert.IsTrue(eventType.IsProperty("myComplexBean.nested.nestedValue"));
 	        Assert.IsTrue(eventType.IsProperty("myComplexBean.indexed[1]"));
-	        Assert.IsTrue(eventType.IsProperty("myComplexBean.Mapped('a')"));
+	        Assert.IsTrue(eventType.IsProperty("myComplexBean.mapped('a')"));
 	        Assert.IsTrue(eventType.IsProperty("myNullType"));
 
 	        Assert.IsFalse(eventType.IsProperty("dummy"));

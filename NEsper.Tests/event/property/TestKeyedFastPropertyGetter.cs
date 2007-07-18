@@ -24,7 +24,7 @@ namespace net.esper.events.property
 			_event = SupportEventBeanFactory.CreateObject(bean);
 
             Type type = typeof(SupportBeanComplexProps);
-            MethodInfo methodOne = type.GetMethod("getIndexed", new Type[] { typeof(int) });
+            MethodInfo methodOne = type.GetMethod("GetIndexed", new Type[] { typeof(int) });
             IndexedPropertyDescriptor descriptor = new IndexedAccessorPropertyDescriptor("indexed", methodOne);
             getter = new KeyedPropertyGetter(descriptor, 1);
 		}

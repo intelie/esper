@@ -109,6 +109,7 @@ namespace net.esper.events.property
                 switch( desc.PropertyName ) {
                     case "type":
                     case "hashCode":
+                    case "toString": // does not occur naturally (added for completeness)
                         toRemove.Add(desc);
                         break ;
                 }
@@ -297,15 +298,25 @@ namespace net.esper.events.property
         /// <param name="type"></param>
         /// <returns></returns>
 
-        public static IEnumerable<MethodInfo> GetSimpleAccessors( Type type ) 
+        public static IEnumerable<MethodInfo> GetSimpleAccessors(Type type)
         {
-        	foreach( MethodInfo methodInfo in GetAccessors( type ) ) {
-        		ParameterInfo[] methodParams = methodInfo.GetParameters() ;
-        		int length = methodParams.Length;
-        		if ( methodParams.Length == 0 ) {
-        			yield return methodInfo ;
-        		}
-        	}
+            foreach (MethodInfo methodInfo in GetAccessors(type))
+            {
+                ParameterInfo[] methodParams = methodInfo.GetParameters();
+                int length = methodParams.Length;
+                if (methodParams.Length == 0)
+                {
+                    switch (methodInfo.Name)
+                    {
+                        case "GetType":
+                        case "GetHashCode":
+                            break;
+                        default:
+                            yield return methodInfo;
+                            break;
+                    }
+                }
+            }
         }
 
         /// <summary>

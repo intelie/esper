@@ -105,5 +105,35 @@ namespace net.esper.util
 	            ThreadLogUtil.TraceLock(RELEASED_TEXT + " read " + name, lockObj);
 	        }
 	    }
-	}
+
+        /// <summary>
+        /// Gets a value indicating whether this instance has its reader lock held.
+        /// </summary>
+
+	    public bool IsReaderLockHeld
+	    {
+	        get
+	        {
+	            return
+	                lockObj != null
+	                    ? lockObj.IsReaderLockHeld
+	                    : false;
+	        }
+	    }
+
+        /// <summary>
+        /// Gets a value indicating whether this instance has its writer lock held.
+        /// </summary>
+
+        public bool IsWriterLockHeld
+        {
+            get
+            {
+                return
+                    lockObj != null
+                        ? lockObj.IsWriterLockHeld
+                        : false;
+            }
+        }
+    }
 } // End of namespace

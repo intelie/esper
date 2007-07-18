@@ -76,7 +76,7 @@ namespace net.esper.eql.parse
 	    /// The leave node method for subquery statements pops from the stack.
 	    /// </summary>
 	    /// <throws>SemanticException is a standard parser exception</throws>
-	    protected void PushStmtContext()
+	    protected override void pushStmtContext()
 		{
 	        if (log.IsDebugEnabled)
 	        {

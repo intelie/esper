@@ -7,7 +7,6 @@
 // ---------------------------------------------------------------------------------- /
 
 using System;
-using System.Collections.Generic;
 
 using NUnit.Framework;
 
@@ -28,8 +27,10 @@ namespace net.esper.events
 		private EDictionary<String, Type> properties;
 		private EventAdapterService eventAdapterService;
 
+        [SetUp]
 		protected void SetUp()
 		{
+            PropertyResolutionStyleHelper.DefaultPropertyResolutionStyle = PropertyResolutionStyle.CASE_INSENSITIVE;
 	        underlyingEventTypeOne = new BeanEventType(typeof(SupportBeanSimple), new BeanEventAdapter(PropertyResolutionStyle.CASE_INSENSITIVE), null, "abc");
             underlyingEventTypeTwo = new BeanEventType(typeof(SupportBean_A), new BeanEventAdapter(PropertyResolutionStyle.CASE_INSENSITIVE), null, "abc");
 	        properties = new HashDictionary<String, Type>();
@@ -43,7 +44,7 @@ namespace net.esper.events
 		public void testInvalidRepeatedNames()
 		{
 			properties.Clear();
-			properties.Put("myString", typeof(string));
+			properties.Put("MyString", typeof(string));
 
 			try
 			{
@@ -60,7 +61,7 @@ namespace net.esper.events
 		[Test]
 		public void testPropertyNames()
 		{
-			String[] expected = new String[] { "myInt", "myString", "additionalInt", "additionalString" };
+			String[] expected = new String[] { "MyInt", "MyString", "additionalInt", "additionalString" };
 			ArrayAssertionUtil.AreEqualAnyOrder(expected, eventType.PropertyNames);
 		}
 

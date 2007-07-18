@@ -1,6 +1,6 @@
 using System;
-
-using PropertyDescriptor = System.ComponentModel.PropertyDescriptor;
+using System.ComponentModel;
+using System.Reflection;
 
 using net.esper.events;
 
@@ -37,34 +37,42 @@ namespace net.esper.events.property
         /// <param name="obj">The obj.</param>
         /// <returns></returns>
 		public Object GetValue(EventBean obj)
-		{
-			Object underlying = obj.Underlying;
-			
-			try
-			{
-				Object value = property.GetValue( underlying ) ;
-				if ( value is Array )
-				{
-					Array arrayValue = value as Array ;
-					return
-						( arrayValue.Length > index ) ?
-						( arrayValue.GetValue( index ) ) :
-						( null ) ;
-				}
-				else if ( value is System.Collections.IList )
-				{
-					System.Collections.IList listValue = value as System.Collections.IList;
-					return
-						( listValue.Count > index ) ?
-						( listValue[index] ) :
-						( null ) ;
-				}
-				else
-				{
-					return null ;
-				}
-			}
-			catch (InvalidCastException)
+        {
+            Object underlying = obj.Underlying;
+
+            try
+            {
+                Object value = property.GetValue(underlying);
+                if (value is Array)
+                {
+                    Array arrayValue = value as Array;
+                    return
+                        (arrayValue.Length > index)
+                            ?
+                                (arrayValue.GetValue(index))
+                            :
+                                (null);
+                }
+                else if (value is System.Collections.IList)
+                {
+                    System.Collections.IList listValue = value as System.Collections.IList;
+                    return
+                        (listValue.Count > index)
+                            ?
+                                (listValue[index])
+                            :
+                                (null);
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            catch( TargetInvocationException e )
+            {
+                throw new PropertyAccessException(e);
+            }
+        	catch (InvalidCastException)
 			{
 				throw new PropertyAccessException("Mismatched getter instance to event bean type");
 			}

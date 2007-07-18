@@ -3,6 +3,7 @@ using System.Xml;
 using System.Xml.XPath;
 
 using net.esper.events;
+using net.esper.util;
 
 namespace net.esper.events.xml
 {
@@ -14,6 +15,7 @@ namespace net.esper.events.xml
         internal XPathExpression expression;
 		internal String property;
 		internal Type resultType;
+	    internal Type boxedResultType;
 
         /// <summary>
         /// Returns type of event property.
@@ -23,7 +25,7 @@ namespace net.esper.events.xml
         /// </returns>
 		virtual public Type ResultClass
 		{
-			get { return resultType; }
+			get { return boxedResultType; }
 		}
 
 		/// <summary>
@@ -38,6 +40,7 @@ namespace net.esper.events.xml
 			this.expression = xPathExpression;
 			this.property = propertyName;
 			this.resultType = resultType;
+		    this.boxedResultType = TypeHelper.GetBoxedType(resultType);
 		}
 
 		/// <summary>
@@ -72,7 +75,7 @@ namespace net.esper.events.xml
                         break;
                     case XPathResultType.NodeSet:
                         {
-                            XPathNodeIterator iterator = result as XPathNodeIterator;
+                            XPathNodeIterator iterator = (XPathNodeIterator) result;
                             if (iterator.MoveNext())
                             {
                                 XPathNavigator current = iterator.Current;

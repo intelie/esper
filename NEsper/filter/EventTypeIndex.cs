@@ -53,7 +53,7 @@ namespace net.esper.filter
 
         public void Add(EventType eventType, FilterHandleSetNode rootNode)
         {
-            using (WriterLock writeLock = new WriterLock(eventTypesRWLock))
+            using (new WriterLock(eventTypesRWLock))
             {
                 if (eventTypes.ContainsKey(eventType))
                 {

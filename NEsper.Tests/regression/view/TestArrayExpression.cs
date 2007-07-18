@@ -27,6 +27,7 @@ namespace net.esper.regression.view
 
 	    private EPServiceProvider epService;
 
+        [SetUp]
 	    protected void SetUp()
 	    {
 	        epService = EPServiceProviderManager.GetDefaultProvider();

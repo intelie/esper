@@ -176,7 +176,7 @@ namespace net.esper.regression.pattern
             {
                 countReceived++;
                 SupportBean _event = (SupportBean)(newEvents[0]["tag"]);
-                int numNewEvents = _event.GetIntPrimitive();
+                int numNewEvents = _event.IntPrimitive;
 
                 for (int i = 0; i < numNewEvents; i++)
                 {

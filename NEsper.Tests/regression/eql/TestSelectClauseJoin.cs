@@ -5,7 +5,6 @@ using net.esper.events;
 using net.esper.support.bean;
 using net.esper.support.util;
 
-using NUnit.Core;
 using NUnit.Framework;
 
 namespace net.esper.regression.eql
@@ -31,8 +30,8 @@ namespace net.esper.regression.eql
 
 			String joinStatement =
                 "select s0.doubleBoxed, s1.intPrimitive*s1.intBoxed/2.0 as div from " +
-                eventA + "(str='s0').win:length(3) as s0," +
-                eventB + "(str='s1').win:length(3) as s1" +
+                eventA + "(string='s0').win:length(3) as s0," +
+                eventB + "(string='s1').win:length(3) as s1" +
                 " where s0.doubleBoxed = s1.doubleBoxed";
 
 			joinView = epService.EPAdministrator.CreateEQL(joinStatement);

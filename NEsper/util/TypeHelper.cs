@@ -153,41 +153,55 @@ namespace net.esper.util
             {
                 return typeof(byte?).FullName;
             }
-            if (typeName == typeof(short).FullName)
+            if ((typeName == typeof(short).FullName) ||
+                (typeName == "short"))
             {
                 return typeof(short?).FullName;
             }
-            if (typeName == typeof(ushort).FullName)
+            if ((typeName == typeof(ushort).FullName) ||
+                (typeName == "ushort"))
             {
                 return typeof(ushort?).FullName;
             }
-            if (typeName == typeof(int).FullName)
+            if ((typeName == typeof(int).FullName) ||
+                (typeName == "int"))
             {
                 return typeof(int?).FullName;
             }
-            if (typeName == typeof(uint).FullName)
+            if ((typeName == typeof(uint).FullName) ||
+                (typeName == "uint"))
             {
                 return typeof(uint?).FullName;
             }
-            if (typeName == typeof(long).FullName)
+            if ((typeName == typeof(long).FullName) ||
+                (typeName == "long"))
             {
                 return typeof(long?).FullName;
             }
-            if (typeName == typeof(ulong).FullName)
+            if ((typeName == typeof(ulong).FullName) ||
+                (typeName == "ulong"))
             {
                 return typeof(ulong?).FullName;
             }
-            if (typeName == typeof(float).FullName)
+            if ((typeName == typeof(float).FullName) ||
+                (typeName == "float"))
             {
                 return typeof(float?).FullName;
             }
-            if (typeName == typeof(double).FullName)
+            if ((typeName == typeof(double).FullName) ||
+                (typeName == "double"))
             {
                 return typeof(double?).FullName;
             }
-            if (typeName == typeof(bool).FullName)
+            if ((typeName == typeof(bool).FullName) ||
+                (typeName == "boolean") ||
+                (typeName == "bool"))
             {
                 return typeof(bool?).FullName;
+            }
+            if (String.Equals(typeName, "string", StringComparison.OrdinalIgnoreCase))
+            {
+                typeName = typeof(string).FullName;
             }
             return typeName;
         }

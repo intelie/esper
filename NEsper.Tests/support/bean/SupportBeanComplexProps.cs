@@ -14,12 +14,12 @@ namespace net.esper.support.bean
         private readonly int[] _arrayProperty;
 
         public static String[] PROPERTIES = {
-    	    "simpleProperty",
+    	    "SimpleProperty",
     	    "mapped()",
     	    "indexed[]",
-    	    "mapProperty",
-    	    "arrayProperty",
-    	    "nested"
+    	    "MapProperty",
+    	    "ArrayProperty",
+    	    "Nested"
         };
 
         public static SupportBeanComplexProps MakeDefaultBean()

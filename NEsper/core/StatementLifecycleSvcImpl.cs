@@ -120,31 +120,31 @@ namespace net.esper.core
                 bool canSelfJoin = IsPotentialSelfJoin(compiledSpec.StreamSpecs);
                 statementContext.EpStatementHandle.CanSelfJoin = canSelfJoin;
 
-                eventProcessingRWLock.AcquireWriteLock();
-                try
+                using (new WriterLock(eventProcessingRWLock))
                 {
-                    // create statement - may fail for parser and simple validation errors
-                    EPStatementSPI statement = new EPStatementImpl(statementId, statementName, expression, isPattern, services.DispatchService, this);
+                    try
+                    {
+                        // create statement - may fail for parser and simple validation errors
+                        EPStatementSPI statement =
+                            new EPStatementImpl(statementId, statementName, expression, isPattern,
+                                                services.DispatchService, this);
 
-                    // create start method
-                    EPStatementStartMethod startMethod;
-                    startMethod = new EPStatementStartMethod(compiledSpec, services, statementContext);
+                        // create start method
+                        EPStatementStartMethod startMethod;
+                        startMethod = new EPStatementStartMethod(compiledSpec, services, statementContext);
 
-                    statementDesc = new EPStatementDesc(statement, startMethod, null);
-                    stmtIdToDescMap[statementId] = statementDesc;
-                    stmtNameToStmtMap[statementName] = statement;
-                    stmtNameToIdMap[statementName] = statementId;
-                }
-                catch (Exception)
-                {
-                    stmtIdToDescMap.Remove(statementId);
-                    stmtNameToIdMap.Remove(statementName);
-                    stmtNameToStmtMap.Remove(statementName);
-                    throw;
-                }
-                finally
-                {
-                    eventProcessingRWLock.ReleaseWriteLock();
+                        statementDesc = new EPStatementDesc(statement, startMethod, null);
+                        stmtIdToDescMap[statementId] = statementDesc;
+                        stmtNameToStmtMap[statementName] = statement;
+                        stmtNameToIdMap[statementName] = statementId;
+                    }
+                    catch (Exception)
+                    {
+                        stmtIdToDescMap.Remove(statementId);
+                        stmtNameToIdMap.Remove(statementName);
+                        stmtNameToStmtMap.Remove(statementName);
+                        throw;
+                    }
                 }
 
                 return statementDesc;
@@ -240,8 +240,7 @@ namespace net.esper.core
 
                 // Acquire a lock for event processing as threads may be in the views used by the statement
                 // and that could conflict with the destroy of views
-                eventProcessingRWLock.AcquireWriteLock();
-                try
+                using(new WriterLock(eventProcessingRWLock))
                 {
                     EPStatementDesc desc = stmtIdToDescMap.Fetch(statementId);
                     if (desc == null)
@@ -249,10 +248,6 @@ namespace net.esper.core
                         throw new IllegalStateException("Cannot start statement, statement is in destroyed state");
                     }
                     StartInternal(statementId, desc);
-                }
-                finally
-                {
-                    eventProcessingRWLock.ReleaseWriteLock();
                 }
             }
         }
@@ -269,14 +264,9 @@ namespace net.esper.core
 
             // Acquire a lock for event processing as threads may be in the views used by the statement
             // and that could conflict with the destroy of views
-            eventProcessingRWLock.AcquireWriteLock();
-            try
+            using(new ReaderLock(eventProcessingRWLock))
             {
                 StartInternal(statementId, desc);
-            }
-            finally
-            {
-                eventProcessingRWLock.ReleaseWriteLock();
             }
         }
 
@@ -342,8 +332,7 @@ namespace net.esper.core
             {
                 // Acquire a lock for event processing as threads may be in the views used by the statement
                 // and that could conflict with the destroy of views
-                eventProcessingRWLock.AcquireWriteLock();
-                try
+                using(new WriterLock(eventProcessingRWLock))
                 {
                     EPStatementDesc desc = stmtIdToDescMap.Fetch(statementId);
                     if (desc == null)
@@ -369,10 +358,6 @@ namespace net.esper.core
 
                     statement.CurrentState = EPStatementState.STOPPED;
                 }
-                finally
-                {
-                    eventProcessingRWLock.ReleaseWriteLock();
-                }
             }
         }
 
@@ -386,8 +371,7 @@ namespace net.esper.core
             {
                 // Acquire a lock for event processing as threads may be in the views used by the statement
                 // and that could conflict with the destroy of views
-                eventProcessingRWLock.AcquireWriteLock();
-                try
+                using (new WriterLock(eventProcessingRWLock))
                 {
                     EPStatementDesc desc = stmtIdToDescMap.Fetch(statementId);
                     if (desc == null)
@@ -400,7 +384,7 @@ namespace net.esper.core
                     {
                         EPStatementStopMethod stopMethod = desc.StopMethod;
                         statement.ParentView = null;
-                        stopMethod() ;
+                        stopMethod();
                     }
 
                     statement.CurrentState = EPStatementState.DESTROYED;
@@ -408,14 +392,6 @@ namespace net.esper.core
                     stmtNameToStmtMap.Remove(statement.Name);
                     stmtNameToIdMap.Remove(statement.Name);
                     stmtIdToDescMap.Remove(statementId);
-                }
-                catch (Exception ex)
-                {
-                    throw ex;
-                }
-                finally
-                {
-                    eventProcessingRWLock.ReleaseWriteLock();
                 }
             }
         }

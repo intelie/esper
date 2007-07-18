@@ -75,9 +75,9 @@ namespace net.esper.events.property
         {
             IList<EventPropertyDescriptor> result = new List<EventPropertyDescriptor>();
             result.Add(new EventPropertyDescriptor("x", "x", (PropertyDescriptor)null, EventPropertyType.SIMPLE));
-            result.Add(new EventPropertyDescriptor("GetHashCode", "GetHashCode", (PropertyDescriptor)null, EventPropertyType.SIMPLE));
-            result.Add(new EventPropertyDescriptor("ToString", "ToString", (PropertyDescriptor)null, EventPropertyType.SIMPLE));
-            result.Add(new EventPropertyDescriptor("GetType", "GetType", (PropertyDescriptor)null, EventPropertyType.SIMPLE));
+            result.Add(new EventPropertyDescriptor("hashCode", "hashCode", (PropertyDescriptor)null, EventPropertyType.SIMPLE));
+            result.Add(new EventPropertyDescriptor("toString", "toString", (PropertyDescriptor)null, EventPropertyType.SIMPLE));
+            result.Add(new EventPropertyDescriptor("type", "type", (PropertyDescriptor)null, EventPropertyType.SIMPLE));
 
             PropertyHelper.RemoveClrProperties(result);
 
@@ -89,7 +89,7 @@ namespace net.esper.events.property
         public void testGetGetter()
         {
             EventBean bean = SupportEventBeanFactory.CreateObject(new SupportBeanPropertyNames());
-            MethodInfo method = typeof(SupportBeanPropertyNames).GetMethod("getA", new Type[]{}) ;
+            MethodInfo method = typeof(SupportBeanPropertyNames).GetMethod("GetA", new Type[]{}) ;
             PropertyDescriptor descriptor = new SimpleAccessorPropertyDescriptor(method.Name, method);
             EventPropertyGetter getter = PropertyHelper.GetGetter(descriptor);
             Assert.AreEqual("", getter.GetValue(bean));

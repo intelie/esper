@@ -93,9 +93,9 @@ namespace net.esper.eql.spec
 	            {
 	                selfStreamName = "s_" + UuidGenerator.Generate(filterNode);
 	            }
-	            LinkedDictionary<String, EventType> filterTypes = new LinkedDictionary<String, EventType>();
-	            filterTypes.Put(selfStreamName, eventType);
-	            filterTypes.PutAll(taggedEventTypes);
+	            List<KeyValuePair<String, EventType>> filterTypes = new List<KeyValuePair<string, EventType>>();
+	            filterTypes.Add(new KeyValuePair<string, EventType>(selfStreamName, eventType));
+	            filterTypes.AddRange(taggedEventTypes);
 	            StreamTypeService streamTypeService = new StreamTypeServiceImpl(filterTypes, true, false);
 
 	            IList<ExprNode> exprNodes = filterNode.RawFilterSpec.FilterExpressions;

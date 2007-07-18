@@ -29,8 +29,10 @@ namespace net.esper.regression.view
 		private EPStatement statement;
 		private SupportUpdateListener listener;
 
+        [SetUp]
 		protected void SetUp()
 		{
+            PropertyResolutionStyleHelper.DefaultPropertyResolutionStyle = PropertyResolutionStyle.CASE_INSENSITIVE;
 		    epService = EPServiceProviderManager.GetDefaultProvider();
 		    epService.Initialize();
 		    stream = " from " + typeof(SupportMarketDataBean).FullName +".win:length(5) ";
@@ -101,8 +103,8 @@ namespace net.esper.regression.view
 		public void testNoParameters()
 		{
 			long startTime = DateTimeHelper.CurrentTimeMillis;
-			statementText = "select DateTimeHelper.CurrentTimeMillis " + stream;
-			long result = (long) CreateStatementAndGet("DateTimeHelper.CurrentTimeMillis");
+            statementText = "select net.esper.compat.DateTimeHelper.GetCurrentTimeMillis() " + stream;
+            long result = (long)CreateStatementAndGet("net.esper.compat.DateTimeHelper.GetCurrentTimeMillis()");
 			long finishTime = DateTimeHelper.CurrentTimeMillis;
 			Assert.IsTrue(startTime <= result);
 			Assert.IsTrue(result <= finishTime);
@@ -147,7 +149,7 @@ namespace net.esper.regression.view
             Assert.AreEqual(3, CreateStatementAndGetProperty(true, "Math.Max(2, 3)")[0]);
 
 			statementText = "select System.Math.Max(2, 3d) " + stream;
-            Assert.AreEqual(3d, CreateStatementAndGetProperty(true, "System.Math.Max(2, 3.0)")[0]);
+            Assert.AreEqual(3d, CreateStatementAndGetProperty(true, "System.Math.Max(2, 3d)")[0]);
 
 			statementText = "select Int64.Parse(\"123\", 10)" + stream;
 			Object expected = Int64.Parse("123");

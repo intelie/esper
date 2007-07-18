@@ -55,14 +55,14 @@ namespace net.esper.regression.view
 		[Test]
 		public void testAggregateAllNoJoinAll()
 		{
-		    String viewExpr = "select longBoxed, Sum(longBoxed) as result " +
+		    String viewExpr = "select longBoxed, sum(longBoxed) as result " +
 		    "from " + typeof(SupportBean).FullName + ".win:length(3) " +
 		    "having Sum(longBoxed) > 0 " +
 		    "output all every 2 events";
 
             RunAssertAllSum(CreateStmtAndListenerNoJoin(viewExpr));
 
-		    viewExpr = "select longBoxed, Sum(longBoxed) as result " +
+		    viewExpr = "select longBoxed, sum(longBoxed) as result " +
 		    "from " + typeof(SupportBean).FullName + ".win:length(3) " +
 		    "output every 2 events";
 
@@ -72,14 +72,14 @@ namespace net.esper.regression.view
 		[Test]
 		public void testAggregateAllNoJoinLast()
 		{
-		    String viewExpr = "select longBoxed, Sum(longBoxed) as result " +
+		    String viewExpr = "select longBoxed, sum(longBoxed) as result " +
 		    "from " + typeof(SupportBean).FullName + ".win:length(3) " +
 		    "having Sum(longBoxed) > 0 " +
 		    "output last every 2 events";
 
             RunAssertLastSum(CreateStmtAndListenerNoJoin(viewExpr));
 
-		    viewExpr = "select longBoxed, Sum(longBoxed) as result " +
+		    viewExpr = "select longBoxed, sum(longBoxed) as result " +
 		    "from " + typeof(SupportBean).FullName + ".win:length(3) " +
 		    "output last every 2 events";
 
@@ -125,7 +125,7 @@ namespace net.esper.regression.view
 		[Test]
 		public void testAggregateAllJoinAll()
 		{
-		    String viewExpr = "select longBoxed, Sum(longBoxed) as result " +
+		    String viewExpr = "select longBoxed, sum(longBoxed) as result " +
 		    "from " + typeof(SupportBeanString).FullName + ".win:length(3) as one, " +
 		    typeof(SupportBean).FullName + ".win:length(3) as two " +
 		    "having Sum(longBoxed) > 0 " +
@@ -133,7 +133,7 @@ namespace net.esper.regression.view
 
             RunAssertAllSum(CreateStmtAndListenerNoJoin(viewExpr));
 
-		    viewExpr = "select longBoxed, Sum(longBoxed) as result " +
+		    viewExpr = "select longBoxed, sum(longBoxed) as result " +
 		    "from " + typeof(SupportBeanString).FullName + ".win:length(3) as one, " +
 		    typeof(SupportBean).FullName + ".win:length(3) as two " +
 		    "output every 2 events";
@@ -144,7 +144,7 @@ namespace net.esper.regression.view
 		[Test]
 		public void testAggregateAllJoinLast()
 	    {
-	        String viewExpr = "select longBoxed, Sum(longBoxed) as result " +
+	        String viewExpr = "select longBoxed, sum(longBoxed) as result " +
 	        "from " + typeof(SupportBeanString).FullName + ".win:length(3) as one, " +
 	        typeof(SupportBean).FullName + ".win:length(3) as two " +
 	        "having Sum(longBoxed) > 0 " +
@@ -152,7 +152,7 @@ namespace net.esper.regression.view
 
             RunAssertLastSum(CreateStmtAndListenerNoJoin(viewExpr));
 
-	        viewExpr = "select longBoxed, Sum(longBoxed) as result " +
+	        viewExpr = "select longBoxed, sum(longBoxed) as result " +
 	        "from " + typeof(SupportBeanString).FullName + ".win:length(3) as one, " +
 	        typeof(SupportBean).FullName + ".win:length(3) as two " +
 	        "output last every 2 events";

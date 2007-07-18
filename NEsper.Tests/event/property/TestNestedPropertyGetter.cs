@@ -67,7 +67,7 @@ namespace net.esper.events.property
 	    private KeyedPropertyGetter MakeGetterOne(int index)
         {
             Type type = typeof(SupportBeanCombinedProps);
-            MethodInfo methodOne = type.GetMethod("getIndexed", new Type[] { typeof(int) });
+            MethodInfo methodOne = type.GetMethod("GetIndexed", new Type[] { typeof(int) });
             IndexedPropertyDescriptor descriptor = new IndexedAccessorPropertyDescriptor("indexed", methodOne);
             return new KeyedPropertyGetter(descriptor, index);
         }
@@ -75,7 +75,7 @@ namespace net.esper.events.property
         private KeyedPropertyGetter MakeGetterTwo(String key)
         {
             Type type = typeof(SupportBeanCombinedProps.NestedLevOne);
-            MethodInfo methodTwo = type.GetMethod("getMapped", new Type[] { typeof(string) });
+            MethodInfo methodTwo = type.GetMethod("GetMapped", new Type[] { typeof(string) });
             IndexedPropertyDescriptor descriptor = new IndexedAccessorPropertyDescriptor("mapped", methodTwo);
             return new KeyedPropertyGetter(descriptor, key);
         }

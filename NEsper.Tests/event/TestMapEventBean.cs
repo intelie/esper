@@ -23,7 +23,7 @@ namespace net.esper.events
 	public class TestMapEventBean
 	{
 	    private EDictionary<String, Type> testTypesMap;
-	    private EDictionary<String, Object> testValuesMap;
+        private DataDictionary testValuesMap;
 
 	    private EventType eventType;
 	    private MapEventBean _eventBean;
@@ -38,7 +38,7 @@ namespace net.esper.events
 	        testTypesMap.Put("anInt", typeof(int?));
 	        testTypesMap.Put("myComplexBean", typeof(SupportBeanComplexProps));
 
-	        testValuesMap = new HashDictionary<String, Object>();
+	        testValuesMap = new DataDictionary();
 	        testValuesMap.Put("aString", "test");
 	        testValuesMap.Put("anInt", 10);
 	        testValuesMap.Put("myComplexBean", supportBean);

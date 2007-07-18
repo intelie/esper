@@ -27,6 +27,7 @@ namespace net.esper.events
 		private EventType eventTypeCombined;
 		private EventAdapterService eventService;
 
+        [SetUp]
 		protected void SetUp()
 		{
 			eventService = SupportEventAdapterService.GetService();
@@ -61,13 +62,13 @@ namespace net.esper.events
 		[Test]
 		public void testGetCombined()
 		{
-	        Assert.AreEqual("0ma0", _eventBeanCombined["indexed[0].Mapped('0ma').value"]);
-	        Assert.AreEqual("0ma1", _eventBeanCombined["indexed[0].Mapped('0mb').value"]);
-	        Assert.AreEqual("1ma0", _eventBeanCombined["indexed[1].Mapped('1ma').value"]);
-	        Assert.AreEqual("1ma1", _eventBeanCombined["indexed[1].Mapped('1mb').value"]);
+	        Assert.AreEqual("0ma0", _eventBeanCombined["indexed[0].mapped('0ma').value"]);
+	        Assert.AreEqual("0ma1", _eventBeanCombined["indexed[0].mapped('0mb').value"]);
+	        Assert.AreEqual("1ma0", _eventBeanCombined["indexed[1].mapped('1ma').value"]);
+	        Assert.AreEqual("1ma1", _eventBeanCombined["indexed[1].mapped('1mb').value"]);
 
-	        Assert.AreEqual("0ma0", _eventBeanCombined["array[0].Mapped('0ma').value"]);
-	        Assert.AreEqual("1ma1", _eventBeanCombined["array[1].Mapped('1mb').value"]);
+	        Assert.AreEqual("0ma0", _eventBeanCombined["array[0].mapped('0ma').value"]);
+	        Assert.AreEqual("1ma1", _eventBeanCombined["array[1].mapped('1mb').value"]);
 
 			AssertMap(_eventBeanCombined);
 		}

@@ -26,6 +26,8 @@ namespace net.esper.regression.view
 	    [SetUp]
 	    public void SetUp()
 	    {
+            PropertyResolutionStyleHelper.DefaultPropertyResolutionStyle = PropertyResolutionStyle.CASE_INSENSITIVE;
+
 	        testListener = new SupportUpdateListener();
 	        epService = EPServiceProviderManager.GetDefaultProvider();
 	        epService.Initialize();
@@ -165,7 +167,7 @@ namespace net.esper.regression.view
 
 	        EPStatement selectTestCase = epService.EPAdministrator.CreateEQL(caseExpr);
 	        selectTestCase.AddListener(testListener);
-	        Assert.AreEqual(typeof(Boolean), selectTestCase.EventType.GetPropertyType("result"));
+	        Assert.AreEqual(typeof(bool?), selectTestCase.EventType.GetPropertyType("result"));
 
 	        SendAndAssert(1, 2, 3, 4L, false);
 	        SendAndAssert(1, 1, 3, 4L, true);
@@ -185,7 +187,7 @@ namespace net.esper.regression.view
 
 	        EPStatement selectTestCase = epService.EPAdministrator.CreateEQL(caseExpr);
 	        selectTestCase.AddListener(testListener);
-	        Assert.AreEqual(typeof(Boolean), selectTestCase.EventType.GetPropertyType("result"));
+	        Assert.AreEqual(typeof(bool?), selectTestCase.EventType.GetPropertyType("result"));
 
 	        SendAndAssert(1, 2f, 3d, 4L, false);
 	        SendAndAssert(1, 1f, 3d, 4L, true);
@@ -205,7 +207,7 @@ namespace net.esper.regression.view
 
 	        EPStatement selectTestCase = epService.EPAdministrator.CreateEQL(caseExpr);
 	        selectTestCase.AddListener(testListener);
-	        Assert.AreEqual(typeof(Boolean), selectTestCase.EventType.GetPropertyType("result"));
+	        Assert.AreEqual(typeof(bool?), selectTestCase.EventType.GetPropertyType("result"));
 
 	        SendAndAssert(1, 2, 3L, false);
 	        SendAndAssert(2, 2, 3L, true);
@@ -226,7 +228,7 @@ namespace net.esper.regression.view
 
 	        EPStatement selectTestCase = epService.EPAdministrator.CreateEQL(caseExpr);
 	        selectTestCase.AddListener(testListener);
-	        Assert.AreEqual(typeof(Boolean), selectTestCase.EventType.GetPropertyType("result"));
+	        Assert.AreEqual(typeof(bool?), selectTestCase.EventType.GetPropertyType("result"));
 
 	        SendAndAssert(1, 2f, 3d, false);
 	        SendAndAssert(2, 2f, 3d, true);
@@ -304,7 +306,7 @@ namespace net.esper.regression.view
 
 	        EPStatement selectTestCase = epService.EPAdministrator.CreateEQL(caseExpr);
 	        selectTestCase.AddListener(testListener);
-	        Assert.AreEqual(typeof(Boolean), selectTestCase.EventType.GetPropertyType("result"));
+	        Assert.AreEqual(typeof(bool?), selectTestCase.EventType.GetPropertyType("result"));
 
 	        for (int i = 0; i < input.Length; i++)
 	        {
@@ -321,7 +323,7 @@ namespace net.esper.regression.view
 
 	        EPStatement selectTestCase = epService.EPAdministrator.CreateEQL(caseExpr);
 	        selectTestCase.AddListener(testListener);
-	        Assert.AreEqual(typeof(Boolean), selectTestCase.EventType.GetPropertyType("result"));
+	        Assert.AreEqual(typeof(bool?), selectTestCase.EventType.GetPropertyType("result"));
 
 	        for (int i = 0; i < input.Length; i++)
 	        {
@@ -338,7 +340,7 @@ namespace net.esper.regression.view
 
 	        EPStatement selectTestCase = epService.EPAdministrator.CreateEQL(caseExpr);
 	        selectTestCase.AddListener(testListener);
-	        Assert.AreEqual(typeof(Boolean), selectTestCase.EventType.GetPropertyType("result"));
+	        Assert.AreEqual(typeof(bool?), selectTestCase.EventType.GetPropertyType("result"));
 
 	        for (int i = 0; i < input.Length; i++)
 	        {

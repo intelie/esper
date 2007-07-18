@@ -121,7 +121,6 @@ namespace net.esper.filter
             using (new ReaderLock(currentNode.NodeRWLock))
             {
                 // Need to find an existing index that matches one of the filter parameters
-                currentNode.NodeRWLock.AcquireReaderLock(LockConstants.ReaderTimeout);
                 pair = IndexHelper.FindIndex(remainingParameters, currentNode.Indizes);
 
                 // Found an index matching a filter parameter
@@ -132,7 +131,6 @@ namespace net.esper.filter
                     FilterParamIndexBase index = pair.Second;
                     treePathInfo.Add(index, filterForValue);
                     AddToIndex(index, filterForValue, treePathInfo);
-                    currentNode.NodeRWLock.ReleaseReaderLock();
                     return;
                 }
             }

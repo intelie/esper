@@ -18,7 +18,6 @@ namespace net.esper.support.bean
         public static String[] PROPERTIES = new String[]
         {
         	"indexed[]",
-        	"array",
         	"Array"
         };
 

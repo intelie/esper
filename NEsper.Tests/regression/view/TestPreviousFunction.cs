@@ -27,6 +27,7 @@ namespace net.esper.regression.view
 	    [SetUp]
 	    public void SetUp()
 	    {
+	        PropertyResolutionStyleHelper.DefaultPropertyResolutionStyle = PropertyResolutionStyle.CASE_INSENSITIVE;
 	        testListener = new SupportUpdateListener();
 	        epService = EPServiceProviderManager.GetDefaultProvider();
 	        epService.Initialize();
@@ -36,7 +37,7 @@ namespace net.esper.regression.view
 	    [Test]
 	    public void testPrevCountStarWithStaticMethod()
 	    {
-	        String text = "select Count(*) as total, " +
+	        String text = "select count(*) as total, " +
 	                      "prev(" + typeof(TestPreviousFunction).FullName + ".IntToLong(count(*)) - 1, price) as firstPrice from " + typeof(SupportMarketDataBean).FullName + ".win:time(60)";
 	        EPStatement stmt = epService.EPAdministrator.CreateEQL(text);
 	        stmt.AddListener(testListener);
@@ -47,7 +48,7 @@ namespace net.esper.regression.view
 	    [Test]
 	    public void testPrevCountStar()
 	    {
-	        String text = "select Count(*) as total, " +
+	        String text = "select count(*) as total, " +
 	                      "prev(count(*) - 1, price) as firstPrice from " + typeof(SupportMarketDataBean).FullName + ".win:time(60)";
 	        EPStatement stmt = epService.EPAdministrator.CreateEQL(text);
 	        stmt.AddListener(testListener);
@@ -119,7 +120,7 @@ namespace net.esper.regression.view
 	    public void testSortWindowPerGroup()
 	    {
 	        // descending sort
-	        String viewExpr = "select symbol, Prev(1, price) as prevPrice, Prev(2, price) as prevPrevPrice " +
+	        String viewExpr = "select symbol, prev(1, price) as prevPrice, prev(2, price) as prevPrevPrice " +
 	                          "from " + typeof(SupportMarketDataBean).FullName + ".std:groupby('symbol').ext:sort('price', false, 10) ";
 
 	        EPStatement selectTestView = epService.EPAdministrator.CreateEQL(viewExpr);
@@ -127,8 +128,8 @@ namespace net.esper.regression.view
 
 	        // assert select result type
 	        Assert.AreEqual(typeof(string), selectTestView.EventType.GetPropertyType("symbol"));
-	        Assert.AreEqual(typeof(double), selectTestView.EventType.GetPropertyType("prevPrice"));
-	        Assert.AreEqual(typeof(double), selectTestView.EventType.GetPropertyType("prevPrevPrice"));
+	        Assert.AreEqual(typeof(double?), selectTestView.EventType.GetPropertyType("prevPrice"));
+	        Assert.AreEqual(typeof(double?), selectTestView.EventType.GetPropertyType("prevPrevPrice"));
 
 	        SendMarketEvent("IBM", 75);
 	        AssertReceived("IBM", null, null);
@@ -158,7 +159,7 @@ namespace net.esper.regression.view
 	    [Test]
 	    public void testTimeBatchPerGroup()
 	    {
-	        String viewExpr = "select symbol, Prev(1, price) as prevPrice, Prev(2, price) as prevPrevPrice " +
+	        String viewExpr = "select symbol, prev(1, price) as prevPrice, prev(2, price) as prevPrevPrice " +
 	                          "from " + typeof(SupportMarketDataBean).FullName + ".std:groupby('symbol').win:time_batch(1 sec) ";
 
 	        EPStatement selectTestView = epService.EPAdministrator.CreateEQL(viewExpr);
@@ -166,8 +167,8 @@ namespace net.esper.regression.view
 
 	        // assert select result type
 	        Assert.AreEqual(typeof(string), selectTestView.EventType.GetPropertyType("symbol"));
-	        Assert.AreEqual(typeof(double), selectTestView.EventType.GetPropertyType("prevPrice"));
-	        Assert.AreEqual(typeof(double), selectTestView.EventType.GetPropertyType("prevPrevPrice"));
+	        Assert.AreEqual(typeof(double?), selectTestView.EventType.GetPropertyType("prevPrice"));
+	        Assert.AreEqual(typeof(double?), selectTestView.EventType.GetPropertyType("prevPrevPrice"));
 
 	        SendTimer(0);
 	        SendMarketEvent("IBM", 75);
@@ -218,7 +219,7 @@ namespace net.esper.regression.view
 	    [Test]
 	    public void testLengthBatchPerGroup()
 	    {
-	        String viewExpr = "select symbol, Prev(1, price) as prevPrice, Prev(2, price) as prevPrevPrice " +
+	        String viewExpr = "select symbol, prev(1, price) as prevPrice, prev(2, price) as prevPrevPrice " +
 	                          "from " + typeof(SupportMarketDataBean).FullName + ".std:groupby('symbol').win:length_batch(3) ";
 
 	        EPStatement selectTestView = epService.EPAdministrator.CreateEQL(viewExpr);
@@ -226,8 +227,8 @@ namespace net.esper.regression.view
 
 	        // assert select result type
 	        Assert.AreEqual(typeof(string), selectTestView.EventType.GetPropertyType("symbol"));
-	        Assert.AreEqual(typeof(double), selectTestView.EventType.GetPropertyType("prevPrice"));
-	        Assert.AreEqual(typeof(double), selectTestView.EventType.GetPropertyType("prevPrevPrice"));
+            Assert.AreEqual(typeof(double?), selectTestView.EventType.GetPropertyType("prevPrice"));
+            Assert.AreEqual(typeof(double?), selectTestView.EventType.GetPropertyType("prevPrevPrice"));
 
 	        SendMarketEvent("IBM", 75);
 	        SendMarketEvent("MSFT", 50);
@@ -283,7 +284,7 @@ namespace net.esper.regression.view
 	    [Test]
 	    public void testTimeWindowPerGroup()
 	    {
-	        String viewExpr = "select symbol, Prev(1, price) as prevPrice, Prev(2, price) as prevPrevPrice " +
+	        String viewExpr = "select symbol, prev(1, price) as prevPrice, prev(2, price) as prevPrevPrice " +
 	                          "from " + typeof(SupportMarketDataBean).FullName + ".std:groupby('symbol').win:time(20 sec) ";
 	        AssertPerGroup(viewExpr);
 	    }
@@ -291,7 +292,7 @@ namespace net.esper.regression.view
 	    [Test]
 	    public void testExtTimeWindowPerGroup()
 	    {
-	        String viewExpr = "select symbol, Prev(1, price) as prevPrice, Prev(2, price) as prevPrevPrice " +
+	        String viewExpr = "select symbol, prev(1, price) as prevPrice, prev(2, price) as prevPrevPrice " +
 	                          "from " + typeof(SupportMarketDataBean).FullName + ".std:groupby('symbol').win:ext_timed('volume', 20 sec) ";
 	        AssertPerGroup(viewExpr);
 	    }
@@ -299,7 +300,7 @@ namespace net.esper.regression.view
 	    [Test]
 	    public void testLengthWindowPerGroup()
 	    {
-	        String viewExpr = "select symbol, Prev(1, price) as prevPrice, Prev(2, price) as prevPrevPrice " +
+	        String viewExpr = "select symbol, prev(1, price) as prevPrice, prev(2, price) as prevPrevPrice " +
 	                          "from " + typeof(SupportMarketDataBean).FullName + ".std:groupby('symbol').win:length(10) ";
 	        AssertPerGroup(viewExpr);
 	    }
@@ -308,8 +309,8 @@ namespace net.esper.regression.view
 	    public void testPreviousTimeWindow()
 	    {
 	        String viewExpr = "select symbol as currSymbol, " +
-	                          " Prev(2, symbol) as prevSymbol, " +
-	                          " Prev(2, price) as prevPrice " +
+	                          " prev(2, symbol) as prevSymbol, " +
+	                          " prev(2, price) as prevPrice " +
 	                          "from " + typeof(SupportMarketDataBean).FullName + ".win:time(1 min) ";
 
 	        EPStatement selectTestView = epService.EPAdministrator.CreateEQL(viewExpr);
@@ -317,7 +318,7 @@ namespace net.esper.regression.view
 
 	        // assert select result type
 	        Assert.AreEqual(typeof(string), selectTestView.EventType.GetPropertyType("prevSymbol"));
-	        Assert.AreEqual(typeof(double), selectTestView.EventType.GetPropertyType("prevPrice"));
+            Assert.AreEqual(typeof(double?), selectTestView.EventType.GetPropertyType("prevPrice"));
 
 	        SendTimer(0);
 	        Assert.IsFalse(testListener.IsInvoked);
@@ -375,8 +376,8 @@ namespace net.esper.regression.view
 	    public void testPreviousExtTimedWindow()
 	    {
 	        String viewExpr = "select symbol as currSymbol, " +
-	                          " Prev(2, symbol) as prevSymbol, " +
-	                          " Prev(2, price) as prevPrice " +
+	                          " prev(2, symbol) as prevSymbol, " +
+	                          " prev(2, price) as prevPrice " +
 	                          "from " + typeof(SupportMarketDataBean).FullName + ".win:ext_timed('volume', 1 min) ";
 
 	        EPStatement selectTestView = epService.EPAdministrator.CreateEQL(viewExpr);
@@ -384,7 +385,7 @@ namespace net.esper.regression.view
 
 	        // assert select result type
 	        Assert.AreEqual(typeof(string), selectTestView.EventType.GetPropertyType("prevSymbol"));
-	        Assert.AreEqual(typeof(double), selectTestView.EventType.GetPropertyType("prevPrice"));
+            Assert.AreEqual(typeof(double?), selectTestView.EventType.GetPropertyType("prevPrice"));
 
 	        SendMarketEvent("D1", 1, 0);
 	        AssertNewEvents("D1", null, null);
@@ -419,8 +420,8 @@ namespace net.esper.regression.view
 	    public void testPreviousTimeBatchWindow()
 	    {
 	        String viewExpr = "select symbol as currSymbol, " +
-	                          " Prev(2, symbol) as prevSymbol, " +
-	                          " Prev(2, price) as prevPrice " +
+	                          " prev(2, symbol) as prevSymbol, " +
+	                          " prev(2, price) as prevPrice " +
 	                          "from " + typeof(SupportMarketDataBean).FullName + ".win:time_batch(1 min) ";
 
 	        EPStatement selectTestView = epService.EPAdministrator.CreateEQL(viewExpr);
@@ -428,7 +429,7 @@ namespace net.esper.regression.view
 
 	        // assert select result type
 	        Assert.AreEqual(typeof(string), selectTestView.EventType.GetPropertyType("prevSymbol"));
-	        Assert.AreEqual(typeof(double), selectTestView.EventType.GetPropertyType("prevPrice"));
+            Assert.AreEqual(typeof(double?), selectTestView.EventType.GetPropertyType("prevPrice"));
 
 	        SendTimer(0);
 	        Assert.IsFalse(testListener.IsInvoked);
@@ -472,8 +473,8 @@ namespace net.esper.regression.view
 	    public void testPreviousTimeBatchWindowJoin()
 	    {
 	        String viewExpr = "select string as currSymbol, " +
-	                          " Prev(2, symbol) as prevSymbol, " +
-	                          " Prev(1, price) as prevPrice " +
+	                          " prev(2, symbol) as prevSymbol, " +
+	                          " prev(1, price) as prevPrice " +
 	                          "from " + typeof(SupportBean).FullName + ", " +
 	                          typeof(SupportMarketDataBean).FullName + ".win:time_batch(1 min)";
 
@@ -482,7 +483,7 @@ namespace net.esper.regression.view
 
 	        // assert select result type
 	        Assert.AreEqual(typeof(string), selectTestView.EventType.GetPropertyType("prevSymbol"));
-	        Assert.AreEqual(typeof(double), selectTestView.EventType.GetPropertyType("prevPrice"));
+            Assert.AreEqual(typeof(double?), selectTestView.EventType.GetPropertyType("prevPrice"));
 
 	        SendTimer(0);
 	        Assert.IsFalse(testListener.IsInvoked);
@@ -528,7 +529,7 @@ namespace net.esper.regression.view
 
 	        // assert select result type
 	        Assert.AreEqual(typeof(string), selectTestView.EventType.GetPropertyType("prev0Symbol"));
-	        Assert.AreEqual(typeof(double), selectTestView.EventType.GetPropertyType("prev0Price"));
+            Assert.AreEqual(typeof(double?), selectTestView.EventType.GetPropertyType("prev0Price"));
 
 	        SendMarketEvent("A", 1);
 	        AssertNewEvents("A", "A", 1d, null, null, null, null);
@@ -560,7 +561,7 @@ namespace net.esper.regression.view
 
 	        // assert select result type
 	        Assert.AreEqual(typeof(string), selectTestView.EventType.GetPropertyType("prev0Symbol"));
-	        Assert.AreEqual(typeof(double), selectTestView.EventType.GetPropertyType("prev0Price"));
+            Assert.AreEqual(typeof(double?), selectTestView.EventType.GetPropertyType("prev0Price"));
 
 	        SendMarketEvent("A", 1);
 	        SendMarketEvent("B", 2);
@@ -594,9 +595,9 @@ namespace net.esper.regression.view
 	    [Test]
 	    public void testPreviousLengthWindowWhere()
 	    {
-	        String viewExpr =   "select Prev(2, symbol) as currSymbol " +
+	        String viewExpr =   "select prev(2, symbol) as currSymbol " +
 	                            "from " + typeof(SupportMarketDataBean).FullName + ".win:length(100) " +
-	                            "where Prev(2, price) > 100";
+	                            "where prev(2, price) > 100";
 
 	        EPStatement selectTestView = epService.EPAdministrator.CreateEQL(viewExpr);
 	        selectTestView.AddListener(testListener);
@@ -612,7 +613,7 @@ namespace net.esper.regression.view
 	    [Test]
 	    public void testPreviousLengthWindowDynamic()
 	    {
-	        String viewExpr =   "select Prev(intPrimitive, string) as sPrev " +
+	        String viewExpr =   "select prev(intPrimitive, string) as sPrev " +
 	                            "from " + typeof(SupportBean).FullName + ".win:length(100)";
 
 	        EPStatement selectTestView = epService.EPAdministrator.CreateEQL(viewExpr);
@@ -643,19 +644,19 @@ namespace net.esper.regression.view
 	    public void testPreviousSortWindow()
 	    {
 	        String viewExpr = "select symbol as currSymbol, " +
-	                          " Prev(0, symbol) as prev0Symbol, " +
-	                          " Prev(1, symbol) as prev1Symbol, " +
-	                          " Prev(2, symbol) as prev2Symbol, " +
-	                          " Prev(0, price) as prev0Price, " +
-	                          " Prev(1, price) as prev1Price, " +
-	                          " Prev(2, price) as prev2Price " +
+	                          " prev(0, symbol) as prev0Symbol, " +
+	                          " prev(1, symbol) as prev1Symbol, " +
+	                          " prev(2, symbol) as prev2Symbol, " +
+	                          " prev(0, price) as prev0Price, " +
+	                          " prev(1, price) as prev1Price, " +
+	                          " prev(2, price) as prev2Price " +
 	                          "from " + typeof(SupportMarketDataBean).FullName + ".ext:sort('symbol', false, 100)";
 
 	        EPStatement selectTestView = epService.EPAdministrator.CreateEQL(viewExpr);
 	        selectTestView.AddListener(testListener);
 
 	        Assert.AreEqual(typeof(string), selectTestView.EventType.GetPropertyType("prev0Symbol"));
-	        Assert.AreEqual(typeof(double), selectTestView.EventType.GetPropertyType("prev0Price"));
+            Assert.AreEqual(typeof(double?), selectTestView.EventType.GetPropertyType("prev0Price"));
 
 	        SendMarketEvent("COX", 30);
 	        AssertNewEvents("COX", "COX", 30d, null, null, null, null);
@@ -682,9 +683,9 @@ namespace net.esper.regression.view
 	    [Test]
 	    public void testInvalid()
 	    {
-	        TryInvalid("select Prev(0, average) " +
+	        TryInvalid("select prev(0, average) " +
 	                "from " + typeof(SupportMarketDataBean).FullName + ".win:length(100).stat:uni('price')",
-	                "Error starting view: Previous function requires a single data window view onto the stream [select Prev(0, average) from net.esper.support.bean.SupportMarketDataBean.win:length(100).stat:uni('price')]");
+	                "Error starting view: Previous function requires a single data window view onto the stream [select prev(0, average) from net.esper.support.bean.SupportMarketDataBean.win:length(100).stat:uni('price')]");
 	    }
 
 	    private void TryInvalid(String statement, String expectedError)
@@ -716,10 +717,10 @@ namespace net.esper.regression.view
 	        testListener.Reset();
 	    }
 
-	    private void AssertEvent(EventBean _eventBean,
-	                             String currSymbol,
-	                             String prevSymbol,
-	                             double? prevPrice)
+	    private static void AssertEvent(EventBean _eventBean,
+                                        String currSymbol,
+                                        String prevSymbol,
+                                        double? prevPrice)
 	    {
 	        Assert.AreEqual(currSymbol, _eventBean["currSymbol"]);
 	        Assert.AreEqual(prevSymbol, _eventBean["prevSymbol"]);
@@ -821,8 +822,8 @@ namespace net.esper.regression.view
 
 	        // assert select result type
 	        Assert.AreEqual(typeof(string), selectTestView.EventType.GetPropertyType("symbol"));
-	        Assert.AreEqual(typeof(double), selectTestView.EventType.GetPropertyType("prevPrice"));
-	        Assert.AreEqual(typeof(double), selectTestView.EventType.GetPropertyType("prevPrevPrice"));
+            Assert.AreEqual(typeof(double?), selectTestView.EventType.GetPropertyType("prevPrice"));
+            Assert.AreEqual(typeof(double?), selectTestView.EventType.GetPropertyType("prevPrevPrice"));
 
 	        SendMarketEvent("IBM", 75);
 	        AssertReceived("IBM", null, null);
@@ -861,28 +862,28 @@ namespace net.esper.regression.view
 	        AssertReceived(_event, symbol, prevPrice, prevPrevPrice);
 	    }
 
-	    private void AssertReceived(EventBean _event, String symbol, double? prevPrice, double? prevPrevPrice)
+        private static void AssertReceived(EventBean _event, String symbol, double? prevPrice, double? prevPrevPrice)
 	    {
 	        Assert.AreEqual(symbol, _event["symbol"]);
 	        Assert.AreEqual(prevPrice, _event["prevPrice"]);
 	        Assert.AreEqual(prevPrevPrice, _event["prevPrevPrice"]);
 	    }
 
-	    private void AssertCountAndPrice(EventBean _event, long? total, double? price)
+	    private static void AssertCountAndPrice(EventBean _event, long? total, double? price)
 	    {
 	        Assert.AreEqual(total, _event["total"]);
 	        Assert.AreEqual(price, _event["firstPrice"]);
 	    }
 
-        public static int? LongToInt(long? longValue)
+        public static int? IntToLong(long? longValue)
         {
-            int? returnValue = null;
-            if ( longValue.HasValue )
+            if (longValue.HasValue)
             {
-                returnValue = (int) longValue.Value;
+                return (int) longValue.Value;
+            } else
+            {
+                return null;
             }
-
-            return returnValue;
         }
 	}
 } // End of namespace

@@ -24,10 +24,12 @@ namespace net.esper.regression.events
 	    [SetUp]
         public virtual void setUp()
         {
+            PropertyResolutionStyleHelper.DefaultPropertyResolutionStyle = PropertyResolutionStyle.CASE_INSENSITIVE;
+
             properties = new Properties();
-            properties[(String)"myInt"] = "int";
-            properties[(String)"myString"] = "String";
-            properties[(String)"beanA"] = typeof(SupportBeanComplexProps).FullName;
+            properties["myInt"] = "int";
+            properties["myString"] = "String";
+            properties["beanA"] = typeof(SupportBeanComplexProps).FullName;
 
             map = new DataDictionary() ;
             map.Put("myInt", 3);

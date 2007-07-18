@@ -6,7 +6,6 @@ using net.esper.events;
 using net.esper.support.bean;
 using net.esper.support.events;
 
-using NUnit.Core;
 using NUnit.Framework;
 
 namespace net.esper.events.property
@@ -63,8 +62,8 @@ namespace net.esper.events.property
         private ArrayPropertyGetter makeGetter(int index)
 		{
             Type type = typeof(SupportBeanComplexProps);
-			MethodInfo method = type.GetMethod("getArrayProperty");
-            PropertyDescriptor property = new SimpleAccessorPropertyDescriptor(method);
+            PropertyDescriptorCollection properties = TypeDescriptor.GetProperties(type);
+            PropertyDescriptor property = properties["ArrayProperty"];
 			return new ArrayPropertyGetter(property, index);
 		}
 	}

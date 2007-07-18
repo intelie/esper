@@ -4,7 +4,6 @@ using System.Reflection;
 using net.esper.support.bean;
 using net.esper.support.events;
 
-using NUnit.Core;
 using NUnit.Framework;
 
 using org.apache.commons.logging;
@@ -30,13 +29,13 @@ namespace net.esper.events
         [Test]
         public void testGetter()
         {
-            ReflectionPropMethodGetter getter = makeGetter(typeof(SupportBean), "getIntPrimitive");
+            ReflectionPropMethodGetter getter = makeGetter(typeof(SupportBean), "GetIntPrimitive");
             Assert.AreEqual(10, getter.GetValue(unitTestBean));
 
-            getter = makeGetter(typeof(SupportBean), "getString");
+            getter = makeGetter(typeof(SupportBean), "GetString");
             Assert.AreEqual("a", getter.GetValue(unitTestBean));
 
-            getter = makeGetter(typeof(SupportBean), "getDoubleBoxed");
+            getter = makeGetter(typeof(SupportBean), "GetDoubleBoxed");
             Assert.AreEqual(null, getter.GetValue(unitTestBean));
 
             try
@@ -55,7 +54,7 @@ namespace net.esper.events
         [Test]
         public void testPerformance()
         {
-            ReflectionPropMethodGetter getter = makeGetter(typeof(SupportBean), "getIntPrimitive");
+            ReflectionPropMethodGetter getter = makeGetter(typeof(SupportBean), "GetIntPrimitive");
 
             log.Info(".testPerformance Starting test");
 

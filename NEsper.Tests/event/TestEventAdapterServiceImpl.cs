@@ -7,8 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Xml;
 using System.Xml.XPath;
 
@@ -28,6 +26,7 @@ namespace net.esper.events
 	    [SetUp]
 	    public void SetUp()
 	    {
+	        PropertyResolutionStyleHelper.DefaultPropertyResolutionStyle = PropertyResolutionStyle.CASE_INSENSITIVE;
 	        adapterService = new EventAdapterServiceImpl();
 	    }
 

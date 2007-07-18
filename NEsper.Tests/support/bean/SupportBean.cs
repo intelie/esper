@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.IO;
 
 namespace net.esper.support.bean
 {
@@ -16,7 +15,7 @@ namespace net.esper.support.bean
 	{
 	    private string _string;
 
-        public string @String
+        public string String
         {
             get { return _string; }
         }
@@ -134,91 +133,6 @@ namespace net.esper.support.bean
 	    {
 	        this._string = _string;
 	        this.intPrimitive = intPrimitive;
-	    }
-
-	    public String GetString()
-	    {
-	        return _string;
-	    }
-
-	    public bool IsBoolPrimitive()
-	    {
-	        return boolPrimitive;
-	    }
-
-	    public int GetIntPrimitive()
-	    {
-	        return intPrimitive;
-	    }
-
-	    public long GetLongPrimitive()
-	    {
-	        return longPrimitive;
-	    }
-
-	    public char GetCharPrimitive()
-	    {
-	        return charPrimitive;
-	    }
-
-	    public short GetShortPrimitive()
-	    {
-	        return shortPrimitive;
-	    }
-
-	    public sbyte GetBytePrimitive()
-	    {
-	        return bytePrimitive;
-	    }
-
-	    public float GetFloatPrimitive()
-	    {
-	        return floatPrimitive;
-	    }
-
-	    public double GetDoublePrimitive()
-	    {
-	        return doublePrimitive;
-	    }
-
-	    public bool? GetBoolBoxed()
-	    {
-	        return boolBoxed;
-	    }
-
-	    public int? GetIntBoxed()
-	    {
-	        return intBoxed;
-	    }
-
-	    public long? GetLongBoxed()
-	    {
-	        return longBoxed;
-	    }
-
-	    public char? GetCharBoxed()
-	    {
-	        return charBoxed;
-	    }
-
-	    public short? GetShortBoxed()
-	    {
-	        return shortBoxed;
-	    }
-
-	    public sbyte? GetByteBoxed()
-	    {
-	        return byteBoxed;
-	    }
-
-	    public float? GetFloatBoxed()
-	    {
-	        return floatBoxed;
-	    }
-
-	    public double? GetDoubleBoxed()
-	    {
-	        return doubleBoxed;
 	    }
 
 	    public void SetString(String _string)

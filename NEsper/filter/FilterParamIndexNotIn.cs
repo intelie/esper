@@ -113,7 +113,11 @@ namespace net.esper.filter
 	            Set<EventEvaluator> evaluators = constantsMap.Fetch(keyValue);
 	            if (evaluators != null) // could already be removed as constants may be the same
 	            {
-	                evaluators.Remove(eval);
+                    if (eval != null)
+                    {
+                        evaluators.Remove(eval);
+                    }
+
 	                if (evaluators.Count == 0)
 	                {
 	                    constantsMap.Remove(keyValue);

@@ -31,6 +31,8 @@ namespace net.esper.regression.view
 	    [SetUp]
 	    public void SetUp()
 	    {
+            PropertyResolutionStyleHelper.DefaultPropertyResolutionStyle = PropertyResolutionStyle.CASE_INSENSITIVE;
+
 	        testListener = new SupportUpdateListener();
 	        epService = EPServiceProviderManager.GetDefaultProvider();
 	        epService.Initialize();
@@ -187,7 +189,7 @@ namespace net.esper.regression.view
 	    {
 	        // assert select result type
 	        Assert.AreEqual(typeof(String), selectTestView.EventType.GetPropertyType("symbol"));
-	        Assert.AreEqual(typeof(double), selectTestView.EventType.GetPropertyType("price"));
+	        Assert.AreEqual(typeof(double?), selectTestView.EventType.GetPropertyType("price"));
 	        Assert.AreEqual(typeof(double?), selectTestView.EventType.GetPropertyType("avgPrice"));
 
 	        SendEvent(SYMBOL_DELL, 10);

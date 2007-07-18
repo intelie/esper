@@ -38,13 +38,14 @@ namespace net.esper.regression.eql
 	    public void testSyntaxException()
 	    {
 	        String exceptionText = GetSyntaxExceptionEQL("select * from *");
-	        Assert.AreEqual("unexpected token: * near line 1, column 15 [select * from *]", exceptionText);
+	        String expectedText = @"unexpected token: [""*"",<159>,line=1,col=15] near line 1, column 15 [select * from *]";
+            Assert.AreEqual(expectedText, exceptionText);
 	    }
 
 	    [Test]
 	    public void testLongTypeConstant()
 	    {
-	        String stmtText = "select 2512570244 as value from " + typeof(SupportBean).FullName;
+	        String stmtText = "select 2512570244L as value from " + typeof(SupportBean).FullName;
 	        EPStatement stmt = epService.EPAdministrator.CreateEQL(stmtText);
 	        stmt.AddListener(listener);
 

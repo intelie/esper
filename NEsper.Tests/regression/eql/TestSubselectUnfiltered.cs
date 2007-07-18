@@ -128,8 +128,8 @@ namespace net.esper.regression.eql
             stmt.AddListener(listener);
 
             // check type
-            Assert.AreEqual(typeof(int), stmt.EventType.GetPropertyType("idS3"));
-            Assert.AreEqual(typeof(int), stmt.EventType.GetPropertyType("idS4"));
+            Assert.AreEqual(typeof(int?), stmt.EventType.GetPropertyType("idS3"));
+            Assert.AreEqual(typeof(int?), stmt.EventType.GetPropertyType("idS4"));
 
             // test no _event, should return null
             epService.EPRuntime.SendEvent(new SupportBean_S0(0));
@@ -229,7 +229,7 @@ namespace net.esper.regression.eql
             stmt.AddListener(listener);
 
             // check type
-            Assert.AreEqual(typeof(int), stmt.EventType.GetPropertyType("idS1"));
+            Assert.AreEqual(typeof(int?), stmt.EventType.GetPropertyType("idS1"));
 
             // test no _event, should return null
             epService.EPRuntime.SendEvent(new SupportBean_S0(0));
@@ -258,7 +258,7 @@ namespace net.esper.regression.eql
             stmt.AddListener(listener);
 
             // check type
-            Assert.AreEqual(typeof(double), stmt.EventType.GetPropertyType("idS1"));
+            Assert.AreEqual(typeof(double?), stmt.EventType.GetPropertyType("idS1"));
 
             // test no _event, should return null
             epService.EPRuntime.SendEvent(new SupportBean_S0(0));
@@ -420,7 +420,7 @@ namespace net.esper.regression.eql
             stmt.AddListener(listener);
 
             // check type
-            Assert.AreEqual(typeof(int), stmt.EventType.GetPropertyType(columnName));
+            Assert.AreEqual(typeof(int?), stmt.EventType.GetPropertyType(columnName));
 
             // test no _event, should return null
             epService.EPRuntime.SendEvent(new SupportBean_S0(0));
@@ -447,7 +447,7 @@ namespace net.esper.regression.eql
             stmt.AddListener(listener);
 
             // check type
-            Assert.AreEqual(typeof(int), stmt.EventType.GetPropertyType(columnName));
+            Assert.AreEqual(typeof(int?), stmt.EventType.GetPropertyType(columnName));
 
             // test no _event, should return null
             epService.EPRuntime.SendEvent(new SupportBean_S0(0));

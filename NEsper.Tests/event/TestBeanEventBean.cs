@@ -10,6 +10,7 @@ using System;
 
 using NUnit.Framework;
 
+using net.esper.client;
 using net.esper.support.bean;
 using net.esper.support.events;
 
@@ -25,6 +26,7 @@ namespace net.esper.events
 	    [SetUp]
 	    public void SetUp()
 	    {
+	        PropertyResolutionStyleHelper.DefaultPropertyResolutionStyle = PropertyResolutionStyle.CASE_INSENSITIVE;
 	        testEvent = new SupportBean();
 	        testEvent.SetIntPrimitive(10);
 	    }
@@ -73,15 +75,15 @@ namespace net.esper.events
 	        SupportBeanCombinedProps _event = SupportBeanCombinedProps.MakeDefaultBean();
 	        EventBean _eventBean = SupportEventBeanFactory.CreateObject(_event);
 
-	        Assert.AreEqual("0ma0", _eventBean["indexed[0].Mapped('0ma').value"]);
-	        Assert.AreEqual("0ma1", _eventBean["indexed[0].Mapped('0mb').value"]);
-	        Assert.AreEqual("1ma0", _eventBean["indexed[1].Mapped('1ma').value"]);
-	        Assert.AreEqual("1ma1", _eventBean["indexed[1].Mapped('1mb').value"]);
+	        Assert.AreEqual("0ma0", _eventBean["indexed[0].mapped('0ma').value"]);
+	        Assert.AreEqual("0ma1", _eventBean["indexed[0].mapped('0mb').value"]);
+	        Assert.AreEqual("1ma0", _eventBean["indexed[1].mapped('1ma').value"]);
+	        Assert.AreEqual("1ma1", _eventBean["indexed[1].mapped('1mb').value"]);
 
-	        Assert.AreEqual("0ma0", _eventBean["array[0].Mapped('0ma').value"]);
-	        Assert.AreEqual("1ma1", _eventBean["array[1].Mapped('1mb').value"]);
+	        Assert.AreEqual("0ma0", _eventBean["array[0].mapped('0ma').value"]);
+	        Assert.AreEqual("1ma1", _eventBean["array[1].mapped('1mb').value"]);
 
-	        TryInvalid(_eventBean, "array[0].Mapprop('0ma').value");
+	        TryInvalid(_eventBean, "array[0].mapprop('0ma').value");
 	        TryInvalid(_eventBean, "dummy");
 	        TryInvalid(_eventBean, "dummy[1]");
 	        TryInvalid(_eventBean, "dummy('dd')");
