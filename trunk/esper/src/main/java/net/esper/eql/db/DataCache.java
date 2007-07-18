@@ -1,0 +1,32 @@
+package net.esper.eql.db;
+
+import net.esper.event.EventBean;
+
+import java.util.List;
+
+/**
+ * Implementations serve as caches for historical or reference data retrieved
+ * via lookup keys consisting or one or more rows represented by a list of events.
+ */
+public interface DataCache
+{
+    /**
+     * Ask the cache if the keyed value is cached, returning a list or rows if the key is in the cache,
+     * or returning null to indicate no such key cached. Zero rows may also be cached.
+     * @param lookupKeys is the keys to look up in the cache
+     * @return a list of rows that can be empty is the key was found in the cache, or null if
+     * the key is not found in the cache
+     */
+    public List<EventBean> getCached(Object[] lookupKeys);
+
+    /**
+     * Puts into the cache a key and a list of rows, or an empty list if zero rows.
+     * <p>
+     * The put method is designed to be called when the cache does not contain a key as
+     * determined by the get method. Implementations typically simply overwrite
+     * any keys put into the cache that already existed in the cache.
+     * @param lookupKeys is the keys to the cache entry
+     * @param rows is a number of rows
+     */
+    public void put(Object[] lookupKeys, List<EventBean> rows);
+}
