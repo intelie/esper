@@ -21,7 +21,7 @@ namespace net.esper.regression.view
 	public class TestArrayExpression
 	{
 	    // for use in testing a static method accepting array parameters
-	    private static int[] callbackInts;
+	    private static int?[] callbackInts;
 	    private static String[] callbackStrings;
 	    private static Object[] callbackObjects;
 
@@ -30,6 +30,7 @@ namespace net.esper.regression.view
         [SetUp]
 	    protected void SetUp()
 	    {
+            PropertyResolutionStyleHelper.DefaultPropertyResolutionStyle = PropertyResolutionStyle.CASE_INSENSITIVE;
 	        epService = EPServiceProviderManager.GetDefaultProvider();
 	        epService.Initialize();
 	    }
@@ -84,7 +85,7 @@ namespace net.esper.regression.view
 	        ArrayAssertionUtil.AreEqualExactOrder(new Object[] {null, null, "aa"}, (Object[]) _event["dynCalcArrNulls"]);
 
 	        // assert function parameters
-            ArrayAssertionUtil.AreEqualExactOrder(new int[] { 1 }, callbackInts);
+            ArrayAssertionUtil.AreEqualExactOrder(new int?[] { 1 }, callbackInts);
 	        ArrayAssertionUtil.AreEqualExactOrder(new String[] {"a"}, callbackStrings);
 	        ArrayAssertionUtil.AreEqualExactOrder(new Object[] {1, "d", null, true}, callbackObjects);
 	    }
@@ -109,7 +110,7 @@ namespace net.esper.regression.view
 	    }
 
 	    // for testing EQL static method call
-	    public static String[] DoIt(String[] strings, int[] ints, Object[] objects)
+	    public static String[] DoIt(String[] strings, int?[] ints, Object[] objects)
 	    {
 	        callbackInts = ints;
 	        callbackStrings = strings;

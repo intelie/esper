@@ -44,9 +44,10 @@ namespace net.esper.view
 			// Get a new array created rather then re-use the old one since some client listeners
 			// to this view may keep reference to the new data
 			EventBean[] row = new EventBean[]{ev};
-			foreach (View childView in children)
+            IEnumerator<View> viewEnum = children.GetEnumerator();
+            while( viewEnum.MoveNext() )
 			{
-				childView.Update(row, null);
+				viewEnum.Current.Update(row, null);
 			}
         }
 

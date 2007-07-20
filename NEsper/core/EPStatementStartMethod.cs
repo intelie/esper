@@ -567,7 +567,7 @@ namespace net.esper.core
 	        FilterExprAnalyzer.Analyze(filterExpr, queryGraph);
 
 	        // Build a list of streams and indexes
-	        IDictionary<String, SubqueryJoinedPropDesc> joinProps = new LinkedDictionary<String, SubqueryJoinedPropDesc>();
+            LinkedDictionary<String, SubqueryJoinedPropDesc> joinProps = new LinkedDictionary<String, SubqueryJoinedPropDesc>();
             bool mustCoerce = false;
 	        for (int stream = 0; stream <  outerEventTypes.Length; stream++)
 	        {
@@ -602,7 +602,7 @@ namespace net.esper.core
 
 	        if (joinProps.Count != 0)
 	        {
-	            String[] indexedProps = CollectionHelper.ToArray(joinProps.Keys);
+                String[] indexedProps = joinProps.FastKeyArray;
 	            int[] keyStreamNums = SubqueryJoinedPropDesc.GetKeyStreamNums(joinProps.Values);
 	            String[] keyProps = SubqueryJoinedPropDesc.GetKeyProperties(joinProps.Values);
 

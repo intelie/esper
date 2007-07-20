@@ -26,9 +26,12 @@ namespace net.esper.schedule
         // Current bucket number - for use in ordering handles by bucket
         private int curBucketNum;
 
+        private MonitorLock dataLock;
+
         /// <summary> Constructor.</summary>
         public SchedulingServiceImpl()
         {
+            this.dataLock = new MonitorLock();
             this.timeHandleMap = new TreeDictionary<long, TreeDictionary<ScheduleSlot, ScheduleHandle>>();
             this.handleSetMap = new HashDictionary<ScheduleHandle, TreeDictionary<ScheduleSlot, ScheduleHandle>>();
             this.currentTime = DateTimeHelper.TimeInMillis( DateTime.Now );
@@ -40,7 +43,7 @@ namespace net.esper.schedule
         /// <returns>bucket</returns>
         public ScheduleBucket AllocateBucket()
         {
-			lock( this )
+			using(dataLock.Acquire())
 			{
 				curBucketNum++;
 				return new ScheduleBucket(curBucketNum);
@@ -55,8 +58,8 @@ namespace net.esper.schedule
         /// </returns>
         public long Time
         {
-            get { lock( this ) { return this.currentTime; } }
-            set { lock( this ) { this.currentTime = value; } }
+            get { using(dataLock.Acquire()) { return this.currentTime; } }
+            set { using(dataLock.Acquire()) { this.currentTime = value; } }
         }
 
         /// <summary>
@@ -70,7 +73,7 @@ namespace net.esper.schedule
         /// <throws>  ScheduleServiceException thrown if the add operation did not complete </throws>
         public void Add(long afterMSec, ScheduleHandle handle, ScheduleSlot slot)
         {
-			lock( this )
+			using(dataLock.Acquire())
 			{
 	            if (handleSetMap.ContainsKey(handle))
 	            {
@@ -93,7 +96,7 @@ namespace net.esper.schedule
         /// <param name="slot">The slot.</param>
         public void Add(ScheduleSpec spec, ScheduleHandle handle, ScheduleSlot slot)
         {
-			lock( this )
+			using(dataLock.Acquire())
 			{
 	            if (handleSetMap.ContainsKey(handle))
 	            {
@@ -124,7 +127,7 @@ namespace net.esper.schedule
         /// <throws>  ScheduleServiceException thrown if the handle was not located </throws>
         public void Remove(ScheduleHandle handle, ScheduleSlot slot)
         {
-			lock( this )
+			using(dataLock.Acquire())
 			{
 	            TreeDictionary<ScheduleSlot, ScheduleHandle> handleSet = handleSetMap.Fetch( handle ) ;
 	            if ( handleSet == null )
@@ -159,7 +162,7 @@ namespace net.esper.schedule
         /// </summary>
         public void Evaluate(ICollection<ScheduleHandle> handles)
         {
-			lock( this )
+			using(dataLock.Acquire())
 			{
 	            // Get the values on or before the current time - to get those that are exactly on the
 	            // current time we just add one to the current time for getting the head map

@@ -95,7 +95,11 @@ namespace net.esper.eql.spec
 	            }
 	            List<KeyValuePair<String, EventType>> filterTypes = new List<KeyValuePair<string, EventType>>();
 	            filterTypes.Add(new KeyValuePair<string, EventType>(selfStreamName, eventType));
-	            filterTypes.AddRange(taggedEventTypes);
+                foreach (KeyValuePair<string, EventType> entry in taggedEventTypes)
+                {
+                    filterTypes.Add(new KeyValuePair<string, EventType>(entry.Key, entry.Value));
+                }
+
 	            StreamTypeService streamTypeService = new StreamTypeServiceImpl(filterTypes, true, false);
 
 	            IList<ExprNode> exprNodes = filterNode.RawFilterSpec.FilterExpressions;

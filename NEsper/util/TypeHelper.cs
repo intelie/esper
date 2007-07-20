@@ -10,6 +10,25 @@ namespace net.esper.util
     /// </summary>
     public class TypeHelper
     {
+        private static IDictionary<Type, Type> s_boxedTable;
+
+        static TypeHelper()
+        {
+            s_boxedTable = new Dictionary<Type, Type>();
+            s_boxedTable[typeof (int)] = typeof (int?);
+            s_boxedTable[typeof (long)] = typeof (long?);
+            s_boxedTable[typeof (bool)] = typeof (bool?);
+            s_boxedTable[typeof (char)] = typeof (char?);
+            s_boxedTable[typeof (double)] = typeof (double?);
+            s_boxedTable[typeof (float)] = typeof (float?);
+            s_boxedTable[typeof (sbyte)] = typeof (sbyte?);
+            s_boxedTable[typeof (byte)] = typeof (byte?);
+            s_boxedTable[typeof (short)] = typeof (short?);
+            s_boxedTable[typeof (ushort)] = typeof (ushort?);
+            s_boxedTable[typeof (uint)] = typeof (uint?);
+            s_boxedTable[typeof (ulong)] = typeof (ulong?);
+        }
+
         /// <summary>
         /// Returns the boxed class for the given class, or the class itself if already boxed or not a primitive type.
         /// For primitive unboxed types returns the boxed types, e.g. returns typeof(int?) for passing typeof(int).
@@ -19,55 +38,70 @@ namespace net.esper.util
 
         public static Type GetBoxedType(Type type)
         {
-            if (type == typeof(bool))
+            Type boxed;
+
+            if ( type == null )
             {
-                return typeof(bool?);
+                return null;
             }
-            if (type == typeof(char))
+            else if ( s_boxedTable.TryGetValue(type, out boxed) )
             {
-                return typeof(char?);
+                return boxed;
             }
-            if (type == typeof(double))
+            else
             {
-                return typeof(double?);
+                return type;
             }
-            if (type == typeof(float))
-            {
-                return typeof(float?);
-            }
-            if (type == typeof(sbyte))
-            {
-                return typeof(sbyte?);
-            }
-            if (type == typeof(byte))
-            {
-                return typeof(byte?);
-            }
-            if (type == typeof(short))
-            {
-                return typeof(short?);
-            }
-            if (type == typeof(ushort))
-            {
-                return typeof(ushort?);
-            }
-            if (type == typeof(int))
-            {
-                return typeof(int?);
-            }
-            if (type == typeof(uint))
-            {
-                return typeof(uint?);
-            }
-            if (type == typeof(long))
-            {
-                return typeof(long?);
-            }
-            if (type == typeof(ulong))
-            {
-                return typeof(ulong?);
-            }
-            return type;
+
+            //if (type == typeof(int))
+            //{
+            //    return typeof(int?);
+            //}
+            //if (type == typeof(long))
+            //{
+            //    return typeof(long?);
+            //}
+            //if (type == typeof(bool))
+            //{
+            //    return typeof(bool?);
+            //}
+            //if (type == typeof(char))
+            //{
+            //    return typeof(char?);
+            //}
+            //if (type == typeof(double))
+            //{
+            //    return typeof(double?);
+            //}
+            //if (type == typeof(float))
+            //{
+            //    return typeof(float?);
+            //}
+            //if (type == typeof(sbyte))
+            //{
+            //    return typeof(sbyte?);
+            //}
+            //if (type == typeof(byte))
+            //{
+            //    return typeof(byte?);
+            //}
+            //if (type == typeof(short))
+            //{
+            //    return typeof(short?);
+            //}
+            //if (type == typeof(ushort))
+            //{
+            //    return typeof(ushort?);
+            //}
+            //if (type == typeof(uint))
+            //{
+            //    return typeof(uint?);
+            //}
+            //if (type == typeof(ulong))
+            //{
+            //    return typeof(ulong?);
+            //}
+            //return type;
         }
 
 	    /// <summary>

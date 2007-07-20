@@ -29,7 +29,9 @@ namespace net.esper.regression.eql
 	    [SetUp]
 	    public void SetUp()
 	    {
-	        epService = EPServiceProviderManager.GetProvider("TestPerf2StreamSimpleJoin");
+            PropertyResolutionStyleHelper.DefaultPropertyResolutionStyle = PropertyResolutionStyle.CASE_INSENSITIVE;
+            
+            epService = EPServiceProviderManager.GetProvider("TestPerf2StreamSimpleJoin");
 	        epService.Initialize();
 	        updateListener = new SupportUpdateListener();
 

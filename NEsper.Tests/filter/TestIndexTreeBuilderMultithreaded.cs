@@ -179,7 +179,7 @@ namespace net.esper.filter
 	                 "  completed=" + pool.NumExecuted);
 
 	        pool.Shutdown();
-	        pool.AwaitTermination(new TimeSpan(0, 0, 1));
+	        pool.AwaitTermination(new TimeSpan(0, 0, 10));
 
 	        Assert.IsTrue(pool.NumExecuted == numberOfRunnables);
 	    }

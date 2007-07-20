@@ -26,6 +26,7 @@ namespace net.esper.regression.view
 	    [SetUp]
 	    public void SetUp()
 	    {
+	        PropertyResolutionStyleHelper.DefaultPropertyResolutionStyle = PropertyResolutionStyle.CASE_INSENSITIVE;
 	        testListener = new SupportUpdateListener();
 	        epService = EPServiceProviderManager.GetDefaultProvider();
 	        epService.Initialize();

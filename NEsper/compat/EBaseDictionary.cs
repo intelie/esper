@@ -13,6 +13,12 @@ namespace net.esper.compat
 	{
 		private IDictionary<K,V> m_subDictionary;
 		
+        /// <summary>
+        /// Entry for handling null keys.
+        /// </summary>
+
+        private KeyValuePair<K, V>? m_nullEntry;
+		
 		/// <summary>
 		/// Gets or sets the subdictionary.
 		/// </summary>
@@ -30,6 +36,8 @@ namespace net.esper.compat
 		
 		protected EBaseDictionary()
 		{
+			m_subDictionary = null;
+			m_nullEntry = null;
 		}
 		
 		/// <summary>
@@ -40,6 +48,7 @@ namespace net.esper.compat
 		public EBaseDictionary( IDictionary<K,V> subDictionary )
 		{
 			m_subDictionary = subDictionary ;
+			m_nullEntry = null;
 		}
 
 		/// <summary>
@@ -51,7 +60,8 @@ namespace net.esper.compat
 		/// <param name="defaultValue"></param>
 		/// <returns></returns>
 
-		public virtual V Fetch( K key, V defaultValue ) {
+		public virtual V Fetch( K key, V defaultValue )
+		{
             V returnValue = defaultValue;
             if (key != null)
             {
@@ -59,6 +69,10 @@ namespace net.esper.compat
                 {
                     returnValue = defaultValue;
                 }
+            }
+            else if ( m_nullEntry != null )
+            {
+            	returnValue = m_nullEntry.Value.Value;
             }
 			return returnValue;			
 		}
@@ -85,10 +99,25 @@ namespace net.esper.compat
 
         public bool Remove(K key, out V value)
         {
-            if (!m_subDictionary.TryGetValue(key, out value))
-            {
-                return false;
-            }
+        	if ( key != null )
+        	{
+	            if (!m_subDictionary.TryGetValue(key, out value))
+	            {
+	                return false;
+	            }
+        	}
+        	else
+        	{
+        		if ( m_nullEntry != null )
+        		{
+        			value = m_nullEntry.Value.Value;
+        			m_nullEntry = null ;	
+        		}
+        		else
+        		{
+        			value = default(V);
+        		}
+        	}
 
             return m_subDictionary.Remove(key);
         }
@@ -137,8 +166,24 @@ namespace net.esper.compat
         /// <value></value>
 		public V this[K key]
 		{
-			get { return m_subDictionary[key] ; }
-            set { m_subDictionary[key] = value; }
+			get
+			{
+				if ( key != null ) {
+					return m_subDictionary[key] ;
+				} else if ( m_nullEntry != null ) {
+					return m_nullEntry.Value.Value;
+				} else {
+					throw new KeyNotFoundException() ;
+				}
+			}
+            set
+            {
+            	if ( key != null ) {
+            		m_subDictionary[key] = value;
+            	} else {
+            		m_nullEntry = new KeyValuePair<K,V>(key, value);
+            	}
+            }
 		}
 
         /// <summary>
@@ -147,7 +192,12 @@ namespace net.esper.compat
         /// <value></value>
         /// <returns>An <see cref="T:System.Collections.Generic.ICollection`1"></see> containing the keys of the object that implements <see cref="T:System.Collections.Generic.IDictionary`2"></see>.</returns>
 		public ICollection<K> Keys {
-			get { return m_subDictionary.Keys; }
+			get {
+        		return 
+        			m_nullEntry == null
+        			? m_subDictionary.Keys
+        			: new CollectionPlus<K>( m_subDictionary.Keys, m_nullEntry.Value.Key );
+        	}
 		}
 
         /// <summary>
@@ -156,7 +206,12 @@ namespace net.esper.compat
         /// <value></value>
         /// <returns>An <see cref="T:System.Collections.Generic.ICollection`1"></see> containing the values in the object that implements <see cref="T:System.Collections.Generic.IDictionary`2"></see>.</returns>
 		public ICollection<V> Values {
-			get { return m_subDictionary.Values; }
+			get {
+        		return
+        			m_nullEntry == null
+        			? m_subDictionary.Values
+        			: new CollectionPlus<V>( m_subDictionary.Values, m_nullEntry.Value.Value ) ;
+        	}
 		}
 
         /// <summary>
@@ -165,7 +220,12 @@ namespace net.esper.compat
         /// <value></value>
         /// <returns>The number of elements contained in the <see cref="T:System.Collections.Generic.ICollection`1"></see>.</returns>
 		public int Count {
-			get { return m_subDictionary.Count ; }
+			get {
+        		return
+        			m_nullEntry == null 
+        			? m_subDictionary.Count 
+        			: m_subDictionary.Count + 1 ;
+        	}
 		}
 
         /// <summary>
@@ -187,7 +247,11 @@ namespace net.esper.compat
         /// <exception cref="T:System.ArgumentNullException">key is null.</exception>
 		public bool ContainsKey(K key)
 		{
-            return m_subDictionary.ContainsKey(key);
+			if ( key != null ) {
+            	return m_subDictionary.ContainsKey(key);
+			} else {
+				return m_nullEntry != null;
+			}
 		}
 
         /// <summary>
@@ -200,7 +264,11 @@ namespace net.esper.compat
         /// <exception cref="T:System.ArgumentNullException">key is null.</exception>
         public void Add(K key, V value)
         {
-            m_subDictionary.Add(key, value);
+        	if ( key != null ) {
+            	m_subDictionary.Add(key, value);
+        	} else {
+        		throw new ArgumentException( "An element with the same key already exists in the dictionary" ) ;
+        	}
         }
 
         /// <summary>
@@ -214,7 +282,13 @@ namespace net.esper.compat
         /// <exception cref="T:System.ArgumentNullException">key is null.</exception>
 		public bool Remove(K key)
 		{
-			return m_subDictionary.Remove( key ) ;
+			if ( key != null ) {
+				return m_subDictionary.Remove( key ) ;
+			} else {
+				bool wasFound = m_nullEntry != null ;
+				m_nullEntry = null ;
+				return wasFound;
+			}
 		}
 
         /// <summary>
@@ -225,7 +299,15 @@ namespace net.esper.compat
         /// <returns></returns>
 		public bool TryGetValue(K key, out V value)
 		{
-			return m_subDictionary.TryGetValue( key, out value ) ;
+			if ( key != null ) {
+				return m_subDictionary.TryGetValue( key, out value ) ;
+			} else if ( m_nullEntry != null ) {
+				value = m_nullEntry.Value.Value;				
+				return true;
+			} else {
+				value = default(V);
+				return false;
+			}
 		}
 
         /// <summary>
@@ -235,7 +317,13 @@ namespace net.esper.compat
         /// <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.ICollection`1"></see> is read-only.</exception>
 		public void Add(KeyValuePair<K, V> item)
 		{
-			m_subDictionary.Add( item );
+			if ( item.Key != null ) {
+				m_subDictionary.Add( item );
+			} else if ( m_nullEntry != null ) {
+        		throw new ArgumentException( "An element with the same key already exists in the dictionary" ) ;
+			} else {
+				m_nullEntry = new KeyValuePair<K,V>(item.Key, item.Value);
+			}
 		}
 
         /// <summary>
@@ -244,6 +332,7 @@ namespace net.esper.compat
         /// <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.ICollection`1"></see> is read-only. </exception>
 		public void Clear()
 		{
+			m_nullEntry = null;
 			m_subDictionary.Clear() ;
 		}
 
@@ -256,7 +345,11 @@ namespace net.esper.compat
         /// </returns>
 		public bool Contains(KeyValuePair<K, V> item)
 		{
-			return m_subDictionary.Contains( item ) ;
+			if ( item.Key != null ) {
+				return m_subDictionary.Contains( item ) ;
+			} else {
+				return Object.Equals(m_nullEntry, item);
+			}
 		}
 
         /// <summary>
@@ -269,6 +362,13 @@ namespace net.esper.compat
         /// <exception cref="T:System.ArgumentException">array is multidimensional.-or-arrayIndex is equal to or greater than the length of array.-or-The number of elements in the source <see cref="T:System.Collections.Generic.ICollection`1"></see> is greater than the available space from arrayIndex to the end of the destination array.-or-Type T cannot be cast automatically to the type of the destination array.</exception>
 		public void CopyTo(KeyValuePair<K, V>[] array, int arrayIndex)
 		{
+			if ( m_nullEntry != null )
+			{
+				array[arrayIndex++] = new KeyValuePair<K,V>(
+					m_nullEntry.Value.Key,
+					m_nullEntry.Value.Value);
+			}
+			
 			m_subDictionary.CopyTo( array, arrayIndex ) ;
 		}
 
@@ -282,7 +382,14 @@ namespace net.esper.compat
         /// <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.ICollection`1"></see> is read-only.</exception>
 		public bool Remove(KeyValuePair<K, V> item)
 		{
-			return m_subDictionary.Remove( item ) ;
+			if ( item.Key != null ) {
+				return m_subDictionary.Remove( item ) ;
+			} else if ( Object.Equals( item, m_nullEntry ) ) {
+				m_nullEntry = null ;
+				return true;
+			} else {
+				return false;
+			}
 		}
 
         /// <summary>
@@ -293,7 +400,14 @@ namespace net.esper.compat
         /// </returns>
 		public IEnumerator<KeyValuePair<K, V>> GetEnumerator()
 		{
-			return m_subDictionary.GetEnumerator() ;
+			if ( m_nullEntry != null ) {
+				yield return m_nullEntry.Value;
+			}
+			
+			IEnumerator<KeyValuePair<K,V>> temp = m_subDictionary.GetEnumerator() ;
+			while( temp.MoveNext() ) {
+				yield return temp.Current;
+			}
 		}
 
         /// <summary>
@@ -304,7 +418,14 @@ namespace net.esper.compat
         /// </returns>
 		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
 		{
-			return m_subDictionary.GetEnumerator() ;
+			if ( m_nullEntry != null ) {
+				yield return m_nullEntry;
+			}
+			
+			IEnumerator<KeyValuePair<K,V>> temp = m_subDictionary.GetEnumerator() ;
+			while( temp.MoveNext() ) {
+				yield return temp.Current;
+			}
 		}
 
         /// <summary>
@@ -323,8 +444,9 @@ namespace net.esper.compat
             }
 
             EBaseDictionary<K,V> oDictionary = (EBaseDictionary<K,V>) obj ;
-            bool result = CollectionHelper.AreEqual( m_subDictionary, oDictionary.m_subDictionary ) ;
-            return result;
+            return
+            	Object.Equals( m_nullEntry, oDictionary.m_nullEntry ) &&
+            	CollectionHelper.AreEqual( m_subDictionary, oDictionary.m_subDictionary ) ;
         }
 
         /// <summary>
@@ -348,7 +470,11 @@ namespace net.esper.compat
         
         public override string ToString()
         {
-            return m_subDictionary.ToString();
+        	if ( m_nullEntry == null ) {
+	            return m_subDictionary.ToString();
+        	} else {
+        		return m_subDictionary.ToString() + '+' + m_nullEntry;
+        	}
         }
         
         /// <summary>

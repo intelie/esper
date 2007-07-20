@@ -1,7 +1,6 @@
 using System;
 using System.IO;
 
-using NUnit.Core;
 using NUnit.Framework;
 
 using net.esper.compat;

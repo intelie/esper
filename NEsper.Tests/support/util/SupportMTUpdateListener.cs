@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using NUnit.Framework;
 
 using net.esper.client;
+using net.esper.compat;
 using net.esper.events;
 
 namespace net.esper.support.util
@@ -23,16 +24,18 @@ namespace net.esper.support.util
 	    private EventBean[] lastNewData;
 	    private EventBean[] lastOldData;
 	    private bool isInvoked;
+	    private MonitorLock dataLock;
 
 	    public SupportMTUpdateListener()
 	    {
+            dataLock = new MonitorLock();
 	        newDataList = new List<EventBean[]>();
 	        oldDataList = new List<EventBean[]>();
 	    }
 
 	    public void Update(EventBean[] newData, EventBean[] oldData)
 	    {
-	    	lock( this )
+	    	using(dataLock.Acquire())
 	    	{
 		        this.oldDataList.Add(oldData);
 		        this.newDataList.Add(newData);
@@ -46,7 +49,7 @@ namespace net.esper.support.util
 
 	    public void Reset()
 	    {
-	    	lock( this )
+	    	using(dataLock.Acquire())
 	    	{
 		        this.oldDataList.Clear();
 		        this.newDataList.Clear();
@@ -64,7 +67,7 @@ namespace net.esper.support.util
 
 	    public EventBean[] GetAndResetLastNewData()
 	    {
-	    	lock( this )
+	    	using(dataLock.Acquire())
 	    	{
 		        EventBean[] lastNew = lastNewData;
 		        Reset();
@@ -74,7 +77,7 @@ namespace net.esper.support.util
 
 	    public EventBean AssertOneGetNewAndReset()
 	    {
-	    	lock( this )
+	    	using(dataLock.Acquire())
 	    	{
 		        Assert.IsTrue(isInvoked);
 	
@@ -92,7 +95,7 @@ namespace net.esper.support.util
 
 	    public EventBean AssertOneGetOldAndReset()
 	    {
-	    	lock( this )
+	    	using(dataLock.Acquire())
 	    	{
 		        Assert.IsTrue(isInvoked);
 	
@@ -131,7 +134,7 @@ namespace net.esper.support.util
 
 	    public bool GetAndClearIsInvoked()
 	    {
-	    	lock( this )
+	    	using(dataLock.Acquire())
 	    	{
 		        bool invoked = isInvoked;
 		        isInvoked = false;
@@ -141,7 +144,7 @@ namespace net.esper.support.util
 
 	    public EventBean[] GetNewDataListFlattened()
 	    {
-	    	lock( this )
+	    	using(dataLock.Acquire())
 	    	{
 	        	return Flatten(newDataList);
 	    	}
@@ -149,7 +152,7 @@ namespace net.esper.support.util
 
 	    public EventBean[] GetOldDataListFlattened()
 	    {
-	    	lock( this )
+	    	using(dataLock.Acquire())
 	    	{
 	        	return Flatten(oldDataList);
 	    	}

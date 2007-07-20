@@ -1,5 +1,4 @@
 using System;
-using System.Threading;
 
 using net.esper.compat;
 using net.esper.collection;
@@ -15,7 +14,7 @@ namespace net.esper.filter
     public class EventTypeIndexBuilder
     {
         private readonly EDictionary<FilterHandle, Pair<EventType, IndexTreePath>> callbacks;
-        private readonly Object callbacksLock;
+        private readonly MonitorLock callbacksLock;
         private readonly EventTypeIndex eventTypeIndex;
 
         /// <summary> Constructor - takes the event type index to manipulate as its parameter.</summary>
@@ -26,7 +25,7 @@ namespace net.esper.filter
         {
             this.eventTypeIndex = eventTypeIndex;
             this.callbacks = new HashDictionary<FilterHandle, Pair<EventType, IndexTreePath>>();
-            this.callbacksLock = new Object();
+            this.callbacksLock = new MonitorLock();
         }
 
         /// <summary> Add a filter to the event type index structure, and to the filter subtree.
@@ -44,7 +43,7 @@ namespace net.esper.filter
             FilterHandleSetNode rootNode = eventTypeIndex[eventType];
 
             // Make sure we have a root node
-            using (new MonitorLock(callbacksLock))
+            using (callbacksLock.Acquire())
             {
                 if (rootNode == null)
                 {
@@ -67,7 +66,7 @@ namespace net.esper.filter
             IndexTreeBuilder treeBuilder = new IndexTreeBuilder();
             IndexTreePath path = treeBuilder.Add(filterValueSet, filterCallback, rootNode);
 
-            using (new MonitorLock(callbacksLock))
+            using (callbacksLock.Acquire())
             {
                 callbacks[filterCallback] = new Pair<EventType, IndexTreePath>(eventType, path);
             }
@@ -80,7 +79,7 @@ namespace net.esper.filter
         {
             Pair<EventType, IndexTreePath> pair;
 
-            using (new MonitorLock(callbacksLock))
+            using (callbacksLock.Acquire())
             {
                 pair = callbacks.Fetch(filterCallback, null);
             }
@@ -97,7 +96,7 @@ namespace net.esper.filter
             treeBuilder.Remove(filterCallback, pair.Second, rootNode);
 
             // Remove from callbacks list
-            using (new MonitorLock(callbacksLock))
+            using (callbacksLock.Acquire())
             {
                 callbacks.Remove(filterCallback);
             }

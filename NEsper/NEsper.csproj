@@ -112,6 +112,7 @@
     <Compile Include="compat\BaseLock.cs" />
     <Compile Include="compat\C5CollectionWrapper.cs" />
     <Compile Include="compat\CollectionHelper.cs" />
+    <Compile Include="compat\CollectionPlus.cs" />
     <Compile Include="compat\DateTimeHelper.cs" />
     <Compile Include="compat\EBaseDictionary.cs" />
     <Compile Include="compat\DataDictionary.cs" />

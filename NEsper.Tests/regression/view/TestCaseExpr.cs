@@ -409,8 +409,8 @@ namespace net.esper.regression.view
         {
             String caseExpr =
                 "select case supportEnum " +
-                " when net.esper.support.bean.SupportEnumHelper.ValueForEnum(0) then 1 " +
-                " when net.esper.support.bean.SupportEnumHelper.ValueForEnum(1) then 2 " +
+                " when net.esper.support.bean.SupportEnumHelper.GetValueForEnum(0) then 1 " +
+                " when net.esper.support.bean.SupportEnumHelper.GetValueForEnum(1) then 2 " +
                 " end as p1 " + " from " + typeof(SupportBeanWithEnum).FullName +
                 ".win:length(10)";
 
@@ -436,9 +436,9 @@ namespace net.esper.regression.view
         {
             String caseExpr =
                 "select case intPrimitive * 2 " +
-                " when 2 then net.esper.support.bean.SupportEnumHelper.ValueForEnum(0) " +
-                " when 4 then net.esper.support.bean.SupportEnumHelper.ValueForEnum(1) " +
-                " else net.esper.support.bean.SupportEnumHelper.ValueForEnum(2) " +
+                " when 2 then net.esper.support.bean.SupportEnumHelper.GetValueForEnum(0) " +
+                " when 4 then net.esper.support.bean.SupportEnumHelper.GetValueForEnum(1) " +
+                " else net.esper.support.bean.SupportEnumHelper.GetValueForEnum(2) " +
                 " end as p1 " +
                 " from " + typeof(SupportBean).FullName + ".win:length(10)";
 

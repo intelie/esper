@@ -13,7 +13,7 @@ namespace net.esper.compat
     /// <typeparam name="K"></typeparam>
     /// <typeparam name="V"></typeparam>
 
-    public class LinkedDictionary<K,V> : EDictionary<K,V>
+    public class LinkedDictionary<K, V> : EDictionary<K, V>
     {
         /// <summary>
         /// Delegate for handling events on dictionary entries.
@@ -22,7 +22,7 @@ namespace net.esper.compat
         /// <returns></returns>
 
         public delegate bool EntryEventHandler(KeyValuePair<K, V> entry);
-        
+
         /// <summary>
         /// A list of all key-value pairs added to the table.  The list
         /// preserves insertion order and is used to preserve enumeration
@@ -59,90 +59,100 @@ namespace net.esper.compat
         /// <summary>
         /// Initializes a new instance of the <see cref="LinkedDictionary&lt;K, V&gt;"/> class.
         /// </summary>
-        
+
         public LinkedDictionary()
         {
             this.m_shuffleOnAccess = false;
-            this.m_hashList = new LinkedList<Pair<K,V>>() ;
-            this.m_hashTable = new Dictionary<K, LinkedListNode<Pair<K, V>>>() ;
+            this.m_hashList = new LinkedList<Pair<K, V>>();
+            this.m_hashTable = new Dictionary<K, LinkedListNode<Pair<K, V>>>();
         }
-        
+
         /// <summary>
         /// Initializes a new instance of the <see cref="LinkedDictionary&lt;K, V&gt;"/> class.
         /// </summary>
         /// <param name="hashCapacity"></param>
-        
-        public LinkedDictionary( int hashCapacity )
+
+        public LinkedDictionary(int hashCapacity)
         {
-            this.m_hashList = new LinkedList<Pair<K,V>>() ;
-            this.m_hashTable = new Dictionary<K, LinkedListNode<Pair<K, V>>>( hashCapacity ) ;
+            this.m_hashList = new LinkedList<Pair<K, V>>();
+            this.m_hashTable = new Dictionary<K, LinkedListNode<Pair<K, V>>>(hashCapacity);
         }
 
         #region EDictionary<K,V> Members
-        
+
         /// <summary>
-		/// Fetches the value associated with the specified key.
-		/// If no value can be found, then the defaultValue is
-		/// returned.
-		/// </summary>
-		/// <param name="key"></param>
-		/// <param name="defaultValue"></param>
-		/// <returns></returns>
+        /// Fetches the value associated with the specified key.
+        /// If no value can be found, then the defaultValue is
+        /// returned.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="defaultValue"></param>
+        /// <returns></returns>
 
-		public virtual V Fetch( K key, V defaultValue ) {
-			V returnValue ;
-			if ( ! TryGetValue( key, out returnValue ) ) {
-				returnValue = defaultValue;
-			}
-			return returnValue;			
-		}
+        public virtual V Fetch(K key, V defaultValue)
+        {
+            V returnValue;
+            if (!TryGetValue(key, out returnValue))
+            {
+                returnValue = defaultValue;
+            }
+            return returnValue;
+        }
 
-		/// <summary>
-		/// Fetches the value associated with the specified key.
-		/// If no value can be found, then default(V) is returned.
-		/// </summary>
-		/// <param name="key"></param>
-		/// <returns></returns>
-		
-		public virtual V Fetch( K key ) {
-			return Fetch( key, default(V) );			
-		}
-		
-		/// <summary>
-		/// Sets the given key in the dictionary.  If the key
-		/// already exists, then it is remapped to thenew value.
-		/// </summary>
+        /// <summary>
+        /// Fetches the value associated with the specified key.
+        /// If no value can be found, then default(V) is returned.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
 
-		public virtual void Put( K key, V value )
-		{
-			this[key] = value ;
-		}
+        public virtual V Fetch(K key)
+        {
+            return Fetch(key, default(V));
+        }
 
-		/// <summary>
-		/// Puts all values from the source dictionary into
-		/// this dictionary.
-		/// </summary>
-		/// <param name="source"></param>
-		
-		public virtual void PutAll( IDictionary<K,V> source )
-		{
-			foreach( KeyValuePair<K,V> kvPair in source ) {
-				this[kvPair.Key] = kvPair.Value;
-			}
-		}
-				
-		/// <summary>
-		/// Returns the first value in the enumeration of values
-		/// </summary>
-		/// <returns></returns>
-		
-		public virtual V FirstValue {
-			get {
-				IEnumerator<KeyValuePair<K,V>> kvPairEnum = GetEnumerator() ;
-				kvPairEnum.MoveNext() ;
-				return kvPairEnum.Current.Value;
-			}
-		}
+        /// <summary>
+        /// Sets the given key in the dictionary.  If the key
+        /// already exists, then it is remapped to thenew value.
+        /// </summary>
+
+        public virtual void Put(K key, V value)
+        {
+            this[key] = value;
+        }
+
+        /// <summary>
+        /// Puts all values from the source dictionary into
+        /// this dictionary.
+        /// </summary>
+        /// <param name="source"></param>
+
+        public virtual void PutAll(IDictionary<K, V> source)
+        {
+            if (source.Count != 0)
+            {
+                IEnumerator<KeyValuePair<K, V>> enumObj = source.GetEnumerator();
+                while (enumObj.MoveNext())
+                {
+                    this[enumObj.Current.Key] = enumObj.Current.Value;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Returns the first value in the enumeration of values
+        /// </summary>
+        /// <returns></returns>
+
+        public virtual V FirstValue
+        {
+            get
+            {
+                IEnumerator<KeyValuePair<K, V>> kvPairEnum = GetEnumerator();
+                kvPairEnum.MoveNext();
+                return kvPairEnum.Current.Value;
+            }
+        }
 
         /// <summary>
         /// Removes the item from the dictionary that is associated with
@@ -163,7 +173,7 @@ namespace net.esper.compat
             return Remove(key);
         }
 
-		#endregion
+        #endregion
 
         /// <summary>
         /// Occurs when a potentially destructive operations occurs on the dictionary
@@ -182,7 +192,7 @@ namespace net.esper.compat
         /// <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.IDictionary`2"></see> is read-only.</exception>
         /// <exception cref="T:System.ArgumentException">An element with the same key already exists in the <see cref="T:System.Collections.Generic.IDictionary`2"></see>.</exception>
         /// <exception cref="T:System.ArgumentNullException">key is null.</exception>
-        
+
         public void Add(K key, V value)
         {
             if (m_hashTable.ContainsKey(key))
@@ -200,7 +210,7 @@ namespace net.esper.compat
         /// <summary>
         /// Checks the eldest entry and see if we should remove it.
         /// </summary>
-        
+
         private void CheckEldest()
         {
             if (RemoveEldest != null)
@@ -232,6 +242,41 @@ namespace net.esper.compat
         }
 
         /// <summary>
+        /// Gets the key enumerator in a faster and more efficient manner.
+        /// </summary>
+        /// <value>The fast key enumerator.</value>
+        public IEnumerator<K> FastKeyEnumerator
+        {
+            get
+            {
+                foreach (Pair<K, V> keyValuePair in m_hashList)
+                {
+                    yield return keyValuePair.First;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets the keys in a faster and more efficient manner.
+        /// </summary>
+        /// <value>The fast key array.</value>
+        public K[] FastKeyArray
+        {
+            get
+            {
+                K[] rawArray = new K[this.Count];
+                int rawIndex = 0;
+                
+                foreach (Pair<K, V> keyValuePair in m_hashList)
+                {
+                    rawArray[rawIndex++] = keyValuePair.First;
+                }
+
+                return rawArray;
+            }
+        }
+
+        /// <summary>
         /// Gets an <see cref="T:System.Collections.Generic.ICollection`1"></see> containing the keys of the <see cref="T:System.Collections.Generic.IDictionary`2"></see>.
         /// </summary>
         /// <value></value>
@@ -241,14 +286,14 @@ namespace net.esper.compat
         {
             get
             {
-        		IList<K> keysList = new List<K>() ;
-        		foreach( Pair<K,V> keyValuePair in m_hashList )
-        		{
-        			keysList.Add( keyValuePair.First ) ;
-        		}
+                IList<K> keysList = new List<K>();
+                foreach (Pair<K, V> keyValuePair in m_hashList)
+                {
+                    keysList.Add(keyValuePair.First);
+                }
 
-        		return keysList ;
-        	}
+                return keysList;
+            }
         }
 
         /// <summary>
@@ -260,7 +305,7 @@ namespace net.esper.compat
         /// </returns>
         /// <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.IDictionary`2"></see> is read-only.</exception>
         /// <exception cref="T:System.ArgumentNullException">key is null.</exception>
-        
+
         public bool Remove(K key)
         {
             LinkedListNode<Pair<K, V>> linkedListNode = null;
@@ -280,13 +325,13 @@ namespace net.esper.compat
         /// <param name="key">The key.</param>
         /// <param name="value">The value.</param>
         /// <returns></returns>
-        
+
         public bool TryGetValue(K key, out V value)
         {
             LinkedListNode<Pair<K, V>> linkedListNode = null;
             if (m_hashTable.TryGetValue(key, out linkedListNode))
             {
-                value = linkedListNode.Value.Second ;
+                value = linkedListNode.Value.Second;
                 if (ShuffleOnAccess)
                 {
                     m_hashList.Remove(linkedListNode);
@@ -295,8 +340,8 @@ namespace net.esper.compat
                 return true;
             }
 
-            value = default(V) ;
-            
+            value = default(V);
+
             return false;
         }
 
@@ -305,18 +350,18 @@ namespace net.esper.compat
         /// </summary>
         /// <value></value>
         /// <returns>An <see cref="T:System.Collections.Generic.ICollection`1"></see> containing the values in the object that implements <see cref="T:System.Collections.Generic.IDictionary`2"></see>.</returns>
-        
+
         public ICollection<V> Values
         {
             get
             {
-        		IList<V> valuesList = new List<V>() ;
-        		foreach( Pair<K,V> keyValuePair in m_hashList )
-        		{
-        			valuesList.Add( keyValuePair.Second ) ;
-        		}
+                IList<V> valuesList = new List<V>();
+                foreach (Pair<K, V> keyValuePair in m_hashList)
+                {
+                    valuesList.Add(keyValuePair.Second);
+                }
 
-        		return valuesList ;
+                return valuesList;
             }
         }
 
@@ -344,7 +389,7 @@ namespace net.esper.compat
                 LinkedListNode<Pair<K, V>> linkedListNode = null;
                 if (m_hashTable.TryGetValue(key, out linkedListNode))
                 {
-                	linkedListNode.Value.Second = value;
+                    linkedListNode.Value.Second = value;
                 }
                 else
                 {
@@ -366,17 +411,17 @@ namespace net.esper.compat
         /// </summary>
         /// <param name="item">The object to add to the <see cref="T:System.Collections.Generic.ICollection`1"></see>.</param>
         /// <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.ICollection`1"></see> is read-only.</exception>
-        
+
         public void Add(KeyValuePair<K, V> item)
         {
-            Add( item.Key, item.Value ) ;
+            Add(item.Key, item.Value);
         }
 
         /// <summary>
         /// Removes all items from the <see cref="T:System.Collections.Generic.ICollection`1"></see>.
         /// </summary>
         /// <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.ICollection`1"></see> is read-only. </exception>
-        
+
         public void Clear()
         {
             m_hashTable.Clear();
@@ -393,7 +438,7 @@ namespace net.esper.compat
 
         public bool Contains(KeyValuePair<K, V> item)
         {
-        	return m_hashTable.ContainsKey( item.Key ) ;
+            return m_hashTable.ContainsKey(item.Key);
         }
 
         /// <summary>
@@ -407,20 +452,22 @@ namespace net.esper.compat
 
         public void CopyTo(KeyValuePair<K, V>[] array, int arrayIndex)
         {
-        	if ( array == null ) {
-        		throw new ArgumentNullException() ;
-        	}
-        	
-        	if ( arrayIndex < 0 ) {
+            if (array == null)
+            {
+                throw new ArgumentNullException();
+            }
+
+            if (arrayIndex < 0)
+            {
                 throw new ArgumentOutOfRangeException();
-        	}
-        	
-        	int ii = arrayIndex ;
-        	
-        	foreach( Pair<K,V> keyValuePair in m_hashList )
-        	{
-        		array[ii] = new KeyValuePair<K, V>( keyValuePair.First, keyValuePair.Second ) ;
-        	}
+            }
+
+            int ii = arrayIndex;
+
+            foreach (Pair<K, V> keyValuePair in m_hashList)
+            {
+                array[ii] = new KeyValuePair<K, V>(keyValuePair.First, keyValuePair.Second);
+            }
         }
 
         /// <summary>
@@ -439,7 +486,7 @@ namespace net.esper.compat
         /// </summary>
         /// <value></value>
         /// <returns>true if the <see cref="T:System.Collections.Generic.ICollection`1"></see> is read-only; otherwise, false.</returns>
-        
+
         public bool IsReadOnly
         {
             get { return false; }
@@ -453,8 +500,8 @@ namespace net.esper.compat
         /// true if item was successfully removed from the <see cref="T:System.Collections.Generic.ICollection`1"></see>; otherwise, false. This method also returns false if item is not found in the original <see cref="T:System.Collections.Generic.ICollection`1"></see>.
         /// </returns>
         /// <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.ICollection`1"></see> is read-only.</exception>
-        
-        public bool Remove( KeyValuePair<K, V> item )
+
+        public bool Remove(KeyValuePair<K, V> item)
         {
             return Remove(item.Key);
         }
@@ -469,7 +516,7 @@ namespace net.esper.compat
         /// <returns>
         /// A <see cref="T:System.Collections.Generic.IEnumerator`1"></see> that can be used to iterate through the collection.
         /// </returns>
-        
+
         public IEnumerator<KeyValuePair<K, V>> GetEnumerator()
         {
             foreach (Pair<K, V> subPair in m_hashList)
@@ -496,7 +543,7 @@ namespace net.esper.compat
                 yield return new KeyValuePair<K, V>(subPair.First, subPair.Second);
             }
         }
-        
+
         #endregion
     }
 }

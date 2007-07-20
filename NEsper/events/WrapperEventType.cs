@@ -263,13 +263,21 @@ namespace net.esper.events
         /// <param name="properties">The properties.</param>
 	    private static void CheckForRepeatedPropertyNames(EventType eventType, IDictionary<String, Type> properties)
 		{
-			foreach (String property in eventType.PropertyNames)
-			{
-				if(properties.ContainsKey(property))
-				{
-					throw new EPException("Property " + property + " occurs in both the underlying event and in the additional properties");
-				}
-			}
+            foreach( String property in properties.Keys )
+            {
+                if ( eventType.IsProperty( property ) )
+                {
+                    throw new EPException("Property " + property + " occurs in both the underlying event and in the additional properties");
+                }
+            }
+
+            //foreach (String property in eventType.PropertyNames)
+            //{
+            //    if(properties.ContainsKey(property))
+            //    {
+            //        throw new EPException("Property " + property + " occurs in both the underlying event and in the additional properties");
+            //    }
+            //}
 		}
 	}
 } // End of namespace

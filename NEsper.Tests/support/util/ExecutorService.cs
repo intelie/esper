@@ -1,7 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
+
 using net.esper.compat;
+
+using org.apache.commons.logging;
 
 namespace net.esper.support.util
 {
@@ -18,6 +21,10 @@ namespace net.esper.support.util
         private bool isActive;
         private bool isShutdown;
 
+        /// <summary>
+        /// Gets the number of items executed.
+        /// </summary>
+        /// <value>The num executed.</value>
         public int NumExecuted
         {
             get { return numExecuted; }
@@ -28,8 +35,19 @@ namespace net.esper.support.util
         /// <summary>
         /// Initializes a new instance of the <see cref="ExecutorService"/> class.
         /// </summary>
-        public ExecutorService()
+        public ExecutorService(int maxNumThreads)
         {
+            int workerThreads;
+            int completionThreads;
+
+            ThreadPool.GetMaxThreads(out workerThreads, out completionThreads);
+            ThreadPool.SetMaxThreads(maxNumThreads, completionThreads);
+
+            if (log.IsDebugEnabled)
+            {
+                log.Debug(String.Format(".ctor - Creating Executor with maxNumThreads = {0}", maxNumThreads));
+            }
+
             futuresMonitor = new Object();
             futuresPending = new List<FutureImpl>();
             isActive = true;
@@ -133,6 +151,8 @@ namespace net.esper.support.util
 
             isActive = false;
         }
+
+        private static Log log = LogFactory.GetLog(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     }
 
     /// <summary>
@@ -151,7 +171,7 @@ namespace net.esper.support.util
         /// <returns></returns>
         public static ExecutorService NewFixedThreadPool(int maxNumThreads)
         {
-            return new ExecutorService();
+            return new ExecutorService(maxNumThreads);
         }
     }
 
@@ -205,6 +225,9 @@ namespace net.esper.support.util
 
         private Callable callable;
 
+        /// <summary>
+        /// Invokes this instance.
+        /// </summary>
         public override void Invoke()
         {
             this.Value = callable.Call();
@@ -225,6 +248,9 @@ namespace net.esper.support.util
 
         private Runnable runnable;
 
+        /// <summary>
+        /// Invokes this instance.
+        /// </summary>
         public override void Invoke()
         {
             runnable.Run();

@@ -25,7 +25,9 @@ namespace net.esper.regression.eql
 		[SetUp]
 		public virtual void setUp()
 		{
-			epService = EPServiceProviderManager.GetDefaultProvider();
+            PropertyResolutionStyleHelper.DefaultPropertyResolutionStyle = PropertyResolutionStyle.CASE_INSENSITIVE;
+            
+            epService = EPServiceProviderManager.GetDefaultProvider();
 			epService.Initialize();
 			updateListener = new SupportUpdateListener();
 

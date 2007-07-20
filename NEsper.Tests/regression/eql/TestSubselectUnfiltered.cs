@@ -190,10 +190,10 @@ namespace net.esper.regression.eql
                        "Error starting view: Invalid use of wildcard in subquery [select (select * from S1.std:lastevent()) as idS1 from S0]");
 
             TryInvalid("select (select id from S1.std:lastevent() group by id) as idS1 from S0",
-                       "unexpected token: group near line 1, column 43 [select (select id from S1.std:lastevent() group by id) as idS1 from S0]");
+                       "unexpected token: [\"group\",<40>,line=1,col=43] near line 1, column 43 [select (select id from S1.std:lastevent() group by id) as idS1 from S0]");
 
             TryInvalid("select (select (select id from S1.std:lastevent()) id from S1.std:lastevent()) as idS1 from S0",
-                       "unexpected token: id near line 1, column 52 [select (select (select id from S1.std:lastevent()) id from S1.std:lastevent()) as idS1 from S0]");
+                       "unexpected token: [\"id\",<154>,line=1,col=52] near line 1, column 52 [select (select (select id from S1.std:lastevent()) id from S1.std:lastevent()) as idS1 from S0]");
 
             TryInvalid("select (select Sum(id) from S1.std:lastevent()) as idS1 from S0",
                        "Error starting view: Aggregation functions are not supported within subqueries, consider using insert-into instead [select (select Sum(id) from S1.std:lastevent()) as idS1 from S0]");

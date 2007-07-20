@@ -169,7 +169,7 @@ namespace net.esper.compat
         /// </returns>
         public IEnumerator<T> GetEnumerator()
         {
-            return m_dataTable.Keys.GetEnumerator();
+            return m_dataTable.FastKeyEnumerator;
         }
 
         #endregion
@@ -178,7 +178,7 @@ namespace net.esper.compat
 
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
         {
-            return m_dataTable.Keys.GetEnumerator();
+            return m_dataTable.FastKeyEnumerator;
         }
 
         #endregion

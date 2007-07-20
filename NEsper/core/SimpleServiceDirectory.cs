@@ -11,6 +11,7 @@ namespace net.esper.core
 	public class SimpleServiceDirectory : Directory
 	{
 		private EDictionary<string,object> m_dataTable ;
+        private MonitorLock m_dataLock;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SimpleServiceDirectory"/> class.
@@ -18,6 +19,7 @@ namespace net.esper.core
 		public SimpleServiceDirectory()
 		{
 			m_dataTable = new HashDictionary<string,object>() ;
+            m_dataLock = new MonitorLock();
 		}
 
         /// <summary>
@@ -27,7 +29,7 @@ namespace net.esper.core
         /// <returns></returns>
 		public object Lookup(string name)
 		{
-			lock( m_dataTable )
+			using(m_dataLock.Acquire())
 			{
 				return m_dataTable.Fetch( name ) ;
 			}
@@ -41,7 +43,7 @@ namespace net.esper.core
         /// <param name="obj"></param>
 		public void Bind(string name, object obj)
 		{
-			lock( m_dataTable )
+			using(m_dataLock.Acquire())
 			{
 				if ( m_dataTable.ContainsKey( name ) )
 				{
@@ -60,7 +62,7 @@ namespace net.esper.core
         /// <param name="obj"></param>
 		public void Rebind(string name, object obj)
 		{
-			lock( m_dataTable )
+			using(m_dataLock.Acquire())
 			{
 				m_dataTable[name] = obj;
 			}
@@ -72,7 +74,7 @@ namespace net.esper.core
         /// <param name="name"></param>
 		public void Unbind(string name)
 		{
-			lock( m_dataTable )
+			using(m_dataLock.Acquire())
 			{
 				m_dataTable.Remove( name ) ;
 			}
@@ -85,7 +87,7 @@ namespace net.esper.core
         /// <param name="newName"></param>
 		public void Rename(string oldName, string newName)
 		{
-			lock( m_dataTable )
+			using(m_dataLock.Acquire())
 			{
 				object tempObj = m_dataTable.Fetch( oldName );
 				if ( tempObj == null )
