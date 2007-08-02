@@ -57,7 +57,7 @@ public interface MethodResolutionService
      * @param aggregationMethod is the inner aggregation method
      * @return aggregator
      */
-    public AggregationMethod makeDistinctAggregator(AggregationMethod aggregationMethod);
+    public AggregationMethod makeDistinctAggregator(AggregationMethod aggregationMethod, Class childType);
 
     /**
      * Makes a new avg-aggregator.

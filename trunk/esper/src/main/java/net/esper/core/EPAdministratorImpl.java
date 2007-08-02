@@ -30,8 +30,8 @@ public class EPAdministratorImpl implements EPAdministrator
     private static WalkRuleSelector patternWalkRule;
     private static WalkRuleSelector eqlWalkRule;
 
-    private final EPServicesContext services;
-    private final ConfigurationOperations configurationOperations;
+    private EPServicesContext services;
+    private ConfigurationOperations configurationOperations;
 
     static
     {
@@ -205,6 +205,12 @@ public class EPAdministratorImpl implements EPAdministrator
     public ConfigurationOperations getConfiguration()
     {
         return configurationOperations;
+    }
+
+    public void destroy()
+    {
+        services = null;
+        configurationOperations = null;        
     }
 
     private static Log log = LogFactory.getLog(EPAdministratorImpl.class);

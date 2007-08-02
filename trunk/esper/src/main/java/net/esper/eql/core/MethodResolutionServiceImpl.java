@@ -80,9 +80,9 @@ public class MethodResolutionServiceImpl implements MethodResolutionService
         return new NumIntegerSumAggregator();
     }
 
-    public AggregationMethod makeDistinctAggregator(AggregationMethod aggregationMethod)
+    public AggregationMethod makeDistinctAggregator(AggregationMethod aggregationMethod, Class childType)
     {
-        return new DistinctValueAggregator(aggregationMethod);
+        return new DistinctValueAggregator(aggregationMethod, childType);
     }
 
     public AggregationMethod makeAvgAggregator()

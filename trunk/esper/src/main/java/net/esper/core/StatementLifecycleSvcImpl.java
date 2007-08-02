@@ -37,7 +37,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
     private final ManagedReadWriteLock eventProcessingRWLock;
 
     private final Map<String, String> stmtNameToIdMap;
-    private final Map<String, EPStatementDesc> stmtIdToDescMap;
+    protected final Map<String, EPStatementDesc> stmtIdToDescMap;
     private final Map<String, EPStatement> stmtNameToStmtMap;
     private final RefCountedMap<String, ManagedLock> insertIntoStreams;
 
@@ -68,7 +68,11 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
     {
         // Generate statement id
         String statementId = UuidGenerator.generate(expression);
+        return createAndStart(statementSpec, expression, isPattern, optStatementName);
+    }
 
+    protected synchronized EPStatement createAndStart(StatementSpecRaw statementSpec, String expression, boolean isPattern, String optStatementName, String statementId)
+    {
         // Determine a statement name, i.e. use the id or use/generate one for the name passed in
         String statementName = statementId;
         if (optStatementName != null)

@@ -35,7 +35,7 @@ public class CompositeEventBean implements EventBean
         {
             throw new IllegalArgumentException("Property named '" + property + "' is not a valid property name for this type");
         }
-        return eventType.getGetter(property).get(this);
+        return getter.get(this);
     }
 
     public Object getUnderlying()

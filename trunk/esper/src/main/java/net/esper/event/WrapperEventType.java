@@ -22,8 +22,8 @@ import java.util.Map;
  */
 public class WrapperEventType implements EventType
 {
-	private final EventType underlyingEventType;
-	private final MapEventType underlyingMapType;
+	protected final EventType underlyingEventType;
+	protected final MapEventType underlyingMapType;
 	private final String[] propertyNames;
     private final int hashCode;
     private final boolean isNoMapProperties;
@@ -82,11 +82,12 @@ public class WrapperEventType implements EventType
                 {
                     if(!(event instanceof WrapperEventBean))
                     {
-                        throw new PropertyAccessException("Mismathched property getter to EventBean type");
+                        throw new PropertyAccessException("Mismatched property getter to EventBean type");
                     }
                     WrapperEventBean wrapperEvent = (WrapperEventBean) event;
                     EventBean wrappedEvent = wrapperEvent.getUnderlyingEvent();
-                    return underlyingEventType.getGetter(property).get(wrappedEvent);
+                    EventPropertyGetter underlyingGetter = underlyingEventType.getGetter(property);
+                    return underlyingGetter.get(wrappedEvent);
                 }
             };
 		}
@@ -98,7 +99,7 @@ public class WrapperEventType implements EventType
                 {
                     if(!(event instanceof WrapperEventBean))
                     {
-                        throw new PropertyAccessException("Mismathched property getter to EventBean type");
+                        throw new PropertyAccessException("Mismatched property getter to EventBean type");
                     }
                     WrapperEventBean wrapperEvent = (WrapperEventBean) event;
                     Map map = wrapperEvent.getUnderlyingMap();
@@ -152,7 +153,17 @@ public class WrapperEventType implements EventType
         }
     }
 
-	public boolean isProperty(String property) 
+    public EventType getUnderlyingEventType()
+    {
+        return underlyingEventType;
+    }
+
+    public MapEventType getUnderlyingMapType()
+    {
+        return underlyingMapType;
+    }
+
+    public boolean isProperty(String property)
 	{
 		return underlyingEventType.isProperty(property) || 
 			underlyingMapType.isProperty(property);

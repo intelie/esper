@@ -12,7 +12,7 @@ import java.util.Map;
  * The event type of such events is always {@link WrapperEventType}. Additional properties are stored in a
  * Map.
  */
-public class WrapperEventBean implements EventBean {
+public class WrapperEventBean implements EventBean, DecoratingEventBean {
 
 	private final EventBean event;
 	private final Map<String, Object> map;
@@ -64,6 +64,11 @@ public class WrapperEventBean implements EventBean {
      * @return event property map
      */
     public Map getUnderlyingMap()
+    {
+        return map;
+    }
+
+    public Map<String, Object> getDecoratingProperties()
     {
         return map;
     }

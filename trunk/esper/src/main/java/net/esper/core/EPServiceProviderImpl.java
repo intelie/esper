@@ -104,7 +104,10 @@ public class EPServiceProviderImpl implements EPServiceProviderSPI
                 // No logic required here
             }
 
+            engine.getRuntime().destroy();
+            engine.getAdmin().destroy();
             engine.getServices().destroy();
+            
             engine.getServices().initialize();
         }
 
@@ -215,6 +218,12 @@ public class EPServiceProviderImpl implements EPServiceProviderSPI
 
         // Load and initialize adapter loader classes
         loadAdapters(configSnapshot, services);
+
+        // Initialize extension services
+        if (services.getExtensionServicesContext() != null)
+        {
+            services.getExtensionServicesContext().init();
+        }
     }
 
     /**

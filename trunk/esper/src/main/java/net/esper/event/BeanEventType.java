@@ -293,6 +293,11 @@ public class BeanEventType implements EventType
                 }
                 else
                 {
+                    if (desc.getAccessorField() == null)
+                    {
+                        // Ignore property
+                        continue;
+                    }
                     getter = new ReflectionPropFieldGetter(desc.getAccessorField());
                     type = desc.getAccessorField().getType();
                 }

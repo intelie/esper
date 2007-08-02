@@ -12,7 +12,7 @@ import java.util.Map;
  */
 public class CompositeEventType implements EventType
 {
-    private final Map<String, EventType> taggedEventTypes;
+    protected final Map<String, EventType> taggedEventTypes;
     private String alias;
 
     /**
@@ -166,4 +166,6 @@ public class CompositeEventType implements EventType
     {
         return null;
     }
+
+    
 }

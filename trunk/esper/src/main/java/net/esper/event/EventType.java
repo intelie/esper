@@ -8,6 +8,7 @@
 package net.esper.event;
 
 import java.util.Iterator;
+import java.util.Map;
 
 /**
  * This interface provides metadata on events.

@@ -1,8 +1,5 @@
 package net.esper.view.stat;
 
-import net.esper.util.MetaDefItem;
-
-
 /**
  * Bean for calculating the correlation (same to Microsoft Excel CORREL function).
  */

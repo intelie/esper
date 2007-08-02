@@ -7,6 +7,11 @@ package net.esper.core;
 public interface ExtensionServicesContext
 {
     /**
+     * Invoked to initialize extension services after engine services initialization.
+     */
+    public void init();
+
+    /**
      * Invoked to destroy the extension services, when an existing engine is initialized.
      */
     public void destroy();

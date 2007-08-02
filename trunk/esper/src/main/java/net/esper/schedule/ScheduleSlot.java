@@ -28,6 +28,16 @@ public class ScheduleSlot implements Comparable<ScheduleSlot>, MetaDefItem
         this.slotNum = slotNum;
     }
 
+    public int getBucketNum()
+    {
+        return bucketNum;
+    }
+
+    public int getSlotNum()
+    {
+        return slotNum;
+    }
+
     public int compareTo(ScheduleSlot scheduleCallbackSlot)
     {
         if (this.bucketNum > scheduleCallbackSlot.bucketNum)

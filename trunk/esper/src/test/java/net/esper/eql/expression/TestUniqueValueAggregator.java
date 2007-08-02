@@ -10,7 +10,7 @@ public class TestUniqueValueAggregator extends TestCase
 
     public void setUp()
     {
-        agg = new DistinctValueAggregator(new SupportAggregator());
+        agg = new DistinctValueAggregator(new SupportAggregator(), Integer.class);
     }
 
     public void testEnter()

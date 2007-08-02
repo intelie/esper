@@ -81,9 +81,16 @@ public abstract class ExprAggregateNode extends ExprNode
     public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate) throws ExprValidationException
     {
         this.aggregationMethod = validateAggregationChild(streamTypeService, methodResolutionService);
+
+        Class childType = null;
+        if (this.getChildNodes().size() > 0)
+        {
+            childType = this.getChildNodes().get(0).getType();
+        }
+
         if (isDistinct)
         {
-            aggregationMethod = methodResolutionService.makeDistinctAggregator(aggregationMethod);
+            aggregationMethod = methodResolutionService.makeDistinctAggregator(aggregationMethod, childType);
         }
     }
 

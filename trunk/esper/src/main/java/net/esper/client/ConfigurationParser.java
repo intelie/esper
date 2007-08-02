@@ -7,6 +7,7 @@
  **************************************************************************************/
 package net.esper.client;
 
+import net.esper.util.DOMElementIterator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.w3c.dom.Document;
@@ -22,8 +23,6 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPathConstants;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Iterator;
-import java.util.NoSuchElementException;
 import java.util.Properties;
 
 /**
@@ -39,6 +38,12 @@ class ConfigurationParser {
      * @throws EPException is thrown when the configuration could not be parsed
      */
     protected static void doConfigure(Configuration configuration, InputStream stream, String resourceName) throws EPException
+    {
+        Document document = getDocument(stream, resourceName);
+        doConfigure(configuration, document);
+    }
+
+    protected static Document getDocument(InputStream stream, String resourceName) throws EPException
     {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder;
@@ -71,7 +76,7 @@ class ConfigurationParser {
             }
         }
 
-        doConfigure(configuration, document);
+        return document;
     }
 
     /**
@@ -108,13 +113,13 @@ class ConfigurationParser {
                 optionalClassName = classNode.getTextContent();
                 configuration.addEventTypeAlias(name, optionalClassName);
             }
-            handleSubElement(name, optionalClassName, configuration, nodes.item(i));
+            handleEventTypeDef(name, optionalClassName, configuration, nodes.item(i));
         }
     }
 
-    private static void handleSubElement(String aliasName, String optionalClassName, Configuration configuration, Node parentNode)
+    private static void handleEventTypeDef(String aliasName, String optionalClassName, Configuration configuration, Node parentNode)
     {
-        ElementIterator eventTypeNodeIterator = new ElementIterator(parentNode.getChildNodes());
+        DOMElementIterator eventTypeNodeIterator = new DOMElementIterator(parentNode.getChildNodes());
         while (eventTypeNodeIterator.hasNext())
         {
             Element eventTypeElement = eventTypeNodeIterator.next();
@@ -161,7 +166,7 @@ class ConfigurationParser {
         xmlDOMEventTypeDesc.setDefaultNamespace(defaultNamespace);
         configuration.addEventTypeAlias(aliasName, xmlDOMEventTypeDesc);
 
-        ElementIterator propertyNodeIterator = new ElementIterator(xmldomElement.getChildNodes());
+        DOMElementIterator propertyNodeIterator = new DOMElementIterator(xmldomElement.getChildNodes());
         while (propertyNodeIterator.hasNext())
         {
             Element propertyElement = propertyNodeIterator.next();
@@ -226,7 +231,7 @@ class ConfigurationParser {
         }
         configuration.addEventTypeAlias(aliasName, className, legacyDesc);
 
-        ElementIterator propertyNodeIterator = new ElementIterator(xmldomElement.getChildNodes());
+        DOMElementIterator propertyNodeIterator = new DOMElementIterator(xmldomElement.getChildNodes());
         while (propertyNodeIterator.hasNext())
         {
             Element propertyElement = propertyNodeIterator.next();
@@ -269,7 +274,7 @@ class ConfigurationParser {
             ConfigurationDBRef configDBRef = new ConfigurationDBRef();
             configuration.addDatabaseReference(name, configDBRef);
 
-            ElementIterator nodeIterator = new ElementIterator(dbRefNodes.item(i).getChildNodes());
+            DOMElementIterator nodeIterator = new DOMElementIterator(dbRefNodes.item(i).getChildNodes());
             while (nodeIterator.hasNext())
             {
                 Element subElement = nodeIterator.next();
@@ -383,7 +388,7 @@ class ConfigurationParser {
             String loaderName = nodes.item(i).getAttributes().getNamedItem("name").getTextContent();
             String className = nodes.item(i).getAttributes().getNamedItem("class-name").getTextContent();
             Properties properties = new Properties();
-            ElementIterator nodeIterator = new ElementIterator(nodes.item(i).getChildNodes());
+            DOMElementIterator nodeIterator = new DOMElementIterator(nodes.item(i).getChildNodes());
             while (nodeIterator.hasNext())
             {
                 Element subElement = nodeIterator.next();
@@ -403,7 +408,7 @@ class ConfigurationParser {
         NodeList nodes = parentElement.getElementsByTagName("engine-settings");
         for (int i = 0; i < nodes.getLength(); i++)
         {
-            ElementIterator nodeIterator = new ElementIterator(nodes.item(i).getChildNodes());
+            DOMElementIterator nodeIterator = new DOMElementIterator(nodes.item(i).getChildNodes());
             while (nodeIterator.hasNext())
             {
                 Element subElement = nodeIterator.next();
@@ -417,7 +422,7 @@ class ConfigurationParser {
 
     private static void handleEngineSettingsDefaults(Configuration configuration, Element parentElement)
     {
-        ElementIterator nodeIterator = new ElementIterator(parentElement.getChildNodes());
+        DOMElementIterator nodeIterator = new DOMElementIterator(parentElement.getChildNodes());
         while (nodeIterator.hasNext())
         {
             Element subElement = nodeIterator.next();
@@ -442,7 +447,7 @@ class ConfigurationParser {
 
     private static void handleDefaultsThreading(Configuration configuration, Element parentElement)
     {
-        ElementIterator nodeIterator = new ElementIterator(parentElement.getChildNodes());
+        DOMElementIterator nodeIterator = new DOMElementIterator(parentElement.getChildNodes());
         while (nodeIterator.hasNext())
         {
             Element subElement = nodeIterator.next();
@@ -475,7 +480,7 @@ class ConfigurationParser {
 
     private static void handleDefaultsViewResources(Configuration configuration, Element parentElement)
     {
-        ElementIterator nodeIterator = new ElementIterator(parentElement.getChildNodes());
+        DOMElementIterator nodeIterator = new DOMElementIterator(parentElement.getChildNodes());
         while (nodeIterator.hasNext())
         {
             Element subElement = nodeIterator.next();
@@ -490,7 +495,7 @@ class ConfigurationParser {
 
     private static void handleDefaultsLogging(Configuration configuration, Element parentElement)
     {
-        ElementIterator nodeIterator = new ElementIterator(parentElement.getChildNodes());
+        DOMElementIterator nodeIterator = new DOMElementIterator(parentElement.getChildNodes());
         while (nodeIterator.hasNext())
         {
             Element subElement = nodeIterator.next();
@@ -505,7 +510,7 @@ class ConfigurationParser {
 
     private static void handleDefaultsEventMeta(Configuration configuration, Element parentElement)
     {
-        ElementIterator nodeIterator = new ElementIterator(parentElement.getChildNodes());
+        DOMElementIterator nodeIterator = new DOMElementIterator(parentElement.getChildNodes());
         while (nodeIterator.hasNext())
         {
             Element subElement = nodeIterator.next();
@@ -521,7 +526,7 @@ class ConfigurationParser {
     private static Properties handleProperties(Element element, String propElementName)
     {
         Properties properties = new Properties();
-        ElementIterator nodeIterator = new ElementIterator(element.getChildNodes());
+        DOMElementIterator nodeIterator = new DOMElementIterator(element.getChildNodes());
         while (nodeIterator.hasNext())
         {
             Element subElement = nodeIterator.next();
@@ -570,48 +575,6 @@ class ConfigurationParser {
             return valueNode.getTextContent();
         }
         return null;
-    }
-
-    private static class ElementIterator implements Iterator
-    {
-        private int index;
-        private NodeList nodeList;
-
-        public ElementIterator(NodeList nodeList) {
-            this.nodeList = nodeList;
-        }
-
-        public boolean hasNext() {
-            positionNext();
-            return index < nodeList.getLength();
-        }
-
-        public Element next() {
-            if (index >= nodeList.getLength())
-            {
-                throw new NoSuchElementException();
-            }
-            Element result = (Element) nodeList.item(index);
-            index++;
-            return result;
-        }
-
-        public void remove() {
-            throw new UnsupportedOperationException();
-        }
-
-        private void positionNext()
-        {
-            while (index < nodeList.getLength())
-            {
-                Node node = nodeList.item(index);
-                if (node instanceof Element)
-                {
-                    break;
-                }
-                index++;
-            }
-        }
     }
 
     private static Log log = LogFactory.getLog(ConfigurationParser.class);

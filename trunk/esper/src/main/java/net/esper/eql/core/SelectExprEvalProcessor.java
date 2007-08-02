@@ -187,10 +187,10 @@ public class SelectExprEvalProcessor implements SelectExprProcessor
         	// wrapper bean, we also need to add the map properties
         	if(singleStreamWrapper)
         	{
-        		WrapperEventBean wrapper = (WrapperEventBean)eventsPerStream[0];
+        		DecoratingEventBean wrapper = (DecoratingEventBean)eventsPerStream[0];
         		if(wrapper != null)
         		{
-        			Map<String, Object> map = (Map<String, Object>)wrapper.getUnderlyingMap();
+        			Map<String, Object> map = wrapper.getDecoratingProperties();
                     if ((ExecutionPathDebugLog.isEnabled()) && (log.isDebugEnabled()))
                     {
         			    log.debug(".process additional properties=" + map);

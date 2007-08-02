@@ -593,5 +593,23 @@ public class EPRuntimeImpl implements EPRuntime, TimerCallback, InternalEventRou
         }
     }
 
+    public void destroy()
+    {
+        services = null;
+        threadWorkQueue = null;
+
+        matchesArrayThreadLocal.remove();
+        locksHeldThreadLocal.remove();
+        matchesPerStmtThreadLocal.remove();
+        scheduleArrayThreadLocal.remove();
+        schedulePerStmtThreadLocal.remove();
+
+        matchesArrayThreadLocal = null;
+        locksHeldThreadLocal = null;
+        matchesPerStmtThreadLocal = null;
+        scheduleArrayThreadLocal = null;
+        schedulePerStmtThreadLocal = null;
+    }
+
     private static final Log log = LogFactory.getLog(EPRuntimeImpl.class);
 }

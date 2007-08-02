@@ -16,8 +16,8 @@ import java.util.concurrent.CopyOnWriteArraySet;
  */
 public class EPStatementListenerSet
 {
-    Set<UpdateListener> listeners;
-    Set<StatementAwareUpdateListener> stmtAwareListeners;
+    CopyOnWriteArraySet<UpdateListener> listeners;
+    CopyOnWriteArraySet<StatementAwareUpdateListener> stmtAwareListeners;
 
     /**
      * Ctor.
@@ -43,7 +43,7 @@ public class EPStatementListenerSet
      * Returns the set of listeners to the statement.
      * @return statement listeners
      */
-    public Set<UpdateListener> getListeners()
+    public CopyOnWriteArraySet<UpdateListener> getListeners()
     {
         return listeners;
     }
@@ -52,7 +52,7 @@ public class EPStatementListenerSet
      * Returns the set of statement-aware listeners.
      * @return statement-aware listeners
      */
-    public Set<StatementAwareUpdateListener> getStmtAwareListeners()
+    public CopyOnWriteArraySet<StatementAwareUpdateListener> getStmtAwareListeners()
     {
         return stmtAwareListeners;
     }

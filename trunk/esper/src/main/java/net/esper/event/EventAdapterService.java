@@ -5,6 +5,7 @@ import java.util.Map;
 import org.w3c.dom.Node;
 import net.esper.client.ConfigurationEventTypeXMLDOM;
 import net.esper.client.ConfigurationEventTypeLegacy;
+import net.esper.client.Configuration;
 
 /**
  * Interface for a service to resolve event names to event type.
@@ -60,16 +61,6 @@ public interface EventAdapterService
     public EventType createAnonymousMapType(Map<String, Class> propertyTypes);
 
     /**
-     * Creates a new anonymous EventType instance for an event type that contains a map of name value pairs.
-     * The method accepts a Map that contains the property names as keys and EventType objects as the values.
-     * The EventType instances represent the property types whose underlying class is used to set the type,
-     * via method createAnonymousMapType.
-     * @param propertyTypes is a map of String to EventType objects
-     * @return EventType implementation for map field names and value types which are the underlying types to the event type passed in
-     */
-    public EventType createAnonymousMapTypeUnd(Map<String, EventType> propertyTypes);
-
-    /**
      * Create an event wrapper bean from a set of event properties (name and value objectes) stored in a Map.
      * @param properties is key-value pairs for the event properties
      * @param eventType is the type metadata for any maps of that type
@@ -85,14 +76,6 @@ public interface EventAdapterService
      * @return wrapper event bean
      */
     public EventBean createWrapper(EventBean event, Map<String, Object> properties, EventType eventType);
-
-    /**
-     * Create an aggregate event wrapper bean from a set of named events stored in a Map.
-     * @param events is key-value pairs where the key is the event name and the value is the event
-     * @param eventType is the type metadata for any maps of that type
-     * @return EventBean instance
-     */
-    public EventBean createMapFromUnderlying(Map<String, EventBean> events, EventType eventType);
 
     /**
      * Add an event type with the given alias and Java fully-qualified class name.
@@ -198,4 +181,6 @@ public interface EventAdapterService
      * @param classLegacyInfo is configured legacy 
      */
     public void setClassLegacyConfigs(Map<String, ConfigurationEventTypeLegacy> classLegacyInfo);
+
+    public void setDefaultPropertyResolutionStyle(Configuration.PropertyResolutionStyle classPropertyResolutionStyle);
 }

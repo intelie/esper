@@ -1,6 +1,8 @@
 package net.esper.support.bean;
 
-public class SupportSensorEvent
+import java.io.Serializable;
+
+public class SupportSensorEvent implements Serializable
 {
     private int id;
     private String type;

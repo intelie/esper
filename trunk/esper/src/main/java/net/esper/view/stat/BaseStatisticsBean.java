@@ -293,4 +293,34 @@ public class BaseStatisticsBean implements Cloneable, MetaDefItem
                "  sumYSq=" + this.sumYSq +
                "  sumXY=" + this.sumXY;
     }
+
+    public void setSumX(double sumX)
+    {
+        this.sumX = sumX;
+    }
+
+    public void setSumXSq(double sumXSq)
+    {
+        this.sumXSq = sumXSq;
+    }
+
+    public void setSumY(double sumY)
+    {
+        this.sumY = sumY;
+    }
+
+    public void setSumYSq(double sumYSq)
+    {
+        this.sumYSq = sumYSq;
+    }
+
+    public void setSumXY(double sumXY)
+    {
+        this.sumXY = sumXY;
+    }
+
+    public void setDataPoints(long dataPoints)
+    {
+        this.dataPoints = dataPoints;
+    }
 }
