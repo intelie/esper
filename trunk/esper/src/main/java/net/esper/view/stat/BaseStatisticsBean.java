@@ -9,7 +9,7 @@ import net.esper.util.MetaDefItem;
  * that can be reused by subclasses. The bean calculates standard deviation (sample and population), variance,
  * average and sum.
   */
-public class BaseStatisticsBean implements Cloneable, MetaDefItem
+public class BaseStatisticsBean implements Cloneable
 {
     private double sumX;
     private double sumXSq;

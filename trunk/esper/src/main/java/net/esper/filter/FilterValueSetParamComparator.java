@@ -7,14 +7,15 @@
  **************************************************************************************/
 package net.esper.filter;
 
+import net.esper.util.MetaDefItem;
+
 import java.util.Comparator;
-import java.io.Serializable;
 
 /**
  * Sort comparator for filter parameters that sorts filter parameters according to filter operator type, and
  * within the same filter operator sorts by event property name.
  */
-public class FilterValueSetParamComparator implements Comparator<FilterValueSetParam>, Serializable
+public class FilterValueSetParamComparator implements Comparator<FilterValueSetParam>, MetaDefItem
 {
     /**
      * Defines the sort order among filter operator types. The idea is to sort EQUAL-type operators first
