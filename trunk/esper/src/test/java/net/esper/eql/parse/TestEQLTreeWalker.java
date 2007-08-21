@@ -68,7 +68,7 @@ public class TestEQLTreeWalker extends TestCase
 
         EQLTreeWalker walker = parseAndWalkEQL(expression);
 
-        // Stream spec validation
+        // ProjectedStream spec validation
         assertEquals(3, walker.getStatementSpec().getStreamSpecs().size());
         assertEquals("win1", walker.getStatementSpec().getStreamSpecs().get(0).getOptionalStreamName());
         assertEquals("win2", walker.getStatementSpec().getStreamSpecs().get(1).getOptionalStreamName());

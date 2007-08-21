@@ -7,13 +7,13 @@
  **************************************************************************************/
 package net.esper.pattern;
 
-import net.esper.schedule.SchedulingService;
-import net.esper.schedule.ScheduleBucket;
-import net.esper.filter.FilterService;
-import net.esper.event.EventAdapterService;
 import net.esper.core.EPStatementHandle;
-import net.esper.core.ExtensionServicesContext;
 import net.esper.core.StatementContext;
+import net.esper.core.StatementExtensionSvcContext;
+import net.esper.event.EventAdapterService;
+import net.esper.filter.FilterService;
+import net.esper.schedule.ScheduleBucket;
+import net.esper.schedule.SchedulingService;
 
 /**
  * Contains handles to implementations of services needed by evaluation nodes.
@@ -139,10 +139,10 @@ public final class PatternContext
     }
 
     /**
-     * Returns extension services context.
+     * Returns extension services context for statement (statement-specific).
      * @return extension services
      */
-    public ExtensionServicesContext getExtensionServicesContext()
+    public StatementExtensionSvcContext getExtensionServicesContext()
     {
         return statementContext.getExtensionServicesContext();
     }

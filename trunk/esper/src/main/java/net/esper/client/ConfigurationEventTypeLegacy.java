@@ -9,11 +9,12 @@ package net.esper.client;
 
 import java.util.List;
 import java.util.LinkedList;
+import java.io.Serializable;
 
 /**
  * Configuration information for legacy (non-JavaBean) event types.
  */
-public class ConfigurationEventTypeLegacy
+public class ConfigurationEventTypeLegacy implements Serializable
 {
     private AccessorStyle accessorStyle;
     private CodeGeneration codeGeneration;
@@ -171,7 +172,7 @@ public class ConfigurationEventTypeLegacy
     /**
      * Encapsulates information about an accessor field backing a named event property.
      */
-    public static class LegacyFieldPropDesc
+    public static class LegacyFieldPropDesc implements Serializable
     {
         private String name;
         private String accessorFieldName;
@@ -209,7 +210,7 @@ public class ConfigurationEventTypeLegacy
     /**
      * Encapsulates information about an accessor method backing a named event property.
      */
-    public static class LegacyMethodPropDesc
+    public static class LegacyMethodPropDesc implements Serializable
     {
         private String name;
         private String accessorMethodName;

@@ -7,6 +7,8 @@
  **************************************************************************************/
 package net.esper.client;
 
+import javax.naming.Context;
+
 
 /**
  * This class provides access to the EPRuntime and EPAdministrator implementations.
@@ -24,6 +26,15 @@ public interface EPServiceProvider
      * @return an instance of EPAdministrator
      */
     public EPAdministrator getEPAdministrator();
+
+    /**
+     * Provides naming context for public named objects.
+     * <p>
+     * An extension point designed for use by input and output adapters as well as
+     * other extension services.
+     * @return naming context providing name-to-object bindings
+     */
+    public Context getContext();
 
     /**
      * Frees any resources associated with this runtime instance, and leaves the engine instance

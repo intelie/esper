@@ -113,6 +113,11 @@ public abstract class BaseXMLEventType extends BaseConfigurableEventType {
         return EMPTY_STRING_ARRAY;
     }
 
+    public ConfigurationEventTypeXMLDOM getConfigurationEventTypeXMLDOM()
+    {
+        return configurationEventTypeXMLDOM;
+    }
+
     public boolean equals(Object otherObj)
     {
         if (!(otherObj instanceof BaseXMLEventType))

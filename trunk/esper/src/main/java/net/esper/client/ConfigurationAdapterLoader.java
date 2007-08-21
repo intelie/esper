@@ -1,11 +1,12 @@
 package net.esper.client;
 
 import java.util.Properties;
+import java.io.Serializable;
 
 /**
  * Holds configuration for an input/output adapter loader.
  */
-public class ConfigurationAdapterLoader
+public class ConfigurationAdapterLoader implements Serializable
 {
     private String loaderName;
     private String className;

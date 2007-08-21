@@ -23,14 +23,14 @@ public class TestParserOpPrecedence extends TestCase
 {
     public void testEquivalency() throws Exception
     {
-        assertEquivalent("every a()",
-                          "(every a())");
+        assertEquivalent("every a",
+                          "(every a)");
 
         assertEquivalent("every a() or b()",
                           "((every a()) or b())");
 
-        assertEquivalent("every a() -> b() or c()",
-                          "(every a()) -> (b() or c())");
+        assertEquivalent("every a -> b or c",
+                          "(every a) -> (b or c)");
 
         assertEquivalent("every a() -> b() and c()",
                           "(every a()) -> (b() and c())");

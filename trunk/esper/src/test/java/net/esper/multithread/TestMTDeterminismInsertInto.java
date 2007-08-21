@@ -5,6 +5,7 @@ import net.esper.client.*;
 import net.esper.client.time.TimerControlEvent;
 import net.esper.support.util.SupportUpdateListener;
 import net.esper.support.bean.SupportBean;
+import net.esper.support.client.SupportConfigFactory;
 import net.esper.event.EventBean;
 
 import java.util.concurrent.*;
@@ -23,7 +24,7 @@ public class TestMTDeterminismInsertInto extends TestCase
 
     public void setUp()
     {
-        Configuration config = new Configuration();
+        Configuration config = SupportConfigFactory.getConfiguration();
         // This should fail all test in this class
         // config.getEngineDefaults().getThreading().setInsertIntoDispatchPreserveOrder(false);
 

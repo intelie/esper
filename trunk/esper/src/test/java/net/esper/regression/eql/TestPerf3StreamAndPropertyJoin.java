@@ -3,6 +3,7 @@ package net.esper.regression.eql;
 import net.esper.client.EPServiceProvider;
 import net.esper.client.EPStatement;
 import net.esper.client.EPServiceProviderManager;
+import net.esper.client.Configuration;
 import net.esper.support.bean.*;
 import net.esper.support.util.SupportUpdateListener;
 import org.apache.commons.logging.Log;
@@ -17,7 +18,7 @@ public class TestPerf3StreamAndPropertyJoin extends TestCase
 
     public void setUp()
     {
-        epService = EPServiceProviderManager.getDefaultProvider();
+        epService = EPServiceProviderManager.getDefaultProvider(new Configuration());
         epService.initialize();
         updateListener = new SupportUpdateListener();
     }

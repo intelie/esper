@@ -81,5 +81,5 @@ public interface StatementLifecycleSvc
      * @param statementId is the statement id for which listeners were added
      * @param listeners is the set of listeners after adding the new listener
      */
-    public void updatedListeners(String statementId, EPStatementListenerSet listeners);
+    public void updatedListeners(String statementId, String statementName, EPStatementListenerSet listeners);
 }

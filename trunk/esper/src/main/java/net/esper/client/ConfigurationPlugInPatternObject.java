@@ -1,9 +1,11 @@
 package net.esper.client;
 
+import java.io.Serializable;
+
 /**
  * Configuration information for plugging in a custom view.
  */
-public class ConfigurationPlugInPatternObject
+public class ConfigurationPlugInPatternObject implements Serializable
 {
     private String namespace;
     private String name;

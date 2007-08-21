@@ -4,6 +4,7 @@ import junit.framework.TestCase;
 import net.esper.client.EPServiceProvider;
 import net.esper.client.EPServiceProviderManager;
 import net.esper.client.EPStatement;
+import net.esper.client.Configuration;
 import net.esper.support.bean.SupportBean;
 import net.esper.support.util.SupportUpdateListener;
 import org.apache.commons.logging.Log;
@@ -16,7 +17,7 @@ public class TestPerf2StreamSimpleJoinCoercion extends TestCase
 
     public void setUp()
     {
-        epService = EPServiceProviderManager.getDefaultProvider();
+        epService = EPServiceProviderManager.getDefaultProvider(new Configuration());
         epService.initialize();
         listener = new SupportUpdateListener();
     }

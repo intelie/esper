@@ -13,10 +13,12 @@ import net.esper.event.EventAdapterService;
 import net.esper.schedule.SchedulingService;
 import net.esper.filter.FilterService;
 import net.esper.util.ExecutionPathDebugLog;
+import net.esper.util.SerializableObjectCopier;
 
 import javax.naming.Context;
 import javax.naming.NamingException;
 import java.util.List;
+import java.io.IOException;
 
 /**
  * Service provider encapsulates the engine's services for runtime and administration interfaces.
@@ -24,7 +26,7 @@ import java.util.List;
 public class EPServiceProviderImpl implements EPServiceProviderSPI
 {
     private volatile EPServiceEngine engine;
-    private ConfigurationSnapshot configSnapshot;
+    private ConfigurationInformation configSnapshot;
     private String engineURI;
 
     /**
@@ -36,7 +38,7 @@ public class EPServiceProviderImpl implements EPServiceProviderSPI
     public EPServiceProviderImpl(Configuration configuration, String engineURI) throws ConfigurationException
     {
         this.engineURI = engineURI;
-        configSnapshot = new ConfigurationSnapshot(configuration);
+        configSnapshot = takeSnapshot(configuration);
         initialize();
     }
 
@@ -46,7 +48,7 @@ public class EPServiceProviderImpl implements EPServiceProviderSPI
      */
     public void setConfiguration(Configuration configuration)
     {
-        configSnapshot = new ConfigurationSnapshot(configuration);
+        configSnapshot = takeSnapshot(configuration);
     }
 
     public String getURI()
@@ -84,7 +86,7 @@ public class EPServiceProviderImpl implements EPServiceProviderSPI
         return engine.getServices().getExtensionServicesContext();
     }
 
-    public Context getEnvContext()
+    public Context getContext()
     {
         return engine.getServices().getEngineEnvContext();
     }
@@ -231,7 +233,7 @@ public class EPServiceProviderImpl implements EPServiceProviderSPI
      * @param configuration is the engine configs
      * @param services is the engine instance services
      */
-    private void loadAdapters(ConfigurationSnapshot configuration, EPServicesContext services)
+    private void loadAdapters(ConfigurationInformation configuration, EPServicesContext services)
     {
         List<ConfigurationAdapterLoader> adapterLoaders = configuration.getAdapterLoaders();
         if ((adapterLoaders == null) || (adapterLoaders.size() == 0))
@@ -251,7 +253,7 @@ public class EPServiceProviderImpl implements EPServiceProviderSPI
                 throw new ConfigurationException("Failed to load adapter loader class '" + className + "'", ex);
             }
 
-            Object adapterLoaderObj = null;
+            Object adapterLoaderObj;
             try
             {
                 adapterLoaderObj = adapterLoaderClass.newInstance();
@@ -306,6 +308,22 @@ public class EPServiceProviderImpl implements EPServiceProviderSPI
         public EPAdministratorImpl getAdmin()
         {
             return admin;
+        }
+    }
+
+    private ConfigurationInformation takeSnapshot(Configuration configuration)
+    {
+        try
+        {
+            return (ConfigurationInformation) SerializableObjectCopier.copy(configuration);
+        }
+        catch (IOException e)
+        {
+            throw new ConfigurationException("Failed to snapshot configuration instance through serialization : " + e.getMessage(), e);
+        }
+        catch (ClassNotFoundException e)
+        {
+            throw new ConfigurationException("Failed to snapshot configuration instance through serialization : " + e.getMessage(), e);
         }
     }
 }

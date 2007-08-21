@@ -1,10 +1,7 @@
 package net.esper.regression.client;
 
 import junit.framework.TestCase;
-import net.esper.client.EPServiceProvider;
-import net.esper.client.EPStatement;
-import net.esper.client.EPServiceProviderManager;
-import net.esper.client.EPStatementState;
+import net.esper.client.*;
 import net.esper.support.util.SupportUpdateListener;
 import net.esper.support.util.ArrayAssertionUtil;
 import net.esper.support.bean.SupportBean;
@@ -19,7 +16,7 @@ public class TestEPAdministrator extends TestCase
     public void setUp()
     {
         testListener = new SupportUpdateListener();
-        epService = EPServiceProviderManager.getDefaultProvider(SupportConfigFactory.getConfiguration());
+        epService = EPServiceProviderManager.getDefaultProvider(new Configuration());
         epService.initialize();
     }
 

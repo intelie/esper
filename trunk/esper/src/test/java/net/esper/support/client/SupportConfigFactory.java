@@ -6,7 +6,7 @@ import java.lang.reflect.Method;
 
 public class SupportConfigFactory
 {
-    private static final String TEST_CONFIG_FACTORY_CLASS = "TEST_CONFIG_FACTORY_CLASS";
+    private static final String TEST_CONFIG_FACTORY_CLASS = "CONFIGFACTORY_CLASS";
 
     public static Configuration getConfiguration()
     {

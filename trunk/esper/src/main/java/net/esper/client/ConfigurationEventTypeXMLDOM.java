@@ -7,9 +7,12 @@
  **************************************************************************************/
 package net.esper.client;
 
+import net.esper.util.MetaDefItem;
+
 import javax.xml.namespace.QName;
 import java.util.Map;
 import java.util.HashMap;
+import java.io.Serializable;
 
 /**
  * Configuration object for enabling the engine to process events represented as XML DOM document nodes.
@@ -30,7 +33,7 @@ import java.util.HashMap;
  * root element name occurs in multiple namespaces.
  * <p>
  */
-public class ConfigurationEventTypeXMLDOM
+public class ConfigurationEventTypeXMLDOM implements MetaDefItem, Serializable
 {
     private String rootElementName;
 
@@ -174,7 +177,7 @@ public class ConfigurationEventTypeXMLDOM
     /**
      * Descriptor class for event properties that are resolved via XPath-expression.
      */
-    public static class XPathPropertyDesc
+    public static class XPathPropertyDesc implements Serializable
     {
         private String name;
         private String xpath;

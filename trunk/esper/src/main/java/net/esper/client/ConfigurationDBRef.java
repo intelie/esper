@@ -1,13 +1,14 @@
 package net.esper.client;
 
 import java.util.Properties;
+import java.io.Serializable;
 
 /**
  * Container for database configuration information, such as
  * options around getting a database connection and options to control the lifecycle
  * of connections and set connection parameters.
  */
-public class ConfigurationDBRef
+public class ConfigurationDBRef implements Serializable
 {
     private ConnectionFactoryDesc connectionFactoryDesc;
     private ConnectionSettings connectionSettings;
@@ -178,7 +179,7 @@ public class ConfigurationDBRef
     /**
      * Supplies connectioon-level settings for a given database name.
      */
-    public static class ConnectionSettings
+    public static class ConnectionSettings implements Serializable
     {
         private Boolean autoCommit;
         private String catalog;
@@ -281,7 +282,7 @@ public class ConfigurationDBRef
     /**
      * Connection factory settings for using a DataSource.
      */
-    public static class DataSourceConnection implements ConnectionFactoryDesc
+    public static class DataSourceConnection implements ConnectionFactoryDesc, Serializable
     {
         private String contextLookupName;
         private Properties envProperties;
@@ -319,7 +320,7 @@ public class ConfigurationDBRef
     /**
      * Connection factory settings for using a DriverManager.
      */
-    public static class DriverManagerConnection implements ConnectionFactoryDesc
+    public static class DriverManagerConnection implements ConnectionFactoryDesc, Serializable
     {
         private String className;
         private String url;
@@ -428,7 +429,7 @@ public class ConfigurationDBRef
     /**
      * LRU cache settings.
      */
-    public static class LRUCacheDesc implements DataCacheDesc
+    public static class LRUCacheDesc implements DataCacheDesc, Serializable
     {
         private int size;
 
@@ -459,7 +460,7 @@ public class ConfigurationDBRef
     /**
      * Expiring cache settings.
      */
-    public static class ExpiryTimeCacheDesc implements DataCacheDesc
+    public static class ExpiryTimeCacheDesc implements DataCacheDesc, Serializable
     {
         private double maxAgeSeconds;
         private double purgeIntervalSeconds;

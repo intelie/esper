@@ -1,9 +1,11 @@
 package net.esper.client;
 
+import java.io.Serializable;
+
 /**
  * Provides access to engine configuration defaults for modification.
  */
-public class ConfigurationEngineDefaults
+public class ConfigurationEngineDefaults implements Serializable
 {
     private Threading threading;
     private ViewResources viewResources;
@@ -60,7 +62,7 @@ public class ConfigurationEngineDefaults
     /**
      * Holds threading settings.
      */
-    public static class Threading
+    public static class Threading implements Serializable
     {
         private boolean isListenerDispatchPreserveOrder;
         private long listenerDispatchTimeout;
@@ -189,7 +191,7 @@ public class ConfigurationEngineDefaults
     /**
      * Holds view resources settings.
      */
-    public static class ViewResources
+    public static class ViewResources implements Serializable
     {
         private boolean shareViews;
 
@@ -227,7 +229,7 @@ public class ConfigurationEngineDefaults
     /**
      * Event representation metadata.
      */
-    public static class EventMeta
+    public static class EventMeta implements Serializable
     {
         private Configuration.PropertyResolutionStyle classPropertyResolutionStyle;
 
@@ -263,7 +265,7 @@ public class ConfigurationEngineDefaults
     /**
      * Holds view logging settings other then the Apache commons or Log4J settings.
      */
-    public static class Logging
+    public static class Logging implements Serializable
     {
         private boolean enableExecutionDebug;
 

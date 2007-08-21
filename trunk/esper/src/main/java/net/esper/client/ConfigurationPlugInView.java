@@ -1,12 +1,11 @@
 package net.esper.client;
 
-import java.util.List;
-import java.util.LinkedList;
+import java.io.Serializable;
 
 /**
  * Configuration information for plugging in a custom view.
  */
-public class ConfigurationPlugInView
+public class ConfigurationPlugInView implements Serializable
 {
     private String namespace;
     private String name;

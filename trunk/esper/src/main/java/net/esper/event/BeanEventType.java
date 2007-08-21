@@ -140,18 +140,18 @@ public class BeanEventType implements EventType
      */
     public final EventPropertyDescriptor getMappedProperty(String propertyName)
     {
-        if (this.getPropertyResolutionStyle() == Configuration.PropertyResolutionStyle.CASE_SENSITIVE)
+        if (this.getPropertyResolutionStyle().equals(Configuration.PropertyResolutionStyle.CASE_SENSITIVE))
         {
             return mappedPropertyDescriptors.get(propertyName);
         }
-        if (this.getPropertyResolutionStyle() == Configuration.PropertyResolutionStyle.CASE_INSENSITIVE)
+        if (this.getPropertyResolutionStyle().equals(Configuration.PropertyResolutionStyle.CASE_INSENSITIVE))
         {
             List<SimplePropertyInfo> propertyInfos = mappedSmartPropertyTable.get(propertyName.toLowerCase());
             return propertyInfos != null
                     ? propertyInfos.get(0).getDescriptor()
                     : null;
         }
-        if (this.getPropertyResolutionStyle() == Configuration.PropertyResolutionStyle.DISTINCT_CASE_INSENSITIVE)
+        if (this.getPropertyResolutionStyle().equals(Configuration.PropertyResolutionStyle.DISTINCT_CASE_INSENSITIVE))
         {
             List<SimplePropertyInfo> propertyInfos = mappedSmartPropertyTable.get(propertyName.toLowerCase());
             if (propertyInfos != null)
@@ -174,18 +174,18 @@ public class BeanEventType implements EventType
      */
     public final EventPropertyDescriptor getIndexedProperty(String propertyName)
     {
-        if (this.getPropertyResolutionStyle() == Configuration.PropertyResolutionStyle.CASE_SENSITIVE)
+        if (this.getPropertyResolutionStyle().equals(Configuration.PropertyResolutionStyle.CASE_SENSITIVE))
         {
             return indexedPropertyDescriptors.get(propertyName);
         }
-        if (this.getPropertyResolutionStyle() == Configuration.PropertyResolutionStyle.CASE_INSENSITIVE)
+        if (this.getPropertyResolutionStyle().equals(Configuration.PropertyResolutionStyle.CASE_INSENSITIVE))
         {
             List<SimplePropertyInfo> propertyInfos = indexedSmartPropertyTable.get(propertyName.toLowerCase());
             return propertyInfos != null
                     ? propertyInfos.get(0).getDescriptor()
                     : null;
         }
-        if (this.getPropertyResolutionStyle() == Configuration.PropertyResolutionStyle.DISTINCT_CASE_INSENSITIVE)
+        if (this.getPropertyResolutionStyle().equals(Configuration.PropertyResolutionStyle.DISTINCT_CASE_INSENSITIVE))
         {
             List<SimplePropertyInfo> propertyInfos = indexedSmartPropertyTable.get(propertyName.toLowerCase());
             if (propertyInfos != null)
@@ -461,8 +461,8 @@ public class BeanEventType implements EventType
 
     private boolean usesSmartResolutionStyle()
     {
-        if ((propertyResolutionStyle == Configuration.PropertyResolutionStyle.CASE_INSENSITIVE) ||
-            (propertyResolutionStyle == Configuration.PropertyResolutionStyle.DISTINCT_CASE_INSENSITIVE))
+        if ((propertyResolutionStyle.equals(Configuration.PropertyResolutionStyle.CASE_INSENSITIVE)) ||
+            (propertyResolutionStyle.equals(Configuration.PropertyResolutionStyle.DISTINCT_CASE_INSENSITIVE)))
         {
             return true;
         }
@@ -477,11 +477,11 @@ public class BeanEventType implements EventType
         SimplePropertyInfo propertyInfo;
         List<SimplePropertyInfo> simplePropertyInfoList;
 
-        if (this.getPropertyResolutionStyle() == Configuration.PropertyResolutionStyle.CASE_SENSITIVE)
+        if (this.getPropertyResolutionStyle().equals(Configuration.PropertyResolutionStyle.CASE_SENSITIVE))
         {
             return simpleProperties.get(propertyName);
         }
-        if (this.getPropertyResolutionStyle() == Configuration.PropertyResolutionStyle.CASE_INSENSITIVE)
+        if (this.getPropertyResolutionStyle().equals(Configuration.PropertyResolutionStyle.CASE_INSENSITIVE))
         {
             propertyInfo = simpleProperties.get(propertyName);
             if (propertyInfo != null)
@@ -495,7 +495,7 @@ public class BeanEventType implements EventType
                     ? simplePropertyInfoList.get(0)
                     : null;
         }
-        if (this.getPropertyResolutionStyle() == Configuration.PropertyResolutionStyle.DISTINCT_CASE_INSENSITIVE)
+        if (this.getPropertyResolutionStyle().equals(Configuration.PropertyResolutionStyle.DISTINCT_CASE_INSENSITIVE))
         {
             propertyInfo = simpleProperties.get(propertyName);
             if (propertyInfo != null)

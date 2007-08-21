@@ -69,7 +69,7 @@ public class StatementContextFactoryDefault implements StatementContextFactory
                 epStatementHandle,
                 viewResolutionService,
                 patternResolutionService,
-                engineServices.getExtensionServicesContext(),
+                null,   // no statement extension context
                 new StatementStopServiceImpl(),
                 methodResolutionService,
                 patternContextFactory,

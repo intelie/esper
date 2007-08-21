@@ -30,7 +30,7 @@ import java.util.Properties;
  */
 public class EPServicesContextFactoryDefault implements EPServicesContextFactory
 {
-    public EPServicesContext createServicesContext(EPServiceProvider epServiceProvider, ConfigurationSnapshot configSnapshot)
+    public EPServicesContext createServicesContext(EPServiceProvider epServiceProvider, ConfigurationInformation configSnapshot)
     {
         // Make services that depend on snapshot config entries
         EventAdapterServiceImpl eventAdapterService = new EventAdapterServiceImpl();
@@ -82,7 +82,7 @@ public class EPServicesContextFactoryDefault implements EPServicesContextFactory
      * @param eventAdapterService is events adapter
      * @param configSnapshot is the config snapshot
      */
-    protected static void init(EventAdapterService eventAdapterService, ConfigurationSnapshot configSnapshot)
+    protected static void init(EventAdapterService eventAdapterService, ConfigurationInformation configSnapshot)
     {
         // Extract legacy event type definitions for each event type alias, if supplied.
         //
@@ -90,11 +90,11 @@ public class EPServicesContextFactoryDefault implements EPServicesContextFactory
         // to allow discovery of superclasses and interfaces during event type construction for bean events,
         // such that superclasses and interfaces can use the legacy type definitions.
         Map<String, ConfigurationEventTypeLegacy> classLegacyInfo = new HashMap<String, ConfigurationEventTypeLegacy>();
-        for (Map.Entry<String, String> entry : configSnapshot.getJavaClassAliases().entrySet())
+        for (Map.Entry<String, String> entry : configSnapshot.getEventTypeAliases().entrySet())
         {
             String aliasName = entry.getKey();
             String className = entry.getValue();
-            ConfigurationEventTypeLegacy legacyDef = configSnapshot.getLegacyAliases().get(aliasName);
+            ConfigurationEventTypeLegacy legacyDef = configSnapshot.getEventTypesLegacy().get(aliasName);
             if (legacyDef != null)
             {
                 classLegacyInfo.put(className, legacyDef);
@@ -104,7 +104,7 @@ public class EPServicesContextFactoryDefault implements EPServicesContextFactory
         eventAdapterService.setDefaultPropertyResolutionStyle(configSnapshot.getEngineDefaults().getEventMeta().getClassPropertyResolutionStyle());
 
         // Add from the configuration the Java event class aliases
-        Map<String, String> javaClassAliases = configSnapshot.getJavaClassAliases();
+        Map<String, String> javaClassAliases = configSnapshot.getEventTypeAliases();
         for (Map.Entry<String, String> entry : javaClassAliases.entrySet())
         {
             // Add Java class alias
@@ -120,7 +120,7 @@ public class EPServicesContextFactoryDefault implements EPServicesContextFactory
         }
 
         // Add from the configuration the XML DOM aliases and type def
-        Map<String, ConfigurationEventTypeXMLDOM> xmlDOMAliases = configSnapshot.getXmlDOMAliases();
+        Map<String, ConfigurationEventTypeXMLDOM> xmlDOMAliases = configSnapshot.getEventTypesXMLDOM();
         for (Map.Entry<String, ConfigurationEventTypeXMLDOM> entry : xmlDOMAliases.entrySet())
         {
             // Add Java class alias
@@ -135,7 +135,7 @@ public class EPServicesContextFactoryDefault implements EPServicesContextFactory
         }
 
         // Add map event types
-        Map<String, Properties> mapAliases = configSnapshot.getMapAliases();
+        Map<String, Properties> mapAliases = configSnapshot.getEventTypesMapEvents();
         for(Map.Entry<String, Properties> entry : mapAliases.entrySet())
         {
             try
@@ -155,19 +155,19 @@ public class EPServicesContextFactoryDefault implements EPServicesContextFactory
      * @param configSnapshot config info
      * @return service
      */
-    protected static EngineImportService makeEngineImportService(ConfigurationSnapshot configSnapshot)
+    protected static EngineImportService makeEngineImportService(ConfigurationInformation configSnapshot)
     {
         EngineImportService engineImportService = new EngineImportServiceImpl();
 
         // Add auto-imports
         try
         {
-            for (String importName : configSnapshot.getAutoImports())
+            for (String importName : configSnapshot.getImports())
             {
                 engineImportService.addImport(importName);
             }
 
-            for (ConfigurationPlugInAggregationFunction config : configSnapshot.getPlugInAggregation())
+            for (ConfigurationPlugInAggregationFunction config : configSnapshot.getPlugInAggregationFunctions())
             {
                 engineImportService.addAggregation(config.getName(), config.getFunctionClassName());
             }
@@ -186,7 +186,7 @@ public class EPServicesContextFactoryDefault implements EPServicesContextFactory
      * @param schedulingService is the timer stuff
      * @return database config svc
      */
-    protected static DatabaseConfigService makeDatabaseRefService(ConfigurationSnapshot configSnapshot,
+    protected static DatabaseConfigService makeDatabaseRefService(ConfigurationInformation configSnapshot,
                                                           SchedulingService schedulingService)
     {
         DatabaseConfigService databaseConfigService = null;
@@ -195,7 +195,7 @@ public class EPServicesContextFactoryDefault implements EPServicesContextFactory
         try
         {
             ScheduleBucket allStatementsBucket = schedulingService.allocateBucket();
-            databaseConfigService = new DatabaseConfigServiceImpl(configSnapshot.getDatabaseRefs(), schedulingService, allStatementsBucket);
+            databaseConfigService = new DatabaseConfigServiceImpl(configSnapshot.getDatabaseReferences(), schedulingService, allStatementsBucket);
         }
         catch (IllegalArgumentException ex)
         {

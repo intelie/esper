@@ -1,11 +1,11 @@
 package net.esper.view;
 
-import net.esper.schedule.SchedulingService;
-import net.esper.schedule.ScheduleBucket;
-import net.esper.event.EventAdapterService;
 import net.esper.core.EPStatementHandle;
-import net.esper.core.ExtensionServicesContext;
 import net.esper.core.StatementContext;
+import net.esper.core.StatementExtensionSvcContext;
+import net.esper.event.EventAdapterService;
+import net.esper.schedule.ScheduleBucket;
+import net.esper.schedule.SchedulingService;
 
 /**
  * Context calss for specific views within a statement. Each view in a statement gets it's own context
@@ -76,7 +76,7 @@ public class ViewFactoryContext
      * Returns extension svc.
      * @return svc
      */
-    public ExtensionServicesContext getExtensionServicesContext()
+    public StatementExtensionSvcContext getExtensionServicesContext()
     {
         return statementContext.getExtensionServicesContext();
     }

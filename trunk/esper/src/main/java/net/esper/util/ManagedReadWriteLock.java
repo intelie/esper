@@ -8,6 +8,7 @@
 package net.esper.util;
 
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Simple read-write lock based on {@link java.util.concurrent.locks.ReentrantReadWriteLock} that associates a
@@ -24,6 +25,11 @@ public class ManagedReadWriteLock
      * Acquired text.
      */
     protected final static String ACQUIRED_TEXT = "Got     ";
+
+    /**
+     * Acquired text.
+     */
+    protected final static String TRY_TEXT      = "Trying  ";
 
     /**
      * Release text.
@@ -64,6 +70,33 @@ public class ManagedReadWriteLock
         {
             ThreadLogUtil.traceLock(ACQUIRED_TEXT + " write " + name, lock);
         }
+    }
+
+    /**
+     * Try write lock with timeout, returning an indicator whether the lock was acquired or not.
+     */
+    public boolean tryWriteLock(long msec)
+    {
+        if (ThreadLogUtil.ENABLED_TRACE)
+        {
+            ThreadLogUtil.traceLock(TRY_TEXT + " write " + name, lock);
+        }
+
+        boolean result = false;
+        try
+        {
+            result = lock.writeLock().tryLock(msec, TimeUnit.MICROSECONDS);
+        }
+        catch (InterruptedException ex)
+        {
+        }
+
+        if (ThreadLogUtil.ENABLED_TRACE)
+        {
+            ThreadLogUtil.traceLock(TRY_TEXT + " write " + name + " : " + result, lock);
+        }
+
+        return result;
     }
 
     /**

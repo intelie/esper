@@ -55,7 +55,7 @@ public class TestJMSSpringInputAdapter extends TestCase
         assertEquals("x2", listener.assertOneGetNewAndReset().get("string"));
 
         EPServiceProviderSPI spi = (EPServiceProviderSPI) service;
-        AdapterLoader loader = (AdapterLoader) spi.getEnvContext().lookup("adapter-loader/MyLoader");
+        AdapterLoader loader = (AdapterLoader) spi.getContext().lookup("adapter-loader/MyLoader");
         loader.destroy();
     }
 

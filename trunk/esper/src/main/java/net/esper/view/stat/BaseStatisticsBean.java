@@ -4,12 +4,14 @@ import net.esper.view.ViewProcessingException;
 import net.esper.client.EPException;
 import net.esper.util.MetaDefItem;
 
+import java.io.Serializable;
+
 /**
  * Bean for performing statistical calculations. The bean keeps sums of X and Y datapoints and sums on squares
  * that can be reused by subclasses. The bean calculates standard deviation (sample and population), variance,
  * average and sum.
   */
-public class BaseStatisticsBean implements Cloneable
+public class BaseStatisticsBean implements Cloneable, Serializable
 {
     private double sumX;
     private double sumXSq;

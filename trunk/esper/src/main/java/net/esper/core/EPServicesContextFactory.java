@@ -8,6 +8,7 @@
 package net.esper.core;
 
 import net.esper.client.EPServiceProvider;
+import net.esper.client.ConfigurationInformation;
 
 /**
  * Interface for a factory class to provide services in a services context for an engine instance.
@@ -20,5 +21,5 @@ public interface EPServicesContextFactory
      * @param configurationSnapshot is a snapshot of configs at the time of engine creation
      * @return services context
      */
-    public EPServicesContext createServicesContext(EPServiceProvider epServiceProvider, ConfigurationSnapshot configurationSnapshot);    
+    public EPServicesContext createServicesContext(EPServiceProvider epServiceProvider, ConfigurationInformation configurationSnapshot);    
 }

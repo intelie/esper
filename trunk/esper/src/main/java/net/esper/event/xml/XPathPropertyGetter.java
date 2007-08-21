@@ -36,9 +36,15 @@ public class XPathPropertyGetter implements TypedEventPropertyGetter {
 
 	public Object get(EventBean eventBean) throws PropertyAccessException {
 		Object und = eventBean.getUnderlying();
-		if (!(und instanceof Node))
-			throw new PropertyAccessException("XPathPropertyGetter only usable on org.w3c.dom.Node underlyns events");
-		try {
+        if (und == null)
+        {
+            throw new PropertyAccessException("Unexpected null underlying event encountered, expecting org.w3c.dom.Node instance as underlying");
+        }
+        if (!(und instanceof Node))
+        {
+            throw new PropertyAccessException("Unexpected underlying event of type '" + und.getClass() + "' encountered, expecting org.w3c.dom.Node as underlying");
+        }
+        try {
             Object result = expression.evaluate(und,resultType);
             return result;
 		}
@@ -48,11 +54,11 @@ public class XPathPropertyGetter implements TypedEventPropertyGetter {
 	}
 
 	public Class getResultClass() {
-		if (resultType == XPathConstants.BOOLEAN)
+		if (resultType.equals(XPathConstants.BOOLEAN))
 			return Boolean.class;
-		if (resultType == XPathConstants.NUMBER)
+		if (resultType.equals(XPathConstants.NUMBER))
 			return Double.class;
-		if (resultType == XPathConstants.STRING)
+		if (resultType.equals(XPathConstants.STRING))
 			return String.class;
 		
 		return String.class;

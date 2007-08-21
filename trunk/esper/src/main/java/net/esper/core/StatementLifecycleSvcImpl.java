@@ -38,7 +38,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
 
     private final Map<String, String> stmtNameToIdMap;
     protected final Map<String, EPStatementDesc> stmtIdToDescMap;
-    private final Map<String, EPStatement> stmtNameToStmtMap;
+    protected final Map<String, EPStatement> stmtNameToStmtMap;
     private final RefCountedMap<String, ManagedLock> insertIntoStreams;
 
     public void init()
@@ -555,7 +555,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
         return finalStatementName;
     }
 
-    public void updatedListeners(String statementId, EPStatementListenerSet listeners)
+    public void updatedListeners(String statementId, String statementName, EPStatementListenerSet listeners)
     {
         log.debug(".updatedListeners No action for base implementation");
     }

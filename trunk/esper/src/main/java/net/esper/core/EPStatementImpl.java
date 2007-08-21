@@ -191,7 +191,7 @@ public class EPStatementImpl implements EPStatementSPI
         }
 
         statementListenerSet.addListener(listener);
-        statementLifecycleSvc.updatedListeners(statementId, statementListenerSet);
+        statementLifecycleSvc.updatedListeners(statementId, statementName, statementListenerSet);
     }
 
     /**
@@ -206,7 +206,7 @@ public class EPStatementImpl implements EPStatementSPI
         }
 
         statementListenerSet.removeListener(listener);
-        statementLifecycleSvc.updatedListeners(statementId, statementListenerSet);
+        statementLifecycleSvc.updatedListeners(statementId, statementName, statementListenerSet);
     }
 
     /**
@@ -215,7 +215,7 @@ public class EPStatementImpl implements EPStatementSPI
     public void removeAllListeners()
     {
         statementListenerSet.removeAllListeners();
-        statementLifecycleSvc.updatedListeners(statementId, statementListenerSet);
+        statementLifecycleSvc.updatedListeners(statementId, statementName, statementListenerSet);
     }
 
     public void addListener(StatementAwareUpdateListener listener)
@@ -226,7 +226,7 @@ public class EPStatementImpl implements EPStatementSPI
         }
 
         statementListenerSet.addListener(listener);
-        statementLifecycleSvc.updatedListeners(statementId, statementListenerSet);
+        statementLifecycleSvc.updatedListeners(statementId, statementName, statementListenerSet);
     }
 
     public void removeListener(StatementAwareUpdateListener listener)
@@ -237,7 +237,7 @@ public class EPStatementImpl implements EPStatementSPI
         }
 
         statementListenerSet.removeListener(listener);
-        statementLifecycleSvc.updatedListeners(statementId, statementListenerSet);
+        statementLifecycleSvc.updatedListeners(statementId, statementName, statementListenerSet);
     }
 
     public Iterator<StatementAwareUpdateListener> getStatementAwareListeners()

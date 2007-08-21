@@ -6,6 +6,7 @@ import net.esper.client.Configuration;
 import net.esper.event.xml.SchemaXMLEventType;
 import net.esper.event.xml.SimpleXMLEventType;
 import net.esper.event.xml.XMLEventBean;
+import net.esper.event.xml.BaseXMLEventType;
 import net.esper.util.UuidGenerator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -243,6 +244,24 @@ public class EventAdapterServiceImpl implements EventAdapterService
         {
             throw new EventAdapterException("Required root element name has not been supplied");
         }
+
+        EventType existingType = aliasToTypeMap.get(eventTypeAlias);
+        if (existingType != null)
+        {
+            String message = "Event type named '" + eventTypeAlias + "' has already been declared with differing column name or type information";
+            if (!(existingType instanceof BaseXMLEventType))
+            {
+                throw new EventAdapterException(message);
+            }
+            ConfigurationEventTypeXMLDOM config = ((BaseXMLEventType) existingType).getConfigurationEventTypeXMLDOM();
+            if (!config.equals(configurationEventTypeXMLDOM))
+            {
+                throw new EventAdapterException(message);
+            }
+
+            return existingType;
+        }
+
         EventType type;
         if (configurationEventTypeXMLDOM.getSchemaResource() == null)
         {
@@ -251,20 +270,6 @@ public class EventAdapterServiceImpl implements EventAdapterService
         else
         {
             type = new SchemaXMLEventType(configurationEventTypeXMLDOM);
-        }
-
-        EventType existingType = aliasToTypeMap.get(eventTypeAlias);
-        if (existingType != null)
-        {
-            // The existing type must be the same as the type createdStatement
-            if (!type.equals(existingType))
-            {
-                throw new EventAdapterException("Event type named '" + eventTypeAlias +
-                        "' has already been declared with differing column name or type information");
-            }
-
-            // Since it's the same, return the existing type
-            return existingType;
         }
 
         aliasToTypeMap.put(eventTypeAlias, type);

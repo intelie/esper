@@ -1,9 +1,11 @@
 package net.esper.client;
 
+import java.io.Serializable;
+
 /**
  * Configuration information for plugging in a custom aggregation function.
  */
-public class ConfigurationPlugInAggregationFunction
+public class ConfigurationPlugInAggregationFunction implements Serializable
 {
     private String name;
     private String functionClassName;

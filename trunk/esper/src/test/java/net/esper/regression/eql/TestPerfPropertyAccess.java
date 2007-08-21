@@ -3,6 +3,7 @@ package net.esper.regression.eql;
 import net.esper.client.EPServiceProvider;
 import net.esper.client.EPStatement;
 import net.esper.client.EPServiceProviderManager;
+import net.esper.client.Configuration;
 import net.esper.support.bean.SupportMarketDataBean;
 import net.esper.support.bean.SupportBean;
 import net.esper.support.bean.SupportBeanCombinedProps;
@@ -19,7 +20,7 @@ public class TestPerfPropertyAccess extends TestCase
 
     public void setUp()
     {
-        epService = EPServiceProviderManager.getDefaultProvider();
+        epService = EPServiceProviderManager.getDefaultProvider(new Configuration());
         epService.initialize();
         updateListener = new SupportUpdateListener();
     }

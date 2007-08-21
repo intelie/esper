@@ -28,7 +28,7 @@ public final class StatementContext
     private final EPStatementHandle epStatementHandle;
     private final ViewResolutionService viewResolutionService;
     private final PatternObjectResolutionService patternResolutionService;
-    private final ExtensionServicesContext extensionServicesContext;
+    private final StatementExtensionSvcContext statementExtensionSvcContext;
     private final StatementStopService statementStopService;
     private final MethodResolutionService methodResolutionService;
     private final PatternContextFactory patternContextFactory;
@@ -48,7 +48,7 @@ public final class StatementContext
      * @param eventAdapterService service for generating events and handling event types
      * @param epStatementHandle is the statements-own handle for use in registering callbacks with services
      * @param viewResultionService is a service for resolving view namespace and name to a view factory
-     * @param extensionServicesContext provide extension points for custom statement resources
+     * @param statementExtensionSvcContext provide extension points for custom statement resources
      * @param statementStopService for registering a callback invoked when a statement is stopped
      * @param methodResolutionService is a service for resolving static methods and aggregation functions
      * @param patternContextFactory is the pattern-level services and context information factory
@@ -68,7 +68,7 @@ public final class StatementContext
                               EPStatementHandle epStatementHandle,
                               ViewResolutionService viewResultionService,
                               PatternObjectResolutionService patternResolutionService,
-                              ExtensionServicesContext extensionServicesContext,
+                              StatementExtensionSvcContext statementExtensionSvcContext,
                               StatementStopService statementStopService,
                               MethodResolutionService methodResolutionService,
                               PatternContextFactory patternContextFactory,
@@ -87,7 +87,7 @@ public final class StatementContext
         this.epStatementHandle = epStatementHandle;
         this.viewResolutionService = viewResultionService;
         this.patternResolutionService = patternResolutionService;
-        this.extensionServicesContext = extensionServicesContext;
+        this.statementExtensionSvcContext = statementExtensionSvcContext;
         this.statementStopService = statementStopService;
         this.methodResolutionService = methodResolutionService;
         this.patternContextFactory = patternContextFactory;
@@ -160,12 +160,12 @@ public final class StatementContext
     }
 
     /**
-     * Returns extension context.
+     * Returns extension context for statements.
      * @return context
      */
-    public ExtensionServicesContext getExtensionServicesContext()
+    public StatementExtensionSvcContext getExtensionServicesContext()
     {
-        return extensionServicesContext;
+        return statementExtensionSvcContext;
     }
 
     /**

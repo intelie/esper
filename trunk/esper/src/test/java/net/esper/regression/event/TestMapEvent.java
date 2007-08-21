@@ -151,14 +151,13 @@ public class TestMapEvent extends TestCase
         assertEquals(4, listener.getLastNewData()[0].get("myInt"));
         assertEquals("string2", listener.getLastNewData()[0].get("myString"));
 
-        // send Map<String, String> event, works too since not querying the fields
-        Map<String, String> mapStrings = new HashMap<String, String>();
-        mapStrings.put("myInt", "5");
+        Map<String, Object> mapStrings = new HashMap<String, Object>();
+        mapStrings.put("myInt", 5);
         mapStrings.put("myString", "string3");
         epService.getEPRuntime().sendEvent(mapStrings, "myMapEvent");
 
         assertTrue(listener.getAndClearIsInvoked());
-        assertEquals("5", listener.getLastNewData()[0].get("myInt"));
+        assertEquals(5, listener.getLastNewData()[0].get("myInt"));
         assertEquals("string3", listener.getLastNewData()[0].get("myString"));
     }
 
