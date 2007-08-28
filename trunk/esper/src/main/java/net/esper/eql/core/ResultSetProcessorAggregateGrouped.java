@@ -31,7 +31,7 @@ import org.apache.commons.logging.LogFactory;
  * This processor does perform grouping by computing MultiKey group-by keys for each row.
  * The processor generates one row for each event entering (new event) and one row for each event leaving (old event).
  * <p>
- * Aggregation state is a table of rows held by ${AggregationService} where the row key is the group-by MultiKey.
+ * Aggregation state is a table of rows held by {@link AggregationService} where the row key is the group-by MultiKey.
  */
 public class ResultSetProcessorAggregateGrouped implements ResultSetProcessor
 {

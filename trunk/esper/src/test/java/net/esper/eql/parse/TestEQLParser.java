@@ -416,6 +416,16 @@ public class TestEQLParser extends TestCase implements EqlTokenTypes
         assertIsValid("select c from A where b in (select * from C)");
         assertIsValid("select c from A where b not in (select b from C)");
         assertIsValid("select c from A where q*9 not in (select g*5 from C.win:length(100)) and r=6");
+
+        // properties with optional fields
+        /*
+        assertIsValid("select b.c.d? from E");
+        assertIsValid("select b.c.d?.e? from E");
+        assertIsValid("select b? from E");
+        assertIsValid("select b? as myevent from E");
+        assertIsValid("select * from pattern [every OrderEvent(item.name?)]");
+        assertIsValid("select * from pattern [every OrderEvent(item?.parent.name?='foo')]");
+        */
     }
 
     public void testBitWiseCases() throws Exception

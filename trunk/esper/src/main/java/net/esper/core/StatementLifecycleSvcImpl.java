@@ -33,7 +33,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
     private static Log log = LogFactory.getLog(StatementLifecycleSvcImpl.class);
 
     private final EPServiceProvider epServiceProvider;
-    private final EPServicesContext services;
+    protected final EPServicesContext services;
     private final ManagedReadWriteLock eventProcessingRWLock;
 
     private final Map<String, String> stmtNameToIdMap;

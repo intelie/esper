@@ -85,7 +85,7 @@ public class ManagedReadWriteLock
         boolean result = false;
         try
         {
-            result = lock.writeLock().tryLock(msec, TimeUnit.MICROSECONDS);
+            result = lock.writeLock().tryLock(msec, TimeUnit.MILLISECONDS);
         }
         catch (InterruptedException ex)
         {
