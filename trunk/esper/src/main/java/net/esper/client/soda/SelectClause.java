@@ -1,10 +1,9 @@
 package net.esper.client.soda;
 
-import net.esper.util.MetaDefItem;
-
+import java.io.Serializable;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
-import java.io.Serializable;
 
 public class SelectClause implements Serializable
 {
@@ -42,20 +41,30 @@ public class SelectClause implements Serializable
     public SelectClause(String propertyName)
     {
         this(false);
+        selectList.add(new SelectClauseElement(new PropertyValueExpression(propertyName)));
     }
 
     public SelectClause(String ...propertyNames)
     {
         this(false);
+        for (String name : propertyNames)
+        {
+            selectList.add(new SelectClauseElement(new PropertyValueExpression(name)));
+        }
     }
 
     public SelectClause add(String propertyName)
     {
+        selectList.add(new SelectClauseElement(new PropertyValueExpression(propertyName)));
         return this;
     }
 
-    public SelectClause add(String propertyName, String asName)
+    public SelectClause add(String ...propertyNames)
     {
+        for (String name : propertyNames)
+        {
+            selectList.add(new SelectClauseElement(new PropertyValueExpression(name)));
+        }
         return this;
     }
 
@@ -104,5 +113,34 @@ public class SelectClause implements Serializable
     public void add(SelectClause selectClause)
     {
         // todo
+    }
+
+    public void toEQL(StringWriter writer)
+    {
+        writer.write("select ");
+
+        if (streamSelector == StreamSelector.ISTREAM_ONLY)
+        {
+            writer.write("istream ");
+        }
+        else if (streamSelector == StreamSelector.RSTREAM_ONLY)
+        {
+            writer.write("rstream ");
+        }
+
+        String delimiter = "";
+        if (isWildcard)
+        {
+            writer.write("*");
+            delimiter = ", ";
+        }
+
+        for (SelectClauseElement element : selectList)
+        {
+            writer.write(delimiter);
+            element.toEQL(writer);
+            delimiter = ", ";
+        }
+        writer.write(' ');
     }
 }

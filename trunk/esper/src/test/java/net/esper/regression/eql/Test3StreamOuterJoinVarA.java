@@ -1,16 +1,20 @@
 package net.esper.regression.eql;
 
 import junit.framework.TestCase;
- import net.esper.client.EPServiceProvider;
+import net.esper.client.EPServiceProvider;
 import net.esper.client.EPServiceProviderManager;
 import net.esper.client.EPStatement;
+import net.esper.client.soda.*;
 import net.esper.client.time.TimerControlEvent;
-import net.esper.support.bean.*;
-import net.esper.support.util.SupportUpdateListener;
+import net.esper.event.EventBean;
+import net.esper.support.bean.SupportBean_S0;
+import net.esper.support.bean.SupportBean_S1;
+import net.esper.support.bean.SupportBean_S2;
+import net.esper.support.client.SupportConfigFactory;
 import net.esper.support.util.ArrayAssertionUtil;
 import net.esper.support.util.ArrayHandlingUtil;
-import net.esper.support.client.SupportConfigFactory;
-import net.esper.event.EventBean;
+import net.esper.support.util.SupportUpdateListener;
+import net.esper.type.OuterJoinType;
 
 public class Test3StreamOuterJoinVarA extends TestCase
 {
@@ -28,6 +32,41 @@ public class Test3StreamOuterJoinVarA extends TestCase
         epService.getEPRuntime().sendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));        
         epService.initialize();
         updateListener = new SupportUpdateListener();
+    }
+
+    public void testLeftOuterJoin_root_s0_OM()
+    {
+        EPStatementObjectModel model = new EPStatementObjectModel();
+        model.setSelectClause(SelectClause.createWildcard());
+        FromClause fromClause = FromClause.create(
+                FilterStream.create(EVENT_S0, "s0"),
+                FilterStream.create(EVENT_S1, "s1"),
+                FilterStream.create(EVENT_S2, "s2"));
+        fromClause.add(OuterJoinQualifier.create("s0.p00", OuterJoinType.LEFT, "s1.p10"));
+        fromClause.add(OuterJoinQualifier.create("s0.p00", OuterJoinType.LEFT, "s2.p20"));
+        model.setFromClause(fromClause);
+
+        assertEquals("select * from net.esper.support.bean.SupportBean_S0 as s0 left outer join net.esper.support.bean.SupportBean_S1 as s1 on s0.p00 = s1.p10 left outer join net.esper.support.bean.SupportBean_S2 as s2 on s0.p00 = s2.p20", model.toEQL());
+        joinView = epService.getEPAdministrator().create(model);
+        joinView.addListener(updateListener);
+
+        runAsserts();
+    }
+
+    public void testLeftOuterJoin_root_s0_Compiled()
+    {
+        String joinStatement = "select * from " +
+                                  EVENT_S0 + ".win:length(1000) as s0 " +
+            "left outer join " + EVENT_S1 + ".win:length(1000) as s1 on s0.p00 = s1.p10 " +
+            "left outer join " + EVENT_S2 + ".win:length(1000) as s2 on s0.p00 = s2.p20";
+
+        EPStatementObjectModel model = epService.getEPAdministrator().compile(joinStatement);
+        joinView = epService.getEPAdministrator().create(model);
+        joinView.addListener(updateListener);
+
+        assertEquals(joinStatement, model.toEQL());
+
+        runAsserts();
     }
 
     public void testLeftOuterJoin_root_s0()

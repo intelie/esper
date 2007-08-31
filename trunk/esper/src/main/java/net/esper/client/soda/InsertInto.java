@@ -1,11 +1,10 @@
 package net.esper.client.soda;
 
-import net.esper.util.MetaDefItem;
-
-import java.util.List;
+import java.io.Serializable;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.io.Serializable;
+import java.util.List;
 
 public class InsertInto implements Serializable
 {
@@ -29,7 +28,7 @@ public class InsertInto implements Serializable
         {
             throw new IllegalArgumentException("Insert into only allows istream or rstream selection, not both");
         }
-        return new InsertInto(streamName, Arrays.asList(columns), streamSelector == StreamSelector.ISTREAM_ONLY);
+        return new InsertInto(streamName, Arrays.asList(columns), streamSelector != StreamSelector.RSTREAM_ONLY);
     }
 
     public InsertInto(String streamName)
@@ -87,5 +86,32 @@ public class InsertInto implements Serializable
     public void add(String columnName)
     {
         columnNames.add(columnName);
+    }
+
+
+    public void toEQL(StringWriter writer)
+    {
+        writer.write("insert ");
+        if (!isIStream)
+        {
+            writer.write("rstream ");
+        }
+
+        writer.write("into ");
+        writer.write(streamName);
+
+        if (columnNames.size() > 0)
+        {
+            writer.write("(");
+            String delimiter = "";
+            for (String name : columnNames)
+            {
+                writer.write(delimiter);
+                writer.write(name);
+                delimiter = ", ";
+            }
+            writer.write(")");
+        }
+        writer.write(' ');
     }
 }

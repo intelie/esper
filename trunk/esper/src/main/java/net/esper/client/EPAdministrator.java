@@ -7,6 +7,8 @@
  **************************************************************************************/
 package net.esper.client;
 
+import net.esper.client.soda.EPStatementObjectModel;
+
 /**
  * Administrative interface to the event stream processing engine. Includes methods to create patterns and EQL statements.
  */
@@ -55,6 +57,20 @@ public interface EPAdministrator
      * @throws EPException when the expression was not valid
      */
     public EPStatement createEQL(String eqlStatement, String statementName) throws EPException;
+
+    /**
+     * Creates and starts an EQL statement.
+     * <p>
+     * The statement name is optimally a unique name. If a statement of the same name
+     * has already been created, the engine assigns a postfix to create a unique statement name.
+     * @param sodaStatement is the statement object model
+     * @param statementName is the name to assign to the statement for use in managing the statement
+     * @return EPStatement to poll data from or to add listeners to
+     * @throws EPException when the expression was not valid
+     */
+    public EPStatement create(EPStatementObjectModel sodaStatement, String statementName) throws EPException;
+    public EPStatement create(EPStatementObjectModel sodaStatement) throws EPException;
+    public EPStatementObjectModel compile(String eqlExpression) throws EPException;
 
     /**
      * Returns the statement by the given statement name. Returns null if a statement of that name has not

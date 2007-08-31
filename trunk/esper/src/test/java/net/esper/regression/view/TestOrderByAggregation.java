@@ -728,8 +728,6 @@ public class TestOrderByAggregation extends TestCase {
 	    volumes = new LinkedList<Long>();
 	}
 
-
-
 	private void orderValuesBySumPriceGroup()
 	{
 		symbols.add(0, "CMU");

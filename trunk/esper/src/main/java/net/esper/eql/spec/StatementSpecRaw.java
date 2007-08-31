@@ -12,6 +12,7 @@ import net.esper.util.MetaDefItem;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.io.StringWriter;
 
 /**
  * Specification object representing a complete EQL statement including all EQL constructs.
@@ -162,4 +163,9 @@ public class StatementSpecRaw implements MetaDefItem
     {
         this.selectStreamDirEnum = selectStreamDirEnum;
     }
+
+    public void setSelectClauseSpec(SelectClauseSpec selectClauseSpec)
+    {
+        this.selectClauseSpec = selectClauseSpec;
+    }    
 }

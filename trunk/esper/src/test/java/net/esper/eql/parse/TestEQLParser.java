@@ -426,6 +426,12 @@ public class TestEQLParser extends TestCase implements EqlTokenTypes
         assertIsValid("select * from pattern [every OrderEvent(item.name?)]");
         assertIsValid("select * from pattern [every OrderEvent(item?.parent.name?='foo')]");
         */
+
+        // Allow comments in EQL and patterns
+        assertIsValid("select b.c.d? /* some comment */ from E");
+        assertIsValid("select b /* ajajaj */ .c.d? /* some comment */ from E");
+        assertIsValid("select * from pattern [ /* filter */ every A() -> B() /* for B */]");
+        assertIsValid("select * from pattern [ \n// comment\nevery A() -> B() // same line\n]");
     }
 
     public void testBitWiseCases() throws Exception

@@ -2,6 +2,7 @@ package net.esper.regression.db;
 
 import junit.framework.TestCase;
 import net.esper.client.*;
+import net.esper.client.soda.*;
 import net.esper.client.time.TimerControlEvent;
 import net.esper.client.time.CurrentTimeEvent;
 import net.esper.support.bean.SupportBean_S0;
@@ -42,13 +43,48 @@ public class TestDatabaseJoin extends TestCase
         epService.getEPRuntime().sendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
     }
 
-    public void testTimeBatch()
+    public void testTimeBatchEQL()
+    {
+        String stmtText = "select " + ALL_FIELDS + " from " +
+                " sql:MyDB ['select " + ALL_FIELDS + " from mytesttable where ${intPrimitive} = mytesttable.mybigint'] as s0," +
+                SupportBean.class.getName() + ".win:time_batch(10 sec) as s1";
+        EPStatement stmt = epService.getEPAdministrator().createEQL(stmtText);
+        runtestTimeBatch(stmt);
+    }
+
+    public void testTimeBatchOM()
+    {
+        String[] fields = ALL_FIELDS.split(",");
+        String sql = "select " + ALL_FIELDS + " from mytesttable where ${intPrimitive} = mytesttable.mybigint";
+
+        EPStatementObjectModel model = new EPStatementObjectModel();
+        model.setSelectClause(SelectClause.create(fields));
+        FromClause fromClause = FromClause.create(
+                SQLStream.create("MyDB", sql, "s0"),
+                FilterStream.create(SupportBean.class.getName(), "s1").addView(View.create("win", "time_batch", 10)
+                ));
+        model.setFromClause(fromClause);
+
+        assertEquals("select mybigint, myint, myvarchar, mychar, mybool, mynumeric, mydecimal, mydouble, myreal from sql:MyDB[select mybigint, myint, myvarchar, mychar, mybool, mynumeric, mydecimal, mydouble, myreal from mytesttable where ${intPrimitive} = mytesttable.mybigint] s0, net.esper.support.bean.SupportBean.win:time_batch(10) s1",
+                model.toEQL());
+
+        EPStatement stmt = epService.getEPAdministrator().create(model);
+        runtestTimeBatch(stmt);
+    }
+
+    public void testTimeBatchCompile()
     {
         String stmtText = "select " + ALL_FIELDS + " from " +
                 " sql:MyDB ['select " + ALL_FIELDS + " from mytesttable where ${intPrimitive} = mytesttable.mybigint'] as s0," +
                 SupportBean.class.getName() + ".win:time_batch(10 sec) as s1";
 
-        EPStatement statement = epService.getEPAdministrator().createEQL(stmtText);
+        EPStatementObjectModel model = epService.getEPAdministrator().compile(stmtText);
+        EPStatement stmt = epService.getEPAdministrator().create(model);
+        runtestTimeBatch(stmt);
+    }
+
+    private void runtestTimeBatch(EPStatement statement)
+    {
         listener = new SupportUpdateListener();
         statement.addListener(listener);
 

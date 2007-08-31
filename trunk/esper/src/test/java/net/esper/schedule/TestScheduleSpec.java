@@ -7,6 +7,8 @@ import org.apache.commons.logging.LogFactory;
 
 import java.util.*;
 
+import net.esper.type.ScheduleUnit;
+
 public class TestScheduleSpec extends TestCase
 {
     public void testValidate()

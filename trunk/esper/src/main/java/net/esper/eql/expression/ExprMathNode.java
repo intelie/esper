@@ -120,4 +120,9 @@ public class ExprMathNode extends ExprNode
 
         return true;
     }
+
+    public MathArithTypeEnum getMathArithTypeEnum()
+    {
+        return mathArithTypeEnum;
+    }
 }

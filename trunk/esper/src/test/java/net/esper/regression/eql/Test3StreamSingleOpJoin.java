@@ -4,11 +4,12 @@ import junit.framework.TestCase;
 import net.esper.client.EPServiceProvider;
 import net.esper.client.EPServiceProviderManager;
 import net.esper.client.EPStatement;
+import net.esper.client.soda.*;
 import net.esper.support.bean.SupportBean_A;
 import net.esper.support.bean.SupportBean_B;
 import net.esper.support.bean.SupportBean_C;
-import net.esper.support.util.SupportUpdateListener;
 import net.esper.support.client.SupportConfigFactory;
+import net.esper.support.util.SupportUpdateListener;
 
 public class Test3StreamSingleOpJoin extends TestCase
 {
@@ -20,26 +21,15 @@ public class Test3StreamSingleOpJoin extends TestCase
     private SupportBean_B eventsB[] = new SupportBean_B[10];
     private SupportBean_C eventsC[] = new SupportBean_C[10];
 
+    private String eventA = SupportBean_A.class.getName();
+    private String eventB = SupportBean_B.class.getName();
+    private String eventC = SupportBean_C.class.getName();
+
     public void setUp()
     {
         epService = EPServiceProviderManager.getDefaultProvider(SupportConfigFactory.getConfiguration());
         epService.initialize();
         updateListener = new SupportUpdateListener();
-
-        String eventA = SupportBean_A.class.getName();
-        String eventB = SupportBean_B.class.getName();
-        String eventC = SupportBean_C.class.getName();
-
-        String joinStatement = "select * from " +
-            eventA + ".win:length(3) as streamA," +
-            eventB + ".win:length(3) as streamB," +
-            eventC + ".win:length(3) as streamC" +
-            " where streamA.id = streamB.id " +
-            "   and streamB.id = streamC.id" +
-            "   and streamA.id = streamC.id";
-
-        joinView = epService.getEPAdministrator().createEQL(joinStatement);
-        joinView.addListener(updateListener);
 
         for (int i = 0; i < eventsA.length; i++)
         {
@@ -48,8 +38,71 @@ public class Test3StreamSingleOpJoin extends TestCase
             eventsC[i] = new SupportBean_C(Integer.toString(i));
         }
     }
-
+    
     public void testJoinUniquePerId()
+    {
+        String joinStatement = "select * from " +
+            eventA + ".win:length(3) as streamA," +
+            eventB + ".win:length(3) as streamB," +
+            eventC + ".win:length(3) as streamC" +
+            " where (streamA.id = streamB.id) " +
+            "   and (streamB.id = streamC.id)" +
+            "   and (streamA.id = streamC.id)";
+
+        joinView = epService.getEPAdministrator().createEQL(joinStatement);
+        joinView.addListener(updateListener);
+
+        runJoinUniquePerId();
+    }
+
+    public void testJoinUniquePerIdOM()
+    {
+        EPStatementObjectModel model = new EPStatementObjectModel();
+        model.setSelectClause(SelectClause.createWildcard());
+        FromClause fromClause = FromClause.create(
+                FilterStream.create(eventA, "streamA").addView(View.create("win", "length", 3)),
+                FilterStream.create(eventB, "streamB").addView(View.create("win", "length", 3)),
+                FilterStream.create(eventC, "streamC").addView(View.create("win", "length", 3)));
+        model.setFromClause(fromClause);
+        model.setWhereClause(Expressions.and(
+                Expressions.eqProperty("streamA.id", "streamB.id"),
+                Expressions.eqProperty("streamB.id", "streamC.id"),
+                Expressions.eqProperty("streamA.id", "streamC.id")));
+
+        String joinStatement = "select * from " +
+            eventA + ".win:length(3) as streamA, " +
+            eventB + ".win:length(3) as streamB, " +
+            eventC + ".win:length(3) as streamC " +
+            "where (streamA.id = streamB.id) " +
+            "and (streamB.id = streamC.id) " +
+            "and (streamA.id = streamC.id)";
+
+        joinView = epService.getEPAdministrator().create(model);
+        joinView.addListener(updateListener);
+        assertEquals(joinStatement, model.toEQL());
+
+        runJoinUniquePerId();
+    }
+
+    public void testJoinUniquePerIdCompile()
+    {
+        String joinStatement = "select * from " +
+            eventA + ".win:length(3) as streamA, " +
+            eventB + ".win:length(3) as streamB, " +
+            eventC + ".win:length(3) as streamC " +
+            "where (streamA.id = streamB.id) " +
+            "and (streamB.id = streamC.id) " +
+            "and (streamA.id = streamC.id)";
+
+        EPStatementObjectModel model = epService.getEPAdministrator().compile(joinStatement);
+        joinView = epService.getEPAdministrator().create(model);
+        joinView.addListener(updateListener);
+        assertEquals(joinStatement, model.toEQL());
+
+        runJoinUniquePerId();
+    }
+
+    private void runJoinUniquePerId()
     {
         // Test sending a C event
         sendEvent(eventsA[0]);

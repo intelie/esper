@@ -3,6 +3,7 @@ package net.esper.client.soda;
 import net.esper.util.MetaDefItem;
 
 import java.io.Serializable;
+import java.io.StringWriter;
 
 public class SelectClauseElement implements Serializable
 {
@@ -38,5 +39,15 @@ public class SelectClauseElement implements Serializable
     public void setOptionalAsName(String optionalAsName)
     {
         this.optionalAsName = optionalAsName;
+    }
+
+    public void toEQL(StringWriter writer)
+    {
+        expression.toEQL(writer);
+        if (optionalAsName != null)
+        {
+            writer.write(" as ");
+            writer.write(optionalAsName);
+        }
     }
 }

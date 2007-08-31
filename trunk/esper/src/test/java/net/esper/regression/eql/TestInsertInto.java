@@ -5,6 +5,7 @@ import net.esper.client.EPServiceProvider;
 import net.esper.client.EPServiceProviderManager;
 import net.esper.client.EPStatement;
 import net.esper.client.EPStatementException;
+import net.esper.client.soda.*;
 import net.esper.client.time.CurrentTimeEvent;
 import net.esper.client.time.TimerControlEvent;
 import net.esper.event.EventBean;
@@ -31,13 +32,62 @@ public class TestInsertInto extends TestCase
         epService.getEPRuntime().sendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
     }
 
+    public void testVariantRStreamOMToStmt()
+    {
+        EPStatementObjectModel model = new EPStatementObjectModel();
+        model.setInsertInto(InsertInto.create("Event_1", new String[0], StreamSelector.RSTREAM_ONLY));
+        model.setSelectClause(SelectClause.create().add("intPrimitive", "intBoxed"));
+        model.setFromClause(FromClause.create(FilterStream.create(SupportBean.class.getName())));
+
+        EPStatement stmt = epService.getEPAdministrator().create(model, "s1");
+
+        String eql = "insert rstream into Event_1 " +
+                      "select intPrimitive, intBoxed " +
+                      "from " + SupportBean.class.getName();
+        assertEquals(eql, model.toEQL());
+        assertEquals(eql, stmt.getText());
+
+        EPStatementObjectModel modelTwo = epService.getEPAdministrator().compile(model.toEQL());
+        assertEquals(eql, modelTwo.toEQL());
+    }
+
+    public void testVariantOneOMToStmt()
+    {
+        EPStatementObjectModel model = new EPStatementObjectModel();
+        model.setInsertInto(InsertInto.create("Event_1", "delta", "product"));
+        model.setSelectClause(SelectClause.create().add(Expressions.minus("intPrimitive", "intBoxed"), "deltaTag")
+                .add(Expressions.times("intPrimitive", "intBoxed"), "productTag"));
+        model.setFromClause(FromClause.create(FilterStream.create(SupportBean.class.getName()).addView(View.create("win", "length", 100))));
+        
+        EPStatement stmt = runAsserts(null, model);
+
+        String eql = "insert into Event_1(delta, product) " +
+                      "select (intPrimitive - intBoxed) as deltaTag, (intPrimitive * intBoxed) as productTag " +
+                      "from " + SupportBean.class.getName() + ".win:length(100)";
+        assertEquals(eql, model.toEQL());
+        assertEquals(eql, stmt.getText());
+    }
+
+    public void testVariantOneEQLToOMStmt()
+    {
+        String eql = "insert into Event_1(delta, product) " +
+                      "select (intPrimitive - intBoxed) as deltaTag, (intPrimitive * intBoxed) as productTag " +
+                      "from " + SupportBean.class.getName() + ".win:length(100)";
+
+        EPStatementObjectModel model = epService.getEPAdministrator().compile(eql);
+        assertEquals(eql, model.toEQL());
+
+        EPStatement stmt = runAsserts(null, model);
+        assertEquals(eql, stmt.getText());
+    }
+
     public void testVariantOne()
     {
         String stmtText = "insert into Event_1 (delta, product) " +
                       "select intPrimitive - intBoxed as deltaTag, intPrimitive * intBoxed as productTag " +
                       "from " + SupportBean.class.getName() + ".win:length(100)";
 
-        runAsserts(stmtText);
+        runAsserts(stmtText, null);
     }
     
     public void testVariantOneWildcard()
@@ -63,7 +113,7 @@ public class TestInsertInto extends TestCase
                                 SupportBean_A.class.getName() + ".win:length(100) as s1 " +
                       " where s0.string = s1.id";
 
-        runAsserts(stmtText);
+        runAsserts(stmtText, null);
     }
     
     public void testVariantOneJoinWildcard()
@@ -90,7 +140,7 @@ public class TestInsertInto extends TestCase
                       "select intPrimitive - intBoxed as delta, intPrimitive * intBoxed as product " +
                       "from " + SupportBean.class.getName() + ".win:length(100)";
 
-        runAsserts(stmtText);
+        runAsserts(stmtText, null);
     }
     
     public void testVariantTwoWildcard() throws InterruptedException
@@ -130,7 +180,7 @@ public class TestInsertInto extends TestCase
                                   SupportBean_A.class.getName() + ".win:length(100) as s1 " +
                         " where s0.string = s1.id";
 
-        runAsserts(stmtText);
+        runAsserts(stmtText, null);
     }
     
     public void testVariantTwoJoinWildcard()
@@ -356,10 +406,18 @@ public class TestInsertInto extends TestCase
     	epService.getEPRuntime().sendEvent(new SupportBeanSimple(string, val));
     }
 
-    private void runAsserts(String stmtText)
+    private EPStatement runAsserts(String stmtText, EPStatementObjectModel model)
     {
         // Attach listener to feed
-        EPStatement stmt = epService.getEPAdministrator().createEQL(stmtText);
+        EPStatement stmt = null;
+        if (model != null)
+        {
+            stmt = epService.getEPAdministrator().create(model, "s1");
+        }
+        else
+        {
+            stmt = epService.getEPAdministrator().createEQL(stmtText);
+        }
         stmt.addListener(feedListener);
 
         // send event for joins to match on
@@ -368,14 +426,14 @@ public class TestInsertInto extends TestCase
         // Attach delta statement to statement and add listener
         stmtText = "select min(delta) as minD, max(delta) as maxD " +
                    "from Event_1.win:time(60)";
-        stmt = epService.getEPAdministrator().createEQL(stmtText);
-        stmt.addListener(resultListenerDelta);
+        EPStatement stmtTwo = epService.getEPAdministrator().createEQL(stmtText);
+        stmtTwo.addListener(resultListenerDelta);
 
         // Attach prodict statement to statement and add listener
         stmtText = "select min(product) as minP, max(product) as maxP " +
                    "from Event_1.win:time(60)";
-        stmt = epService.getEPAdministrator().createEQL(stmtText);
-        stmt.addListener(resultListenerProduct);
+        EPStatement stmtThree = epService.getEPAdministrator().createEQL(stmtText);
+        stmtThree.addListener(resultListenerProduct);
 
         epService.getEPRuntime().sendEvent(new CurrentTimeEvent(0)); // Set the time to 0 seconds
 
@@ -400,6 +458,8 @@ public class TestInsertInto extends TestCase
 
         epService.getEPRuntime().sendEvent(new CurrentTimeEvent(61 * 1000)); // Set the time to 61 seconds
         assertReceivedMinMax(12, 12, 13, 13);
+
+        return stmt;
     }
 
     private void assertReceivedMinMax(int minDelta, int maxDelta, int minProduct, int maxProduct)

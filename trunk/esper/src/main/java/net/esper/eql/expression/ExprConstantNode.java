@@ -37,6 +37,11 @@ public class ExprConstantNode extends ExprNode
         return true;
     }
 
+    public Object getValue()
+    {
+        return value;
+    }
+
     public Class getType() throws ExprValidationException
     {
         if (value == null)

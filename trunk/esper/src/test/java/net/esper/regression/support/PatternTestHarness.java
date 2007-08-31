@@ -1,22 +1,25 @@
 package net.esper.regression.support;
 
-import java.util.*;
-
 import junit.framework.TestCase;
-import net.esper.support.bean.SupportBeanConstants;
-import net.esper.support.util.SupportUpdateListener;
-import net.esper.support.client.SupportConfigFactory;
+import net.esper.client.EPRuntime;
+import net.esper.client.EPServiceProvider;
+import net.esper.client.EPServiceProviderManager;
+import net.esper.client.EPStatement;
+import net.esper.client.soda.EPStatementObjectModel;
+import net.esper.client.time.CurrentTimeEvent;
 import net.esper.client.time.TimerControlEvent;
 import net.esper.client.time.TimerEvent;
-import net.esper.client.time.CurrentTimeEvent;
-import net.esper.client.EPStatement;
-import net.esper.client.EPServiceProviderManager;
-import net.esper.client.EPServiceProvider;
-import net.esper.client.EPRuntime;
 import net.esper.event.EventBean;
 import net.esper.event.EventBeanUtility;
-import org.apache.commons.logging.LogFactory;
+import net.esper.support.bean.SupportBeanConstants;
+import net.esper.support.client.SupportConfigFactory;
+import net.esper.support.util.SupportUpdateListener;
 import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.Map;
 
 /**
  * Test harness for testing expressions and comparing received MatchedEventMap instances against against expected results.
@@ -73,6 +76,7 @@ public class PatternTestHarness implements SupportBeanConstants
         for (EventExpressionCase descriptor : caseList.getResults())
         {
             String expressionText = descriptor.getExpressionText();
+            EPStatementObjectModel model = descriptor.getObjectModel();
 
             EPStatement statement = null;
 
@@ -81,16 +85,35 @@ public class PatternTestHarness implements SupportBeanConstants
                 if (useEQL)
                 {
                     expressionText = "select * from pattern [" + expressionText + "]";
-                    statement = serviceProvider.getEPAdministrator().createEQL(expressionText);
+                    if (model != null)
+                    {
+                        statement = serviceProvider.getEPAdministrator().create(model);
+                    }
+                    else
+                    {
+                        statement = serviceProvider.getEPAdministrator().createEQL(expressionText);
+                    }
                 }
                 else
                 {
-                    statement = serviceProvider.getEPAdministrator().createPattern(expressionText);
+                    if (model != null)
+                    {
+                        statement = serviceProvider.getEPAdministrator().create(model);
+                    }
+                    else
+                    {
+                        statement = serviceProvider.getEPAdministrator().createPattern(expressionText);
+                    }
                 }
             }
             catch (Exception ex)
             {
-                log.fatal(".runTest Failed to create statement for pattern expression=" + expressionText, ex);
+                String text = expressionText;
+                if (model != null)
+                {
+                    text = "Model: " + model.toEQL();
+                }
+                log.fatal(".runTest Failed to create statement for pattern expression=" + text, ex);
                 TestCase.fail();
             }
 

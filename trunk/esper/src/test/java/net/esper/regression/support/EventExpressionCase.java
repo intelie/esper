@@ -1,11 +1,14 @@
 package net.esper.regression.support;
 
+import net.esper.client.soda.EPStatementObjectModel;
+
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 
 public class EventExpressionCase
 {
     private String expressionText;
+    private EPStatementObjectModel objectModel;
     private LinkedHashMap<String, LinkedList<EventDescriptor>> expectedResults;
 
     public EventExpressionCase(String expressionText)
@@ -14,9 +17,20 @@ public class EventExpressionCase
         this.expectedResults = new LinkedHashMap<String, LinkedList<EventDescriptor>>();
     }
 
+    public EventExpressionCase(EPStatementObjectModel objectModel)
+    {
+        this.objectModel = objectModel;
+        this.expectedResults = new LinkedHashMap<String, LinkedList<EventDescriptor>>();
+    }
+
     public String getExpressionText()
     {
         return expressionText;
+    }
+
+    public EPStatementObjectModel getObjectModel()
+    {
+        return objectModel;
     }
 
     public LinkedHashMap<String, LinkedList<EventDescriptor>> getExpectedResults()

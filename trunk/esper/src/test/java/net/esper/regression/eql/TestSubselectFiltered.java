@@ -5,6 +5,7 @@ import net.esper.client.Configuration;
 import net.esper.client.EPServiceProvider;
 import net.esper.client.EPServiceProviderManager;
 import net.esper.client.EPStatement;
+import net.esper.client.soda.*;
 import net.esper.client.time.TimerControlEvent;
 import net.esper.event.EventBean;
 import net.esper.event.EventType;
@@ -34,6 +35,47 @@ public class TestSubselectFiltered extends TestCase
 
         // Use external clocking for the test, reduces logging
         epService.getEPRuntime().sendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
+    }
+
+    public void testSameEventCompile()
+    {
+        String stmtText = "select (select * from S1.win:length(1000)) as events1 from S1";
+        EPStatementObjectModel subquery = epService.getEPAdministrator().compile(stmtText);
+        EPStatement stmt = epService.getEPAdministrator().create(subquery);
+        stmt.addListener(listener);
+
+        EventType type = stmt.getEventType();
+        assertEquals(SupportBean_S1.class, type.getPropertyType("events1"));
+
+        Object event = new SupportBean_S1(-1, "Y");
+        epService.getEPRuntime().sendEvent(event);
+        EventBean result = listener.assertOneGetNewAndReset();
+        assertSame(event, result.get("events1"));
+    }
+
+    public void testSameEventOM()
+    {
+        EPStatementObjectModel subquery = new EPStatementObjectModel();
+        subquery.setSelectClause(SelectClause.createWildcard());
+        subquery.setFromClause(FromClause.create(FilterStream.create("S1").addView(View.create("win", "length", 1000))));
+
+        EPStatementObjectModel model = new EPStatementObjectModel();
+        model.setFromClause(FromClause.create(FilterStream.create("S1")));
+        model.setSelectClause(SelectClause.create().add(Expressions.subquery(subquery), "events1"));
+
+        String stmtText = "select (select * from S1.win:length(1000)) as events1 from S1";
+        assertEquals(stmtText, model.toEQL());
+
+        EPStatement stmt = epService.getEPAdministrator().create(model);
+        stmt.addListener(listener);
+
+        EventType type = stmt.getEventType();
+        assertEquals(SupportBean_S1.class, type.getPropertyType("events1"));
+
+        Object event = new SupportBean_S1(-1, "Y");
+        epService.getEPRuntime().sendEvent(event);
+        EventBean result = listener.assertOneGetNewAndReset();
+        assertSame(event, result.get("events1"));
     }
 
     public void testSameEvent()

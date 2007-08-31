@@ -46,6 +46,27 @@ public enum RelationalOpEnum
         this.expressionText = expressionText;
     }
 
+    public static RelationalOpEnum parse(String op)
+    {
+        if (op.equals("<"))
+        {
+            return LT;
+        }
+        else if (op.equals(">"))
+        {
+            return GT;
+        }
+        else if ((op.equals(">=")) || op.equals("=>"))
+        {
+            return GE;
+        }
+        else if ((op.equals("<=")) || op.equals("=<"))
+        {
+            return LE;
+        }
+        else throw new IllegalArgumentException("Invalid relational operator '" + op + "'");
+    }
+
     static
     {
         computers = new HashMap<MultiKey<Object>, RelationalOpEnum.Computer>();

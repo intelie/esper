@@ -5,6 +5,7 @@ import net.esper.client.Configuration;
 import net.esper.client.EPServiceProvider;
 import net.esper.client.EPServiceProviderManager;
 import net.esper.client.EPStatement;
+import net.esper.client.soda.*;
 import net.esper.client.time.TimerControlEvent;
 import net.esper.support.bean.SupportBean_S0;
 import net.esper.support.bean.SupportBean_S1;
@@ -34,10 +35,45 @@ public class TestSubselectExists extends TestCase
     public void testExistsInSelect()
     {
         String stmtText = "select exists (select * from S1.win:length(1000)) as value from S0";
-
         EPStatement stmt = epService.getEPAdministrator().createEQL(stmtText);
         stmt.addListener(listener);
 
+        runTestExistsInSelect();
+    }
+
+    public void testExistsInSelectOM()
+    {
+        EPStatementObjectModel subquery = new EPStatementObjectModel();
+        subquery.setSelectClause(SelectClause.createWildcard());
+        subquery.setFromClause(FromClause.create(FilterStream.create("S1").addView(View.create("win", "length", 1000))));
+
+        EPStatementObjectModel model = new EPStatementObjectModel();
+        model.setFromClause(FromClause.create(FilterStream.create("S0")));
+        model.setSelectClause(SelectClause.create().add(Expressions.subqueryExists(subquery), "value"));
+
+        String stmtText = "select exists (select * from S1.win:length(1000)) as value from S0";
+        assertEquals(stmtText, model.toEQL());
+
+        EPStatement stmt = epService.getEPAdministrator().create(model);
+        stmt.addListener(listener);
+
+        runTestExistsInSelect();
+    }
+
+    public void testExistsInSelectCompile()
+    {
+        String stmtText = "select exists (select * from S1.win:length(1000)) as value from S0";
+        EPStatementObjectModel model = epService.getEPAdministrator().compile(stmtText);
+        assertEquals(stmtText, model.toEQL());
+
+        EPStatement stmt = epService.getEPAdministrator().create(model);
+        stmt.addListener(listener);
+
+        runTestExistsInSelect();
+    }
+
+    private void runTestExistsInSelect()
+    {
         epService.getEPRuntime().sendEvent(new SupportBean_S0(2));
         assertEquals(false, listener.assertOneGetNewAndReset().get("value"));
 

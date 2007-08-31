@@ -15,15 +15,27 @@ public enum OuterJoinType
     /**
      * Left outer join.
      */
-    LEFT,
+    LEFT ("left"),
 
     /**
      * Right outer join.
      */
-    RIGHT,
+    RIGHT ("right"),
 
     /**
      * Full outer join.
      */
-    FULL
+    FULL ("full");
+
+    private String text;
+
+    OuterJoinType(String text)
+    {
+        this.text = text;
+    }
+
+    public String getText()
+    {
+        return text;
+    }
 }

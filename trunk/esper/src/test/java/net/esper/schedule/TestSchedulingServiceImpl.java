@@ -2,6 +2,7 @@ package net.esper.schedule;
 
 import junit.framework.TestCase;
 import net.esper.support.schedule.SupportScheduleCallback;
+import net.esper.type.ScheduleUnit;
 
 import java.util.Calendar;
 import java.util.Collection;

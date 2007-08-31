@@ -4,6 +4,7 @@ import junit.framework.*;
 import java.util.Calendar;
 import net.esper.regression.support.*;
 import net.esper.support.bean.SupportBeanConstants;
+import net.esper.client.soda.*;
 
 public class TestTimerAtObserver extends TestCase implements SupportBeanConstants
 {
@@ -33,6 +34,15 @@ public class TestTimerAtObserver extends TestCase implements SupportBeanConstant
         EventCollection testData = EventCollectionFactory.getEventSetOne(startTime, 1000 * 60 * 10);
         CaseList testCaseList = new CaseList();
         EventExpressionCase testCase = null;
+
+        String text = "select * from pattern [timer:at(10, 8, *, *, *)]";
+        EPStatementObjectModel model = new EPStatementObjectModel();
+        model.setSelectClause(SelectClause.createWildcard());
+        PatternExpr pattern = Patterns.followedBy(
+                Patterns.filter(EVENT_B_CLASS, "b"),
+                Patterns.or(Patterns.filter(EVENT_D_CLASS, "d"), Patterns.filter(EVENT_A_CLASS, "a")));
+        model.setFromClause(FromClause.create(PatternStream.create(pattern)));
+        assertEquals(text, model.toEQL());
 
         testCase = new EventExpressionCase("timer:at(10, 8, *, *, *)");
         testCase.add("A1");

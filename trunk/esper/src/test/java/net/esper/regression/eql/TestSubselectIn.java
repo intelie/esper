@@ -1,19 +1,18 @@
 package net.esper.regression.eql;
 
 import junit.framework.TestCase;
-import net.esper.client.EPServiceProvider;
 import net.esper.client.Configuration;
+import net.esper.client.EPServiceProvider;
 import net.esper.client.EPServiceProviderManager;
 import net.esper.client.EPStatement;
+import net.esper.client.soda.*;
 import net.esper.client.time.TimerControlEvent;
-import net.esper.support.util.SupportUpdateListener;
+import net.esper.support.bean.SupportBean;
 import net.esper.support.bean.SupportBean_S0;
 import net.esper.support.bean.SupportBean_S1;
 import net.esper.support.bean.SupportBean_S2;
-import net.esper.support.bean.SupportBean;
 import net.esper.support.client.SupportConfigFactory;
-import net.esper.event.EventType;
-import net.esper.event.EventBean;
+import net.esper.support.util.SupportUpdateListener;
 
 public class TestSubselectIn extends TestCase
 {
@@ -40,7 +39,43 @@ public class TestSubselectIn extends TestCase
 
         EPStatement stmt = epService.getEPAdministrator().createEQL(stmtText);
         stmt.addListener(listener);
+        
+        runTestInSelect();
+    }
 
+    public void testInSelectOM()
+    {
+        EPStatementObjectModel subquery = new EPStatementObjectModel();
+        subquery.setSelectClause(SelectClause.create("id"));
+        subquery.setFromClause(FromClause.create(FilterStream.create("S1").addView(View.create("win", "length", 1000))));
+
+        EPStatementObjectModel model = new EPStatementObjectModel();
+        model.setFromClause(FromClause.create(FilterStream.create("S0")));
+        model.setSelectClause(SelectClause.create().add(Expressions.subqueryIn("id", subquery), "value"));
+
+        String stmtText = "select id in (select id from S1.win:length(1000)) as value from S0";
+        assertEquals(stmtText, model.toEQL());
+
+        EPStatement stmt = epService.getEPAdministrator().create(model);
+        stmt.addListener(listener);
+
+        runTestInSelect();
+    }
+
+    public void testInSelectCompile()
+    {
+        String stmtText = "select id in (select id from S1.win:length(1000)) as value from S0";
+        EPStatementObjectModel model = epService.getEPAdministrator().compile(stmtText);
+        assertEquals(stmtText, model.toEQL());
+
+        EPStatement stmt = epService.getEPAdministrator().create(model);
+        stmt.addListener(listener);
+
+        runTestInSelect();
+    }
+
+    private void runTestInSelect()
+    {
         epService.getEPRuntime().sendEvent(new SupportBean_S0(2));
         assertEquals(false, listener.assertOneGetNewAndReset().get("value"));
 

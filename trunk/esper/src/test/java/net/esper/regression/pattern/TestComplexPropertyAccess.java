@@ -12,6 +12,7 @@ import net.esper.support.client.SupportConfigFactory;
 import net.esper.client.EPStatement;
 import net.esper.client.EPServiceProvider;
 import net.esper.client.EPServiceProviderManager;
+import net.esper.client.soda.*;
 import net.esper.event.EventBean;
 
 public class TestComplexPropertyAccess extends TestCase
@@ -112,7 +113,6 @@ public class TestComplexPropertyAccess extends TestCase
 
     public void testIndexedValueProp() throws Exception
     {
-        SupportUpdateListener testListener = new SupportUpdateListener();
         EPServiceProvider epService = EPServiceProviderManager.getDefaultProvider(SupportConfigFactory.getConfiguration());
         epService.initialize();
 
@@ -120,6 +120,45 @@ public class TestComplexPropertyAccess extends TestCase
         String pattern = "every a=" + type + " -> b=" + type + "(indexed[0] = a.indexed[0])";
 
         EPStatement stmt = epService.getEPAdministrator().createPattern(pattern);
+        runIndexedValueProp(epService, stmt);
+    }
+
+    public void testIndexedValuePropOM() throws Exception
+    {
+        EPServiceProvider epService = EPServiceProviderManager.getDefaultProvider(SupportConfigFactory.getConfiguration());
+        epService.initialize();
+        String type = SupportBeanComplexProps.class.getName();
+
+        EPStatementObjectModel model = new EPStatementObjectModel();
+        model.setSelectClause(SelectClause.createWildcard());
+        PatternExpr pattern = Patterns.followedBy(Patterns.everyFilter(type, "a"),
+                Patterns.filter(Filter.create(type, Expressions.eqProperty("indexed[0]", "a.indexed[0]")), "b"));
+        model.setFromClause(FromClause.create(PatternStream.create(pattern)));
+
+        String patternText = "select * from pattern [every (a=" + type + ") -> b=" + type + "((indexed[0] = a.indexed[0]))]";
+        assertEquals(patternText, model.toEQL());
+
+        EPStatement stmt = epService.getEPAdministrator().create(model);
+        runIndexedValueProp(epService, stmt);
+    }
+
+    public void testIndexedValuePropCompile() throws Exception
+    {
+        EPServiceProvider epService = EPServiceProviderManager.getDefaultProvider(SupportConfigFactory.getConfiguration());
+        epService.initialize();
+        String type = SupportBeanComplexProps.class.getName();
+
+        String patternText = "select * from pattern [every (a=" + type + ") -> b=" + type + "((indexed[0] = a.indexed[0]))]";
+        EPStatementObjectModel model = epService.getEPAdministrator().compile(patternText);        
+        assertEquals(patternText, model.toEQL());
+
+        EPStatement stmt = epService.getEPAdministrator().create(model);
+        runIndexedValueProp(epService, stmt);
+    }
+
+    private void runIndexedValueProp(EPServiceProvider epService, EPStatement stmt)
+    {
+        SupportUpdateListener testListener = new SupportUpdateListener();
         stmt.addListener(testListener);
 
         Object eventOne = new SupportBeanComplexProps(new int[] {3});

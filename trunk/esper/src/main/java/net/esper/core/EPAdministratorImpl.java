@@ -11,11 +11,13 @@ import antlr.RecognitionException;
 import antlr.TokenStreamException;
 import antlr.collections.AST;
 import net.esper.client.*;
+import net.esper.client.soda.EPStatementObjectModel;
 import net.esper.eql.generated.EQLBaseWalker;
 import net.esper.eql.generated.EQLStatementParser;
 import net.esper.eql.parse.*;
 import net.esper.eql.spec.PatternStreamSpecRaw;
 import net.esper.eql.spec.StatementSpecRaw;
+import net.esper.eql.spec.StatementSpecTranslator;
 import net.esper.util.DebugFacility;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -140,41 +142,35 @@ public class EPAdministratorImpl implements EPAdministrator
 
     private EPStatement createEQLStmt(String eqlStatement, String statementName) throws EPException
     {
-        if (log.isDebugEnabled())
-        {
-            log.debug(".createEQLStmt statementName=" + statementName + " eqlStatement=" + eqlStatement);
-        }
+        StatementSpecRaw statementSpec = compile(eqlStatement, statementName);
+        
+        EPStatement statement = services.getStatementLifecycleSvc().createAndStart(statementSpec, eqlStatement, false, statementName);
 
-        AST ast = ParseHelper.parse(eqlStatement, eqlParseRule);
-        EQLTreeWalker walker = new EQLTreeWalker(services.getEngineImportService());
+        log.debug(".createEQLStmt Statement created and started");
+        return statement;
+    }
 
-        try
-        {
-            ParseHelper.walk(ast, walker, eqlWalkRule, eqlStatement);
-        }
-        catch (ASTWalkException ex)
-        {
-            log.error(".createEQL Error validating expression", ex);
-            throw new EPStatementException(ex.getMessage(), eqlStatement);
-        }
-        catch (RuntimeException ex)
-        {
-            log.error(".createEQL Error validating expression", ex);
-            throw new EPStatementException(ex.getMessage(), eqlStatement);
-        }
+    public EPStatement create(EPStatementObjectModel sodaStatement) throws EPException
+    {
+        return create(sodaStatement, null);
+    }
 
-        if (log.isDebugEnabled())
-        {
-            DebugFacility.dumpAST(walker.getAST());
-        }
-
+    public EPStatement create(EPStatementObjectModel sodaStatement, String statementName) throws EPException
+    {
         // Specifies the statement
-        StatementSpecRaw statementSpec = walker.getStatementSpec();
+        StatementSpecRaw statementSpec = StatementSpecTranslator.map(sodaStatement);
+        String eqlStatement = sodaStatement.toEQL(); 
 
         EPStatement statement = services.getStatementLifecycleSvc().createAndStart(statementSpec, eqlStatement, false, statementName);
 
         log.debug(".createEQLStmt Statement created and started");
         return statement;
+    }
+
+    public EPStatementObjectModel compile(String eqlStatement) throws EPException
+    {
+        StatementSpecRaw statementSpec = compile(eqlStatement, null);
+        return StatementSpecTranslator.unmap(statementSpec);
     }
 
     public EPStatement getStatement(String name)
@@ -211,6 +207,40 @@ public class EPAdministratorImpl implements EPAdministrator
     {
         services = null;
         configurationOperations = null;        
+    }
+
+    private StatementSpecRaw compile(String eqlStatement, String statementName)
+    {
+        if (log.isDebugEnabled())
+        {
+            log.debug(".createEQLStmt statementName=" + statementName + " eqlStatement=" + eqlStatement);
+        }
+
+        AST ast = ParseHelper.parse(eqlStatement, eqlParseRule);
+        EQLTreeWalker walker = new EQLTreeWalker(services.getEngineImportService());
+
+        try
+        {
+            ParseHelper.walk(ast, walker, eqlWalkRule, eqlStatement);
+        }
+        catch (ASTWalkException ex)
+        {
+            log.error(".createEQL Error validating expression", ex);
+            throw new EPStatementException(ex.getMessage(), eqlStatement);
+        }
+        catch (RuntimeException ex)
+        {
+            log.error(".createEQL Error validating expression", ex);
+            throw new EPStatementException(ex.getMessage(), eqlStatement);
+        }
+
+        if (log.isDebugEnabled())
+        {
+            DebugFacility.dumpAST(walker.getAST());
+        }
+
+        // Specifies the statement
+        return walker.getStatementSpec();
     }
 
     private static Log log = LogFactory.getLog(EPAdministratorImpl.class);

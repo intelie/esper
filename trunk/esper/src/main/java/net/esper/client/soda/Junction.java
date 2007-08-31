@@ -1,9 +1,10 @@
 package net.esper.client.soda;
 
-public class Junction extends ExpressionBase
+public abstract class Junction extends ExpressionBase
 {
     public Junction add(Expression expression)
     {
+        this.getChildren().add(expression);
         return this;
     }
 }

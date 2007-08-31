@@ -1,6 +1,7 @@
 package net.esper.client.soda;
 
 import java.io.Serializable;
+import java.io.StringWriter;
 
 public class Filter implements Serializable
 {
@@ -46,5 +47,16 @@ public class Filter implements Serializable
     public void setFilter(Expression filter)
     {
         this.filter = filter;
+    }
+
+    public void toEQL(StringWriter writer)
+    {
+        writer.write(eventTypeAlias);
+        if (filter != null)
+        {
+            writer.write('(');
+            filter.toEQL(writer);
+            writer.write(')');
+        }
     }
 }

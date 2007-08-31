@@ -2,6 +2,7 @@ package net.esper.client.soda;
 
 import java.util.List;
 import java.io.Serializable;
+import java.io.StringWriter;
 
 public abstract class EPBaseNamedObject implements Serializable
 {
@@ -44,5 +45,32 @@ public abstract class EPBaseNamedObject implements Serializable
     public void setParameters(List<Object> parameters)
     {
         this.parameters = parameters;
+    }
+
+    public void toEQL(StringWriter writer)
+    {
+        writer.write(namespace);
+        writer.write(':');
+        writer.write(name);
+
+        if ((parameters != null) && (parameters.size() != 0))
+        {
+            String delimiter = "";
+            writer.write('(');
+            for (Object param : parameters)
+            {
+                writer.write(delimiter);
+                if (param == null)
+                {
+                    writer.write("null");
+                }
+                else
+                {
+                    writer.write(param.toString());
+                }
+                delimiter = ", ";
+            }
+            writer.write(')');
+        }
     }
 }

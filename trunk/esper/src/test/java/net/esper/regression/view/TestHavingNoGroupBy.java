@@ -3,7 +3,7 @@ package net.esper.regression.view;
 import net.esper.client.EPServiceProvider;
 import net.esper.client.EPStatement;
 import net.esper.client.EPServiceProviderManager;
-import net.esper.client.UpdateListener;
+import net.esper.client.soda.*;
 import net.esper.support.util.SupportUpdateListener;
 import net.esper.support.bean.SupportMarketDataBean;
 import net.esper.support.bean.SupportBeanString;
@@ -29,6 +29,24 @@ public class TestHavingNoGroupBy extends TestCase
         testListener = new SupportUpdateListener();
         epService = EPServiceProviderManager.getDefaultProvider(SupportConfigFactory.getConfiguration());
         epService.initialize();
+    }
+
+    public void testSumOneViewOM()
+    {
+        EPStatementObjectModel model = new EPStatementObjectModel();
+        model.setSelectClause(SelectClause.create("symbol", "price").add(Expressions.avg("price"), "avgPrice"));
+        model.setFromClause(FromClause.create(FilterStream.create(SupportMarketDataBean.class.getName()).addView("win", "length", 5)));
+        model.setHavingClause(Expressions.lt(Expressions.property("price"), Expressions.avg("price")));
+
+        String viewExpr = "select symbol, price, avg(price) as avgPrice " +
+                          "from " + SupportMarketDataBean.class.getName() + ".win:length(5) " +
+                          "having (price < avg(price))";
+        assertEquals(viewExpr, model.toEQL());
+
+        selectTestView = epService.getEPAdministrator().create(model);
+        selectTestView.addListener(testListener);
+
+        runAssertion();
     }
 
     public void testSumOneView()

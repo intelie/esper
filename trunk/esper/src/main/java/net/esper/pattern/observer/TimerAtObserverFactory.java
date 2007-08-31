@@ -14,7 +14,7 @@ import java.util.*;
 
 import net.esper.pattern.PatternContext;
 import net.esper.pattern.MatchedEventMap;
-import net.esper.schedule.ScheduleUnit;
+import net.esper.type.ScheduleUnit;
 import net.esper.schedule.ScheduleSpec;
 import net.esper.eql.parse.NumberSetParameter;
 import net.esper.eql.parse.CronParameter;

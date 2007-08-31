@@ -8,6 +8,7 @@ import net.esper.client.EPException;
 import net.esper.client.EPServiceProvider;
 import net.esper.client.EPServiceProviderManager;
 import net.esper.client.EPStatement;
+import net.esper.client.soda.*;
 import net.esper.event.EventBean;
 import net.esper.support.bean.SupportBeanCombinedProps;
 import net.esper.support.bean.SupportBeanSimple;
@@ -34,6 +35,22 @@ public class TestModifiedWildcardSelect extends TestCase
 		insertListener = new SupportUpdateListener();
 		properties = new HashMap<String, Object>();
 	}
+
+    public void testSingleOM() throws Exception
+    {
+        String eventName = SupportBeanSimple.class.getName();
+
+        EPStatementObjectModel model = new EPStatementObjectModel();
+        model.setSelectClause(SelectClause.createWildcard().add(Expressions.concat("myString", "myString"), "concat"));
+        model.setFromClause(FromClause.create(FilterStream.create(eventName).addView(View.create("win", "length", 5))));
+
+        String text = "select *, myString || myString as concat from " + eventName + ".win:length(5)";
+        assertEquals(text, model.toEQL());
+
+        EPStatement statement = epService.getEPAdministrator().create(model);
+        statement.addListener(listener);
+        assertSimple();
+    }
 
 	public void testSingle() throws Exception
 	{

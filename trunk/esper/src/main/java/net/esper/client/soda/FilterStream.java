@@ -2,6 +2,7 @@ package net.esper.client.soda;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.io.StringWriter;
 
 public class FilterStream extends ProjectedStream
 {
@@ -15,6 +16,11 @@ public class FilterStream extends ProjectedStream
     public static FilterStream create(String eventTypeAlias)
     {
         return new FilterStream(Filter.create(eventTypeAlias));
+    }
+
+    public static FilterStream create(String eventTypeAlias, String streamName)
+    {
+        return new FilterStream(Filter.create(eventTypeAlias), streamName);
     }
 
     public static FilterStream create(String eventTypeAlias, Expression filter)
@@ -38,5 +44,15 @@ public class FilterStream extends ProjectedStream
     {
         super(views, name);
         this.filter = filter;
+    }
+
+    public Filter getFilter()
+    {
+        return filter;
+    }
+
+    public void toEQLStream(StringWriter writer)
+    {
+        filter.toEQL(writer);
     }
 }

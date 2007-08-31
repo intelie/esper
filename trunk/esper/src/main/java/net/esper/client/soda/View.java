@@ -3,6 +3,7 @@ package net.esper.client.soda;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.io.StringWriter;
 
 public class View extends EPBaseNamedObject
 {
