@@ -15,7 +15,15 @@ public class RelationalOpExpression extends ExpressionBase
     {
         this.operator = operator.trim();
         addChild(left);
-        addChild(right);
+
+        if (right != null)
+        {
+            addChild(right);
+        }
+        else
+        {
+            addChild(new ConstantExpression(null));
+        }
     }
 
     public String getOperator()

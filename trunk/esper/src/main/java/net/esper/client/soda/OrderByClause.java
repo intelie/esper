@@ -26,13 +26,13 @@ public class OrderByClause implements Serializable
 
     public OrderByClause add(String property, boolean isDescending)
     {
-        orderByExpressions.add(new OrderByElement(Expressions.getPropExpr(property), false));
+        orderByExpressions.add(new OrderByElement(Expressions.getPropExpr(property), isDescending));
         return this;
     }
 
     public OrderByClause add(Expression expression, boolean isDescending)
     {
-        orderByExpressions.add(new OrderByElement(expression, false));
+        orderByExpressions.add(new OrderByElement(expression, isDescending));
         return this;
     }
 

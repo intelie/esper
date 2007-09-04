@@ -4,6 +4,7 @@ import junit.framework.TestCase;
 import net.esper.client.EPServiceProvider;
 import net.esper.client.EPStatement;
 import net.esper.client.EPServiceProviderManager;
+import net.esper.client.soda.*;
 import net.esper.support.util.SupportUpdateListener;
 import net.esper.support.bean.SupportBean;
 import net.esper.support.bean.SupportMarketDataBean;
@@ -41,6 +42,48 @@ public class TestCaseExpr extends TestCase
         selectTestCase.addListener(testListener);
         assertEquals(Double.class, selectTestCase.getEventType().getPropertyType("p1"));
 
+        runCaseSyntax1Sum();
+    }
+
+    public void testCaseSyntax1Sum_OM()
+    {
+        EPStatementObjectModel model = new EPStatementObjectModel();
+        model.setSelectClause(SelectClause.create().add(Expressions.caseWhenThen()
+                .add(Expressions.eq("symbol", "GE"), Expressions.property("volume"))
+                .add(Expressions.eq("symbol", "DELL"), Expressions.sum("price")), "p1"));
+        model.setFromClause(FromClause.create(FilterStream.create(SupportMarketDataBean.class.getName()).addView("win", "length", 10)));
+
+        String caseExpr = "select case" +
+              " when (symbol = 'GE') then volume" +
+              " when (symbol = 'DELL') then sum(price) " +
+              "end as p1 from " +   SupportMarketDataBean.class.getName() + ".win:length(10)";
+
+        assertEquals(caseExpr, model.toEQL());
+        EPStatement selectTestCase = epService.getEPAdministrator().create(model);
+        selectTestCase.addListener(testListener);
+        assertEquals(Double.class, selectTestCase.getEventType().getPropertyType("p1"));
+
+        runCaseSyntax1Sum();
+    }
+
+    public void testCaseSyntax1Sum_Compile()
+    {
+        String caseExpr = "select case" +
+              " when (symbol = 'GE') then volume" +
+              " when (symbol = 'DELL') then sum(price) " +
+              "end as p1 from " +   SupportMarketDataBean.class.getName() + ".win:length(10)";
+        EPStatementObjectModel model = epService.getEPAdministrator().compile(caseExpr);
+
+        assertEquals(caseExpr, model.toEQL());
+        EPStatement selectTestCase = epService.getEPAdministrator().create(model);
+        selectTestCase.addListener(testListener);
+        assertEquals(Double.class, selectTestCase.getEventType().getPropertyType("p1"));
+
+        runCaseSyntax1Sum();
+    }
+
+    private void runCaseSyntax1Sum()
+    {
         sendMarketDataEvent("DELL", 10000, 50);
         EventBean event = testListener.assertOneGetNewAndReset();
         assertEquals(50.0, event.get("p1"));
@@ -71,6 +114,48 @@ public class TestCaseExpr extends TestCase
         selectTestCase.addListener(testListener);
         assertEquals(Long.class, selectTestCase.getEventType().getPropertyType("p1"));
 
+        runCaseSyntax1WithElse();
+    }
+
+    public void testCaseSyntax1WithElse_OM()
+    {
+        EPStatementObjectModel model = new EPStatementObjectModel();
+        model.setSelectClause(SelectClause.create().add(Expressions.caseWhenThen()
+                .setElse(Expressions.property("volume"))
+                .add(Expressions.eq("symbol", "DELL"), Expressions.multiply(Expressions.property("volume"), Expressions.constant(3))), "p1"));
+        model.setFromClause(FromClause.create(FilterStream.create(SupportMarketDataBean.class.getName()).addView("win", "length", 10)));
+
+        String caseExpr = "select case " +
+              "when (symbol = 'DELL') then (volume * 3) " +
+              "else volume " +
+              "end as p1 from " + SupportMarketDataBean.class.getName() + ".win:length(10)";
+        assertEquals(caseExpr, model.toEQL());
+
+        EPStatement selectTestCase = epService.getEPAdministrator().create(model);
+        selectTestCase.addListener(testListener);
+        assertEquals(Long.class, selectTestCase.getEventType().getPropertyType("p1"));
+
+        runCaseSyntax1WithElse();
+    }
+
+    public void testCaseSyntax1WithElse_Compile()
+    {
+        String caseExpr = "select case " +
+              "when (symbol = 'DELL') then (volume * 3) " +
+              "else volume " +
+              "end as p1 from " + SupportMarketDataBean.class.getName() + ".win:length(10)";
+        EPStatementObjectModel model = epService.getEPAdministrator().compile(caseExpr);
+        assertEquals(caseExpr, model.toEQL());
+
+        EPStatement selectTestCase = epService.getEPAdministrator().create(model);
+        selectTestCase.addListener(testListener);
+        assertEquals(Long.class, selectTestCase.getEventType().getPropertyType("p1"));
+
+        runCaseSyntax1WithElse();
+    }
+
+    private void runCaseSyntax1WithElse()
+    {
         sendMarketDataEvent("CSCO", 4000, 0);
         EventBean event = testListener.assertOneGetNewAndReset();
         assertEquals(4000l,event.get("p1"));
@@ -290,6 +375,50 @@ public class TestCaseExpr extends TestCase
         assertEquals(false, testListener.assertOneGetNewAndReset().get("p1"));
     }
 
+    public void testCaseSyntax2WithNull_OM()
+    {
+       String caseExpr = "select case intPrimitive " +
+                 "when 1 then null " +
+                 "when 2 then 1.0 " +
+                 "when 3 then null " +
+                 "else 2 " +
+                 "end as p1 from " + SupportBean.class.getName() + ".win:length(100)";
+
+        EPStatementObjectModel model = new EPStatementObjectModel();
+        model.setSelectClause(SelectClause.create().add(Expressions.caseSwitch("intPrimitive")
+                .setElse(Expressions.constant(2))
+                .add(Expressions.constant(1), Expressions.constant(null))
+                .add(Expressions.constant(2), Expressions.constant(1.0))
+                .add(Expressions.constant(3), Expressions.constant(null)), "p1"));
+        model.setFromClause(FromClause.create(FilterStream.create(SupportBean.class.getName()).addView("win", "length", 100)));
+
+        assertEquals(caseExpr, model.toEQL());
+        EPStatement selectTestCase = epService.getEPAdministrator().create(model);
+        selectTestCase.addListener(testListener);
+        assertEquals(Double.class, selectTestCase.getEventType().getPropertyType("p1"));
+
+        runCaseSyntax2WithNull();
+    }
+
+    public void testCaseSyntax2WithNull_compile()
+    {
+       String caseExpr = "select case intPrimitive " +
+                 "when 1 then null " +
+                 "when 2 then 1.0 " +
+                 "when 3 then null " +
+                 "else 2 " +
+                 "end as p1 from " + SupportBean.class.getName() + ".win:length(100)";
+
+        EPStatementObjectModel model = epService.getEPAdministrator().compile(caseExpr);
+        assertEquals(caseExpr, model.toEQL());
+
+        EPStatement selectTestCase = epService.getEPAdministrator().create(model);
+        selectTestCase.addListener(testListener);
+        assertEquals(Double.class, selectTestCase.getEventType().getPropertyType("p1"));
+
+        runCaseSyntax2WithNull();
+    }
+
     public void testCaseSyntax2WithNull()
     {
        String caseExpr = "select case intPrimitive " +
@@ -303,6 +432,11 @@ public class TestCaseExpr extends TestCase
         selectTestCase.addListener(testListener);
         assertEquals(Double.class, selectTestCase.getEventType().getPropertyType("p1"));
 
+        runCaseSyntax2WithNull();
+    }
+
+    public void runCaseSyntax2WithNull()
+    {
         sendSupportBeanEvent(4);
         assertEquals(2.0, testListener.assertOneGetNewAndReset().get("p1"));
         sendSupportBeanEvent(1);

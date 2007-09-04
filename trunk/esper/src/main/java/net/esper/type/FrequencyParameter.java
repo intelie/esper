@@ -5,10 +5,11 @@
  * The software in this package is published under the terms of the GPL license       *
  * a copy of which has been included with this distribution in the license.txt file.  *
  **************************************************************************************/
-package net.esper.eql.parse;
+package net.esper.type;
 
 import java.util.Set;
 import java.util.HashSet;
+import java.io.StringWriter;
 
 /**
  * Encapsulates a parameter specifying a frequency, i.e. '* / 5'.
@@ -67,5 +68,9 @@ public class FrequencyParameter implements NumberSetParameter
         return values;
     }
 
-
+    public void toEQL(StringWriter writer)
+    {
+        writer.write("*/");
+        writer.write(Integer.toString(frequency));
+    }
 }

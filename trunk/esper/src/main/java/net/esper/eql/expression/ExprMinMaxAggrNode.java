@@ -51,6 +51,15 @@ public class ExprMinMaxAggrNode extends ExprAggregateNode
         return other.minMaxTypeEnum == this.minMaxTypeEnum;
     }
 
+    /**
+     * Returns the indicator for minimum or maximum.
+     * @return min/max indicator
+     */
+    public MinMaxTypeEnum getMinMaxTypeEnum()
+    {
+        return minMaxTypeEnum;
+    }
+
     protected String getAggregationFunctionName()
     {
         return minMaxTypeEnum.getExpressionText();

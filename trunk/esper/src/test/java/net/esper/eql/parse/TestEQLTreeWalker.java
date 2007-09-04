@@ -14,6 +14,7 @@ import net.esper.support.eql.parse.SupportEQLTreeWalkerFactory;
 import net.esper.support.eql.SupportPluginAggregationMethodOne;
 import net.esper.support.event.SupportEventAdapterService;
 import net.esper.type.OuterJoinType;
+import net.esper.type.TimePeriodParameter;
 import net.esper.eql.spec.ViewSpec;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

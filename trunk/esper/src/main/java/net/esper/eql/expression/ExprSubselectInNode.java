@@ -26,7 +26,8 @@ public class ExprSubselectInNode extends ExprSubselectNode
     /**
      * Ctor.
      * @param statementSpec is the subquery statement spec from the parser, unvalidated
-     */    public ExprSubselectInNode(StatementSpecRaw statementSpec)
+     */
+    public ExprSubselectInNode(StatementSpecRaw statementSpec)
     {
         super(statementSpec);
     }
@@ -43,6 +44,15 @@ public class ExprSubselectInNode extends ExprSubselectNode
     public void setNotIn(boolean notIn)
     {
         isNotIn = notIn;
+    }
+
+    /**
+     * Returns true for not-in, or false for in.
+     * @return true for not-in
+     */
+    public boolean isNotIn()
+    {
+        return isNotIn;
     }
 
     public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate) throws ExprValidationException

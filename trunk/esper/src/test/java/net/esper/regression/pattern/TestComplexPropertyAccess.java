@@ -1,19 +1,16 @@
 package net.esper.regression.pattern;
 
 import junit.framework.TestCase;
-import net.esper.regression.support.CaseList;
-import net.esper.regression.support.EventCollection;
-import net.esper.regression.support.EventCollectionFactory;
-import net.esper.regression.support.EventExpressionCase;
-import net.esper.regression.support.PatternTestHarness;
-import net.esper.support.bean.*;
-import net.esper.support.util.SupportUpdateListener;
-import net.esper.support.client.SupportConfigFactory;
-import net.esper.client.EPStatement;
 import net.esper.client.EPServiceProvider;
 import net.esper.client.EPServiceProviderManager;
+import net.esper.client.EPStatement;
 import net.esper.client.soda.*;
 import net.esper.event.EventBean;
+import net.esper.regression.support.*;
+import net.esper.support.bean.SupportBeanCombinedProps;
+import net.esper.support.bean.SupportBeanComplexProps;
+import net.esper.support.client.SupportConfigFactory;
+import net.esper.support.util.SupportUpdateListener;
 
 public class TestComplexPropertyAccess extends TestCase
 {
@@ -135,7 +132,7 @@ public class TestComplexPropertyAccess extends TestCase
                 Patterns.filter(Filter.create(type, Expressions.eqProperty("indexed[0]", "a.indexed[0]")), "b"));
         model.setFromClause(FromClause.create(PatternStream.create(pattern)));
 
-        String patternText = "select * from pattern [every (a=" + type + ") -> b=" + type + "((indexed[0] = a.indexed[0]))]";
+        String patternText = "select * from pattern [(every (a=" + type + ")) -> (b=" + type + "((indexed[0] = a.indexed[0])))]";
         assertEquals(patternText, model.toEQL());
 
         EPStatement stmt = epService.getEPAdministrator().create(model);
@@ -148,7 +145,7 @@ public class TestComplexPropertyAccess extends TestCase
         epService.initialize();
         String type = SupportBeanComplexProps.class.getName();
 
-        String patternText = "select * from pattern [every (a=" + type + ") -> b=" + type + "((indexed[0] = a.indexed[0]))]";
+        String patternText = "select * from pattern [(every (a=" + type + ")) -> (b=" + type + "((indexed[0] = a.indexed[0])))]";
         EPStatementObjectModel model = epService.getEPAdministrator().compile(patternText);        
         assertEquals(patternText, model.toEQL());
 

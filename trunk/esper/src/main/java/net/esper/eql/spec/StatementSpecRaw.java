@@ -164,6 +164,10 @@ public class StatementSpecRaw implements MetaDefItem
         this.selectStreamDirEnum = selectStreamDirEnum;
     }
 
+    /**
+     * Sets the select clause.
+     * @param selectClauseSpec is the new select clause specification
+     */
     public void setSelectClauseSpec(SelectClauseSpec selectClauseSpec)
     {
         this.selectClauseSpec = selectClauseSpec;

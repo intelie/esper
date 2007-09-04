@@ -1,10 +1,13 @@
-package net.esper.eql.parse;
+package net.esper.type;
 
 import junit.framework.TestCase;
 
 import java.util.Set;
 
 import net.esper.support.util.ArrayAssertionUtil;
+import net.esper.type.FrequencyParameter;
+import net.esper.type.ListParameter;
+import net.esper.type.IntParameter;
 
 public class TestListParameter extends TestCase
 {

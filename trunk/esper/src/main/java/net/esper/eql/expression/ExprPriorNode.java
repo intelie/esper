@@ -27,6 +27,15 @@ public class ExprPriorNode extends ExprNode implements ViewResourceCallback
     private RelativeAccessByEventNIndex relativeAccess;
     private RandomAccessByIndex randomAccess;
 
+    /**
+     * Returns the index of the prior.
+     * @return index of prior function
+     */
+    public int getConstantIndexNumber()
+    {
+        return constantIndexNumber;
+    }
+
     public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate) throws ExprValidationException
     {
         if (this.getChildNodes().size() != 2)

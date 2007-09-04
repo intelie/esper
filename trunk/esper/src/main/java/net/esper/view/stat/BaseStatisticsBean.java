@@ -296,31 +296,55 @@ public class BaseStatisticsBean implements Cloneable, Serializable
                "  sumXY=" + this.sumXY;
     }
 
+    /**
+     * Sets the sum X.
+     * @param sumX to set
+     */
     public void setSumX(double sumX)
     {
         this.sumX = sumX;
     }
 
+    /**
+     * Sets the sum X square.
+     * @param sumXSq to set
+     */
     public void setSumXSq(double sumXSq)
     {
         this.sumXSq = sumXSq;
     }
 
+    /**
+     * Sets the sum Y.
+     * @param sumY to set
+     */
     public void setSumY(double sumY)
     {
         this.sumY = sumY;
     }
 
+    /**
+     * Sets the sum Y square.
+     * @param sumYSq to set
+     */
     public void setSumYSq(double sumYSq)
     {
         this.sumYSq = sumYSq;
     }
 
+    /**
+     * Sets the sum of x times y.
+     * @param sumXY sum of x times y.
+     */
     public void setSumXY(double sumXY)
     {
         this.sumXY = sumXY;
     }
 
+    /**
+     * Sets the number of datapoints
+     * @param dataPoints to set
+     */
     public void setDataPoints(long dataPoints)
     {
         this.dataPoints = dataPoints;

@@ -46,6 +46,11 @@ public enum RelationalOpEnum
         this.expressionText = expressionText;
     }
 
+    /**
+     * Parses the operator and returns an enum for the operator.
+     * @param op to parse
+     * @return enum representing relational operation
+     */
     public static RelationalOpEnum parse(String op)
     {
         if (op.equals("<"))

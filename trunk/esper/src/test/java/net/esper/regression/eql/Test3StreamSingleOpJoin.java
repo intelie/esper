@@ -73,9 +73,9 @@ public class Test3StreamSingleOpJoin extends TestCase
             eventA + ".win:length(3) as streamA, " +
             eventB + ".win:length(3) as streamB, " +
             eventC + ".win:length(3) as streamC " +
-            "where (streamA.id = streamB.id) " +
-            "and (streamB.id = streamC.id) " +
-            "and (streamA.id = streamC.id)";
+            "where ((streamA.id = streamB.id)) " +
+            "and ((streamB.id = streamC.id)) " +
+            "and ((streamA.id = streamC.id))";
 
         joinView = epService.getEPAdministrator().create(model);
         joinView.addListener(updateListener);
@@ -90,9 +90,9 @@ public class Test3StreamSingleOpJoin extends TestCase
             eventA + ".win:length(3) as streamA, " +
             eventB + ".win:length(3) as streamB, " +
             eventC + ".win:length(3) as streamC " +
-            "where (streamA.id = streamB.id) " +
-            "and (streamB.id = streamC.id) " +
-            "and (streamA.id = streamC.id)";
+            "where ((streamA.id = streamB.id)) " +
+            "and ((streamB.id = streamC.id)) " +
+            "and ((streamA.id = streamC.id))";
 
         EPStatementObjectModel model = epService.getEPAdministrator().compile(joinStatement);
         joinView = epService.getEPAdministrator().create(model);

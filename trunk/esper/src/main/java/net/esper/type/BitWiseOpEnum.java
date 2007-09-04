@@ -17,7 +17,7 @@ import java.util.HashMap;
  */
 public enum BitWiseOpEnum
 {
-	   /**
+	/**
      * Bitwise and.
      */
     BAND ("&"),
@@ -37,6 +37,15 @@ public enum BitWiseOpEnum
     private BitWiseOpEnum(String expressionText)
     {
         this.expressionText = expressionText;
+    }
+
+    /**
+     * Returns the operator as an expression text.
+     * @return text of operator
+     */
+    public String getExpressionText()
+    {
+        return expressionText;
     }
 
     static

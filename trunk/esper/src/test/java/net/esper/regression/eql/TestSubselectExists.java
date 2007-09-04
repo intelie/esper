@@ -159,6 +159,56 @@ public class TestSubselectExists extends TestCase
         assertFalse(listener.isInvoked());
     }
 
+    public void testNotExists_OM()
+    {
+        EPStatementObjectModel subquery = new EPStatementObjectModel();
+        subquery.setSelectClause(SelectClause.createWildcard());
+        subquery.setFromClause(FromClause.create(FilterStream.create("S1").addView("win", "length", 1000)));
+
+        EPStatementObjectModel model = new EPStatementObjectModel();
+        model.setSelectClause(SelectClause.create("id"));
+        model.setFromClause(FromClause.create(FilterStream.create("S0")));
+        model.setWhereClause(Expressions.not(Expressions.subqueryExists(subquery)));
+
+        String stmtText = "select id from S0 where not exists (select * from S1.win:length(1000))";
+        assertEquals(stmtText, model.toEQL());
+
+        EPStatement stmt = epService.getEPAdministrator().create(model);
+        stmt.addListener(listener);
+
+        epService.getEPRuntime().sendEvent(new SupportBean_S0(2));
+        assertEquals(2, listener.assertOneGetNewAndReset().get("id"));
+
+        epService.getEPRuntime().sendEvent(new SupportBean_S1(-1));
+        epService.getEPRuntime().sendEvent(new SupportBean_S0(1));
+        assertFalse(listener.isInvoked());
+
+        epService.getEPRuntime().sendEvent(new SupportBean_S1(-2));
+        epService.getEPRuntime().sendEvent(new SupportBean_S0(3));
+        assertFalse(listener.isInvoked());
+    }
+
+    public void testNotExists_Compile()
+    {
+        String stmtText = "select id from S0 where not exists (select * from S1.win:length(1000))";
+        EPStatementObjectModel model = epService.getEPAdministrator().compile(stmtText);
+        assertEquals(stmtText, model.toEQL());
+
+        EPStatement stmt = epService.getEPAdministrator().create(model);
+        stmt.addListener(listener);
+
+        epService.getEPRuntime().sendEvent(new SupportBean_S0(2));
+        assertEquals(2, listener.assertOneGetNewAndReset().get("id"));
+
+        epService.getEPRuntime().sendEvent(new SupportBean_S1(-1));
+        epService.getEPRuntime().sendEvent(new SupportBean_S0(1));
+        assertFalse(listener.isInvoked());
+
+        epService.getEPRuntime().sendEvent(new SupportBean_S1(-2));
+        epService.getEPRuntime().sendEvent(new SupportBean_S0(3));
+        assertFalse(listener.isInvoked());
+    }
+
     public void testNotExists()
     {
         String stmtText = "select id from S0 where not exists (select * from S1.win:length(1000))";

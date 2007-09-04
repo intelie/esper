@@ -8,9 +8,10 @@ public class PatternOrExpr extends PatternExprBase
     {
     }
 
-    public void add(PatternExpr expr)
+    public PatternOrExpr add(PatternExpr expr)
     {
         this.getChildren().add(expr);
+        return this;
     }
 
     public PatternOrExpr(PatternExpr first, PatternExpr second, PatternExpr ...more)

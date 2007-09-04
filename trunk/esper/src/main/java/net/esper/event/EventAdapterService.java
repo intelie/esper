@@ -182,5 +182,9 @@ public interface EventAdapterService
      */
     public void setClassLegacyConfigs(Map<String, ConfigurationEventTypeLegacy> classLegacyInfo);
 
+    /**
+     * Sets the resolution style for case-sentitivity.
+     * @param classPropertyResolutionStyle for resolving properties.
+     */    
     public void setDefaultPropertyResolutionStyle(Configuration.PropertyResolutionStyle classPropertyResolutionStyle);
 }

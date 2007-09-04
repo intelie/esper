@@ -5,51 +5,40 @@
  * The software in this package is published under the terms of the GPL license       *
  * a copy of which has been included with this distribution in the license.txt file.  *
  **************************************************************************************/
-package net.esper.eql.parse;
+package net.esper.type;
 
 import java.util.Set;
 import java.util.HashSet;
+import java.io.StringWriter;
 
 /**
- * Represents a range of numbers as a parameter.
+ * Parameter supplying a single int value is a set of numbers.
  */
-public class RangeParameter implements NumberSetParameter
+public class IntParameter implements NumberSetParameter
 {
-    private int low;
-    private int high;
+    private int intValue;
 
     /**
      * Ctor.
-     * @param low - start of range
-     * @param high - end of range
+     * @param intValue - single in value
      */
-    public RangeParameter(int low, int high)
+    public IntParameter(int intValue)
     {
-        this.low = low;
-        this.high = high;
+        this.intValue = intValue;
     }
 
     /**
-     * Returns start of range.
-     * @return start of range
+     * Returns int value.
+     * @return int value
      */
-    public int getLow()
+    public int getIntValue()
     {
-        return low;
-    }
-
-    /**
-     * Returns end of range.
-     * @return end of range
-     */
-    public int getHigh()
-    {
-        return high;
+        return intValue;
     }
 
     public boolean isWildcard(int min, int max)
     {
-        if ((min <= low) && (max >= high))
+        if ((intValue == min) && (intValue == max))
         {
             return true;
         }
@@ -60,15 +49,16 @@ public class RangeParameter implements NumberSetParameter
     {
         Set<Integer> values = new HashSet<Integer>();
 
-        int start = (min > low) ? min : low;
-        int end = (max > high) ? high : max;
-
-        while (start <= end)
+        if ((intValue >= min) && (intValue <= max))
         {
-            values.add(start);
-            start++;
+            values.add(intValue);
         }
 
         return values;
+    }
+
+    public void toEQL(StringWriter writer)
+    {
+        writer.write(Integer.toString(intValue));
     }
 }

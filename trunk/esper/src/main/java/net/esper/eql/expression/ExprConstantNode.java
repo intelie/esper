@@ -37,6 +37,10 @@ public class ExprConstantNode extends ExprNode
         return true;
     }
 
+    /**
+     * Returns the constant's value.
+     * @return value of constant
+     */
     public Object getValue()
     {
         return value;

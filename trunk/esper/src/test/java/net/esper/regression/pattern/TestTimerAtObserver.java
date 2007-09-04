@@ -35,14 +35,15 @@ public class TestTimerAtObserver extends TestCase implements SupportBeanConstant
         CaseList testCaseList = new CaseList();
         EventExpressionCase testCase = null;
 
-        String text = "select * from pattern [timer:at(10, 8, *, *, *)]";
+        String text = "select * from pattern [timer:at(10, 8, *, *, *, *)]";
         EPStatementObjectModel model = new EPStatementObjectModel();
         model.setSelectClause(SelectClause.createWildcard());
-        PatternExpr pattern = Patterns.followedBy(
-                Patterns.filter(EVENT_B_CLASS, "b"),
-                Patterns.or(Patterns.filter(EVENT_D_CLASS, "d"), Patterns.filter(EVENT_A_CLASS, "a")));
+        PatternExpr pattern = Patterns.timerAt(10, 8, null, null, null, null);
         model.setFromClause(FromClause.create(PatternStream.create(pattern)));
         assertEquals(text, model.toEQL());
+        testCase = new EventExpressionCase(model);
+        testCase.add("A1");
+        testCaseList.addTest(testCase);
 
         testCase = new EventExpressionCase("timer:at(10, 8, *, *, *)");
         testCase.add("A1");

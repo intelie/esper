@@ -5,12 +5,13 @@
  * The software in this package is published under the terms of the GPL license       *
  * a copy of which has been included with this distribution in the license.txt file.  *
  **************************************************************************************/
-package net.esper.eql.parse;
+package net.esper.type;
 
 import java.util.List;
 import java.util.LinkedList;
 import java.util.Set;
 import java.util.HashSet;
+import java.io.StringWriter;
 
 /**
  * Represents a list of values in a set of numeric parameters.
@@ -31,7 +32,7 @@ public class ListParameter implements NumberSetParameter
      * Add to the list a further parameter.
      * @param numberSetParameter is the parameter to add
      */
-    protected void add(NumberSetParameter numberSetParameter)
+    public void add(NumberSetParameter numberSetParameter)
     {
         parameters.add(numberSetParameter);
     }
@@ -40,7 +41,7 @@ public class ListParameter implements NumberSetParameter
      * Returns list of parameters.
      * @return list of parameters
      */
-    protected List<NumberSetParameter> getParameters()
+    public List<NumberSetParameter> getParameters()
     {
         return parameters;
     }
@@ -67,5 +68,18 @@ public class ListParameter implements NumberSetParameter
         }
 
         return result;
+    }
+
+    public void toEQL(StringWriter writer)
+    {
+        String delimiter = "";
+        writer.write('[');
+        for (NumberSetParameter param : parameters)
+        {
+            writer.write(delimiter);
+            param.toEQL(writer);
+            delimiter = ", ";
+        }
+        writer.write(']');
     }
 }

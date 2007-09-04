@@ -17,7 +17,7 @@ public abstract class ExpressionBase implements Expression
         return children;
     }
 
-    public void addChild(Expression expression)
+    protected void addChild(Expression expression)
     {
         children.add(expression);
     }

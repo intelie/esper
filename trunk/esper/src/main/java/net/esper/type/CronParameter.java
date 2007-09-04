@@ -1,9 +1,10 @@
-package net.esper.eql.parse;
+package net.esper.type;
 
 import net.esper.type.IntValue;
 
 import java.util.*;
 import java.text.SimpleDateFormat;
+import java.io.StringWriter;
 
 /**
  * Hold parameters for timer:at.
@@ -30,7 +31,12 @@ public class CronParameter implements NumberSetParameter {
          * Last weekday in a month
          */
         lw }
-    
+
+    public void toEQL(StringWriter writer)
+    {
+        writer.write(operator.toString());
+    }
+
     private static int FIRST_DAY_OF_WEEK = Calendar.SUNDAY;
 
     /**

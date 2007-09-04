@@ -46,6 +46,15 @@ public class ExprCaseNode extends ExprNode
         this.isCase2 = isCase2;
     }
 
+    /**
+     * Returns true if this is a switch-type case.
+     * @return true for switch-type case, or false for when-then type
+     */
+    public boolean isCase2()
+    {
+        return isCase2;
+    }
+
     public void validate(StreamTypeService streamTypeService_, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate) throws ExprValidationException
     {
         if (isCase2)

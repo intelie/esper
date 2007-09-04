@@ -1,7 +1,7 @@
 package net.esper.view.window;
 
 import junit.framework.TestCase;
-import net.esper.eql.parse.TimePeriodParameter;
+import net.esper.type.TimePeriodParameter;
 import net.esper.view.ViewParameterException;
 import net.esper.view.ViewAttachException;
 import net.esper.view.std.SizeView;

@@ -74,6 +74,8 @@ public class ManagedReadWriteLock
 
     /**
      * Try write lock with timeout, returning an indicator whether the lock was acquired or not.
+     * @param msec number of milliseconds to wait for lock
+     * @return indicator whether the lock could be acquired or not
      */
     public boolean tryWriteLock(long msec)
     {

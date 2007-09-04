@@ -121,6 +121,10 @@ public class ExprMathNode extends ExprNode
         return true;
     }
 
+    /**
+     * Returns the type of math.
+     * @return math type
+     */
     public MathArithTypeEnum getMathArithTypeEnum()
     {
         return mathArithTypeEnum;

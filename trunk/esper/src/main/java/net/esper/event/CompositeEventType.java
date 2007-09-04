@@ -12,7 +12,11 @@ import java.util.Map;
  */
 public class CompositeEventType implements EventType
 {
+    /**
+     * Map of tag name and event type.
+     */
     protected final Map<String, EventType> taggedEventTypes;
+    
     private String alias;
 
     /**

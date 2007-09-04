@@ -3,9 +3,11 @@ package net.esper.regression.view;
 import net.esper.client.EPServiceProvider;
 import net.esper.client.EPStatement;
 import net.esper.client.EPServiceProviderManager;
+import net.esper.client.soda.*;
 import net.esper.support.util.SupportUpdateListener;
 import net.esper.support.bean.SupportMarketDataBean;
 import net.esper.support.bean.SupportBeanString;
+import net.esper.support.bean.SupportBean;
 import net.esper.support.client.SupportConfigFactory;
 import net.esper.event.EventBean;
 
@@ -42,6 +44,50 @@ public class TestGroupByMedianAndDeviation extends TestCase
 
         selectTestView = epService.getEPAdministrator().createEQL(viewExpr);
         selectTestView.addListener(testListener);
+
+        runAssertion();
+    }
+
+    public void testSumJoin_OM()
+    {
+        EPStatementObjectModel model = new EPStatementObjectModel();
+        model.setSelectClause(SelectClause.create("symbol")
+                .add(Expressions.median("price"), "myMedian")
+                .add(Expressions.medianDistinct("price"), "myDistMedian")
+                .add(Expressions.stddev("price"), "myStdev")
+                .add(Expressions.avedev("price"), "myAvedev")
+        );
+        FromClause fromClause = FromClause.create(
+                FilterStream.create(SupportBeanString.class.getName(), "one").addView(View.create("win", "length", 100)),
+                FilterStream.create(SupportMarketDataBean.class.getName(), "two").addView(View.create("win", "length", 5)));
+        model.setFromClause(fromClause);
+        model.setWhereClause(Expressions.and().add(
+                    Expressions.or()
+                    .add(Expressions.eq("symbol", "DELL"))
+                    .add(Expressions.eq("symbol", "IBM"))
+                    .add(Expressions.eq("symbol", "GE"))
+                )
+                .add(Expressions.eqProperty("one.string", "two.symbol")));
+        model.setGroupByClause(GroupByClause.create("symbol"));
+
+        String viewExpr = "select symbol, " +
+                                 "median(price) as myMedian, " +
+                                 "median(distinct price) as myDistMedian, " +
+                                 "stddev(price) as myStdev, " +
+                                 "avedev(price) as myAvedev " +
+                          "from " + SupportBeanString.class.getName() + ".win:length(100) as one, " +
+                                    SupportMarketDataBean.class.getName() + ".win:length(5) as two " +
+                          "where (((symbol = 'DELL')) or ((symbol = 'IBM')) or ((symbol = 'GE'))) " +
+                          "and ((one.string = two.symbol)) " +
+                          "group by symbol";
+        assertEquals(viewExpr, model.toEQL());
+
+        selectTestView = epService.getEPAdministrator().create(model);
+        selectTestView.addListener(testListener);
+
+        epService.getEPRuntime().sendEvent(new SupportBeanString(SYMBOL_DELL));
+        epService.getEPRuntime().sendEvent(new SupportBeanString(SYMBOL_IBM));
+        epService.getEPRuntime().sendEvent(new SupportBeanString("AAA"));
 
         runAssertion();
     }

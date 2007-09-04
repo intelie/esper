@@ -55,6 +55,7 @@ public interface MethodResolutionService
     /**
      * Makes a new distinct-value-aggregator.
      * @param aggregationMethod is the inner aggregation method
+     * @param childType is the return type of the inner expression to aggregate, if any
      * @return aggregator
      */
     public AggregationMethod makeDistinctAggregator(AggregationMethod aggregationMethod, Class childType);

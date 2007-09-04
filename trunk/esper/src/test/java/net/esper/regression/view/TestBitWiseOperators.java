@@ -8,6 +8,7 @@ import org.apache.commons.logging.LogFactory;
 import net.esper.client.EPServiceProvider;
 import net.esper.client.EPServiceProviderManager;
 import net.esper.client.EPStatement;
+import net.esper.client.soda.*;
 import net.esper.event.EventBean;
 import net.esper.event.EventType;
 import net.esper.support.bean.SupportBean;
@@ -38,7 +39,33 @@ public class TestBitWiseOperators extends TestCase
         assertEquals(Short.class, type.getPropertyType("mySecondProperty"));
         assertEquals(Integer.class, type.getPropertyType("myThirdProperty"));
         assertEquals(Long.class, type.getPropertyType("myFourthProperty"));
-        assertEquals(Boolean.class, type.getPropertyType("myFithProperty"));
+        assertEquals(Boolean.class, type.getPropertyType("myFifthProperty"));
+    }
+
+    public void testBitWiseOperators_OM()
+    {
+        String viewExpr = "select bytePrimitive & byteBoxed as myFirstProperty, " +
+                "shortPrimitive | shortBoxed as mySecondProperty, " +
+                "intPrimitive | intBoxed as myThirdProperty, " +
+                "longPrimitive ^ longBoxed as myFourthProperty, " +
+                "boolPrimitive & boolBoxed as myFifthProperty " +
+                "from " + SupportBean.class.getName() + ".win:length(3)";
+
+        EPStatementObjectModel model = new EPStatementObjectModel();
+        model.setSelectClause(SelectClause.create()
+                .add(Expressions.binaryAnd().add("bytePrimitive").add("byteBoxed"), "myFirstProperty")
+                .add(Expressions.binaryOr().add("shortPrimitive").add("shortBoxed"), "mySecondProperty")
+                .add(Expressions.binaryOr().add("intPrimitive").add("intBoxed"), "myThirdProperty")
+                .add(Expressions.binaryXor().add("longPrimitive").add("longBoxed"), "myFourthProperty")
+                .add(Expressions.binaryAnd().add("boolPrimitive").add("boolBoxed"), "myFifthProperty")
+                );
+        model.setFromClause(FromClause.create(FilterStream.create(SupportBean.class.getName()).addView("win", "length", 3)));
+        assertEquals(viewExpr, model.toEQL());
+
+        _selectTestView = _epService.getEPAdministrator().createEQL(viewExpr);
+        _selectTestView.addListener(_testListener);
+
+        runBitWiseOperators();
     }
 
     public void testBitWiseOperators()
@@ -46,6 +73,11 @@ public class TestBitWiseOperators extends TestCase
         setUpBitWiseStmt();
         _testListener.reset();
 
+        runBitWiseOperators();
+    }
+
+    private void runBitWiseOperators()
+    {
         sendEvent(FIRST_EVENT, new Byte(FIRST_EVENT), SECOND_EVENT, new Short(SECOND_EVENT),
                 FIRST_EVENT, new Integer(THIRD_EVENT), 3L, new Long(FOURTH_EVENT),
                 FITH_EVENT, new Boolean(FITH_EVENT));
@@ -55,7 +87,7 @@ public class TestBitWiseOperators extends TestCase
         assertTrue(((Short) (received.get("mySecondProperty")) & SECOND_EVENT) == SECOND_EVENT);
         assertTrue(((Integer) (received.get("myThirdProperty")) & FIRST_EVENT) == FIRST_EVENT);
         assertEquals(7L, (received.get("myFourthProperty")));
-        assertEquals(false, (received.get("myFithProperty")));
+        assertEquals(false, (received.get("myFifthProperty")));
     }
 
     public void setUp()
@@ -71,7 +103,7 @@ public class TestBitWiseOperators extends TestCase
                 "(shortPrimitive | shortBoxed) as mySecondProperty, " +
                 "(intPrimitive | intBoxed) as myThirdProperty, " +
                 "(longPrimitive ^ longBoxed) as myFourthProperty, " +
-                "(boolPrimitive & boolBoxed) as myFithProperty " +
+                "(boolPrimitive & boolBoxed) as myFifthProperty " +
                 " from " + SupportBean.class.getName() + ".win:length(3) ";
         _selectTestView = _epService.getEPAdministrator().createEQL(viewExpr);
         _selectTestView.addListener(_testListener);

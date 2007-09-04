@@ -318,11 +318,6 @@ public class EventAdapterServiceImpl implements EventAdapterService
     	return new WrapperEventType(alias, underlyingEventType, propertyTypes, this);
     }
 
-    public final EventBean createMapFromUnderlying(Map<String, EventBean> events, EventType eventType)
-    {
-        return new MapEventBean(eventType, events);
-    }
-
     public final EventType createAddToEventType(EventType originalType, String[] fieldNames, Class[] fieldTypes)
     {
         Map<String, Class> types = new HashMap<String, Class>();

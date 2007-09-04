@@ -4,11 +4,11 @@ import junit.framework.TestCase;
 import net.esper.client.EPServiceProvider;
 import net.esper.client.EPServiceProviderManager;
 import net.esper.client.EPStatement;
-import net.esper.support.util.SupportUpdateListener;
-import net.esper.support.bean.SupportBean;
-import net.esper.support.bean.SupportBeanSimple;
-import net.esper.support.client.SupportConfigFactory;
+import net.esper.client.soda.*;
 import net.esper.event.EventBean;
+import net.esper.support.bean.SupportBean;
+import net.esper.support.client.SupportConfigFactory;
+import net.esper.support.util.SupportUpdateListener;
 
 public class TestInBetweenLikeExpr extends TestCase
 {
@@ -20,6 +20,27 @@ public class TestInBetweenLikeExpr extends TestCase
         testListener = new SupportUpdateListener();
         epService = EPServiceProviderManager.getDefaultProvider(SupportConfigFactory.getConfiguration());
         epService.initialize();
+    }
+
+    public void testInStringExprOM()
+    {
+        String caseExpr = "select string in ('a', 'b', 'c') as result from " + SupportBean.class.getName();
+        EPStatementObjectModel model = new EPStatementObjectModel();
+        model.setSelectClause(SelectClause.create().add(Expressions.in("string", "a", "b", "c"), "result"));
+        model.setFromClause(FromClause.create(FilterStream.create(SupportBean.class.getName())));
+
+        tryString(model, caseExpr,
+                    new String[] {"0", "a", "b", "c", "d", null},
+                    new boolean[] {false, true, true, true, false, false});
+
+        caseExpr = "select string not in ('a', 'b', 'c') as result from " + SupportBean.class.getName();
+        model = new EPStatementObjectModel();
+        model.setSelectClause(SelectClause.create().add(Expressions.notIn("string", "a", "b", "c"), "result"));
+        model.setFromClause(FromClause.create(FilterStream.create(SupportBean.class.getName())));
+
+        tryString("string not in ('a', 'b', 'c')",
+                    new String[] {"0", "a", "b", "c", "d", null},
+                    new boolean[] {true, false, false, false, true, true});
     }
 
     public void testInStringExpr()
@@ -319,6 +340,26 @@ public class TestInBetweenLikeExpr extends TestCase
         String caseExpr = "select " + expression + " as result from " + SupportBean.class.getName();
 
         EPStatement selectTestCase = epService.getEPAdministrator().createEQL(caseExpr);
+        selectTestCase.addListener(testListener);
+        assertEquals(Boolean.class, selectTestCase.getEventType().getPropertyType("result"));
+
+        for (int i = 0; i < input.length; i++)
+        {
+            sendSupportBeanEvent(input[i]);
+            EventBean event = testListener.assertOneGetNewAndReset();
+            assertEquals("Wrong result for " + input[i], result[i], event.get("result"));
+        }
+        selectTestCase.stop();
+    }
+
+    private void tryString(EPStatementObjectModel model, String eql, String[] input, boolean[] result)
+    {
+        EPStatement selectTestCase = epService.getEPAdministrator().create(model);
+        assertEquals(eql, model.toEQL());
+
+        EPStatementObjectModel compiled = epService.getEPAdministrator().compile(eql);
+        assertEquals(eql, compiled.toEQL());
+
         selectTestCase.addListener(testListener);
         assertEquals(Boolean.class, selectTestCase.getEventType().getPropertyType("result"));
 

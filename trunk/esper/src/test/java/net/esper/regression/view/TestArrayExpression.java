@@ -2,6 +2,7 @@ package net.esper.regression.view;
 
 import junit.framework.TestCase;
 import net.esper.client.*;
+import net.esper.client.soda.*;
 import net.esper.support.util.SupportUpdateListener;
 import net.esper.support.util.ArrayAssertionUtil;
 import net.esper.support.bean.SupportBean;
@@ -22,6 +23,61 @@ public class TestArrayExpression extends TestCase
     {
         epService = EPServiceProviderManager.getDefaultProvider(SupportConfigFactory.getConfiguration());
         epService.initialize();
+    }
+
+    public void testArrayExpressions_OM()
+    {
+        String stmtText = "select {'a', 'b'} as stringArray, " +
+                              "{} as emptyArray, " +
+                              "{1} as oneEleArray, " +
+                              "{1, 2, 3} as intArray " +
+                "from " + SupportBean.class.getName();
+        EPStatementObjectModel model = new EPStatementObjectModel();
+        model.setSelectClause(SelectClause.create()
+                .add(Expressions.array().add(Expressions.constant("a")).add(Expressions.constant("b")), "stringArray")
+                .add(Expressions.array(), "emptyArray")
+                .add(Expressions.array().add(Expressions.constant(1)), "oneEleArray")
+                .add(Expressions.array().add(Expressions.constant(1)).add(2).add(3), "intArray")
+                );
+        model.setFromClause(FromClause.create(FilterStream.create(SupportBean.class.getName())));
+        assertEquals(stmtText, model.toEQL());
+        
+        EPStatement stmt = epService.getEPAdministrator().create(model);
+        SupportUpdateListener listener = new SupportUpdateListener();
+        stmt.addListener(listener);
+
+        SupportBean bean = new SupportBean("a", 10);
+        epService.getEPRuntime().sendEvent(bean);
+
+        EventBean event = listener.assertOneGetNewAndReset();
+        ArrayAssertionUtil.assertEqualsExactOrder(new String[] {"a", "b"}, (String[]) event.get("stringArray"));
+        ArrayAssertionUtil.assertEqualsExactOrder(new Object[0], (Object[]) event.get("emptyArray"));
+        ArrayAssertionUtil.assertEqualsExactOrder(new Integer[] {1}, (Integer[]) event.get("oneEleArray"));
+        ArrayAssertionUtil.assertEqualsExactOrder(new Integer[] {1,2,3}, (Integer[]) event.get("intArray"));
+    }
+
+    public void testArrayExpressions_Compile()
+    {
+        String stmtText = "select {'a', 'b'} as stringArray, " +
+                              "{} as emptyArray, " +
+                              "{1} as oneEleArray, " +
+                              "{1, 2, 3} as intArray " +
+                "from " + SupportBean.class.getName();
+        EPStatementObjectModel model = epService.getEPAdministrator().compile(stmtText);
+        assertEquals(stmtText, model.toEQL());
+        
+        EPStatement stmt = epService.getEPAdministrator().create(model);
+        SupportUpdateListener listener = new SupportUpdateListener();
+        stmt.addListener(listener);
+
+        SupportBean bean = new SupportBean("a", 10);
+        epService.getEPRuntime().sendEvent(bean);
+
+        EventBean event = listener.assertOneGetNewAndReset();
+        ArrayAssertionUtil.assertEqualsExactOrder(new String[] {"a", "b"}, (String[]) event.get("stringArray"));
+        ArrayAssertionUtil.assertEqualsExactOrder(new Object[0], (Object[]) event.get("emptyArray"));
+        ArrayAssertionUtil.assertEqualsExactOrder(new Integer[] {1}, (Integer[]) event.get("oneEleArray"));
+        ArrayAssertionUtil.assertEqualsExactOrder(new Integer[] {1,2,3}, (Integer[]) event.get("intArray"));
     }
 
     public void testArrayExpressions()

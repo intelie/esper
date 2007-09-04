@@ -56,7 +56,7 @@ public class TestInsertInto extends TestCase
         EPStatementObjectModel model = new EPStatementObjectModel();
         model.setInsertInto(InsertInto.create("Event_1", "delta", "product"));
         model.setSelectClause(SelectClause.create().add(Expressions.minus("intPrimitive", "intBoxed"), "deltaTag")
-                .add(Expressions.times("intPrimitive", "intBoxed"), "productTag"));
+                .add(Expressions.multiply("intPrimitive", "intBoxed"), "productTag"));
         model.setFromClause(FromClause.create(FilterStream.create(SupportBean.class.getName()).addView(View.create("win", "length", 100))));
         
         EPStatement stmt = runAsserts(null, model);
@@ -230,8 +230,8 @@ public class TestInsertInto extends TestCase
 
         try
         {
-            stmtText = "insert into Event_1 (delta) " +
-                      "select intPrimitive - intBoxed as deltaTag " +
+            stmtText = "insert into Event_1(delta) " +
+                      "select (intPrimitive - intBoxed) as deltaTag " +
                       "from " + SupportBean.class.getName() + ".win:length(100)";
             epService.getEPAdministrator().createEQL(stmtText);
             fail();
@@ -239,7 +239,7 @@ public class TestInsertInto extends TestCase
         catch (EPStatementException ex)
         {
             // expected
-            assertEquals("Error starting view: Event type named 'Event_1' has already been declared with differing column name or type information [insert into Event_1 (delta) select intPrimitive - intBoxed as deltaTag from net.esper.support.bean.SupportBean.win:length(100)]", ex.getMessage());
+            assertEquals("Error starting view: Event type named 'Event_1' has already been declared with differing column name or type information [insert into Event_1(delta) select (intPrimitive - intBoxed) as deltaTag from net.esper.support.bean.SupportBean.win:length(100)]", ex.getMessage());
         }
     }
 

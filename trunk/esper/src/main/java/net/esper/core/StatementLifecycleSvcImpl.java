@@ -32,13 +32,25 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
 {
     private static Log log = LogFactory.getLog(StatementLifecycleSvcImpl.class);
 
-    private final EPServiceProvider epServiceProvider;
+    /**
+     * Services context for statement lifecycle management.
+     */
     protected final EPServicesContext services;
+
+    /**
+     * Maps of statement id to descriptor.
+     */
+    protected final Map<String, EPStatementDesc> stmtIdToDescMap;
+
+    /**
+     * Map of statement name to statement.
+     */
+    protected final Map<String, EPStatement> stmtNameToStmtMap;
+
+    private final EPServiceProvider epServiceProvider;
     private final ManagedReadWriteLock eventProcessingRWLock;
 
     private final Map<String, String> stmtNameToIdMap;
-    protected final Map<String, EPStatementDesc> stmtIdToDescMap;
-    protected final Map<String, EPStatement> stmtNameToStmtMap;
     private final RefCountedMap<String, ManagedLock> insertIntoStreams;
 
     public void init()
@@ -71,6 +83,15 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
         return createAndStart(statementSpec, expression, isPattern, optStatementName, statementId);
     }
 
+    /**
+     * Creates and starts statement.
+     * @param statementSpec defines the statement
+     * @param expression is the EQL
+     * @param isPattern is true for patterns
+     * @param optStatementName is the optional statement name
+     * @param statementId is the statement id
+     * @return started statement
+     */
     protected synchronized EPStatement createAndStart(StatementSpecRaw statementSpec, String expression, boolean isPattern, String optStatementName, String statementId)
     {
         // Determine a statement name, i.e. use the id or use/generate one for the name passed in

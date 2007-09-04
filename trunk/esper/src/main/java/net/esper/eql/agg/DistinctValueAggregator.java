@@ -23,7 +23,8 @@ public class DistinctValueAggregator implements AggregationMethod
 
     /**
      * Ctor.
-     * @param inner is the aggregator function computing aggregation values 
+     * @param inner is the aggregator function computing aggregation values
+     * @param childType is the return type of the inner expression to aggregate, if any
      */
     public DistinctValueAggregator(AggregationMethod inner, Class childType)
     {

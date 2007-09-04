@@ -4,18 +4,23 @@ import java.io.StringWriter;
 
 public class LikeExpression extends ExpressionBase
 {
-    private Character optionalEscape;
+    public LikeExpression()
+    {
+    }
 
     public LikeExpression(Expression left, Expression right)
     {
         this(left, right, null);
     }
 
-    public LikeExpression(Expression left, Expression right, Character escape)
+    public LikeExpression(Expression left, Expression right, Expression escape)
     {
         this.getChildren().add(left);
         this.getChildren().add(right);
-        optionalEscape = escape;        
+        if (escape != null)
+        {
+            this.getChildren().add(escape);
+        }
     }
 
     public void toEQL(StringWriter writer)
@@ -25,10 +30,10 @@ public class LikeExpression extends ExpressionBase
         writer.write(" like ");
         this.getChildren().get(1).toEQL(writer);
 
-        if (optionalEscape != null)
+        if (this.getChildren().size() > 2)
         {
             writer.write(" escape ");
-            this.getChildren().get(1).toEQL(writer);
+            this.getChildren().get(2).toEQL(writer);
         }
         writer.write(")");
     }

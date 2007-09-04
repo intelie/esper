@@ -5,6 +5,7 @@ import net.esper.client.EPServiceProvider;
 import net.esper.client.EPServiceProviderManager;
 import net.esper.client.EPStatement;
 import net.esper.client.EPException;
+import net.esper.client.soda.*;
 import net.esper.support.util.SupportUpdateListener;
 import net.esper.support.bean.*;
 import net.esper.support.client.SupportConfigFactory;
@@ -34,6 +35,49 @@ public class TestLikeRegexpExpr extends TestCase
         EPStatement selectTestCase = epService.getEPAdministrator().createEQL(caseExpr);
         selectTestCase.addListener(testListener);
 
+        runLikeRegexStringAndNull();
+    }
+
+    public void testLikeRegexStringAndNull_OM()
+    {
+        String stmtText = "select (p00 like p01) as r1, " +
+                                "(p00 like p01 escape '!') as r2, " +
+                                "(p02 regexp p03) as r3 " +
+                          "from " + SupportBean_S0.class.getName();
+
+        EPStatementObjectModel model = new EPStatementObjectModel();
+        model.setSelectClause(SelectClause.create()
+                .add(Expressions.like(Expressions.property("p00"), Expressions.property("p01")), "r1")
+                .add(Expressions.like(Expressions.property("p00"), Expressions.property("p01"), Expressions.constant("!")), "r2")
+                .add(Expressions.regexp(Expressions.property("p02"), Expressions.property("p03")), "r3")
+                );
+        model.setFromClause(FromClause.create(FilterStream.create(SupportBean_S0.class.getName())));
+        assertEquals(stmtText, model.toEQL());
+
+        EPStatement selectTestCase = epService.getEPAdministrator().create(model);
+        selectTestCase.addListener(testListener);
+
+        runLikeRegexStringAndNull();
+    }
+
+    public void testLikeRegexStringAndNull_Compile()
+    {
+        String stmtText = "select (p00 like p01) as r1, " +
+                                "(p00 like p01 escape '!') as r2, " +
+                                "(p02 regexp p03) as r3 " +
+                          "from " + SupportBean_S0.class.getName();
+
+        EPStatementObjectModel model = epService.getEPAdministrator().compile(stmtText);
+        assertEquals(stmtText, model.toEQL());
+
+        EPStatement selectTestCase = epService.getEPAdministrator().create(model);
+        selectTestCase.addListener(testListener);
+
+        runLikeRegexStringAndNull();
+    }
+
+    private void runLikeRegexStringAndNull()
+    {
         sendS0Event("a", "b", "c", "d");
         assertReceived(new Object[][] {{"r1", false}, {"r2", false}, {"r3", false}});
 

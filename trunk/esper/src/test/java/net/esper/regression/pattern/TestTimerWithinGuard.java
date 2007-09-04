@@ -1,14 +1,18 @@
 package net.esper.regression.pattern;
 
-import net.esper.regression.support.*;
-import net.esper.support.bean.SupportBeanConstants;
-import net.esper.support.bean.SupportBean;
-import net.esper.support.util.SupportUpdateListener;
-import net.esper.support.client.SupportConfigFactory;
-import net.esper.client.*;
-import net.esper.client.time.TimerControlEvent;
+import junit.framework.TestCase;
+import net.esper.client.EPRuntime;
+import net.esper.client.EPServiceProvider;
+import net.esper.client.EPServiceProviderManager;
+import net.esper.client.EPStatement;
+import net.esper.client.soda.*;
 import net.esper.client.time.CurrentTimeEvent;
-import junit.framework.*;
+import net.esper.client.time.TimerControlEvent;
+import net.esper.regression.support.*;
+import net.esper.support.bean.SupportBean;
+import net.esper.support.bean.SupportBeanConstants;
+import net.esper.support.client.SupportConfigFactory;
+import net.esper.support.util.SupportUpdateListener;
 
 public class TestTimerWithinGuard extends TestCase implements SupportBeanConstants
 {
@@ -18,6 +22,7 @@ public class TestTimerWithinGuard extends TestCase implements SupportBeanConstan
         CaseList testCaseList = new CaseList();
         EventExpressionCase testCase = null;
 
+        /*
         testCase = new EventExpressionCase("b=" + EVENT_B_CLASS + "(id=\"B1\") where timer:within(2001 msec)");
         testCase.add("B1", "b", events.getEvent("B1"));
         testCaseList.addTest(testCase);
@@ -26,6 +31,17 @@ public class TestTimerWithinGuard extends TestCase implements SupportBeanConstan
         testCaseList.addTest(testCase);
 
         testCase = new EventExpressionCase("b=" + EVENT_B_CLASS + "(id=\"B1\") where timer:within(1999 msec)");
+        testCaseList.addTest(testCase);
+
+        String text = "select * from pattern [b=" + EVENT_B_CLASS + "((id = 'B3')) where timer:within(10.001)]";
+        EPStatementObjectModel model = new EPStatementObjectModel();
+        model.setSelectClause(SelectClause.createWildcard());
+        Expression filter = Expressions.eq("id", "B3");
+        PatternExpr pattern = Patterns.timerWithin(10.001, Patterns.filter(Filter.create(EVENT_B_CLASS, filter), "b"));
+        model.setFromClause(FromClause.create(PatternStream.create(pattern)));
+        assertEquals(text, model.toEQL());
+        testCase = new EventExpressionCase(model);
+        testCase.add("B3", "b", events.getEvent("B3"));
         testCaseList.addTest(testCase);
 
         testCase = new EventExpressionCase("b=" + EVENT_B_CLASS + "(id=\"B3\") where timer:within(10001 msec)");
@@ -42,10 +58,12 @@ public class TestTimerWithinGuard extends TestCase implements SupportBeanConstan
         testCase.add("B1", "b", events.getEvent("B1"));
         testCase.add("B2", "b", events.getEvent("B2"));
         testCaseList.addTest(testCase);
+        */
 
         testCase = new EventExpressionCase("(every b=" + EVENT_B_CLASS + ") where timer:within(2.001)");
         testCase.add("B1", "b", events.getEvent("B1"));
         testCaseList.addTest(testCase);
+        /*
 
         testCase = new EventExpressionCase("(every b=" + EVENT_B_CLASS + ") where timer:within(4001 milliseconds)");
         testCase.add("B1", "b", events.getEvent("B1"));
@@ -163,6 +181,7 @@ public class TestTimerWithinGuard extends TestCase implements SupportBeanConstan
 
         testCase = new EventExpressionCase("every b=" + EVENT_B_CLASS + "() where timer:within (2000 msec) and every d=" + EVENT_D_CLASS + "() where timer:within(6001 msec)");
         testCaseList.addTest(testCase);
+        */
 
         PatternTestHarness util = new PatternTestHarness(events, testCaseList);
         util.runTest();

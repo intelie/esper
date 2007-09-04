@@ -13,50 +13,54 @@ public class SelectClause implements Serializable
 
     public static SelectClause createWildcard()
     {
-        return new SelectClause(true);
+        return new SelectClause(StreamSelector.RSTREAM_ISTREAM_BOTH, true);
     }
 
     public static SelectClause create()
     {
-        return new SelectClause();
-    }
-
-    public static SelectClause create(String propertyName)
-    {
-        return new SelectClause(propertyName);
+        return new SelectClause(StreamSelector.RSTREAM_ISTREAM_BOTH, false);
     }
 
     public static SelectClause create(String ...propertyNames)
     {
-        return new SelectClause(propertyNames);
+        return new SelectClause(StreamSelector.RSTREAM_ISTREAM_BOTH, propertyNames);
     }
 
-    protected SelectClause(boolean isWildcard)
+    public static SelectClause createWildcard(StreamSelector streamSelector)
     {
-        this.streamSelector = StreamSelector.RSTREAM_ISTREAM_BOTH;
+        return new SelectClause(streamSelector, true);
+    }
+
+    public static SelectClause create(StreamSelector streamSelector)
+    {
+        return new SelectClause(streamSelector, false);
+    }
+
+    public static SelectClause create(StreamSelector streamSelector, String ...propertyNames)
+    {
+        return new SelectClause(streamSelector, propertyNames);
+    }
+
+    protected SelectClause(StreamSelector streamSelector, boolean isWildcard)
+    {
+        this.streamSelector = streamSelector;
         this.selectList = new ArrayList<SelectClauseElement>();
         this.isWildcard = isWildcard;
     }
 
-    public SelectClause(String propertyName)
+    public SelectClause(StreamSelector streamSelector, String propertyName)
     {
-        this(false);
+        this(streamSelector, false);
         selectList.add(new SelectClauseElement(new PropertyValueExpression(propertyName)));
     }
 
-    public SelectClause(String ...propertyNames)
+    public SelectClause(StreamSelector streamSelector, String ...propertyNames)
     {
-        this(false);
+        this(streamSelector, false);
         for (String name : propertyNames)
         {
             selectList.add(new SelectClauseElement(new PropertyValueExpression(name)));
         }
-    }
-
-    public SelectClause add(String propertyName)
-    {
-        selectList.add(new SelectClauseElement(new PropertyValueExpression(propertyName)));
-        return this;
     }
 
     public SelectClause add(String ...propertyNames)
@@ -65,6 +69,12 @@ public class SelectClause implements Serializable
         {
             selectList.add(new SelectClauseElement(new PropertyValueExpression(name)));
         }
+        return this;
+    }
+
+    public SelectClause addWithAlias(String propertyName, String alias)
+    {
+        selectList.add(new SelectClauseElement(new PropertyValueExpression(propertyName), alias));
         return this;
     }
 
@@ -108,12 +118,7 @@ public class SelectClause implements Serializable
     public void setWildcard(boolean wildcard)
     {
         isWildcard = wildcard;
-    }
-
-    public void add(SelectClause selectClause)
-    {
-        // todo
-    }
+    }    
 
     public void toEQL(StringWriter writer)
     {

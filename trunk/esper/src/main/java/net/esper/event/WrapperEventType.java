@@ -22,9 +22,17 @@ import java.util.Map;
  */
 public class WrapperEventType implements EventType
 {
-	protected final EventType underlyingEventType;
-	protected final MapEventType underlyingMapType;
-	private final String[] propertyNames;
+    /**
+     * The underlying wrapped event type.
+     */
+    protected final EventType underlyingEventType;
+
+    /**
+     * The map event type that provides the additional properties.
+     */
+    protected final MapEventType underlyingMapType;
+    
+    private final String[] propertyNames;
     private final int hashCode;
     private final boolean isNoMapProperties;
     private final String typeName;
@@ -153,11 +161,19 @@ public class WrapperEventType implements EventType
         }
     }
 
+    /**
+     * Returns the wrapped event type.
+     * @return wrapped type
+     */
     public EventType getUnderlyingEventType()
     {
         return underlyingEventType;
     }
 
+    /**
+     * Returns the map type.
+     * @return map type providing additional properties.
+     */
     public MapEventType getUnderlyingMapType()
     {
         return underlyingMapType;

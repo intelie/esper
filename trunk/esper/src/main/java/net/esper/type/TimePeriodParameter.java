@@ -5,14 +5,16 @@
  * The software in this package is published under the terms of the GPL license       *
  * a copy of which has been included with this distribution in the license.txt file.  *
  **************************************************************************************/
-package net.esper.eql.parse;
+package net.esper.type;
 
 import net.esper.util.MetaDefItem;
+
+import java.io.StringWriter;
 
 /**
  * Parameter for views that accept time period information such as "5 sec 100 msec".
  */
-public class TimePeriodParameter implements MetaDefItem
+public class TimePeriodParameter implements MetaDefItem, EQLParameterType
 {
     private double numSeconds;
 
@@ -48,5 +50,11 @@ public class TimePeriodParameter implements MetaDefItem
     {
         long temp = numSeconds != +0.0d ? Double.doubleToLongBits(numSeconds) : 0L;
         return (int) (temp ^ (temp >>> 32));
+    }
+
+    public void toEQL(StringWriter writer)
+    {
+        writer.write(Double.toString(numSeconds));
+        writer.write(" sec");
     }
 }

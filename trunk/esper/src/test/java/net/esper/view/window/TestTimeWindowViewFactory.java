@@ -1,6 +1,6 @@
 package net.esper.view.window;
 
-import net.esper.eql.parse.TimePeriodParameter;
+import net.esper.type.TimePeriodParameter;
 import net.esper.support.view.SupportStatementContextFactory;
 import net.esper.view.ViewParameterException;
 import net.esper.view.std.SizeView;

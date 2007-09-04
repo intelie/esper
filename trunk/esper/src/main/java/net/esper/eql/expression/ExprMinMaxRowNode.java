@@ -31,6 +31,15 @@ public class ExprMinMaxRowNode extends ExprNode
         this.minMaxTypeEnum = minMaxTypeEnum;
     }
 
+    /**
+     * Returns the indicator for minimum or maximum.
+     * @return min/max indicator
+     */
+    public MinMaxTypeEnum getMinMaxTypeEnum()
+    {
+        return minMaxTypeEnum;
+    }
+
     public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate) throws ExprValidationException
     {
         if (this.getChildNodes().size() < 2)

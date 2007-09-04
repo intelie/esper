@@ -1,8 +1,10 @@
-package net.esper.eql.parse;
+package net.esper.type;
 
 import junit.framework.TestCase;
 
 import java.util.Set;
+
+import net.esper.type.WildcardParameter;
 
 public class TestWildcardParameter extends TestCase
 {

@@ -4,6 +4,7 @@ import junit.framework.TestCase;
 import net.esper.client.EPServiceProvider;
 import net.esper.client.EPServiceProviderManager;
 import net.esper.client.EPStatement;
+import net.esper.client.soda.*;
 import net.esper.event.EventBean;
 import net.esper.support.bean.SupportBeanString;
 import net.esper.support.bean.SupportMarketDataBean;
@@ -40,6 +41,58 @@ public class TestGroupByMaxMin extends TestCase
                           "group by symbol";
 
         selectTestView = epService.getEPAdministrator().createEQL(viewExpr);
+        selectTestView.addListener(testListener);
+
+        runAssertion();
+    }
+
+    public void testMinMaxView_OM()
+    {
+        EPStatementObjectModel model = new EPStatementObjectModel();
+        model.setSelectClause(SelectClause.create()
+            .add("symbol")
+            .add(Expressions.min("volume"), "minVol")
+            .add(Expressions.max("volume"), "maxVol")
+            .add(Expressions.minDistinct("volume"), "minDistVol")
+            .add(Expressions.maxDistinct("volume"), "maxDistVol")
+            );
+        model.setFromClause(FromClause.create(FilterStream.create(SupportMarketDataBean.class.getName()).addView("win", "length", 3)));
+        model.setWhereClause(Expressions.or()
+                .add(Expressions.eq("symbol", "DELL"))
+                .add(Expressions.eq("symbol", "IBM"))
+                .add(Expressions.eq("symbol", "GE")) );
+        model.setGroupByClause(GroupByClause.create("symbol"));
+
+        String viewExpr = "select symbol, " +
+                                  "min(volume) as minVol, " +
+                                  "max(volume) as maxVol, " +
+                                  "min(distinct volume) as minDistVol, " +
+                                  "max(distinct volume) as maxDistVol " +
+                          "from " + SupportMarketDataBean.class.getName() + ".win:length(3) " +
+                          "where ((symbol = 'DELL')) or ((symbol = 'IBM')) or ((symbol = 'GE')) " +
+                          "group by symbol";
+        assertEquals(viewExpr, model.toEQL());
+
+        selectTestView = epService.getEPAdministrator().create(model);
+        selectTestView.addListener(testListener);
+
+        runAssertion();
+    }
+
+    public void testMinMaxView_Compile()
+    {
+        String viewExpr = "select symbol, " +
+                                  "min(volume) as minVol, " +
+                                  "max(volume) as maxVol, " +
+                                  "min(distinct volume) as minDistVol, " +
+                                  "max(distinct volume) as maxDistVol " +
+                          "from " + SupportMarketDataBean.class.getName() + ".win:length(3) " +
+                          "where ((symbol = 'DELL')) or ((symbol = 'IBM')) or ((symbol = 'GE')) " +
+                          "group by symbol";
+        EPStatementObjectModel model = epService.getEPAdministrator().compile(viewExpr);
+        assertEquals(viewExpr, model.toEQL());
+
+        selectTestView = epService.getEPAdministrator().create(model);
         selectTestView.addListener(testListener);
 
         runAssertion();

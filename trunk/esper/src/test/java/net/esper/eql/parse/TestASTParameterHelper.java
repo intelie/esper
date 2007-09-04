@@ -3,6 +3,7 @@ package net.esper.eql.parse;
 import antlr.collections.AST;
 import antlr.CommonAST;
 import net.esper.eql.generated.EqlEvalTokenTypes;
+import net.esper.type.*;
 import junit.framework.TestCase;
 
 public class TestASTParameterHelper extends TestCase implements EqlEvalTokenTypes

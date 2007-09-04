@@ -8,6 +8,9 @@ import java.util.*;
 import java.io.*;
 import java.net.URL;
 
+/**
+ * Provides configurations for an engine instance.
+ */
 public interface ConfigurationInformation
 {
     /**

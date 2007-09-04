@@ -34,6 +34,10 @@ public enum OuterJoinType
         this.text = text;
     }
 
+    /**
+     * Returns the operator as an expression text.
+     * @return text of operator
+     */
     public String getText()
     {
         return text;

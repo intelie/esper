@@ -1,6 +1,7 @@
-package net.esper.eql.parse;
+package net.esper.type;
 
 import net.esper.support.util.ArrayAssertionUtil;
+import net.esper.type.IntParameter;
 
 import java.util.Set;
 

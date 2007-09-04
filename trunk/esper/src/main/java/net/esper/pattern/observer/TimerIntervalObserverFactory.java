@@ -7,11 +7,9 @@
  **************************************************************************************/
 package net.esper.pattern.observer;
 
-import net.esper.eql.parse.TimePeriodParameter;
+import net.esper.type.TimePeriodParameter;
 import net.esper.pattern.MatchedEventMap;
 import net.esper.pattern.PatternContext;
-import net.esper.pattern.guard.GuardParameterException;
-import net.esper.schedule.ScheduleSpec;
 import net.esper.util.MetaDefItem;
 import net.esper.util.JavaClassHelper;
 

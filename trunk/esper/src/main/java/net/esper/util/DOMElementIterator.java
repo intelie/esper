@@ -5,22 +5,33 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 import java.util.NoSuchElementException;
+import java.util.Iterator;
 
-public class DOMElementIterator
+/**
+ * Iterator over DOM nodes that positions between elements.
+ */
+public class DOMElementIterator implements Iterator<Element>
 {
     private int index;
     private NodeList nodeList;
 
-    public DOMElementIterator(NodeList nodeList) {
+    /**
+     * Ctor.
+     * @param nodeList is a list of DOM nodes.
+     */
+    public DOMElementIterator(NodeList nodeList)
+    {
         this.nodeList = nodeList;
     }
 
-    public boolean hasNext() {
+    public boolean hasNext()
+    {
         positionNext();
         return index < nodeList.getLength();
     }
 
-    public Element next() {
+    public Element next()
+    {
         if (index >= nodeList.getLength())
         {
             throw new NoSuchElementException();
@@ -30,7 +41,8 @@ public class DOMElementIterator
         return result;
     }
 
-    public void remove() {
+    public void remove()
+    {
         throw new UnsupportedOperationException();
     }
 

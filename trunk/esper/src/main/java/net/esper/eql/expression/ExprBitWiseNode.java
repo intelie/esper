@@ -23,8 +23,8 @@ import net.esper.eql.core.ViewResourceDelegate;
 public class ExprBitWiseNode extends ExprNode {
 
     private final BitWiseOpEnum _bitWiseOpEnum;
-    private BitWiseOpEnum.Computer _bitWiseOpEnumComputer;
-    private Class _resultType;
+    private BitWiseOpEnum.Computer bitWiseOpEnumComputer;
+    private Class resultType;
 
     /**
      * Ctor.
@@ -33,6 +33,15 @@ public class ExprBitWiseNode extends ExprNode {
     public ExprBitWiseNode(BitWiseOpEnum bitWiseOpEnum_)
     {
         _bitWiseOpEnum = bitWiseOpEnum_;
+    }
+
+    /**
+     * Returns the bitwise operator.
+     * @return operator
+     */
+    public BitWiseOpEnum getBitWiseOpEnum()
+    {
+        return _bitWiseOpEnum;
     }
 
     public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate) throws ExprValidationException
@@ -65,8 +74,8 @@ public class ExprBitWiseNode extends ExprNode {
             Class childBoxedTypeTwo = JavaClassHelper.getBoxedType(childTypeTwo) ;
             if (childBoxedTypeOne == childBoxedTypeTwo)
             {
-                _resultType = childBoxedTypeOne;
-                _bitWiseOpEnumComputer = _bitWiseOpEnum.getComputer(_resultType);
+                resultType = childBoxedTypeOne;
+                bitWiseOpEnumComputer = _bitWiseOpEnum.getComputer(resultType);
             }
             else
             {
@@ -82,7 +91,7 @@ public class ExprBitWiseNode extends ExprNode {
 
     public Class getType() throws ExprValidationException
     {
-        return _resultType;
+        return resultType;
     }
 
     public Object evaluate(EventBean[] eventsPerStream, boolean isNewData)
@@ -96,7 +105,7 @@ public class ExprBitWiseNode extends ExprNode {
         }
 
         // bitWiseOpEnumComputer is initialized by validation
-        Object result = _bitWiseOpEnumComputer.compute((Object) valueChildOne, (Object) valueChildTwo);
+        Object result = bitWiseOpEnumComputer.compute((Object) valueChildOne, (Object) valueChildTwo);
         return result;
     }
 

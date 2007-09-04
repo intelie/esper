@@ -348,6 +348,11 @@ public enum MathArithTypeEnum
         return expressionText;
     }
 
+    /**
+     * Returns the math operator for the string.
+     * @param operator to parse
+     * @return math enum
+     */
     public static MathArithTypeEnum parseOperator(String operator)
     {
         for (int i = 0; i < MathArithTypeEnum.values().length; i++)

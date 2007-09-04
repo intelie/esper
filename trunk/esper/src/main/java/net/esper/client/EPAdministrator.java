@@ -69,7 +69,21 @@ public interface EPAdministrator
      * @throws EPException when the expression was not valid
      */
     public EPStatement create(EPStatementObjectModel sodaStatement, String statementName) throws EPException;
+
+    /**
+     * Creates and starts an EQL statement.
+     * @param sodaStatement is the statement object model
+     * @return EPStatement to poll data from or to add listeners to
+     * @throws EPException when the expression was not valid
+     */
     public EPStatement create(EPStatementObjectModel sodaStatement) throws EPException;
+
+    /**
+     * Compiles a given EQL into an object model representation of the query.
+     * @param eqlExpression is the statement text to compile
+     * @return object model of statement
+     * @throws EPException indicates compilation errors.
+     */
     public EPStatementObjectModel compile(String eqlExpression) throws EPException;
 
     /**

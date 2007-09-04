@@ -142,12 +142,17 @@ public class EPAdministratorImpl implements EPAdministrator
 
     private EPStatement createEQLStmt(String eqlStatement, String statementName) throws EPException
     {
-        StatementSpecRaw statementSpec = compile(eqlStatement, statementName);
-        
+        // TODO
+        //StatementSpecRaw statementSpec = compile(eqlStatement, statementName);
+        EPStatementObjectModel model = compile(eqlStatement);
+        return create(model, statementName);
+
+        /*
         EPStatement statement = services.getStatementLifecycleSvc().createAndStart(statementSpec, eqlStatement, false, statementName);
 
         log.debug(".createEQLStmt Statement created and started");
         return statement;
+        */
     }
 
     public EPStatement create(EPStatementObjectModel sodaStatement) throws EPException
@@ -158,7 +163,7 @@ public class EPAdministratorImpl implements EPAdministrator
     public EPStatement create(EPStatementObjectModel sodaStatement, String statementName) throws EPException
     {
         // Specifies the statement
-        StatementSpecRaw statementSpec = StatementSpecTranslator.map(sodaStatement);
+        StatementSpecRaw statementSpec = StatementSpecTranslator.map(sodaStatement, services.getEngineImportService());
         String eqlStatement = sodaStatement.toEQL(); 
 
         EPStatement statement = services.getStatementLifecycleSvc().createAndStart(statementSpec, eqlStatement, false, statementName);
@@ -203,6 +208,9 @@ public class EPAdministratorImpl implements EPAdministrator
         return configurationOperations;
     }
 
+    /**
+     * Destroys an engine instance.
+     */
     public void destroy()
     {
         services = null;

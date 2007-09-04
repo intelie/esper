@@ -5,54 +5,34 @@
  * The software in this package is published under the terms of the GPL license       *
  * a copy of which has been included with this distribution in the license.txt file.  *
  **************************************************************************************/
-package net.esper.eql.parse;
+package net.esper.type;
 
 import java.util.Set;
 import java.util.HashSet;
+import java.io.StringWriter;
 
 /**
- * Parameter supplying a single int value is a set of numbers.
+ * Represents a wildcard as a parameter.
  */
-public class IntParameter implements NumberSetParameter
+public class WildcardParameter implements NumberSetParameter
 {
-    private int intValue;
-
-    /**
-     * Ctor.
-     * @param intValue - single in value
-     */
-    public IntParameter(int intValue)
-    {
-        this.intValue = intValue;
-    }
-
-    /**
-     * Returns int value.
-     * @return int value
-     */
-    public int getIntValue()
-    {
-        return intValue;
-    }
-
     public boolean isWildcard(int min, int max)
     {
-        if ((intValue == min) && (intValue == max))
-        {
-            return true;
-        }
-        return false;
+        return true;
     }
 
     public Set<Integer> getValuesInRange(int min, int max)
     {
-        Set<Integer> values = new HashSet<Integer>();
-
-        if ((intValue >= min) && (intValue <= max))
+        Set<Integer> result = new HashSet<Integer>();
+        for (int i = min; i <= max; i++)
         {
-            values.add(intValue);
+            result.add(i);
         }
+        return result;
+    }
 
-        return values;
+    public void toEQL(StringWriter writer)
+    {
+        writer.write('*');
     }
 }

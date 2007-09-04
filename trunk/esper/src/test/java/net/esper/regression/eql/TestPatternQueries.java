@@ -4,6 +4,7 @@ import junit.framework.TestCase;
 import net.esper.client.EPServiceProvider;
 import net.esper.client.EPStatement;
 import net.esper.client.EPServiceProviderManager;
+import net.esper.client.soda.*;
 import net.esper.client.time.TimerControlEvent;
 import net.esper.client.time.CurrentTimeEvent;
 import net.esper.support.util.SupportUpdateListener;
@@ -23,6 +24,75 @@ public class TestPatternQueries extends TestCase
         epService.initialize();
 
         updateListener = new SupportUpdateListener();
+    }
+
+    public void testWhere_OM()
+    {
+        EPStatementObjectModel model = new EPStatementObjectModel();
+        model.setSelectClause(SelectClause.create().addWithAlias("s0.id", "idS0").addWithAlias("s1.id", "idS1"));
+        PatternExpr pattern = Patterns.or()
+                .add(Patterns.everyFilter(SupportBean_S0.class.getName(), "s0"))
+                .add(Patterns.everyFilter(SupportBean_S1.class.getName(), "s1")
+                );
+        model.setFromClause(FromClause.create(PatternStream.create(pattern)));
+        model.setWhereClause(Expressions.or()
+                .add(Expressions.and()
+                      .add(Expressions.isNotNull("s0.id"))
+                      .add(Expressions.lt("s0.id", 100))
+                    )
+                .add(Expressions.and()
+                      .add(Expressions.isNotNull("s1.id"))
+                      .add(Expressions.ge("s1.id", 100))
+                    ));
+
+        String reverse = model.toEQL();
+        String stmtText = "select s0.id as idS0, s1.id as idS1 " +
+                "from pattern [(every (s0=" + SupportBean_S0.class.getName() +
+                ")) or (every (s1=" + SupportBean_S1.class.getName() + "))] " +
+                "where (((s0.id != null)) and ((s0.id < 100))) or (((s1.id != null)) and ((s1.id >= 100)))";
+        assertEquals(stmtText, reverse);
+
+        EPStatement statement = epService.getEPAdministrator().create(model);
+        statement.addListener(updateListener);
+
+        sendEventS0(1);
+        assertEventIds(1, null);
+
+        sendEventS0(101);
+        assertFalse(updateListener.isInvoked());
+
+        sendEventS1(1);
+        assertFalse(updateListener.isInvoked());
+
+        sendEventS1(100);
+        assertEventIds(null, 100);
+    }
+
+    public void testWhere_Compile()
+    {
+        String stmtText = "select s0.id as idS0, s1.id as idS1 " +
+                "from pattern [(every (s0=" + SupportBean_S0.class.getName() +
+                ")) or (every (s1=" + SupportBean_S1.class.getName() + "))] " +
+                "where (((s0.id != null)) and ((s0.id < 100))) or (((s1.id != null)) and ((s1.id >= 100)))";
+        EPStatementObjectModel model = epService.getEPAdministrator().compile(stmtText);
+
+        String reverse = model.toEQL();
+        assertEquals(stmtText, reverse);
+
+        EPStatement statement = epService.getEPAdministrator().create(model);
+        statement.addListener(updateListener);
+
+        sendEventS0(1);
+        assertEventIds(1, null);
+
+        sendEventS0(101);
+        assertFalse(updateListener.isInvoked());
+
+        sendEventS1(1);
+        assertFalse(updateListener.isInvoked());
+
+        sendEventS1(100);
+        assertEventIds(null, 100);
     }
 
     public void testWhere()

@@ -159,10 +159,43 @@ public class TestSubselectFiltered extends TestCase
     public void testWherePrevious()
     {
         String stmtText = "select (select prev(1, id) from S1.win:length(1000) where id=s0.id) as value from S0 as s0";
-
         EPStatement stmt = epService.getEPAdministrator().createEQL(stmtText);
         stmt.addListener(listener);
+        runWherePrevious();
+    }
 
+    public void testWherePreviousOM()
+    {
+        EPStatementObjectModel subquery = new EPStatementObjectModel();
+        subquery.setSelectClause(SelectClause.create().add(Expressions.previous(1, "id")));
+        subquery.setFromClause(FromClause.create(FilterStream.create("S1").addView(View.create("win", "length", 1000))));
+        subquery.setWhereClause(Expressions.eqProperty("id","s0.id"));
+
+        EPStatementObjectModel model = new EPStatementObjectModel();
+        model.setFromClause(FromClause.create(FilterStream.create("S0", "s0")));
+        model.setSelectClause(SelectClause.create().add(Expressions.subquery(subquery), "value"));
+
+        String stmtText = "select (select prev(1, id) from S1.win:length(1000) where (id = s0.id)) as value from S0 as s0";
+        assertEquals(stmtText, model.toEQL());
+
+        EPStatement stmt = epService.getEPAdministrator().create(model);
+        stmt.addListener(listener);
+        runWherePrevious();
+    }
+
+    public void testWherePreviousCompile()
+    {
+        String stmtText = "select (select prev(1, id) from S1.win:length(1000) where (id = s0.id)) as value from S0 as s0";
+        EPStatementObjectModel model = epService.getEPAdministrator().compile(stmtText);
+        assertEquals(stmtText, model.toEQL());
+
+        EPStatement stmt = epService.getEPAdministrator().create(model);
+        stmt.addListener(listener);
+        runWherePrevious();
+    }
+
+    private void runWherePrevious()
+    {
         epService.getEPRuntime().sendEvent(new SupportBean_S1(1));
         epService.getEPRuntime().sendEvent(new SupportBean_S0(0));
         assertNull(listener.assertOneGetNewAndReset().get("value"));

@@ -5,16 +5,17 @@
  * The software in this package is published under the terms of the GPL license       *
  * a copy of which has been included with this distribution in the license.txt file.  *
  **************************************************************************************/
-package net.esper.eql.parse;
+package net.esper.type;
 
 import net.esper.util.MetaDefItem;
 
 import java.util.Set;
+import java.io.StringWriter;
 
 /**
  * Interface to generate a set of integers from parameters that include ranges, lists and frequencies.
  */
-public interface NumberSetParameter extends MetaDefItem
+public interface NumberSetParameter extends MetaDefItem, EQLParameterType
 {
     /**
      * Returns true if all values between and including min and max are supplied by the parameter.
@@ -31,4 +32,6 @@ public interface NumberSetParameter extends MetaDefItem
      * @return set of integer
      */
     public Set<Integer> getValuesInRange(int min, int max);
+
+    public void toEQL(StringWriter writer);
 }

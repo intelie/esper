@@ -50,7 +50,7 @@ public class TestGroupByCount extends TestCase
                                   "count(distinct volume) as countDistVol, " +
                                   "count(volume) as countVol" +
                           " from " + SupportMarketDataBean.class.getName() + ".win:length(3) " +
-                          "where (symbol = 'DELL') or (symbol = 'IBM') or (symbol = 'GE') " +
+                          "where ((symbol = 'DELL')) or ((symbol = 'IBM')) or ((symbol = 'GE')) " +
                           "group by symbol";
         assertEquals(viewExpr, model.toEQL());
 
@@ -67,7 +67,7 @@ public class TestGroupByCount extends TestCase
                                   "count(distinct volume) as countDistVol, " +
                                   "count(volume) as countVol" +
                           " from " + SupportMarketDataBean.class.getName() + ".win:length(3) " +
-                          "where (symbol = 'DELL') or (symbol = 'IBM') or (symbol = 'GE') " +
+                          "where ((symbol = 'DELL')) or ((symbol = 'IBM')) or ((symbol = 'GE')) " +
                           "group by symbol";
         EPStatementObjectModel model = epService.getEPAdministrator().compile(viewExpr);
         assertEquals(viewExpr, model.toEQL());

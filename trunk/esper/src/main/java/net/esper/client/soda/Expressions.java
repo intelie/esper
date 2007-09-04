@@ -1,192 +1,1131 @@
 package net.esper.client.soda;
 
-import java.io.Serializable;
-import java.util.List;
-import java.util.ArrayList;
+import net.esper.type.BitWiseOpEnum;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * Convenience factory for creating {@link Expression} instances.
+ * <p>
+ * Provides quick-access method to create all possible expressions and provides typical parameter lists to each.
+ * <p>
+ * Note that only the typical parameter lists are provided and expressions can allow adding
+ * additional parameters. 
+ * <p>
+ * Many expressions, for example logical AND and OR (conjunction and disjunction), allow
+ * adding an unlimited number of additional sub-expressions to an expression. For those expressions
+ * there are additional add methods provided by the return expression instance.
+ */
 public class Expressions implements Serializable
 {
-    public static Junction or()
+    /**
+     * Plug-in aggregation function.
+     * @param functionName is the function name
+     * @param parameter provides the values to aggregate
+     * @return expression
+     */
+    public static PlugInProjectionExpression plugInAggregation(String functionName, Expression parameter)
+    {
+        return new PlugInProjectionExpression(functionName, false, parameter);
+    }
+
+    /**
+     * Regular expression.
+     * @param left returns the values to match
+     * @param right returns the value to match against
+     * @return expression
+     */
+    public static RegExpExpression regexp(Expression left, Expression right)
+    {
+        return new RegExpExpression(left, right);
+    }
+
+    /**
+     * Regular expression.
+     * @param left returns the values to match
+     * @param right returns the value to match against
+     * @param escape is the escape character
+     * @return expression
+     */
+    public static RegExpExpression regexp(Expression left, Expression right, String escape)
+    {
+        return new RegExpExpression(left, right, new ConstantExpression(escape));
+    }
+
+    /**
+     * Regular expression.
+     * @param property the name of the property returning values to match
+     * @param regExExpression a regular expression to match against
+     * @return expression
+     */
+    public static RegExpExpression regexp(String property, String regExExpression)
+    {
+        return new RegExpExpression(getPropExpr(property), new ConstantExpression(regExExpression));
+    }
+
+    /**
+     * Regular expression.
+     * @param property the name of the property returning values to match
+     * @param regExExpression a regular expression to match against
+     * @param escape is the escape character
+     * @return expression
+     */
+    public static RegExpExpression regexp(String property, String regExExpression, String escape)
+    {
+        return new RegExpExpression(getPropExpr(property), new ConstantExpression(regExExpression), new ConstantExpression(escape));
+    }
+
+    /**
+     * Array expression, representing the syntax of "{1, 2, 3}" returning an integer array of 3 elements valued 1, 2, 3.
+     * @return expression
+     */
+    public static ArrayExpression array()
+    {
+        return new ArrayExpression();
+    }
+
+    /**
+     * Bitwise (binary) AND.
+     * @return expression
+     */
+    public static BitwiseOpExpression binaryAnd()
+    {
+        return new BitwiseOpExpression(BitWiseOpEnum.BAND);
+    }
+
+    /**
+     * Bitwise (binary) OR.
+     * @return expression
+     */
+    public static BitwiseOpExpression binaryOr()
+    {
+        return new BitwiseOpExpression(BitWiseOpEnum.BOR);
+    }
+
+    /**
+     * Bitwise (binary) XOR.
+     * @return expression
+     */
+    public static BitwiseOpExpression binaryXor()
+    {
+        return new BitwiseOpExpression(BitWiseOpEnum.BXOR);
+    }
+
+    /**
+     * Minimum value per-row function (not aggregating).
+     * @param propertyOne the name of a first property to compare
+     * @param propertyTwo the name of a second property to compare
+     * @param moreProperties optional additional properties to compare
+     * @return expression
+     */
+    public static MinRowExpression min(String propertyOne, String propertyTwo, String...moreProperties)
+    {
+        return new MinRowExpression(propertyOne, propertyTwo, moreProperties);
+    }
+
+    /**
+     * Minimum value per-row function (not aggregating).
+     * @param exprOne returns the first value to compare
+     * @param exprTwo returns the second value to compare
+     * @param moreExpressions optional additional values to compare
+     * @return expression
+     */
+    public static MinRowExpression min(Expression exprOne, Expression exprTwo, Expression...moreExpressions)
+    {
+        return new MinRowExpression(exprOne, exprTwo, moreExpressions);
+    }
+
+    /**
+     * Maximum value per-row function (not aggregating).
+     * @param propertyOne the name of a first property to compare
+     * @param propertyTwo the name of a second property to compare
+     * @param moreProperties optional additional properties to compare
+     * @return expression
+     */
+    public static MaxRowExpression max(String propertyOne, String propertyTwo, String...moreProperties)
+    {
+        return new MaxRowExpression(propertyOne, propertyTwo, moreProperties);
+    }
+
+    /**
+     * Maximum value per-row function (not aggregating).
+     * @param exprOne returns the first value to compare
+     * @param exprTwo returns the second value to compare
+     * @param moreExpressions optional additional values to compare
+     * @return expression
+     */
+    public static MaxRowExpression max(Expression exprOne, Expression exprTwo, Expression...moreExpressions)
+    {
+        return new MaxRowExpression(exprOne, exprTwo, moreExpressions);
+    }
+
+    /**
+     * Coalesce.
+     * @param propertyOne name of the first property returning value to coealesce
+     * @param propertyTwo name of the second property returning value to coealesce
+     * @param moreProperties name of the optional additional properties returning values to coealesce
+     * @return expression
+     */
+    public static CoalesceExpression coalesce(String propertyOne, String propertyTwo, String...moreProperties)
+    {
+        return new CoalesceExpression(propertyOne, propertyTwo, moreProperties);
+    }
+
+    /**
+     * Coalesce.
+     * @param exprOne returns value to coalesce
+     * @param exprTwo returns value to coalesce
+     * @param moreExpressions returning optional additional values to coalesce
+     * @return expression
+     */
+    public static CoalesceExpression coalesce(Expression exprOne, Expression exprTwo, Expression...moreExpressions)
+    {
+        return new CoalesceExpression(exprOne, exprTwo, moreExpressions);
+    }
+
+    /**
+     * Constant.
+     * @param value is the constant value
+     * @return expression
+     */
+    public static ConstantExpression constant(Object value)
+    {
+        return new ConstantExpression(value);
+    }
+
+    /**
+     * Case-when-then expression.
+     * @return expression
+     */
+    public static CaseWhenThenExpression caseWhenThen()
+    {
+        return new CaseWhenThenExpression();
+    }
+
+    /**
+     * Case-switch expresssion.
+     * @param valueToSwitchOn provides the switch value
+     * @return expression
+     */
+    public static CaseSwitchExpression caseSwitch(Expression valueToSwitchOn)
+    {
+        return new CaseSwitchExpression(valueToSwitchOn);
+    }
+
+    /**
+     * Case-switch expresssion.
+     * @param propertyName the name of the property that provides the switch value
+     * @return expression
+     */
+    public static CaseSwitchExpression caseSwitch(String propertyName)
+    {
+        return new CaseSwitchExpression(getPropExpr(propertyName));
+    }
+
+    /**
+     * In-expression that is equivalent to the syntax of "property in (value, value, ... value)".
+     * @param property is the name of the property
+     * @param values are the constants to check against
+     * @return expression
+     */
+    public static InExpression in(String property, Object ...values)
+    {
+        return new InExpression(getPropExpr(property), false, values);
+    }
+
+    /**
+     * Not-In-expression that is equivalent to the syntax of "property not in (value, value, ... value)".
+     * @param property is the name of the property
+     * @param values are the constants to check against
+     * @return expression
+     */
+    public static InExpression notIn(String property, Object ...values)
+    {
+        return new InExpression(getPropExpr(property), true, values);
+    }
+
+    /**
+     * In-expression that is equivalent to the syntax of "property in (value, value, ... value)".
+     * @param value provides values to match
+     * @param set are expressons that provide match-against values
+     * @return expression
+     */
+    public static InExpression in(Expression value, Expression ...set)
+    {
+        return new InExpression(value, false, set);
+    }
+
+    /**
+     * Not-In-expression that is equivalent to the syntax of "property not in (value, value, ... value)".
+     * @param value provides values to match
+     * @param set are expressons that provide match-against values
+     * @return expression
+     */
+    public static InExpression notIn(Expression value, Expression ...set)
+    {
+        return new InExpression(value, true, set);
+    }
+
+    /**
+     * Not expression negates the sub-expression to the not which is expected to return boolean-typed values.
+     * @param inner is the sub-expression
+     * @return expression
+     */
+    public static NotExpression not(Expression inner)
+    {
+        return new NotExpression(inner);
+    }
+
+    /**
+     * Static method invocation.
+     * @param className the name of the class to invoke a method on
+     * @param method the name of the method to invoke
+     * @param parameters zero, one or more constants that are the parameters to the static method
+     * @return expression
+     */
+    public static StaticMethodExpression staticMethod(String className, String method, Object ...parameters)
+    {
+        return new StaticMethodExpression(className, method, parameters);
+    }
+
+    /**
+     * Static method invocation.
+     * @param className the name of the class to invoke a method on
+     * @param method the name of the method to invoke
+     * @param parameters zero, one or more expressions that provide parameters to the static method
+     * @return expression
+     */
+    public static StaticMethodExpression staticMethod(String className, String method, Expression ...parameters)
+    {
+        return new StaticMethodExpression(className, method, parameters);    
+    }
+
+    /**
+     * Prior function.
+     * @param index the numeric index of the prior event
+     * @param property the name of the property to obtain the value for
+     * @return expression
+     */
+    public static PriorExpression prior(int index, String property)
+    {
+        return new PriorExpression(index, property);
+    }
+
+    /**
+     * Previous function.
+     * @param expression provides the numeric index of the previous event
+     * @param property the name of the property to obtain the value for
+     * @return expression
+     */
+    public static PreviousExpression previous(Expression expression, String property)
+    {
+        return new PreviousExpression(expression, property);
+    }
+
+    /**
+     * Previous function.
+     * @param index the numeric index of the previous event
+     * @param property the name of the property to obtain the value for
+     * @return expression
+     */
+    public static PreviousExpression previous(int index, String property)
+    {
+        return new PreviousExpression(index, property);
+    }
+
+    /**
+     * Between.
+     * @param property the name of the property supplying data points.
+     * @param lowBoundaryProperty the name of the property supplying lower boundary.
+     * @param highBoundaryProperty the name of the property supplying upper boundary.
+     * @return expression
+     */
+    public static BetweenExpression betweenProperty(String property, String lowBoundaryProperty, String highBoundaryProperty)
+    {
+        return new BetweenExpression(getPropExpr(property), getPropExpr(lowBoundaryProperty), getPropExpr(highBoundaryProperty));
+    }
+
+    /**
+     * Between.
+     * @param property the name of the property that returns the datapoint to check range
+     * @param lowBoundary constant indicating the lower boundary
+     * @param highBoundary constant indicating the upper boundary
+     * @return expression
+     */
+    public static BetweenExpression between(String property, Object lowBoundary, Object highBoundary)
+    {
+        return new BetweenExpression(getPropExpr(property), new ConstantExpression(lowBoundary), new ConstantExpression(highBoundary));
+    }
+
+    /**
+     * Between.
+     * @param datapoint returns the datapoint to check range
+     * @param lowBoundary returns values for the lower boundary
+     * @param highBoundary returns values for the upper boundary
+     * @return expression
+     */
+    public static BetweenExpression between(Expression datapoint, Expression lowBoundary, Expression highBoundary)
+    {
+        return new BetweenExpression(datapoint, lowBoundary, highBoundary);
+    }
+
+    /**
+     * Between (or range).
+     * @param datapoint returns the datapoint to check range
+     * @param lowBoundary returns values for the lower boundary
+     * @param highBoundary returns values for the upper boundary
+     * @param isLowIncluded true to indicate lower boundary itself is included in the range
+     * @param isHighIncluded true to indicate upper boundary itself is included in the range
+     * @return expression
+     */
+    public static BetweenExpression range(Expression datapoint, Expression lowBoundary, Expression highBoundary, boolean isLowIncluded, boolean isHighIncluded)
+    {
+        return new BetweenExpression(datapoint, lowBoundary, highBoundary, isLowIncluded, isHighIncluded, false);
+    }
+
+    /**
+     * Logical OR disjunction. Use add methods to add expressions. 
+     */
+    public static Disjunction or()
     {
         return new Disjunction();
     }
 
-    public static Junction or(Expression ...expressions)
+    /**
+     * Logical OR disjunction.
+     * @param first an expression returning values to junction
+     * @param second an expression returning values to junction
+     * @param expressions an optional list of expressions returning values to junction
+     * @return expression
+     */
+    public static Disjunction or(Expression first, Expression second, Expression ...expressions)
     {
-        return new Disjunction(expressions);
+        return new Disjunction(first, second, expressions);
     }
 
-    public static Junction and()
+    /**
+     * Logical AND conjunction. Use add methods to add expressions. 
+     */
+    public static Conjunction and()
     {
         return new Conjunction();
     }
 
-    public static Junction and(Expression ...expressions)
+    /**
+     * Logical AND conjunction.
+     * @param first an expression returning values to junction
+     * @param second an expression returning values to junction
+     * @param expressions an optional list of expressions returning values to junction
+     * @return expression
+     */
+    public static Conjunction and(Expression first, Expression second, Expression ...expressions)
     {
-        return new Conjunction(expressions);
+        return new Conjunction(first, second, expressions);
     }
 
-    public static Expression ge(String propertyName, Object value)
+    /**
+     * Greater-or-equal between a property and a constant.
+     * @param propertyName the name of the property providing left hand side values
+     * @param value is the constant to compare
+     * @return expression
+     */
+    public static RelationalOpExpression ge(String propertyName, Object value)
     {
         return new RelationalOpExpression(getPropExpr(propertyName)
                 , ">=", new ConstantExpression(value));
     }
 
-    public static Expression ge(Expression left, Expression right)
+    /**
+     * Greater-or-equals between expression results.
+     * @param left the expression providing left hand side values
+     * @param right the expression providing right hand side values
+     * @return expression
+     */
+    public static RelationalOpExpression ge(Expression left, Expression right)
     {
         return new RelationalOpExpression(left, ">=", right);
     }
 
-    public static Expression geProperty(String propertyName, String propertyRight)
+    /**
+     * Greater-or-equal between properties.
+     * @param propertyLeft the name of the property providing left hand side values
+     * @param propertyRight the name of the property providing right hand side values
+     * @return expression
+     */
+    public static RelationalOpExpression geProperty(String propertyLeft, String propertyRight)
     {
-        return new RelationalOpExpression(getPropExpr(propertyName)
+        return new RelationalOpExpression(getPropExpr(propertyLeft)
                 , ">=", new PropertyValueExpression(propertyRight));
     }
 
-    public static Expression gt(String propertyName, Object value)
+    /**
+     * Greater-then between a property and a constant.
+     * @param propertyName the name of the property providing left hand side values
+     * @param value is the constant to compare
+     * @return expression
+     */
+    public static RelationalOpExpression gt(String propertyName, Object value)
     {
         return new RelationalOpExpression(getPropExpr(propertyName)
                 , ">", new ConstantExpression(value));
     }
 
-    public static Expression gt(Expression left, Expression right)
+    /**
+     * Greater-then between expression results.
+     * @param left the expression providing left hand side values
+     * @param right the expression providing right hand side values
+     * @return expression
+     */
+    public static RelationalOpExpression gt(Expression left, Expression right)
     {
         return new RelationalOpExpression(left, ">", right);
     }
 
-    public static Expression gtProperty(String propertyName, String propertyRight)
+    /**
+     * Greater-then between properties.
+     * @param propertyLeft the name of the property providing left hand side values
+     * @param propertyRight the name of the property providing right hand side values
+     * @return expression
+     */
+    public static RelationalOpExpression gtProperty(String propertyLeft, String propertyRight)
     {
-        return new RelationalOpExpression(getPropExpr(propertyName)
+        return new RelationalOpExpression(getPropExpr(propertyLeft)
                 , ">", new PropertyValueExpression(propertyRight));
     }
 
-    public static Expression le(String propertyName, Object value)
+    /**
+     * Less-or-equals between a property and a constant.
+     * @param propertyName the name of the property providing left hand side values
+     * @param value is the constant to compare
+     * @return expression
+     */
+    public static RelationalOpExpression le(String propertyName, Object value)
     {
         return new RelationalOpExpression(getPropExpr(propertyName)
                 , "<=", new ConstantExpression(value));
     }
 
-    public static Expression lt(Expression left, Expression right)
+    /**
+     * Less-or-equal between properties.
+     * @param propertyLeft the name of the property providing left hand side values
+     * @param propertyRight the name of the property providing right hand side values
+     * @return expression
+     */
+    public static RelationalOpExpression leProperty(String propertyLeft, String propertyRight)
     {
-        return new RelationalOpExpression(left, "<", right);
-    }
-
-    public static Expression leProperty(String propertyName, String propertyRight)
-    {
-        return new RelationalOpExpression(getPropExpr(propertyName)
+        return new RelationalOpExpression(getPropExpr(propertyLeft)
                 , "<=", new PropertyValueExpression(propertyRight));
     }
 
-    public static Expression le(Expression left, Expression right)
+    /**
+     * Less-or-equal between expression results.
+     * @param left the expression providing left hand side values
+     * @param right the expression providing right hand side values
+     * @return expression
+     */
+    public static RelationalOpExpression le(Expression left, Expression right)
     {
         return new RelationalOpExpression(left, "<=", right);
     }
 
-    public static Expression lt(String propertyName, Object value)
+    /**
+     * Less-then between a property and a constant.
+     * @param propertyName the name of the property providing left hand side values
+     * @param value is the constant to compare
+     * @return expression
+     */
+    public static RelationalOpExpression lt(String propertyName, Object value)
     {
         return new RelationalOpExpression(getPropExpr(propertyName)
                 , "<", new ConstantExpression(value));
     }
 
-    public static Expression ltProperty(String propertyName, String propertyRight)
+    /**
+     * Less-then between properties.
+     * @param propertyLeft the name of the property providing left hand side values
+     * @param propertyRight the name of the property providing right hand side values
+     * @return expression
+     */
+    public static RelationalOpExpression ltProperty(String propertyLeft, String propertyRight)
     {
-        return new RelationalOpExpression(getPropExpr(propertyName)
+        return new RelationalOpExpression(getPropExpr(propertyLeft)
                 , "<", new PropertyValueExpression(propertyRight));
     }
 
-    public static Expression eq(String propertyName, Object value)
+    /**
+     * Less-then between expression results.
+     * @param left the expression providing left hand side values
+     * @param right the expression providing right hand side values
+     * @return expression
+     */
+    public static RelationalOpExpression lt(Expression left, Expression right)
+    {
+        return new RelationalOpExpression(left, "<", right);
+    }
+
+    /**
+     * Equals between a property and a constant.
+     * @param propertyName the name of the property providing left hand side values
+     * @param value is the constant to compare
+     * @return expression
+     */
+    public static RelationalOpExpression eq(String propertyName, Object value)
     {
         return new RelationalOpExpression(getPropExpr(propertyName)
                 , "=", new ConstantExpression(value));
     }
 
-    public static Expression eqProperty(String propertyName, String propertyRight)
+    /**
+     * Equals between properties.
+     * @param propertyLeft the name of the property providing left hand side values
+     * @param propertyRight the name of the property providing right hand side values
+     * @return expression
+     */
+    public static RelationalOpExpression eqProperty(String propertyLeft, String propertyRight)
     {
-        return new RelationalOpExpression(getPropExpr(propertyName)
+        return new RelationalOpExpression(getPropExpr(propertyLeft)
                 , "=", new PropertyValueExpression(propertyRight));
     }
 
-    public static Expression property(String propertyName)
+    /**
+     * Equals between expression results.
+     * @param left the expression providing left hand side values
+     * @param right the expression providing right hand side values
+     * @return expression
+     */
+    public static RelationalOpExpression eq(Expression left, Expression right)
+    {
+        return new RelationalOpExpression(left, "=", right);
+    }
+
+    /**
+     * Not-null test.
+     * @param property the name of the property supplying the value to check for null
+     * @return expression
+     */
+    public static RelationalOpExpression isNotNull(String property)
+    {
+        return new RelationalOpExpression(getPropExpr(property), "!=", null);
+    }
+
+    /**
+     * Not-null test.
+     * @param expression supplies the value to check for null
+     * @return expression
+     */
+    public static RelationalOpExpression isNotNull(Expression expression)
+    {
+        return new RelationalOpExpression(expression, "!=", null);
+    }
+
+    /**
+     * Property value.
+     * <p>
+     * An expression that returns the value of the named property.
+     * <p>
+     * Nested, indexed or mapped properties follow the documented sytnax.
+     * @param propertyName is the name of the property to return the value for.
+     * @return expression
+     */
+    public static PropertyValueExpression property(String propertyName)
     {
         return getPropExpr(propertyName);
     }
 
-    public static Expression like(String propertyName, Object value)
+    /**
+     * SQL-Like.
+     * @param propertyName the name of the property providing values to match
+     * @param value is the string to match against
+     * @return expression
+     */
+    public static LikeExpression like(String propertyName, String value)
     {
         return new LikeExpression(getPropExpr(propertyName), new ConstantExpression(value));
     }
 
-    public static Expression like(Expression left, Expression right)
+    /**
+     * SQL-Like.
+     * @param left provides value to match
+     * @param right provides string to match against
+     * @return expression
+     */
+    public static LikeExpression like(Expression left, Expression right)
     {
         return new LikeExpression(left, right);
     }
 
-    public static Expression avg(String propertyName)
+    /**
+     * SQL-Like.
+     * @param propertyName the name of the property providing values to match
+     * @param value is the string to match against
+     * @param escape the escape character(s)
+     * @return expression
+     */
+    public static LikeExpression like(String propertyName, Object value, String escape)
     {
-        return new AvgProjectionExpression(getPropExpr(propertyName));
+        return new LikeExpression(getPropExpr(propertyName), new ConstantExpression(value), new ConstantExpression(escape));
     }
 
-    public static Expression avg(Expression inner)
+    /**
+     * SQL-Like.
+     * @param left provides value to match
+     * @param right provides string to match against
+     * @param escape the escape character(s)
+     * @return expression
+     */
+    public static LikeExpression like(Expression left, Expression right, Expression escape)
     {
-        return new AvgProjectionExpression(inner);
+        return new LikeExpression(left, right, escape);
     }
 
-    public static Expression sum(String propertyName)
+    /**
+     * Average aggregation function.
+     * @param propertyName name of the property providing the values to aggregate.
+     * @return expression
+     */
+    public static AvgProjectionExpression avg(String propertyName)
     {
-        return new SumProjectionExpression(getPropExpr(propertyName));
+        return new AvgProjectionExpression(getPropExpr(propertyName), false);
     }
 
-    public static Expression sum(Expression inner)
+    /**
+     * Average aggregation function.
+     * @param expression provides the values to aggregate.
+     * @return expression
+     */
+    public static AvgProjectionExpression avg(Expression expression)
     {
-        return new SumProjectionExpression(inner);
+        return new AvgProjectionExpression(expression, false);
     }
 
-    public static Expression minus(Expression left, Expression right)
+    /**
+     * Average aggregation function considering distinct values only.
+     * @param propertyName name of the property providing the values to aggregate.
+     * @return expression
+     */
+    public static AvgProjectionExpression avgDistinct(String propertyName)
     {
-        return new ArithmaticExpression(left, "-", right);
+        return new AvgProjectionExpression(getPropExpr(propertyName), true);
     }
 
-    public static Expression minus(String propertyLeft, String propertyRight)
+    /**
+     * Average aggregation function considering distinct values only.
+     * @param expression provides the values to aggregate.
+     * @return expression
+     */
+    public static AvgProjectionExpression avgDistinct(Expression expression)
     {
-        return new ArithmaticExpression(new PropertyValueExpression(propertyLeft), "-", new PropertyValueExpression(propertyRight));
+        return new AvgProjectionExpression(expression, true);
     }
 
-    public static Expression times(Expression left, Expression right)
+    /**
+     * Median aggregation function.
+     * @param propertyName name of the property providing the values to aggregate.
+     * @return expression
+     */
+    public static MedianProjectionExpression median(String propertyName)
     {
-        return new ArithmaticExpression(left, "*", right);
+        return new MedianProjectionExpression(getPropExpr(propertyName), false);
     }
 
-    public static Expression times(String propertyLeft, String propertyRight)
+    /**
+     * Median aggregation function.
+     * @param expression provides the values to aggregate.
+     * @return expression
+     */
+    public static MedianProjectionExpression median(Expression expression)
     {
-        return new ArithmaticExpression(new PropertyValueExpression(propertyLeft), "*", new PropertyValueExpression(propertyRight));
+        return new MedianProjectionExpression(expression, false);
     }
 
-    public static Expression countStar()
+    /**
+     * Median aggregation function considering distinct values only.
+     * @param propertyName name of the property providing the values to aggregate.
+     * @return expression
+     */
+    public static MedianProjectionExpression medianDistinct(String propertyName)
+    {
+        return new MedianProjectionExpression(getPropExpr(propertyName), true);
+    }
+
+    /**
+     * Median aggregation function considering distinct values only.
+     * @param expression provides the values to aggregate.
+     * @return expression
+     */
+    public static MedianProjectionExpression medianDistinct(Expression expression)
+    {
+        return new MedianProjectionExpression(expression, true);
+    }
+
+    /**
+     * Standard deviation aggregation function.
+     * @param propertyName name of the property providing the values to aggregate.
+     * @return expression
+     */
+    public static StddevProjectionExpression stddev(String propertyName)
+    {
+        return new StddevProjectionExpression(getPropExpr(propertyName), false);
+    }
+
+    /**
+     * Standard deviation aggregation function.
+     * @param expression provides the values to aggregate.
+     * @return expression
+     */
+    public static StddevProjectionExpression stddev(Expression expression)
+    {
+        return new StddevProjectionExpression(expression, false);
+    }
+
+    /**
+     * Standard deviation function considering distinct values only.
+     * @param propertyName name of the property providing the values to aggregate.
+     * @return expression
+     */
+    public static StddevProjectionExpression stddevDistinct(String propertyName)
+    {
+        return new StddevProjectionExpression(getPropExpr(propertyName), true);
+    }
+
+    /**
+     * Standard deviation function considering distinct values only.
+     * @param expression provides the values to aggregate.
+     * @return expression
+     */
+    public static StddevProjectionExpression stddevDistinct(Expression expression)
+    {
+        return new StddevProjectionExpression(expression, true);
+    }
+
+    /**
+     * Mean deviation aggregation function.
+     * @param propertyName name of the property providing the values to aggregate.
+     * @return expression
+     */
+    public static AvedevProjectionExpression avedev(String propertyName)
+    {
+        return new AvedevProjectionExpression(getPropExpr(propertyName), false);
+    }
+
+    /**
+     * Mean deviation aggregation function.
+     * @param expression provides the values to aggregate.
+     * @return expression
+     */
+    public static AvedevProjectionExpression avedev(Expression expression)
+    {
+        return new AvedevProjectionExpression(expression, false);
+    }
+
+    /**
+     * Mean deviation function considering distinct values only.
+     * @param propertyName name of the property providing the values to aggregate.
+     * @return expression
+     */
+    public static AvedevProjectionExpression avedevDistinct(String propertyName)
+    {
+        return new AvedevProjectionExpression(getPropExpr(propertyName), false);
+    }
+
+    /**
+     * Mean deviation function considering distinct values only.
+     * @param expression provides the values to aggregate.
+     * @return expression
+     */
+    public static AvedevProjectionExpression avedevDistinct(Expression expression)
+    {
+        return new AvedevProjectionExpression(expression, false);
+    }
+
+    /**
+     * Sum aggregation function.
+     * @param propertyName name of the property providing the values to aggregate.
+     * @return expression
+     */
+    public static SumProjectionExpression sum(String propertyName)
+    {
+        return new SumProjectionExpression(getPropExpr(propertyName), false);
+    }
+
+    /**
+     * Sum aggregation function.
+     * @param expression provides the values to aggregate.
+     * @return expression
+     */
+    public static SumProjectionExpression sum(Expression expression)
+    {
+        return new SumProjectionExpression(expression, false);
+    }
+
+    /**
+     * Sum aggregation function considering distinct values only.
+     * @param propertyName name of the property providing the values to aggregate.
+     * @return expression
+     */
+    public static SumProjectionExpression sumDistinct(String propertyName)
+    {
+        return new SumProjectionExpression(getPropExpr(propertyName), true);
+    }
+
+    /**
+     * Sum aggregation function considering distinct values only.
+     * @param expression provides the values to aggregate.
+     * @return expression
+     */
+    public static SumProjectionExpression sumDistinct(Expression expression)
+    {
+        return new SumProjectionExpression(expression, true);
+    }
+
+    /**
+     * Count aggregation function not counting values, equivalent to "count(*)".
+     * @return expression
+     */
+    public static CountStarProjectionExpression countStar()
     {
         return new CountStarProjectionExpression();
     }
 
-    public static Expression count(String propertyName)
+    /**
+     * Count aggregation function.
+     * @param propertyName name of the property providing the values to count.
+     * @return expression
+     */
+    public static CountProjectionExpression count(String propertyName)
     {
         return new CountProjectionExpression(getPropExpr(propertyName), false);
     }
 
-    public static Expression count(Expression expression)
+    /**
+     * Count aggregation function.
+     * @param expression provides the values to count.
+     * @return expression
+     */
+    public static CountProjectionExpression count(Expression expression)
     {
         return new CountProjectionExpression(expression, false);
     }
 
-    public static Expression countDistinct(String propertyName)
+    /**
+     * Count aggregation function considering distinct values only.
+     * @param propertyName name of the property providing the values to count.
+     * @return expression
+     */
+    public static CountProjectionExpression countDistinct(String propertyName)
     {
         return new CountProjectionExpression(getPropExpr(propertyName), true);
     }
 
-    public static Expression countDistinct(Expression expression)
+    /**
+     * Count aggregation function considering distinct values only.
+     * @param expression provides the values to count.
+     * @return expression
+     */
+    public static CountProjectionExpression countDistinct(Expression expression)
     {
         return new CountProjectionExpression(expression, true);
     }
 
-    public static Expression concat(String property, String ...properties)
+    /**
+     * Minimum aggregation function.
+     * @param propertyName name of the property providing the values to aggregate.
+     * @return expression
+     */
+    public static MinProjectionExpression min(String propertyName)
+    {
+        return new MinProjectionExpression(getPropExpr(propertyName), false);
+    }
+
+    /**
+     * Minimum aggregation function.
+     * @param expression provides the values to aggregate.
+     * @return expression
+     */
+    public static MinProjectionExpression min(Expression expression)
+    {
+        return new MinProjectionExpression(expression, false);
+    }
+
+    /**
+     * Minimum aggregation function considering distinct values only.
+     * @param propertyName name of the property providing the values to aggregate.
+     * @return expression
+     */
+    public static MinProjectionExpression minDistinct(String propertyName)
+    {
+        return new MinProjectionExpression(getPropExpr(propertyName), true);
+    }
+
+    /**
+     * Minimum aggregation function considering distinct values only.
+     * @param expression provides the values to aggregate.
+     * @return expression
+     */
+    public static MinProjectionExpression minDistinct(Expression expression)
+    {
+        return new MinProjectionExpression(expression, true);
+    }
+
+    /**
+     * Maximum aggregation function.
+     * @param propertyName name of the property providing the values to aggregate.
+     * @return expression
+     */
+    public static MaxProjectionExpression max(String propertyName)
+    {
+        return new MaxProjectionExpression(getPropExpr(propertyName), false);
+    }
+
+    /**
+     * Maximum aggregation function.
+     * @param expression provides the values to aggregate.
+     * @return expression
+     */
+    public static MaxProjectionExpression max(Expression expression)
+    {
+        return new MaxProjectionExpression(expression, false);
+    }
+
+    /**
+     * Maximum aggregation function considering distinct values only.
+     * @param propertyName name of the property providing the values to aggregate.
+     * @return expression
+     */
+    public static MaxProjectionExpression maxDistinct(String propertyName)
+    {
+        return new MaxProjectionExpression(getPropExpr(propertyName), true);
+    }
+
+    /**
+     * Maximum aggregation function considering distinct values only.
+     * @param expression provides the values to aggregate.
+     * @return expression
+     */
+    public static MaxProjectionExpression maxDistinct(Expression expression)
+    {
+        return new MaxProjectionExpression(expression, true);
+    }
+
+    /**
+     * Modulo.
+     * @param left the expression providing left hand values
+     * @param right the expression providing right hand values
+     * @return expression
+     */
+    public static ArithmaticExpression modulo(Expression left, Expression right)
+    {
+        return new ArithmaticExpression(left, "%", right);
+    }
+
+    /**
+     * Modulo.
+     * @param propertyLeft the name of the property providing left hand values
+     * @param propertyRight the name of the property providing right hand values
+     * @return expression
+     */
+    public static ArithmaticExpression modulo(String propertyLeft, String propertyRight)
+    {
+        return new ArithmaticExpression(new PropertyValueExpression(propertyLeft), "%", new PropertyValueExpression(propertyRight));
+    }
+
+    /**
+     * Subtraction.
+     * @param left the expression providing left hand values
+     * @param right the expression providing right hand values
+     * @return expression
+     */
+    public static ArithmaticExpression minus(Expression left, Expression right)
+    {
+        return new ArithmaticExpression(left, "-", right);
+    }
+
+    /**
+     * Subtraction.
+     * @param propertyLeft the name of the property providing left hand values
+     * @param propertyRight the name of the property providing right hand values
+     * @return expression
+     */
+    public static ArithmaticExpression minus(String propertyLeft, String propertyRight)
+    {
+        return new ArithmaticExpression(new PropertyValueExpression(propertyLeft), "-", new PropertyValueExpression(propertyRight));
+    }
+
+    /**
+     * Addition.
+     * @param left the expression providing left hand values
+     * @param right the expression providing right hand values
+     * @return expression
+     */
+    public static ArithmaticExpression plus(Expression left, Expression right)
+    {
+        return new ArithmaticExpression(left, "+", right);
+    }
+
+    /**
+     * Addition.
+     * @param propertyLeft the name of the property providing left hand values
+     * @param propertyRight the name of the property providing right hand values
+     * @return expression
+     */
+    public static ArithmaticExpression plus(String propertyLeft, String propertyRight)
+    {
+        return new ArithmaticExpression(new PropertyValueExpression(propertyLeft), "+", new PropertyValueExpression(propertyRight));
+    }
+
+    /**
+     * Multiplication.
+     * @param left the expression providing left hand values
+     * @param right the expression providing right hand values
+     * @return expression
+     */
+    public static ArithmaticExpression multiply(Expression left, Expression right)
+    {
+        return new ArithmaticExpression(left, "*", right);
+    }
+
+    /**
+     * Multiplication.
+     * @param propertyLeft the name of the property providing left hand values
+     * @param propertyRight the name of the property providing right hand values
+     * @return expression
+     */
+    public static ArithmaticExpression multiply(String propertyLeft, String propertyRight)
+    {
+        return new ArithmaticExpression(new PropertyValueExpression(propertyLeft), "*", new PropertyValueExpression(propertyRight));
+    }
+
+    /**
+     * Division.
+     * @param left the expression providing left hand values
+     * @param right the expression providing right hand values
+     * @return expression
+     */
+    public static ArithmaticExpression divide(Expression left, Expression right)
+    {
+        return new ArithmaticExpression(left, "/", right);
+    }
+
+    /**
+     * Division.
+     * @param propertyLeft the name of the property providing left hand values
+     * @param propertyRight the name of the property providing right hand values
+     * @return expression
+     */
+    public static ArithmaticExpression divide(String propertyLeft, String propertyRight)
+    {
+        return new ArithmaticExpression(new PropertyValueExpression(propertyLeft), "/", new PropertyValueExpression(propertyRight));
+    }
+
+    /**
+     * Concatenation.
+     * @param property the name of property returning values to concatenate
+     * @param properties the names of additional properties returning values to concatenate
+     * @return expression
+     */
+    public static ConcatExpression concat(String property, String ...properties)
     {
         ConcatExpression concat = new ConcatExpression();
         concat.getChildren().add(new PropertyValueExpression(property));
@@ -194,26 +1133,75 @@ public class Expressions implements Serializable
         return concat;
     }
 
-    public static Expression subquery(EPStatementObjectModel model)
+    /**
+     * Subquery.
+     * @param model is the object model of the subquery
+     * @return expression
+     */
+    public static SubqueryExpression subquery(EPStatementObjectModel model)
     {
         return new SubqueryExpression(model);
     }
 
-    public static Expression subqueryIn(String property, EPStatementObjectModel model)
+    /**
+     * Subquery with in-clause, represents the syntax of "value in (select ... from ...)".
+     * @param property is the name of the property that returns the value to match against the values returned by the subquery
+     * @param model is the object model of the subquery
+     * @return expression
+     */
+    public static SubqueryInExpression subqueryIn(String property, EPStatementObjectModel model)
     {
-        return new SubqueryInExpression(getPropExpr(property), model);
+        return new SubqueryInExpression(getPropExpr(property), model, false);
     }
 
-    public static Expression subqueryExists(EPStatementObjectModel model)
+    /**
+     * Subquery with not-in-clause, represents the syntax of "value not in (select ... from ...)".
+     * @param property is the name of the property that returns the value to match against the values returned by the subquery
+     * @param model is the object model of the subquery
+     * @return expression
+     */
+    public static SubqueryInExpression subqueryNotIn(String property, EPStatementObjectModel model)
+    {
+        return new SubqueryInExpression(getPropExpr(property), model, true);
+    }
+
+    /**
+     * Subquery with exists-clause, represents the syntax of "select * from ... where exists (select ... from ...)".
+     * @param model is the object model of the subquery
+     * @return expression
+     */
+    public static SubqueryExistsExpression subqueryExists(EPStatementObjectModel model)
     {
         return new SubqueryExistsExpression(model);
     }
 
-    public static Expression subqueryIn(Expression expression, EPStatementObjectModel model)
+    /**
+     * Subquery with in-clause, represents the syntax of "value in (select ... from ...)".
+     * @param expression returns the value to match against the values returned by the subquery
+     * @param model is the object model of the subquery
+     * @return expression
+     */
+    public static SubqueryInExpression subqueryIn(Expression expression, EPStatementObjectModel model)
     {
-        return new SubqueryInExpression(expression, model);
+        return new SubqueryInExpression(expression, model, false);
     }
 
+    /**
+     * Subquery with not-in-clause, represents the syntax of "value not in (select ... from ...)".
+     * @param expression returns the value to match against the values returned by the subquery
+     * @param model is the object model of the subquery
+     * @return expression
+     */
+    public static SubqueryInExpression subqueryNotIn(Expression expression, EPStatementObjectModel model)
+    {
+        return new SubqueryInExpression(expression, model, true);
+    }
+
+    /**
+     * Returns a list of expressions returning property values for the property names passed in.
+     * @param properties is a list of property names
+     * @return list of property value expressions
+     */
     protected static List<PropertyValueExpression> toPropertyExpressions(String ...properties)
     {
         List<PropertyValueExpression> expr = new ArrayList<PropertyValueExpression>();
@@ -224,8 +1212,13 @@ public class Expressions implements Serializable
         return expr;
     }
 
-    protected static PropertyValueExpression getPropExpr(String property)
+    /**
+     * Returns an expression returning the propertyName value for the propertyName name passed in.
+     * @param propertyName the name of the property returning property values
+     * @return expression
+     */
+    protected static PropertyValueExpression getPropExpr(String propertyName)
     {
-        return new PropertyValueExpression(property);
+        return new PropertyValueExpression(propertyName);
     }
 }

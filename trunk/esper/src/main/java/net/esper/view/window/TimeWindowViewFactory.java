@@ -1,7 +1,7 @@
 package net.esper.view.window;
 
 import net.esper.view.*;
-import net.esper.eql.parse.TimePeriodParameter;
+import net.esper.type.TimePeriodParameter;
 import net.esper.eql.core.ViewResourceCallback;
 import net.esper.event.EventType;
 import net.esper.util.JavaClassHelper;

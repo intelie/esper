@@ -1,35 +1,55 @@
 package net.esper.eql.spec;
 
+import net.esper.client.EPException;
 import net.esper.client.soda.*;
+import net.esper.eql.agg.AggregationSupport;
+import net.esper.eql.core.EngineImportException;
+import net.esper.eql.core.EngineImportService;
+import net.esper.eql.core.EngineImportUndefinedException;
 import net.esper.eql.expression.*;
 import net.esper.pattern.*;
 import net.esper.type.MathArithTypeEnum;
+import net.esper.type.MinMaxTypeEnum;
 import net.esper.type.RelationalOpEnum;
 
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Helper for mapping internal representations of a statement to the SODA object model for statements. 
+ */
 public class StatementSpecTranslator
 {
-    public static StatementSpecRaw map(EPStatementObjectModel sodaStatement)
+    /**
+     * Maps the SODA object model to a statement specification.
+     * @param sodaStatement is the object model to map
+     * @param engineImportService for resolving imports such as plug-in aggregations
+     * @return statement specification, and internal representation of a statement
+     */
+    public static StatementSpecRaw map(EPStatementObjectModel sodaStatement, EngineImportService engineImportService)
     {
         StatementSpecRaw raw = new StatementSpecRaw();
         mapInsertInto(sodaStatement.getInsertInto(), raw);
-        mapSelect(sodaStatement.getSelectClause(), raw);
-        mapFrom(sodaStatement.getFromClause(), raw);
-        mapWhere(sodaStatement.getWhereClause(), raw);
-        mapGroupBy(sodaStatement.getGroupByClause(), raw);
-        mapHaving(sodaStatement.getHavingClause(), raw);
+        mapSelect(sodaStatement.getSelectClause(), raw, engineImportService);
+        mapFrom(sodaStatement.getFromClause(), raw, engineImportService);
+        mapWhere(sodaStatement.getWhereClause(), raw, engineImportService);
+        mapGroupBy(sodaStatement.getGroupByClause(), raw, engineImportService);
+        mapHaving(sodaStatement.getHavingClause(), raw, engineImportService);
         mapOutputLimit(sodaStatement.getOutputLimitClause(), raw);
-        mapOrderBy(sodaStatement.getOrderByClause(), raw);
+        mapOrderBy(sodaStatement.getOrderByClause(), raw, engineImportService);
         return raw;
     }
 
+    /**
+     * Maps the internal representation of a statement to the SODA object model.
+     * @param statementSpec is the internal representation
+     * @return object model of statement
+     */
     public static EPStatementObjectModel unmap(StatementSpecRaw statementSpec)
     {
         EPStatementObjectModel model = new EPStatementObjectModel();
         unmapInsertInto(statementSpec.getInsertIntoDesc(), model);
-        unmapSelect(statementSpec.getSelectClauseSpec(), model);
+        unmapSelect(statementSpec.getSelectClauseSpec(), statementSpec.getSelectStreamSelectorEnum(), model);
         unmapFrom(statementSpec.getStreamSpecs(), statementSpec.getOuterJoinDescList(), model);
         unmapWhere(statementSpec.getFilterRootNode(), model);
         unmapGroupBy(statementSpec.getGroupByExpressions(), model);
@@ -84,7 +104,7 @@ public class StatementSpecTranslator
         model.setOutputLimitClause(clause);
     }
 
-    private static void mapOrderBy(OrderByClause orderByClause, StatementSpecRaw raw)
+    private static void mapOrderBy(OrderByClause orderByClause, StatementSpecRaw raw, EngineImportService engineImportService)
     {
         if (orderByClause == null)
         {
@@ -92,7 +112,7 @@ public class StatementSpecTranslator
         }
         for (OrderByElement element : orderByClause.getOrderByExpressions())
         {
-            ExprNode orderExpr = mapExpressionDeep(element.getExpression());
+            ExprNode orderExpr = mapExpressionDeep(element.getExpression(), engineImportService);
             OrderByItem item = new OrderByItem(orderExpr, element.isDescending());
             raw.getOrderByList().add(item);
         }
@@ -117,13 +137,13 @@ public class StatementSpecTranslator
         raw.setOutputLimitSpec(spec);
     }
 
-    private static void mapHaving(Expression havingClause, StatementSpecRaw raw)
+    private static void mapHaving(Expression havingClause, StatementSpecRaw raw, EngineImportService engineImportService)
     {
         if (havingClause == null)
         {
             return;
         }
-        ExprNode node = mapExpressionDeep(havingClause);
+        ExprNode node = mapExpressionDeep(havingClause, engineImportService);
         raw.setHavingExprRootNode(node);
     }
 
@@ -137,7 +157,7 @@ public class StatementSpecTranslator
         model.setHavingClause(expr);
     }
 
-    private static void mapGroupBy(GroupByClause groupByClause, StatementSpecRaw raw)
+    private static void mapGroupBy(GroupByClause groupByClause, StatementSpecRaw raw, EngineImportService engineImportService)
     {
         if (groupByClause == null)
         {
@@ -145,7 +165,7 @@ public class StatementSpecTranslator
         }
         for (Expression expr : groupByClause.getGroupByExpressions())
         {
-            ExprNode node = mapExpressionDeep(expr);
+            ExprNode node = mapExpressionDeep(expr, engineImportService);
             raw.getGroupByExpressions().add(node);
         }
     }
@@ -165,13 +185,13 @@ public class StatementSpecTranslator
         model.setGroupByClause(clause);
     }
 
-    private static void mapWhere(Expression whereClause, StatementSpecRaw raw)
+    private static void mapWhere(Expression whereClause, StatementSpecRaw raw, EngineImportService engineImportService)
     {
         if (whereClause == null)
         {
             return;
         }
-        ExprNode node = mapExpressionDeep(whereClause);
+        ExprNode node = mapExpressionDeep(whereClause, engineImportService);
         raw.setFilterExprRootNode(node);
     }
 
@@ -192,35 +212,34 @@ public class StatementSpecTranslator
         
         for (StreamSpecRaw stream : streamSpecs)
         {
+            ProjectedStream projStream = null;
             if (stream instanceof FilterStreamSpecRaw)
             {
                 FilterStreamSpecRaw filterStreamSpec = (FilterStreamSpecRaw) stream;
                 Filter filter = unmapFilter(filterStreamSpec.getRawFilterSpec());
-                FilterStream filterStream = new FilterStream(filter, filterStreamSpec.getOptionalStreamName());
-
-                for (ViewSpec viewSpec : filterStreamSpec.getViewSpecs())
-                {
-                    filterStream.addView(View.create(viewSpec.getObjectNamespace(), viewSpec.getObjectName(), viewSpec.getObjectParameters()));
-                }
-                from.add(filterStream);
+                projStream = new FilterStream(filter, filterStreamSpec.getOptionalStreamName());
             }
             else if (stream instanceof DBStatementStreamSpec)
             {
                 DBStatementStreamSpec db = (DBStatementStreamSpec) stream;
-                SQLStream sqlStream = new SQLStream(db.getDatabaseName(), db.getSqlWithSubsParams(), db.getOptionalStreamName());
-                from.add(sqlStream);
+                projStream = new SQLStream(db.getDatabaseName(), db.getSqlWithSubsParams(), db.getOptionalStreamName());
             }
             else if (stream instanceof PatternStreamSpecRaw)
             {
                 PatternStreamSpecRaw pattern = (PatternStreamSpecRaw) stream;
                 PatternExpr patternExpr = unmapPatternEvalDeep(pattern.getEvalNode());
-                PatternStream pStream = new PatternStream(patternExpr, pattern.getOptionalStreamName());
-                from.add(pStream);
+                projStream = new PatternStream(patternExpr, pattern.getOptionalStreamName());
             }
             else
             {
                 throw new IllegalArgumentException("Stream modelled by " + stream.getClass() + " cannot be unmapped");
             }
+
+            for (ViewSpec viewSpec : stream.getViewSpecs())
+            {
+                projStream.addView(View.create(viewSpec.getObjectNamespace(), viewSpec.getObjectName(), viewSpec.getObjectParameters()));
+            }
+            from.add(projStream);
         }
 
         for (OuterJoinDesc desc : outerJoinDescList)
@@ -232,10 +251,11 @@ public class StatementSpecTranslator
 
     }
 
-    private static void unmapSelect(SelectClauseSpec selectClauseSpec, EPStatementObjectModel model)
+    private static void unmapSelect(SelectClauseSpec selectClauseSpec, SelectClauseStreamSelectorEnum selectStreamSelectorEnum, EPStatementObjectModel model)
     {
         SelectClause clause = SelectClause.create();
         clause.setWildcard(selectClauseSpec.isUsingWildcard());
+        clause.setStreamSelector(SelectClauseStreamSelectorEnum.mapFromSODA(selectStreamSelectorEnum));
         for (SelectExprElementRawSpec raw : selectClauseSpec.getSelectList())
         {
             Expression expression = unmapExpressionDeep(raw.getSelectExpression());
@@ -279,16 +299,17 @@ public class StatementSpecTranslator
         raw.setInsertIntoDesc(desc);
     }
 
-    private static void mapSelect(SelectClause selectClause, StatementSpecRaw raw)
+    private static void mapSelect(SelectClause selectClause, StatementSpecRaw raw, EngineImportService engineImportService)
     {
         SelectClauseSpec spec = new SelectClauseSpec();
         spec.setIsUsingWildcard(selectClause.isWildcard());
+        raw.setSelectStreamDirEnum(SelectClauseStreamSelectorEnum.mapFromSODA(selectClause.getStreamSelector()));
         raw.setSelectClauseSpec(spec);
 
         for (SelectClauseElement element : selectClause.getSelectList())
         {
             Expression expr = element.getExpression();
-            ExprNode exprNode = mapExpressionDeep(expr);
+            ExprNode exprNode = mapExpressionDeep(expr, engineImportService);
 
             SelectExprElementRawSpec rawElement = new SelectExprElementRawSpec(exprNode, element.getOptionalAsName());
             spec.add(rawElement);
@@ -302,14 +323,14 @@ public class StatementSpecTranslator
         return parent;
     }
 
-    private static ExprNode mapExpressionDeep(Expression expr)
+    private static ExprNode mapExpressionDeep(Expression expr, EngineImportService engineImportService)
     {
-        ExprNode parent = mapExpressionFlat(expr);
-        mapExpressionRecursive(parent, expr);
+        ExprNode parent = mapExpressionFlat(expr, engineImportService);
+        mapExpressionRecursive(parent, expr, engineImportService);
         return parent;
     }
 
-    private static ExprNode mapExpressionFlat(Expression expr)
+    private static ExprNode mapExpressionFlat(Expression expr, EngineImportService engineImportService)
     {
         if (expr == null)
         {
@@ -347,6 +368,10 @@ public class StatementSpecTranslator
             {
                 return new ExprEqualsNode(false);
             }
+            if (op.getOperator().equals("!="))
+            {
+                return new ExprEqualsNode(true);
+            }
             else
             {
                 return new ExprRelationalOpNode(RelationalOpEnum.parse(op.getOperator()));
@@ -364,19 +389,21 @@ public class StatementSpecTranslator
         else if (expr instanceof SubqueryExpression)
         {
             SubqueryExpression sub = (SubqueryExpression) expr;
-            StatementSpecRaw rawSubselect = map(sub.getModel());
+            StatementSpecRaw rawSubselect = map(sub.getModel(), engineImportService);
             return new ExprSubselectRowNode(rawSubselect);
         }
         else if (expr instanceof SubqueryInExpression)
         {
             SubqueryInExpression sub = (SubqueryInExpression) expr;
-            StatementSpecRaw rawSubselect = map(sub.getModel());
-            return new ExprSubselectInNode(rawSubselect);
+            StatementSpecRaw rawSubselect = map(sub.getModel(), engineImportService);
+            ExprSubselectInNode inSub = new ExprSubselectInNode(rawSubselect);
+            inSub.setNotIn(sub.isNotIn());
+            return inSub;
         }
         else if (expr instanceof SubqueryExistsExpression)
         {
             SubqueryExistsExpression sub = (SubqueryExistsExpression) expr;
-            StatementSpecRaw rawSubselect = map(sub.getModel());
+            StatementSpecRaw rawSubselect = map(sub.getModel(), engineImportService);
             return new ExprSubselectExistsNode(rawSubselect);
         }
         else if (expr instanceof CountStarProjectionExpression)
@@ -397,6 +424,112 @@ public class StatementSpecTranslator
         {
             SumProjectionExpression avg = (SumProjectionExpression) expr;
             return new ExprSumNode(avg.isDistinct());
+        }
+        else if (expr instanceof BetweenExpression)
+        {
+            BetweenExpression between = (BetweenExpression) expr;
+            return new ExprBetweenNode(between.isLowEndpointIncluded(), between.isHighEndpointIncluded(), between.isNotBetween());
+        }
+        else if (expr instanceof PriorExpression)
+        {
+            return new ExprPriorNode();
+        }
+        else if (expr instanceof PreviousExpression)
+        {
+            return new ExprPreviousNode();
+        }
+        else if (expr instanceof StaticMethodExpression)
+        {
+            StaticMethodExpression method = (StaticMethodExpression) expr;
+            return new ExprStaticMethodNode(method.getClassName(), method.getMethod());
+        }
+        else if (expr instanceof MinProjectionExpression)
+        {
+            MinProjectionExpression method = (MinProjectionExpression) expr;
+            return new ExprMinMaxAggrNode(method.isDistinct(), MinMaxTypeEnum.MIN);
+        }
+        else if (expr instanceof MaxProjectionExpression)
+        {
+            MaxProjectionExpression method = (MaxProjectionExpression) expr;
+            return new ExprMinMaxAggrNode(method.isDistinct(), MinMaxTypeEnum.MAX);
+        }
+        else if (expr instanceof NotExpression)
+        {
+            return new ExprNotNode();
+        }
+        else if (expr instanceof InExpression)
+        {
+            InExpression in = (InExpression) expr;
+            return new ExprInNode(in.isNotIn());
+        }
+        else if (expr instanceof CoalesceExpression)
+        {
+            return new ExprCoalesceNode();
+        }
+        else if (expr instanceof CaseWhenThenExpression)
+        {
+            return new ExprCaseNode(false);
+        }
+        else if (expr instanceof CaseSwitchExpression)
+        {
+            return new ExprCaseNode(true);
+        }
+        else if (expr instanceof MaxRowExpression)
+        {
+            return new ExprMinMaxRowNode(MinMaxTypeEnum.MAX);
+        }
+        else if (expr instanceof MinRowExpression)
+        {
+            return new ExprMinMaxRowNode(MinMaxTypeEnum.MIN);
+        }
+        else if (expr instanceof BitwiseOpExpression)
+        {
+            BitwiseOpExpression bit = (BitwiseOpExpression) expr;
+            return new ExprBitWiseNode(bit.getBinaryOp());
+        }
+        else if (expr instanceof ArrayExpression)
+        {
+            return new ExprArrayNode();
+        }
+        else if (expr instanceof LikeExpression)
+        {
+            return new ExprLikeNode(false);
+        }
+        else if (expr instanceof RegExpExpression)
+        {
+            return new ExprRegexpNode(false);
+        }
+        else if (expr instanceof MedianProjectionExpression)
+        {
+            MedianProjectionExpression median = (MedianProjectionExpression) expr;
+            return new ExprMedianNode(median.isDistinct());
+        }
+        else if (expr instanceof AvedevProjectionExpression)
+        {
+            AvedevProjectionExpression node = (AvedevProjectionExpression) expr;
+            return new ExprAvedevNode(node.isDistinct());
+        }
+        else if (expr instanceof StddevProjectionExpression)
+        {
+            StddevProjectionExpression node = (StddevProjectionExpression) expr;
+            return new ExprStddevNode(node.isDistinct());
+        }
+        else if (expr instanceof PlugInProjectionExpression)
+        {
+            PlugInProjectionExpression node = (PlugInProjectionExpression) expr;
+            try
+            {
+                AggregationSupport aggregation = engineImportService.resolveAggregation(node.getFunctionName());
+                return new ExprPlugInAggFunctionNode(node.isDistinct(), aggregation, node.getFunctionName());
+            }
+            catch (EngineImportUndefinedException e)
+            {
+                throw new EPException("Error resolving aggregation: " + e.getMessage(), e);
+            }
+            catch (EngineImportException e)
+            {
+                throw new EPException("Error resolving aggregation: " + e.getMessage(), e);            
+            }
         }
         throw new IllegalArgumentException("Could not map expression node of type " + expr.getClass().getSimpleName());
     }
@@ -420,7 +553,13 @@ public class StatementSpecTranslator
         }
         else if (expr instanceof ExprEqualsNode)
         {
-            return new RelationalOpExpression("=");
+            ExprEqualsNode equals = (ExprEqualsNode) expr;
+            String operator = "=";
+            if (equals.isNotEquals())
+            {
+                operator = "!=";
+            }
+            return new RelationalOpExpression(operator);
         }
         else if (expr instanceof ExprRelationalOpNode)
         {
@@ -454,7 +593,7 @@ public class StatementSpecTranslator
         {
             ExprSubselectInNode sub = (ExprSubselectInNode) expr;
             EPStatementObjectModel model = unmap(sub.getStatementSpecRaw());
-            return new SubqueryInExpression(model);
+            return new SubqueryInExpression(model, sub.isNotIn());
         }
         else if (expr instanceof ExprSubselectExistsNode)
         {
@@ -484,6 +623,112 @@ public class StatementSpecTranslator
             ExprSumNode sub = (ExprSumNode) expr;
             return new SumProjectionExpression(sub.isDistinct());
         }
+        else if (expr instanceof ExprBetweenNode)
+        {
+            ExprBetweenNode between = (ExprBetweenNode) expr;
+            return new BetweenExpression(between.isLowEndpointIncluded(), between.isHighEndpointIncluded(), between.isNotBetween());
+        }
+        else if (expr instanceof ExprPriorNode)
+        {
+            return new PriorExpression();
+        }
+        else if (expr instanceof ExprPreviousNode)
+        {
+            return new PreviousExpression();
+        }
+        else if (expr instanceof ExprStaticMethodNode)
+        {
+            ExprStaticMethodNode node = (ExprStaticMethodNode) expr;
+            return new StaticMethodExpression(node.getClassName(), node.getMethodName());
+        }
+        else if (expr instanceof ExprMinMaxAggrNode)
+        {
+            ExprMinMaxAggrNode node = (ExprMinMaxAggrNode) expr;
+            if (node.getMinMaxTypeEnum() == MinMaxTypeEnum.MIN)
+            {
+                return new MinProjectionExpression(node.isDistinct());
+            }
+            else
+            {
+                return new MaxProjectionExpression(node.isDistinct());
+            }
+        }
+        else if (expr instanceof ExprStaticMethodNode)
+        {
+            ExprStaticMethodNode node = (ExprStaticMethodNode) expr;
+            return new StaticMethodExpression(node.getClassName(), node.getMethodName());
+        }
+        else if (expr instanceof ExprNotNode)
+        {
+            return new NotExpression();
+        }
+        else if (expr instanceof ExprInNode)
+        {
+            ExprInNode in = (ExprInNode) expr;
+            return new InExpression(in.isNotIn());
+        }
+        else if (expr instanceof ExprCoalesceNode)
+        {
+            return new CoalesceExpression();
+        }
+        else if (expr instanceof ExprCaseNode)
+        {
+            ExprCaseNode mycase = (ExprCaseNode) expr;
+            if (mycase.isCase2())
+            {
+                return new CaseSwitchExpression();
+            }
+            else
+            {
+                return new CaseWhenThenExpression();
+            }
+        }
+        else if (expr instanceof ExprMinMaxRowNode)
+        {
+            ExprMinMaxRowNode node = (ExprMinMaxRowNode) expr;
+            if (node.getMinMaxTypeEnum() == MinMaxTypeEnum.MAX)
+            {
+                return new MaxRowExpression();
+            }
+            return new MinRowExpression();
+        }
+        else if (expr instanceof ExprBitWiseNode)
+        {
+            ExprBitWiseNode node = (ExprBitWiseNode) expr;
+            return new BitwiseOpExpression(node.getBitWiseOpEnum());
+        }
+        else if (expr instanceof ExprArrayNode)
+        {
+            return new ArrayExpression();
+        }
+        else if (expr instanceof ExprLikeNode)
+        {
+            return new LikeExpression();
+        }
+        else if (expr instanceof ExprRegexpNode)
+        {
+            return new RegExpExpression();
+        }
+        else if (expr instanceof ExprMedianNode)
+        {
+            ExprMedianNode median = (ExprMedianNode) expr;
+            return new MedianProjectionExpression(median.isDistinct());
+        }
+        else if (expr instanceof ExprAvedevNode)
+        {
+            ExprAvedevNode node = (ExprAvedevNode) expr;
+            return new AvedevProjectionExpression(node.isDistinct());
+        }
+        else if (expr instanceof ExprStddevNode)
+        {
+            ExprStddevNode node = (ExprStddevNode) expr;
+            return new StddevProjectionExpression(node.isDistinct());
+        }
+        else if (expr instanceof ExprPlugInAggFunctionNode)
+        {
+            ExprPlugInAggFunctionNode node = (ExprPlugInAggFunctionNode) expr;
+            return new PlugInProjectionExpression(node.getAggregationFunctionName(), node.isDistinct());
+        }
         throw new IllegalArgumentException("Could not map expression node of type " + expr.getClass().getSimpleName());
     }
 
@@ -497,17 +742,17 @@ public class StatementSpecTranslator
         }
     }
 
-    private static void mapExpressionRecursive(ExprNode parent, Expression expr)
+    private static void mapExpressionRecursive(ExprNode parent, Expression expr, EngineImportService engineImportService)
     {
         for (Expression child : expr.getChildren())
         {
-            ExprNode result = mapExpressionFlat(child);
+            ExprNode result = mapExpressionFlat(child, engineImportService);
             parent.addChildNode(result);
-            mapExpressionRecursive(result, child);
+            mapExpressionRecursive(result, child, engineImportService);
         }
     }
 
-    private static void mapFrom(FromClause fromClause, StatementSpecRaw raw)
+    private static void mapFrom(FromClause fromClause, StatementSpecRaw raw, EngineImportService engineImportService)
     {
         for (ProjectedStream stream : fromClause.getStreams())
         {
@@ -516,7 +761,7 @@ public class StatementSpecTranslator
             if (stream instanceof FilterStream)
             {
                 FilterStream filterStream = (FilterStream) stream;
-                FilterSpecRaw filterSpecRaw = mapFilter(filterStream.getFilter());
+                FilterSpecRaw filterSpecRaw = mapFilter(filterStream.getFilter(), engineImportService);
                 spec = new FilterStreamSpecRaw(filterSpecRaw, new ArrayList<ViewSpec>(), filterStream.getOptStreamName());
             }
             else if (stream instanceof SQLStream)
@@ -528,7 +773,7 @@ public class StatementSpecTranslator
             else if (stream instanceof PatternStream)
             {
                 PatternStream patternStream = (PatternStream) stream;
-                EvalNode child = mapPatternEvalDeep(patternStream.getExpression());
+                EvalNode child = mapPatternEvalDeep(patternStream.getExpression(), engineImportService);
                 spec = new PatternStreamSpecRaw(child, new ArrayList<ViewSpec>(), patternStream.getOptStreamName());
             }
             else
@@ -542,8 +787,8 @@ public class StatementSpecTranslator
 
         for (OuterJoinQualifier qualifier : fromClause.getOuterJoinQualifiers())
         {
-            ExprIdentNode left = (ExprIdentNode) mapExpressionFlat(qualifier.getLeft());
-            ExprIdentNode right = (ExprIdentNode) mapExpressionFlat(qualifier.getRight());
+            ExprIdentNode left = (ExprIdentNode) mapExpressionFlat(qualifier.getLeft(), engineImportService);
+            ExprIdentNode right = (ExprIdentNode) mapExpressionFlat(qualifier.getRight(), engineImportService);
             raw.getOuterJoinDescList().add(new OuterJoinDesc(qualifier.getType(), left, right));
         }
     }
@@ -556,7 +801,7 @@ public class StatementSpecTranslator
         }
     }
 
-    private static EvalNode mapPatternEvalFlat(PatternExpr eval)
+    private static EvalNode mapPatternEvalFlat(PatternExpr eval, EngineImportService engineImportService)
     {
         if (eval == null)
         {
@@ -581,8 +826,22 @@ public class StatementSpecTranslator
         else if (eval instanceof PatternFilterExpr)
         {
             PatternFilterExpr filterExpr = (PatternFilterExpr) eval;
-            FilterSpecRaw filterSpec = mapFilter(filterExpr.getFilter());
+            FilterSpecRaw filterSpec = mapFilter(filterExpr.getFilter(), engineImportService);
             return new EvalFilterNode(filterSpec, filterExpr.getTagName());
+        }
+        else if (eval instanceof PatternObserverExpr)
+        {
+            PatternObserverExpr observer = (PatternObserverExpr) eval;
+            return new EvalObserverNode(new PatternObserverSpec(observer.getNamespace(), observer.getName(), observer.getParameters()));
+        }
+        else if (eval instanceof PatternGuardExpr)
+        {
+            PatternGuardExpr guard = (PatternGuardExpr) eval;
+            return new EvalGuardNode(new PatternGuardSpec(guard.getNamespace(), guard.getName(), guard.getParameters()));
+        }
+        else if (eval instanceof PatternNotExpr)
+        {
+            return new EvalNotNode();
         }
         throw new IllegalArgumentException("Could not map pattern expression node of type " + eval.getClass().getSimpleName());
     }
@@ -605,11 +864,27 @@ public class StatementSpecTranslator
         {
             return new PatternEveryExpr();
         }
+        else if (eval instanceof EvalNotNode)
+        {
+            return new PatternNotExpr();
+        }
         else if (eval instanceof EvalFilterNode)
         {
             EvalFilterNode filterNode = (EvalFilterNode) eval;
             Filter filter = unmapFilter(filterNode.getRawFilterSpec());
             return new PatternFilterExpr(filter, filterNode.getEventAsName());
+        }
+        else if (eval instanceof EvalObserverNode)
+        {
+            EvalObserverNode observerNode = (EvalObserverNode) eval;
+            return new PatternObserverExpr(observerNode.getPatternObserverSpec().getObjectNamespace(),
+                    observerNode.getPatternObserverSpec().getObjectName(), observerNode.getPatternObserverSpec().getObjectParameters());
+        }
+        else if (eval instanceof EvalGuardNode)
+        {
+            EvalGuardNode guardNode = (EvalGuardNode) eval;
+            return new PatternGuardExpr(guardNode.getPatternGuardSpec().getObjectNamespace(),
+                    guardNode.getPatternGuardSpec().getObjectName(), guardNode.getPatternGuardSpec().getObjectParameters());
         }
         throw new IllegalArgumentException("Could not map pattern expression node of type " + eval.getClass().getSimpleName());
     }
@@ -624,13 +899,13 @@ public class StatementSpecTranslator
         }
     }
 
-    private static void mapPatternEvalRecursive(EvalNode parent, PatternExpr expr)
+    private static void mapPatternEvalRecursive(EvalNode parent, PatternExpr expr, EngineImportService engineImportService)
     {
         for (PatternExpr child : expr.getChildren())
         {
-            EvalNode result = mapPatternEvalFlat(child);
+            EvalNode result = mapPatternEvalFlat(child, engineImportService);
             parent.addChildNode(result);
-            mapPatternEvalRecursive(result, child);
+            mapPatternEvalRecursive(result, child, engineImportService);
         }
     }
 
@@ -641,19 +916,19 @@ public class StatementSpecTranslator
         return parent;
     }
 
-    private static EvalNode mapPatternEvalDeep(PatternExpr expr)
+    private static EvalNode mapPatternEvalDeep(PatternExpr expr, EngineImportService engineImportService)
     {
-        EvalNode parent = mapPatternEvalFlat(expr);
-        mapPatternEvalRecursive(parent, expr);
+        EvalNode parent = mapPatternEvalFlat(expr, engineImportService);
+        mapPatternEvalRecursive(parent, expr, engineImportService);
         return parent;
     }
 
-    private static FilterSpecRaw mapFilter(Filter filter)
+    private static FilterSpecRaw mapFilter(Filter filter, EngineImportService engineImportService)
     {
         List<ExprNode> expr = new ArrayList<ExprNode>();
         if (filter.getFilter() != null)
         {
-            ExprNode exprNode = mapExpressionDeep(filter.getFilter());
+            ExprNode exprNode = mapExpressionDeep(filter.getFilter(), engineImportService);
             expr.add(exprNode);
         }
 

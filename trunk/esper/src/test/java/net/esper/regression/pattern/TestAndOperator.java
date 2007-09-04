@@ -38,7 +38,7 @@ public class TestAndOperator extends TestCase implements SupportBeanConstants
         model.setSelectClause(SelectClause.createWildcard());
         PatternExpr pattern = Patterns.every(Patterns.and(Patterns.filter(EVENT_B_CLASS, "b"), Patterns.filter(EVENT_D_CLASS, "d"))); 
         model.setFromClause(FromClause.create(PatternStream.create(pattern)));
-        assertEquals("select * from pattern [every (b=" + EVENT_B_CLASS + " and d=" + EVENT_D_CLASS + ")]", model.toEQL());
+        assertEquals("select * from pattern [every ((b=" + EVENT_B_CLASS + ") and (d=" + EVENT_D_CLASS + "))]", model.toEQL());
         testCase = new EventExpressionCase(model);
         testCase.add("D1", "b", events.getEvent("B1"), "d", events.getEvent("D1"));
         testCase.add("B3", "b", events.getEvent("B3"), "d", events.getEvent("D2"));

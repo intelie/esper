@@ -3,6 +3,7 @@ package net.esper.regression.pattern;
 import junit.framework.*;
 import net.esper.regression.support.*;
 import net.esper.support.bean.SupportBeanConstants;
+import net.esper.client.soda.*;
 
 public class TestNotOperator extends TestCase implements SupportBeanConstants
 {
@@ -14,6 +15,20 @@ public class TestNotOperator extends TestCase implements SupportBeanConstants
 
         testCase = new EventExpressionCase("b=" + EVENT_B_CLASS + " and not d=" + EVENT_D_CLASS);
         testCase.add("B1", "b", events.getEvent("B1"));
+        testCaseList.addTest(testCase);
+
+        String text = "select * from pattern [(every (b=" + EVENT_B_CLASS + ")) and (not g=" + EVENT_G_CLASS + ")]";
+        EPStatementObjectModel model = new EPStatementObjectModel();
+        model.setSelectClause(SelectClause.createWildcard());
+        PatternExpr pattern = Patterns.and()
+                .add(Patterns.everyFilter(EVENT_B_CLASS, "b"))
+                .add(Patterns.notFilter(EVENT_G_CLASS, "g"));
+        model.setFromClause(FromClause.create(PatternStream.create(pattern)));
+        assertEquals(text, model.toEQL());
+        testCase = new EventExpressionCase(model);
+        testCase.add("B1", "b", events.getEvent("B1"));
+        testCase.add("B2", "b", events.getEvent("B2"));
+        testCase.add("B3", "b", events.getEvent("B3"));
         testCaseList.addTest(testCase);
 
         testCase = new EventExpressionCase("every b=" + EVENT_B_CLASS + " and not g=" + EVENT_G_CLASS);

@@ -10,6 +10,7 @@ import net.esper.client.EPServiceProvider;
 import net.esper.client.EPServiceProviderManager;
 import net.esper.client.EPStatement;
 import net.esper.client.EPStatementException;
+import net.esper.client.soda.*;
 import net.esper.event.EventBean;
 import net.esper.support.bean.SupportMarketDataBean;
 import net.esper.support.bean.SupportTemperatureBean;
@@ -120,7 +121,37 @@ public class TestStaticFunctions extends TestCase
 		}
 	}
 	
-	public void testSingleParameter()
+    public void testSingleParameterOM()
+    {
+        EPStatementObjectModel model = new EPStatementObjectModel();
+        model.setSelectClause(SelectClause.create().add(Expressions.staticMethod("Integer", "toBinaryString", 7), "value"));
+        model.setFromClause(FromClause.create(FilterStream.create(SupportMarketDataBean.class.getName()).addView("win", "length", 5)));
+        statementText = "select Integer.toBinaryString(7) as value" + stream;
+
+        assertEquals(statementText.trim(), model.toEQL());
+        statement = epService.getEPAdministrator().create(model);
+        listener = new SupportUpdateListener();
+        statement.addListener(listener);
+
+        sendEvent("IBM", 10d, 4l);
+        assertEquals(Integer.toBinaryString(7), listener.assertOneGetNewAndReset().get("value"));
+    }
+
+    public void testSingleParameterCompile()
+    {
+        statementText = "select Integer.toBinaryString(7) as value" + stream;
+        EPStatementObjectModel model = epService.getEPAdministrator().compile(statementText);
+
+        assertEquals(statementText.trim(), model.toEQL());
+        statement = epService.getEPAdministrator().create(model);
+        listener = new SupportUpdateListener();
+        statement.addListener(listener);
+
+        sendEvent("IBM", 10d, 4l);
+        assertEquals(Integer.toBinaryString(7), listener.assertOneGetNewAndReset().get("value"));
+    }
+
+    public void testSingleParameter()
 	{
 		statementText = "select Integer.toBinaryString(7) " + stream;
 		Object[] result = createStatementAndGetProperty(true, "Integer.toBinaryString(7)");

@@ -7,7 +7,7 @@
  **************************************************************************************/
 package net.esper.pattern.guard;
 
-import net.esper.eql.parse.TimePeriodParameter;
+import net.esper.type.TimePeriodParameter;
 import net.esper.pattern.PatternContext;
 import net.esper.util.JavaClassHelper;
 import net.esper.util.MetaDefItem;

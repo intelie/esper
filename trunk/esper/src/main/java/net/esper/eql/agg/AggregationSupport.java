@@ -23,7 +23,7 @@ public abstract class AggregationSupport implements AggregationMethod
     /**
      * Ctor.
      */
-    protected AggregationSupport()
+    public AggregationSupport()
     {
     }
 

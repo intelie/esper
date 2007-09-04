@@ -8,9 +8,10 @@ public class PatternFollowedByExpr extends PatternExprBase
     {
     }
 
-    public void add(PatternExpr expr)
+    public PatternFollowedByExpr add(PatternExpr expr)
     {
         this.getChildren().add(expr);
+        return this;
     }
 
     public PatternFollowedByExpr(PatternExpr first, PatternExpr second, PatternExpr ...more)

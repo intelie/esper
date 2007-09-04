@@ -65,7 +65,7 @@ public class TestDatabaseJoin extends TestCase
                 ));
         model.setFromClause(fromClause);
 
-        assertEquals("select mybigint, myint, myvarchar, mychar, mybool, mynumeric, mydecimal, mydouble, myreal from sql:MyDB[select mybigint, myint, myvarchar, mychar, mybool, mynumeric, mydecimal, mydouble, myreal from mytesttable where ${intPrimitive} = mytesttable.mybigint] s0, net.esper.support.bean.SupportBean.win:time_batch(10) s1",
+        assertEquals("select mybigint, myint, myvarchar, mychar, mybool, mynumeric, mydecimal, mydouble, myreal from sql:MyDB[select mybigint, myint, myvarchar, mychar, mybool, mynumeric, mydecimal, mydouble, myreal from mytesttable where ${intPrimitive} = mytesttable.mybigint] as s0, net.esper.support.bean.SupportBean.win:time_batch(10) as s1",
                 model.toEQL());
 
         EPStatement stmt = epService.getEPAdministrator().create(model);
