@@ -3,7 +3,7 @@ package net.esper.client.soda;
 import java.io.StringWriter;
 
 /**
- * Represents an arithmatic expression.
+ * Arithmatic expression for addition, subtraction, multiplication, division and modulo.
  */
 public class ArithmaticExpression extends ExpressionBase
 {
@@ -38,6 +38,39 @@ public class ArithmaticExpression extends ExpressionBase
     public String getOperator()
     {
         return operator;
+    }
+
+    /**
+     * Add a constant to include in the computation.
+     * @param object constant to add
+     * @return expression
+     */
+    public ArithmaticExpression add(Object object)
+    {
+        this.getChildren().add(new ConstantExpression(object));
+        return this;
+    }
+
+    /**
+     * Add an expression to include in the computation. 
+     * @param expression to add
+     * @return expression
+     */
+    public ArithmaticExpression add(Expression expression)
+    {
+        this.getChildren().add(expression);
+        return this;
+    }
+
+    /**
+     * Add a property to include in the computation.
+     * @param propertyName is the name of the property
+     * @return expression
+     */
+    public ArithmaticExpression add(String propertyName)
+    {
+        this.getChildren().add(new PropertyValueExpression(propertyName));
+        return this;
     }
 
     public void toEQL(StringWriter writer)

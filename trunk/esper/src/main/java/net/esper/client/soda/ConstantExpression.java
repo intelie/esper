@@ -3,7 +3,7 @@ package net.esper.client.soda;
 import java.io.StringWriter;
 
 /**
- * Represents a constant value as an part of an expression.
+ * Constant value returns a fixed value for use in expressions.
  */
 public class ConstantExpression extends ExpressionBase
 {

@@ -2,6 +2,10 @@ package net.esper.client.soda;
 
 import java.io.StringWriter;
 
+
+/**
+ * Disjunction represents a logical OR allowing multiple sub-expressions to be connected by OR.
+ */
 public class Disjunction extends Junction
 {
     /**
@@ -15,7 +19,9 @@ public class Disjunction extends Junction
 
     /**
      * Ctor.
-     * @param expressions is the expression to put in the AND-relationship.
+     * @param first an expression to add to the OR-test
+     * @param second an expression to add to the OR-test
+     * @param expressions is the expression to put in the OR-relationship.
      */
     public Disjunction(Expression first, Expression second, Expression... expressions)
     {

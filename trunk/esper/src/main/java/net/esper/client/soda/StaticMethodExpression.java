@@ -2,11 +2,20 @@ package net.esper.client.soda;
 
 import java.io.StringWriter;
 
+/**
+ * Static method call consists of a class name and method name.
+ */
 public class StaticMethodExpression extends ExpressionBase
 {
     private String className;
     private String method;
 
+    /**
+     * Ctor.
+     * @param className class name providing the static method
+     * @param method method name
+     * @param parameters an optiona array of parameters
+     */
     public StaticMethodExpression(String className, String method, Object[] parameters)
     {
         this.className = className;
@@ -25,6 +34,11 @@ public class StaticMethodExpression extends ExpressionBase
         }
     }
 
+    /**
+     * Ctor.
+     * @param className class name providing the static method
+     * @param method method name
+     */
     public StaticMethodExpression(String className, String method)
     {
         this.className = className;
@@ -49,21 +63,37 @@ public class StaticMethodExpression extends ExpressionBase
         writer.write(')');
     }
 
+    /**
+     * Returns the class name.
+     * @return class name
+     */
     public String getClassName()
     {
         return className;
     }
 
+    /**
+     * Sets the class name.
+     * @param className class name
+     */
     public void setClassName(String className)
     {
         this.className = className;
     }
 
+    /**
+     * Returns the method name.
+     * @return method name
+     */
     public String getMethod()
     {
         return method;
     }
 
+    /**
+     * Sets the method name.
+     * @param method method name
+     */
     public void setMethod(String method)
     {
         this.method = method;

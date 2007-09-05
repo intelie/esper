@@ -3,9 +3,11 @@ package net.esper.client.soda;
 import java.io.StringWriter;
 
 /**
- * Standard deviation of the (distinct) values returned by an expression.
+ * Average of the (distinct) values returned by an expression.
+ * <p>
+ * Expects a single child expression providing the values to aggregate.
  */
-public class StddevProjectionExpression extends ExpressionBase
+public class AvgProjectionExpression extends ExpressionBase
 {
     private boolean isDistinct;
 
@@ -13,7 +15,7 @@ public class StddevProjectionExpression extends ExpressionBase
      * Ctor - for use to create an expression tree, without inner expression
      * @param isDistinct true if distinct
      */
-    public StddevProjectionExpression(boolean isDistinct)
+    public AvgProjectionExpression(boolean isDistinct)
     {
         this.isDistinct = isDistinct;
     }
@@ -23,7 +25,7 @@ public class StddevProjectionExpression extends ExpressionBase
      * @param expression returning values to project
      * @param isDistinct true if distinct
      */
-    public StddevProjectionExpression(Expression expression, boolean isDistinct)
+    public AvgProjectionExpression(Expression expression, boolean isDistinct)
     {
         this.isDistinct = isDistinct;
         this.getChildren().add(expression);
@@ -31,7 +33,7 @@ public class StddevProjectionExpression extends ExpressionBase
 
     public void toEQL(StringWriter writer)
     {
-        writer.write("stddev(");
+        writer.write("avg(");
         if (isDistinct)
         {
             writer.write("distinct ");

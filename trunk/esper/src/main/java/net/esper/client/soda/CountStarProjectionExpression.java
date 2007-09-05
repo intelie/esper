@@ -3,7 +3,7 @@ package net.esper.client.soda;
 import java.io.StringWriter;
 
 /**
- * Projection representing a "count(*)" aggregation function.
+ * Count of (distinct) rows, equivalent to "count(*)"
  */
 public class CountStarProjectionExpression extends ExpressionBase
 {

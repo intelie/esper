@@ -1,53 +1,83 @@
 package net.esper.client.soda;
 
-import net.esper.util.MetaDefItem;
-
 import java.io.Serializable;
 import java.io.StringWriter;
 
+/**
+ * Part of a select-clause to describe individual select-clause expressions.
+ */
 public class SelectClauseElement implements Serializable
 {
     private Expression expression;
-    private String optionalAsName;
+    private String asName;
 
+    /**
+     * Ctor.
+     * @param expression is the selection expression
+     */
     public SelectClauseElement(Expression expression)
     {
         this.expression = expression;
     }
 
+    /**
+     * Ctor.
+     * @param expression is the selection expression
+     * @param optionalAsName is the "as"-tag for the expression
+     */
     public SelectClauseElement(Expression expression, String optionalAsName)
     {
         this.expression = expression;
-        this.optionalAsName = optionalAsName;
+        this.asName = optionalAsName;
     }
 
+    /**
+     * Returns the selection expression.
+     * @return expression
+     */
     public Expression getExpression()
     {
         return expression;
     }
 
+    /**
+     * Sets the selection expression.
+     * @param expression is the selection expression
+     */
     public void setExpression(Expression expression)
     {
         this.expression = expression;
     }
 
-    public String getOptionalAsName()
+    /**
+     * Returns the optional "as"-name of the expression, or null if not defined
+     * @return tag or null for selection expression
+     */
+    public String getAsName()
     {
-        return optionalAsName;
+        return asName;
     }
 
-    public void setOptionalAsName(String optionalAsName)
+    /**
+     * Sets the optional "as"-name of the expression, or null if not defined
+     * @param asName column alias or null for selection expression
+     */
+    public void setAsName(String asName)
     {
-        this.optionalAsName = optionalAsName;
+        this.asName = asName;
     }
 
+    /**
+     * Renders the element in textual representation.
+     * @param writer to output to
+     */
     public void toEQL(StringWriter writer)
     {
         expression.toEQL(writer);
-        if (optionalAsName != null)
+        if (asName != null)
         {
             writer.write(" as ");
-            writer.write(optionalAsName);
+            writer.write(asName);
         }
     }
 }

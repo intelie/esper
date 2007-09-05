@@ -2,6 +2,9 @@ package net.esper.client.soda;
 
 import java.io.StringWriter;
 
+/**
+ * Maximum of the (distinct) values returned by an expression.
+ */
 public class MaxProjectionExpression extends ExpressionBase
 {
     private boolean isDistinct;

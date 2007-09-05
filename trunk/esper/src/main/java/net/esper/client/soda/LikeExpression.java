@@ -2,17 +2,36 @@ package net.esper.client.soda;
 
 import java.io.StringWriter;
 
+/**
+ * SQL-Like expression for matching '%' and '_' wildcard strings following SQL standards. 
+ */
 public class LikeExpression extends ExpressionBase
 {
+    /**
+     * Ctor - for use to create an expression tree, without child expression.
+     * <p>
+     * Use add methods to add child expressions to acts upon.
+     */
     public LikeExpression()
     {
     }
 
+    /**
+     * Ctor.
+     * @param left provides the value to match
+     * @param right provides the like-expression to match against
+     */
     public LikeExpression(Expression left, Expression right)
     {
         this(left, right, null);
     }
 
+    /**
+     * Ctor.
+     * @param left provides the value to match
+     * @param right provides the like-expression to match against
+     * @param escape is the expression providing the string escape character
+     */
     public LikeExpression(Expression left, Expression right, Expression escape)
     {
         this.getChildren().add(left);

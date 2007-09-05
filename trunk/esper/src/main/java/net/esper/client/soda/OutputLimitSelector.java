@@ -1,5 +1,8 @@
 package net.esper.client.soda;
 
+/**
+ * Selector for use in output rate limiting.
+ */
 public enum OutputLimitSelector
 {
     /**
@@ -24,6 +27,10 @@ public enum OutputLimitSelector
         this.text = text;
     }
 
+    /**
+     * Returns the text for the selector.
+     * @return text
+     */
     public String getText()
     {
         return text;

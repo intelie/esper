@@ -8,6 +8,7 @@ import net.esper.client.time.CurrentTimeEvent;
 import net.esper.support.util.SupportUpdateListener;
 import net.esper.support.bean.SupportBean;
 import net.esper.support.bean.SupportBeanString;
+import net.esper.support.bean.SupportMarketDataBean;
 import net.esper.support.client.SupportConfigFactory;
 
 import org.apache.commons.logging.Log;
@@ -19,12 +20,12 @@ public class TestAggregateRowForAllHaving extends TestCase
     private final static String JOIN_KEY = "KEY";
 
     private EPServiceProvider epService;
-    private SupportUpdateListener testListener;
+    private SupportUpdateListener listener;
     private EPStatement selectTestView;
 
     public void setUp()
     {
-        testListener = new SupportUpdateListener();
+        listener = new SupportUpdateListener();
         epService = EPServiceProviderManager.getDefaultProvider(SupportConfigFactory.getConfiguration());
         epService.initialize();
         epService.getEPRuntime().sendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
@@ -36,7 +37,7 @@ public class TestAggregateRowForAllHaving extends TestCase
                           "from " + SupportBean.class.getName() + ".win:time(10 seconds) " +
                           "having sum(longBoxed) > 10";
         selectTestView = epService.getEPAdministrator().createEQL(viewExpr);
-        selectTestView.addListener(testListener);
+        selectTestView.addListener(listener);
 
         runAssert();
     }
@@ -50,7 +51,7 @@ public class TestAggregateRowForAllHaving extends TestCase
                           "having sum(longBoxed) > 10";
 
         selectTestView = epService.getEPAdministrator().createEQL(viewExpr);
-        selectTestView.addListener(testListener);
+        selectTestView.addListener(listener);
 
         epService.getEPRuntime().sendEvent(new SupportBeanString(JOIN_KEY));
 
@@ -64,20 +65,57 @@ public class TestAggregateRowForAllHaving extends TestCase
 
         sendTimerEvent(0);
         sendEvent(10);
-        assertFalse(testListener.isInvoked());
+        assertFalse(listener.isInvoked());
 
         sendTimerEvent(5000);
         sendEvent(15);
-        assertEquals(25L, testListener.getAndResetLastNewData()[0].get("mySum"));
+        assertEquals(25L, listener.getAndResetLastNewData()[0].get("mySum"));
 
         sendTimerEvent(8000);
         sendEvent(-5);
-        assertEquals(20L, testListener.getAndResetLastNewData()[0].get("mySum"));
-        assertNull(testListener.getLastOldData());
+        assertEquals(20L, listener.getAndResetLastNewData()[0].get("mySum"));
+        assertNull(listener.getLastOldData());
 
         sendTimerEvent(10000);
-        assertEquals(20L, testListener.getLastOldData()[0].get("mySum"));
-        assertNull(testListener.getAndResetLastNewData());
+        assertEquals(20L, listener.getLastOldData()[0].get("mySum"));
+        assertNull(listener.getAndResetLastNewData());
+    }
+
+    public void testAvgGroupWindow()
+    {
+        //String stmtText = "select istream avg(price) as aprice from "+ SupportMarketDataBean.class.getName()
+        //        +".std:groupby('symbol').win:length(1) having avg(price) <= 0";
+        String stmtText = "select istream avg(price) as aprice from "+ SupportMarketDataBean.class.getName()
+                +".std:unique('symbol') having avg(price) <= 0";
+        EPStatement statement = epService.getEPAdministrator().createEQL(stmtText);
+        statement.addListener(listener);
+
+        sendEvent("A", -1);
+        assertEquals(-1.0d, listener.getLastNewData()[0].get("aprice"));
+        listener.reset();
+
+        sendEvent("A", 5);
+        assertFalse(listener.isInvoked());
+        
+        sendEvent("B", -6);
+        assertEquals(-.5d, listener.getLastNewData()[0].get("aprice"));
+        listener.reset();
+
+        sendEvent("C", 2);
+        assertFalse(listener.isInvoked());
+
+        sendEvent("C", 3);
+        assertFalse(listener.isInvoked());
+
+        sendEvent("C", -2);
+        assertEquals(-1d, listener.getLastNewData()[0].get("aprice"));
+        listener.reset();
+    }
+
+    private Object sendEvent(String symbol, double price) {
+        Object event = new SupportMarketDataBean(symbol, price, null, null);
+        epService.getEPRuntime().sendEvent(event);
+        return event;
     }
 
     private void sendEvent(long longBoxed, int intBoxed, short shortBoxed)

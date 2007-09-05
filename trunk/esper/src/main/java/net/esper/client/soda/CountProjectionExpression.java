@@ -2,6 +2,9 @@ package net.esper.client.soda;
 
 import java.io.StringWriter;
 
+/**
+ * Count of the (distinct) values returned by an expression, equivalent to "count(distinct property)"
+ */
 public class CountProjectionExpression extends ExpressionBase
 {
     private boolean isDistinct;

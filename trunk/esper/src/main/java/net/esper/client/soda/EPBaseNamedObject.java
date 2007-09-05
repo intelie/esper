@@ -83,6 +83,10 @@ public abstract class EPBaseNamedObject implements Serializable
         this.parameters = parameters;
     }
 
+    /**
+     * Writes the object in EQL-syntax in the format "namespace:name(parameter, parameter, ..., parameter)"
+     * @param writer to output to
+     */
     public void toEQL(StringWriter writer)
     {
         writer.write(namespace);

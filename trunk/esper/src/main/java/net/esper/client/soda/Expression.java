@@ -6,9 +6,10 @@ import java.io.Serializable;
 import java.io.StringWriter;
 
 /**
- * Interface representing an expression.
+ * Interface representing an expression for use in select-clauses, where-clauses, having-clauses, order-by clauses and
+ * streams based on filters and pattern filter expressions.
  * <p>
- * Expressions are organized into a tree-like structure with nodes representing sub-expressions (composite pattern).
+ * Expressions are organized into a tree-like structure with nodes representing sub-expressions.
  * <p>
  * Certain types of nodes have certain requirements towards the number or types of nodes that
  * are expected as sub-expressions to an expression.

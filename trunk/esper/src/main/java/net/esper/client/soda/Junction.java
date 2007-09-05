@@ -1,5 +1,8 @@
 package net.esper.client.soda;
 
+/**
+ * Base junction for conjunction (and) and disjunction (or).
+ */
 public abstract class Junction extends ExpressionBase
 {
     /**
@@ -13,6 +16,11 @@ public abstract class Junction extends ExpressionBase
         return this;
     }
 
+    /**
+     * Property to add to the conjunction (AND) or disjunction (OR).
+     * @param propertyName is the name of the property
+     * @return expression
+     */
     public Junction add(String propertyName)
     {
         this.getChildren().add(new PropertyValueExpression(propertyName));

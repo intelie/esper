@@ -3,7 +3,7 @@ package net.esper.client.soda;
 import java.io.StringWriter;
 
 /**
- * Represents a case-expression that acts as a switch.
+ * Case-expression that acts as a switch testing a value against other values.
  * <p>
  * The first child expression provides the value to switch on.
  * The following pairs of child expressions provide the "when expression then expression" results.

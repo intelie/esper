@@ -6,22 +6,43 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * An insert-into clause consists of a stream name and column names and an optional stream selector.
+ */
 public class InsertInto implements Serializable
 {
     private final boolean isIStream;
     private final String streamName;
     private List<String> columnNames;
 
+    /**
+     * Creates the insert-into clause.
+     * @param streamName the name of the stream to insert into
+     * @return clause
+     */
     public static InsertInto create(String streamName)
     {
         return new InsertInto(streamName);
     }
 
+    /**
+     * Creates the insert-into clause.
+     * @param streamName the name of the stream to insert into
+     * @param columns is a list of column names
+     * @return clause
+     */
     public static InsertInto create(String streamName, String ...columns)
     {
         return new InsertInto(streamName, columns);
     }
 
+    /**
+     * Creates the insert-into clause.
+     * @param streamName the name of the stream to insert into
+     * @param columns is a list of column names
+     * @param streamSelector selects the stream
+     * @return clause
+     */
     public static InsertInto create(String streamName, String[] columns, StreamSelector streamSelector)
     {
         if (streamSelector == StreamSelector.RSTREAM_ISTREAM_BOTH)
@@ -31,6 +52,10 @@ public class InsertInto implements Serializable
         return new InsertInto(streamName, Arrays.asList(columns), streamSelector != StreamSelector.RSTREAM_ONLY);
     }
 
+    /**
+     * Ctor.
+     * @param streamName is the stream name to insert into
+     */
     public InsertInto(String streamName)
     {
         this.isIStream = true;
@@ -38,6 +63,11 @@ public class InsertInto implements Serializable
         this.columnNames = new ArrayList<String>();
     }
 
+    /**
+     * Ctor.
+     * @param streamName is the stream name to insert into
+     * @param columnNames column names
+     */
     public InsertInto(String streamName, String[] columnNames)
     {
         this.isIStream = true;
@@ -45,6 +75,12 @@ public class InsertInto implements Serializable
         this.columnNames = Arrays.asList(columnNames);
     }
 
+    /**
+     * Ctor.
+     * @param streamName is the stream name to insert into
+     * @param columnNames column names
+     * @param isIStream is true for selecting the insert stream (default)
+     */
     public InsertInto(String streamName, List<String> columnNames, boolean isIStream)
     {
         this.isIStream = isIStream;
@@ -88,7 +124,10 @@ public class InsertInto implements Serializable
         columnNames.add(columnName);
     }
 
-
+    /**
+     * Renders the clause in textual representation.
+     * @param writer to output to
+     */
     public void toEQL(StringWriter writer)
     {
         writer.write("insert ");

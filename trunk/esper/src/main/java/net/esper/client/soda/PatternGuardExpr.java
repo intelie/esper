@@ -1,27 +1,48 @@
 package net.esper.client.soda;
 
-import net.esper.type.NumberSetParameter;
-
+import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.ArrayList;
-import java.io.StringWriter;
 
+/**
+ * Guard is the where timer-within pattern object for use in pattern expressions. 
+ */
 public class PatternGuardExpr extends EPBaseNamedObject implements PatternExpr
 {
     private List<PatternExpr> guarded;
 
+    /**
+     * Ctor - for use to create a pattern expression tree, without pattern child expression.
+     * @param namespace is the guard object namespace
+     * @param name is the guard object name
+     * @param parameters is guard object parameters
+     */
     public PatternGuardExpr(String namespace, String name, List<Object> parameters)
     {
         super(namespace, name, parameters);
         this.guarded = new ArrayList<PatternExpr>();
     }
 
+    /**
+     * Ctor - for use to create a pattern expression tree, without pattern child expression.
+     * @param namespace is the guard object namespace
+     * @param name is the guard object name
+     * @param parameters is guard object parameters
+     * @param guarded is the guarded pattern expression
+     */
     public PatternGuardExpr(String namespace, String name, Object[] parameters, PatternExpr guarded)
     {
         this(namespace, name, Arrays.asList(parameters), guarded);
     }
 
+    /**
+     * Ctor - for use to create a pattern expression tree, without pattern child expression.
+     * @param namespace is the guard object namespace
+     * @param name is the guard object name
+     * @param parameters is guard object parameters
+     * @param guardedPattern is the guarded pattern expression
+     */
     public PatternGuardExpr(String namespace, String name, List<Object> parameters, PatternExpr guardedPattern)
     {
         super(namespace, name, parameters);
@@ -37,10 +58,9 @@ public class PatternGuardExpr extends EPBaseNamedObject implements PatternExpr
     public void toEQL(StringWriter writer)
     {
         writer.write('(');
-        guarded.get(0).toEQL(writer);        
+        guarded.get(0).toEQL(writer);
         writer.write(") ");
         writer.write(" where ");
         super.toEQL(writer);
     }
-
 }

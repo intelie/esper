@@ -242,10 +242,11 @@ public class TestAggregateRowForAll extends TestCase
         assertEquals(null, listener.getLastNewData()[1].get("aprice"));//B
     }
 
-    private void sendEvent(String symbol, double price) {
-        epService.getEPRuntime().sendEvent(new SupportMarketDataBean(symbol, price, null, null));
+    private Object sendEvent(String symbol, double price) {
+        Object event = new SupportMarketDataBean(symbol, price, null, null);
+        epService.getEPRuntime().sendEvent(event);
+        return event;
     }
-
 
     private void sendEvent(long longBoxed, int intBoxed, short shortBoxed)
     {

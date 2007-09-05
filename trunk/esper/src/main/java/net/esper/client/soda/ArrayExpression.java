@@ -3,7 +3,7 @@ package net.esper.client.soda;
 import java.io.StringWriter;
 
 /**
- * Represents an array expression in a syntax of the form {element 1, element 2, ... element n}.
+ * Array expression forms array results, similar to the EQL syntax of "{element 1, element 2, ... element n}".
  */
 public class ArrayExpression extends ExpressionBase
 {

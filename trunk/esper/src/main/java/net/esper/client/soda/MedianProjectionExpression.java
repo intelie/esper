@@ -2,6 +2,9 @@ package net.esper.client.soda;
 
 import java.io.StringWriter;
 
+/**
+ * Median projection (aggregation) in the distinct and regular form.
+ */
 public class MedianProjectionExpression extends ExpressionBase
 {
     private boolean isDistinct;

@@ -2,12 +2,26 @@ package net.esper.client.soda;
 
 import java.io.StringWriter;
 
+/**
+ * Case expression that act as a when-then-else.
+ */
 public class CaseWhenThenExpression extends ExpressionBase
-{
+{    
+    /**
+     * Ctor - for use to create an expression tree, without child expression.
+     * <p>
+     * Use add methods to add child expressions to acts upon.
+     */
     public CaseWhenThenExpression()
     {
     }
 
+    /**
+     * Adds a when-then pair of expressions.
+     * @param when providings conditions to evaluate
+     * @param then provides the result when a condition evaluates to true
+     * @return expression
+     */
     public CaseWhenThenExpression add(Expression when, Expression then)
     {
         int size = this.getChildren().size();
@@ -25,6 +39,11 @@ public class CaseWhenThenExpression extends ExpressionBase
         return this;
     }
 
+    /**
+     * Sets the expression to provide a value when no when-condition matches.
+     * @param elseExpr expression providing default result
+     * @return expression
+     */
     public CaseWhenThenExpression setElse(Expression elseExpr)
     {
         int size = this.getChildren().size();

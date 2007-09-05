@@ -1,66 +1,104 @@
 package net.esper.client.soda;
 
-import java.io.Serializable;
 import java.io.StringWriter;
 import java.util.List;
 
-public abstract class ProjectedStream implements Serializable
+/**
+ * Abstract base class for streams that can be projected via views providing data window, uniqueness or other projections
+ * or deriving further information from streams.
+ */
+public abstract class ProjectedStream extends Stream
 {
     private List<View> views;
-    private String optStreamName;
 
+    /**
+     * Represent as textual.
+     * @param writer to output to
+     */
     public abstract void toEQLStream(StringWriter writer);
 
+    /**
+     * Ctor.
+     * @param views is a list of views upon the stream
+     * @param optStreamName is the stream as-name, or null if unnamed 
+     */
     protected ProjectedStream(List<View> views, String optStreamName)
     {
-        this.optStreamName = optStreamName;
+        super(optStreamName);
         this.views = views;
     }
 
+    /**
+     * Adds an un-parameterized view to the stream.
+     * @param namespace is the view namespace, for example "win" for most data windows
+     * @param name is the view name, for example "length" for a length window
+     * @return stream
+     */
     public ProjectedStream addView(String namespace, String name)
     {
         views.add(View.create(namespace, name));
         return this;
     }
 
+    /**
+     * Adds a parameterized view to the stream.
+     * @param namespace is the view namespace, for example "win" for most data windows
+     * @param name is the view name, for example "length" for a length window
+     * @param parameters is a list of view parameters
+     * @return stream
+     */
     public ProjectedStream addView(String namespace, String name, List<Object> parameters)
     {
         views.add(View.create(namespace, name, parameters));
         return this;
     }
 
+    /**
+     * Adds a parameterized view to the stream.
+     * @param namespace is the view namespace, for example "win" for most data windows
+     * @param name is the view name, for example "length" for a length window
+     * @param parameters is a list of view parameters
+     * @return stream
+     */
     public ProjectedStream addView(String namespace, String name, Object ...parameters)
     {
         views.add(View.create(namespace, name, parameters));
         return this;
     }
 
+    /**
+     * Add a view to the stream.
+     * @param view to add
+     * @return stream
+     */
     public ProjectedStream addView(View view)
     {
         views.add(view);
         return this;
     }
 
+    /**
+     * Returns the list of views added to the stream.
+     * @return list of views
+     */
     public List<View> getViews()
     {
         return views;
     }
 
+    /**
+     * Sets the list of views onto the stream.
+     * @param views list of views
+     */
     public void setViews(List<View> views)
     {
         this.views = views;
     }
 
-    public String getOptStreamName()
-    {
-        return optStreamName;
-    }
-
-    public void setOptStreamName(String optStreamName)
-    {
-        this.optStreamName = optStreamName;
-    }
-
+    /**
+     * Renders the clause in textual representation.
+     * @param writer to output to
+     */
     public void toEQL(StringWriter writer)
     {
         toEQLStream(writer);
@@ -77,10 +115,10 @@ public abstract class ProjectedStream implements Serializable
             }
         }
 
-        if (optStreamName != null)
+        if (super.getStreamName() != null)
         {
             writer.write(" as ");
-            writer.write(optStreamName);
+            writer.write(super.getStreamName());
         }
     }
 }

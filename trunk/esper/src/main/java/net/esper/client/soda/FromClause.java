@@ -5,43 +5,75 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * The from-clause names the streams to select upon.
+ * <p>
+ * The most common projected stream is a filter-based stream which is created by {@link FilterStream}. 
+ * <p>
+ * Multiple streams can be joined by adding each stream individually.
+ * <p>
+ * Outer joins are also handled by this class. To create an outer join consisting of 2 streams,
+ * add one {@link OuterJoinQualifier} that defines the outer join relationship between the 2 streams. The outer joins between
+ * N streams, add N-1 {@link OuterJoinQualifier} qualifiers.
+ */
 public class FromClause implements Serializable
 {
-    private List<ProjectedStream> streams;
+    private List<Stream> streams;
     private List<OuterJoinQualifier> outerJoinQualifiers;
 
-    public static FromClause create(ProjectedStream stream)
+    /**
+     * Creates an empty from-clause to which one adds streams via the add methods.
+     * @return empty from clause
+     */
+    public static FromClause create()
     {
-        return new FromClause(stream);
+        return new FromClause();
     }
 
-    public static FromClause create(ProjectedStream stream, OuterJoinQualifier outerJoinQualifier, ProjectedStream streamSecond)
+    /**
+     * Creates a from-clause that lists 2 projected streams joined via outer join.
+     * @param stream first stream in outer join
+     * @param outerJoinQualifier qualifies the outer join
+     * @param streamSecond second stream in outer join
+     * @return from clause
+     */
+    public static FromClause create(Stream stream, OuterJoinQualifier outerJoinQualifier, Stream streamSecond)
     {
         return new FromClause(stream, outerJoinQualifier, streamSecond);
     }
 
-    public static FromClause create(ProjectedStream ...streams)
+    /**
+     * Creates a from clause that selects from a single stream.
+     * <p>
+     * Use {@link FilterStream} to create filter-based streams to add.
+     * @param streams is one or more streams to add to the from clause.
+     * @return from clause
+     */
+    public static FromClause create(Stream ...streams)
     {
         return new FromClause(streams);
     }
 
-    public FromClause(ProjectedStream streamOne, OuterJoinQualifier outerJoinQualifier, ProjectedStream streamTwo)
+    /**
+     * Ctor for an outer join between two streams.
+     * @param streamOne first stream in outer join
+     * @param outerJoinQualifier type of outer join and fields joined on
+     * @param streamTwo second stream in outer join
+     */
+    public FromClause(Stream streamOne, OuterJoinQualifier outerJoinQualifier, Stream streamTwo)
     {
         this(streamOne);
         add(streamTwo);
         outerJoinQualifiers.add(outerJoinQualifier);
     }
 
-    public FromClause(ProjectedStream stream)
+    /**
+     * Ctor.
+     * @param streamsList is zero or more streams in the from-clause.
+     */
+    public FromClause(Stream ...streamsList)
     {
-        streams = new ArrayList<ProjectedStream>();
-        outerJoinQualifiers = new ArrayList<OuterJoinQualifier>();
-        streams.add(stream);
-    }
-
-    public FromClause(ProjectedStream ...streamsList)
-    {
-        streams = new ArrayList<ProjectedStream>();
+        streams = new ArrayList<Stream>();
         outerJoinQualifiers = new ArrayList<OuterJoinQualifier>();
         for (int i = 0; i < streamsList.length; i++)
         {
@@ -49,23 +81,45 @@ public class FromClause implements Serializable
         }
     }
 
-    public FromClause add(ProjectedStream stream)
+    /**
+     * Adds a stream.
+     * <p>
+     * Use {@link FilterStream} to add filter-based streams.
+     * @param stream to add
+     * @return from clause
+     */
+    public FromClause add(Stream stream)
     {
         streams.add(stream);
         return this;
     }
 
+    /**
+     * Adds an outer join descriptor that defines how the streams are related via outer joins.
+     * <P>
+     * For joining N streams, add N-1 outer join qualifiers.
+     * @param outerJoinQualifier is the type of outer join and the fields in the outer join
+     * @return from clause
+     */
     public FromClause add(OuterJoinQualifier outerJoinQualifier)
     {
         outerJoinQualifiers.add(outerJoinQualifier);
         return this;
     }
 
-    public List<ProjectedStream> getStreams()
+    /**
+     * Returns the list of streams in the from-clause.
+     * @return list of streams
+     */
+    public List<Stream> getStreams()
     {
         return streams;
     }
 
+    /**
+     * Renders the from-clause in textual representation.
+     * @param writer to output to
+     */
     public void toEQL(StringWriter writer)
     {
         String delimiter = "";
@@ -73,10 +127,10 @@ public class FromClause implements Serializable
 
         if (outerJoinQualifiers.size() == 0)
         {
-            for (ProjectedStream stream : streams)
+            for (Stream stream : streams)
             {
                 writer.write(delimiter);
-                stream.toEQL(writer);
+                stream.toEQLStream(writer);
                 delimiter = ", ";
             }
         }
@@ -88,8 +142,8 @@ public class FromClause implements Serializable
             }
             for (int i = 0; i < streams.size(); i++)
             {
-                ProjectedStream stream = streams.get(i);
-                stream.toEQL(writer);
+                Stream stream = streams.get(i);
+                stream.toEQLStream(writer);
 
                 if (i > 0)
                 {
@@ -111,6 +165,11 @@ public class FromClause implements Serializable
         }
     }
 
+    /**
+     * Returns the outer join descriptors, if this is an outer join, or an empty list if
+     * none of the streams are outer joined.
+     * @return list of outer join qualifiers
+     */
     public List<OuterJoinQualifier> getOuterJoinQualifiers()
     {
         return outerJoinQualifiers;

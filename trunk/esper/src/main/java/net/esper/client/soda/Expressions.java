@@ -9,14 +9,14 @@ import java.util.List;
 /**
  * Convenience factory for creating {@link Expression} instances.
  * <p>
- * Provides quick-access method to create all possible expressions and provides typical parameter lists to each.
+ * Provides quick-access methods to create all possible expressions and provides typical parameter lists to each.
  * <p>
  * Note that only the typical parameter lists are provided and expressions can allow adding
  * additional parameters. 
  * <p>
  * Many expressions, for example logical AND and OR (conjunction and disjunction), allow
  * adding an unlimited number of additional sub-expressions to an expression. For those expressions
- * there are additional add methods provided by the return expression instance.
+ * there are additional add methods provided.
  */
 public class Expressions implements Serializable
 {
@@ -386,7 +386,8 @@ public class Expressions implements Serializable
     }
 
     /**
-     * Logical OR disjunction. Use add methods to add expressions. 
+     * Logical OR disjunction. Use add methods to add expressions.
+     * @return expression
      */
     public static Disjunction or()
     {
@@ -407,6 +408,7 @@ public class Expressions implements Serializable
 
     /**
      * Logical AND conjunction. Use add methods to add expressions. 
+     * @return expression
      */
     public static Conjunction and()
     {
@@ -1205,9 +1207,9 @@ public class Expressions implements Serializable
     protected static List<PropertyValueExpression> toPropertyExpressions(String ...properties)
     {
         List<PropertyValueExpression> expr = new ArrayList<PropertyValueExpression>();
-        for (int i = 0; i < properties.length; i++)
+        for (String property : properties)
         {
-            expr.add(getPropExpr(properties[i]));
+            expr.add(getPropExpr(property));
         }
         return expr;
     }

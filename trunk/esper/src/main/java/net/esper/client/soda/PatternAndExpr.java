@@ -2,18 +2,24 @@ package net.esper.client.soda;
 
 import java.io.StringWriter;
 
+/**
+ * Logical AND for use in pattern expressions. 
+ */
 public class PatternAndExpr extends PatternExprBase
 {
+    /**
+     * Ctor - for use to create a pattern expression tree, without pattern child expression.
+     */
     public PatternAndExpr()
     {
     }
 
-    public PatternAndExpr add(PatternExpr expr)
-    {
-        this.getChildren().add(expr);
-        return this;
-    }
-
+    /**
+     * Ctor.
+     * @param first a first pattern expression in the AND relationship
+     * @param second a second pattern expression in the AND relationship
+     * @param patternExprs further optional pattern expressions in the AND relationship
+     */
     public PatternAndExpr(PatternExpr first, PatternExpr second, PatternExpr ...patternExprs)
     {
         this.addChild(first);
@@ -23,7 +29,18 @@ public class PatternAndExpr extends PatternExprBase
             this.addChild(patternExprs[i]);
         }
     }
-    
+
+    /**
+     * Adds a pattern expression to the AND relationship between patterns.
+     * @param expr to add
+     * @return pattern expression
+     */
+    public PatternAndExpr add(PatternExpr expr)
+    {
+        this.getChildren().add(expr);
+        return this;
+    }
+
     public void toEQL(StringWriter writer)
     {
         String delimiter = "";

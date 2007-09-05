@@ -2,6 +2,9 @@ package net.esper.client.soda;
 
 import java.io.StringWriter;
 
+/**
+ * Minimum of the (distinct) values returned by an expression.
+ */
 public class MinProjectionExpression extends ExpressionBase
 {
     private boolean isDistinct;

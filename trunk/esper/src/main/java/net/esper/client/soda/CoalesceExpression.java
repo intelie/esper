@@ -3,7 +3,7 @@ package net.esper.client.soda;
 import java.io.StringWriter;
 
 /**
- * Represents a coalesce-function which returns the first non-null value in a list of values.
+ * Coalesce-function which returns the first non-null value in a list of values.
  */
 public class CoalesceExpression extends ExpressionBase
 {
@@ -46,6 +46,39 @@ public class CoalesceExpression extends ExpressionBase
         {
             addChild(moreExpressions[i]);
         }
+    }
+
+    /**
+     * Add a constant to include in the computation.
+     * @param object constant to add
+     * @return expression
+     */
+    public CoalesceExpression add(Object object)
+    {
+        this.getChildren().add(new ConstantExpression(object));
+        return this;
+    }
+
+    /**
+     * Add an expression to include in the computation.
+     * @param expression to add
+     * @return expression
+     */
+    public CoalesceExpression add(Expression expression)
+    {
+        this.getChildren().add(expression);
+        return this;
+    }
+
+    /**
+     * Add a property to include in the computation.
+     * @param propertyName is the name of the property
+     * @return expression
+     */
+    public CoalesceExpression add(String propertyName)
+    {
+        this.getChildren().add(new PropertyValueExpression(propertyName));
+        return this;
     }
 
     public void toEQL(StringWriter writer)

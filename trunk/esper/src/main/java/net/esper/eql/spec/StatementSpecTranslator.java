@@ -61,7 +61,7 @@ public class StatementSpecTranslator
 
     private static void unmapOrderBy(List<OrderByItem> orderByList, EPStatementObjectModel model)
     {
-        if ((orderByList != null) && (orderByList.size() == 0))
+        if ((orderByList == null) || (orderByList.size() == 0))
         {
             return;
         }
@@ -132,7 +132,7 @@ public class StatementSpecTranslator
         }
         else
         {
-            spec = new OutputLimitSpec((double) outputLimitClause.getFrequency(), displayLimit);
+            spec = new OutputLimitSpec(outputLimitClause.getFrequency(), displayLimit);
         }
         raw.setOutputLimitSpec(spec);
     }
@@ -212,34 +212,38 @@ public class StatementSpecTranslator
         
         for (StreamSpecRaw stream : streamSpecs)
         {
-            ProjectedStream projStream = null;
+            Stream targetStream;
             if (stream instanceof FilterStreamSpecRaw)
             {
                 FilterStreamSpecRaw filterStreamSpec = (FilterStreamSpecRaw) stream;
                 Filter filter = unmapFilter(filterStreamSpec.getRawFilterSpec());
-                projStream = new FilterStream(filter, filterStreamSpec.getOptionalStreamName());
+                targetStream = new FilterStream(filter, filterStreamSpec.getOptionalStreamName());
             }
             else if (stream instanceof DBStatementStreamSpec)
             {
                 DBStatementStreamSpec db = (DBStatementStreamSpec) stream;
-                projStream = new SQLStream(db.getDatabaseName(), db.getSqlWithSubsParams(), db.getOptionalStreamName());
+                targetStream = new SQLStream(db.getDatabaseName(), db.getSqlWithSubsParams(), db.getOptionalStreamName());
             }
             else if (stream instanceof PatternStreamSpecRaw)
             {
                 PatternStreamSpecRaw pattern = (PatternStreamSpecRaw) stream;
                 PatternExpr patternExpr = unmapPatternEvalDeep(pattern.getEvalNode());
-                projStream = new PatternStream(patternExpr, pattern.getOptionalStreamName());
+                targetStream = new PatternStream(patternExpr, pattern.getOptionalStreamName());
             }
             else
             {
                 throw new IllegalArgumentException("Stream modelled by " + stream.getClass() + " cannot be unmapped");
             }
 
-            for (ViewSpec viewSpec : stream.getViewSpecs())
+            if (targetStream instanceof ProjectedStream)
             {
-                projStream.addView(View.create(viewSpec.getObjectNamespace(), viewSpec.getObjectName(), viewSpec.getObjectParameters()));
+                ProjectedStream projStream = (ProjectedStream) targetStream;
+                for (ViewSpec viewSpec : stream.getViewSpecs())
+                {
+                    projStream.addView(View.create(viewSpec.getObjectNamespace(), viewSpec.getObjectName(), viewSpec.getObjectParameters()));
+                }
             }
-            from.add(projStream);
+            from.add(targetStream);
         }
 
         for (OuterJoinDesc desc : outerJoinDescList)
@@ -311,7 +315,7 @@ public class StatementSpecTranslator
             Expression expr = element.getExpression();
             ExprNode exprNode = mapExpressionDeep(expr, engineImportService);
 
-            SelectExprElementRawSpec rawElement = new SelectExprElementRawSpec(exprNode, element.getOptionalAsName());
+            SelectExprElementRawSpec rawElement = new SelectExprElementRawSpec(exprNode, element.getAsName());
             spec.add(rawElement);
         }
     }
@@ -653,11 +657,6 @@ public class StatementSpecTranslator
                 return new MaxProjectionExpression(node.isDistinct());
             }
         }
-        else if (expr instanceof ExprStaticMethodNode)
-        {
-            ExprStaticMethodNode node = (ExprStaticMethodNode) expr;
-            return new StaticMethodExpression(node.getClassName(), node.getMethodName());
-        }
         else if (expr instanceof ExprNotNode)
         {
             return new NotExpression();
@@ -754,7 +753,7 @@ public class StatementSpecTranslator
 
     private static void mapFrom(FromClause fromClause, StatementSpecRaw raw, EngineImportService engineImportService)
     {
-        for (ProjectedStream stream : fromClause.getStreams())
+        for (Stream stream : fromClause.getStreams())
         {
             StreamSpecRaw spec;
             
@@ -762,19 +761,19 @@ public class StatementSpecTranslator
             {
                 FilterStream filterStream = (FilterStream) stream;
                 FilterSpecRaw filterSpecRaw = mapFilter(filterStream.getFilter(), engineImportService);
-                spec = new FilterStreamSpecRaw(filterSpecRaw, new ArrayList<ViewSpec>(), filterStream.getOptStreamName());
+                spec = new FilterStreamSpecRaw(filterSpecRaw, new ArrayList<ViewSpec>(), filterStream.getStreamName());
             }
             else if (stream instanceof SQLStream)
             {
                 SQLStream sqlStream = (SQLStream) stream;
-                spec = new DBStatementStreamSpec(sqlStream.getOptStreamName(), new ArrayList<ViewSpec>(),
+                spec = new DBStatementStreamSpec(sqlStream.getStreamName(), new ArrayList<ViewSpec>(),
                         sqlStream.getDatabaseName(), sqlStream.getSqlWithSubsParams());
             }
             else if (stream instanceof PatternStream)
             {
                 PatternStream patternStream = (PatternStream) stream;
                 EvalNode child = mapPatternEvalDeep(patternStream.getExpression(), engineImportService);
-                spec = new PatternStreamSpecRaw(child, new ArrayList<ViewSpec>(), patternStream.getOptStreamName());
+                spec = new PatternStreamSpecRaw(child, new ArrayList<ViewSpec>(), patternStream.getStreamName());
             }
             else
             {
@@ -782,7 +781,11 @@ public class StatementSpecTranslator
             }
 
             raw.getStreamSpecs().add(spec);
-            addViews(stream, spec);
+            
+            if (stream instanceof ProjectedStream)
+            {
+                addViews((ProjectedStream) stream, spec);
+            }
         }
 
         for (OuterJoinQualifier qualifier : fromClause.getOuterJoinQualifiers())

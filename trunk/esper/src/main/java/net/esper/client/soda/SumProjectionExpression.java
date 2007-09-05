@@ -3,9 +3,9 @@ package net.esper.client.soda;
 import java.io.StringWriter;
 
 /**
- * Standard deviation of the (distinct) values returned by an expression.
+ * Sum of the (distinct) values returned by an expression.
  */
-public class StddevProjectionExpression extends ExpressionBase
+public class SumProjectionExpression extends ExpressionBase
 {
     private boolean isDistinct;
 
@@ -13,7 +13,7 @@ public class StddevProjectionExpression extends ExpressionBase
      * Ctor - for use to create an expression tree, without inner expression
      * @param isDistinct true if distinct
      */
-    public StddevProjectionExpression(boolean isDistinct)
+    public SumProjectionExpression(boolean isDistinct)
     {
         this.isDistinct = isDistinct;
     }
@@ -23,7 +23,7 @@ public class StddevProjectionExpression extends ExpressionBase
      * @param expression returning values to project
      * @param isDistinct true if distinct
      */
-    public StddevProjectionExpression(Expression expression, boolean isDistinct)
+    public SumProjectionExpression(Expression expression, boolean isDistinct)
     {
         this.isDistinct = isDistinct;
         this.getChildren().add(expression);
@@ -31,7 +31,7 @@ public class StddevProjectionExpression extends ExpressionBase
 
     public void toEQL(StringWriter writer)
     {
-        writer.write("stddev(");
+        writer.write("sum(");
         if (isDistinct)
         {
             writer.write("distinct ");

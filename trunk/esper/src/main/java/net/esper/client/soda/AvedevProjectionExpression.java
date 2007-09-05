@@ -3,7 +3,7 @@ package net.esper.client.soda;
 import java.io.StringWriter;
 
 /**
- * Mean deviation of the (distinct) values in the expression.
+ * Mean deviation of the (distinct) values returned by an expression. 
  */
 public class AvedevProjectionExpression extends ExpressionBase
 {

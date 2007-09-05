@@ -3,7 +3,7 @@ package net.esper.client.soda;
 import java.io.StringWriter;
 
 /**
- * A conjunction represents a logical AND allowing multiple sub-expressions to be connected by AND.
+ * Conjunction represents a logical AND allowing multiple sub-expressions to be connected by AND.
  */
 public class Conjunction extends Junction
 {    
@@ -18,7 +18,9 @@ public class Conjunction extends Junction
 
     /**
      * Ctor.
-     * @param expressions is the expression to put in the AND-relationship.
+     * @param first provides value to AND
+     * @param second provides value to AND
+     * @param expressions is more expressions to put in the AND-relationship.
      */
     public Conjunction(Expression first, Expression second, Expression ...expressions)
     {
