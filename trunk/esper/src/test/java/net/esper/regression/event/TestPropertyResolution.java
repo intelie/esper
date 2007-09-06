@@ -6,12 +6,27 @@ import net.esper.event.EventBean;
 import net.esper.support.bean.SupportBean;
 import net.esper.support.bean.SupportBeanDupProperty;
 import net.esper.support.bean.SupportBeanComplexProps;
+import net.esper.support.bean.SupportBeanWriteOnly;
 import net.esper.support.client.SupportConfigFactory;
 import net.esper.support.util.SupportUpdateListener;
 
 public class TestPropertyResolution extends TestCase
 {
     private EPServiceProvider epService;
+
+    public void testWriteOnly()
+    {
+        epService = EPServiceProviderManager.getDefaultProvider();
+        epService.initialize();
+
+        EPStatement stmt = epService.getEPAdministrator().createEQL("select * from " + SupportBeanWriteOnly.class.getName());
+        SupportUpdateListener listener = new SupportUpdateListener();
+        stmt.addListener(listener);
+
+        Object event = new SupportBeanWriteOnly();
+        epService.getEPRuntime().sendEvent(event);
+        assertSame(event, listener.assertOneGetNewAndReset().getUnderlying());
+    }
 
     public void testCaseSensitive()
     {
@@ -27,7 +42,7 @@ public class TestPropertyResolution extends TestCase
         assertEquals("upper", result.get("MYPROPERTY"));
         assertEquals("lower", result.get("myproperty"));
         assertEquals("uppercamel", result.get("myProperty"));
-        
+
         try
         {
             epService.getEPAdministrator().createEQL("select MyProperty from " + SupportBeanDupProperty.class.getName());

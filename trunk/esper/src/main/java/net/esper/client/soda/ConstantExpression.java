@@ -27,6 +27,11 @@ public class ConstantExpression extends ExpressionBase
 
     public void toEQL(StringWriter writer)
     {
+        renderEQL(writer, constant);
+    }
+
+    public static void renderEQL(StringWriter writer, Object constant)
+    {
         if (constant == null)
         {
             writer.write("null");
@@ -36,14 +41,14 @@ public class ConstantExpression extends ExpressionBase
         if ((constant instanceof String) ||
             (constant instanceof Character))
         {
-            writer.write('\'');
+            writer.write('\"');
             writer.write(constant.toString());
-            writer.write('\'');
+            writer.write('\"');
         }
         else
         {
             writer.write(constant.toString());
-        }        
+        }
     }
 
     /**

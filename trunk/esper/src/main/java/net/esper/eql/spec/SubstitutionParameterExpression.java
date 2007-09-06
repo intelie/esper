@@ -1,6 +1,7 @@
 package net.esper.eql.spec;
 
 import net.esper.client.soda.ExpressionBase;
+import net.esper.client.soda.ConstantExpression;
 
 import java.io.StringWriter;
 
@@ -10,19 +11,28 @@ import java.io.StringWriter;
  */
 public class SubstitutionParameterExpression extends ExpressionBase
 {
+    private final int index;
     private Object constant;
     private boolean isSatisfied;
 
     /**
      * Ctor.
      */
-    public SubstitutionParameterExpression()
+    public SubstitutionParameterExpression(int index)
     {
+        this.index = index;
     }
 
     public void toEQL(StringWriter writer)
     {
-        writer.write("?");
+        if (!isSatisfied)
+        {
+            writer.write("?");
+        }
+        else
+        {
+            ConstantExpression.renderEQL(writer, constant);
+        }
     }
 
     /**
@@ -34,6 +44,16 @@ public class SubstitutionParameterExpression extends ExpressionBase
         return constant;
     }
 
+    public boolean isSatisfied()
+    {
+        return isSatisfied;
+    }
+
+    public int getIndex()
+    {
+        return index;
+    }
+
     /**
      * Sets the constant value that the expression represents.
      * @param constant is the value, or null to indicate the null value
@@ -41,5 +61,6 @@ public class SubstitutionParameterExpression extends ExpressionBase
     public void setConstant(Object constant)
     {
         this.constant = constant;
+        isSatisfied = true;
     }
 }

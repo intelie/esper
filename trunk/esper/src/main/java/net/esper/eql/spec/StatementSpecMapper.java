@@ -45,7 +45,7 @@ public class StatementSpecMapper
      * @param statementSpec is the internal representation
      * @return object model of statement
      */
-    public static EPStatementObjectModel unmap(StatementSpecRaw statementSpec)
+    public static StatementSpecUnMapResult unmap(StatementSpecRaw statementSpec)
     {
         StatementSpecUnMapContext unmapContext = new StatementSpecUnMapContext();
 
@@ -58,7 +58,8 @@ public class StatementSpecMapper
         unmapHaving(statementSpec.getHavingExprRootNode(), model, unmapContext);
         unmapOutputLimit(statementSpec.getOutputLimitSpec(), model);
         unmapOrderBy(statementSpec.getOrderByList(), model, unmapContext);
-        return model;
+        
+        return new StatementSpecUnMapResult(model, unmapContext.getIndexedParams());
     }
 
     private static void unmapOrderBy(List<OrderByItem> orderByList, EPStatementObjectModel model, StatementSpecUnMapContext unmapContext)
@@ -520,6 +521,15 @@ public class StatementSpecMapper
             StddevProjectionExpression node = (StddevProjectionExpression) expr;
             return new ExprStddevNode(node.isDistinct());
         }
+        else if (expr instanceof SubstitutionParameterExpression)
+        {
+            SubstitutionParameterExpression node = (SubstitutionParameterExpression) expr;
+            if (!(node.isSatisfied()))
+            {
+                throw new EPException("Substitution parameter value for index " + node.getIndex() + " not set, please provide a value for this parameter");
+            }
+            return new ExprConstantNode(node.getConstant());
+        }
         else if (expr instanceof PlugInProjectionExpression)
         {
             PlugInProjectionExpression node = (PlugInProjectionExpression) expr;
@@ -592,20 +602,23 @@ public class StatementSpecMapper
         else if (expr instanceof ExprSubselectRowNode)
         {
             ExprSubselectRowNode sub = (ExprSubselectRowNode) expr;
-            EPStatementObjectModel model = unmap(sub.getStatementSpecRaw());
-            return new SubqueryExpression(model);
+            StatementSpecUnMapResult unmapped = unmap(sub.getStatementSpecRaw());
+            unmapContext.addAll(unmapped.getIndexedParams());
+            return new SubqueryExpression(unmapped.getObjectModel());
         }
         else if (expr instanceof ExprSubselectInNode)
         {
             ExprSubselectInNode sub = (ExprSubselectInNode) expr;
-            EPStatementObjectModel model = unmap(sub.getStatementSpecRaw());
-            return new SubqueryInExpression(model, sub.isNotIn());
+            StatementSpecUnMapResult unmapped = unmap(sub.getStatementSpecRaw());
+            unmapContext.addAll(unmapped.getIndexedParams());
+            return new SubqueryInExpression(unmapped.getObjectModel(), sub.isNotIn());
         }
         else if (expr instanceof ExprSubselectExistsNode)
         {
             ExprSubselectExistsNode sub = (ExprSubselectExistsNode) expr;
-            EPStatementObjectModel model = unmap(sub.getStatementSpecRaw());
-            return new SubqueryExistsExpression(model);
+            StatementSpecUnMapResult unmapped = unmap(sub.getStatementSpecRaw());
+            unmapContext.addAll(unmapped.getIndexedParams());
+            return new SubqueryExistsExpression(unmapped.getObjectModel());
         }
         else if (expr instanceof ExprCountNode)
         {
@@ -733,7 +746,7 @@ public class StatementSpecMapper
         else if (expr instanceof ExprSubstitutionNode)
         {
             ExprSubstitutionNode node = (ExprSubstitutionNode) expr;
-            SubstitutionParameterExpression subParam = new SubstitutionParameterExpression();
+            SubstitutionParameterExpression subParam = new SubstitutionParameterExpression(node.getIndex());
             unmapContext.add(node.getIndex(), subParam);
             return subParam;
         }

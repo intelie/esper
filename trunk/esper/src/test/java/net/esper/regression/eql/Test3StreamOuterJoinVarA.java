@@ -15,6 +15,7 @@ import net.esper.support.util.ArrayAssertionUtil;
 import net.esper.support.util.ArrayHandlingUtil;
 import net.esper.support.util.SupportUpdateListener;
 import net.esper.type.OuterJoinType;
+import net.esper.util.SerializableObjectCopier;
 
 public class Test3StreamOuterJoinVarA extends TestCase
 {
@@ -34,7 +35,7 @@ public class Test3StreamOuterJoinVarA extends TestCase
         updateListener = new SupportUpdateListener();
     }
 
-    public void testLeftOuterJoin_root_s0_OM()
+    public void testLeftOuterJoin_root_s0_OM() throws Exception
     {
         EPStatementObjectModel model = new EPStatementObjectModel();
         model.setSelectClause(SelectClause.createWildcard());
@@ -45,6 +46,7 @@ public class Test3StreamOuterJoinVarA extends TestCase
         fromClause.add(OuterJoinQualifier.create("s0.p00", OuterJoinType.LEFT, "s1.p10"));
         fromClause.add(OuterJoinQualifier.create("s0.p00", OuterJoinType.LEFT, "s2.p20"));
         model.setFromClause(fromClause);
+        model = (EPStatementObjectModel) SerializableObjectCopier.copy(model);
 
         assertEquals("select * from net.esper.support.bean.SupportBean_S0 as s0 left outer join net.esper.support.bean.SupportBean_S1 as s1 on s0.p00 = s1.p10 left outer join net.esper.support.bean.SupportBean_S2 as s2 on s0.p00 = s2.p20", model.toEQL());
         joinView = epService.getEPAdministrator().create(model);
@@ -53,14 +55,15 @@ public class Test3StreamOuterJoinVarA extends TestCase
         runAsserts();
     }
 
-    public void testLeftOuterJoin_root_s0_Compiled()
+    public void testLeftOuterJoin_root_s0_Compiled() throws Exception
     {
         String joinStatement = "select * from " +
                                   EVENT_S0 + ".win:length(1000) as s0 " +
             "left outer join " + EVENT_S1 + ".win:length(1000) as s1 on s0.p00 = s1.p10 " +
             "left outer join " + EVENT_S2 + ".win:length(1000) as s2 on s0.p00 = s2.p20";
 
-        EPStatementObjectModel model = epService.getEPAdministrator().compile(joinStatement);
+        EPStatementObjectModel model = epService.getEPAdministrator().compileEQL(joinStatement);
+        model = (EPStatementObjectModel) SerializableObjectCopier.copy(model);
         joinView = epService.getEPAdministrator().create(model);
         joinView.addListener(updateListener);
 

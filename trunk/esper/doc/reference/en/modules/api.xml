@@ -401,11 +401,11 @@ We generally recommended that listener implementations do not block. By implemen
         </para>
 
         <para>
-			The statement object model supports full round-trip from object model to EQL statement string and back to object model: A statement object model can be rendered into an EQL string representation via the <literal>toEQL</literal> method on <literal>EPStatementObjectModel</literal>. Further, the administrative API allows to compile a statement string into an object model representation via the <literal>compile</literal> method on <literal>EPAdministrator</literal>.
+			The statement object model supports full round-trip from object model to EQL statement string and back to object model: A statement object model can be rendered into an EQL string representation via the <literal>toEQL</literal> method on <literal>EPStatementObjectModel</literal>. Further, the administrative API allows to compile a statement string into an object model representation via the <literal>compileEQL</literal> method on <literal>EPAdministrator</literal>.
         </para>
 
 		<para>
-			The <literal>create</literal> method on <literal>EPAdministrator</literal> creates and starts a statement as represented by an object model. In order to obtain an object model from an existing statement, obtain the statement expression text of the statement via the <literal>getText</literal> method on <literal>EPStatement</literal> and use the <literal>compile</literal> method to obtain the object model.
+			The <literal>create</literal> method on <literal>EPAdministrator</literal> creates and starts a statement as represented by an object model. In order to obtain an object model from an existing statement, obtain the statement expression text of the statement via the <literal>getText</literal> method on <literal>EPStatement</literal> and use the <literal>compileEQL</literal> method to obtain the object model.
 		</para>
 
 		<para>
@@ -618,29 +618,26 @@ model.setOrderByClause(OrderByClause.create("line"));]]></programlisting>
         </para>
 
         <para>
+			Substitution parameters can be inserted into any EQL construct that takes an expression. They are therefore valid in any clauses such as the select-clause, from-clause filters, where-clause, group-by-clause, having-clause or order-by-clause. 
+			Substitution parameters cannot be used as parameters to views, pattern observers and guards. They also cannot be used where a numeric constant is required rather then an expression.
+        </para>
+
+        <para>
 			All substitution parameters must be replaced by actual values before a statement with substitution parameters can be started. Substitution parameters can be replaced with an actual value using the <literal>setObject</literal> method for each index. Substitution parameters can be set to new values and new statements can be created from the same <literal>EPPreparedStatement</literal> object more then once.
         </para>
 
         <para>
-			In the following example of setting parameters on a prepared statement, <literal>epService</literal> represents an engine instance:
+			While the <literal>setObject</literal> method allows substitution parameters to assume any actual value including application Java objects or enumeration values, the application must provide the correct type of  substitution parameter that matches the requirements of the expression the parameter resides in.
+        </para>
+
+        <para>
+			In the following example of setting parameters on a prepared statement and starting the prepared statement, <literal>epService</literal> represents an engine instance:
         </para>
 
 		<programlisting><![CDATA[String stmt = "select * from com.chipmaker.ReadyEvent(line=?)";
 EPPreparedStatement prepared = epService.getEPAdministrator().prepareEQL(stmt);
 prepared.setObject(1, 8);
 EPStatement statement = epService.getEPAdministrator().create(prepared);]]></programlisting>
-
-		<para>
-			The following limitations apply:
-		</para>
-
-		<itemizedlist spacing="compact">
-			<listitem>
-				<para>
-					Substitution parameters are expected to be of the correct type matching the type required by the expression. Type validation occurs when the statement is created and started.
-				</para>
-			</listitem>
-		</itemizedlist>
 	
   </sect1>
       

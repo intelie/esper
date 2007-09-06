@@ -8,6 +8,7 @@ import net.esper.support.bean.SupportMarketDataBean;
 import net.esper.support.eql.SupportPluginAggregationMethodTwo;
 import net.esper.support.eql.SupportPluginAggregationMethodOne;
 import net.esper.support.util.SupportUpdateListener;
+import net.esper.util.SerializableObjectCopier;
 
 public class TestAggregationFunctionPlugIn extends TestCase
 {
@@ -29,7 +30,7 @@ public class TestAggregationFunctionPlugIn extends TestCase
         epService.initialize();
     }
 
-    public void testGrouped_OM()
+    public void testGrouped_OM() throws Exception
     {
         String text = "select concatstring(string) as val from " + SupportBean.class.getName() + ".win:length(10) group by intPrimitive";
 
@@ -39,15 +40,17 @@ public class TestAggregationFunctionPlugIn extends TestCase
         model.setFromClause(FromClause.create(FilterStream.create(SupportBean.class.getName()).addView("win", "length", 10)));
         model.setGroupByClause(GroupByClause.create("intPrimitive"));
         assertEquals(text, model.toEQL());
+        SerializableObjectCopier.copy(model);
 
         tryGrouped(null, model);
     }
 
-    public void testGrouped_Compile()
+    public void testGrouped_Compile() throws Exception
     {
         String text = "select concatstring(string) as val from " + SupportBean.class.getName() + ".win:length(10) group by intPrimitive";
 
-        EPStatementObjectModel model = epService.getEPAdministrator().compile(text);
+        EPStatementObjectModel model = epService.getEPAdministrator().compileEQL(text);
+        SerializableObjectCopier.copy(model);
         assertEquals(text, model.toEQL());
 
         tryGrouped(null, model);

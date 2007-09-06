@@ -13,6 +13,7 @@ import net.esper.support.bean.SupportBean_S1;
 import net.esper.support.bean.SupportBean_S2;
 import net.esper.support.client.SupportConfigFactory;
 import net.esper.support.util.SupportUpdateListener;
+import net.esper.util.SerializableObjectCopier;
 
 public class TestSubselectIn extends TestCase
 {
@@ -43,7 +44,7 @@ public class TestSubselectIn extends TestCase
         runTestInSelect();
     }
 
-    public void testInSelectOM()
+    public void testInSelectOM() throws Exception
     {
         EPStatementObjectModel subquery = new EPStatementObjectModel();
         subquery.setSelectClause(SelectClause.create("id"));
@@ -52,6 +53,7 @@ public class TestSubselectIn extends TestCase
         EPStatementObjectModel model = new EPStatementObjectModel();
         model.setFromClause(FromClause.create(FilterStream.create("S0")));
         model.setSelectClause(SelectClause.create().add(Expressions.subqueryIn("id", subquery), "value"));
+        model = (EPStatementObjectModel) SerializableObjectCopier.copy(model);
 
         String stmtText = "select id in (select id from S1.win:length(1000)) as value from S0";
         assertEquals(stmtText, model.toEQL());
@@ -62,10 +64,11 @@ public class TestSubselectIn extends TestCase
         runTestInSelect();
     }
 
-    public void testInSelectCompile()
+    public void testInSelectCompile() throws Exception
     {
         String stmtText = "select id in (select id from S1.win:length(1000)) as value from S0";
-        EPStatementObjectModel model = epService.getEPAdministrator().compile(stmtText);
+        EPStatementObjectModel model = epService.getEPAdministrator().compileEQL(stmtText);
+        model = (EPStatementObjectModel) SerializableObjectCopier.copy(model);
         assertEquals(stmtText, model.toEQL());
 
         EPStatement stmt = epService.getEPAdministrator().create(model);

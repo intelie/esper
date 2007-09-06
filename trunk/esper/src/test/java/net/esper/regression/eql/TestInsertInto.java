@@ -12,6 +12,7 @@ import net.esper.event.EventBean;
 import net.esper.support.bean.*;
 import net.esper.support.util.SupportUpdateListener;
 import net.esper.support.client.SupportConfigFactory;
+import net.esper.util.SerializableObjectCopier;
 
 public class TestInsertInto extends TestCase
 {
@@ -32,12 +33,13 @@ public class TestInsertInto extends TestCase
         epService.getEPRuntime().sendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
     }
 
-    public void testVariantRStreamOMToStmt()
+    public void testVariantRStreamOMToStmt() throws Exception
     {
         EPStatementObjectModel model = new EPStatementObjectModel();
         model.setInsertInto(InsertIntoClause.create("Event_1", new String[0], StreamSelector.RSTREAM_ONLY));
         model.setSelectClause(SelectClause.create().add("intPrimitive", "intBoxed"));
         model.setFromClause(FromClause.create(FilterStream.create(SupportBean.class.getName())));
+        model = (EPStatementObjectModel) SerializableObjectCopier.copy(model);
 
         EPStatement stmt = epService.getEPAdministrator().create(model, "s1");
 
@@ -47,18 +49,20 @@ public class TestInsertInto extends TestCase
         assertEquals(eql, model.toEQL());
         assertEquals(eql, stmt.getText());
 
-        EPStatementObjectModel modelTwo = epService.getEPAdministrator().compile(model.toEQL());
+        EPStatementObjectModel modelTwo = epService.getEPAdministrator().compileEQL(model.toEQL());
+        model = (EPStatementObjectModel) SerializableObjectCopier.copy(model);
         assertEquals(eql, modelTwo.toEQL());
     }
 
-    public void testVariantOneOMToStmt()
+    public void testVariantOneOMToStmt() throws Exception
     {
         EPStatementObjectModel model = new EPStatementObjectModel();
         model.setInsertInto(InsertIntoClause.create("Event_1", "delta", "product"));
         model.setSelectClause(SelectClause.create().add(Expressions.minus("intPrimitive", "intBoxed"), "deltaTag")
                 .add(Expressions.multiply("intPrimitive", "intBoxed"), "productTag"));
         model.setFromClause(FromClause.create(FilterStream.create(SupportBean.class.getName()).addView(View.create("win", "length", 100))));
-        
+        model = (EPStatementObjectModel) SerializableObjectCopier.copy(model);
+
         EPStatement stmt = runAsserts(null, model);
 
         String eql = "insert into Event_1(delta, product) " +
@@ -68,13 +72,14 @@ public class TestInsertInto extends TestCase
         assertEquals(eql, stmt.getText());
     }
 
-    public void testVariantOneEQLToOMStmt()
+    public void testVariantOneEQLToOMStmt() throws Exception
     {
         String eql = "insert into Event_1(delta, product) " +
                       "select (intPrimitive - intBoxed) as deltaTag, (intPrimitive * intBoxed) as productTag " +
                       "from " + SupportBean.class.getName() + ".win:length(100)";
 
-        EPStatementObjectModel model = epService.getEPAdministrator().compile(eql);
+        EPStatementObjectModel model = epService.getEPAdministrator().compileEQL(eql);
+        model = (EPStatementObjectModel) SerializableObjectCopier.copy(model);
         assertEquals(eql, model.toEQL());
 
         EPStatement stmt = runAsserts(null, model);

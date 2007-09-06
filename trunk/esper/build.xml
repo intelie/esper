@@ -53,7 +53,7 @@
 			</packageset>
 
 			<group title="Core API"
-				packages="net.esper.client,net.esper.client.time,net.esper.event"/>
+				packages="net.esper.client,net.esper.client.time,net.esper.client.soda,net.esper.event"/>
 						
 		</javadoc>
 		<copy file="${doc.api.dir}/package.html" todir="${dist.api.dir}"/>

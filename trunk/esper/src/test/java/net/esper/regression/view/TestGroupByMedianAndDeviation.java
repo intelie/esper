@@ -10,6 +10,7 @@ import net.esper.support.bean.SupportBeanString;
 import net.esper.support.bean.SupportBean;
 import net.esper.support.client.SupportConfigFactory;
 import net.esper.event.EventBean;
+import net.esper.util.SerializableObjectCopier;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -48,7 +49,7 @@ public class TestGroupByMedianAndDeviation extends TestCase
         runAssertion();
     }
 
-    public void testSumJoin_OM()
+    public void testSumJoin_OM() throws Exception
     {
         EPStatementObjectModel model = new EPStatementObjectModel();
         model.setSelectClause(SelectClause.create("symbol")
@@ -69,6 +70,7 @@ public class TestGroupByMedianAndDeviation extends TestCase
                 )
                 .add(Expressions.eqProperty("one.string", "two.symbol")));
         model.setGroupByClause(GroupByClause.create("symbol"));
+        model = (EPStatementObjectModel) SerializableObjectCopier.copy(model);
 
         String viewExpr = "select symbol, " +
                                  "median(price) as myMedian, " +
@@ -77,7 +79,7 @@ public class TestGroupByMedianAndDeviation extends TestCase
                                  "avedev(price) as myAvedev " +
                           "from " + SupportBeanString.class.getName() + ".win:length(100) as one, " +
                                     SupportMarketDataBean.class.getName() + ".win:length(5) as two " +
-                          "where (((symbol = 'DELL')) or ((symbol = 'IBM')) or ((symbol = 'GE'))) " +
+                          "where (((symbol = \"DELL\")) or ((symbol = \"IBM\")) or ((symbol = \"GE\"))) " +
                           "and ((one.string = two.symbol)) " +
                           "group by symbol";
         assertEquals(viewExpr, model.toEQL());

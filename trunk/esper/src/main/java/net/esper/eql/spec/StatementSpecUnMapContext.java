@@ -28,4 +28,16 @@ public class StatementSpecUnMapContext
     {
         return indexedParams;
     }
+
+    public void addAll(Map<Integer, SubstitutionParameterExpression> inner)
+    {
+        for (Map.Entry<Integer, SubstitutionParameterExpression> entry : inner.entrySet())
+        {
+            if (indexedParams.containsKey(entry.getKey()))
+            {
+                throw new IllegalStateException("Index '" + entry.getKey() + "' already found in collection");
+            }
+            indexedParams.put(entry.getKey(), entry.getValue());            
+        }
+    }
 }

@@ -4,6 +4,7 @@ import junit.framework.*;
 import net.esper.regression.support.*;
 import net.esper.support.bean.SupportBeanConstants;
 import net.esper.client.soda.*;
+import net.esper.util.SerializableObjectCopier;
 
 public class TestNotOperator extends TestCase implements SupportBeanConstants
 {
@@ -24,6 +25,7 @@ public class TestNotOperator extends TestCase implements SupportBeanConstants
                 .add(Patterns.everyFilter(EVENT_B_CLASS, "b"))
                 .add(Patterns.notFilter(EVENT_G_CLASS, "g"));
         model.setFromClause(FromClause.create(PatternStream.create(pattern)));
+        model = (EPStatementObjectModel) SerializableObjectCopier.copy(model);
         assertEquals(text, model.toEQL());
         testCase = new EventExpressionCase(model);
         testCase.add("B1", "b", events.getEvent("B1"));

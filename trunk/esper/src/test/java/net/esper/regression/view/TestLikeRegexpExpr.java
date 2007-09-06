@@ -10,6 +10,7 @@ import net.esper.support.util.SupportUpdateListener;
 import net.esper.support.bean.*;
 import net.esper.support.client.SupportConfigFactory;
 import net.esper.event.EventBean;
+import net.esper.util.SerializableObjectCopier;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -38,10 +39,10 @@ public class TestLikeRegexpExpr extends TestCase
         runLikeRegexStringAndNull();
     }
 
-    public void testLikeRegexStringAndNull_OM()
+    public void testLikeRegexStringAndNull_OM() throws Exception
     {
         String stmtText = "select (p00 like p01) as r1, " +
-                                "(p00 like p01 escape '!') as r2, " +
+                                "(p00 like p01 escape \"!\") as r2, " +
                                 "(p02 regexp p03) as r3 " +
                           "from " + SupportBean_S0.class.getName();
 
@@ -52,6 +53,7 @@ public class TestLikeRegexpExpr extends TestCase
                 .add(Expressions.regexp(Expressions.property("p02"), Expressions.property("p03")), "r3")
                 );
         model.setFromClause(FromClause.create(FilterStream.create(SupportBean_S0.class.getName())));
+        model = (EPStatementObjectModel) SerializableObjectCopier.copy(model);        
         assertEquals(stmtText, model.toEQL());
 
         EPStatement selectTestCase = epService.getEPAdministrator().create(model);
@@ -60,14 +62,15 @@ public class TestLikeRegexpExpr extends TestCase
         runLikeRegexStringAndNull();
     }
 
-    public void testLikeRegexStringAndNull_Compile()
+    public void testLikeRegexStringAndNull_Compile() throws Exception
     {
         String stmtText = "select (p00 like p01) as r1, " +
-                                "(p00 like p01 escape '!') as r2, " +
+                                "(p00 like p01 escape \"!\") as r2, " +
                                 "(p02 regexp p03) as r3 " +
                           "from " + SupportBean_S0.class.getName();
 
-        EPStatementObjectModel model = epService.getEPAdministrator().compile(stmtText);
+        EPStatementObjectModel model = epService.getEPAdministrator().compileEQL(stmtText);
+        model = (EPStatementObjectModel) SerializableObjectCopier.copy(model);
         assertEquals(stmtText, model.toEQL());
 
         EPStatement selectTestCase = epService.getEPAdministrator().create(model);

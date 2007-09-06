@@ -12,6 +12,7 @@ import net.esper.support.bean.SupportBean_S1;
 import net.esper.support.bean.SupportBean_S2;
 import net.esper.support.util.SupportUpdateListener;
 import net.esper.support.client.SupportConfigFactory;
+import net.esper.util.SerializableObjectCopier;
 
 public class TestSubselectExists extends TestCase
 {
@@ -41,7 +42,7 @@ public class TestSubselectExists extends TestCase
         runTestExistsInSelect();
     }
 
-    public void testExistsInSelectOM()
+    public void testExistsInSelectOM() throws Exception
     {
         EPStatementObjectModel subquery = new EPStatementObjectModel();
         subquery.setSelectClause(SelectClause.createWildcard());
@@ -50,6 +51,7 @@ public class TestSubselectExists extends TestCase
         EPStatementObjectModel model = new EPStatementObjectModel();
         model.setFromClause(FromClause.create(FilterStream.create("S0")));
         model.setSelectClause(SelectClause.create().add(Expressions.subqueryExists(subquery), "value"));
+        model = (EPStatementObjectModel) SerializableObjectCopier.copy(model);
 
         String stmtText = "select exists (select * from S1.win:length(1000)) as value from S0";
         assertEquals(stmtText, model.toEQL());
@@ -60,10 +62,11 @@ public class TestSubselectExists extends TestCase
         runTestExistsInSelect();
     }
 
-    public void testExistsInSelectCompile()
+    public void testExistsInSelectCompile() throws Exception
     {
         String stmtText = "select exists (select * from S1.win:length(1000)) as value from S0";
-        EPStatementObjectModel model = epService.getEPAdministrator().compile(stmtText);
+        EPStatementObjectModel model = epService.getEPAdministrator().compileEQL(stmtText);
+        model = (EPStatementObjectModel) SerializableObjectCopier.copy(model);
         assertEquals(stmtText, model.toEQL());
 
         EPStatement stmt = epService.getEPAdministrator().create(model);
@@ -159,7 +162,7 @@ public class TestSubselectExists extends TestCase
         assertFalse(listener.isInvoked());
     }
 
-    public void testNotExists_OM()
+    public void testNotExists_OM() throws Exception
     {
         EPStatementObjectModel subquery = new EPStatementObjectModel();
         subquery.setSelectClause(SelectClause.createWildcard());
@@ -169,6 +172,7 @@ public class TestSubselectExists extends TestCase
         model.setSelectClause(SelectClause.create("id"));
         model.setFromClause(FromClause.create(FilterStream.create("S0")));
         model.setWhereClause(Expressions.not(Expressions.subqueryExists(subquery)));
+        model = (EPStatementObjectModel) SerializableObjectCopier.copy(model);
 
         String stmtText = "select id from S0 where not exists (select * from S1.win:length(1000))";
         assertEquals(stmtText, model.toEQL());
@@ -188,10 +192,11 @@ public class TestSubselectExists extends TestCase
         assertFalse(listener.isInvoked());
     }
 
-    public void testNotExists_Compile()
+    public void testNotExists_Compile() throws Exception
     {
         String stmtText = "select id from S0 where not exists (select * from S1.win:length(1000))";
-        EPStatementObjectModel model = epService.getEPAdministrator().compile(stmtText);
+        EPStatementObjectModel model = epService.getEPAdministrator().compileEQL(stmtText);
+        model = (EPStatementObjectModel) SerializableObjectCopier.copy(model);
         assertEquals(stmtText, model.toEQL());
 
         EPStatement stmt = epService.getEPAdministrator().create(model);

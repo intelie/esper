@@ -64,11 +64,11 @@ public class SubqueryInExpression extends ExpressionBase
         this.getChildren().get(0).toEQL(writer);
         if (isNotIn)
         {
-            writer.write("not in (");
+            writer.write(" not in (");
         }
         else
         {
-            writer.write("in (");
+            writer.write(" in (");
         }
         writer.write(model.toEQL());
         writer.write(')');

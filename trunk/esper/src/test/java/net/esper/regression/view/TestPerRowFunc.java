@@ -11,6 +11,7 @@ import net.esper.support.bean.SupportBean_S0;
 import net.esper.support.client.SupportConfigFactory;
 import net.esper.event.EventType;
 import net.esper.event.EventBean;
+import net.esper.util.SerializableObjectCopier;
 
 import java.util.Arrays;
 
@@ -75,7 +76,7 @@ public class TestPerRowFunc extends TestCase
         assertEquals(null, testListener.assertOneGetNewAndReset().get("result"));
     }
 
-    public void testCoalesceLong_OM()
+    public void testCoalesceLong_OM() throws Exception
     {
         String viewExpr = "select coalesce(longBoxed, intBoxed, shortBoxed) as result" +
                           " from " + SupportBean.class.getName() + ".win:length(1000)";
@@ -84,6 +85,7 @@ public class TestPerRowFunc extends TestCase
         model.setSelectClause(SelectClause.create().add(Expressions.coalesce(
                 "longBoxed", "intBoxed", "shortBoxed"), "result"));
         model.setFromClause(FromClause.create(FilterStream.create(SupportBean.class.getName()).addView("win", "length", 1000)));
+        model = (EPStatementObjectModel) SerializableObjectCopier.copy(model);
         assertEquals(viewExpr, model.toEQL());
 
         epService.initialize();
@@ -99,7 +101,7 @@ public class TestPerRowFunc extends TestCase
         String viewExpr = "select coalesce(longBoxed, intBoxed, shortBoxed) as result" +
                           " from " + SupportBean.class.getName() + ".win:length(1000)";
 
-        EPStatementObjectModel model = epService.getEPAdministrator().compile(viewExpr);
+        EPStatementObjectModel model = epService.getEPAdministrator().compileEQL(viewExpr);
         assertEquals(viewExpr, model.toEQL());
 
         epService.initialize();
@@ -211,7 +213,7 @@ public class TestPerRowFunc extends TestCase
         runMinMaxWindowStats();
     }
 
-    public void testMinMaxWindowStats_OM()
+    public void testMinMaxWindowStats_OM() throws Exception
     {
         String viewExpr = "select max(longBoxed, intBoxed) as myMax, " +
                                  "max(longBoxed, intBoxed, shortBoxed) as myMaxEx, " +
@@ -227,6 +229,7 @@ public class TestPerRowFunc extends TestCase
                 .add(Expressions.min(Expressions.property("longBoxed"), Expressions.property("intBoxed"), Expressions.property("shortBoxed")), "myMinEx")
                 );
         model.setFromClause(FromClause.create(FilterStream.create(SupportBean.class.getName()).addView("win", "length", 3)));
+        model = (EPStatementObjectModel) SerializableObjectCopier.copy(model);
         assertEquals(viewExpr, model.toEQL());
 
         selectTestView = epService.getEPAdministrator().create(model);
@@ -236,7 +239,7 @@ public class TestPerRowFunc extends TestCase
         runMinMaxWindowStats();
     }
 
-    public void testMinMaxWindowStats_Compile()
+    public void testMinMaxWindowStats_Compile() throws Exception
     {
         String viewExpr = "select max(longBoxed, intBoxed) as myMax, " +
                                  "max(longBoxed, intBoxed, shortBoxed) as myMaxEx, " +
@@ -244,7 +247,8 @@ public class TestPerRowFunc extends TestCase
                                  "min(longBoxed, intBoxed, shortBoxed) as myMinEx" +
                           " from " + SupportBean.class.getName() + ".win:length(3)";
 
-        EPStatementObjectModel model = epService.getEPAdministrator().compile(viewExpr);
+        EPStatementObjectModel model = epService.getEPAdministrator().compileEQL(viewExpr);
+        model = (EPStatementObjectModel) SerializableObjectCopier.copy(model);
         assertEquals(viewExpr, model.toEQL());
 
         selectTestView = epService.getEPAdministrator().create(model);

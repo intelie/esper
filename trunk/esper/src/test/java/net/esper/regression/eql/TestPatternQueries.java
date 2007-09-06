@@ -12,6 +12,7 @@ import net.esper.support.bean.SupportBean_S0;
 import net.esper.support.bean.SupportBean_S1;
 import net.esper.support.client.SupportConfigFactory;
 import net.esper.event.EventBean;
+import net.esper.util.SerializableObjectCopier;
 
 public class TestPatternQueries extends TestCase
 {
@@ -26,7 +27,7 @@ public class TestPatternQueries extends TestCase
         updateListener = new SupportUpdateListener();
     }
 
-    public void testWhere_OM()
+    public void testWhere_OM() throws Exception
     {
         EPStatementObjectModel model = new EPStatementObjectModel();
         model.setSelectClause(SelectClause.create().addWithAlias("s0.id", "idS0").addWithAlias("s1.id", "idS1"));
@@ -44,6 +45,7 @@ public class TestPatternQueries extends TestCase
                       .add(Expressions.isNotNull("s1.id"))
                       .add(Expressions.ge("s1.id", 100))
                     ));
+        model = (EPStatementObjectModel) SerializableObjectCopier.copy(model);
 
         String reverse = model.toEQL();
         String stmtText = "select s0.id as idS0, s1.id as idS1 " +
@@ -68,13 +70,14 @@ public class TestPatternQueries extends TestCase
         assertEventIds(null, 100);
     }
 
-    public void testWhere_Compile()
+    public void testWhere_Compile() throws Exception
     {
         String stmtText = "select s0.id as idS0, s1.id as idS1 " +
                 "from pattern [(every (s0=" + SupportBean_S0.class.getName() +
                 ")) or (every (s1=" + SupportBean_S1.class.getName() + "))] " +
                 "where (((s0.id != null)) and ((s0.id < 100))) or (((s1.id != null)) and ((s1.id >= 100)))";
-        EPStatementObjectModel model = epService.getEPAdministrator().compile(stmtText);
+        EPStatementObjectModel model = epService.getEPAdministrator().compileEQL(stmtText);
+        model = (EPStatementObjectModel) SerializableObjectCopier.copy(model);
 
         String reverse = model.toEQL();
         assertEquals(stmtText, reverse);

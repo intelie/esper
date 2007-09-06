@@ -10,6 +10,7 @@ import net.esper.support.bean.SupportBeanString;
 import net.esper.support.bean.SupportMarketDataBean;
 import net.esper.support.client.SupportConfigFactory;
 import net.esper.support.util.SupportUpdateListener;
+import net.esper.util.SerializableObjectCopier;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -46,7 +47,7 @@ public class TestGroupByMaxMin extends TestCase
         runAssertion();
     }
 
-    public void testMinMaxView_OM()
+    public void testMinMaxView_OM() throws Exception
     {
         EPStatementObjectModel model = new EPStatementObjectModel();
         model.setSelectClause(SelectClause.create()
@@ -62,6 +63,7 @@ public class TestGroupByMaxMin extends TestCase
                 .add(Expressions.eq("symbol", "IBM"))
                 .add(Expressions.eq("symbol", "GE")) );
         model.setGroupByClause(GroupByClause.create("symbol"));
+        model = (EPStatementObjectModel) SerializableObjectCopier.copy(model);
 
         String viewExpr = "select symbol, " +
                                   "min(volume) as minVol, " +
@@ -69,7 +71,7 @@ public class TestGroupByMaxMin extends TestCase
                                   "min(distinct volume) as minDistVol, " +
                                   "max(distinct volume) as maxDistVol " +
                           "from " + SupportMarketDataBean.class.getName() + ".win:length(3) " +
-                          "where ((symbol = 'DELL')) or ((symbol = 'IBM')) or ((symbol = 'GE')) " +
+                          "where ((symbol = \"DELL\")) or ((symbol = \"IBM\")) or ((symbol = \"GE\")) " +
                           "group by symbol";
         assertEquals(viewExpr, model.toEQL());
 
@@ -87,9 +89,9 @@ public class TestGroupByMaxMin extends TestCase
                                   "min(distinct volume) as minDistVol, " +
                                   "max(distinct volume) as maxDistVol " +
                           "from " + SupportMarketDataBean.class.getName() + ".win:length(3) " +
-                          "where ((symbol = 'DELL')) or ((symbol = 'IBM')) or ((symbol = 'GE')) " +
+                          "where ((symbol = \"DELL\")) or ((symbol = \"IBM\")) or ((symbol = \"GE\")) " +
                           "group by symbol";
-        EPStatementObjectModel model = epService.getEPAdministrator().compile(viewExpr);
+        EPStatementObjectModel model = epService.getEPAdministrator().compileEQL(viewExpr);
         assertEquals(viewExpr, model.toEQL());
 
         selectTestView = epService.getEPAdministrator().create(model);

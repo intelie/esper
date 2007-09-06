@@ -11,6 +11,7 @@ import net.esper.support.bean.SupportBeanCombinedProps;
 import net.esper.support.bean.SupportBeanComplexProps;
 import net.esper.support.client.SupportConfigFactory;
 import net.esper.support.util.SupportUpdateListener;
+import net.esper.util.SerializableObjectCopier;
 
 public class TestComplexPropertyAccess extends TestCase
 {
@@ -131,6 +132,7 @@ public class TestComplexPropertyAccess extends TestCase
         PatternExpr pattern = Patterns.followedBy(Patterns.everyFilter(type, "a"),
                 Patterns.filter(Filter.create(type, Expressions.eqProperty("indexed[0]", "a.indexed[0]")), "b"));
         model.setFromClause(FromClause.create(PatternStream.create(pattern)));
+        model = (EPStatementObjectModel) SerializableObjectCopier.copy(model);
 
         String patternText = "select * from pattern [(every (a=" + type + ")) -> (b=" + type + "((indexed[0] = a.indexed[0])))]";
         assertEquals(patternText, model.toEQL());
@@ -146,7 +148,8 @@ public class TestComplexPropertyAccess extends TestCase
         String type = SupportBeanComplexProps.class.getName();
 
         String patternText = "select * from pattern [(every (a=" + type + ")) -> (b=" + type + "((indexed[0] = a.indexed[0])))]";
-        EPStatementObjectModel model = epService.getEPAdministrator().compile(patternText);        
+        EPStatementObjectModel model = epService.getEPAdministrator().compileEQL(patternText);
+        model = (EPStatementObjectModel) SerializableObjectCopier.copy(model);
         assertEquals(patternText, model.toEQL());
 
         EPStatement stmt = epService.getEPAdministrator().create(model);

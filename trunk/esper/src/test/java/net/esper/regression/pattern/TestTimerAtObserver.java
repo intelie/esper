@@ -5,6 +5,7 @@ import java.util.Calendar;
 import net.esper.regression.support.*;
 import net.esper.support.bean.SupportBeanConstants;
 import net.esper.client.soda.*;
+import net.esper.util.SerializableObjectCopier;
 
 public class TestTimerAtObserver extends TestCase implements SupportBeanConstants
 {
@@ -40,6 +41,7 @@ public class TestTimerAtObserver extends TestCase implements SupportBeanConstant
         model.setSelectClause(SelectClause.createWildcard());
         PatternExpr pattern = Patterns.timerAt(10, 8, null, null, null, null);
         model.setFromClause(FromClause.create(PatternStream.create(pattern)));
+        model = (EPStatementObjectModel) SerializableObjectCopier.copy(model);
         assertEquals(text, model.toEQL());
         testCase = new EventExpressionCase(model);
         testCase.add("A1");

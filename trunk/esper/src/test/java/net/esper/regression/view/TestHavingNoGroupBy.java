@@ -10,6 +10,7 @@ import net.esper.support.bean.SupportBeanString;
 import net.esper.support.bean.SupportBean;
 import net.esper.support.client.SupportConfigFactory;
 import net.esper.event.EventBean;
+import net.esper.util.SerializableObjectCopier;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -31,12 +32,13 @@ public class TestHavingNoGroupBy extends TestCase
         epService.initialize();
     }
 
-    public void testSumOneViewOM()
+    public void testSumOneViewOM() throws Exception
     {
         EPStatementObjectModel model = new EPStatementObjectModel();
         model.setSelectClause(SelectClause.create("symbol", "price").add(Expressions.avg("price"), "avgPrice"));
         model.setFromClause(FromClause.create(FilterStream.create(SupportMarketDataBean.class.getName()).addView("win", "length", 5)));
         model.setHavingClause(Expressions.lt(Expressions.property("price"), Expressions.avg("price")));
+        model = (EPStatementObjectModel) SerializableObjectCopier.copy(model);
 
         String viewExpr = "select symbol, price, avg(price) as avgPrice " +
                           "from " + SupportMarketDataBean.class.getName() + ".win:length(5) " +

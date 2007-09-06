@@ -4,6 +4,7 @@ import junit.framework.*;
 import net.esper.regression.support.*;
 import net.esper.support.bean.SupportBeanConstants;
 import net.esper.client.soda.*;
+import net.esper.util.SerializableObjectCopier;
 
 public class TestOperators extends TestCase implements SupportBeanConstants
 {
@@ -30,6 +31,7 @@ public class TestOperators extends TestCase implements SupportBeanConstants
                 Patterns.filter(EVENT_B_CLASS, "b"),
                 Patterns.or(Patterns.filter(EVENT_D_CLASS, "d"), Patterns.filter(EVENT_A_CLASS, "a")));
         model.setFromClause(FromClause.create(PatternStream.create(pattern)));
+        model = (EPStatementObjectModel) SerializableObjectCopier.copy(model);
         String text = "select * from pattern [(b=" + EVENT_B_CLASS + ") -> ((d=" + EVENT_D_CLASS + ") or (a=" + EVENT_A_CLASS + "))]";
         assertEquals(text, model.toEQL());
         testCase = new EventExpressionCase(model);

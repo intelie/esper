@@ -9,6 +9,7 @@ import net.esper.event.EventBean;
 import net.esper.support.bean.SupportBean;
 import net.esper.support.client.SupportConfigFactory;
 import net.esper.support.util.SupportUpdateListener;
+import net.esper.util.SerializableObjectCopier;
 
 public class TestInBetweenLikeExpr extends TestCase
 {
@@ -22,9 +23,9 @@ public class TestInBetweenLikeExpr extends TestCase
         epService.initialize();
     }
 
-    public void testInStringExprOM()
+    public void testInStringExprOM() throws Exception
     {
-        String caseExpr = "select string in ('a', 'b', 'c') as result from " + SupportBean.class.getName();
+        String caseExpr = "select string in (\"a\", \"b\", \"c\") as result from " + SupportBean.class.getName();
         EPStatementObjectModel model = new EPStatementObjectModel();
         model.setSelectClause(SelectClause.create().add(Expressions.in("string", "a", "b", "c"), "result"));
         model.setFromClause(FromClause.create(FilterStream.create(SupportBean.class.getName())));
@@ -33,10 +34,11 @@ public class TestInBetweenLikeExpr extends TestCase
                     new String[] {"0", "a", "b", "c", "d", null},
                     new boolean[] {false, true, true, true, false, false});
 
-        caseExpr = "select string not in ('a', 'b', 'c') as result from " + SupportBean.class.getName();
+        caseExpr = "select string not in (\"a\", \"b\", \"c\") as result from " + SupportBean.class.getName();
         model = new EPStatementObjectModel();
         model.setSelectClause(SelectClause.create().add(Expressions.notIn("string", "a", "b", "c"), "result"));
         model.setFromClause(FromClause.create(FilterStream.create(SupportBean.class.getName())));
+        model = (EPStatementObjectModel) SerializableObjectCopier.copy(model);
 
         tryString("string not in ('a', 'b', 'c')",
                     new String[] {"0", "a", "b", "c", "d", null},
@@ -352,12 +354,13 @@ public class TestInBetweenLikeExpr extends TestCase
         selectTestCase.stop();
     }
 
-    private void tryString(EPStatementObjectModel model, String eql, String[] input, boolean[] result)
+    private void tryString(EPStatementObjectModel model, String eql, String[] input, boolean[] result) throws Exception
     {
         EPStatement selectTestCase = epService.getEPAdministrator().create(model);
         assertEquals(eql, model.toEQL());
 
-        EPStatementObjectModel compiled = epService.getEPAdministrator().compile(eql);
+        EPStatementObjectModel compiled = epService.getEPAdministrator().compileEQL(eql);
+        compiled = (EPStatementObjectModel) SerializableObjectCopier.copy(compiled);
         assertEquals(eql, compiled.toEQL());
 
         selectTestCase.addListener(testListener);

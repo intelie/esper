@@ -68,8 +68,7 @@ public class PatternGuardExpr extends EPBaseNamedObject implements PatternExpr
     {
         writer.write('(');
         guarded.get(0).toEQL(writer);
-        writer.write(") ");
-        writer.write(" where ");
+        writer.write(") where ");
         super.toEQL(writer);
     }
 }

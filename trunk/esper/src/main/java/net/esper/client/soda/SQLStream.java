@@ -93,8 +93,8 @@ public class SQLStream extends Stream
     {
         writer.write("sql:");
         writer.write(databaseName);
-        writer.write('[');
+        writer.write("[\"");
         writer.write(sqlWithSubsParams);
-        writer.write(']');
+        writer.write("\"]");
     }
 }

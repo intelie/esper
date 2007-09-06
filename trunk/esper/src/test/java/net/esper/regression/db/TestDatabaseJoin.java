@@ -13,6 +13,7 @@ import net.esper.support.eql.SupportDatabaseService;
 import net.esper.support.client.SupportConfigFactory;
 import net.esper.event.EventBean;
 import net.esper.event.EventType;
+import net.esper.util.SerializableObjectCopier;
 
 import java.util.Properties;
 import java.sql.*;
@@ -52,7 +53,7 @@ public class TestDatabaseJoin extends TestCase
         runtestTimeBatch(stmt);
     }
 
-    public void testTimeBatchOM()
+    public void testTimeBatchOM() throws Exception
     {
         String[] fields = ALL_FIELDS.split(",");
         String sql = "select " + ALL_FIELDS + " from mytesttable where ${intPrimitive} = mytesttable.mybigint";
@@ -64,21 +65,25 @@ public class TestDatabaseJoin extends TestCase
                 FilterStream.create(SupportBean.class.getName(), "s1").addView(View.create("win", "time_batch", 10)
                 ));
         model.setFromClause(fromClause);
+        SerializableObjectCopier.copy(model);
 
-        assertEquals("select mybigint, myint, myvarchar, mychar, mybool, mynumeric, mydecimal, mydouble, myreal from sql:MyDB[select mybigint, myint, myvarchar, mychar, mybool, mynumeric, mydecimal, mydouble, myreal from mytesttable where ${intPrimitive} = mytesttable.mybigint] as s0, net.esper.support.bean.SupportBean.win:time_batch(10) as s1",
+        assertEquals("select mybigint, myint, myvarchar, mychar, mybool, mynumeric, mydecimal, mydouble, myreal from sql:MyDB[\"select mybigint, myint, myvarchar, mychar, mybool, mynumeric, mydecimal, mydouble, myreal from mytesttable where ${intPrimitive} = mytesttable.mybigint\"] as s0, net.esper.support.bean.SupportBean.win:time_batch(10) as s1",
                 model.toEQL());
 
         EPStatement stmt = epService.getEPAdministrator().create(model);
         runtestTimeBatch(stmt);
+
+        stmt = epService.getEPAdministrator().createEQL(model.toEQL());
     }
 
-    public void testTimeBatchCompile()
+    public void testTimeBatchCompile() throws Exception
     {
         String stmtText = "select " + ALL_FIELDS + " from " +
                 " sql:MyDB ['select " + ALL_FIELDS + " from mytesttable where ${intPrimitive} = mytesttable.mybigint'] as s0," +
                 SupportBean.class.getName() + ".win:time_batch(10 sec) as s1";
 
-        EPStatementObjectModel model = epService.getEPAdministrator().compile(stmtText);
+        EPStatementObjectModel model = epService.getEPAdministrator().compileEQL(stmtText);
+        SerializableObjectCopier.copy(model);
         EPStatement stmt = epService.getEPAdministrator().create(model);
         runtestTimeBatch(stmt);
     }

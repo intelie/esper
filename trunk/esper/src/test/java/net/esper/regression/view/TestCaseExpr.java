@@ -13,6 +13,7 @@ import net.esper.event.EventBean;
 import net.esper.support.bean.SupportEnum;
 import net.esper.support.bean.SupportBeanWithEnum;
 import net.esper.support.client.SupportConfigFactory;
+import net.esper.util.SerializableObjectCopier;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -45,17 +46,18 @@ public class TestCaseExpr extends TestCase
         runCaseSyntax1Sum();
     }
 
-    public void testCaseSyntax1Sum_OM()
+    public void testCaseSyntax1Sum_OM() throws Exception
     {
         EPStatementObjectModel model = new EPStatementObjectModel();
         model.setSelectClause(SelectClause.create().add(Expressions.caseWhenThen()
                 .add(Expressions.eq("symbol", "GE"), Expressions.property("volume"))
                 .add(Expressions.eq("symbol", "DELL"), Expressions.sum("price")), "p1"));
         model.setFromClause(FromClause.create(FilterStream.create(SupportMarketDataBean.class.getName()).addView("win", "length", 10)));
+        model = (EPStatementObjectModel) SerializableObjectCopier.copy(model);
 
         String caseExpr = "select case" +
-              " when (symbol = 'GE') then volume" +
-              " when (symbol = 'DELL') then sum(price) " +
+              " when (symbol = \"GE\") then volume" +
+              " when (symbol = \"DELL\") then sum(price) " +
               "end as p1 from " +   SupportMarketDataBean.class.getName() + ".win:length(10)";
 
         assertEquals(caseExpr, model.toEQL());
@@ -69,10 +71,10 @@ public class TestCaseExpr extends TestCase
     public void testCaseSyntax1Sum_Compile()
     {
         String caseExpr = "select case" +
-              " when (symbol = 'GE') then volume" +
-              " when (symbol = 'DELL') then sum(price) " +
+              " when (symbol = \"GE\") then volume" +
+              " when (symbol = \"DELL\") then sum(price) " +
               "end as p1 from " +   SupportMarketDataBean.class.getName() + ".win:length(10)";
-        EPStatementObjectModel model = epService.getEPAdministrator().compile(caseExpr);
+        EPStatementObjectModel model = epService.getEPAdministrator().compileEQL(caseExpr);
 
         assertEquals(caseExpr, model.toEQL());
         EPStatement selectTestCase = epService.getEPAdministrator().create(model);
@@ -117,16 +119,17 @@ public class TestCaseExpr extends TestCase
         runCaseSyntax1WithElse();
     }
 
-    public void testCaseSyntax1WithElse_OM()
+    public void testCaseSyntax1WithElse_OM() throws Exception
     {
         EPStatementObjectModel model = new EPStatementObjectModel();
         model.setSelectClause(SelectClause.create().add(Expressions.caseWhenThen()
                 .setElse(Expressions.property("volume"))
                 .add(Expressions.eq("symbol", "DELL"), Expressions.multiply(Expressions.property("volume"), Expressions.constant(3))), "p1"));
         model.setFromClause(FromClause.create(FilterStream.create(SupportMarketDataBean.class.getName()).addView("win", "length", 10)));
+        model = (EPStatementObjectModel) SerializableObjectCopier.copy(model);
 
         String caseExpr = "select case " +
-              "when (symbol = 'DELL') then (volume * 3) " +
+              "when (symbol = \"DELL\") then (volume * 3) " +
               "else volume " +
               "end as p1 from " + SupportMarketDataBean.class.getName() + ".win:length(10)";
         assertEquals(caseExpr, model.toEQL());
@@ -141,10 +144,10 @@ public class TestCaseExpr extends TestCase
     public void testCaseSyntax1WithElse_Compile()
     {
         String caseExpr = "select case " +
-              "when (symbol = 'DELL') then (volume * 3) " +
+              "when (symbol = \"DELL\") then (volume * 3) " +
               "else volume " +
               "end as p1 from " + SupportMarketDataBean.class.getName() + ".win:length(10)";
-        EPStatementObjectModel model = epService.getEPAdministrator().compile(caseExpr);
+        EPStatementObjectModel model = epService.getEPAdministrator().compileEQL(caseExpr);
         assertEquals(caseExpr, model.toEQL());
 
         EPStatement selectTestCase = epService.getEPAdministrator().create(model);
@@ -375,7 +378,7 @@ public class TestCaseExpr extends TestCase
         assertEquals(false, testListener.assertOneGetNewAndReset().get("p1"));
     }
 
-    public void testCaseSyntax2WithNull_OM()
+    public void testCaseSyntax2WithNull_OM() throws Exception
     {
        String caseExpr = "select case intPrimitive " +
                  "when 1 then null " +
@@ -391,6 +394,7 @@ public class TestCaseExpr extends TestCase
                 .add(Expressions.constant(2), Expressions.constant(1.0))
                 .add(Expressions.constant(3), Expressions.constant(null)), "p1"));
         model.setFromClause(FromClause.create(FilterStream.create(SupportBean.class.getName()).addView("win", "length", 100)));
+        model = (EPStatementObjectModel) SerializableObjectCopier.copy(model);
 
         assertEquals(caseExpr, model.toEQL());
         EPStatement selectTestCase = epService.getEPAdministrator().create(model);
@@ -400,7 +404,7 @@ public class TestCaseExpr extends TestCase
         runCaseSyntax2WithNull();
     }
 
-    public void testCaseSyntax2WithNull_compile()
+    public void testCaseSyntax2WithNull_compile() throws Exception
     {
        String caseExpr = "select case intPrimitive " +
                  "when 1 then null " +
@@ -409,7 +413,8 @@ public class TestCaseExpr extends TestCase
                  "else 2 " +
                  "end as p1 from " + SupportBean.class.getName() + ".win:length(100)";
 
-        EPStatementObjectModel model = epService.getEPAdministrator().compile(caseExpr);
+        EPStatementObjectModel model = epService.getEPAdministrator().compileEQL(caseExpr);
+        model = (EPStatementObjectModel) SerializableObjectCopier.copy(model);
         assertEquals(caseExpr, model.toEQL());
 
         EPStatement selectTestCase = epService.getEPAdministrator().create(model);

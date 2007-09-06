@@ -19,6 +19,7 @@ import net.esper.support.bean.SupportBean_S0;
 import net.esper.support.eql.SupportStaticMethodLib;
 import net.esper.support.util.SupportUpdateListener;
 import net.esper.support.client.SupportConfigFactory;
+import net.esper.util.SerializableObjectCopier;
 
 import com.sun.org.apache.bcel.internal.util.ClassLoader;
 
@@ -121,11 +122,12 @@ public class TestStaticFunctions extends TestCase
 		}
 	}
 	
-    public void testSingleParameterOM()
+    public void testSingleParameterOM() throws Exception
     {
         EPStatementObjectModel model = new EPStatementObjectModel();
         model.setSelectClause(SelectClause.create().add(Expressions.staticMethod("Integer", "toBinaryString", 7), "value"));
         model.setFromClause(FromClause.create(FilterStream.create(SupportMarketDataBean.class.getName()).addView("win", "length", 5)));
+        model = (EPStatementObjectModel) SerializableObjectCopier.copy(model);
         statementText = "select Integer.toBinaryString(7) as value" + stream;
 
         assertEquals(statementText.trim(), model.toEQL());
@@ -137,10 +139,11 @@ public class TestStaticFunctions extends TestCase
         assertEquals(Integer.toBinaryString(7), listener.assertOneGetNewAndReset().get("value"));
     }
 
-    public void testSingleParameterCompile()
+    public void testSingleParameterCompile() throws Exception
     {
         statementText = "select Integer.toBinaryString(7) as value" + stream;
-        EPStatementObjectModel model = epService.getEPAdministrator().compile(statementText);
+        EPStatementObjectModel model = epService.getEPAdministrator().compileEQL(statementText);
+        model = (EPStatementObjectModel) SerializableObjectCopier.copy(model);
 
         assertEquals(statementText.trim(), model.toEQL());
         statement = epService.getEPAdministrator().create(model);

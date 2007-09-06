@@ -12,6 +12,7 @@ import net.esper.event.EventType;
 import net.esper.support.bean.*;
 import net.esper.support.util.SupportUpdateListener;
 import net.esper.support.client.SupportConfigFactory;
+import net.esper.util.SerializableObjectCopier;
 
 public class TestSubselectFiltered extends TestCase
 {
@@ -37,10 +38,12 @@ public class TestSubselectFiltered extends TestCase
         epService.getEPRuntime().sendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
     }
 
-    public void testSameEventCompile()
+    public void testSameEventCompile() throws Exception
     {
         String stmtText = "select (select * from S1.win:length(1000)) as events1 from S1";
-        EPStatementObjectModel subquery = epService.getEPAdministrator().compile(stmtText);
+        EPStatementObjectModel subquery = epService.getEPAdministrator().compileEQL(stmtText);
+        subquery = (EPStatementObjectModel) SerializableObjectCopier.copy(subquery);
+
         EPStatement stmt = epService.getEPAdministrator().create(subquery);
         stmt.addListener(listener);
 
@@ -53,7 +56,7 @@ public class TestSubselectFiltered extends TestCase
         assertSame(event, result.get("events1"));
     }
 
-    public void testSameEventOM()
+    public void testSameEventOM() throws Exception
     {
         EPStatementObjectModel subquery = new EPStatementObjectModel();
         subquery.setSelectClause(SelectClause.createWildcard());
@@ -62,6 +65,7 @@ public class TestSubselectFiltered extends TestCase
         EPStatementObjectModel model = new EPStatementObjectModel();
         model.setFromClause(FromClause.create(FilterStream.create("S1")));
         model.setSelectClause(SelectClause.create().add(Expressions.subquery(subquery), "events1"));
+        model = (EPStatementObjectModel) SerializableObjectCopier.copy(model);
 
         String stmtText = "select (select * from S1.win:length(1000)) as events1 from S1";
         assertEquals(stmtText, model.toEQL());
@@ -164,7 +168,7 @@ public class TestSubselectFiltered extends TestCase
         runWherePrevious();
     }
 
-    public void testWherePreviousOM()
+    public void testWherePreviousOM() throws Exception
     {
         EPStatementObjectModel subquery = new EPStatementObjectModel();
         subquery.setSelectClause(SelectClause.create().add(Expressions.previous(1, "id")));
@@ -174,6 +178,7 @@ public class TestSubselectFiltered extends TestCase
         EPStatementObjectModel model = new EPStatementObjectModel();
         model.setFromClause(FromClause.create(FilterStream.create("S0", "s0")));
         model.setSelectClause(SelectClause.create().add(Expressions.subquery(subquery), "value"));
+        model = (EPStatementObjectModel) SerializableObjectCopier.copy(model);
 
         String stmtText = "select (select prev(1, id) from S1.win:length(1000) where (id = s0.id)) as value from S0 as s0";
         assertEquals(stmtText, model.toEQL());
@@ -186,7 +191,7 @@ public class TestSubselectFiltered extends TestCase
     public void testWherePreviousCompile()
     {
         String stmtText = "select (select prev(1, id) from S1.win:length(1000) where (id = s0.id)) as value from S0 as s0";
-        EPStatementObjectModel model = epService.getEPAdministrator().compile(stmtText);
+        EPStatementObjectModel model = epService.getEPAdministrator().compileEQL(stmtText);
         assertEquals(stmtText, model.toEQL());
 
         EPStatement stmt = epService.getEPAdministrator().create(model);

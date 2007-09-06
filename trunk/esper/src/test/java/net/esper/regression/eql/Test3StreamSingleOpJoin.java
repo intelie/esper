@@ -10,6 +10,7 @@ import net.esper.support.bean.SupportBean_B;
 import net.esper.support.bean.SupportBean_C;
 import net.esper.support.client.SupportConfigFactory;
 import net.esper.support.util.SupportUpdateListener;
+import net.esper.util.SerializableObjectCopier;
 
 public class Test3StreamSingleOpJoin extends TestCase
 {
@@ -55,7 +56,7 @@ public class Test3StreamSingleOpJoin extends TestCase
         runJoinUniquePerId();
     }
 
-    public void testJoinUniquePerIdOM()
+    public void testJoinUniquePerIdOM() throws Exception
     {
         EPStatementObjectModel model = new EPStatementObjectModel();
         model.setSelectClause(SelectClause.createWildcard());
@@ -68,6 +69,7 @@ public class Test3StreamSingleOpJoin extends TestCase
                 Expressions.eqProperty("streamA.id", "streamB.id"),
                 Expressions.eqProperty("streamB.id", "streamC.id"),
                 Expressions.eqProperty("streamA.id", "streamC.id")));
+        model = (EPStatementObjectModel) SerializableObjectCopier.copy(model);
 
         String joinStatement = "select * from " +
             eventA + ".win:length(3) as streamA, " +
@@ -84,7 +86,7 @@ public class Test3StreamSingleOpJoin extends TestCase
         runJoinUniquePerId();
     }
 
-    public void testJoinUniquePerIdCompile()
+    public void testJoinUniquePerIdCompile() throws Exception
     {
         String joinStatement = "select * from " +
             eventA + ".win:length(3) as streamA, " +
@@ -94,7 +96,8 @@ public class Test3StreamSingleOpJoin extends TestCase
             "and ((streamB.id = streamC.id)) " +
             "and ((streamA.id = streamC.id))";
 
-        EPStatementObjectModel model = epService.getEPAdministrator().compile(joinStatement);
+        EPStatementObjectModel model = epService.getEPAdministrator().compileEQL(joinStatement);
+        model = (EPStatementObjectModel) SerializableObjectCopier.copy(model);
         joinView = epService.getEPAdministrator().create(model);
         joinView.addListener(updateListener);
         assertEquals(joinStatement, model.toEQL());

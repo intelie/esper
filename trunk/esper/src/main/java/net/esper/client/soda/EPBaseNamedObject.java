@@ -118,7 +118,7 @@ public abstract class EPBaseNamedObject implements Serializable
             }
             else
             {
-                writer.write(param.toString());
+                ConstantExpression.renderEQL(writer, param);
             }
             delimiter = ", ";
         }

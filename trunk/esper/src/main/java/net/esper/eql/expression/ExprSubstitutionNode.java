@@ -12,6 +12,7 @@ import net.esper.client.EPException;
  */
 public class ExprSubstitutionNode extends ExprNode
 {
+    private static final String ERROR_MSG = "Invalid use of substitution parameters marked by '?' in statement, use the prepare method to prepare statements with substitution parameters";
     private final int index;
 
     /**
@@ -24,7 +25,7 @@ public class ExprSubstitutionNode extends ExprNode
 
     public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate) throws ExprValidationException
     {
-        throw new ExprValidationException("Substitution parameter not satisfied");
+        throw new ExprValidationException(ERROR_MSG);
     }
 
     public int getIndex()
@@ -39,17 +40,17 @@ public class ExprSubstitutionNode extends ExprNode
 
     public Class getType() throws ExprValidationException
     {
-        throw new ExprValidationException("Substitution parameter not satisfied");
+        throw new ExprValidationException(ERROR_MSG);
     }
 
     public Object evaluate(EventBean[] eventsPerStream, boolean isNewData)
     {
-        throw new EPException("Substitution parameter not satisfied");
+        throw new EPException(ERROR_MSG);
     }
 
     public String toExpressionString()
     {
-        throw new EPException("Substitution parameter not satisfied");
+        throw new EPException(ERROR_MSG);
     }
 
     public boolean equalsNode(ExprNode node)

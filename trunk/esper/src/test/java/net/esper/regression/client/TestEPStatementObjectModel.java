@@ -4,12 +4,11 @@ import junit.framework.TestCase;
 import net.esper.client.EPServiceProvider;
 import net.esper.client.EPServiceProviderManager;
 import net.esper.client.EPStatement;
-import net.esper.client.EPStatementState;
 import net.esper.client.soda.*;
 import net.esper.support.util.SupportUpdateListener;
-import net.esper.support.util.ArrayAssertionUtil;
 import net.esper.support.client.SupportConfigFactory;
 import net.esper.support.bean.SupportBean;
+import net.esper.util.SerializableObjectCopier;
 
 public class TestEPStatementObjectModel extends TestCase
 {
@@ -26,11 +25,12 @@ public class TestEPStatementObjectModel extends TestCase
     // This is a simple EQL only.
     // Each OM/SODA Api is tested in it's respective unit test (i.e. TestInsertInto), including toEQL()
     // 
-    public void testCreateFromOM()
+    public void testCreateFromOM() throws Exception
     {
         EPStatementObjectModel model = new EPStatementObjectModel();
         model.setSelectClause(SelectClause.createWildcard());
         model.setFromClause(FromClause.create(FilterStream.create(SupportBean.class.getName())));
+        SerializableObjectCopier.copy(model);
 
         EPStatement stmt = epService.getEPAdministrator().create(model, "s1");
         stmt.addListener(listener);
@@ -43,7 +43,7 @@ public class TestEPStatementObjectModel extends TestCase
     // This is a simple EQL only.
     // Each OM/SODA Api is tested in it's respective unit test (i.e. TestInsertInto), including toEQL()
     //
-    public void testCreateFromOMComplete()
+    public void testCreateFromOMComplete() throws Exception
     {
         EPStatementObjectModel model = new EPStatementObjectModel();
         model.setInsertInto(InsertIntoClause.create("ReadyStreamAvg", "line", "avgAge"));
@@ -58,20 +58,23 @@ public class TestEPStatementObjectModel extends TestCase
         model.setOutputLimitClause(OutputLimitClause.create(10, OutputLimitUnit.SECONDS));
         model.setOrderByClause(OrderByClause.create("line"));                
 
-        assertEquals("", model.toEQL());
+        assertEquals("insert into ReadyStreamAvg(line, avgAge) select line, avg(age) as avgAge from net.esper.support.bean.SupportBean(line in (1, 8, 10)).win:time(10) as RS where (waverId != null) group by line having (avg(age) < 0) output every 10.0 seconds order by line", model.toEQL());
+        SerializableObjectCopier.copy(model);
     }
 
-    public void testCompileToOM()
+    public void testCompileToOM() throws Exception
     {
         String stmtText = "select * from " + SupportBean.class.getName();
-        EPStatementObjectModel model = epService.getEPAdministrator().compile(stmtText);
-        assertNotNull(model);        
+        EPStatementObjectModel model = epService.getEPAdministrator().compileEQL(stmtText);
+        SerializableObjectCopier.copy(model);
+        assertNotNull(model);
     }
     
-    public void testEQLtoOMtoStmt()
+    public void testEQLtoOMtoStmt() throws Exception
     {
         String stmtText = "select * from " + SupportBean.class.getName();
-        EPStatementObjectModel model = epService.getEPAdministrator().compile(stmtText);
+        EPStatementObjectModel model = epService.getEPAdministrator().compileEQL(stmtText);
+        SerializableObjectCopier.copy(model);
 
         EPStatement stmt = epService.getEPAdministrator().create(model, "s1");
         stmt.addListener(listener);

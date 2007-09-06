@@ -139,7 +139,7 @@ public class FromClause implements Serializable
             for (Stream stream : streams)
             {
                 writer.write(delimiter);
-                stream.toEQLStream(writer);
+                stream.toEQL(writer);
                 delimiter = ", ";
             }
         }
@@ -152,7 +152,7 @@ public class FromClause implements Serializable
             for (int i = 0; i < streams.size(); i++)
             {
                 Stream stream = streams.get(i);
-                stream.toEQLStream(writer);
+                stream.toEQL(writer);
 
                 if (i > 0)
                 {

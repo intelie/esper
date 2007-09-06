@@ -15,6 +15,7 @@ import net.esper.event.EventType;
 import net.esper.support.bean.SupportMarketDataBean;
 import net.esper.support.util.SupportUpdateListener;
 import net.esper.support.client.SupportConfigFactory;
+import net.esper.util.SerializableObjectCopier;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -97,7 +98,7 @@ public class TestOrderByAliases extends TestCase {
 		clearValues();
 	}
     
-    public void testAliasesAggregationOM()
+    public void testAliasesAggregationOM() throws Exception
     {
         EPStatementObjectModel model = new EPStatementObjectModel();
         model.setSelectClause(SelectClause.create("symbol", "volume").add(Expressions.sum("price")));
@@ -105,6 +106,7 @@ public class TestOrderByAliases extends TestCase {
         model.setGroupByClause(GroupByClause.create("symbol"));
         model.setOutputLimitClause(OutputLimitClause.create(6, OutputLimitUnit.EVENTS));
         model.setOrderByClause(OrderByClause.create(Expressions.sum("price")));
+        model = (EPStatementObjectModel) SerializableObjectCopier.copy(model);
 
         String statementString = "select symbol, volume, sum(price) from " +
                                 SupportMarketDataBean.class.getName() + ".win:length(20) " +
@@ -123,7 +125,7 @@ public class TestOrderByAliases extends TestCase {
         clearValues();
     }
 
-    public void testAliasesAggregationCompile()
+    public void testAliasesAggregationCompile() throws Exception
     {
         String statementString = "select symbol, volume, sum(price) from " +
                                 SupportMarketDataBean.class.getName() + ".win:length(20) " +
@@ -131,7 +133,8 @@ public class TestOrderByAliases extends TestCase {
                                 "output every 6 events " +
                                 "order by sum(price)";
 
-        EPStatementObjectModel model = epService.getEPAdministrator().compile(statementString);
+        EPStatementObjectModel model = epService.getEPAdministrator().compileEQL(statementString);
+        model = (EPStatementObjectModel) SerializableObjectCopier.copy(model);
         assertEquals(statementString, model.toEQL());
 
         createAndSendAggregate(model);

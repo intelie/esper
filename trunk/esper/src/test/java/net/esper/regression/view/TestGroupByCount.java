@@ -9,6 +9,7 @@ import net.esper.support.bean.SupportMarketDataBean;
 import net.esper.support.bean.SupportBeanString;
 import net.esper.support.client.SupportConfigFactory;
 import net.esper.event.EventBean;
+import net.esper.util.SerializableObjectCopier;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -30,7 +31,7 @@ public class TestGroupByCount extends TestCase
         epService.initialize();
     }
 
-    public void testCountOneViewOM()
+    public void testCountOneViewOM() throws Exception
     {
         EPStatementObjectModel model = new EPStatementObjectModel();
         model.setSelectClause(SelectClause.create()
@@ -44,13 +45,14 @@ public class TestGroupByCount extends TestCase
                 .add(Expressions.eq("symbol", "IBM"))
                 .add(Expressions.eq("symbol", "GE")) );
         model.setGroupByClause(GroupByClause.create("symbol"));
+        model = (EPStatementObjectModel) SerializableObjectCopier.copy(model);
 
         String viewExpr = "select symbol, " +
                                   "count(*) as countAll, " +
                                   "count(distinct volume) as countDistVol, " +
                                   "count(volume) as countVol" +
                           " from " + SupportMarketDataBean.class.getName() + ".win:length(3) " +
-                          "where ((symbol = 'DELL')) or ((symbol = 'IBM')) or ((symbol = 'GE')) " +
+                          "where ((symbol = \"DELL\")) or ((symbol = \"IBM\")) or ((symbol = \"GE\")) " +
                           "group by symbol";
         assertEquals(viewExpr, model.toEQL());
 
@@ -60,16 +62,17 @@ public class TestGroupByCount extends TestCase
         runAssertion();
     }
 
-    public void testCountOneViewCompile()
+    public void testCountOneViewCompile() throws Exception
     {
         String viewExpr = "select symbol, " +
                                   "count(*) as countAll, " +
                                   "count(distinct volume) as countDistVol, " +
                                   "count(volume) as countVol" +
                           " from " + SupportMarketDataBean.class.getName() + ".win:length(3) " +
-                          "where ((symbol = 'DELL')) or ((symbol = 'IBM')) or ((symbol = 'GE')) " +
+                          "where ((symbol = \"DELL\")) or ((symbol = \"IBM\")) or ((symbol = \"GE\")) " +
                           "group by symbol";
-        EPStatementObjectModel model = epService.getEPAdministrator().compile(viewExpr);
+        EPStatementObjectModel model = epService.getEPAdministrator().compileEQL(viewExpr);
+        model = (EPStatementObjectModel) SerializableObjectCopier.copy(model);
         assertEquals(viewExpr, model.toEQL());
 
         selectTestView = epService.getEPAdministrator().create(model);

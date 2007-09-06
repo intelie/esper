@@ -14,6 +14,7 @@ import net.esper.event.EventType;
 import net.esper.support.bean.SupportBean;
 import net.esper.support.util.SupportUpdateListener;
 import net.esper.support.client.SupportConfigFactory;
+import net.esper.util.SerializableObjectCopier;
 
 import junit.framework.TestCase;
 
@@ -42,7 +43,7 @@ public class TestBitWiseOperators extends TestCase
         assertEquals(Boolean.class, type.getPropertyType("myFifthProperty"));
     }
 
-    public void testBitWiseOperators_OM()
+    public void testBitWiseOperators_OM() throws Exception
     {
         String viewExpr = "select bytePrimitive & byteBoxed as myFirstProperty, " +
                 "shortPrimitive | shortBoxed as mySecondProperty, " +
@@ -60,6 +61,7 @@ public class TestBitWiseOperators extends TestCase
                 .add(Expressions.binaryAnd().add("boolPrimitive").add("boolBoxed"), "myFifthProperty")
                 );
         model.setFromClause(FromClause.create(FilterStream.create(SupportBean.class.getName()).addView("win", "length", 3)));
+        model = (EPStatementObjectModel) SerializableObjectCopier.copy(model);
         assertEquals(viewExpr, model.toEQL());
 
         _selectTestView = _epService.getEPAdministrator().createEQL(viewExpr);

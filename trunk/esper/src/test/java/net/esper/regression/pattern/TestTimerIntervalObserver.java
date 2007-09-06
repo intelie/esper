@@ -12,6 +12,7 @@ import net.esper.client.EPRuntime;
 import net.esper.client.soda.*;
 import net.esper.client.time.TimerControlEvent;
 import net.esper.client.time.CurrentTimeEvent;
+import net.esper.util.SerializableObjectCopier;
 
 public class TestTimerIntervalObserver extends TestCase implements SupportBeanConstants
 {
@@ -31,6 +32,7 @@ public class TestTimerIntervalObserver extends TestCase implements SupportBeanCo
         model.setSelectClause(SelectClause.createWildcard());
         PatternExpr pattern = Patterns.timerInterval(1.999);
         model.setFromClause(FromClause.create(PatternStream.create(pattern)));
+        model = (EPStatementObjectModel) SerializableObjectCopier.copy(model);
         assertEquals(text, model.toEQL());
         testCase = new EventExpressionCase(model);
         testCase.add("B1");

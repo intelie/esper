@@ -84,7 +84,7 @@ public interface EPAdministrator
      * @return object model of statement
      * @throws EPException indicates compilation errors.
      */
-    public EPStatementObjectModel compile(String eqlExpression) throws EPException;
+    public EPStatementObjectModel compileEQL(String eqlExpression) throws EPException;
 
     /**
      * Prepares a statement for the given EQL, which can include substitution parameters marked via question mark '?'.

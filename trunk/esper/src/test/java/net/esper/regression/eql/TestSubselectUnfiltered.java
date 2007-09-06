@@ -8,6 +8,7 @@ import net.esper.event.EventBean;
 import net.esper.support.bean.*;
 import net.esper.support.util.SupportUpdateListener;
 import net.esper.support.eql.SupportStaticMethodLib;
+import net.esper.util.SerializableObjectCopier;
 
 public class TestSubselectUnfiltered extends TestCase {
     private EPServiceProvider epService;
@@ -199,7 +200,7 @@ public class TestSubselectUnfiltered extends TestCase {
                    "Error starting view: Implicit conversion from datatype 'SupportBean_S1' to 'Integer' is not allowed [select id in (select * from S1.win:length(1000)) as value from S0]");
     }
 
-    public void testUnfilteredStreamPrior_OM()
+    public void testUnfilteredStreamPrior_OM() throws Exception
     {
         EPStatementObjectModel subquery = new EPStatementObjectModel();
         subquery.setSelectClause(SelectClause.create().add(Expressions.prior(0, "id")));
@@ -208,6 +209,7 @@ public class TestSubselectUnfiltered extends TestCase {
         EPStatementObjectModel model = new EPStatementObjectModel();
         model.setSelectClause(SelectClause.create().add(Expressions.subquery(subquery), "idS1"));
         model.setFromClause(FromClause.create(FilterStream.create("S0")));
+        model = (EPStatementObjectModel) SerializableObjectCopier.copy(model);
 
         String stmtText = "select (select prior(0, id) from S1.win:length(1000)) as idS1 from S0";
         assertEquals(stmtText, model.toEQL());
@@ -215,10 +217,11 @@ public class TestSubselectUnfiltered extends TestCase {
         runUnfilteredStreamPrior(stmt);
     }
 
-    public void testUnfilteredStreamPrior_Compile()
+    public void testUnfilteredStreamPrior_Compile() throws Exception
     {
         String stmtText = "select (select prior(0, id) from S1.win:length(1000)) as idS1 from S0";
-        EPStatementObjectModel model = epService.getEPAdministrator().compile(stmtText);
+        EPStatementObjectModel model = epService.getEPAdministrator().compileEQL(stmtText);
+        model = (EPStatementObjectModel) SerializableObjectCopier.copy(model);
         assertEquals(stmtText, model.toEQL());
         EPStatement stmt = epService.getEPAdministrator().create(model);
         runUnfilteredStreamPrior(stmt);

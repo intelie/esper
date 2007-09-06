@@ -21,6 +21,7 @@ import net.esper.support.bean.SupportMarketDataBean;
 import net.esper.support.bean.SupportBean;
 import net.esper.support.util.SupportUpdateListener;
 import net.esper.support.client.SupportConfigFactory;
+import net.esper.util.SerializableObjectCopier;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -73,7 +74,7 @@ public class TestOrderBySimple extends TestCase {
     	clearValues();
 	}
 
-    public void testDescending_OM()
+    public void testDescending_OM() throws Exception
 	{
         String stmtText = "select symbol from " +
                 SupportMarketDataBean.class.getName() + ".win:length(5) " +
@@ -85,6 +86,7 @@ public class TestOrderBySimple extends TestCase {
         model.setFromClause(FromClause.create(FilterStream.create(SupportMarketDataBean.class.getName()).addView("win", "length", 5)));
         model.setOutputLimitClause(OutputLimitClause.create(6, OutputLimitUnit.EVENTS));
         model.setOrderByClause(OrderByClause.create().add("price", true));
+        model = (EPStatementObjectModel) SerializableObjectCopier.copy(model);
         assertEquals(stmtText, model.toEQL());
 
         testListener = new SupportUpdateListener();

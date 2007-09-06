@@ -18,6 +18,7 @@ import net.esper.eql.parse.*;
 import net.esper.eql.spec.PatternStreamSpecRaw;
 import net.esper.eql.spec.StatementSpecRaw;
 import net.esper.eql.spec.StatementSpecMapper;
+import net.esper.eql.spec.StatementSpecUnMapResult;
 import net.esper.util.DebugFacility;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -101,58 +102,30 @@ public class EPAdministratorImpl implements EPAdministrator
 
     private EPStatement createPatternStmt(String expression, String statementName) throws EPException
     {
-        // Parse and walk
-        AST ast = ParseHelper.parse(expression, patternParseRule);
-        EQLTreeWalker walker = new EQLTreeWalker(services.getEngineImportService());
+        StatementSpecRaw rawPattern = compilePattern(expression);
+        return services.getStatementLifecycleSvc().createAndStart(rawPattern, expression, true, statementName);
 
-        try
-        {
-            ParseHelper.walk(ast, walker, patternWalkRule, expression);
-        }
-        catch (ASTWalkException ex)
-        {
-            log.debug(".createPattern Error validating expression", ex);
-            throw new EPStatementException(ex.getMessage(), expression);
-        }
-        catch (RuntimeException ex)
-        {
-            log.debug(".createPattern Error validating expression", ex);
-            throw new EPStatementException(ex.getMessage(), expression);
-        }
-
-        if (log.isDebugEnabled())
-        {
-            DebugFacility.dumpAST(walker.getAST());
-        }
-
-        if (walker.getStatementSpec().getStreamSpecs().size() > 1)
-        {
-            throw new IllegalStateException("Unexpected multiple stream specifications encountered");
-        }
-
-        // Get pattern specification
-        PatternStreamSpecRaw patternStreamSpec = (PatternStreamSpecRaw) walker.getStatementSpec().getStreamSpecs().get(0);
-
-        // Create statement spec
-        StatementSpecRaw statementSpec = new StatementSpecRaw();
-        statementSpec.getStreamSpecs().add(patternStreamSpec);
-
-        return services.getStatementLifecycleSvc().createAndStart(statementSpec, expression, true, statementName);
+        /**
+         * For round-trip testing of all statements, of a statement to SODA and creation from SODA, use below lines:
+        String pattern = "select * from pattern[" + expression + "]";
+        EPStatementObjectModel model = compileEQL(pattern);
+        return create(model, statementName);
+         */
     }
 
     private EPStatement createEQLStmt(String eqlStatement, String statementName) throws EPException
     {
-        // TODO
-        //StatementSpecRaw statementSpec = compile(eqlStatement, statementName);
-        EPStatementObjectModel model = compile(eqlStatement);
-        return create(model, statementName);
-
-        /*
+        StatementSpecRaw statementSpec = compileEQL(eqlStatement, statementName);
         EPStatement statement = services.getStatementLifecycleSvc().createAndStart(statementSpec, eqlStatement, false, statementName);
 
         log.debug(".createEQLStmt Statement created and started");
         return statement;
-        */
+
+        /**
+         * For round-trip testing of all statements, of a statement to SODA and creation from SODA, use below lines:
+        EPStatementObjectModel model = compile(eqlStatement);
+        return create(model, statementName);
+         */
     }
 
     public EPStatement create(EPStatementObjectModel sodaStatement) throws EPException
@@ -174,35 +147,53 @@ public class EPAdministratorImpl implements EPAdministrator
 
     public EPPreparedStatement prepareEQL(String eqlExpression) throws EPException
     {
-        StatementSpecRaw statementSpec = compile(eqlExpression, null);
-        EPStatementObjectModel model = StatementSpecMapper.unmap(statementSpec);
+        // compile to specification
+        StatementSpecRaw statementSpec = compileEQL(eqlExpression, null);
 
-        // TODO
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        // map to object model thus finding all substitution parameters and their indexes
+        StatementSpecUnMapResult unmapped = StatementSpecMapper.unmap(statementSpec);
+
+        // the prepared statement is the object model plus a list of substitution parameters
+        // map to specification will refuse any substitution parameters that are unfilled
+        return new EPPreparedStatementImpl(unmapped.getObjectModel(), unmapped.getIndexedParams());
     }
 
     public EPPreparedStatement preparePattern(String patternExpression) throws EPException
     {
-        // TODO
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        StatementSpecRaw rawPattern = compilePattern(patternExpression);
+
+        // map to object model thus finding all substitution parameters and their indexes
+        StatementSpecUnMapResult unmapped = StatementSpecMapper.unmap(rawPattern);
+
+        // the prepared statement is the object model plus a list of substitution parameters
+        // map to specification will refuse any substitution parameters that are unfilled
+        return new EPPreparedStatementImpl(unmapped.getObjectModel(), unmapped.getIndexedParams());
     }
 
     public EPStatement create(EPPreparedStatement prepared, String statementName) throws EPException
     {
-        // TODO
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        EPPreparedStatementImpl impl = (EPPreparedStatementImpl) prepared;
+
+        StatementSpecRaw statementSpec = StatementSpecMapper.map(impl.getModel(), services.getEngineImportService());
+        String eqlStatement = impl.getModel().toEQL();
+
+        return services.getStatementLifecycleSvc().createAndStart(statementSpec, eqlStatement, false, statementName);
     }
 
     public EPStatement create(EPPreparedStatement prepared) throws EPException
     {
-        // TODO
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return create(prepared, null);
     }
 
-    public EPStatementObjectModel compile(String eqlStatement) throws EPException
+    public EPStatementObjectModel compileEQL(String eqlStatement) throws EPException
     {
-        StatementSpecRaw statementSpec = compile(eqlStatement, null);
-        return StatementSpecMapper.unmap(statementSpec);
+        StatementSpecRaw statementSpec = compileEQL(eqlStatement, null);
+        StatementSpecUnMapResult unmapped = StatementSpecMapper.unmap(statementSpec);
+        if (unmapped.getIndexedParams().size() != 0)
+        {
+            throw new EPException("Invalid use of substitution parameters marked by '?' in statement, use the prepare method to prepare statements with substitution parameters");
+        }
+        return unmapped.getObjectModel();
     }
 
     public EPStatement getStatement(String name)
@@ -244,7 +235,7 @@ public class EPAdministratorImpl implements EPAdministrator
         configurationOperations = null;        
     }
 
-    private StatementSpecRaw compile(String eqlStatement, String statementName)
+    private StatementSpecRaw compileEQL(String eqlStatement, String statementName)
     {
         if (log.isDebugEnabled())
         {
@@ -276,6 +267,48 @@ public class EPAdministratorImpl implements EPAdministrator
 
         // Specifies the statement
         return walker.getStatementSpec();
+    }
+
+    private StatementSpecRaw compilePattern(String expression)
+    {
+        // Parse and walk
+        AST ast = ParseHelper.parse(expression, patternParseRule);
+        EQLTreeWalker walker = new EQLTreeWalker(services.getEngineImportService());
+
+        try
+        {
+            ParseHelper.walk(ast, walker, patternWalkRule, expression);
+        }
+        catch (ASTWalkException ex)
+        {
+            log.debug(".createPattern Error validating expression", ex);
+            throw new EPStatementException(ex.getMessage(), expression);
+        }
+        catch (RuntimeException ex)
+        {
+            log.debug(".createPattern Error validating expression", ex);
+            throw new EPStatementException(ex.getMessage(), expression);
+        }
+
+        if (log.isDebugEnabled())
+        {
+            DebugFacility.dumpAST(walker.getAST());
+        }
+
+        if (walker.getStatementSpec().getStreamSpecs().size() > 1)
+        {
+            throw new IllegalStateException("Unexpected multiple stream specifications encountered");
+        }
+
+        // Get pattern specification
+        PatternStreamSpecRaw patternStreamSpec = (PatternStreamSpecRaw) walker.getStatementSpec().getStreamSpecs().get(0);
+
+        // Create statement spec, set pattern stream, set wildcard select
+        StatementSpecRaw statementSpec = new StatementSpecRaw();
+        statementSpec.getStreamSpecs().add(patternStreamSpec);
+        statementSpec.getSelectClauseSpec().setIsUsingWildcard(true);
+
+        return statementSpec;
     }
 
     private static Log log = LogFactory.getLog(EPAdministratorImpl.class);
