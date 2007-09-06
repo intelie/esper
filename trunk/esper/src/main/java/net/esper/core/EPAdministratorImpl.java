@@ -17,7 +17,7 @@ import net.esper.eql.generated.EQLStatementParser;
 import net.esper.eql.parse.*;
 import net.esper.eql.spec.PatternStreamSpecRaw;
 import net.esper.eql.spec.StatementSpecRaw;
-import net.esper.eql.spec.StatementSpecTranslator;
+import net.esper.eql.spec.StatementSpecMapper;
 import net.esper.util.DebugFacility;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -163,7 +163,7 @@ public class EPAdministratorImpl implements EPAdministrator
     public EPStatement create(EPStatementObjectModel sodaStatement, String statementName) throws EPException
     {
         // Specifies the statement
-        StatementSpecRaw statementSpec = StatementSpecTranslator.map(sodaStatement, services.getEngineImportService());
+        StatementSpecRaw statementSpec = StatementSpecMapper.map(sodaStatement, services.getEngineImportService());
         String eqlStatement = sodaStatement.toEQL(); 
 
         EPStatement statement = services.getStatementLifecycleSvc().createAndStart(statementSpec, eqlStatement, false, statementName);
@@ -172,10 +172,37 @@ public class EPAdministratorImpl implements EPAdministrator
         return statement;
     }
 
+    public EPPreparedStatement prepareEQL(String eqlExpression) throws EPException
+    {
+        StatementSpecRaw statementSpec = compile(eqlExpression, null);
+        EPStatementObjectModel model = StatementSpecMapper.unmap(statementSpec);
+
+        // TODO
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public EPPreparedStatement preparePattern(String patternExpression) throws EPException
+    {
+        // TODO
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public EPStatement create(EPPreparedStatement prepared, String statementName) throws EPException
+    {
+        // TODO
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public EPStatement create(EPPreparedStatement prepared) throws EPException
+    {
+        // TODO
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
     public EPStatementObjectModel compile(String eqlStatement) throws EPException
     {
         StatementSpecRaw statementSpec = compile(eqlStatement, null);
-        return StatementSpecTranslator.unmap(statementSpec);
+        return StatementSpecMapper.unmap(statementSpec);
     }
 
     public EPStatement getStatement(String name)

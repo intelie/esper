@@ -1,3 +1,10 @@
+/**************************************************************************************
+ * Copyright (C) 2006 Esper Team. All rights reserved.                                *
+ * http://esper.codehaus.org                                                          *
+ * ---------------------------------------------------------------------------------- *
+ * The software in this package is published under the terms of the GPL license       *
+ * a copy of which has been included with this distribution in the license.txt file.  *
+ **************************************************************************************/
 package net.esper.client.soda;
 
 import java.io.Serializable;
@@ -8,6 +15,8 @@ import java.io.StringWriter;
  */
 public class SelectClauseElement implements Serializable
 {
+    private static final long serialVersionUID = 0L;
+
     private Expression expression;
     private String asName;
 

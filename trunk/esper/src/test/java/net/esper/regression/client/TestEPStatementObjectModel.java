@@ -5,10 +5,7 @@ import net.esper.client.EPServiceProvider;
 import net.esper.client.EPServiceProviderManager;
 import net.esper.client.EPStatement;
 import net.esper.client.EPStatementState;
-import net.esper.client.soda.EPStatementObjectModel;
-import net.esper.client.soda.SelectClause;
-import net.esper.client.soda.FromClause;
-import net.esper.client.soda.FilterStream;
+import net.esper.client.soda.*;
 import net.esper.support.util.SupportUpdateListener;
 import net.esper.support.util.ArrayAssertionUtil;
 import net.esper.support.client.SupportConfigFactory;
@@ -41,6 +38,27 @@ public class TestEPStatementObjectModel extends TestCase
         Object event = new SupportBean();
         epService.getEPRuntime().sendEvent(event);
         assertEquals(event, listener.assertOneGetNewAndReset().getUnderlying());
+    }
+
+    // This is a simple EQL only.
+    // Each OM/SODA Api is tested in it's respective unit test (i.e. TestInsertInto), including toEQL()
+    //
+    public void testCreateFromOMComplete()
+    {
+        EPStatementObjectModel model = new EPStatementObjectModel();
+        model.setInsertInto(InsertIntoClause.create("ReadyStreamAvg", "line", "avgAge"));
+        model.setSelectClause(SelectClause.create()
+            .add("line")
+            .add(Expressions.avg("age"), "avgAge"));
+        Filter filter = Filter.create(SupportBean.class.getName(), Expressions.in("line", 1, 8, 10));
+        model.setFromClause(FromClause.create(FilterStream.create(filter, "RS").addView("win", "time", 10)));
+        model.setWhereClause(Expressions.isNotNull("waverId"));
+        model.setGroupByClause(GroupByClause.create("line"));
+        model.setHavingClause(Expressions.lt(Expressions.avg("age"), Expressions.constant(0)));
+        model.setOutputLimitClause(OutputLimitClause.create(10, OutputLimitUnit.SECONDS));
+        model.setOrderByClause(OrderByClause.create("line"));                
+
+        assertEquals("", model.toEQL());
     }
 
     public void testCompileToOM()

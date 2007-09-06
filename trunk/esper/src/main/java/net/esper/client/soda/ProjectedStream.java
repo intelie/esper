@@ -1,3 +1,10 @@
+/**************************************************************************************
+ * Copyright (C) 2006 Esper Team. All rights reserved.                                *
+ * http://esper.codehaus.org                                                          *
+ * ---------------------------------------------------------------------------------- *
+ * The software in this package is published under the terms of the GPL license       *
+ * a copy of which has been included with this distribution in the license.txt file.  *
+ **************************************************************************************/
 package net.esper.client.soda;
 
 import java.io.StringWriter;
@@ -15,7 +22,7 @@ public abstract class ProjectedStream extends Stream
      * Represent as textual.
      * @param writer to output to
      */
-    public abstract void toEQLStream(StringWriter writer);
+    public abstract void toEQLProjectedStream(StringWriter writer);
 
     /**
      * Ctor.
@@ -99,9 +106,9 @@ public abstract class ProjectedStream extends Stream
      * Renders the clause in textual representation.
      * @param writer to output to
      */
-    public void toEQL(StringWriter writer)
+    public void toEQLStream(StringWriter writer)
     {
-        toEQLStream(writer);
+        toEQLProjectedStream(writer);
 
         if ((views != null) && (views.size() != 0))
         {
@@ -113,12 +120,6 @@ public abstract class ProjectedStream extends Stream
                 view.toEQL(writer);
                 delimiter = ".";
             }
-        }
-
-        if (super.getStreamName() != null)
-        {
-            writer.write(" as ");
-            writer.write(super.getStreamName());
         }
     }
 }

@@ -1,3 +1,10 @@
+/**************************************************************************************
+ * Copyright (C) 2006 Esper Team. All rights reserved.                                *
+ * http://esper.codehaus.org                                                          *
+ * ---------------------------------------------------------------------------------- *
+ * The software in this package is published under the terms of the GPL license       *
+ * a copy of which has been included with this distribution in the license.txt file.  *
+ **************************************************************************************/
 package net.esper.client.soda;
 
 import net.esper.type.WildcardParameter;
@@ -19,6 +26,8 @@ import java.util.List;
  */
 public class Patterns
 {
+    private static final long serialVersionUID = 0L;
+
     /**
      * Pattern-every expression control the lifecycle of the pattern sub-expression.
      * @param inner sub-expression to the every-keyword

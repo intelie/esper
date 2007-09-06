@@ -87,6 +87,42 @@ public interface EPAdministrator
     public EPStatementObjectModel compile(String eqlExpression) throws EPException;
 
     /**
+     * Prepares a statement for the given EQL, which can include substitution parameters marked via question mark '?'.
+     * @param eqlExpression is the statement text to prepare
+     * @return prepared statement
+     * @throws EPException indicates compilation errors.
+     */
+    public EPPreparedStatement prepareEQL(String eqlExpression) throws EPException;
+
+    /**
+     * Prepares a statement for the given pattern, which can include substitution parameters marked via question mark '?'.
+     * @param patternExpression is the statement text to prepare
+     * @return prepared statement
+     * @throws EPException indicates compilation errors.
+     */
+    public EPPreparedStatement preparePattern(String patternExpression) throws EPException;
+
+    /**
+     * Creates and starts a prepared statement.
+     * <p>
+     * The statement name is optimally a unique name. If a statement of the same name
+     * has already been created, the engine assigns a postfix to create a unique statement name.
+     * @param prepared is the prepared statement for which all substitution values have been provided
+     * @param statementName is the name to assign to the statement for use in manageing the statement
+     * @return EPStatement to poll data from or to add listeners to
+     * @throws EPException when the prepared statement was not valid
+     */
+    public EPStatement create(EPPreparedStatement prepared, String statementName) throws EPException;
+
+    /**
+     * Creates and starts a prepared statement.
+     * @param prepared is the prepared statement for which all substitution values have been provided
+     * @return EPStatement to poll data from or to add listeners to
+     * @throws EPException when the expression was not valid
+     */
+    public EPStatement create(EPPreparedStatement prepared) throws EPException;
+
+    /**
      * Returns the statement by the given statement name. Returns null if a statement of that name has not
      * been created, or if the statement by that name has been destroyed.
      * @param name is the statement name to return the statement for

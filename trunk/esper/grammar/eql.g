@@ -152,6 +152,7 @@ tokens
 	IN_SUBSELECT_QUERY_EXPR;
 	LAST_OPERATOR;
 	WEEKDAY_OPERATOR;
+	SUBSTITUTION;
 	
    	INT_TYPE;
    	LONG_TYPE;
@@ -184,6 +185,11 @@ number
     |   NUM_DOUBLE^ { #number.setType(DOUBLE_TYPE); }
     ;
 
+substitution
+	:	QUESTION!
+		{ #substitution = #([SUBSTITUTION,"substitution"], #substitution); }
+	;
+	
 constant
 	:	(m:MINUS! | PLUS!)? n:number { #constant.setType(#n.getType()); 
 	                                   #constant.setText( (m == null) ? #n.getText() : "-" + #n.getText()); 
@@ -456,6 +462,7 @@ multiplyExpression
 unaryExpression
 	: MINUS^ {#MINUS.setType(UNARY_MINUS);} eventProperty
 	| constant
+	| substitution
 	| LPAREN! expression RPAREN!
 	| eventPropertyOrLibFunction
 	| builtinFunc

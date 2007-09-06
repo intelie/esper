@@ -13,7 +13,7 @@ import net.esper.eql.core.StreamTypeService;
 import net.esper.eql.core.ViewResourceDelegate;
 
 /**
- * Represents a constant in a filter expressiun tree.
+ * Represents a constant in an expressiun tree.
  */
 public class ExprConstantNode extends ExprNode
 {
@@ -44,6 +44,11 @@ public class ExprConstantNode extends ExprNode
     public Object getValue()
     {
         return value;
+    }
+
+    public void setValue(Object value)
+    {
+        this.value = value;
     }
 
     public Class getType() throws ExprValidationException

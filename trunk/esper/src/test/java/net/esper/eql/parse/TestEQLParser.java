@@ -68,7 +68,6 @@ public class TestEQLParser extends TestCase implements EqlTokenTypes
         assertIsInvalid("select * from com.xxx().std:win(3) where b('aaa)=5");
 
         assertIsInvalid("select sum() from b.win:length(1)");
-        assertIsInvalid("select sum(?) from b.win:length(1)");
         assertIsInvalid("select sum(1+) from b.win:length(1)");
         assertIsInvalid("select sum(distinct) from b.win:length(1)");
         assertIsInvalid("select sum(distinct distinct a) from b.win:length(1)");
@@ -162,6 +161,10 @@ public class TestEQLParser extends TestCase implements EqlTokenTypes
         assertIsInvalid("select c from A where q*9 in in (select g*5 from C.win:length(100)) and r=6");
         assertIsInvalid("select c from A in (select g*5 from C.win:length(100)) and r=6");
         assertIsInvalid("select c from A where a in (select g*5 from C.win:length(100)) 9");
+
+        // Substitution parameters
+        assertIsInvalid("select ? ? from A");
+        assertIsInvalid("select * from A(??)");
     }
 
     public void testValidCases() throws Exception
@@ -428,10 +431,19 @@ public class TestEQLParser extends TestCase implements EqlTokenTypes
         */
 
         // Allow comments in EQL and patterns
-        assertIsValid("select b.c.d? /* some comment */ from E");
-        assertIsValid("select b /* ajajaj */ .c.d? /* some comment */ from E");
+        assertIsValid("select b.c.d /* some comment */ from E");
+        assertIsValid("select b /* ajajaj */ .c.d /* some comment */ from E");
         assertIsValid("select * from pattern [ /* filter */ every A() -> B() /* for B */]");
         assertIsValid("select * from pattern [ \n// comment\nevery A() -> B() // same line\n]");
+
+        // Substitution parameters
+        assertIsValid(preFill + "(string=?)");
+        assertIsValid(preFill + "(string in (?, ?))");
+        assertIsValid(preFill + " where string=? and ?=val");
+        assertIsValid(preFill + " having avg(volume) > ?");
+        assertIsValid(preFill + " having avg(?) > ?");
+        assertIsValid("select sum(?) from b.win:length(1)");
+        assertIsValid("select ?||'a' from B(a=?) where c=? group by ? having d>? output every 10 events order by a, ?");
     }
 
     public void testBitWiseCases() throws Exception

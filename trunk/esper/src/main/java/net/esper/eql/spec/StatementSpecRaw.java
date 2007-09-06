@@ -8,6 +8,7 @@
 package net.esper.eql.spec;
 
 import net.esper.eql.expression.ExprNode;
+import net.esper.eql.expression.ExprSubstitutionNode;
 import net.esper.util.MetaDefItem;
 
 import java.util.LinkedList;
@@ -29,6 +30,7 @@ public class StatementSpecRaw implements MetaDefItem
     private ExprNode havingExprRootNode;
     private OutputLimitSpec outputLimitSpec;
     private List<OrderByItem> orderByList = new LinkedList<OrderByItem>();
+    private boolean existsSubstitutionParameters;
 
     /**
      * Returns the FROM-clause stream definitions.
@@ -171,5 +173,15 @@ public class StatementSpecRaw implements MetaDefItem
     public void setSelectClauseSpec(SelectClauseSpec selectClauseSpec)
     {
         this.selectClauseSpec = selectClauseSpec;
-    }    
+    }
+
+    public boolean isExistsSubstitutionParameters()
+    {
+        return existsSubstitutionParameters;
+    }
+
+    public void setExistsSubstitutionParameters(boolean existsSubstitutionParameters)
+    {
+        this.existsSubstitutionParameters = existsSubstitutionParameters;
+    }
 }

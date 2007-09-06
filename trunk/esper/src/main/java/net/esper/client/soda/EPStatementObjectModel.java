@@ -1,7 +1,18 @@
+/**************************************************************************************
+ * Copyright (C) 2006 Esper Team. All rights reserved.                                *
+ * http://esper.codehaus.org                                                          *
+ * ---------------------------------------------------------------------------------- *
+ * The software in this package is published under the terms of the GPL license       *
+ * a copy of which has been included with this distribution in the license.txt file.  *
+ **************************************************************************************/
 package net.esper.client.soda;
+
+import net.esper.eql.spec.SubstitutionParameterExpression;
 
 import java.io.Serializable;
 import java.io.StringWriter;
+import java.util.List;
+import java.util.ArrayList;
 
 /**
  * Object model of an EQL statement.
@@ -31,7 +42,9 @@ import java.io.StringWriter;
  */
 public class EPStatementObjectModel implements Serializable
 {
-    private InsertInto insertInto;
+    private static final long serialVersionUID = 0L;
+
+    private InsertIntoClause insertInto;
     private SelectClause selectClause;
     private FromClause fromClause;
     private Expression whereClause;
@@ -39,6 +52,8 @@ public class EPStatementObjectModel implements Serializable
     private Expression havingClause;
     private OutputLimitClause outputLimitClause;
     private OrderByClause orderByClause;
+
+    private List<SubstitutionParameterExpression> substitutions = new ArrayList<SubstitutionParameterExpression>();
 
     /**
      * Ctor.
@@ -52,7 +67,7 @@ public class EPStatementObjectModel implements Serializable
      * @param insertInto specifies the insert-into-clause, or null to indicate that the clause is absent
      * @return model
      */
-    public EPStatementObjectModel setInsertInto(InsertInto insertInto)
+    public EPStatementObjectModel setInsertInto(InsertIntoClause insertInto)
     {
         this.insertInto = insertInto;
         return this;
@@ -62,7 +77,7 @@ public class EPStatementObjectModel implements Serializable
      * Return the insert-into-clause, or null to indicate that the clause is absent.
      * @return specification of the insert-into-clause, or null if none present
      */
-    public InsertInto getInsertInto()
+    public InsertIntoClause getInsertInto()
     {
         return insertInto;
     }

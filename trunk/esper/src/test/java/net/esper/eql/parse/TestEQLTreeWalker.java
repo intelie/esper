@@ -28,6 +28,27 @@ public class TestEQLTreeWalker extends TestCase
                     CLASSNAME + "(string='a').win:length(10).std:lastevent() as win1," +
                     CLASSNAME + "(string='b').win:length(10).std:lastevent() as win2 ";
 
+    public void testWalkSubstitutionParams() throws Exception
+    {
+        // try EQL
+        String expression = "select * from " + CLASSNAME + "(string=?, value=?)";
+        EQLTreeWalker walker = parseAndWalkEQL(expression);
+        StatementSpecRaw raw = walker.getStatementSpec();
+        assertTrue(raw.isExistsSubstitutionParameters());
+
+        FilterStreamSpecRaw streamSpec = (FilterStreamSpecRaw) raw.getStreamSpecs().get(0);
+        ExprEqualsNode equalsFilter = (ExprEqualsNode) streamSpec.getRawFilterSpec().getFilterExpressions().get(0);
+        assertEquals(1, ((ExprSubstitutionNode) equalsFilter.getChildNodes().get(1)).getIndex());
+        equalsFilter = (ExprEqualsNode) streamSpec.getRawFilterSpec().getFilterExpressions().get(1);
+        assertEquals(2, ((ExprSubstitutionNode) equalsFilter.getChildNodes().get(1)).getIndex());
+
+        // try pattern
+        expression = CLASSNAME + "(string=?, value=?)";
+        walker = parseAndWalkPattern(expression);
+        raw = walker.getStatementSpec();
+        assertTrue(raw.isExistsSubstitutionParameters());
+    }
+
     public void testWalkEQLSimpleWhere() throws Exception
     {
         String expression = EXPRESSION + "where win1.f1=win2.f2";

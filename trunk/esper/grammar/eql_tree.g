@@ -150,6 +150,7 @@ evalExprChoice
 	
 valueExpr
 	: 	c:constant { leaveNode(#c); }
+	|	s:substitution { leaveNode(#s); }
 	| 	a:arithmeticExpr { leaveNode(#a); }
 	| 	eventPropertyExpr
 	|   evalExprChoice
@@ -382,6 +383,10 @@ secondPart
 
 millisecondPart
 	:	#( MILLISECOND_PART number)
+	;
+
+substitution
+	:	SUBSTITUTION
 	;
 
 constant

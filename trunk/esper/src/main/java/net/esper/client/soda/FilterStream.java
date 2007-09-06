@@ -1,3 +1,10 @@
+/**************************************************************************************
+ * Copyright (C) 2006 Esper Team. All rights reserved.                                *
+ * http://esper.codehaus.org                                                          *
+ * ---------------------------------------------------------------------------------- *
+ * The software in this package is published under the terms of the GPL license       *
+ * a copy of which has been included with this distribution in the license.txt file.  *
+ **************************************************************************************/
 package net.esper.client.soda;
 
 import java.util.ArrayList;
@@ -40,6 +47,17 @@ public class FilterStream extends ProjectedStream
     public static FilterStream create(String eventTypeAlias, String streamName)
     {
         return new FilterStream(Filter.create(eventTypeAlias), streamName);
+    }
+
+    /**
+     * Creates a stream using a filter that provides the event type name and filter expression to filter for.
+     * @param filter defines what to look for
+     * @param streamName is an optional stream name
+     * @return stream
+     */
+    public static FilterStream create(Filter filter, String streamName)
+    {
+        return new FilterStream(filter, streamName);
     }
 
     /**
@@ -104,7 +122,7 @@ public class FilterStream extends ProjectedStream
         this.filter = filter;
     }
 
-    public void toEQLStream(StringWriter writer)
+    public void toEQLProjectedStream(StringWriter writer)
     {
         filter.toEQL(writer);
     }

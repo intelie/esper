@@ -1,3 +1,10 @@
+/**************************************************************************************
+ * Copyright (C) 2006 Esper Team. All rights reserved.                                *
+ * http://esper.codehaus.org                                                          *
+ * ---------------------------------------------------------------------------------- *
+ * The software in this package is published under the terms of the GPL license       *
+ * a copy of which has been included with this distribution in the license.txt file.  *
+ **************************************************************************************/
 package net.esper.client.soda;
 
 import java.io.Serializable;
@@ -11,6 +18,8 @@ import java.io.StringWriter;
  */
 public abstract class Stream implements Serializable
 {
+    private static final long serialVersionUID = 0L;
+
     private String streamName;
 
     /**
@@ -45,4 +54,20 @@ public abstract class Stream implements Serializable
     {
         this.streamName = streamName;
     }
+
+    /**
+     * Renders the clause in textual representation.
+     * @param writer to output to
+     */
+    public void toEQL(StringWriter writer)
+    {
+        toEQLStream(writer);
+
+        if (streamName != null)
+        {
+            writer.write(" as ");
+            writer.write(streamName);
+        }
+    }
+
 }

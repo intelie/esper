@@ -35,7 +35,7 @@ public class TestInsertInto extends TestCase
     public void testVariantRStreamOMToStmt()
     {
         EPStatementObjectModel model = new EPStatementObjectModel();
-        model.setInsertInto(InsertInto.create("Event_1", new String[0], StreamSelector.RSTREAM_ONLY));
+        model.setInsertInto(InsertIntoClause.create("Event_1", new String[0], StreamSelector.RSTREAM_ONLY));
         model.setSelectClause(SelectClause.create().add("intPrimitive", "intBoxed"));
         model.setFromClause(FromClause.create(FilterStream.create(SupportBean.class.getName())));
 
@@ -54,7 +54,7 @@ public class TestInsertInto extends TestCase
     public void testVariantOneOMToStmt()
     {
         EPStatementObjectModel model = new EPStatementObjectModel();
-        model.setInsertInto(InsertInto.create("Event_1", "delta", "product"));
+        model.setInsertInto(InsertIntoClause.create("Event_1", "delta", "product"));
         model.setSelectClause(SelectClause.create().add(Expressions.minus("intPrimitive", "intBoxed"), "deltaTag")
                 .add(Expressions.multiply("intPrimitive", "intBoxed"), "productTag"));
         model.setFromClause(FromClause.create(FilterStream.create(SupportBean.class.getName()).addView(View.create("win", "length", 100))));

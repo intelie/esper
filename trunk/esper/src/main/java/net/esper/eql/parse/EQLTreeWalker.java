@@ -42,6 +42,7 @@ public class EQLTreeWalker extends EQLBaseWalker
     private boolean isProcessingPattern;
 
     // AST Walk result
+    private List<ExprSubstitutionNode> substitutionParamNodes = new ArrayList<ExprSubstitutionNode>(); 
     private StatementSpecRaw statementSpec;
     private final Stack<StatementSpecRaw> statementSpecStack;
 
@@ -157,6 +158,9 @@ public class EQLTreeWalker extends EQLBaseWalker
             case STRING_TYPE:
             case NULL_TYPE:
                 leaveConstant(node);
+                break;
+            case SUBSTITUTION:
+                leaveSubstitution(node);
                 break;
             case STAR:
             case MINUS:
@@ -433,6 +437,7 @@ public class EQLTreeWalker extends EQLBaseWalker
 
         PatternStreamSpecRaw streamSpec = new PatternStreamSpecRaw(evalNode, new LinkedList<ViewSpec>(), null);
         statementSpec.getStreamSpecs().add(streamSpec);
+        statementSpec.setExistsSubstitutionParameters(substitutionParamNodes.size() > 0);
 
         astPatternNodeMap.clear();
     }
@@ -455,6 +460,8 @@ public class EQLTreeWalker extends EQLBaseWalker
             throw new ASTWalkException("Unexpected AST tree contains left over child elements," +
                     " not all pattern nodes have been removed from AST-to-pattern nodes map");
         }
+
+        statementSpec.setExistsSubstitutionParameters(substitutionParamNodes.size() > 0);
     }
 
     private void leaveSelectionElement(AST node) throws ASTWalkException
@@ -657,6 +664,28 @@ public class EQLTreeWalker extends EQLBaseWalker
         log.debug(".leaveConstant");
         ExprConstantNode constantNode = new ExprConstantNode(ASTConstantHelper.parse(node));
         astExprNodeMap.put(node, constantNode);
+    }
+
+    // TODO
+    // Expression tree contains ExprSubstitutionNode
+    // StatementSpec contains List<ExprSubstitutionNode>
+    // createEQL() checks that the list of ExprSubstitutionNode is empty
+    // compile() unmaps and returns a EPStatementObjectModel with a List<SubstitutionExpression>
+    // client gets QueryParameters from model, calls set(index, value) methods
+    // SubstitutionExpression is marked as happy
+    // client performs create(model), code maps and checks that all SubstitutionExpression are 'happy'
+    // client can perform multiple create(model)
+
+    private void leaveSubstitution(AST node)
+    {
+        log.debug(".leaveSubstitution");
+
+        // Add the substitution parameter node, for later replacement
+        int currentSize = this.substitutionParamNodes.size();
+        ExprSubstitutionNode substitutionNode = new ExprSubstitutionNode(currentSize + 1);
+        substitutionParamNodes.add(substitutionNode);
+
+        astExprNodeMap.put(node, substitutionNode);
     }
 
     private void leaveMath(AST node)
