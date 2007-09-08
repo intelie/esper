@@ -49,6 +49,24 @@ public class ASTFilterSpecHelper implements EqlTokenTypes
                     buffer.append(child.getFirstChild().getNextSibling().getText());
                     buffer.append(']');
                     break;
+                case EVENT_PROP_DYNAMIC_SIMPLE:
+                    buffer.append(child.getFirstChild().getText());
+                    buffer.append('?');
+                    break;
+                case EVENT_PROP_DYNAMIC_MAPPED:
+                    buffer.append(child.getFirstChild().getText());
+                    buffer.append('(');
+                    buffer.append(child.getFirstChild().getNextSibling().getText());
+                    buffer.append(')');
+                    buffer.append('?');
+                    break;
+                case EVENT_PROP_DYNAMIC_INDEXED:
+                    buffer.append(child.getFirstChild().getText());
+                    buffer.append('[');
+                    buffer.append(child.getFirstChild().getNextSibling().getText());
+                    buffer.append(']');
+                    buffer.append('?');
+                    break;
                 default:
                     throw new IllegalStateException("Event property AST node not recognized, type=" + child.getType());
             }

@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.io.Serializable;
 
-public class SupportBeanComplexProps implements Serializable
+public class SupportBeanComplexProps implements Serializable, SupportMarkerInterface
 {
     private String simpleProperty;
 	private Properties mappedProps;
@@ -103,6 +103,11 @@ public class SupportBeanComplexProps implements Serializable
 			return nestedValue;
 		}
 
+        public void setNestedValue(String nestedValue)
+        {
+            this.nestedValue = nestedValue;
+        }
+
         public SupportBeanSpecialGetterNestedNested getNestedNested()
         {
             return nestedNested;
@@ -147,6 +152,11 @@ public class SupportBeanComplexProps implements Serializable
         public String getNestedNestedValue()
         {
             return nestedNestedValue;
+        }
+
+        public void setNestedNestedValue(String nestedNestedValue)
+        {
+            this.nestedNestedValue = nestedNestedValue;
         }
     }
 }

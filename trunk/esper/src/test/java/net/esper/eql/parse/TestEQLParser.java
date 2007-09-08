@@ -14,7 +14,7 @@ public class TestEQLParser extends TestCase implements EqlTokenTypes
     public void testDisplayAST() throws Exception
     {
         String className = SupportBean.class.getName();
-        String expression = "select b in (select * from A) from " + className;
+        String expression = "select a.b? from " + className;
 
         log.debug(".testDisplayAST parsing: " + expression);
         AST ast = parse(expression);
@@ -420,15 +420,16 @@ public class TestEQLParser extends TestCase implements EqlTokenTypes
         assertIsValid("select c from A where b not in (select b from C)");
         assertIsValid("select c from A where q*9 not in (select g*5 from C.win:length(100)) and r=6");
 
-        // properties with optional fields
-        /*
+        // dynamic properties
         assertIsValid("select b.c.d? from E");
         assertIsValid("select b.c.d?.e? from E");
         assertIsValid("select b? from E");
         assertIsValid("select b? as myevent from E");
         assertIsValid("select * from pattern [every OrderEvent(item.name?)]");
         assertIsValid("select * from pattern [every OrderEvent(item?.parent.name?='foo')]");
-        */
+        assertIsValid("select b.c[0].d? from E");
+        assertIsValid("select b.c[0]?.mapped('a')? from E");
+        assertIsValid("select b?.c[0].mapped('a') from E");
 
         // Allow comments in EQL and patterns
         assertIsValid("select b.c.d /* some comment */ from E");

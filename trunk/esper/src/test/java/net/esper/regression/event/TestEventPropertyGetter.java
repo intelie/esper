@@ -5,15 +5,20 @@ import net.esper.client.EPServiceProvider;
 import net.esper.client.EPServiceProviderManager;
 import net.esper.client.EPStatement;
 import net.esper.support.bean.SupportMarketDataBean;
+import net.esper.support.bean.SupportBeanDynRoot;
+import net.esper.support.bean.SupportBean_S0;
+import net.esper.support.util.SupportUpdateListener;
 
 public class TestEventPropertyGetter extends TestCase
 {
+    private SupportUpdateListener listener;
     private EPServiceProvider epService;
 
     public void setUp()
     {
         epService = EPServiceProviderManager.getDefaultProvider();
         epService.initialize();
+        listener = new SupportUpdateListener();
     }
 
     public void testGetter() throws Exception

@@ -119,6 +119,9 @@ tokens
    	EVENT_PROP_SIMPLE;
    	EVENT_PROP_MAPPED;
    	EVENT_PROP_INDEXED;
+   	EVENT_PROP_DYNAMIC_SIMPLE;
+   	EVENT_PROP_DYNAMIC_INDEXED;
+   	EVENT_PROP_DYNAMIC_MAPPED;
    	EVENT_LIMIT_EXPR;
 	SEC_LIMIT_EXPR;
 	MIN_LIMIT_EXPR;
@@ -723,10 +726,22 @@ eventProperty
 eventPropertyAtomic
 	:	IDENT 
 		{ #eventPropertyAtomic = #([EVENT_PROP_SIMPLE,"eventPropertySimple"], #eventPropertyAtomic); }
-	|	IDENT LBRACK! NUM_INT RBRACK!
-		{ #eventPropertyAtomic = #([EVENT_PROP_INDEXED,"eventPropertyIndexed"], #eventPropertyAtomic); }
-	|	IDENT LPAREN! (STRING_LITERAL | QUOTED_STRING_LITERAL) RPAREN!
-		{ #eventPropertyAtomic = #([EVENT_PROP_MAPPED,"eventPropertyMapped"], #eventPropertyAtomic); }
+	|	IDENT LBRACK! NUM_INT RBRACK! (d:QUESTION!)?
+		{ 
+			if (d!=null) 
+				#eventPropertyAtomic = #([EVENT_PROP_INDEXED,"eventPropertyIndexed"], #eventPropertyAtomic);
+			else
+				#eventPropertyAtomic = #([EVENT_PROP_DYNAMIC_INDEXED,"eventPropertyDynamicIndexed"], #eventPropertyAtomic); 
+		}				
+	|	IDENT LPAREN! (STRING_LITERAL | QUOTED_STRING_LITERAL) RPAREN! (q:QUESTION!)?
+		{ 
+			if (q!=null) 
+				#eventPropertyAtomic = #([EVENT_PROP_MAPPED,"eventPropertyMapped"], #eventPropertyAtomic); 
+			else
+				#eventPropertyAtomic = #([EVENT_PROP_DYNAMIC_MAPPED,"eventPropertyDynamicMapped"], #eventPropertyAtomic); 				
+		}
+	|	IDENT QUESTION!
+		{ #eventPropertyAtomic = #([EVENT_PROP_DYNAMIC_SIMPLE,"eventPropertyDynamicSimple"], #eventPropertyAtomic); }
 	;
 
 time_period 	

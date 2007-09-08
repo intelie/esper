@@ -51,15 +51,20 @@ public class PropertyParser implements EqlTokenTypes
 
         if (ast.getNumberOfChildren() == 1)
         {
-            return makeProperty(ast.getFirstChild());
+            return makeProperty(ast.getFirstChild(), false);
         }
 
         AST child = ast.getFirstChild();
         List<Property> properties = new LinkedList<Property>();
 
+        boolean isRootedInDynamic = false;
         do
         {
-            Property property = makeProperty(child);
+            Property property = makeProperty(child, isRootedInDynamic);
+            if (property instanceof DynamicSimpleProperty)
+            {
+                isRootedInDynamic = true;
+            }
             properties.add(property);
             child = child.getNextSibling();
         }
@@ -68,17 +73,46 @@ public class PropertyParser implements EqlTokenTypes
         return new NestedProperty(properties, beanEventTypeFactory);
     }
 
-    private static Property makeProperty(AST child)
+    private static Property makeProperty(AST child, boolean isRootedInDynamic)
     {
         switch (child.getType()) {
             case EVENT_PROP_SIMPLE:
-                return new SimpleProperty(child.getFirstChild().getText());
+                if (!isRootedInDynamic)
+                {
+                    return new SimpleProperty(child.getFirstChild().getText());
+                }
+                else
+                {
+                    return new DynamicSimpleProperty(child.getFirstChild().getText());
+                }
             case EVENT_PROP_MAPPED:
                 String key = StringValue.parseString(child.getFirstChild().getNextSibling().getText());
-                return new MappedProperty(child.getFirstChild().getText(), key);
+                if (!isRootedInDynamic)
+                {
+                    return new MappedProperty(child.getFirstChild().getText(), key);
+                }
+                else
+                {
+                    return new DynamicMappedProperty(child.getFirstChild().getText(), key);
+                }
             case EVENT_PROP_INDEXED:
                 int index = IntValue.parseString(child.getFirstChild().getNextSibling().getText());
-                return new IndexedProperty(child.getFirstChild().getText(), index);
+                if (!isRootedInDynamic)
+                {
+                    return new IndexedProperty(child.getFirstChild().getText(), index);
+                }
+                else
+                {
+                    return new DynamicIndexedProperty(child.getFirstChild().getText(), index);
+                }
+            case EVENT_PROP_DYNAMIC_SIMPLE:
+                return new DynamicSimpleProperty(child.getFirstChild().getText());
+            case EVENT_PROP_DYNAMIC_INDEXED:
+                index = IntValue.parseString(child.getFirstChild().getNextSibling().getText());
+                return new DynamicIndexedProperty(child.getFirstChild().getText(), index);
+            case EVENT_PROP_DYNAMIC_MAPPED:
+                key = StringValue.parseString(child.getFirstChild().getNextSibling().getText());
+                return new DynamicMappedProperty(child.getFirstChild().getText(), key);
             default:
                 throw new IllegalStateException("Event property AST node not recognized, type=" + child.getType());
         }

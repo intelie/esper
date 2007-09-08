@@ -394,7 +394,7 @@ public class TestEQLTreeWalker extends TestCase
 
     public void testComplexProperty() throws Exception
     {
-        String text = "select array [ 1 ],s0.map('a'),nested.nested2, a[1].b as x " +
+        String text = "select array [ 1 ],s0.map('a'),nested.nested2, a[1].b as x, nested.abcdef? " +
                 " from SupportBean_N().win:lenght(10) as win1 " +
                 " where a[1].b('a').nested.c[0] = 4";
         EQLTreeWalker walker = parseAndWalkEQL(text);
@@ -414,6 +414,10 @@ public class TestEQLTreeWalker extends TestCase
         identNode = (ExprIdentNode) walker.getStatementSpec().getSelectClauseSpec().getSelectList().get(3).getSelectExpression();
         assertEquals("a[1].b", identNode.getUnresolvedPropertyName());
         assertEquals(null, identNode.getStreamOrPropertyName());
+
+        identNode = (ExprIdentNode) walker.getStatementSpec().getSelectClauseSpec().getSelectList().get(4).getSelectExpression();
+        assertEquals("abcdef?", identNode.getUnresolvedPropertyName());
+        assertEquals("nested", identNode.getStreamOrPropertyName());
 
         identNode = (ExprIdentNode) walker.getStatementSpec().getFilterRootNode().getChildNodes().get(0);
         assertEquals("a[1].b('a').nested.c[0]", identNode.getUnresolvedPropertyName());
