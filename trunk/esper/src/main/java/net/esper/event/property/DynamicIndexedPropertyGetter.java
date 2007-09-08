@@ -17,6 +17,11 @@ public class DynamicIndexedPropertyGetter extends DynamicPropertyGetterBase impl
     private final Object[] params;
     private final int index;
 
+    /**
+     * Ctor.
+     * @param fieldName property name
+     * @param index index to get the element at
+     */
     public DynamicIndexedPropertyGetter(String fieldName, int index)
     {
         getterMethodName = getGetterMethodName(fieldName);

@@ -229,6 +229,10 @@ builtinFunc
 	| 	#(COALESCE valueExpr valueExpr (valueExpr)* )
 	| 	#(PREVIOUS valueExpr eventPropertyExpr)
 	| 	#(PRIOR c:NUM_INT eventPropertyExpr) {leaveNode(#c);}
+	| 	#(INSTANCEOF valueExpr CLASS_IDENT (CLASS_IDENT)*) 
+	| 	#(CAST valueExpr CLASS_IDENT)
+	| 	#(EXISTS eventPropertyExpr)
+	| 	#(ISNUMERIC valueExpr)
 	;
 	
 arrayExpr

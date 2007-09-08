@@ -5,11 +5,21 @@ import net.esper.eql.spec.SubstitutionParameterExpression;
 
 import java.util.Map;
 
+/**
+ * Prepared statement implementation that stores the statement object model and
+ * a list of substitution parameters, to be mapped into an internal representation upon
+ * creation.
+ */
 public class EPPreparedStatementImpl implements EPPreparedStatement
 {
     private EPStatementObjectModel model;
     private Map<Integer, SubstitutionParameterExpression> subParams;
 
+    /**
+     * Ctor.
+     * @param model is the statement object model
+     * @param subParams is the substitution parameter list
+     */
     public EPPreparedStatementImpl(EPStatementObjectModel model, Map<Integer, SubstitutionParameterExpression> subParams)
     {
         this.model = model;
@@ -34,11 +44,19 @@ public class EPPreparedStatementImpl implements EPPreparedStatement
         subs.setConstant(value);
     }
 
+    /**
+     * Returns the statement object model for the prepared statement
+     * @return object model
+     */
     public EPStatementObjectModel getModel()
     {
         return model;
     }
 
+    /**
+     * Returns the indexed substitution parameters.
+     * @return map of index and parameter
+     */
     public Map<Integer, SubstitutionParameterExpression> getSubParams()
     {
         return subParams;

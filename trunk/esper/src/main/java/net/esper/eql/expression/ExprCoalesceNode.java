@@ -105,10 +105,14 @@ public class ExprCoalesceNode extends ExprNode
     public String toExpressionString()
     {
         StringBuilder buffer = new StringBuilder();
-        for (int i = 2; i < this.getChildNodes().size(); i++)
+        buffer.append("coalesce(");
+
+        String delimiter = "";
+        for (int i = 0; i < this.getChildNodes().size(); i++)
         {
-            buffer.append(',');
+            buffer.append(delimiter);
             buffer.append(this.getChildNodes().get(i).toExpressionString());
+            delimiter = ",";
         }
         buffer.append(')');
         return buffer.toString();

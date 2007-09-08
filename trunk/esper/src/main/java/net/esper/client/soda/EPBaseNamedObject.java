@@ -9,6 +9,7 @@ package net.esper.client.soda;
 
 import net.esper.type.NumberSetParameter;
 import net.esper.type.EQLParameterType;
+import net.esper.core.EPStatementObjectModelHelper;
 
 import java.util.List;
 import java.io.Serializable;
@@ -118,7 +119,7 @@ public abstract class EPBaseNamedObject implements Serializable
             }
             else
             {
-                ConstantExpression.renderEQL(writer, param);
+                EPStatementObjectModelHelper.renderEQL(writer, param);
             }
             delimiter = ", ";
         }

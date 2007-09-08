@@ -100,6 +100,7 @@ public class TestExprCoalesceNode extends TestCase
 
     public void testToExpressionString() throws Exception
     {
-        //assertEquals("coalesce(null, null, ", coalesceNodes[0].toExpressionString());
+        coalesceNodes[0].validate(null, null, null);
+        assertEquals("coalesce(null,null,4)", coalesceNodes[0].toExpressionString());
     }
 }

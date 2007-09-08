@@ -382,6 +382,29 @@ public class TestJavaClassHelper extends TestCase
         }
     }
 
+    public void testGetPrimitiveClassForName()
+    {
+        Object[][] tests = new Object[][] {
+                {"int", int.class},
+                {"Long", long.class},
+                {"SHort", short.class},
+                {"DOUBLE", double.class},
+                {"float", float.class},
+                {"boolean", boolean.class},
+                {"ByTe", byte.class},
+                {"char", char.class},
+                {"jfjfjf", null},
+                {SupportBean.class.getName(), null},
+                {"string", String.class},
+                {"STRINg", String.class}
+        };
+
+        for (int i = 0; i < tests.length; i++)
+        {
+            assertEquals(tests[i][1], JavaClassHelper.getPrimitiveClassForName((String) tests[i][0]));
+        }
+    }
+
     private void tryInvalidGetCommonCoercionType(Class[] types)
     {
         try

@@ -1,10 +1,12 @@
-package net.esper.client.soda;
+package net.esper.core;
 
 import junit.framework.TestCase;
 
 import java.io.StringWriter;
 
-public class TestConstantExpression extends TestCase
+import net.esper.core.EPStatementObjectModelHelper;
+
+public class TestEPStatementObjectModelHelper extends TestCase
 {
     public void testRenderEQL()
     {
@@ -17,7 +19,7 @@ public class TestConstantExpression extends TestCase
     private String tryConstant(Object value)
     {
         StringWriter writer = new StringWriter();
-        ConstantExpression.renderEQL(writer, value);
+        EPStatementObjectModelHelper.renderEQL(writer, value);
         return writer.toString();
     }
 }

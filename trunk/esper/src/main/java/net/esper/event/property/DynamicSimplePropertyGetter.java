@@ -15,6 +15,10 @@ public class DynamicSimplePropertyGetter extends DynamicPropertyGetterBase imple
     private final String getterMethodName;
     private final String isMethodName;
 
+    /**
+     * Ctor.
+     * @param fieldName the property name
+     */
     public DynamicSimplePropertyGetter(String fieldName)
     {
         getterMethodName = getGetterMethodName(fieldName);

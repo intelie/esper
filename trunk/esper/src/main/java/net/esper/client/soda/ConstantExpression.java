@@ -7,6 +7,8 @@
  **************************************************************************************/
 package net.esper.client.soda;
 
+import net.esper.core.EPStatementObjectModelHelper;
+
 import java.io.StringWriter;
 
 /**
@@ -27,28 +29,7 @@ public class ConstantExpression extends ExpressionBase
 
     public void toEQL(StringWriter writer)
     {
-        renderEQL(writer, constant);
-    }
-
-    public static void renderEQL(StringWriter writer, Object constant)
-    {
-        if (constant == null)
-        {
-            writer.write("null");
-            return;
-        }
-
-        if ((constant instanceof String) ||
-            (constant instanceof Character))
-        {
-            writer.write('\"');
-            writer.write(constant.toString());
-            writer.write('\"');
-        }
-        else
-        {
-            writer.write(constant.toString());
-        }
+        EPStatementObjectModelHelper.renderEQL(writer, constant);
     }
 
     /**

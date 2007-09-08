@@ -16,10 +16,24 @@ public abstract class DynamicPropertyGetterBase implements EventPropertyGetter
 {
     private final CopyOnWriteArrayList<DynamicPropertyDescriptor> cache;
 
-    // To be implemented to return the method required, or null to indicate not found
+    /**
+     * To be implemented to return the method required, or null to indicate an appropriate method could not be found.
+     * @param clazz to search for a matching method
+     * @return method if found, or null if no matching method exists
+     */
     protected abstract Method determineMethod(Class clazz);
+
+    /**
+     * Call the getter to obtains the return result object, or null if no such method exists.
+     * @param descriptor provides method information for the class
+     * @param underlying is the underlying object to ask for the property value
+     * @return underlying
+     */
     protected abstract Object call(DynamicPropertyDescriptor descriptor, Object underlying);
 
+    /**
+     * Ctor.
+     */
     public DynamicPropertyGetterBase()
     {
         cache = new CopyOnWriteArrayList<DynamicPropertyDescriptor>();

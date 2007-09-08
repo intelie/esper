@@ -290,6 +290,18 @@ public class EQLTreeWalker extends EQLBaseWalker
             case IN_SUBSELECT_QUERY_EXPR:
                 leaveSubselectQueryIn(node);
                 break;
+            case INSTANCEOF:
+                leaveInstanceOf(node);
+                break;
+            case EXISTS:
+                leaveExists(node);
+                break;
+            case CAST:
+                leaveCast(node);
+                break;
+            case ISNUMERIC:
+                leaveIsNumeric(node);
+                break;
             default:
                 throw new ASTWalkException("Unhandled node type encountered, type '" + node.getType() +
                         "' with text '" + node.getText() + '\'');
@@ -352,6 +364,49 @@ public class EQLTreeWalker extends EQLBaseWalker
 
         ExprPriorNode priorNode = new ExprPriorNode();
         astExprNodeMap.put(node, priorNode);
+    }
+
+    private void leaveInstanceOf(AST node)
+    {
+        log.debug(".leaveInstanceOf");
+
+        AST classIdent = node.getFirstChild().getNextSibling();
+
+        // get class identifiers
+        List<String> classes = new ArrayList<String>();
+        while(classIdent != null)
+        {
+            classes.add(classIdent.getText());
+            classIdent = classIdent.getNextSibling();
+        }
+
+        String idents[] = classes.toArray(new String[0]);
+        ExprInstanceofNode instanceofNode = new ExprInstanceofNode(idents);
+        astExprNodeMap.put(node, instanceofNode);
+    }
+
+    private void leaveExists(AST node)
+    {
+        log.debug(".leaveExists");
+
+        ExprPropertyExistsNode instanceofNode = new ExprPropertyExistsNode();
+        astExprNodeMap.put(node, instanceofNode);
+    }
+
+    private void leaveCast(AST node)
+    {
+        log.debug(".leaveCast");
+
+        ExprCastNode castNode = new ExprCastNode();
+        astExprNodeMap.put(node, castNode);
+    }
+
+    private void leaveIsNumeric(AST node)
+    {
+        log.debug(".leaveIsNumeric");
+
+        ExprIsNumericNode isNumericNode = new ExprIsNumericNode();
+        astExprNodeMap.put(node, isNumericNode);
     }
 
     private void leaveArray(AST node)

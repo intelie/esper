@@ -16,6 +16,11 @@ public class DynamicMappedPropertyGetter extends DynamicPropertyGetterBase imple
     private final String getterMethodName;
     private final Object[] params;
 
+    /**
+     * Ctor.
+     * @param fieldName property name
+     * @param key mapped access key
+     */
     public DynamicMappedPropertyGetter(String fieldName, String key)
     {
         getterMethodName = getGetterMethodName(fieldName);

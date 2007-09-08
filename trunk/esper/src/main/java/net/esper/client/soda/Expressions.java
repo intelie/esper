@@ -30,6 +30,44 @@ public class Expressions implements Serializable
     private static final long serialVersionUID = 0L;
 
     /**
+     * Instance-of function, tests if the type of the return value of an expression is in a list of types.
+     * <p>
+     * The list of types can include fully-qualified class names plus any of the
+     * Java primitive type names: byte, char, short, int, long, float, double, boolean.
+     * Alternatively to "java.lang.String" the simple "string" is also permitted.
+     * <p>
+     * Type checks include all superclasses and interfaces of the value returned by the expression.
+     * @param expression returns the value to test whether the type returned is any of the  is the function name
+     * @param typeNames is one type to check for
+     * @param typeNames is optional additional types to check for in a list
+     * @return expression
+     */
+    public static InstanceOfExpression instanceOf(Expression expression, String typeName, String...typeNames)
+    {
+        return new InstanceOfExpression(expression, typeName, typeNames);
+    }
+
+    /**
+     * Instance-of function, tests if the type of the return value of a property is in a list of types.
+     * <p>
+     * Useful with dynamic (unchecked) properties to check the type of property returned.
+     * <p>
+     * The list of types can include fully-qualified class names plus any of the
+     * Java primitive type names: byte, char, short, int, long, float, double, boolean.
+     * Alternatively to "java.lang.String" the simple "string" is also permitted.
+     * <p>
+     * Type checks include all superclasses and interfaces of the value returned by the expression.
+     * @param propertyName name of the property supplying the vakue to test
+     * @param typeNames is one type to check for
+     * @param typeNames is optional additional types to check for in a list
+     * @return expression
+     */
+    public static InstanceOfExpression instanceOf(String propertyName, String typeName, String...typeNames)
+    {
+        return new InstanceOfExpression(getPropExpr(propertyName), typeName, typeNames);
+    }
+
+    /**
      * Plug-in aggregation function.
      * @param functionName is the function name
      * @param parameter provides the values to aggregate

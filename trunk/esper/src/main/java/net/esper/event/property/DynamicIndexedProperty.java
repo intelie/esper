@@ -15,6 +15,7 @@ public class DynamicIndexedProperty extends PropertyBase
     /**
      * Ctor.
      * @param propertyName is the property name
+     * @param index is the index of the array or indexed property
      */
     public DynamicIndexedProperty(String propertyName, int index)
     {

@@ -2,6 +2,7 @@ package net.esper.eql.spec;
 
 import net.esper.client.soda.ExpressionBase;
 import net.esper.client.soda.ConstantExpression;
+import net.esper.core.EPStatementObjectModelHelper;
 
 import java.io.StringWriter;
 
@@ -17,6 +18,7 @@ public class SubstitutionParameterExpression extends ExpressionBase
 
     /**
      * Ctor.
+     * @param index is the index of the substitution parameter
      */
     public SubstitutionParameterExpression(int index)
     {
@@ -31,7 +33,7 @@ public class SubstitutionParameterExpression extends ExpressionBase
         }
         else
         {
-            ConstantExpression.renderEQL(writer, constant);
+            EPStatementObjectModelHelper.renderEQL(writer, constant);
         }
     }
 
@@ -44,11 +46,19 @@ public class SubstitutionParameterExpression extends ExpressionBase
         return constant;
     }
 
+    /**
+     * Returns true if the parameter is satisfied, or false if not.
+     * @return true if the actual value is supplied, false if not
+     */
     public boolean isSatisfied()
     {
         return isSatisfied;
     }
 
+    /**
+     * Returns the index of the parameter.
+     * @return parameter index.
+     */
     public int getIndex()
     {
         return index;

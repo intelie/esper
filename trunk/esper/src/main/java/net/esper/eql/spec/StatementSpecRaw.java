@@ -175,11 +175,19 @@ public class StatementSpecRaw implements MetaDefItem
         this.selectClauseSpec = selectClauseSpec;
     }
 
+    /**
+     * Returns true if there are one or more substitution parameters in the statement of contained-within subquery statements
+     * @return true if parameters exists
+     */
     public boolean isExistsSubstitutionParameters()
     {
         return existsSubstitutionParameters;
     }
 
+    /**
+     * Sets the substitution parameters.
+     * @param existsSubstitutionParameters true to indicate there are parameters
+     */
     public void setExistsSubstitutionParameters(boolean existsSubstitutionParameters)
     {
         this.existsSubstitutionParameters = existsSubstitutionParameters;

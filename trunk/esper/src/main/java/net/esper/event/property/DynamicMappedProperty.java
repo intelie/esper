@@ -15,6 +15,7 @@ public class DynamicMappedProperty extends PropertyBase
     /**
      * Ctor.
      * @param propertyName is the property name
+     * @param key is the mapped access key
      */
     public DynamicMappedProperty(String propertyName, String key)
     {

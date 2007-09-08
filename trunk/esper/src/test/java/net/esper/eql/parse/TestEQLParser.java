@@ -165,6 +165,19 @@ public class TestEQLParser extends TestCase implements EqlTokenTypes
         // Substitution parameters
         assertIsInvalid("select ? ? from A");
         assertIsInvalid("select * from A(??)");
+
+        // cast, instanceof, isnumeric and exists dynamic property
+        assertIsInvalid("select * from A(boolean = exists(a, b))");
+        assertIsInvalid("select * from A (boolean = exists())");
+        assertIsInvalid("select * from A (boolean = exists(1))");
+        assertIsInvalid("select * from A where exists(1 + a.b.c?.d.e)");
+        assertIsInvalid("select * from A(boolean = instanceof(, a))");
+        assertIsInvalid("select * from A(boolean = instanceof(b))");
+        assertIsInvalid("select * from A(boolean = instanceof('agc', ,))");
+        assertIsInvalid("select * from A(boolean = instanceof(b net.esper.support.AClass))");
+        assertIsInvalid("select * from A(cast(b, +1))");
+        assertIsInvalid("select * from A(cast(b?, a + 1))");
+        assertIsInvalid("select * from A(cast((), a + 1))");
     }
 
     public void testValidCases() throws Exception
@@ -445,6 +458,25 @@ public class TestEQLParser extends TestCase implements EqlTokenTypes
         assertIsValid(preFill + " having avg(?) > ?");
         assertIsValid("select sum(?) from b.win:length(1)");
         assertIsValid("select ?||'a' from B(a=?) where c=? group by ? having d>? output every 10 events order by a, ?");
+
+        // cast, instanceof, isnumeric and exists dynamic property
+        assertIsValid(preFill + "(boolean = exists(a))");
+        assertIsValid(preFill + "(boolean = exists(a?))");
+        assertIsValid(preFill + "(boolean = exists(a?))");
+        assertIsValid(preFill + " where exists(a.b.c?.d.e)");
+        assertIsValid(preFill + "(boolean = instanceof(a + 2, a))");
+        assertIsValid(preFill + "(boolean = instanceof(b, a))");
+        assertIsValid(preFill + "(boolean = instanceof('agc', string, String, java.lang.String))");
+        assertIsValid(preFill + "(boolean = instanceof(b, net.esper.support.AClass))");
+        assertIsValid(preFill + "(boolean = instanceof(b, net.esper.support.AClass, int, long, java.lang.Long))");
+        assertIsValid(preFill + "(cast(b, boolean))");
+        assertIsValid(preFill + "(cast(b?, Boolean))");
+        assertIsValid(preFill + "(cast(b?, java.lang.String))");
+        assertIsValid(preFill + "(cast(b?, long))");
+        assertIsValid(preFill + "(cast(a + 5, long))");
+        assertIsValid(preFill + "(isnumeric(b?))");
+        assertIsValid(preFill + "(isnumeric(b + 2))");
+        assertIsValid(preFill + "(isnumeric(\"aa\"))");
     }
 
     public void testBitWiseCases() throws Exception

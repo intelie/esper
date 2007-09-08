@@ -609,4 +609,51 @@ public class JavaClassHelper
         }
         return Class.forName(className);
     }
+
+    /**
+     * Returns the class for a Java primitive type name, ignoring case, and considering String as a primitive.
+     * @param typeName is a potential primitive Java type, or some other type name
+     * @return class for primitive type name, or null if not a primitive type.
+     */
+    public static Class getPrimitiveClassForName(String typeName)
+    {
+        typeName = typeName.toLowerCase();
+        if (typeName.equals("boolean"))
+        {
+            return boolean.class;
+        }
+        if (typeName.equals("char"))
+        {
+            return char.class;
+        }
+        if (typeName.equals("double"))
+        {
+            return double.class;
+        }
+        if (typeName.equals("float"))
+        {
+            return float.class;
+        }
+        if (typeName.equals("byte"))
+        {
+            return byte.class;
+        }
+        if (typeName.equals("short"))
+        {
+            return short.class;
+        }
+        if (typeName.equals("int"))
+        {
+            return int.class;
+        }
+        if (typeName.equals("long"))
+        {
+            return long.class;
+        }
+        if (typeName.equals("string"))
+        {
+            return String.class;
+        }
+        return null;
+    }
 }

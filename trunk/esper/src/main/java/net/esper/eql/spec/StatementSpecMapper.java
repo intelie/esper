@@ -521,6 +521,11 @@ public class StatementSpecMapper
             StddevProjectionExpression node = (StddevProjectionExpression) expr;
             return new ExprStddevNode(node.isDistinct());
         }
+        else if (expr instanceof InstanceOfExpression)
+        {
+            InstanceOfExpression node = (InstanceOfExpression) expr;
+            return new ExprInstanceofNode(node.getTypeNames());
+        }
         else if (expr instanceof SubstitutionParameterExpression)
         {
             SubstitutionParameterExpression node = (SubstitutionParameterExpression) expr;
@@ -742,6 +747,11 @@ public class StatementSpecMapper
         {
             ExprPlugInAggFunctionNode node = (ExprPlugInAggFunctionNode) expr;
             return new PlugInProjectionExpression(node.getAggregationFunctionName(), node.isDistinct());
+        }
+        else if (expr instanceof ExprInstanceofNode)
+        {
+            ExprInstanceofNode node = (ExprInstanceofNode) expr;
+            return new InstanceOfExpression(node.getClassIdentifiers());
         }
         else if (expr instanceof ExprSubstitutionNode)
         {

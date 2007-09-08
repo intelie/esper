@@ -46,6 +46,10 @@ public class ExprConstantNode extends ExprNode
         return value;
     }
 
+    /**
+     * Sets the value of the constant.
+     * @param value to set
+     */
     public void setValue(Object value)
     {
         this.value = value;

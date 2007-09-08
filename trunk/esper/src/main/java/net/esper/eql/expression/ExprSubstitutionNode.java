@@ -17,6 +17,7 @@ public class ExprSubstitutionNode extends ExprNode
 
     /**
      * Ctor.
+     * @param index is the index of the substitution parameter
      */
     public ExprSubstitutionNode(int index)
     {
@@ -28,6 +29,10 @@ public class ExprSubstitutionNode extends ExprNode
         throw new ExprValidationException(ERROR_MSG);
     }
 
+    /**
+     * Returns the substitution parameter index.
+     * @return index
+     */
     public int getIndex()
     {
         return index;

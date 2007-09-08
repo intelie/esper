@@ -76,6 +76,13 @@ public class SupportExprNode extends ExprNode
         {
             return "\"" + value + "\"";
         }
+        else
+        {
+            if (value == null)
+            {
+                return "null";
+            }
+        }
         return value.toString();
     }
 

@@ -75,6 +75,8 @@ tokens
 	EXISTS="exists";
 	WEEKDAY="weekday";
 	LW="lastweekday";
+	INSTANCEOF="instanceof";
+	CAST="cast";
 	
    	NUMERIC_PARAM_RANGE;
    	NUMERIC_PARAM_LIST;
@@ -156,6 +158,8 @@ tokens
 	LAST_OPERATOR;
 	WEEKDAY_OPERATOR;
 	SUBSTITUTION;
+	CAST_EXPR;
+	ISNUMERIC;
 	
    	INT_TYPE;
    	LONG_TYPE;
@@ -473,7 +477,7 @@ unaryExpression
 	| subSelectExpression
 	| existsSubSelectExpression
 	;
-	
+	    
 subSelectExpression 
 	:	subQueryExpr
 		{ #subSelectExpression = #([SUBSELECT_EXPR,"subSelectExpression"], #subSelectExpression); }	
@@ -521,6 +525,10 @@ builtinFunc
 	| PRIOR^ LPAREN! NUM_INT COMMA! eventProperty RPAREN!
 	// MIN and MAX can also be "Math.min" static function and "min(price)" aggregation function and "min(a, b, c...)" built-in function
 	// therefore handled in code via libFunction as below
+	| INSTANCEOF^ LPAREN! expression COMMA! classIdentifier (COMMA! classIdentifier)* RPAREN!
+	| CAST^ LPAREN! expression COMMA! classIdentifier RPAREN!
+	| EXISTS^ LPAREN! eventProperty RPAREN!
+	| ISNUMERIC^ LPAREN! expression RPAREN!
 	;
 	
 maxFunc

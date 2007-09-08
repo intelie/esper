@@ -98,6 +98,81 @@
 
 	</sect1>
 		
+	<sect1 id="eventrep-dyncproperties">
+	   <title>Dynamic Event Properties</title>
+           
+		<para>
+			Dynamic (unchecked) properties are event properties that need not be known at statement compilation time. Such properties are resolved during runtime.
+		</para>
+			
+		<para>
+			The idea behind dynamic properties is that for a given underlying event representation we don't always know all properties in advance. An underlying event may have additional properties that are not known at statement compilation time, that we want to query on. The concept is especially useful for events that represent rich, object-oriented domain models.
+		</para>
+
+		<para>
+			The syntax consists of the property name and a question mark. Indexed, mapped and nested properties can also be dynamic properties:
+		</para>
+
+		<table frame="topbot">
+			<title>Types of Event Properties</title>
+			<tgroup cols="2">
+				<colspec colwidth="1*"/>
+				<colspec colwidth="2.5*"/>
+				<thead>
+					<row>
+						<entry>Type</entry>
+						<entry>Syntax</entry>
+					</row>
+				</thead>
+				<tbody>
+					<row>
+						<entry>Dynamic Simple</entry>
+						<entry><synopsis>name?</synopsis></entry>
+					</row>
+					<row>
+						<entry>Dynamic Indexed</entry>
+						<entry><synopsis>name[<emphasis>index</emphasis>]?</synopsis></entry>
+					</row>
+					<row>
+						<entry>Dynamic Mapped</entry>
+						<entry><synopsis>name('<emphasis>key</emphasis>')?</synopsis></entry>
+					</row>
+					<row>
+						<entry>Dynamic Nested</entry>
+						<entry><synopsis>name.nestedname?</synopsis> or <synopsis>name?.nestedname</synopsis></entry>
+					</row>
+				</tbody>
+			</tgroup>
+		</table> 
+
+		<para>
+			An an example, consider an OrderEvent event that provides an "item" property. The "item" property is of type <literal>Object</literal> and holds a reference to an instance of either a Service or Product class. 
+		</para>
+
+		<para>
+			Assume that both Service and Product classes provide a property named "price". Via a dynamic property we can specify a query that obtains the price property from either object (Service or Product):
+		</para>
+		<programlisting><![CDATA[select item.price? from OrderEvent]]></programlisting>		
+
+		<para>
+			 Dynamic properties return a <literal>null</literal> value if the property name does not exist as a property. 
+		</para>
+
+		<para>
+			 Assume that the Service class contains a "serviceName" property that the Order class does not possess. The following query returns the value of the "serviceName" property for Service objects and returns a <literal>null</literal>-value for Order objects referenced by "item":
+		</para>
+		<programlisting><![CDATA[select item.serviceName? from OrderEvent]]></programlisting>		
+
+		<para>
+			Consider the case where OrderEvent is an interface that has multiple implementation classes, some of which have a "timestamp" property. The next query returns the timestamp property on those implementations of the OrderEvent interface that feature the property:
+		</para>
+		<programlisting><![CDATA[select timestamp? from OrderEvent]]></programlisting>		
+		
+		<para>
+			Note that dynamic properties always return the <literal>java.lang.Object</literal> type. The query as above returns a single column named "timestamp?" of type <literal>Object</literal>.
+		</para>
+	</sect1>
+
 	<sect1 id="eventrep-javabean">
 	   <title>Plain Java Object Events</title>
 
