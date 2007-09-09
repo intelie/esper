@@ -25,7 +25,7 @@ public class TestInstanceOfExpr extends TestCase
 
     public void testInstanceofSimple()
     {
-        String caseExpr = "select instanceof(string, string) as t0, " +
+        String stmtText = "select instanceof(string, string) as t0, " +
                           " instanceof(intBoxed, int) as t1, " +
                           " instanceof(floatBoxed, java.lang.Float) as t2, " +
                           " instanceof(string, java.lang.Float, char, byte) as t3, " +
@@ -35,7 +35,7 @@ public class TestInstanceOfExpr extends TestCase
                           " instanceof(floatBoxed, long, float) as t7 " +
                           " from " + SupportBean.class.getName();
 
-        EPStatement selectTestCase = epService.getEPAdministrator().createEQL(caseExpr);
+        EPStatement selectTestCase = epService.getEPAdministrator().createEQL(stmtText);
         selectTestCase.addListener(listener);
 
         for (int i = 0; i < 7; i++)
@@ -110,7 +110,7 @@ public class TestInstanceOfExpr extends TestCase
 
     public void testDynamicPropertyJavaTypes()
     {
-        String caseExpr = "select instanceof(inner?, string) as t0, " +
+        String stmtText = "select instanceof(inner?, string) as t0, " +
                           " instanceof(inner?, int) as t1, " +
                           " instanceof(inner?, java.lang.Float) as t2, " +
                           " instanceof(inner?, java.lang.Float, char, byte) as t3, " +
@@ -120,7 +120,7 @@ public class TestInstanceOfExpr extends TestCase
                           " instanceof(inner?, long, float) as t7 " +
                           " from " + SupportMarkerInterface.class.getName();
 
-        EPStatement selectTestCase = epService.getEPAdministrator().createEQL(caseExpr);
+        EPStatement selectTestCase = epService.getEPAdministrator().createEQL(stmtText);
         selectTestCase.addListener(listener);
 
         epService.getEPRuntime().sendEvent(new SupportBeanDynRoot("abc"));
@@ -141,7 +141,7 @@ public class TestInstanceOfExpr extends TestCase
 
     public void testDynamicSuperTypeAndInterface()
     {
-        String caseExpr = "select instanceof(inner?, " + SupportMarkerInterface.class.getName() + ") as t0, " +
+        String stmtText = "select instanceof(inner?, " + SupportMarkerInterface.class.getName() + ") as t0, " +
                           " instanceof(inner?, " + ISupportA.class.getName() + ") as t1, " +
                           " instanceof(inner?, " + ISupportBaseAB.class.getName() + ") as t2, " +
                           " instanceof(inner?, " + ISupportBaseABImpl.class.getName() + ") as t3, " +
@@ -152,7 +152,7 @@ public class TestInstanceOfExpr extends TestCase
 
                           " from " + SupportMarkerInterface.class.getName();
 
-        EPStatement selectTestCase = epService.getEPAdministrator().createEQL(caseExpr);
+        EPStatement selectTestCase = epService.getEPAdministrator().createEQL(stmtText);
         selectTestCase.addListener(listener);
 
         epService.getEPRuntime().sendEvent(new SupportBeanDynRoot(new SupportBeanDynRoot("abc")));

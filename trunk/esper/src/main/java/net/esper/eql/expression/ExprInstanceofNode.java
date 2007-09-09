@@ -157,7 +157,7 @@ public class ExprInstanceofNode extends ExprNode
         getSuper(superClass, result);
     }
 
-    private static void getSuper(Class clazz, Set<Class> result)
+    protected static void getSuper(Class clazz, Set<Class> result)
     {
         getSuperInterfaces(clazz, result);
         getSuperClasses(clazz, result);
@@ -192,7 +192,7 @@ public class ExprInstanceofNode extends ExprNode
             }
             catch (ClassNotFoundException e)
             {
-                throw new ExprValidationException("Class as listed in instanceof by name '" + className + "' cannot be loaded", e);
+                throw new ExprValidationException("Class as listed in instanceof function by name '" + className + "' cannot be loaded", e);
             }
 
             // Add primitive and boxed types, or type itself if not built-in

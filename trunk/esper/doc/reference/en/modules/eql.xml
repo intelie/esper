@@ -1481,27 +1481,10 @@ for user-controlled imports of classes and packages as outlined in <xref linkend
 				</thead>
 				<tbody>
 					<row>
-						<entry><synopsis>max(<emphasis>expression</emphasis>, <emphasis>expression</emphasis> [, <emphasis>expression</emphasis> ...])</synopsis></entry>
+						<entry><synopsis>cast(<emphasis>expression</emphasis> , <emphasis>type name</emphasis>)</synopsis></entry>
 						<entry>
 							<para>
-								Returns the highest numeric value among the 2 or more comma-separated expressions.
-							</para>
-						</entry>
-					</row>
-					<row>
-						<entry><synopsis>min(<emphasis>expression</emphasis>, <emphasis>expression</emphasis> [, <emphasis>expression</emphasis> ...])</synopsis></entry>
-						<entry>
-							<para>
-								Returns the lowest numeric value among the 2 or more comma-separated expressions.
-							</para>
-						</entry>
-					</row>
-					<row>
-						<entry><synopsis>coalesce(<emphasis>expression</emphasis>, <emphasis>expression</emphasis> [, <emphasis>expression</emphasis> ...])</synopsis>
-					</entry>
-						<entry>
-							<para>
-								Returns the first non-<literal>null</literal> value in the list, or <literal>null</literal> if there are no non-<literal>null</literal> values.
+								Casts the result of an expression to the given type . 
 							</para>
 						</entry>
 					</row>
@@ -1530,6 +1513,54 @@ for user-controlled imports of classes and packages as outlined in <xref linkend
 						</entry>
 					</row>
 					<row>
+					  <entry><synopsis>coalesce(<emphasis>expression</emphasis>, <emphasis>expression</emphasis> [, <emphasis>expression</emphasis> ...])</synopsis></entry>
+						<entry>
+							<para>
+								Returns the first non-<literal>null</literal> value in the list, or <literal>null</literal> if there are no non-<literal>null</literal> values.
+							</para>
+						</entry>
+					</row>
+					<row>
+						<entry><synopsis>exists(<emphasis>dynamic property name</emphasis>)</synopsis></entry>
+						<entry>
+							<para>
+								Returns true if the dynamic property exists for the selected type, or false if the property does not exist.
+							</para>
+						</entry>
+					</row>
+					<row>
+					  <entry><synopsis>instanceof(<emphasis>expression</emphasis>, <emphasis>typename</emphasis> [, <emphasis>typename</emphasis> ...])</synopsis></entry>
+						<entry>
+							<para>
+								Returns true if the expression returns an object whose type is one of the types listed.
+							</para>
+						</entry>
+					</row>
+					<row>
+					  <entry><synopsis>isnumeric(<emphasis>expression</emphasis>, <emphasis>typename</emphasis> [, <emphasis>typename</emphasis> ...])</synopsis></entry>
+						<entry>
+							<para>
+								Returns true if the expression returns an object whose type is one of the types listed.
+							</para>
+						</entry>
+					</row>
+					<row>
+						<entry><synopsis>max(<emphasis>expression</emphasis>, <emphasis>expression</emphasis> [, <emphasis>expression</emphasis> ...])</synopsis></entry>
+						<entry>
+							<para>
+								Returns the highest numeric value among the 2 or more comma-separated expressions.
+							</para>
+						</entry>
+					</row>
+					<row>
+						<entry><synopsis>min(<emphasis>expression</emphasis>, <emphasis>expression</emphasis> [, <emphasis>expression</emphasis> ...])</synopsis></entry>
+						<entry>
+							<para>
+								Returns the lowest numeric value among the 2 or more comma-separated expressions.
+							</para>
+						</entry>
+					</row>
+					<row>
 						<entry><synopsis>prev(<emphasis>expression</emphasis>, <emphasis>event_property)</emphasis></synopsis></entry>
 						<entry>
 							<para>
@@ -1548,42 +1579,6 @@ for user-controlled imports of classes and packages as outlined in <xref linkend
 				</tbody>
 			</tgroup>
 		</table>
-
-		<sect2 id="eql-single-row-function-ref-minmax">
-			<title>The <literal>Min</literal> and <literal>Max</literal> Functions</title>
-
-			<para>
-				The <literal>min</literal> and <literal>max</literal> function take two or more parameters that itself can be expressions. The <literal>min</literal> function returns the lowest numeric value among the 2 or more comma-separated expressions, while the <literal>max</literal> function returns the highest numeric value.
-				The return type is the compatible aggregated type of all return values.
-			</para>
-
-			<para>
-				The next example shows the <literal>max</literal> function that has a <literal>Double</literal> return type and returns the value 1.1.
-			</para>
-			<programlisting>select max(1, 1.1, 2 * 0.5) from ...</programlisting>
-
-			<para>
-				The <literal>min</literal> function returns the lowest value. The statement below uses the function to determine the smaller of two timestamp values.
-			</para>
-	
-			<programlisting>select symbol, min(ticks.timestamp, news.timestamp) as minT
-	from StockTickEvent.win:time(30 sec) as ticks, NewsEvent.win:time(30 sec) as news
-	where ticks.symbol = news.symbol</programlisting>
-		</sect2>
-
-		<sect2 id="eql-single-row-function-ref-coalesce">
-			<title>The <literal>Coalesce</literal> Function</title>
-
-			<para>
-				The result of the <literal>coalesce</literal> function is the first expression in a list of expressions that returns a non-null value. The return type is the compatible aggregated type of all return values.
-			</para>
-			
-			<para>
-				This example returns a String-typed result of value 'foo'.
-			</para>
-			<programlisting>select coalesce(null, 'foo') from ...</programlisting>
-			
-		</sect2>
 
 		<sect2 id="eql-single-row-function-ref-case">
 			<title>The <literal>Case</literal> Control Flow Function</title>
@@ -1607,6 +1602,88 @@ for user-controlled imports of classes and packages as outlined in <xref linkend
 			<programlisting>select case when 1>0 then true else false end from ...</programlisting>
 		</sect2>
 		
+		<sect2 id="eql-single-row-function-ref-coalesce">
+			<title>The <literal>Coalesce</literal> Function</title>
+
+			<para>
+				The result of the <literal>coalesce</literal> function is the first expression in a list of expressions that returns a non-null value. The return type is the compatible aggregated type of all return values.
+			</para>
+			
+			<para>
+				This example returns a String-typed result of value 'foo'.
+			</para>
+			<programlisting>select coalesce(null, 'foo') from ...</programlisting>			
+		</sect2>
+
+		<sect2 id="eql-single-row-function-exists">
+			<title>The <literal>Exists</literal> Function</title>
+
+			<para>
+				The <literal>exists</literal> function returns a boolean value indicating whether the property exists. The <literal>exists</literal> function accepts a single property name as it's only parameter. 
+			</para>
+
+			<para>
+				The <literal>exists</literal> function is for use with dynamic (unchecked) properties. Dynamic properties are properties whose type is not known at compile type. Dynamic properties return a null value
+				if the dynamic property does not exists on an event, or if the dynamic property exists but the value of the dynamic property is null. 
+			</para>
+			
+			<para>
+				The <literal>exists</literal> function it used for determining if a dynamic property exists. It returns false if the dynamic property does not exist on the event, and returns true if the property exists.
+			</para>
+
+			<para>
+				Assume that <literal>OrderEvent</literal> events not always contain a "serviceName" property, for example when OrderEvent is an interface. The next sample query returns true for those <literal>OrderEvent</literal> events
+				that provides the dynamic "serviceName" property.
+			</para>
+			<programlisting>select exists(serviceName?) from OrderEvent</programlisting>
+		</sect2>
+
+		<sect2 id="eql-single-row-function-instanceof">
+			<title>The <literal>Instance-Of</literal> Function</title>
+
+			<para>
+				The <literal>instanceof</literal> function returns a boolean value indicating whether the type of value returned by the expression within is one of the given types. The first parameter to the <literal>instanceof</literal> function is an expression to evaluate. The second and subsequent parameters are Java type names.
+			</para>
+
+			<para>
+				The function determines the return type of the expression at runtime by evaluating the expression, and compares the return type of the expression to the types passed. If the expression return type matches any od the passed
+				types, the function returns <literal>true</literal>.
+			</para>
+
+			<para>
+				This example uses the <literal>instanceof</literal> function to select different properties based on the type:
+			</para>
+			<programlisting>select case when instanceof(inner, Service) then serviceName 
+  when instanceof(inner, Product) then productName end 
+  from OrderEvent</programlisting>
+
+			<para>
+				The <literal>instanceof</literal> function returns <literal>false</literal> if the expression tested by instanceof returned null.
+			</para>
+		</sect2>
+
+		<sect2 id="eql-single-row-function-ref-minmax">
+			<title>The <literal>Min</literal> and <literal>Max</literal> Functions</title>
+
+			<para>
+				The <literal>min</literal> and <literal>max</literal> function take two or more parameters that itself can be expressions. The <literal>min</literal> function returns the lowest numeric value among the 2 or more comma-separated expressions, while the <literal>max</literal> function returns the highest numeric value.
+				The return type is the compatible aggregated type of all return values.
+			</para>
+
+			<para>
+				The next example shows the <literal>max</literal> function that has a <literal>Double</literal> return type and returns the value 1.1.
+			</para>
+			<programlisting>select max(1, 1.1, 2 * 0.5) from ...</programlisting>
+
+			<para>
+				The <literal>min</literal> function returns the lowest value. The statement below uses the function to determine the smaller of two timestamp values.
+			</para>
+	
+			<programlisting>select symbol, min(ticks.timestamp, news.timestamp) as minT
+	from StockTickEvent.win:time(30 sec) as ticks, NewsEvent.win:time(30 sec) as news
+	where ticks.symbol = news.symbol</programlisting>
+		</sect2>
+
 		<sect2 id="eql-single-row-function-ref-previous">
 			<title>The <literal>Previous</literal> Function</title>
 

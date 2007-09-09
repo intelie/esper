@@ -30,6 +30,42 @@ public class Expressions implements Serializable
     private static final long serialVersionUID = 0L;
 
     /**
+     * Cast function, casts the result on an expression to the desired type, or
+     * returns null if the type cannot be casted to the type.
+     * <p>
+     * The list of types can include fully-qualified class names plus any of the
+     * Java primitive type names: byte, char, short, int, long, float, double, boolean.
+     * Alternatively to "java.lang.String" the simple "string" is also permitted.
+     * <p>
+     * Type checks include all superclasses and interfaces of the value returned by the expression.
+     * @param expression returns the value to cast
+     * @param typeName is type to cast to
+     * @return expression
+     */
+    public static CastExpression cast(Expression expression, String typeName)
+    {
+        return new CastExpression(expression, typeName);
+    }
+
+    /**
+     * Cast function, casts the result on an expression to the desired type, or
+     * returns null if the type cannot be casted to the type.
+     * <p>
+     * The list of types can include fully-qualified class names plus any of the
+     * Java primitive type names: byte, char, short, int, long, float, double, boolean.
+     * Alternatively to "java.lang.String" the simple "string" is also permitted.
+     * <p>
+     * Type checks include all superclasses and interfaces of the value returned by the expression.
+     * @param propertyName name of the property supplying the value to cast
+     * @param typeName is type to cast to
+     * @return expression
+     */
+    public static CastExpression cast(String propertyName, String typeName)
+    {
+        return new CastExpression(getPropExpr(propertyName), typeName);
+    }
+
+    /**
      * Instance-of function, tests if the type of the return value of an expression is in a list of types.
      * <p>
      * The list of types can include fully-qualified class names plus any of the
@@ -57,7 +93,7 @@ public class Expressions implements Serializable
      * Alternatively to "java.lang.String" the simple "string" is also permitted.
      * <p>
      * Type checks include all superclasses and interfaces of the value returned by the expression.
-     * @param propertyName name of the property supplying the vakue to test
+     * @param propertyName name of the property supplying the value to test
      * @param typeNames is one type to check for
      * @param typeNames is optional additional types to check for in a list
      * @return expression

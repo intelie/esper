@@ -469,6 +469,8 @@ public class TestEQLParser extends TestCase implements EqlTokenTypes
         assertIsValid(preFill + "(boolean = instanceof('agc', string, String, java.lang.String))");
         assertIsValid(preFill + "(boolean = instanceof(b, net.esper.support.AClass))");
         assertIsValid(preFill + "(boolean = instanceof(b, net.esper.support.AClass, int, long, java.lang.Long))");
+        assertIsValid(preFill + "(cast(b as boolean))");
+        assertIsValid(preFill + "(cast(b? as Boolean))");
         assertIsValid(preFill + "(cast(b, boolean))");
         assertIsValid(preFill + "(cast(b?, Boolean))");
         assertIsValid(preFill + "(cast(b?, java.lang.String))");

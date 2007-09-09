@@ -299,9 +299,6 @@ public class EQLTreeWalker extends EQLBaseWalker
             case CAST:
                 leaveCast(node);
                 break;
-            case ISNUMERIC:
-                leaveIsNumeric(node);
-                break;
             default:
                 throw new ASTWalkException("Unhandled node type encountered, type '" + node.getType() +
                         "' with text '" + node.getText() + '\'');
@@ -397,16 +394,9 @@ public class EQLTreeWalker extends EQLBaseWalker
     {
         log.debug(".leaveCast");
 
-        ExprCastNode castNode = new ExprCastNode();
+        String classIdent = node.getFirstChild().getNextSibling().getText();
+        ExprCastNode castNode = new ExprCastNode(classIdent);
         astExprNodeMap.put(node, castNode);
-    }
-
-    private void leaveIsNumeric(AST node)
-    {
-        log.debug(".leaveIsNumeric");
-
-        ExprIsNumericNode isNumericNode = new ExprIsNumericNode();
-        astExprNodeMap.put(node, isNumericNode);
     }
 
     private void leaveArray(AST node)

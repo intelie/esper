@@ -1,0 +1,70 @@
+package net.esper.multithread;
+
+import junit.framework.Assert;
+import net.esper.client.EPServiceProvider;
+import net.esper.client.EPStatement;
+import net.esper.event.EventBean;
+import net.esper.support.bean.SupportBean;
+import net.esper.support.bean.SupportTradeEvent;
+import net.esper.support.util.SupportStmtAwareUpdateListener;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class TwoPatternRunnable implements Runnable
+{
+    private final EPServiceProvider engine;
+    private final SupportStmtAwareUpdateListener listener;
+    private boolean isShutdown;
+
+    public TwoPatternRunnable(EPServiceProvider engine)
+    {
+        this.engine = engine;
+        listener = new SupportStmtAwareUpdateListener();
+    }
+
+    public void setShutdown(boolean shutdown)
+    {
+        isShutdown = shutdown;
+    }
+
+    public void run()
+    {
+        String stmtText = "every event1=SupportEvent(userId in ('100','101'),amount>=1000)";
+        EPStatement statement = engine.getEPAdministrator().createPattern(stmtText);
+        statement.addListener(listener);
+
+        int countLoops = 0;
+        while(!isShutdown)
+        {
+            countLoops++;
+            List<SupportTradeEvent> matches = new ArrayList<SupportTradeEvent>();
+
+            for (int i = 0; i < 100000; i++)
+            {
+                SupportTradeEvent bean;
+                if (i % 1000 == 1)
+                {
+                    bean = new SupportTradeEvent(i, "100", 1001);
+                    matches.add(bean);
+                }
+                else
+                {
+                    bean = new SupportTradeEvent(i, "101", 10);
+                }
+                engine.getEPRuntime().sendEvent(bean);
+            }
+
+            // check results
+            EventBean[] received = listener.getNewDataListFlattened();
+            Assert.assertEquals(matches.size(), received.length);
+            for (int i = 0; i < received.length; i++)
+            {
+                Assert.assertSame(matches.get(i), received[i].get("event1"));
+            }
+            
+            System.out.println("Found " + received.length + " matches in loop #" + countLoops);
+            listener.reset();
+        }
+    }
+}

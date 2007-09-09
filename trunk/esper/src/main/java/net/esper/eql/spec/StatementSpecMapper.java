@@ -526,6 +526,11 @@ public class StatementSpecMapper
             InstanceOfExpression node = (InstanceOfExpression) expr;
             return new ExprInstanceofNode(node.getTypeNames());
         }
+        else if (expr instanceof CastExpression)
+        {
+            CastExpression node = (CastExpression) expr;
+            return new ExprCastNode(node.getTypeName());
+        }
         else if (expr instanceof SubstitutionParameterExpression)
         {
             SubstitutionParameterExpression node = (SubstitutionParameterExpression) expr;
@@ -752,6 +757,11 @@ public class StatementSpecMapper
         {
             ExprInstanceofNode node = (ExprInstanceofNode) expr;
             return new InstanceOfExpression(node.getClassIdentifiers());
+        }
+        else if (expr instanceof ExprCastNode)
+        {
+            ExprCastNode node = (ExprCastNode) expr;
+            return new CastExpression(node.getClassIdentifier());
         }
         else if (expr instanceof ExprSubstitutionNode)
         {
