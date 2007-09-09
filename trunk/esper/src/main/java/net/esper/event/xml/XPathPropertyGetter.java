@@ -63,4 +63,9 @@ public class XPathPropertyGetter implements TypedEventPropertyGetter {
 		
 		return String.class;
 	}
+
+    public boolean isExistsProperty(EventBean eventBean)
+    {
+        return true; // Property exists as the property is not dynamic (unchecked)
+    }    
 }

@@ -21,11 +21,19 @@ public class ExprCastNode extends ExprNode
     private Caster caster;
     private boolean isNumeric;
 
+    /**
+     * Ctor.
+     * @param classIdentifier the the name of the type to cast to
+     */
     public ExprCastNode(String classIdentifier)
     {
         this.classIdentifier = classIdentifier;
     }
 
+    /**
+     * Returns the name of the type of cast to.
+     * @return type name
+     */
     public String getClassIdentifier()
     {
         return classIdentifier;
@@ -155,11 +163,24 @@ public class ExprCastNode extends ExprNode
         return false;
     }
 
+    /**
+     * Interface for casting.
+     */
     public interface Caster
     {
+        /**
+         * Casts an object to another type.
+         * <p>
+         * Performs a compatibility check and returns null if not compatible.
+         * @param object to cast
+         * @return casted or transformed object, possibly the same, or null if the cast cannot be made
+         */
         public Object cast(Object object);
     }
 
+    /**
+     * Cast implementation for numeric values.
+     */
     public class DoubleCaster implements Caster
     {
         public Object cast(Object object)
@@ -168,6 +189,9 @@ public class ExprCastNode extends ExprNode
         }
     }
 
+    /**
+     * Cast implementation for numeric values.
+     */
     public class FloatCaster implements Caster
     {
         public Object cast(Object object)
@@ -176,6 +200,9 @@ public class ExprCastNode extends ExprNode
         }
     }
 
+    /**
+     * Cast implementation for numeric values.
+     */
     public class LongCaster implements Caster
     {
         public Object cast(Object object)
@@ -184,6 +211,9 @@ public class ExprCastNode extends ExprNode
         }
     }
 
+    /**
+     * Cast implementation for numeric values.
+     */
     public class IntCaster implements Caster
     {
         public Object cast(Object object)
@@ -192,6 +222,9 @@ public class ExprCastNode extends ExprNode
         }
     }
 
+    /**
+     * Cast implementation for numeric values.
+     */
     public class ShortCaster implements Caster
     {
         public Object cast(Object object)
@@ -200,6 +233,9 @@ public class ExprCastNode extends ExprNode
         }
     }
 
+    /**
+     * Cast implementation for numeric values.
+     */
     public class ByteCaster implements Caster
     {
         public Object cast(Object object)
@@ -208,11 +244,18 @@ public class ExprCastNode extends ExprNode
         }
     }
 
+    /**
+     * Cast implementation for non-numeric values.
+     */
     public class TypeCaster implements Caster
     {
         private Class typeToCastTo;
         private CopyOnWriteArraySet<Pair<Class, Boolean>> pairs = new CopyOnWriteArraySet<Pair<Class, Boolean>>();
 
+        /**
+         * Ctor.
+         * @param typeToCastTo is the target type
+         */
         public TypeCaster(Class typeToCastTo)
         {
             this.typeToCastTo = typeToCastTo;

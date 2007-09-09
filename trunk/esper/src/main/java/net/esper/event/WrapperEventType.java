@@ -97,6 +97,11 @@ public class WrapperEventType implements EventType
                     EventPropertyGetter underlyingGetter = underlyingEventType.getGetter(property);
                     return underlyingGetter.get(wrappedEvent);
                 }
+
+                public boolean isExistsProperty(EventBean eventBean)
+                {
+                    return true; // Property exists as the property is not dynamic (unchecked)
+                }
             };
 		}
 		else if (underlyingMapType.isProperty(property))
@@ -112,6 +117,11 @@ public class WrapperEventType implements EventType
                     WrapperEventBean wrapperEvent = (WrapperEventBean) event;
                     Map map = wrapperEvent.getUnderlyingMap();
                     return underlyingMapType.getValue(property, map);
+                }
+
+                public boolean isExistsProperty(EventBean eventBean)
+                {
+                    return true; // Property exists as the property is not dynamic (unchecked)
                 }
             };
 		}

@@ -3,7 +3,7 @@ package net.esper.client.soda;
 import java.io.StringWriter;
 
 /**
- * Instance-of expression checks if an expression returns a certain type.
+ * Cast expression casts the return value of an expression to a specified type.
  */
 public class CastExpression extends ExpressionBase
 {
@@ -42,11 +42,19 @@ public class CastExpression extends ExpressionBase
         writer.write(")");
     }
 
+    /**
+     * Returns the name of the type to cast to.
+     * @return type name
+     */
     public String getTypeName()
     {
         return typeName;
     }
 
+    /**
+     * Sets the name of the type to cast to.
+     * @param typeName is the name of type to cast to
+     */
     public void setTypeName(String typeName)
     {
         this.typeName = typeName;

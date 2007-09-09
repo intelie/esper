@@ -50,4 +50,9 @@ public class KeyedFastPropertyGetter implements EventPropertyGetter
                 " fastMethod=" + fastMethod.toString() +
                 " key=" + key;
     }
+
+    public boolean isExistsProperty(EventBean eventBean)
+    {
+        return true; // Property exists as the property is not dynamic (unchecked)
+    }    
 }

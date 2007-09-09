@@ -42,4 +42,9 @@ public class CGLibPropertyGetter implements EventPropertyGetter
         return "CGLibPropertyGetter " +
                 "fastMethod=" + fastMethod.toString();
     }
+
+    public boolean isExistsProperty(EventBean eventBean)
+    {
+        return true; // Property exists as the property is not dynamic (unchecked)
+    }
 }

@@ -154,7 +154,7 @@ public class TestExprIdentNode extends TestCase
         assertFalse(identNodes[0].equalsNode(identNodes[2]));
     }
 
-    private EventBean makeEvent(int intPrimitive)
+    protected static EventBean makeEvent(int intPrimitive)
     {
         SupportBean event = new SupportBean();
         event.setIntPrimitive(intPrimitive);

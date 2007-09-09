@@ -61,4 +61,9 @@ public class ArrayFastPropertyGetter implements EventPropertyGetter
                 " fastMethod=" + fastMethod.toString() +
                 " index=" + index;
     }
+
+    public boolean isExistsProperty(EventBean eventBean)
+    {
+        return true; // Property exists as the property is not dynamic (unchecked)
+    }    
 }

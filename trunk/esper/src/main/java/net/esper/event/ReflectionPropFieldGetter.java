@@ -41,4 +41,9 @@ public final class ReflectionPropFieldGetter implements EventPropertyGetter
         return "ReflectionPropFieldGetter " +
                 "field=" + field.toGenericString();
     }
+
+    public boolean isExistsProperty(EventBean eventBean)
+    {
+        return true; // Property exists as the property is not dynamic (unchecked)
+    }    
 }

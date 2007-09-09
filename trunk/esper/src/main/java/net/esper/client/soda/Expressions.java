@@ -30,6 +30,16 @@ public class Expressions implements Serializable
     private static final long serialVersionUID = 0L;
 
     /**
+     * Exists-function for use with dynamic properties to test property existence.
+     * @param propertyName name of the property to test whether it exists or not
+     * @return expression
+     */
+    public static PropertyExistsExpression existsProperty(String propertyName)
+    {
+        return new PropertyExistsExpression(propertyName);
+    }
+
+    /**
      * Cast function, casts the result on an expression to the desired type, or
      * returns null if the type cannot be casted to the type.
      * <p>
@@ -74,7 +84,7 @@ public class Expressions implements Serializable
      * <p>
      * Type checks include all superclasses and interfaces of the value returned by the expression.
      * @param expression returns the value to test whether the type returned is any of the  is the function name
-     * @param typeNames is one type to check for
+     * @param typeName is one type to check for
      * @param typeNames is optional additional types to check for in a list
      * @return expression
      */
@@ -94,7 +104,7 @@ public class Expressions implements Serializable
      * <p>
      * Type checks include all superclasses and interfaces of the value returned by the expression.
      * @param propertyName name of the property supplying the value to test
-     * @param typeNames is one type to check for
+     * @param typeName is one type to check for
      * @param typeNames is optional additional types to check for in a list
      * @return expression
      */

@@ -65,6 +65,11 @@ public class MapEventType implements EventType
                     Object value = map.get(name);
                     return value;
                 }
+
+                public boolean isExistsProperty(EventBean eventBean)
+                {
+                    return true; // Property exists as the property is not dynamic (unchecked)
+                }
             };
 
             propertyGetters.put(name, getter);
@@ -165,6 +170,11 @@ public class MapEventType implements EventType
                 // Wrap object
                 EventBean event = MapEventType.this.eventAdapterService.adapterForBean(value);
                 return nestedGetter.get(event);
+            }
+
+            public boolean isExistsProperty(EventBean eventBean)
+            {
+                return true; // Property exists as the property is not dynamic (unchecked)
             }
         };
 

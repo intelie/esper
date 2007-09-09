@@ -59,11 +59,19 @@ public class InstanceOfExpression extends ExpressionBase
         writer.write(")");
     }
 
+    /**
+     * Returns the types to compare to.
+     * @return list of types to compare to
+     */
     public String[] getTypeNames()
     {
         return typeNames;
     }
 
+    /**
+     * Sets the types to compare to.
+     * @param typeNames list of types to compare to
+     */
     public void setTypeNames(String[] typeNames)
     {
         this.typeNames = typeNames;

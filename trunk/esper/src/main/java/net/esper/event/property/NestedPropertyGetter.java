@@ -43,4 +43,28 @@ public class NestedPropertyGetter implements EventPropertyGetter
         }
         return value;
     }
+
+    public boolean isExistsProperty(EventBean eventBean)
+    {
+        int lastElementIndex = getterChain.length - 1;
+
+        // walk the getter chain up to the previous-to-last element, returning its object value.
+        // any null values in between mean the property does not exists
+        for (int i = 0; i < getterChain.length - 1; i++)
+        {
+            Object value = getterChain[i].get(eventBean);
+
+            if (value == null)
+            {
+                return false;
+            }
+            else
+            {
+                EventType type = beanEventTypeFactory.createBeanType(value.getClass().getName(), value.getClass());
+                eventBean = new BeanEventBean(value, type);
+            }
+        }
+        
+        return getterChain[lastElementIndex].isExistsProperty(eventBean);
+    }
 }

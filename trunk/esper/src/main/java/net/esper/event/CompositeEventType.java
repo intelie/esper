@@ -107,6 +107,11 @@ public class CompositeEventType implements EventType
 
                     return null;
                 }
+
+                public boolean isExistsProperty(EventBean eventBean)
+                {
+                    return true; // Property exists as the property is not dynamic (unchecked)
+                }
             };
         }
 
@@ -146,6 +151,10 @@ public class CompositeEventType implements EventType
                 }
 
                 return null;
+            }
+            public boolean isExistsProperty(EventBean eventBean)
+            {
+                return true; // Property exists as the property is not dynamic (unchecked)
             }
         };
     }

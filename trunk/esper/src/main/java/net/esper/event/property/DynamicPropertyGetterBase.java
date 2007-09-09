@@ -49,6 +49,16 @@ public abstract class DynamicPropertyGetterBase implements EventPropertyGetter
         return call(desc, obj.getUnderlying());
     }
 
+    public boolean isExistsProperty(EventBean eventBean)
+    {
+        DynamicPropertyDescriptor desc = getPopulateCache(eventBean);
+        if (desc.getMethod() == null)
+        {
+            return false;
+        }
+        return true;
+    }
+
     private DynamicPropertyDescriptor getPopulateCache(EventBean obj)
     {
         // Check if the method is already there

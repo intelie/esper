@@ -59,4 +59,9 @@ public class KeyedMethodPropertyGetter implements EventPropertyGetter
                 " method=" + method.toString() +
                 " key=" + key;
     }
+
+    public boolean isExistsProperty(EventBean eventBean)
+    {
+        return true; // Property exists as the property is not dynamic (unchecked)
+    }
 }

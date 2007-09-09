@@ -1,6 +1,6 @@
 package net.esper.support.bean;
 
-public class SupportBeanBase
+public class SupportBeanBase implements SupportMarkerInterface
 {
     private String id;
 

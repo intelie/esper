@@ -16,5 +16,20 @@ public interface EventPropertyGetter
      * @throws PropertyAccessException to indicate that property access failed
      */
     public Object get(EventBean eventBean) throws PropertyAccessException;
+
+    /**
+     * Returns true if the property exists, or false if the type does not have such a property.
+     * <p>
+     * Useful for dynamic properties of the syntax "property?" and the dynamic nested/indexed/mapped versions.
+     * Dynamic nested properties follow the syntax "property?.nested" which is equivalent to "property?.nested?".
+     * If any of the properties in the path of a dynamic nested property return null, the dynamic nested property
+     * does not exists and the method returns false.
+     * <p>
+     * For non-dynamic properties, this method always returns true since a getter would not be available
+     * unless
+     * @param eventBean is the event to check if the dynamic property exists
+     * @return indictor whether the property exists, always true for non-dynamic (default) properties 
+     */
+    public boolean isExistsProperty(EventBean eventBean);
 }
 

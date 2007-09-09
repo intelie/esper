@@ -230,6 +230,22 @@ public class ExprIdentNode extends ExprNode
         return propertyGetter.get(event);
     }
 
+    /**
+     * Returns true if the property exists, or false if not.
+     * @param eventsPerStream each stream's events
+     * @param isNewData if the stream represents insert or remove stream
+     * @return true if the property exists, false if not
+     */
+    public boolean evaluatePropertyExists(EventBean[] eventsPerStream, boolean isNewData)
+    {
+        EventBean event = eventsPerStream[streamNum];
+        if (event == null)
+        {
+            return false;
+        }
+        return propertyGetter.isExistsProperty(event);
+    }
+
     public String toExpressionString()
     {
         StringBuilder buffer = new StringBuilder();

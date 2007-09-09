@@ -70,4 +70,9 @@ public class ArrayMethodPropertyGetter implements EventPropertyGetter
                 " method=" + method.toString() +
                 " index=" + index;
     }
+
+    public boolean isExistsProperty(EventBean eventBean)
+    {
+        return true; // Property exists as the property is not dynamic (unchecked)
+    }    
 }

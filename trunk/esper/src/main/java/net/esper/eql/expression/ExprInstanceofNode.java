@@ -20,9 +20,13 @@ public class ExprInstanceofNode extends ExprNode
     private Class[] classes;
     private CopyOnWriteArrayList<Pair<Class, Boolean>> resultCache = new CopyOnWriteArrayList<Pair<Class, Boolean>>();
 
-    public ExprInstanceofNode(String[] classIndentifiers)
+    /**
+     * Ctor.
+     * @param classIdentifiers is a list of type names to check type for
+     */
+    public ExprInstanceofNode(String[] classIdentifiers)
     {
-        this.classIdentifiers = classIndentifiers;
+        this.classIdentifiers = classIdentifiers;
     }
 
     public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate) throws ExprValidationException
@@ -157,12 +161,21 @@ public class ExprInstanceofNode extends ExprNode
         getSuper(superClass, result);
     }
 
+    /**
+     * Populates all interface and superclasses for the given class, recursivly.
+     * @param clazz to reflect upon
+     * @param result set of classes to populate
+     */
     protected static void getSuper(Class clazz, Set<Class> result)
     {
         getSuperInterfaces(clazz, result);
         getSuperClasses(clazz, result);
     }
 
+    /**
+     * Returns the list of class names or types to check instance of.
+     * @return class names
+     */
     public String[] getClassIdentifiers()
     {
         return classIdentifiers;

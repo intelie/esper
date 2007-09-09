@@ -531,6 +531,10 @@ public class StatementSpecMapper
             CastExpression node = (CastExpression) expr;
             return new ExprCastNode(node.getTypeName());
         }
+        else if (expr instanceof PropertyExistsExpression)
+        {
+            return new ExprPropertyExistsNode();
+        }
         else if (expr instanceof SubstitutionParameterExpression)
         {
             SubstitutionParameterExpression node = (SubstitutionParameterExpression) expr;
@@ -762,6 +766,10 @@ public class StatementSpecMapper
         {
             ExprCastNode node = (ExprCastNode) expr;
             return new CastExpression(node.getClassIdentifier());
+        }
+        else if (expr instanceof ExprPropertyExistsNode)
+        {
+            return new PropertyExistsExpression();
         }
         else if (expr instanceof ExprSubstitutionNode)
         {
