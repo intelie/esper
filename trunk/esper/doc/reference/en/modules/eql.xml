@@ -1481,14 +1481,6 @@ for user-controlled imports of classes and packages as outlined in <xref linkend
 				</thead>
 				<tbody>
 					<row>
-						<entry><synopsis>cast(<emphasis>expression</emphasis> , <emphasis>type name</emphasis>)</synopsis></entry>
-						<entry>
-							<para>
-								Casts the result of an expression to the given type . 
-							</para>
-						</entry>
-					</row>
-					<row>
 						<entry><synopsis>case <emphasis>value</emphasis> 
   when <emphasis>compare_value</emphasis> then <emphasis>result</emphasis>
   [when <emphasis>compare_value</emphasis> then <emphasis>result</emphasis> ...] 
@@ -1513,6 +1505,14 @@ for user-controlled imports of classes and packages as outlined in <xref linkend
 						</entry>
 					</row>
 					<row>
+						<entry><synopsis>cast(<emphasis>expression</emphasis>, <emphasis>type_name</emphasis>)</synopsis></entry>
+						<entry>
+							<para>
+								Casts the result of an expression to the given type. 
+							</para>
+						</entry>
+					</row>
+					<row>
 					  <entry><synopsis>coalesce(<emphasis>expression</emphasis>, <emphasis>expression</emphasis> [, <emphasis>expression</emphasis> ...])</synopsis></entry>
 						<entry>
 							<para>
@@ -1521,23 +1521,15 @@ for user-controlled imports of classes and packages as outlined in <xref linkend
 						</entry>
 					</row>
 					<row>
-						<entry><synopsis>exists(<emphasis>dynamic property name</emphasis>)</synopsis></entry>
+						<entry><synopsis>exists(<emphasis>dynamic_property_name</emphasis>)</synopsis></entry>
 						<entry>
 							<para>
-								Returns true if the dynamic property exists for the selected type, or false if the property does not exist.
+								Returns true if the dynamic property exists for the event, or false if the property does not exist.
 							</para>
 						</entry>
 					</row>
 					<row>
-					  <entry><synopsis>instanceof(<emphasis>expression</emphasis>, <emphasis>typename</emphasis> [, <emphasis>typename</emphasis> ...])</synopsis></entry>
-						<entry>
-							<para>
-								Returns true if the expression returns an object whose type is one of the types listed.
-							</para>
-						</entry>
-					</row>
-					<row>
-					  <entry><synopsis>isnumeric(<emphasis>expression</emphasis>, <emphasis>typename</emphasis> [, <emphasis>typename</emphasis> ...])</synopsis></entry>
+					  <entry><synopsis>instanceof(<emphasis>expression</emphasis>, <emphasis>type_name</emphasis> [, <emphasis>type_name</emphasis> ...])</synopsis></entry>
 						<entry>
 							<para>
 								Returns true if the expression returns an object whose type is one of the types listed.
@@ -1602,6 +1594,70 @@ for user-controlled imports of classes and packages as outlined in <xref linkend
 			<programlisting>select case when 1>0 then true else false end from ...</programlisting>
 		</sect2>
 		
+
+		<sect2 id="eql-single-row-function-cast">
+			<title>The <literal>Cast</literal> Function</title>
+
+			<para>
+				The <literal>cast</literal> function casts the return type of an expression to a designated type. The function accepts two parameters: The first parameter is the property name or expression that returns the 
+				value to be casted. The second parameter is the type to cast to.
+			</para>
+
+			<para>
+				Valid parameters for the second (type) parameter are:
+			</para>
+	
+			<itemizedlist>
+				<listitem>
+					<para>
+						Any of the Java built-in types: <literal>int, long, byte, short, char, double, float, string</literal>, where <literal>string</literal>  is a short notation for <literal>java.lang.String</literal>. The type name is not case-sensitive. For example:
+						<synopsis>cast(price, double)</synopsis>
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						The fully-qualified class name of the class to cast to, for example: <synopsis>cast(product, org.myproducer.Product)</synopsis>
+					</para>
+				</listitem>
+			</itemizedlist>
+
+			<para>
+				The <literal>cast</literal> function is often used to provide a type for dynamic (unchecked) properties. Dynamic properties are properties whose type is not known at compile type. 
+				These properties are always of type <literal>java.lang.Object</literal>. 
+			</para>
+			
+			<para>
+				The <literal>cast</literal> function as shown in the next statement casts the dynamic "price" property of an "item" in the OrderEvent to a double value.
+			</para>
+			<programlisting><![CDATA[select cast(item.price?, double) from OrderEvent]]></programlisting>
+
+			<para>
+				The <literal>cast</literal> function returns a <literal>null</literal> value if the expression result cannot be casted to the desired type, or if the expression result itself is <literal>null</literal>.
+			</para>
+
+			<para>
+				The <literal>cast</literal> function adheres to the following type conversion rules:
+			</para>
+
+			<itemizedlist>
+				<listitem>
+					<para>
+						For all numeric types, the <literal>cast</literal> function utilitzes <literal>java.lang.Number</literal> to convert numeric types, if required. 
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						For casts to <literal>string</literal> or <literal>java.lang.String</literal>, the function calls <literal>toString</literal> on the expression result.
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						For casts to other objects including application objects, the <literal>cast</literal> function considers a Java class's superclasses as well as all directly or indirectly-implemented interfaces by superclasses .
+					</para>
+				</listitem>
+			</itemizedlist>
+		</sect2>
+
 		<sect2 id="eql-single-row-function-ref-coalesce">
 			<title>The <literal>Coalesce</literal> Function</title>
 
@@ -1619,7 +1675,7 @@ for user-controlled imports of classes and packages as outlined in <xref linkend
 			<title>The <literal>Exists</literal> Function</title>
 
 			<para>
-				The <literal>exists</literal> function returns a boolean value indicating whether the property exists. The <literal>exists</literal> function accepts a single property name as it's only parameter. 
+				The <literal>exists</literal> function returns a boolean value indicating whether the dynamic property, provided as a parameter to the function, exists on the event. The <literal>exists</literal> function accepts a single dynamic property name as it's only parameter. 
 			</para>
 
 			<para>
@@ -1628,37 +1684,60 @@ for user-controlled imports of classes and packages as outlined in <xref linkend
 			</para>
 			
 			<para>
-				The <literal>exists</literal> function it used for determining if a dynamic property exists. It returns false if the dynamic property does not exist on the event, and returns true if the property exists.
+				The <literal>exists</literal> function as shown next returns true if the "item" property contains an object that has a "serviceName" property. It returns false if the "item" property is null, or if the "item" property does not 
+				contain an object that has a property named "serviceName" :
 			</para>
-
-			<para>
-				Assume that <literal>OrderEvent</literal> events not always contain a "serviceName" property, for example when OrderEvent is an interface. The next sample query returns true for those <literal>OrderEvent</literal> events
-				that provides the dynamic "serviceName" property.
-			</para>
-			<programlisting>select exists(serviceName?) from OrderEvent</programlisting>
+			<programlisting><![CDATA[select exists(item.serviceName?) from OrderEvent]]></programlisting> 
 		</sect2>
 
 		<sect2 id="eql-single-row-function-instanceof">
 			<title>The <literal>Instance-Of</literal> Function</title>
 
 			<para>
-				The <literal>instanceof</literal> function returns a boolean value indicating whether the type of value returned by the expression within is one of the given types. The first parameter to the <literal>instanceof</literal> function is an expression to evaluate. The second and subsequent parameters are Java type names.
+				The <literal>instanceof</literal> function returns a boolean value indicating whether the type of value returned by the expression is one of the given types. The first parameter to the <literal>instanceof</literal> function is an expression to evaluate. The second and subsequent parameters are Java type names.
 			</para>
 
 			<para>
-				The function determines the return type of the expression at runtime by evaluating the expression, and compares the return type of the expression to the types passed. If the expression return type matches any od the passed
-				types, the function returns <literal>true</literal>.
+				The function determines the return type of the expression at runtime by evaluating the expression, and compares the type of object returned by the expression to the defined types. 
+				If the type of object returned by the expression matches any of the given types, the function returns <literal>true</literal>. If the expression returned <literal>null</literal> or a type that does not
+				match any of the given types, the function returns <literal>false</literal>.
+			</para>
+
+			<para>
+				The <literal>instanceof</literal> function is often used in conjunction with dynamic (unchecked) properties. Dynamic properties are properties whose type is not known at compile type. 
 			</para>
 
 			<para>
 				This example uses the <literal>instanceof</literal> function to select different properties based on the type:
 			</para>
-			<programlisting>select case when instanceof(inner, Service) then serviceName 
-  when instanceof(inner, Product) then productName end 
+			<programlisting>select case when instanceof(item, com.mycompany.Service) then serviceName?
+  when instanceof(item, com.mycompany.Product) then productName? end 
   from OrderEvent</programlisting>
 
 			<para>
 				The <literal>instanceof</literal> function returns <literal>false</literal> if the expression tested by instanceof returned null.
+			</para>
+
+			<para>
+				Valid parameters for the type parameter list are:
+			</para>
+	
+			<itemizedlist>
+				<listitem>
+					<para>
+						Any of the Java built-in types: <literal>int, long, byte, short, char, double, float, string</literal>, where <literal>string</literal>  is a short notation for <literal>java.lang.String</literal>. The type name is not case-sensitive. For example, the next function tests if the dynamic "price" property is either of type float or type double:
+						<synopsis>instanceof(price?, double, float)</synopsis>
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						The fully-qualified class name of the class to cast to, for example: <synopsis>instanceof(product, org.myproducer.Product)</synopsis>
+					</para>
+				</listitem>
+			</itemizedlist>
+			
+			<para>
+				The function considers an event class's superclasses as well as all the directly or indirectly-implemented interfaces by superclasses.
 			</para>
 		</sect2>
 

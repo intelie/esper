@@ -110,7 +110,7 @@
 		</para>
 
 		<para>
-			The syntax consists of the property name and a question mark. Indexed, mapped and nested properties can also be dynamic properties:
+			The syntax of dynamic properties consists of the property name and a question mark. Indexed, mapped and nested properties can also be dynamic properties:
 		</para>
 
 		<table frame="topbot">
@@ -139,14 +139,18 @@
 					</row>
 					<row>
 						<entry>Dynamic Nested</entry>
-						<entry><synopsis>name.nestedname?</synopsis> or <synopsis>name?.nestedname</synopsis></entry>
+						<entry><synopsis>name?.nestedPropertyName</synopsis></entry>
 					</row>
 				</tbody>
 			</tgroup>
 		</table> 
 
 		<para>
-			An an example, consider an OrderEvent event that provides an "item" property. The "item" property is of type <literal>Object</literal> and holds a reference to an instance of either a Service or Product class. 
+			 Dynamic properties always return the <literal>java.lang.Object</literal> type. Also, dynamic properties return a <literal>null</literal> value if the dynamic property does not exist on events processed at runtime. 
+		</para>
+
+		<para>
+			As an example, consider an OrderEvent event that provides an "item" property. The "item" property is of type <literal>Object</literal> and holds a reference to an instance of either a Service or Product. 
 		</para>
 
 		<para>
@@ -155,22 +159,48 @@
 		<programlisting><![CDATA[select item.price? from OrderEvent]]></programlisting>		
 
 		<para>
-			 Dynamic properties return a <literal>null</literal> value if the property name does not exist as a property. 
-		</para>
-
-		<para>
-			 Assume that the Service class contains a "serviceName" property that the Order class does not possess. The following query returns the value of the "serviceName" property for Service objects and returns a <literal>null</literal>-value for Order objects referenced by "item":
+			 As a second example, assume that the Service class contains a "serviceName" property that the Product class does not possess. The following query returns the value of the "serviceName" property for Service objects. It returns a <literal>null</literal>-value for Product objects that do not have the "serviceName" property:
 		</para>
 		<programlisting><![CDATA[select item.serviceName? from OrderEvent]]></programlisting>		
 
 		<para>
-			Consider the case where OrderEvent is an interface that has multiple implementation classes, some of which have a "timestamp" property. The next query returns the timestamp property on those implementations of the OrderEvent interface that feature the property:
+			Consider the case where OrderEvent has multiple implementation classes, some of which have a "timestamp" property. The next query returns the timestamp property of those implementations of the OrderEvent interface that feature the property:
 		</para>
 		<programlisting><![CDATA[select timestamp? from OrderEvent]]></programlisting>		
 		
 		<para>
-			Note that dynamic properties always return the <literal>java.lang.Object</literal> type. The query as above returns a single column named "timestamp?" of type <literal>Object</literal>.
+			The query as above returns a single column named "timestamp?" of type <literal>Object</literal>. 			
 		</para>
+
+		<para>
+			When dynamic properties are nested, then all properties under the dynamic property are also considered dynamic properties. In the below example the query asks for the "direction" property of the object returned by the "detail" dynamic property:
+		</para>
+		<programlisting><![CDATA[select detail?.direction from OrderEvent
+// equivalent to 
+select detail?.direction? from OrderEvent]]></programlisting>		
+
+		<para>
+			The functions that are often useful in conjunction with dynamic properties are:
+		</para>
+
+		<itemizedlist>
+			<listitem>
+				<para>
+                    The <literal>cast</literal> function casts the value of a dynamic property (or the value of an expression) to a given type.
+                </para>
+			</listitem>
+			<listitem>
+				<para>
+                    The <literal>exists</literal> function checks whether a dynamic property exists. It returns <literal>true</literal> if the event has a property of that name, or false if the property does not exist on that event.
+                </para>
+			</listitem>
+			<listitem>
+				<para>
+                    The <literal>instanceof</literal> function checks whether the value of a dynamic property (or the value of an expression) is of any of the given types.
+                </para>
+			</listitem>
+		</itemizedlist>
+
 	</sect1>
 
 	<sect1 id="eventrep-javabean">
