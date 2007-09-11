@@ -2,14 +2,7 @@ package net.esper.core;
 
 import net.esper.client.EPStatement;
 import net.esper.client.EPStatementState;
-import net.esper.client.UpdateListener;
 import net.esper.view.Viewable;
-import net.esper.event.EventType;
-import net.esper.event.EventBean;
-import net.esper.dispatch.DispatchService;
-
-import java.util.Iterator;
-import java.util.Set;
 
 /**
  * Statement SPI for statements operations for state transitions and internal management.
@@ -41,7 +34,7 @@ public interface EPStatementSPI extends EPStatement
      * Set statement state.
      * @param currentState new current state
      */
-    public void setCurrentState(EPStatementState currentState);
+    public void setCurrentState(EPStatementState currentState, long timeLastStateChange);
 
     /**
      * Sets the parent view.

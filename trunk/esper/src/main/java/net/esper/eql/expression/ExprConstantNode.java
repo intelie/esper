@@ -11,6 +11,7 @@ import net.esper.event.EventBean;
 import net.esper.eql.core.MethodResolutionService;
 import net.esper.eql.core.StreamTypeService;
 import net.esper.eql.core.ViewResourceDelegate;
+import net.esper.schedule.TimeProvider;
 
 /**
  * Represents a constant in an expressiun tree.
@@ -28,7 +29,7 @@ public class ExprConstantNode extends ExprNode
         this.value = value;
     }
 
-    public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate) throws ExprValidationException
+    public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider) throws ExprValidationException
     {
     }
 

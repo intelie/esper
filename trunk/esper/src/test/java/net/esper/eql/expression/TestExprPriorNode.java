@@ -65,7 +65,7 @@ public class TestExprPriorNode extends TestCase
     private void tryInvalidValidate(ExprPriorNode exprPriorNode) throws Exception
     {
         try {
-            exprPriorNode.validate(null, null, null);
+            exprPriorNode.validate(null, null, null, null);
             fail();
         }
         catch (ExprValidationException ex)

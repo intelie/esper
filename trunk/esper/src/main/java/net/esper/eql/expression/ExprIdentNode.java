@@ -12,6 +12,7 @@ import net.esper.event.PropertyAccessException;
 import net.esper.event.EventPropertyGetter;
 import net.esper.collection.Pair;
 import net.esper.eql.core.*;
+import net.esper.schedule.TimeProvider;
 
 /**
  * Represents an stream property identifier in a filter expressiun tree.
@@ -83,7 +84,7 @@ public class ExprIdentNode extends ExprNode
         return streamOrPropertyName;
     }
 
-    public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate) throws ExprValidationException
+    public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider) throws ExprValidationException
     {
         Pair<PropertyResolutionDescriptor, String> propertyInfoPair = getTypeFromStream(streamTypeService, unresolvedPropertyName, streamOrPropertyName);
         resolvedStreamName = propertyInfoPair.getSecond();

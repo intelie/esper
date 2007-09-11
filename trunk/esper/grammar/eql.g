@@ -77,6 +77,7 @@ tokens
 	LW="lastweekday";
 	INSTANCEOF="instanceof";
 	CAST="cast";
+	CURRENT_TIMESTAMP="current_timestamp";
 	
    	NUMERIC_PARAM_RANGE;
    	NUMERIC_PARAM_LIST;
@@ -527,6 +528,7 @@ builtinFunc
 	| INSTANCEOF^ LPAREN! expression COMMA! classIdentifier (COMMA! classIdentifier)* RPAREN!
 	| CAST^ LPAREN! expression (COMMA! | AS!) classIdentifier RPAREN!
 	| EXISTS^ LPAREN! eventProperty RPAREN!
+	| CURRENT_TIMESTAMP^ (LPAREN! RPAREN!)?
 	;
 	
 maxFunc

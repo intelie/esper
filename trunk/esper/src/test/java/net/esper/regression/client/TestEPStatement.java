@@ -1,15 +1,12 @@
 package net.esper.regression.client;
 
 import junit.framework.TestCase;
-import net.esper.client.EPServiceProvider;
-import net.esper.client.EPServiceProviderManager;
-import net.esper.client.EPStatement;
-import net.esper.client.EPStatementState;
-import net.esper.support.util.SupportUpdateListener;
-import net.esper.support.util.ArrayAssertionUtil;
+import net.esper.client.*;
+import net.esper.client.time.CurrentTimeEvent;
 import net.esper.support.bean.SupportBean;
-import net.esper.support.bean.SupportMarketDataBean;
 import net.esper.support.client.SupportConfigFactory;
+import net.esper.support.util.ArrayAssertionUtil;
+import net.esper.support.util.SupportUpdateListener;
 
 public class TestEPStatement extends TestCase
 {
@@ -19,19 +16,34 @@ public class TestEPStatement extends TestCase
     public void setUp()
     {
         testListener = new SupportUpdateListener();
-        epService = EPServiceProviderManager.getDefaultProvider(SupportConfigFactory.getConfiguration());
+        Configuration config = SupportConfigFactory.getConfiguration();
+        config.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
+        epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();
     }
 
     public void testStartedDestroy()
     {
+        sendTimer(1000);
+
         String text = "select * from " + SupportBean.class.getName();
         EPStatement stmt = epService.getEPAdministrator().createEQL(text, "s1");
+        assertEquals(1000l, stmt.getTimeLastStateChange());
+        assertEquals(false, stmt.isDestroyed());
+        assertEquals(false, stmt.isStopped());
+        assertEquals(true, stmt.isStarted());
+
         stmt.addListener(testListener);
         sendEvent();
         testListener.assertOneGetNewAndReset();
 
+        sendTimer(2000);
         stmt.destroy();
+        assertEquals(2000l, stmt.getTimeLastStateChange());
+        assertEquals(true, stmt.isDestroyed());
+        assertEquals(false, stmt.isStopped());
+        assertEquals(false, stmt.isStarted());
+
         sendEvent();
         assertFalse(testListener.isInvoked());
 
@@ -40,17 +52,33 @@ public class TestEPStatement extends TestCase
 
     public void testStopDestroy()
     {
+        sendTimer(5000);
         String text = "select * from " + SupportBean.class.getName();
         EPStatement stmt = epService.getEPAdministrator().createEQL(text, "s1");
+        assertEquals(false, stmt.isDestroyed());
+        assertEquals(false, stmt.isStopped());
+        assertEquals(true, stmt.isStarted());
+        assertEquals(5000l, stmt.getTimeLastStateChange());
         stmt.addListener(testListener);
         sendEvent();
         testListener.assertOneGetNewAndReset();
 
+        sendTimer(6000);
         stmt.stop();
+        assertEquals(6000l, stmt.getTimeLastStateChange());
+        assertEquals(false, stmt.isDestroyed());
+        assertEquals(true, stmt.isStopped());
+        assertEquals(false, stmt.isStarted());
+
         sendEvent();
         assertFalse(testListener.isInvoked());
 
+        sendTimer(7000);
         stmt.destroy();
+        assertEquals(true, stmt.isDestroyed());
+        assertEquals(false, stmt.isStopped());
+        assertEquals(false, stmt.isStarted());
+        assertEquals(7000l, stmt.getTimeLastStateChange());
         sendEvent();
         assertFalse(testListener.isInvoked());
 
@@ -99,25 +127,16 @@ public class TestEPStatement extends TestCase
         }
     }
     
-    private EPStatement[] createStmts(String[] statementNames)
-    {
-        EPStatement statements[] = new EPStatement[statementNames.length];
-        for (int i = 0; i < statementNames.length; i++)
-        {
-            statements[i] = epService.getEPAdministrator().createEQL("select * from " + SupportBean.class.getName(), statementNames[i]);
-        }
-        return statements;
-    }
-
-    private EPStatement createStmt(String statementName)
-    {
-        EPStatement stmt = epService.getEPAdministrator().createEQL("select * from " + SupportBean.class.getName(), statementName);
-        return stmt;
-    }
-
     private void sendEvent()
     {
         SupportBean bean = new SupportBean();
         epService.getEPRuntime().sendEvent(bean);
     }
+
+    private void sendTimer(long timeInMSec)
+    {
+        CurrentTimeEvent event = new CurrentTimeEvent(timeInMSec);
+        EPRuntime runtime = epService.getEPRuntime();
+        runtime.sendEvent(event);
+    }    
 }

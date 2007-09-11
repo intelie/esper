@@ -22,6 +22,7 @@ import net.esper.pattern.observer.ObserverParameterException;
 import net.esper.pattern.guard.GuardFactory;
 import net.esper.pattern.guard.GuardParameterException;
 import net.esper.util.UuidGenerator;
+import net.esper.schedule.TimeProvider;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -56,7 +57,8 @@ public class PatternStreamSpecRaw extends StreamSpecBase implements StreamSpecRa
 
     public StreamSpecCompiled compile(EventAdapterService eventAdapterService,
                                       MethodResolutionService methodResolutionService,
-                                      PatternObjectResolutionService patternObjectResolutionService)
+                                      PatternObjectResolutionService patternObjectResolutionService,
+                                      TimeProvider timeProvider)
             throws ExprValidationException
     {
         // Determine all the filter nodes used in the pattern
@@ -127,7 +129,7 @@ public class PatternStreamSpecRaw extends StreamSpecBase implements StreamSpecRa
             StreamTypeService streamTypeService = new StreamTypeServiceImpl(filterTypes, true, false);
 
             List<ExprNode> exprNodes = filterNode.getRawFilterSpec().getFilterExpressions();
-            FilterSpecCompiled spec = FilterSpecCompiler.makeFilterSpec(eventType, exprNodes, taggedEventTypes, streamTypeService, methodResolutionService);
+            FilterSpecCompiled spec = FilterSpecCompiler.makeFilterSpec(eventType, exprNodes, taggedEventTypes, streamTypeService, methodResolutionService, timeProvider);
             filterNode.setFilterSpec(spec);
         }
 

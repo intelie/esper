@@ -12,13 +12,14 @@ import net.esper.event.EventBean;
 import net.esper.eql.core.MethodResolutionService;
 import net.esper.eql.core.StreamTypeService;
 import net.esper.eql.core.ViewResourceDelegate;
+import net.esper.schedule.TimeProvider;
 
 /**
  * Represents a NOT expression in an expression tree.
  */
 public class ExprNotNode extends ExprNode
 {
-    public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate) throws ExprValidationException
+    public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider) throws ExprValidationException
     {
         // Must have a single child node
         if (this.getChildNodes().size() != 1)

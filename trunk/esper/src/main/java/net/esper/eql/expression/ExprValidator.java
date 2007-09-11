@@ -10,6 +10,7 @@ package net.esper.eql.expression;
 import net.esper.eql.core.MethodResolutionService;
 import net.esper.eql.core.StreamTypeService;
 import net.esper.eql.core.ViewResourceDelegate;
+import net.esper.schedule.TimeProvider;
 
 /**
  * Validation interface for expression nodes.
@@ -21,11 +22,13 @@ public interface ExprValidator
      * @param streamTypeService serves stream event type info
      * @param methodResolutionService - for resolving class names in library method invocations
      * @param viewResourceDelegate - delegates for view resources to expression nodes
+     * @param timeProvider
      * @throws ExprValidationException thrown when validation failed
      */
     public void validate(StreamTypeService streamTypeService,
                          MethodResolutionService methodResolutionService,
-                         ViewResourceDelegate viewResourceDelegate) throws ExprValidationException;
+                         ViewResourceDelegate viewResourceDelegate,
+                         TimeProvider timeProvider) throws ExprValidationException;
 
     /**
      * Returns the type that the node's evaluate method returns an instance of.

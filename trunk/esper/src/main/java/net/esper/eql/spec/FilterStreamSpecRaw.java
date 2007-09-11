@@ -16,9 +16,9 @@ import net.esper.event.EventAdapterService;
 import net.esper.event.EventType;
 import net.esper.filter.FilterSpecCompiled;
 import net.esper.filter.FilterSpecCompiler;
-import net.esper.eql.spec.ViewSpec;
-import net.esper.util.MetaDefItem;
 import net.esper.pattern.PatternObjectResolutionService;
+import net.esper.schedule.TimeProvider;
+import net.esper.util.MetaDefItem;
 
 import java.util.List;
 
@@ -60,7 +60,8 @@ public class FilterStreamSpecRaw extends StreamSpecBase implements StreamSpecRaw
 
     public StreamSpecCompiled compile(EventAdapterService eventAdapterService,
                                       MethodResolutionService methodResolutionService,
-                                      PatternObjectResolutionService patternObjectResolutionService)
+                                      PatternObjectResolutionService patternObjectResolutionService,
+                                      TimeProvider timeProvider)
             throws ExprValidationException
     {
         // Determine the event type
@@ -72,7 +73,7 @@ public class FilterStreamSpecRaw extends StreamSpecBase implements StreamSpecRaw
         StreamTypeService streamTypeService = new StreamTypeServiceImpl(new EventType[] {eventType}, new String[] {"s0"});
 
         FilterSpecCompiled spec = FilterSpecCompiler.makeFilterSpec(eventType, rawFilterSpec.getFilterExpressions(), null,
-                streamTypeService, methodResolutionService);
+                streamTypeService, methodResolutionService, timeProvider);
 
         return new FilterStreamSpecCompiled(spec, this.getViewSpecs(), this.getOptionalStreamName());
     }
@@ -94,7 +95,7 @@ public class FilterStreamSpecRaw extends StreamSpecBase implements StreamSpecRaw
         {
             try
             {
-                eventType = eventAdapterService.addBeanType(eventName, eventName);
+                eventType = eventAdapterService.addBeanType(eventName, eventName, true);
             }
             catch (EventAdapterException ex)
             {

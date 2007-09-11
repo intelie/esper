@@ -17,7 +17,7 @@ import java.util.Collection;
  * with same or ascending values for each subsequent call. Handles with are triggered are automatically removed
  * by implementations.
  */
-public interface SchedulingService
+public interface SchedulingService extends TimeProvider
 {
     /**
      * Add a callback for after the given milliseconds from the current time.
@@ -53,12 +53,6 @@ public interface SchedulingService
      */
     public void remove(ScheduleHandle handle, ScheduleSlot slot)
             throws ScheduleServiceException;
-
-    /**
-     * Gets the last time known to the scheduling service.
-     * @return time that has last been set on this service
-     */
-    public long getTime();
 
     /**
      * Set the time based upon which the evaluation of events invokes callbacks.

@@ -21,6 +21,7 @@ import net.esper.eql.spec.*;
 import net.esper.eql.agg.AggregationServiceFactory;
 import net.esper.eql.agg.AggregationService;
 import net.esper.event.EventAdapterService;
+import net.esper.schedule.TimeProvider;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -78,7 +79,8 @@ public class ResultSetProcessorFactory
                                                   StreamTypeService typeService,
                                                   EventAdapterService eventAdapterService,
                                                   MethodResolutionService methodResolutionService,
-                                                  ViewResourceDelegate viewResourceDelegate)
+                                                  ViewResourceDelegate viewResourceDelegate,
+                                                  TimeProvider timeProvider)
             throws ExprValidationException
     {
         if (log.isDebugEnabled())
@@ -100,7 +102,7 @@ public class ResultSetProcessorFactory
         {
             // validate element
             SelectExprElementRawSpec element = selectClauseSpec.getSelectList().get(i);
-            ExprNode validatedExpression = element.getSelectExpression().getValidatedSubtree(typeService, methodResolutionService, viewResourceDelegate);
+            ExprNode validatedExpression = element.getSelectExpression().getValidatedSubtree(typeService, methodResolutionService, viewResourceDelegate, timeProvider);
 
             // determine an element name if none assigned
             String asName = element.getOptionalAsName();
@@ -126,7 +128,7 @@ public class ResultSetProcessorFactory
                 throw new ExprValidationException("Subselects not allowed within group-by");
             }
 
-            groupByNodes.set(i, groupByNodes.get(i).getValidatedSubtree(typeService, methodResolutionService, viewResourceDelegate));
+            groupByNodes.set(i, groupByNodes.get(i).getValidatedSubtree(typeService, methodResolutionService, viewResourceDelegate, timeProvider));
         }
 
         // Validate having clause, if present
@@ -140,7 +142,7 @@ public class ResultSetProcessorFactory
                 throw new ExprValidationException("Subselects not allowed within having-clause");
             }
 
-            optionalHavingNode = optionalHavingNode.getValidatedSubtree(typeService, methodResolutionService, viewResourceDelegate);
+            optionalHavingNode = optionalHavingNode.getValidatedSubtree(typeService, methodResolutionService, viewResourceDelegate, timeProvider);
         }
 
         // Validate order-by expressions, if any (could be empty list for no order-by)
@@ -157,7 +159,7 @@ public class ResultSetProcessorFactory
             }
 
             Boolean isDescending = orderByList.get(i).isDescending();
-        	OrderByItem validatedOrderBy = new OrderByItem(orderByNode.getValidatedSubtree(typeService, methodResolutionService, viewResourceDelegate), isDescending);
+        	OrderByItem validatedOrderBy = new OrderByItem(orderByNode.getValidatedSubtree(typeService, methodResolutionService, viewResourceDelegate, timeProvider), isDescending);
         	orderByList.set(i, validatedOrderBy);
         }
 

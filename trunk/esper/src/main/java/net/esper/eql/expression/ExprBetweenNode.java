@@ -12,6 +12,7 @@ import net.esper.eql.core.MethodResolutionService;
 import net.esper.eql.core.ViewResourceDelegate;
 import net.esper.util.JavaClassHelper;
 import net.esper.event.EventBean;
+import net.esper.schedule.TimeProvider;
 
 import java.util.Iterator;
 
@@ -73,7 +74,7 @@ public class ExprBetweenNode extends ExprNode
         return isNotBetween;
     }
 
-    public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate) throws ExprValidationException
+    public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider) throws ExprValidationException
     {
         if (this.getChildNodes().size() != 3)
         {

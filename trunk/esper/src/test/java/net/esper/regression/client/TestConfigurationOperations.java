@@ -30,6 +30,46 @@ public class TestConfigurationOperations extends TestCase
         configOps = epService.getEPAdministrator().getConfiguration();
     }
 
+    public void testAutoAliasPackage()
+    {
+        configOps.addEventTypeAutoAlias(this.getClass().getPackage().getName());
+
+        EPStatement stmt = epService.getEPAdministrator().createEQL("select * from " + MyAutoAliasEventType.class.getSimpleName());
+        stmt.addListener(testListener);
+
+        MyAutoAliasEventType eventOne = new MyAutoAliasEventType(10);
+        epService.getEPRuntime().sendEvent(eventOne);
+        assertSame(eventOne, testListener.assertOneGetNewAndReset().getUnderlying());
+    }
+
+    public void testAutoAliasPackageAmbigous()
+    {
+        Configuration config = new Configuration();
+        config.addEventTypeAutoAlias(this.getClass().getPackage().getName());
+        configOps.addEventTypeAutoAlias(this.getClass().getPackage().getName());
+        configOps.addEventTypeAutoAlias(SupportBean.class.getPackage().getName());
+
+        try
+        {
+            epService.getEPAdministrator().createEQL("select * from " + SupportAmbigousEventType.class.getSimpleName());
+            fail();
+        }
+        catch (Exception ex)
+        {
+            assertEquals("Failed to resolve event type: Failed to resolve alias 'SupportAmbigousEventType', the class was ambigously found both in package 'net.esper.regression.client' and in package 'net.esper.support.bean' [select * from SupportAmbigousEventType]", ex.getMessage());
+        }
+
+        try
+        {
+            epService.getEPAdministrator().createEQL("select * from XXXX");
+            fail();
+        }
+        catch (Exception ex)
+        {
+            assertEquals("Failed to resolve event type: Failed to load class XXXX [select * from XXXX]", ex.getMessage());
+        }
+    }
+
     public void testAddDOMType() throws Exception
     {
         tryInvalid("AddedDOMOne");

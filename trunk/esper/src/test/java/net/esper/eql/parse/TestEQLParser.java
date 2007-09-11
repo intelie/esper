@@ -14,7 +14,7 @@ public class TestEQLParser extends TestCase implements EqlTokenTypes
     public void testDisplayAST() throws Exception
     {
         String className = SupportBean.class.getName();
-        String expression = "select a.b? from " + className;
+        String expression = "select timestamp() from " + className;
 
         log.debug(".testDisplayAST parsing: " + expression);
         AST ast = parse(expression);
@@ -479,6 +479,9 @@ public class TestEQLParser extends TestCase implements EqlTokenTypes
         assertIsValid(preFill + "(isnumeric(b?))");
         assertIsValid(preFill + "(isnumeric(b + 2))");
         assertIsValid(preFill + "(isnumeric(\"aa\"))");
+
+        // timestamp
+        assertIsValid("select timestamp() from B.win:length(1)");
     }
 
     public void testBitWiseCases() throws Exception

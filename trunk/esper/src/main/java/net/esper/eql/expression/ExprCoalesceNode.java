@@ -13,6 +13,7 @@ import net.esper.eql.core.ViewResourceDelegate;
 import net.esper.util.JavaClassHelper;
 import net.esper.util.CoercionException;
 import net.esper.event.EventBean;
+import net.esper.schedule.TimeProvider;
 
 /**
  * Represents the COALESCE(a,b,...) function is an expression tree.
@@ -22,7 +23,7 @@ public class ExprCoalesceNode extends ExprNode
     private Class resultType;
     private boolean[] isNumericCoercion;
 
-    public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate) throws ExprValidationException
+    public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider) throws ExprValidationException
     {
         if (this.getChildNodes().size() < 2)
         {

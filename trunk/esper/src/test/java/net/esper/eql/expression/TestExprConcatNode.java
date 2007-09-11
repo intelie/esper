@@ -33,7 +33,7 @@ public class TestExprConcatNode extends TestCase
         // Must have 2 or more String subnodes
         try
         {
-            concatNode.validate(null, null, null);
+            concatNode.validate(null, null, null, null);
             fail();
         }
         catch (ExprValidationException ex)
@@ -46,7 +46,7 @@ public class TestExprConcatNode extends TestCase
         concatNode.addChildNode(new SupportExprNode(Integer.class));
         try
         {
-            concatNode.validate(null, null, null);
+            concatNode.validate(null, null, null, null);
             fail();
         }
         catch (ExprValidationException ex)

@@ -14,6 +14,7 @@ import net.esper.eql.expression.*;
 import net.esper.event.EventType;
 import net.esper.type.RelationalOpEnum;
 import net.esper.util.JavaClassHelper;
+import net.esper.schedule.TimeProvider;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -50,12 +51,13 @@ public final class FilterSpecCompiler
                                                     List<ExprNode> filterExpessions,
                                                     LinkedHashMap<String, EventType> taggedEventTypes,
                                                     StreamTypeService streamTypeService,
-                                                    MethodResolutionService methodResolutionService)
+                                                    MethodResolutionService methodResolutionService,
+                                                    TimeProvider timeProvider)
             throws ExprValidationException
     {
         // Validate all nodes, make sure each returns a boolean and types are good;
         // Also decompose all AND super nodes into individual expressions
-        List<ExprNode> constituents = FilterSpecCompiler.validateAndDecompose(filterExpessions, streamTypeService, methodResolutionService);
+        List<ExprNode> constituents = FilterSpecCompiler.validateAndDecompose(filterExpessions, streamTypeService, methodResolutionService, timeProvider);
 
         // From the constituents make a filter specification
         FilterSpecCompiled spec = makeFilterSpec(eventType, constituents, taggedEventTypes);
@@ -86,7 +88,7 @@ public final class FilterSpecCompiler
         }
     }
 
-    private static List<ExprNode> validateAndDecompose(List<ExprNode> exprNodes, StreamTypeService streamTypeService, MethodResolutionService methodResolutionService)
+    private static List<ExprNode> validateAndDecompose(List<ExprNode> exprNodes, StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, TimeProvider timeProvider)
             throws ExprValidationException
     {
         List<ExprNode> validatedNodes = new ArrayList<ExprNode>();
@@ -100,7 +102,7 @@ public final class FilterSpecCompiler
                 throw new ExprValidationException("Subselects not allowed within filters");
             }
 
-            ExprNode validated = node.getValidatedSubtree(streamTypeService, methodResolutionService, null);
+            ExprNode validated = node.getValidatedSubtree(streamTypeService, methodResolutionService, null, timeProvider);
             validatedNodes.add(validated);
 
             if ((validated.getType() != Boolean.class) && ((validated.getType() != boolean.class)))

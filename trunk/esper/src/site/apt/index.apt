@@ -27,8 +27,9 @@ Technology Introduction
 
 
 Features
+
 	
-    * Event Stream Processing
+* Event Stream Processing
 
 		* Time-based, interval-based, length-based and sorted windows
 
@@ -45,7 +46,7 @@ Features
 		[]
 		
         
-    * Event Pattern Matching
+* Event Pattern Matching
 
 		* Logical and temporal event correlation
 
@@ -57,17 +58,37 @@ Features
 
         []
 
-    * Event Representations
+* Event Representations
 	
         * Supports event-type inheritance and polymorphism as provided by the Java language
 
         * Events can be plain Java objects, XML document object model (DOM) and java.util.Map including nested objects
 
         * Event properties can be simple, indexed, mapped or nested - allows querying of deep Java object graphs and XML structures
+        
+        * Dynamic properties allow dynamic typing of properties, suppored by <cast>, <instanceof> and <exists> functions
 
         []
         
-    * Input Adapters
+* Prepared statements and substitution parameters
+    
+        * Precompile a statement with substitution parameters and efficiently start the parameterized statement multiple times
+        
+        []
+        
+* Statement Object Model
+    
+        * A set of classes providing an object-oriented representation of a statement 
+        
+        * Full and complete specification of a statement via object model
+        
+        * Round-trip from object model to statement text and back to object model
+        
+        * Build, change or interrogate statements beyond the textual representation 
+        
+        []
+        
+* Input Adapters
     	
     	* CSV input adapter reads comma-separated value formats
     	
@@ -78,6 +99,10 @@ Features
     		* preloading of reference data
     	
     	* JMS input and output adapter based on Spring JMS templates
+			
+		[]
+
+* Other
 
     * Relational database access via SQL-query joins with event streams; LRU and expiry-time query result caches
 	

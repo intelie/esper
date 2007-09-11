@@ -299,6 +299,9 @@ public class EQLTreeWalker extends EQLBaseWalker
             case CAST:
                 leaveCast(node);
                 break;
+            case CURRENT_TIMESTAMP:
+                leaveTimestamp(node);
+                break;
             default:
                 throw new ASTWalkException("Unhandled node type encountered, type '" + node.getType() +
                         "' with text '" + node.getText() + '\'');
@@ -397,6 +400,14 @@ public class EQLTreeWalker extends EQLBaseWalker
         String classIdent = node.getFirstChild().getNextSibling().getText();
         ExprCastNode castNode = new ExprCastNode(classIdent);
         astExprNodeMap.put(node, castNode);
+    }
+
+    private void leaveTimestamp(AST node)
+    {
+        log.debug(".leaveTimestamp");
+
+        ExprTimestampNode timeNode = new ExprTimestampNode();
+        astExprNodeMap.put(node, timeNode);
     }
 
     private void leaveArray(AST node)

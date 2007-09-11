@@ -12,6 +12,7 @@ import net.esper.eql.core.MethodResolutionService;
 import net.esper.eql.core.StreamTypeService;
 import net.esper.eql.core.ViewResourceDelegate;
 import net.esper.event.EventBean;
+import net.esper.schedule.TimeProvider;
 import net.sf.cglib.reflect.FastClass;
 import net.sf.cglib.reflect.FastMethod;
 
@@ -128,7 +129,7 @@ public class ExprStaticMethodNode extends ExprNode
 		}
 	}
 
-	public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate) throws ExprValidationException
+	public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider) throws ExprValidationException
 	{
 		// Get the types of the childNodes
 		List<ExprNode> childNodes = this.getChildNodes();

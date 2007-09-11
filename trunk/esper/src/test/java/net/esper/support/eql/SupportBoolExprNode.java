@@ -6,6 +6,7 @@ import net.esper.eql.expression.ExprValidationException;
 import net.esper.eql.core.StreamTypeService;
 import net.esper.eql.core.ViewResourceDelegate;
 import net.esper.event.EventBean;
+import net.esper.schedule.TimeProvider;
 
 public class SupportBoolExprNode extends ExprNode
 {
@@ -16,7 +17,7 @@ public class SupportBoolExprNode extends ExprNode
         this.evaluateResult = evaluateResult;
     }
 
-    public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate) throws ExprValidationException
+    public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider) throws ExprValidationException
     {
     }
 

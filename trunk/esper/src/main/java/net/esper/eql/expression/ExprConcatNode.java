@@ -11,6 +11,7 @@ import net.esper.event.EventBean;
 import net.esper.eql.core.MethodResolutionService;
 import net.esper.eql.core.StreamTypeService;
 import net.esper.eql.core.ViewResourceDelegate;
+import net.esper.schedule.TimeProvider;
 
 /**
  * Represents a simple Math (+/-/divide/*) in a filter expression tree.
@@ -27,7 +28,7 @@ public class ExprConcatNode extends ExprNode
         buffer = new StringBuffer();
     }
 
-    public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate) throws ExprValidationException
+    public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider) throws ExprValidationException
     {
         if (this.getChildNodes().size() < 2)
         {

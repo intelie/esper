@@ -1,12 +1,12 @@
 package net.esper.event;
 
+import net.esper.client.Configuration;
 import net.esper.client.ConfigurationEventTypeLegacy;
 import net.esper.client.ConfigurationEventTypeXMLDOM;
-import net.esper.client.Configuration;
+import net.esper.event.xml.BaseXMLEventType;
 import net.esper.event.xml.SchemaXMLEventType;
 import net.esper.event.xml.SimpleXMLEventType;
 import net.esper.event.xml.XMLEventBean;
-import net.esper.event.xml.BaseXMLEventType;
 import net.esper.util.UuidGenerator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -14,6 +14,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -38,6 +39,7 @@ public class EventAdapterServiceImpl implements EventAdapterService
     private final Map<String, EventType> aliasToTypeMap;
     private BeanEventAdapter beanEventAdapter;
     private Map<String, EventType> xmldomRootElementNames;
+    private LinkedHashSet<String> javaPackageNames;
 
     /**
      * Ctor.
@@ -46,6 +48,7 @@ public class EventAdapterServiceImpl implements EventAdapterService
     {
         aliasToTypeMap = new HashMap<String, EventType>();
         xmldomRootElementNames = new HashMap<String, EventType>();
+        javaPackageNames = new LinkedHashSet<String>(); 
 
         // Share the mapping of class to type with the type creation for thread safety
         typesPerJavaBean = new ConcurrentHashMap<Class, BeanEventType>();
@@ -134,7 +137,7 @@ public class EventAdapterServiceImpl implements EventAdapterService
      * @return event type
      * @throws EventAdapterException if the Class name cannot resolve or other error occured
      */
-    public synchronized EventType addBeanType(String eventTypeAlias, String fullyQualClassName) throws EventAdapterException
+    public synchronized EventType addBeanType(String eventTypeAlias, String fullyQualClassName, boolean considerAutoAlias) throws EventAdapterException
     {
         if (log.isDebugEnabled())
         {
@@ -157,14 +160,43 @@ public class EventAdapterServiceImpl implements EventAdapterService
                     "' has already been declared with differing column name or type information");
         }
 
-        Class clazz;
+        // Try to resolve as a fully-qualified class name first
+        Class clazz = null;
         try
         {
             clazz = Class.forName(fullyQualClassName);
         }
         catch (ClassNotFoundException ex)
         {
-            throw new EventAdapterException("Failed to load class " + fullyQualClassName, ex);
+            if (!considerAutoAlias)
+            {
+                throw new EventAdapterException("Failed to load class " + fullyQualClassName, ex);
+            }
+
+            // Attempt to resolve from auto-alias packages
+            for (String javaPackageName : javaPackageNames)
+            {
+                String generatedClassName = javaPackageName + "." + fullyQualClassName;
+                try
+                {
+                    Class resolvedClass = Class.forName(generatedClassName);
+                    if (clazz != null)
+                    {
+                        throw new EventAdapterException("Failed to resolve alias '" + eventTypeAlias + "', the class was ambigously found both in " +
+                                "package '" + clazz.getPackage().getName() + "' and in " +
+                                "package '" + resolvedClass.getPackage().getName() + "'" , ex);
+                    }
+                    clazz = resolvedClass;
+                }
+                catch (ClassNotFoundException ex1)
+                {
+                    // expected, class may not exists in all packages
+                }
+            }
+            if (clazz == null)
+            {
+                throw new EventAdapterException("Failed to load class " + fullyQualClassName, ex);
+            }
         }
 
         EventType eventType = beanEventAdapter.createBeanType(eventTypeAlias, clazz);
@@ -351,5 +383,10 @@ public class EventAdapterServiceImpl implements EventAdapterService
     public final EventBean adapterForCompositeEvent(EventType eventType, Map<String, EventBean> taggedEvents)
     {
         return new CompositeEventBean(taggedEvents, eventType);
+    }
+
+    public void addAutoAliasPackage(String javaPackageName)
+    {
+        javaPackageNames.add(javaPackageName);
     }
 }

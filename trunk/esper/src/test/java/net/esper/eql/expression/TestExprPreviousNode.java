@@ -6,7 +6,6 @@ import net.esper.support.eql.SupportExprNode;
 import net.esper.support.bean.SupportBean;
 import net.esper.support.event.SupportEventBeanFactory;
 import net.esper.event.EventBean;
-import net.esper.view.internal.PriorEventBufferUnbound;
 import net.esper.view.window.RandomAccessByIndexGetter;
 import net.esper.view.window.IStreamRandomAccess;
 
@@ -70,7 +69,7 @@ public class TestExprPreviousNode extends TestCase {
     private void tryInvalidValidate(ExprPreviousNode exprPrevNode) throws Exception
     {
         try {
-            exprPrevNode.validate(null, null, null);
+            exprPrevNode.validate(null, null, null, null);
             fail();
         }
         catch (ExprValidationException ex)

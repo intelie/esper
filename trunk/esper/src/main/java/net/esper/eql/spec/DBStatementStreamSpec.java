@@ -12,6 +12,7 @@ import net.esper.event.EventAdapterService;
 import net.esper.eql.core.MethodResolutionService;
 import net.esper.util.MetaDefItem;
 import net.esper.pattern.PatternObjectResolutionService;
+import net.esper.schedule.TimeProvider;
 
 import java.util.List;
 
@@ -58,7 +59,8 @@ public class DBStatementStreamSpec extends StreamSpecBase implements StreamSpecR
 
     public StreamSpecCompiled compile(EventAdapterService eventAdapterService,
                                       MethodResolutionService methodResolutionService,
-                                      PatternObjectResolutionService patternObjectResolutionService)
+                                      PatternObjectResolutionService patternObjectResolutionService,
+                                      TimeProvider timeProvider)
     {
         return this;
     }

@@ -4,6 +4,7 @@ import net.esper.eql.core.StreamTypeService;
 import net.esper.eql.core.MethodResolutionService;
 import net.esper.eql.core.ViewResourceDelegate;
 import net.esper.event.EventBean;
+import net.esper.schedule.TimeProvider;
 
 /**
  * Represents the EXISTS(property) function in an expression tree.
@@ -19,7 +20,7 @@ public class ExprPropertyExistsNode extends ExprNode
     {
     }
 
-    public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate) throws ExprValidationException
+    public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider) throws ExprValidationException
     {
         if (this.getChildNodes().size() != 1)
         {

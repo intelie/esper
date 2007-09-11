@@ -213,7 +213,8 @@ public class EPStatementStartMethod
                 typeService,
                 services.getEventAdapterService(),
                 statementContext.getMethodResolutionService(),
-                viewResourceDelegate);
+                viewResourceDelegate,
+                statementContext.getSchedulingService());
 
         // Validate where-clause filter tree and outer join clause
         validateNodes(typeService, statementContext.getMethodResolutionService(), viewResourceDelegate);
@@ -318,7 +319,7 @@ public class EPStatementStartMethod
             // Validate where clause, initializing nodes to the stream ids used
             try
             {
-                optionalFilterNode = optionalFilterNode.getValidatedSubtree(typeService, methodResolutionService, viewResourceDelegate);
+                optionalFilterNode = optionalFilterNode.getValidatedSubtree(typeService, methodResolutionService, viewResourceDelegate, statementContext.getSchedulingService());
                 statementSpec.setFilterExprRootNode(optionalFilterNode);
 
                 // Make sure there is no aggregation in the where clause
@@ -348,7 +349,7 @@ public class EPStatementStartMethod
             equalsNode.addChildNode(outerJoinDesc.getRightNode());
             try
             {
-                equalsNode = equalsNode.getValidatedSubtree(typeService, methodResolutionService, viewResourceDelegate);
+                equalsNode = equalsNode.getValidatedSubtree(typeService, methodResolutionService, viewResourceDelegate, statementContext.getSchedulingService());
             }
             catch (ExprValidationException ex)
             {
@@ -510,7 +511,7 @@ public class EPStatementStartMethod
             if (selectClauseSpec.getSelectList().size() > 0)
             {
                 ExprNode selectExpression = selectClauseSpec.getSelectList().get(0).getSelectExpression();
-                selectExpression = selectExpression.getValidatedSubtree(subselectTypeService, statementContext.getMethodResolutionService(), viewResourceDelegateSubselect);
+                selectExpression = selectExpression.getValidatedSubtree(subselectTypeService, statementContext.getMethodResolutionService(), viewResourceDelegateSubselect, statementContext.getSchedulingService());
                 subselect.setSelectClause(selectExpression);
                 subselect.setSelectAsName(selectClauseSpec.getSelectList().get(0).getOptionalAsName());
             }
@@ -519,7 +520,7 @@ public class EPStatementStartMethod
             ExprNode filterExpr = statementSpec.getFilterRootNode();
             if (filterExpr != null)
             {
-                filterExpr = filterExpr.getValidatedSubtree(subselectTypeService, statementContext.getMethodResolutionService(), viewResourceDelegateSubselect);
+                filterExpr = filterExpr.getValidatedSubtree(subselectTypeService, statementContext.getMethodResolutionService(), viewResourceDelegateSubselect, statementContext.getSchedulingService());
                 if (JavaClassHelper.getBoxedType(filterExpr.getType()) != Boolean.class)
                 {
                     throw new ExprValidationException("Subselect filter expression must return a boolean value");

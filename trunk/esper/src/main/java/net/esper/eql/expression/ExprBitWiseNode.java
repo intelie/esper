@@ -16,6 +16,7 @@ import net.esper.util.JavaClassHelper;
 import net.esper.eql.core.MethodResolutionService;
 import net.esper.eql.core.StreamTypeService;
 import net.esper.eql.core.ViewResourceDelegate;
+import net.esper.schedule.TimeProvider;
 
 /**
  * Represents the bit-wise operators in an expression tree.
@@ -44,7 +45,7 @@ public class ExprBitWiseNode extends ExprNode {
         return _bitWiseOpEnum;
     }
 
-    public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate) throws ExprValidationException
+    public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider) throws ExprValidationException
     {
         if (this.getChildNodes().size() != 2)
         {

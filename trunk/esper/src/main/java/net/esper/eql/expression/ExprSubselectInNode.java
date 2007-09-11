@@ -6,6 +6,7 @@ import net.esper.eql.core.ViewResourceDelegate;
 import net.esper.eql.spec.StatementSpecRaw;
 import net.esper.event.EventBean;
 import net.esper.util.JavaClassHelper;
+import net.esper.schedule.TimeProvider;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -55,7 +56,7 @@ public class ExprSubselectInNode extends ExprSubselectNode
         return isNotIn;
     }
 
-    public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate) throws ExprValidationException
+    public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider) throws ExprValidationException
     {
         if (this.getChildNodes().size() != 1)
         {

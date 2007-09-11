@@ -92,45 +92,55 @@ class ConfigurationParser {
         DOMElementIterator eventTypeNodeIterator = new DOMElementIterator(root.getChildNodes());
         while (eventTypeNodeIterator.hasNext())
         {
-            Element eventTypeElement = eventTypeNodeIterator.next();
-            String nodeName = eventTypeElement.getNodeName();
-            if (nodeName.equals("event-type"))
+            Element element = eventTypeNodeIterator.next();
+            String nodeName = element.getNodeName();
+            if (nodeName.equals("event-type-auto-alias"))
             {
-                handleEventTypes(configuration, eventTypeElement);
+                handleEventTypeAutoAliases(configuration, element);
+            }
+            else if (nodeName.equals("event-type"))
+            {
+                handleEventTypes(configuration, element);
             }
             else if(nodeName.equals("auto-import"))
             {
-            	handleAutoImports(configuration, eventTypeElement);
+            	handleAutoImports(configuration, element);
             }
             else if (nodeName.equals("database-reference"))
             {
-                handleDatabaseRefs(configuration, eventTypeElement);
+                handleDatabaseRefs(configuration, element);
             }
             else if (nodeName.equals("plugin-view"))
             {
-                handlePlugInView(configuration, eventTypeElement);
+                handlePlugInView(configuration, element);
             }
             else if (nodeName.equals("plugin-aggregation-function"))
             {
-                handlePlugInAggregation(configuration, eventTypeElement);
+                handlePlugInAggregation(configuration, element);
             }
             else if (nodeName.equals("plugin-pattern-guard"))
             {
-                handlePlugInPatternGuard(configuration, eventTypeElement);
+                handlePlugInPatternGuard(configuration, element);
             }
             else if (nodeName.equals("plugin-pattern-observer"))
             {
-                handlePlugInPatternObserver(configuration, eventTypeElement);
+                handlePlugInPatternObserver(configuration, element);
             }
             else if (nodeName.equals("adapter-loader"))
             {
-                handleAdapterLoaders(configuration, eventTypeElement);
+                handleAdapterLoaders(configuration, element);
             }
             else if (nodeName.equals("engine-settings"))
             {
-                handleEngineSettings(configuration, eventTypeElement);
+                handleEngineSettings(configuration, element);
             }
         }
+    }
+
+    private static void handleEventTypeAutoAliases(Configuration configuration, Element element)
+    {
+        String name = element.getAttributes().getNamedItem("package-name").getTextContent();
+        configuration.addEventTypeAutoAlias(name);
     }
 
     private static void handleEventTypes(Configuration configuration, Element element)

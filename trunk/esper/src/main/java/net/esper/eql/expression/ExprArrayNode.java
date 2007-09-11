@@ -13,6 +13,7 @@ import net.esper.eql.core.ViewResourceDelegate;
 import net.esper.event.EventBean;
 import net.esper.util.JavaClassHelper;
 import net.esper.util.CoercionException;
+import net.esper.schedule.TimeProvider;
 
 import java.util.List;
 import java.util.LinkedList;
@@ -35,7 +36,7 @@ public class ExprArrayNode extends ExprNode
     {
     }
 
-    public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate) throws ExprValidationException
+    public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider) throws ExprValidationException
     {
         length = this.getChildNodes().size();
 

@@ -3,6 +3,7 @@
 	<xs:element name="esper-configuration">
 		<xs:complexType>
 			<xs:sequence>
+				<xs:element ref="event-type-auto-alias" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:element ref="event-type" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:element ref="auto-import" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:element ref="database-reference" minOccurs="0" maxOccurs="unbounded"/>
@@ -13,6 +14,11 @@
 				<xs:element ref="adapter-loader" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:element ref="engine-settings" minOccurs="0" maxOccurs="unbounded"/>
 			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="event-type-auto-alias">
+		<xs:complexType>
+			<xs:attribute name="package-name" type="xs:string" use="required"/>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="event-type">

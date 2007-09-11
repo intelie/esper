@@ -78,7 +78,7 @@ public class TestExprRegexpNode extends TestCase
     private void tryInvalidValidate(ExprRegexpNode exprLikeRegexpNode) throws Exception
     {
         try {
-            exprLikeRegexpNode.validate(null, null, null);
+            exprLikeRegexpNode.validate(null, null, null, null);
             fail();
         }
         catch (ExprValidationException ex)

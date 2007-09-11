@@ -51,7 +51,7 @@ public class TestExprSumNode extends TestExprAggregateNodeAdapter
         // Must have exactly 1 subnodes
         try
         {
-            sumNode.validate(null, null, null);
+            sumNode.validate(null, null, null, null);
             fail();
         }
         catch (ExprValidationException ex)
@@ -64,7 +64,7 @@ public class TestExprSumNode extends TestExprAggregateNodeAdapter
         sumNode.addChildNode(new SupportExprNode(Integer.class));
         try
         {
-            sumNode.validate(null, null, null);
+            sumNode.validate(null, null, null, null);
             fail();
         }
         catch (ExprValidationException ex)

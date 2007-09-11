@@ -107,6 +107,11 @@ public class Configuration implements ConfigurationOperations, ConfigurationInfo
     protected ConfigurationEngineDefaults engineDefaults;
 
     /**
+     * Saves the Java packages to search to resolve event type aliases.
+     */
+    protected Set<String> eventTypeAutoAliasPackages;
+
+    /**
      * Constructs an empty configuration. The auto import values
      * are set by default to java.lang, java.math, java.text and
      * java.util.
@@ -342,6 +347,27 @@ public class Configuration implements ConfigurationOperations, ConfigurationInfo
         plugInPatternObjects.add(entry);
     }
 
+    public void addEventTypeAutoAlias(String javaPackageName)
+    {
+        eventTypeAutoAliasPackages.add(javaPackageName);
+    }
+
+    /**
+     * Returns a set of Java package names that Java event classes reside in.
+     * <p>
+     * This setting allows an application to place all it's events into one or more Java packages
+     * and then declare these packages via this method. The engine
+     * attempts to resolve an event type alias to a Java class residing in each declared package.
+     * <p>
+     * For example, in the statement "select * from MyEvent" the engine attempts to load class "javaPackageName.MyEvent"
+     * and if successful, uses that class as the event type.
+     * @return set of Java package names to look for events types when encountering a new event type alias
+     */
+    public Set<String> getEventTypeAutoAliasPackages()
+    {
+        return eventTypeAutoAliasPackages;
+    }
+
     public ConfigurationEngineDefaults getEngineDefaults()
     {
         return engineDefaults;
@@ -533,6 +559,7 @@ public class Configuration implements ConfigurationOperations, ConfigurationInfo
         plugInAggregationFunctions = new ArrayList<ConfigurationPlugInAggregationFunction>();
         plugInPatternObjects = new ArrayList<ConfigurationPlugInPatternObject>();
         engineDefaults = new ConfigurationEngineDefaults();
+        eventTypeAutoAliasPackages = new LinkedHashSet<String>();
     }
 
     /**

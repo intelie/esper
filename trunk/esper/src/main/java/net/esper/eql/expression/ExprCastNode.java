@@ -6,6 +6,7 @@ import net.esper.eql.core.ViewResourceDelegate;
 import net.esper.event.EventBean;
 import net.esper.util.JavaClassHelper;
 import net.esper.collection.Pair;
+import net.esper.schedule.TimeProvider;
 
 import java.util.Set;
 import java.util.HashSet;
@@ -39,7 +40,7 @@ public class ExprCastNode extends ExprNode
         return classIdentifier;
     }
 
-    public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate) throws ExprValidationException
+    public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider) throws ExprValidationException
     {
         if (this.getChildNodes().size() != 1)
         {

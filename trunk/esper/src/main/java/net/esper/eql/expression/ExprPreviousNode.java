@@ -11,6 +11,7 @@ import net.esper.view.window.RandomAccessByIndexGetter;
 import net.esper.view.window.RelativeAccessByEventNIndexGetter;
 import net.esper.view.ViewCapDataWindowAccess;
 import net.esper.util.JavaClassHelper;
+import net.esper.schedule.TimeProvider;
 
 /**
  * Represents the 'prev' previous event function in an expression node tree.
@@ -25,7 +26,7 @@ public class ExprPreviousNode extends ExprNode implements ViewResourceCallback
     private RandomAccessByIndexGetter randomAccessGetter;
     private RelativeAccessByEventNIndexGetter relativeAccessGetter;
 
-    public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate) throws ExprValidationException
+    public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider) throws ExprValidationException
     {
         if (this.getChildNodes().size() != 2)
         {

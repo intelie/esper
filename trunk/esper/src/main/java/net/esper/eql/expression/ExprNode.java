@@ -10,6 +10,7 @@ package net.esper.eql.expression;
 import net.esper.eql.core.*;
 import net.esper.eql.agg.AggregationSupport;
 import net.esper.util.MetaDefItem;
+import net.esper.schedule.TimeProvider;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -61,29 +62,32 @@ public abstract class ExprNode implements ExprValidator, ExprEvaluator, MetaDefI
      * @param streamTypeService - serves stream type information
      * @param methodResolutionService - for resolving class names in library method invocations
      * @param viewResourceDelegate - delegates for view resources to expression nodes
+     * @param timeProvider
      * @throws ExprValidationException when the validation fails
      * @return the root node of the validated subtree, possibly
      *         different than the root node of the unvalidated subtree
      */
-    public ExprNode getValidatedSubtree(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService,
-                                        ViewResourceDelegate viewResourceDelegate) throws ExprValidationException
+    public ExprNode getValidatedSubtree(StreamTypeService streamTypeService,
+                                        MethodResolutionService methodResolutionService,
+                                        ViewResourceDelegate viewResourceDelegate,
+                                        TimeProvider timeProvider) throws ExprValidationException
     {
         ExprNode result = this;
 
         for (int i = 0; i < childNodes.size(); i++)
         {
-            childNodes.set(i, childNodes.get(i).getValidatedSubtree(streamTypeService, methodResolutionService, viewResourceDelegate));
+            childNodes.set(i, childNodes.get(i).getValidatedSubtree(streamTypeService, methodResolutionService, viewResourceDelegate, timeProvider));
         }
 
         try
         {
-            validate(streamTypeService, methodResolutionService, viewResourceDelegate);
+            validate(streamTypeService, methodResolutionService, viewResourceDelegate, timeProvider);
         }
         catch(ExprValidationException e)
         {
             if(this instanceof ExprIdentNode)
             {
-                result = resolveIdentAsStaticMethod(streamTypeService, methodResolutionService, e);
+                result = resolveIdentAsStaticMethod(streamTypeService, methodResolutionService, e, timeProvider);
             }
             else
             {
@@ -184,7 +188,7 @@ public abstract class ExprNode implements ExprValidator, ExprEvaluator, MetaDefI
     // look the same, however as the validation could not resolve "Stream.property('key')" before calling this method,
     // this method tries to resolve the mapped property as a static method.
     // Assumes that this is an ExprIdentNode.
-    private ExprNode resolveIdentAsStaticMethod(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ExprValidationException propertyException)
+    private ExprNode resolveIdentAsStaticMethod(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ExprValidationException propertyException, TimeProvider timeProvider)
     throws ExprValidationException
     {
         // Reconstruct the original string
@@ -211,7 +215,7 @@ public abstract class ExprNode implements ExprValidator, ExprEvaluator, MetaDefI
             // Validate
             try
             {
-                result.validate(streamTypeService, methodResolutionService, null);
+                result.validate(streamTypeService, methodResolutionService, null, timeProvider);
             }
             catch(ExprValidationException e)
             {
@@ -231,7 +235,7 @@ public abstract class ExprNode implements ExprValidator, ExprEvaluator, MetaDefI
             // Validate
             try
             {
-                result.validate(streamTypeService, methodResolutionService, null);
+                result.validate(streamTypeService, methodResolutionService, null, timeProvider);
             }
             catch (RuntimeException e)
             {

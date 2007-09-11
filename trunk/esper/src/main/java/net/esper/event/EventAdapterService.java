@@ -85,12 +85,16 @@ public interface EventAdapterService
      * If the alias already exists with different class name, throws an exception.
      * <p>
      * If the alias does not already exists, adds the alias and constructs a new {@link net.esper.event.BeanEventType}.
+     * <p>
+     * Takes into account all event-type-auto-alias-package names supplied and
+     * attempts to resolve the class name via the packages if the direct resolution failed. 
      * @param eventTypeAlias is the alias name for the event type
      * @param fullyQualClassName is the fully qualified class name
+     * @param considerAutoAlias whether auto-alias by Java packages should be considered
      * @return event type is the type added
      * @throws EventAdapterException if alias already exists and doesn't match class names
      */
-    public EventType addBeanType(String eventTypeAlias, String fullyQualClassName) throws EventAdapterException;
+    public EventType addBeanType(String eventTypeAlias, String fullyQualClassName, boolean considerAutoAlias) throws EventAdapterException;
 
     /**
      * Add an event type with the given alias and Java class.
@@ -187,4 +191,10 @@ public interface EventAdapterService
      * @param classPropertyResolutionStyle for resolving properties.
      */    
     public void setDefaultPropertyResolutionStyle(Configuration.PropertyResolutionStyle classPropertyResolutionStyle);
+
+    /**
+     * Adds a Java package name of a package that Java event classes reside in.
+     * @param javaPackageName is the fully-qualified Java package name of the Java package that event classes reside in
+     */
+    public void addAutoAliasPackage(String javaPackageName);
 }

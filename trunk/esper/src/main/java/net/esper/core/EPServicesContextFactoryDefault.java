@@ -111,7 +111,7 @@ public class EPServicesContextFactoryDefault implements EPServicesContextFactory
             try
             {
                 String aliasName = entry.getKey();
-                eventAdapterService.addBeanType(aliasName, entry.getValue());
+                eventAdapterService.addBeanType(aliasName, entry.getValue(), false);
             }
             catch (EventAdapterException ex)
             {

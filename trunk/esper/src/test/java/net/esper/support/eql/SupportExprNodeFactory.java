@@ -1,17 +1,13 @@
 package net.esper.support.eql;
 
 import net.esper.eql.expression.*;
-import net.esper.eql.core.StreamTypeService;
-import net.esper.eql.core.ViewResourceDelegate;
 import net.esper.eql.core.ViewResourceDelegateImpl;
 import net.esper.eql.core.MethodResolutionServiceImpl;
 import net.esper.type.MathArithTypeEnum;
 import net.esper.type.RelationalOpEnum;
 import net.esper.view.ViewFactoryChain;
 import net.esper.view.ViewFactory;
-import net.esper.view.ViewResolutionServiceImpl;
 import net.esper.view.window.LengthWindowViewFactory;
-import net.esper.core.StatementContextFactory;
 import net.esper.support.view.SupportStatementContextFactory;
 
 import java.util.List;
@@ -312,6 +308,6 @@ public class SupportExprNodeFactory
         }
         ViewResourceDelegateImpl viewResources = new ViewResourceDelegateImpl(factoriesPerStream, SupportStatementContextFactory.makeContext());
 
-        topNode.getValidatedSubtree(streamTypeService, new MethodResolutionServiceImpl(null), viewResources);
+        topNode.getValidatedSubtree(streamTypeService, new MethodResolutionServiceImpl(null), viewResources, null);
     }
 }

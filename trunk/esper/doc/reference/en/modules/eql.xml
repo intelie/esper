@@ -1521,6 +1521,14 @@ for user-controlled imports of classes and packages as outlined in <xref linkend
 						</entry>
 					</row>
 					<row>
+						<entry><synopsis>current_timestamp[()]</synopsis></entry>
+						<entry>
+							<para>
+								Returns the current engine time as a <literal>long</literal> millisecond value. Reserved keyword with optional parenthesis.
+							</para>
+						</entry>
+					</row>
+					<row>
 						<entry><synopsis>exists(<emphasis>dynamic_property_name</emphasis>)</synopsis></entry>
 						<entry>
 							<para>
@@ -1666,9 +1674,28 @@ for user-controlled imports of classes and packages as outlined in <xref linkend
 			</para>
 			
 			<para>
-				This example returns a String-typed result of value 'foo'.
+				This example returns a String-typed result of value 'foo':
 			</para>
 			<programlisting>select coalesce(null, 'foo') from ...</programlisting>			
+		</sect2>
+
+		<sect2 id="eql-single-row-function-ref-currenttime">
+			<title>The <literal>Current_Timestamp</literal> Function</title>
+
+			<para>
+				The <literal>current_timestamp</literal> function is a reserved keyword and requires no parameters. The result of the <literal>current_timestamp</literal> function is the <literal>long</literal>-type millisecond value of the current engine system time.
+			</para>
+			
+			<para>
+				The function returns the current engine timestamp at the time of expression evaluation. When using external-timer events, the function provides the last value of the externally-supplied time at the time of expression evaluation.
+			</para>
+
+			<para>
+				This example selects the current engine time:
+			</para>
+			<programlisting><![CDATA[select current_timestamp from MyEvent
+// equivalent to
+select current_timestamp from MyEvent]]></programlisting>
 		</sect2>
 
 		<sect2 id="eql-single-row-function-exists">

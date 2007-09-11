@@ -13,6 +13,7 @@ import net.esper.eql.core.ViewResourceDelegate;
 import net.esper.event.EventBean;
 import net.esper.util.JavaClassHelper;
 import net.esper.client.EPException;
+import net.esper.schedule.TimeProvider;
 
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
@@ -37,7 +38,7 @@ public class ExprRegexpNode extends ExprNode
         this.isNot = not;
     }
 
-    public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate) throws ExprValidationException
+    public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider) throws ExprValidationException
     {
         if (this.getChildNodes().size() != 2)
         {

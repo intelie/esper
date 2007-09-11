@@ -9,6 +9,19 @@ import java.util.Properties;
 public interface ConfigurationOperations
 {
     /**
+     * Adds a Java package name of a package that Java event classes reside in.
+     * <p>
+     * This setting allows an application to place all it's events into one or more Java packages
+     * and then declare these packages via this method. The engine
+     * attempts to resolve an event type alias to a Java class residing in each declared package.
+     * <p>
+     * For example, in the statement "select * from MyEvent" the engine attempts to load class "javaPackageName.MyEvent"
+     * and if successful, uses that class as the event type.
+     * @param javaPackageName is the fully-qualified Java package name of the Java package that event classes reside in
+     */
+    public void addEventTypeAutoAlias(String javaPackageName);
+
+    /**
      * Adds a plug-in aggregation function given a function name and an aggregation class name.
      * <p>
      * The aggregation class must extends the base class {@link net.esper.eql.agg.AggregationSupport}.

@@ -232,6 +232,7 @@ builtinFunc
 	| 	#(INSTANCEOF valueExpr CLASS_IDENT (CLASS_IDENT)*) 
 	| 	#(CAST valueExpr CLASS_IDENT)
 	| 	#(EXISTS eventPropertyExpr)
+	|	#(CURRENT_TIMESTAMP {} )
 	;
 	
 arrayExpr

@@ -119,7 +119,7 @@ public class JoinSetComposerFactoryImpl implements JoinSetComposerFactory
                 equalsNode = new ExprEqualsNode(false);
                 equalsNode.addChildNode(outerJoinDesc.getLeftNode());
                 equalsNode.addChildNode(outerJoinDesc.getRightNode());
-                equalsNode.validate(null, null, null);
+                equalsNode.validate(null, null, null, null);
             }
 
             HistoricalEventViewable viewable = (HistoricalEventViewable) streamViews[polledView];

@@ -129,7 +129,7 @@ public class TestExprStaticMethodNode extends TestCase
 
     private void validate(ExprNode node) throws Exception
     {
-        node.getValidatedSubtree(streamTypeService, methodResolutionService, null);
+        node.getValidatedSubtree(streamTypeService, methodResolutionService, null, null);
     }
 
     public void nonstaticMethod(){}

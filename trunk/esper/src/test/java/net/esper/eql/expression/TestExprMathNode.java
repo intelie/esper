@@ -17,7 +17,7 @@ public class TestExprMathNode extends TestCase
     {
         arithNode.addChildNode(new SupportExprNode(Double.class));
         arithNode.addChildNode(new SupportExprNode(Integer.class));
-        arithNode.validate(null, null, null);
+        arithNode.validate(null, null, null, null);
         assertEquals(Double.class, arithNode.getType());
     }
 
@@ -40,7 +40,7 @@ public class TestExprMathNode extends TestCase
         // Must have exactly 2 subnodes
         try
         {
-            arithNode.validate(null, null, null);
+            arithNode.validate(null, null, null, null);
             fail();
         }
         catch (ExprValidationException ex)
@@ -53,7 +53,7 @@ public class TestExprMathNode extends TestCase
         arithNode.addChildNode(new SupportExprNode(Integer.class));
         try
         {
-            arithNode.validate(null, null, null);
+            arithNode.validate(null, null, null, null);
             fail();
         }
         catch (ExprValidationException ex)
@@ -66,7 +66,7 @@ public class TestExprMathNode extends TestCase
     {
         arithNode.addChildNode(new SupportExprNode(new Integer(10)));
         arithNode.addChildNode(new SupportExprNode(new Double(1.5)));
-        arithNode.getValidatedSubtree(null, null, null);
+        arithNode.getValidatedSubtree(null, null, null, null);
         assertEquals(11.5d, arithNode.evaluate(null, false));
 
         arithNode = makeNode(null, Integer.class, 5d, Double.class);

@@ -12,6 +12,7 @@ import net.esper.event.EventBean;
 import net.esper.eql.core.MethodResolutionService;
 import net.esper.eql.core.StreamTypeService;
 import net.esper.eql.core.ViewResourceDelegate;
+import net.esper.schedule.TimeProvider;
 
 /**
  * Represents an equals (=) comparator in a filter expressiun tree.
@@ -41,7 +42,7 @@ public class ExprEqualsNode extends ExprNode
         return isNotEquals;
     }
 
-    public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate) throws ExprValidationException
+    public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider) throws ExprValidationException
     {
         // Must have 2 child nodes
         if (this.getChildNodes().size() != 2)

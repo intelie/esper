@@ -40,6 +40,11 @@ public class ConfigurationOperationsImpl implements ConfigurationOperations
         this.engineImportService = engineImportService;
     }
 
+    public void addEventTypeAutoAlias(String javaPackageName)
+    {
+        eventAdapterService.addAutoAliasPackage(javaPackageName);
+    }
+
     public void addPlugInAggregationFunction(String functionName, String aggregationClassName)
     {
         try
@@ -68,7 +73,7 @@ public class ConfigurationOperationsImpl implements ConfigurationOperations
     {
         try
         {
-            eventAdapterService.addBeanType(eventTypeAlias, javaEventClassName);
+            eventAdapterService.addBeanType(eventTypeAlias, javaEventClassName, false);
         }
         catch (EventAdapterException t)
         {

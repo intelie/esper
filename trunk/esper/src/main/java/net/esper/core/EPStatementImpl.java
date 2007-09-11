@@ -24,6 +24,7 @@ public class EPStatementImpl implements EPStatementSPI
     private UpdateDispatchViewBase dispatchChildView;
     private StatementLifecycleSvc statementLifecycleSvc;
 
+    private long timeLastStateChange;
     private Viewable parentView;
     private EPStatementState currentState;
     private EventType eventType;
@@ -47,6 +48,7 @@ public class EPStatementImpl implements EPStatementSPI
                               boolean isPattern,
                               DispatchService dispatchService,
                               StatementLifecycleSvc statementLifecycleSvc,
+                              long timeLastStateChange,
                               boolean isBlockingDispatch,
                               long msecBlockingTimeout)
     {
@@ -65,6 +67,7 @@ public class EPStatementImpl implements EPStatementSPI
             this.dispatchChildView = new UpdateDispatchViewNonBlocking(epServiceProvider, this, statementListenerSet, dispatchService);
         }
         this.currentState = EPStatementState.STOPPED;
+        this.timeLastStateChange = timeLastStateChange;
     }
 
     public String getStatementId()
@@ -109,9 +112,10 @@ public class EPStatementImpl implements EPStatementSPI
         return currentState;
     }
 
-    public void setCurrentState(EPStatementState currentState)
+    public void setCurrentState(EPStatementState currentState, long timeLastStateChange)
     {
         this.currentState = currentState;
+        this.timeLastStateChange = timeLastStateChange;
     }
 
     public void setParentView(Viewable viewable)
@@ -248,5 +252,25 @@ public class EPStatementImpl implements EPStatementSPI
     public Iterator<UpdateListener> getUpdateListeners()
     {
         return statementListenerSet.getListeners().iterator();
+    }
+
+    public long getTimeLastStateChange()
+    {
+        return timeLastStateChange;
+    }
+
+    public boolean isStarted()
+    {
+        return currentState == EPStatementState.STARTED;
+    }
+
+    public boolean isStopped()
+    {
+        return currentState == EPStatementState.STOPPED;
+    }
+
+    public boolean isDestroyed()
+    {
+        return currentState == EPStatementState.DESTROYED;
     }
 }

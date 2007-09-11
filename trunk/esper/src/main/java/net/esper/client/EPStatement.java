@@ -47,6 +47,24 @@ public interface EPStatement extends EPListenable, EPIterable
     public EPStatementState getState();
 
     /**
+     * Returns true if the statement state is started.
+     * @return true for started statements, false for stopped or destroyed statements.
+     */
+    public boolean isStarted();
+
+    /**
+     * Returns true if the statement state is stopped.
+     * @return true for stopped statements, false for started or destroyed statements.
+     */
+    public boolean isStopped();
+
+    /**
+     * Returns true if the statement state is destroyed.
+     * @return true for destroyed statements, false for started or stopped statements.
+     */
+    public boolean isDestroyed();
+
+    /**
      * Returns the underlying expression text.
      * @return expression text
      */
@@ -57,5 +75,11 @@ public interface EPStatement extends EPListenable, EPIterable
      * @return statement name
      */
     public String getName();
+
+    /**
+     * Returns the system time in milliseconds of when the statement last change state.
+     * @return time in milliseconds of last statement state change
+     */
+    public long getTimeLastStateChange();
 }
 

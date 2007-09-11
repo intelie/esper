@@ -42,7 +42,7 @@ public class TestEventAdapterServiceImpl extends TestCase
 
     public void testGetType()
     {
-        adapterService.addBeanType("NAME", TestEventAdapterServiceImpl.class.getName());
+        adapterService.addBeanType("NAME", TestEventAdapterServiceImpl.class.getName(), false);
 
         EventType type = adapterService.getExistsTypeByAlias("NAME");
         assertEquals(TestEventAdapterServiceImpl.class, type.getUnderlyingType());
@@ -57,7 +57,7 @@ public class TestEventAdapterServiceImpl extends TestCase
     {
         try
         {
-            adapterService.addBeanType("x", "xx");
+            adapterService.addBeanType("x", "xx", false);
             fail();
         }
         catch (EventAdapterException ex)
@@ -128,17 +128,17 @@ public class TestEventAdapterServiceImpl extends TestCase
 
     public void testAddClassName()
     {
-        EventType typeOne = adapterService.addBeanType("latencyEvent", SupportBean.class.getName());
+        EventType typeOne = adapterService.addBeanType("latencyEvent", SupportBean.class.getName(), true);
         assertEquals(SupportBean.class, typeOne.getUnderlyingType());
 
         assertSame(typeOne, adapterService.getExistsTypeByAlias("latencyEvent"));
 
-        EventType typeTwo = adapterService.addBeanType("latencyEvent", SupportBean.class.getName());
+        EventType typeTwo = adapterService.addBeanType("latencyEvent", SupportBean.class.getName(), false);
         assertSame(typeOne, typeTwo);
 
         try
         {
-            adapterService.addBeanType("latencyEvent", SupportBean_A.class.getName());
+            adapterService.addBeanType("latencyEvent", SupportBean_A.class.getName(), true);
             fail();
         }
         catch (EventAdapterException ex)
@@ -159,7 +159,7 @@ public class TestEventAdapterServiceImpl extends TestCase
 
         try
         {
-            adapterService.addBeanType("latencyEvent", SupportBean_A.class.getName());
+            adapterService.addBeanType("latencyEvent", SupportBean_A.class.getName(), false);
             fail();
         }
         catch (EventAdapterException ex)

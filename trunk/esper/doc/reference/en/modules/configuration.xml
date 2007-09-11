@@ -81,6 +81,34 @@ configuration.configure("myengine.esper.cfg.xml");
 		<sect2 id="config-java" revision="1">
 			<title>Events represented by Java Classes</title>
 			
+			<sect3 id="config-java-package-alias" revision="1">
+				<title>Package of Java Event Classes</title>
+				
+				<para>
+					Via this configuration an application can make the Java package or packages that contain an application's Java event classes known to an engine. 
+					Thereby an application can simply refer to event types in statements by using the simple class name of
+					each Java class representing an event type.
+				</para>
+								
+				<para>
+					For example, consider an order-taking application that places all event classes in package <literal>com.mycompany.order.event</literal>. One Java class representing an event is the class <literal>OrderEvent</literal>. 
+					The application can simply issue a statement as follows to select <literal>OrderEvent</literal> events:
+				</para>
+				<programlisting><![CDATA[select * from OrderEvent]]></programlisting>
+
+				<para>
+					The XML configuration for defining the Java packages that contain Java event classes is:
+				</para>
+				<programlisting><![CDATA[<event-type-auto-alias package-name="com.mycompany.order.event"/>]]></programlisting>
+				
+				<para>
+					The same configuration but using the <literal>Configuration</literal> class:
+				</para>
+				<programlisting><![CDATA[Configuration config = new Configuration();
+config.addEventTypeAutoAlias("com.mycompany.order.event");]]></programlisting>
+
+			</sect3>
+
 			<sect3 id="config-java-event-name" revision="1">
 				<title>Event type alias to Java class mapping</title>
 				

@@ -44,6 +44,11 @@ public class TestConfigurationParser extends TestCase
     protected static void assertFileConfig(Configuration config)
     {
         // assert alias for class
+        assertEquals(2, config.getEventTypeAutoAliasPackages().size());
+        assertEquals("com.mycompany.eventsone", config.getEventTypeAutoAliasPackages().toArray()[0]);
+        assertEquals("com.mycompany.eventstwo", config.getEventTypeAutoAliasPackages().toArray()[1]);
+
+        // assert alias for class
         assertEquals(3, config.getEventTypeAliases().size());
         assertEquals("com.mycompany.myapp.MySampleEventOne", config.getEventTypeAliases().get("MySampleEventOne"));
         assertEquals("com.mycompany.myapp.MySampleEventTwo", config.getEventTypeAliases().get("MySampleEventTwo"));

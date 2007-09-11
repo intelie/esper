@@ -29,7 +29,7 @@ public class TestExprArrayNode extends TestCase
 
         for (int i = 0; i < arrayNodes.length; i++)
         {
-            arrayNodes[i].validate(null, null, null);
+            arrayNodes[i].validate(null, null, null, null);
         }
     }
 

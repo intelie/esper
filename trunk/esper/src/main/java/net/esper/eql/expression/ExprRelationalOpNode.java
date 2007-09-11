@@ -13,6 +13,7 @@ import net.esper.type.RelationalOpEnum;
 import net.esper.eql.core.MethodResolutionService;
 import net.esper.eql.core.StreamTypeService;
 import net.esper.eql.core.ViewResourceDelegate;
+import net.esper.schedule.TimeProvider;
 
 /**
  * Represents a lesser or greater then (</<=/>/>=) expression in a filter expression tree.
@@ -45,7 +46,7 @@ public class ExprRelationalOpNode extends ExprNode
         return relationalOpEnum;
     }
 
-    public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate) throws ExprValidationException
+    public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider) throws ExprValidationException
     {
         // Must have 2 child nodes
         if (this.getChildNodes().size() != 2)

@@ -15,6 +15,7 @@ import net.esper.view.window.RandomAccessByIndex;
 import net.esper.view.window.RelativeAccessByEventNIndex;
 import net.esper.view.ViewCapPriorEventAccess;
 import net.esper.event.EventBean;
+import net.esper.schedule.TimeProvider;
 
 /**
  * Represents the 'prior' prior event function in an expression node tree.
@@ -36,7 +37,7 @@ public class ExprPriorNode extends ExprNode implements ViewResourceCallback
         return constantIndexNumber;
     }
 
-    public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate) throws ExprValidationException
+    public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider) throws ExprValidationException
     {
         if (this.getChildNodes().size() != 2)
         {

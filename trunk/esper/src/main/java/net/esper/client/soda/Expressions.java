@@ -30,6 +30,16 @@ public class Expressions implements Serializable
     private static final long serialVersionUID = 0L;
 
     /**
+     * Current system time supplies internal-timer provided time or
+     * the time provided by external timer events.
+     * @return expression
+     */
+    public static CurrentTimestampExpression currentTimestamp()
+    {
+        return new CurrentTimestampExpression();
+    }
+    
+    /**
      * Exists-function for use with dynamic properties to test property existence.
      * @param propertyName name of the property to test whether it exists or not
      * @return expression

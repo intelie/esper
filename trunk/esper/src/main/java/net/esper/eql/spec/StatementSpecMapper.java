@@ -535,6 +535,10 @@ public class StatementSpecMapper
         {
             return new ExprPropertyExistsNode();
         }
+        else if (expr instanceof CurrentTimestampExpression)
+        {
+            return new ExprTimestampNode();
+        }
         else if (expr instanceof SubstitutionParameterExpression)
         {
             SubstitutionParameterExpression node = (SubstitutionParameterExpression) expr;
@@ -770,6 +774,10 @@ public class StatementSpecMapper
         else if (expr instanceof ExprPropertyExistsNode)
         {
             return new PropertyExistsExpression();
+        }
+        else if (expr instanceof ExprTimestampNode)
+        {
+            return new CurrentTimestampExpression();
         }
         else if (expr instanceof ExprSubstitutionNode)
         {
