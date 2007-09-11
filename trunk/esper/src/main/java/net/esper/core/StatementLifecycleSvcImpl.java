@@ -415,8 +415,8 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
                 throw new IllegalStateException("Statement already stopped");
             }
 
-            statement.setParentView(null);
             stopMethod.stop();
+            statement.setParentView(null);
             desc.setStopMethod(null);
 
             long timeLastStateChange = services.getSchedulingService().getTime();

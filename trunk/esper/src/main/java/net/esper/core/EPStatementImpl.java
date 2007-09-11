@@ -91,6 +91,10 @@ public class EPStatementImpl implements EPStatementSPI
             throw new IllegalStateException("Cannot stop statement, statement is in destroyed state");
         }
         statementLifecycleSvc.stop(statementId);
+
+        // On stop, we give the dispatch view a chance to dispatch final results, if any
+        dispatchChildView.dispatchOnStop();
+        
         dispatchChildView.clear();
     }
 

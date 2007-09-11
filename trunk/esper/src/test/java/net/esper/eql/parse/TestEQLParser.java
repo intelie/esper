@@ -14,7 +14,7 @@ public class TestEQLParser extends TestCase implements EqlTokenTypes
     public void testDisplayAST() throws Exception
     {
         String className = SupportBean.class.getName();
-        String expression = "select timestamp() from " + className;
+        String expression = "select current_timestamp() from " + className;
 
         log.debug(".testDisplayAST parsing: " + expression);
         AST ast = parse(expression);

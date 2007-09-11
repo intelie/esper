@@ -736,14 +736,14 @@ eventPropertyAtomic
 		{ #eventPropertyAtomic = #([EVENT_PROP_SIMPLE,"eventPropertySimple"], #eventPropertyAtomic); }
 	|	IDENT LBRACK! NUM_INT RBRACK! (d:QUESTION!)?
 		{ 
-			if (d!=null) 
+			if (d == null) 
 				#eventPropertyAtomic = #([EVENT_PROP_INDEXED,"eventPropertyIndexed"], #eventPropertyAtomic);
 			else
 				#eventPropertyAtomic = #([EVENT_PROP_DYNAMIC_INDEXED,"eventPropertyDynamicIndexed"], #eventPropertyAtomic); 
 		}				
 	|	IDENT LPAREN! (STRING_LITERAL | QUOTED_STRING_LITERAL) RPAREN! (q:QUESTION!)?
 		{ 
-			if (q!=null) 
+			if (q == null) 
 				#eventPropertyAtomic = #([EVENT_PROP_MAPPED,"eventPropertyMapped"], #eventPropertyAtomic); 
 			else
 				#eventPropertyAtomic = #([EVENT_PROP_DYNAMIC_MAPPED,"eventPropertyDynamicMapped"], #eventPropertyAtomic); 				

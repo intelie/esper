@@ -17,6 +17,7 @@ public class TestViewPlugin extends TestCase
         Configuration configuration = new Configuration();
         configuration.addEventTypeAlias("A", SupportMarketDataBean.class);
         configuration.addPlugInView("mynamespace", "trendspotter", MyTrendSpotterViewFactory.class.getName());
+        configuration.addPlugInView("mynamespace", "flushedsimple", MyFlushedSimpleViewFactory.class.getName());
         configuration.addPlugInView("mynamespace", "invalid", String.class.getName());
         epService = EPServiceProviderManager.getProvider("TestViewPlugin", configuration);
         epService.initialize();
@@ -27,7 +28,21 @@ public class TestViewPlugin extends TestCase
         epService.initialize();
     }
 
-    public void testPlugInView()
+    public void testPlugInViewFlushed()
+    {
+        String text = "select * from A.mynamespace:flushedsimple('price')";
+        EPStatement stmt = epService.getEPAdministrator().createEQL(text);
+        stmt.addListener(testListener);
+
+        sendEvent(1);
+        sendEvent(2);
+        assertFalse(testListener.isInvoked());
+
+        stmt.stop();
+        assertEquals(2, testListener.getLastNewData().length);
+    }
+
+    public void testPlugInViewTrend()
     {
         String text = "select * from A.mynamespace:trendspotter('price')";
         EPStatement stmt = epService.getEPAdministrator().createEQL(text);

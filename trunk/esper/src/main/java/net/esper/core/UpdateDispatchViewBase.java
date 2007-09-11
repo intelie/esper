@@ -99,6 +99,14 @@ public abstract class UpdateDispatchViewBase extends ViewSupport implements Disp
         return new SingleEventIterator(lastIterableEvent);
     }
 
+    public void dispatchOnStop()
+    {
+        if ((lastNewEvents.get().size() > 0) || (lastOldEvents.get().size() > 0))
+        {
+            execute();
+        }
+    }
+
     public void execute()
     {
         isDispatchWaiting.set(false);

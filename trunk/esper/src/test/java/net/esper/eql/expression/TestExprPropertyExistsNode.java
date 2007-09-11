@@ -63,8 +63,8 @@ public class TestExprPropertyExistsNode extends TestCase
             existsNodes[i].validate(null, null, null, null);
         }
 
-        assertEquals(null, existsNodes[0].evaluate(new EventBean[3], false));
-        assertEquals(null, existsNodes[1].evaluate(new EventBean[3], false));
+        assertEquals(false, existsNodes[0].evaluate(new EventBean[3], false));
+        assertEquals(false, existsNodes[1].evaluate(new EventBean[3], false));
 
         EventBean[] events = new EventBean[] {TestExprIdentNode.makeEvent(10)};
         assertEquals(false, existsNodes[0].evaluate(events, false));
