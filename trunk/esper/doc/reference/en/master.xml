@@ -47,17 +47,22 @@
 			</listitem>
 			<listitem>
 				<para>
+                    Read <xref linkend="event_representation"/> that explains the different ways of representing events to Esper
+                </para>
+			</listitem>
+			<listitem>
+				<para>
+                    Read <xref linkend="outputmodel"/> to gain insight into EQL continuous query results
+                </para>
+			</listitem>
+			<listitem>
+				<para>
                     Read <xref linkend="eql-intro"/> for an introduction to event stream processing via EQL
                 </para>
 			</listitem>
 			<listitem>
 				<para>
                     Read <xref linkend="event-pattern-intro"/> for an overview over event patterns
-                </para>
-			</listitem>
-			<listitem>
-				<para>
-                    Read <xref linkend="outputmodel"/> to gain insight into EQL continuous query results
                 </para>
 			</listitem>
 			<listitem>
@@ -70,17 +75,17 @@
 
     &technology_overview;
 
-    &configuration;
-
-    &api;
+    &event_representation;
 
     &outputmodel;
 
-    &event_representation;
+    &api;
 
     &EQL;
 
     &event_pattern;
+
+    &configuration;
 
     &extension;
 

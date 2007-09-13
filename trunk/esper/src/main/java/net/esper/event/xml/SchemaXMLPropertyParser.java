@@ -156,12 +156,15 @@ public class SchemaXMLPropertyParser implements EqlTokenTypes
             prefix = prefix + ':';
         switch (child.getType())
         {
+            case EVENT_PROP_DYNAMIC_SIMPLE:
             case EVENT_PROP_SIMPLE:
                 QName type = SchemaUtil.simpleTypeToQName((XSSimpleTypeDecl) use.getAttrDeclaration().getTypeDefinition());
                 String path = "/@" + prefix + child.getFirstChild().getText();
                 return new Pair<String, QName>(path, type);
+            case EVENT_PROP_DYNAMIC_MAPPED:
             case EVENT_PROP_MAPPED:
                 throw new RuntimeException("Mapped properties not applicable to attributes");
+            case EVENT_PROP_DYNAMIC_INDEXED:
             case EVENT_PROP_INDEXED:
                 throw new RuntimeException("Mapped properties not applicable to attributes");
             default:

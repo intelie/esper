@@ -26,8 +26,9 @@
 				<item name="License" href="/about/license/license.html"/>
                 <item name="Terms of Use" href="/about/license/terms.html"/>
             </item>
-			<item name="Case Studies and Tutorials" href="/tutorials/tutorials.html" collapse="false">
+			<item name="Tutorials and Case Studies" href="/tutorials/tutorials.html" collapse="false">
 				<item name="Tutorial" href="/tutorials/tutorial/tutorial.html"/>
+				<item name="Quick Start" href="/tutorials/tutorial/quickstart.html"/>
 				<item name="Short Case Study" href="/tutorials/tutorial/feedmonitor_casestudy.html"/>
 				<item name="Longer Case Study" href="/tutorials/tutorial/transaction_casestudy.html"/>
 				<item name="Solution Patterns" href="/tutorials/solution_patterns/solution_patterns.html"/>

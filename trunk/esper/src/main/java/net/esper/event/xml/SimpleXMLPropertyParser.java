@@ -70,11 +70,14 @@ public class SimpleXMLPropertyParser implements EqlTokenTypes
     {
         switch (child.getType())
         {
+            case EVENT_PROP_DYNAMIC_SIMPLE:
             case EVENT_PROP_SIMPLE:
                 return '/' + child.getFirstChild().getText();
+            case EVENT_PROP_DYNAMIC_MAPPED:
             case EVENT_PROP_MAPPED:
                 String key = StringValue.parseString(child.getFirstChild().getNextSibling().getText());
                 return '/' + child.getFirstChild().getText() + "[@id='" + key + "']";
+            case EVENT_PROP_DYNAMIC_INDEXED:
             case EVENT_PROP_INDEXED:
                 int index = IntValue.parseString(child.getFirstChild().getNextSibling().getText());
                 return '/' + child.getFirstChild().getText() + "[position() = " + index + ']';

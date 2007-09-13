@@ -8,7 +8,7 @@ import net.esper.event.BeanEventType;
  * <p>
  * Dynamic properties always exist, have an Object type and are resolved to a method during runtime.
  */
-public class DynamicIndexedProperty extends PropertyBase
+public class DynamicIndexedProperty extends PropertyBase implements DynamicProperty
 {
     private final int index;
 
@@ -31,5 +31,15 @@ public class DynamicIndexedProperty extends PropertyBase
     public Class getPropertyType(BeanEventType eventType)
     {
         return Object.class;
+    }
+
+    public Class getPropertyTypeMap()
+    {
+        return Object.class;
+    }
+
+    public EventPropertyGetter getGetterMap()
+    {
+        return new MapIndexedPropertyGetter(this.getPropertyName(), index);
     }
 }

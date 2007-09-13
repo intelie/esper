@@ -1,9 +1,8 @@
 package net.esper.event.property;
 
-import net.esper.event.EventPropertyGetter;
 import net.esper.event.EventBean;
+import net.esper.event.EventPropertyGetter;
 import net.esper.event.PropertyAccessException;
-import net.sf.cglib.reflect.FastMethod;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;

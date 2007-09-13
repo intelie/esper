@@ -6,10 +6,15 @@ import net.esper.support.bean.*;
 import net.esper.client.EPServiceProvider;
 import net.esper.client.EPServiceProviderManager;
 import net.esper.client.EPStatement;
+import net.esper.client.EPException;
 import net.esper.event.EventBean;
 import net.esper.event.EventType;
 
-public class TestEventPropertyDynamic extends TestCase
+import java.util.Properties;
+import java.util.Map;
+import java.util.HashMap;
+
+public class TestEventPropertyDynamicBean extends TestCase
 {
     private SupportUpdateListener listener;
     private EPServiceProvider epService;

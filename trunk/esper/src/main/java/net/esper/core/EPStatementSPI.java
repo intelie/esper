@@ -33,6 +33,7 @@ public interface EPStatementSPI extends EPStatement
     /**
      * Set statement state.
      * @param currentState new current state
+     * @param timeLastStateChange the timestamp the statement changed state
      */
     public void setCurrentState(EPStatementState currentState, long timeLastStateChange);
 

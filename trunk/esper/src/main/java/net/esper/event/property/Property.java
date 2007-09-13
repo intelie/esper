@@ -22,4 +22,16 @@ public interface Property
      * @return fast property value getter for property
      */
     public EventPropertyGetter getGetter(BeanEventType eventType);
+
+    /**
+     * Returns the property type for use with Map event representations.
+     * @return property type
+     */
+    public Class getPropertyTypeMap();
+
+    /**
+     * Returns the getter-method for use with Map event representations.
+     * @return getter for maps
+     */
+    public EventPropertyGetter getGetterMap();
 }

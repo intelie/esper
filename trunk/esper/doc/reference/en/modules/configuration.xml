@@ -7,6 +7,11 @@
         pattern and EQL statements, and to tune the engine behavior to specific requirements. The Esper engine works out-of-the-box without configuration.
     </para>
 
+    <para>
+        An application can supply configuration at the time of engine allocation using the <literal>Configuration</literal> class, and can also use XML files to hold configuration. Configuration can be changed at runtime
+        via the <literal>ConfigurationOperations</literal> interface available from <literal>EPAdministrator</literal> via the <literal>getConfiguration</literal> method.
+    </para>
+
     <sect1 id="configuration-programmatic" revision="1">
         <title>Programmatic Configuration</title>
 
@@ -31,6 +36,11 @@ EPServiceProvider epService = EPServiceProviderManager.getProvider("sample", con
 			Note that <literal>Configuration</literal> is meant only as an initialization-time object. The Esper engine represented by an <literal>EPServiceProvider</literal> is immutable and does not retain any association back to the <literal>Configuration</literal>.
         </para>
         
+        <para>
+			The <literal>ConfigurationOperations</literal> interface provides runtime configuration options. Through this interface applications can, for example, add new event types or aliases at runtime and then create new statements
+			that rely on the additional configuration. The <literal>getConfiguration</literal> method on <literal>EPAdministrator</literal> allows access to <literal>ConfigurationOperations</literal>.
+        </para>
+
     </sect1>
 
 	<sect1 id="configuration-via-xml" revision="1">

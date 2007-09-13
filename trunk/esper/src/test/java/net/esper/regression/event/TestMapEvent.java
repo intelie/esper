@@ -11,6 +11,7 @@ import net.esper.support.bean.SupportMarketDataBean;
 import net.esper.support.bean.SupportBean;
 import net.esper.support.bean.SupportBeanComplexProps;
 import net.esper.support.client.SupportConfigFactory;
+import net.esper.event.EventBean;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 

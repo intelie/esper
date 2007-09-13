@@ -258,6 +258,13 @@
 			</itemizedlist>
 
 			<para>
+				The engine can provide a callback to the view indicating when a statement using the view is stopped. The callback is available to the view via the <literal>net.esper.view.StatementStopCallback</literal> interface. Your
+				view code must subscribe to the stop callback in order for the engine to invoke the callback:
+			</para>
+			
+			<programlisting><![CDATA[statementContext.getStatementStopService().addSubscriber(this);]]></programlisting>
+
+			<para>
 				Please refer to the sample views for a code sample on how to implement <literal>iterator</literal> and <literal>cloneView</literal> methods.
 			</para>
 

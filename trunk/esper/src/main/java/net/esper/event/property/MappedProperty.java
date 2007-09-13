@@ -68,4 +68,14 @@ public class MappedProperty extends PropertyBase
         }
         return propertyDesc.getReadMethod().getReturnType();
     }
+
+    public Class getPropertyTypeMap()
+    {
+        return null;  // Mapped properties are not allowed in non-dynamic form in a map
+    }
+
+    public EventPropertyGetter getGetterMap()
+    {
+        return null;  // Mapped properties are not allowed in non-dynamic form in a map
+    }
 }

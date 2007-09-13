@@ -62,7 +62,7 @@ public abstract class ExprNode implements ExprValidator, ExprEvaluator, MetaDefI
      * @param streamTypeService - serves stream type information
      * @param methodResolutionService - for resolving class names in library method invocations
      * @param viewResourceDelegate - delegates for view resources to expression nodes
-     * @param timeProvider
+     * @param timeProvider - provides engine current time
      * @throws ExprValidationException when the validation fails
      * @return the root node of the validated subtree, possibly
      *         different than the root node of the unvalidated subtree

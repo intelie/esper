@@ -99,6 +99,9 @@ public abstract class UpdateDispatchViewBase extends ViewSupport implements Disp
         return new SingleEventIterator(lastIterableEvent);
     }
 
+    /**
+     * Dispatches when the statement is stopped any remaining results.
+     */
     public void dispatchOnStop()
     {
         if ((lastNewEvents.get().size() > 0) || (lastOldEvents.get().size() > 0))

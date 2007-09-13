@@ -115,4 +115,41 @@ public class NestedProperty implements Property
 
         return result;
     }
+
+    public Class getPropertyTypeMap()
+    {
+        // Only if the top-level property is a dynamic property can this property exist
+        if (properties.get(0) instanceof DynamicProperty)
+        {
+            return Object.class;
+        }
+        else
+        {
+            return null;
+        }
+    }
+
+    public EventPropertyGetter getGetterMap()
+    {
+        // Only if the top-level property is a dynamic property can this property exist
+        if (!(properties.get(0) instanceof DynamicProperty))
+        {
+            return null;
+        }
+
+        List<EventPropertyGetter> getters = new LinkedList<EventPropertyGetter>();
+
+        for (Iterator<Property> it = properties.iterator(); it.hasNext();)
+        {
+            Property property = it.next();
+            EventPropertyGetter getter = property.getGetterMap();
+            if (getter == null)
+            {
+                return null;
+            }
+            getters.add(getter);
+        }
+
+        return new MapNestedPropertyGetter(getters);
+    }
 }

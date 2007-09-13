@@ -108,4 +108,14 @@ public class IndexedProperty extends PropertyBase
         }
         return null;
     }
+
+    public Class getPropertyTypeMap()
+    {
+        return null;  // indexed properties are not allowed in non-dynamic form in a map
+    }
+
+    public EventPropertyGetter getGetterMap()
+    {
+        return null;  // indexed properties are not allowed in non-dynamic form in a map
+    }
 }

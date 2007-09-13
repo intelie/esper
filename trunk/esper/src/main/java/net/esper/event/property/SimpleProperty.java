@@ -39,4 +39,14 @@ public class SimpleProperty extends PropertyBase
         }
         return eventType.getPropertyType(propertyName);
     }
+
+    public Class getPropertyTypeMap()
+    {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public EventPropertyGetter getGetterMap()
+    {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
 }

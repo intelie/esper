@@ -44,6 +44,7 @@ public final class FilterSpecCompiler
      * @param taggedEventTypes is a map of stream names (tags) and event types available
      * @param streamTypeService is used to set rules for resolving properties
      * @param methodResolutionService resolved imports for static methods and such
+     * @param timeProvider - provides engine current time
      * @return compiled filter specification
      * @throws ExprValidationException if the expression or type validations failed
      */

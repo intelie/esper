@@ -67,6 +67,7 @@ public class ResultSetProcessorFactory
      * @param eventAdapterService - wrapping service for events
      * @param methodResolutionService - for resolving class names
      * @param viewResourceDelegate - delegates views resource factory to expression resources requirements
+     * @param timeProvider - provides engine current time for selection on of filtering and grouping 
      * @return result set processor instance
      * @throws ExprValidationException when any of the expressions is invalid
      */

@@ -1,21 +1,91 @@
 Tutorial
 ~~~~~~~~~~~~~~
 
-  EQL is name of the event query language that Esper provides. EQL is very similar to SQL in it's syntax and 
-  offers additional capabilities for event stream processing. As part of EQL, Esper also offers a pattern language that provides for stateful (state-machine) event pattern matching. EQL and patterns can be used alone or can be combined into useful, easy to read statements. EQL also has object-oriented event processing capabilities leveraging the Java type system and XML.
+* Introduction
 
-  EQL offers two principal methods of event processing that can be used alone or in combination:
-  
-  [[1]] Event stream analysis
+	Esper is an Event Stream Processing (ESP) and event correlation engine (CEP, Complex Event Processing). 
+	Targeted to real-time Event Driven Architectures (EDA), Esper is capable of triggering custom actions written as 
+	Plain Old Java Objects (POJO) when event conditions occur among event streams. 
+	It is designed for high-volume event correlation where millions of events coming in would make it impossible to store 
+	them all to later query them using classical database architecture. 
+	
+	A tailored Event Query Language (EQL) allows expressing rich event conditions, correlation, possibly spanning time windows, 
+	thus minimizing the development effort required to set up a system that can react to complex situations.
 
-  [[2]] Event pattern matching
-    
-  []
-    
+	Esper is a lightweight kernel written in Java which is fully embeddable into any Java process, JEE application server or 
+	Java-based Enterprise Service Bus. It enables rapid development of applications that process large volumes of incoming messages or events.
+
+* Introduction to event streams and complex events
+
+	Information is critical to make wise decisions. This is true in real life but also in computing, and especially critical in several 
+	areas, such as finance, fraud detection, business intelligence or battlefield operation. 
+	Information flows in from different sources in the form of messages or events, giving a hint on the state at a given time such as stock price. 
+	That said, looking at those discrete events is most of the time meaningless. 
+	A trader needs to look at the stock trend over a period, possibly combined with other information to make the best deal at the right time.
+
+	While discrete events when looked one by one might be meaningless, event streams--that is an infinite set of events--considered over a sliding 
+	window and further correlated, are highly meaningful, and reacting to them with the minimal latency is critical for effective action and competitive 
+	advantage.
+
+* Introduction to Esper
+	
+	Relational databases or message-based systems such as JMS make it really hard to deal with temporal data and real-time queries. 
+	Indeed, databases require explicit querying to return meaningful data and are not suited to push data as it changes. 
+	JMS systems are stateless and require the developer to implement the temporal and aggregation logic himself. 
+	By contrast, the Esper engine provides a higher abstraction and intelligence and can be thought of as a database turned upside-down: 
+	instead of storing the data and running queries against stored data, Esper allows applications to store queries and run the data through. 
+	Response from the Esper engine is real-time when conditions occur that match user defined queries. 
+	The execution model is thus continuous rather than only when a query is submitted.
+
+	Such concepts are a key foundation of EDA, and have been under active research in more than the last 10 years. 
+	Awareness of the importance of such systems in real-world architectures has started to emerge only recently.
+
+	In Esper, a tailored EQL allows registering queries in the engine. A listener class--which is basically a POJO--will then be called by the 
+	engine when the EQL condition is matched as events flow in. The EQL enables to express complex matching conditions that include temporal 
+	windows, joining of different event streams, as well as filtering, aggregation, and sorting. Esper statements can also be combined 
+	together with "followed by" conditions thus deriving complex events from more simple events. Events can be represented as JavaBean 
+	classes, legacy Java classes, XML document or java.util.Map, which promotes reuse of existing systems acting as messages publishers.
+
+	A trivial yet meaningful example is as follow: assume a trader wants to buy Google stock as soon as the price goes below some 
+	floor value-- not when looking at each tick but when the computation is done over a sliding time window--say of 30 seconds. 
+	Given a StockTick event bean with a price and symbol property and the EQL "select avg(price) from StockTick.win:time(30 sec) where symbol='GOOG'", a listener POJO would get notified as ticks come in to trigger the buy order.
+
+
+* Developing event-driven applications
+
+	Developing event-driven application is not hard using Esper. You may want to roughly follow these steps:
+
+	[[1]] Define the mission of your application by analyzing your business domain and defining the situations to be detected or information to be reported
+	
+	[[2]] Define your performance requirements, specifically throughput and latency 
+	
+	[[3]] Identify where events are coming from 
+	
+	[[4]] Identify lower level event formats and event content that is applicable to your domain 
+	
+	[[5]] Design the event relationships leading to complex events
+	
+	[[6]] Instrument your sources of events
+	
+	[[7]] Design how you want to represent events: as Java classes, as Maps, or as XML events
+	
+	[[8]] Define EQL statements for patterns and stream processing 
+	
+	[[9]] Use the CSV adapter as an event simulation tool, to test situations to be detected, or to generate to load
+	
+	[[10]] Test against your performance requirements: throughput and latency in your target environment 
+
+
+* Designing event representations
+
+	Java classes are a simple, rich and versatile way to represent events in Esper. Java classes offer inheritance and polymorphism via
+	interfaces and super-classes, and can represent a complex business domain via an object graph. Maps and XML are an alternative way
+	of representing events.
+	    
       
 * Event Stream Analysis
 	
-	EQL statements are used to derive and aggregate information from one or more streams of events, to join or merge event streams,
+	EQL statements derive and aggregate information from one or more streams of events, to join or merge event streams,
 	and to feed results from one event stream to subsequent statements.  
 	
 	EQL is similar to SQL in it's use of the <select> clause and the <where> clause. However EQL statements instead of tables use event streams
@@ -100,24 +170,10 @@ group by symbol
 	Patterns match when a sequence (or absence) of events is detected. Pattern match results are available for
 	further analysis and processing.
 	
-	The pattern below detects a sitation where a Status event is not followed by another Status event with the same id within 10 seconds.
-	The statement further counts all such occurances grouped per id. 
+	The pattern below detects a situation where a Status event is not followed by another Status event with the same id within 10 seconds.
+	The statement further counts all such occurrences grouped per id. 
 
 ----------------------------------------
 select a.id, count(*) from pattern [ every a=Status -> (timer:interval(10 sec) and not Status(id=a.id)]
 group by id
 ----------------------------------------
-
-* Event Representation in Java
-
-  Events are represented as JavaBean instances. Esper can interrogate any plain-old Java object representing an event as long as the object exposes the required getter methods
-  following the JavaBean conventions.
-  
-  Esper can also query object graphs consisting of arrays, mapped or nested event properties, or any combination. The following are examples of valid 
-  event properties for EQL and pattern statements:
-  
-----------------------------------------
-  OrderEvent.item[1].description				
-  RFIDEvent.attribute('shelfcode')
-----------------------------------------  
-

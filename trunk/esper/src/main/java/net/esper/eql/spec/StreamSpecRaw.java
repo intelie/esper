@@ -24,6 +24,7 @@ public interface StreamSpecRaw extends StreamSpec
      * @param eventAdapterService supplies type information
      * @param methodResolutionService for resolving imports
      * @param patternObjectResolutionService for resolving pattern objects
+     * @param timeProvider - provides engine current time
      * @return compiled stream
      * @throws ExprValidationException to indicate validation errors
      */

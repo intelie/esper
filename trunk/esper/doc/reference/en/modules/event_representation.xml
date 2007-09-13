@@ -201,6 +201,10 @@ select detail?.direction? from OrderEvent]]></programlisting>
 			</listitem>
 		</itemizedlist>
 
+		<para>
+			Dynamic event properties work with all event representations outlined next: Java objects, Map-based and XML DOM-based events.
+		</para>
+
 	</sect1>
 
 	<sect1 id="eventrep-javabean">
@@ -323,9 +327,26 @@ where address('work').streetName = 'Park Ave'
 		</para>
 
 		<para>
-			The engine can process <literal>java.util.Map</literal> events via the <literal>sendEvent(Map map, String eventTypeAlias)</literal> method on the <literal>EPRuntime</literal> interface. Entries in the Map represent event properties. Keys must be of type <literal>java.util.String</literal> for the engine to be able to look up event property names specified by pattern or EQL statements. Values can be of any type. JavaBean-style objects as values in a <literal>Map</literal> can also be processed by the engine. 
+			The engine can process <literal>java.util.Map</literal> events via the <literal>sendEvent(Map map, String eventTypeAlias)</literal> method on the <literal>EPRuntime</literal> interface. Entries in the Map represent event properties. Keys must be of type <literal>java.util.String</literal> for the engine to be able to look up event property names specified by pattern or EQL statements. 
 		</para>
 			
+		<para>
+			Map event properties can be of any type. Map event properties that are Java application objects or that are of type <literal>java.util.Map</literal> offer additional power:
+		</para>
+
+			<itemizedlist spacing="compact">
+				<listitem>
+					<para>
+						Properties that are Java application objects can be queried via the nested, indexed, mapped and dynamic property syntax as outlined earlier. 
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						Properties that are of type <literal>Map</literal> allow Maps to be nested arbitrarily deep and thus can be used to represent complex domain information. The nested, indexed, mapped and dynamic property syntax can be used to query Maps within Maps.. 					
+					</para>
+				</listitem>
+			</itemizedlist>
+
 		<para>
 			In order to use <literal>Map</literal> events, the event type name and property names and types must be made known to the engine via Configuration. Please see the examples in <xref linkend="config-java-util-map"/>.
 		</para>
