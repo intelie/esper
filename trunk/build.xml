@@ -1,0 +1,77 @@
+<project name="esper" default="info" basedir=".">
+
+	<!-- Name of project and version, used to create filenames -->
+	<property name="Name" value="Esper"/>
+	<property name="name" value="esper"/>
+	<property name="version" value="1.11.0"/>
+	<property name="patchlevel" value=""/>
+	<property name="fullversion" value="${version}${patchlevel}"/>
+	<property name="fullname" value="${name}-${fullversion}"/>
+
+	<property name="dist.dir" value=".."/>
+	<property name="lib.dir" value="lib"/>
+	<property name="src.dir" value="src/main/java"/>
+	<property name="generated.src" value="target/generated-sources/antlr"/>
+	<property name="doc.dir" value="doc"/>
+	<property name="doc.api.dir" value="${doc.dir}/api"/>
+	<property name="dist.api.dir" value="doc/javadoc/api"/>
+
+	<property name="dist_excludes" value="**/target/**, **/intellij/**, **/doc/reference/support/**, examples/terminalsvc/terminalsvc-ear/target/example-terminalsvc-ear-1.0/**, examples/terminalsvc-jse/**, esper/src/**, esper/grammar/**, esper/doc/api/**, esper/doc/reference/en/**, esper/etc/regression/**, esperio/src/**, esperio/etc/regression/**, esperio/doc/api/**, esperio/doc/reference/en/**, esper/**/build.xml, build.xml, esper/**/pom.xml, esperio/**/build.xml, esperio/**/pom.xml, esper/lib/*mysql*.jar, examples/benchmark/lib/*.jar"/>
+<!--	<property name="dist_excludes" value="**/target/site/**, **/target/*classes*/**, **/target/*reports*/**, **/intellij/**, **/doc/reference/support/**, examples/terminalsvc/terminalsvc-ear/target/example-terminalsvc-ear-1.0/**, examples/terminalsvc-jse/**, esper/src/**, esper/grammer/**,  "/> For source distribution --> 
+
+	<target name="info" description="The master build is done my Maven">
+		<echo message="Please use Maven 2 to build Esper and related components. Maven build instructions are available on the website." />
+	</target>
+
+	<target name="grammar_html" description="Generate HTML page from ANTLR grammar">
+       <java classname="antlr.Tool">
+         <arg value="-html"/>
+         <arg value="-o"/>
+         <arg value="esper/doc/grammar"/>
+         <arg value="esper/grammar/eql.g"/>
+         <classpath>
+           <pathelement location="esper/lib/antlr-2.7.5.jar"/>
+         </classpath>
+       </java>
+    </target>
+
+	<target name="touch_all" description="Update timestamp all artifacts">
+		<touch>
+			<fileset dir=".">
+				<include name="**/*.java"/>
+			</fileset>
+		</touch>
+	</target>
+
+	<target name="source_zip" description="Zip up dev artifacts">
+		<echo message="Building a zip of the development artifacts" />
+		<zip zipfile="${dist.dir}/${fullname}-dev-artifacts.zip" basedir="." excludes="**/target/**, **/lib/**, **/doc/javadoc/**, **/doc/build/**, **/doc/reference/support/**,**/doc/reference/build/**, **/*.jar, **/*.ear, **/*.war" />
+	</target>
+	
+	<target name="dist_zip" description="Zip up distribution" depends="touch_all">
+		<echo message="Building a zip for distribution" />
+		<property name="zip-file" value="${dist.dir}/${fullname}.zip"/>
+		<zip zipfile="${zip-file}">
+			<zipfileset prefix="${name}-${version}" dir="." excludes="${dist_excludes}"/>
+		</zip>
+		<checksum file="${zip-file}" algorithm="MD5" fileext=".md5"/>
+		<checksum file="${zip-file}" algorithm="SHA" fileext=".asc"/>		
+	</target>
+
+	<target name="dist_tar" description="Tar up distribution" depends="touch_all">
+		<property name="tar-file" value="${dist.dir}/${fullname}.tar"/>
+		<echo message="Building a tar for distribution" />
+		<fixcrlf srcdir="examples/etc"
+		       eol="lf"
+		       eof="remove"
+		       includes="**/*.sh"/>
+		<tar longfile="gnu" tarfile="${tar-file}">
+			<tarfileset prefix="${name}-${version}" dir="." excludes="${dist_excludes}"/>
+			<tarfileset prefix="${name}-${version}" dir="." mode="555" includes="examples/etc/*.sh"/>
+		</tar>
+		<gzip zipfile="${tar-file}.gz" src="${tar-file}" />			
+		<checksum file="${tar-file}.gz" algorithm="MD5" fileext=".md5"/>
+		<checksum file="${tar-file}.gz" algorithm="SHA" fileext=".asc"/>		
+	</target>
+	
+</project>

@@ -1,0 +1,176 @@
+Event Stream Intelligence with Esper and NEsper 
+
+	Esper is a component for CEP and ESP applications, available for Java as Esper, and for .NET as NEsper.
+
+	Esper and NEsper enable rapid development of applications that process large volumes of incoming messages or events. Esper and NEsper filter 
+	and analyze events in various ways, and respond to conditions of interest in real-time.
+		
+
+Technology Introduction
+
+	Complex Event Processing, or CEP, is technology to process events and discover complex patterns among multiple streams of event data.
+	ESP stands for Event Stream Processing and deals with the task of processing multiple streams of event data with the goal of identifying the meaningful events within those streams,
+	and deriving meaningful information from them.
+		
+
+	The Esper engine has been developed to address the requirements of applications that analyze and react to events. Some typical examples of applications are:
+	
+	* Business process management and automation (process monitoring, BAM, reporting exceptions, operational intelligence) 
+	
+	* Finance (algorithmic trading, fraud detection, risk management) 
+	
+	* Network and application monitoring (intrusion detection, SLA monitoring) 
+	
+	* Sensor network applications (RFID reading, scheduling and control of frabrication lines, air traffic) 
+	
+	[]
+
+
+Features
+
+	
+* Event Stream Processing
+
+		* Time-based, interval-based, length-based and sorted windows
+
+		* Grouping, aggregation, sorting, filtering and merging of event streams
+
+		* Tailored SQL-like query language using <insert into>, <select>, <from>, <where>, <group-by>, <having> and <order-by> clauses
+
+		* Inner-joins and outer joins (left, right, full) of an unlimited number of streams or windows
+
+		* Subqueries including <exists> and <in>
+		
+		* Output rate limiting and stabilizing
+		
+		[]
+		
+        
+* Event Pattern Matching
+
+		* Logical and temporal event correlation
+
+		* Crontab-like timer <'at'> operator
+
+		* Lifecyle of pattern can be controlled by timer and via operators
+
+        * Pattern-matched events provided to listeners
+
+        []
+
+* Event Representations
+	
+        * Supports event-type inheritance and polymorphism as provided by the Java language
+
+        * Events can be plain Java objects, XML document object model (DOM) and java.util.Map including nested objects
+
+        * Event properties can be simple, indexed, mapped or nested - allows querying of deep Java object graphs and XML structures
+        
+        * Dynamic properties allow dynamic typing of properties, suppored by <cast>, <instanceof> and <exists> functions
+
+        []
+        
+* Prepared statements and substitution parameters
+    
+        * Precompile a statement with substitution parameters and efficiently start the parameterized statement multiple times
+        
+        []
+        
+* Statement Object Model
+    
+        * A set of classes providing an object-oriented representation of a statement 
+        
+        * Full and complete specification of a statement via object model
+        
+        * Round-trip from object model to statement text and back to object model
+        
+        * Build, change or interrogate statements beyond the textual representation 
+        
+        []
+        
+* Input Adapters
+    	
+    	* CSV input adapter reads comma-separated value formats
+    	
+    		* simulate multiple event streams with timed, coordinated playback via timestamp column
+    		
+    		* load generator
+    		
+    		* preloading of reference data
+    	
+    	* JMS input and output adapter based on Spring JMS templates
+			
+		[]
+
+* Other
+
+    * Relational database access via SQL-query joins with event streams; LRU and expiry-time query result caches
+	
+    * Supports both listener (push) and consumer (pull) model 
+	
+    * Supports externally-supplied time as well as Java system time	
+	
+    * Multithread-safe as of release 1.5
+    
+    	* Multithreaded sends of events into the engine
+    	
+    	* Create, start and stop statements during operation
+    	
+    	* Applications can retain full control over threading
+    	
+    	* Efficiently sharing resources between statements
+    	
+    * Supports multiple independent Esper engines per JavaVM
+    		  
+    * Pluggable architecture for event pattern and event stream analysis via user-defined functions, plug-in views, plug-in aggregation functions, plug-in 
+      pattern guards and plug-in pattern event observers
+	  
+	[]		
+
+
+Typical Uses
+
+	What these applications have in common is the requirement to process events (or messages) in real-time or near real-time. 
+	This is sometimes referred to as complex event processing (CEP) and event stream analysis. 
+
+	Key considerations for these types of applications are the complexity of the logic required, throughput and latency. 
+
+	* Complex computations - applications that detect patterns among events (event correlation), filter events, aggregate time or length windows of events, join event streams, trigger based on absence of events etc.
+
+	* High throughput - applications that process large volumes of messages (between 1,000 to 100k messages per second) 
+	
+	* Low latency - applications that react in real-time to conditions that occur (from a few milliseconds to a few seconds) 
+		
+	[]
+
+
+Java - Known Limitations
+
+	* Esper requires a Java Virtual Machine version 5.0 runtime, or above. 
+	
+	* Esper will not work with JavaVM versions 1.4.2 or below.
+	
+	* An Esper engine instance is multithread-safe, i.e. 2 or more threads sending events to the
+	  same engine instance is supported as of release 1.5. Multiple engine instances in the same Java JVM 
+	  has also been tested and is a supported configuration.
+	  
+	* JDBC drivers must support the getMetadata feature to work correctly with the Esper embedded-SQL feature	  
+	
+
+.NET - Known Limitations
+
+	* NEsper is the .NET version of the Java Esper version 1.3
+	
+	* Features out of version 1.3 that are not available yet:
+	
+		* Database joins
+	
+Summary
+
+	Esper and NEsper were designed to make it easier to build CEP and ESP applications. Esper and NEsper are open-source software available
+	under the GNU General Public License (GPL) license.
+
+=====================
+=====================
+	We are happy to use licenses of {{{http://www.jetbrains.com/idea/?java_esper}IntelliJ IDEA}}, {{{http://www.jetbrains.com/resharper/?java_esper}ReSharper}}, and {{{http://www.jetbrains.com/profiler/?java_esper}dotTrace}} through the {{{http://www.jetbrains.com/devnet/index.html?java_esper}JetBrains Open Source Program}}
+	
