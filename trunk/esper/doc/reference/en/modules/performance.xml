@@ -1,0 +1,512 @@
+<chapter id="performance" revision="1">
+
+    <title>Performance</title>
+
+    <para>
+        Esper has been highly optimized to handle very high throughput streams with very little latency between event receipt and output result posting.
+        It is also possible to use Esper on a soft-real-time or hard-real-time JVM to maximize predictability even
+        further.
+    </para>
+
+    <para>
+        This section describes performance best practices and explains how to assess Esper performance by using our
+        provided performance kit.
+    </para>
+
+    <sect1 id="performance-results" revision="1">
+        <title>Performance Results</title>
+
+
+        <para>
+            For a complete understanding of those results, consult the next sections.
+        </para>
+
+        <para>
+            <programlisting>Esper exceeds over 500 000 event/s on a dual CPU 2GHz Intel based hardware,
+with engine latency below 3 microseconds average (below 10us with more than 
+99% predictability) on a VWAP benchmark with 1000 statements registered in the system 
+- this tops at 70 Mbit/s at 85% CPU usage.
+
+Esper also demonstrates linear scalability from 100 000 to 500 000 event/s on this 
+hardware, with consistent results accross different statements.
+
+Other tests demonstrate equivalent performance results
+(straight through processing, match all, match none, no statement registered,
+VWAP with time based window or length based windows).
+                
+Tests on a laptop demonstrated about 5x time less performance - that is 
+between 70 000 event/s and 200 000 event/s - which still gives room for easy 
+testing on small configuration.</programlisting>
+        </para>
+
+
+    </sect1>
+
+    <sect1 id="performance-tips" revision="1">
+        <title>Performance Tips</title>
+
+		<sect2 id="perf-tips-1">
+			<title>Understand how to tune your Java virtual machine</title>
+	
+			<para>
+				Esper runs on a JVM and you need to be familiar with JVM tuning.
+				Key parameters to consider include minimum and maximum heap memory and nursery heap sizes.
+				Statements with time-based or length-based data windows can consume large amounts of memory as their size or length can be large.
+			</para>
+
+			<para>
+				For time-based data windows, one needs to be aware that the memory consumed depends on the actual event stream input
+				throughput. Event pattern instances also consume memory, especially when using the "every"
+				keyword in patterns to repeat pattern sub-expressions - which again will depend on the actual event stream input throughput.
+			</para>
+		</sect2>
+	
+		<sect2 id="perf-tips-2">
+			<title>Compare Esper to other solutions</title>
+			<para>
+				If you compare Esper performance to the performance of another solution, you need to ensure that your statements have
+				truly equivalent semantics. The is because between different vendors the event processing language can be seem fairly similar 
+				whoever may, for all similarities, produce different results.
+			</para>
+
+			<para>
+				For example some vendor solution mandates the use of "bounded streams". The next statement shows one vendor's event processing syntax:
+			</para>
+
+<programlisting><![CDATA[// Other (name omitted) vendor solution statement:
+select * from (select * from Market where ticker = 'GOOG') retain 1 event
+// The above is NOT an Esper statement]]></programlisting>
+			<para>
+				The semantically equivalent statement in Esper is:
+			</para>
+		
+<programlisting><![CDATA[// Esper statement with the same semantics:
+select * from MarketData(ticker='$').win:length(1)]]></programlisting>
+
+			<para>
+				As an example, a NOT semantically equivalent statement in Esper is:
+			</para>
+		
+<programlisting><![CDATA[// Esper statement that DOES ***NOT*** HAVE the same semantics 
+// No length window was used
+select * from MarketData(ticker='$')]]></programlisting>
+		</sect2>
+
+		<sect2 id="perf-tips-3">
+			<title>Select the underlying event rather than individual fields</title>
+			
+			<para>
+				By selecting the underlying event in the select-clause we can reduce load on the engine, since the 
+				engine does not need to generate a new output event for each input event.
+			</para>
+	
+			<para>
+				For example, the following statement returns the underlying event to update listeners:
+			</para>
+	
+<programlisting><![CDATA[// Better performance
+select * from RFIDEvent]]></programlisting>
+
+			<para>
+				In comparison, the next statement selects individual properties. This statement requires the engine to generate an output event that 
+				contains exactly the required properties:
+			</para>
+
+<programlisting><![CDATA[// Less good performance
+select assetId, zone, xlocation, ylocation from RFIDEvent ]]></programlisting>
+		</sect2>
+		
+		<sect2 id="perf-tips-4">
+			<title>Prefer stream-level filtering over post-data-window filtering</title>
+
+			<para>
+				Esper stream-level filtering is very well optimized, while filtering via the where-clause post any data windows is not optimized. 
+				In very simple statements that don't have data windows this distinction can make a performance difference.
+			</para>
+	
+			<para>
+				Consider the example below, which performs stream-level filtering:
+			</para>
+
+<programlisting><![CDATA[// Better performance : stream-level filtering
+select * from MarketData(ticker = 'GOOG')]]></programlisting>
+
+			<para>
+				The example below is the equivalent (same semantics) statement and performs post-data-window filtering without a data window.
+				The engine does not optimize statements that filter in the where-clause for the reason that data window views are generally present.
+			</para>
+
+<programlisting><![CDATA[// Less good performance : post-data-window filtering
+select * from Market where ticker = 'GOOG']]></programlisting>
+
+			<para>
+				Thus this optimization technique applies to statements without any data window. 
+			</para>
+
+			<para>
+				When a data window is used, the semantics change. Let's look at an example to better understand the difference:
+				In the next statement only GOOG market events enter the length window:
+			</para>
+
+			<programlisting><![CDATA[select avg(price) from MarketData(ticker = 'GOOG').win:length(100)]]></programlisting>
+
+			<para>
+				The above statement computes the average price of GOOG market data events for the last 100 GOOG market data events. 
+			</para>
+			
+			<para>
+				Compare the filter position to a filter in the where clause. 
+				The following statement is NOT equivalent as all events enter the data window (not just GOOG events):
+			</para>
+	
+			<programlisting><![CDATA[select avg(price) from Market.win:length(100) where ticker = 'GOOG']]></programlisting>
+
+			<para>
+				The statement above computes the average price of all market data events for the last 100 market data events, and outputs results only for GOOG.
+			</para>
+		</sect2>
+	
+		<sect2 id="perf-tips-6">
+			<title>Reduce the use of arithmetic in expressions</title>
+
+			<para>
+				Esper does not yet attempt to pre-evaluate arithmetic expressions that produce constant results.
+			</para>
+	
+			<para>
+				Therefore, a filter expression as below is optimized:
+			</para>
+<programlisting><![CDATA[// Better performance : no arithmetic
+select * from MarketData(price>40) ]]></programlisting>
+
+			<para>
+				While the engine cannot currently optimize this expression:
+			</para>
+
+<programlisting><![CDATA[// Less good performance : with arithmetic
+select * from MarketData(price+10>50) ]]></programlisting>
+
+		</sect2>
+		
+		<sect2 id="perf-tips-7">
+			<title>Consider using EventPropertyGetter for fast access to event properties</title>
+
+			<para>
+				The EventPropertyGetter interface is useful for obtaining an event property value without property name table lookup 
+				given an EventBean instance that is of the same event type that the property getter was obtained from.
+			</para>
+
+			<para>
+				When compiling a statement, the EPStatement instance lets us know the EventType via the getEventType() method.
+				From the EventType we can obtain EventPropertyGetter instances for named event properties.
+			</para>
+
+			<para>
+				To demonstrate, consider the following simple statement:
+			</para>
+	
+			<programlisting><![CDATA[select symbol, avg(price) from Market group by symbol]]></programlisting>
+
+			<para>
+				After compiling the statement, obtain the EventType and pass the type to the listener:
+			</para>
+	
+<programlisting><![CDATA[EPStatement stmt = epService.getEPAdministrator().createEQL(stmtText);
+MyGetterUpdateListener listener = new MyGetterUpdateListener(stmt.getEventType());]]></programlisting>
+
+			<para>
+				The listener can use the type to obtain fast getters for property values of events for the same type:
+			</para>
+
+<programlisting><![CDATA[public class MyGetterUpdateListener implements StatementAwareUpdateListener {
+    private final EventPropertyGetter symbolGetter;
+    private final EventPropertyGetter avgPriceGetter;
+
+    public MyGetterUpdateListener(EventType eventType) {
+        symbolGetter = eventType.getGetter("symbol");
+        avgPriceGetter = eventType.getGetter("avg(price)");
+    }]]></programlisting>
+
+			<para>
+				Last, the update method can invoke the getters to obtain event property values:
+			</para>
+	
+	<programlisting><![CDATA[    public void update(EventBean[] eventBeans, EventBean[] oldBeans, EPStatement epStatement, EPServiceProvider epServiceProvider) {
+        String symbol = (String) symbolGetter.get(eventBeans[0]);
+        long volume = (Long) volumeGetter.get(eventBeans[0]);
+        // some more logic here
+    }]]></programlisting>
+		</sect2>
+			
+		<sect2 id="perf-tips-8">
+			<title>Consider casting the underlying event</title>
+
+			<para>
+				When an application requires the value of most or all event properties, it can often be best to simply select the underlying event via wildcard
+				and cast the received events.
+			</para>
+
+			<para>
+				Let's look at the sample statement:
+			</para>
+	
+			<programlisting><![CDATA[select * from MarketData(symbol regexp 'E[a-z]')]]></programlisting>
+
+			<para>
+				An update listener to the statement may want to cast the received events to the expected underlying event class:
+			</para>
+	
+<programlisting><![CDATA[    public void update(EventBean[] eventBeans, EventBean[] eventBeans) {
+        MarketData md = (MarketData) eventBeans[0].getUnderlying();
+        // some more logic here
+    }]]></programlisting>
+
+		</sect2>
+		
+		<sect2 id="perf-tips-9">
+			<title>Turn off logging</title>
+
+			<para>
+	Since Esper 1.10, even if you don't have a log4j configuration file in place, Esper will make sure to minimize execution path logging overhead.
+	For prior versions, and to reduce logging overhead overall, we recommend the "WARN" log level or the "INFO" log level.
+			</para>
+
+			<para>
+	Please see the log4j configuration file in "etc/infoonly_log4j.xml" for example log4j settings.
+			</para>
+		</sect2>
+
+    </sect1>
+
+    <sect1 id="performance-kit" revision="1">
+        <title>Using the performance kit</title>
+
+        <sect2 id="how-to-kit" revision="1">
+            <title>How to use the performance kit</title>
+
+        <para>
+            The benchmark application is basically an Esper event server build with Esper that listens to remote clients
+            over TCP.
+            Remote clients send MarketData(ticker, price, volume) streams to the event server.
+            The Esper event server is started with 1000 statements of one single kind (unless otherwise written),
+            with one statement per ticker symbol, unless the statement kind does not depend on the symbol.
+            The statement prototype is provided along the results with a '$' instead of the actual ticker symbol value.
+            The Esper event server is entirely multithreaded and can leverage the full power of 32bit or 64bit
+            underlying hardware multi-processor multi-core architecture.
+        </para>
+
+            <para>
+                The kit also prints out when starting up the event size and the theoretical maximal throughput you can get on a
+                100 Mbit/s and 1 Gbit/s network. Keep in mind a 100 Mbit/s network will be overloaded at about 400 000 event/s when using our kit despite
+                the small size of events.
+            </para>
+
+        <para>
+            Results are posted on our Wiki page at <ulink url="http://docs.codehaus.org/display/ESPER/Esper+performance">http://docs.codehaus.org/display/ESPER/Esper+performance</ulink>.
+            Reported results do not represent best ever obtained results. Reported results may help you better compare
+            Esper to other solutions (for latency, throughput and CPU utilization) and also assess your target hardware and JVMs.
+        </para>
+
+            <para>
+                The Esper event server, client and statement prototypes are provided in the source repository
+                <literal>esper/trunk/examples/benchmark/</literal>
+                . Refer to <ulink url="http://xircles.codehaus.org/projects/esper/repo">http://xircles.codehaus.org/projects/esper/repo</ulink>
+                for source access.
+            </para>
+
+            <para>
+                A built is provided for convenience (without sources) as an attachment to the Wiki page
+                at <ulink url="http://docs.codehaus.org/pages/viewpageattachments.action?pageId=8356191">http://docs.codehaus.org/pages/viewpageattachments.action?pageId=8356191</ulink>.
+                It contains Ant script to start client, server in simulation mode and server. For real measurement we
+                advise
+                to start from a shell script (because Ant is pipelining stdout/stderr when you invoke a JVM from Ant -
+                which
+                is costly). Sample scripts are provided for you to edit and customize.
+            </para>
+
+            <para>
+                If you use the kit you should:
+            </para>
+
+            <orderedlist>
+                <listitem>
+                    <para>
+                        Choose the statement you want to benchmark, add it to
+                        <literal>etc/statements.properties</literal>
+                        under
+                        your own KEY and use the
+                        <literal>-mode KEY</literal>
+                        when you start the Esper event server.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+                        Prepare your runServer.sh/runServer.cmd and runClient.sh/runclient.cmd scripts. You'll need to
+                        drop required
+                        jar libraries in
+                        <literal>lib/</literal>
+                        , make sure the classpath is configured in those script to include
+                        <literal>build</literal>
+                        and
+                        <literal>etc</literal>
+                        . The required libraries are Esper (any compatible version, we have tested started with Esper
+                        1.7.0)
+                        and its dependencies as in the sample below (with Esper 1.10) :
+                        <programlisting><![CDATA[# classpath on Unix/Linux (on one single line)
+etc:build:lib/esper-1.10.0.jar:lib/commons-logging-1.0.3.jar:lib/cglib-full-2.0.2.jar
+   :lib/antlr-2.7.5.jar:lib/log4j-1.2.8.jar
+@rem  classpath on Windows (on one single line)
+etc;build;lib\esper-1.10.0.jar;lib\commons-logging-1.0.3.jar;lib\cglib-full-2.0.2.jar
+   ;lib\antlr-2.7.5.jar;lib\log4j-1.2.8.jar]]></programlisting>
+                        Note that <literal>./etc</literal> and <literal>./build</literal> have to be in the classpath.
+                        At that stage you should also start to set min and max JVM heap. A good start is 1GB as in
+                        <literal>-Xms1g -Xmx1g</literal>
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+                        Write the statement you want to benchmark given that client will send a stream MarketData(String
+                        ticker, int volume, double price), add it to
+                        <literal>etc/statements.properties</literal>
+                        under
+                        your own KEY and use the
+                        <literal>-mode KEY</literal>
+                        when you start the Esper event server.
+                        Use <literal>'$'</literal> in the statement to create a prototype. For every symbol, a statement
+                        will get registered with all <literal>'$'</literal> replaced by the actual symbol value (f.e. <literal>'GOOG'</literal>)
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+                        Ensure client and server are using the same
+                        <literal>-Desper.benchmark.symbol=1000</literal> value.
+                        This sets the number of symbol to use (thus may set the number of statement if you are using
+                        a statement prototype, and governs how MarketData event are represented over the network.
+                        Basically all events will have the same size over the network to ensure predictability and will be ranging
+                        between <literal>S0AA</literal> and <literal>S999A</literal> if you use 1000 as a value here (prefix with S and padded with A up to
+                        a fixed length string. Volume and price attributes will be randomized.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+                        Establish a performance baseline in simulation mode (without clients). Use the
+                        <literal>-rate 1x5000</literal>
+                        option
+                        to simulate one client (one thread) sending 5000 evt/s. You can ramp up both the number of client simulated
+                        thread and their emission rate to maximize CPU
+                        utilization.
+                        The right number should mimic the client emission rate you will use in the client/server benchmark
+                        and should thus be
+                        consistent with what your client machine and network will be able to send.
+                        On small hardware, having a lot of thread with slow rate will not help getting high throughput in this
+                        simulation mode.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+                        Do performance runs with client/server mode. Remove the
+                        <literal>-rate NxM</literal>
+                        option from the runServer script or Ant task.
+                        Start the server with
+                        <literal>-help</literal>
+                        to display the possible server options (listen port, statistics, fan out options etc).
+                        On the remote machine, start one or more client. Use
+                        <literal>-help</literal>
+                        to display the possible client options (remote port, host,
+                        emission rate). The client will output the actual number of event it is sending to the server.
+                        If the server gets overloaded (or if you turned on
+                        <literal>-queue</literal>
+                        options on the server) the client will likely
+                        not be able to reach its target rate.
+                    </para>
+                    <para>
+                        Usually you will get better performance by using server side <literal>-queue -1</literal> option so as to have
+                        each client connection handled by a single thread pipeline. If you change to 0 or more, there will be
+                        intermediate structures to pass the event stream in an asynchronous fashion. This will increase context
+                        switching, although if you are using many clients, or are using the <literal>-sleep xxx</literal> (xxx in
+                        milliseconds) to simulate a listener delay you may get better performance.
+                    </para>
+                    <para>
+                        The most important server side option is <literal>-stat xxx</literal> (xxx in seconds) to print out
+                        throughput and latency statistics aggregated over the last xxx seconds (and reset every time).
+                        It will produce both internal Esper latency (in nanosecond) and also end to end latency (in millisecond, including network time).
+                        If you are measuring end to end latency you should make sure your server and client machine(s) are having the same time
+                        with f.e. ntpd with a good enough precision.
+                        The stat format is like:
+                        <programlisting><![CDATA[---Stats - engine (unit: ns)
+  Avg: 2528 #4101107
+        0 <    5000:  97.01%  97.01% #3978672
+     5000 <   10000:   2.60%  99.62% #106669
+    10000 <   15000:   0.35%  99.97% #14337
+    15000 <   20000:   0.02%  99.99% #971
+    20000 <   25000:   0.00%  99.99% #177
+    25000 <   50000:   0.00% 100.00% #89
+    50000 <  100000:   0.00% 100.00% #41
+   100000 <  500000:   0.00% 100.00% #120
+   500000 < 1000000:   0.00% 100.00% #2
+  1000000 < 2500000:   0.00% 100.00% #7
+  2500000 < 5000000:   0.00% 100.00% #5
+  5000000 <    more:   0.00% 100.00% #18
+---Stats - endToEnd (unit: ms)
+  Avg: -2704829444341073400 #4101609
+        0 <       1:  75.01%  75.01% #3076609
+        1 <       5:   0.00%  75.01% #0
+        5 <      10:   0.00%  75.01% #0
+       10 <      50:   0.00%  75.01% #0
+       50 <     100:   0.00%  75.01% #0
+      100 <     250:   0.00%  75.01% #0
+      250 <     500:   0.00%  75.01% #0
+      500 <    1000:   0.00%  75.01% #0
+     1000 <    more:  24.99% 100.00% #1025000
+Throughput 412503 (active 0 pending 0 cnx 4)]]></programlisting>
+                        This one reads as:
+<programlisting>"Throughput is 412 503 event/s with 4 client connected. No -queue options 
+was used thus no event is pending at the time the statistics are printed. 
+Esper latency average is at 2528 ns (that is 2.5 us) for 4 101 107 events 
+(which means we have 10 seconds stats here). Less than 10us latency 
+was achieved for 106 669 events that is 99.62%. Latency between 5us 
+and 10us was achieved for those 2.60% of all the events in the interval."
+
+"End to end latency was ... in this case likely due to client clock difference
+we ended up with unusable end to end statistics."</programlisting>
+
+	<para>
+		Consider the second output paragraph on end-to-end latency:
+	</para>
+                        
+      <programlisting><![CDATA[---Stats - endToEnd (unit: ms)
+  Avg: 15 #863396
+        0 <       1:   0.75%   0.75% #6434
+        1 <       5:   0.99%   1.74% #8552
+        5 <      10:   2.12%   3.85% #18269
+       10 <      50:  91.27%  95.13% #788062
+       50 <     100:   0.10%  95.22% #827
+      100 <     250:   4.36%  99.58% #37634
+      250 <     500:   0.42% 100.00% #3618
+      500 <    1000:   0.00% 100.00% #0
+     1000 <    more:   0.00% 100.00% #0]]></programlisting>
+     
+     <para>
+		 This would read:
+     </para>
+                        
+<programlisting>"End to end latency average is at 15 milliseconds for the 863 396 events 
+considered for this statistic report. 95.13% ie 788 062 events were handled 
+(end to end) below 50ms, and 91.27% were handled between 10ms and 50ms."</programlisting>
+
+                    </para>
+                </listitem>
+            </orderedlist>
+        </sect2>
+
+        <sect2 id="how-we-kit" revision="1">
+            <title>How we use the performance kit</title>
+
+            <para>
+                We use the performance kit to track performance progress across Esper versions, as well as to implement
+                optimizations. You can track our work on the Wiki at <ulink url=" http://docs.codehaus.org/display/ESPER/Home"> http://docs.codehaus.org/display/ESPER/Home</ulink>
+            </para>
+
+        </sect2>
+    </sect1>
+</chapter>
