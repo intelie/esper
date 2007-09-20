@@ -6,7 +6,7 @@
 	<!ENTITY api SYSTEM "modules/api.xml">
 	<!ENTITY event_representation SYSTEM "modules/event_representation.xml">
 	<!ENTITY examples SYSTEM "modules/examples.xml">
-	<!ENTITY eql SYSTEM "modules/eql_clauses.xml">
+	<!ENTITY eql SYSTEM "modules/eql-clauses.xml">
 	<!ENTITY event_pattern SYSTEM "modules/event_pattern.xml">
 	<!ENTITY references SYSTEM "modules/references.xml">
 	<!ENTITY operatorreference SYSTEM "modules/operatorreference.xml">

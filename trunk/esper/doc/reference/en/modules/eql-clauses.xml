@@ -1025,6 +1025,14 @@ select A.customerId, A.timestamp - B.timestamp
 select A.customerId as custId, A.timestamp - B.timestamp as latency
   from EventA.win:time(30 min) A, EventB.win:time(30 min) B
  where A.txnId = B.txnId</programlisting>
+
+		<para>
+			The <literal>insert into</literal> clause can be used in connection with patterns to provide pattern results to further statements for analysis:
+		</para>
+
+		<programlisting>insert into ReUpEvent
+select linkUp.ip as ip 
+from pattern [every linkDown=LinkDownEvent -> linkUp=LinkUpEvent(ip=linkDown.ip)]</programlisting>
 	</sect1>
 
     <sect1 id="eql-join">
