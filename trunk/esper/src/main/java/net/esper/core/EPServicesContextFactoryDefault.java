@@ -20,6 +20,10 @@ import net.esper.util.JavaClassHelper;
 import net.esper.util.ManagedReadWriteLock;
 import net.esper.timer.TimerService;
 import net.esper.timer.TimerServiceImpl;
+import net.esper.filter.FilterServiceProvider;
+import net.esper.filter.FilterService;
+import net.esper.view.stream.StreamFactoryServiceProvider;
+import net.esper.view.stream.StreamFactoryService;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -64,11 +68,14 @@ public class EPServicesContextFactoryDefault implements EPServicesContextFactory
         }
         TimerService timerService = new TimerServiceImpl(msecTimerResolution);
 
+        StreamFactoryService streamFactoryService = StreamFactoryServiceProvider.newService(configSnapshot.getEngineDefaults().getViewResources().isShareViews());
+        FilterService filterService = FilterServiceProvider.newService();
+
         // New services context
         EPServicesContext services = new EPServicesContext(epServiceProvider.getURI(), schedulingService,
                 eventAdapterService, engineImportService, engineSettingsService, databaseConfigService, plugInViews,
                 new StatementLockFactoryImpl(), eventProcessingRWLock, null, jndiContext, statementContextFactory,
-                plugInPatternObj, outputConditionFactory, timerService, configSnapshot.getEngineDefaults().getViewResources().isShareViews());
+                plugInPatternObj, outputConditionFactory, timerService, filterService, streamFactoryService);
 
         // Circular dependency
         StatementLifecycleSvc statementLifecycleSvc = new StatementLifecycleSvcImpl(epServiceProvider, services);

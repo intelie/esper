@@ -92,7 +92,9 @@ public final class EPServicesContext
                              PluggableObjectCollection plugInPatternObjects,
                              OutputConditionFactory outputConditionFactory,
                              TimerService timerService,
-                             boolean isShareViews)
+                             FilterService filterService,
+                             StreamFactoryService streamFactoryService
+                             )
     {
         this.engineURI = engineURI;
         this.schedulingService = schedulingService;
@@ -100,12 +102,12 @@ public final class EPServicesContext
         this.engineImportService = engineImportService;
         this.engineSettingsService = engineSettingsService;
         this.databaseConfigService = databaseConfigService;
-        this.filterService = FilterServiceProvider.newService();
+        this.filterService = filterService;
         this.timerService = timerService;
         this.emitService = EmitServiceProvider.newService();
         this.dispatchService = DispatchServiceProvider.newService();
         this.viewService = ViewServiceProvider.newService();
-        this.streamFactoryService = StreamFactoryServiceProvider.newService(isShareViews);
+        this.streamFactoryService = streamFactoryService;
         this.plugInViews = plugInViews;
         this.statementLockFactory = statementLockFactory;
         this.eventProcessingRWLock = eventProcessingRWLock;
