@@ -1,18 +1,17 @@
 package net.esper.event.xml;
 
 
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathExpression;
-import javax.xml.xpath.XPath;
-
-import net.esper.event.EventPropertyGetter;
-import net.esper.event.TypedEventPropertyGetter;
 import net.esper.client.ConfigurationEventTypeXMLDOM;
 import net.esper.client.EPException;
+import net.esper.event.EventPropertyGetter;
+import net.esper.event.TypedEventPropertyGetter;
 
-import java.util.Map;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathExpressionException;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Optimistic try to resolve the property string into an appropiate xPath,

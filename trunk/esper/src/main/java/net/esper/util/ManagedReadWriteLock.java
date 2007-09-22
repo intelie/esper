@@ -47,11 +47,12 @@ public class ManagedReadWriteLock
     /**
      * Ctor.
      * @param name of lock
+     * @param isFair true if a fair lock, false if not
      */
-    public ManagedReadWriteLock(String name)
+    public ManagedReadWriteLock(String name, boolean isFair)
     {
         this.name = name;
-        this.lock = new ReentrantReadWriteLock();
+        this.lock = new ReentrantReadWriteLock(isFair);
     }
 
     /**
