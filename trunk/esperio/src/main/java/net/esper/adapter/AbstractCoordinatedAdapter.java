@@ -258,7 +258,10 @@ public abstract class AbstractCoordinatedAdapter implements CoordinatedAdapter
 		}
 		else
 		{
-			long afterMsec = eventsToSend.first().getSendTime() - currentTime;
+            // Offset is not a function of the currentTime alone.
+            long baseMsec = currentTime - startTime;
+            long afterMsec = eventsToSend.first().getSendTime() - baseMsec;
+
 			nextScheduleSlot = eventsToSend.first().getScheduleSlot();
 			log.debug(".scheduleNextCallback schedulingCallback in " + afterMsec + " milliseconds");
 			schedulingService.add(afterMsec, scheduleCSVHandle, nextScheduleSlot);

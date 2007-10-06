@@ -13,6 +13,8 @@ import net.esper.view.ViewEnumHelper;
 import net.esper.view.ViewResolutionService;
 import net.esper.view.ViewResolutionServiceImpl;
 
+import java.util.Map;
+
 /**
  * Default implementation for making a statement-specific context class.
  */
@@ -40,7 +42,8 @@ public class StatementContextFactoryDefault implements StatementContextFactory
     public StatementContext makeContext(String statementId,
                                     String statementName,
                                     String expression,
-                                    EPServicesContext engineServices)
+                                    EPServicesContext engineServices,
+                                    Map<String, Object> optAdditionalContext)
     {
         // Allocate the statement's schedule bucket which stays constant over it's lifetime.
         // The bucket allows callbacks for the same time to be ordered (within and across statements) and thus deterministic.

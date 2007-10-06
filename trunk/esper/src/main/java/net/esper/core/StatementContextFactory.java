@@ -1,5 +1,7 @@
 package net.esper.core;
 
+import java.util.Map;
+
 /**
  * Interface for a factory class that makes statement context specific to a statement.
  */
@@ -13,6 +15,9 @@ public interface StatementContextFactory
      * @param engineServices is engine services
      * @return statement context
      */
-    public StatementContext makeContext(String statementId, String statementName, String expression,
-                                        EPServicesContext engineServices);
+    public StatementContext makeContext(String statementId, 
+                                        String statementName,
+                                        String expression,
+                                        EPServicesContext engineServices,
+                                        Map<String, Object> optAdditionalContext);
 }

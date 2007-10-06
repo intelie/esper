@@ -21,6 +21,7 @@ public class TestCSVAdapterUseCases extends TestCase
 {
     private static String NEW_LINE = System.getProperty("line.separator");
     private static String CSV_FILENAME_ONELINE_TRADE = "regression/csvtest_tradedata.csv";
+    private static String CSV_FILENAME_ONELINE_TRADE_MULTIPLE = "regression/csvtest_tradedata_multiple.csv";
     private static String CSV_FILENAME_TIMESTAMPED_PRICES = "regression/csvtest_timestamp_prices.csv";
     private static String CSV_FILENAME_TIMESTAMPED_TRADES = "regression/csvtest_timestamp_trades.csv";
 
@@ -68,7 +69,7 @@ public class TestCSVAdapterUseCases extends TestCase
     /**
      * Play a CSV file using an engine thread
      */
-    public void testEngineThread() throws Exception
+    public void testEngineThread1000PerSec() throws Exception
     {
         epService = EPServiceProviderManager.getProvider("testExistingTypeNoOptions", makeConfig("TypeA"));
         epService.initialize();
@@ -79,15 +80,42 @@ public class TestCSVAdapterUseCases extends TestCase
 
         CSVInputAdapterSpec spec = new CSVInputAdapterSpec(new AdapterInputSource(CSV_FILENAME_ONELINE_TRADE), "TypeA");
         spec.setEventsPerSec(1000);
-//        spec.setLooping(true);
         spec.setUsingEngineThread(true);
 
         InputAdapter inputAdapter = new CSVInputAdapter(epService, spec);
         inputAdapter.start();
         Thread.sleep(1000);
-//        inputAdapter.stop();
 
         assertEquals(1, listener.getNewDataList().size());
+    }
+
+    /**
+     * Play a CSV file using an engine thread.
+     */
+    public void testEngineThread1PerSec() throws Exception
+    {
+        epService = EPServiceProviderManager.getProvider("testExistingTypeNoOptions", makeConfig("TypeA"));
+        epService.initialize();
+
+        EPStatement stmt = epService.getEPAdministrator().createEQL("select symbol, price, volume from TypeA.win:length(100)");
+        SupportUpdateListener listener = new SupportUpdateListener();
+        stmt.addListener(listener);
+
+        CSVInputAdapterSpec spec = new CSVInputAdapterSpec(new AdapterInputSource(CSV_FILENAME_ONELINE_TRADE_MULTIPLE), "TypeA");
+        spec.setEventsPerSec(1);
+        spec.setUsingEngineThread(true);
+
+        InputAdapter inputAdapter = new CSVInputAdapter(epService, spec);
+        inputAdapter.start();
+
+        Thread.sleep(1500);
+        assertEquals(1, listener.getNewDataList().size());
+        listener.reset();
+        Thread.sleep(300);
+        assertEquals(0, listener.getNewDataList().size());       
+
+        Thread.sleep(2000);
+        assertTrue(listener.getNewDataList().size() >= 2);
     }
 
     /**

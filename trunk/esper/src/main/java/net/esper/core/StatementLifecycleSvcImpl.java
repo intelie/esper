@@ -80,7 +80,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
     {
         // Generate statement id
         String statementId = UuidGenerator.generate(expression);
-        return createAndStart(statementSpec, expression, isPattern, optStatementName, statementId);
+        return createAndStart(statementSpec, expression, isPattern, optStatementName, statementId, null);
     }
 
     /**
@@ -92,7 +92,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
      * @param statementId is the statement id
      * @return started statement
      */
-    protected synchronized EPStatement createAndStart(StatementSpecRaw statementSpec, String expression, boolean isPattern, String optStatementName, String statementId)
+    protected synchronized EPStatement createAndStart(StatementSpecRaw statementSpec, String expression, boolean isPattern, String optStatementName, String statementId, Map<String, Object> optAdditionalContext)
     {
         // Determine a statement name, i.e. use the id or use/generate one for the name passed in
         String statementName = statementId;
@@ -101,7 +101,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
             statementName = getUniqueStatementName(optStatementName, statementId);
         }
 
-        EPStatementDesc desc = createStopped(statementSpec, expression, isPattern, statementName, statementId);
+        EPStatementDesc desc = createStopped(statementSpec, expression, isPattern, statementName, statementId, optAdditionalContext);
         start(statementId, desc);
         return desc.getEpStatement();
     }
@@ -115,13 +115,13 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
      * @param statementId is the statement id
      * @return statement 
      */
-    protected synchronized EPStatement createStarted(StatementSpecRaw statementSpec, String expression, boolean isPattern, String statementName, String statementId)
+    protected synchronized EPStatement createStarted(StatementSpecRaw statementSpec, String expression, boolean isPattern, String statementName, String statementId, Map<String, Object> optAdditionalContext)
     {
         if (log.isDebugEnabled())
         {
             log.debug(".start Creating and starting statement " + statementId);
         }
-        EPStatementDesc desc = createStopped(statementSpec, expression, isPattern, statementName, statementId);
+        EPStatementDesc desc = createStopped(statementSpec, expression, isPattern, statementName, statementId, optAdditionalContext);
         start(statementId, desc);
         return desc.getEpStatement();
     }
@@ -135,12 +135,12 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
      * @param statementId is the statement id
      * @return stopped statement
      */
-    protected synchronized EPStatementDesc createStopped(StatementSpecRaw statementSpec, String expression, boolean isPattern, String statementName, String statementId)
+    protected synchronized EPStatementDesc createStopped(StatementSpecRaw statementSpec, String expression, boolean isPattern, String statementName, String statementId, Map<String, Object> optAdditionalContext)
     {
         EPStatementDesc statementDesc;
         EPStatementStartMethod startMethod;
 
-        StatementContext statementContext =  services.getStatementContextFactory().makeContext(statementId, statementName, expression, services);
+        StatementContext statementContext =  services.getStatementContextFactory().makeContext(statementId, statementName, expression, services, optAdditionalContext);
         StatementSpecCompiled compiledSpec = compile(statementSpec, expression, statementContext);
 
         // For insert-into streams, create a lock taken out as soon as an event is inserted
