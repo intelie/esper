@@ -33,7 +33,7 @@
 			</sect2>
 
 			<sect2 id="view-win-length-batch" >
-			   <title>Length window batch (<literal>win:length_batch</literal>)</title>
+			   <title>Length batch window (<literal>win:length_batch</literal>)</title>
 		
 				<para>
 					This window view buffers events and releases them when a given minimum number of events has been collected. The view takes the number of events to batch as a parameter:
@@ -100,7 +100,7 @@ win:time(125)</programlisting>
 			</sect2>
 
 			<sect2 id="view-win-time-batch" >
-			   <title>Time window batch (<literal>win:time_batch</literal>)</title>
+			   <title>Time batch window (<literal>win:time_batch</literal>)</title>
 		
 				<para>
 					This window view buffers events and releases them every specified time interval in one update. The view takes a time period or a number of seconds as a parameter.
@@ -115,6 +115,54 @@ win:time(125)</programlisting>
 				</para>
 	
 				<programlisting><![CDATA[select * from StockTickEvent.win:time_batch(5 sec)]]></programlisting>
+			</sect2>
+
+			<sect2 id="view-win-time-length-batch" >
+			   <title>Time-Length combination batch window (<literal>win:time_length_batch</literal>)</title>
+		
+				<para>
+					This data window view is a combination of time and length batch window. Similar to the time and length batch windows, this view batches events and releases the batched events when either one of the 
+following conditions occurs, whichever occurs first: the data window has collected a given number of events, or a given time interval has passed.
+				</para>
+
+				<para>
+					The view parameters take 2 forms. The first form accepts a time period or number of seconds, and a parameter for the number of events:
+				</para>				
+				<synopsis>win:time_length_batch(<emphasis>time_period or number_of_seconds</emphasis>, <emphasis>number of events</emphasis>)</synopsis>
+
+				<para>
+					The next example shows a time-length combination batch window that batches up to 100 events or all events arriving within a 1-second time interval, whichever condition occurs first:
+				</para>
+				<programlisting><![CDATA[ select * from MyEvent.win:time_length_batch(1 sec, 100)]]></programlisting>
+
+				<para>
+					In this example, if 100 events arrive into the window before a 1-second time interval passes, the view posts the batch of 100 events. If less then 100 events arrive within a 1-second interval,
+					the view posts all events that arrived within the 1-second interval at the end of the interval.
+				</para>
+
+				<para>
+					By default, if there are no events arriving in the current interval (insert stream), and no events remain from the prior batch (remove stream), then the view does not post results to listeners. This
+					view allows overriding this default behavior via flow control keywords.
+				</para>
+
+				<para>
+					The synopsis of the view with flow control parameters is:
+				</para>				
+				<synopsis>win:time_length_batch(<emphasis>time_period or number_of_seconds</emphasis>, <emphasis>number of events</emphasis>, 
+    "<emphasis>flow control keyword [, keyword...]</emphasis>")</synopsis>
+
+				<para>
+					The <literal>FORCE_UPDATE</literal> flow control keyword instructs the view to post an empty result set to listeners if there is no data to post for an interval. The view begins posting no later then after one time interval passed after the first event arrives.
+				</para>				
+
+				<para>
+					The <literal>START_EAGER</literal> flow control keyword instructs the view to post empty result sets even before the first event arrives, starting a time interval at statement creation time.
+				</para>				
+
+				<para>
+					Taking the two flow control keywords in one sample statement, this example presents a view that waits for 10 seconds or reacts when the 5th event arrives, whichever comes first. It posts empty result sets after one interval after the statement is created, and keeps posting an empty result set as no events arrive during intervals: 
+				</para>
+				<programlisting><![CDATA[ select * from MyEvent.win:time_length_batch(10 sec, 5, "FORCE_UPDATE, START_EAGER")]]></programlisting>
 			</sect2>
 	   </sect1>
 

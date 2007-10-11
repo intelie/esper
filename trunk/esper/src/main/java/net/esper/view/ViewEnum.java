@@ -32,6 +32,11 @@ public enum ViewEnum
     TIME_BATCH("win","time_batch", TimeBatchViewFactory.class, null),
 
     /**
+     * Time length batch.
+     */
+    TIME_LENGTH_BATCH("win","time_length_batch", TimeLengthBatchViewFactory.class, null),
+
+    /**
      * Externally timed window.
      */
     EXT_TIMED_WINDOW("win", "ext_timed", ExternallyTimedWindowViewFactory.class, null),

@@ -127,6 +127,11 @@ public class SupportUpdateListener implements UpdateListener
         return flatten(newDataList);
     }
 
+    public EventBean[] getOldDataListFlattened()
+    {
+        return flatten(oldDataList);
+    }
+
     private EventBean[] flatten(List<EventBean[]> list)
     {
         int count = 0;

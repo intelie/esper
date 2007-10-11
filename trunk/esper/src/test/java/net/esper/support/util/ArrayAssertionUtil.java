@@ -91,6 +91,34 @@ public class ArrayAssertionUtil
     }
 
     /**
+     * Comparing the underlying events to the expected events using equals-semantics.
+     * @param events is an event array to get the underlying objects
+     * @param expectedValues is an array of expected underlying events
+     */
+    public static void assertEqualsExactOrderUnderlying(EventBean[] events, Object[] expectedValues)
+    {
+        if ((expectedValues == null) && (events == null))
+        {
+            return;
+        }
+        if ( ((expectedValues == null) && (events != null)) ||
+             ((expectedValues != null) && (events == null)) )
+        {
+            TestCase.assertTrue(false);
+        }
+
+        TestCase.assertEquals(expectedValues.length, events.length);
+
+        ArrayList<Object> underlying = new ArrayList<Object>();
+        for (EventBean event : events)
+        {
+            underlying.add(event.getUnderlying());
+        }
+
+        assertEqualsExactOrder(underlying.toArray(), expectedValues);
+    }
+
+    /**
      * Compare the objects in the two object arrays assuming the exact same order.
      * @param data is the data to assertEqualsExactOrder against
      * @param expectedValues is the expected values
