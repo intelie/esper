@@ -156,7 +156,7 @@ following conditions occurs, whichever occurs first: the data window has collect
 				</para>				
 
 				<para>
-					The <literal>START_EAGER</literal> flow control keyword instructs the view to post empty result sets even before the first event arrives, starting a time interval at statement creation time.
+					The <literal>START_EAGER</literal> flow control keyword instructs the view to post empty result sets even before the first event arrives, starting a time interval at statement creation time. As when using <literal>FORCE_UPDATE</literal>, the view also posts an empty result set to listeners if there is no data to post for an interval, however it starts doing so at time of statement creation rather then at the time of arrival of the first event.
 				</para>				
 
 				<para>

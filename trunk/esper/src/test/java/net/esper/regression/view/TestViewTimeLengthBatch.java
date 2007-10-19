@@ -490,6 +490,49 @@ public class TestViewTimeLengthBatch extends TestCase
         assertData(events[2], 2.0, 1.0, 1.0);
         listener.reset();
     }
+
+    public void testGroupBySumStartEager()
+    {
+        final long startTime = 1000;
+        sendTimer(startTime);
+
+        EPRuntime engine = epService.getEPRuntime();
+        EPStatement stmt = epService.getEPAdministrator().createEQL(
+                "select symbol, sum(price) as s from " + SupportMarketDataBean.class.getName() +
+                ".win:time_length_batch(5, 10, \"START_EAGER\") group by symbol order by symbol asc");
+        stmt.addListener(listener);
+
+        sendTimer(startTime + 4000);
+        assertFalse(listener.isInvoked());
+
+        sendTimer(startTime + 6000);
+        assertEquals(1, listener.getNewDataList().size());
+        EventBean[] events = listener.getLastNewData();
+        assertNull(events);
+        listener.reset();
+
+        sendTimer(startTime + 7000);
+        engine.sendEvent(new SupportMarketDataBean("S1", "e1", 10d));
+
+        sendTimer(startTime + 8000);
+        engine.sendEvent(new SupportMarketDataBean("S2", "e2", 77d));
+
+        sendTimer(startTime + 9000);
+        engine.sendEvent(new SupportMarketDataBean("S1", "e3", 1d));
+
+        sendTimer(startTime + 10000);
+        assertFalse(listener.isInvoked());
+
+        sendTimer(startTime + 11000);
+        assertEquals(1, listener.getNewDataList().size());
+        events = listener.getLastNewData();
+        assertEquals(2, events.length);
+        assertEquals("S1", events[0].get("symbol"));
+        assertEquals(11d, events[0].get("s"));
+        assertEquals("S2", events[1].get("symbol"));
+        assertEquals(77d, events[1].get("s"));
+        listener.reset();
+    }
     
     private void sendTimer(long timeInMSec)
     {
