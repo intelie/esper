@@ -76,6 +76,8 @@ public final class EPServicesContext
      * @param outputConditionFactory factory for output condition objects
      * @param timerService is the timer service
      * @param isShareViews is a boolean indicating whether the engine shares view resources between statements
+     * @param filterService the filter service
+     * @param streamFactoryService is hooking up filters to streams
      */
     public EPServicesContext(String engineURI,
                              SchedulingService schedulingService,

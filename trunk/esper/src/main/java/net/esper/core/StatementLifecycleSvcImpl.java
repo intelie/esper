@@ -90,6 +90,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
      * @param isPattern is true for patterns
      * @param optStatementName is the optional statement name
      * @param statementId is the statement id
+     * @param optAdditionalContext additional context for use by the statement context
      * @return started statement
      */
     protected synchronized EPStatement createAndStart(StatementSpecRaw statementSpec, String expression, boolean isPattern, String optStatementName, String statementId, Map<String, Object> optAdditionalContext)
@@ -113,6 +114,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
      * @param isPattern is true for patterns, 
      * @param statementName is the statement name
      * @param statementId is the statement id
+     * @param optAdditionalContext additional context for use by the statement context
      * @return statement 
      */
     protected synchronized EPStatement createStarted(StatementSpecRaw statementSpec, String expression, boolean isPattern, String statementName, String statementId, Map<String, Object> optAdditionalContext)
@@ -133,6 +135,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
      * @param isPattern is true for patterns, false for non-patterns
      * @param statementName is the statement name assigned or given
      * @param statementId is the statement id
+     * @param optAdditionalContext additional context for use by the statement context
      * @return stopped statement
      */
     protected synchronized EPStatementDesc createStopped(StatementSpecRaw statementSpec, String expression, boolean isPattern, String statementName, String statementId, Map<String, Object> optAdditionalContext)

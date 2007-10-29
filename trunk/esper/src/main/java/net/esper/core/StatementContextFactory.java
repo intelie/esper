@@ -13,6 +13,7 @@ public interface StatementContextFactory
      * @param statementName is the statement name
      * @param expression is the statement expression
      * @param engineServices is engine services
+     * @param optAdditionalContext addtional context to pass to the statement
      * @return statement context
      */
     public StatementContext makeContext(String statementId, 

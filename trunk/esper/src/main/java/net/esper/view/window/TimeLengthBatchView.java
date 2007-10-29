@@ -57,6 +57,7 @@ public final class TimeLengthBatchView extends ViewSupport implements CloneableV
      * @param timeBatchViewFactory for copying this view in a group-by
      * @param forceOutput is true if the batch should produce empty output if there is no value to output following time intervals
      * @param statementContext is required view services
+     * @param isStartEager is true for start-eager
      */
     public TimeLengthBatchView(TimeLengthBatchViewFactory timeBatchViewFactory,
                          StatementContext statementContext,
@@ -98,16 +99,19 @@ public final class TimeLengthBatchView extends ViewSupport implements CloneableV
         return msecIntervalSize;
     }
 
-    public long getNumberOfEvents()
-    {
-        return numberOfEvents;
-    }
-
+    /**
+     * True for force-output.
+     * @return indicates force-output
+     */
     public boolean isForceOutput()
     {
         return isForceOutput;
     }
 
+    /**
+     * True for start-eager.
+     * @return indicates start-eager
+     */
     public boolean isStartEager()
     {
         return isStartEager;
@@ -159,6 +163,7 @@ public final class TimeLengthBatchView extends ViewSupport implements CloneableV
     /**
      * This method updates child views and clears the batch of events.
      * We cancel and old callback and schedule a new callback at this time if there were events in the batch.
+     * @param isFromSchedule true if invoked from a schedule, false if not
      */
     protected final void sendBatch(boolean isFromSchedule)
     {

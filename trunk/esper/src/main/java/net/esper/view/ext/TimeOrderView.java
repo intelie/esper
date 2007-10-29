@@ -56,6 +56,9 @@ public final class TimeOrderView extends ViewSupport implements DataWindowView, 
      * @param optionalSortedRandomAccess is the friend class handling the random access, if required by
      * expressions
      * @param timeOrderViewFactory for copying this view in a group-by
+     * @param statementContext the statement context
+     * @param timestampFieldName the property name of the event supplying timestamp values
+     * @param intervalSize the interval time length
      */
     public TimeOrderView( StatementContext statementContext,
                           TimeOrderViewFactory timeOrderViewFactory,
@@ -90,11 +93,19 @@ public final class TimeOrderView extends ViewSupport implements DataWindowView, 
         }
     }
 
+    /**
+     * Returns the timestamp property name.
+     * @return property name supplying timestamp values
+     */
     public String getTimestampFieldName()
     {
         return timestampFieldName;
     }
 
+    /**
+     * Returns the time interval size.
+     * @return interval size
+     */
     public long getIntervalSize()
     {
         return intervalSize;
@@ -118,11 +129,6 @@ public final class TimeOrderView extends ViewSupport implements DataWindowView, 
     {
         // The schema is the parent view's schema
         return parent.getEventType();
-    }
-
-    public int getEventCount()
-    {
-        return eventCount;
     }
 
     public final void update(EventBean[] newData, EventBean[] oldData)
