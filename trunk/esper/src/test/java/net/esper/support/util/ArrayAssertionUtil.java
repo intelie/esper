@@ -375,6 +375,50 @@ public class ArrayAssertionUtil
         TestCase.assertEquals(numMatches, expected.length);
     }
 
+    public static void assertPropsPerRow(EventBean[] received, Object[][] propertiesPerRow)
+    {
+        if (propertiesPerRow == null)
+        {
+            if ((received == null) || (received.length == 0))
+            {
+                return;
+            }
+        }
+        Assert.assertEquals(propertiesPerRow.length, received.length);
+
+        for (int i = 0; i < propertiesPerRow.length; i++)
+        {
+            String name = (String) propertiesPerRow[i][0];
+            Object value = propertiesPerRow[i][1];
+            Object eventProp = received[i].get(name);
+            Assert.assertEquals("Error asserting property named " + name,value,eventProp);
+        }
+    }
+
+    public static void assertPropsPerRow(EventBean[] received, String[] propertyNames, Object[][] propertiesListPerRow)
+    {
+        if (propertiesListPerRow == null)
+        {
+            if ((received == null) || (received.length == 0))
+            {
+                return;
+            }
+        }
+        Assert.assertEquals(propertiesListPerRow.length, received.length);
+
+        for (int i = 0; i < propertiesListPerRow.length; i++)
+        {
+            Object[] propertiesThisRow = propertiesListPerRow[i];
+            for (int j = 0; j < propertiesThisRow.length; j++)
+            {
+                String name = propertyNames[j];
+                Object value = propertiesThisRow[j];
+                Object eventProp = received[i].get(name);
+                Assert.assertEquals("Error asserting property named " + name,value,eventProp);
+            }
+        }
+    }
+
     public static void assertEqualsAnyOrder(EventBean[][] expected, EventBean[][] received)
     {
         // Empty lists are fine
@@ -503,6 +547,16 @@ public class ArrayAssertionUtil
             resultClasses[i] = objects[i].getClass();
         }
         assertEqualsAnyOrder(resultClasses, classes);
+    }
+
+    public static EventBean[] iteratorToArray(Iterator<EventBean> iterator)
+    {
+        ArrayList<EventBean> events = new ArrayList<EventBean>();
+        for (;iterator.hasNext();)
+        {
+            events.add(iterator.next());
+        }
+        return events.toArray(new EventBean[0]);
     }
 
     public static Object[] sum(Object[] srcOne, Object[] srcTwo)

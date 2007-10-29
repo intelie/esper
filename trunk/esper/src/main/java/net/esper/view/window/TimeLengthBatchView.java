@@ -109,6 +109,15 @@ public final class TimeLengthBatchView extends ViewSupport implements CloneableV
     }
 
     /**
+     * Returns the length of the batch.
+     * @return maximum number of events allowed before window gets flushed 
+     */
+    public long getNumberOfEvents()
+    {
+        return numberOfEvents;
+    }
+
+    /**
      * True for start-eager.
      * @return indicates start-eager
      */
