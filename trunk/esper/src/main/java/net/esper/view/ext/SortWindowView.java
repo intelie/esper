@@ -190,11 +190,12 @@ public final class SortWindowView extends ViewSupport implements DataWindowView,
             }
         }
 
-        // If there are child views, fireStatementStopped update method
         if (optionalSortedRandomAccess != null)
         {
             optionalSortedRandomAccess.refresh(sortedEvents, eventCount, sortWindowSize);
         }
+
+        // If there are child views, fire update method
         if (this.hasViews())
         {
             EventBean[] expiredArr = null;

@@ -102,6 +102,11 @@ public enum ViewEnum
     SORT_WINDOW("ext", "sort", SortWindowViewFactory.class, null),
 
     /**
+     * Time order event window.
+     */
+    TIME_ORDER("ext", "time_order", TimeOrderViewFactory.class, null),
+
+    /**
      * Prior event view.
      */
     PRIOR_EVENT_VIEW("int", "prioreventinternal", PriorEventViewFactory.class, null);
