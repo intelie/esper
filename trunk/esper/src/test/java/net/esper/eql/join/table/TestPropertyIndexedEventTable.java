@@ -1,12 +1,15 @@
 package net.esper.eql.join.table;
 
-import net.esper.event.*;
+import junit.framework.TestCase;
+import net.esper.event.EventBean;
+import net.esper.event.EventType;
+import net.esper.event.PropertyAccessException;
 import net.esper.support.bean.SupportBean;
 import net.esper.support.bean.SupportBean_A;
-import net.esper.support.event.SupportEventTypeFactory;
 import net.esper.support.event.SupportEventBeanFactory;
-import net.esper.eql.join.table.PropertyIndexedEventTable;
-import junit.framework.TestCase;
+import net.esper.support.event.SupportEventTypeFactory;
+import net.esper.support.util.ArrayAssertionUtil;
+
 import java.util.Set;
 
 public class TestPropertyIndexedEventTable extends TestCase
@@ -14,6 +17,7 @@ public class TestPropertyIndexedEventTable extends TestCase
     private String[] propertyNames;
     private EventType eventType;
     private EventBean[] testEvents;
+    private Object[] testEventsUnd;
     private PropertyIndexedEventTable index;
 
     public void setUp()
@@ -27,9 +31,11 @@ public class TestPropertyIndexedEventTable extends TestCase
         String stringValues[] = new String[] { "a", "b", "c", "a", "b", "c" };
 
         testEvents = new EventBean[intValues.length];
+        testEventsUnd = new Object[intValues.length];
         for (int i = 0; i < intValues.length; i++)
         {
             testEvents[i] = makeBean(intValues[i], stringValues[i]);
+            testEventsUnd[i] = testEvents[i].getUnderlying();
         }
         index.add(testEvents);
     }
@@ -139,14 +145,32 @@ public class TestPropertyIndexedEventTable extends TestCase
         assertEquals(1, result.size());
         assertTrue(result.contains(testEvents[4]));
 
+        // iterate
+        Object[] underlying = ArrayAssertionUtil.iteratorToArrayUnderlying(index.iterator());
+        ArrayAssertionUtil.assertEqualsAnyOrder(new Object[] {testEventsUnd[0], testEventsUnd[2], testEventsUnd[3], testEventsUnd[4], testEventsUnd[5]}, underlying);
+
         index.remove(new EventBean[] {testEvents[4]});
         result = index.lookup(new Object[] {1, "b"});
         assertNull(result);
+
+        // iterate
+        underlying = ArrayAssertionUtil.iteratorToArrayUnderlying(index.iterator());
+        ArrayAssertionUtil.assertEqualsAnyOrder(new Object[] {testEventsUnd[0], testEventsUnd[2], testEventsUnd[3], testEventsUnd[5]}, underlying);
 
         index.add(new EventBean[] {testEvents[1]});
         result = index.lookup(new Object[] {1, "b"});
         assertEquals(1, result.size());
         assertTrue(result.contains(testEvents[1]));
+
+        // iterate
+        underlying = ArrayAssertionUtil.iteratorToArrayUnderlying(index.iterator());
+        ArrayAssertionUtil.assertEqualsAnyOrder(new Object[] {testEventsUnd[0], testEventsUnd[1], testEventsUnd[2], testEventsUnd[3], testEventsUnd[5]}, underlying);
+    }
+
+    public void testIterator()
+    {
+        Object[] underlying = ArrayAssertionUtil.iteratorToArrayUnderlying(index.iterator());
+        ArrayAssertionUtil.assertEqualsAnyOrder(testEventsUnd, underlying);
     }
 
     private EventBean makeBean (int intValue, String stringValue)

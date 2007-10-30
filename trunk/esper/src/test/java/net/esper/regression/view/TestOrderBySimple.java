@@ -1,11 +1,5 @@
 package net.esper.regression.view;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-
 import junit.framework.TestCase;
 import net.esper.client.EPServiceProvider;
 import net.esper.client.EPServiceProviderManager;
@@ -18,18 +12,20 @@ import net.esper.event.EventBean;
 import net.esper.event.EventType;
 import net.esper.support.bean.SupportBeanString;
 import net.esper.support.bean.SupportMarketDataBean;
-import net.esper.support.bean.SupportBean;
-import net.esper.support.util.SupportUpdateListener;
 import net.esper.support.client.SupportConfigFactory;
+import net.esper.support.util.SupportUpdateListener;
+import net.esper.support.util.ArrayAssertionUtil;
 import net.esper.util.SerializableObjectCopier;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import java.util.*;
 
 public class TestOrderBySimple extends TestCase {
 
 	private static final Log log = LogFactory.getLog(TestOrderBySimple.class);
 	private EPServiceProvider epService;
+    private EPStatement statement;
     private List<Double> prices;
     private List<String> symbols;
     private SupportUpdateListener testListener;
@@ -43,6 +39,38 @@ public class TestOrderBySimple extends TestCase {
 	    prices = new LinkedList<Double>();
 	    volumes = new LinkedList<Long>();
 	}
+
+    public void testIterator()
+	{
+    	String statementString = "select symbol, string, price from " +
+    	            SupportMarketDataBean.class.getName() + ".win:length(10) as one, " +
+    	            SupportBeanString.class.getName() + ".win:length(100) as two " +
+                    "where one.symbol = two.string " +
+                    "order by price";
+        statement = epService.getEPAdministrator().createEQL(statementString);
+        sendJoinEvents();
+        sendEvent("CAT", 50);
+        sendEvent("IBM", 49);
+        sendEvent("CAT", 15);
+        sendEvent("IBM", 100);
+        ArrayAssertionUtil.assertEqualsExactOrder(statement.iterator(), new String[] {"symbol", "string", "price"},
+                new Object[][] {
+                                {"CAT", "CAT", 15d},
+                                {"IBM", "IBM", 49d},
+                                {"CAT", "CAT", 50d},
+                                {"IBM", "IBM", 100d},
+                                });
+
+        sendEvent("KGB", 75);
+        ArrayAssertionUtil.assertEqualsExactOrder(statement.iterator(), new String[] {"symbol", "string", "price"},
+                new Object[][] {
+                                {"CAT", "CAT", 15d},
+                                {"IBM", "IBM", 49d},
+                                {"CAT", "CAT", 50d},
+                                {"KGB", "KGB", 75d},
+                                {"IBM", "IBM", 100d},
+                                });
+    }
 
     public void testAcrossJoin()
 	{
@@ -58,7 +86,7 @@ public class TestOrderBySimple extends TestCase {
     	assertValues(symbols, "symbol");
     	assertValues(symbols, "string");
        	assertOnlyProperties(Arrays.asList(new String[] {"symbol", "string"}));
-    	clearValues();
+        clearValues();
 
     	statementString = "select symbol from " +
     	SupportMarketDataBean.class.getName() + ".win:length(10) as one, " +
@@ -862,7 +890,7 @@ public class TestOrderBySimple extends TestCase {
 
 	private void createAndSend(String statementString) {
 		testListener = new SupportUpdateListener();
-		EPStatement statement = epService.getEPAdministrator().createEQL(statementString);
+		statement = epService.getEPAdministrator().createEQL(statementString);
     	statement.addListener(testListener);
     	sendEvent("IBM", 2);
     	sendEvent("KGB", 1);

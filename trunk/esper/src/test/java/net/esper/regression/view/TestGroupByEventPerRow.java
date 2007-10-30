@@ -4,6 +4,7 @@ import net.esper.client.EPServiceProvider;
 import net.esper.client.EPStatement;
 import net.esper.client.EPServiceProviderManager;
 import net.esper.support.util.SupportUpdateListener;
+import net.esper.support.util.ArrayAssertionUtil;
 import net.esper.support.bean.SupportMarketDataBean;
 import net.esper.support.bean.SupportBeanString;
 import net.esper.support.client.SupportConfigFactory;
@@ -105,6 +106,9 @@ public class TestGroupByEventPerRow extends TestCase
 
     private void runAssertion()
     {
+        String[] fields = new String[] {"symbol", "volume", "mySum"};
+        ArrayAssertionUtil.assertEqualsAnyOrder(selectTestView.iterator(), fields, null);
+
         // assert select result type
         assertEquals(String.class, selectTestView.getEventType().getPropertyType("symbol"));
         assertEquals(Long.class, selectTestView.getEventType().getPropertyType("volume"));
@@ -112,18 +116,28 @@ public class TestGroupByEventPerRow extends TestCase
 
         sendEvent(SYMBOL_DELL, 10000, 51);
         assertEvents(SYMBOL_DELL, 10000, 51);
+        ArrayAssertionUtil.assertEqualsAnyOrder(selectTestView.iterator(), fields, new Object[][] {
+                {"DELL", 10000L, 51d}});
 
         sendEvent(SYMBOL_DELL, 20000, 52);
         assertEvents(SYMBOL_DELL, 20000, 103);
+        ArrayAssertionUtil.assertEqualsAnyOrder(selectTestView.iterator(), fields, new Object[][] {
+                {"DELL", 10000L, 103d}, {"DELL", 20000L, 103d}});
 
         sendEvent(SYMBOL_IBM, 30000, 70);
         assertEvents(SYMBOL_IBM, 30000, 70);
+        ArrayAssertionUtil.assertEqualsAnyOrder(selectTestView.iterator(), fields, new Object[][] {
+                {"DELL", 10000L, 103d}, {"DELL", 20000L, 103d}, {"IBM", 30000L, 70d}});
 
         sendEvent(SYMBOL_IBM, 10000, 20);
         assertEvents(SYMBOL_DELL, 10000, 103, SYMBOL_IBM, 10000, 90);
+        ArrayAssertionUtil.assertEqualsAnyOrder(selectTestView.iterator(), fields, new Object[][] {
+                {"DELL", 20000L, 52d}, {"IBM", 30000L, 90d}, {"IBM", 10000L, 90d}});
 
         sendEvent(SYMBOL_DELL, 40000, 45);
         assertEvents(SYMBOL_DELL, 20000, 52, SYMBOL_DELL, 40000, 45);
+        ArrayAssertionUtil.assertEqualsAnyOrder(selectTestView.iterator(), fields, new Object[][] {
+                {"IBM", 10000L, 90d}, {"IBM", 30000L, 90d}, {"DELL", 40000L, 45d}});
     }
 
     private void assertEvents(String symbol, long volume, double sum)

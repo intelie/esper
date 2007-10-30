@@ -10,7 +10,9 @@ import net.esper.client.time.CurrentTimeEvent;
 import net.esper.support.bean.SupportBean;
 import net.esper.support.bean.SupportBeanString;
 import net.esper.support.bean.SupportBean_A;
+import net.esper.support.bean.SupportMarketDataBean;
 import net.esper.support.util.SupportUpdateListener;
+import net.esper.support.util.ArrayAssertionUtil;
 import net.esper.support.client.SupportConfigFactory;
 import net.esper.event.EventBean;
 
@@ -25,6 +27,32 @@ public class TestOutputLimitSimple extends TestCase
     {
         epService = EPServiceProviderManager.getDefaultProvider(SupportConfigFactory.getConfiguration());
         epService.initialize();
+    }
+
+    public void testIterator()
+	{
+        String[] fields = new String[] {"symbol", "price"};
+        String statementString = "select symbol, string, price from " +
+    	            SupportMarketDataBean.class.getName() + ".win:length(10) as one, " +
+    	            SupportBeanString.class.getName() + ".win:length(100) as two " +
+                    "where one.symbol = two.string " +
+                    "output every 3 events";
+        EPStatement statement = epService.getEPAdministrator().createEQL(statementString);
+        epService.getEPRuntime().sendEvent(new SupportBeanString("CAT"));
+        epService.getEPRuntime().sendEvent(new SupportBeanString("IBM"));
+
+        // Output limit clause ignored when iterating, for both joins and no-join
+        sendEvent("CAT", 50);
+        ArrayAssertionUtil.assertEqualsExactOrder(statement.iterator(), fields, new Object[][] {{"CAT", 50d}});
+
+        sendEvent("CAT", 60);
+        ArrayAssertionUtil.assertEqualsAnyOrder(statement.iterator(), fields, new Object[][] {{"CAT", 50d}, {"CAT", 60d}});
+
+        sendEvent("IBM", 70);
+        ArrayAssertionUtil.assertEqualsAnyOrder(statement.iterator(), fields, new Object[][] {{"CAT", 50d}, {"CAT", 60d}, {"IBM", 70d}});
+
+        sendEvent("IBM", 90);
+        ArrayAssertionUtil.assertEqualsAnyOrder(statement.iterator(), fields, new Object[][] {{"CAT", 50d}, {"CAT", 60d}, {"IBM", 70d}, {"IBM", 90d}});
     }
 
     public void testLimitEventJoin()
@@ -467,10 +495,15 @@ public class TestOutputLimitSimple extends TestCase
 	    event1.setIntPrimitive(0);
 	    event1.setIntBoxed(0);
 
-
 	    SupportBean_A event2 = new SupportBean_A(s);
 
 	    epService.getEPRuntime().sendEvent(event1);
 	    epService.getEPRuntime().sendEvent(event2);
-	}    
+	}
+
+    private void sendEvent(String symbol, double price)
+    {
+        SupportMarketDataBean bean = new SupportMarketDataBean(symbol, price, 0L, null);
+        epService.getEPRuntime().sendEvent(bean);
+    }    
 }

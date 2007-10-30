@@ -7,14 +7,13 @@
  **************************************************************************************/
 package net.esper.eql.join;
 
-import net.esper.dispatch.Dispatchable;
-import net.esper.view.internal.BufferObserver;
-import net.esper.event.EventBean;
 import net.esper.collection.FlushedEventBuffer;
 import net.esper.core.EPStatementDispatch;
+import net.esper.event.EventBean;
+import net.esper.view.internal.BufferObserver;
 
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * This class reacts to any new data buffered by registring with the dispatch service.

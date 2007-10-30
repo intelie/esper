@@ -45,7 +45,7 @@ public class OutputProcessViewPolicy extends OutputProcessView
     					  OutputLimitSpec outputLimitSpec,
     					  StatementContext statementContext)
     {
-        super(resultSetProcessor, streamCount > 1);
+        super(resultSetProcessor);
         log.debug(".ctor");
 
     	if(streamCount < 1)

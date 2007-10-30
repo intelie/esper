@@ -48,4 +48,10 @@ public class JoinExecutionStrategyImpl implements JoinExecutionStrategy
         }
     }
 
+    public Set<MultiKey<EventBean>> staticJoin()
+    {
+        Set<MultiKey<EventBean>> joinSet = composer.staticJoin();
+        filter.process(joinSet, null);
+        return joinSet;
+    }
 }

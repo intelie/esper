@@ -9,6 +9,8 @@ package net.esper.eql.join.table;
 
 import net.esper.event.EventBean;
 
+import java.util.Iterator;
+
 /**
  * Table of events allowing add and remove. Lookup in table is coordinated
  * through the underlying implementation.
@@ -26,4 +28,6 @@ public interface EventTable
      * @param events to remove
      */
     public void remove(EventBean[] events);
+
+    public Iterator<EventBean> iterator();
 }

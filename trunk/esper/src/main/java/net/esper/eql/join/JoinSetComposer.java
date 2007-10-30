@@ -31,4 +31,6 @@ public interface JoinSetComposer
      * @return join tuples
      */
     public UniformPair<Set<MultiKey<EventBean>>> join(EventBean[][] newDataPerStream, EventBean[][] oldDataPerStream);
+
+    public Set<MultiKey<EventBean>> staticJoin();
 }

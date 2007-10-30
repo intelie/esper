@@ -232,4 +232,18 @@ public class ResultSetProcessorAggregateAll implements ResultSetProcessor
     {
         return optionalHavingNode;
     }
+
+    public Iterator<EventBean> getIterator(Set<MultiKey<EventBean>> joinSet)
+    {
+        EventBean[] result;
+        if (optionalHavingNode == null)
+        {
+            result = ResultSetProcessorSimple.getSelectEventsNoHaving(selectExprProcessor, orderByProcessor, joinSet, isOutputLimiting, isOutputLimitLastOnly, true);
+        }
+        else
+        {
+            result = ResultSetProcessorSimple.getSelectEventsHaving(selectExprProcessor, orderByProcessor, joinSet, optionalHavingNode, isOutputLimiting, isOutputLimitLastOnly, true);
+        }
+        return new ArrayEventIterator(result);
+    }
 }

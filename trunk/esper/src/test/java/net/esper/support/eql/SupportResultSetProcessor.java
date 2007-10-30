@@ -33,4 +33,9 @@ public class SupportResultSetProcessor implements ResultSetProcessor
     {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
+
+    public Iterator<EventBean> getIterator(Set<MultiKey<EventBean>> joinSet)
+    {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
 }

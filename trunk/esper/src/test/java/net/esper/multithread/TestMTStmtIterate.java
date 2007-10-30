@@ -4,17 +4,10 @@ import junit.framework.TestCase;
 import net.esper.client.EPServiceProvider;
 import net.esper.client.EPServiceProviderManager;
 import net.esper.client.EPStatement;
-import net.esper.client.time.TimerControlEvent;
-import net.esper.support.util.SupportMTUpdateListener;
+import net.esper.client.Configuration;
 import net.esper.support.bean.SupportBean;
-import net.esper.support.bean.SupportMarketDataBean;
-import net.esper.event.EventBean;
 
 import java.util.concurrent.*;
-import java.util.Set;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.HashSet;
 
 /**
  * Test for multithread-safety (or lack thereof) for iterators: iterators fail with concurrent mods as expected behavior
@@ -22,11 +15,12 @@ import java.util.HashSet;
 public class TestMTStmtIterate extends TestCase
 {
     private EPServiceProvider engine;
-    private SupportMTUpdateListener listener;
 
     public void setUp()
     {
-        engine = EPServiceProviderManager.getProvider("TestMTStmtIterate");
+        Configuration config = new Configuration();
+        config.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
+        engine = EPServiceProviderManager.getProvider("TestMTStmtIterate", config);
     }
 
     public void tearDown()
@@ -46,10 +40,7 @@ public class TestMTStmtIterate extends TestCase
          * (3) statement lock could prevent concurrent mod but could also become an issue for deadlock and lock contention
          */
 
-        /**
-         * NOTE: just 1 thread
-         */
-        trySend(1, 10, stmt);
+        trySend(2, 10, stmt);
     }
 
     private void trySend(int numThreads, int numRepeats, EPStatement stmt) throws Exception

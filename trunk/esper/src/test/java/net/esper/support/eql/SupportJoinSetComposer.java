@@ -24,4 +24,9 @@ public class SupportJoinSetComposer implements JoinSetComposer
     {
         return result;
     }
+
+    public Set<MultiKey<EventBean>> staticJoin()
+    {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
 }

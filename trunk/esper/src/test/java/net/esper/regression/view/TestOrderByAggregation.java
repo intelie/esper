@@ -14,6 +14,7 @@ import net.esper.event.EventType;
 import net.esper.support.bean.SupportBeanString;
 import net.esper.support.bean.SupportMarketDataBean;
 import net.esper.support.util.SupportUpdateListener;
+import net.esper.support.util.ArrayAssertionUtil;
 import net.esper.support.client.SupportConfigFactory;
 
 import org.apache.commons.logging.Log;
@@ -537,6 +538,123 @@ public class TestOrderByAggregation extends TestCase {
     	clearValues();
     }
 
+    public void testIteratorAggregateRowForAll()
+	{
+        String[] fields = new String[] {"sumPrice"};
+        String statementString = "select sum(price) as sumPrice from " +
+    	            SupportMarketDataBean.class.getName() + ".win:length(10) as one, " +
+    	            SupportBeanString.class.getName() + ".win:length(100) as two " +
+                    "where one.symbol = two.string " +
+                    "order by price";
+        EPStatement statement = epService.getEPAdministrator().createEQL(statementString);
+        sendJoinEvents();
+        sendEvent("CAT", 50);
+        sendEvent("IBM", 49);
+        sendEvent("CAT", 15);
+        sendEvent("IBM", 100);
+        ArrayAssertionUtil.assertEqualsExactOrder(statement.iterator(), fields, new Object[][] {{214d}});
+
+        sendEvent("KGB", 75);
+        ArrayAssertionUtil.assertEqualsExactOrder(statement.iterator(), fields, new Object[][] {{289d}});
+    }
+
+    public void testIteratorAggregateRowPerEvent()
+	{
+        String[] fields = new String[] {"symbol", "sumPrice"};
+        String statementString = "select symbol, sum(price) as sumPrice from " +
+    	            SupportMarketDataBean.class.getName() + ".win:length(10) as one, " +
+    	            SupportBeanString.class.getName() + ".win:length(100) as two " +
+                    "where one.symbol = two.string " +
+                    "order by symbol";
+        EPStatement statement = epService.getEPAdministrator().createEQL(statementString);
+        sendJoinEvents();
+        sendEvent("CAT", 50);
+        sendEvent("IBM", 49);
+        sendEvent("CAT", 15);
+        sendEvent("IBM", 100);
+        ArrayAssertionUtil.assertEqualsExactOrder(statement.iterator(), fields,
+                new Object[][] {
+                                {"CAT", 214d},
+                                {"CAT", 214d},
+                                {"IBM", 214d},
+                                {"IBM", 214d},
+                                });
+
+        sendEvent("KGB", 75);
+        ArrayAssertionUtil.assertEqualsExactOrder(statement.iterator(), fields,
+                new Object[][] {
+                                {"CAT", 289d},
+                                {"CAT", 289d},
+                                {"IBM", 289d},
+                                {"IBM", 289d},
+                                {"KGB", 289d},
+                                });
+    }
+
+    public void testIteratorGroupByEventPerGroup()
+	{
+        String[] fields = new String[] {"symbol", "sumPrice"};
+        String statementString = "select symbol, sum(price) as sumPrice from " +
+    	            SupportMarketDataBean.class.getName() + ".win:length(10) as one, " +
+    	            SupportBeanString.class.getName() + ".win:length(100) as two " +
+                    "where one.symbol = two.string " +
+                    "group by symbol " +
+                    "order by symbol";
+        EPStatement statement = epService.getEPAdministrator().createEQL(statementString);
+        sendJoinEvents();
+        sendEvent("CAT", 50);
+        sendEvent("IBM", 49);
+        sendEvent("CAT", 15);
+        sendEvent("IBM", 100);
+        ArrayAssertionUtil.assertEqualsAnyOrder(statement.iterator(), fields,
+                new Object[][] {
+                                {"CAT", 65d},
+                                {"IBM", 149d},
+                                });
+
+        sendEvent("KGB", 75);
+        ArrayAssertionUtil.assertEqualsAnyOrder(statement.iterator(), fields,
+                new Object[][] {
+                                {"CAT", 65d},
+                                {"IBM", 149d},
+                                {"KGB", 75d},
+                                });
+    }
+
+    public void testIteratorGroupByEventPerRow()
+	{
+        String[] fields = new String[] {"symbol", "string", "sumPrice"};
+        String statementString = "select symbol, string, sum(price) as sumPrice from " +
+    	            SupportMarketDataBean.class.getName() + ".win:length(10) as one, " +
+    	            SupportBeanString.class.getName() + ".win:length(100) as two " +
+                    "where one.symbol = two.string " +
+                    "group by symbol " +
+                    "order by symbol";
+        EPStatement statement = epService.getEPAdministrator().createEQL(statementString);
+        sendJoinEvents();
+        sendEvent("CAT", 50);
+        sendEvent("IBM", 49);
+        sendEvent("CAT", 15);
+        sendEvent("IBM", 100);
+        ArrayAssertionUtil.assertEqualsAnyOrder(statement.iterator(), fields,
+                new Object[][] {
+                                {"CAT", "CAT", 65d},
+                                {"CAT", "CAT", 65d},
+                                {"IBM", "IBM", 149d},
+                                {"IBM", "IBM", 149d},
+                                });
+
+        sendEvent("KGB", 75);
+        ArrayAssertionUtil.assertEqualsAnyOrder(statement.iterator(), fields,
+                new Object[][] {
+                                {"CAT", "CAT", 65d},
+                                {"CAT", "CAT", 65d},
+                                {"IBM", "IBM", 149d},
+                                {"IBM", "IBM", 149d},
+                                {"KGB", "KGB", 75d},
+                                });
+    }
+
     private void sendEvent(String symbol, double price)
 	{
 	    SupportMarketDataBean bean = new SupportMarketDataBean(symbol, price, 0L, null);
@@ -737,5 +855,4 @@ public class TestOrderByAggregation extends TestCase {
 		prices.add(1, 7d);
 		prices.add(2, 11d);
 	}
-	
 }

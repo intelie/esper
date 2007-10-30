@@ -8,6 +8,10 @@
 package net.esper.eql.join;
 
 import net.esper.event.EventBean;
+import net.esper.collection.MultiKey;
+import net.esper.collection.UniformPair;
+
+import java.util.Set;
 
 /**
  * Strategy for executing a join.
@@ -22,4 +26,6 @@ public interface JoinExecutionStrategy
      */
     public void join(EventBean[][] newDataPerStream,
                      EventBean[][] oldDataPerStream);
+
+    public Set<MultiKey<EventBean>> staticJoin();
 }

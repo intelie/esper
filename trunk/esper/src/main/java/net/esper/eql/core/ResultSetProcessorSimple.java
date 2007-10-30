@@ -24,6 +24,7 @@ public class ResultSetProcessorSimple implements ResultSetProcessor
     private final boolean isOutputLimitLastOnly;
     private final OrderByProcessor orderByProcessor;
     private final ExprNode optionalHavingExpr;
+    private final Set<MultiKey<EventBean>> emptyRowSet = new HashSet<MultiKey<EventBean>>();
 
     /**
      * Ctor.
@@ -59,8 +60,8 @@ public class ResultSetProcessorSimple implements ResultSetProcessor
 
     public Pair<EventBean[], EventBean[]> processJoinResult(Set<MultiKey<EventBean>> newEvents, Set<MultiKey<EventBean>> oldEvents)
     {
-        EventBean[] selectOldEvents = null;
-        EventBean[] selectNewEvents = null;
+        EventBean[] selectOldEvents;
+        EventBean[] selectNewEvents;
 
         if (optionalHavingExpr == null)
         {
@@ -396,6 +397,13 @@ public class ResultSetProcessorSimple implements ResultSetProcessor
         return new TransformEventIterator(parent.iterator(), new ResultSetSimpleTransform(this));
     }
     
+    public Iterator<EventBean> getIterator(Set<MultiKey<EventBean>> joinSet)
+    {
+        // Process join results set as a regular join, includes sorting and having-clause filter
+        Pair<EventBean[], EventBean[]> result = processJoinResult(joinSet, emptyRowSet);
+        return new ArrayEventIterator(result.getFirst());
+    }
+
     /**
      * Method to transform an event based on the select expression.
      */

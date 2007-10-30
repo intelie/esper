@@ -169,6 +169,11 @@ public class PropertyIndexedEventTable implements EventTable
         }
     }
 
+    public Iterator<EventBean> iterator()
+    {
+        return new PropertyIndexedEventTableIterator(propertyIndex);
+    }
+
     public String toString()
     {
         return "PropertyIndexedEventTable" +

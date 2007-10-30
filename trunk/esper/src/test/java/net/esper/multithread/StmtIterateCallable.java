@@ -2,6 +2,7 @@ package net.esper.multithread;
 
 import net.esper.client.EPServiceProvider;
 import net.esper.client.EPStatement;
+import net.esper.client.SafeIterator;
 import net.esper.support.bean.SupportBean;
 import net.esper.event.EventBean;
 
@@ -15,6 +16,7 @@ import org.apache.commons.logging.LogFactory;
 
 public class StmtIterateCallable implements Callable
 {
+    private static final Log log = LogFactory.getLog(StmtIterateCallable.class);
     private final int threadNum;
     private final EPServiceProvider engine;
     private final EPStatement stmt;
@@ -34,11 +36,13 @@ public class StmtIterateCallable implements Callable
         {
             for (int loop = 0; loop < numRepeats; loop++)
             {
+                log.info(".call Thread " + Thread.currentThread().getId() + " sending event " + loop);
                 String id = Long.toString(threadNum * 100000000 + loop);
                 SupportBean bean = new SupportBean(id, 0);
                 engine.getEPRuntime().sendEvent(bean);
 
-                Iterator<EventBean> it = stmt.iterator();
+                log.info(".call Thread " + Thread.currentThread().getId() + " starting iterator " + loop);
+                SafeIterator<EventBean> it = stmt.safeIterator();
                 boolean found = false;
                 for (;it.hasNext();)
                 {
@@ -48,7 +52,9 @@ public class StmtIterateCallable implements Callable
                         found = true;
                     }
                 }
+                it.close();
                 Assert.assertTrue(found);
+                log.info(".call Thread " + Thread.currentThread().getId() + " end iterator " + loop);
             }
         }
         catch (AssertionFailedError ex)
@@ -63,6 +69,4 @@ public class StmtIterateCallable implements Callable
         }
         return true;
     }
-
-    private static final Log log = LogFactory.getLog(StmtIterateCallable.class);
 }

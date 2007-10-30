@@ -177,7 +177,8 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
             long blockingTimeout = services.getEngineSettingsService().getEngineSettings().getThreading().getListenerDispatchTimeout();
             long timeLastStateChange = services.getSchedulingService().getTime();
             EPStatementSPI statement = new EPStatementImpl(epServiceProvider, statementId, statementName, expression, isPattern,
-                    services.getDispatchService(), this, timeLastStateChange, preserveDispatchOrder, blockingTimeout);
+                    services.getDispatchService(), this, timeLastStateChange, preserveDispatchOrder, blockingTimeout,
+                    statementContext.getEpStatementHandle().getStatementLock());
 
             // create start method
             startMethod = new EPStatementStartMethod(compiledSpec, services, statementContext);

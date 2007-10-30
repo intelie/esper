@@ -274,6 +274,9 @@ public class EPStatementStartMethod
         // Create strategy for join execution
         JoinExecutionStrategy execution = new JoinExecutionStrategyImpl(composer, filter, indicatorView);
 
+        // The view needs a reference to the join execution to pull iterator values
+        indicatorView.setJoinExecutionStrategy(execution);
+
         // Hook up dispatchable with buffer and execution strategy
         JoinExecStrategyDispatchable joinStatementDispatch = new JoinExecStrategyDispatchable(execution, statementSpec.getStreamSpecs().size());
         statementContext.getEpStatementHandle().setOptionalDispatchable(joinStatementDispatch);

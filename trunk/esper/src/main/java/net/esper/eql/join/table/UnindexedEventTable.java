@@ -11,6 +11,7 @@ import net.esper.event.EventBean;
 
 import java.util.Set;
 import java.util.HashSet;
+import java.util.Iterator;
 
 /**
  * Simple table of events without an index.
@@ -62,6 +63,11 @@ public class UnindexedEventTable implements EventTable
     public Set<EventBean> getEventSet()
     {
         return eventSet;
+    }
+
+    public Iterator<EventBean> iterator()
+    {
+        return eventSet.iterator();
     }
 
     public String toString()

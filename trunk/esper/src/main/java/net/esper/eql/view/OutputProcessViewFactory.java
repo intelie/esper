@@ -42,6 +42,6 @@ public class OutputProcessViewFactory
         {
             return new OutputProcessViewPolicy(resultSetProcessor, streamCount, outputLimitSpec, statementContext);
         }
-        return new OutputProcessViewDirect(resultSetProcessor, streamCount > 1);
+        return new OutputProcessViewDirect(resultSetProcessor);
     }
 }

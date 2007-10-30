@@ -17,6 +17,7 @@ public class Test3StreamOuterFullJoin extends TestCase
     private EPServiceProvider epService;
     private EPStatement joinView;
     private SupportUpdateListener updateListener;
+    private String[] fields = new String[] {"s0.p00", "s0.p01", "s1.p10", "s1.p11", "s2.p20", "s2.p21", };
 
     private final static String EVENT_S0 = SupportBean_S0.class.getName();
     private final static String EVENT_S1 = SupportBean_S1.class.getName();
@@ -54,11 +55,19 @@ public class Test3StreamOuterFullJoin extends TestCase
         //
         Object[] s1Events = SupportBean_S1.makeS1("A", new String[] {"A-s1-1", "A-s1-2"});
         sendEvent(s1Events);
-        ArrayAssertionUtil.assertRefAnyOrderArr(new Object[][] {{ null, s1Events[1], null, }}, getAndResetNewEvents());
+        ArrayAssertionUtil.assertRefAnyOrderArr(new Object[][] {{ null, s1Events[1], null}}, getAndResetNewEvents());
+        ArrayAssertionUtil.assertEqualsAnyOrder(joinView.iterator(), fields,
+                new Object[][] {{null, null, "A", "A-s1-1", null, null},
+                                {null, null, "A", "A-s1-2", null, null}});
 
         Object[] s2Events = SupportBean_S2.makeS2("A", new String[] {"A-s2-1", "A-s2-2"});
         sendEvent(s2Events);
         ArrayAssertionUtil.assertRefAnyOrderArr(new Object[][] {{ null, null, s2Events[1] }}, getAndResetNewEvents());
+        ArrayAssertionUtil.assertEqualsAnyOrder(joinView.iterator(), fields,
+                new Object[][] {{null, null, "A", "A-s1-1", null, null},
+                                {null, null, "A", "A-s1-2", null, null},
+                                {null, null, null, null, "A", "A-s2-1"},
+                                {null, null, null, null, "A", "A-s2-2"}});
 
         Object[] s0Events = SupportBean_S0.makeS0("A", new String[] {"A-s0-1"});
         sendEvent(s0Events);
@@ -69,25 +78,59 @@ public class Test3StreamOuterFullJoin extends TestCase
             { s0Events[0], s1Events[1], s2Events[1] },
         };
         ArrayAssertionUtil.assertRefAnyOrderArr(expected, getAndResetNewEvents());
+        ArrayAssertionUtil.assertEqualsAnyOrder(joinView.iterator(), fields,
+                new Object[][] {{"A", "A-s0-1", "A", "A-s1-1", "A", "A-s2-1"},
+                                {"A", "A-s0-1", "A", "A-s1-2", "A", "A-s2-1"},
+                                {"A", "A-s0-1", "A", "A-s1-1", "A", "A-s2-2"},
+                                {"A", "A-s0-1", "A", "A-s1-2", "A", "A-s2-2"}});
 
         // Test s0 outer join to s1 and s2, no results for each s1 and s2
         //
         s0Events = SupportBean_S0.makeS0("B", new String[] {"B-s0-1"});
         sendEvent(s0Events);
         ArrayAssertionUtil.assertRefAnyOrderArr(new Object[][] {{ s0Events[0], null, null}}, getAndResetNewEvents());
+        ArrayAssertionUtil.assertEqualsAnyOrder(joinView.iterator(), fields,
+                new Object[][] {{"A", "A-s0-1", "A", "A-s1-1", "A", "A-s2-1"},
+                                {"A", "A-s0-1", "A", "A-s1-2", "A", "A-s2-1"},
+                                {"A", "A-s0-1", "A", "A-s1-1", "A", "A-s2-2"},
+                                {"A", "A-s0-1", "A", "A-s1-2", "A", "A-s2-2"},
+                                {"B", "B-s0-1", null, null, null, null}});
 
         s0Events = SupportBean_S0.makeS0("B", new String[] {"B-s0-2"});
         sendEvent(s0Events);
         ArrayAssertionUtil.assertRefAnyOrderArr(new Object[][] {{ s0Events[0], null, null}}, getAndResetNewEvents());
+        ArrayAssertionUtil.assertEqualsAnyOrder(joinView.iterator(), fields,
+                new Object[][] {{"A", "A-s0-1", "A", "A-s1-1", "A", "A-s2-1"},
+                                {"A", "A-s0-1", "A", "A-s1-2", "A", "A-s2-1"},
+                                {"A", "A-s0-1", "A", "A-s1-1", "A", "A-s2-2"},
+                                {"A", "A-s0-1", "A", "A-s1-2", "A", "A-s2-2"},
+                                {"B", "B-s0-1", null, null, null, null},
+                                {"B", "B-s0-2", null, null, null, null}});
 
         // Test s0 outer join to s1 and s2, one row for s1 and no results for s2
         //
         s1Events = SupportBean_S1.makeS1("C", new String[] {"C-s1-1"});
         sendEventsAndReset(s1Events);
+        ArrayAssertionUtil.assertEqualsAnyOrder(joinView.iterator(), fields,
+                new Object[][] {{"A", "A-s0-1", "A", "A-s1-1", "A", "A-s2-1"},
+                                {"A", "A-s0-1", "A", "A-s1-2", "A", "A-s2-1"},
+                                {"A", "A-s0-1", "A", "A-s1-1", "A", "A-s2-2"},
+                                {"A", "A-s0-1", "A", "A-s1-2", "A", "A-s2-2"},
+                                {"B", "B-s0-1", null, null, null, null},
+                                {"B", "B-s0-2", null, null, null, null},
+                                {null, null, "C", "C-s1-1", null, null}});
 
         s0Events = SupportBean_S0.makeS0("C", new String[] {"C-s0-1"});
         sendEvent(s0Events);
         ArrayAssertionUtil.assertRefAnyOrderArr(new Object[][] {{ s0Events[0], s1Events[0], null}}, getAndResetNewEvents());
+        ArrayAssertionUtil.assertEqualsAnyOrder(joinView.iterator(), fields,
+                new Object[][] {{"A", "A-s0-1", "A", "A-s1-1", "A", "A-s2-1"},
+                                {"A", "A-s0-1", "A", "A-s1-2", "A", "A-s2-1"},
+                                {"A", "A-s0-1", "A", "A-s1-1", "A", "A-s2-2"},
+                                {"A", "A-s0-1", "A", "A-s1-2", "A", "A-s2-2"},
+                                {"B", "B-s0-1", null, null, null, null},
+                                {"B", "B-s0-2", null, null, null, null},
+                                {"C", "C-s0-1", "C", "C-s1-1", null, null}});
 
         // Test s0 outer join to s1 and s2, two rows for s1 and no results for s2
         //

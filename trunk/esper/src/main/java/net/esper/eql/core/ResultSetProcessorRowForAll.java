@@ -53,8 +53,8 @@ public class ResultSetProcessorRowForAll implements ResultSetProcessor
 
     public Pair<EventBean[], EventBean[]> processJoinResult(Set<MultiKey<EventBean>> newEvents, Set<MultiKey<EventBean>> oldEvents)
     {
-        EventBean[] selectOldEvents = null;
-        EventBean[] selectNewEvents = null;
+        EventBean[] selectOldEvents;
+        EventBean[] selectNewEvents;
 
         selectOldEvents = getSelectListEvents(selectExprProcessor, optionalHavingNode, false);
 
@@ -149,5 +149,11 @@ public class ResultSetProcessorRowForAll implements ResultSetProcessor
         }
         SingleEventIterator iterator = new SingleEventIterator(selectNewEvents[0]);
         return iterator;
+    }
+
+    public Iterator<EventBean> getIterator(Set<MultiKey<EventBean>> joinSet)
+    {
+        EventBean[] result = getSelectListEvents(selectExprProcessor, optionalHavingNode, true);
+        return new ArrayEventIterator(result);
     }
 }

@@ -36,7 +36,11 @@ public class JoinSetFilter implements JoinSetProcessor
         if (filterExprNode != null)
         {
             filter(filterExprNode, newEvents, true);
-            filter(filterExprNode, oldEvents, false);
+
+            if (oldEvents != null)
+            {
+                filter(filterExprNode, oldEvents, false);
+            }
         }
     }
 

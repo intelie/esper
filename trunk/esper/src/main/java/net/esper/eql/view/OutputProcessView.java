@@ -7,15 +7,16 @@
  **************************************************************************************/
 package net.esper.eql.view;
 
-import net.esper.collection.TransformEventIterator;
+import net.esper.collection.MultiKey;
 import net.esper.eql.core.ResultSetProcessor;
-import net.esper.eql.core.OrderByProcessor;
+import net.esper.eql.join.JoinExecutionStrategy;
 import net.esper.eql.join.JoinSetIndicator;
 import net.esper.event.EventBean;
 import net.esper.event.EventType;
 import net.esper.view.ViewSupport;
 
 import java.util.Iterator;
+import java.util.Set;
 
 /**
  * Base output processing view that has the responsibility to serve up event type and
@@ -29,17 +30,15 @@ public abstract class OutputProcessView extends ViewSupport implements JoinSetIn
      * Processes the parent views result set generating events for pushing out to child view.
      */
     protected final ResultSetProcessor resultSetProcessor;
-    private boolean isJoin;
+    private JoinExecutionStrategy joinExecutionStrategy;
 
     /**
      * Ctor.
      * @param resultSetProcessor processes the results posted by parent view or joins
-     * @param isJoin is true for join statements
      */
-    protected OutputProcessView(ResultSetProcessor resultSetProcessor, boolean isJoin)
+    protected OutputProcessView(ResultSetProcessor resultSetProcessor)
     {
         this.resultSetProcessor = resultSetProcessor;
-        this.isJoin = isJoin;
     }
 
     public EventType getEventType()
@@ -59,11 +58,17 @@ public abstract class OutputProcessView extends ViewSupport implements JoinSetIn
     	}
     }
 
+    public void setJoinExecutionStrategy(JoinExecutionStrategy joinExecutionStrategy)
+    {
+        this.joinExecutionStrategy = joinExecutionStrategy;
+    }
+
     public Iterator<EventBean> iterator()
     {
-        if (isJoin)
+        if (joinExecutionStrategy != null)
         {
-            throw new UnsupportedOperationException("Joins statements do not allow iteration");
+            Set<MultiKey<EventBean>> joinSet = joinExecutionStrategy.staticJoin();
+            return resultSetProcessor.getIterator(joinSet);
         }
         if(resultSetProcessor != null)
     	{
@@ -73,5 +78,5 @@ public abstract class OutputProcessView extends ViewSupport implements JoinSetIn
     	{
     		return parent.iterator();
     	}
-    }    
+    }
 }

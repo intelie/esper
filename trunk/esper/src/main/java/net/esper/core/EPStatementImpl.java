@@ -1,13 +1,12 @@
 package net.esper.core;
 
-import net.esper.client.EPStatementState;
-import net.esper.client.StatementAwareUpdateListener;
-import net.esper.client.UpdateListener;
-import net.esper.client.EPServiceProvider;
+import net.esper.client.*;
 import net.esper.dispatch.DispatchService;
 import net.esper.event.EventBean;
 import net.esper.event.EventType;
 import net.esper.view.Viewable;
+import net.esper.util.ManagedLock;
+import net.esper.collection.SafeIteratorImpl;
 
 import java.util.Iterator;
 
@@ -28,6 +27,7 @@ public class EPStatementImpl implements EPStatementSPI
     private Viewable parentView;
     private EPStatementState currentState;
     private EventType eventType;
+    private ManagedLock statementLock;
 
     /**
      * Ctor.
@@ -51,7 +51,8 @@ public class EPStatementImpl implements EPStatementSPI
                               StatementLifecycleSvc statementLifecycleSvc,
                               long timeLastStateChange,
                               boolean isBlockingDispatch,
-                              long msecBlockingTimeout)
+                              long msecBlockingTimeout,
+                              ManagedLock statementLock)
     {
         this.isPattern = isPattern;
         this.statementId = statementId;
@@ -69,6 +70,7 @@ public class EPStatementImpl implements EPStatementSPI
         }
         this.currentState = EPStatementState.STOPPED;
         this.timeLastStateChange = timeLastStateChange;
+        this.statementLock = statementLock;
     }
 
     public String getStatementId()
@@ -162,6 +164,28 @@ public class EPStatementImpl implements EPStatementSPI
         else
         {
             return parentView.iterator();
+        }
+    }
+
+    public SafeIterator<EventBean> safeIterator()
+    {
+        // Return null if not started
+        if (parentView == null)
+        {
+            return null;
+        }
+
+        // Acquire the lock first
+        statementLock.acquireLock(null);
+
+        // Provide iterator - that iterator MUST be closed else the lock is not released
+        if (isPattern)
+        {
+            return new SafeIteratorImpl<EventBean>(statementLock, dispatchChildView.iterator());
+        }
+        else
+        {
+            return new SafeIteratorImpl<EventBean>(statementLock, parentView.iterator());
         }
     }
 

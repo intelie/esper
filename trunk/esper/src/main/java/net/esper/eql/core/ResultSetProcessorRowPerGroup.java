@@ -475,4 +475,12 @@ public class ResultSetProcessorRowPerGroup implements ResultSetProcessor
 
         return new ArrayEventIterator(orderedEvents);
     }
+
+    public Iterator<EventBean> getIterator(Set<MultiKey<EventBean>> joinSet)
+    {
+        Map<MultiKeyUntyped, EventBean[]> keysAndEvents = new HashMap<MultiKeyUntyped, EventBean[]>();
+        generateGroupKeys(joinSet, keysAndEvents, true);
+        EventBean[] selectNewEvents = generateOutputEventsJoin(keysAndEvents, optionalHavingNode, newEventGroupReps, newGenerators, true);
+        return new ArrayEventIterator(selectNewEvents);
+    }
 }

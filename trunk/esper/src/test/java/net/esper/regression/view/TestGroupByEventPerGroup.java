@@ -11,6 +11,7 @@ import net.esper.event.EventBean;
 import net.esper.support.bean.SupportBeanString;
 import net.esper.support.bean.SupportMarketDataBean;
 import net.esper.support.util.SupportUpdateListener;
+import net.esper.support.util.ArrayAssertionUtil;
 import net.esper.support.client.SupportConfigFactory;
 import net.esper.collection.UniformPair;
 import org.apache.commons.logging.Log;
@@ -96,6 +97,9 @@ public class TestGroupByEventPerGroup extends TestCase
 
     private void runAssertion()
     {
+        String[] fields = new String[] {"symbol", "mySum", "myAvg"};
+        ArrayAssertionUtil.assertEqualsAnyOrder(selectTestView.iterator(), fields, null);
+
         // assert select result type
         assertEquals(String.class, selectTestView.getEventType().getPropertyType("symbol"));
         assertEquals(Double.class, selectTestView.getEventType().getPropertyType("mySum"));
@@ -105,31 +109,37 @@ public class TestGroupByEventPerGroup extends TestCase
         assertEvents(SYMBOL_DELL,
                 null, null,
                 10d, 10d);
+        ArrayAssertionUtil.assertEqualsAnyOrder(selectTestView.iterator(), fields, new Object[][] {{"DELL", 10d, 10d}});
 
         sendEvent(SYMBOL_DELL, 20);
         assertEvents(SYMBOL_DELL,
                 10d, 10d,
                 30d, 15d);
+        ArrayAssertionUtil.assertEqualsAnyOrder(selectTestView.iterator(), fields, new Object[][] {{"DELL", 30d, 15d}});
 
         sendEvent(SYMBOL_DELL, 100);
         assertEvents(SYMBOL_DELL,
                 30d, 15d,
                 130d, 130d/3d);
+        ArrayAssertionUtil.assertEqualsAnyOrder(selectTestView.iterator(), fields, new Object[][] {{"DELL", 130d, 130d/3d}});
 
         sendEvent(SYMBOL_DELL, 50);
         assertEvents(SYMBOL_DELL,
                 130d, 130/3d,
                 170d, 170/3d);    // 20 + 100 + 50
+        ArrayAssertionUtil.assertEqualsAnyOrder(selectTestView.iterator(), fields, new Object[][] {{"DELL", 170d, 170d/3d}});
 
         sendEvent(SYMBOL_DELL, 5);
         assertEvents(SYMBOL_DELL,
                 170d, 170/3d,
                 155d, 155/3d);    // 100 + 50 + 5
+        ArrayAssertionUtil.assertEqualsAnyOrder(selectTestView.iterator(), fields, new Object[][] {{"DELL", 155d, 155d/3d}});
 
         sendEvent("AAA", 1000);
         assertEvents(SYMBOL_DELL,
                 155d, 155d/3,
                 55d, 55d/2);    // 50 + 5
+        ArrayAssertionUtil.assertEqualsAnyOrder(selectTestView.iterator(), fields, new Object[][] {{"DELL", 55d, 55d/2d}});
 
         sendEvent(SYMBOL_IBM, 70);
         assertEvents(SYMBOL_DELL,
@@ -138,11 +148,15 @@ public class TestGroupByEventPerGroup extends TestCase
                 SYMBOL_IBM,
                 null, null,
                 70, 70);    // Dell:5
+        ArrayAssertionUtil.assertEqualsAnyOrder(selectTestView.iterator(), fields, new Object[][] {
+                {"DELL", 5d, 5d}, {"IBM", 70d, 70d}});
 
         sendEvent("AAA", 2000);
         assertEvents(SYMBOL_DELL,
                 5d, 5d,
                 null, null);
+        ArrayAssertionUtil.assertEqualsAnyOrder(selectTestView.iterator(), fields, new Object[][] {
+                {"IBM", 70d, 70d}});
 
         sendEvent("AAA", 3000);
         assertFalse(listener.isInvoked());
@@ -151,6 +165,7 @@ public class TestGroupByEventPerGroup extends TestCase
         assertEvents(SYMBOL_IBM,
                 70d, 70d,
                 null, null);
+        ArrayAssertionUtil.assertEqualsAnyOrder(selectTestView.iterator(), fields, null);
     }
 
     private void assertEvents(String symbol,

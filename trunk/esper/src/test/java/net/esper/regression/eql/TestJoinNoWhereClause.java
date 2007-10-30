@@ -7,6 +7,7 @@ import net.esper.client.EPStatement;
 import net.esper.support.bean.SupportBean;
 import net.esper.support.bean.SupportMarketDataBean;
 import net.esper.support.util.SupportUpdateListener;
+import net.esper.support.util.ArrayAssertionUtil;
 import net.esper.support.client.SupportConfigFactory;
 
 public class TestJoinNoWhereClause extends TestCase
@@ -36,6 +37,7 @@ public class TestJoinNoWhereClause extends TestCase
 
     public void testJoinNoWhereClause()
     {
+        String[] fields = new String[] {"stream_0.volume", "stream_1.longBoxed"};
         String joinStatement = "select * from " +
                 SupportMarketDataBean.class.getName() + ".win:length(3)," +
                 SupportBean.class.getName() + "().win:length(3)";
@@ -45,16 +47,27 @@ public class TestJoinNoWhereClause extends TestCase
 
         // Send 2 events, should join on second one
         sendEvent(setOne[0]);
+        ArrayAssertionUtil.assertEqualsAnyOrder(joinView.iterator(), fields, null);
+
         sendEvent(setTwo[0]);
         assertEquals(1, updateListener.getLastNewData().length);
         assertEquals(setOne[0], updateListener.getLastNewData()[0].get("stream_0"));
         assertEquals(setTwo[0], updateListener.getLastNewData()[0].get("stream_1"));
         updateListener.reset();
+        ArrayAssertionUtil.assertEqualsAnyOrder(joinView.iterator(), fields,
+                new Object[][] {{0L, 0L}});
 
         sendEvent(setOne[1]);
         sendEvent(setOne[2]);
         sendEvent(setTwo[1]);
         assertEquals(3, updateListener.getLastNewData().length);
+        ArrayAssertionUtil.assertEqualsAnyOrder(joinView.iterator(), fields,
+                new Object[][] {{0L, 0L},
+                                {1L, 0L},
+                                {2L, 0L},
+                                {0L, 1L},
+                                {1L, 1L},
+                                {2L, 1L}});
     }
 
     private void sendEvent(Object event)

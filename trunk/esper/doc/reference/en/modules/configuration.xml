@@ -16,7 +16,7 @@
         <title>Programmatic Configuration</title>
 
         <para>
-            An instance of <literal>net.esper.client.Configuration</literal> represents all configuration parameters. The <literal>Configuration</literal> is used to build an (immutable) <literal>EPServiceProvider</literal>, which provides the administrative and runtime interfaces for an Esper engine instance. 
+            An instance of <literal>net.esper.client.Configuration</literal> represents all configuration parameters. The <literal>Configuration</literal> is used to build an <literal>EPServiceProvider</literal>, which provides the administrative and runtime interfaces for an Esper engine instance.
         </para>
 
         <para>
@@ -33,7 +33,7 @@ EPServiceProvider epService = EPServiceProviderManager.getProvider("sample", con
 ]]></programlisting>
 
         <para>
-			Note that <literal>Configuration</literal> is meant only as an initialization-time object. The Esper engine represented by an <literal>EPServiceProvider</literal> is immutable and does not retain any association back to the <literal>Configuration</literal>.
+			Note that <literal>Configuration</literal> is meant only as an initialization-time object. The Esper engine represented by an <literal>EPServiceProvider</literal> does not retain any association back to the <literal>Configuration</literal>.
         </para>
         
         <para>

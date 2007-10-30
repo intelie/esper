@@ -7,8 +7,10 @@ import net.esper.client.EPStatement;
 import net.esper.event.EventBean;
 import net.esper.event.EventType;
 import net.esper.support.bean.SupportBean;
-import net.esper.support.util.SupportUpdateListener;
 import net.esper.support.client.SupportConfigFactory;
+import net.esper.support.util.SupportUpdateListener;
+
+import java.util.Iterator;
 
 public class TestSelectClauseJoin extends TestCase
 {
@@ -44,6 +46,11 @@ public class TestSelectClauseJoin extends TestCase
         EventBean[] newEvents = updateListener.getLastNewData();
         assertEquals(1d, newEvents[0].get("s0.doubleBoxed"));
         assertEquals(3d, newEvents[0].get("div"));
+
+        Iterator<EventBean> iterator = joinView.iterator();
+        EventBean event = iterator.next();
+        assertEquals(1d, event.get("s0.doubleBoxed"));
+        assertEquals(3d, event.get("div"));
     }
 
     public void testEventType()

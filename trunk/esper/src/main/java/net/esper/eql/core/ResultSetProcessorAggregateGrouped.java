@@ -529,4 +529,12 @@ public class ResultSetProcessorAggregateGrouped implements ResultSetProcessor
     {
         return optionalHavingNode;
     }
+
+    public Iterator<EventBean> getIterator(Set<MultiKey<EventBean>> joinSet)
+    {
+        // Generate group-by keys for all events
+        MultiKeyUntyped[] groupByKeys = generateGroupKeys(joinSet, true);
+        EventBean[] result = generateOutputEventsJoin(joinSet, groupByKeys, optionalHavingNode, newEventGroupReps, newGenerators, true);
+        return new ArrayEventIterator(result);
+    }
 }

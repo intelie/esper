@@ -23,6 +23,8 @@ public interface EPIterable
      */
     public Iterator<EventBean> iterator();
 
+    public SafeIterator<EventBean> safeIterator();
+
     /**
      * Returns the type of events the iterable returns.
      * @return event type of events the iterator returns

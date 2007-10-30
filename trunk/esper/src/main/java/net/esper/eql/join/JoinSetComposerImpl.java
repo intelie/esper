@@ -15,6 +15,7 @@ import net.esper.event.EventBean;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.Iterator;
 
 /**
  * Implements the function to determine a join result set using tables/indexes and query strategy
@@ -130,5 +131,24 @@ public class JoinSetComposerImpl implements JoinSetComposer
     protected QueryStrategy[] getQueryStrategies()
     {
         return queryStrategies;
+    }
+
+    public Set<MultiKey<EventBean>> staticJoin()
+    {
+        Set<MultiKey<EventBean>> result = new LinkedHashSet<MultiKey<EventBean>>();
+        EventBean[] lookupEvents = new EventBean[1];
+
+        // for each stream, perform query strategy
+        for (int stream = 0; stream < queryStrategies.length; stream++)
+        {
+            Iterator<EventBean> streamEvents = repositories[stream][0].iterator();
+            for (;streamEvents.hasNext();)
+            {
+                lookupEvents[0] = streamEvents.next();
+                queryStrategies[stream].lookup(lookupEvents, result);
+            }
+        }
+
+        return result;
     }
 }

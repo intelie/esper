@@ -4,6 +4,7 @@ import net.esper.client.EPServiceProvider;
 import net.esper.client.EPStatement;
 import net.esper.client.EPServiceProviderManager;
 import net.esper.support.util.SupportUpdateListener;
+import net.esper.support.util.ArrayAssertionUtil;
 import net.esper.support.bean.SupportBean;
 import net.esper.support.bean.SupportBeanString;
 import net.esper.support.bean.SupportMarketDataBean;
@@ -21,12 +22,14 @@ public class TestAggregateRowPerEvent extends TestCase
     private EPServiceProvider epService;
     private SupportUpdateListener testListener;
     private EPStatement selectTestView;
+    private int eventCount;
 
     public void setUp()
     {
         testListener = new SupportUpdateListener();
         epService = EPServiceProviderManager.getDefaultProvider(SupportConfigFactory.getConfiguration());
         epService.initialize();
+        eventCount = 0;
     }
 
     public void testSumOneView()
@@ -92,28 +95,39 @@ public class TestAggregateRowPerEvent extends TestCase
 
     private void runAssert()
     {
+        String[] fields = new String[] {"longPrimitive", "mySum"};
+
         // assert select result type
         assertEquals(Long.class, selectTestView.getEventType().getPropertyType("mySum"));
+        ArrayAssertionUtil.assertEqualsAnyOrder(selectTestView.iterator(), fields, null);
 
         sendEvent(10);
         assertEquals(10L, testListener.getAndResetLastNewData()[0].get("mySum"));
+        ArrayAssertionUtil.assertEqualsAnyOrder(selectTestView.iterator(), fields, new Object[][] {{1L, 10L}});
+
         sendEvent(15);
         assertEquals(25L, testListener.getAndResetLastNewData()[0].get("mySum"));
+        ArrayAssertionUtil.assertEqualsAnyOrder(selectTestView.iterator(), fields, new Object[][] {{1L, 25L}, {2L, 25L}});
+
         sendEvent(-5);
         assertEquals(20L, testListener.getAndResetLastNewData()[0].get("mySum"));
         assertNull(testListener.getLastOldData());
+        ArrayAssertionUtil.assertEqualsAnyOrder(selectTestView.iterator(), fields, new Object[][] {{1L, 20L}, {2L, 20L}, {3L, 20L}});
 
         sendEvent(-2);
         assertEquals(20L, testListener.getLastOldData()[0].get("mySum"));
         assertEquals(8L, testListener.getAndResetLastNewData()[0].get("mySum"));
+        ArrayAssertionUtil.assertEqualsAnyOrder(selectTestView.iterator(), fields, new Object[][] {{4L, 8L}, {2L, 8L}, {3L, 8L}});
 
         sendEvent(100);
         assertEquals(8L, testListener.getLastOldData()[0].get("mySum"));
         assertEquals(93L, testListener.getAndResetLastNewData()[0].get("mySum"));
+        ArrayAssertionUtil.assertEqualsAnyOrder(selectTestView.iterator(), fields, new Object[][] {{4L, 93L}, {5L, 93L}, {3L, 93L}});
 
         sendEvent(1000);
         assertEquals(93L, testListener.getLastOldData()[0].get("mySum"));
         assertEquals(1098L, testListener.getAndResetLastNewData()[0].get("mySum"));
+        ArrayAssertionUtil.assertEqualsAnyOrder(selectTestView.iterator(), fields, new Object[][] {{4L, 1098L}, {5L, 1098L}, {6L, 1098L}});
     }
 
     private void sendEvent(long longBoxed, int intBoxed, short shortBoxed)
@@ -123,6 +137,7 @@ public class TestAggregateRowPerEvent extends TestCase
         bean.setLongBoxed(longBoxed);
         bean.setIntBoxed(intBoxed);
         bean.setShortBoxed(shortBoxed);
+        bean.setLongPrimitive(++eventCount);
         epService.getEPRuntime().sendEvent(bean);
     }
 
