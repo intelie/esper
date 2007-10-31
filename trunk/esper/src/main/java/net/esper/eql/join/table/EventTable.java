@@ -29,5 +29,9 @@ public interface EventTable
      */
     public void remove(EventBean[] events);
 
+    /**
+     * Returns an iterator over events in the table.
+     * @return table iterator
+     */
     public Iterator<EventBean> iterator();
 }

@@ -142,7 +142,7 @@ EPStatement myTrigger = admin.createEQL("select * from pattern [" +
            <title>Pulling Data from Patterns</title>
            
 			<para>
-				Data can also be pulled from pattern statements via the <literal>iterator()</literal> method. 
+				Data can also be obtained from pattern statements via the <literal>safeIterator()</literal> and <literal>iterator()</literal> methods on <literal>EPStatement</literal> (the pull API). 
 				If the pattern had fired at least once, then the iterator returns the last event for which it fired.
 				The <literal>hasNext()</literal> method can be used to determine if the pattern had fired.				 				
 			</para>

@@ -51,7 +51,7 @@
         <title>EQL Syntax</title>
         
 		<para>
-			EQL queries are created and stored in the engine, and publish results as events are received by the engine or timer events occur that match the criteria specified in the query. Events can also be pulled from running EQL queries.
+			EQL queries are created and stored in the engine, and publish results to listeners as events are received by the engine or timer events occur that match the criteria specified in the query. Events can also be obtained from running EQL queries via the <literal>safeIterator</literal> and <literal>iterator</literal> methods that provide a pull-data API.
 		</para>
 
 		<para>
@@ -138,7 +138,7 @@ select * from MyEvent  /* this also works */]]></programlisting>
         <title>Choosing Event Properties And Events: the <emphasis>Select</emphasis> Clause</title>
         
 		<para>
-			The select clause is required in all EQL statements. The select clause can be used to select all properties via the wildcard <literal>*</literal>, or to specify a list of event properties and expressions. The select clause defines the event type (event property names and types) of the resulting events published by the statement, or pulled from the statement.
+			The select clause is required in all EQL statements. The select clause can be used to select all properties via the wildcard <literal>*</literal>, or to specify a list of event properties and expressions. The select clause defines the event type (event property names and types) of the resulting events published by the statement, or pulled from the statement via the iterator methods.
 		</para>
 
 		<para>

@@ -27,5 +27,9 @@ public interface JoinExecutionStrategy
     public void join(EventBean[][] newDataPerStream,
                      EventBean[][] oldDataPerStream);
 
+    /**
+     * A static join is for use with iterating over join statements.
+     * @return set of rows, each row with two or more events, one for each stream
+     */
     public Set<MultiKey<EventBean>> staticJoin();
 }

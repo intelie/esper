@@ -120,20 +120,42 @@ statement.addListener(myListener);]]></programlisting>
 	  <sect2 id="api-admin-iterators">		
 			<title>Using Iterators</title>
 			<para>
-				Subscribing to events posted by a statement is following a push model. The engine pushes data to listeners when events are received that cause data to change or patterns to match. Alternatively, statements can also serve up data in a pull model via the <literal>iterator</literal> method. This can come in handy if we are not interested in all new updates, but only want to perform a frequent poll for the latest data. For example, an event pattern that fires every 5 seconds could be used to pull data from an EQL statement. The code snippet below demonstrates some pull code.			
+				Subscribing to events posted by a statement is following a push model. The engine pushes data to listeners when events are received that cause data to change or patterns to match. Alternatively, you need to know that statements serve up data that your application can obtain via the <literal>safeIterator</literal> and <literal>iterator</literal> methods on <literal>EPStatement</literal>. This is called the pull API and can come in handy if your application is not interested in all new updates, and only needs to perform a frequent or infrequent poll for the latest data. 
 			</para>
-			<programlisting><![CDATA[Iterator<EventBean> eventIter = countStmt.iterator();
-for (EventBean event : eventIter) {
-   // .. do something ..
+
+			<para>
+				The <literal>safeIterator</literal> method on <literal>EPStatement</literal> returns a concurrency-safe iterator returning current statement results, even while concurrent threads may send events into the engine for processing. The safe iterator guarantees correct results even as events are being processed by other threads. The cost is that the iterator obtains and holds a statement lock that must be released via the <literal>close</literal> method on the <literal>SafeIterator</literal> instance. 
+			</para>
+
+			<para>
+				The <literal>iterator</literal> method on <literal>EPStatement</literal> returns a concurrency-unsafe iterator. This iterator is only useful for applications that are single-threaded, or applications that themselves perform coordination between the iterating thread and the  threads that send events into the engine for processing. The advantage to this iterator is that it does not hold a lock.
+			</para>
+
+			<para>
+				The next code snippet shows a short example of use of safe iterators:
+			</para>
+			<programlisting><![CDATA[EPStatement statement = epAdmin.createEQL("select avg('price') as avgPrice from MyTick");
+// .. send events into the engine
+// then use the pull API...
+SafeIterator<EventBean> safeIter = statement.safeIterator();
+try {
+  for (;safeIter.hasNext();) {
+     // .. process event ..
+     EventBean event = safeIter.next();
+     System.out.println("avg:" + event.get("avgPrice");
+  }
+}
+finally {
+  safeIter.close();	// Note: safe iterators must be closed
 }]]></programlisting>
 
 			<para>
-				This is a second example:
+				This is a short example of use of the regular iterator that is not safe for concurrent event processing:
 			</para>
 			<programlisting><![CDATA[double averagePrice = (Double) eqlStatement.iterator().next().get("average");]]></programlisting>
 			
 			<para>
-				The <literal>iterator</literal> method can be used to pull results out of most statements, including statements that contain aggregation functions, pattern statements, and statements that contain a <literal>where</literal> clause, <literal>group by</literal> clause, <literal>having</literal> clause or <literal>order by</literal> clause.
+				The <literal>safeIterator</literal> and <literal>iterator</literal> methods can be used to pull results out of all statements, including statements that join streams, contain aggregation functions, pattern statements, and statements that contain a <literal>where</literal> clause, <literal>group by</literal> clause, <literal>having</literal> clause or <literal>order by</literal> clause.
 			</para>
 
 			<para>
@@ -141,23 +163,23 @@ for (EventBean event : eventIter) {
 			</para>
 
 			<para>
-				Esper places the following restrictions on the pull API and usage of the <literal>iterator</literal> method:
+				Esper places the following restrictions on the pull API and usage of the <literal>safeIterator</literal> and <literal>iterator</literal> methods:
 			</para>
 	
 			<orderedlist spacing="compact">
 				<listitem>
 					<para>
-						EQL statements joining multiple event streams do not support the pull API.
+						In multithreaded applications, use the <literal>safeIterator</literal> method. Note: make sure your application closes the iterator via the <literal>close</literal> method when done, otherwise the iterated statement stays locked and event processing for that statement does not resume.
 					</para>
 				</listitem>
 				<listitem>
 					<para>
-						Since the <literal>iterator</literal> method returns events to the application immediately, the iterator does not honor an output rate limiting clause, if present.
+						In multithreaded applications, the <literal>iterator</literal> method does not hold any locks. The iterator returned by this method does not make any guarantees towards correctness of results and fail-behavior, if your application processes events into the engine instance by multiple threads. Use the <literal>safeIterator</literal> method for concurrency-safe iteration instead.
 					</para>
 				</listitem>
 				<listitem>
 					<para>
-						In multithreaded applications, the <literal>iterator</literal> method does not hold any locks and modifications to the underlying data window may throw runtime exceptions in the face of concurrent modifications.
+						Since the <literal>safeIterator</literal> and <literal>iterator</literal> methods return events to the application immediately, the iterator does not honor an output rate limiting clause, if present. That is, the iterator returns results as if there is no output-rate clause for the statement. Use a separate statement and the <literal>insert into</literal> clause to control the output rate for iteration.
 					</para>
 				</listitem>
 			</orderedlist>
@@ -292,7 +314,7 @@ runtime.sendEvent(new CurrentTimeEvent(timeInMillis));
         <title>Events Received from the Engine</title>
 
         <para>
-			The Esper engine posts events to registered <literal>UpdateListener</literal> instances ('push' method for receiving events). For many statements events can also be pulled from statements via the <literal>iterator</literal> method. Both pull and push supply <literal>EventBean</literal> instances representing the events generated by the engine or events supplied to the engine. Each <literal>EventBean</literal> instance represents an event, with each event being either an artificial event, composite event or an event supplied to the engine via its runtime interface.
+			The Esper engine posts events to registered <literal>UpdateListener</literal> instances ('push' method for receiving events). For all statements events can also be pulled from statements via the <literal>safeIterator</literal> and <literal>iterator</literal> methods. Both pull and push supply <literal>EventBean</literal> instances representing the events generated by the engine or events supplied to the engine. Each <literal>EventBean</literal> instance represents an event, with each event being either an artificial event, composite event or an event supplied to the engine via its runtime interface.
         </para>
 			
         <para>

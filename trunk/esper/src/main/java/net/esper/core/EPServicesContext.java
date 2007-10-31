@@ -18,14 +18,12 @@ import net.esper.eql.spec.PluggableObjectCollection;
 import net.esper.eql.view.OutputConditionFactory;
 import net.esper.event.EventAdapterService;
 import net.esper.filter.FilterService;
-import net.esper.filter.FilterServiceProvider;
 import net.esper.schedule.SchedulingService;
 import net.esper.timer.TimerService;
 import net.esper.util.ManagedReadWriteLock;
 import net.esper.view.ViewService;
 import net.esper.view.ViewServiceProvider;
 import net.esper.view.stream.StreamFactoryService;
-import net.esper.view.stream.StreamFactoryServiceProvider;
 
 /**
  * Convenience class to hold implementations for all services.
@@ -75,7 +73,6 @@ public final class EPServicesContext
      * @param plugInPatternObjects resolves plug-in pattern objects
      * @param outputConditionFactory factory for output condition objects
      * @param timerService is the timer service
-     * @param isShareViews is a boolean indicating whether the engine shares view resources between statements
      * @param filterService the filter service
      * @param streamFactoryService is hooking up filters to streams
      */

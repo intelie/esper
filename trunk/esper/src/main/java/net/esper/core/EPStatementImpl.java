@@ -41,6 +41,7 @@ public class EPStatementImpl implements EPStatementSPI
      * @param msecBlockingTimeout is the max number of milliseconds of block time
      * @param epServiceProvider is the engine instance to provide to statement-aware update listeners
      * @param timeLastStateChange the timestamp the statement was created and started
+     * @param statementLock the lock associated with the statement
      */
     public EPStatementImpl(EPServiceProvider epServiceProvider,
                            String statementId,

@@ -108,8 +108,10 @@ Features
 
     * Relational database access via SQL-query joins with event streams; LRU and expiry-time query result caches
 	
-    * Supports both listener (push) and consumer (pull) model 
+    * Support for both the listener (push/subscription) API and the consumer (pull/receive) API for querying results
 	
+    	* Concurrency-safe iterator provides complete query capability for all statements
+    	
     * Supports externally-supplied time as well as Java system time	
 	
     * Multithread-safe as of release 1.5

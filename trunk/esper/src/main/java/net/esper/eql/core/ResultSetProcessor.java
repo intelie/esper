@@ -51,5 +51,10 @@ public interface ResultSetProcessor
      */
     public Iterator<EventBean> getIterator(Viewable parent);
 
+    /**
+     * Returns the iterator for iterating over a join-result.
+     * @param joinSet is the join result set
+     * @return iterator over join results
+     */
     public Iterator<EventBean> getIterator(Set<MultiKey<EventBean>> joinSet);
 }

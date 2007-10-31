@@ -58,6 +58,10 @@ public abstract class OutputProcessView extends ViewSupport implements JoinSetIn
     	}
     }
 
+    /**
+     * For joins, supplies the join execution strategy that provides iteration over statement results.
+     * @param joinExecutionStrategy executes joins including static (non-continuous) joins 
+     */
     public void setJoinExecutionStrategy(JoinExecutionStrategy joinExecutionStrategy)
     {
         this.joinExecutionStrategy = joinExecutionStrategy;
