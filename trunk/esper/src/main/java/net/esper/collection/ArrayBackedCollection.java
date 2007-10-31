@@ -39,7 +39,7 @@ public class ArrayBackedCollection<T> implements Collection<T>
         this.handles = new Object[currentSize];
     }
 
-    public boolean add(Object object)
+    public boolean add(T object)
     {
         if (currentIndex <= lastIndex)
         {
@@ -90,17 +90,12 @@ public class ArrayBackedCollection<T> implements Collection<T>
         throw new UnsupportedOperationException();
     }
 
-    public Iterator iterator()
+    public Iterator<T> iterator()
     {
         throw new UnsupportedOperationException();
     }
 
     public Object[] toArray()
-    {
-        throw new UnsupportedOperationException();
-    }
-
-    public Object[] toArray(Object[] a)
     {
         throw new UnsupportedOperationException();
     }
@@ -126,6 +121,11 @@ public class ArrayBackedCollection<T> implements Collection<T>
     }
 
     public boolean containsAll(Collection c)
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    public <T> T[] toArray(T[] a)
     {
         throw new UnsupportedOperationException();
     }
