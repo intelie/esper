@@ -10,7 +10,7 @@ package net.esper.client.soda;
 import java.io.StringWriter;
 
 /**
- * Exists-expression for a set of values returned by a subquery.
+ * Exists-expression for a set of values returned by a lookup.
  */
 public class SubqueryExistsExpression extends ExpressionBase
 {
@@ -18,7 +18,7 @@ public class SubqueryExistsExpression extends ExpressionBase
 
     /**
      * Ctor - for use to create an expression tree, without child expression.
-     * @param model is the subquery statement object model
+     * @param model is the lookup statement object model
      */
     public SubqueryExistsExpression(EPStatementObjectModel model)
     {
@@ -33,8 +33,8 @@ public class SubqueryExistsExpression extends ExpressionBase
     }
 
     /**
-     * Returns the subquery statement object model.
-     * @return subquery model
+     * Returns the lookup statement object model.
+     * @return lookup model
      */
     public EPStatementObjectModel getModel()
     {
@@ -42,8 +42,8 @@ public class SubqueryExistsExpression extends ExpressionBase
     }
 
     /**
-     * Sets the subquery statement object model.
-     * @param model is the subquery model to set
+     * Sets the lookup statement object model.
+     * @param model is the lookup model to set
      */
     public void setModel(EPStatementObjectModel model)
     {

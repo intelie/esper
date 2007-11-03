@@ -7,7 +7,6 @@
  **************************************************************************************/
 package net.esper.eql.spec;
 
-import net.esper.collection.Pair;
 import net.esper.eql.expression.ExprNode;
 import net.esper.eql.expression.ExprSubselectNode;
 
@@ -18,6 +17,8 @@ import java.util.List;
  */
 public class StatementSpecCompiled
 {
+    private final OnDeleteDesc onDeleteDesc;
+    private final CreateWindowDesc createWindowDesc;
     private final InsertIntoDesc insertIntoDesc;
     private final SelectClauseStreamSelectorEnum selectStreamDirEnum;
     private final SelectClauseSpec selectClauseSpec;
@@ -44,7 +45,9 @@ public class StatementSpecCompiled
      * @param orderByList order by
      * @param subSelectExpressions list of subqueries
      */
-    public StatementSpecCompiled(InsertIntoDesc insertIntoDesc,
+    public StatementSpecCompiled(OnDeleteDesc onDeleteDesc,
+                                 CreateWindowDesc createWindowDesc,
+                                 InsertIntoDesc insertIntoDesc,
                                  SelectClauseStreamSelectorEnum selectClauseStreamSelectorEnum,
                                  SelectClauseSpec selectClauseSpec,
                                  List<StreamSpecCompiled> streamSpecs,
@@ -56,6 +59,8 @@ public class StatementSpecCompiled
                                  List<OrderByItem> orderByList,
                                  List<ExprSubselectNode> subSelectExpressions)
     {
+        this.onDeleteDesc = onDeleteDesc; 
+        this.createWindowDesc = createWindowDesc;
         this.insertIntoDesc = insertIntoDesc;
         this.selectStreamDirEnum = selectClauseStreamSelectorEnum;
         this.selectClauseSpec = selectClauseSpec;
@@ -67,6 +72,11 @@ public class StatementSpecCompiled
         this.outputLimitSpec = outputLimitSpec;
         this.orderByList = orderByList;
         this.subSelectExpressions = subSelectExpressions;
+    }
+
+    public CreateWindowDesc getCreateWindowDesc()
+    {
+        return createWindowDesc;
     }
 
     /**
@@ -168,11 +178,16 @@ public class StatementSpecCompiled
     }
 
     /**
-     * Returns the list of subquery expression nodes.
-     * @return subquery nodes
+     * Returns the list of lookup expression nodes.
+     * @return lookup nodes
      */
     public List<ExprSubselectNode> getSubSelectExpressions()
     {
         return subSelectExpressions;
+    }
+
+    public OnDeleteDesc getOnDeleteDesc()
+    {
+        return onDeleteDesc;
     }
 }

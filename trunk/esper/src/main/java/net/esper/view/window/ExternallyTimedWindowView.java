@@ -35,7 +35,7 @@ public final class ExternallyTimedWindowView extends ViewSupport implements Data
     private final long millisecondsBeforeExpiry;
     private EventPropertyGetter timestampFieldGetter;
 
-    private final TimeWindow timeWindow = new TimeWindow();
+    private final TimeWindow timeWindow = new TimeWindow(false);
     private ViewUpdatedCollection viewUpdatedCollection;
 
     /**

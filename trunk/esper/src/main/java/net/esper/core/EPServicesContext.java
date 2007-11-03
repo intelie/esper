@@ -13,6 +13,7 @@ import net.esper.emit.EmitService;
 import net.esper.emit.EmitServiceProvider;
 import net.esper.eql.core.EngineImportService;
 import net.esper.eql.core.EngineSettingsService;
+import net.esper.eql.named.NamedWindowService;
 import net.esper.eql.db.DatabaseConfigService;
 import net.esper.eql.spec.PluggableObjectCollection;
 import net.esper.eql.view.OutputConditionFactory;
@@ -51,6 +52,7 @@ public final class EPServicesContext
     private StatementContextFactory statementContextFactory;
     private PluggableObjectCollection plugInPatternObjects;
     private OutputConditionFactory outputConditionFactory;
+    private NamedWindowService namedWindowService;
 
     // Supplied after construction to avoid circular dependency
     private StatementLifecycleSvc statementLifecycleSvc;
@@ -92,7 +94,8 @@ public final class EPServicesContext
                              OutputConditionFactory outputConditionFactory,
                              TimerService timerService,
                              FilterService filterService,
-                             StreamFactoryService streamFactoryService
+                             StreamFactoryService streamFactoryService,
+                             NamedWindowService namedWindowService
                              )
     {
         this.engineURI = engineURI;
@@ -115,6 +118,7 @@ public final class EPServicesContext
         this.statementContextFactory = statementContextFactory;
         this.plugInPatternObjects = plugInPatternObjects;
         this.outputConditionFactory = outputConditionFactory;
+        this.namedWindowService = namedWindowService;
     }
 
     /**
@@ -379,5 +383,10 @@ public final class EPServicesContext
     public OutputConditionFactory getOutputConditionFactory()
     {
         return outputConditionFactory;
+    }
+
+    public NamedWindowService getNamedWindowService()
+    {
+        return namedWindowService;
     }
 }

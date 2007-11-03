@@ -3,6 +3,7 @@ package net.esper.view.window;
 import net.esper.view.*;
 import net.esper.type.TimePeriodParameter;
 import net.esper.eql.core.ViewResourceCallback;
+import net.esper.eql.named.RemoveStreamViewCapability;
 import net.esper.event.EventType;
 import net.esper.util.JavaClassHelper;
 import net.esper.core.StatementContext;
@@ -23,6 +24,8 @@ public class TimeWindowViewFactory implements ViewFactory
      * Access into the data window.
      */
     protected RandomAccessByIndexGetter randomAccessGetterImpl;
+
+    protected boolean isRemoveStreamHandling;
     
     private EventType eventType;
 
@@ -74,6 +77,10 @@ public class TimeWindowViewFactory implements ViewFactory
         {
             return true;
         }
+        else if (viewCapability instanceof RemoveStreamViewCapability)
+        {
+            return true;
+        }
         else
         {
             return false;
@@ -95,6 +102,11 @@ public class TimeWindowViewFactory implements ViewFactory
         {
             throw new UnsupportedOperationException("View capability " + viewCapability.getClass().getSimpleName() + " not supported");
         }
+        if (viewCapability instanceof RemoveStreamViewCapability)
+        {
+            isRemoveStreamHandling = true;
+            return;
+        }
         if (randomAccessGetterImpl == null)
         {
             randomAccessGetterImpl = new RandomAccessByIndexGetter();
@@ -112,7 +124,7 @@ public class TimeWindowViewFactory implements ViewFactory
             randomAccessGetterImpl.updated(randomAccess);
         }
         
-        return new TimeWindowView(statementContext, this, millisecondsBeforeExpiry, randomAccess);
+        return new TimeWindowView(statementContext, this, millisecondsBeforeExpiry, randomAccess, isRemoveStreamHandling);
     }
 
     public EventType getEventType()

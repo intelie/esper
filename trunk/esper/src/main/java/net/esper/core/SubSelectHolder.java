@@ -4,7 +4,7 @@ import net.esper.view.Viewable;
 import net.esper.view.ViewFactoryChain;
 
 /**
- * Entry holding subquery resource references for use by {@link SubSelectStreamCollection}.
+ * Entry holding lookup resource references for use by {@link SubSelectStreamCollection}.
  */
 public class SubSelectHolder
 {
@@ -14,7 +14,7 @@ public class SubSelectHolder
 
     /**
      * Ctor.
-     * @param streamNumber is the subquery stream number
+     * @param streamNumber is the lookup stream number
      * @param viewable is the root viewable
      * @param viewFactoryChain is the view chain
      */
@@ -26,7 +26,7 @@ public class SubSelectHolder
     }
 
     /**
-     * Returns subquery stream number.
+     * Returns lookup stream number.
      * @return stream num
      */
     public int getStreamNumber()
@@ -35,7 +35,7 @@ public class SubSelectHolder
     }
 
     /**
-     * Returns the subquery child viewable.
+     * Returns the lookup child viewable.
      * @return child-most viewable
      */
     public Viewable getViewable()
@@ -44,7 +44,7 @@ public class SubSelectHolder
     }
 
     /**
-     * Returns the subquery view factory chain
+     * Returns the lookup view factory chain
      * @return view factory chain
      */
     public ViewFactoryChain getViewFactoryChain()

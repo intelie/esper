@@ -37,6 +37,7 @@ public class SupportStatementContextFactory
                 null,
                 null,
                 null,
-                new OutputConditionFactoryDefault());
+                new OutputConditionFactoryDefault(),
+                null);
     }
 }

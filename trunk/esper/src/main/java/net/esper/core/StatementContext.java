@@ -1,6 +1,7 @@
 package net.esper.core;
 
 import net.esper.eql.core.MethodResolutionService;
+import net.esper.eql.named.NamedWindowService;
 import net.esper.eql.join.JoinSetComposerFactory;
 import net.esper.eql.view.OutputConditionFactory;
 import net.esper.event.EventAdapterService;
@@ -35,6 +36,7 @@ public final class StatementContext
     private final FilterService filterService;
     private final JoinSetComposerFactory joinSetComposerFactory;
     private final OutputConditionFactory outputConditionFactory;
+    private final NamedWindowService namedWindowService;
 
     /**
      * Constructor.
@@ -74,7 +76,8 @@ public final class StatementContext
                               PatternContextFactory patternContextFactory,
                               FilterService filterService,
                               JoinSetComposerFactory joinSetComposerFactory,
-                              OutputConditionFactory outputConditionFactory)
+                              OutputConditionFactory outputConditionFactory,
+                              NamedWindowService namedWindowService)
     {
         this.engineURI = engineURI;
         this.engineInstanceId = engineInstanceId;
@@ -94,6 +97,7 @@ public final class StatementContext
         this.filterService = filterService;
         this.joinSetComposerFactory = joinSetComposerFactory;
         this.outputConditionFactory = outputConditionFactory;
+        this.namedWindowService = namedWindowService;
     }
 
     /**
@@ -256,6 +260,11 @@ public final class StatementContext
     public PatternObjectResolutionService getPatternResolutionService()
     {
         return patternResolutionService;
+    }
+
+    public NamedWindowService getNamedWindowService()
+    {
+        return namedWindowService;
     }
 
     public String toString()

@@ -40,6 +40,28 @@ tokens
 // EQL expression
 //----------------------------------------------------------------------------
 startEQLExpressionRule
+	:	(selectExpr | createWindowExpr | onExpr)		 
+		{ end(); }
+	;
+
+onExpr 
+	:	#(i:ON_EXPR eventFilterExpr (IDENT)? DELETE IDENT (IDENT)? (whereClause)? { leaveNode(#i); } )
+	;
+
+createWindowExpr
+	:	#(i:CREATE_WINDOW_EXPR IDENT (viewListExpr)? (createSelectionList)? CLASS_IDENT { leaveNode(#i); } )
+	;
+	
+createSelectionList
+	:	#(s:CREATE_WINDOW_SELECT_EXPR createSelectionListElement (createSelectionListElement)* { leaveNode(#s); } )
+	;
+	
+createSelectionListElement
+	:	w:WILDCARD_SELECT { leaveNode(#w); }
+	|	#(s:SELECTION_ELEMENT_EXPR eventPropertyExpr (IDENT)? { leaveNode(#s); } )
+	;
+
+selectExpr
 	:	(insertIntoExpr)?
 		selectClause 
 		fromClause
@@ -48,7 +70,6 @@ startEQLExpressionRule
 		(havingClause)?
 		(outputLimitExpr)?
 		(orderByClause)?
-		{ end(); }
 	;
 	
 insertIntoExpr

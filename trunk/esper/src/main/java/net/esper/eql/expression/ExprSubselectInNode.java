@@ -26,7 +26,7 @@ public class ExprSubselectInNode extends ExprSubselectNode
 
     /**
      * Ctor.
-     * @param statementSpec is the subquery statement spec from the parser, unvalidated
+     * @param statementSpec is the lookup statement spec from the parser, unvalidated
      */
     public ExprSubselectInNode(StatementSpecRaw statementSpec)
     {
@@ -39,7 +39,7 @@ public class ExprSubselectInNode extends ExprSubselectNode
     }
 
     /**
-     * Indicate that this is a not-in subquery.
+     * Indicate that this is a not-in lookup.
      * @param notIn is true for not-in, or false for regular 'in'
      */
     public void setNotIn(boolean notIn)

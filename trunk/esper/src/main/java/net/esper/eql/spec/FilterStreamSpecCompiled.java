@@ -41,4 +41,9 @@ public class FilterStreamSpecCompiled extends StreamSpecBase implements StreamSp
     {
         return filterSpec;
     }
+
+    public void setFilterSpec(FilterSpecCompiled filterSpec)
+    {
+        this.filterSpec = filterSpec;
+    }
 }

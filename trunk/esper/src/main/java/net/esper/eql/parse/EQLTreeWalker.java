@@ -62,7 +62,7 @@ public class EQLTreeWalker extends EQLBaseWalker
 
     /**
      * Pushes a statement into the stack, creating a new empty statement to fill in.
-     * The leave node method for subquery statements pops from the stack.
+     * The leave node method for lookup statements pops from the stack.
      * @throws SemanticException is a standard parser exception
      */
     protected void pushStmtContext() throws SemanticException {
@@ -302,6 +302,15 @@ public class EQLTreeWalker extends EQLBaseWalker
             case CURRENT_TIMESTAMP:
                 leaveTimestamp(node);
                 break;
+            case CREATE_WINDOW_EXPR:
+                leaveCreateWindow(node);
+                break;
+            case CREATE_WINDOW_SELECT_EXPR:
+                leaveCreateWindowSelect(node);
+                break;
+            case ON_EXPR:
+                leaveOnExpr(node);
+                break;
             default:
                 throw new ASTWalkException("Unhandled node type encountered, type '" + node.getType() +
                         "' with text '" + node.getText() + '\'');
@@ -348,6 +357,70 @@ public class EQLTreeWalker extends EQLBaseWalker
             }
         }
         while (childNode != null);
+    }
+
+    private void leaveCreateWindow(AST node)
+    {
+        log.debug(".leaveCreateWindow");
+
+        String windowName = node.getFirstChild().getText();
+
+        String eventName = null;
+        AST child = node.getFirstChild().getNextSibling();
+        while (child != null)
+        {
+            if (child.getType() == CLASS_IDENT) // the event type
+            {
+                eventName = child.getText();
+            }
+            child = child.getNextSibling();
+        }
+        if (eventName == null)
+        {
+            throw new ASTWalkException("Event type AST not found");
+        }
+
+        CreateWindowDesc desc = new CreateWindowDesc(windowName);
+        statementSpec.setCreateWindowDesc(desc);
+
+        FilterSpecRaw rawFilterSpec = new FilterSpecRaw(eventName, new LinkedList<ExprNode>());
+        FilterStreamSpecRaw streamSpec = new FilterStreamSpecRaw(rawFilterSpec, viewSpecs, null);
+        statementSpec.getStreamSpecs().add(streamSpec);
+    }
+
+    private void leaveCreateWindowSelect(AST node)
+    {
+        log.debug(".leaveCreateWindowSelect");
+    }
+
+    private void leaveOnExpr(AST node)
+    {
+        log.debug(".leaveOnExpr");
+
+        // get optional filter stream as-name
+        AST childNode = node.getFirstChild().getNextSibling();
+        String filterStreamName = null;
+        if (childNode.getType() == IDENT)
+        {
+            filterStreamName = childNode.getText();
+            childNode = childNode.getNextSibling();
+        }
+
+        // get window name
+        childNode = childNode.getNextSibling();
+        String windowName = childNode.getText();
+
+        // get optional window stream as-name
+        String windowStreamName = null;
+        childNode = childNode.getNextSibling();
+        if ((childNode != null) && (childNode.getType() == IDENT))
+        {
+            windowStreamName = childNode.getText();
+        }
+
+        statementSpec.setOnDeleteDesc(new OnDeleteDesc(windowName, windowStreamName, statementSpec.getFilterRootNode()));
+        statementSpec.setFilterExprRootNode(null); // remove where clause
+        statementSpec.getStreamSpecs().add(new FilterStreamSpecRaw(filterSpec, new ArrayList<ViewSpec>(), filterStreamName));
     }
 
     private void leavePrevious(AST node)

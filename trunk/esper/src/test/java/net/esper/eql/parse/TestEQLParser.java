@@ -14,7 +14,7 @@ public class TestEQLParser extends TestCase implements EqlTokenTypes
     public void testDisplayAST() throws Exception
     {
         String className = SupportBean.class.getName();
-        String expression = "select current_timestamp() from " + className;
+        String expression = "on MyEvent delete from MyNamedWindow";
 
         log.debug(".testDisplayAST parsing: " + expression);
         AST ast = parse(expression);
@@ -178,6 +178,24 @@ public class TestEQLParser extends TestCase implements EqlTokenTypes
         assertIsInvalid("select * from A(cast(b, +1))");
         assertIsInvalid("select * from A(cast(b?, a + 1))");
         assertIsInvalid("select * from A(cast((), a + 1))");
+
+        // named window
+        assertIsInvalid("create window AAA as MyType B");
+        assertIsInvalid("create window AAA as select from MyType");
+        assertIsInvalid("create window AAA as , *, b from MyType");
+        assertIsInvalid("create window as select a from MyType");
+        assertIsInvalid("create window AAA.win:length(10) select a from MyType");
+        assertIsInvalid("create window AAA as select from MyType");
+        assertIsInvalid("create window AAA.win:length(10)");
+        assertIsInvalid("create window AAA");
+        assertIsInvalid("create window AAA as select a*5 from MyType");
+
+        // delete statement
+        assertIsInvalid("on MyEvent from MyNamedWindow");
+        assertIsInvalid("on  delete from MyNamedWindow");
+        assertIsInvalid("on MyEvent abc def delete from MyNamedWindow");
+        assertIsInvalid("on MyEvent(a<2)(a) delete from MyNamedWindow");
+        assertIsInvalid("on MyEvent delete from MyNamedWindow where");
     }
 
     public void testValidCases() throws Exception
@@ -483,6 +501,23 @@ public class TestEQLParser extends TestCase implements EqlTokenTypes
 
         // timestamp
         assertIsValid("select timestamp() from B.win:length(1)");
+
+        // named window
+        assertIsValid("create window AAA as MyType");
+        assertIsValid("create window AAA as com.myclass.MyType");
+        assertIsValid("create window AAA as select * from MyType");
+        assertIsValid("create window AAA as select a, *, b from MyType");
+        assertIsValid("create window AAA as select a from MyType");
+        assertIsValid("create window AAA.win:length(10) as select a from MyType");
+        assertIsValid("create window AAA.win:length(10) as select a,b from MyType");
+        assertIsValid("create window AAA.win:length(10).win:time(1 sec) as select a,b from MyType");
+
+        // delete statement
+        assertIsValid("on MyEvent delete from MyNamedWindow");
+        assertIsValid("on MyEvent delete from MyNamedWindow where key = myotherkey");
+        assertIsValid("on MyEvent(myval != 0) as myevent delete from MyNamedWindow as mywin where mywin.key = myevent.otherKey");
+        assertIsValid("on com.my.MyEvent(a=1, b=2 or c.d>3) as myevent delete from MyNamedWindow as mywin where a=b and c<d");
+        assertIsValid("on MyEvent yyy delete from MyNamedWindow xxx where mywin.key = myevent.otherKey");
     }
 
     public void testBitWiseCases() throws Exception

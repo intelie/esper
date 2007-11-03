@@ -10,6 +10,7 @@ package net.esper.eql.spec;
 import net.esper.eql.core.MethodResolutionService;
 import net.esper.eql.core.StreamTypeService;
 import net.esper.eql.core.StreamTypeServiceImpl;
+import net.esper.eql.named.NamedWindowService;
 import net.esper.eql.expression.ExprNode;
 import net.esper.eql.expression.ExprValidationException;
 import net.esper.event.EventAdapterService;
@@ -58,7 +59,8 @@ public class PatternStreamSpecRaw extends StreamSpecBase implements StreamSpecRa
     public StreamSpecCompiled compile(EventAdapterService eventAdapterService,
                                       MethodResolutionService methodResolutionService,
                                       PatternObjectResolutionService patternObjectResolutionService,
-                                      TimeProvider timeProvider)
+                                      TimeProvider timeProvider,
+                                      NamedWindowService namedWindowService)
             throws ExprValidationException
     {
         // Determine all the filter nodes used in the pattern

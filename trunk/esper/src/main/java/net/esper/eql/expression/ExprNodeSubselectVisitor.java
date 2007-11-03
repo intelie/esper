@@ -19,8 +19,8 @@ public class ExprNodeSubselectVisitor implements ExprNodeVisitor
     }
 
     /**
-     * Returns a list of subquery expression nodes.
-     * @return subquery nodes
+     * Returns a list of lookup expression nodes.
+     * @return lookup nodes
      */
     public List<ExprSubselectNode> getSubselects() {
         return subselects;

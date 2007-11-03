@@ -15,9 +15,14 @@ import net.esper.eql.join.plan.QueryGraph;
 import net.esper.eql.join.plan.FilterExprAnalyzer;
 import net.esper.eql.spec.*;
 import net.esper.eql.view.*;
-import net.esper.eql.subquery.*;
+import net.esper.eql.lookup.*;
+import net.esper.eql.named.NamedWindowDeleteView;
+import net.esper.eql.named.NamedWindowConsumerView;
+import net.esper.eql.named.NamedWindowDeltaView;
+import net.esper.eql.named.RemoveStreamViewCapability;
 import net.esper.event.EventBean;
 import net.esper.event.EventType;
+import net.esper.event.MapEventType;
 import net.esper.pattern.*;
 import net.esper.util.StopCallback;
 import net.esper.util.JavaClassHelper;
@@ -25,6 +30,8 @@ import net.esper.util.ManagedLock;
 import net.esper.view.*;
 import net.esper.view.internal.BufferView;
 import net.esper.view.internal.BufferObserver;
+import net.esper.filter.FilterSpecCompiled;
+import net.esper.filter.FilterSpecParam;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -64,6 +71,33 @@ public class EPStatementStartMethod
     public Pair<Viewable, EPStatementStopMethod> start()
         throws ExprValidationException, ViewProcessingException
     {
+        if (statementSpec.getCreateWindowDesc() != null)
+        {
+            FilterStreamSpecCompiled filterStreamSpec = (FilterStreamSpecCompiled) statementSpec.getStreamSpecs().get(0);
+
+            // Create Map or Wrapper event type from the select clause of the window.
+            // If no columns selected, simply create a wrapper type
+            if (statementSpec.getSelectClauseSpec().getSelectList().size() == 0)
+            {
+                String typeName = statementSpec.getCreateWindowDesc().getWindowName();
+                EventType prototypeType = filterStreamSpec.getFilterSpec().getEventType();
+
+                // TODO: mapping of types should be easier
+                if (prototypeType instanceof MapEventType)
+                {
+                    MapEventType mapType = (MapEventType) prototypeType;
+                    EventType newType = services.getEventAdapterService().addMapType(typeName, mapType.getTypes());
+                    filterStreamSpec.setFilterSpec(new FilterSpecCompiled(newType, new ArrayList<FilterSpecParam>()));
+                }
+                else
+                {
+                    Map<String, Class> addOnTypes = new HashMap<String, Class>();
+                    EventType newType = services.getEventAdapterService().addWrapperType(typeName, filterStreamSpec.getFilterSpec().getEventType(), addOnTypes);
+                    filterStreamSpec.setFilterSpec(new FilterSpecCompiled(newType, new ArrayList<FilterSpecParam>()));
+                }
+            }
+        }
+
         // Determine stream names for each stream - some streams may not have a name given
         String[] streamNames = determineStreamNames(statementSpec.getStreamSpecs());
         final boolean isJoin = statementSpec.getStreamSpecs().size() > 1;
@@ -139,6 +173,13 @@ public class EPStatementStartMethod
                 eventStreamParentViewable[i] = historicalEventViewable;
                 stopCallbacks.add(historicalEventViewable);
             }
+            else if (streamSpec instanceof NamedWindowStreamSpec)
+            {
+                NamedWindowStreamSpec namedSpec = (NamedWindowStreamSpec) streamSpec;
+                NamedWindowConsumerView consumerView = services.getNamedWindowService().addConsumer(namedSpec.getWindowName(), statementContext.getEpStatementHandle(), statementContext.getStatementStopService());
+                eventStreamParentViewable[i] = consumerView;
+                unmaterializedViewChain[i] = services.getViewService().createFactories(i, consumerView.getEventType(), namedSpec.getViewSpecs(), statementContext);
+            }
             else
             {
                 throw new ExprValidationException("Unknown stream specification type: " + streamSpec);
@@ -162,6 +203,12 @@ public class EPStatementStartMethod
         // Construct type information per stream
         StreamTypeService typeService = new StreamTypeServiceImpl(streamEventTypes, streamNames);
         ViewResourceDelegate viewResourceDelegate = new ViewResourceDelegateImpl(unmaterializedViewChain, statementContext);
+
+        // For named windows, request remove stream handling from views
+        if (statementSpec.getCreateWindowDesc() != null)
+        {
+            viewResourceDelegate.requestCapability(0, new RemoveStreamViewCapability(), null);
+        }
 
         // create stop method using statement stream specs
         EPStatementStopMethod stopMethod = new EPStatementStopMethod()
@@ -250,6 +297,33 @@ public class EPStatementStartMethod
             IStreamRStreamSelectorView streamSelectorView = new IStreamRStreamSelectorView(statementSpec.getSelectStreamSelectorEnum());
             finalView.addView(streamSelectorView);
             finalView = streamSelectorView;
+        }
+
+        if (statementSpec.getCreateWindowDesc() != null)
+        {
+            Viewable rootView = streamViews[0];
+            NamedWindowDeltaView namedWindowDeltaView = services.getNamedWindowService().addNamed(
+                    statementSpec.getCreateWindowDesc().getWindowName(),
+                    rootView,
+                    statementContext.getStatementStopService());
+            finalView.addView(namedWindowDeltaView);
+            finalView = namedWindowDeltaView;
+        }
+
+        if (statementSpec.getOnDeleteDesc() != null)
+        {
+            OnDeleteDesc onDeleteDesc = statementSpec.getOnDeleteDesc();
+            EventType namedWindowType = services.getNamedWindowService().getNamedWindowType(onDeleteDesc.getWindowName());
+            FilterStreamSpecCompiled streamSpec = (FilterStreamSpecCompiled) statementSpec.getStreamSpecs().get(0);
+
+            ExprNode validatedJoin = validateJoinNamedWindow(statementSpec.getOnDeleteDesc().getJoinExpr(),
+                    namedWindowType, onDeleteDesc.getOptionalAsName(),
+                    streamSpec.getFilterSpec().getEventType(), streamSpec.getOptionalStreamName());
+            onDeleteDesc.setJoinExpr(validatedJoin);
+
+            NamedWindowDeleteView deleteView = services.getNamedWindowService().addDeleter(onDeleteDesc);
+            finalView.addView(deleteView);
+            finalView = deleteView;
         }
 
         log.debug(".start Statement start completed");
@@ -474,7 +548,7 @@ public class EPStatementStartMethod
             ViewFactoryChain viewFactoryChain = services.getViewService().createFactories(subselectStreamNumber, viewable.getEventType(), filterStreamSpec.getViewSpecs(), statementContext);
             subselect.setRawEventType(viewFactoryChain.getEventType());
 
-            // Add subquery to list, for later starts
+            // Add lookup to list, for later starts
             subSelectStreamDesc.add(subselect, subselectStreamNumber, viewable, viewFactoryChain);
         }
 
@@ -536,7 +610,7 @@ public class EPStatementStartMethod
             Viewable subselectView = services.getViewService().createViews(viewableRoot, viewFactoryChain.getViewFactoryChain(), statementContext);
 
             // Determine indexing of the filter expression
-            Pair<EventTable, SubqueryTableLookupStrategy> indexPair = determineSubqueryIndex(filterExpr, eventType,
+            Pair<EventTable, TableLookupStrategy> indexPair = determineSubqueryIndex(filterExpr, eventType,
                     outerEventTypes, subselectTypeService);
             subselect.setStrategy(indexPair.getSecond());
             final EventTable eventIndex = indexPair.getFirst();
@@ -567,7 +641,7 @@ public class EPStatementStartMethod
         }
     }
 
-    private Pair<EventTable, SubqueryTableLookupStrategy> determineSubqueryIndex(ExprNode filterExpr,
+    private Pair<EventTable, TableLookupStrategy> determineSubqueryIndex(ExprNode filterExpr,
                                                                                  EventType viewableEventType,
                                                                                  EventType[] outerEventTypes,
                                                                                  StreamTypeService subselectTypeService)
@@ -578,7 +652,7 @@ public class EPStatementStartMethod
         {
             UnindexedEventTable table = new UnindexedEventTable(0);
             FullTableScanLookupStrategy strategy = new FullTableScanLookupStrategy(table);
-            return new Pair<EventTable, SubqueryTableLookupStrategy>(table, strategy);
+            return new Pair<EventTable, TableLookupStrategy>(table, strategy);
         }
 
         // analyze query graph
@@ -586,7 +660,7 @@ public class EPStatementStartMethod
         FilterExprAnalyzer.analyze(filterExpr, queryGraph);
 
         // Build a list of streams and indexes
-        Map<String, SubqueryJoinedPropDesc> joinProps = new LinkedHashMap<String, SubqueryJoinedPropDesc>();
+        Map<String, JoinedPropDesc> joinProps = new LinkedHashMap<String, JoinedPropDesc>();
         boolean mustCoerce = false;
         for (int stream = 0; stream <  outerEventTypes.length; stream++)
         {
@@ -613,7 +687,7 @@ public class EPStatementStartMethod
                     mustCoerce = true;
                 }
 
-                SubqueryJoinedPropDesc desc = new SubqueryJoinedPropDesc(indexPropertiesJoin[i],
+                JoinedPropDesc desc = new JoinedPropDesc(indexPropertiesJoin[i],
                         coercionType, keyPropertiesJoin[i], stream);
                 joinProps.put(indexPropertiesJoin[i], desc);
             }
@@ -622,29 +696,56 @@ public class EPStatementStartMethod
         if (joinProps.size() != 0)
         {
             String indexedProps[] = joinProps.keySet().toArray(new String[0]);
-            int[] keyStreamNums = SubqueryJoinedPropDesc.getKeyStreamNums(joinProps.values());
-            String[] keyProps = SubqueryJoinedPropDesc.getKeyProperties(joinProps.values());
+            int[] keyStreamNums = JoinedPropDesc.getKeyStreamNums(joinProps.values());
+            String[] keyProps = JoinedPropDesc.getKeyProperties(joinProps.values());
 
             if (!mustCoerce)
             {
                 PropertyIndexedEventTable table = new PropertyIndexedEventTable(0, viewableEventType, indexedProps);
-                SubqueryTableLookupStrategy strategy = new IndexedTableLookupStrategy( outerEventTypes,
+                TableLookupStrategy strategy = new IndexedTableLookupStrategy( outerEventTypes,
                         keyStreamNums, keyProps, table);
-                return new Pair<EventTable, SubqueryTableLookupStrategy>(table, strategy);
+                return new Pair<EventTable, TableLookupStrategy>(table, strategy);
             }
             else
             {
-                Class coercionTypes[] = SubqueryJoinedPropDesc.getCoercionTypes(joinProps.values());
+                Class coercionTypes[] = JoinedPropDesc.getCoercionTypes(joinProps.values());
                 PropertyIndTableCoerceAdd table = new PropertyIndTableCoerceAdd(0, viewableEventType, indexedProps, coercionTypes);
-                SubqueryTableLookupStrategy strategy = new IndexedTableLookupStrategyCoercing( outerEventTypes, keyStreamNums, keyProps, table, coercionTypes);
-                return new Pair<EventTable, SubqueryTableLookupStrategy>(table, strategy);
+                TableLookupStrategy strategy = new IndexedTableLookupStrategyCoercing( outerEventTypes, keyStreamNums, keyProps, table, coercionTypes);
+                return new Pair<EventTable, TableLookupStrategy>(table, strategy);
             }
         }
         else
         {
             UnindexedEventTable table = new UnindexedEventTable(0);
-            return new Pair<EventTable, SubqueryTableLookupStrategy>(table, new FullTableScanLookupStrategy(table));
+            return new Pair<EventTable, TableLookupStrategy>(table, new FullTableScanLookupStrategy(table));
         }
+    }
+
+    // For delete actions from named windows
+    private ExprNode validateJoinNamedWindow(ExprNode deleteJoinExpr,
+                                         EventType namedWindowType,
+                                         String optNamedWindowStreamName,
+                                         EventType filteredType,
+                                         String optFilterStreamName) throws ExprValidationException
+    {
+        String namedWindowStreamName = optNamedWindowStreamName;
+        if (namedWindowStreamName == null)
+        {
+            namedWindowStreamName = "stream_0";
+        }
+
+        String filterStreamName = optFilterStreamName;
+        if (filterStreamName == null)
+        {
+            filterStreamName = "stream_1";
+        }
+
+        LinkedHashMap<String, EventType> namesAndTypes = new LinkedHashMap<String, EventType>();
+        namesAndTypes.put(namedWindowStreamName, namedWindowType);
+        namesAndTypes.put(filterStreamName, filteredType);
+        StreamTypeService typeService = new StreamTypeServiceImpl(namesAndTypes, false, false);
+
+        return deleteJoinExpr.getValidatedSubtree(typeService, statementContext.getMethodResolutionService(), null, statementContext.getSchedulingService());
     }
 
     private static final Log log = LogFactory.getLog(EPStatementStartMethod.class);

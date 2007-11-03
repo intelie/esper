@@ -24,14 +24,20 @@ public final class TimeWindow implements Iterable
 {
     private final LinkedList<Pair<Long, LinkedList<EventBean>>> window;
     private Long oldestTimestamp;
+    private Map<EventBean, LinkedList<EventBean>> reverseIndex;
 
     /**
      * Ctor.
      */
-    public TimeWindow()
+    public TimeWindow(boolean isSupportRemoveStream)
     {
         this.window = new LinkedList<Pair<Long, LinkedList<EventBean>>>();
         this.oldestTimestamp = null;
+
+        if (isSupportRemoveStream)
+        {
+            reverseIndex = new HashMap<EventBean, LinkedList<EventBean>>();
+        }
     }
 
     /**
@@ -54,6 +60,11 @@ public final class TimeWindow implements Iterable
             listOfBeans.add(bean);
             Pair<Long, LinkedList<EventBean>> pair = new Pair<Long, LinkedList<EventBean>>(timestamp, listOfBeans);
             window.add(pair);
+
+            if (reverseIndex != null)
+            {
+                reverseIndex.put(bean, listOfBeans);
+            }
             return;
         }
 
@@ -63,6 +74,10 @@ public final class TimeWindow implements Iterable
         if (lastPair.getFirst() == timestamp)
         {
             lastPair.getSecond().add(bean);
+            if (reverseIndex != null)
+            {
+                reverseIndex.put(bean, lastPair.getSecond());
+            }
             return;
         }
 
@@ -70,7 +85,24 @@ public final class TimeWindow implements Iterable
         LinkedList<EventBean> listOfBeans = new LinkedList<EventBean>();
         listOfBeans.add(bean);
         Pair<Long, LinkedList<EventBean>> pair = new Pair<Long, LinkedList<EventBean>>(timestamp, listOfBeans);
+        if (reverseIndex != null)
+        {
+            reverseIndex.put(bean, listOfBeans);
+        }
         window.add(pair);
+    }
+
+    public final void remove(EventBean event)
+    {
+        if (reverseIndex == null)
+        {
+            throw new UnsupportedOperationException("Time window does not accept event removal");
+        }
+        List<EventBean> list = reverseIndex.get(event);
+        if (list != null)
+        {
+            list.remove(event);
+        }
     }
 
     /**

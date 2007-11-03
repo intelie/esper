@@ -1240,7 +1240,7 @@ public class Expressions implements Serializable
 
     /**
      * Subquery.
-     * @param model is the object model of the subquery
+     * @param model is the object model of the lookup
      * @return expression
      */
     public static SubqueryExpression subquery(EPStatementObjectModel model)
@@ -1250,8 +1250,8 @@ public class Expressions implements Serializable
 
     /**
      * Subquery with in-clause, represents the syntax of "value in (select ... from ...)".
-     * @param property is the name of the property that returns the value to match against the values returned by the subquery
-     * @param model is the object model of the subquery
+     * @param property is the name of the property that returns the value to match against the values returned by the lookup
+     * @param model is the object model of the lookup
      * @return expression
      */
     public static SubqueryInExpression subqueryIn(String property, EPStatementObjectModel model)
@@ -1261,8 +1261,8 @@ public class Expressions implements Serializable
 
     /**
      * Subquery with not-in-clause, represents the syntax of "value not in (select ... from ...)".
-     * @param property is the name of the property that returns the value to match against the values returned by the subquery
-     * @param model is the object model of the subquery
+     * @param property is the name of the property that returns the value to match against the values returned by the lookup
+     * @param model is the object model of the lookup
      * @return expression
      */
     public static SubqueryInExpression subqueryNotIn(String property, EPStatementObjectModel model)
@@ -1272,7 +1272,7 @@ public class Expressions implements Serializable
 
     /**
      * Subquery with exists-clause, represents the syntax of "select * from ... where exists (select ... from ...)".
-     * @param model is the object model of the subquery
+     * @param model is the object model of the lookup
      * @return expression
      */
     public static SubqueryExistsExpression subqueryExists(EPStatementObjectModel model)
@@ -1282,8 +1282,8 @@ public class Expressions implements Serializable
 
     /**
      * Subquery with in-clause, represents the syntax of "value in (select ... from ...)".
-     * @param expression returns the value to match against the values returned by the subquery
-     * @param model is the object model of the subquery
+     * @param expression returns the value to match against the values returned by the lookup
+     * @param model is the object model of the lookup
      * @return expression
      */
     public static SubqueryInExpression subqueryIn(Expression expression, EPStatementObjectModel model)
@@ -1293,8 +1293,8 @@ public class Expressions implements Serializable
 
     /**
      * Subquery with not-in-clause, represents the syntax of "value not in (select ... from ...)".
-     * @param expression returns the value to match against the values returned by the subquery
-     * @param model is the object model of the subquery
+     * @param expression returns the value to match against the values returned by the lookup
+     * @param model is the object model of the lookup
      * @return expression
      */
     public static SubqueryInExpression subqueryNotIn(Expression expression, EPStatementObjectModel model)

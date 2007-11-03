@@ -10,7 +10,7 @@ package net.esper.client.soda;
 import java.io.StringWriter;
 
 /**
- * In-expression for a set of values returned by a subquery.
+ * In-expression for a set of values returned by a lookup.
  */
 public class SubqueryInExpression extends ExpressionBase
 {
@@ -19,7 +19,7 @@ public class SubqueryInExpression extends ExpressionBase
 
     /**
      * Ctor - for use to create an expression tree, without child expression.
-     * @param model is the subquery statement object model
+     * @param model is the lookup statement object model
      * @param isNotIn is true for not-in
      */
     public SubqueryInExpression(EPStatementObjectModel model, boolean isNotIn)
@@ -31,7 +31,7 @@ public class SubqueryInExpression extends ExpressionBase
     /**
      * Ctor - for use to create an expression tree, without child expression.
      * @param expression is the expression providing the value to match
-     * @param model is the subquery statement object model
+     * @param model is the lookup statement object model
      * @param isNotIn is true for not-in
      */
     public SubqueryInExpression(Expression expression, EPStatementObjectModel model, boolean isNotIn)
@@ -42,7 +42,7 @@ public class SubqueryInExpression extends ExpressionBase
     }
 
     /**
-     * Returns true for not-in, or false for in-subquery.
+     * Returns true for not-in, or false for in-lookup.
      * @return true for not-in
      */
     public boolean isNotIn()
@@ -51,7 +51,7 @@ public class SubqueryInExpression extends ExpressionBase
     }
 
     /**
-     * Set to true for not-in, or false for in-subquery.
+     * Set to true for not-in, or false for in-lookup.
      * @param notIn true for not-in
      */
     public void setNotIn(boolean notIn)
@@ -75,8 +75,8 @@ public class SubqueryInExpression extends ExpressionBase
     }
 
     /**
-     * Returns the subquery statement object model.
-     * @return subquery model
+     * Returns the lookup statement object model.
+     * @return lookup model
      */
     public EPStatementObjectModel getModel()
     {
@@ -84,8 +84,8 @@ public class SubqueryInExpression extends ExpressionBase
     }
 
     /**
-     * Sets the subquery statement object model.
-     * @param model is the subquery model to set
+     * Sets the lookup statement object model.
+     * @param model is the lookup model to set
      */
     public void setModel(EPStatementObjectModel model)
     {

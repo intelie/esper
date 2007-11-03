@@ -15,6 +15,8 @@ options
 // language tokens
 tokens
 {
+	CREATE="create";
+	WINDOW="window";
 	IN_SET="in";
 	BETWEEN="between";
 	LIKE="like";
@@ -23,7 +25,7 @@ tokens
 	OR_EXPR="or";
 	AND_EXPR="and";
 	NOT_EXPR="not";
-    EVERY_EXPR="every";
+    	EVERY_EXPR="every";
 	WHERE="where";
 	AS="as";	
 	SUM="sum";
@@ -79,6 +81,7 @@ tokens
 	INSTANCEOF="instanceof";
 	CAST="cast";
 	CURRENT_TIMESTAMP="current_timestamp";
+	DELETE="delete";
 	
    	NUMERIC_PARAM_RANGE;
    	NUMERIC_PARAM_LIST;
@@ -161,6 +164,9 @@ tokens
 	WEEKDAY_OPERATOR;
 	SUBSTITUTION;
 	CAST_EXPR;
+	CREATE_WINDOW_EXPR;
+	CREATE_WINDOW_SELECT_EXPR;
+	ON_EXPR;
 	
    	INT_TYPE;
    	LONG_TYPE;
@@ -217,6 +223,12 @@ stringconstant
 // EQL expression
 //----------------------------------------------------------------------------
 eqlExpression 
+	:	selectExpr
+	|	createWindowExpr
+	|	onExpr
+	;
+	
+selectExpr
 	:	(INSERT! insertIntoExpr)?
 		SELECT! selectClause
 		FROM! streamExpression (regularJoin | outerJoinList)
@@ -227,6 +239,28 @@ eqlExpression
 		(ORDER! BY! orderByListExpr)?
 	;
 	
+onExpr 
+	:	ON! eventFilterExpression (AS! IDENT | IDENT)? DELETE FROM! IDENT (AS! IDENT | IDENT)? (WHERE! whereClause)?
+		{ #onExpr = #([ON_EXPR,"onExpr"], #onExpr); }
+	;
+	
+createWindowExpr
+	:	CREATE! WINDOW! IDENT (DOT! viewExpression (DOT! viewExpression)*)? AS! (SELECT! createSelectionList FROM!)? classIdentifier
+		{ #createWindowExpr = #([CREATE_WINDOW_EXPR,"createWindowExpr"], #createWindowExpr); }
+	;
+		
+createSelectionList 	
+	:	createSelectionListElement (COMMA! createSelectionListElement)*
+		{ #createSelectionList = #([CREATE_WINDOW_SELECT_EXPR,"createSelectionList"], #createSelectionList); }
+	;
+
+createSelectionListElement
+	:   	STAR 
+		{ #createSelectionListElement = #[WILDCARD_SELECT, "wildcard-select"]; }
+	|	eventProperty (AS! IDENT)?
+		{ #createSelectionListElement = #([SELECTION_ELEMENT_EXPR,"createSelectionListElement"], #createSelectionListElement); }
+	;
+
 insertIntoExpr
 	:	(ISTREAM | RSTREAM)? INTO! IDENT (insertIntoColumnList)?
 		{ #insertIntoExpr = #([INSERTINTO_EXPR,"insertIntoExpr"], #insertIntoExpr); }
@@ -275,7 +309,7 @@ selectionList
 	;
 
 selectionListElement
-	:   STAR 
+	:   	STAR 
 		{ #selectionListElement = #[WILDCARD_SELECT, "wildcard-select"]; }
 	|	expression (AS! IDENT)?
 		{ #selectionListElement = #([SELECTION_ELEMENT_EXPR,"selectionListElement"], #selectionListElement); }

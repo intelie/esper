@@ -23,10 +23,10 @@ public class SubSelectStreamCollection
     }
 
     /**
-     * Add subquery.
+     * Add lookup.
      * @param subselectNode is the subselect expression node
-     * @param streamNumber is the subquery stream number
-     * @param viewable is the subquery viewable
+     * @param streamNumber is the lookup stream number
+     * @param viewable is the lookup viewable
      * @param viewFactoryChain is the chain of view factories
      */
     public void add(ExprSubselectNode subselectNode, int streamNumber, Viewable viewable, ViewFactoryChain viewFactoryChain)
@@ -36,7 +36,7 @@ public class SubSelectStreamCollection
 
     /**
      * Returns stream number.
-     * @param subqueryNode is the subquery node's stream number
+     * @param subqueryNode is the lookup node's stream number
      * @return number of stream
      */
     public int getStreamNumber(ExprSubselectNode subqueryNode)
@@ -45,7 +45,7 @@ public class SubSelectStreamCollection
     }
 
     /**
-     * Returns the subquery viewable, child-most view.
+     * Returns the lookup viewable, child-most view.
      * @param subqueryNode is the expression node to get this for
      * @return child viewable
      */
@@ -55,7 +55,7 @@ public class SubSelectStreamCollection
     }
 
     /**
-     * Returns the subquery's view factory chain.
+     * Returns the lookup's view factory chain.
      * @param subqueryNode is the node to look for
      * @return view factory chain
      */

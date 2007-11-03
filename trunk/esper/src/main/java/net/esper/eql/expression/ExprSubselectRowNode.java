@@ -20,7 +20,7 @@ public class ExprSubselectRowNode extends ExprSubselectNode
 
     /**
      * Ctor.
-     * @param statementSpec is the subquery statement spec from the parser, unvalidated
+     * @param statementSpec is the lookup statement spec from the parser, unvalidated
      */
     public ExprSubselectRowNode(StatementSpecRaw statementSpec)
     {

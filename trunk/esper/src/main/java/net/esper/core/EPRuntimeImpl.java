@@ -472,6 +472,19 @@ public class EPRuntimeImpl implements EPRuntime, TimerCallback, InternalEventRou
         }
 
         unlockInsertStreamLocks();
+
+        // Process named window deltas
+        boolean haveDispatched = services.getNamedWindowService().dispatch();
+        if (haveDispatched)
+        {
+            // Dispatch results to listeners
+            dispatch();
+        }
+
+        if (!(threadWorkQueue.isEmpty()))
+        {
+            processThreadWorkQueue();
+        }
     }
 
     private void unlockInsertStreamLocks()

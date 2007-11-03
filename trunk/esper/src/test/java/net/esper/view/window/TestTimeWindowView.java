@@ -26,7 +26,7 @@ public class TestTimeWindowView extends TestCase
         schedulingServiceStub = new SupportSchedulingServiceImpl();
 
         // Set up length window view and a test child view
-        myView = new TimeWindowView(SupportStatementContextFactory.makeContext(schedulingServiceStub), null, TEST_WINDOW_MSEC, null);
+        myView = new TimeWindowView(SupportStatementContextFactory.makeContext(schedulingServiceStub), null, TEST_WINDOW_MSEC, null, false);
         childView = new SupportBeanClassView(SupportMarketDataBean.class);
         myView.addView(childView);
     }

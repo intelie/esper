@@ -2,7 +2,7 @@ package net.esper.eql.expression;
 
 import net.esper.eql.spec.StatementSpecCompiled;
 import net.esper.eql.spec.StatementSpecRaw;
-import net.esper.eql.subquery.SubqueryTableLookupStrategy;
+import net.esper.eql.lookup.TableLookupStrategy;
 import net.esper.event.EventBean;
 import net.esper.event.EventType;
 import org.apache.commons.logging.Log;
@@ -34,21 +34,21 @@ public abstract class ExprSubselectNode extends ExprNode
 
     private StatementSpecRaw statementSpecRaw;
     private StatementSpecCompiled statementSpecCompiled;
-    private SubqueryTableLookupStrategy strategy;
+    private TableLookupStrategy strategy;
     private String selectAsName;
 
     /**
-     * Evaluate the subquery expression returning an evaluation result object.
+     * Evaluate the lookup expression returning an evaluation result object.
      * @param eventsPerStream is the events for each stream in a join
      * @param isNewData is true for new data, or false for old data
-     * @param matchingEvents is filtered results from the table of stored subquery events
+     * @param matchingEvents is filtered results from the table of stored lookup events
      * @return evaluation result
      */
     public abstract Object evaluate(EventBean[] eventsPerStream, boolean isNewData, Set<EventBean> matchingEvents);
 
     /**
      * Ctor.
-     * @param statementSpec is the subquery statement spec from the parser, unvalidated
+     * @param statementSpec is the lookup statement spec from the parser, unvalidated
      */
     public ExprSubselectNode(StatementSpecRaw statementSpec)
     {
@@ -143,10 +143,10 @@ public abstract class ExprSubselectNode extends ExprNode
     }
 
     /**
-     * Sets the strategy for boiling down the table of subquery events into a subset against which to run the filter.
+     * Sets the strategy for boiling down the table of lookup events into a subset against which to run the filter.
      * @param strategy is the looking strategy (full table scan or indexed)
      */
-    public void setStrategy(SubqueryTableLookupStrategy strategy)
+    public void setStrategy(TableLookupStrategy strategy)
     {
         this.strategy = strategy;
     }

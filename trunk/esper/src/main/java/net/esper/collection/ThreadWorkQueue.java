@@ -52,4 +52,10 @@ public class ThreadWorkQueue
         LinkedList<Object> queue = threadQueue.get();
         return queue.poll();
     }
+
+    public static boolean isEmpty()
+    {
+        LinkedList<Object> queue = threadQueue.get();
+        return queue.isEmpty();
+    }
 }

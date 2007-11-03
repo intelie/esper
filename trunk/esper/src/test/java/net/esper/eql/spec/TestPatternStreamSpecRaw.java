@@ -4,6 +4,7 @@ import antlr.collections.AST;
 import junit.framework.TestCase;
 import net.esper.eql.core.MethodResolutionServiceImpl;
 import net.esper.eql.core.EngineImportServiceImpl;
+import net.esper.eql.named.NamedWindowServiceImpl;
 import net.esper.eql.parse.EQLTreeWalker;
 import net.esper.eql.expression.ExprValidationException;
 import net.esper.filter.*;
@@ -200,7 +201,7 @@ public class TestPatternStreamSpecRaw extends TestCase
 
     private PatternStreamSpecCompiled compile(PatternStreamSpecRaw raw) throws Exception
     {
-        PatternStreamSpecCompiled compiled = (PatternStreamSpecCompiled) raw.compile(SupportEventAdapterService.getService(), new MethodResolutionServiceImpl(new EngineImportServiceImpl()), null, null);
+        PatternStreamSpecCompiled compiled = (PatternStreamSpecCompiled) raw.compile(SupportEventAdapterService.getService(), new MethodResolutionServiceImpl(new EngineImportServiceImpl()), null, null, new NamedWindowServiceImpl());
         return compiled;
     }
 

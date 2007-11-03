@@ -16,7 +16,7 @@ import java.util.Set;
 import java.util.concurrent.*;
 
 /**
- * Test for multithread-safety of a subquery statement.
+ * Test for multithread-safety of a lookup statement.
  */
 public class TestMTStmtSubquery extends TestCase
 {

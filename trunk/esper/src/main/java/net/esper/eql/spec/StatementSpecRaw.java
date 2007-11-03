@@ -8,18 +8,18 @@
 package net.esper.eql.spec;
 
 import net.esper.eql.expression.ExprNode;
-import net.esper.eql.expression.ExprSubstitutionNode;
 import net.esper.util.MetaDefItem;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.io.StringWriter;
 
 /**
  * Specification object representing a complete EQL statement including all EQL constructs.
  */
 public class StatementSpecRaw implements MetaDefItem
 {
+    private OnDeleteDesc onDeleteDesc;
+    private CreateWindowDesc createWindowDesc;
     private InsertIntoDesc insertIntoDesc;
     private SelectClauseStreamSelectorEnum selectStreamDirEnum = SelectClauseStreamSelectorEnum.RSTREAM_ISTREAM_BOTH;
     private SelectClauseSpec selectClauseSpec = new SelectClauseSpec();
@@ -176,7 +176,7 @@ public class StatementSpecRaw implements MetaDefItem
     }
 
     /**
-     * Returns true if there are one or more substitution parameters in the statement of contained-within subquery statements
+     * Returns true if there are one or more substitution parameters in the statement of contained-within lookup statements
      * @return true if parameters exists
      */
     public boolean isExistsSubstitutionParameters()
@@ -191,5 +191,25 @@ public class StatementSpecRaw implements MetaDefItem
     public void setExistsSubstitutionParameters(boolean existsSubstitutionParameters)
     {
         this.existsSubstitutionParameters = existsSubstitutionParameters;
+    }
+
+    public CreateWindowDesc getCreateWindowDesc()
+    {
+        return createWindowDesc;
+    }
+
+    public void setCreateWindowDesc(CreateWindowDesc createWindowDesc)
+    {
+        this.createWindowDesc = createWindowDesc;
+    }
+
+    public OnDeleteDesc getOnDeleteDesc()
+    {
+        return onDeleteDesc;
+    }
+
+    public void setOnDeleteDesc(OnDeleteDesc onDeleteDesc)
+    {
+        this.onDeleteDesc = onDeleteDesc;
     }
 }

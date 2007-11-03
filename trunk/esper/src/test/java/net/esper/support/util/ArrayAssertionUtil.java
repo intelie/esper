@@ -422,6 +422,25 @@ public class ArrayAssertionUtil
         }
     }
 
+    public static void assertProps(EventBean received, String[] propertyNames, Object[] propertiesThisRow)
+    {
+        if (propertiesThisRow == null)
+        {
+            if (received == null)
+            {
+                return;
+            }
+        }
+
+        for (int j = 0; j < propertiesThisRow.length; j++)
+        {
+            String name = propertyNames[j];
+            Object value = propertiesThisRow[j];
+            Object eventProp = received.get(name);
+            Assert.assertEquals("Error asserting property named '" + name + "'",value,eventProp);
+        }
+    }
+
     public static void assertEqualsAnyOrder(Iterator<EventBean> iterator, String[] propertyNames, Object[][] propertiesListPerRow)
     {
         // convert to array of events

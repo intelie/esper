@@ -1,15 +1,14 @@
 package net.esper.core;
 
 import net.esper.client.*;
-import net.esper.eql.core.EngineImportException;
-import net.esper.eql.core.EngineImportService;
-import net.esper.eql.core.EngineImportServiceImpl;
-import net.esper.eql.core.EngineSettingsService;
+import net.esper.eql.core.*;
 import net.esper.eql.db.DatabaseConfigService;
 import net.esper.eql.db.DatabaseConfigServiceImpl;
 import net.esper.eql.spec.PluggableObjectCollection;
 import net.esper.eql.view.OutputConditionFactory;
 import net.esper.eql.view.OutputConditionFactoryDefault;
+import net.esper.eql.named.NamedWindowServiceImpl;
+import net.esper.eql.named.NamedWindowService;
 import net.esper.event.EventAdapterException;
 import net.esper.event.EventAdapterServiceImpl;
 import net.esper.event.EventAdapterService;
@@ -70,12 +69,13 @@ public class EPServicesContextFactoryDefault implements EPServicesContextFactory
 
         StreamFactoryService streamFactoryService = StreamFactoryServiceProvider.newService(configSnapshot.getEngineDefaults().getViewResources().isShareViews());
         FilterService filterService = FilterServiceProvider.newService();
+        NamedWindowService namedWindowService = new NamedWindowServiceImpl();
 
         // New services context
         EPServicesContext services = new EPServicesContext(epServiceProvider.getURI(), schedulingService,
                 eventAdapterService, engineImportService, engineSettingsService, databaseConfigService, plugInViews,
                 new StatementLockFactoryImpl(), eventProcessingRWLock, null, jndiContext, statementContextFactory,
-                plugInPatternObj, outputConditionFactory, timerService, filterService, streamFactoryService);
+                plugInPatternObj, outputConditionFactory, timerService, filterService, streamFactoryService, namedWindowService);
 
         // Circular dependency
         StatementLifecycleSvc statementLifecycleSvc = new StatementLifecycleSvcImpl(epServiceProvider, services);

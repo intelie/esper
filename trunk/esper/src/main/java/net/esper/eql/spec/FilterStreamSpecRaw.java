@@ -10,6 +10,7 @@ package net.esper.eql.spec;
 import net.esper.eql.core.MethodResolutionService;
 import net.esper.eql.core.StreamTypeService;
 import net.esper.eql.core.StreamTypeServiceImpl;
+import net.esper.eql.named.NamedWindowService;
 import net.esper.eql.expression.ExprValidationException;
 import net.esper.event.EventAdapterException;
 import net.esper.event.EventAdapterService;
@@ -61,11 +62,29 @@ public class FilterStreamSpecRaw extends StreamSpecBase implements StreamSpecRaw
     public StreamSpecCompiled compile(EventAdapterService eventAdapterService,
                                       MethodResolutionService methodResolutionService,
                                       PatternObjectResolutionService patternObjectResolutionService,
-                                      TimeProvider timeProvider)
+                                      TimeProvider timeProvider,
+                                      NamedWindowService namedWindowService)
             throws ExprValidationException
     {
         // Determine the event type
         String eventName = rawFilterSpec.getEventTypeAlias();
+
+        // Could be a named window
+        if (namedWindowService.getNamedWindowType(eventName) != null)
+        {
+            // Validate that no filter criteria have been used, and no views
+            if (!rawFilterSpec.getFilterExpressions().isEmpty())
+            {
+                throw new ExprValidationException("Use of named window '" + eventName + "' does not allow filter expressions");
+            }
+            if (!this.getViewSpecs().isEmpty())
+            {
+                throw new ExprValidationException("Use of named window '" + eventName + "' does not allow additional subviews");
+            }
+
+            return new NamedWindowStreamSpec(eventName, this.getOptionalStreamName());
+        }
+
         EventType eventType = resolveType(eventName, eventAdapterService);
 
         // Validate all nodes, make sure each returns a boolean and types are good;

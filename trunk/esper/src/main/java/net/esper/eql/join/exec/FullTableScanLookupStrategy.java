@@ -9,7 +9,6 @@ package net.esper.eql.join.exec;
 
 import net.esper.event.EventBean;
 import net.esper.eql.join.table.UnindexedEventTable;
-import net.esper.eql.subquery.SubqueryTableLookupStrategy;
 
 import java.util.Set;
 
