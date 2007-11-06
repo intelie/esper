@@ -1,6 +1,6 @@
 package net.esper.view.window;
 
-import net.esper.collection.ViewUpdatedCollection;
+import net.esper.client.EPException;
 import net.esper.core.EPStatementHandleCallback;
 import net.esper.core.ExtensionServicesContext;
 import net.esper.core.StatementContext;
@@ -15,79 +15,51 @@ import net.esper.view.ViewSupport;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 
 /**
- * A data view that aggregates events in a stream and releases them in one batch if either one of these
- * conditions is reached, whichever comes first: One, a time interval passes. Two, a given number of events collected.
- * <p>
- * The view releases the batched events after the interval or number of events as new data to child views. The prior batch if
- * not empty is released as old data to child view. The view DOES release intervals with no old or new data.
- * It does not collect old data published by a parent view.
- * If there are no events in the current and prior batch, the view WILL invoke the update method of child views.
- * <p>
- * The view starts the first interval when the view is created.
+ * Same as the {@link TimeBatchView}, this view also supports fast-remove from the batch for remove stream events.
  */
-public final class TimeLengthBatchView extends ViewSupport implements CloneableView, DataWindowView
+public final class TimeBatchViewRStream extends ViewSupport implements CloneableView, DataWindowView
 {
-    private static final Log log = LogFactory.getLog(TimeLengthBatchView.class);
-
     // View parameters
-    private final TimeLengthBatchViewFactory timeLengthBatchViewFactory;
+    private final TimeBatchViewFactory timeBatchViewFactory;
     private final StatementContext statementContext;
     private final long msecIntervalSize;
-    private final long numberOfEvents;
-    private final boolean isForceOutput;
-    private final boolean isStartEager;
-    private final ViewUpdatedCollection viewUpdatedCollection;
+    private final Long initialReferencePoint;
     private final ScheduleSlot scheduleSlot;
 
     // Current running parameters
-    private ArrayList<EventBean> lastBatch = null;
-    private ArrayList<EventBean> currentBatch = new ArrayList<EventBean>();
+    private Long currentReferencePoint;
+    private LinkedHashSet<EventBean> lastBatch = null;
+    private LinkedHashSet<EventBean> currentBatch = new LinkedHashSet<EventBean>();
     private boolean isCallbackScheduled;
-    private EPStatementHandleCallback handle;
 
     /**
      * Constructor.
      * @param msecIntervalSize is the number of milliseconds to batch events for
-     * @param numberOfEvents is the event count before the batch fires off
-     * @param viewUpdatedCollection is a collection that the view must update when receiving events
-     * @param timeBatchViewFactory for copying this view in a group-by
-     * @param forceOutput is true if the batch should produce empty output if there is no value to output following time intervals
+     * @param referencePoint is the reference point onto which to base intervals, or null if
+     * there is no such reference point supplied
+     * @param timeBatchViewFactory fr copying this view in a group-by
      * @param statementContext is required view services
-     * @param isStartEager is true for start-eager
      */
-    public TimeLengthBatchView(TimeLengthBatchViewFactory timeBatchViewFactory,
+    public TimeBatchViewRStream(TimeBatchViewFactory timeBatchViewFactory,
                          StatementContext statementContext,
                          long msecIntervalSize,
-                         long numberOfEvents,
-                         boolean forceOutput,
-                         boolean isStartEager,
-                         ViewUpdatedCollection viewUpdatedCollection)
+                         Long referencePoint)
     {
         this.statementContext = statementContext;
-        this.timeLengthBatchViewFactory = timeBatchViewFactory;
+        this.timeBatchViewFactory = timeBatchViewFactory;
         this.msecIntervalSize = msecIntervalSize;
-        this.numberOfEvents = numberOfEvents;
-        this.isStartEager = isStartEager;
-        this.viewUpdatedCollection = viewUpdatedCollection;
-        this.isForceOutput = forceOutput;
+        this.initialReferencePoint = referencePoint;
 
         this.scheduleSlot = statementContext.getScheduleBucket().allocateSlot();
-
-        // schedule the first callback
-        if (isStartEager)
-        {
-            scheduleCallback();
-            isCallbackScheduled = true;
-        }
     }
 
     public View cloneView(StatementContext statementContext)
     {
-        return timeLengthBatchViewFactory.makeView(statementContext);
+        return timeBatchViewFactory.makeView(statementContext);
     }
 
     /**
@@ -100,30 +72,12 @@ public final class TimeLengthBatchView extends ViewSupport implements CloneableV
     }
 
     /**
-     * True for force-output.
-     * @return indicates force-output
+     * Gets the reference point to use to anchor interval start and end dates to.
+     * @return is the millisecond reference point.
      */
-    public boolean isForceOutput()
+    public final Long getInitialReferencePoint()
     {
-        return isForceOutput;
-    }
-
-    /**
-     * Returns the length of the batch.
-     * @return maximum number of events allowed before window gets flushed 
-     */
-    public long getNumberOfEvents()
-    {
-        return numberOfEvents;
-    }
-
-    /**
-     * True for start-eager.
-     * @return indicates start-eager
-     */
-    public boolean isStartEager()
-    {
-        return isStartEager;
+        return initialReferencePoint;
     }
 
     public final EventType getEventType()
@@ -140,6 +94,13 @@ public final class TimeLengthBatchView extends ViewSupport implements CloneableV
                     "  oldData.length==" + ((oldData == null) ? 0 : oldData.length));
         }
 
+        if (statementContext == null)
+        {
+            String message = "View context has not been supplied, cannot schedule callback";
+            log.fatal(".update " + message);
+            throw new EPException(message);
+        }
+
         if (oldData != null)
         {
             for (int i = 0; i < oldData.length; i++)
@@ -154,55 +115,47 @@ public final class TimeLengthBatchView extends ViewSupport implements CloneableV
             return;
         }
 
-        // Add data points
+        // If we have an empty window about to be filled for the first time, schedule a callback
+        if (currentBatch.isEmpty())
+        {
+            if (currentReferencePoint == null)
+            {
+                currentReferencePoint = initialReferencePoint;
+                if (currentReferencePoint == null)
+                {
+                    currentReferencePoint = statementContext.getSchedulingService().getTime();
+                }
+            }
+
+            // Schedule the next callback if there is none currently scheduled
+            if (!isCallbackScheduled)
+            {
+                scheduleCallback();
+                isCallbackScheduled = true;
+            }
+        }
+
+        // add data points to the timeWindow
         for (int i = 0; i < newData.length; i++)
         {
             currentBatch.add(newData[i]);
         }
 
-        // We are done unless we went over the boundary
-        if (currentBatch.size() < numberOfEvents)
-        {
-            // Schedule a callback if there is none scheduled
-            if (!isCallbackScheduled)
-            {
-                scheduleCallback();
-                isCallbackScheduled = true;            
-            }
-
-            return;
-        }
-
-        // send a batch of events
-        sendBatch(false);
+        // We do not update child views, since we batch the events.
     }
 
     /**
      * This method updates child views and clears the batch of events.
-     * We cancel and old callback and schedule a new callback at this time if there were events in the batch.
-     * @param isFromSchedule true if invoked from a schedule, false if not
+     * We schedule a new callback at this time if there were events in the batch.
      */
-    protected final void sendBatch(boolean isFromSchedule)
+    protected final void sendBatch()
     {
+        isCallbackScheduled = false;
+
         if ((ExecutionPathDebugLog.isEnabled()) && (log.isDebugEnabled()))
         {
             log.debug(".sendBatch Update child views, " +
                     "  time=" + statementContext.getSchedulingService().getTime());
-        }
-
-        // No more callbacks scheduled if called from a schedule
-        if (isFromSchedule)
-        {
-            isCallbackScheduled = false;
-        }
-        else
-        {
-            // Remove schedule if called from on overflow due to number of events
-            if (isCallbackScheduled)
-            {
-                statementContext.getSchedulingService().remove(handle, scheduleSlot);
-                isCallbackScheduled = false;
-            }
         }
 
         // If there are child views and the batch was filled, fireStatementStopped update method
@@ -220,12 +173,7 @@ public final class TimeLengthBatchView extends ViewSupport implements CloneableV
                 oldData = lastBatch.toArray(new EventBean[0]);
             }
 
-            // Post new data (current batch) and old data (prior batch)
-            if (viewUpdatedCollection != null)
-            {
-                viewUpdatedCollection.update(newData, oldData);
-            }
-            if ((newData != null) || (oldData != null) || (isForceOutput))
+            if ((newData != null) || (oldData != null))
             {
                 updateChildren(newData, oldData);
             }
@@ -242,17 +190,14 @@ public final class TimeLengthBatchView extends ViewSupport implements CloneableV
 
         // Only if there have been any events in this or the last interval do we schedule a callback,
         // such as to not waste resources when no events arrive.
-        if (((!currentBatch.isEmpty()) || ((lastBatch != null) && (!lastBatch.isEmpty())))
-           ||
-           (isForceOutput))
+        if ((!currentBatch.isEmpty()) || ((lastBatch != null) && (!lastBatch.isEmpty())))
         {
             scheduleCallback();
             isCallbackScheduled = true;
         }
 
-        // Flush and roll
         lastBatch = currentBatch;
-        currentBatch = new ArrayList<EventBean>();
+        currentBatch = new LinkedHashSet<EventBean>();
     }
 
     /**
@@ -280,27 +225,33 @@ public final class TimeLengthBatchView extends ViewSupport implements CloneableV
     {
         return this.getClass().getName() +
                 " msecIntervalSize=" + msecIntervalSize +
-                " numberOfEvents=" + numberOfEvents;
+                " initialReferencePoint=" + initialReferencePoint;
     }
 
     private void scheduleCallback()
     {
         long current = statementContext.getSchedulingService().getTime();
+        long afterMSec = TimeBatchView.computeWaitMSec(current, this.currentReferencePoint, this.msecIntervalSize);
 
         if ((ExecutionPathDebugLog.isEnabled()) && (log.isDebugEnabled()))
         {
             log.debug(".scheduleCallback Scheduled new callback for " +
-                    " msecIntervalSize=" + msecIntervalSize +
-                    " now=" + current);
+                    " afterMsec=" + afterMSec +
+                    " now=" + current +
+                    " currentReferencePoint=" + currentReferencePoint +
+                    " initialReferencePoint=" + initialReferencePoint +
+                    " msecIntervalSize=" + msecIntervalSize);
         }
 
         ScheduleHandleCallback callback = new ScheduleHandleCallback() {
             public void scheduledTrigger(ExtensionServicesContext extensionServicesContext)
             {
-                TimeLengthBatchView.this.sendBatch(true);
+                TimeBatchViewRStream.this.sendBatch();
             }
         };
-        handle = new EPStatementHandleCallback(statementContext.getEpStatementHandle(), callback);
-        statementContext.getSchedulingService().add(msecIntervalSize, handle, scheduleSlot);
+        EPStatementHandleCallback handle = new EPStatementHandleCallback(statementContext.getEpStatementHandle(), callback);
+        statementContext.getSchedulingService().add(afterMSec, handle, scheduleSlot);
     }
+
+    private static final Log log = LogFactory.getLog(TimeBatchViewRStream.class);
 }

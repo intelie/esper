@@ -13,30 +13,35 @@ import net.esper.view.StatementStopService;
 
 import java.util.*;
 
-public class NamedWindowDeltaView extends ViewSupport
+public class NamedWindowTailView extends ViewSupport
 {
     private final EventType eventType;
-    private final View optionalRootView;
+    private final NamedWindowRootView namedWindowRootView;
     private final NamedWindowService namedWindowService;
     private final Map<EPStatementHandle, List<NamedWindowConsumerView>> consumers;
 
-    private final EventTable table;
-
-    public NamedWindowDeltaView(EventType eventType, NamedWindowService namedWindowService, Viewable eventStream, StatementStopService statementStopService)
+    public NamedWindowTailView(EventType eventType, NamedWindowService namedWindowService, NamedWindowRootView namedWindowRootView)
     {
         this.eventType = eventType;
         this.namedWindowService = namedWindowService;
         consumers = new HashMap<EPStatementHandle, List<NamedWindowConsumerView>>();
-        table = new UnindexedEventTable(0);
+        this.namedWindowRootView = namedWindowRootView; 
+    }
 
-        if (eventStream instanceof View)
+    public void update(EventBean[] newData, EventBean[] oldData)
+    {
+        // Only old data needs to be removed
+        if (oldData != null)
         {
-            optionalRootView = (View) eventStream;
+            namedWindowRootView.removeOldData(oldData);
         }
-        else
-        {
-            optionalRootView = null;
-        }
+
+        // Post to child views
+        updateChildren(newData, oldData);        
+
+        // Add to dispatch list for later result dispatch by runtime
+        NamedWindowDeltaData delta = new NamedWindowDeltaData(newData, oldData);
+        namedWindowService.addDispatch(delta, consumers);
     }
 
     public NamedWindowConsumerView addConsumer(EPStatementHandle statementHandle, StatementStopService statementStopService)
@@ -77,20 +82,6 @@ public class NamedWindowDeltaView extends ViewSupport
         }
     }
 
-    public void update(EventBean[] newData, EventBean[] oldData)
-    {
-        // Keep for later dispatch
-        NamedWindowDeltaData delta = new NamedWindowDeltaData(newData, oldData);
-        namedWindowService.addDispatch(delta, consumers);
-
-        // Update child views
-        updateChildren(newData, oldData);
-
-        // Add new data to tables, TODO: multiple tables
-        table.add(newData);
-        table.remove(oldData);
-    }
-
     public EventType getEventType()
     {
         return eventType;
@@ -100,16 +91,4 @@ public class NamedWindowDeltaView extends ViewSupport
     {
         return null;  // TODO
     }
-
-    public NamedWindowDeleteView addDeleter(OnDeleteDesc onDeleteDesc)
-    {
-        View removeStreamView = this;
-        if (optionalRootView != null)
-        {
-            removeStreamView = optionalRootView;
-        }
-        DeletionStrategyImpl strategy = new DeletionStrategyImpl(table, onDeleteDesc.getJoinExpr(), removeStreamView);
-        return new NamedWindowDeleteView(strategy);
-    }
-
 }

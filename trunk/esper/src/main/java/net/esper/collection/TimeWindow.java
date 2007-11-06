@@ -103,6 +103,7 @@ public final class TimeWindow implements Iterable
         {
             list.remove(event);
         }
+        reverseIndex.remove(event);
     }
 
     /**
@@ -152,6 +153,14 @@ public final class TimeWindow implements Iterable
             oldestTimestamp = pair.getFirst();
         }
 
+        if (reverseIndex != null)
+        {
+            for (EventBean expired : resultBeans)
+            {
+                reverseIndex.remove(expired);
+            }
+        }
+
         return resultBeans;
     }
 
@@ -181,5 +190,10 @@ public final class TimeWindow implements Iterable
     public final boolean isEmpty()
     {
         return window.isEmpty();
+    }
+
+    protected Map<EventBean, LinkedList<EventBean>> getReverseIndex()
+    {
+        return reverseIndex;
     }
 }

@@ -17,9 +17,7 @@ import net.esper.view.window.DataWindowView;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.TreeMap;
+import java.util.*;
 
 /**
  * Window retaining timestamped events up to a given number of seconds such that
@@ -50,6 +48,7 @@ public final class TimeOrderView extends ViewSupport implements DataWindowView, 
     private TreeMap<Long, ArrayList<EventBean>> sortedEvents;
     private boolean isCallbackScheduled;
     private int eventCount;
+    private Map<EventBean, ArrayList<EventBean>> reverseIndex;
 
     /**
      * Ctor.
@@ -64,7 +63,8 @@ public final class TimeOrderView extends ViewSupport implements DataWindowView, 
                           TimeOrderViewFactory timeOrderViewFactory,
                           String timestampFieldName,
                           long intervalSize,
-                          IStreamTimeOrderRandomAccess optionalSortedRandomAccess)
+                          IStreamTimeOrderRandomAccess optionalSortedRandomAccess,
+                          boolean isRemoveStreamHandling)
     {
         this.statementContext = statementContext;
         this.timeOrderViewFactory = timeOrderViewFactory;
@@ -72,6 +72,10 @@ public final class TimeOrderView extends ViewSupport implements DataWindowView, 
         this.intervalSize = intervalSize;
         this.optionalSortedRandomAccess = optionalSortedRandomAccess;
         this.scheduleSlot = statementContext.getScheduleBucket().allocateSlot();
+        if (isRemoveStreamHandling)
+        {
+            reverseIndex = new HashMap<EventBean, ArrayList<EventBean>>();
+        }
 
         sortedEvents = new TreeMap<Long, ArrayList<EventBean>>();
 
@@ -139,95 +143,130 @@ public final class TimeOrderView extends ViewSupport implements DataWindowView, 
             dumpUpdateParams("TimeOrderView", newData, oldData);
         }
 
-        if ((newData == null) || (newData.length == 0))
-        {
-            return;
-        }
+        EventBean[] postOldEventsArray = null;
 
-        // figure out the current tail time
-        long engineTime = statementContext.getSchedulingService().getTime();
-        long windowTailTime = engineTime - intervalSize + 1;
-        long oldestEvent = Long.MAX_VALUE;
-        if (!sortedEvents.isEmpty())
+        if ((newData != null) && (newData.length > 0))
         {
-            oldestEvent = sortedEvents.firstKey();
-        }
-        boolean addedOlderEvent = false;
 
-        // add events or post events as remove stream if already older then tail time
-        ArrayList<EventBean> postOldEvents = null;
-        for (int i = 0; i < newData.length; i++)
-        {
-            // get timestamp of event
-            EventBean newEvent = newData[i];
-            Long timestamp = (Long) timestampFieldGetters.get(newEvent);
-
-            // if the event timestamp indicates its older then the tail of the window, release it
-            if (timestamp < windowTailTime)
+            // figure out the current tail time
+            long engineTime = statementContext.getSchedulingService().getTime();
+            long windowTailTime = engineTime - intervalSize + 1;
+            long oldestEvent = Long.MAX_VALUE;
+            if (!sortedEvents.isEmpty())
             {
-                if (postOldEvents == null)
-                {
-                    postOldEvents = new ArrayList<EventBean>();
-                }
-                postOldEvents.add(newEvent);
+                oldestEvent = sortedEvents.firstKey();
             }
-            else
+            boolean addedOlderEvent = false;
+
+            // add events or post events as remove stream if already older then tail time
+            ArrayList<EventBean> postOldEvents = null;
+            for (int i = 0; i < newData.length; i++)
             {
-                if (timestamp < oldestEvent)
+                // get timestamp of event
+                EventBean newEvent = newData[i];
+                Long timestamp = (Long) timestampFieldGetters.get(newEvent);
+
+                // if the event timestamp indicates its older then the tail of the window, release it
+                if (timestamp < windowTailTime)
                 {
-                    addedOlderEvent = true;
-                    oldestEvent = timestamp;
-                }
-                
-                // add to list
-                ArrayList<EventBean> listOfBeans = sortedEvents.get(timestamp);
-                if (listOfBeans != null)
-                {
-                    listOfBeans.add(newEvent);
+                    if (postOldEvents == null)
+                    {
+                        postOldEvents = new ArrayList<EventBean>();
+                    }
+                    postOldEvents.add(newEvent);
                 }
                 else
                 {
-                    listOfBeans = new ArrayList<EventBean>();
-                    listOfBeans.add(newEvent);
-                    sortedEvents.put(timestamp, listOfBeans);
-                }
-                eventCount++;
-            }
-        }
+                    if (timestamp < oldestEvent)
+                    {
+                        addedOlderEvent = true;
+                        oldestEvent = timestamp;
+                    }
 
-        // If we do have data, check the callback
-        if (!sortedEvents.isEmpty())
-        {
-            // If we haven't scheduled a callback yet, schedule it now
-            if (!isCallbackScheduled)
-            {
-                long callbackWait = oldestEvent - windowTailTime + 1;
-                statementContext.getSchedulingService().add(callbackWait, handle, scheduleSlot);
-                isCallbackScheduled = true;
+                    // add to list
+                    ArrayList<EventBean> listOfBeans = sortedEvents.get(timestamp);
+                    if (listOfBeans != null)
+                    {
+                        listOfBeans.add(newEvent);
+                    }
+                    else
+                    {
+                        listOfBeans = new ArrayList<EventBean>();
+                        listOfBeans.add(newEvent);
+                        sortedEvents.put(timestamp, listOfBeans);
+                    }
+
+                    if (reverseIndex != null)
+                    {
+                        reverseIndex.put(newEvent, listOfBeans);
+                    }
+                    eventCount++;
+                }
             }
-            else
+
+            // If we do have data, check the callback
+            if (!sortedEvents.isEmpty())
             {
-                // We may need to reschedule, and older event may have been added
-                if (addedOlderEvent)
+                // If we haven't scheduled a callback yet, schedule it now
+                if (!isCallbackScheduled)
                 {
-                    oldestEvent = sortedEvents.firstKey();
                     long callbackWait = oldestEvent - windowTailTime + 1;
-                    statementContext.getSchedulingService().remove(handle, scheduleSlot);
                     statementContext.getSchedulingService().add(callbackWait, handle, scheduleSlot);
                     isCallbackScheduled = true;
                 }
+                else
+                {
+                    // We may need to reschedule, and older event may have been added
+                    if (addedOlderEvent)
+                    {
+                        oldestEvent = sortedEvents.firstKey();
+                        long callbackWait = oldestEvent - windowTailTime + 1;
+                        statementContext.getSchedulingService().remove(handle, scheduleSlot);
+                        statementContext.getSchedulingService().add(callbackWait, handle, scheduleSlot);
+                        isCallbackScheduled = true;
+                    }
+                }
+            }
+
+            if (postOldEvents != null)
+            {
+                postOldEventsArray = postOldEvents.toArray(new EventBean[0]);
+            }
+
+            if (optionalSortedRandomAccess != null)
+            {
+                optionalSortedRandomAccess.refresh(sortedEvents, eventCount);
             }
         }
 
-        EventBean[] postOldEventsArray = null;
-        if (postOldEvents != null)
+        if ((oldData != null) && (reverseIndex != null))
         {
-            postOldEventsArray = postOldEvents.toArray(new EventBean[0]);
-        }
+            for (EventBean old : oldData)
+            {
+                ArrayList<EventBean> list = reverseIndex.remove(old);
+                if (list != null)
+                {
+                    list.remove(old);
+                }
+            }
 
-        if (optionalSortedRandomAccess != null)
-        {
-            optionalSortedRandomAccess.refresh(sortedEvents, eventCount);
+            if (postOldEventsArray == null)
+            {
+                postOldEventsArray = oldData;
+            }
+            else
+            {
+                Set<EventBean> oldDataSet = new HashSet<EventBean>();
+                for (EventBean old : postOldEventsArray)
+                {
+                    oldDataSet.add(old);
+                }
+                for (EventBean old : oldData)
+                {
+                    oldDataSet.add(old);
+                }
+                postOldEventsArray = oldDataSet.toArray(new EventBean[0]);
+            }
         }
 
         // update child views
@@ -301,6 +340,14 @@ public final class TimeOrderView extends ViewSupport implements DataWindowView, 
             }
             eventCount -= expireEvents.size();
             sortedEvents.remove(oldestKey);
+
+            if (reverseIndex != null)
+            {
+                for (EventBean released : releaseEvents)
+                {
+                    reverseIndex.remove(released);
+                }
+            }
         }
 
         if (optionalSortedRandomAccess != null)

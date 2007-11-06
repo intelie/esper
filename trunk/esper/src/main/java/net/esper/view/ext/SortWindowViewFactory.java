@@ -1,6 +1,7 @@
 package net.esper.view.ext;
 
 import net.esper.eql.core.ViewResourceCallback;
+import net.esper.eql.named.RemoveStreamViewCapability;
 import net.esper.event.EventType;
 import net.esper.util.JavaClassHelper;
 import net.esper.view.*;
@@ -115,6 +116,10 @@ public class SortWindowViewFactory implements ViewFactory
 
     public boolean canProvideCapability(ViewCapability viewCapability)
     {
+        if (viewCapability instanceof RemoveStreamViewCapability)
+        {
+            return true;
+        }
         if (viewCapability instanceof ViewCapDataWindowAccess)
         {
             return true;
@@ -131,7 +136,10 @@ public class SortWindowViewFactory implements ViewFactory
         {
             throw new UnsupportedOperationException("View capability " + viewCapability.getClass().getSimpleName() + " not supported");
         }
-        
+        if (viewCapability instanceof RemoveStreamViewCapability)
+        {
+            return;
+        }
         if (randomAccessGetterImpl == null)
         {
             randomAccessGetterImpl = new RandomAccessByIndexGetter();

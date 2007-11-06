@@ -8,6 +8,7 @@ import net.esper.eql.expression.ExprSubselectNode;
 import net.esper.eql.expression.ExprValidationException;
 import net.esper.eql.spec.*;
 import net.esper.event.EventType;
+import net.esper.event.MapEventType;
 import net.esper.pattern.EvalFilterNode;
 import net.esper.pattern.EvalNode;
 import net.esper.pattern.EvalNodeAnalysisResult;
@@ -17,6 +18,8 @@ import net.esper.util.ManagedReadWriteLock;
 import net.esper.util.UuidGenerator;
 import net.esper.view.ViewProcessingException;
 import net.esper.view.Viewable;
+import net.esper.filter.FilterSpecCompiled;
+import net.esper.filter.FilterSpecParam;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -694,6 +697,38 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
             String text = "Unexpected error compiling statement";
             log.error(".compile " + text, ex);
             throw new EPStatementException(text + ":" + ex.getClass().getName() + ":" + ex.getMessage(), eqlStatement);
+        }
+
+        // The create window command:
+        //      create window windowName[.window_view_list] as [select properties from] type
+        //
+        // This section expected s single FilterStreamSpecCompiled representing the selected type.
+        // It creates a new event type representing the window type and a sets the type selected on the filter stream spec.
+        if (spec.getCreateWindowDesc() != null)
+        {
+            FilterStreamSpecCompiled filterStreamSpec = (FilterStreamSpecCompiled) compiledStreams.get(0);
+
+            // Create Map or Wrapper event type from the select clause of the window.
+            // If no columns selected, simply create a wrapper type
+            if (spec.getSelectClauseSpec().getSelectList().size() == 0)
+            {
+                String typeName = spec.getCreateWindowDesc().getWindowName();
+                EventType prototypeType = filterStreamSpec.getFilterSpec().getEventType();
+
+                // TODO: mapping of types should be easier
+                if (prototypeType instanceof MapEventType)
+                {
+                    MapEventType mapType = (MapEventType) prototypeType;
+                    EventType newType = statementContext.getEventAdapterService().addMapType(typeName, mapType.getTypes());
+                    filterStreamSpec.setFilterSpec(new FilterSpecCompiled(newType, new ArrayList<FilterSpecParam>()));
+                }
+                else
+                {
+                    Map<String, Class> addOnTypes = new HashMap<String, Class>();
+                    EventType newType = statementContext.getEventAdapterService().addWrapperType(typeName, filterStreamSpec.getFilterSpec().getEventType(), addOnTypes);
+                    filterStreamSpec.setFilterSpec(new FilterSpecCompiled(newType, new ArrayList<FilterSpecParam>()));
+                }
+            }
         }
 
         // Look for expressions with sub-selects in select expression list and filter expression

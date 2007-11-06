@@ -1,10 +1,9 @@
 package net.esper.core;
 
-import net.esper.filter.FilterHandleCallback;
 import net.esper.filter.FilterHandle;
+import net.esper.filter.FilterHandleCallback;
 import net.esper.schedule.ScheduleHandle;
 import net.esper.schedule.ScheduleHandleCallback;
-import net.esper.util.MetaDefItem;
 
 /**
  * Statement resource handle and callback for use with {@link net.esper.filter.FilterService} and

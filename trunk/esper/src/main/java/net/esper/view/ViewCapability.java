@@ -19,4 +19,6 @@ public interface ViewCapability
      * @return true to indicate inspection success, or false to indicate inspection failure
      */
     public boolean inspect(int streamNumber, List<ViewFactory> viewFactories, StatementContext statementContext);
+
+    public boolean requiresChildViews();
 }

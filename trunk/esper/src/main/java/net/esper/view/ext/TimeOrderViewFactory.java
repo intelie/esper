@@ -2,6 +2,7 @@ package net.esper.view.ext;
 
 import net.esper.core.StatementContext;
 import net.esper.eql.core.ViewResourceCallback;
+import net.esper.eql.named.RemoveStreamViewCapability;
 import net.esper.event.EventType;
 import net.esper.type.TimePeriodParameter;
 import net.esper.util.JavaClassHelper;
@@ -29,6 +30,8 @@ public class TimeOrderViewFactory implements ViewFactory
      * The access into the collection for use with 'previous'.
      */
     protected RandomAccessByIndexGetter randomAccessGetterImpl;
+
+    protected boolean isRemoveStreamHandling;
 
     private EventType eventType;
 
@@ -95,6 +98,10 @@ public class TimeOrderViewFactory implements ViewFactory
         {
             return true;
         }
+        else if (viewCapability instanceof RemoveStreamViewCapability)
+        {
+            return true;
+        }
         else
         {
             return false;
@@ -107,7 +114,11 @@ public class TimeOrderViewFactory implements ViewFactory
         {
             throw new UnsupportedOperationException("View capability " + viewCapability.getClass().getSimpleName() + " not supported");
         }
-
+        if (viewCapability instanceof RemoveStreamViewCapability)
+        {
+            isRemoveStreamHandling = true;
+            return;
+        }
         if (randomAccessGetterImpl == null)
         {
             randomAccessGetterImpl = new RandomAccessByIndexGetter();
@@ -125,7 +136,7 @@ public class TimeOrderViewFactory implements ViewFactory
             randomAccessGetterImpl.updated(sortedRandomAccess);
         }
 
-        return new TimeOrderView(statementContext, this, timestampFieldName, intervalSize, sortedRandomAccess);
+        return new TimeOrderView(statementContext, this, timestampFieldName, intervalSize, sortedRandomAccess, isRemoveStreamHandling);
     }
 
     public EventType getEventType()

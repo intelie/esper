@@ -3,7 +3,6 @@ package net.esper.eql.core;
 import net.esper.view.ViewFactoryChain;
 import net.esper.view.ViewFactory;
 import net.esper.view.ViewCapability;
-import net.esper.view.ViewResolutionService;
 import net.esper.core.StatementContext;
 
 /**
@@ -45,6 +44,12 @@ public class ViewResourceDelegateImpl implements ViewResourceDelegate
                 factory.setProvideCapability(requestedCabability, resourceCallback);
                 return true;
             }
+        }
+
+        // check if the capability requires child views
+        if ((!requestedCabability.requiresChildViews()) && factories.getViewFactoryChain().isEmpty())
+        {
+            return true;
         }
 
         return false;

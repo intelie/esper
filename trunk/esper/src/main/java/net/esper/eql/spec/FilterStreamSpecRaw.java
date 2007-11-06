@@ -70,21 +70,17 @@ public class FilterStreamSpecRaw extends StreamSpecBase implements StreamSpecRaw
         String eventName = rawFilterSpec.getEventTypeAlias();
 
         // Could be a named window
-        if (namedWindowService.getNamedWindowType(eventName) != null)
+        if (namedWindowService.isNamedWindow(eventName))
         {
             // Validate that no filter criteria have been used, and no views
             if (!rawFilterSpec.getFilterExpressions().isEmpty())
             {
                 throw new ExprValidationException("Use of named window '" + eventName + "' does not allow filter expressions");
             }
-            if (!this.getViewSpecs().isEmpty())
-            {
-                throw new ExprValidationException("Use of named window '" + eventName + "' does not allow additional subviews");
-            }
 
-            return new NamedWindowStreamSpec(eventName, this.getOptionalStreamName());
+            return new NamedWindowConsumerStreamSpec(eventName, this.getOptionalStreamName(), this.getViewSpecs());
         }
-
+        
         EventType eventType = resolveType(eventName, eventAdapterService);
 
         // Validate all nodes, make sure each returns a boolean and types are good;

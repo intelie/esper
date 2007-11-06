@@ -8,7 +8,7 @@ import java.util.ArrayList;
 /**
  * Specification for use of an existing named window.
  */
-public class NamedWindowStreamSpec extends StreamSpecBase implements StreamSpecCompiled
+public class NamedWindowConsumerStreamSpec extends StreamSpecBase implements StreamSpecCompiled
 {
     private String windowName;
 
@@ -16,9 +16,9 @@ public class NamedWindowStreamSpec extends StreamSpecBase implements StreamSpecC
      * Ctor.
      * @param windowName - specifies the name of the named window
      */
-    public NamedWindowStreamSpec(String windowName, String optionalAsName)
+    public NamedWindowConsumerStreamSpec(String windowName, String optionalAsName, List<ViewSpec> viewSpecs)
     {
-        super(optionalAsName, new ArrayList<ViewSpec>());
+        super(optionalAsName, viewSpecs);
         this.windowName = windowName;
     }
 

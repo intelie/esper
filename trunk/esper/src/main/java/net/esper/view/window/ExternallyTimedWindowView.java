@@ -35,8 +35,9 @@ public final class ExternallyTimedWindowView extends ViewSupport implements Data
     private final long millisecondsBeforeExpiry;
     private EventPropertyGetter timestampFieldGetter;
 
-    private final TimeWindow timeWindow = new TimeWindow(false);
+    private final TimeWindow timeWindow;
     private ViewUpdatedCollection viewUpdatedCollection;
+    private boolean isRemoveStreamHandling;
 
     /**
      * Constructor.
@@ -51,12 +52,15 @@ public final class ExternallyTimedWindowView extends ViewSupport implements Data
      * @param externallyTimedWindowViewFactory for copying this view in a group-by
      */
     public ExternallyTimedWindowView(ExternallyTimedWindowViewFactory externallyTimedWindowViewFactory,
-                                     String timestampFieldName, long msecBeforeExpiry, ViewUpdatedCollection viewUpdatedCollection)
+                                     String timestampFieldName, long msecBeforeExpiry, ViewUpdatedCollection viewUpdatedCollection,
+                                     boolean isRemoveStreamHandling)
     {
         this.externallyTimedWindowViewFactory = externallyTimedWindowViewFactory;
         this.timestampFieldName = timestampFieldName;
         this.millisecondsBeforeExpiry = msecBeforeExpiry;
         this.viewUpdatedCollection = viewUpdatedCollection;
+        this.isRemoveStreamHandling = isRemoveStreamHandling;
+        this.timeWindow = new TimeWindow(isRemoveStreamHandling);
     }
 
     public View cloneView(StatementContext statementContext)
@@ -123,6 +127,32 @@ public final class ExternallyTimedWindowView extends ViewSupport implements Data
         if ((expired != null) && (!expired.isEmpty()))
         {
             oldDataUpdate = expired.toArray(new EventBean[0]);
+        }
+
+        if ((oldData != null) && (isRemoveStreamHandling))
+        {
+            for (EventBean anOldData : oldData)
+            {
+                timeWindow.remove(anOldData);
+            }
+
+            if (oldDataUpdate == null)
+            {
+                oldDataUpdate = oldData;
+            }
+            else
+            {
+                Set<EventBean> oldDataPost = new HashSet<EventBean>();
+                for (EventBean old : oldData)
+                {
+                    oldDataPost.add(old);
+                }
+                for (EventBean old : oldDataUpdate)
+                {
+                    oldDataPost.add(old);
+                }
+                oldDataUpdate = oldDataPost.toArray(new EventBean[0]);
+            }
         }
 
         if (viewUpdatedCollection != null)

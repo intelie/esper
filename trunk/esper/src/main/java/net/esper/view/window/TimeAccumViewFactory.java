@@ -6,6 +6,7 @@ import net.esper.type.TimePeriodParameter;
 import net.esper.util.JavaClassHelper;
 import net.esper.core.StatementContext;
 import net.esper.eql.core.ViewResourceCallback;
+import net.esper.eql.named.RemoveStreamViewCapability;
 
 import java.util.List;
 
@@ -25,6 +26,11 @@ public class TimeAccumViewFactory implements ViewFactory
      * Access into the data window.
      */
     protected RandomAccessByIndexGetter randomAccessGetterImpl;
+
+    /**
+     * Indicators that we need to handle the remove stream posted by parent views. 
+     */
+    protected boolean isRemoveStreamHandling;
 
     public void setViewParameters(ViewFactoryContext viewFactoryContext, List<Object> viewParameters) throws ViewParameterException
     {
@@ -70,6 +76,10 @@ public class TimeAccumViewFactory implements ViewFactory
 
     public boolean canProvideCapability(ViewCapability viewCapability)
     {
+        if (viewCapability instanceof RemoveStreamViewCapability)
+        {
+            return true;
+        }
         return viewCapability instanceof ViewCapDataWindowAccess;
     }
 
@@ -78,6 +88,11 @@ public class TimeAccumViewFactory implements ViewFactory
         if (!canProvideCapability(viewCapability))
         {
             throw new UnsupportedOperationException("View capability " + viewCapability.getClass().getSimpleName() + " not supported");
+        }
+        if (viewCapability instanceof RemoveStreamViewCapability)
+        {
+            isRemoveStreamHandling = true;
+            return;
         }
         if (randomAccessGetterImpl == null)
         {
@@ -96,7 +111,14 @@ public class TimeAccumViewFactory implements ViewFactory
             randomAccessGetterImpl.updated(randomAccess);
         }
 
-        return new TimeAccumView(this, statementContext, millisecondsQuietTime, randomAccess);
+        if (isRemoveStreamHandling)
+        {
+            return new TimeAccumViewRStream(this, statementContext, millisecondsQuietTime);            
+        }
+        else
+        {
+            return new TimeAccumView(this, statementContext, millisecondsQuietTime, randomAccess);
+        }
     }
 
     public EventType getEventType()

@@ -1,11 +1,8 @@
 package net.esper.eql.named;
 
 import net.esper.core.EPStatementHandle;
-import net.esper.eql.spec.OnDeleteDesc;
 import net.esper.event.EventBean;
 import net.esper.event.EventType;
-import net.esper.view.Viewable;
-import net.esper.view.StatementStopService;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,7 +11,7 @@ import java.util.Map;
 
 public class NamedWindowServiceImpl implements NamedWindowService
 {
-    private Map<String, NamedWindowDeltaView> views;
+    private Map<String, NamedWindowProcessor> processors;
 
     private ThreadLocal<List<NamedWindowConsumerDispatchUnit>> threadLocal = new ThreadLocal<List<NamedWindowConsumerDispatchUnit>>()
     {
@@ -26,56 +23,42 @@ public class NamedWindowServiceImpl implements NamedWindowService
 
     public NamedWindowServiceImpl()
     {
-        this.views = new HashMap<String, NamedWindowDeltaView>();
+        this.processors = new HashMap<String, NamedWindowProcessor>();
     }
 
-    public NamedWindowDeleteView addDeleter(OnDeleteDesc onDeleteDesc)
+    public boolean isNamedWindow(String name)
     {
-        NamedWindowDeltaView deltaView = views.get(onDeleteDesc.getWindowName());
-        if (deltaView == null)
+        return processors.containsKey(name);
+    }
+
+    public NamedWindowProcessor getProcessor(String name)
+    {
+        NamedWindowProcessor processor = processors.get(name);
+        if (processor == null)
         {
             throw new RuntimeException("XXX"); // TODO
         }
-        return deltaView.addDeleter(onDeleteDesc);        
+        return processor;
     }
 
-    public NamedWindowDeltaView addNamed(String name, Viewable eventStream, StatementStopService statementStopService)
+    public NamedWindowProcessor addProcessor(String name, EventType eventType)
     {
-        if (views.containsKey(name))
-        {
-            throw new RuntimeException("XXX"); // TODO
-        }
-        NamedWindowDeltaView deltaView = new NamedWindowDeltaView(eventStream.getEventType(), this, eventStream, statementStopService);
-        views.put(name, deltaView);
-        return deltaView;
-    }
-
-    public EventType getNamedWindowType(String eventName)
-    {
-        NamedWindowDeltaView deltaView = views.get(eventName);
-        if (deltaView == null)
-        {
-            return null;
-        }
-        return deltaView.getEventType();
-    }
-
-    public NamedWindowConsumerView addConsumer(String windowName, EPStatementHandle statementHandle, StatementStopService statementStopService)
-    {
-        NamedWindowDeltaView deltaView = views.get(windowName);
-        if (deltaView == null)
+        if (processors.containsKey(name))
         {
             throw new RuntimeException("XXX"); // TODO
         }
 
-        return deltaView.addConsumer(statementHandle, statementStopService);
-    }
+        NamedWindowProcessor processor = new NamedWindowProcessor(this, name, eventType);
+        processors.put(name, processor);
+        
+        return processor;
+    }    
 
     public void addDispatch(NamedWindowDeltaData delta, Map<EPStatementHandle, List<NamedWindowConsumerView>> consumers)
     {
         NamedWindowConsumerDispatchUnit unit = new NamedWindowConsumerDispatchUnit(delta, consumers);
         threadLocal.get().add(unit);
-    }
+    }    
 
     public boolean dispatch()
     {

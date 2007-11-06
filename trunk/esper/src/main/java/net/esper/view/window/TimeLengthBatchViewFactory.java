@@ -6,6 +6,7 @@ import net.esper.type.TimePeriodParameter;
 import net.esper.util.JavaClassHelper;
 import net.esper.core.StatementContext;
 import net.esper.eql.core.ViewResourceCallback;
+import net.esper.eql.named.RemoveStreamViewCapability;
 
 import java.util.List;
 
@@ -130,6 +131,10 @@ public class TimeLengthBatchViewFactory implements ViewFactory
 
     public boolean canProvideCapability(ViewCapability viewCapability)
     {
+        if (viewCapability instanceof RemoveStreamViewCapability)
+        {
+            return true;
+        }
         return viewCapability instanceof ViewCapDataWindowAccess;
     }
 
@@ -138,6 +143,10 @@ public class TimeLengthBatchViewFactory implements ViewFactory
         if (!canProvideCapability(viewCapability))
         {
             throw new UnsupportedOperationException("View capability " + viewCapability.getClass().getSimpleName() + " not supported");
+        }
+        if (viewCapability instanceof RemoveStreamViewCapability)
+        {
+            return;
         }
         if (relativeAccessGetterImpl == null)
         {

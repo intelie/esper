@@ -16,13 +16,9 @@ import net.esper.eql.join.plan.FilterExprAnalyzer;
 import net.esper.eql.spec.*;
 import net.esper.eql.view.*;
 import net.esper.eql.lookup.*;
-import net.esper.eql.named.NamedWindowDeleteView;
-import net.esper.eql.named.NamedWindowConsumerView;
-import net.esper.eql.named.NamedWindowDeltaView;
-import net.esper.eql.named.RemoveStreamViewCapability;
+import net.esper.eql.named.*;
 import net.esper.event.EventBean;
 import net.esper.event.EventType;
-import net.esper.event.MapEventType;
 import net.esper.pattern.*;
 import net.esper.util.StopCallback;
 import net.esper.util.JavaClassHelper;
@@ -30,8 +26,6 @@ import net.esper.util.ManagedLock;
 import net.esper.view.*;
 import net.esper.view.internal.BufferView;
 import net.esper.view.internal.BufferObserver;
-import net.esper.filter.FilterSpecCompiled;
-import net.esper.filter.FilterSpecParam;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -71,31 +65,13 @@ public class EPStatementStartMethod
     public Pair<Viewable, EPStatementStopMethod> start()
         throws ExprValidationException, ViewProcessingException
     {
+        // For named windows, register the window name and event type
         if (statementSpec.getCreateWindowDesc() != null)
         {
+            String windowName = statementSpec.getCreateWindowDesc().getWindowName();
             FilterStreamSpecCompiled filterStreamSpec = (FilterStreamSpecCompiled) statementSpec.getStreamSpecs().get(0);
-
-            // Create Map or Wrapper event type from the select clause of the window.
-            // If no columns selected, simply create a wrapper type
-            if (statementSpec.getSelectClauseSpec().getSelectList().size() == 0)
-            {
-                String typeName = statementSpec.getCreateWindowDesc().getWindowName();
-                EventType prototypeType = filterStreamSpec.getFilterSpec().getEventType();
-
-                // TODO: mapping of types should be easier
-                if (prototypeType instanceof MapEventType)
-                {
-                    MapEventType mapType = (MapEventType) prototypeType;
-                    EventType newType = services.getEventAdapterService().addMapType(typeName, mapType.getTypes());
-                    filterStreamSpec.setFilterSpec(new FilterSpecCompiled(newType, new ArrayList<FilterSpecParam>()));
-                }
-                else
-                {
-                    Map<String, Class> addOnTypes = new HashMap<String, Class>();
-                    EventType newType = services.getEventAdapterService().addWrapperType(typeName, filterStreamSpec.getFilterSpec().getEventType(), addOnTypes);
-                    filterStreamSpec.setFilterSpec(new FilterSpecCompiled(newType, new ArrayList<FilterSpecParam>()));
-                }
-            }
+            EventType windowType = filterStreamSpec.getFilterSpec().getEventType();
+            services.getNamedWindowService().addProcessor(windowName, windowType);
         }
 
         // Determine stream names for each stream - some streams may not have a name given
@@ -173,10 +149,11 @@ public class EPStatementStartMethod
                 eventStreamParentViewable[i] = historicalEventViewable;
                 stopCallbacks.add(historicalEventViewable);
             }
-            else if (streamSpec instanceof NamedWindowStreamSpec)
+            else if (streamSpec instanceof NamedWindowConsumerStreamSpec)
             {
-                NamedWindowStreamSpec namedSpec = (NamedWindowStreamSpec) streamSpec;
-                NamedWindowConsumerView consumerView = services.getNamedWindowService().addConsumer(namedSpec.getWindowName(), statementContext.getEpStatementHandle(), statementContext.getStatementStopService());
+                NamedWindowConsumerStreamSpec namedSpec = (NamedWindowConsumerStreamSpec) streamSpec;
+                NamedWindowProcessor processor = services.getNamedWindowService().getProcessor(namedSpec.getWindowName());
+                NamedWindowConsumerView consumerView = processor.addConsumer(statementContext.getEpStatementHandle(), statementContext.getStatementStopService());
                 eventStreamParentViewable[i] = consumerView;
                 unmaterializedViewChain[i] = services.getViewService().createFactories(i, consumerView.getEventType(), namedSpec.getViewSpecs(), statementContext);
             }
@@ -204,10 +181,19 @@ public class EPStatementStartMethod
         StreamTypeService typeService = new StreamTypeServiceImpl(streamEventTypes, streamNames);
         ViewResourceDelegate viewResourceDelegate = new ViewResourceDelegateImpl(unmaterializedViewChain, statementContext);
 
-        // For named windows, request remove stream handling from views
+        // For named windows, request remove stream handling from views, and set the top view to the index view
         if (statementSpec.getCreateWindowDesc() != null)
         {
-            viewResourceDelegate.requestCapability(0, new RemoveStreamViewCapability(), null);
+            NamedWindowProcessor processor = services.getNamedWindowService().getProcessor(statementSpec.getCreateWindowDesc().getWindowName());
+            View rootView = processor.getRootView();
+            eventStreamParentViewable[0].addView(rootView);
+            eventStreamParentViewable[0] = rootView;
+
+            // request remove stream capability from views
+            if (!viewResourceDelegate.requestCapability(0, new RemoveStreamViewCapability(), null))
+            {
+                throw new ExprValidationException("Named windows require either no child view, or data window child views and the optional groupby view");
+            }
         }
 
         // create stop method using statement stream specs
@@ -301,27 +287,26 @@ public class EPStatementStartMethod
 
         if (statementSpec.getCreateWindowDesc() != null)
         {
-            Viewable rootView = streamViews[0];
-            NamedWindowDeltaView namedWindowDeltaView = services.getNamedWindowService().addNamed(
-                    statementSpec.getCreateWindowDesc().getWindowName(),
-                    rootView,
-                    statementContext.getStatementStopService());
-            finalView.addView(namedWindowDeltaView);
-            finalView = namedWindowDeltaView;
+            NamedWindowProcessor processor = services.getNamedWindowService().getProcessor(statementSpec.getCreateWindowDesc().getWindowName());
+            NamedWindowTailView tailView = processor.getTailView();
+            finalView.addView(tailView);
+            finalView = tailView;
         }
 
         if (statementSpec.getOnDeleteDesc() != null)
         {
             OnDeleteDesc onDeleteDesc = statementSpec.getOnDeleteDesc();
-            EventType namedWindowType = services.getNamedWindowService().getNamedWindowType(onDeleteDesc.getWindowName());
-            FilterStreamSpecCompiled streamSpec = (FilterStreamSpecCompiled) statementSpec.getStreamSpecs().get(0);
+            NamedWindowProcessor processor = services.getNamedWindowService().getProcessor(onDeleteDesc.getWindowName());
 
+            // validate join expression
+            EventType namedWindowType = processor.getNamedWindowType(onDeleteDesc.getWindowName());
+            FilterStreamSpecCompiled streamSpec = (FilterStreamSpecCompiled) statementSpec.getStreamSpecs().get(0);
             ExprNode validatedJoin = validateJoinNamedWindow(statementSpec.getOnDeleteDesc().getJoinExpr(),
                     namedWindowType, onDeleteDesc.getOptionalAsName(),
                     streamSpec.getFilterSpec().getEventType(), streamSpec.getOptionalStreamName());
             onDeleteDesc.setJoinExpr(validatedJoin);
 
-            NamedWindowDeleteView deleteView = services.getNamedWindowService().addDeleter(onDeleteDesc);
+            NamedWindowDeleteView deleteView = processor.addDeleter(onDeleteDesc);
             finalView.addView(deleteView);
             finalView = deleteView;
         }

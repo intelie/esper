@@ -1,18 +1,16 @@
 package net.esper.collection;
 
-import junit.framework.*;
-
-import java.util.List;
-import java.util.Iterator;
-import java.util.ConcurrentModificationException;
-
+import junit.framework.TestCase;
+import net.esper.event.EventBean;
 import net.esper.support.bean.SupportBean;
 import net.esper.support.event.SupportEventBeanFactory;
 import net.esper.support.util.ArrayAssertionUtil;
-import net.esper.event.EventBean;
-import net.esper.client.EPException;
-import org.apache.commons.logging.LogFactory;
 import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import java.util.ConcurrentModificationException;
+import java.util.Iterator;
+import java.util.List;
 
 public class TestTimeWindow extends TestCase
 {
@@ -125,6 +123,8 @@ public class TestTimeWindow extends TestCase
         assertTrue(beanList == null);
         assertTrue(windowRemovable.isEmpty());
         assertTrue(windowRemovable.getOldestTimestamp() == null);
+
+        assertEquals(0, windowRemovable.getReverseIndex().size());
     }
 
     public void testTimeWindowPerformance()

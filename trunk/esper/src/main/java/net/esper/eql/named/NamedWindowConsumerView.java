@@ -21,14 +21,14 @@ public class NamedWindowConsumerView extends ViewSupport implements StatementSto
 {
     private static final Log log = LogFactory.getLog(NamedWindowConsumerView.class);
     private EventType eventType;
-    private NamedWindowDeltaView deltaView;
+    private NamedWindowTailView tailView;
 
     public NamedWindowConsumerView(EventType eventType,
                                    StatementStopService statementStopService,
-                                   NamedWindowDeltaView deltaView)
+                                   NamedWindowTailView tailView)
     {
         this.eventType = eventType;
-        this.deltaView = deltaView;
+        this.tailView = tailView;
         statementStopService.addSubscriber(this);
     }
 
@@ -62,6 +62,6 @@ public class NamedWindowConsumerView extends ViewSupport implements StatementSto
 
     public void statementStopped()
     {
-        deltaView.removeConsumer(this);
+        tailView.removeConsumer(this);
     }
 }
