@@ -96,6 +96,111 @@ public class TestTimeWindowIterator extends TestCase
             events.get("e"), events.get("f"), events.get("g")} );
     }
     
+    public void testEmptyList()
+    {
+        LinkedList<Pair<Long, LinkedList<EventBean>>> testWindow = new LinkedList<Pair<Long, LinkedList<EventBean>>>();
+
+        LinkedList<EventBean> list1 = new LinkedList<EventBean>();
+        addToWindow(testWindow, 10L, list1);
+
+        Iterator it = new TimeWindowIterator(testWindow);
+        ArrayAssertionUtil.assertEqualsExactOrder(it, (Object[]) null);
+    }
+
+    public void testTwoEmptyList()
+    {
+        LinkedList<Pair<Long, LinkedList<EventBean>>> testWindow = new LinkedList<Pair<Long, LinkedList<EventBean>>>();
+
+        LinkedList<EventBean> list1 = new LinkedList<EventBean>();
+        addToWindow(testWindow, 10L, list1);
+        LinkedList<EventBean> list2 = new LinkedList<EventBean>();
+        addToWindow(testWindow, 20L, list2);
+
+        Iterator it = new TimeWindowIterator(testWindow);
+        ArrayAssertionUtil.assertEqualsExactOrder(it, (Object[]) null);
+    }
+
+    public void testThreeEmptyList()
+    {
+        LinkedList<Pair<Long, LinkedList<EventBean>>> testWindow = new LinkedList<Pair<Long, LinkedList<EventBean>>>();
+
+        LinkedList<EventBean> list1 = new LinkedList<EventBean>();
+        addToWindow(testWindow, 10L, list1);
+        LinkedList<EventBean> list2 = new LinkedList<EventBean>();
+        addToWindow(testWindow, 20L, list2);
+        LinkedList<EventBean> list3 = new LinkedList<EventBean>();
+        addToWindow(testWindow, 30L, list3);
+
+        Iterator it = new TimeWindowIterator(testWindow);
+        ArrayAssertionUtil.assertEqualsExactOrder(it, (Object[]) null);
+    }
+
+    public void testEmptyListFrontTail()
+    {
+        LinkedList<Pair<Long, LinkedList<EventBean>>> testWindow = new LinkedList<Pair<Long, LinkedList<EventBean>>>();
+
+        LinkedList<EventBean> list1 = new LinkedList<EventBean>();
+        addToWindow(testWindow, 10L, list1);
+
+        LinkedList<EventBean> list2 = new LinkedList<EventBean>();
+        list2.add(events.get("c"));
+        list2.add(events.get("d"));
+        addToWindow(testWindow, 15L, list2);
+
+        LinkedList<EventBean> list3 = new LinkedList<EventBean>();
+        addToWindow(testWindow, 20L, list3);
+
+        Iterator it = new TimeWindowIterator(testWindow);
+        ArrayAssertionUtil.assertEqualsExactOrder(it, new Object[] {events.get("c"), events.get("d")} );
+    }
+
+    public void testEmptyListSprinkle()
+    {
+        LinkedList<Pair<Long, LinkedList<EventBean>>> testWindow = new LinkedList<Pair<Long, LinkedList<EventBean>>>();
+
+        LinkedList<EventBean> list1 = new LinkedList<EventBean>();
+        list1.add(events.get("a"));
+        addToWindow(testWindow, 10L, list1);
+
+        LinkedList<EventBean> list2 = new LinkedList<EventBean>();
+        addToWindow(testWindow, 15L, list2);
+
+        LinkedList<EventBean> list3 = new LinkedList<EventBean>();
+        list3.add(events.get("c"));
+        list3.add(events.get("d"));
+        addToWindow(testWindow, 20L, list3);
+
+        LinkedList<EventBean> list4 = new LinkedList<EventBean>();
+        addToWindow(testWindow, 40L, list4);
+
+        Iterator it = new TimeWindowIterator(testWindow);
+        ArrayAssertionUtil.assertEqualsExactOrder(it, new Object[] {events.get("a"), events.get("c"), events.get("d")} );
+    }
+
+    public void testEmptyListFront()
+    {
+        LinkedList<Pair<Long, LinkedList<EventBean>>> testWindow = new LinkedList<Pair<Long, LinkedList<EventBean>>>();
+
+        LinkedList<EventBean> list1 = new LinkedList<EventBean>();
+        addToWindow(testWindow, 10L, list1);
+
+        LinkedList<EventBean> list2 = new LinkedList<EventBean>();
+        list2.add(events.get("a"));
+        addToWindow(testWindow, 15L, list2);
+
+        LinkedList<EventBean> list3 = new LinkedList<EventBean>();
+        list3.add(events.get("c"));
+        list3.add(events.get("d"));
+        addToWindow(testWindow, 20L, list3);
+
+        LinkedList<EventBean> list4 = new LinkedList<EventBean>();
+        list4.add(events.get("e"));
+        addToWindow(testWindow, 40L, list4);
+
+        Iterator it = new TimeWindowIterator(testWindow);
+        ArrayAssertionUtil.assertEqualsExactOrder(it, new Object[] {events.get("a"), events.get("c"), events.get("d"), events.get("e")} );
+    }
+
     private void addToWindow(LinkedList<Pair<Long, LinkedList<EventBean>>> testWindow,
                              long key, 
                              LinkedList<EventBean> value)

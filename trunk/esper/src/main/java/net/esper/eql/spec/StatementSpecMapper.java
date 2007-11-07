@@ -29,6 +29,8 @@ public class StatementSpecMapper
     public static StatementSpecRaw map(EPStatementObjectModel sodaStatement, EngineImportService engineImportService)
     {
         StatementSpecRaw raw = new StatementSpecRaw();
+        mapCreateWindow(sodaStatement.getCreateWindow(), raw);
+        mapOnDelete(sodaStatement.getOnDelete(), raw, engineImportService);
         mapInsertInto(sodaStatement.getInsertInto(), raw);
         mapSelect(sodaStatement.getSelectClause(), raw, engineImportService);
         mapFrom(sodaStatement.getFromClause(), raw, engineImportService);
@@ -50,6 +52,8 @@ public class StatementSpecMapper
         StatementSpecUnMapContext unmapContext = new StatementSpecUnMapContext();
 
         EPStatementObjectModel model = new EPStatementObjectModel();
+        unmapCreateWindow(statementSpec.getCreateWindowDesc(), model);
+        unmapOnDelete(statementSpec.getOnDeleteDesc(), model, unmapContext);
         unmapInsertInto(statementSpec.getInsertIntoDesc(), model);
         unmapSelect(statementSpec.getSelectClauseSpec(), statementSpec.getSelectStreamSelectorEnum(), model, unmapContext);
         unmapFrom(statementSpec.getStreamSpecs(), statementSpec.getOuterJoinDescList(), model, unmapContext);
@@ -60,6 +64,29 @@ public class StatementSpecMapper
         unmapOrderBy(statementSpec.getOrderByList(), model, unmapContext);
         
         return new StatementSpecUnMapResult(model, unmapContext.getIndexedParams());
+    }
+
+    private static void unmapOnDelete(OnDeleteDesc onDeleteDesc, EPStatementObjectModel model, StatementSpecUnMapContext unmapContext)
+    {
+        if (onDeleteDesc == null)
+        {
+            return;
+        }
+        Expression expr = null;
+        if (onDeleteDesc.getJoinExpr() != null)
+        {
+            expr = unmapExpressionDeep(onDeleteDesc.getJoinExpr(), unmapContext);
+        }
+        model.setOnDelete(new OnDeleteClause(onDeleteDesc.getWindowName(), onDeleteDesc.getOptionalAsName(), expr));
+    }
+
+    private static void unmapCreateWindow(CreateWindowDesc createWindowDesc, EPStatementObjectModel model)
+    {
+        if (createWindowDesc == null)
+        {
+            return;
+        }
+        model.setCreateWindow(new CreateWindowClause(createWindowDesc.getWindowName(), unmapViews(createWindowDesc.getViewSpecs())));
     }
 
     private static void unmapOrderBy(List<OrderByItem> orderByList, EPStatementObjectModel model, StatementSpecUnMapContext unmapContext)
@@ -138,6 +165,21 @@ public class StatementSpecMapper
             spec = new OutputLimitSpec(outputLimitClause.getFrequency(), displayLimit);
         }
         raw.setOutputLimitSpec(spec);
+    }
+
+    private static void mapOnDelete(OnDeleteClause onDelete, StatementSpecRaw raw, EngineImportService engineImportService)
+    {
+        if (onDelete == null)
+        {
+            return;
+        }
+
+        ExprNode node = null;
+        if (onDelete.getJoinExpr() != null)
+        {
+            node = mapExpressionDeep(onDelete.getJoinExpr(), engineImportService);
+        }        
+        raw.setOnDeleteDesc(new OnDeleteDesc(onDelete.getWindowName(), onDelete.getOptionalAsName(), node));
     }
 
     private static void mapHaving(Expression havingClause, StatementSpecRaw raw, EngineImportService engineImportService)
@@ -287,6 +329,16 @@ public class StatementSpecMapper
                         insertIntoDesc.getColumnNames().toArray(new String[0]), s));
     }
 
+    private static void mapCreateWindow(CreateWindowClause createWindow, StatementSpecRaw raw)
+    {
+        if (createWindow == null)
+        {
+            return;
+        }
+
+        raw.setCreateWindowDesc(new CreateWindowDesc(createWindow.getWindowName(), mapViews(createWindow.getViews())));
+    }
+
     private static void mapInsertInto(InsertIntoClause insertInto, StatementSpecRaw raw)
     {
         if (insertInto == null)
@@ -308,6 +360,10 @@ public class StatementSpecMapper
 
     private static void mapSelect(SelectClause selectClause, StatementSpecRaw raw, EngineImportService engineImportService)
     {
+        if (selectClause == null)
+        {
+            return;
+        }
         SelectClauseSpec spec = new SelectClauseSpec();
         spec.setIsUsingWildcard(selectClause.isWildcard());
         raw.setSelectStreamDirEnum(SelectClauseStreamSelectorEnum.mapFromSODA(selectClause.getStreamSelector()));
@@ -842,7 +898,8 @@ public class StatementSpecMapper
             
             if (stream instanceof ProjectedStream)
             {
-                addViews((ProjectedStream) stream, spec);
+                ProjectedStream projectedStream = (ProjectedStream) stream;
+                spec.getViewSpecs().addAll(mapViews(projectedStream.getViews()));
             }
         }
 
@@ -854,12 +911,24 @@ public class StatementSpecMapper
         }
     }
 
-    private static void addViews(ProjectedStream stream, StreamSpecRaw spec)
+    private static List<ViewSpec> mapViews(List<View> views)
     {
-        for (View view : stream.getViews())
+        List<ViewSpec> viewSpecs = new ArrayList<ViewSpec>();
+        for (View view : views)
         {
-            spec.getViewSpecs().add(new ViewSpec(view.getNamespace(), view.getName(), view.getParameters()));
+            viewSpecs.add(new ViewSpec(view.getNamespace(), view.getName(), view.getParameters()));
         }
+        return viewSpecs;
+    }
+
+    private static List<View> unmapViews(List<ViewSpec> viewSpecs)
+    {
+        List<View> views = new ArrayList<View>();
+        for (ViewSpec viewSpec : viewSpecs)
+        {
+            views.add(View.create(viewSpec.getObjectNamespace(), viewSpec.getObjectName(), viewSpec.getObjectParameters()));
+        }
+        return views;
     }
 
     private static EvalNode mapPatternEvalFlat(PatternExpr eval, EngineImportService engineImportService)

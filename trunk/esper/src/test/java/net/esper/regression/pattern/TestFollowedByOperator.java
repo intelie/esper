@@ -24,6 +24,11 @@ public class TestFollowedByOperator extends TestCase implements SupportBeanConst
         CaseList testCaseList = new CaseList();
         EventExpressionCase testCase = null;
 
+        testCase = new EventExpressionCase("b=" + EVENT_B_CLASS + " -> (d=" + EVENT_D_CLASS + " or not d=" + EVENT_D_CLASS + ")");
+        testCase.add("B1", "b", events.getEvent("B1"), "d", null);
+        testCase.add("D1", "b", events.getEvent("B1"), "d", events.getEvent("D1"));
+        testCaseList.addTest(testCase);
+
         testCase = new EventExpressionCase("b=" + EVENT_B_CLASS + " -> every d=" + EVENT_D_CLASS);
         testCase.add("D1", "b", events.getEvent("B1"), "d", events.getEvent("D1"));
         testCase.add("D2", "b", events.getEvent("B1"), "d", events.getEvent("D2"));

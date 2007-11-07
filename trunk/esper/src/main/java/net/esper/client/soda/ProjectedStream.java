@@ -109,7 +109,11 @@ public abstract class ProjectedStream extends Stream
     public void toEQLStream(StringWriter writer)
     {
         toEQLProjectedStream(writer);
+        toEQLViews(writer, views);
+    }
 
+    protected static void toEQLViews(StringWriter writer, List<View> views)
+    {
         if ((views != null) && (views.size() != 0))
         {
             writer.write('.');

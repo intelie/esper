@@ -89,6 +89,6 @@ public class NamedWindowTailView extends ViewSupport
 
     public Iterator<EventBean> iterator()
     {
-        return null;  // TODO
+        return this.parent.iterator();
     }
 }

@@ -13,7 +13,7 @@ import net.esper.event.EventBean;
 import java.util.HashMap;
 import java.util.Map;
 
-public class TestCreateWindow extends TestCase
+public class TestNamedWindowDataWin extends TestCase
 {
     private EPServiceProvider epService;
     private SupportUpdateListener listenerWindow;
@@ -22,14 +22,6 @@ public class TestCreateWindow extends TestCase
     private SupportUpdateListener listenerStmtThree;
     private SupportUpdateListener listenerStmtDelete;
 
-    // Assert event types
-    // Test batch view - multiple events added/removed at once
-    // Test type already exists and is compatible
-    // Test type already exists and is incompatible: different fields, wrapped or mapped
-    // Test type already exists and is incompatible: Boxed/unboxed
-    // Test same window created twice
-    // Test subqueries
-    // Test statement object model + compile
     // Test remove of named windows
     // Invalid use of filter expression or subview in selecting from a named window, use of patterns
     // test pattern just getting the insert stream
@@ -42,9 +34,8 @@ public class TestCreateWindow extends TestCase
     // test stop/start/stop/destroy of select, delete and create window
     // test delete named window
     // Adding a delete to a already-filled window
-    // Test listener not invoked for delete stmts
     // test performance and coercion
-    // test MT locking/safety
+    // test MT locking/safety of iterators and push
 
     public void setUp()
     {
@@ -71,21 +62,21 @@ public class TestCreateWindow extends TestCase
                         "on " + SupportMarketDataBean.class.getName() + " as s0 delete from MyWindow as s1 where s0.symbol = s1.key");
     }
 
-    public void testWithDeteteFirstAs()
+    public void testWithDeleteFirstAs()
     {
-        tryCreateWindow("create window MyWindow as MyMap",
+        tryCreateWindow("create window MyWindow as select key, value from MyMap",
                         "on " + SupportMarketDataBean.class.getName() + " delete from MyWindow as s1 where symbol = s1.key");
     }
 
-    public void testWithDeteteSecondAs()
+    public void testWithDeleteSecondAs()
     {
         tryCreateWindow("create window MyWindow as MyMap",
                         "on " + SupportMarketDataBean.class.getName() + " as s0 delete from MyWindow where s0.symbol = key");
     }
 
-    public void testWithDeteteNoAs()
+    public void testWithDeleteNoAs()
     {
-        tryCreateWindow("create window MyWindow as MyMap",
+        tryCreateWindow("create window MyWindow as select key as key, value as value from MyMap",
                         "on " + SupportMarketDataBean.class.getName() + " delete from MyWindow where symbol = key");
     }
 
@@ -122,6 +113,7 @@ public class TestCreateWindow extends TestCase
         listenerStmtTwo.reset();
         ArrayAssertionUtil.assertProps(listenerStmtThree.assertOneGetNewAndReset(), fields, new Object[] {"E1", 10L});
         ArrayAssertionUtil.assertProps(listenerWindow.assertOneGetNewAndReset(), fields, new Object[] {"E1", 10L});
+        ArrayAssertionUtil.assertEqualsExactOrder(stmtCreate.iterator(), fields, new Object[][] {{"E1", 20L}});
 
         sendSupportBean("E2", 20L);
         ArrayAssertionUtil.assertProps(listenerStmtOne.assertOneGetNewAndReset(), fields, new Object[] {"E2", 40L});
@@ -158,6 +150,7 @@ public class TestCreateWindow extends TestCase
         assertFalse(listenerStmtOne.isInvoked());
         assertFalse(listenerStmtTwo.isInvoked());
         assertFalse(listenerWindow.isInvoked());
+        assertFalse(listenerStmtDelete.isInvoked());
 
         // send delete event
         sendMarketBean("E2");
@@ -176,6 +169,7 @@ public class TestCreateWindow extends TestCase
         listenerStmtTwo.reset();
         assertFalse(listenerStmtThree.isInvoked());
         ArrayAssertionUtil.assertProps(listenerWindow.assertOneGetOldAndReset(), fields, new Object[] {"E3", 5L});
+        assertFalse(listenerStmtDelete.isInvoked());
 
         stmtSelectOne.destroy();
         stmtSelectTwo.destroy();
@@ -193,6 +187,7 @@ public class TestCreateWindow extends TestCase
         String stmtTextCreate = "create window MyWindow.win:time(10 sec) as MyMap";
         EPStatement stmtCreate = epService.getEPAdministrator().createEQL(stmtTextCreate);
         stmtCreate.addListener(listenerWindow);
+        ArrayAssertionUtil.assertEqualsExactOrder(stmtCreate.iterator(), fields, null);
 
         // create insert into
         String stmtTextInsert = "insert into MyWindow select string as key, longBoxed as value from " + SupportBean.class.getName();
@@ -212,16 +207,19 @@ public class TestCreateWindow extends TestCase
         sendSupportBean("E1", 1L);
         ArrayAssertionUtil.assertProps(listenerWindow.assertOneGetNewAndReset(), fields, new Object[] {"E1", 1L});
         ArrayAssertionUtil.assertProps(listenerStmtOne.assertOneGetNewAndReset(), fields, new Object[] {"E1", 1L});
+        ArrayAssertionUtil.assertEqualsExactOrder(stmtCreate.iterator(), fields, new Object[][] {{"E1", 1L}});
 
         sendTimer(5000);
         sendSupportBean("E2", 2L);
         ArrayAssertionUtil.assertProps(listenerWindow.assertOneGetNewAndReset(), fields, new Object[] {"E2", 2L});
         ArrayAssertionUtil.assertProps(listenerStmtOne.assertOneGetNewAndReset(), fields, new Object[] {"E2", 2L});
+        ArrayAssertionUtil.assertEqualsExactOrder(stmtCreate.iterator(), fields, new Object[][] {{"E1", 1L}, {"E2", 2L}});
 
         sendTimer(10000);
         sendSupportBean("E3", 3L);
         ArrayAssertionUtil.assertProps(listenerWindow.assertOneGetNewAndReset(), fields, new Object[] {"E3", 3L});
         ArrayAssertionUtil.assertProps(listenerStmtOne.assertOneGetNewAndReset(), fields, new Object[] {"E3", 3L});
+        ArrayAssertionUtil.assertEqualsExactOrder(stmtCreate.iterator(), fields, new Object[][] {{"E1", 1L}, {"E2", 2L}, {"E3", 3L}});
 
         // Should push out the window
         sendTimer(10999);
@@ -230,15 +228,18 @@ public class TestCreateWindow extends TestCase
         sendTimer(11000);
         ArrayAssertionUtil.assertProps(listenerWindow.assertOneGetOldAndReset(), fields, new Object[] {"E1", 1L});
         ArrayAssertionUtil.assertProps(listenerStmtOne.assertOneGetOldAndReset(), fields, new Object[] {"E1", 1L});
+        ArrayAssertionUtil.assertEqualsExactOrder(stmtCreate.iterator(), fields, new Object[][] {{"E2", 2L}, {"E3", 3L}});
 
         sendSupportBean("E4", 4L);
         ArrayAssertionUtil.assertProps(listenerWindow.assertOneGetNewAndReset(), fields, new Object[] {"E4", 4L});
         ArrayAssertionUtil.assertProps(listenerStmtOne.assertOneGetNewAndReset(), fields, new Object[] {"E4", 4L});
+        ArrayAssertionUtil.assertEqualsExactOrder(stmtCreate.iterator(), fields, new Object[][] {{"E2", 2L}, {"E3", 3L}, {"E4", 4L}});
 
         // delete E2
         sendMarketBean("E2");
         ArrayAssertionUtil.assertProps(listenerWindow.assertOneGetOldAndReset(), fields, new Object[] {"E2", 2L});
         ArrayAssertionUtil.assertProps(listenerStmtOne.assertOneGetOldAndReset(), fields, new Object[] {"E2", 2L});
+        ArrayAssertionUtil.assertEqualsExactOrder(stmtCreate.iterator(), fields, new Object[][] {{"E3", 3L}, {"E4", 4L}});
 
         // nothing pushed
         sendTimer(15000);
@@ -252,11 +253,13 @@ public class TestCreateWindow extends TestCase
         sendTimer(20000);
         ArrayAssertionUtil.assertProps(listenerWindow.assertOneGetOldAndReset(), fields, new Object[] {"E3", 3L});
         ArrayAssertionUtil.assertProps(listenerStmtOne.assertOneGetOldAndReset(), fields, new Object[] {"E3", 3L});
+        ArrayAssertionUtil.assertEqualsExactOrder(stmtCreate.iterator(), fields, new Object[][] {{"E4", 4L}});
 
         // delete E4
         sendMarketBean("E4");
         ArrayAssertionUtil.assertProps(listenerWindow.assertOneGetOldAndReset(), fields, new Object[] {"E4", 4L});
         ArrayAssertionUtil.assertProps(listenerStmtOne.assertOneGetOldAndReset(), fields, new Object[] {"E4", 4L});
+        ArrayAssertionUtil.assertEqualsExactOrder(stmtCreate.iterator(), fields, null);
 
         sendTimer(100000);
         assertFalse(listenerWindow.isInvoked());
@@ -694,6 +697,20 @@ public class TestCreateWindow extends TestCase
         ArrayAssertionUtil.assertProps(oldData[2], fields, new Object[] {"E4", 4L});
         listenerWindow.reset();
         listenerStmtOne.reset();
+
+        sendSupportBean("E10", 10L);
+        sendSupportBean("E10", 11L);
+        sendMarketBean("E10");
+
+        sendSupportBean("E21", 21L);
+        sendSupportBean("E22", 22L);
+        assertFalse(listenerWindow.isInvoked());
+        assertFalse(listenerStmtOne.isInvoked());
+        sendSupportBean("E23", 23L);
+        oldData = listenerWindow.getLastOldData();
+        newData = listenerWindow.getLastNewData();
+        assertEquals(3, newData.length);
+        assertEquals(3, oldData.length);
     }
 
     public void testSortWindow()
@@ -914,18 +931,36 @@ public class TestCreateWindow extends TestCase
 
     public void testInvalidNoDataWindow()
     {
-        // create window
-        String stmtTextCreate = "create window MyWindow.std:groupby('value').stat:uni('value') as MyMap";
+        assertEquals("Error starting view: Named windows require either no child view, or one or more child views that are data window views [create window MyWindow.std:groupby('value').stat:uni('value') as MyMap]",
+                     tryInvalid("create window MyWindow.std:groupby('value').stat:uni('value') as MyMap"));        
+    }
 
+    public void testAlreadyExists()
+    {
+        epService.getEPAdministrator().createEQL("create window MyWindow as MyMap");
         try
         {
-            epService.getEPAdministrator().createEQL(stmtTextCreate);
+            epService.getEPAdministrator().createEQL("create window MyWindow as MyMap");
             fail();
         }
         catch (EPException ex)
         {
-            assertEquals("Error starting view: Named windows require either no child view, or data window child views and the optional groupby view [create window MyWindow.std:groupby('value').stat:uni('value') as MyMap]", ex.getMessage());
+            assertEquals("Error starting view: A named window by name 'MyWindow' has already been created [create window MyWindow as MyMap]", ex.getMessage());
         }
+    }
+
+    private String tryInvalid(String eql)
+    {
+        try
+        {
+            epService.getEPAdministrator().createEQL(eql);
+            fail();
+        }
+        catch (EPException ex)
+        {
+            return ex.getMessage();
+        }
+        return null;
     }
 
     public void testPriorGroupStats()

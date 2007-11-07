@@ -157,11 +157,18 @@ public class TestMapEventType extends TestCase
         assertTrue(eventType.equals(new MapEventType("", mapTwo, eventAdapterService)));
 
         mapTwo.put("myInt", Integer.class);
-        assertFalse(eventType.equals(new MapEventType("", mapTwo, eventAdapterService)));
+        assertTrue(eventType.equals(new MapEventType("", mapTwo, eventAdapterService)));
         mapTwo.remove("myInt");
         assertFalse(eventType.equals(new MapEventType("", mapTwo, eventAdapterService)));
         mapTwo.put("myInt", int.class);
         assertTrue(eventType.equals(new MapEventType("", mapTwo, eventAdapterService)));
+
+        // Test boxed and primitive compatible
+        Map<String, Class> mapOne = new LinkedHashMap<String, Class>();
+        mapOne.put("myInt", int.class);
+        mapTwo = new LinkedHashMap<String, Class>();
+        mapTwo.put("myInt", Integer.class);
+        assertEquals(new MapEventType("T1", mapOne, eventAdapterService), new MapEventType("T1", mapTwo, eventAdapterService));
     }
 
     public void testGetFromMap()

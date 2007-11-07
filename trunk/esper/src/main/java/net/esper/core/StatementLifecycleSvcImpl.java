@@ -6,7 +6,10 @@ import net.esper.collection.RefCountedMap;
 import net.esper.eql.expression.ExprNodeSubselectVisitor;
 import net.esper.eql.expression.ExprSubselectNode;
 import net.esper.eql.expression.ExprValidationException;
+import net.esper.eql.expression.ExprNode;
 import net.esper.eql.spec.*;
+import net.esper.eql.core.StreamTypeService;
+import net.esper.eql.core.StreamTypeServiceImpl;
 import net.esper.event.EventType;
 import net.esper.event.MapEventType;
 import net.esper.pattern.EvalFilterNode;
@@ -23,10 +26,7 @@ import net.esper.filter.FilterSpecParam;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Provides statement lifecycle services.
@@ -699,35 +699,23 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
             throw new EPStatementException(text + ":" + ex.getClass().getName() + ":" + ex.getMessage(), eqlStatement);
         }
 
-        // The create window command:
-        //      create window windowName[.window_view_list] as [select properties from] type
-        //
-        // This section expected s single FilterStreamSpecCompiled representing the selected type.
-        // It creates a new event type representing the window type and a sets the type selected on the filter stream spec.
+        // for create window statements, we switch the filter to a new event type
         if (spec.getCreateWindowDesc() != null)
         {
-            FilterStreamSpecCompiled filterStreamSpec = (FilterStreamSpecCompiled) compiledStreams.get(0);
-
-            // Create Map or Wrapper event type from the select clause of the window.
-            // If no columns selected, simply create a wrapper type
-            if (spec.getSelectClauseSpec().getSelectList().size() == 0)
+            try
             {
-                String typeName = spec.getCreateWindowDesc().getWindowName();
-                EventType prototypeType = filterStreamSpec.getFilterSpec().getEventType();
+                FilterStreamSpecCompiled filterStreamSpec = (FilterStreamSpecCompiled) compiledStreams.get(0);
+                EventType selectFromType = filterStreamSpec.getFilterSpec().getEventType();
+                FilterSpecCompiled newFilter = handleCreateWindow(selectFromType, spec, eqlStatement, statementContext);
+                filterStreamSpec.setFilterSpec(newFilter);
+                filterStreamSpec.getViewSpecs().addAll(spec.getCreateWindowDesc().getViewSpecs());
 
-                // TODO: mapping of types should be easier
-                if (prototypeType instanceof MapEventType)
-                {
-                    MapEventType mapType = (MapEventType) prototypeType;
-                    EventType newType = statementContext.getEventAdapterService().addMapType(typeName, mapType.getTypes());
-                    filterStreamSpec.setFilterSpec(new FilterSpecCompiled(newType, new ArrayList<FilterSpecParam>()));
-                }
-                else
-                {
-                    Map<String, Class> addOnTypes = new HashMap<String, Class>();
-                    EventType newType = statementContext.getEventAdapterService().addWrapperType(typeName, filterStreamSpec.getFilterSpec().getEventType(), addOnTypes);
-                    filterStreamSpec.setFilterSpec(new FilterSpecCompiled(newType, new ArrayList<FilterSpecParam>()));
-                }
+                // clear the select clause, there is none as the views post directly to consuming statements via dispatch
+                spec.getSelectClauseSpec().getSelectList().clear();
+            }
+            catch (ExprValidationException e)
+            {
+                throw new EPStatementException(e.getMessage(), eqlStatement);
             }
         }
 
@@ -764,5 +752,95 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
                 spec.getOrderByList(),
                 visitor.getSubselects()
                 );
-    }    
+    }
+
+    // The create window command:
+    //      create window windowName[.window_view_list] as [select properties from] type
+    //
+    // This section expected s single FilterStreamSpecCompiled representing the selected type.
+    // It creates a new event type representing the window type and a sets the type selected on the filter stream spec.
+    private static FilterSpecCompiled handleCreateWindow(EventType selectFromType,
+                                           StatementSpecRaw spec,
+                                           String eqlStatement,
+                                           StatementContext statementContext)
+            throws ExprValidationException
+    {
+        String typeName = spec.getCreateWindowDesc().getWindowName();
+        EventType targetType = null;
+
+        // Validate the select expressions which consists of properties only
+        List<SelectExprElementCompiledSpec> select = compileLimitedSelect(spec.getSelectClauseSpec(), eqlStatement, selectFromType);
+
+        // Create Map or Wrapper event type from the select clause of the window.
+        // If no columns selected, simply create a wrapper type
+        // Build a list of properties
+        Map<String, Class> properties = new HashMap<String, Class>();
+        for (SelectExprElementCompiledSpec selectElement : select)
+        {
+            properties.put(selectElement.getAssignedName(), selectElement.getSelectExpression().getType());
+        }
+
+        // Create Map or Wrapper event type from the select clause of the window.
+        // If no columns selected, simply create a wrapper type
+        boolean isWildcard = spec.getSelectClauseSpec().isUsingWildcard();
+        if (isWildcard)
+        {
+            targetType = statementContext.getEventAdapterService().addWrapperType(typeName, selectFromType, properties);
+        }
+        else
+        {
+            // Some columns selected, use the types of the columns
+            if (spec.getSelectClauseSpec().getSelectList().size() > 0)
+            {
+                targetType = statementContext.getEventAdapterService().addMapType(typeName, properties);
+            }
+            else
+            {
+                // No columns selected, no wildcard, use the type as is or as a wrapped type
+                if (selectFromType instanceof MapEventType)
+                {
+                    MapEventType mapType = (MapEventType) selectFromType;
+                    targetType = statementContext.getEventAdapterService().addMapType(typeName, mapType.getTypes());
+                }
+                else
+                {
+                    Map<String, Class> addOnTypes = new HashMap<String, Class>();
+                    targetType = statementContext.getEventAdapterService().addWrapperType(typeName, selectFromType, addOnTypes);
+                }
+            }
+        }
+
+        return new FilterSpecCompiled(targetType, new ArrayList<FilterSpecParam>());
+    }
+
+    private static List<SelectExprElementCompiledSpec> compileLimitedSelect(SelectClauseSpec spec, String eqlStatement, EventType singleType)
+    {
+        List<SelectExprElementCompiledSpec> selectProps = new LinkedList<SelectExprElementCompiledSpec>();
+        StreamTypeService streams = new StreamTypeServiceImpl(new EventType[] {singleType}, new String[] {"stream_0"});
+
+        for (SelectExprElementRawSpec raw : spec.getSelectList())
+        {
+            ExprNode validatedExpression = null;
+            try
+            {
+                validatedExpression = raw.getSelectExpression().getValidatedSubtree(streams, null, null, null);
+            }
+            catch (ExprValidationException e)
+            {
+                throw new EPStatementException(e.getMessage(), eqlStatement);
+            }
+
+            // determine an element name if none assigned
+            String asName = raw.getOptionalAsName();
+            if (asName == null)
+            {
+                asName = validatedExpression.toExpressionString();
+            }
+
+            SelectExprElementCompiledSpec validatedElement = new SelectExprElementCompiledSpec(validatedExpression, asName);
+            selectProps.add(validatedElement);
+        }
+
+        return selectProps;
+    }
 }

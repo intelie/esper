@@ -192,7 +192,7 @@ public class EPStatementStartMethod
             // request remove stream capability from views
             if (!viewResourceDelegate.requestCapability(0, new RemoveStreamViewCapability(), null))
             {
-                throw new ExprValidationException("Named windows require either no child view, or data window child views and the optional groupby view");
+                throw new ExprValidationException("Named windows require either no child view, or one or more child views that are data window views");
             }
         }
 
@@ -493,7 +493,37 @@ public class EPStatementStartMethod
         {
             StatementSpecCompiled statementSpec = subselect.getStatementSpecCompiled();
             SelectClauseSpec selectClauseSpec = statementSpec.getSelectClauseSpec();
-            FilterStreamSpecCompiled filterStreamSpec = (FilterStreamSpecCompiled) statementSpec.getStreamSpecs().get(0);
+
+            if (statementSpec.getStreamSpecs().get(0) instanceof FilterStreamSpecCompiled)
+            {
+                FilterStreamSpecCompiled filterStreamSpec = (FilterStreamSpecCompiled) statementSpec.getStreamSpecs().get(0);
+
+                // A child view is required to limit the stream
+                if (filterStreamSpec.getViewSpecs().size() == 0)
+                {
+                    throw new ExprValidationException("Subqueries require one or more views to limit the stream, consider declaring a length or time window");
+                }
+
+                subselectStreamNumber++;
+
+                // Register filter, create view factories
+                Pair<EventStream, ManagedLock> streamLockPair = services.getStreamService().createStream(filterStreamSpec.getFilterSpec(),
+                        services.getFilterService(), statementContext.getEpStatementHandle(), isJoin);
+                Viewable viewable = streamLockPair.getFirst();
+                ViewFactoryChain viewFactoryChain = services.getViewService().createFactories(subselectStreamNumber, viewable.getEventType(), filterStreamSpec.getViewSpecs(), statementContext);
+                subselect.setRawEventType(viewFactoryChain.getEventType());
+
+                // Add lookup to list, for later starts
+                subSelectStreamDesc.add(subselect, subselectStreamNumber, viewable, viewFactoryChain);
+            }
+            else
+            {
+                NamedWindowConsumerStreamSpec namedSpec = (NamedWindowConsumerStreamSpec) statementSpec.getStreamSpecs().get(0);
+                NamedWindowProcessor processor = services.getNamedWindowService().getProcessor(namedSpec.getWindowName());
+                NamedWindowConsumerView consumerView = processor.addConsumer(statementContext.getEpStatementHandle(), statementContext.getStatementStopService());
+                ViewFactoryChain viewFactoryChain = services.getViewService().createFactories(0, consumerView.getEventType(), namedSpec.getViewSpecs(), statementContext);
+                subSelectStreamDesc.add(subselect, subselectStreamNumber, consumerView, viewFactoryChain);
+            }
 
             // no aggregation functions allowed in select
             if (selectClauseSpec.getSelectList().size() > 0)
@@ -517,24 +547,6 @@ public class EPStatementStartMethod
                     throw new ExprValidationException("Aggregation functions are not supported within subqueries, consider using insert-into instead");
                 }
             }
-
-            // A child view is required to limit the stream
-            if (filterStreamSpec.getViewSpecs().size() == 0)
-            {
-                throw new ExprValidationException("Subqueries require one or more views to limit the stream, consider declaring a length or time window");
-            }
-
-            subselectStreamNumber++;
-
-            // Register filter, create view factories
-            Pair<EventStream, ManagedLock> streamLockPair = services.getStreamService().createStream(filterStreamSpec.getFilterSpec(),
-                    services.getFilterService(), statementContext.getEpStatementHandle(), isJoin);
-            Viewable viewable = streamLockPair.getFirst();
-            ViewFactoryChain viewFactoryChain = services.getViewService().createFactories(subselectStreamNumber, viewable.getEventType(), filterStreamSpec.getViewSpecs(), statementContext);
-            subselect.setRawEventType(viewFactoryChain.getEventType());
-
-            // Add lookup to list, for later starts
-            subSelectStreamDesc.add(subselect, subselectStreamNumber, viewable, viewFactoryChain);
         }
 
         return subSelectStreamDesc;
@@ -546,7 +558,7 @@ public class EPStatementStartMethod
         for (ExprSubselectNode subselect : statementSpec.getSubSelectExpressions())
         {
             StatementSpecCompiled statementSpec = subselect.getStatementSpecCompiled();
-            FilterStreamSpecCompiled filterStreamSpec = (FilterStreamSpecCompiled) statementSpec.getStreamSpecs().get(0);
+            StreamSpecCompiled filterStreamSpec = statementSpec.getStreamSpecs().get(0);
             ViewFactoryChain viewFactoryChain = subSelectStreamDesc.getViewFactoryChain(subselect);
             EventType eventType = viewFactoryChain.getEventType();
 

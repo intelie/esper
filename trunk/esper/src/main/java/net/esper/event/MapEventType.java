@@ -1,6 +1,7 @@
 package net.esper.event;
 
 import net.esper.event.property.*;
+import net.esper.util.JavaClassHelper;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -352,7 +353,9 @@ public class MapEventType implements EventType
             {
                 continue;
             }
-            if (!otherClass.equals(thisClass))
+            Class boxedOther = JavaClassHelper.getBoxedType(otherClass);
+            Class boxedThis = JavaClassHelper.getBoxedType(thisClass);
+            if (!boxedOther.equals(boxedThis))
             {
                 return false;
             }

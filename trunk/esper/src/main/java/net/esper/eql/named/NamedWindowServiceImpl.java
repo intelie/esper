@@ -3,6 +3,7 @@ package net.esper.eql.named;
 import net.esper.core.EPStatementHandle;
 import net.esper.event.EventBean;
 import net.esper.event.EventType;
+import net.esper.view.ViewProcessingException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -41,11 +42,11 @@ public class NamedWindowServiceImpl implements NamedWindowService
         return processor;
     }
 
-    public NamedWindowProcessor addProcessor(String name, EventType eventType)
+    public NamedWindowProcessor addProcessor(String name, EventType eventType) throws ViewProcessingException
     {
         if (processors.containsKey(name))
         {
-            throw new RuntimeException("XXX"); // TODO
+            throw new ViewProcessingException("A named window by name '" + name + "' has already been created");
         }
 
         NamedWindowProcessor processor = new NamedWindowProcessor(this, name, eventType);

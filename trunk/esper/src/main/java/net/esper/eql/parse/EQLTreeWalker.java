@@ -380,11 +380,11 @@ public class EQLTreeWalker extends EQLBaseWalker
             throw new ASTWalkException("Event type AST not found");
         }
 
-        CreateWindowDesc desc = new CreateWindowDesc(windowName);
+        CreateWindowDesc desc = new CreateWindowDesc(windowName, viewSpecs);
         statementSpec.setCreateWindowDesc(desc);
 
         FilterSpecRaw rawFilterSpec = new FilterSpecRaw(eventName, new LinkedList<ExprNode>());
-        FilterStreamSpecRaw streamSpec = new FilterStreamSpecRaw(rawFilterSpec, viewSpecs, null);
+        FilterStreamSpecRaw streamSpec = new FilterStreamSpecRaw(rawFilterSpec, new LinkedList<ViewSpec>(), null);
         statementSpec.getStreamSpecs().add(streamSpec);
     }
 

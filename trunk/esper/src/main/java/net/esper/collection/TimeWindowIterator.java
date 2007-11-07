@@ -27,7 +27,12 @@ public final class TimeWindowIterator implements Iterator<EventBean>
         keyIterator = window.iterator();
         if (keyIterator.hasNext())
         {
-            Pair<Long, LinkedList<EventBean>> pair = (Pair<Long, LinkedList<EventBean>>) keyIterator.next();
+            // Position to the next filled list
+            Pair<Long, LinkedList<EventBean>> pair = keyIterator.next();
+            while((pair.getSecond().isEmpty()) && (keyIterator.hasNext()))
+            {
+                pair = keyIterator.next();
+            }
             currentListIterator = pair.getSecond().iterator();
         }
     }
@@ -46,7 +51,12 @@ public final class TimeWindowIterator implements Iterator<EventBean>
             currentListIterator = null;
             if (keyIterator.hasNext())
             {
-                Pair<Long, LinkedList<EventBean>> pair = (Pair<Long, LinkedList<EventBean>>) keyIterator.next();
+                // Position to the next filled list
+                Pair<Long, LinkedList<EventBean>> pair = keyIterator.next();
+                while((pair.getSecond().isEmpty()) && (keyIterator.hasNext()))
+                {
+                    pair = keyIterator.next();
+                }
                 currentListIterator = pair.getSecond().iterator();
             }
         }

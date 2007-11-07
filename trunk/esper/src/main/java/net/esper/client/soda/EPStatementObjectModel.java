@@ -44,6 +44,8 @@ public class EPStatementObjectModel implements Serializable
 {
     private static final long serialVersionUID = 0L;
 
+    private CreateWindowClause createWindow;
+    private OnDeleteClause onDelete;
     private InsertIntoClause insertInto;
     private SelectClause selectClause;
     private FromClause fromClause;
@@ -231,6 +233,23 @@ public class EPStatementObjectModel implements Serializable
     {
         StringWriter writer = new StringWriter();
 
+        if (createWindow != null)
+        {
+            createWindow.toEQL(writer);
+            writer.write(" as ");
+            selectClause.toEQL(writer);
+            fromClause.toEQL(writer);
+            return writer.toString();
+        }
+
+        if (onDelete != null)
+        {
+            writer.write("on ");
+            fromClause.getStreams().get(0).toEQL(writer);
+            onDelete.toEQL(writer);
+            return writer.toString();
+        }
+
         if (selectClause == null)
         {
             throw new IllegalStateException("Select-clause has not been defined");
@@ -273,5 +292,25 @@ public class EPStatementObjectModel implements Serializable
         }
 
         return writer.toString();
+    }
+
+    public CreateWindowClause getCreateWindow()
+    {
+        return createWindow;
+    }
+
+    public void setCreateWindow(CreateWindowClause createWindow)
+    {
+        this.createWindow = createWindow;
+    }
+
+    public OnDeleteClause getOnDelete()
+    {
+        return onDelete;
+    }
+
+    public void setOnDelete(OnDeleteClause onDelete)
+    {
+        this.onDelete = onDelete;
     }
 }
