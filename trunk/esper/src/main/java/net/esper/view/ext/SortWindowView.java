@@ -8,7 +8,7 @@ import java.util.*;
 import net.esper.util.MultiKeyComparator;
 import net.esper.util.ExecutionPathDebugLog;
 import net.esper.view.*;
-import net.esper.view.window.DataWindowView;
+import net.esper.view.DataWindowView;
 import net.esper.collection.MultiKeyUntyped;
 import net.esper.event.EventPropertyGetter;
 import net.esper.event.EventType;
@@ -226,7 +226,7 @@ public final class SortWindowView extends ViewSupport implements DataWindowView,
         LinkedList<EventBean> listOfBeans = sortedEvents.get(key);
         if (listOfBeans != null)
         {
-            listOfBeans.addFirst(bean); // Add to the front of the list as the second sort critertial is ascending arrival order
+            listOfBeans.add(bean);
             return;
         }
 

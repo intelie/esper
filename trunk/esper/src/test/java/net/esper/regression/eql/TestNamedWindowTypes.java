@@ -43,7 +43,7 @@ public class TestNamedWindowTypes extends TestCase
     public void testNoWildcardWithAs()
     {
         // create window
-        String stmtTextCreate = "create window MyWindow as select string as a, longPrimitive as b, longBoxed as c from " + SupportBean.class.getName();
+        String stmtTextCreate = "create window MyWindow.win:keepall() as select string as a, longPrimitive as b, longBoxed as c from " + SupportBean.class.getName();
         EPStatement stmtCreate = epService.getEPAdministrator().createEQL(stmtTextCreate);
         stmtCreate.addListener(listenerWindow);
         ArrayAssertionUtil.assertEqualsAnyOrder(stmtCreate.getEventType().getPropertyNames(), new String[] {"a", "b", "c"});
@@ -92,7 +92,7 @@ public class TestNamedWindowTypes extends TestCase
     public void testNoWildcardNoAs()
     {
         // create window
-        String stmtTextCreate = "create window MyWindow as select string, longPrimitive, longBoxed from " + SupportBean.class.getName();
+        String stmtTextCreate = "create window MyWindow.win:keepall() as select string, longPrimitive, longBoxed from " + SupportBean.class.getName();
         EPStatement stmtCreate = epService.getEPAdministrator().createEQL(stmtTextCreate);
         stmtCreate.addListener(listenerWindow);
 
@@ -128,7 +128,7 @@ public class TestNamedWindowTypes extends TestCase
     public void testWildcardNoFields()
     {
         // create window
-        String stmtTextCreate = "create window MyWindow as select * from " + SupportBean_A.class.getName();
+        String stmtTextCreate = "create window MyWindow.win:keepall() as select * from " + SupportBean_A.class.getName();
         EPStatement stmtCreate = epService.getEPAdministrator().createEQL(stmtTextCreate);
         stmtCreate.addListener(listenerWindow);
 
@@ -150,7 +150,7 @@ public class TestNamedWindowTypes extends TestCase
     public void testNoSpecificationBean()
     {
         // create window
-        String stmtTextCreate = "create window MyWindow as " + SupportBean_A.class.getName();
+        String stmtTextCreate = "create window MyWindow.win:keepall() as " + SupportBean_A.class.getName();
         EPStatement stmtCreate = epService.getEPAdministrator().createEQL(stmtTextCreate);
         stmtCreate.addListener(listenerWindow);
 
@@ -172,7 +172,7 @@ public class TestNamedWindowTypes extends TestCase
     public void testWildcardWithFields()
     {
         // create window
-        String stmtTextCreate = "create window MyWindow as select *, id as myid from " + SupportBean_A.class.getName();
+        String stmtTextCreate = "create window MyWindow.win:keepall() as select *, id as myid from " + SupportBean_A.class.getName();
         EPStatement stmtCreate = epService.getEPAdministrator().createEQL(stmtTextCreate);
         stmtCreate.addListener(listenerWindow);
 

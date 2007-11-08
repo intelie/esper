@@ -1,6 +1,4 @@
-package net.esper.view.window;
-
-import net.esper.view.View;
+package net.esper.view;
 
 /**
  * Tag interface for data window views. Data window views follow the view interface but keep a window over the
@@ -14,7 +12,7 @@ import net.esper.view.View;
  * They publish the data that expires out of the window (for length or time reasons or other reasons) as old data to
  * their child views.
  * <p>
- * They do not change event type compared to their parent view.
+ * They do not change event type compared to their parent view, since they only hold events temporarily.
  * <p>
  * They remove the data they receive as old data from their parent view out of the window and report the data
  * removed as old data to child views (this is an optional capability for performance reasons).

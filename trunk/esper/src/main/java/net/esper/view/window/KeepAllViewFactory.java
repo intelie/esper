@@ -4,54 +4,28 @@ import net.esper.core.StatementContext;
 import net.esper.eql.core.ViewResourceCallback;
 import net.esper.eql.named.RemoveStreamViewCapability;
 import net.esper.event.EventType;
-import net.esper.util.JavaClassHelper;
 import net.esper.view.*;
 
 import java.util.List;
 
 /**
- * Factory for {@link LengthWindowView}. 
+ * Factory for {@link net.esper.view.window.KeepAllView}.
  */
-public class LengthWindowViewFactory implements DataWindowViewFactory
+public class KeepAllViewFactory implements DataWindowViewFactory
 {
-    /**
-     * Size of length window.
-     */
-    protected int size;
-
     /**
      * The access into the data window.
      */
     protected RandomAccessByIndexGetter randomAccessGetterImpl;
 
-    protected boolean isRemoveStreamHandling;
-
     private EventType eventType;
 
     public void setViewParameters(ViewFactoryContext viewFactoryContext, List<Object> viewParameters) throws ViewParameterException
     {
-        String errorMessage = "Length window view requires a single integer-type parameter";
-        if (viewParameters.size() != 1)
+        String errorMessage = "Keep-all data window view requires an empty parameter list";
+        if (viewParameters.size() != 0)
         {
             throw new ViewParameterException(errorMessage);
-        }
-
-        Object parameter = viewParameters.get(0);
-        if (!(parameter instanceof Number))
-        {
-            throw new ViewParameterException(errorMessage);
-        }
-        Number numParam = (Number) parameter;
-        if ( (JavaClassHelper.isFloatingPointNumber(numParam)) ||
-             (numParam instanceof Long))
-        {
-            throw new ViewParameterException(errorMessage);
-        }
-
-        size =  numParam.intValue();
-        if (size <= 0)
-        {
-            throw new ViewParameterException("Length window requires a positive number");
         }
     }
 
@@ -66,14 +40,7 @@ public class LengthWindowViewFactory implements DataWindowViewFactory
         {
             return true;
         }
-        if (viewCapability instanceof RemoveStreamViewCapability)
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
+        return viewCapability instanceof RemoveStreamViewCapability;
     }
 
     public void setProvideCapability(ViewCapability viewCapability, ViewResourceCallback resourceCallback)
@@ -84,7 +51,6 @@ public class LengthWindowViewFactory implements DataWindowViewFactory
         }
         if (viewCapability instanceof RemoveStreamViewCapability)
         {
-            isRemoveStreamHandling = true;
             return;
         }
         if (randomAccessGetterImpl == null)
@@ -104,14 +70,7 @@ public class LengthWindowViewFactory implements DataWindowViewFactory
             randomAccessGetterImpl.updated(randomAccess);
         }
 
-        if (isRemoveStreamHandling)
-        {
-            return new LengthWindowViewRStream(this, size);
-        }
-        else
-        {
-            return new LengthWindowView(this, size, randomAccess);
-        }
+        return new KeepAllView(this, randomAccess);
     }
 
     public EventType getEventType()
@@ -121,16 +80,12 @@ public class LengthWindowViewFactory implements DataWindowViewFactory
 
     public boolean canReuse(View view)
     {
-        if (!(view instanceof LengthWindowView))
+        if (!(view instanceof KeepAllView))
         {
             return false;
         }
 
-        LengthWindowView myView = (LengthWindowView) view;
-        if (myView.getSize() != size)
-        {
-            return false;
-        }
+        KeepAllView myView = (KeepAllView) view;
         return myView.isEmpty();
     }
 }

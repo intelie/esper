@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * Factory for {@link net.esper.view.window.TimeBatchView}.
  */
-public class LengthBatchViewFactory implements ViewFactory
+public class LengthBatchViewFactory implements DataWindowViewFactory
 {
     /**
      * The length window size.

@@ -14,7 +14,7 @@ import java.util.List;
 /**
  * Factory for views for time-ordering events.
  */
-public class TimeOrderViewFactory implements ViewFactory
+public class TimeOrderViewFactory implements DataWindowViewFactory
 {
     /**
      * The timestamp field name.

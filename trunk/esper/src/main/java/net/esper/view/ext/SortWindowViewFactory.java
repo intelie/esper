@@ -14,7 +14,7 @@ import java.util.List;
 /**
  * Factory for sort window views.
  */
-public class SortWindowViewFactory implements ViewFactory
+public class SortWindowViewFactory implements DataWindowViewFactory
 {
     /**
      * The sort-by field names.

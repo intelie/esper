@@ -30,7 +30,7 @@ public class TestViewFactoryDelegateImpl extends TestCase
         delegate = new ViewResourceDelegateImpl(factories, null);
     }
 
-    public void testRequest()
+    public void testRequest() throws Exception
     {
         ViewResourceCallback callback = new ViewResourceCallback() {
 

@@ -3,6 +3,7 @@ package net.esper.view.std;
 import net.esper.view.*;
 import net.esper.event.EventType;
 import net.esper.eql.core.ViewResourceCallback;
+import net.esper.eql.named.RemoveStreamViewCapability;
 import net.esper.core.StatementContext;
 
 import java.util.List;
@@ -10,7 +11,7 @@ import java.util.List;
 /**
  * Factory for {@link LastElementView} instances.
  */
-public class LastElementViewFactory implements ViewFactory
+public class LastElementViewFactory implements DataWindowViewFactory
 {
     private EventType eventType;
 
@@ -30,11 +31,19 @@ public class LastElementViewFactory implements ViewFactory
 
     public boolean canProvideCapability(ViewCapability viewCapability)
     {
+        if (viewCapability instanceof RemoveStreamViewCapability)
+        {
+            return true;
+        }
         return false;
     }
 
     public void setProvideCapability(ViewCapability viewCapability, ViewResourceCallback resourceCallback)
     {
+        if (viewCapability instanceof RemoveStreamViewCapability)
+        {
+            return;
+        }
         throw new UnsupportedOperationException("View capability " + viewCapability.getClass().getSimpleName() + " not supported");
     }
 

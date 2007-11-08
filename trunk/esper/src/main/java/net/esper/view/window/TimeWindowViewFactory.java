@@ -13,7 +13,7 @@ import java.util.List;
 /**
  * Factory for {@link TimeWindowView}. 
  */
-public class TimeWindowViewFactory implements ViewFactory
+public class TimeWindowViewFactory implements DataWindowViewFactory
 {
     /**
      * Number of msec before expiry.

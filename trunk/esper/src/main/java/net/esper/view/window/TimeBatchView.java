@@ -12,6 +12,7 @@ import net.esper.schedule.ScheduleSlot;
 import net.esper.view.CloneableView;
 import net.esper.view.View;
 import net.esper.view.ViewSupport;
+import net.esper.view.DataWindowView;
 import net.esper.util.ExecutionPathDebugLog;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

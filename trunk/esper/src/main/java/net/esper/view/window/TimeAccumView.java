@@ -3,6 +3,7 @@ package net.esper.view.window;
 import net.esper.view.ViewSupport;
 import net.esper.view.CloneableView;
 import net.esper.view.View;
+import net.esper.view.DataWindowView;
 import net.esper.core.StatementContext;
 import net.esper.core.ExtensionServicesContext;
 import net.esper.core.EPStatementHandleCallback;

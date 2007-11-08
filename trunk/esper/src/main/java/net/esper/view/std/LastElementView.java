@@ -1,15 +1,15 @@
 package net.esper.view.std;
 
-import java.util.Iterator;
-import java.util.LinkedList;
-
-import net.esper.event.EventType;
+import net.esper.collection.OneEventLinkedList;
+import net.esper.collection.SingleEventIterator;
+import net.esper.core.StatementContext;
 import net.esper.event.EventBean;
-import net.esper.view.ViewSupport;
+import net.esper.event.EventType;
 import net.esper.view.CloneableView;
 import net.esper.view.View;
-import net.esper.core.StatementContext;
-import net.esper.collection.SingleEventIterator;
+import net.esper.view.ViewSupport;
+
+import java.util.Iterator;
 
 /**
  * This view is a very simple view presenting the last event posted by the parent view to any subviews.
@@ -51,30 +51,51 @@ public class LastElementView extends ViewSupport implements CloneableView
 
     public void update(EventBean[] newData, EventBean[] oldData)
     {
-        LinkedList<EventBean> oldDataToPost = new LinkedList<EventBean>();
+        OneEventLinkedList oldDataToPost = null;
 
         if ((newData != null) && (newData.length != 0))
         {
             if (lastEvent != null)
             {
+                oldDataToPost = new OneEventLinkedList();
                 oldDataToPost.add(lastEvent);
             }
             if (newData.length > 1)
             {
                 for (int i = 0; i < newData.length - 1; i++)
                 {
+                    if (oldDataToPost == null)
+                    {
+                        oldDataToPost = new OneEventLinkedList();
+                    }
                     oldDataToPost.add(newData[i]);
                 }
             }
             lastEvent = newData[newData.length - 1];
         }
 
+        if (oldData != null)
+        {
+            for (int i = 0; i < oldData.length; i++)
+            {
+                if (oldData[i].equals(lastEvent))
+                {
+                    if (oldDataToPost == null)
+                    {
+                        oldDataToPost = new OneEventLinkedList();
+                    }
+                    oldDataToPost.add(oldData[i]);
+                    lastEvent = null;
+                }
+            }
+        }
+
         // If there are child views, fireStatementStopped update method
         if (this.hasViews())
         {
-            if (!oldDataToPost.isEmpty())
+            if ((oldDataToPost != null) && (!oldDataToPost.isEmpty()))
             {
-                updateChildren(newData, oldDataToPost.toArray(new EventBean[0]));
+                updateChildren(newData, oldDataToPost.toArray());
             }
             else
             {

@@ -47,6 +47,11 @@ public enum ViewEnum
     EXT_TIMED_WINDOW("win", "ext_timed", ExternallyTimedWindowViewFactory.class, null),
 
     /**
+     * Keep-all data window.
+     */
+    KEEPALL_WINDOW("win", "keepall", KeepAllViewFactory.class, null),
+
+    /**
      * Size view.
      */
     SIZE("std", "size", SizeViewFactory.class, null),

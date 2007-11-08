@@ -10,6 +10,7 @@ import net.esper.eql.expression.ExprNode;
 import net.esper.eql.spec.*;
 import net.esper.eql.core.StreamTypeService;
 import net.esper.eql.core.StreamTypeServiceImpl;
+import net.esper.eql.named.NamedWindowService;
 import net.esper.event.EventType;
 import net.esper.event.MapEventType;
 import net.esper.pattern.EvalFilterNode;
@@ -708,6 +709,12 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
                 EventType selectFromType = filterStreamSpec.getFilterSpec().getEventType();
                 FilterSpecCompiled newFilter = handleCreateWindow(selectFromType, spec, eqlStatement, statementContext);
                 filterStreamSpec.setFilterSpec(newFilter);
+
+                // view must be non-empty list
+                if (spec.getCreateWindowDesc().getViewSpecs().isEmpty())
+                {
+                    throw new ExprValidationException(NamedWindowService.ERROR_MSG_DATAWINDOWS);
+                }
                 filterStreamSpec.getViewSpecs().addAll(spec.getCreateWindowDesc().getViewSpecs());
 
                 // clear the select clause, there is none as the views post directly to consuming statements via dispatch

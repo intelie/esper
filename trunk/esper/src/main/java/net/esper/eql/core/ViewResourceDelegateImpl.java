@@ -4,6 +4,7 @@ import net.esper.view.ViewFactoryChain;
 import net.esper.view.ViewFactory;
 import net.esper.view.ViewCapability;
 import net.esper.core.StatementContext;
+import net.esper.eql.expression.ExprValidationException;
 
 /**
  * Coordinates between view factories and requested resource (by expressions) the
@@ -26,6 +27,7 @@ public class ViewResourceDelegateImpl implements ViewResourceDelegate
     }
 
     public boolean requestCapability(int streamNumber, ViewCapability requestedCabability, ViewResourceCallback resourceCallback)
+            throws ExprValidationException
     {
         ViewFactoryChain factories = viewFactories[streamNumber];
 

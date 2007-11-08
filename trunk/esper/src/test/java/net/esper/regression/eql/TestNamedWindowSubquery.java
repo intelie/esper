@@ -40,7 +40,7 @@ public class TestNamedWindowSubquery extends TestCase
     public void testSubquery()
     {
         // create window
-        String stmtTextCreate = "create window MyWindow as select string as a, longPrimitive as b, longBoxed as c from " + SupportBean.class.getName();
+        String stmtTextCreate = "create window MyWindow.win:keepall() as select string as a, longPrimitive as b, longBoxed as c from " + SupportBean.class.getName();
         EPStatement stmtCreate = epService.getEPAdministrator().createEQL(stmtTextCreate);
         stmtCreate.addListener(listenerWindow);
 

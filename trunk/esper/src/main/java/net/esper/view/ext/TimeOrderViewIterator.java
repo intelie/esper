@@ -2,6 +2,7 @@ package net.esper.view.ext;
 
 import net.esper.event.EventBean;
 import net.esper.collection.MultiKeyUntyped;
+import net.esper.collection.Pair;
 
 import java.util.*;
 
@@ -25,8 +26,15 @@ public final class TimeOrderViewIterator implements Iterator<EventBean>
         keyIterator = window.keySet().iterator();
         if (keyIterator.hasNext())
         {
-            Long initialKey = keyIterator.next();
-            currentListIterator = window.get(initialKey).iterator();
+            Long key = keyIterator.next();
+
+            ArrayList<EventBean> list = window.get(key);
+            while((list.isEmpty()) && (keyIterator.hasNext()))
+            {
+                key = keyIterator.next();
+                list = window.get(key);
+            }
+            currentListIterator = list.iterator();
         }
     }
 
@@ -44,8 +52,15 @@ public final class TimeOrderViewIterator implements Iterator<EventBean>
             currentListIterator = null;
             if (keyIterator.hasNext())
             {
-                Long nextKey = keyIterator.next();
-                currentListIterator = window.get(nextKey).iterator();
+                Long key = keyIterator.next();
+
+                ArrayList<EventBean> list = window.get(key);
+                while((list.isEmpty()) && (keyIterator.hasNext()))
+                {
+                    key = keyIterator.next();
+                    list = window.get(key);
+                }
+                currentListIterator = list.iterator();
             }
         }
 

@@ -156,6 +156,10 @@ public class EPStatementStartMethod
                 NamedWindowConsumerView consumerView = processor.addConsumer(statementContext.getEpStatementHandle(), statementContext.getStatementStopService());
                 eventStreamParentViewable[i] = consumerView;
                 unmaterializedViewChain[i] = services.getViewService().createFactories(i, consumerView.getEventType(), namedSpec.getViewSpecs(), statementContext);
+
+                // Consumers to named windows cannot declare a data window view onto the named window to avoid duplicate remove streams
+                ViewResourceDelegate viewResourceDelegate = new ViewResourceDelegateImpl(unmaterializedViewChain, statementContext);
+                viewResourceDelegate.requestCapability(i, new NotADataWindowViewCapability(), null);
             }
             else
             {
@@ -192,7 +196,7 @@ public class EPStatementStartMethod
             // request remove stream capability from views
             if (!viewResourceDelegate.requestCapability(0, new RemoveStreamViewCapability(), null))
             {
-                throw new ExprValidationException("Named windows require either no child view, or one or more child views that are data window views");
+                throw new ExprValidationException(NamedWindowService.ERROR_MSG_DATAWINDOWS);
             }
         }
 
@@ -261,13 +265,44 @@ public class EPStatementStartMethod
 
         // For just 1 event stream without joins, handle the one-table process separatly.
         Viewable finalView;
+        JoinPreloadMethod joinPreloadMethod = null;
         if (streamNames.length == 1)
         {
             finalView = handleSimpleSelect(streamViews[0], optionalResultSetProcessor, statementContext);
         }
         else
         {
-            finalView = handleJoin(streamNames, streamEventTypes, streamViews, optionalResultSetProcessor, statementSpec.getSelectStreamSelectorEnum(), statementContext);
+            Pair<Viewable, JoinPreloadMethod> pair = handleJoin(streamNames, streamEventTypes, streamViews, optionalResultSetProcessor, statementSpec.getSelectStreamSelectorEnum(), statementContext);
+            finalView = pair.getFirst();
+            joinPreloadMethod = pair.getSecond();
+        }
+
+        // Replay any named window data, for later consumers of named data windows
+        for (int i = 0; i < statementSpec.getStreamSpecs().size(); i++)
+        {
+            StreamSpecCompiled streamSpec = statementSpec.getStreamSpecs().get(i);
+            if (streamSpec instanceof NamedWindowConsumerStreamSpec)
+            {
+                NamedWindowConsumerStreamSpec namedSpec = (NamedWindowConsumerStreamSpec) streamSpec;
+                NamedWindowProcessor processor = services.getNamedWindowService().getProcessor(namedSpec.getWindowName());
+                NamedWindowTailView consumerView = processor.getTailView();
+                NamedWindowConsumerView view = (NamedWindowConsumerView) eventStreamParentViewable[i];
+
+                // preload view for stream
+                ArrayList<EventBean> eventsInWindow = new ArrayList<EventBean>();
+                for(Iterator<EventBean> it = consumerView.iterator(); it.hasNext();)
+                {
+                    eventsInWindow.add(it.next());
+                }
+                EventBean[] newEvents = eventsInWindow.toArray(new EventBean[0]);
+                view.update(newEvents, null);
+
+                // in a join, preload indexes, if any
+                if (joinPreloadMethod != null)
+                {
+                    joinPreloadMethod.preloadFromBuffer(i);
+                }
+            }
         }
 
         // Hook up internal event route for insert-into if required
@@ -316,7 +351,7 @@ public class EPStatementStartMethod
         return new Pair<Viewable, EPStatementStopMethod>(finalView, stopMethod);
     }
 
-    private Viewable handleJoin(String[] streamNames,
+    private Pair<Viewable, JoinPreloadMethod> handleJoin(String[] streamNames,
                                 EventType[] streamTypes,
                                 Viewable[] streamViews,
                                 ResultSetProcessor optionalResultSetProcessor,
@@ -340,15 +375,18 @@ public class EPStatementStartMethod
         JoinExecStrategyDispatchable joinStatementDispatch = new JoinExecStrategyDispatchable(execution, statementSpec.getStreamSpecs().size());
         statementContext.getEpStatementHandle().setOptionalDispatchable(joinStatementDispatch);
 
+        JoinPreloadMethodImpl preloadMethod = new JoinPreloadMethodImpl(streamNames.length, composer);
+
         // Create buffer for each view. Point buffer to dispatchable for join.
         for (int i = 0; i < statementSpec.getStreamSpecs().size(); i++)
         {
             BufferView buffer = new BufferView(i);
             streamViews[i].addView(buffer);
             buffer.setObserver(joinStatementDispatch);
+            preloadMethod.setBuffer(buffer, i);
         }
 
-        return indicatorView;
+        return new Pair<Viewable, JoinPreloadMethod>(indicatorView, preloadMethod);
     }
 
     /**

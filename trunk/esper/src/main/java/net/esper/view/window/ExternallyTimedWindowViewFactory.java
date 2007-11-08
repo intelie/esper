@@ -13,7 +13,7 @@ import java.util.List;
 /**
  * Factory for {@link ExternallyTimedWindowView}.
  */
-public class ExternallyTimedWindowViewFactory implements ViewFactory
+public class ExternallyTimedWindowViewFactory implements DataWindowViewFactory
 {
     private EventType eventType;
 

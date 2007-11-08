@@ -13,7 +13,7 @@ import java.util.List;
 /**
  * Factory for {@link net.esper.view.window.TimeAccumView}.
  */
-public class TimeAccumViewFactory implements ViewFactory
+public class TimeAccumViewFactory implements DataWindowViewFactory
 {
     private EventType eventType;
 

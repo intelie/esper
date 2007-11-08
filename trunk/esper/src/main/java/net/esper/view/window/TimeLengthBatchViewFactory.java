@@ -13,7 +13,7 @@ import java.util.List;
 /**
  * Factory for {@link net.esper.view.window.TimeLengthBatchView}.
  */
-public class TimeLengthBatchViewFactory implements ViewFactory
+public class TimeLengthBatchViewFactory implements DataWindowViewFactory
 {
     private static final String FORCE_UPDATE_KEYWORD = "force_update";
     private static final String START_EAGER_KEYWORD = "start_eager";

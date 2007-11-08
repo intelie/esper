@@ -10,17 +10,16 @@ import net.esper.event.EventBean;
 import net.esper.event.EventType;
 import net.esper.schedule.ScheduleHandleCallback;
 import net.esper.schedule.ScheduleSlot;
+import net.esper.util.ExecutionPathDebugLog;
 import net.esper.view.CloneableView;
 import net.esper.view.View;
 import net.esper.view.ViewSupport;
-import net.esper.util.ExecutionPathDebugLog;
+import net.esper.view.DataWindowView;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.HashMap;
 
 /**
  * This view is a moving timeWindow extending the specified amount of milliseconds into the past.
@@ -104,12 +103,9 @@ public final class TimeWindowView extends ViewSupport implements CloneableView, 
 
         if (oldData != null)
         {
-            if (isRemoveStreamHandling)
+            for (int i = 0; i < oldData.length; i++)
             {
-                for (int i = 0; i < oldData.length; i++)
-                {
-                    timeWindow.remove(oldData[i]);
-                }
+                timeWindow.remove(oldData[i]);
             }
         }
 

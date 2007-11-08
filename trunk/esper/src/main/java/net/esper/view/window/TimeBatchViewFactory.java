@@ -13,7 +13,7 @@ import java.util.List;
 /**
  * Factory for {@link TimeBatchView}. 
  */
-public class TimeBatchViewFactory implements ViewFactory
+public class TimeBatchViewFactory implements DataWindowViewFactory
 {
     private EventType eventType;
 

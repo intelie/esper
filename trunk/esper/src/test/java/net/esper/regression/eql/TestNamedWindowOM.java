@@ -32,11 +32,11 @@ public class TestNamedWindowOM extends TestCase
     public void testCompile()
     {
         String[] fields = new String[] {"key", "value"};
-        String stmtTextCreate = "create window MyWindow as select string as key, longBoxed as value from " + SupportBean.class.getName();
+        String stmtTextCreate = "create window MyWindow.win:keepall() as select string as key, longBoxed as value from " + SupportBean.class.getName();
         EPStatementObjectModel modelCreate = epService.getEPAdministrator().compileEQL(stmtTextCreate);
         EPStatement stmtCreate = epService.getEPAdministrator().create(modelCreate);
         stmtCreate.addListener(listenerWindow);
-        assertEquals("create window MyWindow as select string as key, longBoxed as value from net.esper.support.bean.SupportBean", modelCreate.toEQL());
+        assertEquals("create window MyWindow.win:keepall() as select string as key, longBoxed as value from net.esper.support.bean.SupportBean", modelCreate.toEQL());
 
         String stmtTextInsert = "insert into MyWindow select string as key, longBoxed as value from " + SupportBean.class.getName();
         EPStatementObjectModel modelInsert = epService.getEPAdministrator().compileEQL(stmtTextInsert);
@@ -87,7 +87,7 @@ public class TestNamedWindowOM extends TestCase
     {
         String[] fields = new String[] {"key", "value"};
         EPStatementObjectModel model = new EPStatementObjectModel();
-        model.setCreateWindow(CreateWindowClause.create("MyWindow"));
+        model.setCreateWindow(CreateWindowClause.create("MyWindow").addView("win", "keepall"));
         model.setSelectClause(SelectClause.create()
                 .addWithAlias("string", "key")
                 .addWithAlias("longBoxed", "value"));
@@ -96,7 +96,7 @@ public class TestNamedWindowOM extends TestCase
         EPStatement stmtCreate = epService.getEPAdministrator().create(model);
         stmtCreate.addListener(listenerWindow);
 
-        String stmtTextCreate = "create window MyWindow as select string as key, longBoxed as value from " + SupportBean.class.getName();
+        String stmtTextCreate = "create window MyWindow.win:keepall() as select string as key, longBoxed as value from " + SupportBean.class.getName();
         assertEquals(stmtTextCreate, model.toEQL());
 
         String stmtTextInsert = "insert into MyWindow select string as key, longBoxed as value from " + SupportBean.class.getName();

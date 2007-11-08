@@ -8,6 +8,7 @@ import net.esper.event.EventType;
 import net.esper.view.ViewSupport;
 import net.esper.view.CloneableView;
 import net.esper.view.View;
+import net.esper.view.DataWindowView;
 import net.esper.core.StatementContext;
 import net.esper.collection.ViewUpdatedCollection;
 

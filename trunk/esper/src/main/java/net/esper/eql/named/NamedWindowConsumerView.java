@@ -7,6 +7,7 @@ import net.esper.view.StatementStopCallback;
 import net.esper.event.EventType;
 import net.esper.event.EventBean;
 import net.esper.util.ExecutionPathDebugLog;
+import net.esper.collection.SingleEventIterator;
 
 import java.util.Iterator;
 
@@ -22,6 +23,7 @@ public class NamedWindowConsumerView extends ViewSupport implements StatementSto
     private static final Log log = LogFactory.getLog(NamedWindowConsumerView.class);
     private EventType eventType;
     private NamedWindowTailView tailView;
+    private EventBean lastEvent;
 
     public NamedWindowConsumerView(EventType eventType,
                                    StatementStopService statementStopService,
@@ -41,6 +43,11 @@ public class NamedWindowConsumerView extends ViewSupport implements StatementSto
                     "  oldData.length==" + ((oldData == null) ? 0 : oldData.length));
         }
 
+        if ((newData != null) && (newData.length > 0))
+        {
+            lastEvent = newData[newData.length - 1];
+        }
+
         updateChildren(newData, oldData);
     }
 
@@ -57,7 +64,7 @@ public class NamedWindowConsumerView extends ViewSupport implements StatementSto
 
     public Iterator<EventBean> iterator()
     {
-        return null;  // TODO
+        return new SingleEventIterator(lastEvent);  // May reach this iterator if a consumer does not declare a window itself 
     }
 
     public void statementStopped()
