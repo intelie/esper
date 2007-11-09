@@ -22,11 +22,6 @@ public class TestNamedWindowViews extends TestCase
     private SupportUpdateListener listenerStmtThree;
     private SupportUpdateListener listenerStmtDelete;
 
-    // test multiple named windows in one statement as join
-    // test performance with or without named window service dispatch
-    // single insert-into may go into 2 named windows joined to each other, should update
-    // test stop/start/stop/destroy of select, delete and create window
-
     public void setUp()
     {
         Map<String, Class> types = new HashMap<String, Class>();
@@ -73,8 +68,7 @@ public class TestNamedWindowViews extends TestCase
     private void tryCreateWindow(String createWindowStatement, String deleteStatement)
     {
         String[] fields = new String[] {"key", "value"};
-        String stmtTextCreate = createWindowStatement;
-        EPStatement stmtCreate = epService.getEPAdministrator().createEQL(stmtTextCreate);
+        EPStatement stmtCreate = epService.getEPAdministrator().createEQL(createWindowStatement);
         stmtCreate.addListener(listenerWindow);
 
         assertEquals(String.class, stmtCreate.getEventType().getPropertyType("key"));
@@ -126,8 +120,7 @@ public class TestNamedWindowViews extends TestCase
         ArrayAssertionUtil.assertEqualsExactOrder(stmtCreate.iterator(), fields, new Object[][] {{"E1", 10L}, {"E2", 20L}, {"E3", 5L}});
 
         // create delete stmt
-        String stmtTextDelete = deleteStatement;
-        EPStatement stmtDelete = epService.getEPAdministrator().createEQL(stmtTextDelete);
+        EPStatement stmtDelete = epService.getEPAdministrator().createEQL(deleteStatement);
         stmtDelete.addListener(listenerStmtDelete);
 
         // send delete event
@@ -805,7 +798,7 @@ public class TestNamedWindowViews extends TestCase
         ArrayAssertionUtil.assertProps(listenerWindow.getLastNewData()[0], fields, new Object[] {"E7", 16L});
         ArrayAssertionUtil.assertProps(listenerWindow.getLastOldData()[0], fields, new Object[] {"E5", 17L});
         listenerWindow.reset();
-        ArrayAssertionUtil.assertEqualsExactOrder(stmtCreate.iterator(), fields, new Object[][] {{"E3", 15L}, {"E6", 16L}, {"E7", 16L}});
+        ArrayAssertionUtil.assertEqualsExactOrder(stmtCreate.iterator(), fields, new Object[][] {{"E3", 15L}, {"E7", 16L}, {"E6", 16L}});
 
         // delete E7 has no effect
         sendMarketBean("E7");
@@ -977,6 +970,76 @@ public class TestNamedWindowViews extends TestCase
         listenerStmtOne.reset();
     }
 
+    public void testTimeBatchPerGroup()
+    {
+        String[] fields = new String[] {"key", "value"};
+
+        // create window
+        String stmtTextCreate = "create window MyWindow.std:groupby('value').win:time_batch(10 sec) as MyMap";
+        EPStatement stmtCreate = epService.getEPAdministrator().createEQL(stmtTextCreate);
+        stmtCreate.addListener(listenerWindow);
+
+        // create insert into
+        String stmtTextInsert = "insert into MyWindow select string as key, longBoxed as value from " + SupportBean.class.getName();
+        epService.getEPAdministrator().createEQL(stmtTextInsert);
+
+        // create consumer
+        String stmtTextSelectOne = "select key, value as value from MyWindow";
+        EPStatement stmtSelectOne = epService.getEPAdministrator().createEQL(stmtTextSelectOne);
+        stmtSelectOne.addListener(listenerStmtOne);
+
+        sendTimer(1000);
+        sendSupportBean("E1", 10L);
+        sendSupportBean("E2", 20L);
+        sendSupportBean("E3", 20L);
+        sendSupportBean("E4", 10L);
+
+        sendTimer(11000);
+        assertEquals(listenerWindow.getLastNewData().length, 4);
+        assertEquals(listenerStmtOne.getLastNewData().length, 4);
+        ArrayAssertionUtil.assertProps(listenerWindow.getLastNewData()[0], fields, new Object[] {"E1", 10L});
+        ArrayAssertionUtil.assertProps(listenerWindow.getLastNewData()[1], fields, new Object[] {"E4", 10L});
+        ArrayAssertionUtil.assertProps(listenerWindow.getLastNewData()[2], fields, new Object[] {"E2", 20L});
+        ArrayAssertionUtil.assertProps(listenerWindow.getLastNewData()[3], fields, new Object[] {"E3", 20L});
+        listenerWindow.reset();
+        ArrayAssertionUtil.assertProps(listenerStmtOne.getLastNewData()[0], fields, new Object[] {"E1", 10L});
+        ArrayAssertionUtil.assertProps(listenerStmtOne.getLastNewData()[1], fields, new Object[] {"E4", 10L});
+        ArrayAssertionUtil.assertProps(listenerStmtOne.getLastNewData()[2], fields, new Object[] {"E2", 20L});
+        ArrayAssertionUtil.assertProps(listenerStmtOne.getLastNewData()[3], fields, new Object[] {"E3", 20L});
+        listenerStmtOne.reset();
+    }
+
+    public void testDoubleInsertSameWindow()
+    {
+        String[] fields = new String[] {"key", "value"};
+
+        // create window
+        String stmtTextCreate = "create window MyWindow.win:keepall() as MyMap";
+        EPStatement stmtCreate = epService.getEPAdministrator().createEQL(stmtTextCreate);
+        stmtCreate.addListener(listenerWindow);
+
+        // create insert into
+        String stmtTextInsert = "insert into MyWindow select string as key, longBoxed+1 as value from " + SupportBean.class.getName();
+        epService.getEPAdministrator().createEQL(stmtTextInsert);
+
+        stmtTextInsert = "insert into MyWindow select string as key, longBoxed+2 as value from " + SupportBean.class.getName();
+        epService.getEPAdministrator().createEQL(stmtTextInsert);
+
+        // create consumer
+        String stmtTextSelectOne = "select key, value as value from MyWindow";
+        EPStatement stmtSelectOne = epService.getEPAdministrator().createEQL(stmtTextSelectOne);
+        stmtSelectOne.addListener(listenerStmtOne);
+
+        sendSupportBean("E1", 10L);
+        assertEquals(2, listenerWindow.getNewDataList().size());    // listener to window gets 2 individual events
+        assertEquals(1, listenerStmtOne.getNewDataList().size());   // listener to statement gets 1 individual event
+        assertEquals(2, listenerWindow.getNewDataListFlattened().length);
+        assertEquals(2, listenerStmtOne.getNewDataListFlattened().length);
+        ArrayAssertionUtil.assertProps(listenerStmtOne.getLastNewData()[0], fields, new Object[] {"E1", 11L});
+        ArrayAssertionUtil.assertProps(listenerStmtOne.getLastNewData()[1], fields, new Object[] {"E1", 12L});
+        listenerStmtOne.reset();
+    }
+
     public void testLastEvent()
     {
         String[] fields = new String[] {"key", "value"};
@@ -1113,6 +1176,8 @@ public class TestNamedWindowViews extends TestCase
                      tryInvalid("create window MyWindow.std:groupby('value').stat:uni('value') as MyMap"));        
         assertEquals("Named windows require one or more child views that are data window views [create window MyWindow as MyMap]",
                      tryInvalid("create window MyWindow as MyMap"));
+        assertEquals("Named window 'dummy' has not been declared [on MyMap delete from dummy]",
+                     tryInvalid("on MyMap delete from dummy"));
     }
 
     public void testAlreadyExists()

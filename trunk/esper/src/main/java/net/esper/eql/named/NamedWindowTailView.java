@@ -86,4 +86,9 @@ public class NamedWindowTailView extends ViewSupport implements Iterable<EventBe
     {
         return this.parent.iterator();
     }
+
+    public void destroy()
+    {
+        consumers.clear();        
+    }
 }

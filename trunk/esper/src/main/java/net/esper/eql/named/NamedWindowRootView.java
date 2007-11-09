@@ -184,4 +184,10 @@ public class NamedWindowRootView extends ViewSupport
     {
         return null; 
     }
+
+    public void destroy()
+    {
+        indexRepository.destroy();
+        tablePerStrategy.clear();
+    }
 }

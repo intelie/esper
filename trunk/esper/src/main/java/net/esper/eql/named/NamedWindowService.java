@@ -16,6 +16,7 @@ public interface NamedWindowService
     public boolean isNamedWindow(String name);
     public NamedWindowProcessor addProcessor(String name, EventType eventType) throws ViewProcessingException;
     public NamedWindowProcessor getProcessor(String name);
+    public void removeProcessor(String name);
 
     public boolean dispatch();
     public void addDispatch(NamedWindowDeltaData delta, Map<EPStatementHandle,List<NamedWindowConsumerView>> consumers);

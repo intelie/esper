@@ -40,8 +40,8 @@ public class TestStockTickerMultithreaded extends TestCase implements StockTicke
 
     public void testMultithreaded()
     {
-        // performTest(3, 500000, 100000, 60);  // on fast systems
-        performTest(3, 50000, 10000, 15);   // for unit tests on slow machines
+        performTest(3, 1000000, 100000, 60);  // on fast systems
+        //performTest(3, 50000, 10000, 15);   // for unit tests on slow machines
     }
 
     public void performTest(int numberOfThreads,

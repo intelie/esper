@@ -7,7 +7,6 @@ import net.esper.core.EPStatementHandle;
 
 public class NamedWindowProcessor
 {
-    private final NamedWindowService namedWindowService;
     private final NamedWindowTailView tailView;
     private final NamedWindowRootView rootView;
     private final String windowName;
@@ -15,13 +14,12 @@ public class NamedWindowProcessor
 
     public NamedWindowProcessor(NamedWindowService namedWindowService, String windowName, EventType eventType)
     {
-        this.namedWindowService = namedWindowService;
         this.windowName = windowName;
         this.eventType = eventType;
 
         rootView = new NamedWindowRootView();
         tailView = new NamedWindowTailView(eventType, namedWindowService, rootView);
-        rootView.setDataWindowContents(tailView);   // for
+        rootView.setDataWindowContents(tailView);   // for iteration used for delete without index
     }
 
     public NamedWindowTailView getTailView()
@@ -49,4 +47,9 @@ public class NamedWindowProcessor
         return tailView.addConsumer(statementHandle, statementStopService);
     }
 
+    public void destroy()
+    {
+        tailView.destroy();
+        rootView.destroy();
+    }
 }

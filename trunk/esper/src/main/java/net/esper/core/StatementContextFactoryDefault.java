@@ -14,6 +14,7 @@ import net.esper.view.StatementStopServiceImpl;
 import net.esper.view.ViewEnumHelper;
 import net.esper.view.ViewResolutionService;
 import net.esper.view.ViewResolutionServiceImpl;
+import net.esper.client.EPStatementException;
 
 import java.util.Map;
 
@@ -57,20 +58,29 @@ public class StatementContextFactoryDefault implements StatementContextFactory
         ManagedLock statementResourceLock = null;
 
         // For on-delete statements, use the create-named-window statement lock 
-        if (optOnDeleteDesc == null)
+        if (optOnDeleteDesc != null)
         {
-            statementResourceLock = engineServices.getStatementLockFactory().getStatementLock(statementName, expression);
+            statementResourceLock = engineServices.getNamedWindowService().getNamedWindowLock(optOnDeleteDesc.getWindowName());
+            if (statementResourceLock == null)
+            {
+                throw new EPStatementException("Named window '" + optOnDeleteDesc.getWindowName() + "' has not been declared", expression);
+            }
+        }
+        // For creating a named window, save the lock for use with on-delete statements
+        else if (optCreateWindowDesc != null)
+        {
+            statementResourceLock = engineServices.getNamedWindowService().getNamedWindowLock(optCreateWindowDesc.getWindowName());
+            if (statementResourceLock == null)
+            {
+                statementResourceLock = engineServices.getStatementLockFactory().getStatementLock(statementName, expression);
+                engineServices.getNamedWindowService().addNamedWindowLock(optCreateWindowDesc.getWindowName(), statementResourceLock);
+            }
         }
         else
         {
-            statementResourceLock = engineServices.getNamedWindowService().getNamedWindowLock(optOnDeleteDesc.getWindowName());
+            statementResourceLock = engineServices.getStatementLockFactory().getStatementLock(statementName, expression);
         }
 
-        // For creating a named window, save the lock for use with on-delete statements
-        if (optCreateWindowDesc != null)
-        {
-            engineServices.getNamedWindowService().addNamedWindowLock(optCreateWindowDesc.getWindowName(), statementResourceLock);
-        }
 
         EPStatementHandle epStatementHandle = new EPStatementHandle(statementId, statementResourceLock, expression);
 

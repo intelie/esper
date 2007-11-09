@@ -13,6 +13,12 @@ public class NamedWindowDeltaData
         this.oldData = oldData;
     }
 
+    public NamedWindowDeltaData(NamedWindowDeltaData deltaOne, NamedWindowDeltaData deltaTwo)
+    {
+        this.newData = aggregate(deltaOne.getNewData(), deltaTwo.getNewData());
+        this.oldData = aggregate(deltaOne.getOldData(), deltaTwo.getOldData());
+    }
+
     public EventBean[] getNewData()
     {
         return newData;
@@ -21,5 +27,21 @@ public class NamedWindowDeltaData
     public EventBean[] getOldData()
     {
         return oldData;
+    }
+
+    private static EventBean[] aggregate(EventBean[] arrOne, EventBean[] arrTwo)
+    {
+        if (arrOne == null)
+        {
+            return arrTwo;
+        }
+        if (arrTwo == null)
+        {
+            return arrOne;
+        }
+        EventBean[] arr = new EventBean[arrOne.length + arrTwo.length];
+        System.arraycopy(arrOne, 0, arr, 0, arrOne.length);
+        System.arraycopy(arrTwo, 0, arr, arrOne.length, arrTwo.length);
+        return arr;
     }
 }

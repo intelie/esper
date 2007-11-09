@@ -224,6 +224,12 @@ public class EPStatementStartMethod
                     FilterStreamSpecCompiled filterStreamSpec = (FilterStreamSpecCompiled) subselect.getStatementSpecCompiled().getStreamSpecs().get(0);
                     services.getStreamService().dropStream(filterStreamSpec.getFilterSpec(), services.getFilterService(), isJoin);
                 }
+
+                if (statementSpec.getCreateWindowDesc() != null)
+                {
+                    String windowName = statementSpec.getCreateWindowDesc().getWindowName();
+                    services.getNamedWindowService().removeProcessor(windowName);
+                }
             }
         };
 

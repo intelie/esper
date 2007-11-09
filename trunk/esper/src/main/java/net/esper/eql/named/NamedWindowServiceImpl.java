@@ -3,13 +3,10 @@ package net.esper.eql.named;
 import net.esper.core.EPStatementHandle;
 import net.esper.event.EventBean;
 import net.esper.event.EventType;
-import net.esper.view.ViewProcessingException;
 import net.esper.util.ManagedLock;
+import net.esper.view.ViewProcessingException;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class NamedWindowServiceImpl implements NamedWindowService
 {
@@ -24,6 +21,14 @@ public class NamedWindowServiceImpl implements NamedWindowService
         }
     };
 
+    private ThreadLocal<Map<EPStatementHandle, Object>> dispatchesPerStmtTL = new ThreadLocal<Map<EPStatementHandle, Object>>()
+    {
+        protected synchronized Map<EPStatementHandle, Object> initialValue()
+        {
+            return new HashMap<EPStatementHandle, Object>();
+        }
+    };
+
     public NamedWindowServiceImpl()
     {
         this.processors = new HashMap<String, NamedWindowProcessor>();
@@ -32,21 +37,11 @@ public class NamedWindowServiceImpl implements NamedWindowService
 
     public ManagedLock getNamedWindowLock(String windowName)
     {
-        ManagedLock lock = windowStatementLocks.get(windowName);
-        if (lock == null)
-        {
-            throw new IllegalStateException("Named window lock for window '" + windowName + "' not found");
-        }
-        return lock;
+        return windowStatementLocks.get(windowName);
     }
 
     public void addNamedWindowLock(String windowName, ManagedLock statementResourceLock)
     {
-        ManagedLock lock = windowStatementLocks.get(windowName);
-        if (lock != null)
-        {
-            throw new IllegalStateException("Named window lock for window '" + windowName + "' already exists");
-        }
         windowStatementLocks.put(windowName, statementResourceLock);
     }
 
@@ -60,7 +55,7 @@ public class NamedWindowServiceImpl implements NamedWindowService
         NamedWindowProcessor processor = processors.get(name);
         if (processor == null)
         {
-            throw new RuntimeException("XXX"); // TODO
+            throw new IllegalStateException("A named window by name '" + name + "' does not exist");
         }
         return processor;
     }
@@ -76,7 +71,17 @@ public class NamedWindowServiceImpl implements NamedWindowService
         processors.put(name, processor);
         
         return processor;
-    }    
+    }
+
+    public void removeProcessor(String name)
+    {
+        NamedWindowProcessor processor = processors.get(name);
+        if (processor != null)
+        {
+            processor.destroy();
+            processors.remove(name);
+        }
+    }
 
     public void addDispatch(NamedWindowDeltaData delta, Map<EPStatementHandle, List<NamedWindowConsumerView>> consumers)
     {
@@ -117,11 +122,118 @@ public class NamedWindowServiceImpl implements NamedWindowService
                     handle.getStatementLock().releaseLock(null);
                 }
             }
+
+            dispatches.clear();
+            return true;
         }
-        // TODO: prove dispatches for more then one result is needed
+
+        // Multiple different-result dispatches to same or different statements are needed in two situations:
+        // a) an event comes in, triggers two insert-into statements inserting into the same named window and the window produces 2 results
+        // b) a time batch is grouped in the named window, and a timer fires for both groups at the same time producing more then one result
+
+        // Most likely all dispatches go to different statements since most statements are not joins of
+        // named windows that produce results at the same time. Therefore sort by statement handle.
+        Map<EPStatementHandle, Object> dispatchesPerStmt = dispatchesPerStmtTL.get();
+        for (NamedWindowConsumerDispatchUnit unit : dispatches)
+        {
+            for (Map.Entry<EPStatementHandle, List<NamedWindowConsumerView>> entry : unit.getDispatchTo().entrySet())
+            {
+                EPStatementHandle handle = entry.getKey();
+                Object perStmtObj = dispatchesPerStmt.get(handle);
+                if (perStmtObj == null)
+                {
+                    dispatchesPerStmt.put(handle, unit);
+                }
+                else if (perStmtObj instanceof List)
+                {
+                    List<NamedWindowConsumerDispatchUnit> list = (List<NamedWindowConsumerDispatchUnit>) perStmtObj;
+                    list.add(unit);
+                }
+                else    // convert from object to list
+                {
+                    NamedWindowConsumerDispatchUnit unitObj = (NamedWindowConsumerDispatchUnit) perStmtObj;
+                    List<NamedWindowConsumerDispatchUnit> list = new ArrayList<NamedWindowConsumerDispatchUnit>();
+                    list.add(unitObj);
+                    list.add(unit);
+                    dispatchesPerStmt.put(handle, list);
+                }
+            }
+        }
+
+        // Dispatch
+        for (Map.Entry<EPStatementHandle, Object> entry : dispatchesPerStmt.entrySet())
+        {
+            EPStatementHandle handle = entry.getKey();
+            Object perStmtObj = entry.getValue();
+
+            // dispatch of a single result to the statement
+            if (entry instanceof NamedWindowConsumerDispatchUnit)
+            {
+                NamedWindowConsumerDispatchUnit unit = (NamedWindowConsumerDispatchUnit) perStmtObj;
+                EventBean[] newData = unit.getDeltaData().getNewData();
+                EventBean[] oldData = unit.getDeltaData().getOldData();
+
+                handle.getStatementLock().acquireLock(null); // TODO: statement lock factory
+                try
+                {
+                    for (NamedWindowConsumerView consumerView : unit.getDispatchTo().get(handle))
+                    {
+                        consumerView.update(newData, oldData);
+                    }
+
+                    // internal join processing, if applicable
+                    handle.internalDispatch();
+                }
+                finally
+                {
+                    handle.getStatementLock().releaseLock(null);
+                }
+
+                continue;
+            }
+
+            // dispatch of multiple results to a the same statement, need to aggregate per consumer view
+            List<NamedWindowConsumerDispatchUnit> list = (List<NamedWindowConsumerDispatchUnit>) perStmtObj;
+            Map<NamedWindowConsumerView, NamedWindowDeltaData> deltaPerConsumer = new LinkedHashMap<NamedWindowConsumerView, NamedWindowDeltaData>();
+            for (NamedWindowConsumerDispatchUnit unit : list)   // for each unit
+            {
+                for (NamedWindowConsumerView consumerView : unit.getDispatchTo().get(handle))   // each consumer
+                {
+                    NamedWindowDeltaData deltaForConsumer = deltaPerConsumer.get(consumerView);
+                    if (deltaForConsumer == null)
+                    {
+                        deltaPerConsumer.put(consumerView, unit.getDeltaData());
+                    }
+                    else
+                    {
+                        NamedWindowDeltaData aggregated = new NamedWindowDeltaData(deltaForConsumer, unit.getDeltaData());
+                        deltaPerConsumer.put(consumerView, aggregated);
+                    }
+                }
+            }
+
+            handle.getStatementLock().acquireLock(null); // TODO: statement lock factory
+            try
+            {
+                for (Map.Entry<NamedWindowConsumerView, NamedWindowDeltaData> entryDelta : deltaPerConsumer.entrySet())
+                {
+                    EventBean[] newData = entryDelta.getValue().getNewData();
+                    EventBean[] oldData = entryDelta.getValue().getOldData();
+                    entryDelta.getKey().update(newData, oldData);
+                }
+
+                // internal join processing, if applicable
+                handle.internalDispatch();
+            }
+            finally
+            {
+                handle.getStatementLock().releaseLock(null);
+            }
+        }
 
         dispatches.clear();
-        
+        dispatchesPerStmt.clear();
+
         return true;
     }
 }

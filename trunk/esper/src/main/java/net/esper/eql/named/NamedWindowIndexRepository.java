@@ -93,6 +93,12 @@ public class NamedWindowIndexRepository
         return tables;
     }
 
+    public void destroy()
+    {
+        tables.clear();
+        tableIndexes.clear();
+    }
+
     public class IndexedProp implements Comparable
     {
         private String name;
