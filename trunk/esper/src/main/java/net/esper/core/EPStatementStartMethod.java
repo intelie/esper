@@ -341,7 +341,7 @@ public class EPStatementStartMethod
                     streamSpec.getFilterSpec().getEventType(), streamSpec.getOptionalStreamName());
             onDeleteDesc.setJoinExpr(validatedJoin);
 
-            NamedWindowDeleteView deleteView = processor.addDeleter(onDeleteDesc);
+            NamedWindowDeleteView deleteView = processor.addDeleter(onDeleteDesc, streamSpec.getFilterSpec().getEventType(), statementContext.getStatementStopService());
             finalView.addView(deleteView);
             finalView = deleteView;
         }
@@ -608,6 +608,13 @@ public class EPStatementStartMethod
                 subexpressionStreamName = "$subselect_" + subselectStreamNumber;
             }
 
+            // Named windows don't allow data views
+            if (filterStreamSpec instanceof NamedWindowConsumerStreamSpec)
+            {
+                ViewResourceDelegate viewResourceDelegate = new ViewResourceDelegateImpl(new ViewFactoryChain[] {viewFactoryChain}, statementContext);
+                viewResourceDelegate.requestCapability(0, new NotADataWindowViewCapability(), null);
+            }
+
             // Streams event types are the original stream types with the stream zero the subselect stream
             LinkedHashMap<String, EventType> namesAndTypes = new LinkedHashMap<String, EventType>();
             namesAndTypes.put(subexpressionStreamName, eventType);
@@ -650,16 +657,35 @@ public class EPStatementStartMethod
             subselect.setStrategy(indexPair.getSecond());
             final EventTable eventIndex = indexPair.getFirst();
 
-            // Start up event table from the iterator
-            Iterator<EventBean> it = subselectView.iterator();
-            if ((it != null) && (it.hasNext()))
+            // Preload
+            if (filterStreamSpec instanceof NamedWindowConsumerStreamSpec)
             {
-                ArrayList<EventBean> preloadEvents = new ArrayList<EventBean>();
-                for (;it.hasNext();)
+                NamedWindowConsumerStreamSpec namedSpec = (NamedWindowConsumerStreamSpec) filterStreamSpec ;
+                NamedWindowProcessor processor = services.getNamedWindowService().getProcessor(namedSpec.getWindowName());
+                NamedWindowTailView consumerView = processor.getTailView();
+
+                // preload view for stream
+                ArrayList<EventBean> eventsInWindow = new ArrayList<EventBean>();
+                for(Iterator<EventBean> it = consumerView.iterator(); it.hasNext();)
                 {
-                    preloadEvents.add(it.next());
+                    eventsInWindow.add(it.next());
                 }
-                eventIndex.add(preloadEvents.toArray(new EventBean[0]));
+                EventBean[] newEvents = eventsInWindow.toArray(new EventBean[0]);
+                ((View)viewableRoot).update(newEvents, null);
+            }
+            else        // preload from the data window that site on top
+            {
+                // Start up event table from the iterator
+                Iterator<EventBean> it = subselectView.iterator();
+                if ((it != null) && (it.hasNext()))
+                {
+                    ArrayList<EventBean> preloadEvents = new ArrayList<EventBean>();
+                    for (;it.hasNext();)
+                    {
+                        preloadEvents.add(it.next());
+                    }
+                    eventIndex.add(preloadEvents.toArray(new EventBean[0]));
+                }
             }
 
             // hook up subselect viewable and event table
@@ -672,7 +698,7 @@ public class EPStatementStartMethod
                 }
 
             });
-            subselectView.addView(bufferView);
+            subselectView.addView(bufferView);            
         }
     }
 
@@ -763,6 +789,11 @@ public class EPStatementStartMethod
                                          EventType filteredType,
                                          String optFilterStreamName) throws ExprValidationException
     {
+        if (deleteJoinExpr == null)
+        {
+            return null;
+        }
+        
         String namedWindowStreamName = optNamedWindowStreamName;
         if (namedWindowStreamName == null)
         {

@@ -4,6 +4,7 @@ import net.esper.core.EPStatementHandle;
 import net.esper.event.EventBean;
 import net.esper.event.EventType;
 import net.esper.view.ViewProcessingException;
+import net.esper.util.ManagedLock;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,6 +14,7 @@ import java.util.Map;
 public class NamedWindowServiceImpl implements NamedWindowService
 {
     private Map<String, NamedWindowProcessor> processors;
+    private Map<String, ManagedLock> windowStatementLocks;
 
     private ThreadLocal<List<NamedWindowConsumerDispatchUnit>> threadLocal = new ThreadLocal<List<NamedWindowConsumerDispatchUnit>>()
     {
@@ -25,6 +27,27 @@ public class NamedWindowServiceImpl implements NamedWindowService
     public NamedWindowServiceImpl()
     {
         this.processors = new HashMap<String, NamedWindowProcessor>();
+        this.windowStatementLocks = new HashMap<String, ManagedLock>();
+    }
+
+    public ManagedLock getNamedWindowLock(String windowName)
+    {
+        ManagedLock lock = windowStatementLocks.get(windowName);
+        if (lock == null)
+        {
+            throw new IllegalStateException("Named window lock for window '" + windowName + "' not found");
+        }
+        return lock;
+    }
+
+    public void addNamedWindowLock(String windowName, ManagedLock statementResourceLock)
+    {
+        ManagedLock lock = windowStatementLocks.get(windowName);
+        if (lock != null)
+        {
+            throw new IllegalStateException("Named window lock for window '" + windowName + "' already exists");
+        }
+        windowStatementLocks.put(windowName, statementResourceLock);
     }
 
     public boolean isNamedWindow(String name)

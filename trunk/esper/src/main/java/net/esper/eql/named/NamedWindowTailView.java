@@ -1,19 +1,14 @@
 package net.esper.eql.named;
 
 import net.esper.core.EPStatementHandle;
-import net.esper.eql.join.table.EventTable;
-import net.esper.eql.join.table.UnindexedEventTable;
-import net.esper.eql.spec.OnDeleteDesc;
 import net.esper.event.EventBean;
 import net.esper.event.EventType;
-import net.esper.view.View;
-import net.esper.view.ViewSupport;
-import net.esper.view.Viewable;
 import net.esper.view.StatementStopService;
+import net.esper.view.ViewSupport;
 
 import java.util.*;
 
-public class NamedWindowTailView extends ViewSupport
+public class NamedWindowTailView extends ViewSupport implements Iterable<EventBean>
 {
     private final EventType eventType;
     private final NamedWindowRootView namedWindowRootView;

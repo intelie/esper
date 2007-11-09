@@ -2,7 +2,15 @@ package net.esper.regression.pattern;
 
 import junit.framework.*;
 import net.esper.regression.support.*;
-import net.esper.support.bean.SupportBeanConstants;
+import net.esper.support.bean.*;
+import net.esper.support.client.SupportConfigFactory;
+import net.esper.support.util.SupportUpdateListener;
+import net.esper.support.util.PrintUpdateListener;
+import net.esper.client.Configuration;
+import net.esper.client.EPServiceProvider;
+import net.esper.client.EPServiceProviderManager;
+import net.esper.client.EPStatement;
+import net.esper.event.EventBean;
 
 public class TestOrOperator extends TestCase implements SupportBeanConstants
 {
@@ -105,5 +113,42 @@ public class TestOrOperator extends TestCase implements SupportBeanConstants
 
         PatternTestHarness util = new PatternTestHarness(events, testCaseList);
         util.runTest();
+    }
+
+    public void testOrAndNot()
+    {
+        tryOrAndNot("(a=A -> b=B) or (a=A -> not b=B)");
+        tryOrAndNot("a=A -> (b=B or not B)");
+    }
+
+    private void tryOrAndNot(String pattern)
+    {
+        Configuration config = SupportConfigFactory.getConfiguration();
+        config.addEventTypeAlias("A", SupportBean_A.class.getName());
+        config.addEventTypeAlias("B", SupportBean_B.class.getName());
+        config.addEventTypeAlias("C", SupportBean_C.class.getName());
+        EPServiceProvider epService = EPServiceProviderManager.getDefaultProvider(config);
+        epService.initialize();
+
+        String expression =
+            "select * " +
+            "from pattern [" + pattern + "]";
+
+        EPStatement statement = epService.getEPAdministrator().createEQL(expression);
+        SupportUpdateListener listener = new SupportUpdateListener();
+        statement.addListener(listener);
+        statement.addListener(new PrintUpdateListener());
+
+        Object eventA1 = new SupportBean_A("A1");
+        epService.getEPRuntime().sendEvent(eventA1);
+        EventBean event = listener.assertOneGetNewAndReset();
+        assertEquals(eventA1, event.get("a"));
+        assertNull(event.get("b"));
+
+        Object eventB1 = new SupportBean_B("B1");
+        epService.getEPRuntime().sendEvent(eventB1);
+        event = listener.assertOneGetNewAndReset();
+        assertEquals(eventA1, event.get("a"));
+        assertEquals(eventB1, event.get("b"));
     }
 }

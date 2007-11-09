@@ -56,23 +56,19 @@ public class TestNamedWindowSubquery extends TestCase
         assertEquals(String.class, stmtSelectOne.getEventType().getPropertyType("value"));
         assertEquals(String.class, stmtSelectOne.getEventType().getPropertyType("symbol"));
 
-        // create consumer 2
-        String stmtTextSelectTwo = "select (select a from MyWindow.std:lastevent()) as value, symbol from " + SupportMarketDataBean.class.getName();
-        EPStatement stmtSelectTwo = epService.getEPAdministrator().createEQL(stmtTextSelectTwo);
-        stmtSelectTwo.addListener(listenerStmtTwo);
-        ArrayAssertionUtil.assertEqualsAnyOrder(stmtSelectTwo.getEventType().getPropertyNames(), new String[] {"value", "symbol"});
-        assertEquals(String.class, stmtSelectOne.getEventType().getPropertyType("value"));
-        assertEquals(String.class, stmtSelectOne.getEventType().getPropertyType("symbol"));
-
         sendMarketBean("M1");
         String fieldsStmt[] = new String[] {"value", "symbol"};
         ArrayAssertionUtil.assertProps(listenerStmtOne.assertOneGetNewAndReset(), fieldsStmt, new Object[] {null, "M1"});
-        ArrayAssertionUtil.assertProps(listenerStmtTwo.assertOneGetNewAndReset(), fieldsStmt, new Object[] {null, "M1"});
 
         sendSupportBean("S1", 1L, 2L);
         assertFalse(listenerStmtOne.isInvoked());
         String fieldsWin[] = new String[] {"a", "b", "c"};
         ArrayAssertionUtil.assertProps(listenerWindow.assertOneGetNewAndReset(), fieldsWin, new Object[] {"S1", 1L, 2L});
+
+        // create consumer 2 -- note that this one should not start empty now
+        String stmtTextSelectTwo = "select (select a from MyWindow) as value, symbol from " + SupportMarketDataBean.class.getName();
+        EPStatement stmtSelectTwo = epService.getEPAdministrator().createEQL(stmtTextSelectTwo);
+        stmtSelectTwo.addListener(listenerStmtTwo);
 
         sendMarketBean("M1");
         ArrayAssertionUtil.assertProps(listenerStmtOne.assertOneGetNewAndReset(), fieldsStmt, new Object[] {"S1", "M1"});
@@ -85,7 +81,7 @@ public class TestNamedWindowSubquery extends TestCase
         sendMarketBean("M2");
         ArrayAssertionUtil.assertProps(listenerStmtOne.assertOneGetNewAndReset(), fieldsStmt, new Object[] {null, "M2"});
         assertFalse(listenerWindow.isInvoked());
-        ArrayAssertionUtil.assertProps(listenerStmtTwo.assertOneGetNewAndReset(), fieldsStmt, new Object[] {"S2", "M2"});
+        ArrayAssertionUtil.assertProps(listenerStmtTwo.assertOneGetNewAndReset(), fieldsStmt, new Object[] {null, "M2"});
 
         // create delete stmt
         String stmtTextDelete = "on " + SupportBean_A.class.getName() + " delete from MyWindow where id = a";
@@ -106,7 +102,7 @@ public class TestNamedWindowSubquery extends TestCase
 
         sendMarketBean("M4");
         ArrayAssertionUtil.assertProps(listenerStmtOne.assertOneGetNewAndReset(), fieldsStmt, new Object[] {null, "M4"});
-        ArrayAssertionUtil.assertProps(listenerStmtTwo.assertOneGetNewAndReset(), fieldsStmt, new Object[] {"S2", "M4"});
+        ArrayAssertionUtil.assertProps(listenerStmtTwo.assertOneGetNewAndReset(), fieldsStmt, new Object[] {null, "M4"});
 
         sendSupportBean("S3", 100L, 200L);
         ArrayAssertionUtil.assertProps(listenerWindow.assertOneGetNewAndReset(), fieldsWin, new Object[] {"S3", 100L, 200L});
@@ -115,6 +111,20 @@ public class TestNamedWindowSubquery extends TestCase
         ArrayAssertionUtil.assertProps(listenerStmtOne.assertOneGetNewAndReset(), fieldsStmt, new Object[] {"S3", "M5"});
         ArrayAssertionUtil.assertProps(listenerStmtTwo.assertOneGetNewAndReset(), fieldsStmt, new Object[] {"S3", "M5"});
     }
+
+    public void testConsumerDataWindowSubquery()
+    {
+        epService.getEPAdministrator().createEQL("create window MyWindow.win:keepall() as " + SupportBean.class.getName());
+        try
+        {
+            epService.getEPAdministrator().createEQL("select (select string from MyWindow.std:lastevent()) from MyWindow");
+            fail();
+        }
+        catch (EPException ex)
+        {
+            assertEquals("Error starting view: Consuming statements to a named window cannot declare a data window view onto the named window [select (select string from MyWindow.std:lastevent()) from MyWindow]", ex.getMessage());
+        }
+    }    
 
     private SupportBean sendSupportBean(String string, long longPrimitive, Long longBoxed)
     {

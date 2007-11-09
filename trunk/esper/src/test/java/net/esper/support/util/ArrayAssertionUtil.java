@@ -665,6 +665,17 @@ public class ArrayAssertionUtil
         return events.toArray();
     }
 
+    public static int iteratorCount(Iterator<EventBean> iterator)
+    {
+        int count = 0;
+        for (;iterator.hasNext();)
+        {
+            iterator.next();
+            count++;
+        }
+        return count;
+    }
+
     public static Object[] sum(Object[] srcOne, Object[] srcTwo)
     {
         Object[] result = new Object[srcOne.length + srcTwo.length];

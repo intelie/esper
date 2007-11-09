@@ -1,5 +1,8 @@
 package net.esper.core;
 
+import net.esper.eql.spec.OnDeleteDesc;
+import net.esper.eql.spec.CreateWindowDesc;
+
 import java.util.Map;
 
 /**
@@ -20,5 +23,7 @@ public interface StatementContextFactory
                                         String statementName,
                                         String expression,
                                         EPServicesContext engineServices,
-                                        Map<String, Object> optAdditionalContext);
+                                        Map<String, Object> optAdditionalContext,
+                                        OnDeleteDesc optOnDeleteDesc,
+                                        CreateWindowDesc optCreateWindowDesc);
 }

@@ -21,6 +21,7 @@ public class NamedWindowProcessor
 
         rootView = new NamedWindowRootView();
         tailView = new NamedWindowTailView(eventType, namedWindowService, rootView);
+        rootView.setDataWindowContents(tailView);   // for
     }
 
     public NamedWindowTailView getTailView()
@@ -33,9 +34,9 @@ public class NamedWindowProcessor
         return rootView;    // hooked as the top view before any data windows
     }
 
-    public NamedWindowDeleteView addDeleter(OnDeleteDesc onDeleteDesc)
+    public NamedWindowDeleteView addDeleter(OnDeleteDesc onDeleteDesc, EventType filterEventType, StatementStopService statementStopService)
     {
-        return rootView.addDeleter(onDeleteDesc);
+        return rootView.addDeleter(onDeleteDesc, filterEventType, statementStopService);
     }
 
     public EventType getNamedWindowType(String eventName)

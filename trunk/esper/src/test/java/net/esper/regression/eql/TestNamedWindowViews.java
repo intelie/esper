@@ -22,15 +22,10 @@ public class TestNamedWindowViews extends TestCase
     private SupportUpdateListener listenerStmtThree;
     private SupportUpdateListener listenerStmtDelete;
 
-    // test performance for delete from named window
-    // Test remove of named windows
     // test multiple named windows in one statement as join
     // test performance with or without named window service dispatch
     // single insert-into may go into 2 named windows joined to each other, should update
     // test stop/start/stop/destroy of select, delete and create window
-    // Adding a delete to an already-filled window
-    // test performance and coercion
-    // test MT locking/safety of iterators and push
 
     public void setUp()
     {

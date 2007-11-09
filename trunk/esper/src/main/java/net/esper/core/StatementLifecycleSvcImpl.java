@@ -147,7 +147,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
         EPStatementDesc statementDesc;
         EPStatementStartMethod startMethod;
 
-        StatementContext statementContext =  services.getStatementContextFactory().makeContext(statementId, statementName, expression, services, optAdditionalContext);
+        StatementContext statementContext =  services.getStatementContextFactory().makeContext(statementId, statementName, expression, services, optAdditionalContext, statementSpec.getOnDeleteDesc(), statementSpec.getCreateWindowDesc());
         StatementSpecCompiled compiledSpec = compile(statementSpec, expression, statementContext);
 
         // For insert-into streams, create a lock taken out as soon as an event is inserted

@@ -190,12 +190,11 @@ public final class SortWindowView extends ViewSupport implements DataWindowView,
             }
         }
 
+        // If there are child views, fireStatementStopped update method
         if (optionalSortedRandomAccess != null)
         {
             optionalSortedRandomAccess.refresh(sortedEvents, eventCount, sortWindowSize);
         }
-
-        // If there are child views, fire update method
         if (this.hasViews())
         {
             EventBean[] expiredArr = null;
@@ -226,7 +225,7 @@ public final class SortWindowView extends ViewSupport implements DataWindowView,
         LinkedList<EventBean> listOfBeans = sortedEvents.get(key);
         if (listOfBeans != null)
         {
-            listOfBeans.add(bean);
+            listOfBeans.addFirst(bean); // Add to the front of the list as the second sort critertial is ascending arrival order
             return;
         }
 

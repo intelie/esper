@@ -3,6 +3,7 @@ package net.esper.eql.named;
 import net.esper.event.EventType;
 import net.esper.core.EPStatementHandle;
 import net.esper.view.ViewProcessingException;
+import net.esper.util.ManagedLock;
 
 import java.util.List;
 import java.util.Map;
@@ -18,4 +19,7 @@ public interface NamedWindowService
 
     public boolean dispatch();
     public void addDispatch(NamedWindowDeltaData delta, Map<EPStatementHandle,List<NamedWindowConsumerView>> consumers);
+
+    public ManagedLock getNamedWindowLock(String windowName);
+    public void addNamedWindowLock(String windowName, ManagedLock statementResourceLock);
 }

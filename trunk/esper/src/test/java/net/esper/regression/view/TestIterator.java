@@ -118,22 +118,6 @@ public class TestIterator extends TestCase
         ArrayAssertionUtil.assertEqualsExactOrder(stmt.iterator(), fields, new Object[][] {{"OCC", 2L}, {"OCC", 3L}, {"SYM", 0L}});
     }
 
-    public void testJoin()
-    {
-        String stmtText = "select * from " + SupportMarketDataBean.class.getName() + ".win:length(5)," +
-                           SupportBean.class.getName();
-        EPStatement stmt = epService.getEPAdministrator().createEQL(stmtText);
-        try
-        {
-            stmt.iterator();
-            fail();
-        }
-        catch (UnsupportedOperationException ex)
-        {
-            // expected
-        }
-    }
-
     public void testFilter()
     {
         String[] fields = new String[] {"symbol", "vol"};
