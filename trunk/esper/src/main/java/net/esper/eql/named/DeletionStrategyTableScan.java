@@ -10,12 +10,20 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 
+/**
+ * Determine events to be deleted from a named window using the where-clause and full table scan.
+ */
 public class DeletionStrategyTableScan implements DeletionStrategy
 {
     private final ExprNode joinExpr;
     private final EventBean[] eventsPerStream;
     private final Iterable<EventBean> iterableNamedWindow;
 
+    /**
+     * Ctor.
+     * @param joinExpr is the where clause
+     * @param iterable is the named window's data window iterator
+     */
     public DeletionStrategyTableScan(ExprNode joinExpr, Iterable<EventBean> iterable)
     {
         this.joinExpr = joinExpr;

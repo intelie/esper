@@ -50,6 +50,7 @@ public final class ExternallyTimedWindowView extends ViewSupport implements Data
      * greater then secondsBeforeExpiry are pushed out of the window.
      * @param viewUpdatedCollection is a collection that the view must update when receiving events
      * @param externallyTimedWindowViewFactory for copying this view in a group-by
+     * @param isRemoveStreamHandling flag to indicate that the view must handle the removed events from a parent view
      */
     public ExternallyTimedWindowView(ExternallyTimedWindowViewFactory externallyTimedWindowViewFactory,
                                      String timestampFieldName, long msecBeforeExpiry, ViewUpdatedCollection viewUpdatedCollection,

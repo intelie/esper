@@ -58,6 +58,7 @@ public final class TimeOrderView extends ViewSupport implements DataWindowView, 
      * @param statementContext the statement context
      * @param timestampFieldName the property name of the event supplying timestamp values
      * @param intervalSize the interval time length
+     * @param isRemoveStreamHandling if the view must handle the remove stream of parent views
      */
     public TimeOrderView( StatementContext statementContext,
                           TimeOrderViewFactory timeOrderViewFactory,

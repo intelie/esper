@@ -31,6 +31,9 @@ public class TimeOrderViewFactory implements DataWindowViewFactory
      */
     protected RandomAccessByIndexGetter randomAccessGetterImpl;
 
+    /**
+     * Indicates if the view must handle the remove stream of parent views.
+     */
     protected boolean isRemoveStreamHandling;
 
     private EventType eventType;

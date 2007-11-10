@@ -112,6 +112,11 @@ public abstract class ProjectedStream extends Stream
         toEQLViews(writer, views);
     }
 
+    /**
+     * Renders the views onto the projected stream.
+     * @param writer to render to
+     * @param views to render
+     */
     protected static void toEQLViews(StringWriter writer, List<View> views)
     {
         if ((views != null) && (views.size() != 0))

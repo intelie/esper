@@ -32,6 +32,9 @@ public class TimeBatchViewFactory implements DataWindowViewFactory
      */
     protected RelativeAccessByEventNIndexGetter relativeAccessGetterImpl;
 
+    /**
+     * Flag to indicate that the view must handle the removed events from a parent view.
+     */
     protected boolean isRemoveStreamHandling;
 
     public void setViewParameters(ViewFactoryContext viewFactoryContext, List<Object> viewParameters) throws ViewParameterException

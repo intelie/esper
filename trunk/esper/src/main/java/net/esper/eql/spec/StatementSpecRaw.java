@@ -193,21 +193,37 @@ public class StatementSpecRaw implements MetaDefItem
         this.existsSubstitutionParameters = existsSubstitutionParameters;
     }
 
+    /**
+     * Returns the create-window specification.
+     * @return descriptor for creating a named window
+     */
     public CreateWindowDesc getCreateWindowDesc()
     {
         return createWindowDesc;
     }
 
+    /**
+     * Sets the create-window specification.
+     * @param createWindowDesc descriptor for creating a named window
+     */
     public void setCreateWindowDesc(CreateWindowDesc createWindowDesc)
     {
         this.createWindowDesc = createWindowDesc;
     }
 
+    /**
+     * Returns the on-delete statement specification.
+     * @return descriptor for creating a an on-delete statement
+     */
     public OnDeleteDesc getOnDeleteDesc()
     {
         return onDeleteDesc;
     }
 
+    /**
+     * Sets the on-delete statement specification.
+     * @param onDeleteDesc descriptor for creating an on-delete statement
+     */
     public void setOnDeleteDesc(OnDeleteDesc onDeleteDesc)
     {
         this.onDeleteDesc = onDeleteDesc;

@@ -59,31 +59,55 @@ public class OnDeleteClause implements Serializable
         }
     }
 
+    /**
+     * Returns the name of the named window to delete from.
+     * @return named window name
+     */
     public String getWindowName()
     {
         return windowName;
     }
 
+    /**
+     * Sets the name of the named window.
+     * @param windowName window name
+     */
     public void setWindowName(String windowName)
     {
         this.windowName = windowName;
     }
 
+    /**
+     * Returns the as-alias for the named window.
+     * @return alias
+     */
     public String getOptionalAsName()
     {
         return optionalAsName;
     }
 
+    /**
+     * Sets the as-alias for the named window.
+     * @param optionalAsName alias to set for window
+     */
     public void setOptionalAsName(String optionalAsName)
     {
         this.optionalAsName = optionalAsName;
     }
 
+    /**
+     * Returns the where-clause of the on-delete statement, or null if none defined 
+     * @return where-clause
+     */
     public Expression getJoinExpr()
     {
         return joinExpr;
     }
 
+    /**
+     * Sets the where-clause.
+     * @param joinExpr is the where-clause expression, or null if 
+     */
     public void setJoinExpr(Expression joinExpr)
     {
         this.joinExpr = joinExpr;

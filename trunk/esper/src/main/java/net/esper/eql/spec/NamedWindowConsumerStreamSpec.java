@@ -15,6 +15,8 @@ public class NamedWindowConsumerStreamSpec extends StreamSpecBase implements Str
     /**
      * Ctor.
      * @param windowName - specifies the name of the named window
+     * @param optionalAsName - an alias or null if none defined
+     * @param viewSpecs - is the view specifications
      */
     public NamedWindowConsumerStreamSpec(String windowName, String optionalAsName, List<ViewSpec> viewSpecs)
     {
@@ -22,6 +24,10 @@ public class NamedWindowConsumerStreamSpec extends StreamSpecBase implements Str
         this.windowName = windowName;
     }
 
+    /**
+     * Returns the window name.
+     * @return window name
+     */
     public String getWindowName()
     {
         return windowName;

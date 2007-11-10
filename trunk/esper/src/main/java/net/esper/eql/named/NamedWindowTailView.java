@@ -8,6 +8,10 @@ import net.esper.view.ViewSupport;
 
 import java.util.*;
 
+/**
+ * This view is hooked into a named window's view chain as the last view and handles dispatching of named window
+ * insert and remove stream results via {@link NamedWindowService} to consuming statements.
+ */
 public class NamedWindowTailView extends ViewSupport implements Iterable<EventBean>
 {
     private final EventType eventType;
@@ -15,6 +19,12 @@ public class NamedWindowTailView extends ViewSupport implements Iterable<EventBe
     private final NamedWindowService namedWindowService;
     private final Map<EPStatementHandle, List<NamedWindowConsumerView>> consumers;
 
+    /**
+     * Ctor.
+     * @param eventType the event type of the named window
+     * @param namedWindowService the service for dispatches to consumers for hooking into the dispatch loop
+     * @param namedWindowRootView the root data window view for indicating remove stream events to be removed from possible on-delete indexes
+     */
     public NamedWindowTailView(EventType eventType, NamedWindowService namedWindowService, NamedWindowRootView namedWindowRootView)
     {
         this.eventType = eventType;
@@ -39,6 +49,12 @@ public class NamedWindowTailView extends ViewSupport implements Iterable<EventBe
         namedWindowService.addDispatch(delta, consumers);
     }
 
+    /**
+     * Adds a consumer view keeping the consuming statement's handle and lock to coordinate dispatches.
+     * @param statementHandle the statement handle
+     * @param statementStopService for when the consumer stops, to unregister the consumer
+     * @return consumer representative view
+     */
     public NamedWindowConsumerView addConsumer(EPStatementHandle statementHandle, StatementStopService statementStopService)
     {
         // Construct consumer view, allow a callback to this view to remove the consumer
@@ -56,6 +72,11 @@ public class NamedWindowTailView extends ViewSupport implements Iterable<EventBe
         return consumerView;
     }
 
+    /**
+     * Called by the consumer view to indicate it was stopped or destroyed, such that the
+     * consumer can be deregistered and further dispatches disregard this consumer.
+     * @param namedWindowConsumerView is the consumer representative view
+     */
     public void removeConsumer(NamedWindowConsumerView namedWindowConsumerView)
     {
         EPStatementHandle handleRemoved = null;
@@ -87,6 +108,9 @@ public class NamedWindowTailView extends ViewSupport implements Iterable<EventBe
         return this.parent.iterator();
     }
 
+    /**
+     * Destroy the view.
+     */
     public void destroy()
     {
         consumers.clear();        

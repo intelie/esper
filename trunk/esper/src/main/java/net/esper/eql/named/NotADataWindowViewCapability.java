@@ -10,6 +10,10 @@ import net.esper.eql.expression.ExprValidationException;
 
 import java.util.List;
 
+/**
+ * Expresses the requirement that all views are derived-value views and now data window views, with the exception of
+ * group-by and merge views.
+ */
 public class NotADataWindowViewCapability implements ViewCapability
 {
     public boolean inspect(int streamNumber, List<ViewFactory> viewFactories, StatementContext statementContext)

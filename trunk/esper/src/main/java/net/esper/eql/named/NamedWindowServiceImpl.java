@@ -8,6 +8,10 @@ import net.esper.view.ViewProcessingException;
 
 import java.util.*;
 
+/**
+ * This service hold for each named window a dedicated processor and a lock to the named window.
+ * This lock is shrared between the named window and on-delete statements.
+ */
 public class NamedWindowServiceImpl implements NamedWindowService
 {
     private Map<String, NamedWindowProcessor> processors;
@@ -29,6 +33,9 @@ public class NamedWindowServiceImpl implements NamedWindowService
         }
     };
 
+    /**
+     * Ctor.
+     */
     public NamedWindowServiceImpl()
     {
         this.processors = new HashMap<String, NamedWindowProcessor>();

@@ -77,6 +77,7 @@ public final class EPServicesContext
      * @param timerService is the timer service
      * @param filterService the filter service
      * @param streamFactoryService is hooking up filters to streams
+     * @param namedWindowService is holding information about the named windows active in the system
      */
     public EPServicesContext(String engineURI,
                              SchedulingService schedulingService,
@@ -385,6 +386,10 @@ public final class EPServicesContext
         return outputConditionFactory;
     }
 
+    /**
+     * Returns the named window management service.
+     * @return service for managing named windows
+     */
     public NamedWindowService getNamedWindowService()
     {
         return namedWindowService;

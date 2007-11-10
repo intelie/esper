@@ -5,10 +5,17 @@ import net.esper.event.EventBean;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+/**
+ * Deletes from a named window all events simply using the named window's data window iterator.
+ */
 public class DeletionStrategyDeleteAll implements DeletionStrategy
 {
     private Iterable<EventBean> source;
 
+    /**
+     * Ctor.
+     * @param source iterator of the data window under the named window
+     */
     public DeletionStrategyDeleteAll(Iterable<EventBean> source)
     {
         this.source = source;

@@ -15,8 +15,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- * Dispatch view dispatches to child views, which is always just 1.
- * TODO
+ * Represents a consumer of a named window that selects from a named window via a from-clause.
+ * <p>
+ * The view simply dispatches directly to child views, and keeps the last new event for iteration.
  */
 public class NamedWindowConsumerView extends ViewSupport implements StatementStopCallback
 {
@@ -25,6 +26,12 @@ public class NamedWindowConsumerView extends ViewSupport implements StatementSto
     private NamedWindowTailView tailView;
     private EventBean lastEvent;
 
+    /**
+     * Ctor.
+     * @param eventType the event type of the named window
+     * @param statementStopService for registering a callback when the view stopped, to unregister the statement as a consumer
+     * @param tailView to indicate when the consumer stopped to remove the consumer
+     */
     public NamedWindowConsumerView(EventType eventType,
                                    StatementStopService statementStopService,
                                    NamedWindowTailView tailView)

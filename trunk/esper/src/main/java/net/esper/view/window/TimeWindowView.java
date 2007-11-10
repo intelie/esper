@@ -49,6 +49,7 @@ public final class TimeWindowView extends ViewSupport implements CloneableView, 
      * @param viewUpdatedCollection is a collection the view must update when receiving events
      * @param statementContext is required view services
      * @param timeWindowViewFactory for copying the view in a group-by
+     * @param isRemoveStreamHandling flag to indicate that the view must handle the removed events from a parent view
      */
     public TimeWindowView(StatementContext statementContext, TimeWindowViewFactory timeWindowViewFactory, long millisecondsBeforeExpiry, ViewUpdatedCollection viewUpdatedCollection,
                           boolean isRemoveStreamHandling)

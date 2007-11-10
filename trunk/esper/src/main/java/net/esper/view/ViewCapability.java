@@ -23,5 +23,9 @@ public interface ViewCapability
     public boolean inspect(int streamNumber, List<ViewFactory> viewFactories, StatementContext statementContext)
         throws ExprValidationException;
 
+    /**
+     * Returns true to indicate that the capability requirs one or more child views, or can work without child views.
+     * @return true for child views required, false for not required
+     */
     public boolean requiresChildViews();
 }

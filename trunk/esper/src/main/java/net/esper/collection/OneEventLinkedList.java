@@ -4,11 +4,20 @@ import net.esper.event.EventBean;
 
 import java.util.LinkedList;
 
+/**
+ * Simple collection that exposes a limited add-and-get interface and that is optimized towards holding
+ * a single event, but can hold multiple events. If more then one event is added, the
+ * class allocates a linked list for additional events.
+ */
 public class OneEventLinkedList
 {
     private EventBean firstEvent;
     private LinkedList<EventBean> additionalEvents;
 
+    /**
+     * Add an event to the collection.
+     * @param event is the event to add
+     */
     public void add(EventBean event)
     {
         if (event == null)
@@ -29,11 +38,19 @@ public class OneEventLinkedList
         additionalEvents.add(event);
     }
 
+    /**
+     * Returns true if the collection is empty.
+     * @return true if empty, false if not
+     */
     public boolean isEmpty()
     {
         return firstEvent == null;
     }
 
+    /**
+     * Returns an array holding the collected events.
+     * @return event array
+     */
     public EventBean[] toArray()
     {
         if (firstEvent == null)

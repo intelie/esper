@@ -25,6 +25,11 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+/**
+ * The root window in a named window plays multiple roles: It holds the indexes for deleting rows, if any on-delete statement
+ * requires such indexes. Such indexes are updated when events arrive, or remove from when a data window
+ * or on-delete statement expires events. The view keeps track of on-delete statements their indexes used.
+ */
 public class NamedWindowRootView extends ViewSupport
 {
     private static final Log log = LogFactory.getLog(NamedWindowRootView.class);
@@ -34,18 +39,29 @@ public class NamedWindowRootView extends ViewSupport
     private Iterable<EventBean> dataWindowContents;
     private final Map<DeletionStrategy, PropertyIndexedEventTable> tablePerStrategy;
 
+    /**
+     * Ctor.
+     */
     public NamedWindowRootView()
     {
         this.indexRepository = new NamedWindowIndexRepository();
         this.tablePerStrategy = new HashMap<DeletionStrategy, PropertyIndexedEventTable>();
     }
 
+    /**
+     * Sets the iterator to use to obtain current named window data window contents.
+     * @param dataWindowContents iterator over events help by named window
+     */
     public void setDataWindowContents(Iterable<EventBean> dataWindowContents)
     {
         this.dataWindowContents = dataWindowContents;
     }
 
-    // Called by tail view to indicate that the view removed data
+    /**
+     * Called by tail view to indicate that the data window view exired events that must be removed from index tables.
+     * @param oldData removed stream of the data window
+     */
+    //
     public void removeOldData(EventBean[] oldData)
     {
         for (EventTable table : indexRepository.getTables())
@@ -75,6 +91,13 @@ public class NamedWindowRootView extends ViewSupport
         updateChildren(newData, oldData);
     }
 
+    /**
+     * Add a on-delete view that, using a deletion strategy, deletes from the named window.
+     * @param onDeleteDesc the specification for the on-delete
+     * @param filterEventType the event type for the on-clause in the on-delete
+     * @param statementStopService for stopping the statement
+     * @return view representing the on-delete view chain, posting delete events to it's listeners
+     */
     public NamedWindowDeleteView addDeleter(OnDeleteDesc onDeleteDesc, EventType filterEventType, StatementStopService statementStopService)
     {
         // Determine strategy for deletion and index table to use (if any)
@@ -86,6 +109,11 @@ public class NamedWindowRootView extends ViewSupport
         return new NamedWindowDeleteView(statementStopService, strategy.getFirst(), this);
     }
 
+    /**
+     * Unregister an on-delete statement view, using the strategy as a key to remove a reference to the index table
+     * used by the strategy.
+     * @param strategy to use for deleting events
+     */
     public void removeDeleter(DeletionStrategy strategy)
     {
         PropertyIndexedEventTable table = tablePerStrategy.remove(strategy);
@@ -185,6 +213,9 @@ public class NamedWindowRootView extends ViewSupport
         return null; 
     }
 
+    /**
+     * Destroy and clear resources.
+     */
     public void destroy()
     {
         indexRepository.destroy();

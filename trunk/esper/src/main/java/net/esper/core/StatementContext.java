@@ -58,6 +58,7 @@ public final class StatementContext
      * @param patternResolutionService is the service that resolves pattern objects for the statement
      * @param joinSetComposerFactory is the factory for creating service objects that compose join results
      * @param outputConditionFactory is the factory for output condition objects
+     * @param namedWindowService is holding information about the named windows active in the system
      */
     public StatementContext(String engineURI,
                             String engineInstanceId,
@@ -262,6 +263,10 @@ public final class StatementContext
         return patternResolutionService;
     }
 
+    /**
+     * Returns the named window management service.
+     * @return service for managing named windows
+     */
     public NamedWindowService getNamedWindowService()
     {
         return namedWindowService;

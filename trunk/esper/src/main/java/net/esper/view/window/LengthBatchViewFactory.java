@@ -24,6 +24,9 @@ public class LengthBatchViewFactory implements DataWindowViewFactory
      */
     protected RelativeAccessByEventNIndexGetter relativeAccessGetterImpl;
     
+    /**
+     * Flag to indicate that the view must handle the removed events from a parent view.
+     */
     protected boolean isRemoveStreamHandling;
 
     private EventType eventType;

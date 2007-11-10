@@ -25,6 +25,7 @@ public final class KeepAllView extends ViewSupport implements DataWindowView, Cl
     /**
      * Ctor.
      * @param keepAllViewFactory for copying this view in a group-by
+     * @param viewUpdatedCollection for satisfying queries that select previous events in window order
      */
     public KeepAllView(KeepAllViewFactory keepAllViewFactory, ViewUpdatedCollection viewUpdatedCollection)
     {

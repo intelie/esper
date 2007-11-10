@@ -8,12 +8,20 @@ import java.util.Set;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 
+/**
+ * Uses an index to determine event to be deleted from a named window.
+ */
 public class DeletionStrategyIndexed implements DeletionStrategy
 {
     private final ExprNode joinExpr;
     private final EventBean[] eventsPerStream;
     private final TableLookupStrategy tableLookupStrategy;
 
+    /**
+     * Ctor.
+     * @param joinExpr the validated where clause of the on-delete
+     * @param tableLookupStrategy the strategy for looking up in an index the matching events using correlation
+     */
     public DeletionStrategyIndexed(ExprNode joinExpr, TableLookupStrategy tableLookupStrategy)
     {
         this.joinExpr = joinExpr;

@@ -294,21 +294,41 @@ public class EPStatementObjectModel implements Serializable
         return writer.toString();
     }
 
+    /**
+     * Returns the create-window clause for creating named windows, or null if this statement does not
+     * create a named window.
+     * @return named window creation clause
+     */
     public CreateWindowClause getCreateWindow()
     {
         return createWindow;
     }
 
+    /**
+     * Sets the create-window clause for creating named windows, or null if this statement does not
+     * create a named window.
+     * @param createWindow is the named window creation clause
+     */
     public void setCreateWindow(CreateWindowClause createWindow)
     {
         this.createWindow = createWindow;
     }
 
+    /**
+     * Returns the on-delete clause for deleting from named windows, or null if this statement
+     * does not delete from a named window
+     * @return on delete clause
+     */
     public OnDeleteClause getOnDelete()
     {
         return onDelete;
     }
 
+    /**
+     * Sets the on-delete clause for deleting from named windows, or null if this statement
+     * does not delete from a named window
+     * @param onDelete is the on-delete clause to set
+     */
     public void setOnDelete(OnDeleteClause onDelete)
     {
         this.onDelete = onDelete;

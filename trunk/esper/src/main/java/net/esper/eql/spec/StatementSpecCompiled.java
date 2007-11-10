@@ -44,6 +44,8 @@ public class StatementSpecCompiled
      * @param outputLimitSpec output limit
      * @param orderByList order by
      * @param subSelectExpressions list of subqueries
+     * @param onDeleteDesc describes on-delete statements
+     * @param createWindowDesc describes create-window statements
      */
     public StatementSpecCompiled(OnDeleteDesc onDeleteDesc,
                                  CreateWindowDesc createWindowDesc,
@@ -74,6 +76,10 @@ public class StatementSpecCompiled
         this.subSelectExpressions = subSelectExpressions;
     }
 
+    /**
+     * Returns the specification for an create-window statement.
+     * @return create-window spec, or null if not such a statement
+     */
     public CreateWindowDesc getCreateWindowDesc()
     {
         return createWindowDesc;
@@ -186,6 +192,10 @@ public class StatementSpecCompiled
         return subSelectExpressions;
     }
 
+    /**
+     * Returns the specification for an on-delete statement.
+     * @return on-delete spec, or null if not such a statement
+     */
     public OnDeleteDesc getOnDeleteDesc()
     {
         return onDeleteDesc;

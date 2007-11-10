@@ -38,10 +38,10 @@ public class CreateWindowClause implements Serializable
     }
 
     /**
-     * Adds an un-parameterized view to the stream.
+     * Adds an un-parameterized view to the named window.
      * @param namespace is the view namespace, for example "win" for most data windows
      * @param name is the view name, for example "length" for a length window
-     * @return stream
+     * @return named window creation clause
      */
     public CreateWindowClause addView(String namespace, String name)
     {
@@ -50,11 +50,11 @@ public class CreateWindowClause implements Serializable
     }
 
     /**
-     * Adds a parameterized view to the stream.
+     * Adds a parameterized view to the named window.
      * @param namespace is the view namespace, for example "win" for most data windows
      * @param name is the view name, for example "length" for a length window
      * @param parameters is a list of view parameters
-     * @return stream
+     * @return named window creation clause
      */
     public CreateWindowClause addView(String namespace, String name, List<Object> parameters)
     {
@@ -64,7 +64,7 @@ public class CreateWindowClause implements Serializable
 
     /**
      * Ctor.
-     * @param windowName is the stream name to insert into
+     * @param windowName is the name of the window to create
      * @param viewArr is the list of data window views
      */
     public CreateWindowClause(String windowName, View[] viewArr)
@@ -82,7 +82,8 @@ public class CreateWindowClause implements Serializable
 
     /**
      * Ctor.
-     * @param windowName is the stream name to insert into
+     * @param windowName is the name of the window to create
+     * @param views is a list of data window views
      */
     public CreateWindowClause(String windowName, List<View> views)
     {
@@ -101,21 +102,37 @@ public class CreateWindowClause implements Serializable
         ProjectedStream.toEQLViews(writer, views);
     }
 
+    /**
+     * Returns the window name.
+     * @return window name
+     */
     public String getWindowName()
     {
         return windowName;
     }
 
+    /**
+     * Sets the window name.
+     * @param windowName is the name to set
+     */
     public void setWindowName(String windowName)
     {
         this.windowName = windowName;
     }
 
+    /**
+     * Returns the views onto the named window.
+     * @return named window data views
+     */
     public List<View> getViews()
     {
         return views;
     }
 
+    /**
+     * Sets the views onto the named window.
+     * @param views to set
+     */
     public void setViews(List<View> views)
     {
         this.views = views;

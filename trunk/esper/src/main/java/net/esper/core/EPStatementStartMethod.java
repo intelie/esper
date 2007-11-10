@@ -340,7 +340,7 @@ public class EPStatementStartMethod
             NamedWindowProcessor processor = services.getNamedWindowService().getProcessor(onDeleteDesc.getWindowName());
 
             // validate join expression
-            EventType namedWindowType = processor.getNamedWindowType(onDeleteDesc.getWindowName());
+            EventType namedWindowType = processor.getNamedWindowType();
             FilterStreamSpecCompiled streamSpec = (FilterStreamSpecCompiled) statementSpec.getStreamSpecs().get(0);
             ExprNode validatedJoin = validateJoinNamedWindow(statementSpec.getOnDeleteDesc().getJoinExpr(),
                     namedWindowType, onDeleteDesc.getOptionalAsName(),

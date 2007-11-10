@@ -17,6 +17,8 @@ public interface StatementContextFactory
      * @param expression is the statement expression
      * @param engineServices is engine services
      * @param optAdditionalContext addtional context to pass to the statement
+     * @param optOnDeleteDesc the on-delete statement descriptor for named window context creation
+     * @param optCreateWindowDesc the create-window statement descriptor for named window context creation
      * @return statement context
      */
     public StatementContext makeContext(String statementId, 

@@ -94,6 +94,10 @@ public final class TimeWindow implements Iterable
         window.add(pair);
     }
 
+    /**
+     * Removes the event from the window, if remove stream handling is enabled.
+     * @param event to remove
+     */
     public final void remove(EventBean event)
     {
         if (reverseIndex == null)
@@ -194,6 +198,10 @@ public final class TimeWindow implements Iterable
         return window.isEmpty();
     }
 
+    /**
+     * Returns the reverse index, for testing purposes.
+     * @return reverse index
+     */
     protected Map<EventBean, LinkedList<EventBean>> getReverseIndex()
     {
         return reverseIndex;

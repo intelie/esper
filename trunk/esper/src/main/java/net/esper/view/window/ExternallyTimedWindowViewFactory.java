@@ -27,6 +27,9 @@ public class ExternallyTimedWindowViewFactory implements DataWindowViewFactory
      */
     protected long millisecondsBeforeExpiry;
 
+    /**
+     * Flag to indicate that the view must handle the removed events from a parent view.
+     */
     protected boolean isRemoveStreamHandling;
 
     /**
