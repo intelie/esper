@@ -28,6 +28,8 @@ public final class TimeWindow implements Iterable
 
     /**
      * Ctor.
+     * @param isSupportRemoveStream true to indicate the time window should support effective removal of events
+     * in the window based on the remove stream events received, or false to not accomodate removal at all
      */
     public TimeWindow(boolean isSupportRemoveStream)
     {

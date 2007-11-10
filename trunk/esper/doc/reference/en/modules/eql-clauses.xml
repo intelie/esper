@@ -13,7 +13,7 @@
         </para>
         
         <para>
-			EQL statements contain definitions of one or more views. Similar to tables in an SQL statement, views define the data available for querying and filtering. 
+			EQL statements contain definitions of one or more views. Similar to tables in a SQL statement, views define the data available for querying and filtering. 
 			Some views represent windows over a stream of events. Other views derive statistics from event properties, group events or handle unique event property values.
             Views can be staggered onto each other to build a chain of views. The Esper engine makes sure that views are reused among EQL statements for efficiency.
         </para>
@@ -25,21 +25,19 @@
 		<orderedlist spacing="compact">
 			<listitem>
 				<para>
-					Views that represent moving event windows: <literal>win:length</literal>, <literal>win:length_batch</literal>, <literal>win:time</literal>, <literal>win:time_batch</literal>, <literal>win:ext_time</literal>, <literal>ext:sort_window</literal>
+					Data window views: <literal>win:length</literal>, <literal>win:length_batch</literal>, <literal>win:time</literal>, <literal>win:time_batch</literal>, <literal>win:time_length_batch</literal>, <literal>win:time_accum</literal>, <literal>win:ext_timed</literal>, <literal>ext:sort_window</literal>, <literal>ext:time_order</literal>, <literal>std:unique</literal>, <literal>std:groupby</literal>, <literal>std:lastevent</literal>
 				</para>
 			</listitem>
 			<listitem>
 				<para>
-					Views for aggregation: <literal>std:unique</literal>, <literal>std:groupby</literal>, <literal>std:lastevent</literal> (note: the <literal>group-by</literal> clause and the <literal>std:groupby</literal> view are very similar in function, see view description for differences)
-				</para>
-			</listitem>
-			<listitem>
-				<para>
-					Views that derive statistics: <literal>std:size</literal>, <literal>stat:uni</literal>, <literal>stat:linest</literal>, <literal>stat:correl</literal>, <literal>stat:weighted_avg</literal>, 
-					<literal>stat:cube</literal>
+					Views that derive statistics: <literal>std:size</literal>, <literal>stat:uni</literal>, <literal>stat:linest</literal>, <literal>stat:correl</literal>, <literal>stat:weighted_avg</literal>, <literal>stat:cube</literal>
 				</para>
 			</listitem>
 		</orderedlist>
+
+        <para>
+			EQL provides the concept of <emphasis>named window</emphasis>. Named windows are data windows that can be inserted-into and deleted-from by one or more statements, and that can queried by one or more statements. Named windows have a global character, being visible and shared across an engine instance beyond a single statement. Use the <literal>CREATE WINDOW</literal> clause to create named windows. Use the <literal>INSERT INTO</literal> clause to insert data into a named window, and the <literal>ON DELETE</literal> clause to remove events from a named window. Finally, the name of the named window can occur in a statement's <literal>FROM</literal> clause to query a named window or include the named window in a join or subquery. 
+        </para>
 
         <para>
 			Esper can be extended by plugging-in custom developed views.
@@ -257,7 +255,7 @@ select * from MyEvent  /* this also works */]]></programlisting>
         <title>Specifying Event Streams : the <emphasis>From</emphasis> Clause</title>
 
 		<para>
-			The <literal>from</literal> clause is required in all EQL statements. It specifies one or more event streams. Each event stream can optionally be given a name by means of the <literal>as</literal> syntax.
+			The <literal>from</literal> clause is required in all EQL statements. It specifies one or more event streams or named windows. Each event stream or named window can optionally be given a name by means of the <literal>as</literal> syntax.
 		</para>
 		<synopsis>from <emphasis>stream_def</emphasis> [as <emphasis>name</emphasis>] [, <emphasis>stream_def</emphasis> [as <emphasis>name</emphasis>]] [, ...]</synopsis>
 
@@ -949,7 +947,7 @@ order by price, volume</programlisting>
 
 		<para>
 			The <literal>insert into</literal> clause is optional in Esper. This clause can be specified to make the results of a statement available as an event stream for use
-			in further statements. The clause can also be used to merge multiple event streams to form a single stream of events.
+			in further statements, or to insert events into a named window. The clause can also be used to merge multiple event streams to form a single stream of events.
 		</para>
 
 		<programlisting>insert into CombinedEvent
@@ -1247,12 +1245,12 @@ from pattern [every linkDown=LinkDownEvent -> linkUp=LinkUpEvent(ip=linkDown.ip)
 			</listitem>
 			<listitem>
 				<para>
-					Your database software must support JDBC prepared statements that provide statement meta data at compilation time. Most major databases provide this function.
+					Your database software must support JDBC prepared statements that provide statement meta data at compilation time. Most major databases provide this function. A workaround is available for databases that do not provide this function.
 				</para>
 			</listitem>
 			<listitem>
 				<para>
-					JDBC drivers must support the getMetadata feature
+					JDBC drivers must support the getMetadata feature. A workaround is available as below for JDBC drivers that don't support getting metadata.
 				</para>
 			</listitem>
 		</itemizedlist>
@@ -1397,6 +1395,213 @@ select orderId, orderAmount from
 			</para>
 			<programlisting><![CDATA[select mycol from sql:myDB [
   'select mycol from mytesttable ${$ESPER-SAMPLE-WHERE} where ....'], ...]]></programlisting>
+		</sect2>
+
+	</sect1>
+	
+	<sect1 id="named_overview" revision="1">
+		<title>Creating and Using Named Windows</title>
+		
+		<para>
+			A <emphasis>named window</emphasis> is a global data window that can take part in many statement queries, and that can be inserted-into and deleted-from by multiple statements.
+		</para>
+		
+		<para>
+			The <literal>create window</literal> clause declares a new named window. The named window starts up empty. Events must be inserted into the named window using the <literal>insert into</literal> clause. Events can also be deleted from a named window via the <literal>on delete</literal> clause. 
+		</para>	
+			
+		<para>
+			Events enter the named window by means of <literal>insert into</literal> clause of a <literal>select</literal> statement. Events leave a named window either because the expiry policy of the declared data window removes events from the named window, or through statements that use the <literal>on delete</literal> clause to explicitly delete from a named window.
+		</para>	
+		
+		<para>
+			To query a named window, simply use the window name in the <literal>from</literal> clause of your statement, including statements that contain subqueries, joins and outer-joins.
+		</para>	
+		
+		<sect2 id="named_create" revision="1">
+			<title>Creating Named Windows: the <literal>Create Window</literal> clause</title>
+			
+			<para>
+				The <literal>create window</literal> statement creates a named window by specifying a window name and one or more data window views, as well as the type of event to hold in the named window.
+			</para>
+
+			<para>
+				The syntax for creating a named window is as follows: 
+			</para>
+			<synopsis>create window <emphasis>window_name</emphasis>.<emphasis>view_specifications</emphasis> as [select <emphasis>list_of_properties</emphasis> from] <emphasis>event_type</emphasis></synopsis>
+				
+			<para>
+				The <emphasis>window_name</emphasis> you assign to the named window can be any identifier. The name should not already be in use as an event type or stream name.
+			</para>
+				
+			<para>
+				The <emphasis>view_specifications</emphasis> are one or more data window views that define the expiry policy for removing events from the data window. Named windows must explicitly declare a data window view. This is required to ensure that the policy for retaining events in the data window is well defined. To keep all events, use the keep-all view: It indicates that the named window should keep all events and only remove events from the named window that are deleted via the <literal>on delete</literal> clause. The view specification can only list data window views, derived-value views are not allowed since these don't represent an expiry policy. 					
+			</para>
+				
+			<para>				
+				The <literal>select</literal> clause and <emphasis>list_of_properties</emphasis> are optional. If present, they specify the column names and, implicitly by definition of the event type, the column types of events held by the named window. Expressions other then column names are not allowed in the <literal>select</literal> list of properties. Wildcards (*) and wildcards with additional properties can also be used.
+			</para>
+
+			<para>				
+				Finally, the <emphasis>event_type</emphasis> is required and provides the name of the event type of events held in the data window, unless column names and types have been explicitly selected via <literal>select</literal>.
+			</para>
+
+			<para>
+				The next statement creates a named window 'AllOrdersNamedWindow' for which the expiry policy is simply to keep all events. Assume that the event type 'OrderMapEventType' has been configured. The named window is to hold events of type 'OrderMapEventType':
+			</para>
+			<programlisting><![CDATA[create window AllOrdersNamedWindow.win:keepall() as OrderMapEventType]]></programlisting>
+
+			<para>
+				The below sample statement demonstrates the <literal>select</literal> syntax. It defines a named window in which each row has the three properties 'symbol', 'volume' and 'price'. This named window actively removes events from the window that are older then 30 seconds.
+			</para>
+			<programlisting><![CDATA[create window OrdersTimeWindow.win:time(30 sec) as 
+  select symbol, volume, price from OrderEvent]]></programlisting>
+
+			<para>
+				In an alternate form, the <literal>as</literal> keyword can be used to rename columns:
+			</para>
+			<programlisting><![CDATA[create window OrdersTimeWindow.win:time(30 sec) as 
+  select symbol as sym, volume as vol, price from OrderEvent]]></programlisting>
+
+			<para>
+				A new named window starts up empty. It must be explicitly inserted into by one or more statements, as discussed below. 
+			</para>
+
+			<para>
+				If your application stops or destroys the statement that creates the named window, any consuming statements no longer receive insert or remove stream events. The named window can also not be deleted from after it was stopped or destroyed.
+			</para>
+
+			<para>
+				The <literal>create window</literal> statement posts to listeners any events that are inserted into the named window as new data. The statement posts all deleted events or events that expire out of the data window to listeners as the remove stream (old data). The named window contents can also be iterated on via the pull API to obtain the current contents of a named window.
+			</para>
+		</sect2>
+
+		<sect2 id="named_delete" revision="1">
+			<title>Deleting From Named Windows: the <literal>On Delete</literal> clause</title>
+			
+			<para>
+				An <literal>on delete</literal> clause removes events from a named window. The clause can be used to remove all events, or only events that match certain criteria, or events that correlate with an arriving event.
+			</para>
+
+			<para>
+				The syntax for the <literal>on delete</literal> clause is as follows: 
+			</para>
+			<synopsis>on <emphasis>event_type</emphasis>[<emphasis>(filter_criteria)</emphasis>] [as <emphasis>alias_name</emphasis>]
+delete from <emphasis>window_name</emphasis> [as <emphasis>alias_name</emphasis>]
+[where <emphasis>criteria_expression</emphasis>]</synopsis>
+				
+			<para>
+				The <emphasis>event_type</emphasis> is the name or alias of the type of events that trigger removal from the named window. It is optionally followed by <emphasis>filter_criteria</emphasis> which are filter expressions to apply to arriving events. The optional <literal>as</literal> keyword can be used to assign an alias for use in the <literal>where</literal> clause.
+			</para>
+				
+			<para>
+				The <emphasis>window_name</emphasis> is simply the name of the named window to delete events from. The <literal>as</literal> keyword is also available to assign an alias to the named window.
+			</para>
+				
+			<para>
+				The optional <literal>where</literal> clause contains a <emphasis>criteria_expression</emphasis> that correlates the arriving (triggering) event to the events to be removed from the named window. The <emphasis>criteria_expression</emphasis> may also simply filter for events in the named window to be removed from the named window.
+			</para>
+
+			<para>				
+				Let's look at a couple of examples. In the simplest form, this statement deletes all events from the named window 'AllOrdersNamedWindow' when any 'FlushOrderEvent' arrives:
+			</para>
+			<programlisting><![CDATA[on FlushOrderEvent delete from AllOrdersNamedWindow]]></programlisting>
+
+			<para>				
+				This example adds a <literal>where</literal> clause to the example above. Upon arrival of a triggering 'ZeroVolumeEvent', the statement removes from the named window any orders that have a volume of zero or less:
+			</para>
+			<programlisting><![CDATA[on ZeroVolumeEvent delete from AllOrdersNamedWindow where volume <= 0]]></programlisting>
+
+			<para>				
+				The next example shows a more complete use of the syntax, and correlates the triggering event with events held by the named window:
+			</para>
+			<programlisting><![CDATA[on NewOrderEvent(volume>0) as myNewOrders
+delete from AllOrdersNamedWindow as myNamedWindow 
+where myNamedWindow.symbol = myNewOrders.symbol]]></programlisting>
+
+			<para>				
+				In the above sample statement, only if a 'NewOrderEvent' event with a volume greater then zero arrives does the statement trigger. Upon triggering, all events in the named window that have the same value for the symbol property as the triggering 'NewOrderEvent' event are then removed from the named window. The statement also showcases the <literal>as</literal> keyword to assign alias names for use in the <literal>where</literal> expression.
+			</para>
+
+			<para>				
+				For correlated queries (as above) that correlate triggering events with events held by a named window, Esper internally creates efficient indexes to enable high performance removal of events especially from named windows that hold large numbers of events.
+			</para>
+
+			<para>
+				Your application can subscribe a listener to your <literal>on delete</literal> statements to determine removed events. The statement post any events that are deleted from a named window to all listeners attached to the statement as new data. Upon iteration, the statement provides the last deleted event, if any.
+			</para>
+		</sect2>
+
+		<sect2 id="named_inserting" revision="1">
+			<title>Inserting Into Named Windows</title>
+			
+			<para>
+				The <literal>insert into</literal> clause inserts events into named windows. Your application must ensure that the column names and types match the declared column names and types of the named window to be inserted into.
+			</para>
+			
+			<para>
+				In this example we first create a named window using some of the columns of an OrderEvent event type:
+			</para>
+			<programlisting><![CDATA[create window OrdersWindow.win:keepall() as select symbol, volume, price from OrderEvent]]></programlisting>
+			
+			<para>
+				The insert into the named window selects individual columns to be inserted:
+			</para>
+			<programlisting><![CDATA[insert into OrdersWindow(symbol, volume, price) select name, count, price from FXOrderEvent
+// .. alternative form...
+insert into OrdersWindow select name as symbol, vol as volume, price from FXOrderEvent]]></programlisting>
+
+			<para>
+				Following above statement, the engine enters every FXOrderEvent arriving into the engine into the named window 'OrdersWindow'.
+			</para>
+
+			<para>
+				The following EQL creates a named window for an event type backed by a Java class, and inserts into the window any 'OrderEvent' where the symbol value is IBM:
+			</para>
+			<programlisting><![CDATA[create window OrdersWindow as com.mycompany.OrderEvent
+insert into OrdersWindow select * from com.mycompany.OrderEvent(symbol='IBM')]]></programlisting>
+
+			<para>
+				The last example adds one column named 'derivedPrice' to the 'OrderEvent' type by specifying a wildcard, and uses a static function to populate the column:
+			</para>
+			<programlisting><![CDATA[create window OrdersWindow as select *, price as derivedPrice from OrderEvent
+insert into OrdersWindow select *, MyFunc.func(price, percent) as derivedPrice from OrderEvent]]></programlisting>
+		</sect2>
+
+		<sect2 id="named_selecting" revision="1">
+			<title>Selecting From Named Windows</title>
+			
+			<para>
+				A named window can be referred to by any statement in the <literal>from</literal> clause of the statement. Additional views may be used onto named windows however such views cannot include data window views.
+			</para>
+			
+			<para>
+				A statement selecting from a named window 'AllOrdersNamedWindow' is shown next. The named window must first be created via the <literal>create window</literal> clause before use.
+			</para>
+			<programlisting><![CDATA[select * from AllOrdersNamedWindow]]></programlisting>
+			
+			<para>
+				The statement as above simply receives the insert and remove stream of the named window and reports that stream to its listeners. An iterator on such statement returns the last new event in the named window, if any.
+			</para>
+
+			<para>
+				The next statement derives an average price per symbol from events posted by a named window: 
+			</para>
+			<programlisting><![CDATA[select symbol, avg(price) from AllOrdersNamedWindow group by symbol]]></programlisting>
+			
+			<para>
+				Your application may create a consuming statement such as above on an empty named window, or your application may create the above statement on an already filled named window. The engine provides correct results in either case: 
+				At the time of statement creation the Esper engine provides the current named window contents to the consuming statement. Thus, your statement deriving data from a named window does not start empty if the named window already holds one or more events.
+			</para>
+
+			<para>
+				The following example declares a further view into the named window. Such a view can be a plug-in view or one of the built-in views, but cannot be a data window view (with the exception of the group-by view which is allowed).
+			</para>
+			<programlisting><![CDATA[select * from AllOrdersNamedWindow.mycompany:mypluginview()]]></programlisting>
+			
+			<para>
+				Data window views cannot be used onto named windows since named windows post insert and remove streams for the events entering and leaving the named window, thus the expiry policy and batch behavior are well defined by the data window declared for the named window.
+			</para>
 		</sect2>
 
 	</sect1>

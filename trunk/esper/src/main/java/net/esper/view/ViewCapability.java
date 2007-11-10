@@ -18,6 +18,7 @@ public interface ViewCapability
      * @param viewFactories is a list of view factories that originate the final views
      * @param statementContext is the statement-level services
      * @return true to indicate inspection success, or false to indicate inspection failure
+     * @throws ExprValidationException to indicate the inspect operation failed and a capability is not provided 
      */
     public boolean inspect(int streamNumber, List<ViewFactory> viewFactories, StatementContext statementContext)
         throws ExprValidationException;

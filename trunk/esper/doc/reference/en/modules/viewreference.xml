@@ -6,6 +6,153 @@
 			The section on <xref linkend="processingmodel"/> provides additional information on the relationship of views, filtering and aggregation.
         </para>
         
+        <para>
+            Esper organizes built-in views in namespaces and names. Views that provide sliding or tumbling data windows are in the <literal>win</literal> namespace. Other most commonly used views are in the <literal>std</literal> namespace. The <literal>ext</literal> namespace are views that order events. The <literal>stat</literal> namespace is used for views that derive statistical data.
+        </para>
+
+        <para>
+            Esper distinguishes between data window views and derived-value views. Data windows, or data window views, are views that retain incoming events until an expiry policy indicates to release events.             
+        </para>
+
+        <para>
+            The next table summarizes data window views:
+        </para>
+
+	   <table frame="topbot">
+			<title>Built-in Data Window Views</title>
+			<tgroup cols="3">
+				<colspec colwidth="1.5*"/>
+				<colspec colwidth="2.0*"/>
+				<colspec colwidth="2.0*"/>
+				<thead>
+					<row>
+						<entry>View</entry>
+						<entry>Syntax</entry>
+						<entry>Description</entry>
+					</row>
+				</thead>
+				<tbody>
+					<row>
+						<entry>Length window</entry>
+						<entry>win:length(<emphasis>size</emphasis>)</entry>
+						<entry>Sliding length window extending the specified number of elements into the past</entry>
+					</row>
+					<row>
+						<entry>Length batch window</entry>
+						<entry>win:length_batch(<emphasis>size</emphasis>)</entry>
+						<entry>Tumbling window that batches events and releases them when a given minimum number of events has been collected</entry>
+					</row>
+					<row>
+						<entry>Time window</entry>
+						<entry>win:time(<emphasis>time period</emphasis>)</entry>
+						<entry>Sliding time window extending the specified time interval into the past</entry>
+					</row>
+					<row>
+						<entry>Externally-timed window</entry>
+						<entry>win:ext_timed(<emphasis>timestamp property</emphasis>, <emphasis>time period</emphasis>)</entry>
+						<entry>Sliding time window, based on the millisecond time value supplied by an event property</entry>
+					</row>
+					<row>
+						<entry>Time batch window</entry>
+						<entry>win:time_batch(<emphasis>time period</emphasis>)</entry>
+						<entry>Tumbling window that batches events and releases them every specified time interval</entry>
+					</row>
+					<row>
+						<entry>Time-Length combination batch window</entry>
+						<entry>win:time_length_batch(<emphasis>time period, size</emphasis>)</entry>
+						<entry>Tumbling multi-policy time and length batch window with flow control options</entry>
+					</row>
+					<row>
+						<entry>Time-Accumulating window</entry>
+						<entry>win:time_accum(<emphasis>time period</emphasis>)</entry>
+						<entry>Sliding time window accumulates events until no more events arrive within a given time interval</entry>
+					</row>
+					<row>
+						<entry>Keep-All window</entry>
+						<entry>win:keepall()</entry>
+						<entry>The keep-all data window view simply retains all events</entry>
+					</row>
+					<row>
+						<entry>Sorted window</entry>
+						<entry>ext:sort(<emphasis>property names, descending, size</emphasis>)</entry>
+						<entry>Sorts by values of the specified properties and keeps only the top events up to the given size</entry>
+					</row>
+					<row>
+						<entry>Time-Order View</entry>
+						<entry>ext:time_order(<emphasis>property name, time_period</emphasis>)</entry>
+						<entry>Orders events that arrive out-of-order, using a timestamp-property supplied by each event to be ordered</entry>
+					</row>
+					<row>
+						<entry>Unique</entry>
+						<entry>std:unique(<emphasis>property name</emphasis>)</entry>
+						<entry>Retains only the most recent among events having the same value for the specified property. Acts as a length window of size 1 for each distinct value of the property</entry>
+					</row>
+					<row>
+						<entry>Group By</entry>
+						<entry>std:groupby(<emphasis>property name</emphasis>)</entry>
+						<entry>Groups events into sub-views by the value of the specified field, generally used to provide a separate data window per group</entry>
+					</row>
+					<row>
+						<entry>Last Event</entry>
+						<entry>std:lastevent()</entry>
+						<entry>Retains the last event, acts as a length window of size 1</entry>
+					</row>
+				</tbody>
+			</tgroup>
+		</table> 
+		
+        <para>
+			The table below summarizes views that derive information from received events and present the derived information as an insert and remove stream: 
+        </para>
+
+	   <table frame="topbot">
+			<title>Built-in Derived-Value Views</title>
+			<tgroup cols="3">
+				<colspec colwidth="1.5*"/>
+				<colspec colwidth="2.0*"/>
+				<colspec colwidth="2.0*"/>
+				<thead>
+					<row>
+						<entry>View</entry>
+						<entry>Syntax</entry>
+						<entry>Description</entry>
+					</row>
+				</thead>
+				<tbody>
+					<row>
+						<entry>Size</entry>
+						<entry>std:size()</entry>
+						<entry>Derives a count of the number of events in a data window, or in an insert stream if used without a data window.</entry>
+					</row>
+					<row>
+						<entry>Univariate statistics</entry>
+						<entry>stat:uni(<emphasis>property name</emphasis>)</entry>
+						<entry>Calculates univariate statistics on an event property</entry>
+					</row>
+					<row>
+						<entry>Regression</entry>
+						<entry>stat:linest(<emphasis>property name, property name</emphasis>)</entry>
+						<entry>Calculates regression on two event properties</entry>
+					</row>
+					<row>
+						<entry>Correlation</entry>
+						<entry>stat:correl(<emphasis>property name, property name</emphasis>)</entry>
+						<entry>Calculates the correlation value on two event properties</entry>
+					</row>
+					<row>
+						<entry>Weighted average</entry>
+						<entry>stat:weighted_avg(<emphasis>property name, property name</emphasis>)</entry>
+						<entry>Calculates weighted average given a weight field and a field to compute the average for</entry>
+					</row>
+					<row>
+						<entry>Multi-dimensional statistics</entry>
+						<entry>stat:cube(<emphasis>values to derive, property datapoint, property column, row, page</emphasis>)</entry>
+						<entry>Groups and calculates statistics by one or more event properties</entry>
+					</row>
+				</tbody>
+			</tgroup>
+		</table> 
+        
         <sect1 id="win-views" >
            <title>Window views</title>
 
@@ -52,7 +199,7 @@
 			   <title>Time window (<literal>win:time</literal>)</title>
 		
 				<para>
-					This view is a moving (sliding) time window extending from the specified time interval into the past based on the system time.
+					This view is a moving (sliding) time window extending the specified time interval into the past based on the system time.
 					This view takes a time period (see <xref linkend="eql-syntax-time-periods"/>) or a number of seconds as a parameter:
 				</para>
 
@@ -84,13 +231,13 @@ win:time(125)</programlisting>
 			   <title>Externally-timed window (<literal>win:ext_timed</literal>)</title>
 		
 				<para>
-					Similar to the time window, this view is a moving (sliding) time window extending from the specified time interval into the past, but based on the millisecond
+					Similar to the time window, this view is a moving (sliding) time window extending the specified time interval into the past, but based on the millisecond
 					time value supplied by an event property. The view takes two parameters: the name of the event property to return the long-typed timestamp value,
 					and a time period or a number of seconds:
 				</para>
 
-				<synopsis>win:time(<emphasis>timestamp_property_name</emphasis>, <emphasis>time_period</emphasis>)</synopsis>
-				<synopsis>win:time(<emphasis>timestamp_property_name</emphasis>, <emphasis>number_of_seconds</emphasis>)</synopsis>
+				<synopsis>win:ext_timed(<emphasis>timestamp_property_name</emphasis>, <emphasis>time_period</emphasis>)</synopsis>
+				<synopsis>win:ext_timed(<emphasis>timestamp_property_name</emphasis>, <emphasis>number_of_seconds</emphasis>)</synopsis>
 
 				<para>
 					This view holds stock tick events of the last 10 seconds based on the timestamp property in <literal>StockTickEvent</literal>.
@@ -166,7 +313,7 @@ following conditions occurs, whichever occurs first: the data window has collect
 			</sect2>
 
 			<sect2 id="view-win-time-accumulating" >
-			   <title>Time-Accumulting window (<literal>win:time_accum</literal>)</title>
+			   <title>Time-Accumulating window (<literal>win:time_accum</literal>)</title>
 		
 				<para>
 					This data window view is a specialized moving (sliding) time window that differs from the regular time window in that it accumulates events until no more events arrive within a given time interval, and only then releases the accumulated events as a remove stream.
@@ -195,6 +342,29 @@ following conditions occurs, whichever occurs first: the data window has collect
 					If there are no events arriving, then the view does not post results to listeners. 
 				</para>
 			</sect2>
+
+			<sect2 id="view-win-keepall" >
+			   <title>Keep-All window (<literal>win:keepall</literal>)</title>
+		
+				<para>
+					This keep-all data window view simply retains all events. The view does not remove events from the data window, unless used with a named window and the <literal>on delete</literal> clause.
+				</para>
+
+				<para>
+					The view accepts no parameters. The synopsis is as follows:
+				</para>				
+				<synopsis>win:keepall()</synopsis>
+
+				<para>
+					The next example shows a keep-all window that accumulates all events received into the window:
+				</para>
+				<programlisting><![CDATA[ select * from MyEvent.win:keepall()]]></programlisting>
+
+				<para>
+					Note that since the view does not release events, care must be taken to prevent retained events from using all available memory.
+				</para>
+			</sect2>
+
 	   </sect1>
 
         <sect1 id="std-views" >

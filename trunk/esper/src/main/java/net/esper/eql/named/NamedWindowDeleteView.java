@@ -4,6 +4,7 @@ import net.esper.event.EventBean;
 import net.esper.event.EventType;
 import net.esper.util.ExecutionPathDebugLog;
 import net.esper.view.*;
+import net.esper.collection.SingleEventIterator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -12,9 +13,10 @@ import java.util.Iterator;
 public class NamedWindowDeleteView extends ViewSupport implements StatementStopCallback
 {
     private static final Log log = LogFactory.getLog(NamedWindowDeleteView.class);
-    private EventType eventType;
+    private final EventType eventType;
     private final DeletionStrategy deletionStrategy;
     private final NamedWindowRootView removeStreamView;
+    private EventBean lastEvent;
 
     public NamedWindowDeleteView(StatementStopService statementStopService,
                                  DeletionStrategy deletionStrategy,
@@ -23,6 +25,7 @@ public class NamedWindowDeleteView extends ViewSupport implements StatementStopC
         this.deletionStrategy = deletionStrategy;
         this.removeStreamView = removeStreamView;
         statementStopService.addSubscriber(this);
+        eventType = removeStreamView.getEventType();
     }
 
     public void statementStopped()
@@ -49,12 +52,9 @@ public class NamedWindowDeleteView extends ViewSupport implements StatementStopC
         if ((eventsToDelete != null) && (eventsToDelete.length > 0))
         {
             removeStreamView.update(null, eventsToDelete);
+            updateChildren(eventsToDelete, null);            
+            lastEvent = eventsToDelete[eventsToDelete.length - 1];
         }
-    }
-
-    public void setParent(Viewable parent)
-    {
-        eventType = parent.getEventType();
     }
 
     public EventType getEventType()
@@ -64,6 +64,6 @@ public class NamedWindowDeleteView extends ViewSupport implements StatementStopC
 
     public Iterator<EventBean> iterator()
     {
-        throw new UnsupportedOperationException("On-delete expression does not support iteration");  
+        return new SingleEventIterator(lastEvent);  
     }
 }

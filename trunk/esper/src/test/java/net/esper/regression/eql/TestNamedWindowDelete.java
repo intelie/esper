@@ -20,6 +20,7 @@ public class TestNamedWindowDelete extends TestCase
     private EPServiceProvider epService;
     private SupportUpdateListener listenerWindow;
     private SupportUpdateListener listenerSelect;
+    private SupportUpdateListener listenerDelete;
 
     public void setUp()
     {
@@ -30,6 +31,7 @@ public class TestNamedWindowDelete extends TestCase
         epService.initialize();
         listenerWindow = new SupportUpdateListener();
         listenerSelect = new SupportUpdateListener();
+        listenerDelete = new SupportUpdateListener();
     }
 
     public void testDeleteAll()
@@ -41,7 +43,9 @@ public class TestNamedWindowDelete extends TestCase
 
         // create delete stmt
         String stmtTextDelete = "on " + SupportBean_A.class.getName() + " delete from MyWindow";
-        epService.getEPAdministrator().createEQL(stmtTextDelete);
+        EPStatement stmtDelete = epService.getEPAdministrator().createEQL(stmtTextDelete);
+        stmtDelete.addListener(listenerDelete);
+        ArrayAssertionUtil.assertEqualsAnyOrder(stmtDelete.getEventType().getPropertyNames(), new String[] {"a", "b"});
 
         // create insert into
         String stmtTextInsertOne = "insert into MyWindow select string as a, intPrimitive as b from " + SupportBean.class.getName();
@@ -57,30 +61,39 @@ public class TestNamedWindowDelete extends TestCase
         sendSupportBean_A("A1");
         assertFalse(listenerWindow.isInvoked());
         assertFalse(listenerSelect.isInvoked());
+        assertFalse(listenerDelete.isInvoked());
 
         // send 1 event
         sendSupportBean("E1", 1);
         ArrayAssertionUtil.assertProps(listenerWindow.assertOneGetNewAndReset(), fields, new Object[] {"E1", 1});
         ArrayAssertionUtil.assertProps(listenerSelect.assertOneGetNewAndReset(), fields, new Object[] {"E1", 1});
         ArrayAssertionUtil.assertEqualsExactOrder(stmtCreate.iterator(), fields, new Object[][] {{"E1", 1}});
+        ArrayAssertionUtil.assertEqualsExactOrder(stmtDelete.iterator(), fields, null);
 
         // Delete all events, 1 row expected
         sendSupportBean_A("A2");
         ArrayAssertionUtil.assertProps(listenerWindow.assertOneGetOldAndReset(), fields, new Object[] {"E1", 1});
         ArrayAssertionUtil.assertProps(listenerSelect.assertOneGetOldAndReset(), fields, new Object[] {"E1", 1});
         ArrayAssertionUtil.assertEqualsExactOrder(stmtCreate.iterator(), fields, null);
+        ArrayAssertionUtil.assertProps(listenerDelete.assertOneGetNewAndReset(), fields, new Object[] {"E1", 1});
+        ArrayAssertionUtil.assertEqualsExactOrder(stmtDelete.iterator(), fields, new Object[][] {{"E1", 1}});
 
         // send 2 events
         sendSupportBean("E2", 2);
         sendSupportBean("E3", 3);
         listenerWindow.reset();
         ArrayAssertionUtil.assertEqualsExactOrder(stmtCreate.iterator(), fields, new Object[][] {{"E2", 2}, {"E3", 3}});
+        assertFalse(listenerDelete.isInvoked());
 
         // Delete all events, 2 rows expected
         sendSupportBean_A("A2");
         ArrayAssertionUtil.assertProps(listenerWindow.getLastOldData()[0], fields, new Object[] {"E2", 2});
         ArrayAssertionUtil.assertProps(listenerWindow.getLastOldData()[1], fields, new Object[] {"E3", 3});
         ArrayAssertionUtil.assertEqualsExactOrder(stmtCreate.iterator(), fields, null);
+        assertEquals(2, listenerDelete.getLastNewData().length);
+        ArrayAssertionUtil.assertProps(listenerDelete.getLastNewData()[0], fields, new Object[] {"E2", 2});
+        ArrayAssertionUtil.assertProps(listenerDelete.getLastNewData()[1], fields, new Object[] {"E3", 3});
+        ArrayAssertionUtil.assertEqualsExactOrder(stmtDelete.iterator(), fields, new Object[][] {{"E3", 3}});
     }
 
     public void testDeleteCondition()

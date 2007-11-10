@@ -5,6 +5,9 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Create a named window, defining the parameter of the named window such as window name and data window view name(s).
+ */
 public class CreateWindowClause implements Serializable
 {
     private static final long serialVersionUID = 0L;
@@ -12,11 +15,23 @@ public class CreateWindowClause implements Serializable
     private String windowName;
     private List<View> views;
 
-    public static CreateWindowClause create(String windowName)
+    /**
+     * Creates a clause to create a named window.
+     * @param windowName is the name of the named window
+     * @param view is a data window view
+     * @return create window clause
+     */
+    public static CreateWindowClause create(String windowName, View view)
     {
-        return new CreateWindowClause(windowName, (View[]) null);
+        return new CreateWindowClause(windowName, new View[] {view});
     }
 
+    /**
+     * Creates a clause to create a named window.
+     * @param windowName is the name of the named window
+     * @param views is the data window views
+     * @return create window clause
+     */
     public static CreateWindowClause create(String windowName, View... views)
     {
         return new CreateWindowClause(windowName, views);
@@ -50,6 +65,7 @@ public class CreateWindowClause implements Serializable
     /**
      * Ctor.
      * @param windowName is the stream name to insert into
+     * @param viewArr is the list of data window views
      */
     public CreateWindowClause(String windowName, View[] viewArr)
     {
