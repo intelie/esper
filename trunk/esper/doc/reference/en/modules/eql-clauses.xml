@@ -1225,9 +1225,22 @@ from pattern [every linkDown=LinkDownEvent -> linkUp=LinkUpEvent(ip=linkDown.ip)
 		</para>
 			
 		<para>
-			Esper can join and outer join all types of event streams to stored data. In order for such data sources to become accessible to Esper, some configuration is required. The <xref linkend="config-database-ref"/> explains the required configuration for database access in greater detail, and includes information of configuring a query result cache.
+			Esper can join and outer join all types of event streams to stored data. In order for such data sources to become accessible to Esper, some configuration is required. The <xref linkend="config-database-ref"/> explains the required configuration for database access in greater detail, and includes information on configuring a query result cache.
 		</para>
 		
+		<para>
+			Esper does not parse of otherwise inspect your SQL query. Therefore your SQL can make use of any database-specific SQL language extensions or features that your database provides.
+		</para>
+
+		<para>
+			If you have enabled query result caching in your Esper database configuration, Esper retains SQL query results in cache following the configured cache eviction policy. 
+		</para>
+			
+		<para>
+			Also if you have enabled query result caching in your Esper database configuration and provide EQL <literal>where</literal> clause and/or <literal>on</literal> clause (outer join) expressions, then 
+			Esper builds indexes on the SQL query results to enable fast lookup. This is especially useful if your queries return a large number of rows. For building the proper indexes, Esper inspects the expression found in your EQL query <literal>where</literal> clause, if present. For outer joins, Esper also inspects your EQL query <literal>on</literal> clause. Esper analyzes the EQL <literal>on</literal> clause and <literal>where</literal> clause expressions, if present, looking for property comparison with or without logical AND-relationships between properties. When a SQL query returns rows for caching, Esper builds the appropriate index and lookup strategies for fast row matching against indexes.
+		</para>
+
 		<para>
 			The following restrictions currently apply:
 		</para>
@@ -1313,6 +1326,40 @@ from pattern [every linkDown=LinkDownEvent -> linkUp=LinkUpEvent(ip=linkDown.ip)
 				Any window, such as the time window, generates insert stream (istream) events as events enter the window, and remove stream (rstream) events as events leave the window. The engine executes the given SQL query for each <literal>CustomerCallEvent</literal> in both the insert stream and the remove stream. As a performance optimization, the <literal>istream</literal> or <literal>rstream</literal> keywords in the select-clause can be used to instruct the engine to only join insert stream or remove stream events, reducing the number of SQL query executions.
 			</para>
 			
+		</sect2>
+
+		<sect2 id="histdata_join_where" revision="1">
+			<title>SQL Query and the EQL <literal>Where</literal> Clause</title>
+			
+			<para>
+				Consider using the EQL <literal>where</literal> clause to join the SQL query result to your event stream. Similar to EQL joins and outer-joins that join event streams or patterns, the EQL <literal>where</literal> clause provides join criteria between the SQL query results and the event stream (as a side note, an SQL <literal>where</literal> clause is a filter of rows executed by your database on your database server before returning SQL query results).
+			</para>
+
+			<para>
+				Esper analyzes the expression in the EQL <literal>where</literal> clause, if present, and builds the appropriate indexes from that information at runtime, to ensure fast matching of event stream events to SQL query results, even if your SQL query returns a large number of rows. Your applications must ensure to configure a cache for your database using Esper configuration, as such indexes are held with regular data in a cache. If you application does not enable caching of SQL query results, the engine does not build indexes on cached data.
+			</para>
+
+			<para>
+				The sample EQL statement below joins an event stream consisting of <literal>OrderEvent</literal> events with the results of an SQL query against the database named <literal>MyRefDB</literal> and table <literal>SymbolReference</literal>: 
+			</para>
+			
+			<programlisting><![CDATA[select symbol, symbolDesc from OrderEvent as orders,
+  sql:MyRefDB ['select symbolDesc from SymbolReference'] as reference
+  where reference.symbol = orders.symbol]]></programlisting>
+
+			<para>
+				Notice how the EQL <literal>where</literal> clause joins the <literal>OrderEvent</literal> stream to the <literal>SymbolReference</literal> table. In this example, the SQL query itself does not have a SQL <literal>where</literal> clause 
+				and therefore returns all rows from table <literal>SymbolReference</literal>.
+			</para>
+
+			<para>
+				If your application enables caching, the SQL query fires only at the arrival of the first <literal>OrderEvent</literal> event. When the second <literal>OrderEvent</literal> arrives, the join execution uses the cached query result. If the caching policy that you specified in the Esper database configuration evicts the SQL query result from cache, then the engine fires the SQL query again to obtain a new result and places the result in cache. 
+			</para>
+			
+			<para>
+				If SQL result caching is enabled and your EQL <literal>where</literal> clause, as show in the above example, provides the properties to join, then the engine indexes the SQL query results in cache and retains the index together with the query result in cache. Thus your application can benefit from high performance index-based lookups as long as the SQL query results are found in cache. 
+			</para>
+
 		</sect2>
 
 		<sect2 id="histdata_outerjoin" revision="1">
