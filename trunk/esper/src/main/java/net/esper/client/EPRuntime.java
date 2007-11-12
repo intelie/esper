@@ -98,4 +98,27 @@ public interface EPRuntime
      * @param event to route internally for processing by the event stream processing runtime
      */
     public void route(final Object event);
+
+    /**
+     * Sets a listener to receive events that are unmatched by any statement.
+     * <p>
+     * Events that can be unmatched are all events that are send into a runtime via one
+     * of the sendEvent methods, or that have been generated via insert-into clause.
+     * <p>
+     * For an event to be unmatched by any statement, the event must not match any
+     * statement's event stream filter criteria (a where-clause is NOT a filter criteria for a stream, as below).
+     * <p>
+     * Note: In the following statement a MyEvent event does always match
+     * this statement's event stream filter criteria, regardless of the value of the 'quantity' property.
+     * <pre>select * from MyEvent where quantity > 5</pre>
+     * <br>
+     * In the following statement only a MyEvent event with a 'quantity' property value of 5 or less does not match
+     * this statement's event stream filter criteria:
+     * <pre>select * from MyEvent(quantity > 5)</pre>
+     * <p>
+     * For patterns, if no pattern sub-expression is active for such event, the event is also unmatched.
+     * @param listener is the listener to receive notification of unmatched events, or null to unregister a
+     * previously registered listener
+     */
+    public void setUnmatchedListener(UnmatchedListener listener);
 }

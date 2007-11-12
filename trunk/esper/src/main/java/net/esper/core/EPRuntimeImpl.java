@@ -10,6 +10,7 @@ package net.esper.core;
 import net.esper.client.EPException;
 import net.esper.client.EPRuntime;
 import net.esper.client.EmittedListener;
+import net.esper.client.UnmatchedListener;
 import net.esper.client.time.CurrentTimeEvent;
 import net.esper.client.time.TimerControlEvent;
 import net.esper.client.time.TimerEvent;
@@ -21,9 +22,9 @@ import net.esper.filter.FilterHandleCallback;
 import net.esper.schedule.ScheduleHandle;
 import net.esper.schedule.ScheduleHandleCallback;
 import net.esper.timer.TimerCallback;
+import net.esper.util.ExecutionPathDebugLog;
 import net.esper.util.ManagedLock;
 import net.esper.util.ThreadLogUtil;
-import net.esper.util.ExecutionPathDebugLog;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -38,6 +39,7 @@ public class EPRuntimeImpl implements EPRuntime, TimerCallback, InternalEventRou
     private EPServicesContext services;
     private ThreadWorkQueue threadWorkQueue;
     private boolean isHoldInsertStreamLock;
+    private volatile UnmatchedListener unmatchedListener;
 
     private ThreadLocal<ArrayBackedCollection<FilterHandle>> matchesArrayThreadLocal = new ThreadLocal<ArrayBackedCollection<FilterHandle>>()
     {
@@ -168,15 +170,15 @@ public class EPRuntimeImpl implements EPRuntime, TimerCallback, InternalEventRou
 
     public void route(Object event)
     {
-        threadWorkQueue.add(event);
+        ThreadWorkQueue.add(event);
     }
 
     // Internal route of events via insert-into, holds a statement lock
     public void route(EventBean events[], EPStatementHandle epStatementHandle)
     {
-        for (int i = 0; i < events.length; i++)
+        for (EventBean event : events)
         {
-            threadWorkQueue.add(events[i]);
+            ThreadWorkQueue.add(event);
         }
 
         if (isHoldInsertStreamLock)
@@ -516,6 +518,10 @@ public class EPRuntimeImpl implements EPRuntime, TimerCallback, InternalEventRou
 
         if (matches.size() == 0)
         {
+            if (unmatchedListener != null)
+            {
+                unmatchedListener.update(event);
+            }
             return;
         }
 
@@ -625,6 +631,11 @@ public class EPRuntimeImpl implements EPRuntime, TimerCallback, InternalEventRou
         matchesPerStmtThreadLocal = null;
         scheduleArrayThreadLocal = null;
         schedulePerStmtThreadLocal = null;
+    }
+
+    public void setUnmatchedListener(UnmatchedListener listener)
+    {
+        this.unmatchedListener = listener;
     }
 
     private static final Log log = LogFactory.getLog(EPRuntimeImpl.class);

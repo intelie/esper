@@ -7,7 +7,7 @@ import java.util.Iterator;
 import java.util.Set;
 
 /**
- * Strategy for use in poll-based joins to reduce a cached result set (represented by {@see EventTable}), in
+ * Strategy for use in poll-based joins to reduce a cached result set (represented by {@link EventTable}), in
  * which the cache result set may have been indexed, to fewer rows following the join-criteria in a where clause.
  */
 public interface HistoricalIndexLookupStrategy

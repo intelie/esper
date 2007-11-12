@@ -17,7 +17,6 @@ import java.util.Iterator;
  * <p>
  * Multiple safe iterators may be not be used at the same time by different application threads.
  * A single application thread may hold and use multiple safe iterators however this is discouraged.
- * @return safe iterator; NOTE: Must use the close method to close the safe iterator, preferably in a finally block
  */
 public interface SafeIterator<E> extends Iterator<E>
 {

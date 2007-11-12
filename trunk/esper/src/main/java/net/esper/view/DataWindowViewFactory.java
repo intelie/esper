@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * Marker interface for use with view factories that create data window views only.
  * <p>
- * Please {@see DataWindowView} for details on views that meet data window requirements.
+ * Please {@link DataWindowView} for details on views that meet data window requirements.
  */
 public interface DataWindowViewFactory extends ViewFactory
 {
