@@ -1,24 +1,22 @@
 package net.esper.eql.db;
 
 import junit.framework.TestCase;
-import net.esper.event.EventBean;
+import net.esper.eql.join.table.EventTable;
+import net.esper.eql.join.table.UnindexedEventTable;
 import net.esper.schedule.SchedulingServiceImpl;
 import net.esper.support.schedule.SupportSchedulingServiceImpl;
-
-import java.util.LinkedList;
-import java.util.List;
 
 public class TestDataCacheExpiringImpl extends TestCase
 {
     private SupportSchedulingServiceImpl scheduler;
     private DataCacheExpiringImpl cache;
-    private List<EventBean>[] lists = new LinkedList[10];
+    private EventTable[] lists = new EventTable[10];
 
     public void setUp()
     {
         for (int i = 0; i < lists.length; i++)
         {
-            lists[i] = new LinkedList<EventBean>();
+            lists[i] = new UnindexedEventTable(0);
         }
     }
 

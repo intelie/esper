@@ -2,6 +2,8 @@ package net.esper.eql.db;
 
 import junit.framework.TestCase;
 import net.esper.event.EventBean;
+import net.esper.eql.join.table.EventTable;
+import net.esper.eql.join.table.UnindexedEventTable;
 
 import java.util.List;
 import java.util.LinkedList;
@@ -9,20 +11,21 @@ import java.util.LinkedList;
 public class TestDataCacheLRUImpl extends TestCase
 {
     private DataCacheLRUImpl cache;
-    private List<EventBean>[] lists = new LinkedList[10];
+    private EventTable[] lists = new EventTable[10];
 
     public void setUp()
     {
         cache = new DataCacheLRUImpl(3);
         for (int i = 0; i < lists.length; i++)
         {
-            lists[i] = new LinkedList<EventBean>();
+            lists[i] = new UnindexedEventTable(0);
         }
     }
 
     public void testGet()
     {
         assertNull(cache.getCached(make("a")));
+        assertTrue(cache.isActive());
 
         cache.put(make("a"), lists[0]);     // a
         assertSame(lists[0], cache.getCached(make("a")));

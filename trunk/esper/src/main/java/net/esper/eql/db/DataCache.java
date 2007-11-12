@@ -1,8 +1,6 @@
 package net.esper.eql.db;
 
-import net.esper.event.EventBean;
-
-import java.util.List;
+import net.esper.eql.join.table.EventTable;
 
 /**
  * Implementations serve as caches for historical or reference data retrieved
@@ -17,7 +15,7 @@ public interface DataCache
      * @return a list of rows that can be empty is the key was found in the cache, or null if
      * the key is not found in the cache
      */
-    public List<EventBean> getCached(Object[] lookupKeys);
+    public EventTable getCached(Object[] lookupKeys);
 
     /**
      * Puts into the cache a key and a list of rows, or an empty list if zero rows.
@@ -28,5 +26,11 @@ public interface DataCache
      * @param lookupKeys is the keys to the cache entry
      * @param rows is a number of rows
      */
-    public void put(Object[] lookupKeys, List<EventBean> rows);
+    public void put(Object[] lookupKeys, EventTable rows);
+
+    /**
+     * Returns true if the cache is active and currently caching, or false if the cache is inactive and not currently caching
+     * @return true for caching enabled, false for no caching taking place
+     */
+    public boolean isActive();
 }

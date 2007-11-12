@@ -138,7 +138,8 @@ public class TestNamedWindowViews extends TestCase
         assertFalse(listenerStmtOne.isInvoked());
         assertFalse(listenerStmtTwo.isInvoked());
         assertFalse(listenerWindow.isInvoked());
-        assertFalse(listenerStmtDelete.isInvoked());
+        assertTrue(listenerStmtDelete.isInvoked());
+        listenerStmtDelete.reset();
         ArrayAssertionUtil.assertEqualsExactOrder(stmtCreate.iterator(), fields, new Object[][] {{"E2", 20L}, {"E3", 5L}});
 
         // send delete event
@@ -159,7 +160,7 @@ public class TestNamedWindowViews extends TestCase
         listenerStmtTwo.reset();
         assertFalse(listenerStmtThree.isInvoked());
         ArrayAssertionUtil.assertProps(listenerWindow.assertOneGetOldAndReset(), fields, new Object[] {"E3", 5L});
-        assertFalse(listenerStmtDelete.isInvoked());
+        assertTrue(listenerStmtDelete.isInvoked());
         ArrayAssertionUtil.assertEqualsExactOrder(stmtCreate.iterator(), fields, null);
 
         stmtSelectOne.destroy();
@@ -1348,7 +1349,7 @@ public class TestNamedWindowViews extends TestCase
         EPStatement stmtSelectTwo = epService.getEPAdministrator().createEQL(stmtTextSelectTwo);
         stmtSelectTwo.addListener(listenerStmtTwo);
         assertFalse(listenerStmtTwo.isInvoked());
-        ArrayAssertionUtil.assertEqualsExactOrder(stmtSelectTwo.iterator(), fieldsJoin, new Object[][] {{"E1", 1L, null}, {"E2", 1L, null}});
+        ArrayAssertionUtil.assertEqualsAnyOrder(stmtSelectTwo.iterator(), fieldsJoin, new Object[][] {{"E1", 1L, null}, {"E2", 1L, null}});
 
         sendMarketBean("S1", 1);    // join on long
         assertEquals(2, listenerStmtTwo.getLastNewData().length);

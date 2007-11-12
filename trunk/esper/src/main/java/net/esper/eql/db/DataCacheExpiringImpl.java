@@ -1,17 +1,16 @@
 package net.esper.eql.db;
 
-import net.esper.event.EventBean;
-import net.esper.schedule.SchedulingService;
-import net.esper.schedule.ScheduleSlot;
-import net.esper.schedule.ScheduleHandleCallback;
 import net.esper.collection.MultiKey;
 import net.esper.core.EPStatementHandle;
 import net.esper.core.EPStatementHandleCallback;
 import net.esper.core.ExtensionServicesContext;
+import net.esper.eql.join.table.EventTable;
+import net.esper.schedule.ScheduleHandleCallback;
+import net.esper.schedule.ScheduleSlot;
+import net.esper.schedule.SchedulingService;
 
-import java.util.List;
-import java.util.WeakHashMap;
 import java.util.Iterator;
+import java.util.WeakHashMap;
 
 /**
  * Implements an expiry-time cache that evicts data when data becomes stale
@@ -48,7 +47,7 @@ public class DataCacheExpiringImpl implements DataCache, ScheduleHandleCallback
         this.epStatementHandle = epStatementHandle;
     }
 
-    public List<EventBean> getCached(Object[] lookupKeys)
+    public EventTable getCached(Object[] lookupKeys)
     {
         MultiKey key = new MultiKey<Object>(lookupKeys);
         Item item = cache.get(key);
@@ -67,7 +66,7 @@ public class DataCacheExpiringImpl implements DataCache, ScheduleHandleCallback
         return item.getData();
     }
 
-    public void put(Object[] lookupKeys, List<EventBean> rows)
+    public void put(Object[] lookupKeys, EventTable rows)
     {
         MultiKey key = new MultiKey<Object>(lookupKeys);
         long now = schedulingService.getTime();
@@ -100,6 +99,11 @@ public class DataCacheExpiringImpl implements DataCache, ScheduleHandleCallback
         return purgeIntervalMSec;
     }
 
+    public boolean isActive()
+    {
+        return true;
+    }
+
     /**
      * Returns the current cache size.
      * @return cache size
@@ -128,16 +132,16 @@ public class DataCacheExpiringImpl implements DataCache, ScheduleHandleCallback
 
     private static class Item
     {
-        private List<EventBean> data;
+        private EventTable data;
         private long time;
 
-        public Item(List<EventBean> data, long time)
+        public Item(EventTable data, long time)
         {
             this.data = data;
             this.time = time;
         }
 
-        public List<EventBean> getData()
+        public EventTable getData()
         {
             return data;
         }

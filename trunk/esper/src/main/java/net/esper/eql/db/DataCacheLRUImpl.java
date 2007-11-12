@@ -1,9 +1,8 @@
 package net.esper.eql.db;
 
-import net.esper.event.EventBean;
 import net.esper.collection.MultiKey;
+import net.esper.eql.join.table.EventTable;
 
-import java.util.List;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -15,7 +14,7 @@ public class DataCacheLRUImpl implements DataCache
 {
     private final int cacheSize;
     private static final float hashTableLoadFactor = 0.75f;
-    private final LinkedHashMap<MultiKey<Object>, List<EventBean>> cache;
+    private final LinkedHashMap<MultiKey<Object>, EventTable> cache;
 
     /**
      * Ctor.
@@ -25,11 +24,11 @@ public class DataCacheLRUImpl implements DataCache
     {
         this.cacheSize = cacheSize;
         int hashTableCapacity = (int)Math.ceil(cacheSize / hashTableLoadFactor) + 1;
-        this.cache = new LinkedHashMap<MultiKey<Object>,List<EventBean>>(hashTableCapacity, hashTableLoadFactor, true)
+        this.cache = new LinkedHashMap<MultiKey<Object>,EventTable>(hashTableCapacity, hashTableLoadFactor, true)
         {
             private static final long serialVersionUID = 1;
 
-            @Override protected boolean removeEldestEntry (Map.Entry<MultiKey<Object>,List<EventBean>> eldest)
+            @Override protected boolean removeEldestEntry (Map.Entry<MultiKey<Object>,EventTable> eldest)
             {
                 return size() > DataCacheLRUImpl.this.cacheSize;
             }
@@ -42,7 +41,7 @@ public class DataCacheLRUImpl implements DataCache
     * @param lookupKeys the key whose associated value is to be returned.
     * @return the value associated to this key, or null if no value with this key exists in the cache.
     */
-    public List<EventBean> getCached(Object[] lookupKeys)
+    public EventTable getCached(Object[] lookupKeys)
     {
         MultiKey<Object> keys = new MultiKey<Object>(lookupKeys);
         return cache.get(keys);
@@ -54,7 +53,7 @@ public class DataCacheLRUImpl implements DataCache
     * @param key the key with which the specified value is to be associated.
     * @param value a value to be associated with the specified key.
     */
-    public synchronized void put(Object[] key, List<EventBean> value)
+    public synchronized void put(Object[] key, EventTable value)
     {
         MultiKey<Object> mkeys = new MultiKey<Object>(key);
         cache.put(mkeys, value);
@@ -67,5 +66,10 @@ public class DataCacheLRUImpl implements DataCache
     public int getCacheSize()
     {
         return cacheSize;
+    }
+
+    public boolean isActive()
+    {
+        return true;
     }
 }

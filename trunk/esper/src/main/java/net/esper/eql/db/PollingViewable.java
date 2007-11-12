@@ -9,6 +9,8 @@ import net.esper.eql.core.StreamTypeService;
 import net.esper.eql.core.PropertyResolutionDescriptor;
 import net.esper.eql.core.StreamTypesException;
 import net.esper.eql.expression.ExprValidationException;
+import net.esper.eql.join.table.EventTable;
+import net.esper.eql.join.PollResultIndexingStrategy;
 import net.esper.client.EPException;
 import java.util.*;
 
@@ -87,11 +89,11 @@ public class PollingViewable implements HistoricalEventViewable
         }
     }
 
-    public List<EventBean>[] poll(EventBean[][] lookupEventsPerStream)
+    public EventTable[] poll(EventBean[][] lookupEventsPerStream, PollResultIndexingStrategy indexingStrategy)
     {
         pollExecStrategy.start();
 
-        List<EventBean>[] resultPerInputRow = new LinkedList[lookupEventsPerStream.length];
+        EventTable[] resultPerInputRow = new EventTable[lookupEventsPerStream.length];
 
         // Get input parameters for each row
         for (int row = 0; row < lookupEventsPerStream.length; row++)
@@ -108,7 +110,7 @@ public class PollingViewable implements HistoricalEventViewable
             }
 
             // Get the result from cache
-            List<EventBean> result = dataCache.getCached(lookupValues);
+            EventTable result = dataCache.getCached(lookupValues);
             if (result != null)     // found in cache
             {
                 resultPerInputRow[row] = result;
@@ -117,9 +119,17 @@ public class PollingViewable implements HistoricalEventViewable
             {
                 try
                 {
-                    result = pollExecStrategy.poll(lookupValues);
-                    resultPerInputRow[row] = result;
-                    dataCache.put(lookupValues, result);
+                    // Poll using the polling execution strategy and lookup values
+                    List<EventBean> pollResult = pollExecStrategy.poll(lookupValues);
+
+                    // index the result, if required, using an indexing strategy
+                    EventTable indexTable = indexingStrategy.index(pollResult, dataCache.isActive());
+
+                    // assign to row
+                    resultPerInputRow[row] = indexTable;
+
+                    // save in cache
+                    dataCache.put(lookupValues, indexTable);
                 }
                 catch (EPException ex)
                 {

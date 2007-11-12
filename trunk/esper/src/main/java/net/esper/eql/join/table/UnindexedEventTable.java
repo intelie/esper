@@ -56,6 +56,11 @@ public class UnindexedEventTable implements EventTable
         }
     }
 
+    public boolean isEmpty()
+    {
+        return eventSet.isEmpty();
+    }
+
     /**
      * Returns events in table.
      * @return all events

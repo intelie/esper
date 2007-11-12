@@ -1,20 +1,22 @@
 package net.esper.eql.db;
 
 import junit.framework.TestCase;
-
-import java.util.*;
-
-import net.esper.support.eql.SupportStreamTypeSvc3Stream;
-import net.esper.support.event.SupportEventAdapterService;
-import net.esper.support.event.SupportEventBeanFactory;
-import net.esper.support.bean.SupportBean;
+import net.esper.collection.MultiKey;
+import net.esper.eql.join.table.EventTable;
+import net.esper.eql.join.table.UnindexedEventTableList;
+import net.esper.eql.join.PollResultIndexingStrategy;
 import net.esper.event.EventBean;
 import net.esper.event.EventType;
-import net.esper.collection.MultiKey;
+import net.esper.support.bean.SupportBean;
+import net.esper.support.eql.SupportStreamTypeSvc3Stream;
+import net.esper.support.event.SupportEventAdapterService;
+
+import java.util.*;
 
 public class TestPollingViewable extends TestCase
 {
     private PollingViewable pollingViewable;
+    private PollResultIndexingStrategy indexingStrategy;
 
     public void setUp() throws Exception
     {
@@ -27,13 +29,21 @@ public class TestPollingViewable extends TestCase
         EventType resultEventType = SupportEventAdapterService.getService().createAnonymousMapType(resultProperties);
 
         Map<MultiKey<Object>, List<EventBean>> pollResults = new HashMap<MultiKey<Object>, List<EventBean>>();
-        pollResults.put(new MultiKey(new Object[] {-1}), new LinkedList());
-        pollResults.put(new MultiKey(new Object[] {500}), new LinkedList());
+        pollResults.put(new MultiKey<Object>(new Object[] {-1}), new LinkedList<EventBean>());
+        pollResults.put(new MultiKey<Object>(new Object[] {500}), new LinkedList<EventBean>());
         SupportPollingStrategy supportPollingStrategy = new SupportPollingStrategy(pollResults);
 
         pollingViewable = new PollingViewable(1, inputProperties, supportPollingStrategy, dataCache, resultEventType);
 
         pollingViewable.validate(new SupportStreamTypeSvc3Stream());
+
+        indexingStrategy = new PollResultIndexingStrategy()
+        {
+            public EventTable index(List<EventBean> pollResult, boolean isActiveCache)
+            {
+                return new UnindexedEventTableList(pollResult);
+            }
+        };        
     }
 
     public void testPoll()
@@ -41,12 +51,12 @@ public class TestPollingViewable extends TestCase
         EventBean[][] input = new EventBean[2][2];
         input[0] = new EventBean[] {makeEvent(-1), null};
         input[1] = new EventBean[] {makeEvent(500), null};
-        List<EventBean>[] resultRows = pollingViewable.poll(input);
+        EventTable[] resultRows = pollingViewable.poll(input, indexingStrategy);
 
         // should have joined to two rows
         assertEquals(2, resultRows.length);
-        assertEquals(0, resultRows[0].size());
-        assertEquals(0, resultRows[1].size());
+        assertTrue(resultRows[0].isEmpty());
+        assertTrue(resultRows[1].isEmpty());
     }
 
     private EventBean makeEvent(int intPrimitive)

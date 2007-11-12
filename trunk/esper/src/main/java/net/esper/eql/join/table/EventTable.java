@@ -34,4 +34,10 @@ public interface EventTable
      * @return table iterator
      */
     public Iterator<EventBean> iterator();
+
+    /**
+     * Returns true if the index is empty, or false if not
+     * @return true for empty index
+     */
+    public boolean isEmpty();
 }

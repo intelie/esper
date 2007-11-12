@@ -54,7 +54,7 @@ public class TestMTStmtTwoPatterns extends TestCase
         Thread.sleep(1000);
 
         // Create a second pattern, wait 500 msec, destroy second pattern in a loop
-        for (int i = 0; i < 100; i++)
+        for (int i = 0; i < 10; i++)
         {
             EPStatement statement = engine.getEPAdministrator().createPattern(statementTwo);
             Thread.sleep(500);

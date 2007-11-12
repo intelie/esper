@@ -91,11 +91,18 @@ public class TestDatabaseOuterJoin extends TestCase
         listener = new SupportUpdateListener();
         statement.addListener(listener);
 
+        // No result as the SQL query returns 1 row and therefore the on-clause filters it out
         sendEvent(1, "xxx");
         assertFalse(listener.isInvoked());
 
-        sendEvent(2, "B");
+        // Result as the SQL query returns 0 rows
+        sendEvent(-1, "xxx");
         EventBean received = listener.assertOneGetNewAndReset();
+        assertEquals(-1, received.get("MyInt"));
+        assertReceived(received, null, null, null, null, null, null, null, null, null);
+
+        sendEvent(2, "B");
+        received = listener.assertOneGetNewAndReset();
         assertEquals(2, received.get("MyInt"));
         assertReceived(received, 2l, 20, "B", "Y", false, new BigDecimal(100), new BigDecimal(200), 2.2d, 2.3d);
     }

@@ -5,15 +5,17 @@ import net.esper.client.*;
 import net.esper.client.time.TimerControlEvent;
 import net.esper.client.time.CurrentTimeEvent;
 import net.esper.support.util.SupportUpdateListener;
+import net.esper.support.util.ArrayAssertionUtil;
 import net.esper.support.eql.SupportDatabaseService;
 import net.esper.support.bean.SupportBean_S0;
+import net.esper.support.bean.SupportBean;
 import net.esper.event.EventBean;
 import java.util.Properties;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-public class TestDatabaseJoinPerformance extends TestCase
+public class TestDatabaseJoinPerfNoCache extends TestCase
 {
     private EPServiceProvider epServiceRetained;
     private EPServiceProvider epServicePooled;
@@ -119,6 +121,26 @@ public class TestDatabaseJoinPerformance extends TestCase
         assertFalse(listener.isInvoked());
     }
 
+    public void testWhereClauseNoIndexNoCache()
+    {
+        String stmtText = "select id, mycol3, mycol2 from " +
+                SupportBean_S0.class.getName() + ".win:keepall() as s0," +
+                " sql:MyDB ['select mycol3, mycol2 from mytesttable_large'] as s1 where s0.id = s1.mycol3";
+
+        EPStatement statement = epServiceRetained.getEPAdministrator().createEQL(stmtText);
+        listener = new SupportUpdateListener();
+        statement.addListener(listener);
+
+        for (int i = 0; i < 20; i++)
+        {
+            int num = i + 1;
+            String col2 = Integer.toString(Math.round((float)num / 10));
+            SupportBean_S0 bean = new SupportBean_S0(num);
+            epServiceRetained.getEPRuntime().sendEvent(bean);
+            ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), new String[] {"id", "mycol3", "mycol2"}, new Object[] {num, num, col2});
+        }
+    }
+
     private void try100Events(EPServiceProvider engine)
     {
         String stmtText = "select myint from " +
@@ -141,5 +163,5 @@ public class TestDatabaseJoinPerformance extends TestCase
         }
     }
 
-    private static final Log log = LogFactory.getLog(TestDatabaseJoinPerformance.class);
+    private static final Log log = LogFactory.getLog(TestDatabaseJoinPerfNoCache.class);
 }

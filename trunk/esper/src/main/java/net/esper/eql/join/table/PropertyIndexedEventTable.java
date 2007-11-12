@@ -169,6 +169,11 @@ public class PropertyIndexedEventTable implements EventTable
         }
     }
 
+    public boolean isEmpty()
+    {
+        return propertyIndex.isEmpty();
+    }
+
     public Iterator<EventBean> iterator()
     {
         return new PropertyIndexedEventTableIterator(propertyIndex);

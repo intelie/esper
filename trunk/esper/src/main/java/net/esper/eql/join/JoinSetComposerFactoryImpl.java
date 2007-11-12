@@ -7,29 +7,28 @@
  **************************************************************************************/
 package net.esper.eql.join;
 
+import net.esper.collection.Pair;
+import net.esper.eql.expression.ExprAndNode;
+import net.esper.eql.expression.ExprEqualsNode;
 import net.esper.eql.expression.ExprNode;
 import net.esper.eql.expression.ExprValidationException;
-import net.esper.eql.expression.ExprEqualsNode;
-import net.esper.eql.spec.OuterJoinDesc;
-import net.esper.eql.spec.SelectClauseStreamSelectorEnum;
 import net.esper.eql.join.exec.ExecNode;
-import net.esper.eql.join.plan.QueryPlan;
-import net.esper.eql.join.plan.QueryPlanBuilder;
-import net.esper.eql.join.plan.QueryPlanIndex;
-import net.esper.eql.join.plan.QueryPlanNode;
+import net.esper.eql.join.plan.*;
 import net.esper.eql.join.table.EventTable;
+import net.esper.eql.join.table.PropertyIndTableCoerceAll;
 import net.esper.eql.join.table.PropertyIndexedEventTable;
 import net.esper.eql.join.table.UnindexedEventTable;
-import net.esper.eql.join.table.PropertyIndTableCoerceAll;
+import net.esper.eql.spec.OuterJoinDesc;
+import net.esper.eql.spec.SelectClauseStreamSelectorEnum;
 import net.esper.event.EventType;
-import net.esper.view.Viewable;
-import net.esper.view.HistoricalEventViewable;
 import net.esper.type.OuterJoinType;
-
-import java.util.List;
-
+import net.esper.util.JavaClassHelper;
+import net.esper.view.HistoricalEventViewable;
+import net.esper.view.Viewable;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import java.util.List;
 
 /**
  * Factory for building a {@link JoinSetComposer} from analyzing filter nodes, for
@@ -75,55 +74,16 @@ public class JoinSetComposerFactoryImpl implements JoinSetComposerFactory
             }
         }
 
-        EventTable[][] indexes = null;
-        QueryStrategy[] queryStrategies = null;
+        EventTable[][] indexes;
+        QueryStrategy[] queryStrategies;
+
+        // Handle a join with a database or other historical data source
         if (hasHistorical)
         {
-            // No tables for any streams
-            indexes = new EventTable[streamTypes.length][];
-            queryStrategies = new QueryStrategy[streamTypes.length];
-
-            for (int streamNo = 0; streamNo < streamTypes.length; streamNo++)
-            {
-                indexes[streamNo] = new EventTable[0];
-            }
-
-            int polledView = 0;
-            int streamView = 1;
-            if (streamViews[1] instanceof HistoricalEventViewable)
-            {
-                streamView = 0;
-                polledView = 1;
-            }
-
-            boolean isOuterJoin = false;
-            ExprEqualsNode equalsNode = null;
-            if (!outerJoinDescList.isEmpty())
-            {
-                OuterJoinDesc outerJoinDesc = outerJoinDescList.get(0);
-                if (outerJoinDesc.getOuterJoinType().equals(OuterJoinType.FULL))
-                {
-                    isOuterJoin = true;
-                }
-                else if ((outerJoinDesc.getOuterJoinType().equals(OuterJoinType.LEFT)) &&
-                        (streamView == 0))
-                {
-                        isOuterJoin = true;
-                }
-                else if ((outerJoinDesc.getOuterJoinType().equals(OuterJoinType.RIGHT)) &&
-                        (streamView == 1))
-                {
-                        isOuterJoin = true;
-                }
-
-                equalsNode = new ExprEqualsNode(false);
-                equalsNode.addChildNode(outerJoinDesc.getLeftNode());
-                equalsNode.addChildNode(outerJoinDesc.getRightNode());
-                equalsNode.validate(null, null, null, null);
-            }
-
-            HistoricalEventViewable viewable = (HistoricalEventViewable) streamViews[polledView];
-            queryStrategies[streamView] = new HistoricalDataQueryStrategy(streamView, polledView, viewable, isOuterJoin, equalsNode);
+            Pair<EventTable[][], QueryStrategy[]> indexAndStrategies =
+                    makeComposerHistorical(outerJoinDescList, optionalFilterNode, streamTypes, streamViews);
+            indexes = indexAndStrategies.getFirst();
+            queryStrategies = indexAndStrategies.getSecond();
         }
         else
         {
@@ -162,6 +122,144 @@ public class JoinSetComposerFactoryImpl implements JoinSetComposerFactory
         }
 
         return new JoinSetComposerImpl(indexes, queryStrategies, selectStreamSelectorEnum);
+    }
+
+    private Pair<EventTable[][], QueryStrategy[]> makeComposerHistorical(List<OuterJoinDesc> outerJoinDescList,
+                                                                         ExprNode optionalFilterNode,
+                                                                         EventType[] streamTypes,
+                                                                         Viewable[] streamViews)
+            throws ExprValidationException
+    {
+        EventTable[][] indexes;
+        QueryStrategy[] queryStrategies;
+
+        // No tables for any streams
+        indexes = new EventTable[streamTypes.length][];
+        queryStrategies = new QueryStrategy[streamTypes.length];
+        for (int streamNo = 0; streamNo < streamTypes.length; streamNo++)
+        {
+            indexes[streamNo] = new EventTable[0];
+        }
+
+        int polledView = 0;
+        int streamView = 1;
+        if (streamViews[1] instanceof HistoricalEventViewable)
+        {
+            streamView = 0;
+            polledView = 1;
+        }
+
+        // Build an outer join expression node
+        boolean isOuterJoin = false;
+        ExprEqualsNode outerJoinEqualsNode = null;
+        if (!outerJoinDescList.isEmpty())
+        {
+            OuterJoinDesc outerJoinDesc = outerJoinDescList.get(0);
+            if (outerJoinDesc.getOuterJoinType().equals(OuterJoinType.FULL))
+            {
+                isOuterJoin = true;
+            }
+            else if ((outerJoinDesc.getOuterJoinType().equals(OuterJoinType.LEFT)) &&
+                    (streamView == 0))
+            {
+                    isOuterJoin = true;
+            }
+            else if ((outerJoinDesc.getOuterJoinType().equals(OuterJoinType.RIGHT)) &&
+                    (streamView == 1))
+            {
+                    isOuterJoin = true;
+            }
+
+            outerJoinEqualsNode = new ExprEqualsNode(false);
+            outerJoinEqualsNode.addChildNode(outerJoinDesc.getLeftNode());
+            outerJoinEqualsNode.addChildNode(outerJoinDesc.getRightNode());
+            outerJoinEqualsNode.validate(null, null, null, null);
+        }
+
+        // Determine filter for indexing purposes
+        ExprNode filterForIndexing = null;
+        if ((outerJoinEqualsNode != null) && (optionalFilterNode != null))  // both filter and outer join, add
+        {
+            filterForIndexing = new ExprAndNode();
+            filterForIndexing.addChildNode(optionalFilterNode);
+            filterForIndexing.addChildNode(outerJoinEqualsNode);
+        }
+        else if ((outerJoinEqualsNode == null) && (optionalFilterNode != null))
+        {
+            filterForIndexing = optionalFilterNode;
+        }
+        else if (outerJoinEqualsNode != null)
+        {
+            filterForIndexing = outerJoinEqualsNode;
+        }
+
+        Pair<HistoricalIndexLookupStrategy, PollResultIndexingStrategy> indexStrategies =
+                determineIndexing(filterForIndexing, streamTypes[polledView], streamTypes[streamView], polledView, streamView);
+
+        HistoricalEventViewable viewable = (HistoricalEventViewable) streamViews[polledView];
+        queryStrategies[streamView] = new HistoricalDataQueryStrategy(streamView, polledView, viewable, isOuterJoin, outerJoinEqualsNode,
+                indexStrategies.getFirst(), indexStrategies.getSecond());
+
+        return new Pair<EventTable[][], QueryStrategy[]>(indexes, queryStrategies);
+    }
+
+    private Pair<HistoricalIndexLookupStrategy, PollResultIndexingStrategy> determineIndexing(ExprNode filterForIndexing,
+                                                                                              EventType polledViewType,
+                                                                                              EventType streamViewType,
+                                                                                              int polledViewStreamNum,
+                                                                                              int streamViewStreamNum)
+    {
+        // No filter means unindexed event tables
+        if (filterForIndexing == null)
+        {
+            return new Pair<HistoricalIndexLookupStrategy, PollResultIndexingStrategy>(
+                            new HistoricalIndexLookupStrategyNoIndex(), new PollResultIndexingStrategyNoIndex());
+        }
+
+        // analyze query graph; Whereas stream0=named window, stream1=delete-expr filter
+        QueryGraph queryGraph = new QueryGraph(2);
+        FilterExprAnalyzer.analyze(filterForIndexing, queryGraph);
+
+        // index and key property names
+        String[] keyPropertiesJoin = queryGraph.getKeyProperties(streamViewStreamNum, polledViewStreamNum);
+        String[] indexPropertiesJoin = queryGraph.getIndexProperties(streamViewStreamNum, polledViewStreamNum);
+
+        // If the analysis revealed no join columns, must use the brute-force full table scan
+        if ((keyPropertiesJoin == null) || (keyPropertiesJoin.length == 0))
+        {
+            return new Pair<HistoricalIndexLookupStrategy, PollResultIndexingStrategy>(
+                            new HistoricalIndexLookupStrategyNoIndex(), new PollResultIndexingStrategyNoIndex());
+        }
+
+        // Build a set of index descriptors with property name and coercion type
+        boolean mustCoerce = false;
+        Class[] coercionTypes = new Class[indexPropertiesJoin.length];
+        for (int i = 0; i < keyPropertiesJoin.length; i++)
+        {
+            Class keyPropType = JavaClassHelper.getBoxedType(streamViewType.getPropertyType(keyPropertiesJoin[i]));
+            Class indexedPropType = JavaClassHelper.getBoxedType(polledViewType.getPropertyType(indexPropertiesJoin[i]));
+            Class coercionType = indexedPropType;
+            if (keyPropType != indexedPropType)
+            {
+                coercionType = JavaClassHelper.getCompareToCoercionType(keyPropType, keyPropType);
+                mustCoerce = true;
+            }
+
+            coercionTypes[i] = coercionType;
+        }
+
+        // No coercion
+        if (!mustCoerce)
+        {
+            PollResultIndexingStrategyIndex indexing = new PollResultIndexingStrategyIndex(polledViewStreamNum, polledViewType, indexPropertiesJoin);
+            HistoricalIndexLookupStrategy strategy = new HistoricalIndexLookupStrategyIndex(streamViewType, keyPropertiesJoin);
+            return new Pair<HistoricalIndexLookupStrategy, PollResultIndexingStrategy>(strategy, indexing);
+        }
+
+        // With coercion, same lookup strategy as the index coerces
+        PollResultIndexingStrategy indexing = new PollResultIndexingStrategyIndexCoerce(polledViewStreamNum, polledViewType, indexPropertiesJoin, coercionTypes);
+        HistoricalIndexLookupStrategy strategy = new HistoricalIndexLookupStrategyIndex(streamViewType, keyPropertiesJoin);
+        return new Pair<HistoricalIndexLookupStrategy, PollResultIndexingStrategy>(strategy, indexing);
     }
 
     /**

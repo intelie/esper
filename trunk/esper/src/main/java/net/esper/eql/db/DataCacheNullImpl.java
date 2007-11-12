@@ -8,6 +8,7 @@
 package net.esper.eql.db;
 
 import net.esper.event.EventBean;
+import net.esper.eql.join.table.EventTable;
 
 import java.util.List;
 
@@ -16,13 +17,18 @@ import java.util.List;
  */
 public class DataCacheNullImpl implements DataCache
 {
-    public List<EventBean> getCached(Object[] lookupKeys)
+    public EventTable getCached(Object[] lookupKeys)
     {
         return null;
     }
 
-    public void put(Object[] lookupKeys, List<EventBean> rows)
+    public void put(Object[] lookupKeys, EventTable rows)
     {
 
+    }
+
+    public boolean isActive()
+    {
+        return false;
     }
 }

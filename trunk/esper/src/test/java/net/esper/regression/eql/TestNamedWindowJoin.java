@@ -198,7 +198,6 @@ public class TestNamedWindowJoin extends TestCase
         assertFalse(listenerStmtOne.isInvoked());
     }
 
-    // TODO
     public void testJoinSingleInsertOneWindow()
     {
         String[] fields = new String[] {"a1", "b1", "a2", "b2"};

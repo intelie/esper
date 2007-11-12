@@ -677,7 +677,8 @@ public class EPStatementStartMethod
                     eventsInWindow.add(it.next());
                 }
                 EventBean[] newEvents = eventsInWindow.toArray(new EventBean[0]);
-                ((View)viewableRoot).update(newEvents, null);
+                ((View)viewableRoot).update(newEvents, null); // fill view
+                eventIndex.add(newEvents);  // fill index
             }
             else        // preload from the data window that site on top
             {
