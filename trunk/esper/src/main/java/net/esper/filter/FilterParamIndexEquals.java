@@ -74,7 +74,7 @@ public final class FilterParamIndexEquals extends FilterParamIndexPropBase
     {
         Object attributeValue = this.getGetter().get(eventBean);
 
-        if ((ExecutionPathDebugLog.isEnabled()) && (log.isDebugEnabled()))
+        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
         {
             log.debug(".match (" + Thread.currentThread().getId() + ") attributeValue=" + attributeValue);
         }

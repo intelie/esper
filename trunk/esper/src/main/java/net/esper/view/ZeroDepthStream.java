@@ -39,7 +39,7 @@ public final class ZeroDepthStream implements EventStream
 
     public final void insert(EventBean event)
     {
-        if ((ExecutionPathDebugLog.isEnabled()) && (log.isDebugEnabled()))
+        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
         {
             log.debug(".insert Received event, updating child views, event=" + event);
         }

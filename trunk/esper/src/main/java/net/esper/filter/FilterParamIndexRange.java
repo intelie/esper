@@ -104,7 +104,7 @@ public final class FilterParamIndexRange extends FilterParamIndexPropBase
     {
         Object objAttributeValue = this.getGetter().get(eventBean);
 
-        if ((ExecutionPathDebugLog.isEnabled()) && (log.isDebugEnabled()))
+        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
         {
             log.debug(".match Finding range matches, attribute=" + this.getPropertyName() +
                       "  attrValue=" + objAttributeValue);

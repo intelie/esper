@@ -49,7 +49,7 @@ public class TestMTStmtNamedWindowDelete extends TestCase
         listenerConsumer = new SupportMTUpdateListener();
         stmtConsumer.addListener(listenerConsumer);
 
-        trySend(4, 10000);
+        trySend(4, 1000);
     }
 
     private void trySend(int numThreads, int numRepeats) throws Exception

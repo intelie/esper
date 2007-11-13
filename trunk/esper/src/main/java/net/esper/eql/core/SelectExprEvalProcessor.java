@@ -191,7 +191,7 @@ public class SelectExprEvalProcessor implements SelectExprProcessor
         		if(wrapper != null)
         		{
         			Map<String, Object> map = wrapper.getDecoratingProperties();
-                    if ((ExecutionPathDebugLog.isEnabled()) && (log.isDebugEnabled()))
+                    if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
                     {
         			    log.debug(".process additional properties=" + map);
                     }

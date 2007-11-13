@@ -37,7 +37,7 @@ public final class EvalFollowedByStateNode extends EvalStateNode implements Eval
     {
         super(evalFollowedByNode, parentNode, null);
 
-        if ((ExecutionPathDebugLog.isEnabled()) && (log.isDebugEnabled()))
+        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
         {
             log.debug(".constructor");
         }
@@ -52,7 +52,7 @@ public final class EvalFollowedByStateNode extends EvalStateNode implements Eval
 
     public final void start()
     {
-        if ((ExecutionPathDebugLog.isEnabled()) && (log.isDebugEnabled()))
+        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
         {
             log.debug(".start Starting followed-by expression for the first child");
         }
@@ -72,7 +72,7 @@ public final class EvalFollowedByStateNode extends EvalStateNode implements Eval
     {
         Integer index = nodes.get(fromNode);
 
-        if ((ExecutionPathDebugLog.isEnabled()) && (log.isDebugEnabled()))
+        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
         {
             log.debug(".evaluateTrue index=" + index + "  fromNode=" + fromNode.hashCode() + "  isQuitted=" + isQuitted);
         }
@@ -106,7 +106,7 @@ public final class EvalFollowedByStateNode extends EvalStateNode implements Eval
 
     public final void evaluateFalse(EvalStateNode fromNode)
     {
-        if ((ExecutionPathDebugLog.isEnabled()) && (log.isDebugEnabled()))
+        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
         {
             log.debug(".evaluateFalse Child node has indicated permanently false");
         }
@@ -117,7 +117,7 @@ public final class EvalFollowedByStateNode extends EvalStateNode implements Eval
 
     public final void quit()
     {
-        if ((ExecutionPathDebugLog.isEnabled()) && (log.isDebugEnabled()))
+        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
         {
             log.debug(".quit Stopping followed-by all children");
         }

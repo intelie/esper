@@ -35,7 +35,7 @@ public final class EvalObserverStateNode extends EvalStateNode implements Observ
     {
         super(evalObserverNode, parentNode, null);
 
-        if ((ExecutionPathDebugLog.isEnabled()) && (log.isDebugEnabled()))
+        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
         {
             log.debug(".constructor");
         }

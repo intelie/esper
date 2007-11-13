@@ -72,7 +72,7 @@ public final class JMXLastCubeElementDynamicMBean implements JMXLastElementObser
     {
         cells = CubeCellStringRenderer.renderCube(cube);
 
-        if ((ExecutionPathDebugLog.isEnabled()) && (log.isDebugEnabled()))
+        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
         {
             log.debug (".setCube Cells...");
             for (String attribute : cells.keySet())
@@ -83,7 +83,7 @@ public final class JMXLastCubeElementDynamicMBean implements JMXLastElementObser
 
         tables = CubeTabularDataRenderer.renderCube(cube);
 
-        if ((ExecutionPathDebugLog.isEnabled()) && (log.isDebugEnabled()))
+        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
         {
             log.debug (".setCube Tables...");
             for (String attribute : tables.keySet())
@@ -94,7 +94,7 @@ public final class JMXLastCubeElementDynamicMBean implements JMXLastElementObser
 
         setupMBeanInfo();
 
-        if ((ExecutionPathDebugLog.isEnabled()) && (log.isDebugEnabled()))
+        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
         {
             log.debug (".setCube mBeanInfo.getAttributes().length=" + mBeanInfo.getAttributes().length);
         }

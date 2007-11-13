@@ -96,7 +96,7 @@ public class EPRuntimeImpl implements EPRuntime, TimerCallback, InternalEventRou
 
     public void timerCallback()
     {
-        if ((ExecutionPathDebugLog.isEnabled()) && (log.isDebugEnabled()))
+        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
         {
             log.debug(".timerCallback Evaluating scheduled callbacks");
         }
@@ -114,7 +114,7 @@ public class EPRuntimeImpl implements EPRuntime, TimerCallback, InternalEventRou
             return;
         }
 
-        if ((ExecutionPathDebugLog.isEnabled()) && (log.isDebugEnabled()))
+        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
         {
             log.debug(".sendEvent Processing event " + event);
         }
@@ -131,7 +131,7 @@ public class EPRuntimeImpl implements EPRuntime, TimerCallback, InternalEventRou
             return;
         }
 
-        if ((ExecutionPathDebugLog.isEnabled()) && (log.isDebugEnabled()))
+        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
         {
             log.debug(".sendEvent Processing DOM node event " + document);
         }
@@ -148,7 +148,7 @@ public class EPRuntimeImpl implements EPRuntime, TimerCallback, InternalEventRou
             throw new IllegalArgumentException("Invalid null event object");
         }
 
-        if ((ExecutionPathDebugLog.isEnabled()) && (log.isDebugEnabled()))
+        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
         {
             log.debug(".sendMap Processing event " + map);
         }
@@ -275,7 +275,7 @@ public class EPRuntimeImpl implements EPRuntime, TimerCallback, InternalEventRou
         }
 
         // Evaluation of all time events is protected from statement management
-        if ((ExecutionPathDebugLog.isEnabled()) && (log.isDebugEnabled()))
+        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
         {
             log.debug(".processTimeEvent Setting time and evaluating schedules");
         }

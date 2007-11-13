@@ -1647,8 +1647,9 @@ insert into OrdersWindow select *, MyFunc.func(price, percent) as derivedPrice f
 			<programlisting><![CDATA[select * from AllOrdersNamedWindow.mycompany:mypluginview()]]></programlisting>
 			
 			<para>
-				Data window views cannot be used onto named windows since named windows post insert and remove streams for the events entering and leaving the named window, thus the expiry policy and batch behavior are well defined by the data window declared for the named window.
+				Data window views cannot be used onto named windows since named windows post insert and remove streams for the events entering and leaving the named window, thus the expiry policy and batch behavior are well defined by the data window declared for the named window. For example, the following is not allowed and fails at time of statement creation:
 			</para>
+			<programlisting><![CDATA[select * from AllOrdersNamedWindow.win:time(30 sec)]]></programlisting>
 		</sect2>
 
 	</sect1>

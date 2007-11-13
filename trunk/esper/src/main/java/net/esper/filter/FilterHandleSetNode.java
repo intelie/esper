@@ -100,7 +100,7 @@ public final class FilterHandleSetNode implements EventEvaluator
         // Add each filter callback stored in this node to the matching list
         for (FilterHandle filterCallback : callbackSet)
         {
-            if ((ExecutionPathDebugLog.isEnabled()) && (log.isDebugEnabled()))
+            if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
             {
                 log.debug(".match (" + Thread.currentThread().getId() + ") Found a match, filterCallbackHash=" + filterCallback.hashCode() +
                         "  me=" + this +

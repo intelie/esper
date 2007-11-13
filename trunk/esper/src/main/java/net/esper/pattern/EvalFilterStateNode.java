@@ -41,7 +41,7 @@ public final class EvalFilterStateNode extends EvalStateNode implements FilterHa
     {
         super(evalFilterNode, parentNode, null);
 
-        if ((ExecutionPathDebugLog.isEnabled()) && (log.isDebugEnabled()))
+        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
         {
             log.debug(".constructor");
         }
@@ -53,7 +53,7 @@ public final class EvalFilterStateNode extends EvalStateNode implements FilterHa
 
     public final void start()
     {
-        if ((ExecutionPathDebugLog.isEnabled()) && (log.isDebugEnabled()))
+        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
         {
             log.debug(".start Starting filter expression");
         }
@@ -70,7 +70,7 @@ public final class EvalFilterStateNode extends EvalStateNode implements FilterHa
 
     public final void quit()
     {
-        if ((ExecutionPathDebugLog.isEnabled()) && (log.isDebugEnabled()))
+        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
         {
             log.debug(".quit Stop filter expression");
         }
@@ -86,14 +86,14 @@ public final class EvalFilterStateNode extends EvalStateNode implements FilterHa
 
     public final void matchFound(EventBean event)
     {
-        if ((ExecutionPathDebugLog.isEnabled()) && (log.isDebugEnabled()))
+        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
         {
             log.debug(".matchFound Filter node received match");
         }
 
         if (!isStarted)
         {
-            if ((ExecutionPathDebugLog.isEnabled()) && (log.isDebugEnabled()))
+            if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
             {
                 log.debug(".matchFound Match ignored, filter was stopped");
             }

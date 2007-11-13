@@ -94,7 +94,7 @@ public final class TimeAccumView extends ViewSupport implements CloneableView, D
 
     public final void update(EventBean[] newData, EventBean[] oldData)
     {
-        if ((ExecutionPathDebugLog.isEnabled()) && (log.isDebugEnabled()))
+        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
         {
             log.debug(".update Received update, " +
                     "  newData.length==" + ((newData == null) ? 0 : newData.length) +
@@ -170,7 +170,7 @@ public final class TimeAccumView extends ViewSupport implements CloneableView, D
     {
         callbackScheduledTime = -1;
 
-        if ((ExecutionPathDebugLog.isEnabled()) && (log.isDebugEnabled()))
+        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
         {
             log.debug(".sendRemoveStream Update child views, " +
                     "  time=" + statementContext.getSchedulingService().getTime());

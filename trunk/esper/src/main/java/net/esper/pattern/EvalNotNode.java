@@ -20,7 +20,7 @@ public final class EvalNotNode extends EvalNode
                                         MatchedEventMap beginState,
                                         PatternContext context, Object stateNodeId)
     {
-        if ((ExecutionPathDebugLog.isEnabled()) && (log.isDebugEnabled()))
+        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
         {
             log.debug(".newState");
         }

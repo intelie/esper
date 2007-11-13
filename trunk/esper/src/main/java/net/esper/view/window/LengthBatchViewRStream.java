@@ -65,7 +65,7 @@ public final class LengthBatchViewRStream extends ViewSupport implements Cloneab
 
     public final void update(EventBean[] newData, EventBean[] oldData)
     {
-        if ((ExecutionPathDebugLog.isEnabled()) && (log.isDebugEnabled()))
+        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
         {
             log.debug(".update Received update, " +
                     "  newData.length==" + ((newData == null) ? 0 : newData.length) +
@@ -107,7 +107,7 @@ public final class LengthBatchViewRStream extends ViewSupport implements Cloneab
      */
     protected final void sendBatch()
     {
-        if ((ExecutionPathDebugLog.isEnabled()) && (log.isDebugEnabled()))
+        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
         {
             log.debug(".sendBatch Update child views");
         }
@@ -134,7 +134,7 @@ public final class LengthBatchViewRStream extends ViewSupport implements Cloneab
             }
         }
 
-        if ((ExecutionPathDebugLog.isEnabled()) && (log.isDebugEnabled()))
+        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
         {
             log.debug(".sendBatch Published updated data, ....newData size=" + currentBatch.size());
             for (Object object : currentBatch)

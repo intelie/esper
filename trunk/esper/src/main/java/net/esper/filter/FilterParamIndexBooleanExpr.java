@@ -68,7 +68,7 @@ public final class FilterParamIndexBooleanExpr extends FilterParamIndexBase
 
     public final void matchEvent(EventBean eventBean, Collection<FilterHandle> matches)
     {
-        if ((ExecutionPathDebugLog.isEnabled()) && (log.isDebugEnabled()))
+        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
         {
             log.debug(".match (" + Thread.currentThread().getId() + ")");
         }

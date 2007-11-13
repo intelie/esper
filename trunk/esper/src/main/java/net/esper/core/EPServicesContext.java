@@ -339,6 +339,7 @@ public final class EPServicesContext
         this.engineEnvContext = null;
         this.statementContextFactory = null;
         this.plugInPatternObjects = null;
+        this.namedWindowService = null;
     }
 
     /**

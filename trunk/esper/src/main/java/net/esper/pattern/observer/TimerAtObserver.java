@@ -50,7 +50,7 @@ public class TimerAtObserver implements EventObserver, ScheduleHandleCallback
 
     public final void scheduledTrigger(ExtensionServicesContext extensionServicesContext)
     {
-        if ((ExecutionPathDebugLog.isEnabled()) && (log.isDebugEnabled()))
+        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
         {
             log.debug(".scheduledTrigger");
         }
@@ -61,7 +61,7 @@ public class TimerAtObserver implements EventObserver, ScheduleHandleCallback
 
     public void startObserve()
     {
-        if ((ExecutionPathDebugLog.isEnabled()) && (log.isDebugEnabled()))
+        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
         {
             log.debug(".startObserve Starting at, spec=" + scheduleSpec);
         }
@@ -78,7 +78,7 @@ public class TimerAtObserver implements EventObserver, ScheduleHandleCallback
 
     public void stopObserve()
     {
-        if ((ExecutionPathDebugLog.isEnabled()) && (log.isDebugEnabled()))
+        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
         {
             log.debug(".stopObserve");
         }

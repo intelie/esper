@@ -36,7 +36,7 @@ public final class EvalAndStateNode extends EvalStateNode implements Evaluator
     {
         super(evalAndNode, parentNode, null);
 
-        if ((ExecutionPathDebugLog.isEnabled()) && (log.isDebugEnabled()))
+        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
         {
             log.debug(".constructor");
         }
@@ -54,7 +54,7 @@ public final class EvalAndStateNode extends EvalStateNode implements Evaluator
 
     public final void start()
     {
-        if ((ExecutionPathDebugLog.isEnabled()) && (log.isDebugEnabled()))
+        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
         {
             log.debug(".start Starting and-expression all children, size=" + getFactoryNode().getChildNodes().size());
         }
@@ -73,7 +73,7 @@ public final class EvalAndStateNode extends EvalStateNode implements Evaluator
 
     public final void evaluateTrue(MatchedEventMap matchEvent, EvalStateNode fromNode, boolean isQuitted)
     {
-        if ((ExecutionPathDebugLog.isEnabled()) && (log.isDebugEnabled()))
+        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
         {
             log.debug(".evaluateTrue fromNode=" + fromNode.hashCode());
         }
@@ -130,7 +130,7 @@ public final class EvalAndStateNode extends EvalStateNode implements Evaluator
 
     public final void evaluateFalse(EvalStateNode fromNode)
     {
-        if ((ExecutionPathDebugLog.isEnabled()) && (log.isDebugEnabled()))
+        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
         {
             log.debug(".evaluateFalse Removing fromNode=" + fromNode.hashCode());
         }
@@ -206,7 +206,7 @@ public final class EvalAndStateNode extends EvalStateNode implements Evaluator
 
     public final void quit()
     {
-        if ((ExecutionPathDebugLog.isEnabled()) && (log.isDebugEnabled()))
+        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
         {
             log.debug(".quit Stopping all children");
         }

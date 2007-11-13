@@ -75,7 +75,7 @@ public final class OutputConditionTime implements OutputCondition
 
     public final void updateOutputCondition(int newEventsCount, int oldEventsCount)
     {
-        if ((ExecutionPathDebugLog.isEnabled()) && (log.isDebugEnabled()))
+        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
         {
         	log.debug(".updateOutputCondition, " +
         			"  newEventsCount==" + newEventsCount +
@@ -106,7 +106,7 @@ public final class OutputConditionTime implements OutputCondition
         long current = context.getSchedulingService().getTime();
         long afterMSec = computeWaitMSec(current, this.currentReferencePoint, this.msecIntervalSize);
 
-        if ((ExecutionPathDebugLog.isEnabled()) && (log.isDebugEnabled()))
+        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
         {
             log.debug(".scheduleCallback Scheduled new callback for " +
                     " afterMsec=" + afterMSec +

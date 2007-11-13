@@ -28,7 +28,7 @@ public final class SchedulingServiceImpl implements SchedulingService
     private final Map<ScheduleHandle, SortedMap<ScheduleSlot, ScheduleHandle>> handleSetMap;
 
     // Current time - used for evaluation as well as for adding new handles
-    private long currentTime;
+    private volatile long currentTime;
 
     // Current bucket number - for use in ordering handles by bucket
     private int curBucketNum;
@@ -49,7 +49,7 @@ public final class SchedulingServiceImpl implements SchedulingService
         return new ScheduleBucket(curBucketNum);
     }
 
-    public synchronized long getTime()
+    public long getTime()
     {
         return this.currentTime;
     }

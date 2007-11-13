@@ -147,7 +147,7 @@ public final class TimeWindowView extends ViewSupport implements CloneableView, 
     {
         long expireBeforeTimestamp = statementContext.getSchedulingService().getTime() - millisecondsBeforeExpiry + 1;
 
-        if ((ExecutionPathDebugLog.isEnabled()) && (log.isDebugEnabled()))
+        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
         {
             log.debug(".expire Expiring messages before " +
                     "msec=" + expireBeforeTimestamp +
@@ -172,7 +172,7 @@ public final class TimeWindowView extends ViewSupport implements CloneableView, 
             }
         }
 
-        if ((ExecutionPathDebugLog.isEnabled()) && (log.isDebugEnabled()))
+        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
         {
             log.debug(".expire Expired messages....size=" + expired.size());
             for (Object object : expired)
@@ -191,7 +191,7 @@ public final class TimeWindowView extends ViewSupport implements CloneableView, 
         long scheduleMillisec = millisecondsBeforeExpiry - (currentTimestamp - oldestTimestamp);
         scheduleCallback(scheduleMillisec);
 
-        if ((ExecutionPathDebugLog.isEnabled()) && (log.isDebugEnabled()))
+        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
         {
             log.debug(".expire Scheduled new callback for now plus msec=" + scheduleMillisec);
         }

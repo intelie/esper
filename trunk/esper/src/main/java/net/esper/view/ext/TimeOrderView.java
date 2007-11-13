@@ -138,7 +138,7 @@ public final class TimeOrderView extends ViewSupport implements DataWindowView, 
 
     public final void update(EventBean[] newData, EventBean[] oldData)
     {
-        if ((ExecutionPathDebugLog.isEnabled()) && (log.isDebugEnabled()))
+        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
         {
             log.debug(".update Updating view");
             dumpUpdateParams("TimeOrderView", newData, oldData);
@@ -307,7 +307,7 @@ public final class TimeOrderView extends ViewSupport implements DataWindowView, 
         long expireBeforeTimestamp = statementContext.getSchedulingService().getTime() - intervalSize + 1;
         isCallbackScheduled = false;
 
-        if ((ExecutionPathDebugLog.isEnabled()) && (log.isDebugEnabled()))
+        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
         {
             log.debug(".expire Expiring messages before " +
                     "msec=" + expireBeforeTimestamp +
@@ -366,7 +366,7 @@ public final class TimeOrderView extends ViewSupport implements DataWindowView, 
             }
         }
 
-        if ((ExecutionPathDebugLog.isEnabled()) && (log.isDebugEnabled()))
+        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
         {
             log.debug(".expire Expired messages....size=" + releaseEvents.size());
             for (Object object : releaseEvents)
@@ -386,7 +386,7 @@ public final class TimeOrderView extends ViewSupport implements DataWindowView, 
         statementContext.getSchedulingService().add(callbackWait, handle, scheduleSlot);
         isCallbackScheduled = true;
 
-        if ((ExecutionPathDebugLog.isEnabled()) && (log.isDebugEnabled()))
+        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
         {
             log.debug(".expire Scheduled new callback for now plus msec=" + callbackWait);
         }

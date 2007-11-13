@@ -92,7 +92,7 @@ public final class GroupByView extends ViewSupport implements CloneableView
 
     public final void update(EventBean[] newData, EventBean[] oldData)
     {
-        if ((ExecutionPathDebugLog.isEnabled()) && (log.isDebugEnabled()))
+        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
         {
             log.debug(".update Updating view");
             dumpUpdateParams("GroupByView", newData, oldData);

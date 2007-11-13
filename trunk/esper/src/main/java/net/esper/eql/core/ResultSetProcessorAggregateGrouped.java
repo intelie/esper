@@ -96,7 +96,7 @@ public class ResultSetProcessorAggregateGrouped implements ResultSetProcessor
         MultiKeyUntyped[] oldDataGroupByKeys = generateGroupKeys(oldEvents, false);
 
         // generate old events
-        if ((ExecutionPathDebugLog.isEnabled()) && (log.isDebugEnabled()))
+        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
         {
             log.debug(".processJoinResults creating old output events");
         }
@@ -125,7 +125,7 @@ public class ResultSetProcessorAggregateGrouped implements ResultSetProcessor
         }
 
         // generate new events using select expressions
-        if ((ExecutionPathDebugLog.isEnabled()) && (log.isDebugEnabled()))
+        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
         {
             log.debug(".processJoinResults creating new output events");
         }
@@ -145,7 +145,7 @@ public class ResultSetProcessorAggregateGrouped implements ResultSetProcessor
         MultiKeyUntyped[] oldDataGroupByKeys = generateGroupKeys(oldData, false);
 
         // generate old events
-        if ((ExecutionPathDebugLog.isEnabled()) && (log.isDebugEnabled()))
+        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
         {
             log.debug(".processViewResults creating old output events");
         }
@@ -173,7 +173,7 @@ public class ResultSetProcessorAggregateGrouped implements ResultSetProcessor
         }
 
         // generate new events using select expressions
-        if ((ExecutionPathDebugLog.isEnabled()) && (log.isDebugEnabled()))
+        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
         {
             log.debug(".processViewResults creating new output events");
         }

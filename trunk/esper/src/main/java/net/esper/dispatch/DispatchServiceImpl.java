@@ -44,7 +44,7 @@ public class DispatchServiceImpl implements DispatchService
 
     private static void dispatchFromQueue(LinkedList<Dispatchable> dispatchQueue)
     {
-        if ((ExecutionPathDebugLog.isEnabled()) && (log.isDebugEnabled()))
+        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
         {
             log.debug(".dispatchFromQueue Dispatch queue is " + dispatchQueue.size() + " elements");
         }

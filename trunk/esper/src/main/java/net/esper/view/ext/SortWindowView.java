@@ -129,7 +129,7 @@ public final class SortWindowView extends ViewSupport implements DataWindowView,
 
     public final void update(EventBean[] newData, EventBean[] oldData)
     {
-        if ((ExecutionPathDebugLog.isEnabled()) && (log.isDebugEnabled()))
+        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
         {
             log.debug(".update Updating view");
             dumpUpdateParams("SortWindowView", newData, oldData);
@@ -183,7 +183,7 @@ public final class SortWindowView extends ViewSupport implements DataWindowView,
 
                 removedEvents.add(event);
 
-                if ((ExecutionPathDebugLog.isEnabled()) && (log.isDebugEnabled()))
+                if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
                 {
                     log.debug(".update Pushing out event event=" + event);
                 }

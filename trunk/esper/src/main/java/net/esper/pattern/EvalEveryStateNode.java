@@ -71,7 +71,7 @@ public final class EvalEveryStateNode extends EvalStateNode implements Evaluator
     {
         super(everyNode, parentNode, null);
 
-        if ((ExecutionPathDebugLog.isEnabled()) && (log.isDebugEnabled()))
+        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
         {
             log.debug(".constructor");
         }
@@ -86,7 +86,7 @@ public final class EvalEveryStateNode extends EvalStateNode implements Evaluator
 
     public final void start()
     {
-        if ((ExecutionPathDebugLog.isEnabled()) && (log.isDebugEnabled()))
+        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
         {
             log.debug(".start Starting single child");
         }
@@ -117,7 +117,7 @@ public final class EvalEveryStateNode extends EvalStateNode implements Evaluator
 
     public final void evaluateFalse(EvalStateNode fromNode)
     {
-        if ((ExecutionPathDebugLog.isEnabled()) && (log.isDebugEnabled()))
+        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
         {
             log.debug(".evaluateFalse");
         }
@@ -147,7 +147,7 @@ public final class EvalEveryStateNode extends EvalStateNode implements Evaluator
 
     public final void evaluateTrue(MatchedEventMap matchEvent, EvalStateNode fromNode, boolean isQuitted)
     {
-        if ((ExecutionPathDebugLog.isEnabled()) && (log.isDebugEnabled()))
+        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
         {
             log.debug(".evaluateTrue fromNode=" + fromNode  + "  isQuitted=" + isQuitted);
         }
@@ -190,7 +190,7 @@ public final class EvalEveryStateNode extends EvalStateNode implements Evaluator
 
     public final void quit()
     {
-        if ((ExecutionPathDebugLog.isEnabled()) && (log.isDebugEnabled()))
+        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
         {
             log.debug(".quit Quitting EVERY-node all children");
         }

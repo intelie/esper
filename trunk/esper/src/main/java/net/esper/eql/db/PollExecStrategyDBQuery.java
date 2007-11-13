@@ -93,7 +93,7 @@ public class PollExecStrategyDBQuery implements PollExecStrategy
     private List<EventBean> execute(PreparedStatement preparedStatement,
                                     Object[] lookupValuePerStream)
     {
-        if (ExecutionPathDebugLog.isEnabled() && log.isInfoEnabled())
+        if (ExecutionPathDebugLog.isDebugEnabled && log.isInfoEnabled())
         {
             log.info(".execute Executing prepared statement '" + preparedStatementText + "'");
         }
@@ -105,7 +105,7 @@ public class PollExecStrategyDBQuery implements PollExecStrategy
             try
             {
                 Object parameter = lookupValuePerStream[i];
-                if (ExecutionPathDebugLog.isEnabled() && log.isInfoEnabled())
+                if (ExecutionPathDebugLog.isDebugEnabled && log.isInfoEnabled())
                 {
                     log.info(".execute Setting parameter " + count + " to " + parameter + " typed " + ((parameter == null)? "null" : parameter.getClass()));
                 }

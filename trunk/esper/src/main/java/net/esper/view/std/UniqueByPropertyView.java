@@ -78,7 +78,7 @@ public final class UniqueByPropertyView extends ViewSupport implements Cloneable
 
     public final void update(EventBean[] newData, EventBean[] oldData)
     {
-        if ((ExecutionPathDebugLog.isEnabled()) && (log.isDebugEnabled()))
+        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
         {
             log.debug(".update Updating view");
             dumpUpdateParams("UniqueByPropertyView", newData, oldData);

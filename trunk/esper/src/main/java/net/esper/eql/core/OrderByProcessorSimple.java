@@ -115,7 +115,7 @@ public class OrderByProcessorSimple implements OrderByProcessor {
 
 	public EventBean[] sort(EventBean[] outgoingEvents, EventBean[][] generatingEvents, MultiKeyUntyped[] groupByKeys, boolean isNewData)
 	{
-		if ((ExecutionPathDebugLog.isEnabled()) && (log.isDebugEnabled()))
+		if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
         {
             log.debug(".sort");
         }

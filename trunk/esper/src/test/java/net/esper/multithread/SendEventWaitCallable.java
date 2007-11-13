@@ -15,6 +15,7 @@ public class SendEventWaitCallable implements Callable
     private final EPServiceProvider engine;
     private final Iterator<Object> events;
     private final Object sendLock;
+    private boolean isShutdown;
 
     public SendEventWaitCallable(int threadNum, EPServiceProvider engine, Object sendLock, Iterator<Object> events)
     {
@@ -24,11 +25,16 @@ public class SendEventWaitCallable implements Callable
         this.sendLock = sendLock;
     }
 
+    public void setShutdown(boolean shutdown)
+    {
+        isShutdown = shutdown;
+    }
+
     public Object call() throws Exception
     {
         try
         {
-            while (events.hasNext())
+            while ((events.hasNext() && (!isShutdown)))
             {
                 synchronized(sendLock) {
                     sendLock.wait();

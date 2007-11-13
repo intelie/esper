@@ -125,7 +125,7 @@ public final class FilterParamIndexCompare extends FilterParamIndexPropBase
         FilterOperator filterOperator = this.getFilterOperator();
         Double propertyValueDouble = ((Number) propertyValue).doubleValue();
 
-        if ((ExecutionPathDebugLog.isEnabled()) && (log.isDebugEnabled()))
+        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
         {
             log.debug(".match (" + Thread.currentThread().getId() + ") propertyValue=" + propertyValue +
                       "  filterOperator=" + filterOperator);

@@ -80,7 +80,7 @@ public class EventTypeIndex implements EventEvaluator
 
     public void matchEvent(EventBean event, Collection<FilterHandle> matches)
     {
-        if ((ExecutionPathDebugLog.isEnabled()) && (log.isDebugEnabled()))
+        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
         {
             log.debug(".matchEvent Event received for matching, event=" + event);
         }
@@ -129,7 +129,7 @@ public class EventTypeIndex implements EventEvaluator
         // In this case, log a message and done.
         if (rootNode == null)
         {
-            if ((ExecutionPathDebugLog.isEnabled()) && (log.isDebugEnabled()))
+            if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
             {
                 String message = "Event type is not known to the filter service, eventType=" + eventType;
                 log.debug(".matchEvent " + message);

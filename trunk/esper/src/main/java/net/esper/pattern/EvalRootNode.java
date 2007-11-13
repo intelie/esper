@@ -32,7 +32,7 @@ public final class EvalRootNode extends EvalNode implements PatternStarter
                                         MatchedEventMap beginState,
                                         PatternContext context, Object stateNodeId)
     {
-        if ((ExecutionPathDebugLog.isEnabled()) && (log.isDebugEnabled()))
+        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
         {
             log.debug(".newState");
         }

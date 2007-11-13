@@ -88,7 +88,7 @@ public final class TimeBatchViewRStream extends ViewSupport implements Cloneable
 
     public final void update(EventBean[] newData, EventBean[] oldData)
     {
-        if ((ExecutionPathDebugLog.isEnabled()) && (log.isDebugEnabled()))
+        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
         {
             log.debug(".update Received update, " +
                     "  newData.length==" + ((newData == null) ? 0 : newData.length) +
@@ -153,7 +153,7 @@ public final class TimeBatchViewRStream extends ViewSupport implements Cloneable
     {
         isCallbackScheduled = false;
 
-        if ((ExecutionPathDebugLog.isEnabled()) && (log.isDebugEnabled()))
+        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
         {
             log.debug(".sendBatch Update child views, " +
                     "  time=" + statementContext.getSchedulingService().getTime());
@@ -180,7 +180,7 @@ public final class TimeBatchViewRStream extends ViewSupport implements Cloneable
             }
         }
 
-        if ((ExecutionPathDebugLog.isEnabled()) && (log.isDebugEnabled()))
+        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
         {
             log.debug(".sendBatch Published updated data, ....newData size=" + currentBatch.size());
             for (Object object : currentBatch)
@@ -234,7 +234,7 @@ public final class TimeBatchViewRStream extends ViewSupport implements Cloneable
         long current = statementContext.getSchedulingService().getTime();
         long afterMSec = TimeBatchView.computeWaitMSec(current, this.currentReferencePoint, this.msecIntervalSize);
 
-        if ((ExecutionPathDebugLog.isEnabled()) && (log.isDebugEnabled()))
+        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
         {
             log.debug(".scheduleCallback Scheduled new callback for " +
                     " afterMsec=" + afterMSec +

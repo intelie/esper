@@ -16,7 +16,6 @@ public class TestPerfNamedWindow extends TestCase
 {
     private EPServiceProvider epService;
     private SupportUpdateListener listenerWindow;
-    private SupportUpdateListener listenerStmtOne;
 
     public void setUp()
     {
@@ -26,7 +25,6 @@ public class TestPerfNamedWindow extends TestCase
         epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();
         listenerWindow = new SupportUpdateListener();
-        listenerStmtOne = new SupportUpdateListener();
     }
 
     public void testDeletePerformance()

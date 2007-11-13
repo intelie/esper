@@ -116,7 +116,7 @@ public class StaticMethodResolver
 	public static Method resolveMethod(Class declaringClass, String methodName, Class[] paramTypes)
 	throws NoSuchMethodException
 	{
-        if ((ExecutionPathDebugLog.isEnabled()) && (log.isDebugEnabled()))
+        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
         {
             log.debug(".resolve method className=" + declaringClass.getSimpleName() + ", methodName=" + methodName);
         }

@@ -32,14 +32,14 @@ public final class EvalRootStateNode extends EvalStateNode implements Evaluator,
     {
         super(rootSingleChildNode, null, null);
 
-        if ((ExecutionPathDebugLog.isEnabled()) && (log.isDebugEnabled()))
+        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
         {
             log.debug(".constructor");
         }
 
         topStateNode = rootSingleChildNode.newState(this, beginState, context, null);
 
-        if ((ExecutionPathDebugLog.isEnabled()) && (log.isDebugEnabled()))
+        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
         {
             log.debug(".constructor Done, dumping full tree");
             EvalStateNodePrinterVisitor visitor = new EvalStateNodePrinterVisitor();
@@ -58,7 +58,7 @@ public final class EvalRootStateNode extends EvalStateNode implements Evaluator,
 
     public final void start()
     {
-        if ((ExecutionPathDebugLog.isEnabled()) && (log.isDebugEnabled()))
+        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
         {
             log.debug(".start Starting single child");
         }
@@ -87,7 +87,7 @@ public final class EvalRootStateNode extends EvalStateNode implements Evaluator,
 
     public final void evaluateTrue(MatchedEventMap matchEvent, EvalStateNode fromNode, boolean isQuitted)
     {
-        if ((ExecutionPathDebugLog.isEnabled()) && (log.isDebugEnabled()))
+        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
         {
             log.debug(".evaluateTrue isQuitted=" + isQuitted);
         }
@@ -102,7 +102,7 @@ public final class EvalRootStateNode extends EvalStateNode implements Evaluator,
 
     public final void evaluateFalse(EvalStateNode fromNode)
     {
-        if ((ExecutionPathDebugLog.isEnabled()) && (log.isDebugEnabled()))
+        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
         {
             log.debug(".evaluateFalse");            
         }

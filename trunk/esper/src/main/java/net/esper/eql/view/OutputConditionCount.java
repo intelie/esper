@@ -77,7 +77,7 @@ public final class OutputConditionCount implements OutputCondition
         this.newEventsCount += newDataCount;
         this.oldEventsCount += oldDataCount;
 
-        if ((ExecutionPathDebugLog.isEnabled()) && (log.isDebugEnabled()))
+        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
         {
             log.debug(".updateBatchCondition, " +
                     "  newEventsCount==" + newEventsCount +

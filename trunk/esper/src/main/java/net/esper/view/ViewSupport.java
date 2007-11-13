@@ -155,7 +155,7 @@ public abstract class ViewSupport implements View
             printObjectArray(prefix, writer, oldData);
         }
 
-        if ((ExecutionPathDebugLog.isEnabled()) && (log.isDebugEnabled()))
+        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
         {
             log.debug(".dumpUpdateParams Dumping update parameters..." + buffer.toString());
         }
@@ -182,7 +182,7 @@ public abstract class ViewSupport implements View
         {
             for (View child : parentViewable.getViews())
             {
-                if ((ExecutionPathDebugLog.isEnabled()) && (log.isDebugEnabled()))
+                if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
                 {
                     log.debug(".dumpChildViews " + prefix + ' ' + child.toString());
                 }

@@ -42,7 +42,7 @@ public class TestEQLTreeWalker extends TestCase
         assertEquals("MyNamedWindow", raw.getOnDeleteDesc().getWindowName());
         assertEquals("mywin", raw.getOnDeleteDesc().getOptionalAsName());
 
-        assertTrue(raw.getFilterRootNode() instanceof ExprEqualsNode);
+        assertTrue(raw.getOnDeleteDesc().getJoinExpr() instanceof ExprEqualsNode);
     }
 
     public void testWalkCreateWindow() throws Exception
@@ -67,10 +67,10 @@ public class TestEQLTreeWalker extends TestCase
         assertEquals("com.MyClass", streamSpec.getRawFilterSpec().getEventTypeAlias());
 
         // 2 views
-        assertEquals(2, streamSpec.getViewSpecs().size());
-        assertEquals("groupby", streamSpec.getViewSpecs().get(0).getObjectName());
-        assertEquals("std", streamSpec.getViewSpecs().get(0).getObjectNamespace());
-        assertEquals("length", streamSpec.getViewSpecs().get(1).getObjectName());
+        assertEquals(2, raw.getCreateWindowDesc().getViewSpecs().size());
+        assertEquals("groupby", raw.getCreateWindowDesc().getViewSpecs().get(0).getObjectName());
+        assertEquals("std", raw.getCreateWindowDesc().getViewSpecs().get(0).getObjectNamespace());
+        assertEquals("length", raw.getCreateWindowDesc().getViewSpecs().get(1).getObjectName());
     }
 
     public void testWalkSubstitutionParams() throws Exception

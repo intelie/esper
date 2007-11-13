@@ -41,7 +41,7 @@ public final class ScheduleComputeHelper
      */
     public static long computeNextOccurance(ScheduleSpec spec, long afterTimeInMillis)
     {
-        if ((ExecutionPathDebugLog.isEnabled()) && (log.isDebugEnabled()))
+        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
         {
             log.debug(".computeNextOccurance Computing next occurance, afterTimeInMillis=" + (new Date(afterTimeInMillis)) +
                       "  as long=" + afterTimeInMillis +
@@ -61,7 +61,7 @@ public final class ScheduleComputeHelper
 
         Date result = compute(spec, afterTimeInMillis);
 
-        if ((ExecutionPathDebugLog.isEnabled()) && (log.isDebugEnabled()))
+        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
         {
             log.debug(".computeNextOccurance Completed, result=" + result + "  long=" + result.getTime());
         }

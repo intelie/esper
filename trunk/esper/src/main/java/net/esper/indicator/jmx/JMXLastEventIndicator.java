@@ -69,7 +69,7 @@ public final class JMXLastEventIndicator implements UpdateListener
             objectName += ":indexProperty=" + indexProperty;
         }
 
-        if ((ExecutionPathDebugLog.isEnabled()) && (log.isDebugEnabled()))
+        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
         {
             log.debug(".setParent Registering mbean with name " + objectName);
         }

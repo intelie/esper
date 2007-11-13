@@ -42,10 +42,11 @@ public class TestMTStmtPattern extends TestCase
         Object sendLock = new Object();
         ExecutorService threadPool = Executors.newFixedThreadPool(numThreads);
         Future future[] = new Future[numThreads];
+        SendEventWaitCallable[] callables = new SendEventWaitCallable[numThreads];
         for (int i = 0; i < numThreads; i++)
         {
-            Callable callable = new SendEventWaitCallable(i, engine, sendLock, new GeneratorIterator(numEvents));
-            future[i] = threadPool.submit(callable);
+            callables[i] = new SendEventWaitCallable(i, engine, sendLock, new GeneratorIterator(numEvents));
+            future[i] = threadPool.submit(callables[i]);
         }
 
         for (int i = 0; i < numEvents; i++)
@@ -61,6 +62,15 @@ public class TestMTStmtPattern extends TestCase
             Thread.sleep(100);
             // Should be received exactly one
             assertTrue(listener.assertOneGetNewAndReset().get("a") instanceof SupportBean);
+        }
+
+        for (SendEventWaitCallable callable : callables)
+        {
+            callable.setShutdown(true);
+        }        
+        synchronized(sendLock)
+        {
+            sendLock.notifyAll();
         }
 
         threadPool.shutdown();
