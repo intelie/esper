@@ -176,13 +176,28 @@ public class ConfigurationDBRef implements Serializable
     }
 
     /**
-     * Configures an expiry-time cache of the given maximum age in seconds and pruge interval in seconds.
+     * Configures an expiry-time cache of the given maximum age in seconds and purge interval in seconds.
+     * <p>
+     * Specifies the cache reference type to be weak references. Weak reference cache entries become
+     * eligible for garbage collection and are removed from cache when the garbage collection requires so.
      * @param maxAgeSeconds is the maximum number of seconds before a query result is considered stale (also known as time-to-live)
      * @param purgeIntervalSeconds is the interval at which the engine purges stale data from the cache
      */
     public void setExpiryTimeCache(double maxAgeSeconds, double purgeIntervalSeconds)
     {
-        dataCacheDesc = new ExpiryTimeCacheDesc(maxAgeSeconds, purgeIntervalSeconds);
+        dataCacheDesc = new ExpiryTimeCacheDesc(maxAgeSeconds, purgeIntervalSeconds, CacheReferenceType.getDefault());
+    }
+
+    /**
+     * Configures an expiry-time cache of the given maximum age in seconds and purge interval in seconds. Also allows
+     * setting the reference type indicating whether garbage collection may remove entries from cache.
+     * @param maxAgeSeconds is the maximum number of seconds before a query result is considered stale (also known as time-to-live)
+     * @param purgeIntervalSeconds is the interval at which the engine purges stale data from the cache
+     * @param cacheReferenceType specifies the reference type to use
+     */
+    public void setExpiryTimeCache(double maxAgeSeconds, double purgeIntervalSeconds, CacheReferenceType cacheReferenceType)
+    {
+        dataCacheDesc = new ExpiryTimeCacheDesc(maxAgeSeconds, purgeIntervalSeconds, cacheReferenceType);
     }
 
     /**
@@ -573,6 +588,7 @@ public class ConfigurationDBRef implements Serializable
      */
     public static class ExpiryTimeCacheDesc implements DataCacheDesc, Serializable
     {
+        private CacheReferenceType cacheReferenceType;
         private double maxAgeSeconds;
         private double purgeIntervalSeconds;
 
@@ -580,11 +596,14 @@ public class ConfigurationDBRef implements Serializable
          * Ctor.
          * @param maxAgeSeconds is the maximum age in seconds
          * @param purgeIntervalSeconds is the purge interval
+         * @param cacheReferenceType the reference type may allow garbage collection to remove entries from
+         * cache unless HARD reference type indicates otherwise 
          */
-        public ExpiryTimeCacheDesc(double maxAgeSeconds, double purgeIntervalSeconds)
+        public ExpiryTimeCacheDesc(double maxAgeSeconds, double purgeIntervalSeconds, CacheReferenceType cacheReferenceType)
         {
             this.maxAgeSeconds = maxAgeSeconds;
             this.purgeIntervalSeconds = purgeIntervalSeconds;
+            this.cacheReferenceType = cacheReferenceType;
         }
 
         /**
@@ -603,6 +622,16 @@ public class ConfigurationDBRef implements Serializable
         public double getPurgeIntervalSeconds()
         {
             return purgeIntervalSeconds;
+        }
+
+        /**
+         * Returns the enumeration whether hard, soft or weak reference type are used
+         * to control whether the garbage collection can remove entries from cache.
+         * @return reference type 
+         */
+        public CacheReferenceType getCacheReferenceType()
+        {
+            return cacheReferenceType;
         }
 
         public String toString()
@@ -635,6 +664,43 @@ public class ConfigurationDBRef implements Serializable
          * See the documentation for the generation or specication of the sample query statement.
          */
         SAMPLE
+    }
+
+    /**
+     * Enum indicating what kind of references are used to store the cache map's keys and values.
+     */
+    public enum CacheReferenceType
+    {
+        /**
+         * Constant indicating that hard references should be used.
+         * <p>
+         * Does not allow garbage collection to remove cache entries.
+         */
+        HARD,
+
+        /**
+         * Constant indicating that soft references should be used.
+         * <p>
+         * Allows garbage collection to remove cache entries only after all weak references have been collected. 
+         */
+        SOFT,
+
+        /**
+         * Constant indicating that weak references should be used.
+         * <p>
+         * Allows garbage collection to remove cache entries. 
+         */
+        WEAK;
+
+        /**
+         * The default policy is set to WEAK to reduce the chance that out-of-memory errors occur
+         * as caches fill, and stay backwards compatible with prior Esper releases.
+         * @return default reference type
+         */
+        public static CacheReferenceType getDefault()
+        {
+            return WEAK;
+        }
     }
 
     /**

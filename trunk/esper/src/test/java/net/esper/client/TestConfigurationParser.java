@@ -134,6 +134,7 @@ public class TestConfigurationParser extends TestCase
         ConfigurationDBRef.ExpiryTimeCacheDesc expCache = (ConfigurationDBRef.ExpiryTimeCacheDesc) configDBRef.getDataCacheDesc();
         assertEquals(60.5, expCache.getMaxAgeSeconds());
         assertEquals(120.1, expCache.getPurgeIntervalSeconds());
+        assertEquals(ConfigurationDBRef.CacheReferenceType.HARD, expCache.getCacheReferenceType());
         assertEquals(ConfigurationDBRef.ColumnChangeCaseEnum.UPPERCASE, configDBRef.getColumnChangeCase());
         assertEquals(ConfigurationDBRef.MetadataOriginEnum.METADATA, configDBRef.getMetadataRetrievalEnum());
         assertEquals(1, configDBRef.getJavaSqlTypesMapping().size());

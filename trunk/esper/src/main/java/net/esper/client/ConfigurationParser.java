@@ -391,7 +391,13 @@ class ConfigurationParser {
             {
                 String maxAge = subElement.getAttributes().getNamedItem("max-age-seconds").getTextContent();
                 String purgeInterval = subElement.getAttributes().getNamedItem("purge-interval-seconds").getTextContent();
-                configDBRef.setExpiryTimeCache(Double.parseDouble(maxAge), Double.parseDouble(purgeInterval));
+                ConfigurationDBRef.CacheReferenceType refTypeEnum = ConfigurationDBRef.CacheReferenceType.getDefault();
+                if (subElement.getAttributes().getNamedItem("ref-type") != null)
+                {
+                    String refType = subElement.getAttributes().getNamedItem("ref-type").getTextContent();
+                    refTypeEnum = ConfigurationDBRef.CacheReferenceType.valueOf(refType.toUpperCase());
+                }
+                configDBRef.setExpiryTimeCache(Double.parseDouble(maxAge), Double.parseDouble(purgeInterval), refTypeEnum);
             }
             else if (subElement.getNodeName().equals("lru-cache"))
             {

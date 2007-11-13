@@ -118,8 +118,8 @@ public class DatabaseConfigServiceImpl implements DatabaseConfigService
         if (config.getDataCacheDesc() instanceof ConfigurationDBRef.ExpiryTimeCacheDesc)
         {
             ConfigurationDBRef.ExpiryTimeCacheDesc expCache = (ConfigurationDBRef.ExpiryTimeCacheDesc) config.getDataCacheDesc();
-            return new DataCacheExpiringImpl(expCache.getMaxAgeSeconds(), expCache.getPurgeIntervalSeconds(), schedulingService,
-                    scheduleBucket.allocateSlot(), epStatementHandle);
+            return new DataCacheExpiringImpl(expCache.getMaxAgeSeconds(), expCache.getPurgeIntervalSeconds(), expCache.getCacheReferenceType(),
+                    schedulingService, scheduleBucket.allocateSlot(), epStatementHandle);
         }
 
         throw new IllegalStateException("Cache implementation class not configured");

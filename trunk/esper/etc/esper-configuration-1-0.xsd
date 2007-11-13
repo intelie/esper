@@ -138,8 +138,8 @@
 					<xs:element ref="connection-lifecycle" minOccurs="0"/>
 					<xs:element ref="lru-cache" minOccurs="0"/>
 					<xs:element ref="expiry-time-cache" minOccurs="0"/>
-					<xs:element ref="column-change-case" minOccurs="0" />
-					<xs:element ref="metadata-origin" minOccurs="0" />
+					<xs:element ref="column-change-case" minOccurs="0"/>
+					<xs:element ref="metadata-origin" minOccurs="0"/>
 					<xs:element ref="sql-types-mapping" minOccurs="0" maxOccurs="unbounded"/>
 				</xs:sequence>
 			</xs:choice>
@@ -196,6 +196,13 @@
 			<xs:enumeration value="retain"/>
 		</xs:restriction>
 	</xs:simpleType>
+	<xs:simpleType name="ref-type-enum">
+		<xs:restriction base="xs:token">
+			<xs:enumeration value="weak"/>
+			<xs:enumeration value="soft"/>
+			<xs:enumeration value="hard"/>
+		</xs:restriction>
+	</xs:simpleType>
 	<xs:element name="lru-cache">
 		<xs:complexType>
 			<xs:attribute name="size" type="xs:int" use="required"/>
@@ -205,6 +212,7 @@
 		<xs:complexType>
 			<xs:attribute name="max-age-seconds" type="xs:double" use="required"/>
 			<xs:attribute name="purge-interval-seconds" type="xs:double" use="required"/>
+			<xs:attribute name="ref-type" type="ref-type-enum" use="optional"/>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="plugin-view">
@@ -358,12 +366,12 @@
 			<xs:enumeration value="metadata"/>
 			<xs:enumeration value="sample"/>
 		</xs:restriction>
-	</xs:simpleType>	
+	</xs:simpleType>
 	<xs:simpleType name="columnChangeCaseEnum">
 		<xs:restriction base="xs:token">
 			<xs:enumeration value="none"/>
 			<xs:enumeration value="lowercase"/>
 			<xs:enumeration value="uppercase"/>
 		</xs:restriction>
-	</xs:simpleType>	
+	</xs:simpleType>
 </xs:schema>

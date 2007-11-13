@@ -821,7 +821,7 @@ Connection connection = dataSource.getConnection();]]></programlisting>
 					<title>Expiry-time Cache</title>
 					
 					<para>
-						The expiry time cache is configured by a maximum age in seconds and a purge interval. The cache discards (on the get operation) any query results that are older then the maximum age so that stale data is not used. If the cache is not empty, then every purge interval number of seconds the engine purges any expired entries from the cache.
+						The expiry time cache is configured by a maximum age in seconds, a purge interval and an optional reference type. The cache discards (on the get operation) any query results that are older then the maximum age so that stale data is not used. If the cache is not empty, then every purge interval number of seconds the engine purges any expired entries from the cache.
 					</para>
 					
 					<para>
@@ -830,9 +830,26 @@ Connection connection = dataSource.getConnection();]]></programlisting>
 
 					<programlisting><![CDATA[<database-reference name="mydb">
 ... configure data source or driver manager settings...
-    <expiry-time-cache max-age-seconds="60" purge-interval-seconds="120"/>
+    <expiry-time-cache max-age-seconds="60" purge-interval-seconds="120" />
+</database-reference>]]></programlisting>
+
+					<para>
+						By default, the expiry-time cache is backed by a <literal>java.util.WeakHashMap</literal> and thus relies on weak references. That means that cached SQL results can be freed during garbage collection. 
+					</para>
+
+					<para>
+						Via XML or using the configuration API the type of reference can be configured to not allow entries to be garbage collected, by setting the <literal>ref-type</literal> property to <literal>hard</literal>:
+					</para>
+
+					<programlisting><![CDATA[<database-reference name="mydb">
+... configure data source or driver manager settings...
+    <expiry-time-cache max-age-seconds="60" purge-interval-seconds="120" ref-type="hard"/>
 </database-reference>]]></programlisting>
 				</sect4>
+
+					<para>
+						The last setting for the cache reference type is <literal>soft</literal>: This strategy allows the garbage collection of cache entries only when all other weak references have been collected.
+					</para>
 			</sect3>
 
 			<sect3 id="config-database-columnchangecase" revision="1">

@@ -1,6 +1,7 @@
 package net.esper.eql.db;
 
 import junit.framework.TestCase;
+import net.esper.client.ConfigurationDBRef;
 import net.esper.eql.join.table.EventTable;
 import net.esper.eql.join.table.UnindexedEventTable;
 import net.esper.schedule.SchedulingServiceImpl;
@@ -23,7 +24,7 @@ public class TestDataCacheExpiringImpl extends TestCase
     public void testPurgeInterval()
     {
         SchedulingServiceImpl scheduler = new SchedulingServiceImpl();
-        cache = new DataCacheExpiringImpl(10, 20, scheduler, null, null);   // age 10 sec, purge 1000 seconds
+        cache = new DataCacheExpiringImpl(10, 20, ConfigurationDBRef.CacheReferenceType.HARD, scheduler, null, null);   // age 10 sec, purge 1000 seconds
 
         // test single entry in cache
         scheduler.setTime(5000);
@@ -58,7 +59,7 @@ public class TestDataCacheExpiringImpl extends TestCase
     public void testGet()
     {
         scheduler = new SupportSchedulingServiceImpl();
-        cache = new DataCacheExpiringImpl(10, 1000, scheduler, null, null);   // age 10 sec, purge 1000 seconds
+        cache = new DataCacheExpiringImpl(10, 1000, ConfigurationDBRef.CacheReferenceType.HARD, scheduler, null, null);   // age 10 sec, purge 1000 seconds
 
         assertNull(cache.getCached(make("a")));
 
