@@ -238,5 +238,5 @@ public class WrapperEventType implements EventType
 				throw new EPException("Property " + property + " occurs in both the underlying event and in the additional properties");
 			}
 		}
-	}
+	}    
 }

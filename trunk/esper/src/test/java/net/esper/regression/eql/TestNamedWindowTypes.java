@@ -5,9 +5,7 @@ import net.esper.client.Configuration;
 import net.esper.client.EPServiceProvider;
 import net.esper.client.EPServiceProviderManager;
 import net.esper.client.EPStatement;
-import net.esper.support.bean.SupportBean;
-import net.esper.support.bean.SupportMarketDataBean;
-import net.esper.support.bean.SupportBean_A;
+import net.esper.support.bean.*;
 import net.esper.support.client.SupportConfigFactory;
 import net.esper.support.util.ArrayAssertionUtil;
 import net.esper.support.util.SupportUpdateListener;
@@ -145,6 +143,36 @@ public class TestNamedWindowTypes extends TestCase
         String[] fields = new String[] {"id"};
         ArrayAssertionUtil.assertProps(listenerWindow.assertOneGetNewAndReset(), fields, new Object[] {"E1"});
         ArrayAssertionUtil.assertProps(listenerStmtOne.assertOneGetNewAndReset(), fields, new Object[] {"E1"});
+    }
+
+    public void testWildcardInheritance()
+    {
+        // create window
+        String stmtTextCreate = "create window MyWindow.win:keepall() as select * from " + SupportBeanBase.class.getName();
+        EPStatement stmtCreate = epService.getEPAdministrator().createEQL(stmtTextCreate);
+        stmtCreate.addListener(listenerWindow);
+
+        // create insert into
+        String stmtTextInsertOne = "insert into MyWindow select * from " + SupportBean_A.class.getName();
+        epService.getEPAdministrator().createEQL(stmtTextInsertOne);
+
+        // create insert into
+        String stmtTextInsertTwo = "insert into MyWindow select * from " + SupportBean_B.class.getName();
+        epService.getEPAdministrator().createEQL(stmtTextInsertTwo);
+
+        // create consumer
+        String stmtTextSelectOne = "select id from MyWindow";
+        EPStatement stmtSelectOne = epService.getEPAdministrator().createEQL(stmtTextSelectOne);
+        stmtSelectOne.addListener(listenerStmtOne);
+
+        epService.getEPRuntime().sendEvent(new SupportBean_A("E1"));
+        String[] fields = new String[] {"id"};
+        ArrayAssertionUtil.assertProps(listenerWindow.assertOneGetNewAndReset(), fields, new Object[] {"E1"});
+        ArrayAssertionUtil.assertProps(listenerStmtOne.assertOneGetNewAndReset(), fields, new Object[] {"E1"});
+
+        epService.getEPRuntime().sendEvent(new SupportBean_B("E2"));
+        ArrayAssertionUtil.assertProps(listenerWindow.assertOneGetNewAndReset(), fields, new Object[] {"E2"});
+        ArrayAssertionUtil.assertProps(listenerStmtOne.assertOneGetNewAndReset(), fields, new Object[] {"E2"});
     }
 
     public void testNoSpecificationBean()

@@ -249,7 +249,7 @@ public class TestFilterStreamSpecRaw extends TestCase
 
     private FilterSpecCompiled compile(FilterStreamSpecRaw raw) throws Exception
     {
-        FilterStreamSpecCompiled compiled = (FilterStreamSpecCompiled) raw.compile(SupportEventAdapterService.getService(), new MethodResolutionServiceImpl(new EngineImportServiceImpl()), null, null, new NamedWindowServiceImpl());
+        FilterStreamSpecCompiled compiled = (FilterStreamSpecCompiled) raw.compile(SupportEventAdapterService.getService(), new MethodResolutionServiceImpl(new EngineImportServiceImpl()), null, null, new NamedWindowServiceImpl(null));
         return compiled.getFilterSpec();
     }
     

@@ -328,40 +328,12 @@ public class MapEventType implements EventType
         MapEventType other = (MapEventType) obj;
 
         // Should have the same type name
-        if (other.types.size() != this.types.size())
-        {
-            return false;
-        }
-
-        // Should have the same number of properties
         if (!other.typeName.equals(this.typeName))
         {
             return false;
         }
 
-        // Compare property by property
-        for (Map.Entry<String, Class> entry : types.entrySet())
-        {
-            Class otherClass = other.types.get(entry.getKey());
-            Class thisClass = entry.getValue();
-            if (((otherClass == null) && (thisClass != null)) ||
-                 (otherClass != null) && (thisClass == null))
-            {
-                return false;
-            }
-            if (otherClass == null)
-            {
-                continue;
-            }
-            Class boxedOther = JavaClassHelper.getBoxedType(otherClass);
-            Class boxedThis = JavaClassHelper.getBoxedType(thisClass);
-            if (!boxedOther.equals(boxedThis))
-            {
-                return false;
-            }
-        }
-
-        return true;
+        return isEqualsProperties(other.types, this.types);
     }
 
     public int hashCode()
@@ -385,5 +357,38 @@ public class MapEventType implements EventType
     public Map<String, Class> getTypes()
     {
         return types;
+    }
+
+    protected static boolean isEqualsProperties(Map<String, Class> setOne, Map<String, Class> setTwo)
+    {
+        // Should have the same number of properties
+        if (setOne.size() != setTwo.size())
+        {
+            return false;
+        }
+        
+        // Compare property by property
+        for (Map.Entry<String, Class> entry : setOne.entrySet())
+        {
+            Class otherClass = setTwo.get(entry.getKey());
+            Class thisClass = entry.getValue();
+            if (((otherClass == null) && (thisClass != null)) ||
+                 (otherClass != null) && (thisClass == null))
+            {
+                return false;
+            }
+            if (otherClass == null)
+            {
+                continue;
+            }
+            Class boxedOther = JavaClassHelper.getBoxedType(otherClass);
+            Class boxedThis = JavaClassHelper.getBoxedType(thisClass);
+            if (!boxedOther.equals(boxedThis))
+            {
+                return false;
+            }
+        }
+
+        return true;
     }
 }

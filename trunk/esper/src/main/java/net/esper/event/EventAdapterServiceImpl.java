@@ -333,10 +333,16 @@ public class EventAdapterServiceImpl implements EventAdapterService
 	    EventType existingType = aliasToTypeMap.get(eventTypeAlias);
 	    if (existingType != null)
 	    {
-	        // The existing type must be the same as the type createdStatement
+	        // The existing type must be the same as the type created
 	        if (!newEventType.equals(existingType))
 	        {
-	            throw new EventAdapterException("Event type named '" + eventTypeAlias +
+                // It is possible that the wrapped event type is compatible: a child type of the desired type
+                if (isCompatibleWrapper(existingType, underlyingEventType, propertyTypes))
+                {
+                    return existingType; 
+                }
+
+                throw new EventAdapterException("Event type named '" + eventTypeAlias +
 	                    "' has already been declared with differing column name or type information");
 	        }
 
@@ -348,6 +354,35 @@ public class EventAdapterServiceImpl implements EventAdapterService
 
 	    return newEventType;
 	}
+
+    private boolean isCompatibleWrapper(EventType existingType, EventType underlyingType, Map<String, Class> propertyTypes)
+    {
+        if (!(existingType instanceof WrapperEventType))
+        {
+            return false;
+        }
+        WrapperEventType existingWrapper = (WrapperEventType) existingType;
+
+        if (!(MapEventType.isEqualsProperties(existingWrapper.getUnderlyingMapType().getTypes(), propertyTypes)))
+        {
+            return false;
+        }
+        EventType existingUnderlyingType = existingWrapper.getUnderlyingEventType();
+
+        // If one of the supertypes of the underlying type is the existing underlying type, we are compatible
+        if (underlyingType.getSuperTypes() == null)
+        {
+            return false;
+        }
+        for (EventType superUnderlying : underlyingType.getSuperTypes())
+        {
+            if (superUnderlying == existingUnderlyingType)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
 
     public final EventType createAnonymousMapType(Map<String, Class> propertyTypes) throws EventAdapterException
     {

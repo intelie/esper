@@ -1613,6 +1613,18 @@ insert into OrdersWindow select * from com.mycompany.OrderEvent(symbol='IBM')]]>
 			</para>
 			<programlisting><![CDATA[create window OrdersWindow as select *, price as derivedPrice from OrderEvent
 insert into OrdersWindow select *, MyFunc.func(price, percent) as derivedPrice from OrderEvent]]></programlisting>
+
+			<para>
+				Event representations based on Java base classes or interfaces, and subclasses or implementing classes, are compatible as these statements show:
+			</para>
+			<programlisting><![CDATA[// create a named window for the base class
+create window OrdersWindow as select * from ProductBaseEvent
+
+// The ServiceProductEvent class subclasses the ProductBaseEvent class
+insert into OrdersWindow select * from ServiceProductEvent
+
+// The MerchandiseProductEvent class subclasses the ProductBaseEvent class
+insert into OrdersWindow select * from MerchandiseProductEvent]]></programlisting>
 		</sect2>
 
 		<sect2 id="named_selecting" revision="1">

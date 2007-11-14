@@ -67,14 +67,15 @@ public class EPServicesContextFactoryDefault implements EPServicesContextFactory
         }
         TimerService timerService = new TimerServiceImpl(msecTimerResolution);
 
+        StatementLockFactory statementLockFactory = new StatementLockFactoryImpl();
         StreamFactoryService streamFactoryService = StreamFactoryServiceProvider.newService(configSnapshot.getEngineDefaults().getViewResources().isShareViews());
         FilterService filterService = FilterServiceProvider.newService();
-        NamedWindowService namedWindowService = new NamedWindowServiceImpl();
+        NamedWindowService namedWindowService = new NamedWindowServiceImpl(statementLockFactory);
 
         // New services context
         EPServicesContext services = new EPServicesContext(epServiceProvider.getURI(), schedulingService,
                 eventAdapterService, engineImportService, engineSettingsService, databaseConfigService, plugInViews,
-                new StatementLockFactoryImpl(), eventProcessingRWLock, null, jndiContext, statementContextFactory,
+                statementLockFactory, eventProcessingRWLock, null, jndiContext, statementContextFactory,
                 plugInPatternObj, outputConditionFactory, timerService, filterService, streamFactoryService, namedWindowService);
 
         // Circular dependency
