@@ -1,6 +1,7 @@
 package net.esper.eql.named;
 
 import net.esper.core.EPStatementHandle;
+import net.esper.core.StatementLockFactory;
 import net.esper.event.EventBean;
 import net.esper.event.EventType;
 import net.esper.util.ManagedLock;
@@ -16,6 +17,7 @@ public class NamedWindowServiceImpl implements NamedWindowService
 {
     private Map<String, NamedWindowProcessor> processors;
     private Map<String, ManagedLock> windowStatementLocks;
+    private StatementLockFactory statementLockFactory;
 
     private ThreadLocal<List<NamedWindowConsumerDispatchUnit>> threadLocal = new ThreadLocal<List<NamedWindowConsumerDispatchUnit>>()
     {
@@ -36,10 +38,18 @@ public class NamedWindowServiceImpl implements NamedWindowService
     /**
      * Ctor.
      */
-    public NamedWindowServiceImpl()
+    public NamedWindowServiceImpl(StatementLockFactory statementLockFactory)
     {
         this.processors = new HashMap<String, NamedWindowProcessor>();
         this.windowStatementLocks = new HashMap<String, ManagedLock>();
+        this.statementLockFactory = statementLockFactory;
+    }
+
+    public void destroy()
+    {
+        processors.clear();
+        threadLocal.remove();
+        dispatchesPerStmtTL.remove();
     }
 
     public ManagedLock getNamedWindowLock(String windowName)
@@ -113,7 +123,7 @@ public class NamedWindowServiceImpl implements NamedWindowService
             for (Map.Entry<EPStatementHandle, List<NamedWindowConsumerView>> entry : unit.getDispatchTo().entrySet())
             {
                 EPStatementHandle handle = entry.getKey();
-                handle.getStatementLock().acquireLock(null); // TODO: statement lock factory
+                handle.getStatementLock().acquireLock(statementLockFactory);
                 try
                 {
                     for (NamedWindowConsumerView consumerView : entry.getValue())
@@ -180,7 +190,7 @@ public class NamedWindowServiceImpl implements NamedWindowService
                 EventBean[] newData = unit.getDeltaData().getNewData();
                 EventBean[] oldData = unit.getDeltaData().getOldData();
 
-                handle.getStatementLock().acquireLock(null); // TODO: statement lock factory
+                handle.getStatementLock().acquireLock(statementLockFactory);
                 try
                 {
                     for (NamedWindowConsumerView consumerView : unit.getDispatchTo().get(handle))
@@ -219,7 +229,7 @@ public class NamedWindowServiceImpl implements NamedWindowService
                 }
             }
 
-            handle.getStatementLock().acquireLock(null); // TODO: statement lock factory
+            handle.getStatementLock().acquireLock(statementLockFactory);
             try
             {
                 for (Map.Entry<NamedWindowConsumerView, NamedWindowDeltaData> entryDelta : deltaPerConsumer.entrySet())

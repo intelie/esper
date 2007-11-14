@@ -115,4 +115,9 @@ public class RefCountedMap<K,V>
         refValue.setSecond(refCounter - 1);
         return false;
     }
+
+    public void clear()
+    {
+        refMap.clear();
+    }
 }

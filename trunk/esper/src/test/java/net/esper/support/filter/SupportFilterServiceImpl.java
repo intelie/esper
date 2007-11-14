@@ -44,4 +44,9 @@ public class SupportFilterServiceImpl implements FilterService
     {
         return removed;
     }
+
+    public void destroy()
+    {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
 }

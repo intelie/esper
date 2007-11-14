@@ -179,6 +179,11 @@ public class PropertyIndexedEventTable implements EventTable
         return new PropertyIndexedEventTableIterator(propertyIndex);
     }
 
+    public void clear()
+    {
+        propertyIndex.clear();
+    }
+
     public String toString()
     {
         return "PropertyIndexedEventTable" +

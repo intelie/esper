@@ -165,12 +165,12 @@ public class TestUseResultPattern extends TestCase implements SupportBeanConstan
     {
         // Test for ESPER-121
         Configuration config = new Configuration();
+        config.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
         config.addEventTypeAlias("FxTradeEvent", SupportTradeEvent.class
                 .getName());
         EPServiceProvider epService = EPServiceProviderManager.getProvider(
                 "testRFIDZoneEnter", config);
         epService.initialize();
-        epService.getEPRuntime().sendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
 
         String expression = "every tradeevent1=FxTradeEvent(userId in ('U1000','U1001','U1002') ) -> " +
                 "(tradeevent2=FxTradeEvent(userId in ('U1000','U1001','U1002') and " +

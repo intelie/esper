@@ -311,6 +311,26 @@ public final class EPServicesContext
         {
             extensionServicesContext.destroy();
         }
+        if (statementLifecycleSvc != null)
+        {
+            statementLifecycleSvc.destroy();
+        }
+        if (filterService != null)
+        {
+            filterService.destroy();
+        }
+        if (schedulingService != null)
+        {
+            schedulingService.destroy();
+        }
+        if (streamFactoryService != null)
+        {
+            streamFactoryService.destroy();
+        }
+        if (namedWindowService != null)
+        {
+            namedWindowService.destroy();
+        }
     }
 
     /**

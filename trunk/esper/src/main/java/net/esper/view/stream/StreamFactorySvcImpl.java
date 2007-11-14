@@ -65,6 +65,12 @@ public class StreamFactorySvcImpl implements StreamFactoryService
         this.isReuseViews = isReuseViews;
     }
 
+    public void destroy()
+    {
+        eventStreamsRefCounted.clear();
+        eventStreamsIdentity.clear();
+    }
+
     /**
      * See the method of the same name in {@link net.esper.view.stream.StreamFactoryService}. Always attempts to reuse an existing event stream.
      * May thus return a new event stream or an existing event stream depending on whether filter criteria match.

@@ -83,4 +83,6 @@ public interface StatementLifecycleSvc
      * @param listeners is the set of listeners after adding the new listener
      */
     public void updatedListeners(String statementId, String statementName, EPStatementListenerSet listeners);
+
+    public void destroy();
 }

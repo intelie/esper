@@ -62,4 +62,9 @@ public class UnindexedEventTableList implements EventTable
     {
         return "UnindexedEventTableList";
     }
+
+    public void clear()
+    {
+        eventSet.clear();
+    }
 }

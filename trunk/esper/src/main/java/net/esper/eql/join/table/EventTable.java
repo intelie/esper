@@ -40,4 +40,6 @@ public interface EventTable
      * @return true for empty index
      */
     public boolean isEmpty();
+
+    public void clear();
 }

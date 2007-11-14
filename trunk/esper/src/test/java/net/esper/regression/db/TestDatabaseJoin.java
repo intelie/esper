@@ -38,6 +38,7 @@ public class TestDatabaseJoin extends TestCase
 
         Configuration configuration = SupportConfigFactory.getConfiguration();
         configuration.addDatabaseReference("MyDB", configDB);
+        configuration.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
 
         epService = EPServiceProviderManager.getProvider("TestDatabaseJoinRetained", configuration);
         epService.initialize();

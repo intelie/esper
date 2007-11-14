@@ -34,6 +34,7 @@ public class TestNoSchemaXMLEvent extends TestCase
     public void setUp()
     {
         Configuration configuration = new Configuration();
+        configuration.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
         ConfigurationEventTypeXMLDOM xmlDOMEventTypeDesc = new ConfigurationEventTypeXMLDOM();
         xmlDOMEventTypeDesc.setRootElementName("myevent");
         xmlDOMEventTypeDesc.addXPathProperty("xpathElement1", "/myevent/element1", XPathConstants.STRING);

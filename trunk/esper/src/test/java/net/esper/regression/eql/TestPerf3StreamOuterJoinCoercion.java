@@ -94,7 +94,7 @@ public class TestPerf3StreamOuterJoinCoercion extends TestCase
         assertTrue("Failed perf test, delta=" + delta, delta < 1000);
     }
 
-    public void testPerfCoercion3waySceneThree()
+    public void testPerfCoercion3waySceneThree() throws Exception
     {
         String stmtText = "select s1.intBoxed as v1, s2.longBoxed as v2, s3.doubleBoxed as v3 from " +
                 SupportBean.class.getName() + "(string='A').win:length(1000000) s1 " +

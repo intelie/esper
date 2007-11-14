@@ -7,6 +7,7 @@ public class TestEPServiceProviderManager extends TestCase
     public void testGetInstance()
     {
         Configuration configuration = new Configuration();
+        configuration.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
 
         EPServiceProvider runtimeDef1 = EPServiceProviderManager.getDefaultProvider();
         EPServiceProvider runtimeA1 = EPServiceProviderManager.getProvider("A");
@@ -34,6 +35,7 @@ public class TestEPServiceProviderManager extends TestCase
     public void testInvalid()
     {
         Configuration configuration = new Configuration();
+        configuration.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
         configuration.addEventTypeAlias("x", "xxx.noclass");
 
         try

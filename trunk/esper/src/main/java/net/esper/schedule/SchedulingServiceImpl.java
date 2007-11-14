@@ -43,6 +43,12 @@ public final class SchedulingServiceImpl implements SchedulingService
         this.currentTime = System.currentTimeMillis();
     }
 
+    public void destroy()
+    {
+        handleSetMap.clear();
+        timeHandleMap.clear();
+    }
+
     public synchronized ScheduleBucket allocateBucket()
     {
         curBucketNum++;

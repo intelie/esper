@@ -14,6 +14,8 @@ public class TestAdapterLoader extends TestCase
     public void testAdapterLoader()
     {
         Configuration config = new Configuration();
+        config.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
+
         Properties props = new Properties();
         props.put("name", "val");
         config.addAdapterLoader("MyLoader", SupportAdapterLoader.class.getName(), props);

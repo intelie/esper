@@ -90,5 +90,10 @@ public class SupportSchedulingServiceImpl implements SchedulingService
         }
     }
 
+    public void destroy()
+    {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
     private static final Log log = LogFactory.getLog(SupportSchedulingServiceImpl.class);
 }

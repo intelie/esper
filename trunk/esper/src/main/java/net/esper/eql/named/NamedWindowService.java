@@ -79,4 +79,6 @@ public interface NamedWindowService
      * @param statementResourceLock is the statement lock for the create window statement
      */
     public void addNamedWindowLock(String windowName, ManagedLock statementResourceLock);
+
+    public void destroy();
 }

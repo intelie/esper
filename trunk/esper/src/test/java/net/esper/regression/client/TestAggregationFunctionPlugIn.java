@@ -21,6 +21,7 @@ public class TestAggregationFunctionPlugIn extends TestCase
 
         Configuration configuration = new Configuration();
         configuration.addPlugInAggregationFunction("concatstring", MyConcatAggregationFunction.class.getName());
+        configuration.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
         epService = EPServiceProviderManager.getProvider("TestAggregationFunctionPlugIn", configuration);
         epService.initialize();
     }

@@ -58,6 +58,17 @@ public class JoinSetComposerImpl implements JoinSetComposer
         }
     }
 
+    public void destroy()
+    {
+        for (int i = 0; i < repositories.length; i++)
+        {
+            for (EventTable table : repositories[i])
+            {
+                table.clear();
+            }            
+        }
+    }
+
     public UniformPair<Set<MultiKey<EventBean>>> join(EventBean[][] newDataPerStream, EventBean[][] oldDataPerStream)
     {
         oldResults.clear();

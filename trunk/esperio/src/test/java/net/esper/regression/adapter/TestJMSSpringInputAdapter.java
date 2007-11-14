@@ -37,6 +37,7 @@ public class TestJMSSpringInputAdapter extends TestCase
     {
         // define loader
         Configuration config = new Configuration();
+        config.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
         Properties props = new Properties();
         props.put(SpringContext.CLASSPATH_CONTEXT, "regression/jms_regression_input_spring.xml");
         config.addAdapterLoader("MyLoader", SpringContextLoader.class.getName(), props);
@@ -62,6 +63,7 @@ public class TestJMSSpringInputAdapter extends TestCase
     public void testMap() throws Exception
     {
         Configuration config = new Configuration();
+        config.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
 
         // define loader
         Properties props = new Properties();

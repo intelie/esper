@@ -41,6 +41,11 @@ public class EventTypeIndex implements EventEvaluator
         eventTypesRWLock = new ReentrantReadWriteLock();
     }
 
+    public void destroy()
+    {
+        eventTypes.clear();
+    }
+
     /**
      * Add a new event type to the index and use the specified node for the root node of its subtree.
      * If the event type already existed, the method will throw an IllegalStateException.

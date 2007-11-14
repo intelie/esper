@@ -56,6 +56,7 @@ public class TestStaticFunctions extends TestCase
 	public void testAutoImports()
 	{
 		Configuration configuration = new Configuration();
+        configuration.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
 		configuration.addImport("mull");
 		epService = EPServiceProviderManager.getProvider("1", configuration);
 		

@@ -130,7 +130,10 @@ public class EPStatementImpl implements EPStatementSPI
     {
         if (viewable == null)
         {
-            parentView.removeView(dispatchChildView);
+            if (parentView != null)
+            {
+                parentView.removeView(dispatchChildView);
+            }
             parentView = null;
         }
         else

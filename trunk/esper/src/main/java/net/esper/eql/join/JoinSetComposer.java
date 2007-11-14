@@ -38,4 +38,6 @@ public interface JoinSetComposer
      * @return static join result
      */
     public Set<MultiKey<EventBean>> staticJoin();
+
+    public void destroy();
 }

@@ -162,17 +162,18 @@ public class TestEPAdministrator extends TestCase
         // create a forth statement with the same name
         stmt = SupportBean.class.getName();
         EPStatement stmtFour = epService.getEPAdministrator().createPattern(stmt, "s1");
-        assertEquals("s1--2", stmtFour.getName());
+        assertEquals("s1--1", stmtFour.getName());
         assertEquals(stmt, stmtFour.getText());
 
         // create a fifth pattern statement with the same name
         stmt = "select * from " + SupportBean.class.getName();
         EPStatement stmtFive = epService.getEPAdministrator().createEQL(stmt, "s1");
-        assertEquals("s1--3", stmtFive.getName());
+        assertEquals("s1--2", stmtFive.getName());
         assertEquals(stmt, stmtFive.getText());
 
         // Null statement names should be allowed
         epService.getEPAdministrator().createPattern("every " + SupportBean.class.getName(), null);
+        epService.getEPAdministrator().destroyAllStatements();
     }
 
     public void testDestroyAll()

@@ -38,4 +38,6 @@ public interface StreamFactoryService
      * necessary for stream reuse and multithreading concerns
      */
     public void dropStream(FilterSpecCompiled filterSpec, FilterService filterService, boolean isJoin);
+
+    public void destroy();
 }

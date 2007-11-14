@@ -57,8 +57,14 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
     private final Map<String, String> stmtNameToIdMap;
     private final RefCountedMap<String, ManagedLock> insertIntoStreams;
 
+    public void destroy()
+    {
+        this.destroyAllStatements();
+    }
+    
     public void init()
     {
+        // called after services are activated, to begin statement loading from store
     }
 
     /**
@@ -148,7 +154,16 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
         EPStatementStartMethod startMethod;
 
         StatementContext statementContext =  services.getStatementContextFactory().makeContext(statementId, statementName, expression, services, optAdditionalContext, statementSpec.getOnDeleteDesc(), statementSpec.getCreateWindowDesc());
-        StatementSpecCompiled compiledSpec = compile(statementSpec, expression, statementContext);
+        StatementSpecCompiled compiledSpec = null;
+        try
+        {
+            compiledSpec = compile(statementSpec, expression, statementContext);
+        }
+        catch (EPStatementException ex)
+        {
+            stmtNameToIdMap.remove(statementName); // Clean out the statement name as it's already assigned
+            throw ex;
+        }
 
         // For insert-into streams, create a lock taken out as soon as an event is inserted
         // Makes the processing between chained statements more predictable.
@@ -549,7 +564,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
 
     private String[] getStatementIds()
     {
-        String[] statementIds = new String[stmtNameToStmtMap.size()];
+        String[] statementIds = new String[stmtNameToIdMap.size()];
         int count = 0;
         for (String id : stmtNameToIdMap.values())
         {

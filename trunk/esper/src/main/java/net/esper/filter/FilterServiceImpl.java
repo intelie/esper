@@ -30,6 +30,12 @@ public final class FilterServiceImpl implements FilterService
         indexBuilder = new EventTypeIndexBuilder(eventTypeIndex);
     }
 
+    public void destroy()
+    {
+        eventTypeIndex.destroy();
+        indexBuilder.destroy();
+    }
+
     public final void add(FilterValueSet filterValueSet, FilterHandle filterCallback)
     {
         indexBuilder.add(filterValueSet, filterCallback);

@@ -175,7 +175,7 @@ public class EPStatementStartMethod
         }
 
         // Materialize sub-select views
-        startSubSelect(subSelectStreamDesc, streamNames, streamEventTypes);
+        startSubSelect(subSelectStreamDesc, streamNames, streamEventTypes, stopCallbacks);
 
         // List of statement streams
         final List<StreamSpecCompiled> statementStreamSpecs = new ArrayList<StreamSpecCompiled>();
@@ -221,8 +221,12 @@ public class EPStatementStartMethod
                 }
                 for (ExprSubselectNode subselect : statementSpec.getSubSelectExpressions())
                 {
-                    FilterStreamSpecCompiled filterStreamSpec = (FilterStreamSpecCompiled) subselect.getStatementSpecCompiled().getStreamSpecs().get(0);
-                    services.getStreamService().dropStream(filterStreamSpec.getFilterSpec(), services.getFilterService(), isJoin);
+                    StreamSpecCompiled subqueryStreamSpec = subselect.getStatementSpecCompiled().getStreamSpecs().get(0);
+                    if (subqueryStreamSpec instanceof FilterStreamSpecCompiled)
+                    {
+                        FilterStreamSpecCompiled filterStreamSpec = (FilterStreamSpecCompiled) subselect.getStatementSpecCompiled().getStreamSpecs().get(0);
+                        services.getStreamService().dropStream(filterStreamSpec.getFilterSpec(), services.getFilterService(), isJoin);
+                    }
                 }
 
                 if (statementSpec.getCreateWindowDesc() != null)
@@ -278,7 +282,7 @@ public class EPStatementStartMethod
         }
         else
         {
-            Pair<Viewable, JoinPreloadMethod> pair = handleJoin(streamNames, streamEventTypes, streamViews, optionalResultSetProcessor, statementSpec.getSelectStreamSelectorEnum(), statementContext);
+            Pair<Viewable, JoinPreloadMethod> pair = handleJoin(streamNames, streamEventTypes, streamViews, optionalResultSetProcessor, statementSpec.getSelectStreamSelectorEnum(), statementContext, stopCallbacks);
             finalView = pair.getFirst();
             joinPreloadMethod = pair.getSecond();
         }
@@ -362,11 +366,19 @@ public class EPStatementStartMethod
                                 Viewable[] streamViews,
                                 ResultSetProcessor optionalResultSetProcessor,
                                 SelectClauseStreamSelectorEnum selectStreamSelectorEnum,
-                                StatementContext statementContext)
+                                StatementContext statementContext,
+                                List<StopCallback> stopCallbacks)
             throws ExprValidationException
     {
         // Handle joins
-        JoinSetComposer composer = statementContext.getJoinSetComposerFactory().makeComposer(statementSpec.getOuterJoinDescList(), statementSpec.getFilterRootNode(), streamTypes, streamNames, streamViews, selectStreamSelectorEnum);
+        final JoinSetComposer composer = statementContext.getJoinSetComposerFactory().makeComposer(statementSpec.getOuterJoinDescList(), statementSpec.getFilterRootNode(), streamTypes, streamNames, streamViews, selectStreamSelectorEnum);
+
+        stopCallbacks.add(new StopCallback(){
+            public void stop()
+            {
+                composer.destroy();
+            }
+        });
         
         JoinSetFilter filter = new JoinSetFilter(statementSpec.getFilterRootNode());
         OutputProcessView indicatorView = OutputProcessViewFactory.makeView(optionalResultSetProcessor, statementSpec.getStreamSpecs().size(), statementSpec.getOutputLimitSpec(), statementContext);
@@ -596,7 +608,7 @@ public class EPStatementStartMethod
         return subSelectStreamDesc;
     }
 
-    private void startSubSelect(SubSelectStreamCollection subSelectStreamDesc, String[] outerStreamNames, EventType outerEventTypes[])
+    private void startSubSelect(SubSelectStreamCollection subSelectStreamDesc, String[] outerStreamNames, EventType outerEventTypes[], List<StopCallback> stopCallbacks)
             throws ExprValidationException
     {
         for (ExprSubselectNode subselect : statementSpec.getSubSelectExpressions())
@@ -662,6 +674,14 @@ public class EPStatementStartMethod
                     outerEventTypes, subselectTypeService);
             subselect.setStrategy(indexPair.getSecond());
             final EventTable eventIndex = indexPair.getFirst();
+
+            // Clear out index on statement stop
+            stopCallbacks.add(new StopCallback() {
+                public void stop()
+                {
+                    eventIndex.clear();
+                }
+            });
 
             // Preload
             if (filterStreamSpec instanceof NamedWindowConsumerStreamSpec)

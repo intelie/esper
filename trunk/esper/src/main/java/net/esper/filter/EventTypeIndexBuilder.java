@@ -38,6 +38,11 @@ public class EventTypeIndexBuilder
         this.callbacksLock = new ReentrantLock();
     }
 
+    public void destroy()
+    {
+        callbacks.clear();
+    }
+
     /**
      * Add a filter to the event type index structure, and to the filter subtree.
      * Throws an IllegalStateException exception if the callback is already registered.

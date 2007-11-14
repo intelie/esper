@@ -4,6 +4,7 @@ import junit.framework.TestCase;
 import net.esper.client.EPServiceProvider;
 import net.esper.client.EPServiceProviderManager;
 import net.esper.client.EPStatement;
+import net.esper.client.Configuration;
 import net.esper.support.bean.SupportBean;
 import net.esper.support.bean.SupportMarketDataBean;
 import net.esper.support.util.SupportUpdateListener;
@@ -19,7 +20,9 @@ public class TestPerf2StreamSimpleJoin extends TestCase
 
     public void setUp()
     {
-        epService = EPServiceProviderManager.getProvider("TestPerf2StreamSimpleJoin", SupportConfigFactory.getConfiguration());
+        Configuration configuration = SupportConfigFactory.getConfiguration();
+        configuration.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
+        epService = EPServiceProviderManager.getProvider("TestPerf2StreamSimpleJoin", configuration);
         epService.initialize();
         updateListener = new SupportUpdateListener();
 

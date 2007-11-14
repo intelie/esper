@@ -30,6 +30,11 @@ public class UnindexedEventTable implements EventTable
         this.streamNum = streamNum;
     }
 
+    public void clear()
+    {
+        eventSet.clear();
+    }
+
     public void add(EventBean[] addEvents)
     {
         if (addEvents == null)

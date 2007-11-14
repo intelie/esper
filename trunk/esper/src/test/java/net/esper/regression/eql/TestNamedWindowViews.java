@@ -1353,14 +1353,22 @@ public class TestNamedWindowViews extends TestCase
 
         sendMarketBean("S1", 1);    // join on long
         assertEquals(2, listenerStmtTwo.getLastNewData().length);
-        ArrayAssertionUtil.assertProps(listenerStmtTwo.getLastNewData()[0], fieldsJoin, new Object[] {"E1", 1L, "S1"});
-        ArrayAssertionUtil.assertProps(listenerStmtTwo.getLastNewData()[1], fieldsJoin, new Object[] {"E2", 1L, "S1"});
-        ArrayAssertionUtil.assertEqualsExactOrder(stmtSelectTwo.iterator(), fieldsJoin, new Object[][] {{"E1", 1L, "S1"}, {"E2", 1L, "S1"}});
+        if (listenerStmtTwo.getLastNewData()[0].get("key").equals("E1"))
+        {
+            ArrayAssertionUtil.assertProps(listenerStmtTwo.getLastNewData()[0], fieldsJoin, new Object[] {"E1", 1L, "S1"});
+            ArrayAssertionUtil.assertProps(listenerStmtTwo.getLastNewData()[1], fieldsJoin, new Object[] {"E2", 1L, "S1"});
+        }
+        else
+        {
+            ArrayAssertionUtil.assertProps(listenerStmtTwo.getLastNewData()[0], fieldsJoin, new Object[] {"E2", 1L, "S1"});
+            ArrayAssertionUtil.assertProps(listenerStmtTwo.getLastNewData()[1], fieldsJoin, new Object[] {"E1", 1L, "S1"});
+        }
+        ArrayAssertionUtil.assertEqualsAnyOrder(stmtSelectTwo.iterator(), fieldsJoin, new Object[][] {{"E1", 1L, "S1"}, {"E2", 1L, "S1"}});
         listenerStmtTwo.reset();
 
         sendMarketBean("S2", 2);    // join on long
         assertFalse(listenerStmtTwo.isInvoked());
-        ArrayAssertionUtil.assertEqualsExactOrder(stmtSelectTwo.iterator(), fieldsJoin, new Object[][] {{"E1", 1L, "S1"}, {"E2", 1L, "S1"}});
+        ArrayAssertionUtil.assertEqualsAnyOrder(stmtSelectTwo.iterator(), fieldsJoin, new Object[][] {{"E1", 1L, "S1"}, {"E2", 1L, "S1"}});
 
         sendSupportBean("E3", 2L);
         ArrayAssertionUtil.assertProps(listenerWindow.assertOneGetNewAndReset(), fieldsWin, new Object[] {"E3", 2L});

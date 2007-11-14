@@ -29,6 +29,7 @@ public class TestMTStmtDatabaseJoin extends TestCase
         configDB.setConnectionAutoCommit(true);
         Configuration configuration = new Configuration();
         configuration.addDatabaseReference("MyDB", configDB);
+        configuration.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
 
         engine = EPServiceProviderManager.getProvider("TestMTStmtDatabaseJoin", configuration);        
     }

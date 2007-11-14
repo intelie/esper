@@ -109,6 +109,7 @@ public class TestSchemaXMLEvent extends TestCase
     private Configuration getConfig()
     {
         Configuration configuration = SupportConfigFactory.getConfiguration();
+        configuration.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
         ConfigurationEventTypeXMLDOM eventTypeMeta = new ConfigurationEventTypeXMLDOM();
         eventTypeMeta.setRootElementName("simpleEvent");
         String schemaUri = TestSchemaXMLEvent.class.getClassLoader().getResource(CLASSLOADER_SCHEMA_URI).toString();

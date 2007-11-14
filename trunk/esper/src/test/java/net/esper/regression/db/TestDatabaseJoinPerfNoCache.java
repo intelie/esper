@@ -28,6 +28,7 @@ public class TestDatabaseJoinPerfNoCache extends TestCase
         configDB.setConnectionLifecycleEnum(ConfigurationDBRef.ConnectionLifecycleEnum.RETAIN);
         Configuration configuration = new Configuration();
         configuration.addDatabaseReference("MyDB", configDB);
+        configuration.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
 
         epServiceRetained = EPServiceProviderManager.getProvider("TestDatabaseJoinRetained", configuration);
         epServiceRetained.initialize();
@@ -38,6 +39,7 @@ public class TestDatabaseJoinPerfNoCache extends TestCase
         configDB.setConnectionLifecycleEnum(ConfigurationDBRef.ConnectionLifecycleEnum.POOLED);
         configuration = new Configuration();
         configuration.addDatabaseReference("MyDB", configDB);
+        configuration.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
         epServicePooled = EPServiceProviderManager.getProvider("TestDatabaseJoinPooled", configuration);
         epServicePooled.initialize();
         epServicePooled.getEPRuntime().sendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));

@@ -2,17 +2,12 @@ package net.esper.regression.eql;
 
 import junit.framework.TestCase;
 import net.esper.client.*;
-import net.esper.client.time.CurrentTimeEvent;
-import net.esper.support.util.SupportUpdateListener;
-import net.esper.support.util.ArrayAssertionUtil;
-import net.esper.support.client.SupportConfigFactory;
-import net.esper.support.bean.SupportMarketDataBean;
 import net.esper.support.bean.SupportBean;
 import net.esper.support.bean.SupportBean_A;
-import net.esper.event.EventBean;
-
-import java.util.Map;
-import java.util.HashMap;
+import net.esper.support.bean.SupportMarketDataBean;
+import net.esper.support.client.SupportConfigFactory;
+import net.esper.support.util.ArrayAssertionUtil;
+import net.esper.support.util.SupportUpdateListener;
 
 public class TestNamedWindowSubquery extends TestCase
 {
@@ -110,9 +105,10 @@ public class TestNamedWindowSubquery extends TestCase
         sendMarketBean("M5");
         ArrayAssertionUtil.assertProps(listenerStmtOne.assertOneGetNewAndReset(), fieldsStmt, new Object[] {"S3", "M5"});
         ArrayAssertionUtil.assertProps(listenerStmtTwo.assertOneGetNewAndReset(), fieldsStmt, new Object[] {"S3", "M5"});
+        epService.getEPAdministrator().destroyAllStatements();
     }
 
-    public void testConsumerDataWindowSubquery()
+    public void testInvalidSubquery()
     {
         epService.getEPAdministrator().createEQL("create window MyWindow.win:keepall() as " + SupportBean.class.getName());
         try

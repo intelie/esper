@@ -31,6 +31,7 @@ public class TestJMSSpringOutputAdapter extends TestCase
     public void testOutputAdapter() throws Exception
     {
         Configuration config = new Configuration();
+        config.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
 
         // define output type
         Map<String, Class> typeProps = new HashMap<String, Class>();
