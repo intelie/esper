@@ -682,6 +682,27 @@ public class EQLTreeWalker extends EQLBaseWalker
 
             streamSpec = new DBStatementStreamSpec(streamName, viewSpecs, dbName, sqlWithParams, sampleSQL);
         }
+        else if (node.getFirstChild().getType() == REFERENCE_JOIN_EXPR)
+        {
+            AST refchildNode = node.getFirstChild().getFirstChild();
+            String refName = refchildNode.getText();
+
+            // read out expressions and remove from AST-expression map
+            List<ExprNode> functionExpressions = new ArrayList<ExprNode>();
+            AST child = refchildNode.getNextSibling();
+            while (child != null)
+            {
+                ExprNode exprNode = astExprNodeMap.get(child);
+                if (exprNode == null)
+                {
+                    throw new IllegalStateException("Expression node as a result of group-by child node not found in collection");
+                }
+                functionExpressions.add(exprNode);
+                astExprNodeMap.remove(child);
+                child = child.getNextSibling();
+            }
+            streamSpec = new ReferenceJoinStreamSpec(streamName, refName, functionExpressions);
+        }
         else
         {
             throw new ASTWalkException("Unexpected AST child node to stream expression, type=" + node.getFirstChild().getType());

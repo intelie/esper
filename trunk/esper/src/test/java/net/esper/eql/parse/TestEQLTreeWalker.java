@@ -28,6 +28,28 @@ public class TestEQLTreeWalker extends TestCase
                     CLASSNAME + "(string='a').win:length(10).std:lastevent() as win1," +
                     CLASSNAME + "(string='b').win:length(10).std:lastevent() as win2 ";
 
+    public void testWalkReferenceJoin() throws Exception
+    {
+        String expression = "select * from reference:MyImpl() as ref, SomeClass";
+        EQLTreeWalker walker = parseAndWalkEQL(expression);
+        StatementSpecRaw raw = walker.getStatementSpec();
+
+        ReferenceJoinStreamSpec streamSpec = (ReferenceJoinStreamSpec) raw.getStreamSpecs().get(0);
+        assertEquals("MyImpl", streamSpec.getReferenceName());
+        assertEquals(0, streamSpec.getExpressions().size());
+        assertEquals("ref", streamSpec.getOptionalStreamName());
+
+        // with expressions
+        expression = "select * from SomeClass as a, reference:MyImpl(a, 2*b) as b";
+        walker = parseAndWalkEQL(expression);
+        raw = walker.getStatementSpec();
+
+        streamSpec = (ReferenceJoinStreamSpec) raw.getStreamSpecs().get(1);
+        assertEquals("MyImpl", streamSpec.getReferenceName());
+        assertEquals(2, streamSpec.getExpressions().size());
+        assertEquals("b", streamSpec.getOptionalStreamName());
+    }
+
     public void testWalkOnExprDelete() throws Exception
     {
         String expression = "on com.MyClass(myval != 0) as myevent delete from MyNamedWindow as mywin where mywin.key = myevent.otherKey";

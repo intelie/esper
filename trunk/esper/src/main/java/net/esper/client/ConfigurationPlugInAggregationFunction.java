@@ -25,8 +25,8 @@ public class ConfigurationPlugInAggregationFunction implements Serializable
     }
 
     /**
-     * Returns the view name.
-     * @return view name
+     * Returns the aggregation function name.
+     * @return aggregation function name
      */
     public String getName()
     {
@@ -34,7 +34,7 @@ public class ConfigurationPlugInAggregationFunction implements Serializable
     }
 
     /**
-     * Sets the view name.
+     * Sets the aggregation function name.
      * @param name to set
      */
     public void setName(String name)

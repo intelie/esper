@@ -1,12 +1,15 @@
 package net.esper.regression.view;
 
 import junit.framework.TestCase;
-import net.esper.client.Configuration;
-import net.esper.client.UpdateListener;
+import net.esper.client.*;
 import net.esper.event.EventBean;
 import net.esper.event.EventType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class TestGroupedTimeWinUniqueSortMinMax extends TestCase {
 
@@ -23,8 +26,6 @@ public class TestGroupedTimeWinUniqueSortMinMax extends TestCase {
 
     public void testSensorQuery() throws Exception {
         log.info ("testSensorQuery...........");
-        // TODO: Esper 125
-        /*
         Configuration configuration = setup();
 
         EPServiceProvider epService = EPServiceProviderManager.getProvider("testSensorQuery", configuration);
@@ -60,8 +61,8 @@ public class TestGroupedTimeWinUniqueSortMinMax extends TestCase {
         assertEquals (71.3,lastEvent.get("highMeasurement"));
         assertEquals ("Device2",lastEvent.get("deviceOfHigh"));
         assertEquals (99.3,lastEvent.get("confidenceOfHigh"));
-    */
     }
+
     static public class Sensor {
 
         public Sensor() {

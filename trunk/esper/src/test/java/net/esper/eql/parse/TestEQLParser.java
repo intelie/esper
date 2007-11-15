@@ -518,6 +518,11 @@ public class TestEQLParser extends TestCase implements EqlTokenTypes
         assertIsValid("on MyEvent(myval != 0) as myevent delete from MyNamedWindow as mywin where mywin.key = myevent.otherKey");
         assertIsValid("on com.my.MyEvent(a=1, b=2 or c.d>3) as myevent delete from MyNamedWindow as mywin where a=b and c<d");
         assertIsValid("on MyEvent yyy delete from MyNamedWindow xxx where mywin.key = myevent.otherKey");
+
+        // reference data join
+        assertIsValid("select * from reference:MyImpl(a, 2*b, MyLib.messy('c'), d.e), SomeClass");
+        assertIsValid("select * from reference:MyImpl(), SomeClass");
+        assertIsValid("select * from SomeClass, reference:MyImpl()");
     }
 
     public void testBitWiseCases() throws Exception

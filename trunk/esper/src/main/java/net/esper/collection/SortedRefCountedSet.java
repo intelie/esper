@@ -72,7 +72,10 @@ public class SortedRefCountedSet<K>
         Integer value = refSet.get(key);
         if (value == null)
         {
-            throw new IllegalStateException("Attempting to remove key from map that wasn't added");
+            // This could happen if a sort operation gets a remove stream that duplicates events.
+            // Generally points to an invalid combination of data windows.
+            // throw new IllegalStateException("Attempting to remove key from map that wasn't added");
+            return;
         }
 
         if (value == 1)
