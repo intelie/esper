@@ -97,11 +97,6 @@ public class Configuration implements ConfigurationOperations, ConfigurationInfo
     protected List<ConfigurationPlugInAggregationFunction> plugInAggregationFunctions;
 
     /**
-     * List of configured plug-in reference data providers.
-     */
-    protected List<ConfigurationPlugInRefDataProvider> plugInRefDataProvider;
-
-    /**
      * List of adapter loaders.
      */
     protected List<ConfigurationAdapterLoader> adapterLoaders;
@@ -146,14 +141,6 @@ public class Configuration implements ConfigurationOperations, ConfigurationInfo
         entry.setFunctionClassName(aggregationClassName);
         entry.setName(functionName);
         plugInAggregationFunctions.add(entry);
-    }
-
-    public void addPlugInRefDataProvider(String providerName, String implementationClassName)
-    {
-        ConfigurationPlugInRefDataProvider entry = new ConfigurationPlugInRefDataProvider();
-        entry.setProviderName(providerName);
-        entry.setImplementationClassName(implementationClassName);
-        plugInRefDataProvider.add(entry);
     }
 
     /**
