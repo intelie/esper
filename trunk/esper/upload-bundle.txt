@@ -1,0 +1,4 @@
+http://dist.codehaus.org/esper/esper-1.12.0-bundle.jar 
+
+http://esper.codehaus.org
+http://http://xircles.codehaus.org/projects/esper/members
