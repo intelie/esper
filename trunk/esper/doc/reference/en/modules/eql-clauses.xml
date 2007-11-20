@@ -1569,7 +1569,7 @@ select orderId, orderAmount from
 			<indexterm><primary>EQL</primary><secondary>named window</secondary><tertiary>deleting from</tertiary></indexterm>
 
 			<para>
-				An <literal>on delete</literal> clause removes events from a named window. The clause can be used to remove all events, or only events that match certain criteria, or events that correlate with an arriving event.
+				An <literal>on delete</literal> clause removes events from a named window. The clause can be used to remove all events, or only events that match certain criteria, or events that correlate with an arriving event or a pattern of arriving events.
 			</para>
 
 			<para>
@@ -1580,7 +1580,7 @@ delete from <emphasis>window_name</emphasis> [as <emphasis>alias_name</emphasis>
 [where <emphasis>criteria_expression</emphasis>]</synopsis>
 				
 			<para>
-				The <emphasis>event_type</emphasis> is the name or alias of the type of events that trigger removal from the named window. It is optionally followed by <emphasis>filter_criteria</emphasis> which are filter expressions to apply to arriving events. The optional <literal>as</literal> keyword can be used to assign an alias for use in the <literal>where</literal> clause.
+				The <emphasis>event_type</emphasis> is the name or alias of the type of events that trigger removal from the named window. It is optionally followed by <emphasis>filter_criteria</emphasis> which are filter expressions to apply to arriving events. The optional <literal>as</literal> keyword can be used to assign an alias for use in the <literal>where</literal> clause. Patterns can also be specified in the <literal>on</literal> clause as described in the next section.
 			</para>
 				
 			<para>
@@ -1619,6 +1619,39 @@ where myNamedWindow.symbol = myNewOrders.symbol]]></programlisting>
 			<para>
 				Your application can subscribe a listener to your <literal>on delete</literal> statements to determine removed events. The statement post any events that are deleted from a named window to all listeners attached to the statement as new data. Upon iteration, the statement provides the last deleted event, if any.
 			</para>
+
+			<sect3 id="named_delete_pattern" >
+			   <title>Using Patterns in the <literal>On Delete</literal> Clause</title>
+
+				<para>
+					By means of patterns the <literal>on delete</literal> clause can look for more complex conditions to occur, possibly involving multiple events or the passing of time. The syntax for <literal>on delete</literal> with a pattern expression is show next:
+				</para>
+				<synopsis>on pattern [<emphasis>pattern_expression</emphasis>] [as <emphasis>alias_name</emphasis>]
+delete from <emphasis>window_name</emphasis> [as <emphasis>alias_name</emphasis>]
+[where <emphasis>criteria_expression</emphasis>]</synopsis>
+					
+				<para>
+					The <emphasis>pattern_expression</emphasis> is any pattern that matches zero or more arriving events. Tags can be used to name events in the pattern and can occur in the optional <literal>where</literal> clause to correlate to events to be removed from a named window.
+				</para>
+					
+				<para>
+					In the next example the triggering pattern fires every 10 seconds. The effect is that every 10 seconds the statement removes from 'MyNamedWindow' all rows:
+				</para>
+				<programlisting><![CDATA[on pattern [every timer:interval(10 sec)] delete from MyNamedWindow]]></programlisting>
+
+				<para>
+					The following example shows the use of tags in a pattern: 
+				</para>
+				<programlisting><![CDATA[on pattern [every ord=OrderEvent(volume>0) or every flush=FlushOrderEvent] 
+delete from OrderWindow as win
+where ord.id = win.id or flush.id = win.id]]></programlisting>
+
+				<para>
+					The pattern above looks for OrderEvent events with a volume value greater then zero and tags such events as 'ord'. 
+					The pattern also looks for FlushOrderEvent events and tags such events as 'flush'. The <literal>where</literal> clause deletes from the 'OrderWindow' named window any events that match in the value of the 'id' property either of the arriving events.
+				</para>
+
+			</sect3>
 		</sect2>
 
 		<sect2 id="named_inserting" revision="1">
@@ -1670,6 +1703,20 @@ insert into OrdersWindow select * from ServiceProductEvent
 
 // The MerchandiseProductEvent class subclasses the ProductBaseEvent class
 insert into OrdersWindow select * from MerchandiseProductEvent]]></programlisting>
+
+			<para>
+				To avoid duplicate events stored in a named window, use a subquery to test whether an event already exists in the named window:
+			</para>
+			<programlisting><![CDATA[insert into OrdersWindow
+select * from ServiceProductEvent as spe
+where not exists (select * from OrdersWindow as win where win.id = spe.id)]]></programlisting>
+
+			<para>
+				A statement that removes events from a named window via the <literal>on delete</literal> clause and a statement that inserts events into a named window via the <literal>insert into</literal> can be combined to replace events in the named window, by creating the two statements in the order as indicated by the sample:
+			</para>
+			<programlisting><![CDATA[// create in this order
+on ServiceProductEvent as spe delete from OrdersWindow as win where win.id = spe.id
+insert into OrdersWindow select * from ServiceProductEvent]]></programlisting>
 		</sect2>
 
 		<sect2 id="named_selecting" revision="1">

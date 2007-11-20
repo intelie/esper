@@ -240,7 +240,7 @@ selectExpr
 	;
 	
 onExpr 
-	:	ON! eventFilterExpression (AS! IDENT | IDENT)? DELETE FROM! IDENT (AS! IDENT | IDENT)? (WHERE! whereClause)?
+	:	ON! (eventFilterExpression | patternInclusionExpression) (AS! IDENT | IDENT)? DELETE FROM! IDENT (AS! IDENT | IDENT)? (WHERE! whereClause)?
 		{ #onExpr = #([ON_EXPR,"onExpr"], #onExpr); }
 	;
 	

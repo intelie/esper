@@ -30,6 +30,7 @@ public class TestEQLTreeWalker extends TestCase
 
     public void testWalkOnExprDelete() throws Exception
     {
+        // try a filter
         String expression = "on com.MyClass(myval != 0) as myevent delete from MyNamedWindow as mywin where mywin.key = myevent.otherKey";
         EQLTreeWalker walker = parseAndWalkEQL(expression);
         StatementSpecRaw raw = walker.getStatementSpec();
@@ -43,6 +44,14 @@ public class TestEQLTreeWalker extends TestCase
         assertEquals("mywin", raw.getOnDeleteDesc().getOptionalAsName());
 
         assertTrue(raw.getOnDeleteDesc().getJoinExpr() instanceof ExprEqualsNode);
+
+        // try a pattern
+        expression = "on pattern [every MyClass] as myevent delete from MyNamedWindow";
+        walker = parseAndWalkEQL(expression);
+        raw = walker.getStatementSpec();
+
+        PatternStreamSpecRaw patternSpec = (PatternStreamSpecRaw) raw.getStreamSpecs().get(0);
+        assertTrue(patternSpec.getEvalNode() instanceof EvalEveryNode);
     }
 
     public void testWalkCreateWindow() throws Exception

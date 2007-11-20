@@ -399,11 +399,33 @@ public class EQLTreeWalker extends EQLBaseWalker
 
         // get optional filter stream as-name
         AST childNode = node.getFirstChild().getNextSibling();
-        String filterStreamName = null;
+        String streamAsName = null;
         if (childNode.getType() == IDENT)
         {
-            filterStreamName = childNode.getText();
+            streamAsName = childNode.getText();
             childNode = childNode.getNextSibling();
+        }
+
+        // get stream to use (pattern or filter)
+        StreamSpecRaw streamSpec;
+        if (node.getFirstChild().getType() == EVENT_FILTER_EXPR)
+        {
+            streamSpec = new FilterStreamSpecRaw(filterSpec, new ArrayList<ViewSpec>(), streamAsName);
+        }
+        else if (node.getFirstChild().getType() == PATTERN_INCL_EXPR)
+        {
+            if ((astPatternNodeMap.size() > 1) || ((astPatternNodeMap.isEmpty())))
+            {
+                throw new ASTWalkException("Unexpected AST tree contains zero or more then 1 child elements for root");
+            }
+            // Get expression node sub-tree from the AST nodes placed so far
+            EvalNode evalNode = astPatternNodeMap.values().iterator().next();
+            streamSpec = new PatternStreamSpecRaw(evalNode, viewSpecs, streamAsName);
+            astPatternNodeMap.clear();
+        }
+        else
+        {
+            throw new IllegalStateException("Invalid AST type node, cannot map to stream specification");
         }
 
         // get window name
@@ -420,7 +442,7 @@ public class EQLTreeWalker extends EQLBaseWalker
 
         statementSpec.setOnDeleteDesc(new OnDeleteDesc(windowName, windowStreamName, statementSpec.getFilterRootNode()));
         statementSpec.setFilterExprRootNode(null); // remove where clause
-        statementSpec.getStreamSpecs().add(new FilterStreamSpecRaw(filterSpec, new ArrayList<ViewSpec>(), filterStreamName));
+        statementSpec.getStreamSpecs().add(streamSpec);
     }
 
     private void leavePrevious(AST node)

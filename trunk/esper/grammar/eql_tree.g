@@ -45,7 +45,7 @@ startEQLExpressionRule
 	;
 
 onExpr 
-	:	#(i:ON_EXPR eventFilterExpr (IDENT)? DELETE IDENT (IDENT)? (whereClause)? { leaveNode(#i); } )
+	:	#(i:ON_EXPR (eventFilterExpr | patternInclusionExpression) (IDENT)? DELETE IDENT (IDENT)? (whereClause)? { leaveNode(#i); } )
 	;
 
 createWindowExpr

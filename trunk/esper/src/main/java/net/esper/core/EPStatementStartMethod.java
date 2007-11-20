@@ -343,15 +343,16 @@ public class EPStatementStartMethod
             OnDeleteDesc onDeleteDesc = statementSpec.getOnDeleteDesc();
             NamedWindowProcessor processor = services.getNamedWindowService().getProcessor(onDeleteDesc.getWindowName());
 
-            // validate join expression
             EventType namedWindowType = processor.getNamedWindowType();
-            FilterStreamSpecCompiled streamSpec = (FilterStreamSpecCompiled) statementSpec.getStreamSpecs().get(0);
+            StreamSpecCompiled streamSpec = statementSpec.getStreamSpecs().get(0);
+
+            // validate join expression
             ExprNode validatedJoin = validateJoinNamedWindow(statementSpec.getOnDeleteDesc().getJoinExpr(),
                     namedWindowType, onDeleteDesc.getOptionalAsName(),
-                    streamSpec.getFilterSpec().getEventType(), streamSpec.getOptionalStreamName());
+                    streamEventTypes[0], streamSpec.getOptionalStreamName());
             onDeleteDesc.setJoinExpr(validatedJoin);
 
-            NamedWindowDeleteView deleteView = processor.addDeleter(onDeleteDesc, streamSpec.getFilterSpec().getEventType(), statementContext.getStatementStopService());
+            NamedWindowDeleteView deleteView = processor.addDeleter(onDeleteDesc, streamEventTypes[0], statementContext.getStatementStopService());
             finalView.addView(deleteView);
             finalView = deleteView;
         }

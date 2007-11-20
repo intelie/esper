@@ -518,6 +518,7 @@ public class TestEQLParser extends TestCase implements EqlTokenTypes
         assertIsValid("on MyEvent(myval != 0) as myevent delete from MyNamedWindow as mywin where mywin.key = myevent.otherKey");
         assertIsValid("on com.my.MyEvent(a=1, b=2 or c.d>3) as myevent delete from MyNamedWindow as mywin where a=b and c<d");
         assertIsValid("on MyEvent yyy delete from MyNamedWindow xxx where mywin.key = myevent.otherKey");
+        assertIsValid("on pattern [every MyEvent or every MyEvent] delete from MyNamedWindow");
     }
 
     public void testBitWiseCases() throws Exception
