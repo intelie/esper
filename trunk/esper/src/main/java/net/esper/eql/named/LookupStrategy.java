@@ -7,12 +7,12 @@ import net.esper.event.EventBean;
  * the strategy for resolving one or more events arriving in the on-clause of an on-delete statement
  * to one or more events to be deleted from the named window.
  */
-public interface DeletionStrategy
+public interface LookupStrategy
 {
     /**
      * Determines the events to be deleted from a named window.
      * @param newData is the correlation events
      * @return the events to delete from the named window
      */
-    public EventBean[] determineRemoveStream(EventBean[] newData);
+    public EventBean[] lookup(EventBean[] newData);
 }

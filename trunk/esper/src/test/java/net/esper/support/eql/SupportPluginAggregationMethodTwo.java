@@ -9,6 +9,11 @@ public class SupportPluginAggregationMethodTwo extends AggregationSupport
         throw new IllegalArgumentException("Invalid node type: " + childNodeType.getName());
     }
 
+    public void clear()
+    {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
+
     public void enter(Object value)
     {
         //To change body of implemented methods use File | Settings | File Templates.

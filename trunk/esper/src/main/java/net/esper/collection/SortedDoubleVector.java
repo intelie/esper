@@ -24,6 +24,11 @@ public class SortedDoubleVector
         values = new ArrayList<Double>();
     }
 
+    public void clear()
+    {
+        values.clear();
+    }
+
     /**
      * Returns the number of items in the collection.
      * @return size

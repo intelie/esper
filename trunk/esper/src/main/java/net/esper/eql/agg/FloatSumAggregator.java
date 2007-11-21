@@ -11,6 +11,12 @@ public class FloatSumAggregator implements AggregationMethod
     private float sum;
     private long numDataPoints;
 
+    public void clear()
+    {
+        sum = 0;
+        numDataPoints = 0;
+    }
+
     public void enter(Object object)
     {
         if (object == null)

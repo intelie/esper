@@ -9,7 +9,8 @@ import net.esper.eql.lookup.IndexedTableLookupStrategy;
 import net.esper.eql.lookup.IndexedTableLookupStrategyCoercing;
 import net.esper.eql.lookup.TableLookupStrategy;
 import net.esper.eql.lookup.JoinedPropDesc;
-import net.esper.eql.spec.OnDeleteDesc;
+import net.esper.eql.spec.OnTriggerDesc;
+import net.esper.eql.core.ResultSetProcessor;
 import net.esper.event.EventBean;
 import net.esper.event.EventType;
 import net.esper.util.ExecutionPathDebugLog;
@@ -17,6 +18,8 @@ import net.esper.util.JavaClassHelper;
 import net.esper.view.StatementStopService;
 import net.esper.view.ViewSupport;
 import net.esper.view.Viewable;
+import net.esper.core.InternalEventRouter;
+import net.esper.core.EPStatementHandle;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -37,7 +40,7 @@ public class NamedWindowRootView extends ViewSupport
     private EventType namedWindowEventType;
     private final NamedWindowIndexRepository indexRepository;
     private Iterable<EventBean> dataWindowContents;
-    private final Map<DeletionStrategy, PropertyIndexedEventTable> tablePerStrategy;
+    private final Map<LookupStrategy, PropertyIndexedEventTable> tablePerStrategy;
 
     /**
      * Ctor.
@@ -45,7 +48,7 @@ public class NamedWindowRootView extends ViewSupport
     public NamedWindowRootView()
     {
         this.indexRepository = new NamedWindowIndexRepository();
-        this.tablePerStrategy = new HashMap<DeletionStrategy, PropertyIndexedEventTable>();
+        this.tablePerStrategy = new HashMap<LookupStrategy, PropertyIndexedEventTable>();
     }
 
     /**
@@ -93,20 +96,31 @@ public class NamedWindowRootView extends ViewSupport
 
     /**
      * Add a on-delete view that, using a deletion strategy, deletes from the named window.
-     * @param onDeleteDesc the specification for the on-delete
+     * @param onTriggerDesc the specification for the on-delete
      * @param filterEventType the event type for the on-clause in the on-delete
      * @param statementStopService for stopping the statement
-     * @return view representing the on-delete view chain, posting delete events to it's listeners
+     * @param internalEventRouter
+     *@param optionalResultSetProcessor @return view representing the on-delete view chain, posting delete events to it's listeners
      */
-    public NamedWindowDeleteView addDeleter(OnDeleteDesc onDeleteDesc, EventType filterEventType, StatementStopService statementStopService)
+    public NamedWindowOnExprBaseView addOnExpr(OnTriggerDesc onTriggerDesc, EventType filterEventType, StatementStopService statementStopService, InternalEventRouter internalEventRouter, ResultSetProcessor optionalResultSetProcessor, EPStatementHandle statementHandle)
     {
         // Determine strategy for deletion and index table to use (if any)
-        Pair<DeletionStrategy,PropertyIndexedEventTable> strategy = getDeletionStrategy(onDeleteDesc, filterEventType);
+        Pair<LookupStrategy,PropertyIndexedEventTable> strategy = getStrategyPair(onTriggerDesc, filterEventType);
+
+        // If a new table is required, add that table to be updated
         if (strategy.getSecond() != null)
         {
             tablePerStrategy.put(strategy.getFirst(), strategy.getSecond());
         }
-        return new NamedWindowDeleteView(statementStopService, strategy.getFirst(), this);
+
+        if (onTriggerDesc.isOnDelete())
+        {
+            return new NamedWindowOnDeleteView(statementStopService, strategy.getFirst(), this);
+        }
+        else
+        {
+            return new NamedWindowOnSelectView(statementStopService, strategy.getFirst(), this, internalEventRouter, optionalResultSetProcessor, statementHandle);
+        }
     }
 
     /**
@@ -114,7 +128,7 @@ public class NamedWindowRootView extends ViewSupport
      * used by the strategy.
      * @param strategy to use for deleting events
      */
-    public void removeDeleter(DeletionStrategy strategy)
+    public void removeOnExpr(LookupStrategy strategy)
     {
         PropertyIndexedEventTable table = tablePerStrategy.remove(strategy);
         if (table != null)
@@ -123,17 +137,17 @@ public class NamedWindowRootView extends ViewSupport
         }
     }
 
-    private Pair<DeletionStrategy,PropertyIndexedEventTable> getDeletionStrategy(OnDeleteDesc onDeleteDesc, EventType filterEventType)
+    private Pair<LookupStrategy,PropertyIndexedEventTable> getStrategyPair(OnTriggerDesc onTriggerDesc, EventType filterEventType)
     {
         // No join expression means delete all
-        if (onDeleteDesc.getJoinExpr() == null)
+        if (onTriggerDesc.getJoinExpr() == null)
         {
-            return new Pair<DeletionStrategy,PropertyIndexedEventTable>(new DeletionStrategyDeleteAll(dataWindowContents), null);
+            return new Pair<LookupStrategy,PropertyIndexedEventTable>(new LookupStrategyAllRows(dataWindowContents), null);
         }
 
         // analyze query graph; Whereas stream0=named window, stream1=delete-expr filter
         QueryGraph queryGraph = new QueryGraph(2);
-        FilterExprAnalyzer.analyze(onDeleteDesc.getJoinExpr(), queryGraph);
+        FilterExprAnalyzer.analyze(onTriggerDesc.getJoinExpr(), queryGraph);
 
         // index and key property names
         String[] keyPropertiesJoin = queryGraph.getKeyProperties(1, 0);
@@ -142,7 +156,7 @@ public class NamedWindowRootView extends ViewSupport
         // If the analysis revealed no join columns, must use the brute-force full table scan
         if ((keyPropertiesJoin == null) || (keyPropertiesJoin.length == 0))
         {
-            return new Pair<DeletionStrategy,PropertyIndexedEventTable>(new DeletionStrategyTableScan(onDeleteDesc.getJoinExpr(), dataWindowContents), null);
+            return new Pair<LookupStrategy,PropertyIndexedEventTable>(new LookupStrategyTableScan(onTriggerDesc.getJoinExpr(), dataWindowContents), null);
         }
 
         // Build a set of index descriptors with property name and coercion type
@@ -194,7 +208,7 @@ public class NamedWindowRootView extends ViewSupport
             lookupStrategy = new IndexedTableLookupStrategyCoercing(eventTypePerStream, streamNumbersPerProperty, keyPropertiesJoin, table, coercionTypes);
         }
 
-        return new Pair<DeletionStrategy,PropertyIndexedEventTable>(new DeletionStrategyIndexed(onDeleteDesc.getJoinExpr(), lookupStrategy), table);
+        return new Pair<LookupStrategy,PropertyIndexedEventTable>(new LookupStrategyIndexed(onTriggerDesc.getJoinExpr(), lookupStrategy), table);
     }
 
     public void setParent(Viewable parent)

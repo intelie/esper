@@ -8,7 +8,7 @@ import java.util.Iterator;
 /**
  * Deletes from a named window all events simply using the named window's data window iterator.
  */
-public class DeletionStrategyDeleteAll implements DeletionStrategy
+public class LookupStrategyAllRows implements LookupStrategy
 {
     private Iterable<EventBean> source;
 
@@ -16,12 +16,12 @@ public class DeletionStrategyDeleteAll implements DeletionStrategy
      * Ctor.
      * @param source iterator of the data window under the named window
      */
-    public DeletionStrategyDeleteAll(Iterable<EventBean> source)
+    public LookupStrategyAllRows(Iterable<EventBean> source)
     {
         this.source = source;
     }
 
-    public EventBean[] determineRemoveStream(EventBean[] newData)
+    public EventBean[] lookup(EventBean[] newData)
     {
         ArrayList<EventBean> events = new ArrayList<EventBean>();
         for (Iterator<EventBean> it = source.iterator(); it.hasNext();)

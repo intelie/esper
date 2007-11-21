@@ -1,9 +1,11 @@
 package net.esper.eql.named;
 
-import net.esper.eql.spec.OnDeleteDesc;
+import net.esper.eql.spec.OnTriggerDesc;
+import net.esper.eql.core.ResultSetProcessor;
 import net.esper.view.StatementStopService;
 import net.esper.event.EventType;
 import net.esper.core.EPStatementHandle;
+import net.esper.core.InternalEventRouter;
 
 /**
  * An instance of this class is associated with a specific named window. The processor
@@ -51,15 +53,17 @@ public class NamedWindowProcessor
     }
 
     /**
-     * Returns a new view for a new on-delete statement.
-     * @param onDeleteDesc descriptor describing the on-delete specification
+     * Returns a new view for a new on-delete or on-select statement.
+     * @param onTriggerDesc descriptor describing the on-trigger specification
      * @param filterEventType event type to trigger on
      * @param statementStopService to indicate a on-delete was stopped
-     * @return delete handling view
+     * @param internalEventRouter for insert-into handling
+     * @param optionalResultSetProcessor
+     * @return on trigger handling view
      */
-    public NamedWindowDeleteView addDeleter(OnDeleteDesc onDeleteDesc, EventType filterEventType, StatementStopService statementStopService)
+    public NamedWindowOnExprBaseView addOnExpr(OnTriggerDesc onTriggerDesc, EventType filterEventType, StatementStopService statementStopService, InternalEventRouter internalEventRouter, ResultSetProcessor optionalResultSetProcessor, EPStatementHandle statementHandle)
     {
-        return rootView.addDeleter(onDeleteDesc, filterEventType, statementStopService);
+        return rootView.addOnExpr(onTriggerDesc, filterEventType, statementStopService, internalEventRouter, optionalResultSetProcessor, statementHandle);
     }
 
     /**

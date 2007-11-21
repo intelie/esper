@@ -17,7 +17,7 @@ import java.util.List;
  */
 public class StatementSpecCompiled
 {
-    private final OnDeleteDesc onDeleteDesc;
+    private final OnTriggerDesc onTriggerDesc;
     private final CreateWindowDesc createWindowDesc;
     private final InsertIntoDesc insertIntoDesc;
     private final SelectClauseStreamSelectorEnum selectStreamDirEnum;
@@ -44,10 +44,10 @@ public class StatementSpecCompiled
      * @param outputLimitSpec output limit
      * @param orderByList order by
      * @param subSelectExpressions list of subqueries
-     * @param onDeleteDesc describes on-delete statements
+     * @param onTriggerDesc describes on-delete statements
      * @param createWindowDesc describes create-window statements
      */
-    public StatementSpecCompiled(OnDeleteDesc onDeleteDesc,
+    public StatementSpecCompiled(OnTriggerDesc onTriggerDesc,
                                  CreateWindowDesc createWindowDesc,
                                  InsertIntoDesc insertIntoDesc,
                                  SelectClauseStreamSelectorEnum selectClauseStreamSelectorEnum,
@@ -61,7 +61,7 @@ public class StatementSpecCompiled
                                  List<OrderByItem> orderByList,
                                  List<ExprSubselectNode> subSelectExpressions)
     {
-        this.onDeleteDesc = onDeleteDesc; 
+        this.onTriggerDesc = onTriggerDesc;
         this.createWindowDesc = createWindowDesc;
         this.insertIntoDesc = insertIntoDesc;
         this.selectStreamDirEnum = selectClauseStreamSelectorEnum;
@@ -193,11 +193,11 @@ public class StatementSpecCompiled
     }
 
     /**
-     * Returns the specification for an on-delete statement.
-     * @return on-delete spec, or null if not such a statement
+     * Returns the specification for an on-delete or on-select statement.
+     * @return on-trigger spec, or null if not such a statement
      */
-    public OnDeleteDesc getOnDeleteDesc()
+    public OnTriggerDesc getOnTriggerDesc()
     {
-        return onDeleteDesc;
+        return onTriggerDesc;
     }
 }

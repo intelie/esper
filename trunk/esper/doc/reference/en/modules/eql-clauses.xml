@@ -1591,6 +1591,10 @@ delete from <emphasis>window_name</emphasis> [as <emphasis>alias_name</emphasis>
 				The optional <literal>where</literal> clause contains a <emphasis>criteria_expression</emphasis> that correlates the arriving (triggering) event to the events to be removed from the named window. The <emphasis>criteria_expression</emphasis> may also simply filter for events in the named window to be removed from the named window.
 			</para>
 
+			<para>
+				The <literal>iterator</literal> of the <literal>EPStatement</literal> representing the <literal>on delete</literal> clause can also be helpful: It returns the last batch of deleted events in response to the last triggering event, in any order, or null if the last triggering event did not remove any rows.
+			</para>
+
 			<para>				
 				Let's look at a couple of examples. In the simplest form, this statement deletes all events from the named window 'AllOrdersNamedWindow' when any 'FlushOrderEvent' arrives:
 			</para>

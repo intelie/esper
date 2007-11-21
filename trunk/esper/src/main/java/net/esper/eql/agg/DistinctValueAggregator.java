@@ -33,6 +33,11 @@ public class DistinctValueAggregator implements AggregationMethod
         this.valueSet = new RefCountedSet<Object>();
     }
 
+    public void clear()
+    {
+        valueSet.clear();
+    }
+
     public void enter(Object value)
     {
         // if value not already encountered, enter into aggregate

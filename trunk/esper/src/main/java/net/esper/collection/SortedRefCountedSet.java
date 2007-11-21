@@ -26,6 +26,11 @@ public class SortedRefCountedSet<K>
         refSet = new TreeMap<K, Integer>();
     }
 
+    public void clear()
+    {
+        refSet.clear();
+    }
+
     /**
      * Add a key to the set. Add with a reference count of one if the key didn't exist in the set.
      * Increase the reference count by one if the key already exists.

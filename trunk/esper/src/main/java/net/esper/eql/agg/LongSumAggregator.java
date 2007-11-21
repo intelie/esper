@@ -11,6 +11,12 @@ public class LongSumAggregator implements AggregationMethod
     private long sum;
     private long numDataPoints;
 
+    public void clear()
+    {
+        sum = 0;
+        numDataPoints = 0;
+    }
+
     public void enter(Object object)
     {
         if (object == null)

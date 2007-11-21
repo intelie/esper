@@ -38,4 +38,9 @@ public class SupportResultSetProcessor implements ResultSetProcessor
     {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
+
+    public void clear()
+    {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
 }

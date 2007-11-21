@@ -155,4 +155,9 @@ public class ResultSetProcessorRowForAll implements ResultSetProcessor
         EventBean[] result = getSelectListEvents(selectExprProcessor, optionalHavingNode, true);
         return new ArrayEventIterator(result);
     }
+
+    public void clear()
+    {
+        aggregationService.clearResults();
+    }        
 }

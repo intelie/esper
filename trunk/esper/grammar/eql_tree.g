@@ -45,8 +45,15 @@ startEQLExpressionRule
 	;
 
 onExpr 
-	:	#(i:ON_EXPR (eventFilterExpr | patternInclusionExpression) (IDENT)? DELETE IDENT (IDENT)? (whereClause)? { leaveNode(#i); } )
+	:	#(i:ON_EXPR (eventFilterExpr | patternInclusionExpression) (IDENT)? 
+		(ON_DELETE_EXPR | onSelectExpr)
+		IDENT (IDENT)?
+		(whereClause)? { leaveNode(#i); } )
 	;
+	
+onSelectExpr
+	:	#(ON_SELECT_EXPR (insertIntoExpr)? selectionList)	
+	;	
 
 createWindowExpr
 	:	#(i:CREATE_WINDOW_EXPR IDENT (viewListExpr)? (createSelectionList)? CLASS_IDENT { leaveNode(#i); } )

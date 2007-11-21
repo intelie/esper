@@ -4,7 +4,7 @@ import net.esper.eql.core.MethodResolutionService;
 import net.esper.eql.core.MethodResolutionServiceImpl;
 import net.esper.eql.join.JoinSetComposerFactoryImpl;
 import net.esper.eql.spec.PluggableObjectCollection;
-import net.esper.eql.spec.OnDeleteDesc;
+import net.esper.eql.spec.OnTriggerDesc;
 import net.esper.eql.spec.CreateWindowDesc;
 import net.esper.pattern.*;
 import net.esper.pattern.PatternObjectHelper;
@@ -47,7 +47,7 @@ public class StatementContextFactoryDefault implements StatementContextFactory
                                     String expression,
                                     EPServicesContext engineServices,
                                     Map<String, Object> optAdditionalContext,
-                                    OnDeleteDesc optOnDeleteDesc,
+                                    OnTriggerDesc optOnTriggerDesc,
                                     CreateWindowDesc optCreateWindowDesc)
     {
         // Allocate the statement's schedule bucket which stays constant over it's lifetime.
@@ -58,12 +58,12 @@ public class StatementContextFactoryDefault implements StatementContextFactory
         ManagedLock statementResourceLock = null;
 
         // For on-delete statements, use the create-named-window statement lock 
-        if (optOnDeleteDesc != null)
+        if (optOnTriggerDesc != null)
         {
-            statementResourceLock = engineServices.getNamedWindowService().getNamedWindowLock(optOnDeleteDesc.getWindowName());
+            statementResourceLock = engineServices.getNamedWindowService().getNamedWindowLock(optOnTriggerDesc.getWindowName());
             if (statementResourceLock == null)
             {
-                throw new EPStatementException("Named window '" + optOnDeleteDesc.getWindowName() + "' has not been declared", expression);
+                throw new EPStatementException("Named window '" + optOnTriggerDesc.getWindowName() + "' has not been declared", expression);
             }
         }
         // For creating a named window, save the lock for use with on-delete statements

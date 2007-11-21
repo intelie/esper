@@ -6,11 +6,12 @@ import net.esper.util.MetaDefItem;
 /**
  * Specification for the on-delete statement.
  */
-public class OnDeleteDesc implements MetaDefItem
+public class OnTriggerDesc implements MetaDefItem
 {
     private String windowName;
     private String optionalAsName;
     private ExprNode joinExpr;
+    private boolean isOnDelete;
 
     /**
      * Ctor.
@@ -18,11 +19,12 @@ public class OnDeleteDesc implements MetaDefItem
      * @param optionalAsName the optional alias
      * @param joinExpr the optional where clause
      */
-    public OnDeleteDesc(String windowName, String optionalAsName, ExprNode joinExpr)
+    public OnTriggerDesc(String windowName, String optionalAsName, ExprNode joinExpr, boolean isOnDelete)
     {
         this.windowName = windowName;
         this.optionalAsName = optionalAsName;
         this.joinExpr = joinExpr;
+        this.isOnDelete = isOnDelete;
     }
 
     /**
@@ -59,5 +61,10 @@ public class OnDeleteDesc implements MetaDefItem
     public void setJoinExpr(ExprNode joinExpr)
     {
         this.joinExpr = joinExpr;
+    }
+
+    public boolean isOnDelete()
+    {
+        return isOnDelete;
     }
 }

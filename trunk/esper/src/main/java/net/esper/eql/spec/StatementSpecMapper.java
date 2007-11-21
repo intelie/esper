@@ -30,7 +30,7 @@ public class StatementSpecMapper
     {
         StatementSpecRaw raw = new StatementSpecRaw();
         mapCreateWindow(sodaStatement.getCreateWindow(), raw);
-        mapOnDelete(sodaStatement.getOnDelete(), raw, engineImportService);
+        mapOnDelete(sodaStatement.getOnExpr(), raw, engineImportService);
         mapInsertInto(sodaStatement.getInsertInto(), raw);
         mapSelect(sodaStatement.getSelectClause(), raw, engineImportService);
         mapFrom(sodaStatement.getFromClause(), raw, engineImportService);
@@ -53,7 +53,7 @@ public class StatementSpecMapper
 
         EPStatementObjectModel model = new EPStatementObjectModel();
         unmapCreateWindow(statementSpec.getCreateWindowDesc(), model);
-        unmapOnDelete(statementSpec.getOnDeleteDesc(), model, unmapContext);
+        unmapOnDelete(statementSpec.getOnTriggerDesc(), model, unmapContext);
         unmapInsertInto(statementSpec.getInsertIntoDesc(), model);
         unmapSelect(statementSpec.getSelectClauseSpec(), statementSpec.getSelectStreamSelectorEnum(), model, unmapContext);
         unmapFrom(statementSpec.getStreamSpecs(), statementSpec.getOuterJoinDescList(), model, unmapContext);
@@ -66,18 +66,18 @@ public class StatementSpecMapper
         return new StatementSpecUnMapResult(model, unmapContext.getIndexedParams());
     }
 
-    private static void unmapOnDelete(OnDeleteDesc onDeleteDesc, EPStatementObjectModel model, StatementSpecUnMapContext unmapContext)
+    private static void unmapOnDelete(OnTriggerDesc onTriggerDesc, EPStatementObjectModel model, StatementSpecUnMapContext unmapContext)
     {
-        if (onDeleteDesc == null)
+        if (onTriggerDesc == null)
         {
             return;
         }
         Expression expr = null;
-        if (onDeleteDesc.getJoinExpr() != null)
+        if (onTriggerDesc.getJoinExpr() != null)
         {
-            expr = unmapExpressionDeep(onDeleteDesc.getJoinExpr(), unmapContext);
+            expr = unmapExpressionDeep(onTriggerDesc.getJoinExpr(), unmapContext);
         }
-        model.setOnDelete(new OnDeleteClause(onDeleteDesc.getWindowName(), onDeleteDesc.getOptionalAsName(), expr));
+        model.setOnExpr(new OnExprClause(onTriggerDesc.isOnDelete(), onTriggerDesc.getWindowName(), onTriggerDesc.getOptionalAsName(), expr));
     }
 
     private static void unmapCreateWindow(CreateWindowDesc createWindowDesc, EPStatementObjectModel model)
@@ -167,19 +167,19 @@ public class StatementSpecMapper
         raw.setOutputLimitSpec(spec);
     }
 
-    private static void mapOnDelete(OnDeleteClause onDelete, StatementSpecRaw raw, EngineImportService engineImportService)
+    private static void mapOnDelete(OnExprClause onExpr, StatementSpecRaw raw, EngineImportService engineImportService)
     {
-        if (onDelete == null)
+        if (onExpr == null)
         {
             return;
         }
 
         ExprNode node = null;
-        if (onDelete.getJoinExpr() != null)
+        if (onExpr.getJoinExpr() != null)
         {
-            node = mapExpressionDeep(onDelete.getJoinExpr(), engineImportService);
+            node = mapExpressionDeep(onExpr.getJoinExpr(), engineImportService);
         }        
-        raw.setOnDeleteDesc(new OnDeleteDesc(onDelete.getWindowName(), onDelete.getOptionalAsName(), node));
+        raw.setOnTriggerDesc(new OnTriggerDesc(onExpr.getWindowName(), onExpr.getOptionalAsName(), node, onExpr.isOnDelete()));
     }
 
     private static void mapHaving(Expression havingClause, StatementSpecRaw raw, EngineImportService engineImportService)

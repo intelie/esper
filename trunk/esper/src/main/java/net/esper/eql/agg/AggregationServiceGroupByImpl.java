@@ -36,6 +36,11 @@ public class AggregationServiceGroupByImpl extends AggregationServiceBase
         this.aggregatorsPerGroup = new HashMap<MultiKeyUntyped, AggregationMethod[]>();
     }
 
+    public void clearResults()
+    {
+        aggregatorsPerGroup.clear();
+    }
+
     public void applyEnter(EventBean[] eventsPerStream, MultiKeyUntyped groupByKey)
     {
         AggregationMethod[] groupAggregators = aggregatorsPerGroup.get(groupByKey);

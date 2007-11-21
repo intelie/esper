@@ -7,6 +7,11 @@ public class SupportAggregator implements AggregationMethod
 {
     private int sum;
 
+    public void clear()
+    {
+        
+    }
+
     public void enter(Object value)
     {
         if (value != null)

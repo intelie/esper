@@ -1,6 +1,6 @@
 package net.esper.core;
 
-import net.esper.eql.spec.OnDeleteDesc;
+import net.esper.eql.spec.OnTriggerDesc;
 import net.esper.eql.spec.CreateWindowDesc;
 
 import java.util.Map;
@@ -17,7 +17,7 @@ public interface StatementContextFactory
      * @param expression is the statement expression
      * @param engineServices is engine services
      * @param optAdditionalContext addtional context to pass to the statement
-     * @param optOnDeleteDesc the on-delete statement descriptor for named window context creation
+     * @param optOnTriggerDesc the on-delete statement descriptor for named window context creation
      * @param optCreateWindowDesc the create-window statement descriptor for named window context creation
      * @return statement context
      */
@@ -26,6 +26,6 @@ public interface StatementContextFactory
                                         String expression,
                                         EPServicesContext engineServices,
                                         Map<String, Object> optAdditionalContext,
-                                        OnDeleteDesc optOnDeleteDesc,
+                                        OnTriggerDesc optOnTriggerDesc,
                                         CreateWindowDesc optCreateWindowDesc);
 }

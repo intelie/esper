@@ -2,18 +2,15 @@ package net.esper.eql.named;
 
 import net.esper.event.EventBean;
 import net.esper.eql.expression.ExprNode;
-import net.esper.eql.join.table.EventTable;
-import net.esper.view.View;
 
 import java.util.Set;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 
 /**
  * Determine events to be deleted from a named window using the where-clause and full table scan.
  */
-public class DeletionStrategyTableScan implements DeletionStrategy
+public class LookupStrategyTableScan implements LookupStrategy
 {
     private final ExprNode joinExpr;
     private final EventBean[] eventsPerStream;
@@ -24,14 +21,14 @@ public class DeletionStrategyTableScan implements DeletionStrategy
      * @param joinExpr is the where clause
      * @param iterable is the named window's data window iterator
      */
-    public DeletionStrategyTableScan(ExprNode joinExpr, Iterable<EventBean> iterable)
+    public LookupStrategyTableScan(ExprNode joinExpr, Iterable<EventBean> iterable)
     {
         this.joinExpr = joinExpr;
         this.eventsPerStream = new EventBean[2];
         this.iterableNamedWindow = iterable;
     }
 
-    public EventBean[] determineRemoveStream(EventBean[] newData)
+    public EventBean[] lookup(EventBean[] newData)
     {
         Set<EventBean> removeEvents = null;
 

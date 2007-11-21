@@ -32,4 +32,8 @@ public class AggregationServiceNull implements AggregationService {
         return null;
     }
 
+    public void clearResults()
+    {
+        // no state to clear
+    }
 }

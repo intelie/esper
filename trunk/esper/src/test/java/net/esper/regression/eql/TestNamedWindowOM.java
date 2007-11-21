@@ -8,6 +8,7 @@ import net.esper.client.EPStatement;
 import net.esper.client.soda.*;
 import net.esper.support.bean.SupportBean;
 import net.esper.support.bean.SupportMarketDataBean;
+import net.esper.support.bean.SupportBean_B;
 import net.esper.support.client.SupportConfigFactory;
 import net.esper.support.util.ArrayAssertionUtil;
 import net.esper.support.util.SupportUpdateListener;
@@ -17,6 +18,7 @@ public class TestNamedWindowOM extends TestCase
     private EPServiceProvider epService;
     private SupportUpdateListener listenerWindow;
     private SupportUpdateListener listenerStmtOne;
+    private SupportUpdateListener listenerOnSelect;
 
     public void setUp()
     {
@@ -27,6 +29,7 @@ public class TestNamedWindowOM extends TestCase
         epService.initialize();
         listenerWindow = new SupportUpdateListener();
         listenerStmtOne = new SupportUpdateListener();
+        listenerOnSelect = new SupportUpdateListener();
     }
 
     public void testCompile()
@@ -37,6 +40,11 @@ public class TestNamedWindowOM extends TestCase
         EPStatement stmtCreate = epService.getEPAdministrator().create(modelCreate);
         stmtCreate.addListener(listenerWindow);
         assertEquals("create window MyWindow.win:keepall() as select string as key, longBoxed as value from net.esper.support.bean.SupportBean", modelCreate.toEQL());
+
+        String stmtTextOnSelect = "on " + SupportBean_B.class.getName() + " select * from MyWindow";
+        EPStatementObjectModel modelOnSelect = epService.getEPAdministrator().compileEQL(stmtTextOnSelect);
+        EPStatement stmtOnSelect = epService.getEPAdministrator().create(modelOnSelect);
+        stmtOnSelect.addListener(listenerOnSelect);
 
         String stmtTextInsert = "insert into MyWindow select string as key, longBoxed as value from " + SupportBean.class.getName();
         EPStatementObjectModel modelInsert = epService.getEPAdministrator().compileEQL(stmtTextInsert);
@@ -78,6 +86,19 @@ public class TestNamedWindowOM extends TestCase
         ArrayAssertionUtil.assertProps(listenerStmtOne.assertOneGetOldAndReset(), fields, new Object[] {"E2", 40L});
         ArrayAssertionUtil.assertProps(listenerWindow.assertOneGetOldAndReset(), fields, new Object[] {"E2", 20L});
 
+        // trigger on-select on empty window
+        assertFalse(listenerOnSelect.isInvoked());
+        epService.getEPRuntime().sendEvent(new SupportBean_B("B1"));
+        assertFalse(listenerOnSelect.isInvoked());
+
+        sendSupportBean("E3", 30L);
+        ArrayAssertionUtil.assertProps(listenerStmtOne.assertOneGetNewAndReset(), fields, new Object[] {"E3", 60L});
+        ArrayAssertionUtil.assertProps(listenerWindow.assertOneGetNewAndReset(), fields, new Object[] {"E3", 30L});
+
+        // trigger on-select on the filled window
+        epService.getEPRuntime().sendEvent(new SupportBean_B("B2"));
+        ArrayAssertionUtil.assertProps(listenerOnSelect.assertOneGetNewAndReset(), fields, new Object[] {"E3", 30L});
+
         stmtSelectOne.destroy();
         stmtInsert.destroy();
         stmtCreate.destroy();
@@ -86,6 +107,8 @@ public class TestNamedWindowOM extends TestCase
     public void testOM()
     {
         String[] fields = new String[] {"key", "value"};
+
+        // create window object model
         EPStatementObjectModel model = new EPStatementObjectModel();
         model.setCreateWindow(CreateWindowClause.create("MyWindow").addView("win", "keepall"));
         model.setSelectClause(SelectClause.create()
@@ -103,6 +126,7 @@ public class TestNamedWindowOM extends TestCase
         EPStatementObjectModel modelInsert = epService.getEPAdministrator().compileEQL(stmtTextInsert);
         EPStatement stmtInsert = epService.getEPAdministrator().create(modelInsert);
 
+        // Consumer statement object model 
         model = new EPStatementObjectModel();
         Expression multi = Expressions.multiply(Expressions.property("value"), Expressions.constant(2));
         model.setSelectClause(SelectClause.create()
@@ -126,7 +150,7 @@ public class TestNamedWindowOM extends TestCase
 
         // create delete stmt
         model = new EPStatementObjectModel();        
-        model.setOnDelete(OnDeleteClause.create("MyWindow", "s1", Expressions.eqProperty("s0.symbol", "s1.key")));
+        model.setOnExpr(OnExprClause.createOnDelete("MyWindow", "s1", Expressions.eqProperty("s0.symbol", "s1.key")));
         model.setFromClause(FromClause.create(FilterStream.create(SupportMarketDataBean.class.getName(), "s0")));
         epService.getEPAdministrator().create(model);
         String stmtTextDelete = "on " + SupportMarketDataBean.class.getName() + " as s0 delete from MyWindow as s1 where (s0.symbol = s1.key)";
@@ -146,6 +170,27 @@ public class TestNamedWindowOM extends TestCase
         sendMarketBean("E2");
         ArrayAssertionUtil.assertProps(listenerStmtOne.assertOneGetOldAndReset(), fields, new Object[] {"E2", 40L});
         ArrayAssertionUtil.assertProps(listenerWindow.assertOneGetOldAndReset(), fields, new Object[] {"E2", 20L});
+
+        // On-select object model
+        model = new EPStatementObjectModel();
+        model.setOnExpr(OnExprClause.createOnSelect("MyWindow", "s1", Expressions.eqProperty("s0.id", "s1.key")));
+        model.setFromClause(FromClause.create(FilterStream.create(SupportBean_B.class.getName(), "s0")));
+        model.setSelectClause(SelectClause.createWildcard());
+        EPStatement statement = epService.getEPAdministrator().create(model);
+        statement.addListener(listenerOnSelect);
+        String stmtTextOnSelect = "on " + SupportBean_B.class.getName() + " as s0 select *  from MyWindow as s1 where (s0.id = s1.key)";
+        assertEquals(stmtTextOnSelect, model.toEQL());
+
+        // send some more events
+        sendSupportBean("E3", 30L);
+        sendSupportBean("E4", 40L);
+
+        epService.getEPRuntime().sendEvent(new SupportBean_B("B1"));
+        assertFalse(listenerOnSelect.isInvoked());
+
+        // trigger on-select
+        epService.getEPRuntime().sendEvent(new SupportBean_B("E3"));
+        ArrayAssertionUtil.assertProps(listenerOnSelect.assertOneGetNewAndReset(), fields, new Object[] {"E3", 30L});
 
         stmtSelectOne.destroy();
         stmtInsert.destroy();

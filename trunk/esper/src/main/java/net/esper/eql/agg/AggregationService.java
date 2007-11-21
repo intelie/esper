@@ -37,4 +37,6 @@ public interface AggregationService extends AggregationResultFuture
      * @param groupKey - key identify the row of aggregation states
      */
     public void setCurrentRow(MultiKeyUntyped groupKey);
+
+    public void clearResults();
 }

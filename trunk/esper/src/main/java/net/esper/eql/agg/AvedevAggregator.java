@@ -15,6 +15,12 @@ public class AvedevAggregator implements AggregationMethod
     private RefCountedSet<Double> valueSet;
     private double sum;
 
+    public void clear()
+    {
+        sum = 0;
+        valueSet.clear();
+    }
+
     /**
      * Ctor.
      */

@@ -9,9 +9,9 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 
 /**
- * Uses an index to determine event to be deleted from a named window.
+ * Uses an index to determine event to be deleted or selected from a named window.
  */
-public class DeletionStrategyIndexed implements DeletionStrategy
+public class LookupStrategyIndexed implements LookupStrategy
 {
     private final ExprNode joinExpr;
     private final EventBean[] eventsPerStream;
@@ -22,14 +22,14 @@ public class DeletionStrategyIndexed implements DeletionStrategy
      * @param joinExpr the validated where clause of the on-delete
      * @param tableLookupStrategy the strategy for looking up in an index the matching events using correlation
      */
-    public DeletionStrategyIndexed(ExprNode joinExpr, TableLookupStrategy tableLookupStrategy)
+    public LookupStrategyIndexed(ExprNode joinExpr, TableLookupStrategy tableLookupStrategy)
     {
         this.joinExpr = joinExpr;
         this.eventsPerStream = new EventBean[2];
         this.tableLookupStrategy = tableLookupStrategy;
     }
 
-    public EventBean[] determineRemoveStream(EventBean[] newData)
+    public EventBean[] lookup(EventBean[] newData)
     {
         Set<EventBean> removeEvents = null;
 

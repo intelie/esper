@@ -41,4 +41,9 @@ public class SupportAggregationService implements AggregationService
     {
         return null;
     }
+
+    public void clearResults()
+    {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
 }

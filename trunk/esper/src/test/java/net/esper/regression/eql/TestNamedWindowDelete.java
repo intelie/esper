@@ -139,7 +139,7 @@ public class TestNamedWindowDelete extends TestCase
         assertEquals(2, listenerDelete.getLastNewData().length);
         ArrayAssertionUtil.assertProps(listenerDelete.getLastNewData()[0], fields, new Object[] {"E2", 2});
         ArrayAssertionUtil.assertProps(listenerDelete.getLastNewData()[1], fields, new Object[] {"E3", 3});
-        ArrayAssertionUtil.assertEqualsExactOrder(stmtDelete.iterator(), fields, new Object[][] {{"E3", 3}});
+        ArrayAssertionUtil.assertEqualsExactOrder(stmtDelete.iterator(), fields, new Object[][] {{"E2", 2}, {"E3", 3}});
     }
 
     public void testDeleteCondition()

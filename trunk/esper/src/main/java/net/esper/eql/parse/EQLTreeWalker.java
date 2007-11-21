@@ -397,13 +397,33 @@ public class EQLTreeWalker extends EQLBaseWalker
     {
         log.debug(".leaveOnExpr");
 
+        // determine on-delete or on-select
+        AST typeChildNode = node.getFirstChild();
+        boolean isOnDelete = false;
+        while(typeChildNode != null)
+        {
+            if (typeChildNode.getType() == ON_DELETE_EXPR)
+            {
+                isOnDelete = true;
+                break;
+            }
+            if (typeChildNode.getType() == ON_SELECT_EXPR)
+            {
+                break;
+            }
+            typeChildNode = typeChildNode.getNextSibling();
+        }
+        if (typeChildNode == null)
+        {
+            throw new IllegalStateException("Could not determine on-expr type");
+        }
+
         // get optional filter stream as-name
         AST childNode = node.getFirstChild().getNextSibling();
         String streamAsName = null;
         if (childNode.getType() == IDENT)
         {
             streamAsName = childNode.getText();
-            childNode = childNode.getNextSibling();
         }
 
         // get stream to use (pattern or filter)
@@ -429,7 +449,7 @@ public class EQLTreeWalker extends EQLBaseWalker
         }
 
         // get window name
-        childNode = childNode.getNextSibling();
+        childNode = typeChildNode.getNextSibling();
         String windowName = childNode.getText();
 
         // get optional window stream as-name
@@ -440,7 +460,7 @@ public class EQLTreeWalker extends EQLBaseWalker
             windowStreamName = childNode.getText();
         }
 
-        statementSpec.setOnDeleteDesc(new OnDeleteDesc(windowName, windowStreamName, statementSpec.getFilterRootNode()));
+        statementSpec.setOnTriggerDesc(new OnTriggerDesc(windowName, windowStreamName, statementSpec.getFilterRootNode(), isOnDelete));
         statementSpec.setFilterExprRootNode(null); // remove where clause
         statementSpec.getStreamSpecs().add(streamSpec);
     }

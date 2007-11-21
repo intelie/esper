@@ -246,4 +246,9 @@ public class ResultSetProcessorAggregateAll implements ResultSetProcessor
         }
         return new ArrayEventIterator(result);
     }
+
+    public void clear()
+    {
+        aggregationService.clearResults();
+    }
 }

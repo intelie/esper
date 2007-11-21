@@ -537,4 +537,9 @@ public class ResultSetProcessorAggregateGrouped implements ResultSetProcessor
         EventBean[] result = generateOutputEventsJoin(joinSet, groupByKeys, optionalHavingNode, newEventGroupReps, newGenerators, true);
         return new ArrayEventIterator(result);
     }
+
+    public void clear()
+    {
+        aggregationService.clearResults();
+    }        
 }

@@ -483,4 +483,9 @@ public class ResultSetProcessorRowPerGroup implements ResultSetProcessor
         EventBean[] selectNewEvents = generateOutputEventsJoin(keysAndEvents, optionalHavingNode, newEventGroupReps, newGenerators, true);
         return new ArrayEventIterator(selectNewEvents);
     }
+
+    public void clear()
+    {
+        aggregationService.clearResults();
+    }        
 }

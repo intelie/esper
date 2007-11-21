@@ -11,6 +11,11 @@ public class MedianAggregator implements AggregationMethod
 {
     private SortedDoubleVector vector;
 
+    public void clear()
+    {
+        vector.clear();
+    }
+
     /**
      * Ctor.
      */

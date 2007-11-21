@@ -20,6 +20,11 @@ public class MyConcatAggregationFunction extends AggregationSupport
         // No need to check the expression node type
     }
 
+    public void clear()
+    {
+        builder = new StringBuilder();
+    }
+
     public void enter(Object value)
     {
         if (value != null)

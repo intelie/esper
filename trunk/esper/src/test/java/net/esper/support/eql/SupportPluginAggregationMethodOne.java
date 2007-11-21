@@ -6,6 +6,11 @@ public class SupportPluginAggregationMethodOne extends AggregationSupport
 {
     private int count;
 
+    public void clear()
+    {
+        count = 0;    
+    }
+
     public void validate(Class childNodeType)
     {
     }

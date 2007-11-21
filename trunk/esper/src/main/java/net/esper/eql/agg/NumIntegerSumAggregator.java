@@ -11,6 +11,12 @@ public class NumIntegerSumAggregator implements AggregationMethod
     private int sum;
     private long numDataPoints;
 
+    public void clear()
+    {
+        sum = 0;
+        numDataPoints = 0;
+    }
+
     public void enter(Object object)
     {
         if (object == null)

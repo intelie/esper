@@ -198,9 +198,20 @@ public class SelectExprEvalProcessor implements SelectExprProcessor
                     props.putAll(map);
         		}
         	}
+            
+            EventBean event;
+            if(joinWildcardProcessor != null)
+            {
+                event = joinWildcardProcessor.process(eventsPerStream, isNewData);
+            }
+            else
+            {
+                event = eventsPerStream[0];
+            }            
+
             // Using a wrapper bean since we cannot use the same event type else same-type filters match.
             // Wrapping it even when not adding properties is very inexpensive.
-            return eventAdapterService.createWrapper(getEvent(eventsPerStream, isNewData), props, resultEventType);
+            return eventAdapterService.createWrapper(event, props, resultEventType);
         }
         else
         {
@@ -235,16 +246,4 @@ public class SelectExprEvalProcessor implements SelectExprProcessor
             throw new ExprValidationException("Number of supplied values in the select clause does not match insert-into clause");
         }
     }
-    
-    private EventBean getEvent(EventBean[] eventsPerStream, boolean isNewData)
-    {
-        if(joinWildcardProcessor != null)
-    	{
-    		return joinWildcardProcessor.process(eventsPerStream, isNewData);
-    	}
-    	else
-    	{
-    		return eventsPerStream[0];
-    	}
-    }    
 }

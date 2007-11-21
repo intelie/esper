@@ -153,7 +153,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
         EPStatementDesc statementDesc;
         EPStatementStartMethod startMethod;
 
-        StatementContext statementContext =  services.getStatementContextFactory().makeContext(statementId, statementName, expression, services, optAdditionalContext, statementSpec.getOnDeleteDesc(), statementSpec.getCreateWindowDesc());
+        StatementContext statementContext =  services.getStatementContextFactory().makeContext(statementId, statementName, expression, services, optAdditionalContext, statementSpec.getOnTriggerDesc(), statementSpec.getCreateWindowDesc());
         StatementSpecCompiled compiledSpec = null;
         try
         {
@@ -760,7 +760,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
         }
 
         return new StatementSpecCompiled(
-                spec.getOnDeleteDesc(),
+                spec.getOnTriggerDesc(),
                 spec.getCreateWindowDesc(),
                 spec.getInsertIntoDesc(),
                 spec.getSelectStreamSelectorEnum(),

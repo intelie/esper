@@ -47,4 +47,12 @@ public class AggregationServiceGroupAllImpl extends AggregationServiceBase
     {
         return aggregators[column].getValue();
     }
+
+    public void clearResults()
+    {
+        for (AggregationMethod aggregator : aggregators)
+        {
+            aggregator.clear();
+        }
+    }
 }

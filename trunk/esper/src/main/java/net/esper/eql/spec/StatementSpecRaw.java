@@ -18,7 +18,7 @@ import java.util.List;
  */
 public class StatementSpecRaw implements MetaDefItem
 {
-    private OnDeleteDesc onDeleteDesc;
+    private OnTriggerDesc onTriggerDesc;
     private CreateWindowDesc createWindowDesc;
     private InsertIntoDesc insertIntoDesc;
     private SelectClauseStreamSelectorEnum selectStreamDirEnum = SelectClauseStreamSelectorEnum.RSTREAM_ISTREAM_BOTH;
@@ -215,17 +215,17 @@ public class StatementSpecRaw implements MetaDefItem
      * Returns the on-delete statement specification.
      * @return descriptor for creating a an on-delete statement
      */
-    public OnDeleteDesc getOnDeleteDesc()
+    public OnTriggerDesc getOnTriggerDesc()
     {
-        return onDeleteDesc;
+        return onTriggerDesc;
     }
 
     /**
      * Sets the on-delete statement specification.
-     * @param onDeleteDesc descriptor for creating an on-delete statement
+     * @param onTriggerDesc descriptor for creating an on-delete statement
      */
-    public void setOnDeleteDesc(OnDeleteDesc onDeleteDesc)
+    public void setOnTriggerDesc(OnTriggerDesc onTriggerDesc)
     {
-        this.onDeleteDesc = onDeleteDesc;
+        this.onTriggerDesc = onTriggerDesc;
     }
 }

@@ -167,6 +167,8 @@ tokens
 	CREATE_WINDOW_EXPR;
 	CREATE_WINDOW_SELECT_EXPR;
 	ON_EXPR;
+	ON_DELETE_EXPR;
+	ON_SELECT_EXPR;
 	
    	INT_TYPE;
    	LONG_TYPE;
@@ -240,10 +242,24 @@ selectExpr
 	;
 	
 onExpr 
-	:	ON! (eventFilterExpression | patternInclusionExpression) (AS! IDENT | IDENT)? DELETE FROM! IDENT (AS! IDENT | IDENT)? (WHERE! whereClause)?
+	:	ON! (eventFilterExpression | patternInclusionExpression) (AS! IDENT | IDENT)? 
+		(onDeleteExpr | onSelectExpr)
+		FROM! IDENT (AS! IDENT | IDENT)?
+		(WHERE! whereClause)?		
 		{ #onExpr = #([ON_EXPR,"onExpr"], #onExpr); }
 	;
 	
+onSelectExpr	
+	:	(INSERT! insertIntoExpr)?
+		SELECT! selectionList
+		{ #onSelectExpr = #([ON_SELECT_EXPR,"onSelectExpr"], #onSelectExpr); }
+	;
+	
+onDeleteExpr	
+	:	DELETE!
+		{ #onDeleteExpr = #([ON_DELETE_EXPR,"onDeleteExpr"], #onDeleteExpr); }
+	;
+
 createWindowExpr
 	:	CREATE! WINDOW! IDENT (DOT! viewExpression (DOT! viewExpression)*)? AS! (SELECT! createSelectionList FROM!)? classIdentifier
 		{ #createWindowExpr = #([CREATE_WINDOW_EXPR,"createWindowExpr"], #createWindowExpr); }
@@ -507,7 +523,7 @@ unaryExpression
 	| substitution
 	| LPAREN! expression RPAREN!
 	| eventPropertyOrLibFunction
-	| builtinFunc
+	| (builtinFunc) => (builtinFunc)
 	| arrayExpression
 	| subSelectExpression
 	| existsSubSelectExpression

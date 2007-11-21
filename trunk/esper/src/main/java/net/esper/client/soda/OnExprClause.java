@@ -6,24 +6,37 @@ import java.io.StringWriter;
 /**
  * A clause to delete from a named window based on a triggering event arriving and correlated to the named window events to be deleted.
  */
-public class OnDeleteClause implements Serializable
+public class OnExprClause implements Serializable
 {
     private static final long serialVersionUID = 0L;
 
+    private boolean isOnDelete;
     private String windowName;
     private String optionalAsName;
     private Expression joinExpr;
 
     /**
-     * Creates a on-delete clause for deleting from a named window.
+     * Creates an on-delete clause for deleting from a named window.
      * @param windowName is the named window name
      * @param asNameAlias is the alias name of the named window
      * @param joinExpr is the where-clause expression for the on-delete
      * @return on-delete clause
      */
-    public static OnDeleteClause create(String windowName, String asNameAlias, Expression joinExpr)
+    public static OnExprClause createOnDelete(String windowName, String asNameAlias, Expression joinExpr)
     {
-        return new OnDeleteClause(windowName, asNameAlias, joinExpr);
+        return new OnExprClause(true, windowName, asNameAlias, joinExpr);
+    }
+
+    /**
+     * Creates an on-select clause for selecting from a named window.
+     * @param windowName is the named window name
+     * @param asNameAlias is the alias name of the named window
+     * @param joinExpr is the where-clause expression for the on-delete
+     * @return on-select clause
+     */
+    public static OnExprClause createOnSelect(String windowName, String asNameAlias, Expression joinExpr)
+    {
+        return new OnExprClause(false, windowName, asNameAlias, joinExpr);
     }
 
     /**
@@ -32,8 +45,9 @@ public class OnDeleteClause implements Serializable
      * @param optionalAsName is the alias name of the named window
      * @param joinExpr is the where-clause expression for the on-delete
      */
-    public OnDeleteClause(String windowName, String optionalAsName, Expression joinExpr)
+    public OnExprClause(boolean isOnDelete, String windowName, String optionalAsName, Expression joinExpr)
     {
+        this.isOnDelete = isOnDelete;
         this.windowName = windowName;
         this.optionalAsName = optionalAsName;
         this.joinExpr = joinExpr;
@@ -45,7 +59,6 @@ public class OnDeleteClause implements Serializable
      */
     public void toEQL(StringWriter writer)
     {
-        writer.write(" delete from ");
         writer.write(windowName);
         if (optionalAsName != null)
         {
@@ -111,5 +124,10 @@ public class OnDeleteClause implements Serializable
     public void setJoinExpr(Expression joinExpr)
     {
         this.joinExpr = joinExpr;
+    }
+
+    public boolean isOnDelete()
+    {
+        return isOnDelete;
     }
 }

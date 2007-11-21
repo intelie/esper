@@ -10,6 +10,11 @@ public class CountAggregator implements AggregationMethod
 {
     private long numDataPoints;
 
+    public void clear()
+    {
+        numDataPoints = 0;
+    }
+
     public void enter(Object object)
     {
         numDataPoints++;

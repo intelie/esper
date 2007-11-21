@@ -45,7 +45,7 @@ public class EPStatementObjectModel implements Serializable
     private static final long serialVersionUID = 0L;
 
     private CreateWindowClause createWindow;
-    private OnDeleteClause onDelete;
+    private OnExprClause onExpr;
     private InsertIntoClause insertInto;
     private SelectClause selectClause;
     private FromClause fromClause;
@@ -242,11 +242,26 @@ public class EPStatementObjectModel implements Serializable
             return writer.toString();
         }
 
-        if (onDelete != null)
+        if (onExpr != null)
         {
             writer.write("on ");
             fromClause.getStreams().get(0).toEQL(writer);
-            onDelete.toEQL(writer);
+
+            if (onExpr.isOnDelete())
+            {
+                writer.write(" delete from ");
+            }
+            else
+            {
+                writer.write(" ");
+                if (insertInto != null)
+                {
+                    insertInto.toEQL(writer);
+                }
+                selectClause.toEQL(writer);
+                writer.write(" from ");
+            }
+            onExpr.toEQL(writer);
             return writer.toString();
         }
 
@@ -319,18 +334,18 @@ public class EPStatementObjectModel implements Serializable
      * does not delete from a named window
      * @return on delete clause
      */
-    public OnDeleteClause getOnDelete()
+    public OnExprClause getOnExpr()
     {
-        return onDelete;
+        return onExpr;
     }
 
     /**
-     * Sets the on-delete clause for deleting from named windows, or null if this statement
-     * does not delete from a named window
-     * @param onDelete is the on-delete clause to set
+     * Sets the on-delete or on-select clause for selecting or deleting from named windows, or null if this statement
+     * does not on-select or on-delete from a named window
+     * @param onExpr is the on-expression (on-select and on-delete) clause to set
      */
-    public void setOnDelete(OnDeleteClause onDelete)
+    public void setOnExpr(OnExprClause onExpr)
     {
-        this.onDelete = onDelete;
+        this.onExpr = onExpr;
     }
 }

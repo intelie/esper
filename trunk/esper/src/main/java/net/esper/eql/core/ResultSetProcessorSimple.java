@@ -404,6 +404,11 @@ public class ResultSetProcessorSimple implements ResultSetProcessor
         return new ArrayEventIterator(result.getFirst());
     }
 
+    public void clear()
+    {
+        // No need to clear state, there is no state held
+    }
+
     /**
      * Method to transform an event based on the select expression.
      */

@@ -10,6 +10,11 @@ public class NonNullCountAggregator implements AggregationMethod
 {
     private long numDataPoints;
 
+    public void clear()
+    {
+        numDataPoints = 0;
+    }
+
     public void enter(Object object)
     {
         if (object == null)

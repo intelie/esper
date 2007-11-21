@@ -28,6 +28,11 @@ public class MinMaxAggregator implements AggregationMethod
         this.refSet = new SortedRefCountedSet<Object>();
     }
 
+    public void clear()
+    {
+        refSet.clear();
+    }
+
     public void enter(Object object)
     {
         if (object == null)

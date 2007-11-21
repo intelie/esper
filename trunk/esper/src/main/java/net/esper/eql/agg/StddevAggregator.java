@@ -12,6 +12,13 @@ public class StddevAggregator implements AggregationMethod
     private double sumSq;
     private long numDataPoints;
 
+    public void clear()
+    {
+        sum = 0;
+        sumSq = 0;
+        numDataPoints = 0;
+    }
+
     public void enter(Object object)
     {
         if (object == null)
