@@ -14,6 +14,7 @@ public class TestNamedWindowSelect extends TestCase
 {
     private EPServiceProvider epService;
     private SupportUpdateListener listenerSelect;
+    private SupportUpdateListener listenerSelectTwo;
     private SupportUpdateListener listenerConsumer;
 
     public void setUp()
@@ -24,11 +25,9 @@ public class TestNamedWindowSelect extends TestCase
         epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();
         listenerSelect = new SupportUpdateListener();
+        listenerSelectTwo = new SupportUpdateListener();
         listenerConsumer = new SupportUpdateListener();
     }
-
-    // TODO: destroy of statement cleanly shuts down filter etc
-    // TODO: should there be a group-by and having clause?
 
     public void testInsertIntoWildcard()
     {
@@ -275,6 +274,81 @@ public class TestNamedWindowSelect extends TestCase
 
         stmtSelect.destroy();
         stmtCreate.destroy();
+    }
+
+    public void testSelectAggregationGrouping()
+    {
+        String[] fields = new String[] {"a", "sumb"};
+
+        // create window
+        String stmtTextCreate = "create window MyWindow.win:keepall() as select string as a, intPrimitive as b from " + SupportBean.class.getName();
+        EPStatement stmtCreate = epService.getEPAdministrator().createEQL(stmtTextCreate);
+
+        // create select stmt
+        String stmtTextSelect = "on " + SupportBean_A.class.getName() + " select a, sum(b) as sumb from MyWindow group by a order by a desc";
+        EPStatement stmtSelect = epService.getEPAdministrator().createEQL(stmtTextSelect);
+        stmtSelect.addListener(listenerSelect);
+
+        // create select stmt
+        String stmtTextSelectTwo = "on " + SupportBean_A.class.getName() + " select a, sum(b) as sumb from MyWindow group by a having sum(b) > 5 order by a desc";
+        EPStatement stmtSelectTwo = epService.getEPAdministrator().createEQL(stmtTextSelectTwo);
+        stmtSelectTwo.addListener(listenerSelectTwo);
+
+        // create insert into
+        String stmtTextInsertOne = "insert into MyWindow select string as a, intPrimitive as b from " + SupportBean.class.getName();
+        epService.getEPAdministrator().createEQL(stmtTextInsertOne);
+
+        // fire trigger
+        sendSupportBean_A("A1");
+        assertFalse(listenerSelect.isInvoked());
+        assertFalse(listenerSelectTwo.isInvoked());
+
+        // send 3 events
+        sendSupportBean("E1", 1);
+        sendSupportBean("E2", 2);
+        sendSupportBean("E1", 5);
+        assertFalse(listenerSelect.isInvoked());
+        assertFalse(listenerSelectTwo.isInvoked());
+
+        // fire trigger
+        sendSupportBean_A("A1");
+        ArrayAssertionUtil.assertPropsPerRow(listenerSelect.getLastNewData(), fields, new Object[][] {{"E2", 2}, {"E1", 6}});
+        assertNull(listenerSelect.getLastOldData());
+        listenerSelect.reset();
+        ArrayAssertionUtil.assertPropsPerRow(listenerSelectTwo.getLastNewData(), fields, new Object[][] {{"E1", 6}});
+        assertNull(listenerSelect.getLastOldData());
+        listenerSelect.reset();
+
+        // send 3 events
+        sendSupportBean("E4", -1);
+        sendSupportBean("E2", 10);
+        sendSupportBean("E1", 100);
+        assertFalse(listenerSelect.isInvoked());
+
+        sendSupportBean_A("A2");
+        ArrayAssertionUtil.assertPropsPerRow(listenerSelect.getLastNewData(), fields, new Object[][] {{"E4", -1}, {"E2", 12}, {"E1", 106}});
+
+        // create delete stmt, delete E2
+        String stmtTextDelete = "on " + SupportBean_B.class.getName() + " delete from MyWindow where id = a";
+        epService.getEPAdministrator().createEQL(stmtTextDelete);
+        sendSupportBean_B("E2");
+
+        sendSupportBean_A("A3");
+        ArrayAssertionUtil.assertPropsPerRow(listenerSelect.getLastNewData(), fields, new Object[][] {{"E4", -1}, {"E1", 106}});
+        assertNull(listenerSelect.getLastOldData());
+        listenerSelect.reset();
+        ArrayAssertionUtil.assertPropsPerRow(listenerSelectTwo.getLastNewData(), fields, new Object[][] {{"E1", 106}});
+        assertNull(listenerSelectTwo.getLastOldData());
+        listenerSelectTwo.reset();
+
+        EventType resultType = stmtSelect.getEventType();
+        assertEquals(2, resultType.getPropertyNames().length);
+        assertEquals(String.class, resultType.getPropertyType("a"));
+        assertEquals(Integer.class, resultType.getPropertyType("sumb"));
+
+        stmtSelect.destroy();
+        stmtCreate.destroy();
+        stmtSelectTwo.destroy();
     }
 
     public void testSelectCorrelationDelete()

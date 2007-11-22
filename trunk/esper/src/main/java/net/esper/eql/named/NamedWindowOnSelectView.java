@@ -67,7 +67,7 @@ public class NamedWindowOnSelectView extends NamedWindowOnExprBaseView
         }
 
         // The on-select listeners receive the events selected
-        if (newData != null)
+        if ((newData != null) && (newData.length > 0))
         {
             updateChildren(newData, null);
         }

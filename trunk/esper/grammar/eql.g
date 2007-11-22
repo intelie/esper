@@ -169,6 +169,7 @@ tokens
 	ON_EXPR;
 	ON_DELETE_EXPR;
 	ON_SELECT_EXPR;
+	ON_EXPR_FROM;
 	
    	INT_TYPE;
    	LONG_TYPE;
@@ -244,20 +245,30 @@ selectExpr
 onExpr 
 	:	ON! (eventFilterExpression | patternInclusionExpression) (AS! IDENT | IDENT)? 
 		(onDeleteExpr | onSelectExpr)
-		FROM! IDENT (AS! IDENT | IDENT)?
-		(WHERE! whereClause)?		
 		{ #onExpr = #([ON_EXPR,"onExpr"], #onExpr); }
 	;
 	
 onSelectExpr	
 	:	(INSERT! insertIntoExpr)?
 		SELECT! selectionList
+		onExprFrom
+		(WHERE! whereClause)?		
+		(GROUP! BY! groupByListExpr)?
+		(HAVING! havingClause)?
+		(ORDER! BY! orderByListExpr)?
 		{ #onSelectExpr = #([ON_SELECT_EXPR,"onSelectExpr"], #onSelectExpr); }
 	;
 	
 onDeleteExpr	
 	:	DELETE!
+		onExprFrom
+		(WHERE! whereClause)?		
 		{ #onDeleteExpr = #([ON_DELETE_EXPR,"onDeleteExpr"], #onDeleteExpr); }
+	;
+	
+onExprFrom
+	:	FROM! IDENT (AS! IDENT | IDENT)?
+		{ #onExprFrom = #([ON_EXPR_FROM,"onExprFrom"], #onExprFrom); }
 	;
 
 createWindowExpr

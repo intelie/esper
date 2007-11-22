@@ -51,7 +51,8 @@ public class TestEQLTreeWalker extends TestCase
 
     public void testWalkOnSelectInsert() throws Exception
     {
-        String expression = "on pattern [com.MyClass] as pat insert into MyStream(a, b) select c, d from MyNamedWindow as mywin";
+        String expression = "on pattern [com.MyClass] as pat insert into MyStream(a, b) select c, d from MyNamedWindow as mywin " +
+                " where a=b group by symbol having c=d order by e";
         EQLTreeWalker walker = parseAndWalkEQL(expression);
         StatementSpecRaw raw = walker.getStatementSpec();
 
@@ -62,6 +63,7 @@ public class TestEQLTreeWalker extends TestCase
         assertEquals("MyNamedWindow", raw.getOnTriggerDesc().getWindowName());
         assertEquals("mywin", raw.getOnTriggerDesc().getOptionalAsName());
         assertFalse(raw.getOnTriggerDesc().isOnDelete());
+        assertTrue(raw.getOnTriggerDesc().getJoinExpr() instanceof ExprEqualsNode);
 
         assertEquals("MyStream", raw.getInsertIntoDesc().getEventTypeAlias());
         assertEquals(2, raw.getInsertIntoDesc().getColumnNames().size());
@@ -70,6 +72,10 @@ public class TestEQLTreeWalker extends TestCase
 
         assertFalse(raw.getSelectClauseSpec().isUsingWildcard());
         assertEquals(2, raw.getSelectClauseSpec().getSelectList().size());
+
+        assertEquals(1, raw.getGroupByExpressions().size());
+        assertTrue(raw.getHavingExprRootNode() instanceof ExprEqualsNode);
+        assertEquals(1, raw.getOrderByList().size());
     }
 
     public void testWalkOnDelete() throws Exception

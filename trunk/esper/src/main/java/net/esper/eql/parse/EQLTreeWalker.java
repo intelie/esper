@@ -18,6 +18,7 @@ import net.esper.eql.generated.EQLBaseWalker;
 import net.esper.eql.spec.*;
 import net.esper.pattern.*;
 import net.esper.type.*;
+import net.esper.collection.UniformPair;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -448,22 +449,40 @@ public class EQLTreeWalker extends EQLBaseWalker
             throw new IllegalStateException("Invalid AST type node, cannot map to stream specification");
         }
 
-        // get window name
-        childNode = typeChildNode.getNextSibling();
-        String windowName = childNode.getText();
+        // The ON_EXPR_FROM contains the window name
+        UniformPair<String> windowName = getWindowName(typeChildNode);
 
-        // get optional window stream as-name
-        String windowStreamName = null;
-        childNode = childNode.getNextSibling();
-        if ((childNode != null) && (childNode.getType() == IDENT))
-        {
-            windowStreamName = childNode.getText();
-        }
-
-        statementSpec.setOnTriggerDesc(new OnTriggerDesc(windowName, windowStreamName, statementSpec.getFilterRootNode(), isOnDelete));
+        statementSpec.setOnTriggerDesc(new OnTriggerDesc(windowName.getFirst(), windowName.getSecond(), statementSpec.getFilterRootNode(), isOnDelete));
         statementSpec.setFilterExprRootNode(null); // remove where clause
         statementSpec.getStreamSpecs().add(streamSpec);
     }
+
+    private UniformPair<String> getWindowName(AST typeChildNode)
+    {
+        String windowName = null;
+        String windowStreamName = null;
+
+        AST child = typeChildNode.getFirstChild();
+        while(child != null)
+        {
+            if (child.getType() == ON_EXPR_FROM)
+            {
+                windowName = child.getFirstChild().getText();
+                if (child.getFirstChild().getNextSibling() != null)
+                {
+                    windowStreamName = child.getFirstChild().getNextSibling().getText();
+                }
+                break;
+            }
+            child = child.getNextSibling();
+        }
+        if (windowName == null)
+        {
+            throw new IllegalStateException("Could not determine on-expr from-clause named window name");
+        }
+        return new UniformPair<String>(windowName, windowStreamName);
+    }
+
 
     private void leavePrevious(AST node)
     {

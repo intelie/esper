@@ -535,6 +535,7 @@ public class TestEQLParser extends TestCase implements EqlTokenTypes
         assertIsValid("on pattern [every X] select a, b, c from MyNamedWindow");
         assertIsValid("on MyEvent insert into YooStream select a, b, c from MyNamedWindow");
         assertIsValid("on MyEvent insert into YooStream (p, q) select a, b, c from MyNamedWindow");
+        assertIsValid("on MyEvent select a, b, c from MyNamedWindow where a=b group by c having d>e order by f");
     }
 
     public void testBitWiseCases() throws Exception

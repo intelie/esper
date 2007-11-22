@@ -42,9 +42,6 @@ public class TestInvalidSyntaxMsg extends TestCase
         tryCompile("select * from A, sql:mydb [\"",
                    "end of input when expecting '\"' near line 1, column 29 [select * from A, sql:mydb [\"]");
 
-        tryCompile("select prior(A, x) from A",
-                   "expecting a numeric literal, found 'A' near line 1, column 14 [select prior(A, x) from A]");
-
         tryCompile("select * from A, into",
                    "unexpected token: into near line 1, column 18 (tip: check for reserved or misspelled keywords in the online grammar documentation near the token 'into') [select * from A, into]");
 
@@ -59,6 +56,9 @@ public class TestInvalidSyntaxMsg extends TestCase
 
         tryCompile("select foo, seconds from " + SupportBeanReservedKeyword.class.getName(),
                    "unexpected token: foo near line 1, column 8 (tip: check for reserved or misspelled keywords in the online grammar documentation near the token 'foo') [select foo, seconds from net.esper.support.bean.SupportBeanReservedKeyword]");
+
+        tryCompile("select prior(A, x) from A",
+                   "unexpected token: prior near line 1, column 8 (tip: check for reserved or misspelled keywords in the online grammar documentation near the token 'prior') [select prior(A, x) from A]");
     }
 
     private void tryCompile(String expression, String expectedMsg)
