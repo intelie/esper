@@ -42,6 +42,9 @@ public interface AggregationMethod
      */
     public Class getValueType();
 
+    /**
+     * Clear out the collection.
+     */
     public void clear();
 
     /**

@@ -58,5 +58,8 @@ public interface ResultSetProcessor
      */
     public Iterator<EventBean> getIterator(Set<MultiKey<EventBean>> joinSet);
 
+    /**
+     * Clear out current state.
+     */
     public void clear();
 }

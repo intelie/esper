@@ -26,6 +26,9 @@ public class SortedRefCountedSet<K>
         refSet = new TreeMap<K, Integer>();
     }
 
+    /**
+     * Clear out the collection.
+     */
     public void clear()
     {
         refSet.clear();

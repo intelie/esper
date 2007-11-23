@@ -84,5 +84,8 @@ public interface StatementLifecycleSvc
      */
     public void updatedListeners(String statementId, String statementName, EPStatementListenerSet listeners);
 
+    /**
+     * Destroy the service.
+     */
     public void destroy();
 }

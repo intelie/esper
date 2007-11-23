@@ -13,6 +13,9 @@ package net.esper.util;
  */
 public class ExecutionPathDebugLog
 {
+    /**
+     * Public access.
+     */
     public static boolean isDebugEnabled = false;
 
     /**

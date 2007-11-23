@@ -95,12 +95,14 @@ public class NamedWindowRootView extends ViewSupport
     }
 
     /**
-     * Add a on-delete view that, using a deletion strategy, deletes from the named window.
+     * Add an on-trigger view that, using a lookup strategy, looks up from the named window and may select or delete rows.
      * @param onTriggerDesc the specification for the on-delete
      * @param filterEventType the event type for the on-clause in the on-delete
      * @param statementStopService for stopping the statement
-     * @param internalEventRouter
-     *@param optionalResultSetProcessor @return view representing the on-delete view chain, posting delete events to it's listeners
+     * @param internalEventRouter for insert-into behavior
+     * @param optionalResultSetProcessor @return view representing the on-delete view chain, posting delete events to it's listeners
+     * @param statementHandle is the handle to the statement, used for routing/insert-into
+     * @return base view for on-trigger expression
      */
     public NamedWindowOnExprBaseView addOnExpr(OnTriggerDesc onTriggerDesc, EventType filterEventType, StatementStopService statementStopService, InternalEventRouter internalEventRouter, ResultSetProcessor optionalResultSetProcessor, EPStatementHandle statementHandle)
     {

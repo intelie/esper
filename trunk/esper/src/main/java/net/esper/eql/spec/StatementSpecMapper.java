@@ -305,10 +305,14 @@ public class StatementSpecMapper
         SelectClause clause = SelectClause.create();
         clause.setWildcard(selectClauseSpec.isUsingWildcard());
         clause.setStreamSelector(SelectClauseStreamSelectorEnum.mapFromSODA(selectStreamSelectorEnum));
-        for (SelectExprElementRawSpec raw : selectClauseSpec.getSelectList())
+        for (SelectExprElementRawSpec raw : selectClauseSpec.getSelectExprList())
         {
             Expression expression = unmapExpressionDeep(raw.getSelectExpression(), unmapContext);
             clause.add(expression, raw.getOptionalAsName());
+        }
+        for (SelectExprElementStreamRawSpec raw : selectClauseSpec.getSelectStreamsList())
+        {
+            clause.addStreamWildcard(raw.getStreamAliasName(), raw.getOptionalAsName());
         }
         model.setSelectClause(clause);
     }
@@ -375,6 +379,11 @@ public class StatementSpecMapper
             ExprNode exprNode = mapExpressionDeep(expr, engineImportService);
 
             SelectExprElementRawSpec rawElement = new SelectExprElementRawSpec(exprNode, element.getAsName());
+            spec.add(rawElement);
+        }
+        for (SelectClauseStreamWildcard element : selectClause.getStreamWildcardSelectList())
+        {
+            SelectExprElementStreamRawSpec rawElement = new SelectExprElementStreamRawSpec(element.getStreamAliasName(), element.getOptionalColumnAlias());
             spec.add(rawElement);
         }
     }

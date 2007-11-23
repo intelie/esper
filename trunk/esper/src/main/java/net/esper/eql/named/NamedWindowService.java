@@ -80,5 +80,8 @@ public interface NamedWindowService
      */
     public void addNamedWindowLock(String windowName, ManagedLock statementResourceLock);
 
+    /**
+     * Clear out the service.
+     */
     public void destroy();
 }

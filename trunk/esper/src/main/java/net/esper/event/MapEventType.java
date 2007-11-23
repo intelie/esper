@@ -358,6 +358,13 @@ public class MapEventType implements EventType
         return types;
     }
 
+    /**
+     * Compares two sets of properties and determines if they are the same, allowing for
+     * boxed/unboxed types.
+     * @param setOne is the first set of properties
+     * @param setTwo is the second set of properties
+     * @return true if the property set is equivalent, false if not
+     */
     public static boolean isEqualsProperties(Map<String, Class> setOne, Map<String, Class> setTwo)
     {
         // Should have the same number of properties

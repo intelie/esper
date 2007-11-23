@@ -39,5 +39,8 @@ public interface JoinSetComposer
      */
     public Set<MultiKey<EventBean>> staticJoin();
 
+    /**
+     * Destroy stateful index tables, if any.
+     */
     public void destroy();
 }

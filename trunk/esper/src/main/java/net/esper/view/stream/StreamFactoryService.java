@@ -39,5 +39,8 @@ public interface StreamFactoryService
      */
     public void dropStream(FilterSpecCompiled filterSpec, FilterService filterService, boolean isJoin);
 
+    /**
+     * Destroy the service.
+     */
     public void destroy();
 }

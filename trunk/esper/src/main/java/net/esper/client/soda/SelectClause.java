@@ -22,6 +22,7 @@ public class SelectClause implements Serializable
 
     private StreamSelector streamSelector;
     private List<SelectClauseElement> selectList;
+    private List<SelectClauseStreamWildcard> streamWildcardSelectList;
     private boolean isWildcard;
 
     /**
@@ -50,6 +51,18 @@ public class SelectClause implements Serializable
     public static SelectClause create(String ...propertyNames)
     {
         return new SelectClause(StreamSelector.RSTREAM_ISTREAM_BOTH, propertyNames);
+    }
+
+    /**
+     * Creates a select-clause with a single stream wildcard selector (e.g. select streamAliasName.* from MyStream as streamAliasName)
+     * @param streamAliasName is the alias given to a stream
+     * @return select-clause
+     */
+    public static SelectClause createStreamWildcard(String streamAliasName)
+    {
+        SelectClause clause = new SelectClause(StreamSelector.RSTREAM_ISTREAM_BOTH, false);
+        clause.addStreamWildcard(streamAliasName);
+        return clause;
     }
 
     /**
@@ -92,6 +105,7 @@ public class SelectClause implements Serializable
     {
         this.streamSelector = streamSelector;
         this.selectList = new ArrayList<SelectClauseElement>();
+        this.streamWildcardSelectList = new ArrayList<SelectClauseStreamWildcard>();
         this.isWildcard = isWildcard;
     }
 
@@ -177,6 +191,38 @@ public class SelectClause implements Serializable
     }
 
     /**
+     * Adds to the select-clause a stream wildcard selector (e.g. select streamAliasName.* from MyStream as streamAliasName)
+     * @param streamAliasName is the alias given to a stream
+     * @return select-clause
+     */
+    public SelectClause addStreamWildcard(String streamAliasName)
+    {
+        streamWildcardSelectList.add(new SelectClauseStreamWildcard(streamAliasName, null));
+        return this;
+    }
+
+    /**
+     * Adds to the select-clause a stream wildcard selector with column alias (e.g. select streamAliasName.* as colAlias from MyStream as streamAliasName)
+     * @param streamAliasName is the alias given to a stream
+     * @param columnAlias the alias given to the column
+     * @return select-clause
+     */
+    public SelectClause addStreamWildcard(String streamAliasName, String columnAlias)
+    {
+        streamWildcardSelectList.add(new SelectClauseStreamWildcard(streamAliasName, columnAlias));
+        return this;
+    }
+
+    /**
+     * Returns the list of stream wildcard selectors (e.g. select streamAliasName.* as colAlias from MyStream as streamAliasName)
+     * @return list of stream wildcard selectors
+     */
+    public List<SelectClauseStreamWildcard> getStreamWildcardSelectList()
+    {
+        return streamWildcardSelectList;
+    }
+
+    /**
      * Returns true is a wildcard is part of the select clause, or false if not.
      * @return true for wildcard
      */
@@ -233,6 +279,13 @@ public class SelectClause implements Serializable
         if (isWildcard)
         {
             writer.write("*");
+            delimiter = ", ";
+        }
+
+        for (SelectClauseStreamWildcard element : streamWildcardSelectList)
+        {
+            writer.write(delimiter);
+            element.toEQL(writer);
             delimiter = ", ";
         }
 

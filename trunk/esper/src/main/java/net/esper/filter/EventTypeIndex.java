@@ -41,6 +41,9 @@ public class EventTypeIndex implements EventEvaluator
         eventTypesRWLock = new ReentrantReadWriteLock();
     }
 
+    /**
+     * Destroy the service.
+     */
     public void destroy()
     {
         eventTypes.clear();

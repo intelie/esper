@@ -177,6 +177,39 @@ public class TestNamedWindowSelect extends TestCase
         stmtCreate.destroy();
     }
 
+    public void testSelectJoinColumns()
+    {
+        String[] fields = new String[] {"triggerid", "wina", "b"};
+
+        // create window
+        String stmtTextCreate = "create window MyWindow.win:keepall() as select string as a, intPrimitive as b from " + SupportBean.class.getName();
+        EPStatement stmtCreate = epService.getEPAdministrator().createEQL(stmtTextCreate);
+
+        // create select stmt
+        String stmtTextSelect = "on " + SupportBean_A.class.getName() + " as trigger select trigger.id as triggerid, win.a as wina, b from MyWindow as win";
+        EPStatement stmtSelect = epService.getEPAdministrator().createEQL(stmtTextSelect);
+        stmtSelect.addListener(listenerSelect);
+
+        // create insert into
+        String stmtTextInsertOne = "insert into MyWindow select string as a, intPrimitive as b from " + SupportBean.class.getName();
+        epService.getEPAdministrator().createEQL(stmtTextInsertOne);
+
+        // send 3 event
+        sendSupportBean("E1", 1);
+        sendSupportBean("E2", 2);
+        assertFalse(listenerSelect.isInvoked());
+
+        // fire trigger
+        sendSupportBean_A("A1");
+        assertEquals(2, listenerSelect.getLastNewData().length);
+        ArrayAssertionUtil.assertProps(listenerSelect.getLastNewData()[0], fields, new Object[] {"A1", "E1", 1});
+        ArrayAssertionUtil.assertProps(listenerSelect.getLastNewData()[1], fields, new Object[] {"A1", "E2", 2});
+        ArrayAssertionUtil.assertEqualsExactOrder(stmtSelect.iterator(), fields, new Object[][] {{"A1", "E1", 1}, {"A1", "E2", 2}});
+
+        stmtSelect.destroy();
+        stmtCreate.destroy();
+    }
+
     public void testSelectAggregation()
     {
         String[] fields = new String[] {"sumb"};

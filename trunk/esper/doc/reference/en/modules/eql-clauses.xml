@@ -1819,12 +1819,7 @@ from <emphasis>window_name</emphasis> [as <emphasis>alias_name</emphasis>]
 			</listitem>
 			<listitem>
 				<para>
-					The query within the <literal>on select</literal> statement is not continuous: It executes only when a triggering event or pattern occurs. Aggregation and groups are computed anew considering the current contents of the named window.
-                </para>
-			</listitem>
-			<listitem>
-				<para>
-                    In an <literal>on select</literal> statement only the <literal>where</literal> clause may use properties of the triggering event. The <literal>select</literal> and remaining clauses may not use properties of the triggering event.
+					The query within the <literal>on select</literal> statement is not continuous: It executes only when a triggering event or pattern occurs. Aggregation and groups are computed anew considering the contents of the named window at the time the triggering event arrives.
                 </para>
 			</listitem>
 		</orderedlist>

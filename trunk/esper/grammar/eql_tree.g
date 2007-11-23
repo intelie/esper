@@ -108,7 +108,8 @@ selectionList
 	
 selectionListElement
 	:	w:WILDCARD_SELECT { leaveNode(#w); }
-	|	#(s:SELECTION_ELEMENT_EXPR valueExpr (IDENT)? { leaveNode(#s); } )
+	|	#(e:SELECTION_ELEMENT_EXPR valueExpr (IDENT)? { leaveNode(#e); } )
+	|	#(s:SELECTION_STREAM IDENT (IDENT)? { leaveNode(#s); } )
 	;
 		
 outerJoin

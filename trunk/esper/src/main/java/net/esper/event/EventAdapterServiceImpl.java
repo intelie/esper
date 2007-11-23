@@ -369,6 +369,14 @@ public class EventAdapterServiceImpl implements EventAdapterService
 	    return newEventType;
 	}
 
+    /**
+     * Returns true if the wrapper type is compatible with an existing wrapper type, for the reason that
+     * the underlying event is a subtype of the existing underlying wrapper's type.
+     * @param existingType is the existing wrapper type
+     * @param underlyingType is the proposed new wrapper type's underlying type
+     * @param propertyTypes is the additional properties
+     * @return true for compatible, or false if not
+     */
     public static boolean isCompatibleWrapper(EventType existingType, EventType underlyingType, Map<String, Class> propertyTypes)
     {
         if (!(existingType instanceof WrapperEventType))

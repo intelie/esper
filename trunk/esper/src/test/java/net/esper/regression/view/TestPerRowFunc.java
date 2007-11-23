@@ -374,5 +374,5 @@ public class TestPerRowFunc extends TestCase
         testListener.reset();
     }
 
-    private static final Log log = LogFactory.getLog(TestViewSelectExprClause.class);
+    private static final Log log = LogFactory.getLog(TestSelectExpr.class);
 }

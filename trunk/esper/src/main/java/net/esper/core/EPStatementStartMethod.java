@@ -134,7 +134,19 @@ public class EPStatementStartMethod
         NamedWindowProcessor processor = services.getNamedWindowService().getProcessor(onTriggerDesc.getWindowName());
         EventType namedWindowType = processor.getNamedWindowType();
         EventType streamEventType = eventStreamParentViewable.getEventType();
-        StreamTypeService typeService = new StreamTypeServiceImpl(new EventType[] {namedWindowType}, new String[] {"stream_0"});
+
+        String namedWindowAlias = onTriggerDesc.getOptionalAsName();
+        if (namedWindowAlias == null)
+        {
+            namedWindowAlias = "stream_0";
+        }
+        String streamAlias = streamSpec.getOptionalStreamName();
+        if (streamAlias == null)
+        {
+            streamAlias = "stream_1";
+        }
+
+        StreamTypeService typeService = new StreamTypeServiceImpl(new EventType[] {namedWindowType, streamEventType}, new String[] {namedWindowAlias, streamAlias});
 
         // create stop method using statement stream specs
         EPStatementStopMethod stopMethod = new EPStatementStopMethod()
@@ -172,8 +184,8 @@ public class EPStatementStartMethod
 
         // validate join expression
         ExprNode validatedJoin = validateJoinNamedWindow(statementSpec.getOnTriggerDesc().getJoinExpr(),
-                namedWindowType, onTriggerDesc.getOptionalAsName(),
-                streamEventType, streamSpec.getOptionalStreamName());
+                namedWindowType, namedWindowAlias,
+                streamEventType, streamAlias);
         onTriggerDesc.setJoinExpr(validatedJoin);
 
         InternalEventRouter routerService = (statementSpec.getInsertIntoDesc() == null)?  null : services.getInternalEventRouter();
@@ -713,9 +725,9 @@ public class EPStatementStartMethod
             }
 
             // no aggregation functions allowed in select
-            if (selectClauseSpec.getSelectList().size() > 0)
+            if (selectClauseSpec.getSelectExprList().size() > 0)
             {
-                ExprNode selectExpression = selectClauseSpec.getSelectList().get(0).getSelectExpression();
+                ExprNode selectExpression = selectClauseSpec.getSelectExprList().get(0).getSelectExpression();
                 List<ExprAggregateNode> aggExprNodes = new LinkedList<ExprAggregateNode>();
                 ExprAggregateNode.getAggregatesBottomUp(selectExpression, aggExprNodes);
                 if (aggExprNodes.size() > 0)
@@ -776,12 +788,12 @@ public class EPStatementStartMethod
 
             // Validate select expression
             SelectClauseSpec selectClauseSpec = subselect.getStatementSpecCompiled().getSelectClauseSpec();
-            if (selectClauseSpec.getSelectList().size() > 0)
+            if (selectClauseSpec.getSelectExprList().size() > 0)
             {
-                ExprNode selectExpression = selectClauseSpec.getSelectList().get(0).getSelectExpression();
+                ExprNode selectExpression = selectClauseSpec.getSelectExprList().get(0).getSelectExpression();
                 selectExpression = selectExpression.getValidatedSubtree(subselectTypeService, statementContext.getMethodResolutionService(), viewResourceDelegateSubselect, statementContext.getSchedulingService());
                 subselect.setSelectClause(selectExpression);
-                subselect.setSelectAsName(selectClauseSpec.getSelectList().get(0).getOptionalAsName());
+                subselect.setSelectAsName(selectClauseSpec.getSelectExprList().get(0).getOptionalAsName());
             }
 
             // Validate filter expression, if there is one
@@ -943,27 +955,15 @@ public class EPStatementStartMethod
     // For delete actions from named windows
     private ExprNode validateJoinNamedWindow(ExprNode deleteJoinExpr,
                                          EventType namedWindowType,
-                                         String optNamedWindowStreamName,
+                                         String namedWindowStreamName,
                                          EventType filteredType,
-                                         String optFilterStreamName) throws ExprValidationException
+                                         String filterStreamName) throws ExprValidationException
     {
         if (deleteJoinExpr == null)
         {
             return null;
         }
         
-        String namedWindowStreamName = optNamedWindowStreamName;
-        if (namedWindowStreamName == null)
-        {
-            namedWindowStreamName = "stream_0";
-        }
-
-        String filterStreamName = optFilterStreamName;
-        if (filterStreamName == null)
-        {
-            filterStreamName = "stream_1";
-        }
-
         LinkedHashMap<String, EventType> namesAndTypes = new LinkedHashMap<String, EventType>();
         namesAndTypes.put(namedWindowStreamName, namedWindowType);
         namesAndTypes.put(filterStreamName, filteredType);

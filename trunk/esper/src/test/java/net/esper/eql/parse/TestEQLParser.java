@@ -294,6 +294,10 @@ public class TestEQLParser extends TestCase implements EqlTokenTypes
         assertIsValid("select a or b from b.win:length(1)");
         assertIsValid("select a = b from b.win:length(1)");
         assertIsValid("select a != b from b.win:length(1)");
+        assertIsValid("select a.* from b.win:length(1) as a");
+        assertIsValid("select a.* as myfield from b.win:length(1) as abc");
+        assertIsValid("select a.*, b.*, c.* from b.win:length(1) as a");
+        assertIsValid("select a.* as x1, b.* as x2, x.* as x3 from b.win:length(1) as a, t as x");
 
         assertIsValid("select sum(a), avg(b) from b.win:length(1)");
         assertIsValid("select sum(all a), avg(all b), avg(all b/c) from b.win:length(1)");

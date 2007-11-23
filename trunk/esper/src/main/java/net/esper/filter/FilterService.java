@@ -51,5 +51,8 @@ public interface FilterService
      */
     public int getNumEventsEvaluated();
 
+    /**
+     * Destroy the service.
+     */
     public void destroy();
 }

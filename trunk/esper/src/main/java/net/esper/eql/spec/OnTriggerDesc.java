@@ -18,6 +18,7 @@ public class OnTriggerDesc implements MetaDefItem
      * @param windowName the window name
      * @param optionalAsName the optional alias
      * @param joinExpr the optional where clause
+     * @param isOnDelete is true for on-delete clauses, and false for on-select clauses
      */
     public OnTriggerDesc(String windowName, String optionalAsName, ExprNode joinExpr, boolean isOnDelete)
     {
@@ -63,6 +64,10 @@ public class OnTriggerDesc implements MetaDefItem
         this.joinExpr = joinExpr;
     }
 
+    /**
+     * Returns true for on-delete clauses, and false for on-select clauses.
+     * @return true for on-delete
+     */
     public boolean isOnDelete()
     {
         return isOnDelete;

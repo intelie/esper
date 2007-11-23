@@ -9,6 +9,9 @@ import org.apache.commons.logging.LogFactory;
 
 import java.util.Iterator;
 
+/**
+ * View for the on-delete statement that handles removing events from a named window.
+ */
 public class NamedWindowOnDeleteView extends NamedWindowOnExprBaseView
 {
     private static final Log log = LogFactory.getLog(NamedWindowOnDeleteView.class);
@@ -27,7 +30,7 @@ public class NamedWindowOnDeleteView extends NamedWindowOnExprBaseView
         super(statementStopService, lookupStrategy, removeStreamView);
     }
 
-    public void handleMatching(EventBean[] matchingEvents)
+    public void handleMatching(EventBean[] triggerEvents, EventBean[] matchingEvents)
     {
         if ((matchingEvents != null) && (matchingEvents.length > 0))
         {

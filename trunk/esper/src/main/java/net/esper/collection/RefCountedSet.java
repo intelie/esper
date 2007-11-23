@@ -29,6 +29,9 @@ public class RefCountedSet<K>
         refSet = new HashMap<K, Integer>();
     }
 
+    /**
+     * Clear out the collection.
+     */
     public void clear()
     {
         refSet.clear();

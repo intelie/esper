@@ -134,6 +134,9 @@ public class EQLTreeWalker extends EQLBaseWalker
             case SELECTION_ELEMENT_EXPR:
                 leaveSelectionElement(node);
                 break;
+            case SELECTION_STREAM:
+                leaveSelectionStream(node);
+                break;
             case EVENT_PROP_EXPR:
                 leaveEventPropertyExpr(node);
                 break;
@@ -676,6 +679,23 @@ public class EQLTreeWalker extends EQLBaseWalker
 
         // Add as selection element
         statementSpec.getSelectClauseSpec().add(new SelectExprElementRawSpec(exprNode, optionalName));
+    }
+
+    private void leaveSelectionStream(AST node) throws ASTWalkException
+    {
+        log.debug(".leaveSelectionStream");
+
+        String streamName = node.getFirstChild().getText();
+
+        // Get alias element name
+        String optionalName = null;
+        if (node.getFirstChild().getNextSibling() != null)
+        {
+            optionalName = node.getFirstChild().getNextSibling().getText();
+        }
+
+        // Add as selection element
+        statementSpec.getSelectClauseSpec().add(new SelectExprElementStreamRawSpec(streamName, optionalName));
     }
 
     private void leaveWildcardSelect()

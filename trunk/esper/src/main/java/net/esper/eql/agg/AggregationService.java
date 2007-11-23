@@ -38,5 +38,8 @@ public interface AggregationService extends AggregationResultFuture
      */
     public void setCurrentRow(MultiKeyUntyped groupKey);
 
+    /**
+     * Clear current aggregation state.
+     */
     public void clearResults();
 }

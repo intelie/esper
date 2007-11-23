@@ -116,6 +116,9 @@ public class RefCountedMap<K,V>
         return false;
     }
 
+    /**
+     * Clear out the collection.
+     */
     public void clear()
     {
         refMap.clear();

@@ -114,6 +114,7 @@ tokens
    	EVAL_IDENT;
    	SELECTION_EXPR;
    	SELECTION_ELEMENT_EXPR;
+   	SELECTION_STREAM;
    	STREAM_EXPR;
    	OUTERJOIN_EXPR;
    	LEFT_OUTERJOIN_EXPR;
@@ -338,8 +339,14 @@ selectionList
 selectionListElement
 	:   	STAR 
 		{ #selectionListElement = #[WILDCARD_SELECT, "wildcard-select"]; }
+	|	(streamSelector) => streamSelector
 	|	expression (AS! IDENT)?
 		{ #selectionListElement = #([SELECTION_ELEMENT_EXPR,"selectionListElement"], #selectionListElement); }
+	;
+	
+streamSelector
+	:	IDENT DOT! STAR! (AS! IDENT)?
+		{ #streamSelector = #([SELECTION_STREAM,"streamSelector"], #streamSelector); }
 	;
 	
 streamExpression

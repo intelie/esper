@@ -15,8 +15,16 @@ import org.apache.commons.logging.LogFactory;
 public abstract class NamedWindowOnExprBaseView extends ViewSupport implements StatementStopCallback
 {
     private static final Log log = LogFactory.getLog(NamedWindowOnExprBaseView.class);
+
+    /**
+     * The event type of the events hosted in the named window.
+     */
     protected final EventType namedWindowEventType;
     private final LookupStrategy lookupStrategy;
+
+    /**
+     * The root view accepting removals (old data).
+     */
     protected final NamedWindowRootView rootView;
 
     /**
@@ -35,7 +43,12 @@ public abstract class NamedWindowOnExprBaseView extends ViewSupport implements S
         namedWindowEventType = rootView.getEventType();
     }
 
-    public abstract void handleMatching(EventBean[] matchingEvents);
+    /**
+     * Implemented by on-trigger views to action on the combination of trigger and matching events in the named window.
+     * @param triggerEvents is the trigger events (usually 1)
+     * @param matchingEvents is the matching events retrieved via lookup strategy
+     */
+    public abstract void handleMatching(EventBean[] triggerEvents, EventBean[] matchingEvents);
     
     public void statementStopped()
     {
@@ -61,6 +74,6 @@ public abstract class NamedWindowOnExprBaseView extends ViewSupport implements S
         EventBean[] eventsFound = lookupStrategy.lookup(newData);
 
         // Let the implementation handle the delete or
-        handleMatching(eventsFound);
+        handleMatching(newData, eventsFound);
     }
 }

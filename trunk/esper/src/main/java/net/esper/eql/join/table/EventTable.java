@@ -41,5 +41,8 @@ public interface EventTable
      */
     public boolean isEmpty();
 
+    /**
+     * Clear out index.
+     */
     public void clear();
 }

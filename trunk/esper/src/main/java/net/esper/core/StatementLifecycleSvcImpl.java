@@ -733,7 +733,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
                 filterStreamSpec.getViewSpecs().addAll(spec.getCreateWindowDesc().getViewSpecs());
 
                 // clear the select clause, there is none as the views post directly to consuming statements via dispatch
-                spec.getSelectClauseSpec().getSelectList().clear();
+                spec.getSelectClauseSpec().getSelectExprList().clear();
             }
             catch (ExprValidationException e)
             {
@@ -744,7 +744,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
         // Look for expressions with sub-selects in select expression list and filter expression
         // Recursively compile the statement within the statement.
         ExprNodeSubselectVisitor visitor = new ExprNodeSubselectVisitor();
-        for (SelectExprElementRawSpec raw : spec.getSelectClauseSpec().getSelectList())
+        for (SelectExprElementRawSpec raw : spec.getSelectClauseSpec().getSelectExprList())
         {
             raw.getSelectExpression().accept(visitor);
         }
@@ -812,7 +812,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
         else
         {
             // Some columns selected, use the types of the columns
-            if (spec.getSelectClauseSpec().getSelectList().size() > 0)
+            if (spec.getSelectClauseSpec().getSelectExprList().size() > 0)
             {
                 targetType = statementContext.getEventAdapterService().addMapType(typeName, properties);
             }
@@ -840,7 +840,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
         List<SelectExprElementCompiledSpec> selectProps = new LinkedList<SelectExprElementCompiledSpec>();
         StreamTypeService streams = new StreamTypeServiceImpl(new EventType[] {singleType}, new String[] {"stream_0"});
 
-        for (SelectExprElementRawSpec raw : spec.getSelectList())
+        for (SelectExprElementRawSpec raw : spec.getSelectExprList())
         {
             ExprNode validatedExpression = null;
             try

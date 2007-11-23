@@ -16,7 +16,7 @@ import net.esper.event.EventType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-public class TestViewSelectExprClause extends TestCase
+public class TestSelectExpr extends TestCase
 {
     private EPServiceProvider epService;
     private SupportUpdateListener testListener;
@@ -28,16 +28,16 @@ public class TestViewSelectExprClause extends TestCase
         epService = EPServiceProviderManager.getDefaultProvider(SupportConfigFactory.getConfiguration());
         epService.initialize();
         epService.getEPRuntime().sendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
-
+    }
+    
+    public void testGetEventType()
+    {
         String viewExpr = "select string, boolBoxed as aBool, 3*intPrimitive, floatBoxed+floatPrimitive as result" +
                           " from " + SupportBean.class.getName() + ".win:length(3) " +
                           " where boolBoxed = true";
         selectTestView = epService.getEPAdministrator().createEQL(viewExpr);
         selectTestView.addListener(testListener);
-    }
-    
-    public void testGetEventType()
-    {
+
         EventType type = selectTestView.getEventType();
         log.debug(".testGetEventType properties=" + Arrays.toString(type.getPropertyNames()));
         ArrayAssertionUtil.assertEqualsAnyOrder(type.getPropertyNames(), new String[] {"(3*intPrimitive)", "string", "result", "aBool"});
@@ -49,6 +49,12 @@ public class TestViewSelectExprClause extends TestCase
 
     public void testWindowStats()
     {
+        String viewExpr = "select string, boolBoxed as aBool, 3*intPrimitive, floatBoxed+floatPrimitive as result" +
+                          " from " + SupportBean.class.getName() + ".win:length(3) " +
+                          " where boolBoxed = true";
+        selectTestView = epService.getEPAdministrator().createEQL(viewExpr);
+        selectTestView.addListener(testListener);
+
         testListener.reset();
 
         sendEvent("a", false, 0, 0, 0);
@@ -73,5 +79,5 @@ public class TestViewSelectExprClause extends TestCase
         epService.getEPRuntime().sendEvent(bean);
     }
 
-    private static final Log log = LogFactory.getLog(TestViewSelectExprClause.class);
+    private static final Log log = LogFactory.getLog(TestSelectExpr.class);
 }

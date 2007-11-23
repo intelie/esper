@@ -41,6 +41,7 @@ public class OnExprClause implements Serializable
 
     /**
      * Ctor.
+     * @param isOnDelete true for an on-delete clause, false for an on-select clause
      * @param windowName is the named window name
      * @param optionalAsName is the alias name of the named window
      * @param joinExpr is the where-clause expression for the on-delete
@@ -126,6 +127,10 @@ public class OnExprClause implements Serializable
         this.joinExpr = joinExpr;
     }
 
+    /**
+     * Set to true to indicate the on-trigger is an on-delete clause.
+     * @return true for on-delete, false for on-select
+     */
     public boolean isOnDelete()
     {
         return isOnDelete;

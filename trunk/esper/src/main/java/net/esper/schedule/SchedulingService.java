@@ -73,6 +73,9 @@ public interface SchedulingService extends TimeProvider
      */
     public ScheduleBucket allocateBucket();
 
+    /**
+     * Destroy the service.
+     */
     public void destroy();
 }
 

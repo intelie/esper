@@ -17,16 +17,18 @@ import java.util.List;
  */
 public class SelectClauseSpec implements MetaDefItem
 {
-	private List<SelectExprElementRawSpec> selectList;
-	private boolean isUsingWildcard;
+	private List<SelectExprElementRawSpec> selectExprList;
+    private List<SelectExprElementStreamRawSpec> selectStreamsList;
+    private boolean isUsingWildcard;
 
     /**
      * Ctor.
      */
     public SelectClauseSpec()
 	{
-		selectList = new ArrayList<SelectExprElementRawSpec>();
-	}
+		selectExprList = new ArrayList<SelectExprElementRawSpec>();
+        selectStreamsList = new ArrayList<SelectExprElementStreamRawSpec>();
+    }
 
     /**
      * Ctor.
@@ -34,7 +36,7 @@ public class SelectClauseSpec implements MetaDefItem
      */
     public SelectClauseSpec(List<SelectExprElementRawSpec> selectList)
 	{
-		this.selectList = selectList;
+		this.selectExprList = selectList;
 	}
 
     /**
@@ -52,16 +54,16 @@ public class SelectClauseSpec implements MetaDefItem
      */
     public void add(SelectExprElementRawSpec element)
 	{
-		selectList.add(element);
+		selectExprList.add(element);
 	}
 
     /**
      * Returns the list of select expressions.
      * @return list of expressions
      */
-    public List<SelectExprElementRawSpec> getSelectList()
+    public List<SelectExprElementRawSpec> getSelectExprList()
 	{
-		return selectList;
+		return selectExprList;
 	}
 
     /**
@@ -72,4 +74,22 @@ public class SelectClauseSpec implements MetaDefItem
 	{
 		return isUsingWildcard;
 	}
+
+    /**
+     * Adds a stream wildcard selection element.
+     * @param spec describes the stream alias name and column alias
+     */
+    public void add(SelectExprElementStreamRawSpec spec)
+    {
+        selectStreamsList.add(spec);
+    }
+
+    /**
+     * Returns the list of stream wildcard selection elements.
+     * @return stream wildcard selection elements
+     */
+    public List<SelectExprElementStreamRawSpec> getSelectStreamsList()
+    {
+        return selectStreamsList;
+    }
 }

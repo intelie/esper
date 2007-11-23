@@ -87,7 +87,7 @@ public class ResultSetProcessorFactory
         if (log.isDebugEnabled())
         {
             log.debug(".getProcessor Getting processor for " +
-                    " selectionList=" + selectClauseSpec.getSelectList() +
+                    " selectionList=" + selectClauseSpec.getSelectExprList() +
                     " isUsingWildcard=" + selectClauseSpec.isUsingWildcard() + 
                     " groupByNodes=" + Arrays.toString(groupByNodes.toArray()) +
                     " optionalHavingNode=" + optionalHavingNode);
@@ -95,14 +95,14 @@ public class ResultSetProcessorFactory
 
         // Expand any instances of select-clause aliases in the
         // order-by clause with the full expression
-        expandAliases(selectClauseSpec.getSelectList(), orderByList);
+        expandAliases(selectClauseSpec.getSelectExprList(), orderByList);
 
         // Validate selection expressions, if any (could be wildcard i.e. empty list)
         List<SelectExprElementCompiledSpec> namedSelectionList = new LinkedList<SelectExprElementCompiledSpec>();
-        for (int i = 0; i < selectClauseSpec.getSelectList().size(); i++)
+        for (int i = 0; i < selectClauseSpec.getSelectExprList().size(); i++)
         {
             // validate element
-            SelectExprElementRawSpec element = selectClauseSpec.getSelectList().get(i);
+            SelectExprElementRawSpec element = selectClauseSpec.getSelectExprList().get(i);
             ExprNode validatedExpression = element.getSelectExpression().getValidatedSubtree(typeService, methodResolutionService, viewResourceDelegate, timeProvider);
 
             // determine an element name if none assigned
@@ -116,6 +116,29 @@ public class ResultSetProcessorFactory
             namedSelectionList.add(validatedElement);
         }
         boolean isUsingWildcard = selectClauseSpec.isUsingWildcard();
+
+        // Validate stream selections, if any (such as stream.*)
+        List<SelectExprElementStreamCompiledSpec> namedStreamList = new LinkedList<SelectExprElementStreamCompiledSpec>();
+        for (SelectExprElementStreamRawSpec raw : selectClauseSpec.getSelectStreamsList())
+        {
+            int streamNum = Integer.MIN_VALUE;
+            for (int i = 0; i < typeService.getStreamNames().length; i++)
+            {
+                if (typeService.getStreamNames()[i].equals(raw.getStreamAliasName()))
+                {
+                    streamNum = i;
+                    break;
+                }
+            }
+
+            if (streamNum == Integer.MIN_VALUE)
+            {
+                throw new ExprValidationException("Stream selector '" + raw.getStreamAliasName() + ".*' does not match any stream alias name in the from clause");
+            }
+
+            SelectExprElementStreamCompiledSpec validatedElement = new SelectExprElementStreamCompiledSpec(raw.getStreamAliasName(), raw.getOptionalAsName(), streamNum);
+            namedStreamList.add(validatedElement);
+        }
         selectClauseSpec = null;
 
         // Validate group-by expressions, if any (could be empty list for no group-by)
@@ -213,7 +236,7 @@ public class ResultSetProcessorFactory
                 groupByNodes, orderByList, aggregationService, eventAdapterService);
 
         // Construct the processor for evaluating the select clause
-        SelectExprProcessor selectExprProcessor = SelectExprProcessorFactory.getProcessor(namedSelectionList, isUsingWildcard, insertIntoDesc, typeService, eventAdapterService);
+        SelectExprProcessor selectExprProcessor = SelectExprProcessorFactory.getProcessor(namedSelectionList, namedStreamList, isUsingWildcard, insertIntoDesc, typeService, eventAdapterService);
 
         // Get a list of event properties being aggregated in the select clause, if any
         Set<Pair<Integer, String>> propertiesAggregatedSelect = getAggregatedProperties(selectAggregateExprNodes);

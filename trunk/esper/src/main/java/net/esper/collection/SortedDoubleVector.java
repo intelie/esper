@@ -24,6 +24,9 @@ public class SortedDoubleVector
         values = new ArrayList<Double>();
     }
 
+    /**
+     * Clear out the collection.
+     */
     public void clear()
     {
         values.clear();

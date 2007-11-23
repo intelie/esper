@@ -38,6 +38,9 @@ public class EventTypeIndexBuilder
         this.callbacksLock = new ReentrantLock();
     }
 
+    /**
+     * Destroy the service.
+     */
     public void destroy()
     {
         callbacks.clear();
