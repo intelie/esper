@@ -160,13 +160,9 @@ select * from MyEvent  /* this also works */]]></programlisting>
 			<synopsis>select * from <emphasis>stream_def</emphasis></synopsis>
 
 			<para>
-				The following statement selects univariate statistics for the last 30 seconds of IBM stock ticks for price.
+				The following statement selects StockTick events for the last 30 seconds of IBM stock ticks.
 			</para>
-			<programlisting><![CDATA[select * from StockTick(symbol='IBM').win:time(30 sec).stat:uni('price')]]></programlisting>
-
-			<para>
-				In a join statement, using the <literal>select *</literal> syntax selects event properties that contain the events representing the joined streams themselves.
-			</para>
+			<programlisting><![CDATA[select * from StockTick(symbol='IBM').win:time(30 sec)]]></programlisting>
 
 			<para>
 				The <literal>*</literal> wildcard and expressions can also be combined in a <literal>select</literal> clause. The combination selects all event properties and in addition the computed values
@@ -174,6 +170,29 @@ select * from MyEvent  /* this also works */]]></programlisting>
 				statement names 'pricevolume':
 			</para>
 			<programlisting><![CDATA[select *, price * volume as pricevolume from StockTick(symbol='IBM')]]></programlisting>
+
+			<para>
+				When using wildcard (*), Esper does not actually copy your event properties out of your event or events. It simply wraps your native type in an <literal>EventBean</literal> interface. Your application has access to
+				the underlying event object through the <literal>getUnderlying</literal> method and has access to the property values through the <literal>get</literal> method.
+			</para>
+
+			<para>
+				In a join statement, using the <literal>select *</literal> syntax selects one event property per stream to hold the event for that stream. The property name is the stream alias name in the <literal>from</literal> clause. 
+			</para>
+		</sect2>
+
+        <sect2 id="eql-select-all-stream" >
+           <title>Choosing all event properties for a given stream</title>
+			<para>
+				In a join statement multiple streams are selected upon, and the following syntax can be used to specify what stream's properties to select:
+			</para>
+			<synopsis>select <emphasis>stream_name</emphasis>.* from ...</synopsis>
+
+			<para>
+				This example is a join between the two streams StockTick and News, respectively named as 'stock' and 'news'. The selection of <literal>stock.*</literal> thus selects the StockTick stream events only:
+			</para>
+			<programlisting><![CDATA[select stock.* from StockTick.win:time(10) as stock, News.win:time(10) as news
+where stock.symbol = news.symbol]]></programlisting>
 		</sect2>
 
         <sect2 id="eql-select-event-props" >
@@ -254,7 +273,7 @@ select * from MyEvent  /* this also works */]]></programlisting>
     </sect1>
 
     <sect1 id="eql-from-clause">
-        <title>Specifying Event Streams : the <emphasis>From</emphasis> Clause</title>
+        <title>Specifying Event Streams: the <emphasis>From</emphasis> Clause</title>
 
 		<indexterm><primary>from clause</primary></indexterm>
 		<indexterm><primary>EQL</primary><secondary>from clause</secondary></indexterm>
@@ -1584,7 +1603,7 @@ delete from <emphasis>window_name</emphasis> [as <emphasis>alias_name</emphasis>
 			</para>
 				
 			<para>
-				The <emphasis>window_name</emphasis> is simply the name of the named window to delete events from. The <literal>as</literal> keyword is also available to assign an alias to the named window.
+				The <emphasis>window_name</emphasis> is the name of the named window to delete events from. The <literal>as</literal> keyword is also available to assign an alias to the named window.
 			</para>
 				
 			<para>
@@ -1765,7 +1784,7 @@ select * from AllOrdersNamedWindow.win:time(30 sec)]]></programlisting>
 		</sect2>
 
 		<sect2 id="named_querying" revision="1">
-			<title>Triggered Select On Named Windows : the <literal>On Select</literal> clause</title>
+			<title>Triggered Select on Named Windows: the <literal>On Select</literal> clause</title>
 			
 			<indexterm><primary>on-select</primary></indexterm>
 			<indexterm><primary>named window</primary><secondary>triggered select using On Select</secondary></indexterm>
@@ -1789,15 +1808,15 @@ from <emphasis>window_name</emphasis> [as <emphasis>alias_name</emphasis>]
 </synopsis>
 				
 			<para>
-				The <emphasis>event_type</emphasis> is the name or alias of the type of events that trigger the query against the named window. It is optionally followed by <emphasis>filter_criteria</emphasis> which are filter expressions to apply to arriving events. The optional <literal>as</literal> keyword can be used to assign an alias for use in the <literal>where</literal> clause. Patterns can also be specified in the <literal>on</literal> clause, see the samples in <xref linkend="named_delete_pattern"/>.
+				The <emphasis>event_type</emphasis> is the name or alias of the type of events that trigger the query against the named window. It is optionally followed by <emphasis>filter_criteria</emphasis> which are filter expressions to apply to arriving events. The optional <literal>as</literal> keyword can be used to assign an alias. Patterns can also be specified in the <literal>on</literal> clause, see the samples in <xref linkend="named_delete_pattern"/>.
 			</para>
 				
 			<para>
-				The <emphasis>insert into</emphasis> clause works as described in <xref linkend="eql-insert-into"/>. The <emphasis>select</emphasis> clause is described in <xref linkend="eql-select-list"/>. 
+				The <emphasis>insert into</emphasis> clause works as described in <xref linkend="eql-insert-into"/>. The <emphasis>select</emphasis> clause is described in <xref linkend="eql-select-list"/>. For all clauses the semantics are equivalent to a join operation: The properties of the triggering event or events are available in the <literal>select</literal> clause and all other clauses.
 			</para>
 
 			<para>
-				The <emphasis>window_name</emphasis> in the <literal>from</literal> clause is simply the name of the named window to select events from. The <literal>as</literal> keyword is also available to assign an alias to the named window.
+				The <emphasis>window_name</emphasis> in the <literal>from</literal> clause is the name of the named window to select events from. The <literal>as</literal> keyword is also available to assign an alias to the named window. The <literal>as</literal> keyword is helpful in conjunction with wildcard in the <literal>select</literal> clause to select named window events via the syntax <literal>select alias.* </literal>.
 			</para>
 				
 			<para>
@@ -1809,12 +1828,12 @@ from <emphasis>window_name</emphasis> [as <emphasis>alias_name</emphasis>]
 			</para>
 
 			<para>
-				Comparing the <literal>on select</literal> clause to a regular join or outer join reveals several important differences: 
+				The similarities and differences between an <literal>on select</literal> clause and a regular or outer join are as follows: 
 			</para>
 		<orderedlist>
 			<listitem>
 				<para>
-                    A join is evaluated when any of the streams participating in the join have new events (insert stream) or events leaving data windows (remove stream).  However, the <literal>on select</literal> statement has one triggering event or pattern that causes the query to be evaluated.
+                    A join is evaluated when any of the streams participating in the join have new events (insert stream) or events leaving data windows (remove stream).  A join is therefore bi-directional or multi-directional. However, the <literal>on select</literal> statement has one triggering event or pattern that causes the query to be evaluated and is thus uni-directional.
                 </para>
 			</listitem>
 			<listitem>
@@ -1835,17 +1854,17 @@ from <emphasis>window_name</emphasis> [as <emphasis>alias_name</emphasis>]
 			<para>				
 				The next statement demonstrates the concept. Upon arrival of a QueryEvent event the statement selects all events in the 'OrdersNamedWindow' named window:
 			</para>
-			<programlisting><![CDATA[on QueryEvent select * from OrdersNamedWindow]]></programlisting>
+			<programlisting><![CDATA[on QueryEvent select win.* from OrdersNamedWindow as win]]></programlisting>
 			
 			<para>
-				 The engine executes the query on arrival of a triggering event, in this case a QueryEvent. It posts the query results to any listeners to the statement, in a single invocation, as the new data array. 
+				 The engine executes the query on arrival of a triggering event, in this case a QueryEvent. It posts the query results to any listeners to the statement, in a single invocation, as the new data array. By prefixing the wildcard (*) selector with the stream name, the <literal>select</literal> clause returns only events of the named window and does not also return triggering events.
 			 </para>
 
 			<para>
 				The <literal>where</literal> clause filters and correlates events in the named window with the triggering event, as shown next: 
 			</para>
 			<programlisting><![CDATA[on QueryEvent(volume>0) as query
-select * from OrdersNamedWindow as win
+select query.symbol, query.volume, win.symbol  from OrdersNamedWindow as win
 where win.symbol = query.symbol]]></programlisting>
 			
 			<para>
@@ -1853,9 +1872,9 @@ where win.symbol = query.symbol]]></programlisting>
 			 </para>
 
 			<para>
-				Aggregation, grouping and ordering of results are allowed, as this example shows:
+				Aggregation, grouping and ordering of results are possible as this example shows:
 			</para>
-			<programlisting><![CDATA[on QueryEvent
+			<programlisting><![CDATA[on QueryEvent as queryEvent
 select symbol, sum(volume) from OrdersNamedWindow as win
 group by symbol
 having volume > 0
@@ -1867,7 +1886,7 @@ order by symbol]]></programlisting>
 		</sect2>
 
 		<sect2 id="named_playback" revision="1">
-			<title>Triggered Playback from a Named Windows : the <literal>On Insert</literal> clause</title>
+			<title>Triggered Playback from Named Windows: the <literal>On Insert</literal> clause</title>
 			
 			<indexterm><primary>on-insert</primary></indexterm>
 			<indexterm><primary>named window</primary><secondary>triggered playback using On Insert</secondary></indexterm>
@@ -1886,7 +1905,7 @@ order by symbol]]></programlisting>
 			</para>
 			<programlisting><![CDATA[on QueryEvent as query
 insert into MyOrderStream
-select * from OrdersNamedWindow]]></programlisting>
+select win.* from OrdersNamedWindow as win]]></programlisting>
 
 			<para>
 				Here is a sample consuming statement of the MyOrderStream. The statement further filters the events provided by the <literal>on insert</literal> statement by user id and reports a total of volume per symbol:

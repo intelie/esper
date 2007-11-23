@@ -41,7 +41,7 @@ public class TestNamedWindowOM extends TestCase
         stmtCreate.addListener(listenerWindow);
         assertEquals("create window MyWindow.win:keepall() as select string as key, longBoxed as value from net.esper.support.bean.SupportBean", modelCreate.toEQL());
 
-        String stmtTextOnSelect = "on " + SupportBean_B.class.getName() + " select * from MyWindow";
+        String stmtTextOnSelect = "on " + SupportBean_B.class.getName() + " select mywin.* from MyWindow as mywin";
         EPStatementObjectModel modelOnSelect = epService.getEPAdministrator().compileEQL(stmtTextOnSelect);
         EPStatement stmtOnSelect = epService.getEPAdministrator().create(modelOnSelect);
         stmtOnSelect.addListener(listenerOnSelect);
@@ -175,10 +175,10 @@ public class TestNamedWindowOM extends TestCase
         model = new EPStatementObjectModel();
         model.setOnExpr(OnExprClause.createOnSelect("MyWindow", "s1", Expressions.eqProperty("s0.id", "s1.key")));
         model.setFromClause(FromClause.create(FilterStream.create(SupportBean_B.class.getName(), "s0")));
-        model.setSelectClause(SelectClause.createWildcard());
+        model.setSelectClause(SelectClause.createStreamWildcard("s1"));
         EPStatement statement = epService.getEPAdministrator().create(model);
         statement.addListener(listenerOnSelect);
-        String stmtTextOnSelect = "on " + SupportBean_B.class.getName() + " as s0 select *  from MyWindow as s1 where (s0.id = s1.key)";
+        String stmtTextOnSelect = "on " + SupportBean_B.class.getName() + " as s0 select s1.*  from MyWindow as s1 where (s0.id = s1.key)";
         assertEquals(stmtTextOnSelect, model.toEQL());
 
         // send some more events

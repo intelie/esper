@@ -42,7 +42,7 @@ public class TestNamedWindowSelect extends TestCase
         epService.getEPAdministrator().createEQL(stmtTextInsertOne);
 
         // create on-select stmt
-        String stmtTextSelect = "on " + SupportBean_A.class.getName() + " insert into MyStream select * from MyWindow";
+        String stmtTextSelect = "on " + SupportBean_A.class.getName() + " insert into MyStream select mywin.* from MyWindow as mywin";
         EPStatement stmtSelect = epService.getEPAdministrator().createEQL(stmtTextSelect);
         stmtSelect.addListener(listenerSelect);
 
@@ -115,9 +115,6 @@ public class TestNamedWindowSelect extends TestCase
 
         tryInvalid("on " + SupportBean_A.class.getName() + " select prev(1, string) from MyWindow",
                    "Error starting view: Previous function cannot be used in this context [on net.esper.support.bean.SupportBean_A select prev(1, string) from MyWindow]");
-
-        tryInvalid("on " + SupportBean_A.class.getName() + " as abc select abc.id from MyWindow",
-                   "Error starting view: Failed to resolve property 'abc.id' to a stream or nested property in a stream [on net.esper.support.bean.SupportBean_A as abc select abc.id from MyWindow]");
     }
 
     private void tryInvalid(String text, String message)
@@ -135,14 +132,15 @@ public class TestNamedWindowSelect extends TestCase
 
     public void testSelectCondition()
     {
-        String[] fields = new String[] {"a", "b"};
+        String[] fieldsCreate = new String[] {"a", "b"};
+        String[] fieldsOnSelect = new String[] {"a", "b", "id"};
 
         // create window
         String stmtTextCreate = "create window MyWindow.win:keepall() as select string as a, intPrimitive as b from " + SupportBean.class.getName();
         EPStatement stmtCreate = epService.getEPAdministrator().createEQL(stmtTextCreate);
 
         // create select stmt
-        String stmtTextSelect = "on " + SupportBean_A.class.getName() + " select * from MyWindow where b < 3";
+        String stmtTextSelect = "on " + SupportBean_A.class.getName() + " select mywin.*, id from MyWindow as mywin where b < 3 order by a asc";
         EPStatement stmtSelect = epService.getEPAdministrator().createEQL(stmtTextSelect);
         stmtSelect.addListener(listenerSelect);
 
@@ -159,19 +157,19 @@ public class TestNamedWindowSelect extends TestCase
         // fire trigger
         sendSupportBean_A("A1");
         assertEquals(2, listenerSelect.getLastNewData().length);
-        ArrayAssertionUtil.assertProps(listenerSelect.getLastNewData()[0], fields, new Object[] {"E1", 1});
-        ArrayAssertionUtil.assertProps(listenerSelect.getLastNewData()[1], fields, new Object[] {"E2", 2});
-        ArrayAssertionUtil.assertEqualsExactOrder(stmtCreate.iterator(), fields, new Object[][] {{"E1", 1}, {"E2", 2}, {"E3", 3}});
-        ArrayAssertionUtil.assertEqualsExactOrder(stmtSelect.iterator(), fields, new Object[][] {{"E1", 1}, {"E2", 2}});
+        ArrayAssertionUtil.assertProps(listenerSelect.getLastNewData()[0], fieldsCreate, new Object[] {"E1", 1});
+        ArrayAssertionUtil.assertProps(listenerSelect.getLastNewData()[1], fieldsCreate, new Object[] {"E2", 2});
+        ArrayAssertionUtil.assertEqualsExactOrder(stmtCreate.iterator(), fieldsCreate, new Object[][] {{"E1", 1}, {"E2", 2}, {"E3", 3}});
+        ArrayAssertionUtil.assertEqualsExactOrder(stmtSelect.iterator(), fieldsOnSelect, new Object[][] {{"E1", 1, "A1"}, {"E2", 2, "A1"}});
 
         sendSupportBean("E4", 0);
         sendSupportBean_A("A2");
         assertEquals(3, listenerSelect.getLastNewData().length);
-        ArrayAssertionUtil.assertProps(listenerSelect.getLastNewData()[0], fields, new Object[] {"E1", 1});
-        ArrayAssertionUtil.assertProps(listenerSelect.getLastNewData()[1], fields, new Object[] {"E2", 2});
-        ArrayAssertionUtil.assertProps(listenerSelect.getLastNewData()[2], fields, new Object[] {"E4", 0});
-        ArrayAssertionUtil.assertEqualsExactOrder(stmtCreate.iterator(), fields, new Object[][] {{"E1", 1}, {"E2", 2}, {"E3", 3}, {"E4", 0}});
-        ArrayAssertionUtil.assertEqualsExactOrder(stmtSelect.iterator(), fields, new Object[][] {{"E1", 1}, {"E2", 2}, {"E4", 0}});
+        ArrayAssertionUtil.assertProps(listenerSelect.getLastNewData()[0], fieldsOnSelect, new Object[] {"E1", 1, "A2"});
+        ArrayAssertionUtil.assertProps(listenerSelect.getLastNewData()[1], fieldsOnSelect, new Object[] {"E2", 2, "A2"});
+        ArrayAssertionUtil.assertProps(listenerSelect.getLastNewData()[2], fieldsOnSelect, new Object[] {"E4", 0, "A2"});
+        ArrayAssertionUtil.assertEqualsExactOrder(stmtCreate.iterator(), fieldsCreate, new Object[][] {{"E1", 1}, {"E2", 2}, {"E3", 3}, {"E4", 0}});
+        ArrayAssertionUtil.assertEqualsExactOrder(stmtSelect.iterator(), fieldsCreate, new Object[][] {{"E1", 1}, {"E2", 2}, {"E4", 0}});
 
         stmtSelect.destroy();
         stmtCreate.destroy();
@@ -186,7 +184,7 @@ public class TestNamedWindowSelect extends TestCase
         EPStatement stmtCreate = epService.getEPAdministrator().createEQL(stmtTextCreate);
 
         // create select stmt
-        String stmtTextSelect = "on " + SupportBean_A.class.getName() + " as trigger select trigger.id as triggerid, win.a as wina, b from MyWindow as win";
+        String stmtTextSelect = "on " + SupportBean_A.class.getName() + " as trigger select trigger.id as triggerid, win.a as wina, b from MyWindow as win order by wina";
         EPStatement stmtSelect = epService.getEPAdministrator().createEQL(stmtTextSelect);
         stmtSelect.addListener(listenerSelect);
 
@@ -393,7 +391,7 @@ public class TestNamedWindowSelect extends TestCase
         EPStatement stmtCreate = epService.getEPAdministrator().createEQL(stmtTextCreate);
 
         // create select stmt
-        String stmtTextSelect = "on " + SupportBean_A.class.getName() + " select * from MyWindow where id = a";
+        String stmtTextSelect = "on " + SupportBean_A.class.getName() + " select mywin.* from MyWindow as mywin where id = a";
         EPStatement stmtSelect = epService.getEPAdministrator().createEQL(stmtTextSelect);
         stmtSelect.addListener(listenerSelect);
 
@@ -455,7 +453,7 @@ public class TestNamedWindowSelect extends TestCase
 
         // create select stmt
         String stmtTextSelect = "on pattern [every ea=" + SupportBean_A.class.getName() +
-                                " or every eb=" + SupportBean_B.class.getName() + "] select * from MyWindow where a = coalesce(ea.id, eb.id)";
+                                " or every eb=" + SupportBean_B.class.getName() + "] select mywin.* from MyWindow as mywin where a = coalesce(ea.id, eb.id)";
         EPStatement stmtSelect = epService.getEPAdministrator().createEQL(stmtTextSelect);
         stmtSelect.addListener(listenerSelect);
 
