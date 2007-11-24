@@ -12,6 +12,7 @@ import net.esper.support.bean.SupportBeanString;
 import net.esper.support.bean.SupportMarketDataBean;
 import net.esper.support.bean.SupportBean;
 import net.esper.support.util.SupportUpdateListener;
+import net.esper.support.util.ArrayAssertionUtil;
 import net.esper.support.client.SupportConfigFactory;
 import net.esper.collection.UniformPair;
 
@@ -55,6 +56,49 @@ public class TestOutputLimitlEventPerGroup extends TestCase
         assertEquals(2.0, result.getFirst()[0].get("maxVol"));
         assertEquals(1, result.getSecond().length);
         assertEquals(null, result.getSecond()[0].get("maxVol"));
+    }
+
+    public void testLimitSnapshot()
+    {
+        epService.getEPRuntime().sendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
+        sendTimer(0);
+        String selectStmt = "select symbol, min(price) as minprice from " + SupportMarketDataBean.class.getName() +
+                ".win:time(10 seconds) group by symbol output snapshot every 1 seconds order by symbol asc";
+
+        EPStatement stmt = epService.getEPAdministrator().createEQL(selectStmt);
+        stmt.addListener(listener);
+        sendEvent("s0", 20);
+
+        sendTimer(500);
+        sendEvent("s1", 16);
+        sendEvent("s0", 14);
+        assertFalse(listener.getAndClearIsInvoked());
+
+        sendTimer(1000);
+        String fields[] = new String[] {"symbol", "minprice"};
+        ArrayAssertionUtil.assertPropsPerRow(listener.getLastNewData(), fields, new Object[][] {{"s0", 14d}, {"s1", 16d}});
+        assertNull(listener.getLastOldData());
+        listener.reset();
+
+        sendTimer(1500);
+        sendEvent("s1", 18);
+        sendEvent("s2", 30);
+
+        sendTimer(10000);
+        ArrayAssertionUtil.assertPropsPerRow(listener.getLastNewData(), fields, new Object[][] {{"s0", 14d}, {"s1", 16d}, {"s2", 30d}});
+        assertNull(listener.getLastOldData());
+        listener.reset();
+
+        sendTimer(11000);
+        ArrayAssertionUtil.assertPropsPerRow(listener.getLastNewData(), fields, new Object[][] {{"s1", 18d}, {"s2", 30d}});
+        assertNull(listener.getLastOldData());
+        listener.reset();
+
+        sendTimer(12000);
+        assertTrue(listener.isInvoked());
+        assertNull(listener.getLastNewData());
+        assertNull(listener.getLastOldData());
+        listener.reset();
     }
 
     public void testWithGroupBy()

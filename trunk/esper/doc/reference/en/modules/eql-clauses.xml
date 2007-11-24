@@ -876,14 +876,14 @@ select symbol, sum(price) from StockTickEvent.std:groupby('symbol').win:length(1
 				<title>Output Clause Options</title>
 			
 				<para>
-				The <literal>output</literal> clause is optional in Esper and is used to control or stabilize the rate at which events are output. For example, the following statement batches old and new events and outputs them at the end of every 90 second interval.				
+				The <literal>output</literal> clause is optional in Esper and is used to control or stabilize the rate at which events are output. For example, the following statement outputs, every 60 seconds, the total price for all orders in the 30-minute time window:		
 				</para>
-			    <programlisting>select * from StockTickEvent.win:length(5) output every 90 seconds</programlisting>
+			    <programlisting>select sum(price) from OrderEvent.win:time(30 min) output every 60 seconds</programlisting>
 
 				<para>
 					Here is the syntax for output rate limiting: 
 				</para>
-				<synopsis>output [all | first | last] every <emphasis>number</emphasis> [minutes | seconds | events]</synopsis>
+				<synopsis>output [all | first | last | snapshot] every <emphasis>number</emphasis> [minutes | seconds | events]</synopsis>
 
 				<para>
 					The <literal>all</literal> keyword is the default and specifies that all events in a batch should be output. The batch size can be specified in terms of time or number of events.
@@ -898,6 +898,10 @@ select symbol, sum(price) from StockTickEvent.std:groupby('symbol').win:length(1
 				<para>
 					The <literal>last</literal> keyword specifies to only output the last event at the end of the given time interval or after the given number of matching events
 					have been accumulated.
+				</para>
+
+				<para>
+					The <literal>snapshot</literal> keyword indicates that the engine output current computation results considering all events as per views specified and/or current aggregation results. While the other keywords control how a batch of events between output intervals is being considered, the <literal>snapshot</literal> keyword outputs all current state of a statement independent of the last batch. 
 				</para>
 
 				<para>

@@ -37,6 +37,11 @@ import antlr.collections.AST;
 			 displayLimit = DisplayLimit.LAST;
 			 child = child.getNextSibling();
 		 }
+         else if(child.getType() == SNAPSHOT)
+         {
+             displayLimit = DisplayLimit.SNAPSHOT;
+             child = child.getNextSibling();
+         }
 		 else if(child.getType() == ALL)
 		 {
 			 child = child.getNextSibling();

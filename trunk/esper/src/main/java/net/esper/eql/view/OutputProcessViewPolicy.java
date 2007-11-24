@@ -9,10 +9,7 @@ import net.esper.event.EventBean;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * A view that prepares output events, batching incoming
@@ -24,6 +21,7 @@ public class OutputProcessViewPolicy extends OutputProcessView
 {
     private final boolean outputLastOnly;
     private final OutputCondition outputCondition;
+    private final boolean outputSnapshot;
 
     // Posted events in ordered form (for applying to aggregates) and summarized per type
     private List<EventBean> newEventsList = new ArrayList<EventBean>();
@@ -56,6 +54,7 @@ public class OutputProcessViewPolicy extends OutputProcessView
     	OutputCallback outputCallback = getCallbackToLocal(streamCount);
     	this.outputCondition = statementContext.getOutputConditionFactory().createCondition(outputLimitSpec, statementContext, outputCallback);
         this.outputLastOnly = (outputLimitSpec != null) && (outputLimitSpec.isDisplayLastOnly());
+        this.outputSnapshot = (outputLimitSpec != null) && (outputLimitSpec.isDisplaySnapshot());
     }
 
     /**
@@ -162,7 +161,27 @@ public class OutputProcessViewPolicy extends OutputProcessView
 			oldEvents = oldEvents != null ? new EventBean[] { oldEvents[oldEvents.length - 1] } : null;
 		}
 
-		if(doOutput)
+        if (outputSnapshot)
+        {
+            Iterator<EventBean> it = this.iterator();
+            if (it.hasNext())
+            {
+                ArrayList<EventBean> snapshot = new ArrayList<EventBean>();
+                for (EventBean bean : this)
+                {
+                    snapshot.add(bean);
+                }
+                newEvents = snapshot.toArray(new EventBean[0]);
+                oldEvents = null;
+            }
+            else
+            {
+                newEvents = null;
+                oldEvents = null;
+            }
+        }
+
+        if(doOutput)
 		{
 			output(forceUpdate, newEvents, oldEvents);
 		}

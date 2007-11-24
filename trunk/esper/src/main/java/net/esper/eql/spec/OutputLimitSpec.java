@@ -21,19 +21,25 @@ public class OutputLimitSpec implements MetaDefItem
     public enum DisplayLimit {
 
         /**
-         * Output first event.
+         * Output first event, relative to the output batch.
          */
         FIRST,
 
         /**
-         * Output last event.
+         * Output last event, relative to the output batch.
          */
         LAST,
 
         /**
-         * Output all events.
+         * Output all events, relative to the output batch.
          */
-        ALL }
+        ALL,
+
+        /**
+         * Output a snapshot of the current state, relative to the full historical state of a statement.
+         */
+        SNAPSHOT
+    }
 
 	private final boolean isEventLimit;
 	private final DisplayLimit displayLimit;
@@ -112,6 +118,15 @@ public class OutputLimitSpec implements MetaDefItem
 	public boolean isDisplayFirstOnly()
 	{
 		return displayLimit == DisplayLimit.FIRST;
+	}
+
+    /**
+     * Returns true to output a full snapshot.
+     * @return true if snapshot
+     */
+	public boolean isDisplaySnapshot()
+	{
+		return displayLimit == DisplayLimit.SNAPSHOT;
 	}
 
 }

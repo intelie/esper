@@ -487,6 +487,7 @@ public class TestEQLParser extends TestCase implements EqlTokenTypes
         assertIsValid(preFill + " having avg(?) > ?");
         assertIsValid("select sum(?) from b.win:length(1)");
         assertIsValid("select ?||'a' from B(a=?) where c=? group by ? having d>? output every 10 events order by a, ?");
+        assertIsValid("select a from B output snapshot every 10 events order by a, ?");
 
         // cast, instanceof, isnumeric and exists dynamic property
         assertIsValid(preFill + "(boolean = exists(a))");

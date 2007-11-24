@@ -82,6 +82,7 @@ tokens
 	CAST="cast";
 	CURRENT_TIMESTAMP="current_timestamp";
 	DELETE="delete";
+	SNAPSHOT="snapshot";
 	
    	NUMERIC_PARAM_RANGE;
    	NUMERIC_PARAM_LIST;
@@ -393,7 +394,7 @@ havingClause
 	;
 
 outputLimit
-	:   (ALL|FIRST|LAST)? EVERY_EXPR! number (e:EVENTS!|sec:SECONDS!|min:MINUTES!)
+	:   (ALL|FIRST|LAST|SNAPSHOT)? EVERY_EXPR! number (e:EVENTS!|sec:SECONDS!|min:MINUTES!)
 		{ 
 			if (e != null) #outputLimit = #([EVENT_LIMIT_EXPR,"outputLimitEvent"], #outputLimit); 
 			if (sec != null) #outputLimit = #([SEC_LIMIT_EXPR,"outputLimitSec"], #outputLimit); 

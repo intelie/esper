@@ -7,6 +7,7 @@ import net.esper.client.EPRuntime;
 import net.esper.client.time.TimerControlEvent;
 import net.esper.client.time.CurrentTimeEvent;
 import net.esper.support.util.SupportUpdateListener;
+import net.esper.support.util.ArrayAssertionUtil;
 import net.esper.support.bean.SupportMarketDataBean;
 import net.esper.support.bean.SupportBeanString;
 import net.esper.support.bean.SupportBean;
@@ -59,6 +60,56 @@ public class TestOutputLimitEventPerRow extends TestCase
         assertEquals(2.0, result.getFirst()[1].get("maxVol"));
         assertEquals(1, result.getSecond().length);
         assertEquals(null, result.getSecond()[0].get("maxVol"));
+    }
+
+    public void testLimitSnapshot()
+    {
+        epService.getEPRuntime().sendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
+        sendTimer(0);
+        String selectStmt = "select symbol, volume, sum(price) as sumprice from " + SupportMarketDataBean.class.getName() +
+                ".win:time(10 seconds) group by symbol output snapshot every 1 seconds";
+
+        EPStatement stmt = epService.getEPAdministrator().createEQL(selectStmt);
+        stmt.addListener(listener);
+        sendEvent("s0", 1, 20);
+
+        sendTimer(500);
+        sendEvent("s1", 2, 16);
+        sendEvent("s0", 3, 14);
+        assertFalse(listener.getAndClearIsInvoked());
+
+        sendTimer(1000);
+        String fields[] = new String[] {"symbol", "volume", "sumprice"};
+        ArrayAssertionUtil.assertPropsPerRow(listener.getLastNewData(), fields, new Object[][] {{"s0", 1L, 34d}, {"s1", 2L, 16d}, {"s0", 3L, 34d}});
+        assertNull(listener.getLastOldData());
+        listener.reset();
+
+        sendTimer(1500);
+        sendEvent("s2", 4, 18);
+        sendEvent("s1", 5, 30);
+
+        sendTimer(10000);
+        ArrayAssertionUtil.assertPropsPerRow(listener.getLastNewData(), fields,
+                new Object[][] {{"s0", 1L, 34d}, {"s1", 2L, 46d}, {"s0", 3L, 34d}, {"s2", 4L, 18d}, {"s1", 5L, 46d}});
+        assertNull(listener.getLastOldData());
+        listener.reset();
+
+        sendTimer(11000);
+        ArrayAssertionUtil.assertPropsPerRow(listener.getLastNewData(), fields, new Object[][] {{"s2", 4L, 18d}, {"s1", 5L, 30d}});
+        assertNull(listener.getLastOldData());
+        listener.reset();
+
+        sendTimer(12000);
+        assertTrue(listener.isInvoked());
+        assertNull(listener.getLastNewData());
+        assertNull(listener.getLastOldData());
+        listener.reset();
+
+        sendTimer(13000);
+        assertTrue(listener.isInvoked());
+        assertNull(listener.getLastNewData());
+        assertNull(listener.getLastOldData());
+        listener.reset();
     }
 
     public void testMaxTimeWindow()

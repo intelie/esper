@@ -42,7 +42,7 @@ public class TestNamedWindowSelect extends TestCase
         epService.getEPAdministrator().createEQL(stmtTextInsertOne);
 
         // create on-select stmt
-        String stmtTextSelect = "on " + SupportBean_A.class.getName() + " insert into MyStream select mywin.* from MyWindow as mywin";
+        String stmtTextSelect = "on " + SupportBean_A.class.getName() + " insert into MyStream select mywin.* from MyWindow as mywin order by string asc";
         EPStatement stmtSelect = epService.getEPAdministrator().createEQL(stmtTextSelect);
         stmtSelect.addListener(listenerSelect);
 

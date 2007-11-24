@@ -1,16 +1,14 @@
 package net.esper.regression.view;
 
 import junit.framework.TestCase;
-import net.esper.client.EPRuntime;
-import net.esper.client.EPServiceProvider;
-import net.esper.client.EPServiceProviderManager;
-import net.esper.client.EPStatement;
+import net.esper.client.*;
 import net.esper.client.time.CurrentTimeEvent;
 import net.esper.client.time.TimerControlEvent;
 import net.esper.event.EventBean;
 import net.esper.support.bean.SupportBean;
 import net.esper.support.bean.SupportMarketDataBean;
 import net.esper.support.util.SupportUpdateListener;
+import net.esper.support.util.ArrayAssertionUtil;
 import net.esper.support.client.SupportConfigFactory;
 import net.esper.collection.UniformPair;
 import org.apache.commons.logging.Log;
@@ -23,7 +21,9 @@ public class TestOutputLimitRowForAll extends TestCase
 
     public void setUp()
     {
-        epService = EPServiceProviderManager.getDefaultProvider(SupportConfigFactory.getConfiguration());
+        Configuration config = SupportConfigFactory.getConfiguration();
+        config.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
+        epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();
         listener = new SupportUpdateListener();
     }
@@ -146,6 +146,59 @@ public class TestOutputLimitRowForAll extends TestCase
         assertEquals(2L, newEvents[0].get("cnt"));
     }
 
+    public void testLimitSnapshot()
+    {
+        SupportUpdateListener listener = new SupportUpdateListener();
+
+        sendTimer(0);
+        String selectStmt = "select count(*) as cnt from " + SupportBean.class.getName() + ".win:time(10 seconds) where intPrimitive > 0 output snapshot every 1 seconds";
+
+        EPStatement stmt = epService.getEPAdministrator().createEQL(selectStmt);
+        stmt.addListener(listener);
+        sendEvent("s0", 1);
+
+        sendTimer(500);
+        sendEvent("s1", 1);
+        sendEvent("s2", -1);
+        assertFalse(listener.getAndClearIsInvoked());
+
+        sendTimer(1000);
+        ArrayAssertionUtil.assertPropsPerRow(listener.getLastNewData(), new String[] {"cnt"}, new Object[][] {{2L}});
+        assertNull(listener.getLastOldData());
+        listener.reset();
+
+        sendTimer(1500);
+        sendEvent("s4", 2);
+        sendEvent("s5", 3);
+        assertFalse(listener.getAndClearIsInvoked());
+
+        sendTimer(2000);
+        ArrayAssertionUtil.assertPropsPerRow(listener.getLastNewData(), new String[] {"cnt"}, new Object[][] {{4L}});
+        assertNull(listener.getLastOldData());
+        listener.reset();
+
+        sendEvent("s5", 4);
+        assertFalse(listener.getAndClearIsInvoked());
+
+        sendTimer(9000);
+        ArrayAssertionUtil.assertPropsPerRow(listener.getLastNewData(), new String[] {"cnt"}, new Object[][] {{5L}});
+        assertNull(listener.getLastOldData());
+        listener.reset();
+
+        sendTimer(10000);
+        ArrayAssertionUtil.assertPropsPerRow(listener.getLastNewData(), new String[] {"cnt"}, new Object[][] {{4L}});
+        assertNull(listener.getLastOldData());
+        listener.reset();
+
+        sendTimer(10999);
+        assertFalse(listener.getAndClearIsInvoked());
+
+        sendTimer(11000);
+        ArrayAssertionUtil.assertPropsPerRow(listener.getLastNewData(), new String[] {"cnt"}, new Object[][] {{3L}});
+        assertNull(listener.getLastOldData());
+        listener.reset();
+    }
+
     private void sendEvent(String s)
 	{
 	    SupportBean bean = new SupportBean();
@@ -156,6 +209,14 @@ public class TestOutputLimitRowForAll extends TestCase
 	    epService.getEPRuntime().sendEvent(bean);
 	}
     
+    private void sendEvent(String s, int intPrimitive)
+	{
+	    SupportBean bean = new SupportBean();
+	    bean.setString(s);
+	    bean.setIntPrimitive(intPrimitive);
+	    epService.getEPRuntime().sendEvent(bean);
+	}
+
     private void sendTimer(long time)
     {
         CurrentTimeEvent event = new CurrentTimeEvent(time);
