@@ -2,10 +2,13 @@ package net.esper.eql.named;
 
 import net.esper.eql.spec.OnTriggerDesc;
 import net.esper.eql.core.ResultSetProcessor;
+import net.esper.eql.expression.ExprNode;
 import net.esper.view.StatementStopService;
 import net.esper.event.EventType;
 import net.esper.core.EPStatementHandle;
 import net.esper.core.InternalEventRouter;
+
+import java.util.List;
 
 /**
  * An instance of this class is associated with a specific named window. The processor
@@ -80,11 +83,12 @@ public class NamedWindowProcessor
      * Adds a consuming (selecting) statement to the named window.
      * @param statementHandle is the statement's handle for locking
      * @param statementStopService for indicating the consuming statement is stopped or destroyed
+     * @param filterList is a list of filter expressions
      * @return consumer view
      */
-    public NamedWindowConsumerView addConsumer(EPStatementHandle statementHandle, StatementStopService statementStopService)
+    public NamedWindowConsumerView addConsumer(List<ExprNode> filterList, EPStatementHandle statementHandle, StatementStopService statementStopService)
     {
-        return tailView.addConsumer(statementHandle, statementStopService);
+        return tailView.addConsumer(filterList, statementHandle, statementStopService);
     }
 
     /**

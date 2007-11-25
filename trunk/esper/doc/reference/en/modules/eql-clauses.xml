@@ -1753,32 +1753,41 @@ insert into OrdersWindow select * from ServiceProductEvent]]></programlisting>
 			<indexterm><primary>EQL</primary><secondary>named window</secondary><tertiary>selecting from</tertiary></indexterm>
 
 			<para>
-				A named window can be referred to by any statement in the <literal>from</literal> clause of the statement. Additional views may be used onto named windows however such views cannot include data window views.
+				A named window can be referred to by any statement in the <literal>from</literal> clause of the statement. Filter criteria can also be specified. Additional views may be used onto named windows however such views cannot include data window views.
 			</para>
 			
 			<para>
-				A statement selecting from a named window 'AllOrdersNamedWindow' is shown next. The named window must first be created via the <literal>create window</literal> clause before use.
+				A statement selecting all events from a named window 'AllOrdersNamedWindow' is shown next. The named window must first be created via the <literal>create window</literal> clause before use.
 			</para>
 			<programlisting><![CDATA[select * from AllOrdersNamedWindow]]></programlisting>
 			
 			<para>
-				The statement as above simply receives the insert and remove stream of the named window and reports that stream to its listeners. An iterator on such statement returns the last new event in the named window, if any.
+				The statement as above simply receives the unfiltered insert and remove stream of the named window and reports that stream to its listeners. An iterator on such statement returns the last new event in the named window, if any.
 			</para>
 
 			<para>
-				The next statement derives an average price per symbol from events posted by a named window: 
+				The next statement derives an average price per symbol from all events posted by a named window: 
 			</para>
 			<programlisting><![CDATA[select symbol, avg(price) from AllOrdersNamedWindow group by symbol]]></programlisting>
 			
 			<para>
 				Your application may create a consuming statement such as above on an empty named window, or your application may create the above statement on an already filled named window. The engine provides correct results in either case: 
-				At the time of statement creation the Esper engine provides the current named window contents to the consuming statement. Thus, your statement deriving data from a named window does not start empty if the named window already holds one or more events.
+				At the time of statement creation the Esper engine internally initializes the consuming statement from the current named window, also taking your declared filters into consideration. Thus, your statement deriving data from a named window does not start empty if the named window already holds one or more events.
 			</para>
 
 			<para>
-				The following example declares a further view into the named window. Such a view can be a plug-in view or one of the built-in views, but cannot be a data window view (with the exception of the group-by view which is allowed).
+				If you require a subset of the data in the named window, you can specify one or more filter expressions onto the named window as shown here:
 			</para>
-			<programlisting><![CDATA[select * from AllOrdersNamedWindow.mycompany:mypluginview()]]></programlisting>
+			<programlisting><![CDATA[select symbol, avg(price) from AllOrdersNamedWindow(sector='energy') group by symbol]]></programlisting>
+			
+			<para>
+				By adding a filter to the named window, the aggregation and grouping as well as any views that may be declared onto to the named window receive a filtered insert and remove stream. The above statement thus outputs, continuously, the average price per symbol for all orders in the named window that belong to a certain sector.
+			</para>
+
+			<para>
+				The following example further declares a view into the named window. Such a view can be a plug-in view or one of the built-in views, but cannot be a data window view (with the exception of the group-by view which is allowed).
+			</para>
+			<programlisting><![CDATA[select * from AllOrdersNamedWindow(volume>0, price>0).mycompany:mypluginview()]]></programlisting>
 			
 			<para>
 				Data window views cannot be used onto named windows since named windows post insert and remove streams for the events entering and leaving the named window, thus the expiry policy and batch behavior are well defined by the data window declared for the named window. For example, the following is not allowed and fails at time of statement creation:

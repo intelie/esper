@@ -89,10 +89,20 @@ public final class FilterSpecCompiler
         }
     }
 
-    private static List<ExprNode> validateAndDecompose(List<ExprNode> exprNodes, StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, TimeProvider timeProvider)
+    /**
+     * Validates expression nodes and returns a list of validated nodes.
+     * @param exprNodes is the nodes to validate
+     * @param streamTypeService is provding type information for each stream
+     * @param methodResolutionService for resolving functions
+     * @param timeProvider for providing current time
+     * @return list of validated expression nodes
+     * @throws ExprValidationException for validation errors
+     */
+    public static List<ExprNode> validateDisallowSubquery(List<ExprNode> exprNodes, StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, TimeProvider timeProvider)
             throws ExprValidationException
     {
         List<ExprNode> validatedNodes = new ArrayList<ExprNode>();
+        
         for (ExprNode node : exprNodes)
         {
             // Ensure there is no subselects
@@ -111,6 +121,14 @@ public final class FilterSpecCompiler
                 throw new ExprValidationException("Filter expression not returning a boolean value: '" + validated.toExpressionString() + "'");
             }
         }
+
+        return validatedNodes;
+    }
+
+    private static List<ExprNode> validateAndDecompose(List<ExprNode> exprNodes, StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, TimeProvider timeProvider)
+            throws ExprValidationException
+    {
+        List<ExprNode> validatedNodes = validateDisallowSubquery(exprNodes, streamTypeService, methodResolutionService, timeProvider);
 
         // Break a top-level AND into constituent expression nodes
         List<ExprNode> constituents = new ArrayList<ExprNode>();

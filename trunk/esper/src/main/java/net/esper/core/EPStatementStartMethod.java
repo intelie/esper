@@ -343,7 +343,7 @@ public class EPStatementStartMethod
             {
                 NamedWindowConsumerStreamSpec namedSpec = (NamedWindowConsumerStreamSpec) streamSpec;
                 NamedWindowProcessor processor = services.getNamedWindowService().getProcessor(namedSpec.getWindowName());
-                NamedWindowConsumerView consumerView = processor.addConsumer(statementContext.getEpStatementHandle(), statementContext.getStatementStopService());
+                NamedWindowConsumerView consumerView = processor.addConsumer(namedSpec.getFilterExpressions(), statementContext.getEpStatementHandle(), statementContext.getStatementStopService());
                 eventStreamParentViewable[i] = consumerView;
                 unmaterializedViewChain[i] = services.getViewService().createFactories(i, consumerView.getEventType(), namedSpec.getViewSpecs(), statementContext);
 
@@ -473,8 +473,11 @@ public class EPStatementStartMethod
                 {
                     eventsInWindow.add(aConsumerView);
                 }
-                EventBean[] newEvents = eventsInWindow.toArray(new EventBean[0]);
-                view.update(newEvents, null);
+                if (!eventsInWindow.isEmpty())
+                {
+                    EventBean[] newEvents = eventsInWindow.toArray(new EventBean[0]);
+                    view.update(newEvents, null);
+                }
 
                 // in a join, preload indexes, if any
                 if (joinPreloadMethod != null)
@@ -719,7 +722,7 @@ public class EPStatementStartMethod
             {
                 NamedWindowConsumerStreamSpec namedSpec = (NamedWindowConsumerStreamSpec) statementSpec.getStreamSpecs().get(0);
                 NamedWindowProcessor processor = services.getNamedWindowService().getProcessor(namedSpec.getWindowName());
-                NamedWindowConsumerView consumerView = processor.addConsumer(statementContext.getEpStatementHandle(), statementContext.getStatementStopService());
+                NamedWindowConsumerView consumerView = processor.addConsumer(namedSpec.getFilterExpressions(), statementContext.getEpStatementHandle(), statementContext.getStatementStopService());
                 ViewFactoryChain viewFactoryChain = services.getViewService().createFactories(0, consumerView.getEventType(), namedSpec.getViewSpecs(), statementContext);
                 subSelectStreamDesc.add(subselect, subselectStreamNumber, consumerView, viewFactoryChain);
             }

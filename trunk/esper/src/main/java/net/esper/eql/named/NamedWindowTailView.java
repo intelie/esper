@@ -5,6 +5,7 @@ import net.esper.event.EventBean;
 import net.esper.event.EventType;
 import net.esper.view.StatementStopService;
 import net.esper.view.ViewSupport;
+import net.esper.eql.expression.ExprNode;
 
 import java.util.*;
 
@@ -53,12 +54,13 @@ public class NamedWindowTailView extends ViewSupport implements Iterable<EventBe
      * Adds a consumer view keeping the consuming statement's handle and lock to coordinate dispatches.
      * @param statementHandle the statement handle
      * @param statementStopService for when the consumer stops, to unregister the consumer
+     * @param filterList is a list of filter expressions
      * @return consumer representative view
      */
-    public NamedWindowConsumerView addConsumer(EPStatementHandle statementHandle, StatementStopService statementStopService)
+    public NamedWindowConsumerView addConsumer(List<ExprNode> filterList, EPStatementHandle statementHandle, StatementStopService statementStopService)
     {
         // Construct consumer view, allow a callback to this view to remove the consumer
-        NamedWindowConsumerView consumerView = new NamedWindowConsumerView(eventType, statementStopService, this);
+        NamedWindowConsumerView consumerView = new NamedWindowConsumerView(filterList, eventType, statementStopService, this);
 
         // Keep a list of consumer views per statement to accomodate joins and subqueries
         List<NamedWindowConsumerView> viewsPerStatements = consumers.get(statementHandle);
