@@ -7,9 +7,10 @@ import net.esper.util.MetaDefItem;
  */
 public class SelectExprElementStreamCompiledSpec implements MetaDefItem
 {
-    private String streamAliasName;
-    private String optionalAliasName;
-    private int streamNumber;
+    private final String streamAliasName;
+    private final String optionalAliasName;
+    private final int streamNumber;
+    private final boolean isTaggedEvent;
 
     /**
      * Ctor.
@@ -17,11 +18,12 @@ public class SelectExprElementStreamCompiledSpec implements MetaDefItem
      * @param optionalAliasName is the column alias
      * @param streamNumber is the number of the stream
      */
-    public SelectExprElementStreamCompiledSpec(String streamAliasName, String optionalAliasName, int streamNumber)
+    public SelectExprElementStreamCompiledSpec(String streamAliasName, String optionalAliasName, int streamNumber, boolean isTaggedEvent)
     {
         this.streamAliasName = streamAliasName;
         this.optionalAliasName = optionalAliasName;
         this.streamNumber = streamNumber;
+        this.isTaggedEvent = isTaggedEvent;
     }
 
     /**
@@ -49,5 +51,10 @@ public class SelectExprElementStreamCompiledSpec implements MetaDefItem
     public int getStreamNumber()
     {
         return streamNumber;
+    }
+
+    public boolean isTaggedEvent()
+    {
+        return isTaggedEvent;
     }
 }

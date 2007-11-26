@@ -10,7 +10,7 @@ import java.util.Map;
  * composite event indicates that the whole patterns matched, and indicates the
  * individual events that caused the pattern as event properties to the event.
  */
-public class CompositeEventType implements EventType
+public class CompositeEventType implements EventType, TaggedCompositeEventType
 {
     /**
      * Map of tag name and event type.
@@ -180,5 +180,46 @@ public class CompositeEventType implements EventType
         return null;
     }
 
-    
+    public boolean equals(Object obj)
+    {
+        if (!(obj instanceof CompositeEventType))
+        {
+            return false;
+        }
+
+        CompositeEventType other = (CompositeEventType) obj;
+        // Composite event types are always anonymous therefore not checking alias name
+
+        if (!(other.taggedEventTypes.size() == taggedEventTypes.size()))
+        {
+            return false;
+        }
+
+        for (Map.Entry<String, EventType> entry : taggedEventTypes.entrySet())
+        {
+            EventType composed = entry.getValue();
+            EventType otherComposed = other.taggedEventTypes.get(entry.getKey());
+
+            if (otherComposed == null)
+            {
+                return false;
+            }
+            if (!(composed.equals(otherComposed)))
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    public int hashCode()
+    {
+        return alias.hashCode();
+    }
+
+    public Map<String, EventType> getTaggedEventTypes()
+    {
+        return taggedEventTypes;
+    }
 }

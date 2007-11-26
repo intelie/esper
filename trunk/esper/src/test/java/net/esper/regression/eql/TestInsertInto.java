@@ -9,10 +9,13 @@ import net.esper.client.soda.*;
 import net.esper.client.time.CurrentTimeEvent;
 import net.esper.client.time.TimerControlEvent;
 import net.esper.event.EventBean;
+import net.esper.event.EventType;
 import net.esper.support.bean.*;
-import net.esper.support.util.SupportUpdateListener;
 import net.esper.support.client.SupportConfigFactory;
+import net.esper.support.util.SupportUpdateListener;
 import net.esper.util.SerializableObjectCopier;
+
+import java.util.Map;
 
 public class TestInsertInto extends TestCase
 {
@@ -320,6 +323,22 @@ public class TestInsertInto extends TestCase
     	assertSimple(listenerOne, "two", 2, null, 0);
     	assertSimple(listenerTwo, "two", 2, "twotwo", 4);
     	assertSimple(listenerThree, "two", 2, "twotwo", 4);
+    }
+
+    public void testInsertFromPattern()
+    {
+    	String stmtOneText = "insert into streamA select * from pattern [every " + SupportBean.class.getName() + "]";
+    	SupportUpdateListener listenerOne = new SupportUpdateListener();
+    	EPStatement stmtOne = epService.getEPAdministrator().createEQL(stmtOneText);
+        stmtOne.addListener(listenerOne);
+
+        String stmtTwoText = "insert into streamA select * from pattern [every " + SupportBean.class.getName() + "]";
+        SupportUpdateListener listenerTwo = new SupportUpdateListener();
+        EPStatement stmtTwo = epService.getEPAdministrator().createEQL(stmtTwoText);
+        stmtTwo.addListener(listenerTwo);
+
+        EventType eventType = stmtOne.getEventType();
+        assertEquals(Map.class, eventType.getUnderlyingType());
     }
 
     public void testInsertIntoPlusPattern()

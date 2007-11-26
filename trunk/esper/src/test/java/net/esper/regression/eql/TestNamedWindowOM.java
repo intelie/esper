@@ -50,11 +50,11 @@ public class TestNamedWindowOM extends TestCase
         EPStatementObjectModel modelInsert = epService.getEPAdministrator().compileEQL(stmtTextInsert);
         EPStatement stmtInsert = epService.getEPAdministrator().create(modelInsert);
 
-        String stmtTextSelectOne = "select key, value*2 as value from MyWindow";
+        String stmtTextSelectOne = "select key, value*2 as value from MyWindow(key != null)";
         EPStatementObjectModel modelSelect = epService.getEPAdministrator().compileEQL(stmtTextSelectOne);
         EPStatement stmtSelectOne = epService.getEPAdministrator().create(modelSelect);
         stmtSelectOne.addListener(listenerStmtOne);
-        assertEquals("select key, (value * 2) as value from MyWindow", modelSelect.toEQL());
+        assertEquals("select key, (value * 2) as value from MyWindow((key != null))", modelSelect.toEQL());
 
         // send events
         sendSupportBean("E1", 10L);
@@ -132,7 +132,7 @@ public class TestNamedWindowOM extends TestCase
         model.setSelectClause(SelectClause.create()
                 .add("key")
                 .add(multi, "value"));
-        model.setFromClause(FromClause.create(FilterStream.create("MyWindow")));
+        model.setFromClause(FromClause.create(FilterStream.create("MyWindow", Expressions.isNotNull("value"))));
 
         EPStatement stmtSelectOne = epService.getEPAdministrator().create(model);
         stmtSelectOne.addListener(listenerStmtOne);

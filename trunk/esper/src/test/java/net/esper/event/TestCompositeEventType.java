@@ -1,7 +1,12 @@
 package net.esper.event;
 
 import net.esper.support.bean.SupportBean;
+import net.esper.support.bean.SupportBeanComplexProps;
 import net.esper.support.util.ArrayAssertionUtil;
+import net.esper.support.event.SupportEventAdapterService;
+
+import java.util.Map;
+import java.util.HashMap;
 
 public class TestCompositeEventType extends TestCompositeEventBase
 {
@@ -44,5 +49,22 @@ public class TestCompositeEventType extends TestCompositeEventBase
     {
         assertTrue(eventType.isProperty("b.nested.nestedValue"));
         assertFalse(eventType.isProperty("b.nested.xxx"));
+    }
+
+    public void testEquals()
+    {
+        Map<String, EventType> taggedEventTypes = new HashMap<String, EventType>();
+        taggedEventTypes.put("a", SupportEventAdapterService.getService().addBeanType("A", SupportBean.class));
+        taggedEventTypes.put("b", SupportEventAdapterService.getService().addBeanType("B", SupportBeanComplexProps.class));
+        EventType eventTypeTwo = new CompositeEventType("alias", taggedEventTypes);
+        EventType eventTypeThree = new CompositeEventType("alias2", taggedEventTypes);
+
+        Map<String, EventType> taggedEventTypesTwo = new HashMap<String, EventType>();
+        taggedEventTypesTwo.put("a", SupportEventAdapterService.getService().addBeanType("A", SupportBean.class));
+        EventType eventTypeFour = new CompositeEventType("alias", taggedEventTypesTwo);
+
+        assertEquals(eventTypeTwo, eventType);
+        assertFalse(eventTypeThree.equals(eventType));
+        assertFalse(eventTypeFour.equals(eventType));
     }
 }

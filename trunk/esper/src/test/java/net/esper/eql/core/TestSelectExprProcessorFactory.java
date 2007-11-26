@@ -64,8 +64,8 @@ public class TestSelectExprProcessorFactory extends TestCase
         elements.add(new SelectExprElementCompiledSpec(null, "yy"));
 
         List<SelectExprElementStreamCompiledSpec> streams = new LinkedList<SelectExprElementStreamCompiledSpec>();
-        streams.add(new SelectExprElementStreamCompiledSpec("win", null, 1));
-        streams.add(new SelectExprElementStreamCompiledSpec("s2", "abc", 2));
+        streams.add(new SelectExprElementStreamCompiledSpec("win", null, 1, false));
+        streams.add(new SelectExprElementStreamCompiledSpec("s2", "abc", 2, false));
 
         SelectExprProcessorFactory.verifyNameUniqueness(elements, streams);
 
@@ -83,7 +83,7 @@ public class TestSelectExprProcessorFactory extends TestCase
 
         // try invalid case
         elements.clear();
-        streams.add(new SelectExprElementStreamCompiledSpec("s0", "abc", 2));
+        streams.add(new SelectExprElementStreamCompiledSpec("s0", "abc", 2, false));
         try
         {
             SelectExprProcessorFactory.verifyNameUniqueness(elements, streams);

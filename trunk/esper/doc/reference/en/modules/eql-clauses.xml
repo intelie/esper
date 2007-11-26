@@ -181,24 +181,10 @@ select * from MyEvent  /* this also works */]]></programlisting>
 			</para>
 		</sect2>
 
-        <sect2 id="eql-select-all-stream" >
-           <title>Choosing all event properties for a given stream</title>
-			<para>
-				In a join statement multiple streams are selected upon, and the following syntax can be used to specify what stream's properties to select:
-			</para>
-			<synopsis>select <emphasis>stream_name</emphasis>.* from ...</synopsis>
-
-			<para>
-				This example is a join between the two streams StockTick and News, respectively named as 'stock' and 'news'. The selection of <literal>stock.*</literal> thus selects the StockTick stream events only:
-			</para>
-			<programlisting><![CDATA[select stock.* from StockTick.win:time(10) as stock, News.win:time(10) as news
-where stock.symbol = news.symbol]]></programlisting>
-		</sect2>
-
         <sect2 id="eql-select-event-props" >
            <title>Choosing specific event properties</title>
 			<para>
-				To chose the particular event properties to return:
+				To choose the particular event properties to return:
 			</para>
 			<synopsis>select <emphasis>event_property</emphasis> [, <emphasis>event_property</emphasis>] [, ...] from <emphasis>stream_def</emphasis></synopsis>
 
@@ -237,6 +223,74 @@ where stock.symbol = news.symbol]]></programlisting>
 ]]></programlisting>
 		</sect2>
 		
+        <sect2 id="eql-select-all-join">
+           <title>Choosing event properties and events in a join</title>
+           
+			<para>
+				If your statement is joining multiple streams, your may specify property names that are unique among the joined streams, or use wildcard (*) as explained earlier.
+			</para>
+
+			<para>
+				In case the property name in your <literal>select</literal> or other clauses is not unique considering all joined streams, you will need to use the alias name of the stream as a prefix to the property.
+			</para>
+
+			<para>
+				This example is a join between the two streams StockTick and News, respectively named as 'tick' and 'news'. The example selects from the StockTick event the symbol value using the 'tick' stream alias as a prefix:
+			</para>
+			<programlisting><![CDATA[select tick.symbol from StockTick.win:time(10) as tick, News.win:time(10) as news]]></programlisting>
+
+			<para>
+				Use the wildcard (*) selector in a join to generate a property for each stream, with the property value being the event itself. The output events of the statement below have two properties: the 'tick' property holds the StockTick event and the 'news' property holds the News event:
+			</para>
+			<programlisting><![CDATA[select * from StockTick.win:time(10) as tick, News.win:time(10) as news]]></programlisting>
+
+			<para>
+				The following syntax can also be used to specify what stream's properties to select:
+			</para>
+			<synopsis>select <emphasis>stream_name</emphasis>.* [as <emphasis>alias</emphasis>] from ...</synopsis>
+
+			<para>
+				The selection of <literal>tick.*</literal> selects the StockTick stream events only:
+			</para>
+			<programlisting><![CDATA[select tick.* from StockTick.win:time(10) as tick, News.win:time(10) as news
+where tick.symbol = news.symbol]]></programlisting>
+
+			<para>
+				The next example uses the <literal>as</literal> keyword to name each stream's joined events. This instructs the engine to create a property for each named event:
+			</para>
+			<programlisting><![CDATA[select tick.* as stocktick, news.* as news 
+from StockTick.win:time(10) as tick, News.win:time(10) as news
+where stock.symbol = news.symbol]]></programlisting>
+
+			<para>
+				The output events of the above example have two properties 'stocktick' and 'news' that are the StockTick and News events.
+			</para>
+		</sect2>
+
+        <sect2 id="eql-select-pattern" >
+           <title>Choosing event properties and events from a pattern</title>
+           
+			<para>
+				If your statement employs pattern expressions, then your pattern expression tags events with a tag name. Each tag name becomes available for use as a property in the <literal>select</literal> clause and all other clauses.
+			</para>
+			
+			<para>
+				For example, here is a very simple pattern that matches on every StockTick event received within 30 seconds after start of the statement. The sample selects the symbol and price properties of the matching events:
+			</para>
+			<programlisting><![CDATA[select tick.symbol as symbol, tick.price as price
+from pattern[every tick=StockTick where timer:within(10 sec)]]]></programlisting>
+
+			<para>
+				The use of the wildcard selector, as shown in the next statement, creates a property for each tagged event in the output. The next statement outputs events that hold a single 'tick' property whose value is the event itself:
+			</para>
+			<programlisting><![CDATA[select * from pattern[every tick=StockTick where timer:within(10 sec)]]]></programlisting>
+
+			<para>
+				You may also select the matching event itself using the <literal>tick.*</literal> syntax. The engine outputs the StockTick event itself to listeners:
+			</para>
+			<programlisting><![CDATA[select tick.* from pattern[every tick=StockTick where timer:within(10 sec)]]]></programlisting>
+		</sect2>
+
         <sect2 id="eql-select-using-istream-rstream" >
             <title>Selecting <literal>istream</literal> and <literal>rstream</literal> events</title>
 

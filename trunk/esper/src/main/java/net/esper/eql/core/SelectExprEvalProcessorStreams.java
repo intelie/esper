@@ -31,6 +31,7 @@ public class SelectExprEvalProcessorStreams implements SelectExprProcessor
     private EventType resultEventType;
     private EventType underlyingEventType;
     private int underlyingStreamNumber;
+    private boolean underlyingIsTaggedEvent;
 
     /**
      * Ctor.
@@ -80,13 +81,23 @@ public class SelectExprEvalProcessorStreams implements SelectExprProcessor
             throw new ExprValidationException("A column alias must be supplied for all but one stream if multiple streams are selected via the stream.* notation");
         }
 
-        // Resolve underlying event type in the case of wildcard or non-aliased stream select
+        // Resolve underlying event type in the case of wildcard or non-aliased stream select.
+        // Determine if the we are considering a tagged event or a stream name.
         if((isUsingWildcard) || (!unaliasedStreams.isEmpty()))
         {
             if (!unaliasedStreams.isEmpty())
             {
                 underlyingStreamNumber = unaliasedStreams.get(0).getStreamNumber();
-                underlyingEventType = typeService.getEventTypes()[underlyingStreamNumber];
+                if (unaliasedStreams.get(0).isTaggedEvent())
+                {
+                    TaggedCompositeEventType comp = (TaggedCompositeEventType) typeService.getEventTypes()[underlyingStreamNumber];
+                    underlyingEventType = comp.getTaggedEventTypes().get(unaliasedStreams.get(0).getStreamAliasName());
+                    underlyingIsTaggedEvent = true;
+                }
+                else
+                {
+                    underlyingEventType = typeService.getEventTypes()[underlyingStreamNumber];
+                }
             }
             else
             {
@@ -269,7 +280,16 @@ public class SelectExprEvalProcessorStreams implements SelectExprProcessor
         		}
         	}
 
-            EventBean event = eventsPerStream[underlyingStreamNumber];
+            EventBean event;
+            if (underlyingIsTaggedEvent)
+            {
+                TaggedCompositeEventBean eventBean = (TaggedCompositeEventBean) eventsPerStream[underlyingStreamNumber]; 
+                event = eventBean.getEventBean(unaliasedStreams.get(0).getStreamAliasName());
+            }
+            else
+            {
+                event = eventsPerStream[underlyingStreamNumber];
+            }
 
             // Using a wrapper bean since we cannot use the same event type else same-type filters match.
             // Wrapping it even when not adding properties is very inexpensive.

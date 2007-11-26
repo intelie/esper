@@ -6,7 +6,7 @@ import java.util.Map;
  * Event bean wrapper for events that consists of a Map of name tags as key values and
  * event bean wrappers as value objects, for use by pattern expressions.
  */
-public class CompositeEventBean implements EventBean
+public class CompositeEventBean implements EventBean, TaggedCompositeEventBean
 {
     private final Map<String, EventBean> wrappedEvents;
     private final EventType eventType;
@@ -41,5 +41,10 @@ public class CompositeEventBean implements EventBean
     public Object getUnderlying()
     {
         return wrappedEvents;
+    }
+
+    public EventBean getEventBean(String property)
+    {
+        return wrappedEvents.get(property);
     }
 }

@@ -566,7 +566,7 @@ public class EPStatementStartMethod
         {
             // Assign a stream name for joins, if not supplied
             streamNames[i] = streams.get(i).getOptionalStreamName();
-            if ((streamNames[i] == null) && (streams.size() > 1))
+            if (streamNames[i] == null)
             {
                 streamNames[i] = "stream_" + i;
             }

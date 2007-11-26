@@ -21,7 +21,10 @@ import net.esper.eql.spec.*;
 import net.esper.eql.agg.AggregationServiceFactory;
 import net.esper.eql.agg.AggregationService;
 import net.esper.event.EventAdapterService;
+import net.esper.event.CompositeEventType;
+import net.esper.event.TaggedCompositeEventType;
 import net.esper.schedule.TimeProvider;
+import net.esper.util.JavaClassHelper;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -122,12 +125,25 @@ public class ResultSetProcessorFactory
         for (SelectExprElementStreamRawSpec raw : selectClauseSpec.getSelectStreamsList())
         {
             int streamNum = Integer.MIN_VALUE;
+            boolean isTaggedEvent = false;
             for (int i = 0; i < typeService.getStreamNames().length; i++)
             {
-                if (typeService.getStreamNames()[i].equals(raw.getStreamAliasName()))
+                String streamAlias = raw.getStreamAliasName();
+                if (typeService.getStreamNames()[i].equals(streamAlias))
                 {
                     streamNum = i;
                     break;
+                }
+
+                if (typeService.getEventTypes()[i] instanceof TaggedCompositeEventType)
+                {
+                    TaggedCompositeEventType compositeType = (TaggedCompositeEventType) typeService.getEventTypes()[i];
+                    if (compositeType.getTaggedEventTypes().get(streamAlias) != null)
+                    {
+                        streamNum = i;
+                        isTaggedEvent = true;
+                        break;
+                    }
                 }
             }
 
@@ -136,7 +152,7 @@ public class ResultSetProcessorFactory
                 throw new ExprValidationException("Stream selector '" + raw.getStreamAliasName() + ".*' does not match any stream alias name in the from clause");
             }
 
-            SelectExprElementStreamCompiledSpec validatedElement = new SelectExprElementStreamCompiledSpec(raw.getStreamAliasName(), raw.getOptionalAsName(), streamNum);
+            SelectExprElementStreamCompiledSpec validatedElement = new SelectExprElementStreamCompiledSpec(raw.getStreamAliasName(), raw.getOptionalAsName(), streamNum, isTaggedEvent);
             namedStreamList.add(validatedElement);
         }
         selectClauseSpec = null;

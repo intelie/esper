@@ -35,6 +35,34 @@ public class TestSelectExprStreamSelector extends TestCase
         epService.getEPRuntime().sendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
     }
 
+    public void testInsertFromPattern()
+    {
+    	String stmtOneText = "insert into streamA select a.* from pattern [every a=" + SupportBean.class.getName() + "]";
+    	SupportUpdateListener listenerOne = new SupportUpdateListener();
+    	EPStatement stmtOne = epService.getEPAdministrator().createEQL(stmtOneText);
+        stmtOne.addListener(listenerOne);
+
+        String stmtTwoText = "insert into streamA select a.* from pattern [every a=" + SupportBean.class.getName() + " where timer:within(30 sec)]";
+        SupportUpdateListener listenerTwo = new SupportUpdateListener();
+        EPStatement stmtTwo = epService.getEPAdministrator().createEQL(stmtTwoText);
+        stmtTwo.addListener(listenerTwo);
+
+        EventType eventType = stmtOne.getEventType();
+        assertEquals(SupportBean.class, eventType.getUnderlyingType());
+
+        Object event = sendBeanEvent("E1", 10);
+        assertSame(event, listenerTwo.assertOneGetNewAndReset().getUnderlying());
+
+        event = sendBeanEvent("E2", 10);
+        assertSame(event, listenerTwo.assertOneGetNewAndReset().getUnderlying());
+
+        String stmtThreeText = "insert into streamB select a.*, 'abc' as abc from pattern [every a=" + SupportBean.class.getName() + " where timer:within(30 sec)]";
+        EPStatement stmtThree = epService.getEPAdministrator().createEQL(stmtThreeText);
+        assertEquals(Pair.class, stmtThree.getEventType().getUnderlyingType());
+        assertEquals(String.class, stmtThree.getEventType().getPropertyType("abc"));
+        assertEquals(String.class, stmtThree.getEventType().getPropertyType("string"));
+    }
+
     public void testObjectModelJoinAlias()
     {
         EPStatementObjectModel model = new EPStatementObjectModel();
