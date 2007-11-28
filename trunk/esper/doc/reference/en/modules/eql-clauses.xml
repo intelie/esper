@@ -36,7 +36,7 @@
 		</orderedlist>
 
         <para>
-			EQL provides the concept of <emphasis>named window</emphasis>. Named windows are data windows that can be inserted-into and deleted-from by one or more statements, and that can queried by one or more statements. Named windows have a global character, being visible and shared across an engine instance beyond a single statement. Use the <literal>CREATE WINDOW</literal> clause to create named windows. Use the <literal>INSERT INTO</literal> clause to insert data into a named window, and the <literal>ON DELETE</literal> clause to remove events from a named window. Finally, the name of the named window can occur in a statement's <literal>FROM</literal> clause to query a named window or include the named window in a join or subquery. 
+			EQL provides the concept of <emphasis>named window</emphasis>. Named windows are data windows that can be inserted-into and deleted-from by one or more statements, and that can queried by one or more statements. Named windows have a global character, being visible and shared across an engine instance beyond a single statement. Use the <literal>CREATE WINDOW</literal> clause to create named windows. Use the <literal>INSERT INTO</literal> clause to insert data into a named window, the <literal>ON DELETE</literal> clause to remove events from a named window, and the <literal>ON SELECT</literal> clause to perform a non-continuous fire-once query on a named window. Finally, the name of the named window can occur in a statement's <literal>FROM</literal> clause to query a named window or include the named window in a join or subquery.
         </para>
 
         <para>
@@ -1178,36 +1178,55 @@ from pattern [every linkDown=LinkDownEvent -> linkUp=LinkUpEvent(ip=linkDown.ip)
 		</para>
 
 		<para>
+			The keywords <literal>left, right</literal> and <literal>full</literal> control the type of the join between two streams. The <literal>on</literal> clause specifies one or more properties that join each stream. The synopsis is as follows:
+		</para>
+
+<synopsis>...from <emphasis>stream_def</emphasis> [as name] 
+  left|right|full outer join <emphasis>stream_def</emphasis> 
+  on <emphasis>property</emphasis> = <emphasis>property</emphasis> [and <emphasis>property</emphasis> = <emphasis>property</emphasis> ...]
+  [left|right|full outer join <emphasis>stream_def</emphasis> on ...]...
+</synopsis>
+
+		<para>
 			If the outer join is a left outer join, there will be an output event for each event of the stream on the left-hand side of the clause. For example, in the left outer join shown below we will get output for each event in the stream RfidEvent, even if the event does not match any event in the event stream OrderList.
 		</para>
 
-<programlisting><![CDATA[select * from net.esper.example.rfid.RfidEvent.win:time(30 sec) as rfid
+<programlisting><![CDATA[select * from RfidEvent.win:time(30 sec) as rfid
        left outer join
-       net.esper.example.rfid.OrderList.win:length(10000) as orderlist
+       OrderList.win:length(10000) as orderlist
      on rfid.itemId = orderList.itemId]]></programlisting>
 		
 		<para>
 			Similarly, if the join is a Right Outer Join, then there will be an output event for each event of the stream on the right-hand side of the clause. For example, in the right outer join shown below we will get output for each event in the stream OrderList, even if the event does not match any event in the event stream RfidEvent.
 		</para>
 
-<programlisting><![CDATA[select * from net.esper.example.rfid.RfidEvent.win:time(30 sec) as rfid
+<programlisting><![CDATA[select * from RfidEvent.win:time(30 sec) as rfid
        right outer join
-       net.esper.example.rfid.OrderList.win:length(10000) as orderlist
-     on rfid.itemId = orderList.itemId]]></programlisting>
+       OrderList.win:length(10000) as orderlist
+       on rfid.itemId = orderList.itemId]]></programlisting>
 
 		<para>
 			For all types of outer joins, if the join condition is not met, the select list is computed with the event properties of the arrived event while all other event properties are considered to be null.
 		</para>
 		
-<programlisting><![CDATA[select * from net.esper.example.rfid.RfidEvent.win:time(30 sec) as rfid
-       full outer join
-       net.esper.example.rfid.OrderList.win:length(10000) as orderlist
-     on rfid.itemId = orderList.itemId]]></programlisting>
-
 		<para>
-			The last type of outer join is a full outer join. In a full outer join, each point in time that an event arrives to one of the event streams, one or more output events are produced. In the example below, when either an RfidEvent or an OrderList event arrive, one or more output event is produced.
+			The last type of outer join is a full outer join. In a full outer join, each point in time that an event arrives to one of the event streams, one or more output events are produced. In the example below, when either an RfidEvent or an OrderList event arrive, one or more output event is produced. The next example shows a full outer join that joins on multiple properties:
 		</para>
 
+<programlisting><![CDATA[select * from RfidEvent.win:time(30 sec) as rfid
+       full outer join
+       OrderList.win:length(10000) as orderlist
+       on rfid.itemId = orderList.itemId and rfid.assetId = orderList.assetId]]></programlisting>
+
+		<para>
+			Finally, this example outer joins multiple streams. Here the RfidEvent stream is outer joined to both ProductName and LocationDescription via left outer join:
+		</para>
+
+<programlisting><![CDATA[select * from RfidEvent.win:time(30 sec) as rfid
+      left outer join ProductName.win:keepall() as refprod
+        on rfid.productId = refprod.prodId
+      left outer join LocationDescription.win:keepall() as refdesc
+        on rfid.location = refdesc.locId]]></programlisting>
     </sect1>
 
     <sect1 id="eql-subqueries">

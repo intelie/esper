@@ -8,8 +8,11 @@
 package net.esper.client.soda;
 
 import net.esper.type.OuterJoinType;
+import net.esper.collection.Pair;
 
 import java.io.Serializable;
+import java.util.List;
+import java.util.ArrayList;
 
 /**
  * Qualifies a join by providing the outer join type (full/left/right) and joined-on properties.
@@ -21,6 +24,7 @@ public class OuterJoinQualifier implements Serializable
     private OuterJoinType type;
     private PropertyValueExpression left;
     private PropertyValueExpression right;
+    private List<Pair<PropertyValueExpression, PropertyValueExpression>> additionalProperties;
 
     /**
      * Creates qualifier.
@@ -42,9 +46,22 @@ public class OuterJoinQualifier implements Serializable
      */
     public OuterJoinQualifier(OuterJoinType type, PropertyValueExpression left, PropertyValueExpression right)
     {
+        this(type, left, right, new ArrayList<Pair<PropertyValueExpression, PropertyValueExpression>>());
+    }
+
+    /**
+     * Ctor.
+     * @param left is a property providing joined-on values
+     * @param type is the type of outer join
+     * @param right is a property providing joined-on values
+     * @param additionalProperties for any pairs of additional on-clause properties
+     */
+    public OuterJoinQualifier(OuterJoinType type, PropertyValueExpression left, PropertyValueExpression right, ArrayList<Pair<PropertyValueExpression, PropertyValueExpression>> additionalProperties)
+    {
         this.type = type;
         this.left = left;
         this.right = right;
+        this.additionalProperties = additionalProperties;
     }
 
     /**
@@ -99,5 +116,26 @@ public class OuterJoinQualifier implements Serializable
     public void setRight(PropertyValueExpression right)
     {
         this.right = right;
+    }
+
+    /**
+     * Add additional properties to the on-clause, which are logical-and to existing properties
+     * @param propertyLeft property providing joined-on value
+     * @param propertyRight property providing joined-on value
+     * @return
+     */
+    public OuterJoinQualifier add(String propertyLeft, String propertyRight)
+    {
+        additionalProperties.add(new Pair<PropertyValueExpression, PropertyValueExpression>(new PropertyValueExpression(propertyLeft), new PropertyValueExpression(propertyRight)));
+        return this;
+    }
+
+    /**
+     * Returns optional additional properties in the on-clause of the outer join.
+     * @return pairs of properties connected via logical-and in an on-clause
+     */
+    public List<Pair<PropertyValueExpression, PropertyValueExpression>> getAdditionalProperties()
+    {
+        return additionalProperties;
     }
 }

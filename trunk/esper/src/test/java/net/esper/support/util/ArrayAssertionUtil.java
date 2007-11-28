@@ -434,7 +434,7 @@ public class ArrayAssertionUtil
 
         for (int j = 0; j < propertiesThisRow.length; j++)
         {
-            String name = propertyNames[j];
+            String name = propertyNames[j].trim();
             Object value = propertiesThisRow[j];
             Object eventProp = received.get(name);
             Assert.assertEquals("Error asserting property named '" + name + "'",value,eventProp);

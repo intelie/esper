@@ -4,12 +4,16 @@ import junit.framework.TestCase;
 import net.esper.client.EPServiceProvider;
 import net.esper.client.EPServiceProviderManager;
 import net.esper.client.EPStatement;
+import net.esper.client.soda.*;
 import net.esper.event.EventBean;
 import net.esper.support.bean.SupportBean_S0;
 import net.esper.support.bean.SupportBean_S1;
+import net.esper.support.bean.SupportBean;
 import net.esper.support.client.SupportConfigFactory;
 import net.esper.support.util.ArrayAssertionUtil;
 import net.esper.support.util.SupportUpdateListener;
+import net.esper.type.OuterJoinType;
+import net.esper.util.SerializableObjectCopier;
 
 public class Test2StreamOuterJoin extends TestCase
 {
@@ -131,6 +135,117 @@ public class Test2StreamOuterJoin extends TestCase
                                 {104, "4", 204, "4"},
                                 {null, null, 205, "5"},
                                 {null, null, 205, "5"}});
+    }
+
+    public void testMultiColumnLeft_OM() throws Exception
+    {
+        EPStatementObjectModel model = new EPStatementObjectModel();
+        model.setSelectClause(SelectClause.create("s0.id, s0.p00, s0.p01, s1.id, s1.p10, s1.p11".split(",")));
+        FromClause fromClause = FromClause.create(
+                FilterStream.create(SupportBean_S0.class.getName(), "s0"),
+                FilterStream.create(SupportBean_S1.class.getName(), "s1"));
+        fromClause.add(OuterJoinQualifier.create("s0.p00", OuterJoinType.LEFT, "s1.p10").add("s1.p11", "s0.p01"));
+        model.setFromClause(fromClause);
+        model = (EPStatementObjectModel) SerializableObjectCopier.copy(model);
+
+        String stmtText = "select s0.id, s0.p00, s0.p01, s1.id, s1.p10, s1.p11 from net.esper.support.bean.SupportBean_S0 as s0 left outer join net.esper.support.bean.SupportBean_S1 as s1 on s0.p00 = s1.p10 and s1.p11 = s0.p01";
+        assertEquals(stmtText, model.toEQL());
+        outerJoinView = epService.getEPAdministrator().create(model);
+        outerJoinView.addListener(updateListener);
+
+        assertMultiColumnLeft();
+
+        EPStatementObjectModel modelReverse = epService.getEPAdministrator().compileEQL(stmtText);
+        assertEquals(stmtText, modelReverse.toEQL());
+    }
+
+    public void testMultiColumnLeft()
+    {
+        String joinStatement = "select s0.id, s0.p00, s0.p01, s1.id, s1.p10, s1.p11 from " +
+            SupportBean_S0.class.getName() + ".win:length(3) as s0 " +
+            "left outer join " +
+            SupportBean_S1.class.getName() + ".win:length(5) as s1" +
+            " on s0.p00 = s1.p10 and s0.p01 = s1.p11";
+
+        outerJoinView = epService.getEPAdministrator().createEQL(joinStatement);
+        outerJoinView.addListener(updateListener);
+
+        assertMultiColumnLeft();
+    }
+
+    private void assertMultiColumnLeft()
+    {
+        String fields[] = "s0.id, s0.p00, s0.p01, s1.id, s1.p10, s1.p11".split(",");
+        epService.getEPRuntime().sendEvent(new SupportBean_S0(1, "A_1", "B_1"));
+        ArrayAssertionUtil.assertProps(updateListener.assertOneGetNewAndReset(), fields, new Object[] {1, "A_1", "B_1", null, null, null});
+
+        epService.getEPRuntime().sendEvent(new SupportBean_S1(2, "A_1", "B_1"));
+        ArrayAssertionUtil.assertProps(updateListener.assertOneGetNewAndReset(), fields, new Object[] {1, "A_1", "B_1", 2, "A_1", "B_1"});
+
+        epService.getEPRuntime().sendEvent(new SupportBean_S1(3, "A_2", "B_1"));
+        assertFalse(updateListener.isInvoked());
+
+        epService.getEPRuntime().sendEvent(new SupportBean_S1(4, "A_1", "B_2"));
+        assertFalse(updateListener.isInvoked());        
+    }
+
+    public void testMultiColumnRight()
+    {
+        String fields[] = "s0.id, s0.p00, s0.p01, s1.id, s1.p10, s1.p11".split(",");
+        String joinStatement = "select s0.id, s0.p00, s0.p01, s1.id, s1.p10, s1.p11 from " +
+            SupportBean_S0.class.getName() + ".win:length(3) as s0 " +
+            "right outer join " +
+            SupportBean_S1.class.getName() + ".win:length(5) as s1" +
+            " on s0.p00 = s1.p10 and s1.p11 = s0.p01";
+
+        outerJoinView = epService.getEPAdministrator().createEQL(joinStatement);
+        outerJoinView.addListener(updateListener);
+
+        epService.getEPRuntime().sendEvent(new SupportBean_S0(1, "A_1", "B_1"));
+        assertFalse(updateListener.isInvoked());
+
+        epService.getEPRuntime().sendEvent(new SupportBean_S1(2, "A_1", "B_1"));
+        ArrayAssertionUtil.assertProps(updateListener.assertOneGetNewAndReset(), fields, new Object[] {1, "A_1", "B_1", 2, "A_1", "B_1"});
+
+        epService.getEPRuntime().sendEvent(new SupportBean_S1(3, "A_2", "B_1"));
+        ArrayAssertionUtil.assertProps(updateListener.assertOneGetNewAndReset(), fields, new Object[] {null, null, null, 3, "A_2", "B_1"});
+
+        epService.getEPRuntime().sendEvent(new SupportBean_S1(4, "A_1", "B_2"));
+        ArrayAssertionUtil.assertProps(updateListener.assertOneGetNewAndReset(), fields, new Object[] {null, null, null, 4, "A_1", "B_2"});
+    }
+
+    public void testMultiColumnRightCoercion()
+    {
+        String fields[] = "s0.string, s1.string".split(",");
+        String joinStatement = "select s0.string, s1.string from " +
+            SupportBean.class.getName() + "(string like 'S0%').win:keepall() as s0 " +
+            "right outer join " +
+            SupportBean.class.getName() + "(string like 'S1%').win:keepall() as s1" +
+            " on s0.intPrimitive = s1.doublePrimitive and s1.intPrimitive = s0.doublePrimitive";
+
+        outerJoinView = epService.getEPAdministrator().createEQL(joinStatement);
+        outerJoinView.addListener(updateListener);
+
+        sendEvent("S1_1", 10, 20d);
+        ArrayAssertionUtil.assertProps(updateListener.assertOneGetNewAndReset(), fields, new Object[] {null, "S1_1"});
+
+        sendEvent("S0_2", 11, 22d);
+        assertFalse(updateListener.isInvoked());
+
+        sendEvent("S0_3", 11, 21d);
+        assertFalse(updateListener.isInvoked());
+
+        sendEvent("S0_4", 12, 21d);
+        assertFalse(updateListener.isInvoked());
+
+        sendEvent("S1_2", 11, 22d);
+        ArrayAssertionUtil.assertProps(updateListener.assertOneGetNewAndReset(), fields, new Object[] {null, "S1_2"});
+
+        sendEvent("S1_3", 22, 11d);
+        ArrayAssertionUtil.assertProps(updateListener.assertOneGetNewAndReset(), fields, new Object[] {"S0_2", "S1_3"});
+
+        sendEvent("S0_5", 22, 11d);
+        ArrayAssertionUtil.assertProps(updateListener.assertOneGetNewAndReset(), fields, new Object[] {"S0_5", "S1_2"});
     }
 
     public void testRightOuterJoin()
@@ -304,6 +419,15 @@ public class Test2StreamOuterJoin extends TestCase
         assertEquals(idS1, receivedEvent.get("s1.id"));
         assertEquals(p00, receivedEvent.get("s0.p00"));
         assertEquals(p10, receivedEvent.get("s1.p10"));
+    }
+
+    private void sendEvent(String s, int intPrimitive, double doublePrimitive)
+    {
+        SupportBean bean = new SupportBean();
+        bean.setString(s);
+        bean.setIntPrimitive(intPrimitive);
+        bean.setDoublePrimitive(doublePrimitive);
+        epService.getEPRuntime().sendEvent(bean);
     }
 
     private EPStatement setupStatement(String outerJoinType)

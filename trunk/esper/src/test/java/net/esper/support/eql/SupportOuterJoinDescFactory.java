@@ -13,7 +13,7 @@ public class SupportOuterJoinDescFactory
 
         identNodeOne.validate(new SupportStreamTypeSvc3Stream(), null, null, null);
         identNodeTwo.validate(new SupportStreamTypeSvc3Stream(), null, null, null);
-        OuterJoinDesc desc = new OuterJoinDesc(type, identNodeOne, identNodeTwo);
+        OuterJoinDesc desc = new OuterJoinDesc(type, identNodeOne, identNodeTwo, null, null);
 
         return desc;
     }

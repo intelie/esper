@@ -11,6 +11,7 @@ import net.esper.pattern.*;
 import net.esper.type.MathArithTypeEnum;
 import net.esper.type.MinMaxTypeEnum;
 import net.esper.type.RelationalOpEnum;
+import net.esper.collection.Pair;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -295,7 +296,20 @@ public class StatementSpecMapper
         {
             PropertyValueExpression left = (PropertyValueExpression) unmapExpressionFlat(desc.getLeftNode(), unmapContext);
             PropertyValueExpression right = (PropertyValueExpression) unmapExpressionFlat(desc.getRightNode(), unmapContext);
-            from.add(new OuterJoinQualifier(desc.getOuterJoinType(), left, right));
+
+            ArrayList<Pair<PropertyValueExpression, PropertyValueExpression>> additionalProperties = new ArrayList<Pair<PropertyValueExpression, PropertyValueExpression>>();
+            if (desc.getAdditionalLeftNodes() != null)
+            {
+                for (int i = 0; i < desc.getAdditionalLeftNodes().length; i++)
+                {
+                    ExprIdentNode leftNode = desc.getAdditionalLeftNodes()[i];
+                    ExprIdentNode rightNode = desc.getAdditionalRightNodes()[i];
+                    PropertyValueExpression propLeft = (PropertyValueExpression) unmapExpressionFlat(leftNode, unmapContext);
+                    PropertyValueExpression propRight = (PropertyValueExpression) unmapExpressionFlat(rightNode, unmapContext);
+                    additionalProperties.add(new Pair<PropertyValueExpression, PropertyValueExpression>(propLeft, propRight));
+                }
+            }
+            from.add(new OuterJoinQualifier(desc.getOuterJoinType(), left, right, additionalProperties));
         }
 
     }
@@ -916,7 +930,22 @@ public class StatementSpecMapper
         {
             ExprIdentNode left = (ExprIdentNode) mapExpressionFlat(qualifier.getLeft(), engineImportService);
             ExprIdentNode right = (ExprIdentNode) mapExpressionFlat(qualifier.getRight(), engineImportService);
-            raw.getOuterJoinDescList().add(new OuterJoinDesc(qualifier.getType(), left, right));
+
+            ExprIdentNode[] additionalLeft = null;
+            ExprIdentNode[] additionalRight = null;
+            if (qualifier.getAdditionalProperties().size() != 0)
+            {
+                additionalLeft = new ExprIdentNode[qualifier.getAdditionalProperties().size()];
+                additionalRight = new ExprIdentNode[qualifier.getAdditionalProperties().size()];
+                int count = 0;
+                for (Pair<PropertyValueExpression, PropertyValueExpression> pair : qualifier.getAdditionalProperties())
+                {
+                    additionalLeft[count] = (ExprIdentNode) mapExpressionFlat(pair.getFirst(), engineImportService);
+                    additionalRight[count] = (ExprIdentNode) mapExpressionFlat(pair.getSecond(), engineImportService);
+                    count++;
+                }
+            }
+            raw.getOuterJoinDescList().add(new OuterJoinDesc(qualifier.getType(), left, right, additionalLeft, additionalRight));
         }
     }
 

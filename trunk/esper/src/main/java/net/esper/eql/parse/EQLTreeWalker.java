@@ -1139,7 +1139,25 @@ public class EQLTreeWalker extends EQLBaseWalker
         astExprNodeMap.remove(node.getFirstChild());
         astExprNodeMap.remove(node.getFirstChild().getNextSibling());
 
-        OuterJoinDesc outerJoinDesc = new OuterJoinDesc(joinType, left, right);
+        // get optional additional
+        AST child = node.getFirstChild().getNextSibling().getNextSibling();
+        ExprIdentNode[] addLeftArr = null;
+        ExprIdentNode[] addRightArr = null;
+        if (child != null)
+        {
+            ArrayList<ExprIdentNode> addLeft = new ArrayList<ExprIdentNode>();
+            ArrayList<ExprIdentNode> addRight = new ArrayList<ExprIdentNode>();
+            while (child != null)
+            {
+                addLeft.add((ExprIdentNode)astExprNodeMap.remove(child));
+                addRight.add((ExprIdentNode)astExprNodeMap.remove(child.getNextSibling()));
+                child = child.getNextSibling().getNextSibling();
+            }
+            addLeftArr = addLeft.toArray(new ExprIdentNode[0]);
+            addRightArr = addRight.toArray(new ExprIdentNode[0]);
+        }
+
+        OuterJoinDesc outerJoinDesc = new OuterJoinDesc(joinType, left, right, addLeftArr, addRightArr);
         statementSpec.getOuterJoinDescList().add(outerJoinDesc);
     }
 

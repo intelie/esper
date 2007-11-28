@@ -638,7 +638,7 @@ public class TestEQLTreeWalker extends TestCase
                         "on win1.f1 = win2.f2 " +
                         outerType + " outer join " +
                         SupportBean_A.class.getName() + "().win:lenght(10) as win3 " +
-                        "on win1.f1 = win3.f3";
+                        "on win1.f1 = win3.f3 and win1.f11 = win3.f31";
         walker = parseAndWalkEQL(text);
 
         descList = walker.getStatementSpec().getOuterJoinDescList();
@@ -657,6 +657,13 @@ public class TestEQLTreeWalker extends TestCase
         assertEquals("win1", desc.getLeftNode().getStreamOrPropertyName());
         assertEquals("f3", desc.getRightNode().getUnresolvedPropertyName());
         assertEquals("win3", desc.getRightNode().getStreamOrPropertyName());
+
+        assertEquals(1, desc.getAdditionalLeftNodes().length);
+        assertEquals("f11", desc.getAdditionalLeftNodes()[0].getUnresolvedPropertyName());
+        assertEquals("win1", desc.getAdditionalLeftNodes()[0].getStreamOrPropertyName());
+        assertEquals(1, desc.getAdditionalRightNodes().length);
+        assertEquals("f31", desc.getAdditionalRightNodes()[0].getUnresolvedPropertyName());
+        assertEquals("win3", desc.getAdditionalRightNodes()[0].getStreamOrPropertyName());
     }
 
     public void testWalkPattern() throws Exception

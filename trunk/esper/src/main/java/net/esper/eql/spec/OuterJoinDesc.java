@@ -19,18 +19,24 @@ public class OuterJoinDesc implements MetaDefItem
     private OuterJoinType outerJoinType;
     private ExprIdentNode leftNode;
     private ExprIdentNode rightNode;
+    private ExprIdentNode[] addLeftNode;
+    private ExprIdentNode[] addRightNode;
 
     /**
      * Ctor.
      * @param outerJoinType - type of the outer join
      * @param leftNode - left hand identifier node
      * @param rightNode - right hand identifier node
+     * @param addLeftNode - additional optional left hand identifier nodes for the on-clause in a logical-and
+     * @param addRightNode - additional optional right hand identifier nodes for the on-clause in a logical-and
      */
-    public OuterJoinDesc(OuterJoinType outerJoinType, ExprIdentNode leftNode, ExprIdentNode rightNode)
+    public OuterJoinDesc(OuterJoinType outerJoinType, ExprIdentNode leftNode, ExprIdentNode rightNode, ExprIdentNode[] addLeftNode, ExprIdentNode[] addRightNode)
     {
         this.outerJoinType = outerJoinType;
         this.leftNode = leftNode;
         this.rightNode = rightNode;
+        this.addLeftNode = addLeftNode;
+        this.addRightNode = addRightNode;
     }
 
     /**
@@ -58,5 +64,15 @@ public class OuterJoinDesc implements MetaDefItem
     public ExprIdentNode getRightNode()
     {
         return rightNode;
+    }
+
+    public ExprIdentNode[] getAdditionalLeftNodes()
+    {
+        return addLeftNode;
+    }
+
+    public ExprIdentNode[] getAdditionalRightNodes()
+    {
+        return addRightNode;
     }
 }

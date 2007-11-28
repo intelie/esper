@@ -3,6 +3,7 @@ package net.esper.core;
 import net.esper.client.EPStatementException;
 import net.esper.collection.Pair;
 import net.esper.collection.FlushedEventBuffer;
+import net.esper.collection.UniformPair;
 import net.esper.eql.core.*;
 import net.esper.eql.db.PollingViewableFactory;
 import net.esper.eql.expression.*;
@@ -123,6 +124,12 @@ public class EPStatementStartMethod
             PatternContext patternContext = statementContext.getPatternContextFactory().createContext(statementContext, 0, rootNode);
             PatternStopCallback patternStopCallback = rootNode.start(callback, patternContext);
             stopCallbacks.add(patternStopCallback);
+        }
+        else if (streamSpec instanceof NamedWindowConsumerStreamSpec)
+        {
+            NamedWindowConsumerStreamSpec namedSpec = (NamedWindowConsumerStreamSpec) streamSpec;
+            NamedWindowProcessor processor = services.getNamedWindowService().getProcessor(namedSpec.getWindowName());
+            eventStreamParentViewable = processor.addConsumer(namedSpec.getFilterExpressions(), statementContext.getEpStatementHandle(), statementContext.getStatementStopService());
         }
         else
         {
@@ -605,59 +612,89 @@ public class EPStatementStartMethod
         {
             OuterJoinDesc outerJoinDesc = statementSpec.getOuterJoinDescList().get(outerJoinCount);
 
-            // Validate the outer join clause using an artificial equals-node on top.
-            // Thus types are checked via equals.
-            // Sets stream ids used for validated nodes.
-            ExprNode equalsNode = new ExprEqualsNode(false);
-            equalsNode.addChildNode(outerJoinDesc.getLeftNode());
-            equalsNode.addChildNode(outerJoinDesc.getRightNode());
-            try
-            {
-                equalsNode = equalsNode.getValidatedSubtree(typeService, methodResolutionService, viewResourceDelegate, statementContext.getSchedulingService());
-            }
-            catch (ExprValidationException ex)
-            {
-                log.debug("Validation exception for outer join node=" + equalsNode.toExpressionString(), ex);
-                throw new EPStatementException("Error validating expression: " + ex.getMessage(), statementContext.getExpression());
-            }
+            UniformPair<Integer> streamIdPair = validateOuterJoinPropertyPair(outerJoinDesc.getLeftNode(), outerJoinDesc.getRightNode(), outerJoinCount,
+                    typeService, methodResolutionService, viewResourceDelegate);
 
-            // Make sure we have left-hand-side and right-hand-side refering to different streams
-            int streamIdLeft = outerJoinDesc.getLeftNode().getStreamId();
-            int streamIdRight = outerJoinDesc.getRightNode().getStreamId();
-            if (streamIdLeft == streamIdRight)
+            if (outerJoinDesc.getAdditionalLeftNodes() != null)
             {
-                String message = "Outer join ON-clause cannot refer to properties of the same stream";
-                throw new EPStatementException("Error validating expression: " + message, statementContext.getExpression());
-            }
+                Set<Integer> streamSet = new HashSet<Integer>();
+                streamSet.add(streamIdPair.getFirst());
+                streamSet.add(streamIdPair.getSecond());
+                for (int i = 0; i < outerJoinDesc.getAdditionalLeftNodes().length; i++)
+                {
+                    UniformPair<Integer> streamIdPairAdd = validateOuterJoinPropertyPair(outerJoinDesc.getAdditionalLeftNodes()[i], outerJoinDesc.getAdditionalRightNodes()[i], outerJoinCount,
+                            typeService, methodResolutionService, viewResourceDelegate);
 
-            // Make sure one of the properties refers to the acutual stream currently being joined
-            int expectedStreamJoined = outerJoinCount + 1;
-            if ((streamIdLeft != expectedStreamJoined) && (streamIdRight != expectedStreamJoined))
-            {
-                String message = "Outer join ON-clause must refer to at least one property of the joined stream" +
-                        " for stream " + expectedStreamJoined;
-                throw new EPStatementException("Error validating expression: " + message, statementContext.getExpression());
-            }
+                    // make sure all additional properties point to the same two streams
+                    if ((!streamSet.contains(streamIdPairAdd.getFirst()) || (!streamSet.contains(streamIdPairAdd.getSecond()))))
+                    {
+                        String message = "Outer join ON-clause columns must refer to properties of the same joined streams" +
+                                " when using multiple columns in the on-clause";
+                        throw new EPStatementException("Error validating expression: " + message, statementContext.getExpression());
+                    }
 
-            // Make sure neither of the streams refer to a 'future' stream
-            String badPropertyName = null;
-            if (streamIdLeft > outerJoinCount + 1)
-            {
-                badPropertyName = outerJoinDesc.getLeftNode().getResolvedPropertyName();
+                }
             }
-            if (streamIdRight > outerJoinCount + 1)
-            {
-                badPropertyName = outerJoinDesc.getRightNode().getResolvedPropertyName();
-            }
-            if (badPropertyName != null)
-            {
-                String message = "Outer join ON-clause invalid scope for property" +
-                        " '" + badPropertyName + "', expecting the current or a prior stream scope";
-                throw new EPStatementException("Error validating expression: " + message, statementContext.getExpression());
-            }
-
         }
     }
+
+    private UniformPair<Integer> validateOuterJoinPropertyPair(ExprIdentNode leftNode, ExprIdentNode rightNode, int outerJoinCount,
+           StreamTypeService typeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate)
+    {
+        // Validate the outer join clause using an artificial equals-node on top.
+        // Thus types are checked via equals.
+        // Sets stream ids used for validated nodes.
+        ExprNode equalsNode = new ExprEqualsNode(false);
+        equalsNode.addChildNode(leftNode);
+        equalsNode.addChildNode(rightNode);
+        try
+        {
+            equalsNode = equalsNode.getValidatedSubtree(typeService, methodResolutionService, viewResourceDelegate, statementContext.getSchedulingService());
+        }
+        catch (ExprValidationException ex)
+        {
+            log.debug("Validation exception for outer join node=" + equalsNode.toExpressionString(), ex);
+            throw new EPStatementException("Error validating expression: " + ex.getMessage(), statementContext.getExpression());
+        }
+
+        // Make sure we have left-hand-side and right-hand-side refering to different streams
+        int streamIdLeft = leftNode.getStreamId();
+        int streamIdRight = rightNode.getStreamId();
+        if (streamIdLeft == streamIdRight)
+        {
+            String message = "Outer join ON-clause cannot refer to properties of the same stream";
+            throw new EPStatementException("Error validating expression: " + message, statementContext.getExpression());
+        }
+
+        // Make sure one of the properties refers to the acutual stream currently being joined
+        int expectedStreamJoined = outerJoinCount + 1;
+        if ((streamIdLeft != expectedStreamJoined) && (streamIdRight != expectedStreamJoined))
+        {
+            String message = "Outer join ON-clause must refer to at least one property of the joined stream" +
+                    " for stream " + expectedStreamJoined;
+            throw new EPStatementException("Error validating expression: " + message, statementContext.getExpression());
+        }
+
+        // Make sure neither of the streams refer to a 'future' stream
+        String badPropertyName = null;
+        if (streamIdLeft > outerJoinCount + 1)
+        {
+            badPropertyName = leftNode.getResolvedPropertyName();
+        }
+        if (streamIdRight > outerJoinCount + 1)
+        {
+            badPropertyName = rightNode.getResolvedPropertyName();
+        }
+        if (badPropertyName != null)
+        {
+            String message = "Outer join ON-clause invalid scope for property" +
+                    " '" + badPropertyName + "', expecting the current or a prior stream scope";
+            throw new EPStatementException("Error validating expression: " + message, statementContext.getExpression());
+        }
+
+        return new UniformPair<Integer>(streamIdLeft, streamIdRight);
+    }
+
 
     private Viewable handleSimpleSelect(Viewable view,
                                         ResultSetProcessor optionalResultSetProcessor,

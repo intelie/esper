@@ -206,6 +206,12 @@ public class TestEQLParser extends TestCase implements EqlTokenTypes
 
     public void testValidCases() throws Exception
     {
+        assertIsValid("select * " +
+                      "from A " +
+                      "left outer join " +
+                      "B" +
+                      " on a = b and c=d");
+
         String className = SupportBean.class.getName();
         String preFill = "select * from " + className;
 
@@ -290,6 +296,11 @@ public class TestEQLParser extends TestCase implements EqlTokenTypes
                       "left outer join " +
                       "a.b(string[0]='test').win:lenght(100) as y " +
                       "on y.array[1].map('a').nested = x.nested2");
+        assertIsValid("select * " +
+                      "from A " +
+                      "left outer join " +
+                      "B" +
+                      " on a = b and c=d");
         assertIsValid("select a and b from b.win:length(1)");
         assertIsValid("select a or b from b.win:length(1)");
         assertIsValid("select a = b from b.win:length(1)");

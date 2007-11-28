@@ -7,6 +7,8 @@
  **************************************************************************************/
 package net.esper.client.soda;
 
+import net.esper.collection.Pair;
+
 import java.io.Serializable;
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -161,6 +163,17 @@ public class FromClause implements Serializable
                     qualCond.getLeft().toEQL(writer);
                     writer.write(" = ");
                     qualCond.getRight().toEQL(writer);
+
+                    if (qualCond.getAdditionalProperties().size() > 0)
+                    {
+                        for (Pair<PropertyValueExpression, PropertyValueExpression> pair : qualCond.getAdditionalProperties())
+                        {
+                            writer.write(" and ");
+                            pair.getFirst().toEQL(writer);
+                            writer.write(" = ");
+                            pair.getSecond().toEQL(writer);                            
+                        }
+                    }
                 }
 
                 if (i < streams.size() - 1)

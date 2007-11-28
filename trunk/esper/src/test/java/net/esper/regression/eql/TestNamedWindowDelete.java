@@ -19,6 +19,7 @@ public class TestNamedWindowDelete extends TestCase
 {
     private EPServiceProvider epService;
     private SupportUpdateListener listenerWindow;
+    private SupportUpdateListener listenerWindowTwo;
     private SupportUpdateListener listenerSelect;
     private SupportUpdateListener listenerDelete;
 
@@ -30,8 +31,61 @@ public class TestNamedWindowDelete extends TestCase
         epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();
         listenerWindow = new SupportUpdateListener();
+        listenerWindowTwo = new SupportUpdateListener();
         listenerSelect = new SupportUpdateListener();
         listenerDelete = new SupportUpdateListener();
+    }
+
+    public void testStaggeredNamedWindow()
+    {
+        String[] fieldsOne = new String[] {"a1", "b1"};
+        String[] fieldsTwo = new String[] {"a2", "b2"};
+
+        // create window one
+        String stmtTextCreateOne = "create window MyWindowOne.win:keepall() as select string as a1, intPrimitive as b1 from " + SupportBean.class.getName();
+        EPStatement stmtCreateOne = epService.getEPAdministrator().createEQL(stmtTextCreateOne);
+        stmtCreateOne.addListener(listenerWindow);
+
+        // create window one
+        String stmtTextCreateTwo = "create window MyWindowTwo.win:keepall() as select string as a2, intPrimitive as b2 from " + SupportBean.class.getName();
+        EPStatement stmtCreateTwo = epService.getEPAdministrator().createEQL(stmtTextCreateTwo);
+        stmtCreateTwo.addListener(listenerWindowTwo);
+
+        // create delete stmt
+        String stmtTextDelete = "on MyWindowOne delete from MyWindowTwo where a1 = a2";
+        EPStatement stmtDelete = epService.getEPAdministrator().createEQL(stmtTextDelete);
+        stmtDelete.addListener(listenerDelete);
+
+        // create insert into
+        String stmtTextInsert = "insert into MyWindowOne select string as a1, intPrimitive as b1 from " + SupportBean.class.getName() + "(intPrimitive > 0)";
+        epService.getEPAdministrator().createEQL(stmtTextInsert);
+        stmtTextInsert = "insert into MyWindowTwo select string as a2, intPrimitive as b2 from " + SupportBean.class.getName() + "(intPrimitive < 0)";
+        epService.getEPAdministrator().createEQL(stmtTextInsert);
+
+        sendSupportBean("E1", -10);
+        ArrayAssertionUtil.assertProps(listenerWindowTwo.assertOneGetNewAndReset(), fieldsTwo, new Object[] {"E1", -10});
+        ArrayAssertionUtil.assertEqualsExactOrder(stmtCreateTwo.iterator(), fieldsTwo, new Object[][] {{"E1", -10}});
+        assertFalse(listenerWindow.isInvoked());
+
+        sendSupportBean("E2", 5);
+        ArrayAssertionUtil.assertProps(listenerWindow.assertOneGetNewAndReset(), fieldsOne, new Object[] {"E2", 5});
+        ArrayAssertionUtil.assertEqualsExactOrder(stmtCreateOne.iterator(), fieldsOne, new Object[][] {{"E2", 5}});
+        assertFalse(listenerWindowTwo.isInvoked());
+
+        sendSupportBean("E3", -1);
+        ArrayAssertionUtil.assertProps(listenerWindowTwo.assertOneGetNewAndReset(), fieldsTwo, new Object[] {"E3", -1});
+        ArrayAssertionUtil.assertEqualsExactOrder(stmtCreateTwo.iterator(), fieldsTwo, new Object[][] {{"E1", -10}, {"E3", -1}});
+        assertFalse(listenerWindow.isInvoked());
+
+        sendSupportBean("E3", 1);
+        ArrayAssertionUtil.assertProps(listenerWindow.assertOneGetNewAndReset(), fieldsOne, new Object[] {"E3", 1});
+        ArrayAssertionUtil.assertEqualsExactOrder(stmtCreateOne.iterator(), fieldsOne, new Object[][] {{"E2", 5}, {"E3", 1}});
+        ArrayAssertionUtil.assertProps(listenerWindowTwo.assertOneGetOldAndReset(), fieldsTwo, new Object[] {"E3", -1});
+        ArrayAssertionUtil.assertEqualsExactOrder(stmtCreateTwo.iterator(), fieldsTwo, new Object[][] {{"E1", -10}});
+
+        stmtDelete.destroy();
+        stmtCreateOne.destroy();
+        stmtCreateTwo.destroy();
     }
 
     public void testDeletePattern()

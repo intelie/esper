@@ -319,8 +319,12 @@ outerJoin
 	;
 
 outerJoinIdent
-	:	ON! eventProperty EQUALS! eventProperty
+	:	ON! outerJoinIdentPair (AND_EXPR! outerJoinIdentPair)*
 		{ #outerJoinIdent = #([OUTERJOIN_EXPR,"outerJoinIdent"], #outerJoinIdent); }
+	;
+	
+outerJoinIdentPair 
+	:	eventProperty EQUALS! eventProperty
 	;
 
 whereClause

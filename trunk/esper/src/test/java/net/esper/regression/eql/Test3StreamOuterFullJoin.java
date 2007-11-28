@@ -31,6 +31,70 @@ public class Test3StreamOuterFullJoin extends TestCase
         updateListener = new SupportUpdateListener();
     }
 
+    public void testFullJoin_2sides_multicolumn()
+    {
+        String fields[] = "s0.id, s0.p00, s0.p01, s1.id, s1.p10, s1.p11, s2.id, s2.p20, s2.p21".split(",");
+
+        String joinStatement = "select * from " +
+                                  EVENT_S0 + ".win:length(1000) as s0 " +
+            " full outer join " + EVENT_S1 + ".win:length(1000) as s1 on s0.p00 = s1.p10 and s0.p01 = s1.p11" +
+            " full outer join " + EVENT_S2 + ".win:length(1000) as s2 on s0.p00 = s2.p20 and s0.p01 = s2.p21";
+
+        joinView = epService.getEPAdministrator().createEQL(joinStatement);
+        joinView.addListener(updateListener);
+
+        epService.getEPRuntime().sendEvent(new SupportBean_S1(10, "A_1", "B_1"));
+        ArrayAssertionUtil.assertProps(updateListener.assertOneGetNewAndReset(), fields, new Object[] {null, null, null, 10, "A_1", "B_1", null, null, null});
+
+        epService.getEPRuntime().sendEvent(new SupportBean_S1(11, "A_2", "B_1"));
+        ArrayAssertionUtil.assertProps(updateListener.assertOneGetNewAndReset(), fields, new Object[] {null, null, null, 11, "A_2", "B_1", null, null, null});
+
+        epService.getEPRuntime().sendEvent(new SupportBean_S1(12, "A_1", "B_2"));
+        ArrayAssertionUtil.assertProps(updateListener.assertOneGetNewAndReset(), fields, new Object[] {null, null, null, 12, "A_1", "B_2", null, null, null});
+
+        epService.getEPRuntime().sendEvent(new SupportBean_S1(13, "A_2", "B_2"));
+        ArrayAssertionUtil.assertProps(updateListener.assertOneGetNewAndReset(), fields, new Object[] {null, null, null, 13, "A_2", "B_2", null, null, null});
+
+        epService.getEPRuntime().sendEvent(new SupportBean_S2(20, "A_1", "B_1"));
+        ArrayAssertionUtil.assertProps(updateListener.assertOneGetNewAndReset(), fields, new Object[] {null, null, null, null, null, null, 20, "A_1", "B_1"});
+
+        epService.getEPRuntime().sendEvent(new SupportBean_S2(21, "A_2", "B_1"));
+        ArrayAssertionUtil.assertProps(updateListener.assertOneGetNewAndReset(), fields, new Object[] {null, null, null, null, null, null, 21, "A_2", "B_1"});
+
+        epService.getEPRuntime().sendEvent(new SupportBean_S2(22, "A_1", "B_2"));
+        ArrayAssertionUtil.assertProps(updateListener.assertOneGetNewAndReset(), fields, new Object[] {null, null, null, null, null, null, 22, "A_1", "B_2"});
+
+        epService.getEPRuntime().sendEvent(new SupportBean_S2(23, "A_2", "B_2"));
+        ArrayAssertionUtil.assertProps(updateListener.assertOneGetNewAndReset(), fields, new Object[] {null, null, null, null, null, null, 23, "A_2", "B_2"});
+
+        epService.getEPRuntime().sendEvent(new SupportBean_S0(1, "A_3", "B_3"));
+        ArrayAssertionUtil.assertProps(updateListener.assertOneGetNewAndReset(), fields, new Object[] {1, "A_3", "B_3", null, null, null, null, null, null});
+
+        epService.getEPRuntime().sendEvent(new SupportBean_S0(2, "A_1", "B_3"));
+        ArrayAssertionUtil.assertProps(updateListener.assertOneGetNewAndReset(), fields, new Object[] {2, "A_1", "B_3", null, null, null, null, null, null});
+
+        epService.getEPRuntime().sendEvent(new SupportBean_S0(3, "A_3", "B_1"));
+        ArrayAssertionUtil.assertProps(updateListener.assertOneGetNewAndReset(), fields, new Object[] {3, "A_3", "B_1", null, null, null, null, null, null});
+
+        epService.getEPRuntime().sendEvent(new SupportBean_S0(4, "A_2", "B_2"));
+        ArrayAssertionUtil.assertProps(updateListener.assertOneGetNewAndReset(), fields, new Object[] {4, "A_2", "B_2", 13, "A_2", "B_2", 23, "A_2", "B_2"});
+
+        epService.getEPRuntime().sendEvent(new SupportBean_S0(5, "A_2", "B_1"));
+        ArrayAssertionUtil.assertProps(updateListener.assertOneGetNewAndReset(), fields, new Object[] {5, "A_2", "B_1", 11, "A_2", "B_1", 21, "A_2", "B_1"});
+
+        epService.getEPRuntime().sendEvent(new SupportBean_S1(14, "A_4", "B_3"));
+        ArrayAssertionUtil.assertProps(updateListener.assertOneGetNewAndReset(), fields, new Object[] {null, null, null, 14, "A_4", "B_3", null, null, null});
+
+        epService.getEPRuntime().sendEvent(new SupportBean_S1(15, "A_1", "B_3"));
+        ArrayAssertionUtil.assertProps(updateListener.assertOneGetNewAndReset(), fields, new Object[] {2, "A_1", "B_3", 15, "A_1", "B_3", null, null, null});
+
+        epService.getEPRuntime().sendEvent(new SupportBean_S2(24, "A_1", "B_3"));
+        ArrayAssertionUtil.assertProps(updateListener.assertOneGetNewAndReset(), fields, new Object[] {2, "A_1", "B_3", 15, "A_1", "B_3", 24, "A_1", "B_3"});
+
+        epService.getEPRuntime().sendEvent(new SupportBean_S2(25, "A_2", "B_3"));
+        ArrayAssertionUtil.assertProps(updateListener.assertOneGetNewAndReset(), fields, new Object[] {null, null, null, null, null, null, 25, "A_2", "B_3"});
+    }
+
     public void testFullJoin_2sides()
     {
         /**

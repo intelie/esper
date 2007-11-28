@@ -117,9 +117,9 @@ outerJoin
 	;
 
 outerJoinIdent
-	:	#(tl:LEFT_OUTERJOIN_EXPR eventPropertyExpr eventPropertyExpr { leaveNode(#tl); } )
-	|	#(tr:RIGHT_OUTERJOIN_EXPR eventPropertyExpr eventPropertyExpr { leaveNode(#tr); } )
-	|	#(tf:FULL_OUTERJOIN_EXPR eventPropertyExpr eventPropertyExpr { leaveNode(#tf); } )
+	:	#(tl:LEFT_OUTERJOIN_EXPR eventPropertyExpr eventPropertyExpr (eventPropertyExpr eventPropertyExpr)* { leaveNode(#tl); } )
+	|	#(tr:RIGHT_OUTERJOIN_EXPR eventPropertyExpr eventPropertyExpr (eventPropertyExpr eventPropertyExpr)* { leaveNode(#tr); } )
+	|	#(tf:FULL_OUTERJOIN_EXPR eventPropertyExpr eventPropertyExpr (eventPropertyExpr eventPropertyExpr)* { leaveNode(#tf); } )
 	;
 
 streamExpression

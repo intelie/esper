@@ -4,6 +4,7 @@ import junit.framework.TestCase;
 import net.esper.client.EPServiceProvider;
 import net.esper.client.EPServiceProviderManager;
 import net.esper.client.EPStatement;
+import net.esper.client.EPStatementException;
 import net.esper.client.soda.*;
 import net.esper.client.time.TimerControlEvent;
 import net.esper.event.EventBean;
@@ -33,6 +34,46 @@ public class Test3StreamOuterJoinVarA extends TestCase
         epService.getEPRuntime().sendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));        
         epService.initialize();
         updateListener = new SupportUpdateListener();
+    }
+
+    public void testLeftJoin_2sides_multicolumn()
+    {
+        String fields[] = "s0.id, s0.p00, s0.p01, s1.id, s1.p10, s1.p11, s2.id, s2.p20, s2.p21".split(",");
+
+        String joinStatement = "select * from " +
+                                  EVENT_S0 + ".win:length(1000) as s0 " +
+            " left outer join " + EVENT_S1 + ".win:length(1000) as s1 on s0.p00 = s1.p10 and s0.p01 = s1.p11" +
+            " left outer join " + EVENT_S2 + ".win:length(1000) as s2 on s0.p00 = s2.p20 and s0.p01 = s2.p21";
+
+        joinView = epService.getEPAdministrator().createEQL(joinStatement);
+        joinView.addListener(updateListener);
+
+        epService.getEPRuntime().sendEvent(new SupportBean_S1(10, "A_1", "B_1"));
+        epService.getEPRuntime().sendEvent(new SupportBean_S1(11, "A_2", "B_1"));
+        epService.getEPRuntime().sendEvent(new SupportBean_S1(12, "A_1", "B_2"));
+        epService.getEPRuntime().sendEvent(new SupportBean_S1(13, "A_2", "B_2"));
+        assertFalse(updateListener.isInvoked());
+
+        epService.getEPRuntime().sendEvent(new SupportBean_S2(20, "A_1", "B_1"));
+        epService.getEPRuntime().sendEvent(new SupportBean_S2(21, "A_2", "B_1"));
+        epService.getEPRuntime().sendEvent(new SupportBean_S2(22, "A_1", "B_2"));
+        epService.getEPRuntime().sendEvent(new SupportBean_S2(23, "A_2", "B_2"));
+        assertFalse(updateListener.isInvoked());
+
+        epService.getEPRuntime().sendEvent(new SupportBean_S0(1, "A_3", "B_3"));
+        ArrayAssertionUtil.assertProps(updateListener.assertOneGetNewAndReset(), fields, new Object[] {1, "A_3", "B_3", null, null, null, null, null, null});
+
+        epService.getEPRuntime().sendEvent(new SupportBean_S0(2, "A_1", "B_3"));
+        ArrayAssertionUtil.assertProps(updateListener.assertOneGetNewAndReset(), fields, new Object[] {2, "A_1", "B_3", null, null, null, null, null, null});
+
+        epService.getEPRuntime().sendEvent(new SupportBean_S0(3, "A_3", "B_1"));
+        ArrayAssertionUtil.assertProps(updateListener.assertOneGetNewAndReset(), fields, new Object[] {3, "A_3", "B_1", null, null, null, null, null, null});
+
+        epService.getEPRuntime().sendEvent(new SupportBean_S0(4, "A_2", "B_2"));
+        ArrayAssertionUtil.assertProps(updateListener.assertOneGetNewAndReset(), fields, new Object[] {4, "A_2", "B_2", 13, "A_2", "B_2", 23, "A_2", "B_2"});
+
+        epService.getEPRuntime().sendEvent(new SupportBean_S0(5, "A_2", "B_1"));
+        ArrayAssertionUtil.assertProps(updateListener.assertOneGetNewAndReset(), fields, new Object[] {5, "A_2", "B_1", 11, "A_2", "B_1", 21, "A_2", "B_1"});
     }
 
     public void testLeftOuterJoin_root_s0_OM() throws Exception
@@ -446,6 +487,37 @@ public class Test3StreamOuterJoinVarA extends TestCase
             { s0Events[1], s1Events[1], s2Events[0] },
         };
         ArrayAssertionUtil.assertRefAnyOrderArr(expected, getAndResetNewEvents());
+    }
+
+    public void testInvalidMulticolumn()
+    {
+        try
+        {
+            String joinStatement = "select * from " +
+                                      EVENT_S0 + ".win:length(1000) as s0 " +
+                " left outer join " + EVENT_S1 + ".win:length(1000) as s1 on s0.p00 = s1.p10 and s0.p01 = s1.p11" +
+                " left outer join " + EVENT_S2 + ".win:length(1000) as s2 on s0.p00 = s2.p20 and s1.p11 = s2.p21";
+            epService.getEPAdministrator().createEQL(joinStatement);
+            fail();
+        }
+        catch (EPStatementException ex)
+        {
+            assertEquals("Error validating expression: Outer join ON-clause columns must refer to properties of the same joined streams when using multiple columns in the on-clause [select * from net.esper.support.bean.SupportBean_S0.win:length(1000) as s0  left outer join net.esper.support.bean.SupportBean_S1.win:length(1000) as s1 on s0.p00 = s1.p10 and s0.p01 = s1.p11 left outer join net.esper.support.bean.SupportBean_S2.win:length(1000) as s2 on s0.p00 = s2.p20 and s1.p11 = s2.p21]", ex.getMessage());
+        }
+
+        try
+        {
+            String joinStatement = "select * from " +
+                                      EVENT_S0 + ".win:length(1000) as s0 " +
+                " left outer join " + EVENT_S1 + ".win:length(1000) as s1 on s0.p00 = s1.p10 and s0.p01 = s1.p11" +
+                " left outer join " + EVENT_S2 + ".win:length(1000) as s2 on s2.p20 = s0.p00 and s2.p20 = s1.p11";
+            epService.getEPAdministrator().createEQL(joinStatement);
+            fail();
+        }
+        catch (EPStatementException ex)
+        {
+            assertEquals("Error validating expression: Outer join ON-clause columns must refer to properties of the same joined streams when using multiple columns in the on-clause [select * from net.esper.support.bean.SupportBean_S0.win:length(1000) as s0  left outer join net.esper.support.bean.SupportBean_S1.win:length(1000) as s1 on s0.p00 = s1.p10 and s0.p01 = s1.p11 left outer join net.esper.support.bean.SupportBean_S2.win:length(1000) as s2 on s2.p20 = s0.p00 and s2.p20 = s1.p11]", ex.getMessage());
+        }
     }
 
     private void sendEvent(Object event)

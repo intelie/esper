@@ -33,10 +33,23 @@ public class OuterJoinAnalyzer
             ExprIdentNode identNodeLeft = outerJoinDesc.getLeftNode();
             ExprIdentNode identNodeRight = outerJoinDesc.getRightNode();
 
-            queryGraph.add(identNodeLeft.getStreamId(), identNodeLeft.getResolvedPropertyName(),
-                    identNodeRight.getStreamId(), identNodeRight.getResolvedPropertyName());
+            add(queryGraph, identNodeLeft, identNodeRight);
+
+            if (outerJoinDesc.getAdditionalLeftNodes() != null)
+            {
+                for (int i = 0; i < outerJoinDesc.getAdditionalLeftNodes().length; i++)
+                {
+                    add(queryGraph, outerJoinDesc.getAdditionalLeftNodes()[i], outerJoinDesc.getAdditionalRightNodes()[i]);                    
+                }
+            }
         }
 
         return queryGraph;
+    }
+
+    private static void add(QueryGraph queryGraph, ExprIdentNode identNodeLeft, ExprIdentNode identNodeRight)
+    {
+        queryGraph.add(identNodeLeft.getStreamId(), identNodeLeft.getResolvedPropertyName(),
+                identNodeRight.getStreamId(), identNodeRight.getResolvedPropertyName());
     }
 }

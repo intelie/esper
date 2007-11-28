@@ -19,6 +19,7 @@ public class NamedWindowConsumerStreamSpec extends StreamSpecBase implements Str
      * @param windowName - specifies the name of the named window
      * @param optionalAsName - an alias or null if none defined
      * @param viewSpecs - is the view specifications
+     * @param filterExpressions - the named window filters
      */
     public NamedWindowConsumerStreamSpec(String windowName, String optionalAsName, List<ViewSpec> viewSpecs, List<ExprNode> filterExpressions)
     {

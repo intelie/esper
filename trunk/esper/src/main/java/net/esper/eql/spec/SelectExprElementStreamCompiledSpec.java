@@ -17,6 +17,7 @@ public class SelectExprElementStreamCompiledSpec implements MetaDefItem
      * @param streamAliasName is the stream alias of the stream to select
      * @param optionalAliasName is the column alias
      * @param streamNumber is the number of the stream
+     * @param isTaggedEvent is true to indicate that we are meaning to select a tagged event in a pattern
      */
     public SelectExprElementStreamCompiledSpec(String streamAliasName, String optionalAliasName, int streamNumber, boolean isTaggedEvent)
     {
@@ -53,6 +54,11 @@ public class SelectExprElementStreamCompiledSpec implements MetaDefItem
         return streamNumber;
     }
 
+    /**
+     * Returns true to indicate that we are meaning to select a tagged event in a pattern, or false if
+     * selecting an event from a stream.
+     * @return true for tagged event in pattern, false for stream
+     */
     public boolean isTaggedEvent()
     {
         return isTaggedEvent;
