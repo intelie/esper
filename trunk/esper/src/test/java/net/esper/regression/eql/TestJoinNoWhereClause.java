@@ -4,6 +4,7 @@ import junit.framework.TestCase;
 import net.esper.client.EPServiceProvider;
 import net.esper.client.EPServiceProviderManager;
 import net.esper.client.EPStatement;
+import net.esper.client.Configuration;
 import net.esper.support.bean.SupportBean;
 import net.esper.support.bean.SupportMarketDataBean;
 import net.esper.support.util.SupportUpdateListener;
@@ -21,7 +22,10 @@ public class TestJoinNoWhereClause extends TestCase
 
     public void setUp()
     {
-        epService = EPServiceProviderManager.getDefaultProvider(SupportConfigFactory.getConfiguration());
+        Configuration config = SupportConfigFactory.getConfiguration();
+        config.getEngineDefaults().getThreading().setListenerDispatchPreserveOrder(false);
+        config.getEngineDefaults().getViewResources().setShareViews(false);
+        epService = EPServiceProviderManager.getDefaultProvider();
         epService.initialize();
         updateListener = new SupportUpdateListener();
 

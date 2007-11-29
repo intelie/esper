@@ -37,7 +37,6 @@ import java.util.*;
 public class EPRuntimeImpl implements EPRuntime, TimerCallback, InternalEventRouter
 {
     private EPServicesContext services;
-    private ThreadWorkQueue threadWorkQueue;
     private boolean isHoldInsertStreamLock;
     private volatile UnmatchedListener unmatchedListener;
 
@@ -90,7 +89,6 @@ public class EPRuntimeImpl implements EPRuntime, TimerCallback, InternalEventRou
     public EPRuntimeImpl(EPServicesContext services)
     {
         this.services = services;
-        threadWorkQueue = new ThreadWorkQueue();
         isHoldInsertStreamLock = this.services.getEngineSettingsService().getEngineSettings().getThreading().isInsertIntoDispatchPreserveOrder();
     }
 
@@ -618,7 +616,6 @@ public class EPRuntimeImpl implements EPRuntime, TimerCallback, InternalEventRou
     public void destroy()
     {
         services = null;
-        threadWorkQueue = null;
 
         matchesArrayThreadLocal.remove();
         locksHeldThreadLocal.remove();

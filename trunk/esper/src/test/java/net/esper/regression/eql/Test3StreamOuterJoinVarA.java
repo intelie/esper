@@ -1,16 +1,11 @@
 package net.esper.regression.eql;
 
 import junit.framework.TestCase;
-import net.esper.client.EPServiceProvider;
-import net.esper.client.EPServiceProviderManager;
-import net.esper.client.EPStatement;
-import net.esper.client.EPStatementException;
+import net.esper.client.*;
 import net.esper.client.soda.*;
 import net.esper.client.time.TimerControlEvent;
 import net.esper.event.EventBean;
-import net.esper.support.bean.SupportBean_S0;
-import net.esper.support.bean.SupportBean_S1;
-import net.esper.support.bean.SupportBean_S2;
+import net.esper.support.bean.*;
 import net.esper.support.client.SupportConfigFactory;
 import net.esper.support.util.ArrayAssertionUtil;
 import net.esper.support.util.ArrayHandlingUtil;
@@ -30,7 +25,11 @@ public class Test3StreamOuterJoinVarA extends TestCase
 
     public void setUp()
     {
-        epService = EPServiceProviderManager.getDefaultProvider(SupportConfigFactory.getConfiguration());
+        Configuration config = SupportConfigFactory.getConfiguration();
+        config.addEventTypeAlias("P1", SupportBean_S1.class);
+        config.addEventTypeAlias("P2", SupportBean_S2.class);
+        config.addEventTypeAlias("P3", SupportBean_S3.class);
+        epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.getEPRuntime().sendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));        
         epService.initialize();
         updateListener = new SupportUpdateListener();
