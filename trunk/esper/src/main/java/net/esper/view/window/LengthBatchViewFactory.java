@@ -117,6 +117,10 @@ public class LengthBatchViewFactory implements DataWindowViewFactory
 
     public boolean canReuse(View view)
     {
+        if (relativeAccessGetterImpl != null)
+        {
+            return false;
+        }
         if (!(view instanceof LengthBatchView))
         {
             return false;

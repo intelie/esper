@@ -143,6 +143,10 @@ public class TimeBatchViewFactory implements DataWindowViewFactory
 
     public boolean canReuse(View view)
     {
+        if (relativeAccessGetterImpl != null)
+        {
+            return false;
+        }
         if (!(view instanceof TimeBatchView))
         {
             return false;

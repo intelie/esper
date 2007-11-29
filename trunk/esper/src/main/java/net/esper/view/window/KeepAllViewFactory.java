@@ -80,6 +80,10 @@ public class KeepAllViewFactory implements DataWindowViewFactory
 
     public boolean canReuse(View view)
     {
+        if (randomAccessGetterImpl != null)
+        {
+            return false;
+        }
         if (!(view instanceof KeepAllView))
         {
             return false;

@@ -66,11 +66,19 @@ public class OuterJoinDesc implements MetaDefItem
         return rightNode;
     }
 
+    /**
+     * Returns additional properties in the on-clause, if any, that are connected via logical-and
+     * @return additional properties
+     */
     public ExprIdentNode[] getAdditionalLeftNodes()
     {
         return addLeftNode;
     }
 
+    /**
+     * Returns additional properties in the on-clause, if any, that are connected via logical-and
+     * @return additional properties
+     */
     public ExprIdentNode[] getAdditionalRightNodes()
     {
         return addRightNode;

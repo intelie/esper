@@ -137,6 +137,11 @@ public class TimeWindowViewFactory implements DataWindowViewFactory
 
     public boolean canReuse(View view)
     {
+        if (randomAccessGetterImpl != null)
+        {
+            return false;
+        }
+
         if (!(view instanceof TimeWindowView))
         {
             return false;

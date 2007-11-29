@@ -129,6 +129,11 @@ public class LengthWindowViewFactory implements DataWindowViewFactory
             return false;
         }
 
+        if (randomAccessGetterImpl != null)
+        {
+            return false;
+        }
+
         LengthWindowView myView = (LengthWindowView) view;
         if (myView.getSize() != size)
         {

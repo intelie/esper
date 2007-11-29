@@ -175,6 +175,10 @@ public class TimeLengthBatchViewFactory implements DataWindowViewFactory
 
     public boolean canReuse(View view)
     {
+        if (relativeAccessGetterImpl != null)
+        {
+            return false;
+        }
         if (!(view instanceof TimeLengthBatchView))
         {
             return false;

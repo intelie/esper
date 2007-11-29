@@ -167,6 +167,11 @@ public class SortWindowViewFactory implements DataWindowViewFactory
 
     public boolean canReuse(View view)
     {
+        if (randomAccessGetterImpl != null)
+        {
+            return false;
+        }
+
         if (!(view instanceof SortWindowView))
         {
             return false;
