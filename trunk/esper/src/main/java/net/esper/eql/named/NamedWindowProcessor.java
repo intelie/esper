@@ -65,9 +65,9 @@ public class NamedWindowProcessor
      * @param statementHandle is the handle to the statement, used for routing/insert-into
      * @return on trigger handling view
      */
-    public NamedWindowOnExprBaseView addOnExpr(OnTriggerDesc onTriggerDesc, EventType filterEventType, StatementStopService statementStopService, InternalEventRouter internalEventRouter, ResultSetProcessor optionalResultSetProcessor, EPStatementHandle statementHandle)
+    public NamedWindowOnExprBaseView addOnExpr(OnTriggerDesc onTriggerDesc, ExprNode joinExpr, EventType filterEventType, StatementStopService statementStopService, InternalEventRouter internalEventRouter, ResultSetProcessor optionalResultSetProcessor, EPStatementHandle statementHandle)
     {
-        return rootView.addOnExpr(onTriggerDesc, filterEventType, statementStopService, internalEventRouter, optionalResultSetProcessor, statementHandle);
+        return rootView.addOnExpr(onTriggerDesc, joinExpr, filterEventType, statementStopService, internalEventRouter, optionalResultSetProcessor, statementHandle);
     }
 
     /**

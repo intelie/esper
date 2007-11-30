@@ -136,7 +136,7 @@ public class TestNamedWindowOM extends TestCase
 
         EPStatement stmtSelectOne = epService.getEPAdministrator().create(model);
         stmtSelectOne.addListener(listenerStmtOne);
-        String stmtTextSelectOne = "select key, (value * 2) as value from MyWindow";
+        String stmtTextSelectOne = "select key, (value * 2) as value from MyWindow((value != null))";
         assertEquals(stmtTextSelectOne, model.toEQL());
 
         // send events
@@ -150,8 +150,9 @@ public class TestNamedWindowOM extends TestCase
 
         // create delete stmt
         model = new EPStatementObjectModel();        
-        model.setOnExpr(OnExprClause.createOnDelete("MyWindow", "s1", Expressions.eqProperty("s0.symbol", "s1.key")));
+        model.setOnExpr(OnClause.createOnDelete("MyWindow", "s1"));
         model.setFromClause(FromClause.create(FilterStream.create(SupportMarketDataBean.class.getName(), "s0")));
+        model.setWhereClause(Expressions.eqProperty("s0.symbol", "s1.key"));
         epService.getEPAdministrator().create(model);
         String stmtTextDelete = "on " + SupportMarketDataBean.class.getName() + " as s0 delete from MyWindow as s1 where (s0.symbol = s1.key)";
         assertEquals(stmtTextDelete, model.toEQL());
@@ -173,7 +174,8 @@ public class TestNamedWindowOM extends TestCase
 
         // On-select object model
         model = new EPStatementObjectModel();
-        model.setOnExpr(OnExprClause.createOnSelect("MyWindow", "s1", Expressions.eqProperty("s0.id", "s1.key")));
+        model.setOnExpr(OnClause.createOnSelect("MyWindow", "s1"));
+        model.setWhereClause(Expressions.eqProperty("s0.id", "s1.key"));
         model.setFromClause(FromClause.create(FilterStream.create(SupportBean_B.class.getName(), "s0")));
         model.setSelectClause(SelectClause.createStreamWildcard("s1"));
         EPStatement statement = epService.getEPAdministrator().create(model);

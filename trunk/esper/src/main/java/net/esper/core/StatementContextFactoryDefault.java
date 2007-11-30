@@ -6,6 +6,7 @@ import net.esper.eql.join.JoinSetComposerFactoryImpl;
 import net.esper.eql.spec.PluggableObjectCollection;
 import net.esper.eql.spec.OnTriggerDesc;
 import net.esper.eql.spec.CreateWindowDesc;
+import net.esper.eql.spec.OnTriggerWindowDesc;
 import net.esper.pattern.*;
 import net.esper.pattern.PatternObjectHelper;
 import net.esper.schedule.ScheduleBucket;
@@ -58,12 +59,13 @@ public class StatementContextFactoryDefault implements StatementContextFactory
         ManagedLock statementResourceLock = null;
 
         // For on-delete statements, use the create-named-window statement lock 
-        if (optOnTriggerDesc != null)
+        if ((optOnTriggerDesc != null) && (optOnTriggerDesc instanceof OnTriggerWindowDesc))
         {
-            statementResourceLock = engineServices.getNamedWindowService().getNamedWindowLock(optOnTriggerDesc.getWindowName());
+            String windowName = ((OnTriggerWindowDesc) optOnTriggerDesc).getWindowName();
+            statementResourceLock = engineServices.getNamedWindowService().getNamedWindowLock(windowName);
             if (statementResourceLock == null)
             {
-                throw new EPStatementException("Named window '" + optOnTriggerDesc.getWindowName() + "' has not been declared", expression);
+                throw new EPStatementException("Named window '" + windowName + "' has not been declared", expression);
             }
         }
         // For creating a named window, save the lock for use with on-delete statements
@@ -80,7 +82,6 @@ public class StatementContextFactoryDefault implements StatementContextFactory
         {
             statementResourceLock = engineServices.getStatementLockFactory().getStatementLock(statementName, expression);
         }
-
 
         EPStatementHandle epStatementHandle = new EPStatementHandle(statementId, statementResourceLock, expression);
 

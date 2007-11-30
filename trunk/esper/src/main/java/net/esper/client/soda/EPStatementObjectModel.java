@@ -45,7 +45,7 @@ public class EPStatementObjectModel implements Serializable
     private static final long serialVersionUID = 0L;
 
     private CreateWindowClause createWindow;
-    private OnExprClause onExpr;
+    private OnClause onExpr;
     private InsertIntoClause insertInto;
     private SelectClause selectClause;
     private FromClause fromClause;
@@ -247,7 +247,7 @@ public class EPStatementObjectModel implements Serializable
             writer.write("on ");
             fromClause.getStreams().get(0).toEQL(writer);
 
-            if (onExpr.isOnDelete())
+            if (onExpr instanceof OnDeleteClause)
             {
                 writer.write(" delete from ");
             }
@@ -261,25 +261,34 @@ public class EPStatementObjectModel implements Serializable
                 selectClause.toEQL(writer);
                 writer.write(" from ");
             }
-            onExpr.toEQL(writer);
-            return writer.toString();
+            if (onExpr instanceof OnDeleteClause)
+            {
+                ((OnDeleteClause)onExpr).toEQL(writer);
+            }
+            if (onExpr instanceof OnSelectClause)
+            {
+                ((OnSelectClause)onExpr).toEQL(writer);                
+            }
         }
+        else
+        {
+            if (selectClause == null)
+            {
+                throw new IllegalStateException("Select-clause has not been defined");
+            }
+            if (fromClause == null)
+            {
+                throw new IllegalStateException("From-clause has not been defined");
+            }
 
-        if (selectClause == null)
-        {
-            throw new IllegalStateException("Select-clause has not been defined");
+            if (insertInto != null)
+            {
+                insertInto.toEQL(writer);
+            }
+            selectClause.toEQL(writer);
+            fromClause.toEQL(writer);
         }
-        if (fromClause == null)
-        {
-            throw new IllegalStateException("From-clause has not been defined");
-        }
-
-        if (insertInto != null)
-        {
-            insertInto.toEQL(writer);
-        }
-        selectClause.toEQL(writer);
-        fromClause.toEQL(writer);
+        
         if (whereClause != null)
         {
             writer.write(" where ");
@@ -334,7 +343,7 @@ public class EPStatementObjectModel implements Serializable
      * does not delete from a named window
      * @return on delete clause
      */
-    public OnExprClause getOnExpr()
+    public OnClause getOnExpr()
     {
         return onExpr;
     }
@@ -344,7 +353,7 @@ public class EPStatementObjectModel implements Serializable
      * does not on-select or on-delete from a named window
      * @param onExpr is the on-expression (on-select and on-delete) clause to set
      */
-    public void setOnExpr(OnExprClause onExpr)
+    public void setOnExpr(OnClause onExpr)
     {
         this.onExpr = onExpr;
     }

@@ -83,6 +83,7 @@ tokens
 	CURRENT_TIMESTAMP="current_timestamp";
 	DELETE="delete";
 	SNAPSHOT="snapshot";
+	SET="set";
 	
    	NUMERIC_PARAM_RANGE;
    	NUMERIC_PARAM_LIST;
@@ -172,6 +173,7 @@ tokens
 	ON_DELETE_EXPR;
 	ON_SELECT_EXPR;
 	ON_EXPR_FROM;
+	ON_SET_EXPR;
 	
    	INT_TYPE;
    	LONG_TYPE;
@@ -246,7 +248,7 @@ selectExpr
 	
 onExpr 
 	:	ON! (eventFilterExpression | patternInclusionExpression) (AS! IDENT | IDENT)? 
-		(onDeleteExpr | onSelectExpr)
+		(onDeleteExpr | onSelectExpr | onSetExpr)
 		{ #onExpr = #([ON_EXPR,"onExpr"], #onExpr); }
 	;
 	
@@ -268,6 +270,15 @@ onDeleteExpr
 		{ #onDeleteExpr = #([ON_DELETE_EXPR,"onDeleteExpr"], #onDeleteExpr); }
 	;
 	
+onSetExpr
+	:	SET! onSetAssignment (COMMA! onSetAssignment)*
+		{ #onSetExpr = #([ON_SET_EXPR,"onSetExpr"], #onSetExpr); }
+	;
+	
+onSetAssignment
+	:	IDENT EQUALS! expression
+	;
+		
 onExprFrom
 	:	FROM! IDENT (AS! IDENT | IDENT)?
 		{ #onExprFrom = #([ON_EXPR_FROM,"onExprFrom"], #onExprFrom); }

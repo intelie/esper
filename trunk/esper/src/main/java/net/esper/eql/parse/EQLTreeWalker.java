@@ -415,6 +415,10 @@ public class EQLTreeWalker extends EQLBaseWalker
             {
                 break;
             }
+            if (typeChildNode.getType() == ON_SET_EXPR)
+            {
+                break;
+            }
             typeChildNode = typeChildNode.getNextSibling();
         }
         if (typeChildNode == null)
@@ -452,12 +456,45 @@ public class EQLTreeWalker extends EQLBaseWalker
             throw new IllegalStateException("Invalid AST type node, cannot map to stream specification");
         }
 
-        // The ON_EXPR_FROM contains the window name
-        UniformPair<String> windowName = getWindowName(typeChildNode);
-
-        statementSpec.setOnTriggerDesc(new OnTriggerDesc(windowName.getFirst(), windowName.getSecond(), statementSpec.getFilterRootNode(), isOnDelete));
-        statementSpec.setFilterExprRootNode(null); // remove where clause
+        if (typeChildNode.getType() != ON_SET_EXPR)
+        {
+            // The ON_EXPR_FROM contains the window name
+            UniformPair<String> windowName = getWindowName(typeChildNode);
+            statementSpec.setOnTriggerDesc(new OnTriggerWindowDesc(windowName.getFirst(), windowName.getSecond(), isOnDelete));
+        }
+        else
+        {
+            OnTriggerSetDesc setDesc = getOnTriggerSet(typeChildNode);
+            statementSpec.setOnTriggerDesc(setDesc);
+        }
         statementSpec.getStreamSpecs().add(streamSpec);
+    }
+
+    private OnTriggerSetDesc getOnTriggerSet(AST typeChildNode)
+    {
+        OnTriggerSetDesc desc = new OnTriggerSetDesc();
+
+        AST child = typeChildNode.getFirstChild();
+        do
+        {
+            // get variable name
+            if (child.getType() != IDENT)
+            {
+                throw new IllegalStateException("Expected identifier but received type '" + child.getType() + "'");
+            }
+            String variableName = child.getText();
+
+            // get expression
+            child = child.getNextSibling();
+            ExprNode childEvalNode = astExprNodeMap.get(child);
+            astExprNodeMap.remove(child);
+
+            desc.addAssignment(new OnTriggerSetAssignment(variableName, childEvalNode));
+            child = child.getNextSibling();
+        }
+        while (child != null);
+
+        return desc;
     }
 
     private UniformPair<String> getWindowName(AST typeChildNode)
@@ -1086,7 +1123,7 @@ public class EQLTreeWalker extends EQLBaseWalker
         }
 
         // Just assign the single root ExprNode not consumed yet
-        statementSpec.setFilterExprRootNode(astExprNodeMap.values().iterator().next());
+        statementSpec.setFilterRootNode(astExprNodeMap.values().iterator().next());
         astExprNodeMap.clear();
     }
 

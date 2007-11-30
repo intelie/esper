@@ -134,7 +134,7 @@ public class StatementSpecRaw implements MetaDefItem
      * Sets the where clause filter expression node.
      * @param filterExprRootNode the where clause expression
      */
-    public void setFilterExprRootNode(ExprNode filterExprRootNode)
+    public void setFilterRootNode(ExprNode filterExprRootNode)
     {
         this.filterExprRootNode = filterExprRootNode;
     }

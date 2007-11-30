@@ -46,7 +46,7 @@ startEQLExpressionRule
 
 onExpr 
 	:	#(i:ON_EXPR (eventFilterExpr | patternInclusionExpression) (IDENT)? 
-		(onDeleteExpr | onSelectExpr)
+		(onDeleteExpr | onSelectExpr | onSetExpr)
 		{ leaveNode(#i); } )
 	;
 	
@@ -57,6 +57,14 @@ onDeleteExpr
 onSelectExpr
 	:	#(ON_SELECT_EXPR (insertIntoExpr)? selectionList onExprFrom (whereClause)? (groupByClause)? (havingClause)? (orderByClause)?)
 	;	
+	
+onSetExpr
+	:	#(ON_SET_EXPR onSetAssignment (onSetAssignment)*)
+	;
+	
+onSetAssignment
+	:	IDENT valueExpr
+	;
 
 onExprFrom
 	:	#(ON_EXPR_FROM IDENT (IDENT)? )

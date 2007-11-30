@@ -14,7 +14,7 @@ public class TestEQLParser extends TestCase implements EqlTokenTypes
     public void testDisplayAST() throws Exception
     {
         String className = SupportBean.class.getName();
-        String expression = "on MyEvent delete from MyNamedWindow";
+        String expression = "on MyEvent set a=b";
 
         log.debug(".testDisplayAST parsing: " + expression);
         AST ast = parse(expression);
@@ -202,6 +202,11 @@ public class TestEQLParser extends TestCase implements EqlTokenTypes
         assertIsInvalid("on MyEvent select * from MyNamedWindow.win:time(30)");
         assertIsInvalid("on MyEvent select * from MyNamedWindow where");
         assertIsInvalid("on MyEvent insert into select * from MyNamedWindow");
+
+        // on-set statement
+        assertIsInvalid("on MyEvent set");
+        assertIsInvalid("on MyEvent set a=dkdkd a");
+        assertIsInvalid("on MyEvent set a=, b=");
     }
 
     public void testValidCases() throws Exception
@@ -552,6 +557,13 @@ public class TestEQLParser extends TestCase implements EqlTokenTypes
         assertIsValid("on MyEvent insert into YooStream select a, b, c from MyNamedWindow");
         assertIsValid("on MyEvent insert into YooStream (p, q) select a, b, c from MyNamedWindow");
         assertIsValid("on MyEvent select a, b, c from MyNamedWindow where a=b group by c having d>e order by f");
+
+        // on-set statement
+        assertIsValid("on MyEvent set var=1");
+        assertIsValid("on MyEvent set var = true");
+        assertIsValid("on MyEvent as event set var = event.val");
+        assertIsValid("on MyEvent as event set var = event.val");
+        assertIsValid("on MyEvent as event set var = event.val * 2, var2='abc', var3='def'");
     }
 
     public void testBitWiseCases() throws Exception

@@ -137,7 +137,7 @@ public class EPStatementStartMethod
         }
 
         // Determine event types
-        OnTriggerDesc onTriggerDesc = statementSpec.getOnTriggerDesc();
+        OnTriggerWindowDesc onTriggerDesc = (OnTriggerWindowDesc) statementSpec.getOnTriggerDesc();
         NamedWindowProcessor processor = services.getNamedWindowService().getProcessor(onTriggerDesc.getWindowName());
         EventType namedWindowType = processor.getNamedWindowType();
         EventType streamEventType = eventStreamParentViewable.getEventType();
@@ -190,13 +190,12 @@ public class EPStatementStartMethod
                 statementContext.getSchedulingService());
 
         // validate join expression
-        ExprNode validatedJoin = validateJoinNamedWindow(statementSpec.getOnTriggerDesc().getJoinExpr(),
+        ExprNode validatedJoin = validateJoinNamedWindow(statementSpec.getFilterRootNode(),
                 namedWindowType, namedWindowAlias,
                 streamEventType, streamAlias);
-        onTriggerDesc.setJoinExpr(validatedJoin);
 
         InternalEventRouter routerService = (statementSpec.getInsertIntoDesc() == null)?  null : services.getInternalEventRouter();
-        NamedWindowOnExprBaseView onExprView = processor.addOnExpr(onTriggerDesc, streamEventType, statementContext.getStatementStopService(), routerService, optionalResultSetProcessor, statementContext.getEpStatementHandle());
+        NamedWindowOnExprBaseView onExprView = processor.addOnExpr(onTriggerDesc, validatedJoin, streamEventType, statementContext.getStatementStopService(), routerService, optionalResultSetProcessor, statementContext.getEpStatementHandle());
         eventStreamParentViewable.addView(onExprView);
 
         log.debug(".start Statement start completed");

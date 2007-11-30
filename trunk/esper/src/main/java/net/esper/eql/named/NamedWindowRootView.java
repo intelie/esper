@@ -10,7 +10,9 @@ import net.esper.eql.lookup.IndexedTableLookupStrategyCoercing;
 import net.esper.eql.lookup.TableLookupStrategy;
 import net.esper.eql.lookup.JoinedPropDesc;
 import net.esper.eql.spec.OnTriggerDesc;
+import net.esper.eql.spec.OnTriggerType;
 import net.esper.eql.core.ResultSetProcessor;
+import net.esper.eql.expression.ExprNode;
 import net.esper.event.EventBean;
 import net.esper.event.EventType;
 import net.esper.util.ExecutionPathDebugLog;
@@ -104,10 +106,10 @@ public class NamedWindowRootView extends ViewSupport
      * @param statementHandle is the handle to the statement, used for routing/insert-into
      * @return base view for on-trigger expression
      */
-    public NamedWindowOnExprBaseView addOnExpr(OnTriggerDesc onTriggerDesc, EventType filterEventType, StatementStopService statementStopService, InternalEventRouter internalEventRouter, ResultSetProcessor optionalResultSetProcessor, EPStatementHandle statementHandle)
+    public NamedWindowOnExprBaseView addOnExpr(OnTriggerDesc onTriggerDesc, ExprNode joinExpr, EventType filterEventType, StatementStopService statementStopService, InternalEventRouter internalEventRouter, ResultSetProcessor optionalResultSetProcessor, EPStatementHandle statementHandle)
     {
         // Determine strategy for deletion and index table to use (if any)
-        Pair<LookupStrategy,PropertyIndexedEventTable> strategy = getStrategyPair(onTriggerDesc, filterEventType);
+        Pair<LookupStrategy,PropertyIndexedEventTable> strategy = getStrategyPair(onTriggerDesc, joinExpr, filterEventType);
 
         // If a new table is required, add that table to be updated
         if (strategy.getSecond() != null)
@@ -115,7 +117,7 @@ public class NamedWindowRootView extends ViewSupport
             tablePerStrategy.put(strategy.getFirst(), strategy.getSecond());
         }
 
-        if (onTriggerDesc.isOnDelete())
+        if (onTriggerDesc.getOnTriggerType() == OnTriggerType.ON_DELETE)
         {
             return new NamedWindowOnDeleteView(statementStopService, strategy.getFirst(), this);
         }
@@ -139,17 +141,17 @@ public class NamedWindowRootView extends ViewSupport
         }
     }
 
-    private Pair<LookupStrategy,PropertyIndexedEventTable> getStrategyPair(OnTriggerDesc onTriggerDesc, EventType filterEventType)
+    private Pair<LookupStrategy,PropertyIndexedEventTable> getStrategyPair(OnTriggerDesc onTriggerDesc, ExprNode joinExpr, EventType filterEventType)
     {
         // No join expression means delete all
-        if (onTriggerDesc.getJoinExpr() == null)
+        if (joinExpr == null)
         {
             return new Pair<LookupStrategy,PropertyIndexedEventTable>(new LookupStrategyAllRows(dataWindowContents), null);
         }
 
         // analyze query graph; Whereas stream0=named window, stream1=delete-expr filter
         QueryGraph queryGraph = new QueryGraph(2);
-        FilterExprAnalyzer.analyze(onTriggerDesc.getJoinExpr(), queryGraph);
+        FilterExprAnalyzer.analyze(joinExpr, queryGraph);
 
         // index and key property names
         String[] keyPropertiesJoin = queryGraph.getKeyProperties(1, 0);
@@ -158,7 +160,7 @@ public class NamedWindowRootView extends ViewSupport
         // If the analysis revealed no join columns, must use the brute-force full table scan
         if ((keyPropertiesJoin == null) || (keyPropertiesJoin.length == 0))
         {
-            return new Pair<LookupStrategy,PropertyIndexedEventTable>(new LookupStrategyTableScan(onTriggerDesc.getJoinExpr(), dataWindowContents), null);
+            return new Pair<LookupStrategy,PropertyIndexedEventTable>(new LookupStrategyTableScan(joinExpr, dataWindowContents), null);
         }
 
         // Build a set of index descriptors with property name and coercion type
@@ -210,7 +212,7 @@ public class NamedWindowRootView extends ViewSupport
             lookupStrategy = new IndexedTableLookupStrategyCoercing(eventTypePerStream, streamNumbersPerProperty, keyPropertiesJoin, table, coercionTypes);
         }
 
-        return new Pair<LookupStrategy,PropertyIndexedEventTable>(new LookupStrategyIndexed(onTriggerDesc.getJoinExpr(), lookupStrategy), table);
+        return new Pair<LookupStrategy,PropertyIndexedEventTable>(new LookupStrategyIndexed(joinExpr, lookupStrategy), table);
     }
 
     public void setParent(Viewable parent)

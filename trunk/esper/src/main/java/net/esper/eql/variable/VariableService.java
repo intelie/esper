@@ -17,10 +17,12 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  * variable reads (by expressions typically) within the statement. 
  * <p>
  * Designed to support:
- * - lock-less read of the current and prior version, locked reads for older versions
- * - atomicity by keeping multiple versions for each variable and a threadlocal that receives the current version each call
- * - one write lock for all variables (required to coordinate with single global version number),
+ * <ol>
+ * <li>lock-less read of the current and prior version, locked reads for older versions
+ * <li>atomicity by keeping multiple versions for each variable and a threadlocal that receives the current version each call
+ * <li>one write lock for all variables (required to coordinate with single global version number),
  *   however writes are very fast (entry to collection plus increment an int) and therefore blocking should not be an issue
+ * </ol>
  * <p>
  * Every new write to a variable creates a new version. Thus when reading variables, readers can ignore newer versions
  * and a read lock is not required in most circumstances.

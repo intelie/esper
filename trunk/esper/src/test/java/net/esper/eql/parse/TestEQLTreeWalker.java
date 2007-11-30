@@ -28,6 +28,34 @@ public class TestEQLTreeWalker extends TestCase
                     CLASSNAME + "(string='a').win:length(10).std:lastevent() as win1," +
                     CLASSNAME + "(string='b').win:length(10).std:lastevent() as win2 ";
 
+    public void testWalkOnSet() throws Exception
+    {
+        String expression = "on com.MyClass as myevent set var1 = 'a', var2 = 2*3, var3 = var1";
+        EQLTreeWalker walker = parseAndWalkEQL(expression);
+        StatementSpecRaw raw = walker.getStatementSpec();
+
+        FilterStreamSpecRaw streamSpec = (FilterStreamSpecRaw) raw.getStreamSpecs().get(0);
+        assertEquals("com.MyClass", streamSpec.getRawFilterSpec().getEventTypeAlias());
+        assertEquals(0, streamSpec.getRawFilterSpec().getFilterExpressions().size());
+        assertEquals("myevent", streamSpec.getOptionalStreamName());
+
+        OnTriggerSetDesc setDesc = (OnTriggerSetDesc) raw.getOnTriggerDesc();
+        assertTrue(setDesc.getOnTriggerType() == OnTriggerType.ON_SET);
+        assertEquals(3, setDesc.getAssignments().size());
+
+        OnTriggerSetAssignment assign = setDesc.getAssignments().get(0);
+        assertEquals("var1", assign.getVariableName());
+        assertTrue(assign.getExpression() instanceof ExprConstantNode);
+
+        assign = setDesc.getAssignments().get(1);
+        assertEquals("var2", assign.getVariableName());
+        assertTrue(assign.getExpression() instanceof ExprMathNode);
+
+        assign = setDesc.getAssignments().get(2);
+        assertEquals("var3", assign.getVariableName());
+        assertTrue(assign.getExpression() instanceof ExprMathNode);
+    }
+
     public void testWalkOnSelectNoInsert() throws Exception
     {
         String expression = "on com.MyClass(myval != 0) as myevent select *, mywin.* as abc, myevent.* from MyNamedWindow as mywin where a=b";
@@ -39,9 +67,10 @@ public class TestEQLTreeWalker extends TestCase
         assertEquals(1, streamSpec.getRawFilterSpec().getFilterExpressions().size());
         assertEquals("myevent", streamSpec.getOptionalStreamName());
 
-        assertEquals("MyNamedWindow", raw.getOnTriggerDesc().getWindowName());
-        assertEquals("mywin", raw.getOnTriggerDesc().getOptionalAsName());
-        assertFalse(raw.getOnTriggerDesc().isOnDelete());
+        OnTriggerWindowDesc windowDesc = (OnTriggerWindowDesc) raw.getOnTriggerDesc();
+        assertEquals("MyNamedWindow", windowDesc.getWindowName());
+        assertEquals("mywin", windowDesc.getOptionalAsName());
+        assertEquals(OnTriggerType.ON_SELECT, windowDesc.getOnTriggerType());
 
         assertNull(raw.getInsertIntoDesc());
         assertTrue(raw.getSelectClauseSpec().isUsingWildcard());
@@ -51,7 +80,7 @@ public class TestEQLTreeWalker extends TestCase
         assertEquals("abc", raw.getSelectClauseSpec().getSelectStreamsList().get(0).getOptionalAsName());
         assertEquals("myevent", raw.getSelectClauseSpec().getSelectStreamsList().get(1).getStreamAliasName());
         assertNull(raw.getSelectClauseSpec().getSelectStreamsList().get(1).getOptionalAsName());
-        assertTrue(raw.getOnTriggerDesc().getJoinExpr() instanceof ExprEqualsNode);
+        assertTrue(raw.getFilterRootNode() instanceof ExprEqualsNode);
     }
 
     public void testWalkOnSelectInsert() throws Exception
@@ -65,10 +94,11 @@ public class TestEQLTreeWalker extends TestCase
         assertTrue(streamSpec.getEvalNode() instanceof EvalFilterNode);
         assertEquals("pat", streamSpec.getOptionalStreamName());
 
-        assertEquals("MyNamedWindow", raw.getOnTriggerDesc().getWindowName());
-        assertEquals("mywin", raw.getOnTriggerDesc().getOptionalAsName());
-        assertFalse(raw.getOnTriggerDesc().isOnDelete());
-        assertTrue(raw.getOnTriggerDesc().getJoinExpr() instanceof ExprEqualsNode);
+        OnTriggerWindowDesc windowDesc = (OnTriggerWindowDesc) raw.getOnTriggerDesc();
+        assertEquals("MyNamedWindow", windowDesc.getWindowName());
+        assertEquals("mywin", windowDesc.getOptionalAsName());
+        assertEquals(OnTriggerType.ON_SELECT, windowDesc.getOnTriggerType());
+        assertTrue(raw.getFilterRootNode() instanceof ExprEqualsNode);
 
         assertEquals("MyStream", raw.getInsertIntoDesc().getEventTypeAlias());
         assertEquals(2, raw.getInsertIntoDesc().getColumnNames().size());
@@ -95,11 +125,12 @@ public class TestEQLTreeWalker extends TestCase
         assertEquals(1, streamSpec.getRawFilterSpec().getFilterExpressions().size());
         assertEquals("myevent", streamSpec.getOptionalStreamName());
 
-        assertEquals("MyNamedWindow", raw.getOnTriggerDesc().getWindowName());
-        assertEquals("mywin", raw.getOnTriggerDesc().getOptionalAsName());
-        assertTrue(raw.getOnTriggerDesc().isOnDelete());
+        OnTriggerWindowDesc windowDesc = (OnTriggerWindowDesc) raw.getOnTriggerDesc();
+        assertEquals("MyNamedWindow", windowDesc.getWindowName());
+        assertEquals("mywin", windowDesc.getOptionalAsName());
+        assertEquals(OnTriggerType.ON_DELETE, windowDesc.getOnTriggerType());
 
-        assertTrue(raw.getOnTriggerDesc().getJoinExpr() instanceof ExprEqualsNode);
+        assertTrue(raw.getFilterRootNode() instanceof ExprEqualsNode);
 
         // try a pattern
         expression = "on pattern [every MyClass] as myevent delete from MyNamedWindow";

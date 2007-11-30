@@ -31,7 +31,7 @@ public class StatementSpecMapper
     {
         StatementSpecRaw raw = new StatementSpecRaw();
         mapCreateWindow(sodaStatement.getCreateWindow(), raw);
-        mapOnDelete(sodaStatement.getOnExpr(), raw, engineImportService);
+        mapOnTrigger(sodaStatement.getOnExpr(), raw, engineImportService);
         mapInsertInto(sodaStatement.getInsertInto(), raw);
         mapSelect(sodaStatement.getSelectClause(), raw, engineImportService);
         mapFrom(sodaStatement.getFromClause(), raw, engineImportService);
@@ -54,7 +54,7 @@ public class StatementSpecMapper
 
         EPStatementObjectModel model = new EPStatementObjectModel();
         unmapCreateWindow(statementSpec.getCreateWindowDesc(), model);
-        unmapOnDelete(statementSpec.getOnTriggerDesc(), model, unmapContext);
+        unmapOnClause(statementSpec.getOnTriggerDesc(), model, unmapContext);
         unmapInsertInto(statementSpec.getInsertIntoDesc(), model);
         unmapSelect(statementSpec.getSelectClauseSpec(), statementSpec.getSelectStreamSelectorEnum(), model, unmapContext);
         unmapFrom(statementSpec.getStreamSpecs(), statementSpec.getOuterJoinDescList(), model, unmapContext);
@@ -67,18 +67,26 @@ public class StatementSpecMapper
         return new StatementSpecUnMapResult(model, unmapContext.getIndexedParams());
     }
 
-    private static void unmapOnDelete(OnTriggerDesc onTriggerDesc, EPStatementObjectModel model, StatementSpecUnMapContext unmapContext)
+    private static void unmapOnClause(OnTriggerDesc onTriggerDesc, EPStatementObjectModel model, StatementSpecUnMapContext unmapContext)
     {
         if (onTriggerDesc == null)
         {
             return;
         }
-        Expression expr = null;
-        if (onTriggerDesc.getJoinExpr() != null)
+        if (onTriggerDesc.getOnTriggerType() == OnTriggerType.ON_DELETE)
         {
-            expr = unmapExpressionDeep(onTriggerDesc.getJoinExpr(), unmapContext);
+            OnTriggerWindowDesc window = (OnTriggerWindowDesc) onTriggerDesc;
+            model.setOnExpr(new OnDeleteClause(window.getWindowName(), window.getOptionalAsName()));
         }
-        model.setOnExpr(new OnExprClause(onTriggerDesc.isOnDelete(), onTriggerDesc.getWindowName(), onTriggerDesc.getOptionalAsName(), expr));
+        if (onTriggerDesc.getOnTriggerType() == OnTriggerType.ON_SELECT)
+        {
+            OnTriggerWindowDesc window = (OnTriggerWindowDesc) onTriggerDesc;
+            model.setOnExpr(new OnSelectClause(window.getWindowName(), window.getOptionalAsName()));
+        }
+        if (onTriggerDesc.getOnTriggerType() == OnTriggerType.ON_SET)
+        {
+            // TODO
+        }
     }
 
     private static void unmapCreateWindow(CreateWindowDesc createWindowDesc, EPStatementObjectModel model)
@@ -168,19 +176,31 @@ public class StatementSpecMapper
         raw.setOutputLimitSpec(spec);
     }
 
-    private static void mapOnDelete(OnExprClause onExpr, StatementSpecRaw raw, EngineImportService engineImportService)
+    private static void mapOnTrigger(OnClause onExpr, StatementSpecRaw raw, EngineImportService engineImportService)
     {
         if (onExpr == null)
         {
             return;
         }
 
-        ExprNode node = null;
-        if (onExpr.getJoinExpr() != null)
+        if (onExpr instanceof OnDeleteClause)
         {
-            node = mapExpressionDeep(onExpr.getJoinExpr(), engineImportService);
-        }        
-        raw.setOnTriggerDesc(new OnTriggerDesc(onExpr.getWindowName(), onExpr.getOptionalAsName(), node, onExpr.isOnDelete()));
+            OnDeleteClause onDeleteClause = (OnDeleteClause) onExpr;
+            raw.setOnTriggerDesc(new OnTriggerWindowDesc(onDeleteClause.getWindowName(), onDeleteClause.getOptionalAsName(), true));
+        }
+        else if (onExpr instanceof OnSelectClause)
+        {
+            OnSelectClause onSelectClause = (OnSelectClause) onExpr;
+            raw.setOnTriggerDesc(new OnTriggerWindowDesc(onSelectClause.getWindowName(), onSelectClause.getOptionalAsName(), true));            
+        }
+        else if (onExpr instanceof OnSetClause)
+        {
+            // TODO
+        }
+        else
+        {
+            throw new IllegalArgumentException("Cannot map on-clause expression type : " + onExpr);
+        }
     }
 
     private static void mapHaving(Expression havingClause, StatementSpecRaw raw, EngineImportService engineImportService)
@@ -238,7 +258,7 @@ public class StatementSpecMapper
             return;
         }
         ExprNode node = mapExpressionDeep(whereClause, engineImportService);
-        raw.setFilterExprRootNode(node);
+        raw.setFilterRootNode(node);
     }
 
     private static void unmapWhere(ExprNode filterRootNode, EPStatementObjectModel model, StatementSpecUnMapContext unmapContext)
