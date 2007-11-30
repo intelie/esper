@@ -12,6 +12,7 @@ import net.esper.util.JavaClassHelper;
 import net.esper.eql.core.*;
 import net.esper.eql.agg.AggregationMethod;
 import net.esper.eql.agg.AggregationResultFuture;
+import net.esper.eql.variable.VariableService;
 import net.esper.schedule.TimeProvider;
 
 import java.util.List;
@@ -79,7 +80,7 @@ public abstract class ExprAggregateNode extends ExprNode
         return false;
     }
 
-    public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider) throws ExprValidationException
+    public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService) throws ExprValidationException
     {
         this.aggregationMethod = validateAggregationChild(streamTypeService, methodResolutionService);
 

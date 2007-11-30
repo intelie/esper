@@ -5,6 +5,7 @@ import net.esper.eql.core.StreamTypeService;
 import net.esper.eql.core.ViewResourceDelegate;
 import net.esper.eql.expression.ExprNode;
 import net.esper.eql.expression.ExprValidationException;
+import net.esper.eql.variable.VariableService;
 import net.esper.event.EventBean;
 import net.esper.schedule.TimeProvider;
 
@@ -39,7 +40,7 @@ public class SupportExprNode extends ExprNode
         this.type = type;
     }
 
-    public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider) throws ExprValidationException
+    public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService) throws ExprValidationException
     {
         // Keep a count for if and when this was validated
         validateCount++;

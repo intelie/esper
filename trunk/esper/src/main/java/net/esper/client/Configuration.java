@@ -112,6 +112,11 @@ public class Configuration implements ConfigurationOperations, ConfigurationInfo
     protected Set<String> eventTypeAutoAliasPackages;
 
     /**
+     * Map of variables.
+     */
+    protected Map<String, ConfigurationVariable> variables;
+
+    /**
      * Constructs an empty configuration. The auto import values
      * are set by default to java.lang, java.math, java.text and
      * java.util.
@@ -352,6 +357,14 @@ public class Configuration implements ConfigurationOperations, ConfigurationInfo
         eventTypeAutoAliasPackages.add(javaPackageName);
     }
 
+    public void addVariable(String variableName, Class type, Object initializationValue)
+    {
+        ConfigurationVariable configVar = new ConfigurationVariable();
+        configVar.setType(type);
+        configVar.setInitializationValue(initializationValue);
+        variables.put(variableName, configVar);
+    }
+
     /**
      * Returns a set of Java package names that Java event classes reside in.
      * <p>
@@ -560,6 +573,7 @@ public class Configuration implements ConfigurationOperations, ConfigurationInfo
         plugInPatternObjects = new ArrayList<ConfigurationPlugInPatternObject>();
         engineDefaults = new ConfigurationEngineDefaults();
         eventTypeAutoAliasPackages = new LinkedHashSet<String>();
+        variables = new HashMap<String, ConfigurationVariable>();
     }
 
     /**

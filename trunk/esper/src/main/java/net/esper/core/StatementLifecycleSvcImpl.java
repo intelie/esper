@@ -11,6 +11,7 @@ import net.esper.eql.spec.*;
 import net.esper.eql.core.StreamTypeService;
 import net.esper.eql.core.StreamTypeServiceImpl;
 import net.esper.eql.named.NamedWindowService;
+import net.esper.eql.variable.VariableService;
 import net.esper.event.EventType;
 import net.esper.event.MapEventType;
 import net.esper.pattern.EvalFilterNode;
@@ -700,7 +701,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
             compiledStreams = new ArrayList<StreamSpecCompiled>();
             for (StreamSpecRaw rawSpec : spec.getStreamSpecs())
             {
-                StreamSpecCompiled compiled = rawSpec.compile(statementContext.getEventAdapterService(), statementContext.getMethodResolutionService(), statementContext.getPatternResolutionService(), statementContext.getSchedulingService(), statementContext.getNamedWindowService());
+                StreamSpecCompiled compiled = rawSpec.compile(statementContext.getEventAdapterService(), statementContext.getMethodResolutionService(), statementContext.getPatternResolutionService(), statementContext.getSchedulingService(), statementContext.getNamedWindowService(), statementContext.getVariableService());
                 compiledStreams.add(compiled);
             }
         }
@@ -845,7 +846,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
             ExprNode validatedExpression = null;
             try
             {
-                validatedExpression = raw.getSelectExpression().getValidatedSubtree(streams, null, null, null);
+                validatedExpression = raw.getSelectExpression().getValidatedSubtree(streams, null, null, null, null);
             }
             catch (ExprValidationException e)
             {

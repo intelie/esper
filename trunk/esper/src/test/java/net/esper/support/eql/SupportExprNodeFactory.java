@@ -3,6 +3,7 @@ package net.esper.support.eql;
 import net.esper.eql.expression.*;
 import net.esper.eql.core.ViewResourceDelegateImpl;
 import net.esper.eql.core.MethodResolutionServiceImpl;
+import net.esper.eql.variable.VariableService;
 import net.esper.type.MathArithTypeEnum;
 import net.esper.type.RelationalOpEnum;
 import net.esper.view.ViewFactoryChain;
@@ -308,6 +309,10 @@ public class SupportExprNodeFactory
         }
         ViewResourceDelegateImpl viewResources = new ViewResourceDelegateImpl(factoriesPerStream, SupportStatementContextFactory.makeContext());
 
-        topNode.getValidatedSubtree(streamTypeService, new MethodResolutionServiceImpl(null), viewResources, null);
+        VariableService variableService = new VariableService();
+        variableService.createNewVariable("intPrimitive", Integer.class, 10);
+        variableService.createNewVariable("var1", String.class, "my_variable_value");
+
+        topNode.getValidatedSubtree(streamTypeService, new MethodResolutionServiceImpl(null), viewResources, null, variableService);
     }
 }

@@ -13,6 +13,7 @@ import net.esper.eql.core.StreamTypeServiceImpl;
 import net.esper.eql.named.NamedWindowService;
 import net.esper.eql.expression.ExprNode;
 import net.esper.eql.expression.ExprValidationException;
+import net.esper.eql.variable.VariableService;
 import net.esper.event.EventAdapterService;
 import net.esper.event.EventType;
 import net.esper.filter.FilterSpecCompiled;
@@ -60,7 +61,8 @@ public class PatternStreamSpecRaw extends StreamSpecBase implements StreamSpecRa
                                       MethodResolutionService methodResolutionService,
                                       PatternObjectResolutionService patternObjectResolutionService,
                                       TimeProvider timeProvider,
-                                      NamedWindowService namedWindowService)
+                                      NamedWindowService namedWindowService,
+                                      VariableService variableService)
             throws ExprValidationException
     {
         // Determine all the filter nodes used in the pattern
@@ -131,7 +133,7 @@ public class PatternStreamSpecRaw extends StreamSpecBase implements StreamSpecRa
             StreamTypeService streamTypeService = new StreamTypeServiceImpl(filterTypes, true, false);
 
             List<ExprNode> exprNodes = filterNode.getRawFilterSpec().getFilterExpressions();
-            FilterSpecCompiled spec = FilterSpecCompiler.makeFilterSpec(eventType, exprNodes, taggedEventTypes, streamTypeService, methodResolutionService, timeProvider);
+            FilterSpecCompiled spec = FilterSpecCompiler.makeFilterSpec(eventType, exprNodes, taggedEventTypes, streamTypeService, methodResolutionService, timeProvider, variableService);
             filterNode.setFilterSpec(spec);
         }
 

@@ -58,6 +58,7 @@ public class QueryPlanIndex
      */
     protected int getIndexNum(String[] indexFields)
     {
+        // Shallow compare, considers unsorted column names
         for (int i = 0; i < indexProps.length; i++)
         {
             if (Arrays.equals(indexFields, indexProps[i]))
@@ -65,6 +66,24 @@ public class QueryPlanIndex
                 return i;
             }
         }
+
+        // Deep compare, consider sorted column names
+        String[] copyIndexFields = new String[indexFields.length];
+        System.arraycopy(indexFields, 0, copyIndexFields, 0, indexFields.length);
+        Arrays.sort(copyIndexFields);
+
+        for (int i = 0; i < indexProps.length; i++)
+        {
+            String[] copyIndexProps = new String[indexProps[i].length];
+            System.arraycopy(indexProps[i], 0, copyIndexProps, 0, copyIndexProps.length);
+            Arrays.sort(copyIndexProps);
+            
+            if (Arrays.equals(copyIndexFields, copyIndexProps))
+            {
+                return i;
+            }
+        }
+
         return -1;
     }
 

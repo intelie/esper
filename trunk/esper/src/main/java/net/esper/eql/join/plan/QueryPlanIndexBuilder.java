@@ -33,7 +33,7 @@ public class QueryPlanIndexBuilder
         // For each stream compile a list of index property sets.
         for (int streamIndexed = 0; streamIndexed < numStreams; streamIndexed++)
         {
-            Set<MultiKey<String>> indexesSet = new HashSet<MultiKey<String>>();
+            Set<MultiKey<String>> indexesSetSortedProps = new HashSet<MultiKey<String>>();
             List<String[]> indexesList = new LinkedList<String[]>();
 
             // Look at the index from the viewpoint of the stream looking up in the index
@@ -44,15 +44,20 @@ public class QueryPlanIndexBuilder
                     continue;
                 }
 
+                // Sort index properties, but use the sorted properties only to eliminate duplicates
                 String[] indexProps = queryGraph.getIndexProperties(streamLookup, streamIndexed);
+
                 if (indexProps != null)
                 {
+                    String[] indexPropsSorted = new String[indexProps.length];
+                    System.arraycopy(indexProps, 0, indexPropsSorted, 0, indexProps.length);
+                    Arrays.sort(indexPropsSorted);
+
                     // Eliminate duplicates by sorting and using a set
-                    Arrays.sort(indexProps);
-                    MultiKey<String> indexPropsUniqueKey = new MultiKey<String>(indexProps);
-                    if (!indexesSet.contains(indexPropsUniqueKey))
+                    MultiKey<String> indexPropsUniqueKey = new MultiKey<String>(indexPropsSorted);
+                    if (!indexesSetSortedProps.contains(indexPropsUniqueKey))
                     {
-                        indexesSet.add(indexPropsUniqueKey);
+                        indexesSetSortedProps.add(indexPropsUniqueKey);
                         indexesList.add(indexProps);
                     }
                 }
@@ -60,9 +65,9 @@ public class QueryPlanIndexBuilder
 
             // Copy the index properties for the stream to a QueryPlanIndex instance
             String[][] indexProps = null;
-            if (!indexesSet.isEmpty())
+            if (!indexesList.isEmpty())
             {
-                indexProps = new String[indexesSet.size()][];
+                indexProps = new String[indexesList.size()][];
                 int count = 0;
                 for (String[] entry : indexesList)
                 {

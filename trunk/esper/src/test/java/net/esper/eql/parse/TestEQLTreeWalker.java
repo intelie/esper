@@ -16,6 +16,7 @@ import net.esper.support.event.SupportEventAdapterService;
 import net.esper.type.OuterJoinType;
 import net.esper.type.TimePeriodParameter;
 import net.esper.eql.spec.ViewSpec;
+import net.esper.eql.variable.VariableService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -30,8 +31,11 @@ public class TestEQLTreeWalker extends TestCase
 
     public void testWalkOnSet() throws Exception
     {
+        VariableService variableService = new VariableService();
+        variableService.createNewVariable("var1", Long.class, 100L);
+
         String expression = "on com.MyClass as myevent set var1 = 'a', var2 = 2*3, var3 = var1";
-        EQLTreeWalker walker = parseAndWalkEQL(expression);
+        EQLTreeWalker walker = parseAndWalkEQL(expression, null, variableService);
         StatementSpecRaw raw = walker.getStatementSpec();
 
         FilterStreamSpecRaw streamSpec = (FilterStreamSpecRaw) raw.getStreamSpecs().get(0);
@@ -53,7 +57,8 @@ public class TestEQLTreeWalker extends TestCase
 
         assign = setDesc.getAssignments().get(2);
         assertEquals("var3", assign.getVariableName());
-        assertTrue(assign.getExpression() instanceof ExprMathNode);
+        ExprVariableNode varNode = (ExprVariableNode) assign.getExpression();
+        assertEquals("var1", varNode.getVariableName());
     }
 
     public void testWalkOnSelectNoInsert() throws Exception
@@ -773,13 +778,13 @@ public class TestEQLTreeWalker extends TestCase
         engineImportService.addAggregation("concat", SupportPluginAggregationMethodOne.class.getName());
 
         String text = "select * from " + SupportBean.class.getName() + " group by concat(1)";
-        EQLTreeWalker walker = parseAndWalkEQL(text, engineImportService);
+        EQLTreeWalker walker = parseAndWalkEQL(text, engineImportService, null);
         ExprPlugInAggFunctionNode node = (ExprPlugInAggFunctionNode) walker.getStatementSpec().getGroupByExpressions().get(0);
         assertEquals("concat", node.getAggregationFunctionName());
         assertFalse(node.isDistinct());
 
         text = "select * from " + SupportBean.class.getName() + " group by concat(distinct 1)";
-        walker = parseAndWalkEQL(text, engineImportService);
+        walker = parseAndWalkEQL(text, engineImportService, null);
         node = (ExprPlugInAggFunctionNode) walker.getStatementSpec().getGroupByExpressions().get(0);
         assertEquals("concat", node.getAggregationFunctionName());
         assertTrue(node.isDistinct());
@@ -972,10 +977,10 @@ public class TestEQLTreeWalker extends TestCase
 
     private static EQLTreeWalker parseAndWalkEQL(String expression) throws Exception
     {
-        return parseAndWalkEQL(expression, new EngineImportServiceImpl());
+        return parseAndWalkEQL(expression, new EngineImportServiceImpl(), null);
     }
 
-    private static EQLTreeWalker parseAndWalkEQL(String expression, EngineImportService engineImportService) throws Exception
+    private static EQLTreeWalker parseAndWalkEQL(String expression, EngineImportService engineImportService, VariableService variableService) throws Exception
     {
         log.debug(".parseAndWalk Trying text=" + expression);
         AST ast = SupportParserHelper.parseEQL(expression);
@@ -985,7 +990,7 @@ public class TestEQLTreeWalker extends TestCase
         EventAdapterService eventAdapterService = SupportEventAdapterService.getService();
         eventAdapterService.addBeanType("SupportBean_N", SupportBean_N.class);
 
-        EQLTreeWalker walker = SupportEQLTreeWalkerFactory.makeWalker(engineImportService);        
+        EQLTreeWalker walker = SupportEQLTreeWalkerFactory.makeWalker(engineImportService, variableService);        
         walker.startEQLExpressionRule(ast);
         return walker;
     }
@@ -997,7 +1002,7 @@ public class TestEQLTreeWalker extends TestCase
         EQLTreeWalker walker = parseAndWalkEQL(expression);
         ExprNode exprNode = walker.getStatementSpec().getFilterRootNode().getChildNodes().get(0);
         ExprBitWiseNode bitWiseNode = (ExprBitWiseNode) (exprNode);
-        bitWiseNode.getValidatedSubtree(null, null, null, null);
+        bitWiseNode.getValidatedSubtree(null, null, null, null, null);
         return bitWiseNode.evaluate(null, false);
     }
 
@@ -1007,7 +1012,7 @@ public class TestEQLTreeWalker extends TestCase
 
         EQLTreeWalker walker = parseAndWalkEQL(expression);
         ExprNode exprNode = (walker.getStatementSpec().getFilterRootNode().getChildNodes().get(0));
-        exprNode = exprNode.getValidatedSubtree(null, null, null, null);
+        exprNode = exprNode.getValidatedSubtree(null, null, null, null, null);
         return exprNode.evaluate(null, false);
     }
 
@@ -1017,7 +1022,7 @@ public class TestEQLTreeWalker extends TestCase
 
         EQLTreeWalker walker = parseAndWalkEQL(expression);
         ExprNode filterExprNode = walker.getStatementSpec().getFilterRootNode();
-        filterExprNode.getValidatedSubtree(null, null, null, null);
+        filterExprNode.getValidatedSubtree(null, null, null, null, null);
         return filterExprNode.evaluate(null, false);
     }
 

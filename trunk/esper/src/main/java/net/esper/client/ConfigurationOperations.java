@@ -117,4 +117,6 @@ public interface ConfigurationOperations
      */
     public void addEventTypeAlias(String eventTypeAlias, ConfigurationEventTypeXMLDOM xmlDOMEventTypeDesc)
             throws ConfigurationException;
+
+    public void addVariable(String variableName, Class type, Object initializationValue) throws ConfigurationException;
 }

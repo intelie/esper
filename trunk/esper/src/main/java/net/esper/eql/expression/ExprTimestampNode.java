@@ -3,6 +3,7 @@ package net.esper.eql.expression;
 import net.esper.eql.core.MethodResolutionService;
 import net.esper.eql.core.StreamTypeService;
 import net.esper.eql.core.ViewResourceDelegate;
+import net.esper.eql.variable.VariableService;
 import net.esper.event.EventBean;
 import net.esper.schedule.TimeProvider;
 
@@ -23,7 +24,7 @@ public class ExprTimestampNode extends ExprNode
     public void validate(StreamTypeService streamTypeService,
                          MethodResolutionService methodResolutionService,
                          ViewResourceDelegate viewResourceDelegate,
-                         TimeProvider timeProvider) throws ExprValidationException
+                         TimeProvider timeProvider, VariableService variableService) throws ExprValidationException
     {
         if (this.getChildNodes().size() != 0)
         {

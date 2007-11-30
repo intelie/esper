@@ -5,6 +5,7 @@ import net.esper.client.*;
 import net.esper.client.soda.*;
 import net.esper.client.time.TimerControlEvent;
 import net.esper.event.EventBean;
+import net.esper.event.EventType;
 import net.esper.support.bean.*;
 import net.esper.support.client.SupportConfigFactory;
 import net.esper.support.util.ArrayAssertionUtil;
@@ -12,6 +13,9 @@ import net.esper.support.util.ArrayHandlingUtil;
 import net.esper.support.util.SupportUpdateListener;
 import net.esper.type.OuterJoinType;
 import net.esper.util.SerializableObjectCopier;
+
+import java.util.Map;
+import java.util.HashMap;
 
 public class Test3StreamOuterJoinVarA extends TestCase
 {
@@ -33,6 +37,53 @@ public class Test3StreamOuterJoinVarA extends TestCase
         epService.getEPRuntime().sendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));        
         epService.initialize();
         updateListener = new SupportUpdateListener();
+    }
+
+    public void testMapLeftJoinUnsortedProps()
+    {
+        String stmtText = "select t1.col1, t1.col2, t2.col1, t2.col2, t3.col1, t3.col2 from type1 as t1" +
+                " left outer join type2 as t2" +
+                " on t1.col2 = t2.col2 and t1.col1 = t2.col1" +
+                " left outer join type3 as t3" +
+                " on t1.col1 = t3.col1";
+
+        Map<String, Class> mapType = new HashMap<String, Class>();
+        mapType.put("col1", String.class);
+        mapType.put("col2", String.class);
+        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("type1", mapType);
+        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("type2", mapType);
+        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("type3", mapType);
+
+        EPStatement stmt = epService.getEPAdministrator().createEQL(stmtText);
+        stmt.addListener(updateListener);
+
+        String fields[] = new String[] {"t1.col1", "t1.col2", "t2.col1", "t2.col2", "t3.col1", "t3.col2"};
+
+        sendMapEvent("type2", "a1", "b1");
+        assertFalse(updateListener.isInvoked());
+
+        sendMapEvent("type1", "b1", "a1");
+        ArrayAssertionUtil.assertProps(updateListener.assertOneGetNewAndReset(), fields, new Object[] {"b1", "a1", null, null, null, null});
+
+        sendMapEvent("type1", "a1", "a1");
+        ArrayAssertionUtil.assertProps(updateListener.assertOneGetNewAndReset(), fields, new Object[] {"a1", "a1", null, null, null, null});
+
+        sendMapEvent("type1", "b1", "b1");
+        ArrayAssertionUtil.assertProps(updateListener.assertOneGetNewAndReset(), fields, new Object[] {"b1", "b1", null, null, null, null});
+
+        sendMapEvent("type1", "a1", "b1");
+        ArrayAssertionUtil.assertProps(updateListener.assertOneGetNewAndReset(), fields, new Object[] {"a1", "b1", "a1", "b1", null, null});
+
+        sendMapEvent("type3", "c1", "b1");
+        assertFalse(updateListener.isInvoked());
+
+        sendMapEvent("type1", "d1", "b1");
+        ArrayAssertionUtil.assertProps(updateListener.assertOneGetNewAndReset(), fields, new Object[] {"d1", "b1", null, null, null, null});
+
+        sendMapEvent("type3", "d1", "bx");
+        ArrayAssertionUtil.assertProps(updateListener.assertOneGetNewAndReset(), fields, new Object[] {"d1", "b1", null, null, "d1", "bx"});
+
+        assertFalse(updateListener.isInvoked());
     }
 
     public void testLeftJoin_2sides_multicolumn()
@@ -536,6 +587,14 @@ public class Test3StreamOuterJoinVarA extends TestCase
         {
             epService.getEPRuntime().sendEvent(events[i]);
         }
+    }
+
+    private void sendMapEvent(String type, String col1, String col2)
+    {
+        Map<String, Object> mapEvent = new HashMap<String, Object>();
+        mapEvent.put("col1", col1);
+        mapEvent.put("col2", col2);
+        epService.getEPRuntime().sendEvent(mapEvent, type);
     }
 
     private Object[][] getAndResetNewEvents()

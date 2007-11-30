@@ -187,7 +187,8 @@ public class EPStatementStartMethod
                 services.getEventAdapterService(),
                 statementContext.getMethodResolutionService(),
                 null,
-                statementContext.getSchedulingService());
+                statementContext.getSchedulingService(),
+                statementContext.getVariableService());
 
         // validate join expression
         ExprNode validatedJoin = validateJoinNamedWindow(statementSpec.getFilterRootNode(),
@@ -436,7 +437,8 @@ public class EPStatementStartMethod
                 services.getEventAdapterService(),
                 statementContext.getMethodResolutionService(),
                 viewResourceDelegate,
-                statementContext.getSchedulingService());
+                statementContext.getSchedulingService(),
+                statementContext.getVariableService());
 
         // Validate where-clause filter tree and outer join clause
         validateNodes(typeService, statementContext.getMethodResolutionService(), viewResourceDelegate);
@@ -589,7 +591,7 @@ public class EPStatementStartMethod
             // Validate where clause, initializing nodes to the stream ids used
             try
             {
-                optionalFilterNode = optionalFilterNode.getValidatedSubtree(typeService, methodResolutionService, viewResourceDelegate, statementContext.getSchedulingService());
+                optionalFilterNode = optionalFilterNode.getValidatedSubtree(typeService, methodResolutionService, viewResourceDelegate, statementContext.getSchedulingService(), statementContext.getVariableService());
                 statementSpec.setFilterExprRootNode(optionalFilterNode);
 
                 // Make sure there is no aggregation in the where clause
@@ -648,7 +650,7 @@ public class EPStatementStartMethod
         equalsNode.addChildNode(rightNode);
         try
         {
-            equalsNode = equalsNode.getValidatedSubtree(typeService, methodResolutionService, viewResourceDelegate, statementContext.getSchedulingService());
+            equalsNode = equalsNode.getValidatedSubtree(typeService, methodResolutionService, viewResourceDelegate, statementContext.getSchedulingService(), statementContext.getVariableService());
         }
         catch (ExprValidationException ex)
         {
@@ -830,7 +832,7 @@ public class EPStatementStartMethod
             if (selectClauseSpec.getSelectExprList().size() > 0)
             {
                 ExprNode selectExpression = selectClauseSpec.getSelectExprList().get(0).getSelectExpression();
-                selectExpression = selectExpression.getValidatedSubtree(subselectTypeService, statementContext.getMethodResolutionService(), viewResourceDelegateSubselect, statementContext.getSchedulingService());
+                selectExpression = selectExpression.getValidatedSubtree(subselectTypeService, statementContext.getMethodResolutionService(), viewResourceDelegateSubselect, statementContext.getSchedulingService(), statementContext.getVariableService());
                 subselect.setSelectClause(selectExpression);
                 subselect.setSelectAsName(selectClauseSpec.getSelectExprList().get(0).getOptionalAsName());
             }
@@ -839,7 +841,7 @@ public class EPStatementStartMethod
             ExprNode filterExpr = statementSpec.getFilterRootNode();
             if (filterExpr != null)
             {
-                filterExpr = filterExpr.getValidatedSubtree(subselectTypeService, statementContext.getMethodResolutionService(), viewResourceDelegateSubselect, statementContext.getSchedulingService());
+                filterExpr = filterExpr.getValidatedSubtree(subselectTypeService, statementContext.getMethodResolutionService(), viewResourceDelegateSubselect, statementContext.getSchedulingService(), statementContext.getVariableService());
                 if (JavaClassHelper.getBoxedType(filterExpr.getType()) != Boolean.class)
                 {
                     throw new ExprValidationException("Subselect filter expression must return a boolean value");
@@ -1008,7 +1010,7 @@ public class EPStatementStartMethod
         namesAndTypes.put(filterStreamName, filteredType);
         StreamTypeService typeService = new StreamTypeServiceImpl(namesAndTypes, false, false);
 
-        return deleteJoinExpr.getValidatedSubtree(typeService, statementContext.getMethodResolutionService(), null, statementContext.getSchedulingService());
+        return deleteJoinExpr.getValidatedSubtree(typeService, statementContext.getMethodResolutionService(), null, statementContext.getSchedulingService(), statementContext.getVariableService());
     }
 
     private static final Log log = LogFactory.getLog(EPStatementStartMethod.class);

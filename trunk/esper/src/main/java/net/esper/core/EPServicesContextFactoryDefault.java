@@ -9,6 +9,7 @@ import net.esper.eql.view.OutputConditionFactory;
 import net.esper.eql.view.OutputConditionFactoryDefault;
 import net.esper.eql.named.NamedWindowServiceImpl;
 import net.esper.eql.named.NamedWindowService;
+import net.esper.eql.variable.VariableService;
 import net.esper.event.EventAdapterException;
 import net.esper.event.EventAdapterServiceImpl;
 import net.esper.event.EventAdapterService;
@@ -72,11 +73,13 @@ public class EPServicesContextFactoryDefault implements EPServicesContextFactory
         FilterService filterService = FilterServiceProvider.newService();
         NamedWindowService namedWindowService = new NamedWindowServiceImpl(statementLockFactory);
 
+        VariableService variableService = new VariableService();
+
         // New services context
         EPServicesContext services = new EPServicesContext(epServiceProvider.getURI(), schedulingService,
                 eventAdapterService, engineImportService, engineSettingsService, databaseConfigService, plugInViews,
                 statementLockFactory, eventProcessingRWLock, null, jndiContext, statementContextFactory,
-                plugInPatternObj, outputConditionFactory, timerService, filterService, streamFactoryService, namedWindowService);
+                plugInPatternObj, outputConditionFactory, timerService, filterService, streamFactoryService, namedWindowService, variableService);
 
         // Circular dependency
         StatementLifecycleSvc statementLifecycleSvc = new StatementLifecycleSvcImpl(epServiceProvider, services);

@@ -4,6 +4,7 @@ import net.esper.eql.spec.StatementSpecRaw;
 import net.esper.eql.core.StreamTypeService;
 import net.esper.eql.core.MethodResolutionService;
 import net.esper.eql.core.ViewResourceDelegate;
+import net.esper.eql.variable.VariableService;
 import net.esper.event.EventBean;
 import net.esper.schedule.TimeProvider;
 import org.apache.commons.logging.Log;
@@ -36,7 +37,7 @@ public class ExprSubselectRowNode extends ExprSubselectNode
         return selectClause.getType();
     }
 
-    public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider) throws ExprValidationException
+    public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService) throws ExprValidationException
     {
     }    
 

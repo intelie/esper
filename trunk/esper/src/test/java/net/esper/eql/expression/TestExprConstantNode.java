@@ -21,7 +21,7 @@ public class TestExprConstantNode extends TestCase
 
     public void testValidate() throws Exception
     {
-        constantNode.validate(null, null, null, null);
+        constantNode.validate(null, null, null, null, null);
     }
 
     public void testEvaluate()

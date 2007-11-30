@@ -193,6 +193,11 @@ public class NStreamQueryPlanBuilder
             // Determine the index number assigned by looking at the index specifications
             indexNum = indexSpecs.getIndexNum(indexedStreamIndexProps);
 
+            if (indexNum == -1)
+            {
+                throw new IllegalStateException("Failed to query plan as index for " + Arrays.toString(indexedStreamIndexProps) + " could looked up in the index specification");
+            }
+
             // Constructed keyed lookup strategy
             String[] keyGenFields = queryGraph.getKeyProperties(currentLookupStream, indexedStream);
             tableLookupPlan = new IndexedTableLookupPlan(currentLookupStream, indexedStream, indexNum, keyGenFields);

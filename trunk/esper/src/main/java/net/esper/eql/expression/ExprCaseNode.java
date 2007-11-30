@@ -14,6 +14,7 @@ import net.esper.collection.UniformPair;
 import net.esper.eql.core.MethodResolutionService;
 import net.esper.eql.core.StreamTypeService;
 import net.esper.eql.core.ViewResourceDelegate;
+import net.esper.eql.variable.VariableService;
 import net.esper.schedule.TimeProvider;
 
 import java.util.List;
@@ -56,7 +57,7 @@ public class ExprCaseNode extends ExprNode
         return isCase2;
     }
 
-    public void validate(StreamTypeService streamTypeService_, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider) throws ExprValidationException
+    public void validate(StreamTypeService streamTypeService_, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService) throws ExprValidationException
     {
         if (isCase2)
         {

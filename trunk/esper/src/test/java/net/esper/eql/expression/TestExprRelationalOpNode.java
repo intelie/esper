@@ -25,7 +25,7 @@ public class TestExprRelationalOpNode extends TestCase
         // Test success
         opNode.addChildNode(new SupportExprNode(String.class));
         opNode.addChildNode(new SupportExprNode(String.class));
-        opNode.validate(null, null, null, null);
+        opNode.validate(null, null, null, null, null);
 
         opNode.getChildNodes().clear();
         opNode.addChildNode(new SupportExprNode(String.class));
@@ -33,7 +33,7 @@ public class TestExprRelationalOpNode extends TestCase
         // Test too few nodes under this node
         try
         {
-            opNode.validate(null, null, null, null);
+            opNode.validate(null, null, null, null, null);
             fail();
         }
         catch (IllegalStateException ex)
@@ -45,7 +45,7 @@ public class TestExprRelationalOpNode extends TestCase
         opNode.addChildNode(new SupportExprNode(Integer.class));
         try
         {
-            opNode.validate(null, null, null, null);
+            opNode.validate(null, null, null, null, null);
             fail();
         }
         catch (ExprValidationException ex)
@@ -60,7 +60,7 @@ public class TestExprRelationalOpNode extends TestCase
 
         try
         {
-            opNode.validate(null, null, null, null);
+            opNode.validate(null, null, null, null, null);
             fail();
         }
         catch (ExprValidationException ex)
@@ -75,7 +75,7 @@ public class TestExprRelationalOpNode extends TestCase
         SupportExprNode childTwo = new SupportExprNode("c");
         opNode.addChildNode(childOne);
         opNode.addChildNode(childTwo);
-        opNode.validate(null, null, null, null);       // Type initialization
+        opNode.validate(null, null, null, null, null);       // Type initialization
 
         assertEquals(true, opNode.evaluate(null, false));
 

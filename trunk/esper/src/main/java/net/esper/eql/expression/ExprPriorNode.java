@@ -11,6 +11,7 @@ import net.esper.eql.core.ViewResourceCallback;
 import net.esper.eql.core.StreamTypeService;
 import net.esper.eql.core.MethodResolutionService;
 import net.esper.eql.core.ViewResourceDelegate;
+import net.esper.eql.variable.VariableService;
 import net.esper.view.window.RandomAccessByIndex;
 import net.esper.view.window.RelativeAccessByEventNIndex;
 import net.esper.view.ViewCapPriorEventAccess;
@@ -37,7 +38,7 @@ public class ExprPriorNode extends ExprNode implements ViewResourceCallback
         return constantIndexNumber;
     }
 
-    public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider) throws ExprValidationException
+    public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService) throws ExprValidationException
     {
         if (this.getChildNodes().size() != 2)
         {

@@ -11,6 +11,7 @@ import net.esper.collection.Pair;
 import net.esper.eql.core.MethodResolutionService;
 import net.esper.eql.core.StreamTypeService;
 import net.esper.eql.expression.*;
+import net.esper.eql.variable.VariableService;
 import net.esper.event.EventType;
 import net.esper.type.RelationalOpEnum;
 import net.esper.util.JavaClassHelper;
@@ -53,12 +54,13 @@ public final class FilterSpecCompiler
                                                     LinkedHashMap<String, EventType> taggedEventTypes,
                                                     StreamTypeService streamTypeService,
                                                     MethodResolutionService methodResolutionService,
-                                                    TimeProvider timeProvider)
+                                                    TimeProvider timeProvider,
+                                                    VariableService variableService)
             throws ExprValidationException
     {
         // Validate all nodes, make sure each returns a boolean and types are good;
         // Also decompose all AND super nodes into individual expressions
-        List<ExprNode> constituents = FilterSpecCompiler.validateAndDecompose(filterExpessions, streamTypeService, methodResolutionService, timeProvider);
+        List<ExprNode> constituents = FilterSpecCompiler.validateAndDecompose(filterExpessions, streamTypeService, methodResolutionService, timeProvider, variableService);
 
         // From the constituents make a filter specification
         FilterSpecCompiled spec = makeFilterSpec(eventType, constituents, taggedEventTypes);
@@ -98,7 +100,7 @@ public final class FilterSpecCompiler
      * @return list of validated expression nodes
      * @throws ExprValidationException for validation errors
      */
-    public static List<ExprNode> validateDisallowSubquery(List<ExprNode> exprNodes, StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, TimeProvider timeProvider)
+    public static List<ExprNode> validateDisallowSubquery(List<ExprNode> exprNodes, StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, TimeProvider timeProvider, VariableService variableService)
             throws ExprValidationException
     {
         List<ExprNode> validatedNodes = new ArrayList<ExprNode>();
@@ -113,7 +115,7 @@ public final class FilterSpecCompiler
                 throw new ExprValidationException("Subselects not allowed within filters");
             }
 
-            ExprNode validated = node.getValidatedSubtree(streamTypeService, methodResolutionService, null, timeProvider);
+            ExprNode validated = node.getValidatedSubtree(streamTypeService, methodResolutionService, null, timeProvider, variableService);
             validatedNodes.add(validated);
 
             if ((validated.getType() != Boolean.class) && ((validated.getType() != boolean.class)))
@@ -125,10 +127,10 @@ public final class FilterSpecCompiler
         return validatedNodes;
     }
 
-    private static List<ExprNode> validateAndDecompose(List<ExprNode> exprNodes, StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, TimeProvider timeProvider)
+    private static List<ExprNode> validateAndDecompose(List<ExprNode> exprNodes, StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, TimeProvider timeProvider, VariableService variableService)
             throws ExprValidationException
     {
-        List<ExprNode> validatedNodes = validateDisallowSubquery(exprNodes, streamTypeService, methodResolutionService, timeProvider);
+        List<ExprNode> validatedNodes = validateDisallowSubquery(exprNodes, streamTypeService, methodResolutionService, timeProvider, variableService);
 
         // Break a top-level AND into constituent expression nodes
         List<ExprNode> constituents = new ArrayList<ExprNode>();

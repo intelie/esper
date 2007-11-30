@@ -32,7 +32,7 @@ public class TestExprInstanceOfNode extends TestCase
     {
         for (int i = 0; i < instanceofNodes.length; i++)
         {
-            instanceofNodes[i].validate(null, null, null, null);
+            instanceofNodes[i].validate(null, null, null, null, null);
             assertEquals(Boolean.class, instanceofNodes[i].getType());
         }
     }
@@ -45,7 +45,7 @@ public class TestExprInstanceOfNode extends TestCase
         // Test too few nodes under this node
         try
         {
-            instanceofNode.validate(null, null, null, null);
+            instanceofNode.validate(null, null, null, null, null);
             fail();
         }
         catch (ExprValidationException ex)
@@ -57,7 +57,7 @@ public class TestExprInstanceOfNode extends TestCase
         instanceofNode.addChildNode(new SupportExprNode("s"));
         try
         {
-            instanceofNode.validate(null, null, null, null);
+            instanceofNode.validate(null, null, null, null, null);
             fail();
         }
         catch (ExprValidationException ex)
@@ -70,7 +70,7 @@ public class TestExprInstanceOfNode extends TestCase
     {
         for (int i = 0; i < instanceofNodes.length; i++)
         {
-            instanceofNodes[i].validate(null, null, null, null);
+            instanceofNodes[i].validate(null, null, null, null, null);
         }
 
         assertEquals(true, instanceofNodes[0].evaluate(null, false));

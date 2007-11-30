@@ -22,7 +22,7 @@ public class TestExprCastNode extends TestCase
     {
         for (int i = 0; i < castNodes.length; i++)
         {
-            castNodes[i].validate(null, null, null, null);
+            castNodes[i].validate(null, null, null, null, null);
         }
 
         assertEquals(Long.class, castNodes[0].getType());
@@ -36,7 +36,7 @@ public class TestExprCastNode extends TestCase
         // Test too few nodes under this node
         try
         {
-            castNode.validate(null, null, null, null);
+            castNode.validate(null, null, null, null, null);
             fail();
         }
         catch (ExprValidationException ex)
@@ -49,7 +49,7 @@ public class TestExprCastNode extends TestCase
         castNode.addChildNode(new SupportExprNode("s"));
         try
         {
-            castNode.validate(null, null, null, null);
+            castNode.validate(null, null, null, null, null);
             fail();
         }
         catch (ExprValidationException ex)
@@ -62,7 +62,7 @@ public class TestExprCastNode extends TestCase
     {
         for (int i = 0; i < castNodes.length; i++)
         {
-            castNodes[i].validate(null, null, null, null);
+            castNodes[i].validate(null, null, null, null, null);
         }
 
         assertEquals(10L, castNodes[0].evaluate(null, false));
@@ -78,7 +78,7 @@ public class TestExprCastNode extends TestCase
 
     public void testToExpressionString() throws Exception
     {
-        castNodes[0].validate(null, null, null, null);
+        castNodes[0].validate(null, null, null, null, null);
         assertEquals("cast(10, long)", castNodes[0].toExpressionString());
     }
 }

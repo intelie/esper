@@ -15,6 +15,8 @@ import net.esper.event.EventAdapterService;
 import net.esper.util.JavaClassHelper;
 import net.esper.eql.core.EngineImportService;
 import net.esper.eql.core.EngineImportException;
+import net.esper.eql.variable.VariableService;
+import net.esper.eql.variable.VariableExistsException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -25,8 +27,9 @@ import java.util.Properties;
  */
 public class ConfigurationOperationsImpl implements ConfigurationOperations
 {
-    private EventAdapterService eventAdapterService;
-    private EngineImportService engineImportService;
+    private final EventAdapterService eventAdapterService;
+    private final EngineImportService engineImportService;
+    private final VariableService variableService;
 
     /**
      * Ctor.
@@ -34,10 +37,12 @@ public class ConfigurationOperationsImpl implements ConfigurationOperations
      * @param engineImportService for imported aggregation functions and static functions
      */
     public ConfigurationOperationsImpl(EventAdapterService eventAdapterService,
-                                       EngineImportService engineImportService)
+                                       EngineImportService engineImportService,
+                                       VariableService variableService)
     {
         this.eventAdapterService = eventAdapterService;
         this.engineImportService = engineImportService;
+        this.variableService = variableService;
     }
 
     public void addEventTypeAutoAlias(String javaPackageName)
@@ -158,5 +163,17 @@ public class ConfigurationOperationsImpl implements ConfigurationOperations
             propertyTypes.put((String) entry.getKey(), clazz);
         }
         return propertyTypes;
+    }
+
+    public void addVariable(String variableName, Class type, Object initializationValue) throws ConfigurationException
+    {
+        try
+        {
+            variableService.createNewVariable(variableName, type, initializationValue);
+        }
+        catch (VariableExistsException e)
+        {
+            throw new ConfigurationException("Error creating variable: " + e.getMessage(), e);
+        }
     }
 }

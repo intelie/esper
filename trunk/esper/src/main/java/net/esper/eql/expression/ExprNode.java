@@ -9,6 +9,7 @@ package net.esper.eql.expression;
 
 import net.esper.eql.core.*;
 import net.esper.eql.agg.AggregationSupport;
+import net.esper.eql.variable.VariableService;
 import net.esper.util.MetaDefItem;
 import net.esper.schedule.TimeProvider;
 import org.apache.commons.logging.Log;
@@ -70,24 +71,25 @@ public abstract class ExprNode implements ExprValidator, ExprEvaluator, MetaDefI
     public ExprNode getValidatedSubtree(StreamTypeService streamTypeService,
                                         MethodResolutionService methodResolutionService,
                                         ViewResourceDelegate viewResourceDelegate,
-                                        TimeProvider timeProvider) throws ExprValidationException
+                                        TimeProvider timeProvider,
+                                        VariableService variableService) throws ExprValidationException
     {
         ExprNode result = this;
 
         for (int i = 0; i < childNodes.size(); i++)
         {
-            childNodes.set(i, childNodes.get(i).getValidatedSubtree(streamTypeService, methodResolutionService, viewResourceDelegate, timeProvider));
+            childNodes.set(i, childNodes.get(i).getValidatedSubtree(streamTypeService, methodResolutionService, viewResourceDelegate, timeProvider, variableService));
         }
 
         try
         {
-            validate(streamTypeService, methodResolutionService, viewResourceDelegate, timeProvider);
+            validate(streamTypeService, methodResolutionService, viewResourceDelegate, timeProvider, variableService);
         }
         catch(ExprValidationException e)
         {
             if(this instanceof ExprIdentNode)
             {
-                result = resolveIdentAsStaticMethod(streamTypeService, methodResolutionService, e, timeProvider);
+                result = resolveIdentAsStaticMethod(streamTypeService, methodResolutionService, e, timeProvider, variableService);
             }
             else
             {
@@ -188,7 +190,7 @@ public abstract class ExprNode implements ExprValidator, ExprEvaluator, MetaDefI
     // look the same, however as the validation could not resolve "Stream.property('key')" before calling this method,
     // this method tries to resolve the mapped property as a static method.
     // Assumes that this is an ExprIdentNode.
-    private ExprNode resolveIdentAsStaticMethod(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ExprValidationException propertyException, TimeProvider timeProvider)
+    private ExprNode resolveIdentAsStaticMethod(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ExprValidationException propertyException, TimeProvider timeProvider, VariableService variableService)
     throws ExprValidationException
     {
         // Reconstruct the original string
@@ -215,7 +217,7 @@ public abstract class ExprNode implements ExprValidator, ExprEvaluator, MetaDefI
             // Validate
             try
             {
-                result.validate(streamTypeService, methodResolutionService, null, timeProvider);
+                result.validate(streamTypeService, methodResolutionService, null, timeProvider, variableService);
             }
             catch(ExprValidationException e)
             {
@@ -235,7 +237,7 @@ public abstract class ExprNode implements ExprValidator, ExprEvaluator, MetaDefI
             // Validate
             try
             {
-                result.validate(streamTypeService, methodResolutionService, null, timeProvider);
+                result.validate(streamTypeService, methodResolutionService, null, timeProvider, variableService);
             }
             catch (RuntimeException e)
             {

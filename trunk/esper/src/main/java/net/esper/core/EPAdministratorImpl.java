@@ -243,7 +243,7 @@ public class EPAdministratorImpl implements EPAdministrator
         }
 
         AST ast = ParseHelper.parse(eqlStatement, eqlParseRule);
-        EQLTreeWalker walker = new EQLTreeWalker(services.getEngineImportService());
+        EQLTreeWalker walker = new EQLTreeWalker(services.getEngineImportService(), services.getVariableService());
 
         try
         {
@@ -273,7 +273,7 @@ public class EPAdministratorImpl implements EPAdministrator
     {
         // Parse and walk
         AST ast = ParseHelper.parse(expression, patternParseRule);
-        EQLTreeWalker walker = new EQLTreeWalker(services.getEngineImportService());
+        EQLTreeWalker walker = new EQLTreeWalker(services.getEngineImportService(), services.getVariableService());
 
         try
         {

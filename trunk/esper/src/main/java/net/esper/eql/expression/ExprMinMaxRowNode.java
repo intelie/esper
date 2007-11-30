@@ -13,6 +13,7 @@ import net.esper.type.MinMaxTypeEnum;
 import net.esper.eql.core.MethodResolutionService;
 import net.esper.eql.core.StreamTypeService;
 import net.esper.eql.core.ViewResourceDelegate;
+import net.esper.eql.variable.VariableService;
 import net.esper.schedule.TimeProvider;
 
 /**
@@ -41,7 +42,7 @@ public class ExprMinMaxRowNode extends ExprNode
         return minMaxTypeEnum;
     }
 
-    public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider) throws ExprValidationException
+    public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService) throws ExprValidationException
     {
         if (this.getChildNodes().size() < 2)
         {

@@ -11,6 +11,7 @@ import net.esper.eql.spec.ViewSpec;
 import net.esper.event.EventAdapterService;
 import net.esper.eql.core.MethodResolutionService;
 import net.esper.eql.named.NamedWindowService;
+import net.esper.eql.variable.VariableService;
 import net.esper.util.MetaDefItem;
 import net.esper.pattern.PatternObjectResolutionService;
 import net.esper.schedule.TimeProvider;
@@ -74,7 +75,8 @@ public class DBStatementStreamSpec extends StreamSpecBase implements StreamSpecR
                                       MethodResolutionService methodResolutionService,
                                       PatternObjectResolutionService patternObjectResolutionService,
                                       TimeProvider timeProvider,
-                                      NamedWindowService namedWindowService)
+                                      NamedWindowService namedWindowService,
+                                      VariableService variableService)
     {
         return this;
     }

@@ -9,6 +9,7 @@ package net.esper.eql.parse;
 
 import antlr.SemanticException;
 import antlr.collections.AST;
+import net.esper.collection.UniformPair;
 import net.esper.eql.agg.AggregationSupport;
 import net.esper.eql.core.EngineImportException;
 import net.esper.eql.core.EngineImportService;
@@ -16,9 +17,9 @@ import net.esper.eql.core.EngineImportUndefinedException;
 import net.esper.eql.expression.*;
 import net.esper.eql.generated.EQLBaseWalker;
 import net.esper.eql.spec.*;
+import net.esper.eql.variable.VariableService;
 import net.esper.pattern.*;
 import net.esper.type.*;
-import net.esper.collection.UniformPair;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -48,14 +49,17 @@ public class EQLTreeWalker extends EQLBaseWalker
     private final Stack<StatementSpecRaw> statementSpecStack;
 
     private final EngineImportService engineImportService;
+    private final VariableService variableService;
 
     /**
      * Ctor.
      * @param engineImportService is required to resolve lib-calls into static methods or configured aggregation functions
      */
-    public EQLTreeWalker(EngineImportService engineImportService)
+    public EQLTreeWalker(EngineImportService engineImportService, VariableService variableService)
     {
         this.engineImportService = engineImportService;
+        this.variableService = variableService;
+        
         statementSpec = new StatementSpecRaw();
         statementSpecStack = new Stack<StatementSpecRaw>();
         astExprNodeMapStack = new Stack<Map<AST, ExprNode>>();
@@ -817,7 +821,8 @@ public class EQLTreeWalker extends EQLBaseWalker
             throw new IllegalStateException("Empty event property expression encountered");
         }
 
-        ExprIdentNode identNode;
+        ExprNode exprNode;
+        String propertyName;
 
         // The stream name may precede the event property name, but cannot be told apart from the property name:
         //      s0.p1 could be a nested property, or could be stream 's0' and property 'p1'
@@ -826,8 +831,8 @@ public class EQLTreeWalker extends EQLBaseWalker
         // And a non-simple property means that it cannot be a stream name.
         if ((node.getNumberOfChildren() == 1) || (node.getFirstChild().getType() != EVENT_PROP_SIMPLE))
         {
-            String propertyName = ASTFilterSpecHelper.getPropertyName(node.getFirstChild());
-            identNode = new ExprIdentNode(propertyName);
+            propertyName = ASTFilterSpecHelper.getPropertyName(node.getFirstChild());
+            exprNode = new ExprIdentNode(propertyName);
         }
         // --> this is more then one child node, and the first child node is a simple property
         // we may have a stream name in the first simple property, or a nested property
@@ -835,11 +840,16 @@ public class EQLTreeWalker extends EQLBaseWalker
         else
         {
             String streamOrNestedPropertyName = node.getFirstChild().getFirstChild().getText();
-            String propertyName = ASTFilterSpecHelper.getPropertyName(node.getFirstChild().getNextSibling());
-            identNode = new ExprIdentNode(propertyName, streamOrNestedPropertyName);
+            propertyName = ASTFilterSpecHelper.getPropertyName(node.getFirstChild().getNextSibling());
+            exprNode = new ExprIdentNode(propertyName, streamOrNestedPropertyName);
         }
 
-        astExprNodeMap.put(node, identNode);
+        if (variableService.getReader(propertyName) != null)
+        {
+            exprNode = new ExprVariableNode(propertyName);
+        }
+
+        astExprNodeMap.put(node, exprNode);
     }
 
     private void leaveLibFunction(AST node)

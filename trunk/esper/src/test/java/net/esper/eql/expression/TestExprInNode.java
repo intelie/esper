@@ -27,7 +27,7 @@ public class TestExprInNode extends TestCase
     public void testValidate() throws Exception
     {
         inNodeNormal = SupportExprNodeFactory.makeInSetNode(true);
-        inNodeNormal.validate(null, null, null, null);
+        inNodeNormal.validate(null, null, null, null, null);
 
         // No subnodes: Exception is thrown.
         tryInvalidValidate(new ExprInNode(true));
@@ -87,7 +87,7 @@ public class TestExprInNode extends TestCase
     private void tryInvalidValidate(ExprInNode exprInNode) throws Exception
     {
         try {
-            exprInNode.validate(null, null, null, null);
+            exprInNode.validate(null, null, null, null, null);
             fail();
         }
         catch (ExprValidationException ex)

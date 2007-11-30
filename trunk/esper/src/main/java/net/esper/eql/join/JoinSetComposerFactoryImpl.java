@@ -173,7 +173,7 @@ public class JoinSetComposerFactoryImpl implements JoinSetComposerFactory
             outerJoinEqualsNode = new ExprEqualsNode(false);
             outerJoinEqualsNode.addChildNode(outerJoinDesc.getLeftNode());
             outerJoinEqualsNode.addChildNode(outerJoinDesc.getRightNode());
-            outerJoinEqualsNode.validate(null, null, null, null);
+            outerJoinEqualsNode.validate(null, null, null, null, null);
         }
 
         // Determine filter for indexing purposes

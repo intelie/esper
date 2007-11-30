@@ -13,9 +13,10 @@ import net.esper.emit.EmitService;
 import net.esper.emit.EmitServiceProvider;
 import net.esper.eql.core.EngineImportService;
 import net.esper.eql.core.EngineSettingsService;
-import net.esper.eql.named.NamedWindowService;
 import net.esper.eql.db.DatabaseConfigService;
+import net.esper.eql.named.NamedWindowService;
 import net.esper.eql.spec.PluggableObjectCollection;
+import net.esper.eql.variable.VariableService;
 import net.esper.eql.view.OutputConditionFactory;
 import net.esper.event.EventAdapterService;
 import net.esper.filter.FilterService;
@@ -53,6 +54,7 @@ public final class EPServicesContext
     private PluggableObjectCollection plugInPatternObjects;
     private OutputConditionFactory outputConditionFactory;
     private NamedWindowService namedWindowService;
+    private VariableService variableService;
 
     // Supplied after construction to avoid circular dependency
     private StatementLifecycleSvc statementLifecycleSvc;
@@ -96,8 +98,8 @@ public final class EPServicesContext
                              TimerService timerService,
                              FilterService filterService,
                              StreamFactoryService streamFactoryService,
-                             NamedWindowService namedWindowService
-                             )
+                             NamedWindowService namedWindowService,
+                             VariableService variableService)
     {
         this.engineURI = engineURI;
         this.schedulingService = schedulingService;
@@ -120,6 +122,7 @@ public final class EPServicesContext
         this.plugInPatternObjects = plugInPatternObjects;
         this.outputConditionFactory = outputConditionFactory;
         this.namedWindowService = namedWindowService;
+        this.variableService = variableService;
     }
 
     /**
@@ -414,5 +417,10 @@ public final class EPServicesContext
     public NamedWindowService getNamedWindowService()
     {
         return namedWindowService;
+    }
+
+    public VariableService getVariableService()
+    {
+        return variableService;
     }
 }
