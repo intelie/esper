@@ -15,6 +15,6 @@ public class SupportEQLTreeWalkerFactory
 
     public static EQLTreeWalker makeWalker()
     {
-        return makeWalker(new EngineImportServiceImpl(), null);
+        return makeWalker(new EngineImportServiceImpl(), new VariableService());
     }
 }

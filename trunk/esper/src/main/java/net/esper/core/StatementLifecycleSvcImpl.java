@@ -3,17 +3,18 @@ package net.esper.core;
 import net.esper.client.*;
 import net.esper.collection.Pair;
 import net.esper.collection.RefCountedMap;
+import net.esper.eql.core.StreamTypeService;
+import net.esper.eql.core.StreamTypeServiceImpl;
+import net.esper.eql.expression.ExprNode;
 import net.esper.eql.expression.ExprNodeSubselectVisitor;
 import net.esper.eql.expression.ExprSubselectNode;
 import net.esper.eql.expression.ExprValidationException;
-import net.esper.eql.expression.ExprNode;
-import net.esper.eql.spec.*;
-import net.esper.eql.core.StreamTypeService;
-import net.esper.eql.core.StreamTypeServiceImpl;
 import net.esper.eql.named.NamedWindowService;
-import net.esper.eql.variable.VariableService;
+import net.esper.eql.spec.*;
 import net.esper.event.EventType;
 import net.esper.event.MapEventType;
+import net.esper.filter.FilterSpecCompiled;
+import net.esper.filter.FilterSpecParam;
 import net.esper.pattern.EvalFilterNode;
 import net.esper.pattern.EvalNode;
 import net.esper.pattern.EvalNodeAnalysisResult;
@@ -23,8 +24,6 @@ import net.esper.util.ManagedReadWriteLock;
 import net.esper.util.UuidGenerator;
 import net.esper.view.ViewProcessingException;
 import net.esper.view.Viewable;
-import net.esper.filter.FilterSpecCompiled;
-import net.esper.filter.FilterSpecParam;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -154,7 +153,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
         EPStatementDesc statementDesc;
         EPStatementStartMethod startMethod;
 
-        StatementContext statementContext =  services.getStatementContextFactory().makeContext(statementId, statementName, expression, services, optAdditionalContext, statementSpec.getOnTriggerDesc(), statementSpec.getCreateWindowDesc());
+        StatementContext statementContext =  services.getStatementContextFactory().makeContext(statementId, statementName, expression, statementSpec.isHasVariables(), services, optAdditionalContext, statementSpec.getOnTriggerDesc(), statementSpec.getCreateWindowDesc());
         StatementSpecCompiled compiledSpec = null;
         try
         {
@@ -198,7 +197,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
             long timeLastStateChange = services.getSchedulingService().getTime();
             EPStatementSPI statement = new EPStatementImpl(epServiceProvider, statementId, statementName, expression, isPattern,
                     services.getDispatchService(), this, timeLastStateChange, preserveDispatchOrder, blockingTimeout,
-                    statementContext.getEpStatementHandle().getStatementLock());
+                    statementContext.getEpStatementHandle().getStatementLock(), statementContext.getVariableService());
 
             // create start method
             startMethod = new EPStatementStartMethod(compiledSpec, services, statementContext);
@@ -773,7 +772,8 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
                 spec.getHavingExprRootNode(),
                 spec.getOutputLimitSpec(),
                 spec.getOrderByList(),
-                visitor.getSubselects()
+                visitor.getSubselects(),
+                spec.isHasVariables()
                 );
     }
 

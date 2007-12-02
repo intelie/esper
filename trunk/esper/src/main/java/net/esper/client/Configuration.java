@@ -290,6 +290,11 @@ public class Configuration implements ConfigurationOperations, ConfigurationInfo
         return plugInPatternObjects;
     }
 
+    public Map<String, ConfigurationVariable> getVariables()
+    {
+        return variables;
+    }
+
     /**
      * Add an input/output adapter loader.
      * @param loaderName is the name of the loader

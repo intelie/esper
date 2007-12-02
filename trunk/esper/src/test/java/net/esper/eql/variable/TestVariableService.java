@@ -111,15 +111,16 @@ public class TestVariableService extends TestCase
 
         service.createNewVariable("a", Long.class, 100L);
         VariableReader reader = service.getReader("a");
+        VariableWriter writer = service.getWriter("a");
         assertEquals(Long.class, reader.getType());
         assertEquals(100L, reader.getValue());
 
-        service.write("a", 101L);
+        writer.write(101L);
         assertEquals(100L, reader.getValue());
         service.setLocalVersion();
         assertEquals(101L, reader.getValue());        
 
-        service.write("a", 102L);
+        writer.write(102L);
         assertEquals(101L, reader.getValue());
         service.setLocalVersion();
         assertEquals(102L, reader.getValue());        
@@ -130,16 +131,18 @@ public class TestVariableService extends TestCase
         service = new VariableService(VariableService.ROLLOVER_READER_BOUNDARY - 100);
         String[] variables = "a,b,c,d".split(",");
 
+        VariableWriter writers[] = new VariableWriter[variables.length];
         for (int i = 0; i < variables.length; i++)
         {
             service.createNewVariable(variables[i], Long.class, 100L);
+            writers[i] = service.getWriter(variables[i]);
         }
 
         for (int i = 0; i < 1000; i++)
         {
             for (int j = 0; j < variables.length; j++)
             {
-                service.write(variables[j], 100L + i);
+                writers[j].write(100L + i);
             }
             readCompare(variables, 100L + i);
         }
@@ -157,6 +160,8 @@ public class TestVariableService extends TestCase
     public void testInvalid() throws Exception
     {
         service.createNewVariable("a", Long.class, null);
+        assertNull(service.getWriter("dummy"));
+
         try
         {
             service.createNewVariable("a", Long.class, null);
@@ -165,16 +170,6 @@ public class TestVariableService extends TestCase
         catch (VariableExistsException e)
         {
             assertEquals("Variable by name 'a' has already been created", e.getMessage());
-        }
-
-        try
-        {
-            service.write("dummy", null);
-            fail();
-        }
-        catch (VariableNotFoundException ex)
-        {
-            assertEquals("Variable by name 'dummy' could not be found", ex.getMessage());
         }
     }
 }

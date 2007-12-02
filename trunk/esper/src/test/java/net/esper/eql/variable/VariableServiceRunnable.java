@@ -1,11 +1,10 @@
 package net.esper.eql.variable;
 
+import junit.framework.Assert;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.util.Random;
-
-import junit.framework.Assert;
 
 public class VariableServiceRunnable implements Runnable
 {
@@ -13,6 +12,7 @@ public class VariableServiceRunnable implements Runnable
     private final Random random;
     private final String[] variables;
     private final VariableReader[] readers;
+    private final VariableWriter[] writers;
     private final VariableService variableService;
     private final VariableVersionCoord variableVersionCoord;
     private final int numLoops;
@@ -31,9 +31,11 @@ public class VariableServiceRunnable implements Runnable
         marks = new int[numLoops];
 
         readers = new VariableReader[variables.length];
+        writers = new VariableWriter[variables.length];
         for (int i = 0; i < variables.length; i++)
         {
             readers[i] = variableService.getReader(variables[i]);
+            writers[i] = variableService.getWriter(variables[i]);
         }
     }
 
@@ -65,19 +67,12 @@ public class VariableServiceRunnable implements Runnable
 
             if (i % 2 == 0)
             {
-                try
+                int newMark = variableVersionCoord.incMark();
+                if (log.isDebugEnabled())
                 {
-                    int newMark = variableVersionCoord.incMark();
-                    if (log.isDebugEnabled())
-                    {
-                        log.debug(".run Thread " + Thread.currentThread().getId() + " at mark " + mark + " write variable '" + variableName + "' new value " + newMark);
-                    }
-                    variableService.write(variableName, newMark);
+                    log.debug(".run Thread " + Thread.currentThread().getId() + " at mark " + mark + " write variable '" + variableName + "' new value " + newMark);
                 }
-                catch (VariableNotFoundException e)
-                {
-                    throw new RuntimeException(e);
-                }
+                writers[index].write(newMark);
             }
         }
 

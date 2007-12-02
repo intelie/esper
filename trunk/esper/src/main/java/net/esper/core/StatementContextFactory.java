@@ -24,6 +24,7 @@ public interface StatementContextFactory
     public StatementContext makeContext(String statementId, 
                                         String statementName,
                                         String expression,
+                                        boolean hasVariables,
                                         EPServicesContext engineServices,
                                         Map<String, Object> optAdditionalContext,
                                         OnTriggerDesc optOnTriggerDesc,

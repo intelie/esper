@@ -31,6 +31,7 @@ public class StatementSpecRaw implements MetaDefItem
     private OutputLimitSpec outputLimitSpec;
     private List<OrderByItem> orderByList = new LinkedList<OrderByItem>();
     private boolean existsSubstitutionParameters;
+    private boolean hasVariables;
 
     /**
      * Returns the FROM-clause stream definitions.
@@ -227,5 +228,25 @@ public class StatementSpecRaw implements MetaDefItem
     public void setOnTriggerDesc(OnTriggerDesc onTriggerDesc)
     {
         this.onTriggerDesc = onTriggerDesc;
+    }
+
+    public ExprNode getFilterExprRootNode()
+    {
+        return filterExprRootNode;
+    }
+
+    public void setFilterExprRootNode(ExprNode filterExprRootNode)
+    {
+        this.filterExprRootNode = filterExprRootNode;
+    }
+
+    public boolean isHasVariables()
+    {
+        return hasVariables;
+    }
+
+    public void setHasVariables(boolean hasVariables)
+    {
+        this.hasVariables = hasVariables;
     }
 }

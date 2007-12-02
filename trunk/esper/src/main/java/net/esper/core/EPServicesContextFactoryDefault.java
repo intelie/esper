@@ -10,6 +10,8 @@ import net.esper.eql.view.OutputConditionFactoryDefault;
 import net.esper.eql.named.NamedWindowServiceImpl;
 import net.esper.eql.named.NamedWindowService;
 import net.esper.eql.variable.VariableService;
+import net.esper.eql.variable.VariableExistsException;
+import net.esper.eql.variable.VariableTypeException;
 import net.esper.event.EventAdapterException;
 import net.esper.event.EventAdapterServiceImpl;
 import net.esper.event.EventAdapterService;
@@ -68,12 +70,13 @@ public class EPServicesContextFactoryDefault implements EPServicesContextFactory
         }
         TimerService timerService = new TimerServiceImpl(msecTimerResolution);
 
+        VariableService variableService = new VariableService();
+        initVariables(variableService, configSnapshot.getVariables());
+
         StatementLockFactory statementLockFactory = new StatementLockFactoryImpl();
         StreamFactoryService streamFactoryService = StreamFactoryServiceProvider.newService(configSnapshot.getEngineDefaults().getViewResources().isShareViews());
         FilterService filterService = FilterServiceProvider.newService();
-        NamedWindowService namedWindowService = new NamedWindowServiceImpl(statementLockFactory);
-
-        VariableService variableService = new VariableService();
+        NamedWindowService namedWindowService = new NamedWindowServiceImpl(statementLockFactory, variableService);
 
         // New services context
         EPServicesContext services = new EPServicesContext(epServiceProvider.getURI(), schedulingService,
@@ -86,6 +89,25 @@ public class EPServicesContextFactoryDefault implements EPServicesContextFactory
         services.setStatementLifecycleSvc(statementLifecycleSvc);
 
         return services;
+    }
+
+    private void initVariables(VariableService variableService, Map<String, ConfigurationVariable> variables)
+    {
+        for (Map.Entry<String, ConfigurationVariable> entry : variables.entrySet())
+        {
+            try
+            {
+                variableService.createNewVariable(entry.getKey(), entry.getValue().getType(), entry.getValue().getInitializationValue());
+            }
+            catch (VariableExistsException e)
+            {
+                throw new ConfigurationException("Error configuring variables: " + e.getMessage(), e);
+            }
+            catch (VariableTypeException e)
+            {
+                throw new ConfigurationException("Error configuring variables: " + e.getMessage(), e);
+            }
+        }
     }
 
     /**

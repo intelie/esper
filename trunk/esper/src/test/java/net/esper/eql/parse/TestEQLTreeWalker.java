@@ -59,6 +59,14 @@ public class TestEQLTreeWalker extends TestCase
         assertEquals("var3", assign.getVariableName());
         ExprVariableNode varNode = (ExprVariableNode) assign.getExpression();
         assertEquals("var1", varNode.getVariableName());
+
+        assertTrue(raw.isHasVariables());
+
+        // try a subquery
+        expression = "select (select var1 from MyEvent) from MyEvent2";
+        walker = parseAndWalkEQL(expression, null, variableService);
+        raw = walker.getStatementSpec();
+        assertTrue(raw.isHasVariables());        
     }
 
     public void testWalkOnSelectNoInsert() throws Exception
@@ -977,7 +985,7 @@ public class TestEQLTreeWalker extends TestCase
 
     private static EQLTreeWalker parseAndWalkEQL(String expression) throws Exception
     {
-        return parseAndWalkEQL(expression, new EngineImportServiceImpl(), null);
+        return parseAndWalkEQL(expression, new EngineImportServiceImpl(), new VariableService());
     }
 
     private static EQLTreeWalker parseAndWalkEQL(String expression, EngineImportService engineImportService, VariableService variableService) throws Exception

@@ -46,6 +46,7 @@ public class StatementContextFactoryDefault implements StatementContextFactory
     public StatementContext makeContext(String statementId,
                                     String statementName,
                                     String expression,
+                                    boolean hasVariables,
                                     EPServicesContext engineServices,
                                     Map<String, Object> optAdditionalContext,
                                     OnTriggerDesc optOnTriggerDesc,
@@ -83,7 +84,7 @@ public class StatementContextFactoryDefault implements StatementContextFactory
             statementResourceLock = engineServices.getStatementLockFactory().getStatementLock(statementName, expression);
         }
 
-        EPStatementHandle epStatementHandle = new EPStatementHandle(statementId, statementResourceLock, expression);
+        EPStatementHandle epStatementHandle = new EPStatementHandle(statementId, statementResourceLock, expression, hasVariables);
 
         MethodResolutionService methodResolutionService = new MethodResolutionServiceImpl(engineServices.getEngineImportService());
 

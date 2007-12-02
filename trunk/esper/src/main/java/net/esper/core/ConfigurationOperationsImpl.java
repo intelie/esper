@@ -17,6 +17,7 @@ import net.esper.eql.core.EngineImportService;
 import net.esper.eql.core.EngineImportException;
 import net.esper.eql.variable.VariableService;
 import net.esper.eql.variable.VariableExistsException;
+import net.esper.eql.variable.VariableTypeException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -172,6 +173,10 @@ public class ConfigurationOperationsImpl implements ConfigurationOperations
             variableService.createNewVariable(variableName, type, initializationValue);
         }
         catch (VariableExistsException e)
+        {
+            throw new ConfigurationException("Error creating variable: " + e.getMessage(), e);
+        }
+        catch (VariableTypeException e)
         {
             throw new ConfigurationException("Error creating variable: " + e.getMessage(), e);
         }

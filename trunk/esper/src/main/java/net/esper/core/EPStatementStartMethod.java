@@ -18,6 +18,7 @@ import net.esper.eql.spec.*;
 import net.esper.eql.view.*;
 import net.esper.eql.lookup.*;
 import net.esper.eql.named.*;
+import net.esper.eql.variable.OnSetVariableView;
 import net.esper.event.EventBean;
 import net.esper.event.EventType;
 import net.esper.pattern.*;
@@ -136,25 +137,6 @@ public class EPStatementStartMethod
             throw new ExprValidationException("Unknown stream specification type: " + streamSpec);
         }
 
-        // Determine event types
-        OnTriggerWindowDesc onTriggerDesc = (OnTriggerWindowDesc) statementSpec.getOnTriggerDesc();
-        NamedWindowProcessor processor = services.getNamedWindowService().getProcessor(onTriggerDesc.getWindowName());
-        EventType namedWindowType = processor.getNamedWindowType();
-        EventType streamEventType = eventStreamParentViewable.getEventType();
-
-        String namedWindowAlias = onTriggerDesc.getOptionalAsName();
-        if (namedWindowAlias == null)
-        {
-            namedWindowAlias = "stream_0";
-        }
-        String streamAlias = streamSpec.getOptionalStreamName();
-        if (streamAlias == null)
-        {
-            streamAlias = "stream_1";
-        }
-
-        StreamTypeService typeService = new StreamTypeServiceImpl(new EventType[] {namedWindowType, streamEventType}, new String[] {namedWindowAlias, streamAlias});
-
         // create stop method using statement stream specs
         EPStatementStopMethod stopMethod = new EPStatementStopMethod()
         {
@@ -174,30 +156,68 @@ public class EPStatementStartMethod
             }
         };
 
-        // Construct a processor for results; for use in on-select to process selection results
-        // May return null if we don't need to post-process results posted by views or joins.
-        ResultSetProcessor optionalResultSetProcessor = ResultSetProcessorFactory.getProcessor(
-                statementSpec.getSelectClauseSpec(),
-                statementSpec.getInsertIntoDesc(),
-                statementSpec.getGroupByExpressions(),
-                statementSpec.getHavingExprRootNode(),
-                statementSpec.getOutputLimitSpec(),
-                statementSpec.getOrderByList(),
-                typeService,
-                services.getEventAdapterService(),
-                statementContext.getMethodResolutionService(),
-                null,
-                statementContext.getSchedulingService(),
-                statementContext.getVariableService());
+        View onExprView;
+        EventType streamEventType = eventStreamParentViewable.getEventType();
 
-        // validate join expression
-        ExprNode validatedJoin = validateJoinNamedWindow(statementSpec.getFilterRootNode(),
-                namedWindowType, namedWindowAlias,
-                streamEventType, streamAlias);
+        if (statementSpec.getOnTriggerDesc() instanceof OnTriggerWindowDesc)
+        {
+            // Determine event types
+            OnTriggerWindowDesc onTriggerDesc = (OnTriggerWindowDesc) statementSpec.getOnTriggerDesc();
+            NamedWindowProcessor processor = services.getNamedWindowService().getProcessor(onTriggerDesc.getWindowName());
+            EventType namedWindowType = processor.getNamedWindowType();
 
-        InternalEventRouter routerService = (statementSpec.getInsertIntoDesc() == null)?  null : services.getInternalEventRouter();
-        NamedWindowOnExprBaseView onExprView = processor.addOnExpr(onTriggerDesc, validatedJoin, streamEventType, statementContext.getStatementStopService(), routerService, optionalResultSetProcessor, statementContext.getEpStatementHandle());
-        eventStreamParentViewable.addView(onExprView);
+            String namedWindowAlias = onTriggerDesc.getOptionalAsName();
+            if (namedWindowAlias == null)
+            {
+                namedWindowAlias = "stream_0";
+            }
+            String streamAlias = streamSpec.getOptionalStreamName();
+            if (streamAlias == null)
+            {
+                streamAlias = "stream_1";
+            }
+
+            StreamTypeService typeService = new StreamTypeServiceImpl(new EventType[] {namedWindowType, streamEventType}, new String[] {namedWindowAlias, streamAlias});
+
+            // Construct a processor for results; for use in on-select to process selection results
+            // May return null if we don't need to post-process results posted by views or joins.
+            ResultSetProcessor optionalResultSetProcessor = ResultSetProcessorFactory.getProcessor(
+                    statementSpec.getSelectClauseSpec(),
+                    statementSpec.getInsertIntoDesc(),
+                    statementSpec.getGroupByExpressions(),
+                    statementSpec.getHavingExprRootNode(),
+                    statementSpec.getOutputLimitSpec(),
+                    statementSpec.getOrderByList(),
+                    typeService,
+                    services.getEventAdapterService(),
+                    statementContext.getMethodResolutionService(),
+                    null,
+                    statementContext.getSchedulingService(),
+                    statementContext.getVariableService());
+
+            // validate join expression
+            ExprNode validatedJoin = validateJoinNamedWindow(statementSpec.getFilterRootNode(),
+                    namedWindowType, namedWindowAlias,
+                    streamEventType, streamAlias);
+
+            InternalEventRouter routerService = (statementSpec.getInsertIntoDesc() == null)?  null : services.getInternalEventRouter();
+            onExprView = processor.addOnExpr(onTriggerDesc, validatedJoin, streamEventType, statementContext.getStatementStopService(), routerService, optionalResultSetProcessor, statementContext.getEpStatementHandle());
+            eventStreamParentViewable.addView(onExprView);
+        }
+        else
+        {
+            OnTriggerSetDesc desc = (OnTriggerSetDesc) statementSpec.getOnTriggerDesc();
+            StreamTypeService typeService = new StreamTypeServiceImpl(new EventType[] {streamEventType}, new String[] {streamSpec.getOptionalStreamName()});
+
+            for (OnTriggerSetAssignment assignment : desc.getAssignments())
+            {
+                ExprNode validated = assignment.getExpression().getValidatedSubtree(typeService, statementContext.getMethodResolutionService(), null, statementContext.getSchedulingService(), statementContext.getVariableService());
+                assignment.setExpression(validated);
+            }
+
+            onExprView = new OnSetVariableView(desc, statementContext.getEventAdapterService(), statementContext.getVariableService());
+            eventStreamParentViewable.addView(onExprView);
+        }
 
         log.debug(".start Statement start completed");
 

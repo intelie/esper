@@ -23,4 +23,9 @@ public class OnTriggerSetAssignment implements MetaDefItem
     {
         return expression;
     }
+
+    public void setExpression(ExprNode expression)
+    {
+        this.expression = expression;
+    }
 }

@@ -64,7 +64,7 @@ public class TestCompositeEventType extends TestCompositeEventBase
         EventType eventTypeFour = new CompositeEventType("alias", taggedEventTypesTwo);
 
         assertEquals(eventTypeTwo, eventType);
-        assertFalse(eventTypeThree.equals(eventType));
+        assertTrue(eventTypeThree.equals(eventType));   // different name is allowed - the type is anonymous
         assertFalse(eventTypeFour.equals(eventType));
     }
 }

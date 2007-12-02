@@ -648,6 +648,12 @@ public class EQLTreeWalker extends EQLBaseWalker
 
         StatementSpecRaw currentSpec = statementSpec;
         statementSpec = statementSpecStack.pop();
+
+        if (currentSpec.isHasVariables())
+        {
+            statementSpec.setHasVariables(true);
+        }
+
         astExprNodeMap = astExprNodeMapStack.pop();
 
         return currentSpec;
@@ -847,6 +853,7 @@ public class EQLTreeWalker extends EQLBaseWalker
         if (variableService.getReader(propertyName) != null)
         {
             exprNode = new ExprVariableNode(propertyName);
+            statementSpec.setHasVariables(true);
         }
 
         astExprNodeMap.put(node, exprNode);

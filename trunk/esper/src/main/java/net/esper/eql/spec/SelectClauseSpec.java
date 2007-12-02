@@ -37,6 +37,7 @@ public class SelectClauseSpec implements MetaDefItem
     public SelectClauseSpec(List<SelectExprElementRawSpec> selectList)
 	{
 		this.selectExprList = selectList;
+        selectStreamsList = new ArrayList<SelectExprElementStreamRawSpec>();
 	}
 
     /**

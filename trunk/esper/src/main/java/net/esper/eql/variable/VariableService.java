@@ -1,5 +1,8 @@
 package net.esper.eql.variable;
 
+import net.esper.collection.Pair;
+import net.esper.util.JavaClassHelper;
+
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -33,7 +36,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  * before processing a statement that has variables.
  * This places into a threadlocal variable the current version number, say version 570.
  * <p>
- * A statement that reads a variable has an {@link ExprVariableNode} that has a {@link VariableReader} handle
+ * A statement that reads a variable has an {@link net.esper.eql.expression.ExprVariableNode} that has a {@link VariableReader} handle
  * obtained during validation (example).
  * <p>
  * The {@link VariableReader} takes the version from the threadlocal (570) and compares the version number with the
@@ -67,7 +70,7 @@ public class VariableService
     };
 
     // Keep the variable list
-    private Map<String, VariableReader> variables;
+    private Map<String, Pair<VariableReader, VariableWriter>> variables;
 
     // Each variable has a index number, a current version and a list of values
     private ArrayList<VersionedValueList<Object>> variableVersions;
@@ -81,7 +84,7 @@ public class VariableService
 
     protected VariableService(int startVersion)
     {
-        variables = new HashMap<String, VariableReader>();
+        variables = new HashMap<String, Pair<VariableReader, VariableWriter>>();
         variableVersions = new ArrayList<VersionedValueList<Object>>();
         readWriteLock = new ReentrantReadWriteLock();
         currentVersionNumber = startVersion;
@@ -92,40 +95,87 @@ public class VariableService
         versionThreadLocal.set(currentVersionNumber);
     }
 
-    public synchronized void createNewVariable(String variableName, Class type, Object value) throws VariableExistsException
+    public synchronized void createNewVariable(String variableName, Class type, Object value)
+            throws VariableExistsException, VariableTypeException
     {
+        // check type
+        Class variableType = JavaClassHelper.getBoxedType(type);
+
+        if (!JavaClassHelper.isJavaBuiltinDataType(variableType))
+        {
+            throw new VariableTypeException("Invalid variable type for variable '" + variableName
+                + "' as type '" + variableType.getName() + "', only Java primitive, boxed or String types are allowed");
+        }
+
+        // check coercion
+        Object coercedValue = value;
+        if ((coercedValue != null) &&
+            (variableType != coercedValue.getClass()))
+        {
+            // if the declared type is not numeric or the init value is not numeric, fail
+            if ((!JavaClassHelper.isNumeric(variableType)) ||
+                (!(coercedValue instanceof Number)))
+            {
+                throw new VariableTypeException("Variable '" + variableName
+                    + "' of declared type '" + variableType.getName() +
+                        "' cannot be initialized by a value of type '" + coercedValue.getClass().getName() + "'");
+            }
+
+            if (!(JavaClassHelper.canCoerce(coercedValue.getClass(), variableType)))
+            {
+                throw new VariableTypeException("Variable '" + variableName
+                    + "' of declared type '" + variableType.getName() +
+                        "' cannot be initialized by a value of type '" + coercedValue.getClass().getName() + "'");
+            }
+
+            // coerce
+            coercedValue = JavaClassHelper.coerceBoxed((Number)coercedValue, variableType);
+        }
+
         // check if it exists
-        VariableReader reader = variables.get(variableName);
-        if (reader != null)
+        Pair<VariableReader, VariableWriter> readerWriter = variables.get(variableName);
+        if (readerWriter != null)
         {
             throw new VariableExistsException("Variable by name '" + variableName + "' has already been created");
         }
 
         // create new holder for versions
-        VersionedValueList<Object> valuePerVersion = new VersionedValueList<Object>(variableName, currentVersionNumber, value, readWriteLock.readLock(), HIGH_WATERMARK_VERSIONS, LOW_WATERMARK_VERSIONS);
+        VersionedValueList<Object> valuePerVersion = new VersionedValueList<Object>(variableName, currentVersionNumber, value, readWriteLock.readLock(), HIGH_WATERMARK_VERSIONS, LOW_WATERMARK_VERSIONS, false);
 
         variableVersions.add(valuePerVersion);
 
         // create reader
-        reader = new VariableReader(versionThreadLocal, type, variableName, currentVariableNumber, valuePerVersion);
-        variables.put(variableName, reader);
+        readerWriter = new Pair<VariableReader, VariableWriter>
+            (new VariableReader(versionThreadLocal, variableType, variableName, currentVariableNumber, valuePerVersion),
+             new VariableWriter(currentVariableNumber, variableType, this));
+        variables.put(variableName, readerWriter);
 
         currentVariableNumber++;
     }
 
     public VariableReader getReader(String variableName)
     {
-        return variables.get(variableName);
+        Pair<VariableReader, VariableWriter> pair = variables.get(variableName);
+        if (pair == null)
+        {
+            return null;
+        }
+        return pair.getFirst();
     }
 
-    public void write(String variableName, Object newValue) throws VariableNotFoundException
+    public VariableWriter getWriter(String variableName)
     {
-        VariableReader reader = variables.get(variableName);
-        if (reader == null)
+        Pair<VariableReader, VariableWriter> pair = variables.get(variableName);
+        if (pair == null)
         {
-            throw new VariableNotFoundException("Variable by name '" + variableName + "' could not be found");
+            return null;
         }
-        VersionedValueList<Object> versions = variableVersions.get(reader.getVariableNumber());
+        return pair.getSecond();
+    }
+
+    protected void write(int variableNumber, Object newValue)
+    {
+        VersionedValueList<Object> versions = variableVersions.get(variableNumber);
 
         // We lock all variables here since otherwise the current version number cannot easily be
         // increased in/outside the lock
@@ -141,7 +191,7 @@ public class VariableService
                 // This honors existing threads that will now use the "high" collection in the reader for high version requests
                 // and low collection (new and updated) for low version requests
                 rollOver();
-                versions = variableVersions.get(reader.getVariableNumber());
+                versions = variableVersions.get(variableNumber);
                 newVersion = 2;
             }
 
@@ -162,19 +212,19 @@ public class VariableService
      */
     private void rollOver()
     {
-        for (Map.Entry<String, VariableReader> entry : variables.entrySet())
+        for (Map.Entry<String, Pair<VariableReader, VariableWriter>> entry : variables.entrySet())
         {
-            int variableNum = entry.getValue().getVariableNumber();
+            int variableNum = entry.getValue().getFirst().getVariableNumber();
             String name = entry.getKey();
 
             // Construct a new collection, forgetting the history
             VersionedValueList<Object> versionsOld = variableVersions.get(variableNum);
             Object currentValue = versionsOld.getCurrentAndPriorValue().getCurrentVersion().getValue();
-            VersionedValueList<Object> versionsNew = new VersionedValueList<Object>(name, 1, currentValue, readWriteLock.readLock(), HIGH_WATERMARK_VERSIONS, LOW_WATERMARK_VERSIONS);
+            VersionedValueList<Object> versionsNew = new VersionedValueList<Object>(name, 1, currentValue, readWriteLock.readLock(), HIGH_WATERMARK_VERSIONS, LOW_WATERMARK_VERSIONS, false);
 
             // Tell the reader to use the high collection for old requests
-            entry.getValue().setVersionsHigh(versionsOld);
-            entry.getValue().setVersionsLow(versionsNew);
+            entry.getValue().getFirst().setVersionsHigh(versionsOld);
+            entry.getValue().getFirst().setVersionsLow(versionsNew);
 
             // Save new collection instead
             variableVersions.set(variableNum, versionsNew);
@@ -184,9 +234,9 @@ public class VariableService
     public String toString()
     {
         StringWriter writer = new StringWriter();
-        for (Map.Entry<String, VariableReader> entry : variables.entrySet())
+        for (Map.Entry<String, Pair<VariableReader, VariableWriter>> entry : variables.entrySet())
         {
-            int variableNum = entry.getValue().getVariableNumber();
+            int variableNum = entry.getValue().getFirst().getVariableNumber();
             VersionedValueList<Object> list = variableVersions.get(variableNum);
             writer.write("Variable '" + entry.getKey() + "' : " + list.toString() + "\n");
         }

@@ -27,8 +27,8 @@ public abstract class OnClause implements Serializable
      * @param asNameAlias is the alias name of the named window
      * @return on-select clause
      */
-    public static OnDeleteClause createOnSelect(String windowName, String asNameAlias)
+    public static OnSelectClause createOnSelect(String windowName, String asNameAlias)
     {
-        return new OnDeleteClause(windowName, asNameAlias);
+        return new OnSelectClause(windowName, asNameAlias);
     }    
 }

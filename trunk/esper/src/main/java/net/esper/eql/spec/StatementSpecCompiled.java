@@ -30,6 +30,7 @@ public class StatementSpecCompiled
     private final OutputLimitSpec outputLimitSpec;
     private final List<OrderByItem> orderByList;
     private final List<ExprSubselectNode> subSelectExpressions;
+    private final boolean hasVariables;
 
     /**
      * Ctor.
@@ -59,7 +60,8 @@ public class StatementSpecCompiled
                                  ExprNode havingExprRootNode,
                                  OutputLimitSpec outputLimitSpec,
                                  List<OrderByItem> orderByList,
-                                 List<ExprSubselectNode> subSelectExpressions)
+                                 List<ExprSubselectNode> subSelectExpressions,
+                                 boolean hasVariables)
     {
         this.onTriggerDesc = onTriggerDesc;
         this.createWindowDesc = createWindowDesc;
@@ -74,6 +76,7 @@ public class StatementSpecCompiled
         this.outputLimitSpec = outputLimitSpec;
         this.orderByList = orderByList;
         this.subSelectExpressions = subSelectExpressions;
+        this.hasVariables = hasVariables;
     }
 
     /**
@@ -199,5 +202,10 @@ public class StatementSpecCompiled
     public OnTriggerDesc getOnTriggerDesc()
     {
         return onTriggerDesc;
+    }
+
+    public boolean isHasVariables()
+    {
+        return hasVariables;
     }
 }

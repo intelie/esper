@@ -15,6 +15,7 @@ public class VersionedValueList<T>
     private final Lock readLock;
     private final int highWatermark;    // used for removing older versions
     private final int lowWatermark;
+    private final boolean errorWhenNotFound;
 
     // Hold the current and prior version for no-lock reading
     private transient CurrentValue<T> currentAndPriorValue;
@@ -22,13 +23,14 @@ public class VersionedValueList<T>
     // Holds the older versions
     private ArrayList<VersionedValue<T>> olderVersions;
 
-    public VersionedValueList(String name, int initialVersion, T initialValue, Lock readLock, int highWatermark, int lowWatermark)
+    public VersionedValueList(String name, int initialVersion, T initialValue, Lock readLock, int highWatermark, int lowWatermark, boolean errorWhenNotFound)
     {
         this.name = name;
         this.readLock = readLock;
         this.highWatermark = highWatermark;
         this.lowWatermark = lowWatermark;
         this.olderVersions = new ArrayList<VersionedValue<T>>();
+        this.errorWhenNotFound = errorWhenNotFound;
 
         currentAndPriorValue = new CurrentValue<T>(new VersionedValue<T>(initialVersion, initialValue),
                                                    new VersionedValue<T>(-1, null));
@@ -95,11 +97,17 @@ public class VersionedValueList<T>
                     {
                         int currentVersion = current.getCurrentVersion().getVersion();
                         int priorVersion = current.getPriorVersion().getVersion();
-                        Integer oldestVersion = (olderVersions.size() > 0) ? olderVersions.get(0).getVersion() : null;
-                        T oldestValue = olderVersions.get(0).getValue();
 
-                        log.warn("Variable value for version '" + versionAndOlder + "' and older could not be found" +
-                            " (currentVersion=" + currentVersion + " priorVersion=" + priorVersion + " oldestVersion=" + oldestVersion + " numOldVersions=" + olderVersions.size() + " oldestValue=" + oldestValue +")");
+                        Integer oldestVersion = (olderVersions.size() > 0) ? olderVersions.get(0).getVersion() : null;
+                        T oldestValue = (olderVersions.size() > 0) ? olderVersions.get(0).getValue() : null;
+
+                        String text = "Variable value for version '" + versionAndOlder + "' and older could not be found" +
+                            " (currentVersion=" + currentVersion + " priorVersion=" + priorVersion + " oldestVersion=" + oldestVersion + " numOldVersions=" + olderVersions.size() + " oldestValue=" + oldestValue +")";
+                        if (errorWhenNotFound)
+                        {
+                            throw new IllegalStateException(text);
+                        }
+                        log.warn(text);
                         return oldestValue;
                     }
                 }

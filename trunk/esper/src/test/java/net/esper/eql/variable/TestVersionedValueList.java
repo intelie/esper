@@ -10,7 +10,7 @@ public class TestVersionedValueList extends TestCase
 
     public void setUp()
     {
-        list = new VersionedValueList<String>("abc", 2, "a", new ReentrantReadWriteLock().readLock(), 10, 5);
+        list = new VersionedValueList<String>("abc", 2, "a", new ReentrantReadWriteLock().readLock(), 10, 5, true);
     }
 
     public void testFlow()

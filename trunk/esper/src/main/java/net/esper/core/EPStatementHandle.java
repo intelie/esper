@@ -18,6 +18,7 @@ public class EPStatementHandle implements MetaDefItem
     // handles self-join (ie. statement where from-clause lists the same event type or a super-type more then once)
     // such that the internal dispatching must occur after both matches are processed
     private boolean canSelfJoin;
+    private boolean hasVariables;
     private ManagedLock routedInsertStreamLock;
 
     /**
@@ -26,10 +27,11 @@ public class EPStatementHandle implements MetaDefItem
      * @param statementLock is the statement resource lock
      * @param expressionText is the expression
      */
-    public EPStatementHandle(String statementId, ManagedLock statementLock, String expressionText)
+    public EPStatementHandle(String statementId, ManagedLock statementLock, String expressionText, boolean hasVariables)
     {
         this.statementId = statementId;
         this.statementLock = statementLock;
+        this.hasVariables = hasVariables;
         hashCode = expressionText.hashCode() ^ statementLock.hashCode();
     }
 
@@ -70,6 +72,11 @@ public class EPStatementHandle implements MetaDefItem
     public ManagedLock getStatementLock()
     {
         return statementLock;
+    }
+
+    public boolean isHasVariables()
+    {
+        return hasVariables;
     }
 
     /**

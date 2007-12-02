@@ -7,6 +7,7 @@ import net.esper.event.EventType;
 import net.esper.view.Viewable;
 import net.esper.util.ManagedLock;
 import net.esper.collection.SafeIteratorImpl;
+import net.esper.eql.variable.VariableService;
 
 import java.util.Iterator;
 
@@ -22,6 +23,7 @@ public class EPStatementImpl implements EPStatementSPI
     private boolean isPattern;
     private UpdateDispatchViewBase dispatchChildView;
     private StatementLifecycleSvc statementLifecycleSvc;
+    private VariableService variableService;
 
     private long timeLastStateChange;
     private Viewable parentView;
@@ -53,7 +55,8 @@ public class EPStatementImpl implements EPStatementSPI
                               long timeLastStateChange,
                               boolean isBlockingDispatch,
                               long msecBlockingTimeout,
-                              ManagedLock statementLock)
+                              ManagedLock statementLock,
+                              VariableService variableService)
     {
         this.isPattern = isPattern;
         this.statementId = statementId;
@@ -72,6 +75,7 @@ public class EPStatementImpl implements EPStatementSPI
         this.currentState = EPStatementState.STOPPED;
         this.timeLastStateChange = timeLastStateChange;
         this.statementLock = statementLock;
+        this.variableService = variableService;
     }
 
     public String getStatementId()
@@ -157,6 +161,7 @@ public class EPStatementImpl implements EPStatementSPI
     public Iterator<EventBean> iterator()
     {
         // Return null if not started
+        variableService.setLocalVersion();
         if (parentView == null)
         {
             return null;
@@ -179,8 +184,9 @@ public class EPStatementImpl implements EPStatementSPI
             return null;
         }
 
-        // Acquire the lock first
+        // Set variable version and acquire the lock first
         statementLock.acquireLock(null);
+        variableService.setLocalVersion();
 
         // Provide iterator - that iterator MUST be closed else the lock is not released
         if (isPattern)

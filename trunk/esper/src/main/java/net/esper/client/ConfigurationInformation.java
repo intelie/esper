@@ -92,4 +92,6 @@ public interface ConfigurationInformation
      * @return engine defaults
      */
     public ConfigurationEngineDefaults getEngineDefaults();
+
+    public Map<String, ConfigurationVariable> getVariables();    
 }

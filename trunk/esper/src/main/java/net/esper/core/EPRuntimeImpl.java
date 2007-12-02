@@ -345,9 +345,15 @@ public class EPRuntimeImpl implements EPRuntime, TimerCallback, InternalEventRou
             Object[] handleArray = handles.getArray();
             EPStatementHandleCallback handle = (EPStatementHandleCallback) handleArray[0];
             ManagedLock statementLock = handle.getEpStatementHandle().getStatementLock();
+
             statementLock.acquireLock(services.getStatementLockFactory());
             try
             {
+                if (handle.getEpStatementHandle().isHasVariables())
+                {
+                    services.getVariableService().setLocalVersion();
+                }
+
                 handle.getScheduleCallback().scheduledTrigger(services.getExtensionServicesContext());
 
                 handle.getEpStatementHandle().internalDispatch();
@@ -410,6 +416,11 @@ public class EPRuntimeImpl implements EPRuntime, TimerCallback, InternalEventRou
             handle.getStatementLock().acquireLock(services.getStatementLockFactory());
             try
             {
+                if (handle.isHasVariables())
+                {
+                    services.getVariableService().setLocalVersion();
+                }
+
                 if (callbackObject instanceof LinkedList)
                 {
                     LinkedList<ScheduleHandleCallback> callbackList = (LinkedList<ScheduleHandleCallback>) callbackObject;
@@ -548,6 +559,11 @@ public class EPRuntimeImpl implements EPRuntime, TimerCallback, InternalEventRou
             handle.getStatementLock().acquireLock(services.getStatementLockFactory());
             try
             {
+                if (handle.isHasVariables())
+                {
+                    services.getVariableService().setLocalVersion();
+                }
+
                 handleCallback.getFilterCallback().matchFound(event);
                 
                 // internal join processing, if applicable
@@ -572,9 +588,15 @@ public class EPRuntimeImpl implements EPRuntime, TimerCallback, InternalEventRou
         for (Map.Entry<EPStatementHandle, Object> entry : stmtCallbacks.entrySet())
         {
             EPStatementHandle handle = entry.getKey();
+
             handle.getStatementLock().acquireLock(services.getStatementLockFactory());
             try
             {
+                if (handle.isHasVariables())
+                {
+                    services.getVariableService().setLocalVersion();
+                }
+
                 List<FilterHandleCallback> callbackList = (List<FilterHandleCallback>) entry.getValue();
                 for (FilterHandleCallback callback : callbackList)
                 {

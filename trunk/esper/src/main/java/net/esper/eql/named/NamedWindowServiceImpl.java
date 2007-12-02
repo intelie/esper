@@ -6,6 +6,7 @@ import net.esper.event.EventBean;
 import net.esper.event.EventType;
 import net.esper.util.ManagedLock;
 import net.esper.view.ViewProcessingException;
+import net.esper.eql.variable.VariableService;
 
 import java.util.*;
 
@@ -15,9 +16,10 @@ import java.util.*;
  */
 public class NamedWindowServiceImpl implements NamedWindowService
 {
-    private Map<String, NamedWindowProcessor> processors;
-    private Map<String, ManagedLock> windowStatementLocks;
-    private StatementLockFactory statementLockFactory;
+    private final Map<String, NamedWindowProcessor> processors;
+    private final Map<String, ManagedLock> windowStatementLocks;
+    private final StatementLockFactory statementLockFactory;
+    private final VariableService variableService;
 
     private ThreadLocal<List<NamedWindowConsumerDispatchUnit>> threadLocal = new ThreadLocal<List<NamedWindowConsumerDispatchUnit>>()
     {
@@ -39,11 +41,12 @@ public class NamedWindowServiceImpl implements NamedWindowService
      * Ctor.
      * @param statementLockFactory statement lock factory
      */
-    public NamedWindowServiceImpl(StatementLockFactory statementLockFactory)
+    public NamedWindowServiceImpl(StatementLockFactory statementLockFactory, VariableService variableService)
     {
         this.processors = new HashMap<String, NamedWindowProcessor>();
         this.windowStatementLocks = new HashMap<String, ManagedLock>();
         this.statementLockFactory = statementLockFactory;
+        this.variableService = variableService;
     }
 
     public void destroy()
@@ -127,6 +130,11 @@ public class NamedWindowServiceImpl implements NamedWindowService
                 handle.getStatementLock().acquireLock(statementLockFactory);
                 try
                 {
+                    if (handle.isHasVariables())
+                    {
+                        variableService.setLocalVersion();
+                    }
+
                     for (NamedWindowConsumerView consumerView : entry.getValue())
                     {
                         consumerView.update(newData, oldData);
@@ -194,6 +202,11 @@ public class NamedWindowServiceImpl implements NamedWindowService
                 handle.getStatementLock().acquireLock(statementLockFactory);
                 try
                 {
+                    if (handle.isHasVariables())
+                    {
+                        variableService.setLocalVersion();
+                    }
+
                     for (NamedWindowConsumerView consumerView : unit.getDispatchTo().get(handle))
                     {
                         consumerView.update(newData, oldData);
@@ -233,6 +246,10 @@ public class NamedWindowServiceImpl implements NamedWindowService
             handle.getStatementLock().acquireLock(statementLockFactory);
             try
             {
+                if (handle.isHasVariables())
+                {
+                    variableService.setLocalVersion();
+                }
                 for (Map.Entry<NamedWindowConsumerView, NamedWindowDeltaData> entryDelta : deltaPerConsumer.entrySet())
                 {
                     EventBean[] newData = entryDelta.getValue().getNewData();
