@@ -136,7 +136,7 @@ public class EPAdministratorImpl implements EPAdministrator
     public EPStatement create(EPStatementObjectModel sodaStatement, String statementName) throws EPException
     {
         // Specifies the statement
-        StatementSpecRaw statementSpec = StatementSpecMapper.map(sodaStatement, services.getEngineImportService());
+        StatementSpecRaw statementSpec = StatementSpecMapper.map(sodaStatement, services.getEngineImportService(), services.getVariableService());
         String eqlStatement = sodaStatement.toEQL(); 
 
         EPStatement statement = services.getStatementLifecycleSvc().createAndStart(statementSpec, eqlStatement, false, statementName);
@@ -174,7 +174,7 @@ public class EPAdministratorImpl implements EPAdministrator
     {
         EPPreparedStatementImpl impl = (EPPreparedStatementImpl) prepared;
 
-        StatementSpecRaw statementSpec = StatementSpecMapper.map(impl.getModel(), services.getEngineImportService());
+        StatementSpecRaw statementSpec = StatementSpecMapper.map(impl.getModel(), services.getEngineImportService(), services.getVariableService());
         String eqlStatement = impl.getModel().toEQL();
 
         return services.getStatementLifecycleSvc().createAndStart(statementSpec, eqlStatement, false, statementName);

@@ -7,8 +7,13 @@
  **************************************************************************************/
 package net.esper.util;
 
+import net.esper.event.EventAdapterException;
+import net.esper.type.*;
+
 import java.util.LinkedList;
 import java.util.List;
+
+import antlr.collections.AST;
 
 /**
  * Helper for questions about Java classes such as
@@ -611,6 +616,55 @@ public class JavaClassHelper
     }
 
     /**
+     * Returns the boxed class for the given classname, recognizing all primitive and abbreviations,
+     * uppercase and lowercase.
+     * <p>
+     * Recognizes "int" as Integer.class and "strIng" as String.class, and "Integer" as Integer.class, and so on. 
+     * @param className is the name to recognize
+     * @return class
+     */
+    public static Class getClassForSimpleName(String className)
+            throws EventAdapterException
+    {
+        if (("string".equals(className.toLowerCase().trim())) ||
+            ("varchar".equals(className.toLowerCase().trim())) ||
+            ("varchar2".equals(className.toLowerCase().trim())))
+        {
+            return String.class;
+        }
+
+        if ("integer".equals(className.toLowerCase().trim()))
+        {
+            return Integer.class;
+        }
+
+        if ("bool".equals(className.toLowerCase().trim()))
+        {
+            return Boolean.class;
+        }
+
+        if ("character".equals(className.toLowerCase().trim()))
+        {
+            return Character.class;
+        }
+
+        // use the boxed type for primitives
+        String boxedClassName = JavaClassHelper.getBoxedClassName(className.toLowerCase().trim());
+
+        Class clazz;
+        try
+        {
+            clazz = Class.forName(boxedClassName);
+        }
+        catch (ClassNotFoundException ex)
+        {
+            throw new EventAdapterException("Unable to load class '" + boxedClassName + "', class not found", ex);
+        }
+
+        return clazz;
+    }
+
+    /**
      * Returns the class for a Java primitive type name, ignoring case, and considering String as a primitive.
      * @param typeName is a potential primitive Java type, or some other type name
      * @return class for primitive type name, or null if not a primitive type.
@@ -653,6 +707,54 @@ public class JavaClassHelper
         if (typeName.equals("string"))
         {
             return String.class;
+        }
+        return null;
+    }
+
+    /**
+     * Parse the String using the given Java built-in class for parsing.
+     * @param text is the text to parse
+     * @return value matching the type passed in
+     */
+    public static Object parse(Class clazz, String text)
+    {
+        Class classBoxed = JavaClassHelper.getBoxedType(clazz);
+
+        if (classBoxed == String.class)
+        {
+            return text;
+        }
+        if (classBoxed == Character.class)
+        {
+            return text.charAt(0);
+        }
+        if (classBoxed == Boolean.class)
+        {
+            return BoolValue.parseString(text.toLowerCase().trim());
+        }
+        if (classBoxed == Byte.class)
+        {
+            return ByteValue.parseString(text.trim());
+        }
+        if (classBoxed == Short.class)
+        {
+            return ShortValue.parseString(text.trim());
+        }
+        if (classBoxed == Long.class)
+        {
+            return LongValue.parseString(text.trim());
+        }
+        if (classBoxed == Float.class)
+        {
+            return FloatValue.parseString(text.trim());
+        }
+        if (classBoxed == Double.class)
+        {
+            return DoubleValue.parseString(text.trim());
+        }
+        if (classBoxed == Integer.class)
+        {
+            return IntValue.parseString(text.trim());
         }
         return null;
     }

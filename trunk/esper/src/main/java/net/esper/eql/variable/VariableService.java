@@ -109,6 +109,22 @@ public class VariableService
 
         // check coercion
         Object coercedValue = value;
+
+        // allow string assignments to non-string variables 
+        if ((coercedValue != null) && (coercedValue instanceof String))
+        {
+            try
+            {
+                coercedValue = JavaClassHelper.parse(type, (String) coercedValue);
+            }
+            catch (Exception ex)
+            {
+                throw new VariableTypeException("Variable '" + variableName
+                    + "' of declared type '" + variableType.getName() +
+                        "' cannot be initialized by value '" + coercedValue + "': " + ex.toString());
+            }                        
+        }
+
         if ((coercedValue != null) &&
             (variableType != coercedValue.getClass()))
         {
@@ -140,7 +156,7 @@ public class VariableService
         }
 
         // create new holder for versions
-        VersionedValueList<Object> valuePerVersion = new VersionedValueList<Object>(variableName, currentVersionNumber, value, readWriteLock.readLock(), HIGH_WATERMARK_VERSIONS, LOW_WATERMARK_VERSIONS, false);
+        VersionedValueList<Object> valuePerVersion = new VersionedValueList<Object>(variableName, currentVersionNumber, coercedValue, readWriteLock.readLock(), HIGH_WATERMARK_VERSIONS, LOW_WATERMARK_VERSIONS, false);
 
         variableVersions.add(valuePerVersion);
 

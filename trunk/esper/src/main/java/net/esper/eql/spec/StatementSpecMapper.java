@@ -7,6 +7,7 @@ import net.esper.eql.core.EngineImportException;
 import net.esper.eql.core.EngineImportService;
 import net.esper.eql.core.EngineImportUndefinedException;
 import net.esper.eql.expression.*;
+import net.esper.eql.variable.VariableService;
 import net.esper.pattern.*;
 import net.esper.type.MathArithTypeEnum;
 import net.esper.type.MinMaxTypeEnum;
@@ -27,19 +28,31 @@ public class StatementSpecMapper
      * @param engineImportService for resolving imports such as plug-in aggregations
      * @return statement specification, and internal representation of a statement
      */
-    public static StatementSpecRaw map(EPStatementObjectModel sodaStatement, EngineImportService engineImportService)
+    public static StatementSpecRaw map(EPStatementObjectModel sodaStatement, EngineImportService engineImportService, VariableService variableService)
+    {
+        StatementSpecMapContext mapContext = new StatementSpecMapContext(engineImportService, variableService);
+        
+        StatementSpecRaw raw = map(sodaStatement, mapContext);
+        if (mapContext.isHasVariables())
+        {
+            raw.setHasVariables(true);
+        }
+        return raw;
+    }
+
+    private static StatementSpecRaw map(EPStatementObjectModel sodaStatement, StatementSpecMapContext mapContext)
     {
         StatementSpecRaw raw = new StatementSpecRaw();
         mapCreateWindow(sodaStatement.getCreateWindow(), raw);
-        mapOnTrigger(sodaStatement.getOnExpr(), raw, engineImportService);
+        mapOnTrigger(sodaStatement.getOnExpr(), raw, mapContext);
         mapInsertInto(sodaStatement.getInsertInto(), raw);
-        mapSelect(sodaStatement.getSelectClause(), raw, engineImportService);
-        mapFrom(sodaStatement.getFromClause(), raw, engineImportService);
-        mapWhere(sodaStatement.getWhereClause(), raw, engineImportService);
-        mapGroupBy(sodaStatement.getGroupByClause(), raw, engineImportService);
-        mapHaving(sodaStatement.getHavingClause(), raw, engineImportService);
+        mapSelect(sodaStatement.getSelectClause(), raw, mapContext);
+        mapFrom(sodaStatement.getFromClause(), raw, mapContext);
+        mapWhere(sodaStatement.getWhereClause(), raw, mapContext);
+        mapGroupBy(sodaStatement.getGroupByClause(), raw, mapContext);
+        mapHaving(sodaStatement.getHavingClause(), raw, mapContext);
         mapOutputLimit(sodaStatement.getOutputLimitClause(), raw);
-        mapOrderBy(sodaStatement.getOrderByClause(), raw, engineImportService);
+        mapOrderBy(sodaStatement.getOrderByClause(), raw, mapContext);
         return raw;
     }
 
@@ -85,7 +98,14 @@ public class StatementSpecMapper
         }
         if (onTriggerDesc.getOnTriggerType() == OnTriggerType.ON_SET)
         {
-            // TODO
+            OnTriggerSetDesc trigger = (OnTriggerSetDesc) onTriggerDesc;
+            OnSetClause clause = new OnSetClause();
+            for (OnTriggerSetAssignment assignment : trigger.getAssignments())
+            {
+                Expression expr = unmapExpressionDeep(assignment.getExpression(), unmapContext);
+                clause.addAssignment(assignment.getVariableName(), expr);
+            }
+            model.setOnExpr(clause);
         }
     }
 
@@ -143,7 +163,7 @@ public class StatementSpecMapper
         model.setOutputLimitClause(clause);
     }
 
-    private static void mapOrderBy(OrderByClause orderByClause, StatementSpecRaw raw, EngineImportService engineImportService)
+    private static void mapOrderBy(OrderByClause orderByClause, StatementSpecRaw raw, StatementSpecMapContext mapContext)
     {
         if (orderByClause == null)
         {
@@ -151,7 +171,7 @@ public class StatementSpecMapper
         }
         for (OrderByElement element : orderByClause.getOrderByExpressions())
         {
-            ExprNode orderExpr = mapExpressionDeep(element.getExpression(), engineImportService);
+            ExprNode orderExpr = mapExpressionDeep(element.getExpression(), mapContext);
             OrderByItem item = new OrderByItem(orderExpr, element.isDescending());
             raw.getOrderByList().add(item);
         }
@@ -176,7 +196,7 @@ public class StatementSpecMapper
         raw.setOutputLimitSpec(spec);
     }
 
-    private static void mapOnTrigger(OnClause onExpr, StatementSpecRaw raw, EngineImportService engineImportService)
+    private static void mapOnTrigger(OnClause onExpr, StatementSpecRaw raw, StatementSpecMapContext mapContext)
     {
         if (onExpr == null)
         {
@@ -195,7 +215,15 @@ public class StatementSpecMapper
         }
         else if (onExpr instanceof OnSetClause)
         {
-            // TODO
+            OnSetClause setClause = (OnSetClause) onExpr;
+            OnTriggerSetDesc desc = new OnTriggerSetDesc();
+            mapContext.setHasVariables(true);
+            for (Pair<String, Expression> pair : setClause.getAssignments())
+            {
+                ExprNode expr = mapExpressionDeep(pair.getSecond(), mapContext);
+                desc.addAssignment(new OnTriggerSetAssignment(pair.getFirst(), expr));
+            }
+            raw.setOnTriggerDesc(desc);
         }
         else
         {
@@ -203,13 +231,13 @@ public class StatementSpecMapper
         }
     }
 
-    private static void mapHaving(Expression havingClause, StatementSpecRaw raw, EngineImportService engineImportService)
+    private static void mapHaving(Expression havingClause, StatementSpecRaw raw, StatementSpecMapContext mapContext)
     {
         if (havingClause == null)
         {
             return;
         }
-        ExprNode node = mapExpressionDeep(havingClause, engineImportService);
+        ExprNode node = mapExpressionDeep(havingClause, mapContext);
         raw.setHavingExprRootNode(node);
     }
 
@@ -223,7 +251,7 @@ public class StatementSpecMapper
         model.setHavingClause(expr);
     }
 
-    private static void mapGroupBy(GroupByClause groupByClause, StatementSpecRaw raw, EngineImportService engineImportService)
+    private static void mapGroupBy(GroupByClause groupByClause, StatementSpecRaw raw, StatementSpecMapContext mapContext)
     {
         if (groupByClause == null)
         {
@@ -231,7 +259,7 @@ public class StatementSpecMapper
         }
         for (Expression expr : groupByClause.getGroupByExpressions())
         {
-            ExprNode node = mapExpressionDeep(expr, engineImportService);
+            ExprNode node = mapExpressionDeep(expr, mapContext);
             raw.getGroupByExpressions().add(node);
         }
     }
@@ -251,13 +279,13 @@ public class StatementSpecMapper
         model.setGroupByClause(clause);
     }
 
-    private static void mapWhere(Expression whereClause, StatementSpecRaw raw, EngineImportService engineImportService)
+    private static void mapWhere(Expression whereClause, StatementSpecRaw raw, StatementSpecMapContext mapContext)
     {
         if (whereClause == null)
         {
             return;
         }
-        ExprNode node = mapExpressionDeep(whereClause, engineImportService);
+        ExprNode node = mapExpressionDeep(whereClause, mapContext);
         raw.setFilterRootNode(node);
     }
 
@@ -396,7 +424,7 @@ public class StatementSpecMapper
         raw.setInsertIntoDesc(desc);
     }
 
-    private static void mapSelect(SelectClause selectClause, StatementSpecRaw raw, EngineImportService engineImportService)
+    private static void mapSelect(SelectClause selectClause, StatementSpecRaw raw, StatementSpecMapContext mapContext)
     {
         if (selectClause == null)
         {
@@ -410,7 +438,7 @@ public class StatementSpecMapper
         for (SelectClauseElement element : selectClause.getSelectList())
         {
             Expression expr = element.getExpression();
-            ExprNode exprNode = mapExpressionDeep(expr, engineImportService);
+            ExprNode exprNode = mapExpressionDeep(expr, mapContext);
 
             SelectExprElementRawSpec rawElement = new SelectExprElementRawSpec(exprNode, element.getAsName());
             spec.add(rawElement);
@@ -429,14 +457,14 @@ public class StatementSpecMapper
         return parent;
     }
 
-    private static ExprNode mapExpressionDeep(Expression expr, EngineImportService engineImportService)
+    private static ExprNode mapExpressionDeep(Expression expr, StatementSpecMapContext mapContext)
     {
-        ExprNode parent = mapExpressionFlat(expr, engineImportService);
-        mapExpressionRecursive(parent, expr, engineImportService);
+        ExprNode parent = mapExpressionFlat(expr, mapContext);
+        mapExpressionRecursive(parent, expr, mapContext);
         return parent;
     }
 
-    private static ExprNode mapExpressionFlat(Expression expr, EngineImportService engineImportService)
+    private static ExprNode mapExpressionFlat(Expression expr, StatementSpecMapContext mapContext)
     {
         if (expr == null)
         {
@@ -456,6 +484,12 @@ public class StatementSpecMapper
                 String stream = prop.getPropertyName().substring(0, indexDot);
                 String property = prop.getPropertyName().substring(indexDot + 1, prop.getPropertyName().length());
                 return new ExprIdentNode(property, stream);
+            }
+
+            if (mapContext.getVariableService().getReader(prop.getPropertyName()) != null)
+            {
+                mapContext.setHasVariables(true);
+                return new ExprVariableNode(prop.getPropertyName());
             }
             return new ExprIdentNode(prop.getPropertyName());
         }
@@ -495,13 +529,13 @@ public class StatementSpecMapper
         else if (expr instanceof SubqueryExpression)
         {
             SubqueryExpression sub = (SubqueryExpression) expr;
-            StatementSpecRaw rawSubselect = map(sub.getModel(), engineImportService);
+            StatementSpecRaw rawSubselect = map(sub.getModel(), mapContext);
             return new ExprSubselectRowNode(rawSubselect);
         }
         else if (expr instanceof SubqueryInExpression)
         {
             SubqueryInExpression sub = (SubqueryInExpression) expr;
-            StatementSpecRaw rawSubselect = map(sub.getModel(), engineImportService);
+            StatementSpecRaw rawSubselect = map(sub.getModel(), mapContext);
             ExprSubselectInNode inSub = new ExprSubselectInNode(rawSubselect);
             inSub.setNotIn(sub.isNotIn());
             return inSub;
@@ -509,7 +543,7 @@ public class StatementSpecMapper
         else if (expr instanceof SubqueryExistsExpression)
         {
             SubqueryExistsExpression sub = (SubqueryExistsExpression) expr;
-            StatementSpecRaw rawSubselect = map(sub.getModel(), engineImportService);
+            StatementSpecRaw rawSubselect = map(sub.getModel(), mapContext);
             return new ExprSubselectExistsNode(rawSubselect);
         }
         else if (expr instanceof CountStarProjectionExpression)
@@ -652,7 +686,7 @@ public class StatementSpecMapper
             PlugInProjectionExpression node = (PlugInProjectionExpression) expr;
             try
             {
-                AggregationSupport aggregation = engineImportService.resolveAggregation(node.getFunctionName());
+                AggregationSupport aggregation = mapContext.getEngineImportService().resolveAggregation(node.getFunctionName());
                 return new ExprPlugInAggFunctionNode(node.isDistinct(), aggregation, node.getFunctionName());
             }
             catch (EngineImportUndefinedException e)
@@ -682,6 +716,12 @@ public class StatementSpecMapper
             {
                 propertyName = prop.getStreamOrPropertyName() + "." + prop.getUnresolvedPropertyName();
             }
+            return new PropertyValueExpression(propertyName);
+        }
+        else if (expr instanceof ExprVariableNode)
+        {
+            ExprVariableNode prop = (ExprVariableNode) expr;
+            String propertyName = prop.getVariableName();
             return new PropertyValueExpression(propertyName);
         }
         else if (expr instanceof ExprEqualsNode)
@@ -898,17 +938,17 @@ public class StatementSpecMapper
         }
     }
 
-    private static void mapExpressionRecursive(ExprNode parent, Expression expr, EngineImportService engineImportService)
+    private static void mapExpressionRecursive(ExprNode parent, Expression expr, StatementSpecMapContext mapContext)
     {
         for (Expression child : expr.getChildren())
         {
-            ExprNode result = mapExpressionFlat(child, engineImportService);
+            ExprNode result = mapExpressionFlat(child, mapContext);
             parent.addChildNode(result);
-            mapExpressionRecursive(result, child, engineImportService);
+            mapExpressionRecursive(result, child, mapContext);
         }
     }
 
-    private static void mapFrom(FromClause fromClause, StatementSpecRaw raw, EngineImportService engineImportService)
+    private static void mapFrom(FromClause fromClause, StatementSpecRaw raw, StatementSpecMapContext mapContext)
     {
         for (Stream stream : fromClause.getStreams())
         {
@@ -917,7 +957,7 @@ public class StatementSpecMapper
             if (stream instanceof FilterStream)
             {
                 FilterStream filterStream = (FilterStream) stream;
-                FilterSpecRaw filterSpecRaw = mapFilter(filterStream.getFilter(), engineImportService);
+                FilterSpecRaw filterSpecRaw = mapFilter(filterStream.getFilter(), mapContext);
                 spec = new FilterStreamSpecRaw(filterSpecRaw, new ArrayList<ViewSpec>(), filterStream.getStreamName());
             }
             else if (stream instanceof SQLStream)
@@ -929,7 +969,7 @@ public class StatementSpecMapper
             else if (stream instanceof PatternStream)
             {
                 PatternStream patternStream = (PatternStream) stream;
-                EvalNode child = mapPatternEvalDeep(patternStream.getExpression(), engineImportService);
+                EvalNode child = mapPatternEvalDeep(patternStream.getExpression(), mapContext);
                 spec = new PatternStreamSpecRaw(child, new ArrayList<ViewSpec>(), patternStream.getStreamName());
             }
             else
@@ -948,8 +988,8 @@ public class StatementSpecMapper
 
         for (OuterJoinQualifier qualifier : fromClause.getOuterJoinQualifiers())
         {
-            ExprIdentNode left = (ExprIdentNode) mapExpressionFlat(qualifier.getLeft(), engineImportService);
-            ExprIdentNode right = (ExprIdentNode) mapExpressionFlat(qualifier.getRight(), engineImportService);
+            ExprIdentNode left = (ExprIdentNode) mapExpressionFlat(qualifier.getLeft(), mapContext);
+            ExprIdentNode right = (ExprIdentNode) mapExpressionFlat(qualifier.getRight(), mapContext);
 
             ExprIdentNode[] additionalLeft = null;
             ExprIdentNode[] additionalRight = null;
@@ -960,8 +1000,8 @@ public class StatementSpecMapper
                 int count = 0;
                 for (Pair<PropertyValueExpression, PropertyValueExpression> pair : qualifier.getAdditionalProperties())
                 {
-                    additionalLeft[count] = (ExprIdentNode) mapExpressionFlat(pair.getFirst(), engineImportService);
-                    additionalRight[count] = (ExprIdentNode) mapExpressionFlat(pair.getSecond(), engineImportService);
+                    additionalLeft[count] = (ExprIdentNode) mapExpressionFlat(pair.getFirst(), mapContext);
+                    additionalRight[count] = (ExprIdentNode) mapExpressionFlat(pair.getSecond(), mapContext);
                     count++;
                 }
             }
@@ -989,7 +1029,7 @@ public class StatementSpecMapper
         return views;
     }
 
-    private static EvalNode mapPatternEvalFlat(PatternExpr eval, EngineImportService engineImportService)
+    private static EvalNode mapPatternEvalFlat(PatternExpr eval, StatementSpecMapContext mapContext)
     {
         if (eval == null)
         {
@@ -1014,7 +1054,7 @@ public class StatementSpecMapper
         else if (eval instanceof PatternFilterExpr)
         {
             PatternFilterExpr filterExpr = (PatternFilterExpr) eval;
-            FilterSpecRaw filterSpec = mapFilter(filterExpr.getFilter(), engineImportService);
+            FilterSpecRaw filterSpec = mapFilter(filterExpr.getFilter(), mapContext);
             return new EvalFilterNode(filterSpec, filterExpr.getTagName());
         }
         else if (eval instanceof PatternObserverExpr)
@@ -1087,13 +1127,13 @@ public class StatementSpecMapper
         }
     }
 
-    private static void mapPatternEvalRecursive(EvalNode parent, PatternExpr expr, EngineImportService engineImportService)
+    private static void mapPatternEvalRecursive(EvalNode parent, PatternExpr expr, StatementSpecMapContext mapContext)
     {
         for (PatternExpr child : expr.getChildren())
         {
-            EvalNode result = mapPatternEvalFlat(child, engineImportService);
+            EvalNode result = mapPatternEvalFlat(child, mapContext);
             parent.addChildNode(result);
-            mapPatternEvalRecursive(result, child, engineImportService);
+            mapPatternEvalRecursive(result, child, mapContext);
         }
     }
 
@@ -1104,19 +1144,19 @@ public class StatementSpecMapper
         return parent;
     }
 
-    private static EvalNode mapPatternEvalDeep(PatternExpr expr, EngineImportService engineImportService)
+    private static EvalNode mapPatternEvalDeep(PatternExpr expr, StatementSpecMapContext mapContext)
     {
-        EvalNode parent = mapPatternEvalFlat(expr, engineImportService);
-        mapPatternEvalRecursive(parent, expr, engineImportService);
+        EvalNode parent = mapPatternEvalFlat(expr, mapContext);
+        mapPatternEvalRecursive(parent, expr, mapContext);
         return parent;
     }
 
-    private static FilterSpecRaw mapFilter(Filter filter, EngineImportService engineImportService)
+    private static FilterSpecRaw mapFilter(Filter filter, StatementSpecMapContext mapContext)
     {
         List<ExprNode> expr = new ArrayList<ExprNode>();
         if (filter.getFilter() != null)
         {
-            ExprNode exprNode = mapExpressionDeep(filter.getFilter(), engineImportService);
+            ExprNode exprNode = mapExpressionDeep(filter.getFilter(), mapContext);
             expr.add(exprNode);
         }
 

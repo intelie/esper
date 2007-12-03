@@ -250,8 +250,9 @@ public class EPStatementObjectModel implements Serializable
             if (onExpr instanceof OnDeleteClause)
             {
                 writer.write(" delete from ");
+                ((OnDeleteClause)onExpr).toEQL(writer);
             }
-            else
+            else if (onExpr instanceof OnSelectClause)
             {
                 writer.write(" ");
                 if (insertInto != null)
@@ -260,14 +261,12 @@ public class EPStatementObjectModel implements Serializable
                 }
                 selectClause.toEQL(writer);
                 writer.write(" from ");
+                ((OnSelectClause)onExpr).toEQL(writer);
             }
-            if (onExpr instanceof OnDeleteClause)
+            else
             {
-                ((OnDeleteClause)onExpr).toEQL(writer);
-            }
-            if (onExpr instanceof OnSelectClause)
-            {
-                ((OnSelectClause)onExpr).toEQL(writer);                
+                OnSetClause onSet = (OnSetClause) onExpr;
+                onSet.toEQL(writer);
             }
         }
         else

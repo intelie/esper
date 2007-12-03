@@ -106,7 +106,7 @@ public class OnSetVariableView extends ViewSupport
         for (OnTriggerSetAssignment assignment : desc.getAssignments())
         {
             Object value = assignment.getExpression().evaluate(eventsPerStream, true);
-            if (mustCoerce[count])
+            if ((value != null) && (mustCoerce[count]))
             {
                 value = JavaClassHelper.coerceBoxed((Number) value, writers[count].getType());
             }

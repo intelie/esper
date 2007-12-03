@@ -2,26 +2,26 @@ package net.esper.regression.eql;
 
 import junit.framework.TestCase;
 import net.esper.client.*;
+import net.esper.client.soda.*;
+import net.esper.event.EventType;
 import net.esper.support.bean.SupportBean;
 import net.esper.support.bean.SupportBean_A;
-import net.esper.support.bean.SupportBean_B;
-import net.esper.support.bean.SupportMarketDataBean;
 import net.esper.support.client.SupportConfigFactory;
 import net.esper.support.util.ArrayAssertionUtil;
 import net.esper.support.util.SupportUpdateListener;
-import net.esper.event.EventType;
+import org.w3c.dom.Document;
+import org.xml.sax.InputSource;
 
-import java.util.Map;
+import javax.xml.parsers.DocumentBuilderFactory;
+import java.io.StringReader;
 import java.util.Arrays;
+import java.util.Map;
 
 public class TestVariables extends TestCase
 {
     private EPServiceProvider epService;
     private SupportUpdateListener listener;
     private SupportUpdateListener listenerSet;
-
-    // test types:
-    // test coercion
 
     // test assignment execution:
     // test order of assignment
@@ -37,12 +37,6 @@ public class TestVariables extends TestCase
     // test create variable syntax
     // test output rate limiting
 
-    // invalid tests:
-    // test set of variable that has not been defined
-    // create of variable that has already been defined
-    
-    // test OM + compile
-
     public void setUp()
     {
         Configuration config = SupportConfigFactory.getConfiguration();
@@ -52,6 +46,91 @@ public class TestVariables extends TestCase
         epService.initialize();
         listener = new SupportUpdateListener();
         listenerSet = new SupportUpdateListener();
+    }
+
+    public void testObjectModel()
+    {
+        epService.getEPAdministrator().getConfiguration().addVariable("var1", double.class, 10d);
+        epService.getEPAdministrator().getConfiguration().addVariable("var2", Long.class, 11L);
+
+        EPStatementObjectModel model = new EPStatementObjectModel();
+        model.setSelectClause(SelectClause.create("var1", "var2", "id"));
+        model.setFromClause(FromClause.create(FilterStream.create(SupportBean_A.class.getName())));
+
+        EPStatement stmtSelect = epService.getEPAdministrator().create(model);
+        String stmtText = "select var1, var2, id from " + SupportBean_A.class.getName();
+        assertEquals(stmtText, model.toEQL());
+        stmtSelect.addListener(listener);
+
+        String[] fieldsSelect = new String[] {"var1", "var2", "id"};
+        sendSupportBean_A("E1");
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fieldsSelect, new Object[] {10d, 11L, "E1"});
+
+        model = new EPStatementObjectModel();
+        model.setOnExpr(OnClause.createOnSet("var1", Expressions.property("intPrimitive")).addAssignment("var2", Expressions.property("intBoxed")));
+        model.setFromClause(FromClause.create(FilterStream.create(SupportBean.class.getName())));
+        String stmtTextSet = "on " + SupportBean.class.getName() + " set var1 = intPrimitive, var2 = intBoxed";
+        EPStatement stmtSet = epService.getEPAdministrator().create(model);
+        stmtSet.addListener(listenerSet);
+        assertEquals(stmtTextSet, model.toEQL());
+
+        EventType typeSet = stmtSet.getEventType();
+        assertEquals(Double.class, typeSet.getPropertyType("var1"));
+        assertEquals(Long.class, typeSet.getPropertyType("var2"));
+        assertEquals(Map.class, typeSet.getUnderlyingType());
+        String[] fieldsVar = new String[] {"var1", "var2"};
+        assertTrue(Arrays.equals(typeSet.getPropertyNames(), fieldsVar));
+
+        ArrayAssertionUtil.assertEqualsExactOrder(stmtSet.iterator(), fieldsVar, new Object[][] {{10d, 11L}});
+        sendSupportBean("S1", 3, 4);
+        ArrayAssertionUtil.assertProps(listenerSet.assertOneGetNewAndReset(), fieldsVar, new Object[] {3d, 4L});
+        ArrayAssertionUtil.assertEqualsExactOrder(stmtSet.iterator(), fieldsVar, new Object[][] {{3d, 4L}});
+
+        sendSupportBean_A("E2");
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fieldsSelect, new Object[] {3d, 4L, "E2"});
+
+        stmtSet.destroy();
+        stmtSelect.destroy();
+    }
+
+    public void testCompile()
+    {
+        epService.getEPAdministrator().getConfiguration().addVariable("var1", double.class, 10d);
+        epService.getEPAdministrator().getConfiguration().addVariable("var2", Long.class, 11L);
+
+        String stmtText = "select var1, var2, id from " + SupportBean_A.class.getName();
+        EPStatementObjectModel model = epService.getEPAdministrator().compileEQL(stmtText);
+        EPStatement stmtSelect = epService.getEPAdministrator().create(model);
+        assertEquals(stmtText, model.toEQL());
+        stmtSelect.addListener(listener);
+
+        String[] fieldsSelect = new String[] {"var1", "var2", "id"};
+        sendSupportBean_A("E1");
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fieldsSelect, new Object[] {10d, 11L, "E1"});
+
+        String stmtTextSet = "on " + SupportBean.class.getName() + " set var1 = intPrimitive, var2 = intBoxed";
+        model = epService.getEPAdministrator().compileEQL(stmtTextSet);
+        EPStatement stmtSet = epService.getEPAdministrator().create(model);
+        stmtSet.addListener(listenerSet);
+        assertEquals(stmtTextSet, model.toEQL());
+
+        EventType typeSet = stmtSet.getEventType();
+        assertEquals(Double.class, typeSet.getPropertyType("var1"));
+        assertEquals(Long.class, typeSet.getPropertyType("var2"));
+        assertEquals(Map.class, typeSet.getUnderlyingType());
+        String[] fieldsVar = new String[] {"var1", "var2"};
+        assertTrue(Arrays.equals(typeSet.getPropertyNames(), fieldsVar));
+
+        ArrayAssertionUtil.assertEqualsExactOrder(stmtSet.iterator(), fieldsVar, new Object[][] {{10d, 11L}});
+        sendSupportBean("S1", 3, 4);
+        ArrayAssertionUtil.assertProps(listenerSet.assertOneGetNewAndReset(), fieldsVar, new Object[] {3d, 4L});
+        ArrayAssertionUtil.assertEqualsExactOrder(stmtSet.iterator(), fieldsVar, new Object[][] {{3d, 4L}});
+
+        sendSupportBean_A("E2");
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fieldsSelect, new Object[] {3d, 4L, "E2"});
+
+        stmtSet.destroy();
+        stmtSelect.destroy();
     }
 
     public void testRuntimeConfig()
@@ -157,7 +236,7 @@ public class TestVariables extends TestCase
         stmtSet.destroy();
     }
 
-    public void testEngineConfig()
+    public void testEngineConfigAPI()
     {
         Configuration config = SupportConfigFactory.getConfiguration();
         config.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
@@ -188,6 +267,56 @@ public class TestVariables extends TestCase
         sendSupportBean("S2", 4);
         ArrayAssertionUtil.assertProps(listenerSet.assertOneGetNewAndReset(), fieldsVar, new Object[] {"end", false, null});
         ArrayAssertionUtil.assertEqualsExactOrder(stmtSet.iterator(), fieldsVar, new Object[][] {{"end", false, null}});
+
+        stmtSet.destroy();
+    }
+
+    public void testEngineConfigXML() throws Exception
+    {
+        String xml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                "<esper-configuration xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:noNamespaceSchemaLocation=\"../esper-configuration-1-0.xsd\">" +
+                "<variable name=\"p_1\" type=\"string\" />" +
+                "<variable name=\"p_2\" type=\"bool\" initialization-value=\"true\"/>" +
+                "<variable name=\"p_3\" type=\"long\" initialization-value=\"10\"/>" +
+                "<variable name=\"p_4\" type=\"double\" initialization-value=\"11.1d\"/>" +
+                "</esper-configuration>";
+
+        DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
+        builderFactory.setNamespaceAware(true);
+        Document configDoc = builderFactory.newDocumentBuilder().parse(new InputSource(new StringReader(xml)));
+
+        Configuration config = SupportConfigFactory.getConfiguration();
+        config.configure(configDoc);
+        config.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
+
+        epService = EPServiceProviderManager.getDefaultProvider(config);
+        epService.initialize();
+
+        String stmtTextSet = "on " + SupportBean.class.getName() + " set p_1 = string, p_2 = boolBoxed, p_3 = intBoxed, p_4 = intBoxed";
+        EPStatement stmtSet = epService.getEPAdministrator().createEQL(stmtTextSet);
+        stmtSet.addListener(listenerSet);
+        String[] fieldsVar = new String[] {"p_1", "p_2", "p_3", "p_4"};
+        ArrayAssertionUtil.assertEqualsExactOrder(stmtSet.iterator(), fieldsVar, new Object[][] {{null, true, 10L, 11.1d}});
+
+        EventType typeSet = stmtSet.getEventType();
+        assertEquals(String.class, typeSet.getPropertyType("p_1"));
+        assertEquals(Boolean.class, typeSet.getPropertyType("p_2"));
+        assertEquals(Long.class, typeSet.getPropertyType("p_3"));
+        assertEquals(Double.class, typeSet.getPropertyType("p_4"));
+        assertTrue(Arrays.equals(typeSet.getPropertyNames(), fieldsVar));
+
+        SupportBean bean = new SupportBean();
+        bean.setString("text");
+        bean.setBoolBoxed(false);
+        bean.setIntBoxed(200);
+        epService.getEPRuntime().sendEvent(bean);
+        ArrayAssertionUtil.assertProps(listenerSet.assertOneGetNewAndReset(), fieldsVar, new Object[] {"text", false, 200L, 200d});
+        ArrayAssertionUtil.assertEqualsExactOrder(stmtSet.iterator(), fieldsVar, new Object[][] {{"text", false, 200L, 200d}});
+
+        bean = new SupportBean();   // leave all fields null
+        epService.getEPRuntime().sendEvent(bean);
+        ArrayAssertionUtil.assertProps(listenerSet.assertOneGetNewAndReset(), fieldsVar, new Object[] {null, null, null, null});
+        ArrayAssertionUtil.assertEqualsExactOrder(stmtSet.iterator(), fieldsVar, new Object[][] {{null, null, null, null}});
 
         stmtSet.destroy();
     }
@@ -248,6 +377,9 @@ public class TestVariables extends TestCase
         epService.getEPAdministrator().getConfiguration().addVariable("var2", boolean.class, false);
         epService.getEPAdministrator().getConfiguration().addVariable("var3", int.class, 1);
 
+        tryInvalidSet("on " + SupportBean.class.getName() + " set dummy = 100",
+                      "Error starting view: Variable by name 'dummy' has not been created or configured [on net.esper.support.bean.SupportBean set dummy = 100]");
+
         tryInvalidSet("on " + SupportBean.class.getName() + " set var1 = 1",
                       "Error starting view: Variable 'var1' of declared type 'java.lang.String' cannot be assigned a value of type 'java.lang.Integer' [on net.esper.support.bean.SupportBean set var1 = 1]");
 
@@ -280,11 +412,11 @@ public class TestVariables extends TestCase
 
     public void testInvalidInitialization()
     {
+        tryInvalid(Integer.class, "abcdef",
+                "Error creating variable: Variable 'var1' of declared type 'java.lang.Integer' cannot be initialized by value 'abcdef': java.lang.NumberFormatException: For input string: \"abcdef\"");
+
         tryInvalid(Integer.class, new Double(11.1),
                 "Error creating variable: Variable 'var1' of declared type 'java.lang.Integer' cannot be initialized by a value of type 'java.lang.Double'");
-
-        tryInvalid(Integer.class, "abcdef",
-                "Error creating variable: Variable 'var1' of declared type 'java.lang.Integer' cannot be initialized by a value of type 'java.lang.String'");
 
         tryInvalid(Math.class, "abcdef",
                 "Error creating variable: Invalid variable type for variable 'var1' as type 'java.lang.Math', only Java primitive, boxed or String types are allowed");
@@ -328,26 +460,6 @@ public class TestVariables extends TestCase
     private SupportBean_A sendSupportBean_A(String id)
     {
         SupportBean_A bean = new SupportBean_A(id);
-        epService.getEPRuntime().sendEvent(bean);
-        return bean;
-    }
-
-    private SupportBean_B sendSupportBean_B(String id)
-    {
-        SupportBean_B bean = new SupportBean_B(id);
-        epService.getEPRuntime().sendEvent(bean);
-        return bean;
-    }
-
-    private SupportBean sendSupportBean(String string, int intPrimitive, Integer intBoxed,
-                                        double doublePrimitive, Double doubleBoxed)
-    {
-        SupportBean bean = new SupportBean();
-        bean.setString(string);
-        bean.setIntPrimitive(intPrimitive);
-        bean.setIntBoxed(intBoxed);
-        bean.setDoublePrimitive(doublePrimitive);
-        bean.setDoubleBoxed(doubleBoxed);
         epService.getEPRuntime().sendEvent(bean);
         return bean;
     }

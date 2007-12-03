@@ -244,25 +244,7 @@ public class EPServicesContextFactoryDefault implements EPServicesContextFactory
         for(Object property : properties.keySet())
         {
             String className = (String) properties.get(property);
-
-            if ("string".equals(className))
-            {
-                className = String.class.getName();
-            }
-
-            // use the boxed type for primitives
-            String boxedClassName = JavaClassHelper.getBoxedClassName(className);
-
-            Class clazz = null;
-            try
-            {
-                clazz = Class.forName(boxedClassName);
-            }
-            catch (ClassNotFoundException ex)
-            {
-                throw new EventAdapterException("Unable to load class '" + boxedClassName + "', class not found", ex);
-            }
-
+            Class clazz = JavaClassHelper.getClassForSimpleName(className);
             propertyTypes.put((String) property, clazz);
         }
         return propertyTypes;

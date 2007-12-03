@@ -264,7 +264,7 @@ public class TestJavaClassHelper extends TestCase
         }
     }
 
-    public void testGetClass() throws Exception
+    public void testClassForName() throws Exception
     {
         Object[][] tests = new Object[][] {
                 {int.class, int.class.getName()},
@@ -279,6 +279,72 @@ public class TestJavaClassHelper extends TestCase
         for (int i = 0; i < tests.length; i++)
         {
             assertEquals(tests[i][0], JavaClassHelper.getClassForName((String)tests[i][1]));
+        }
+    }
+
+    public void testClassForSimpleName() throws Exception
+    {
+        Object[][] tests = new Object[][] {
+                {"Bool", Boolean.class},
+                {"boolean", Boolean.class},
+                {"Boolean", Boolean.class},
+                {"int", Integer.class},
+                {"inTeger", Integer.class},
+                {"long", Long.class},
+                {"LONG", Long.class},
+                {"short", Short.class},
+                {"  short  ", Short.class},
+                {"double", Double.class},
+                {" douBle", Double.class},
+                {"float", Float.class},
+                {"float  ", Float.class},
+                {"byte", Byte.class},
+                {"   bYte ", Byte.class},
+                {"char", Character.class},
+                {"character", Character.class},
+                {"string", String.class},
+                {"varchar", String.class},
+                {"varchar2", String.class},
+                };
+
+        for (int i = 0; i < tests.length; i++)
+        {
+            assertEquals("error in row:" + i, tests[i][1], JavaClassHelper.getClassForSimpleName((String)tests[i][0]));
+        }
+    }
+
+    public void testParse() throws Exception
+    {
+        Object[][] tests = new Object[][] {
+                {Boolean.class, "TrUe", true},
+                {Boolean.class, "false", false},
+                {boolean.class, "false", false},
+                {boolean.class, "true", true},
+                {int.class, "73737474 ", 73737474},
+                {Integer.class, " -1 ", -1},
+                {long.class, "123456789001222L", 123456789001222L},
+                {Long.class, " -2 ", -2L},
+                {Long.class, " -2L ", -2L},
+                {Long.class, " -2l ", -2L},
+                {Short.class, " -3 ", (short)-3},
+                {short.class, "111", (short)111},
+                {Double.class, " -3d ", -3d},
+                {double.class, "111.38373", 111.38373d},
+                {Double.class, " -3.1D ", -3.1D},
+                {Float.class, " -3f ", -3f},
+                {float.class, "111.38373", 111.38373f},
+                {Float.class, " -3.1F ", -3.1f},
+                {Byte.class, " -3 ", (byte) -3},
+                {byte.class, " 1 ", (byte)1},
+                {char.class, "ABC", 'A'},
+                {Character.class, " AB", ' '},
+                {String.class, "AB", "AB"},
+                {String.class, " AB ", " AB "},
+                };
+
+        for (int i = 0; i < tests.length; i++)
+        {
+            assertEquals("error in row:" + i, tests[i][2], JavaClassHelper.parse((Class)tests[i][0], (String)tests[i][1]));
         }
     }
 

@@ -8,6 +8,8 @@
 package net.esper.client;
 
 import net.esper.util.DOMElementIterator;
+import net.esper.util.JavaClassHelper;
+import net.esper.event.EventAdapterException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.w3c.dom.Document;
@@ -125,6 +127,10 @@ class ConfigurationParser {
             else if (nodeName.equals("plugin-pattern-observer"))
             {
                 handlePlugInPatternObserver(configuration, element);
+            }
+            else if (nodeName.equals("variable"))
+            {
+                handleVariable(configuration, element);
             }
             else if (nodeName.equals("adapter-loader"))
             {
@@ -436,6 +442,31 @@ class ConfigurationParser {
         String name = element.getAttributes().getNamedItem("name").getTextContent();
         String factoryClassName = element.getAttributes().getNamedItem("factory-class").getTextContent();
         configuration.addPlugInPatternObserver(namespace, name, factoryClassName);
+    }
+
+    private static void handleVariable(Configuration configuration, Element element)
+    {
+        String variableName = element.getAttributes().getNamedItem("name").getTextContent();
+        String type = element.getAttributes().getNamedItem("type").getTextContent();
+
+        Class variableType;
+        try
+        {
+            variableType = JavaClassHelper.getClassForSimpleName(type);
+        }
+        catch (EventAdapterException ex)
+        {
+            throw new ConfigurationException("Invalid variable type for variable '" + variableName + "': " + ex.getMessage());
+        }
+
+        Node initValueNode = element.getAttributes().getNamedItem("initialization-value");
+        String initValue = null;
+        if (initValueNode != null)
+        {
+            initValue = initValueNode.getTextContent();
+        }
+
+        configuration.addVariable(variableName, variableType, initValue);
     }
 
     private static void handleAdapterLoaders(Configuration configuration, Element element)

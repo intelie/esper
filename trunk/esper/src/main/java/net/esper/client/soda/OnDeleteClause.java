@@ -12,6 +12,11 @@ public class OnDeleteClause extends OnClause
     private String windowName;
     private String optionalAsName;
 
+    public static OnDeleteClause create(String windowName, String optionalAsName)
+    {
+        return new OnDeleteClause(windowName, optionalAsName);
+    }
+
     /**
      * Ctor.
      * @param windowName is the named window name

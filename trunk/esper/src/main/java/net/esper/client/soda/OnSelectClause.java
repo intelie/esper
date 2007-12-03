@@ -12,6 +12,11 @@ public class OnSelectClause extends OnClause
     private String windowName;
     private String optionalAsName;
 
+    public static OnSelectClause create(String windowName, String optionalAsName)
+    {
+        return new OnSelectClause(windowName, optionalAsName);
+    }
+
     /**
      * Ctor.
      * @param windowName is the named window name

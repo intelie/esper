@@ -207,5 +207,14 @@ public class TestConfigurationParser extends TestCase
         assertFalse(config.getEngineDefaults().getViewResources().isShareViews());
         assertEquals(Configuration.PropertyResolutionStyle.DISTINCT_CASE_INSENSITIVE, config.getEngineDefaults().getEventMeta().getClassPropertyResolutionStyle());
         assertTrue(config.getEngineDefaults().getLogging().isEnableExecutionDebug());
+
+        // variables
+        assertEquals(2, config.getVariables().size());
+        ConfigurationVariable variable = config.getVariables().get("var1");
+        assertEquals(Integer.class, variable.getType());
+        assertEquals("1", variable.getInitializationValue());
+        variable = config.getVariables().get("var2");
+        assertEquals(String.class, variable.getType());
+        assertEquals(null, variable.getInitializationValue());
     }
 }

@@ -18,7 +18,7 @@ public abstract class OnClause implements Serializable
      */
     public static OnDeleteClause createOnDelete(String windowName, String asNameAlias)
     {
-        return new OnDeleteClause(windowName, asNameAlias);
+        return OnDeleteClause.create(windowName, asNameAlias);
     }
 
     /**
@@ -29,6 +29,11 @@ public abstract class OnClause implements Serializable
      */
     public static OnSelectClause createOnSelect(String windowName, String asNameAlias)
     {
-        return new OnSelectClause(windowName, asNameAlias);
+        return OnSelectClause.create(windowName, asNameAlias);
     }    
+
+    public static OnSetClause createOnSet(String variableName, Expression expression)
+    {
+        return OnSetClause.create(variableName, expression);
+    }
 }

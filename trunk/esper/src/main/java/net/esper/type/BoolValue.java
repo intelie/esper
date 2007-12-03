@@ -42,7 +42,7 @@ public final class BoolValue extends PrimitiveValueBase
      */
     public static boolean parseString(String value)
     {
-        if (!(value.equals("true")) && (!(value.equals("false"))))
+        if (!(value.toLowerCase().equals("true")) && (!(value.toLowerCase().equals("false"))))
         {
             throw new IllegalArgumentException("Boolean value '" + value + "' cannot be converted to boolean");
         }
