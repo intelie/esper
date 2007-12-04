@@ -44,6 +44,7 @@ public class EPStatementObjectModel implements Serializable
 {
     private static final long serialVersionUID = 0L;
 
+    private CreateVariableClause createVariable;
     private CreateWindowClause createWindow;
     private OnClause onExpr;
     private InsertIntoClause insertInto;
@@ -242,6 +243,12 @@ public class EPStatementObjectModel implements Serializable
             return writer.toString();
         }
 
+        if (createVariable != null)
+        {
+            createVariable.toEQL(writer);
+            return writer.toString();
+        }
+
         if (onExpr != null)
         {
             writer.write("on ");
@@ -355,5 +362,15 @@ public class EPStatementObjectModel implements Serializable
     public void setOnExpr(OnClause onExpr)
     {
         this.onExpr = onExpr;
+    }
+
+    public CreateVariableClause getCreateVariable()
+    {
+        return createVariable;
+    }
+
+    public void setCreateVariable(CreateVariableClause createVariable)
+    {
+        this.createVariable = createVariable;
     }
 }

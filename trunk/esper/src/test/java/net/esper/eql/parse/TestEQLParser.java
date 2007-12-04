@@ -14,7 +14,7 @@ public class TestEQLParser extends TestCase implements EqlTokenTypes
     public void testDisplayAST() throws Exception
     {
         String className = SupportBean.class.getName();
-        String expression = "on MyEvent set a=b";
+        String expression = "create variable uu aa = b";
 
         log.debug(".testDisplayAST parsing: " + expression);
         AST ast = parse(expression);
@@ -564,6 +564,11 @@ public class TestEQLParser extends TestCase implements EqlTokenTypes
         assertIsValid("on MyEvent as event set var = event.val");
         assertIsValid("on MyEvent as event set var = event.val");
         assertIsValid("on MyEvent as event set var = event.val * 2, var2='abc', var3='def'");
+
+        // create variable
+        assertIsValid("create variable integer a = 77");
+        assertIsValid("create variable sometype b = 77");
+        assertIsValid("create variable sometype b");
     }
 
     public void testBitWiseCases() throws Exception

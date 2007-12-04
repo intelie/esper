@@ -46,7 +46,7 @@ public class OnSetVariableView extends ViewSupport
             readers[count] = variableService.getReader(variableName);
             if (readers[count] == null)
             {
-                throw new ExprValidationException("Variables by name '" + variableName + "' has not been created or configured");
+                throw new ExprValidationException("Variable by name '" + variableName + "' has not been created or configured");
             }
 
             // determine types
@@ -61,14 +61,14 @@ public class OnSetVariableView extends ViewSupport
                 if ((!JavaClassHelper.isNumeric(variableType)) ||
                     (!JavaClassHelper.isNumeric(expressionType)))
                 {
-                    throw new ExprValidationException("Variables '" + variableName
+                    throw new ExprValidationException("Variable '" + variableName
                         + "' of declared type '" + variableType.getName() +
                             "' cannot be assigned a value of type '" + expressionType.getName() + "'");
                 }
 
                 if (!(JavaClassHelper.canCoerce(expressionType, variableType)))
                 {
-                    throw new ExprValidationException("Variables '" + variableName
+                    throw new ExprValidationException("Variable '" + variableName
                         + "' of declared type '" + variableType.getName() +
                             "' cannot be assigned a value of type '" + expressionType.getName() + "'");
                 }

@@ -126,7 +126,7 @@ public class VersionedValueList<T>
         return resultValue;
     }
 
-    public void addValue(int version, T value, long timestamp)
+    public Object addValue(int version, T value, long timestamp)
     {
         if (log.isDebugEnabled())
         {
@@ -138,7 +138,7 @@ public class VersionedValueList<T>
         {
             currentAndPriorValue = new CurrentValue<T>(new VersionedValue<T>(version, value, timestamp),
               currentAndPriorValue.getCurrentVersion());
-            return;
+            return currentAndPriorValue.getPriorVersion().getValue();
         }
 
         // add to list
@@ -165,6 +165,7 @@ public class VersionedValueList<T>
         
         currentAndPriorValue = new CurrentValue<T>(new VersionedValue<T>(version, value, timestamp),
                                                    currentAndPriorValue.getCurrentVersion());
+        return currentAndPriorValue.getPriorVersion().getValue();
     }
 
     protected CurrentValue<T> getCurrentAndPriorValue()
@@ -180,7 +181,7 @@ public class VersionedValueList<T>
     public String toString()
     {
         StringBuffer buffer = new StringBuffer();
-        buffer.append("Variables '").append(name).append("' ");
+        buffer.append("Variable '").append(name).append("' ");
         buffer.append(" current=").append(currentAndPriorValue.getCurrentVersion().toString());
         buffer.append(" prior=").append(currentAndPriorValue.getCurrentVersion().toString());
 

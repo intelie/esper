@@ -65,8 +65,11 @@ public class VariableServiceImpl implements VariableService
     // Keep the variable list
     private final Map<String, VariableReader> variables;
 
-    // Each variable has a index number, a current version and a list of values
+    // Each variable has an index number, a current version and a list of values
     private final ArrayList<VersionedValueList<Object>> variableVersions;
+
+    // Each variable may have a single callback to invoke when the variable changes
+    private final ArrayList<VariableChangeCallback> changeCallbacks;
 
     // Write lock taken on write of any variable; and on read of older versions
     private final ReadWriteLock readWriteLock;
@@ -93,6 +96,7 @@ public class VariableServiceImpl implements VariableService
         this.variables = new HashMap<String, VariableReader>();
         this.variableVersions = new ArrayList<VersionedValueList<Object>>();
         this.readWriteLock = new ReentrantReadWriteLock();
+        this.changeCallbacks = new ArrayList<VariableChangeCallback>();
         currentVersionNumber = startVersion;
     }
 
@@ -104,6 +108,11 @@ public class VariableServiceImpl implements VariableService
     public void unsetLocalVersion()
     {
         versionThreadLocal.getCurrentThread().setVersion(null);
+    }
+
+    public void registerCallback(int variableNumber, VariableChangeCallback variableChangeCallback)
+    {
+        changeCallbacks.set(variableNumber, variableChangeCallback);
     }
 
     public synchronized void createNewVariable(String variableName, Class type, Object value)
@@ -130,7 +139,7 @@ public class VariableServiceImpl implements VariableService
             }
             catch (Exception ex)
             {
-                throw new VariableTypeException("Variables '" + variableName
+                throw new VariableTypeException("Variable '" + variableName
                     + "' of declared type '" + variableType.getName() +
                         "' cannot be initialized by value '" + coercedValue + "': " + ex.toString());
             }
@@ -143,14 +152,14 @@ public class VariableServiceImpl implements VariableService
             if ((!JavaClassHelper.isNumeric(variableType)) ||
                 (!(coercedValue instanceof Number)))
             {
-                throw new VariableTypeException("Variables '" + variableName
+                throw new VariableTypeException("Variable '" + variableName
                     + "' of declared type '" + variableType.getName() +
                         "' cannot be initialized by a value of type '" + coercedValue.getClass().getName() + "'");
             }
 
             if (!(JavaClassHelper.canCoerce(coercedValue.getClass(), variableType)))
             {
-                throw new VariableTypeException("Variables '" + variableName
+                throw new VariableTypeException("Variable '" + variableName
                     + "' of declared type '" + variableType.getName() +
                         "' cannot be initialized by a value of type '" + coercedValue.getClass().getName() + "'");
             }
@@ -163,7 +172,7 @@ public class VariableServiceImpl implements VariableService
         VariableReader reader = variables.get(variableName);
         if (reader != null)
         {
-            throw new VariableExistsException("Variables by name '" + variableName + "' has already been created");
+            throw new VariableExistsException("Variable by name '" + variableName + "' has already been created");
         }
 
         long timestamp = timeProvider.getTime();
@@ -171,12 +180,14 @@ public class VariableServiceImpl implements VariableService
         // create new holder for versions
         VersionedValueList<Object> valuePerVersion = new VersionedValueList<Object>(variableName, currentVersionNumber, coercedValue, timestamp, millisecondLifetimeOldVersions, readWriteLock.readLock(), HIGH_WATERMARK_VERSIONS, false);
 
+        // add entries matching in index the variable number
         variableVersions.add(valuePerVersion);
+        changeCallbacks.add(null);
 
         // create reader
         reader = new VariableReader(versionThreadLocal, variableType, variableName, currentVariableNumber, valuePerVersion);
         variables.put(variableName, reader);
-
+        
         currentVariableNumber++;
     }
 
@@ -227,7 +238,14 @@ public class VariableServiceImpl implements VariableService
             VersionedValueList<Object> versions = variableVersions.get(uncommittedEntry.getKey());
 
             // add new value as a new version
-            versions.addValue(newVersion, uncommittedEntry.getValue(), timestamp);
+            Object oldValue = versions.addValue(newVersion, uncommittedEntry.getValue(), timestamp);
+
+            // make a callback that the value changed
+            VariableChangeCallback callback = changeCallbacks.get(uncommittedEntry.getKey());            
+            if (callback != null)
+            {
+                callback.update(uncommittedEntry.getValue(), oldValue);
+            }
         }
 
         // this makes the new values visible to other threads (not this thread unless set-version called again)
@@ -273,7 +291,7 @@ public class VariableServiceImpl implements VariableService
         {
             int variableNum = entry.getValue().getVariableNumber();
             VersionedValueList<Object> list = variableVersions.get(variableNum);
-            writer.write("Variables '" + entry.getKey() + "' : " + list.toString() + "\n");
+            writer.write("Variable '" + entry.getKey() + "' : " + list.toString() + "\n");
         }
         return writer.toString();
     }

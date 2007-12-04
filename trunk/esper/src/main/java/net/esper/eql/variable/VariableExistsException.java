@@ -1,8 +1,6 @@
 package net.esper.eql.variable;
 
-import net.esper.eql.core.StreamTypesException;
-
-public class VariableExistsException extends StreamTypesException
+public class VariableExistsException extends VariableDeclarationException
 {
     public VariableExistsException(String msg)
     {

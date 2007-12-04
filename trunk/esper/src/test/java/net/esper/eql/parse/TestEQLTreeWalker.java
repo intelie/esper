@@ -18,6 +18,7 @@ import net.esper.type.TimePeriodParameter;
 import net.esper.eql.spec.ViewSpec;
 import net.esper.eql.variable.VariableService;
 import net.esper.eql.variable.VariableServiceImpl;
+import net.esper.schedule.SchedulingServiceImpl;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -30,9 +31,21 @@ public class TestEQLTreeWalker extends TestCase
                     CLASSNAME + "(string='a').win:length(10).std:lastevent() as win1," +
                     CLASSNAME + "(string='b').win:length(10).std:lastevent() as win2 ";
 
+    public void testWalkCreateVariable() throws Exception
+    {
+        String expression = "create variable sometype var1 = 1";
+        EQLTreeWalker walker = parseAndWalkEQL(expression);
+        StatementSpecRaw raw = walker.getStatementSpec();
+
+        CreateVariableDesc createVarDesc = raw.getCreateVariableDesc();
+        assertEquals("sometype", createVarDesc.getVariableType());
+        assertEquals("var1", createVarDesc.getVariableName());
+        assertTrue(createVarDesc.getAssignment() instanceof ExprConstantNode);
+    }
+
     public void testWalkOnSet() throws Exception
     {
-        VariableService variableService = new VariableServiceImpl(0, null);
+        VariableService variableService = new VariableServiceImpl(0, new SchedulingServiceImpl());
         variableService.createNewVariable("var1", Long.class, 100L);
 
         String expression = "on com.MyClass as myevent set var1 = 'a', var2 = 2*3, var3 = var1";

@@ -113,7 +113,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
         }
 
         EPStatementDesc desc = createStopped(statementSpec, expression, isPattern, statementName, statementId, optAdditionalContext);
-        start(statementId, desc);
+        start(statementId, desc, true);
         return desc.getEpStatement();
     }
 
@@ -134,7 +134,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
             log.debug(".start Creating and starting statement " + statementId);
         }
         EPStatementDesc desc = createStopped(statementSpec, expression, isPattern, statementName, statementId, optAdditionalContext);
-        start(statementId, desc);
+        start(statementId, desc, true);
         return desc.getEpStatement();
     }
 
@@ -324,7 +324,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
             {
                 throw new IllegalStateException("Cannot start statement, statement is in destroyed state");
             }
-            startInternal(statementId, desc);
+            startInternal(statementId, desc, false);
         }
         catch (RuntimeException ex)
         {
@@ -341,7 +341,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
      * @param statementId is the statement id
      * @param desc is the cached statement info
      */
-    public void start(String statementId, EPStatementDesc desc)
+    public void start(String statementId, EPStatementDesc desc, boolean isNewStatement)
     {
         if (log.isDebugEnabled())
         {
@@ -353,7 +353,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
         eventProcessingRWLock.acquireWriteLock();
         try
         {
-            startInternal(statementId, desc);
+            startInternal(statementId, desc, isNewStatement);
         }
         catch (RuntimeException ex)
         {
@@ -365,7 +365,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
         }
     }
 
-    private void startInternal(String statementId, EPStatementDesc desc)
+    private void startInternal(String statementId, EPStatementDesc desc, boolean isNewStatement)
     {
         if (log.isDebugEnabled())
         {
@@ -386,7 +386,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
         Pair<Viewable, EPStatementStopMethod> pair;
         try
         {
-            pair = desc.getStartMethod().start();
+            pair = desc.getStartMethod().start(isNewStatement);
         }
         catch (ExprValidationException ex)
         {
@@ -762,6 +762,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
         return new StatementSpecCompiled(
                 spec.getOnTriggerDesc(),
                 spec.getCreateWindowDesc(),
+                spec.getCreateVariableDesc(),
                 spec.getInsertIntoDesc(),
                 spec.getSelectStreamSelectorEnum(),
                 spec.getSelectClauseSpec(),

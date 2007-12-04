@@ -44,6 +44,7 @@ public class StatementSpecMapper
     {
         StatementSpecRaw raw = new StatementSpecRaw();
         mapCreateWindow(sodaStatement.getCreateWindow(), raw);
+        mapCreateVariable(sodaStatement.getCreateVariable(), raw, mapContext);
         mapOnTrigger(sodaStatement.getOnExpr(), raw, mapContext);
         mapInsertInto(sodaStatement.getInsertInto(), raw);
         mapSelect(sodaStatement.getSelectClause(), raw, mapContext);
@@ -67,6 +68,7 @@ public class StatementSpecMapper
 
         EPStatementObjectModel model = new EPStatementObjectModel();
         unmapCreateWindow(statementSpec.getCreateWindowDesc(), model);
+        unmapCreateVariable(statementSpec.getCreateVariableDesc(), model, unmapContext);
         unmapOnClause(statementSpec.getOnTriggerDesc(), model, unmapContext);
         unmapInsertInto(statementSpec.getInsertIntoDesc(), model);
         unmapSelect(statementSpec.getSelectClauseSpec(), statementSpec.getSelectStreamSelectorEnum(), model, unmapContext);
@@ -116,6 +118,20 @@ public class StatementSpecMapper
             return;
         }
         model.setCreateWindow(new CreateWindowClause(createWindowDesc.getWindowName(), unmapViews(createWindowDesc.getViewSpecs())));
+    }
+
+    private static void unmapCreateVariable(CreateVariableDesc createVariableDesc, EPStatementObjectModel model, StatementSpecUnMapContext unmapContext)
+    {
+        if (createVariableDesc == null)
+        {
+            return;
+        }
+        Expression assignment = null;
+        if (createVariableDesc.getAssignment() != null)
+        {
+            assignment = unmapExpressionDeep(createVariableDesc.getAssignment(), unmapContext);
+        }
+        model.setCreateVariable(new CreateVariableClause(createVariableDesc.getVariableType(), createVariableDesc.getVariableName(), assignment));
     }
 
     private static void unmapOrderBy(List<OrderByItem> orderByList, EPStatementObjectModel model, StatementSpecUnMapContext unmapContext)
@@ -403,6 +419,22 @@ public class StatementSpecMapper
         }
 
         raw.setCreateWindowDesc(new CreateWindowDesc(createWindow.getWindowName(), mapViews(createWindow.getViews())));
+    }
+
+    private static void mapCreateVariable(CreateVariableClause createVariable, StatementSpecRaw raw, StatementSpecMapContext mapContext)
+    {
+        if (createVariable == null)
+        {
+            return;
+        }
+
+        ExprNode assignment = null;
+        if (createVariable.getOptionalAssignment() != null)
+        {
+            assignment = mapExpressionDeep(createVariable.getOptionalAssignment(), mapContext);
+        }
+
+        raw.setCreateVariableDesc(new CreateVariableDesc(createVariable.getVariableType(), createVariable.getVariableName(), assignment));
     }
 
     private static void mapInsertInto(InsertIntoClause insertInto, StatementSpecRaw raw)
@@ -950,6 +982,11 @@ public class StatementSpecMapper
 
     private static void mapFrom(FromClause fromClause, StatementSpecRaw raw, StatementSpecMapContext mapContext)
     {
+        if (fromClause == null)
+        {
+            return;
+        }
+        
         for (Stream stream : fromClause.getStreams())
         {
             StreamSpecRaw spec;

@@ -20,6 +20,7 @@ public class StatementSpecRaw implements MetaDefItem
 {
     private OnTriggerDesc onTriggerDesc;
     private CreateWindowDesc createWindowDesc;
+    private CreateVariableDesc createVariableDesc;
     private InsertIntoDesc insertIntoDesc;
     private SelectClauseStreamSelectorEnum selectStreamDirEnum = SelectClauseStreamSelectorEnum.RSTREAM_ISTREAM_BOTH;
     private SelectClauseSpec selectClauseSpec = new SelectClauseSpec();
@@ -248,5 +249,15 @@ public class StatementSpecRaw implements MetaDefItem
     public void setHasVariables(boolean hasVariables)
     {
         this.hasVariables = hasVariables;
+    }
+
+    public CreateVariableDesc getCreateVariableDesc()
+    {
+        return createVariableDesc;
+    }
+
+    public void setCreateVariableDesc(CreateVariableDesc createVariableDesc)
+    {
+        this.createVariableDesc = createVariableDesc;
     }
 }

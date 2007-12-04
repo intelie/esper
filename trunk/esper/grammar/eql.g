@@ -84,6 +84,7 @@ tokens
 	DELETE="delete";
 	SNAPSHOT="snapshot";
 	SET="set";
+	VARIABLE="variable";
 	
    	NUMERIC_PARAM_RANGE;
    	NUMERIC_PARAM_LIST;
@@ -174,6 +175,7 @@ tokens
 	ON_SELECT_EXPR;
 	ON_EXPR_FROM;
 	ON_SET_EXPR;
+	CREATE_VARIABLE_EXPR;
 	
    	INT_TYPE;
    	LONG_TYPE;
@@ -232,6 +234,7 @@ stringconstant
 eqlExpression 
 	:	selectExpr
 	|	createWindowExpr
+	|	createVariableExpr
 	|	onExpr
 	;
 	
@@ -289,6 +292,11 @@ createWindowExpr
 		{ #createWindowExpr = #([CREATE_WINDOW_EXPR,"createWindowExpr"], #createWindowExpr); }
 	;
 		
+createVariableExpr
+	:	CREATE! VARIABLE! IDENT IDENT (EQUALS! expression)?
+		{ #createVariableExpr = #([CREATE_VARIABLE_EXPR,"createVariableExpr"], #createVariableExpr); }
+	;
+
 createSelectionList 	
 	:	createSelectionListElement (COMMA! createSelectionListElement)*
 		{ #createSelectionList = #([CREATE_WINDOW_SELECT_EXPR,"createSelectionList"], #createSelectionList); }

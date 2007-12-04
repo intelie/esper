@@ -1,8 +1,6 @@
 package net.esper.eql.variable;
 
-import net.esper.eql.core.StreamTypesException;
-
-public class VariableNotFoundException extends StreamTypesException
+public class VariableNotFoundException extends VariableDeclarationException
 {
     public VariableNotFoundException(String msg)
     {

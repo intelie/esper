@@ -19,6 +19,8 @@ public interface VariableService
 
     public VariableReader getReader(String variableName);
     
+    public void registerCallback(int variableNumber, VariableChangeCallback variableChangeCallback);
+
     public void write(int variableNumber, Object newValue);
     public void commit();
     public void rollback();

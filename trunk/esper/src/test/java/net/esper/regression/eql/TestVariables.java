@@ -24,8 +24,7 @@ public class TestVariables extends TestCase
     private SupportUpdateListener listener;
     private SupportUpdateListener listenerSet;
 
-    // test create variable syntax
-    // test output rate limiting
+    // TODO test output rate limiting
 
     public void setUp()
     {
@@ -313,7 +312,7 @@ public class TestVariables extends TestCase
         }
         catch (ConfigurationException ex)
         {
-            assertEquals("Error creating variable: Variables by name 'var1' has already been created", ex.getMessage());
+            assertEquals("Error creating variable: Variable by name 'var1' has already been created", ex.getMessage());
         }
 
         stmtSet.destroy();
@@ -511,16 +510,16 @@ public class TestVariables extends TestCase
         epService.getEPAdministrator().getConfiguration().addVariable("var3", int.class, 1);
 
         tryInvalidSet("on " + SupportBean.class.getName() + " set dummy = 100",
-                      "Error starting view: Variables by name 'dummy' has not been created or configured [on net.esper.support.bean.SupportBean set dummy = 100]");
+                      "Error starting view: Variable by name 'dummy' has not been created or configured [on net.esper.support.bean.SupportBean set dummy = 100]");
 
         tryInvalidSet("on " + SupportBean.class.getName() + " set var1 = 1",
-                      "Error starting view: Variables 'var1' of declared type 'java.lang.String' cannot be assigned a value of type 'java.lang.Integer' [on net.esper.support.bean.SupportBean set var1 = 1]");
+                      "Error starting view: Variable 'var1' of declared type 'java.lang.String' cannot be assigned a value of type 'java.lang.Integer' [on net.esper.support.bean.SupportBean set var1 = 1]");
 
         tryInvalidSet("on " + SupportBean.class.getName() + " set var3 = 'abc'",
-                      "Error starting view: Variables 'var3' of declared type 'java.lang.Integer' cannot be assigned a value of type 'java.lang.String' [on net.esper.support.bean.SupportBean set var3 = 'abc']");
+                      "Error starting view: Variable 'var3' of declared type 'java.lang.Integer' cannot be assigned a value of type 'java.lang.String' [on net.esper.support.bean.SupportBean set var3 = 'abc']");
 
         tryInvalidSet("on " + SupportBean.class.getName() + " set var3 = doublePrimitive",
-                      "Error starting view: Variables 'var3' of declared type 'java.lang.Integer' cannot be assigned a value of type 'double' [on net.esper.support.bean.SupportBean set var3 = doublePrimitive]");
+                      "Error starting view: Variable 'var3' of declared type 'java.lang.Integer' cannot be assigned a value of type 'double' [on net.esper.support.bean.SupportBean set var3 = doublePrimitive]");
 
         tryInvalidSet("on " + SupportBean.class.getName() + " set var2 = 'false'", null);
         tryInvalidSet("on " + SupportBean.class.getName() + " set var3 = 1.1", null);
@@ -546,10 +545,10 @@ public class TestVariables extends TestCase
     public void testInvalidInitialization()
     {
         tryInvalid(Integer.class, "abcdef",
-                "Error creating variable: Variables 'var1' of declared type 'java.lang.Integer' cannot be initialized by value 'abcdef': java.lang.NumberFormatException: For input string: \"abcdef\"");
+                "Error creating variable: Variable 'var1' of declared type 'java.lang.Integer' cannot be initialized by value 'abcdef': java.lang.NumberFormatException: For input string: \"abcdef\"");
 
         tryInvalid(Integer.class, new Double(11.1),
-                "Error creating variable: Variables 'var1' of declared type 'java.lang.Integer' cannot be initialized by a value of type 'java.lang.Double'");
+                "Error creating variable: Variable 'var1' of declared type 'java.lang.Integer' cannot be initialized by a value of type 'java.lang.Double'");
 
         tryInvalid(Math.class, "abcdef",
                 "Error creating variable: Invalid variable type for variable 'var1' as type 'java.lang.Math', only Java primitive, boxed or String types are allowed");

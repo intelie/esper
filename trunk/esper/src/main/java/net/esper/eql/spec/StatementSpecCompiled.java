@@ -19,6 +19,7 @@ public class StatementSpecCompiled
 {
     private final OnTriggerDesc onTriggerDesc;
     private final CreateWindowDesc createWindowDesc;
+    private final CreateVariableDesc createVariableDesc;
     private final InsertIntoDesc insertIntoDesc;
     private final SelectClauseStreamSelectorEnum selectStreamDirEnum;
     private final SelectClauseSpec selectClauseSpec;
@@ -50,6 +51,7 @@ public class StatementSpecCompiled
      */
     public StatementSpecCompiled(OnTriggerDesc onTriggerDesc,
                                  CreateWindowDesc createWindowDesc,
+                                 CreateVariableDesc createVariableDesc,
                                  InsertIntoDesc insertIntoDesc,
                                  SelectClauseStreamSelectorEnum selectClauseStreamSelectorEnum,
                                  SelectClauseSpec selectClauseSpec,
@@ -65,6 +67,7 @@ public class StatementSpecCompiled
     {
         this.onTriggerDesc = onTriggerDesc;
         this.createWindowDesc = createWindowDesc;
+        this.createVariableDesc = createVariableDesc;
         this.insertIntoDesc = insertIntoDesc;
         this.selectStreamDirEnum = selectClauseStreamSelectorEnum;
         this.selectClauseSpec = selectClauseSpec;
@@ -86,6 +89,11 @@ public class StatementSpecCompiled
     public CreateWindowDesc getCreateWindowDesc()
     {
         return createWindowDesc;
+    }
+
+    public CreateVariableDesc getCreateVariableDesc()
+    {
+        return createVariableDesc;
     }
 
     /**

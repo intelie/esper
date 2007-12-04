@@ -40,7 +40,7 @@ tokens
 // EQL expression
 //----------------------------------------------------------------------------
 startEQLExpressionRule
-	:	(selectExpr | createWindowExpr | onExpr)		 
+	:	(selectExpr | createWindowExpr | createVariableExpr | onExpr)		 
 		{ end(); }
 	;
 
@@ -74,6 +74,10 @@ createWindowExpr
 	:	#(i:CREATE_WINDOW_EXPR IDENT (viewListExpr)? (createSelectionList)? CLASS_IDENT { leaveNode(#i); } )
 	;
 	
+createVariableExpr
+	:	#(i:CREATE_VARIABLE_EXPR IDENT IDENT (valueExpr)? { leaveNode(#i); } )
+	;
+
 createSelectionList
 	:	#(s:CREATE_WINDOW_SELECT_EXPR createSelectionListElement (createSelectionListElement)* { leaveNode(#s); } )
 	;

@@ -316,6 +316,9 @@ public class EQLTreeWalker extends EQLBaseWalker
             case CREATE_WINDOW_SELECT_EXPR:
                 leaveCreateWindowSelect(node);
                 break;
+            case CREATE_VARIABLE_EXPR:
+                leaveCreateVariable(node);
+                break;
             case ON_EXPR:
                 leaveOnExpr(node);
                 break;
@@ -394,6 +397,27 @@ public class EQLTreeWalker extends EQLBaseWalker
         FilterSpecRaw rawFilterSpec = new FilterSpecRaw(eventName, new LinkedList<ExprNode>());
         FilterStreamSpecRaw streamSpec = new FilterStreamSpecRaw(rawFilterSpec, new LinkedList<ViewSpec>(), null);
         statementSpec.getStreamSpecs().add(streamSpec);
+    }
+
+    private void leaveCreateVariable(AST node)
+    {
+        log.debug(".leaveCreateVariable");
+
+        AST child = node.getFirstChild();
+        String variableType = child.getText();
+        child = child.getNextSibling();
+        String variableName = child.getText();
+
+        ExprNode assignment = null;
+        child = child.getNextSibling();
+        if (child != null)
+        {
+            assignment = astExprNodeMap.get(child);
+            astExprNodeMap.remove(child);
+        }
+
+        CreateVariableDesc desc = new CreateVariableDesc(variableType, variableName, assignment);
+        statementSpec.setCreateVariableDesc(desc);
     }
 
     private void leaveCreateWindowSelect(AST node)

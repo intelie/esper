@@ -19,6 +19,9 @@ import net.esper.eql.view.*;
 import net.esper.eql.lookup.*;
 import net.esper.eql.named.*;
 import net.esper.eql.variable.OnSetVariableView;
+import net.esper.eql.variable.VariableDeclarationException;
+import net.esper.eql.variable.CreateVariableView;
+import net.esper.eql.variable.VariableExistsException;
 import net.esper.event.EventBean;
 import net.esper.event.EventType;
 import net.esper.pattern.*;
@@ -64,9 +67,11 @@ public class EPStatementStartMethod
      * @throws ExprValidationException when the expression validation fails
      * @throws ViewProcessingException when views cannot be started
      */
-    public Pair<Viewable, EPStatementStopMethod> start()
+    public Pair<Viewable, EPStatementStopMethod> start(boolean isNewStatement)
         throws ExprValidationException, ViewProcessingException
     {
+        statementContext.getVariableService().setLocalVersion();    // get current version of variables
+
         if (statementSpec.getOnTriggerDesc() != null)
         {
             return startOnTrigger();
@@ -74,6 +79,10 @@ public class EPStatementStartMethod
         else if (statementSpec.getCreateWindowDesc() != null)
         {
             return startCreateWindow();
+        }
+        else if (statementSpec.getCreateVariableDesc() != null)
+        {
+            return startCreateVariable(isNewStatement);
         }
         else
         {
@@ -286,6 +295,67 @@ public class EPStatementStartMethod
         log.debug(".start Statement start completed");
 
         return new Pair<Viewable, EPStatementStopMethod>(finalView, stopMethod);
+    }
+
+    private Pair<Viewable, EPStatementStopMethod> startCreateVariable(boolean isNewStatement)
+        throws ExprValidationException, ViewProcessingException
+    {
+        CreateVariableDesc createDesc = statementSpec.getCreateVariableDesc();
+
+        // Determime the variable type
+        Class type;
+        try
+        {
+            type = JavaClassHelper.getClassForSimpleName(createDesc.getVariableType());
+        }
+        catch (Throwable t)
+        {
+            throw new ExprValidationException("Cannot create variable '" + createDesc.getVariableName() + "', type '" +
+                createDesc.getVariableType() + "' is not a recognized type");
+        }
+
+        // Get assignment value
+        Object value = null;
+        if (createDesc.getAssignment() != null)
+        {
+            // Evaluate assignment expression
+            StreamTypeService typeService = new StreamTypeServiceImpl(new EventType[0], new String[0]);
+            ExprNode validated = createDesc.getAssignment().getValidatedSubtree(typeService, statementContext.getMethodResolutionService(), null, statementContext.getSchedulingService(), statementContext.getVariableService());
+            value = validated.evaluate(null, true);
+        }
+
+        // Create variable
+        try
+        {
+            services.getVariableService().createNewVariable(createDesc.getVariableName(), type, value);
+        }
+        catch (VariableExistsException ex)
+        {
+            // for new statement we don't allow creating the same variable
+            if (isNewStatement)
+            {
+                throw new ExprValidationException("Cannot create variable: " + ex.getMessage());
+            }
+
+            // compare the type
+            if (services.getVariableService().getReader(createDesc.getVariableName()).getType() != type)
+            {
+                throw new ExprValidationException("Cannot create variable: " + ex.getMessage());
+            }
+        }
+        catch (VariableDeclarationException ex)
+        {
+            throw new ExprValidationException("Cannot create variable: " + ex.getMessage());
+        }
+
+        CreateVariableView createView = new CreateVariableView(services.getEventAdapterService(), services.getVariableService(), createDesc.getVariableName());
+        services.getVariableService().registerCallback(services.getVariableService().getReader(createDesc.getVariableName()).getVariableNumber(), createView);
+        
+        return new Pair<Viewable, EPStatementStopMethod>(createView, new EPStatementStopMethod(){
+            public void stop()
+            {
+            }
+        });
     }
 
     private Pair<Viewable, EPStatementStopMethod> startSelect()
