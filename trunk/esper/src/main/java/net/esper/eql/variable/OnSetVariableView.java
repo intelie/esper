@@ -22,8 +22,8 @@ public class OnSetVariableView extends ViewSupport
     private static final Log log = LogFactory.getLog(OnSetVariableView.class);
     private final OnTriggerSetDesc desc;
     private final EventAdapterService eventAdapterService;
+    private final VariableService variableService;
     private final EventType eventType;
-    private final VariableWriter[] writers;
     private final VariableReader[] readers;
     private final EventBean[] eventsPerStream = new EventBean[1];
     private final boolean[] mustCoerce;
@@ -33,9 +33,9 @@ public class OnSetVariableView extends ViewSupport
     {
         this.desc = desc;
         this.eventAdapterService = eventAdapterService;
+        this.variableService = variableService;
 
         Map<String, Class> variableTypes = new HashMap<String, Class>();
-        writers = new VariableWriter[desc.getAssignments().size()];
         readers = new VariableReader[desc.getAssignments().size()];
         mustCoerce = new boolean[desc.getAssignments().size()];
 
@@ -43,15 +43,14 @@ public class OnSetVariableView extends ViewSupport
         for (OnTriggerSetAssignment assignment : desc.getAssignments())
         {
             String variableName = assignment.getVariableName();
-            writers[count] = variableService.getWriter(variableName);
-            if (writers[count] == null)
-            {
-                throw new ExprValidationException("Variable by name '" + variableName + "' has not been created or configured");
-            }
             readers[count] = variableService.getReader(variableName);
+            if (readers[count] == null)
+            {
+                throw new ExprValidationException("Variables by name '" + variableName + "' has not been created or configured");
+            }
 
             // determine types
-            Class variableType = writers[count].getType();
+            Class variableType = readers[count].getType();
             Class expressionType = assignment.getExpression().getType();
             variableTypes.put(variableName, variableType);
 
@@ -62,14 +61,14 @@ public class OnSetVariableView extends ViewSupport
                 if ((!JavaClassHelper.isNumeric(variableType)) ||
                     (!JavaClassHelper.isNumeric(expressionType)))
                 {
-                    throw new ExprValidationException("Variable '" + variableName
+                    throw new ExprValidationException("Variables '" + variableName
                         + "' of declared type '" + variableType.getName() +
                             "' cannot be assigned a value of type '" + expressionType.getName() + "'");
                 }
 
                 if (!(JavaClassHelper.canCoerce(expressionType, variableType)))
                 {
-                    throw new ExprValidationException("Variable '" + variableName
+                    throw new ExprValidationException("Variables '" + variableName
                         + "' of declared type '" + variableType.getName() +
                             "' cannot be assigned a value of type '" + expressionType.getName() + "'");
                 }
@@ -103,21 +102,42 @@ public class OnSetVariableView extends ViewSupport
 
         eventsPerStream[0] = newData[newData.length - 1];
         int count = 0;
-        for (OnTriggerSetAssignment assignment : desc.getAssignments())
+
+        // We obtain a write lock global to the variable space
+        // Since expressions can contain variables themselves, these need to be unchangeable for the duration
+        // as there could be multiple statements that do "var1 = var1 + 1".
+        variableService.getReadWriteLock().writeLock().lock();
+        try
         {
-            Object value = assignment.getExpression().evaluate(eventsPerStream, true);
-            if ((value != null) && (mustCoerce[count]))
+            variableService.setLocalVersion();
+
+            for (OnTriggerSetAssignment assignment : desc.getAssignments())
             {
-                value = JavaClassHelper.coerceBoxed((Number) value, writers[count].getType());
+                VariableReader reader = readers[count];
+                Object value = assignment.getExpression().evaluate(eventsPerStream, true);
+                if ((value != null) && (mustCoerce[count]))
+                {
+                    value = JavaClassHelper.coerceBoxed((Number) value, reader.getType());
+                }
+
+                variableService.write(reader.getVariableNumber(), value);
+                count++;
+
+                if (values != null)
+                {
+                    values.put(assignment.getVariableName(), value);
+                }
             }
 
-            writers[count].write(value);
-            count++;
-
-            if (values != null)
-            {
-                values.put(assignment.getVariableName(), value);
-            }
+            variableService.commit();
+        }
+        catch (Throwable t)
+        {
+            variableService.rollback();
+        }
+        finally
+        {
+            variableService.getReadWriteLock().writeLock().unlock();            
         }
 
         if (values != null)

@@ -4,6 +4,7 @@ import net.esper.eql.expression.*;
 import net.esper.eql.core.ViewResourceDelegateImpl;
 import net.esper.eql.core.MethodResolutionServiceImpl;
 import net.esper.eql.variable.VariableService;
+import net.esper.eql.variable.VariableServiceImpl;
 import net.esper.type.MathArithTypeEnum;
 import net.esper.type.RelationalOpEnum;
 import net.esper.view.ViewFactoryChain;
@@ -309,7 +310,7 @@ public class SupportExprNodeFactory
         }
         ViewResourceDelegateImpl viewResources = new ViewResourceDelegateImpl(factoriesPerStream, SupportStatementContextFactory.makeContext());
 
-        VariableService variableService = new VariableService();
+        VariableService variableService = new VariableServiceImpl(0, null);
         variableService.createNewVariable("intPrimitive", Integer.class, 10);
         variableService.createNewVariable("var1", String.class, "my_variable_value");
 

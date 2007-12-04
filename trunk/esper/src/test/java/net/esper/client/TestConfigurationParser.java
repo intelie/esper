@@ -39,6 +39,8 @@ public class TestConfigurationParser extends TestCase
         assertTrue(config.getEngineDefaults().getViewResources().isShareViews());
 
         assertFalse(config.getEngineDefaults().getLogging().isEnableExecutionDebug());
+
+        assertEquals(60000, config.getEngineDefaults().getVariables().getMsecVersionRelease());
     }
 
     protected static void assertFileConfig(Configuration config)
@@ -207,6 +209,7 @@ public class TestConfigurationParser extends TestCase
         assertFalse(config.getEngineDefaults().getViewResources().isShareViews());
         assertEquals(Configuration.PropertyResolutionStyle.DISTINCT_CASE_INSENSITIVE, config.getEngineDefaults().getEventMeta().getClassPropertyResolutionStyle());
         assertTrue(config.getEngineDefaults().getLogging().isEnableExecutionDebug());
+        assertEquals(30000, config.getEngineDefaults().getVariables().getMsecVersionRelease());
 
         // variables
         assertEquals(2, config.getVariables().size());

@@ -523,6 +523,10 @@ class ConfigurationParser {
             {
                 handleDefaultsLogging(configuration, subElement);
             }
+            if (subElement.getNodeName().equals("variables"))
+            {
+                handleDefaultsVariables(configuration, subElement);
+            }
         }
     }
 
@@ -585,6 +589,21 @@ class ConfigurationParser {
                 String valueText = subElement.getAttributes().getNamedItem("enabled").getTextContent();
                 Boolean value = Boolean.parseBoolean(valueText);
                 configuration.getEngineDefaults().getLogging().setEnableExecutionDebug(value);
+            }
+        }
+    }
+
+    private static void handleDefaultsVariables(Configuration configuration, Element parentElement)
+    {
+        DOMElementIterator nodeIterator = new DOMElementIterator(parentElement.getChildNodes());
+        while (nodeIterator.hasNext())
+        {
+            Element subElement = nodeIterator.next();
+            if (subElement.getNodeName().equals("msec-version-release"))
+            {
+                String valueText = subElement.getAttributes().getNamedItem("value").getTextContent();
+                Long value = Long.parseLong(valueText);
+                configuration.getEngineDefaults().getVariables().setMsecVersionRelease(value);
             }
         }
     }

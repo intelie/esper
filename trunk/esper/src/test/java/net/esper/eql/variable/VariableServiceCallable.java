@@ -5,21 +5,21 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.util.Random;
+import java.util.concurrent.Callable;
 
-public class VariableServiceRunnable implements Runnable
+public class VariableServiceCallable implements Callable
 {
-    private static final Log log = LogFactory.getLog(VariableServiceRunnable.class);
+    private static final Log log = LogFactory.getLog(VariableServiceCallable.class);
     private final Random random;
     private final String[] variables;
     private final VariableReader[] readers;
-    private final VariableWriter[] writers;
     private final VariableService variableService;
     private final VariableVersionCoord variableVersionCoord;
     private final int numLoops;
     private final int[][] results;
     private final int[] marks;
 
-    public VariableServiceRunnable(String[] variables, VariableService variableService, VariableVersionCoord variableVersionCoord, int numLoops)
+    public VariableServiceCallable(String[] variables, VariableService variableService, VariableVersionCoord variableVersionCoord, int numLoops)
     {
         this.random = new Random();
         this.variables = variables;
@@ -31,21 +31,21 @@ public class VariableServiceRunnable implements Runnable
         marks = new int[numLoops];
 
         readers = new VariableReader[variables.length];
-        writers = new VariableWriter[variables.length];
         for (int i = 0; i < variables.length; i++)
         {
             readers[i] = variableService.getReader(variables[i]);
-            writers[i] = variableService.getWriter(variables[i]);
         }
     }
 
-    public void run()
+    public Object call()
     {
         // For each loop
         for (int i = 0; i < numLoops; i++)
         {
             doLoop(i);
         }
+
+        return true; // assertions therefore return a result that fails the test
     }
 
     private void doLoop(int loopNumber)
@@ -55,15 +55,18 @@ public class VariableServiceRunnable implements Runnable
         int[] indexes = getIndexesShuffled(variables.length, random, loopNumber);
         marks[loopNumber] = mark;
 
-        // Perform first loops of reading
+        // Perform first read of all variables
         int[] readResults = new int[variables.length];
         readAll(indexes, readResults, mark);
+
+        // Start a write cycle for the write we are getting an exclusive write lock
+        variableService.getReadWriteLock().writeLock().lock();
 
         // Write every second of the variables
         for (int i = 0; i < indexes.length; i++)
         {
-            int index = indexes[i];
-            String variableName = variables[index];
+            int variableNum = indexes[i];
+            String variableName = variables[variableNum];
 
             if (i % 2 == 0)
             {
@@ -72,20 +75,28 @@ public class VariableServiceRunnable implements Runnable
                 {
                     log.debug(".run Thread " + Thread.currentThread().getId() + " at mark " + mark + " write variable '" + variableName + "' new value " + newMark);
                 }
-                writers[index].write(newMark);
+                variableService.write(readers[variableNum].getVariableNumber(), newMark);
             }
         }
 
-        // Read again for the sake of returning results
+        // Commit (apply) the changes and unlock
+        variableService.commit();
+        variableService.getReadWriteLock().writeLock().unlock();
+
+        // Read again and compare to first result
         results[loopNumber] = new int[variables.length];
         readAll(indexes, results[loopNumber], mark);
 
-        // compare first read with second read
+        // compare first read with second read, written values are NOT visible
         for (int i = 0; i < variables.length; i++)
         {
             if (results[loopNumber][i] != readResults[i])
             {
-                Assert.fail();
+                String text = "Error in loop#" + loopNumber +
+                        " comparing a re-read result for variable " + variables[i] +
+                        " expected " + readResults[i] +
+                        " but was " + results[loopNumber][i];
+                Assert.fail(text);
             }
         }
     }

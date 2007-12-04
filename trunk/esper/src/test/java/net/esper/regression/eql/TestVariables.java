@@ -6,6 +6,7 @@ import net.esper.client.soda.*;
 import net.esper.event.EventType;
 import net.esper.support.bean.SupportBean;
 import net.esper.support.bean.SupportBean_A;
+import net.esper.support.bean.SupportBean_S0;
 import net.esper.support.client.SupportConfigFactory;
 import net.esper.support.util.ArrayAssertionUtil;
 import net.esper.support.util.SupportUpdateListener;
@@ -23,16 +24,6 @@ public class TestVariables extends TestCase
     private SupportUpdateListener listener;
     private SupportUpdateListener listenerSet;
 
-    // test assignment execution:
-    // test order of assignment
-    // test assignment between variables in same set
-    // test writing same variable(s) in same set multiple times
-
-    // test multithreaded:
-    // test atomicity of a single and multiple updates
-    // test iterator
-
-    // test timer gets variable
     // test variable in filter expression
     // test create variable syntax
     // test output rate limiting
@@ -46,6 +37,98 @@ public class TestVariables extends TestCase
         epService.initialize();
         listener = new SupportUpdateListener();
         listenerSet = new SupportUpdateListener();
+    }
+
+    public void testVariableInFilter() throws Exception
+    {
+        epService.getEPAdministrator().getConfiguration().addVariable("var1", String.class, null);
+        epService.getEPAdministrator().getConfiguration().addVariable("var2", String.class, null);
+
+        String stmtTextSet = "on " + SupportBean_S0.class.getName() + " set var1 = p00, var2 = p01";
+        EPStatement stmtSet = epService.getEPAdministrator().createEQL(stmtTextSet);
+        stmtSet.addListener(listenerSet);
+        String[] fieldsVar = new String[] {"var1", "var2"};
+        ArrayAssertionUtil.assertEqualsExactOrder(stmtSet.iterator(), fieldsVar, new Object[][] {{null, null}});
+
+        String stmtTextSelect = "select string, intPrimitive from " + SupportBean.class.getName() + "(string = var1 or string = var2)";
+        String[] fieldsSelect = new String[] {"string", "intPrimitive"};
+        EPStatement stmtSelect = epService.getEPAdministrator().createEQL(stmtTextSelect);
+        stmtSelect.addListener(listener);
+
+        sendSupportBean(null, 1);
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fieldsSelect, new Object[] {null, 1});
+
+        sendSupportBeanS0NewThread(100, "a", "b");
+        ArrayAssertionUtil.assertProps(listenerSet.assertOneGetNewAndReset(), fieldsVar, new Object[] {"a", "b"});
+
+        sendSupportBean("a", 2);
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fieldsSelect, new Object[] {"a", 2});
+
+        sendSupportBean(null, 1);
+        assertFalse(listener.isInvoked());
+
+        sendSupportBean("b", 3);
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fieldsSelect, new Object[] {"b", 3});
+
+        stmtSet.destroy();
+    }
+
+    public void testAssignmentOrderNoDup()
+    {
+        epService.getEPAdministrator().getConfiguration().addVariable("var1", Integer.class, "12");
+        epService.getEPAdministrator().getConfiguration().addVariable("var2", Integer.class, "2");
+        epService.getEPAdministrator().getConfiguration().addVariable("var3", Integer.class, null);
+
+        String stmtTextSet = "on " + SupportBean.class.getName() + " set var1 = intPrimitive, var2 = var1 + 1, var3 = var1 + var2";
+        EPStatement stmtSet = epService.getEPAdministrator().createEQL(stmtTextSet);
+        stmtSet.addListener(listenerSet);
+        String[] fieldsVar = new String[] {"var1", "var2", "var3"};
+        ArrayAssertionUtil.assertEqualsExactOrder(stmtSet.iterator(), fieldsVar, new Object[][] {{12, 2, null}});
+
+        sendSupportBean("S1", 3);
+        ArrayAssertionUtil.assertProps(listenerSet.assertOneGetNewAndReset(), fieldsVar, new Object[] {3, 4, 7});
+        ArrayAssertionUtil.assertEqualsExactOrder(stmtSet.iterator(), fieldsVar, new Object[][] {{3, 4, 7}});
+
+        sendSupportBean("S1", -1);
+        ArrayAssertionUtil.assertProps(listenerSet.assertOneGetNewAndReset(), fieldsVar, new Object[] {-1, 0, -1});
+        ArrayAssertionUtil.assertEqualsExactOrder(stmtSet.iterator(), fieldsVar, new Object[][] {{-1, 0, -1}});
+
+        sendSupportBean("S1", 90);
+        ArrayAssertionUtil.assertProps(listenerSet.assertOneGetNewAndReset(), fieldsVar, new Object[] {90, 91, 181});
+        ArrayAssertionUtil.assertEqualsExactOrder(stmtSet.iterator(), fieldsVar, new Object[][] {{90, 91, 181}});
+
+        stmtSet.destroy();
+    }
+    
+    public void testAssignmentOrderDup() throws Exception
+    {
+        epService.getEPAdministrator().getConfiguration().addVariable("var1", Integer.class, 0);
+        epService.getEPAdministrator().getConfiguration().addVariable("var2", Integer.class, 1);
+        epService.getEPAdministrator().getConfiguration().addVariable("var3", Integer.class, 2);
+
+        String stmtTextSet = "on " + SupportBean.class.getName() + " set var1 = intPrimitive, var2 = var2, var1 = intBoxed, var3 = var3 + 1";
+        EPStatement stmtSet = epService.getEPAdministrator().createEQL(stmtTextSet);
+        stmtSet.addListener(listenerSet);
+        String[] fieldsVar = new String[] {"var1", "var2", "var3"};
+        ArrayAssertionUtil.assertEqualsExactOrder(stmtSet.iterator(), fieldsVar, new Object[][] {{0, 1, 2}});
+
+        sendSupportBean("S1", -1, 10);
+        ArrayAssertionUtil.assertProps(listenerSet.assertOneGetNewAndReset(), fieldsVar, new Object[] {10, 1, 3});
+        ArrayAssertionUtil.assertEqualsExactOrder(stmtSet.iterator(), fieldsVar, new Object[][] {{10, 1, 3}});
+
+        sendSupportBean("S2", -2, 20);
+        ArrayAssertionUtil.assertProps(listenerSet.assertOneGetNewAndReset(), fieldsVar, new Object[] {20, 1, 4});
+        ArrayAssertionUtil.assertEqualsExactOrder(stmtSet.iterator(), fieldsVar, new Object[][] {{20, 1, 4}});
+
+        sendSupportBeanNewThread("S3", -3, 30);
+        ArrayAssertionUtil.assertProps(listenerSet.assertOneGetNewAndReset(), fieldsVar, new Object[] {30, 1, 5});
+        ArrayAssertionUtil.assertEqualsExactOrder(stmtSet.iterator(), fieldsVar, new Object[][] {{30, 1, 5}});
+
+        sendSupportBeanNewThread("S4", -4, 40);
+        ArrayAssertionUtil.assertProps(listenerSet.assertOneGetNewAndReset(), fieldsVar, new Object[] {40, 1, 6});
+        ArrayAssertionUtil.assertEqualsExactOrder(stmtSet.iterator(), fieldsVar, new Object[][] {{40, 1, 6}});
+
+        stmtSet.destroy();
     }
 
     public void testObjectModel()
@@ -180,7 +263,7 @@ public class TestVariables extends TestCase
         }
         catch (ConfigurationException ex)
         {
-            assertEquals("Error creating variable: Variable by name 'var1' has already been created", ex.getMessage());
+            assertEquals("Error creating variable: Variables by name 'var1' has already been created", ex.getMessage());
         }
 
         stmtSet.destroy();
@@ -378,16 +461,16 @@ public class TestVariables extends TestCase
         epService.getEPAdministrator().getConfiguration().addVariable("var3", int.class, 1);
 
         tryInvalidSet("on " + SupportBean.class.getName() + " set dummy = 100",
-                      "Error starting view: Variable by name 'dummy' has not been created or configured [on net.esper.support.bean.SupportBean set dummy = 100]");
+                      "Error starting view: Variables by name 'dummy' has not been created or configured [on net.esper.support.bean.SupportBean set dummy = 100]");
 
         tryInvalidSet("on " + SupportBean.class.getName() + " set var1 = 1",
-                      "Error starting view: Variable 'var1' of declared type 'java.lang.String' cannot be assigned a value of type 'java.lang.Integer' [on net.esper.support.bean.SupportBean set var1 = 1]");
+                      "Error starting view: Variables 'var1' of declared type 'java.lang.String' cannot be assigned a value of type 'java.lang.Integer' [on net.esper.support.bean.SupportBean set var1 = 1]");
 
         tryInvalidSet("on " + SupportBean.class.getName() + " set var3 = 'abc'",
-                      "Error starting view: Variable 'var3' of declared type 'java.lang.Integer' cannot be assigned a value of type 'java.lang.String' [on net.esper.support.bean.SupportBean set var3 = 'abc']");
+                      "Error starting view: Variables 'var3' of declared type 'java.lang.Integer' cannot be assigned a value of type 'java.lang.String' [on net.esper.support.bean.SupportBean set var3 = 'abc']");
 
         tryInvalidSet("on " + SupportBean.class.getName() + " set var3 = doublePrimitive",
-                      "Error starting view: Variable 'var3' of declared type 'java.lang.Integer' cannot be assigned a value of type 'double' [on net.esper.support.bean.SupportBean set var3 = doublePrimitive]");
+                      "Error starting view: Variables 'var3' of declared type 'java.lang.Integer' cannot be assigned a value of type 'double' [on net.esper.support.bean.SupportBean set var3 = doublePrimitive]");
 
         tryInvalidSet("on " + SupportBean.class.getName() + " set var2 = 'false'", null);
         tryInvalidSet("on " + SupportBean.class.getName() + " set var3 = 1.1", null);
@@ -413,10 +496,10 @@ public class TestVariables extends TestCase
     public void testInvalidInitialization()
     {
         tryInvalid(Integer.class, "abcdef",
-                "Error creating variable: Variable 'var1' of declared type 'java.lang.Integer' cannot be initialized by value 'abcdef': java.lang.NumberFormatException: For input string: \"abcdef\"");
+                "Error creating variable: Variables 'var1' of declared type 'java.lang.Integer' cannot be initialized by value 'abcdef': java.lang.NumberFormatException: For input string: \"abcdef\"");
 
         tryInvalid(Integer.class, new Double(11.1),
-                "Error creating variable: Variable 'var1' of declared type 'java.lang.Integer' cannot be initialized by a value of type 'java.lang.Double'");
+                "Error creating variable: Variables 'var1' of declared type 'java.lang.Integer' cannot be initialized by a value of type 'java.lang.Double'");
 
         tryInvalid(Math.class, "abcdef",
                 "Error creating variable: Invalid variable type for variable 'var1' as type 'java.lang.Math', only Java primitive, boxed or String types are allowed");
@@ -475,11 +558,42 @@ public class TestVariables extends TestCase
 
     private SupportBean sendSupportBean(String string, int intPrimitive, Integer intBoxed)
     {
+        SupportBean bean = makeSupportBean(string, intPrimitive, intBoxed);
+        epService.getEPRuntime().sendEvent(bean);
+        return bean;
+    }
+
+    private void sendSupportBeanNewThread(final String string, final int intPrimitive, final Integer intBoxed) throws InterruptedException
+    {
+        Thread t = new Thread() {
+            public void run()
+            {
+                SupportBean bean = makeSupportBean(string, intPrimitive, intBoxed);
+                epService.getEPRuntime().sendEvent(bean);
+            }
+        };
+        t.start();
+        t.join();
+    }
+
+    private void sendSupportBeanS0NewThread(final int id, final String p00, final String p01) throws InterruptedException
+    {
+        Thread t = new Thread() {
+            public void run()
+            {
+                epService.getEPRuntime().sendEvent(new SupportBean_S0(id, p00, p01));
+            }
+        };
+        t.start();
+        t.join();
+    }
+
+    private SupportBean makeSupportBean(String string, int intPrimitive, Integer intBoxed)
+    {
         SupportBean bean = new SupportBean();
         bean.setString(string);
         bean.setIntPrimitive(intPrimitive);
         bean.setIntBoxed(intBoxed);
-        epService.getEPRuntime().sendEvent(bean);
         return bean;
     }
 }

@@ -1,6 +1,9 @@
 package net.esper.eql.variable;
 
 import junit.framework.TestCase;
+import net.esper.schedule.SchedulingServiceImpl;
+
+import java.util.concurrent.*;
 
 public class TestVariableService extends TestCase
 {
@@ -8,7 +11,7 @@ public class TestVariableService extends TestCase
     
     public void setUp()
     {
-        service = new VariableService();
+        service = new VariableServiceImpl(10000, new SchedulingServiceImpl());
     }
 
     public void testPerfSetVersion()
@@ -25,16 +28,12 @@ public class TestVariableService extends TestCase
 
     public void testMultithreadedZero() throws Exception
     {
-        // The VariableService.HIGH_WATERMARK_VERSIONS settings affect this test.
-        // The threads may get held up and a thread may request a very old version.
-        // This is ok but can fail the test as the value is compared against mark.
-        tryMT(4, 100, 8);
+        tryMT(4, 5000, 8);
     }
 
     public void testMultithreadedOne() throws Exception
     {
-        // see above
-        tryMT(2, 100, 2);
+        tryMT(2, 10000, 4);
     }
 
     // Start N threads
@@ -57,53 +56,32 @@ public class TestVariableService extends TestCase
             service.createNewVariable(variables[i], Integer.class, 0);
         }
 
-        // create runnables
-        VariableServiceRunnable[] runnables = new VariableServiceRunnable[numThreads];
-        Thread[] threads = new Thread[numThreads];
-        long[] threadIds = new long[numThreads];
-        for (int i = 0; i < runnables.length; i++)
+        ExecutorService threadPool = Executors.newFixedThreadPool(numThreads);
+        VariableServiceCallable[] callables = new VariableServiceCallable[numThreads];
+        Future future[] = new Future[numThreads];
+        for (int i = 0; i < numThreads; i++)
         {
-            runnables[i] = new VariableServiceRunnable(variables, service, coord, numLoops);
-            threads[i] = new Thread(runnables[i]);
-            threads[i].start();
-            threadIds[i] = threads[i].getId();
+            callables[i] = new VariableServiceCallable(variables, service, coord, numLoops);
+            future[i] = threadPool.submit(callables[i]);
         }
 
-        // Wait for completion of each thread
-        for (Thread thread : threads)
+        threadPool.shutdown();
+        threadPool.awaitTermination(10, TimeUnit.SECONDS);
+
+        for (int i = 0; i < numThreads; i++)
         {
-            thread.join();
+            assertTrue((Boolean) future[i].get());
         }
 
         //System.out.println(service.toString());
         // Verify results per thread
-        for (int i = 0; i < threads.length; i++)
+        for (int i = 0; i < callables.length; i++)
         {
-            int[][] result = runnables[i].getResults();
-            int[] marks = runnables[i].getMarks();
-            verify(result, marks, threadIds[i], numLoops, variables);
+            int[][] result = callables[i].getResults();
+            int[] marks = callables[i].getMarks();
         }
     }
 
-    // the reads should not see any higher number then mark, and there should be no zero after 10 rounds
-    // other assertions are done by the runnable itself
-    private void verify(int[][] result, int[] marks, long threadId, int numLoops, String variables[])
-    {
-        for (int i = 0; i < numLoops; i++)
-        {
-            for (int j = 0; j < variables.length; j++)
-            {
-                if (result[i][j] > marks[i])
-                {
-                    fail("Failed for variable '" + variables[j] + "' at mark " + marks[i]);
-                }
-                if (i > 10)
-                {
-                    assertTrue(result[i][j] > 0);
-                }
-            }
-        }        
-    }
 
     public void testReadWrite() throws Exception
     {
@@ -111,16 +89,17 @@ public class TestVariableService extends TestCase
 
         service.createNewVariable("a", Long.class, 100L);
         VariableReader reader = service.getReader("a");
-        VariableWriter writer = service.getWriter("a");
         assertEquals(Long.class, reader.getType());
         assertEquals(100L, reader.getValue());
 
-        writer.write(101L);
+        service.write(reader.getVariableNumber(), 101L);
+        service.commit();
         assertEquals(100L, reader.getValue());
         service.setLocalVersion();
         assertEquals(101L, reader.getValue());        
 
-        writer.write(102L);
+        service.write(reader.getVariableNumber(), 102L);
+        service.commit();
         assertEquals(101L, reader.getValue());
         service.setLocalVersion();
         assertEquals(102L, reader.getValue());        
@@ -128,21 +107,22 @@ public class TestVariableService extends TestCase
 
     public void testRollover() throws Exception
     {
-        service = new VariableService(VariableService.ROLLOVER_READER_BOUNDARY - 100);
+        service = new VariableServiceImpl(VariableServiceImpl.ROLLOVER_READER_BOUNDARY - 100, 10000, new SchedulingServiceImpl());
         String[] variables = "a,b,c,d".split(",");
 
-        VariableWriter writers[] = new VariableWriter[variables.length];
+        VariableReader readers[] = new VariableReader[variables.length];
         for (int i = 0; i < variables.length; i++)
         {
             service.createNewVariable(variables[i], Long.class, 100L);
-            writers[i] = service.getWriter(variables[i]);
+            readers[i] = service.getReader(variables[i]);
         }
 
         for (int i = 0; i < 1000; i++)
         {
             for (int j = 0; j < variables.length; j++)
             {
-                writers[j].write(100L + i);
+                service.write(readers[j].getVariableNumber(), 100L + i);
+                service.commit();
             }
             readCompare(variables, 100L + i);
         }
@@ -160,7 +140,7 @@ public class TestVariableService extends TestCase
     public void testInvalid() throws Exception
     {
         service.createNewVariable("a", Long.class, null);
-        assertNull(service.getWriter("dummy"));
+        assertNull(service.getReader("dummy"));
 
         try
         {
@@ -169,7 +149,7 @@ public class TestVariableService extends TestCase
         }
         catch (VariableExistsException e)
         {
-            assertEquals("Variable by name 'a' has already been created", e.getMessage());
+            assertEquals("Variables by name 'a' has already been created", e.getMessage());
         }
     }
 }

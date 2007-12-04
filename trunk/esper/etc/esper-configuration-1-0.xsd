@@ -272,6 +272,7 @@
 				<xs:element ref="event-meta" minOccurs="0"/>
 				<xs:element ref="view-resources" minOccurs="0"/>
 				<xs:element ref="logging" minOccurs="0"/>
+				<xs:element ref="variables" minOccurs="0"/>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
@@ -340,6 +341,15 @@
 			</xs:choice>
 		</xs:complexType>
 	</xs:element>
+	<xs:element name="variables">
+		<xs:complexType>
+			<xs:choice>
+				<xs:sequence>
+					<xs:element ref="msec-version-release" minOccurs="0"/>
+				</xs:sequence>
+			</xs:choice>
+		</xs:complexType>
+	</xs:element>
 	<xs:element name="execution-path">
 		<xs:complexType>
 			<xs:attribute name="enabled" type="xs:boolean" use="required"/>
@@ -380,6 +390,11 @@
 			<xs:attribute name="name" type="xs:string" use="required"/>
 			<xs:attribute name="type" type="xs:string" use="required"/>
 			<xs:attribute name="initialization-value" type="xs:string" use="optional"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="msec-version-release">
+		<xs:complexType>
+			<xs:attribute name="value" type="xs:long" use="required"/>
 		</xs:complexType>
 	</xs:element>
 </xs:schema>

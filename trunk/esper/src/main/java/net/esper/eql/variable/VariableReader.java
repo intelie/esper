@@ -8,12 +8,12 @@ public class VariableReader
     private static final Log log = LogFactory.getLog(VariableReader.class);
     private final String variableName;
     private final int variableNumber;
-    private final ThreadLocal<Integer> versionThreadLocal;
+    private final VariableVersionThreadLocal versionThreadLocal;
     private transient VersionedValueList<Object> versionsHigh;
     private transient VersionedValueList<Object> versionsLow;
     private final Class type;
 
-    public VariableReader(ThreadLocal<Integer> versionThreadLocal, Class type, String variableName, int variableNumber, VersionedValueList<Object> versions)
+    public VariableReader(VariableVersionThreadLocal versionThreadLocal, Class type, String variableName, int variableNumber, VersionedValueList<Object> versions)
     {
         this.variableName = variableName;
         this.variableNumber = variableNumber;
@@ -45,10 +45,19 @@ public class VariableReader
 
     public Object getValue()
     {
-        int myVersion = versionThreadLocal.get();
+        VariableVersionThreadEntry entry = versionThreadLocal.getCurrentThread();
+        if (entry.getUncommitted() != null)
+        {
+            // Check existance as null values are allowed
+            if (entry.getUncommitted().containsKey(variableNumber))
+            {
+                return entry.getUncommitted().get(variableNumber);
+            }
+        }
 
+        int myVersion = entry.getVersion();
         VersionedValueList<Object> versions = versionsLow;
-        if (myVersion >= VariableService.ROLLOVER_READER_BOUNDARY)
+        if (myVersion >= VariableServiceImpl.ROLLOVER_READER_BOUNDARY)
         {
             if (versionsHigh != null)
             {

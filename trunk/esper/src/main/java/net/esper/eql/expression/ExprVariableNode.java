@@ -22,7 +22,7 @@ public class ExprVariableNode extends ExprNode
     {
         if (variableName == null)
         {
-            throw new IllegalArgumentException("Variable name is null");
+            throw new IllegalArgumentException("Variables name is null");
         }
         this.variableName = variableName;
     }
@@ -61,7 +61,7 @@ public class ExprVariableNode extends ExprNode
     {
         if (variableType == null)
         {
-            throw new IllegalStateException("Variable node has not been validated");
+            throw new IllegalStateException("Variables node has not been validated");
         }
         return variableType;
     }

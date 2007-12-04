@@ -18,6 +18,7 @@ public class ConfigurationEngineDefaults implements Serializable
     private ViewResources viewResources;
     private EventMeta eventMeta;
     private Logging logging;
+    private Variables variables;
 
     /**
      * Ctor.
@@ -28,6 +29,7 @@ public class ConfigurationEngineDefaults implements Serializable
         viewResources = new ViewResources();
         eventMeta = new EventMeta();
         logging = new Logging();
+        variables = new Variables();
     }
 
     /**
@@ -64,6 +66,11 @@ public class ConfigurationEngineDefaults implements Serializable
     public Logging getLogging()
     {
         return logging;
+    }
+
+    public Variables getVariables()
+    {
+        return variables;
     }
 
     /**
@@ -304,6 +311,50 @@ public class ConfigurationEngineDefaults implements Serializable
         public void setEnableExecutionDebug(boolean enableExecutionDebug)
         {
             this.enableExecutionDebug = enableExecutionDebug;
+        }
+    }
+
+    /**
+     * Holds variables settings.
+     */
+    public static class Variables implements Serializable
+    {
+        private long msecVersionRelease;
+
+        /**
+         * Ctor - sets up defaults.
+         */
+        protected Variables()
+        {
+            msecVersionRelease = 15000;
+        }
+
+        /**
+         * Returns the number of milliseconds that a version of a variables is held stable for
+         * use by very long-running atomic statement execution.
+         * <p>
+         * A slow-executing statement such as an SQL join may use variables that, at the time
+         * the statement starts to execute, have certain values. The engine guarantees that during
+         * statement execution the value of the variables stays the same as long as the statement
+         * does not take longer then the given number of milliseconds to execute. If the statement does take longer
+         * to execute then the variables release time, the current variables value applies instead.
+         * @return millisecond time interval that a variables version is guaranteed to be stable
+         * in the context of an atomic statement execution
+         */
+        public long getMsecVersionRelease()
+        {
+            return msecVersionRelease;
+        }
+
+        /**
+         * Sets the number of milliseconds that a version of a variables is held stable for
+         * use by very long-running atomic statement execution.
+         * @param msecVersionRelease millisecond time interval that a variables version is guaranteed to be stable
+         * in the context of an atomic statement execution
+         */
+        public void setMsecVersionRelease(long msecVersionRelease)
+        {
+            this.msecVersionRelease = msecVersionRelease;
         }
     }
 }

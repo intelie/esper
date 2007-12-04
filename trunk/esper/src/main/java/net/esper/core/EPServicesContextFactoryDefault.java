@@ -12,6 +12,7 @@ import net.esper.eql.named.NamedWindowService;
 import net.esper.eql.variable.VariableService;
 import net.esper.eql.variable.VariableExistsException;
 import net.esper.eql.variable.VariableTypeException;
+import net.esper.eql.variable.VariableServiceImpl;
 import net.esper.event.EventAdapterException;
 import net.esper.event.EventAdapterServiceImpl;
 import net.esper.event.EventAdapterService;
@@ -70,7 +71,7 @@ public class EPServicesContextFactoryDefault implements EPServicesContextFactory
         }
         TimerService timerService = new TimerServiceImpl(msecTimerResolution);
 
-        VariableService variableService = new VariableService();
+        VariableService variableService = new VariableServiceImpl(configSnapshot.getEngineDefaults().getVariables().getMsecVersionRelease(), schedulingService);
         initVariables(variableService, configSnapshot.getVariables());
 
         StatementLockFactory statementLockFactory = new StatementLockFactoryImpl();

@@ -10,12 +10,12 @@ public class VersionedValueList<T>
 {
     private static final Log log = LogFactory.getLog(VersionedValueList.class);
 
-    // Variable name and read lock; read lock used when older version then the prior version is requested
+    // Variables name and read lock; read lock used when older version then the prior version is requested
     private final String name;
     private final Lock readLock;
     private final int highWatermark;    // used for removing older versions
-    private final int lowWatermark;
     private final boolean errorWhenNotFound;
+    private final long millisecondLifetimeOldVersions;
 
     // Hold the current and prior version for no-lock reading
     private transient CurrentValue<T> currentAndPriorValue;
@@ -23,17 +23,17 @@ public class VersionedValueList<T>
     // Holds the older versions
     private ArrayList<VersionedValue<T>> olderVersions;
 
-    public VersionedValueList(String name, int initialVersion, T initialValue, Lock readLock, int highWatermark, int lowWatermark, boolean errorWhenNotFound)
+    public VersionedValueList(String name, int initialVersion, T initialValue, long timestamp, long millisecondLifetimeOldVersions, Lock readLock, int highWatermark, boolean errorWhenNotFound)
     {
         this.name = name;
         this.readLock = readLock;
         this.highWatermark = highWatermark;
-        this.lowWatermark = lowWatermark;
         this.olderVersions = new ArrayList<VersionedValue<T>>();
         this.errorWhenNotFound = errorWhenNotFound;
+        this.millisecondLifetimeOldVersions = millisecondLifetimeOldVersions;
 
-        currentAndPriorValue = new CurrentValue<T>(new VersionedValue<T>(initialVersion, initialValue),
-                                                   new VersionedValue<T>(-1, null));
+        currentAndPriorValue = new CurrentValue<T>(new VersionedValue<T>(initialVersion, initialValue, timestamp),
+                                                   new VersionedValue<T>(-1, null, timestamp));
     }
 
     /**
@@ -101,14 +101,14 @@ public class VersionedValueList<T>
                         Integer oldestVersion = (olderVersions.size() > 0) ? olderVersions.get(0).getVersion() : null;
                         T oldestValue = (olderVersions.size() > 0) ? olderVersions.get(0).getValue() : null;
 
-                        String text = "Variable value for version '" + versionAndOlder + "' and older could not be found" +
+                        String text = "Variables value for version '" + versionAndOlder + "' and older could not be found" +
                             " (currentVersion=" + currentVersion + " priorVersion=" + priorVersion + " oldestVersion=" + oldestVersion + " numOldVersions=" + olderVersions.size() + " oldestValue=" + oldestValue +")";
                         if (errorWhenNotFound)
                         {
                             throw new IllegalStateException(text);
                         }
                         log.warn(text);
-                        return oldestValue;
+                        return current.getCurrentVersion().getValue();
                     }
                 }
             }
@@ -126,7 +126,7 @@ public class VersionedValueList<T>
         return resultValue;
     }
 
-    public void addValue(int version, T value)
+    public void addValue(int version, T value, long timestamp)
     {
         if (log.isDebugEnabled())
         {
@@ -136,7 +136,7 @@ public class VersionedValueList<T>
         // push to prior if not already used
         if (currentAndPriorValue.getPriorVersion().getVersion() == -1)
         {
-            currentAndPriorValue = new CurrentValue<T>(new VersionedValue<T>(version, value),
+            currentAndPriorValue = new CurrentValue<T>(new VersionedValue<T>(version, value, timestamp),
               currentAndPriorValue.getCurrentVersion());
             return;
         }
@@ -148,13 +148,22 @@ public class VersionedValueList<T>
         // check watermarks
         if (olderVersions.size() >= highWatermark)
         {
-            while(olderVersions.size() > lowWatermark)
+            long expireBefore = timestamp - millisecondLifetimeOldVersions;
+            while(olderVersions.size() > 0)
             {
-                olderVersions.remove(0);
+                VersionedValue<T> oldestVersion = olderVersions.get(0);
+                if (oldestVersion.getTimestamp() <= expireBefore)
+                {
+                    olderVersions.remove(0);
+                }
+                else
+                {
+                    break;
+                }
             }
         }
         
-        currentAndPriorValue = new CurrentValue<T>(new VersionedValue<T>(version, value),
+        currentAndPriorValue = new CurrentValue<T>(new VersionedValue<T>(version, value, timestamp),
                                                    currentAndPriorValue.getCurrentVersion());
     }
 
@@ -171,7 +180,7 @@ public class VersionedValueList<T>
     public String toString()
     {
         StringBuffer buffer = new StringBuffer();
-        buffer.append("Variable '").append(name).append("' ");
+        buffer.append("Variables '").append(name).append("' ");
         buffer.append(" current=").append(currentAndPriorValue.getCurrentVersion().toString());
         buffer.append(" prior=").append(currentAndPriorValue.getCurrentVersion().toString());
 
