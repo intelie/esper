@@ -42,7 +42,14 @@ public class EPStatementSyntaxException extends EPStatementException
         {
             NoViableAltException noViable = (NoViableAltException) e;
             Token t = noViable.token;
-            tip = " (tip: check for reserved or misspelled keywords in the online grammar documentation near the token '" + t.getText() + "')";
+            if (t != null)
+            {
+                tip = " (tip: check for reserved or misspelled keywords in the online grammar documentation near the token '" + t.getText() + "')";
+            }
+            else
+            {
+                tip = "";
+            }
         }
         return new EPStatementSyntaxException(e.getMessage() + getPositionInfo(e) + tip, expression);
     }

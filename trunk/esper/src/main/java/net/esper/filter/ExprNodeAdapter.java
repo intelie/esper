@@ -8,6 +8,7 @@
 package net.esper.filter;
 
 import net.esper.eql.expression.ExprNode;
+import net.esper.eql.variable.VariableService;
 import net.esper.event.EventBean;
 
 /**
@@ -19,6 +20,7 @@ public class ExprNodeAdapter
 {
     private final ExprNode exprNode;
     private final EventBean[] prototype;
+    private final VariableService variableService;
 
     private ThreadLocal<EventBean[]> arrayPerThread = new ThreadLocal<EventBean[]>()
     {
@@ -35,9 +37,10 @@ public class ExprNodeAdapter
      * @param exprNode is the boolean expression
      * @param prototype is the row of events the we are matching on
      */
-    public ExprNodeAdapter(ExprNode exprNode, EventBean[] prototype)
+    public ExprNodeAdapter(ExprNode exprNode, EventBean[] prototype, VariableService variableService)
     {
         this.exprNode = exprNode;
+        this.variableService = variableService;
         if (prototype == null)
         {
             this.prototype = new EventBean[1];
@@ -55,6 +58,10 @@ public class ExprNodeAdapter
      */
     public boolean evaluate(EventBean event)
     {
+        if (variableService != null)
+        {
+            variableService.setLocalVersion();
+        }
         EventBean[] eventsPerStream = arrayPerThread.get();
         eventsPerStream[0] = event;
         return (Boolean) exprNode.evaluate(eventsPerStream, true);

@@ -13,9 +13,9 @@ import net.esper.eql.core.StreamTypeService;
 import net.esper.eql.expression.*;
 import net.esper.eql.variable.VariableService;
 import net.esper.event.EventType;
+import net.esper.schedule.TimeProvider;
 import net.esper.type.RelationalOpEnum;
 import net.esper.util.JavaClassHelper;
-import net.esper.schedule.TimeProvider;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -63,7 +63,7 @@ public final class FilterSpecCompiler
         List<ExprNode> constituents = FilterSpecCompiler.validateAndDecompose(filterExpessions, streamTypeService, methodResolutionService, timeProvider, variableService);
 
         // From the constituents make a filter specification
-        FilterSpecCompiled spec = makeFilterSpec(eventType, constituents, taggedEventTypes);
+        FilterSpecCompiled spec = makeFilterSpec(eventType, constituents, taggedEventTypes, variableService);
         if (log.isDebugEnabled())
         {
             log.debug(".makeFilterSpec spec=" + spec);
@@ -201,7 +201,10 @@ public final class FilterSpecCompiler
         while(haveConsolidated);
     }
 
-    private static FilterSpecCompiled makeFilterSpec(EventType eventType, List<ExprNode> constituents, LinkedHashMap<String, EventType> taggedEventTypes)
+    private static FilterSpecCompiled makeFilterSpec(EventType eventType,
+                                                     List<ExprNode> constituents,
+                                                     LinkedHashMap<String, EventType> taggedEventTypes,
+                                                     VariableService variableService)
             throws ExprValidationException
     {
         FilterParamExprMap filterParamExprMap = new FilterParamExprMap();
@@ -244,7 +247,7 @@ public final class FilterSpecCompiler
         // if there are boolean expressions, add
         if (exprNode != null)
         {
-            FilterSpecParamExprNode param = new FilterSpecParamExprNode(PROPERTY_NAME_BOOLEAN_EXPRESSION, FilterOperator.BOOLEAN_EXPRESSION, exprNode, taggedEventTypes);
+            FilterSpecParamExprNode param = new FilterSpecParamExprNode(PROPERTY_NAME_BOOLEAN_EXPRESSION, FilterOperator.BOOLEAN_EXPRESSION, exprNode, taggedEventTypes, variableService);
             filterParams.add(param);
         }
 

@@ -24,7 +24,6 @@ public class TestVariables extends TestCase
     private SupportUpdateListener listener;
     private SupportUpdateListener listenerSet;
 
-    // test variable in filter expression
     // test create variable syntax
     // test output rate limiting
 
@@ -39,7 +38,7 @@ public class TestVariables extends TestCase
         listenerSet = new SupportUpdateListener();
     }
 
-    public void testVariableInFilter() throws Exception
+    public void testVariableInFilterBoolean() throws Exception
     {
         epService.getEPAdministrator().getConfiguration().addVariable("var1", String.class, null);
         epService.getEPAdministrator().getConfiguration().addVariable("var2", String.class, null);
@@ -69,6 +68,57 @@ public class TestVariables extends TestCase
 
         sendSupportBean("b", 3);
         ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fieldsSelect, new Object[] {"b", 3});
+
+        sendSupportBean("c", 4);
+        assertFalse(listener.isInvoked());
+
+        sendSupportBeanS0NewThread(100, "e", "c");
+        ArrayAssertionUtil.assertProps(listenerSet.assertOneGetNewAndReset(), fieldsVar, new Object[] {"e", "c"});
+
+        sendSupportBean("c", 5);
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fieldsSelect, new Object[] {"c", 5});
+
+        sendSupportBean("e", 6);
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fieldsSelect, new Object[] {"e", 6});
+
+        stmtSet.destroy();
+    }
+
+    public void testVariableInFilter() throws Exception
+    {
+        epService.getEPAdministrator().getConfiguration().addVariable("var1", String.class, null);
+
+        String stmtTextSet = "on " + SupportBean_S0.class.getName() + " set var1 = p00";
+        EPStatement stmtSet = epService.getEPAdministrator().createEQL(stmtTextSet);
+        stmtSet.addListener(listenerSet);
+        String[] fieldsVar = new String[] {"var1"};
+        ArrayAssertionUtil.assertEqualsExactOrder(stmtSet.iterator(), fieldsVar, new Object[][] {{null}});
+
+        String stmtTextSelect = "select string, intPrimitive from " + SupportBean.class.getName() + "(string = var1)";
+        String[] fieldsSelect = new String[] {"string", "intPrimitive"};
+        EPStatement stmtSelect = epService.getEPAdministrator().createEQL(stmtTextSelect);
+        stmtSelect.addListener(listener);
+
+        sendSupportBean(null, 1);
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fieldsSelect, new Object[] {null, 1});
+
+        sendSupportBeanS0NewThread(100, "a", "b");
+        ArrayAssertionUtil.assertProps(listenerSet.assertOneGetNewAndReset(), fieldsVar, new Object[] {"a"});
+
+        sendSupportBean("a", 2);
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fieldsSelect, new Object[] {"a", 2});
+
+        sendSupportBean(null, 1);
+        assertFalse(listener.isInvoked());
+
+        sendSupportBeanS0NewThread(100, "e", "c");
+        ArrayAssertionUtil.assertProps(listenerSet.assertOneGetNewAndReset(), fieldsVar, new Object[] {"e"});
+
+        sendSupportBean("c", 5);
+        assertFalse(listener.isInvoked());
+
+        sendSupportBean("e", 6);
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fieldsSelect, new Object[] {"e", 6});
 
         stmtSet.destroy();
     }
