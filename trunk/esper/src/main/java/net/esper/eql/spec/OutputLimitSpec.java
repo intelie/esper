@@ -10,123 +10,64 @@ package net.esper.eql.spec;
 import net.esper.util.MetaDefItem;
 
 /**
- * Spec for building an EventBatch.
- *
+ * Spec for defining an output rate
  */
 public class OutputLimitSpec implements MetaDefItem
 {
+	private final OutputLimitLimitType displayLimit;
+    private final OutputLimitRateType rateType;
+    private final Double rate;
+    private final String variableName;
+
     /**
-     * Enum controlling the type of output limiting.
-     */
-    public enum DisplayLimit {
-
-        /**
-         * Output first event, relative to the output batch.
-         */
-        FIRST,
-
-        /**
-         * Output last event, relative to the output batch.
-         */
-        LAST,
-
-        /**
-         * Output all events, relative to the output batch.
-         */
-        ALL,
-
-        /**
-         * Output a snapshot of the current state, relative to the full historical state of a statement.
-         */
-        SNAPSHOT
-    }
-
-	private final boolean isEventLimit;
-	private final DisplayLimit displayLimit;
-
-	private final int eventRate;
-	private final double timeRate;
-
-	/**
 	 * Ctor.
 	 * 	 For batching events by event count.
-	 * @param eventRate - the number of events to batch.
+     * @param rate is the fixed output rate, or null if by variable
 	 * @param displayLimit - indicates whether to output only the first, only the last, or all events
+     * @param variableForRate - an optional variable name instead of the rate
+     * @param rateType - type of the rate
 	 */
-	public OutputLimitSpec(int eventRate, DisplayLimit displayLimit)
+	public OutputLimitSpec(Double rate, String variableForRate, OutputLimitRateType rateType, OutputLimitLimitType displayLimit)
 	{
-		this.isEventLimit = true;
-		this.eventRate = eventRate;
-		this.timeRate = -1.0;
+		this.rate = rate;
 		this.displayLimit = displayLimit;
-	}
-
-	/**
-	 * Ctor.
-	 * Used for creating batching events by time.
-	 * @param timeRate - the number of seconds to batch for.
-	 * @param displayLimit - indicates whether to output only the first, only the last, or all events
-	 */
-	public OutputLimitSpec(double timeRate, DisplayLimit displayLimit)
-	{
-		this.isEventLimit = false;
-		this.timeRate = timeRate;
-		this.eventRate = -1;
-		this.displayLimit = displayLimit;
-	}
+        this.variableName = variableForRate;
+        this.rateType = rateType;
+    }
 
     /**
-     * Returns the event rate.
-     * @return event rate
+     * Returns the type of output limit.
+     * @return limit
      */
-	public int getEventRate()
-	{
-		return eventRate;
-	}
+    public OutputLimitLimitType getDisplayLimit()
+    {
+        return displayLimit;
+    }
 
     /**
-     * Returns the number of events, or zero if no number of events was supplied.
-     * @return event limit
+     * Returns the type of rate.
+     * @return rate type
      */
-	public boolean isEventLimit()
-	{
-		return isEventLimit;
-	}
+    public OutputLimitRateType getRateType()
+    {
+        return rateType;
+    }
 
     /**
-     * Returns the rate in seconds, if supplied, or zero if not supplied.
-     * @return rate
+     * Returns the rate, or null or -1 if a variable is used instead
+     * @return rate if set
      */
-	public double getTimeRate()
-	{
-		return timeRate;
-	}
+    public Double getRate()
+    {
+        return rate;
+    }
 
     /**
-     * Returns true to output the last event only.
-     * @return true if last only, false otherwise
+     * Returns the variable name if set, or null if a fixed rate
+     * @return variable name
      */
-	public boolean isDisplayLastOnly()
-	{
-		return displayLimit == DisplayLimit.LAST;
-	}
-
-    /**
-     * Returns true to output the first event only.
-     * @return true if first only, false otherwise
-     */
-	public boolean isDisplayFirstOnly()
-	{
-		return displayLimit == DisplayLimit.FIRST;
-	}
-
-    /**
-     * Returns true to output a full snapshot.
-     * @return true if snapshot
-     */
-	public boolean isDisplaySnapshot()
-	{
-		return displayLimit == DisplayLimit.SNAPSHOT;
-	}
-
+    public String getVariableName()
+    {
+        return variableName;
+    }
 }

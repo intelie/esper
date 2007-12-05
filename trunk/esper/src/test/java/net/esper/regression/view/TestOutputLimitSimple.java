@@ -1,10 +1,7 @@
 package net.esper.regression.view;
 
 import junit.framework.TestCase;
-import net.esper.client.EPServiceProvider;
-import net.esper.client.EPServiceProviderManager;
-import net.esper.client.EPStatement;
-import net.esper.client.EPRuntime;
+import net.esper.client.*;
 import net.esper.client.time.TimerControlEvent;
 import net.esper.client.time.CurrentTimeEvent;
 import net.esper.support.bean.SupportBean;
@@ -25,7 +22,9 @@ public class TestOutputLimitSimple extends TestCase
 
     public void setUp()
     {
-        epService = EPServiceProviderManager.getDefaultProvider(SupportConfigFactory.getConfiguration());
+        Configuration config = SupportConfigFactory.getConfiguration();
+        config.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
+        epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();
     }
 
@@ -478,6 +477,7 @@ public class TestOutputLimitSimple extends TestCase
     	sendEvent("s1");
 
     	// check that the listener hasn't been updated
+        sendTimeEvent(timeToCallback - 1);
     	assertFalse(updateListener.getAndClearIsInvoked());
 
     	// update the clock

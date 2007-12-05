@@ -64,6 +64,7 @@ public class EPStatementStartMethod
     /**
      * Starts the EQL statement.
      * @return a viewable to attach to for listening to events, and a stop method to invoke to clean up
+     * @param isNewStatement indicator whether the statement is new or a stop-restart statement
      * @throws ExprValidationException when the expression validation fails
      * @throws ViewProcessingException when views cannot be started
      */
@@ -790,6 +791,7 @@ public class EPStatementStartMethod
     private Viewable handleSimpleSelect(Viewable view,
                                         ResultSetProcessor optionalResultSetProcessor,
                                         StatementContext statementContext)
+            throws ExprValidationException
     {
         Viewable finalView = view;
 

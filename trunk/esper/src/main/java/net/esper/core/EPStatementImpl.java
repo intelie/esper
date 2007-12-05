@@ -44,6 +44,7 @@ public class EPStatementImpl implements EPStatementSPI
      * @param epServiceProvider is the engine instance to provide to statement-aware update listeners
      * @param timeLastStateChange the timestamp the statement was created and started
      * @param statementLock the lock associated with the statement
+     * @param variableService provides access to variable values
      */
     public EPStatementImpl(EPServiceProvider epServiceProvider,
                            String statementId,

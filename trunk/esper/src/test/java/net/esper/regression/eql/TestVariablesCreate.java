@@ -207,6 +207,9 @@ public class TestVariablesCreate extends TestCase
         stmt = "create variable string myvar = 'a'";
         epService.getEPAdministrator().createEQL("create variable string myvar = 'a'");
         tryInvalid(stmt, "Error starting view: Cannot create variable: Variable by name 'myvar' has already been created [create variable string myvar = 'a']");
+
+        tryInvalid("select * from " + SupportBean.class.getName() + " output every somevar events", 
+            "Error starting view: Error in the output rate limiting clause: Variable named 'somevar' has not been declared [select * from net.esper.support.bean.SupportBean output every somevar events]");
     }
 
     private void tryInvalid(String stmtText, String message)

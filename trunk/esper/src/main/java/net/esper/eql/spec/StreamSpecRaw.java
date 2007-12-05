@@ -28,6 +28,7 @@ public interface StreamSpecRaw extends StreamSpec
      * @param patternObjectResolutionService for resolving pattern objects
      * @param timeProvider - provides engine current time
      * @param namedWindowService is the service managing named windows
+     * @param variableService provides variable values
      * @return compiled stream
      * @throws ExprValidationException to indicate validation errors
      */

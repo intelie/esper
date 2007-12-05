@@ -17,6 +17,7 @@ public class ExprVariableNode extends ExprNode
 
     /**
      * Ctor.
+     * @param variableName is the name of the variable
      */
     public ExprVariableNode(String variableName)
     {
@@ -27,6 +28,10 @@ public class ExprVariableNode extends ExprNode
         this.variableName = variableName;
     }
 
+    /**
+     * Returns the name of the variable.
+     * @return variable name
+     */
     public String getVariableName()
     {
         return variableName;

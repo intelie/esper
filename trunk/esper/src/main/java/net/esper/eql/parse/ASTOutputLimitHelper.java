@@ -8,55 +8,68 @@
 package net.esper.eql.parse;
 
 import net.esper.eql.spec.OutputLimitSpec;
-import net.esper.eql.spec.OutputLimitSpec.DisplayLimit;
+import net.esper.eql.spec.OutputLimitLimitType;
+import net.esper.eql.spec.OutputLimitRateType;
 import net.esper.eql.generated.EqlTokenTypes;
 import antlr.collections.AST;
 
 /**
  * Builds an output limit spec from an output limit AST node.
- *
- */public class ASTOutputLimitHelper implements EqlTokenTypes
+ */
+public class ASTOutputLimitHelper implements EqlTokenTypes
 {
-	 /**
-	  * Build an output limit spec from the AST node supplied.
-	  * @param node - parse node
-	  * @return output limit spec
-	  */
-	 public static OutputLimitSpec buildSpec(AST node)
-	 {
-		 AST child = node.getFirstChild();
+    /**
+     * Build an output limit spec from the AST node supplied.
+     *
+     * @param node - parse node
+     * @return output limit spec
+     */
+    public static OutputLimitSpec buildSpec(AST node)
+    {
+        AST child = node.getFirstChild();
 
-		 DisplayLimit displayLimit = DisplayLimit.ALL;
-		 if(child.getType() == FIRST)
-		 {
-			 displayLimit = DisplayLimit.FIRST;
-			 child = child.getNextSibling();
-		 }
-		 else if(child.getType() == LAST)
-		 {
-			 displayLimit = DisplayLimit.LAST;
-			 child = child.getNextSibling();
-		 }
-         else if(child.getType() == SNAPSHOT)
-         {
-             displayLimit = DisplayLimit.SNAPSHOT;
-             child = child.getNextSibling();
-         }
-		 else if(child.getType() == ALL)
-		 {
-			 child = child.getNextSibling();
-		 }
+        OutputLimitLimitType displayLimit = OutputLimitLimitType.ALL;
+        if (child.getType() == FIRST)
+        {
+            displayLimit = OutputLimitLimitType.FIRST;
+            child = child.getNextSibling();
+        }
+        else if (child.getType() == LAST)
+        {
+            displayLimit = OutputLimitLimitType.LAST;
+            child = child.getNextSibling();
+        }
+        else if (child.getType() == SNAPSHOT)
+        {
+            displayLimit = OutputLimitLimitType.SNAPSHOT;
+            child = child.getNextSibling();
+        }
+        else if (child.getType() == ALL)
+        {
+            child = child.getNextSibling();
+        }
 
-		 switch (node.getType()) {
-		 case EVENT_LIMIT_EXPR:
-			 return  new OutputLimitSpec(Integer.parseInt(child.getText()), displayLimit);
-		 case SEC_LIMIT_EXPR:
-			 return  new OutputLimitSpec(Double.parseDouble(child.getText()), displayLimit);
-		 case MIN_LIMIT_EXPR:
-			 // 60 seconds to a minute
-			 return  new OutputLimitSpec(60 * Double.parseDouble(child.getText()), displayLimit);
-		 default:
-			 throw new IllegalArgumentException("Node type " + node.getType() + " not a recognized output limit type");
+        String variableName = null;
+        double rate = -1;
+        if (child.getType() == IDENT)
+        {
+            variableName = child.getText();
+        }
+        else
+        {
+            rate = Double.parseDouble(child.getText());
+        }
+
+        switch (node.getType())
+        {
+            case EVENT_LIMIT_EXPR:
+                return new OutputLimitSpec(rate, variableName, OutputLimitRateType.EVENTS, displayLimit);
+            case SEC_LIMIT_EXPR:
+                return new OutputLimitSpec(rate, variableName, OutputLimitRateType.TIME_SEC, displayLimit);
+            case MIN_LIMIT_EXPR:
+                return new OutputLimitSpec(rate, variableName, OutputLimitRateType.TIME_MIN, displayLimit);
+            default:
+                throw new IllegalArgumentException("Node type " + node.getType() + " not a recognized output limit type");
 		 }
 	 }
 

@@ -417,7 +417,7 @@ havingClause
 	;
 
 outputLimit
-	:   (ALL|FIRST|LAST|SNAPSHOT)? EVERY_EXPR! number (e:EVENTS!|sec:SECONDS!|min:MINUTES!)
+	:   (ALL|FIRST|LAST|SNAPSHOT)? EVERY_EXPR! (number | IDENT) (e:EVENTS!|sec:SECONDS!|min:MINUTES!)
 		{ 
 			if (e != null) #outputLimit = #([EVENT_LIMIT_EXPR,"outputLimitEvent"], #outputLimit); 
 			if (sec != null) #outputLimit = #([SEC_LIMIT_EXPR,"outputLimitSec"], #outputLimit); 

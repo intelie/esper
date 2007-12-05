@@ -24,7 +24,7 @@ public interface ExprValidator
      * @param methodResolutionService - for resolving class names in library method invocations
      * @param viewResourceDelegate - delegates for view resources to expression nodes
      * @param timeProvider - provides engine current time
-     * @param variableService
+     * @param variableService - provides access to variable values
      * @throws ExprValidationException thrown when validation failed
      */
     public void validate(StreamTypeService streamTypeService,

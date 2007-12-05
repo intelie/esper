@@ -122,7 +122,7 @@ public class OuterJoinQualifier implements Serializable
      * Add additional properties to the on-clause, which are logical-and to existing properties
      * @param propertyLeft property providing joined-on value
      * @param propertyRight property providing joined-on value
-     * @return
+     * @return outer join qualifier
      */
     public OuterJoinQualifier add(String propertyLeft, String propertyRight)
     {

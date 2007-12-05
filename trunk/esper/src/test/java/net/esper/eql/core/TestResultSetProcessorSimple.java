@@ -1,24 +1,21 @@
 package net.esper.eql.core;
 
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.Set;
-
 import junit.framework.TestCase;
 import net.esper.collection.MultiKey;
 import net.esper.collection.Pair;
-import net.esper.eql.spec.OutputLimitSpec.DisplayLimit;
 import net.esper.eql.spec.OutputLimitSpec;
-import net.esper.eql.core.OrderByProcessor;
-import net.esper.eql.core.ResultSetProcessorSimple;
-import net.esper.eql.core.SelectExprEvalProcessor;
-import net.esper.eql.core.SelectExprProcessor;
+import net.esper.eql.spec.OutputLimitLimitType;
+import net.esper.eql.spec.OutputLimitRateType;
 import net.esper.event.EventBean;
 import net.esper.support.bean.SupportBean;
 import net.esper.support.eql.SupportSelectExprFactory;
 import net.esper.support.eql.SupportStreamTypeSvc1Stream;
 import net.esper.support.event.SupportEventAdapterService;
 import net.esper.support.event.SupportEventBeanFactory;
+
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 public class TestResultSetProcessorSimple extends TestCase
 {
@@ -34,12 +31,10 @@ public class TestResultSetProcessorSimple extends TestCase
         selectExprProcessor = new SelectExprEvalProcessor(SupportSelectExprFactory.makeNoAggregateSelectList(), null, false, new SupportStreamTypeSvc1Stream(), SupportEventAdapterService.getService());
         orderByProcessor = null;
 
-		outputLimitSpecAll = new OutputLimitSpec(1, DisplayLimit.ALL);
-		assertFalse(outputLimitSpecAll.isDisplayLastOnly());
+		outputLimitSpecAll = new OutputLimitSpec(1d, null, OutputLimitRateType.EVENTS, OutputLimitLimitType.ALL);
 		outputProcessorAll = new ResultSetProcessorSimple(selectExprProcessor, orderByProcessor, null, true, false);
 
-		outputLimitSpecLast = new OutputLimitSpec(1, DisplayLimit.LAST);
-		assertTrue(outputLimitSpecLast.isDisplayLastOnly());
+		outputLimitSpecLast = new OutputLimitSpec(1d, null, OutputLimitRateType.EVENTS, OutputLimitLimitType.LAST);
 		outputProcessorLast = new ResultSetProcessorSimple(selectExprProcessor, orderByProcessor, null, true, true);
     }
 

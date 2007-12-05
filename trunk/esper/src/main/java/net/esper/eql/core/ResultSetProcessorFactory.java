@@ -71,7 +71,8 @@ public class ResultSetProcessorFactory
      * @param eventAdapterService - wrapping service for events
      * @param methodResolutionService - for resolving class names
      * @param viewResourceDelegate - delegates views resource factory to expression resources requirements
-     * @param timeProvider - provides engine current time for selection on of filtering and grouping 
+     * @param timeProvider - provides engine current time for selection on of filtering and grouping
+     * @param variableService - for providing variable access 
      * @return result set processor instance
      * @throws ExprValidationException when any of the expressions is invalid
      */
@@ -273,7 +274,7 @@ public class ResultSetProcessorFactory
 
         // Determine if any output rate limiting must be performed early while processing results
         boolean isOutputLimiting = outputLimitSpec != null;
-        boolean isOutputLimitLastOnly = outputLimitSpec != null ? outputLimitSpec.isDisplayLastOnly() : false;
+        boolean isOutputLimitLastOnly = outputLimitSpec != null ? (outputLimitSpec.getDisplayLimit() == OutputLimitLimitType.LAST) : false;
 
         // (1)
         // There is no group-by clause and no aggregate functions with event properties in the select clause and having clause (simplest case)

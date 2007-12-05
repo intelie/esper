@@ -4,6 +4,7 @@ import net.esper.view.ViewSupport;
 import net.esper.eql.join.JoinSetIndicator;
 import net.esper.eql.core.ResultSetProcessor;
 import net.esper.eql.spec.OutputLimitSpec;
+import net.esper.eql.expression.ExprValidationException;
 import net.esper.event.EventBean;
 import net.esper.event.EventType;
 import net.esper.collection.MultiKey;
@@ -31,17 +32,26 @@ public class OutputProcessViewFactory
      * @param outputLimitSpec is the output rate limiting requirements
      * @param statementContext is the statement-level services
      * @return output processing view
+     * @throws ExprValidationException to indicate 
      */
     public static OutputProcessView makeView(ResultSetProcessor resultSetProcessor,
     					  int streamCount,
     					  OutputLimitSpec outputLimitSpec,
     					  StatementContext statementContext)
+            throws ExprValidationException
     {
-        // Do we need to enforce an output policy?
-        if (outputLimitSpec != null)
+        try
         {
-            return new OutputProcessViewPolicy(resultSetProcessor, streamCount, outputLimitSpec, statementContext);
+            // Do we need to enforce an output policy?
+            if (outputLimitSpec != null)
+            {
+                return new OutputProcessViewPolicy(resultSetProcessor, streamCount, outputLimitSpec, statementContext);
+            }
+            return new OutputProcessViewDirect(resultSetProcessor);
         }
-        return new OutputProcessViewDirect(resultSetProcessor);
+        catch (RuntimeException ex)
+        {
+            throw new ExprValidationException("Error in the output rate limiting clause: " + ex.getMessage(), ex);
+        }
     }
 }

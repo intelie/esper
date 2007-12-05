@@ -54,6 +54,7 @@ public class EQLTreeWalker extends EQLBaseWalker
     /**
      * Ctor.
      * @param engineImportService is required to resolve lib-calls into static methods or configured aggregation functions
+     * @param variableService for variable access
      */
     public EQLTreeWalker(EngineImportService engineImportService, VariableService variableService)
     {
@@ -1186,7 +1187,13 @@ public class EQLTreeWalker extends EQLBaseWalker
     {
         log.debug(".leaveOutputLimit");
 
-        statementSpec.setOutputLimitSpec(ASTOutputLimitHelper.buildSpec(node));
+        OutputLimitSpec spec = ASTOutputLimitHelper.buildSpec(node);
+        statementSpec.setOutputLimitSpec(spec);
+
+        if (spec.getVariableName() != null)
+        {
+            statementSpec.setHasVariables(true);
+        }
     }
 
     private void leaveOuterJoin(AST node)

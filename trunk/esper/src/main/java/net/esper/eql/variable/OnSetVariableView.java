@@ -17,6 +17,12 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+/**
+ * A view that handles the setting of variables upon receipt of a triggering event.
+ * <p>
+ * Variables are updated atomically and thus a separate commit actually updates the
+ * new variable values, or a rollback if an exception occured during validation.
+ */
 public class OnSetVariableView extends ViewSupport
 {
     private static final Log log = LogFactory.getLog(OnSetVariableView.class);
@@ -28,6 +34,13 @@ public class OnSetVariableView extends ViewSupport
     private final EventBean[] eventsPerStream = new EventBean[1];
     private final boolean[] mustCoerce;
 
+    /**
+     * Ctor.
+     * @param desc specification for the on-set statement
+     * @param eventAdapterService for creating statements
+     * @param variableService for setting variables
+     * @throws ExprValidationException if the assignment expressions are invalid
+     */
     public OnSetVariableView(OnTriggerSetDesc desc, EventAdapterService eventAdapterService, VariableService variableService)
             throws ExprValidationException
     {
@@ -131,9 +144,11 @@ public class OnSetVariableView extends ViewSupport
 
             variableService.commit();
         }
-        catch (Throwable t)
+        catch (RuntimeException ex)
         {
+            log.error("Error evaluating on-set variable expressions: " + ex.getMessage(), ex);
             variableService.rollback();
+            throw ex;
         }
         finally
         {

@@ -5,6 +5,7 @@ import net.esper.collection.Pair;
 import net.esper.core.StatementContext;
 import net.esper.eql.core.ResultSetProcessor;
 import net.esper.eql.spec.OutputLimitSpec;
+import net.esper.eql.spec.OutputLimitLimitType;
 import net.esper.event.EventBean;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -53,8 +54,8 @@ public class OutputProcessViewPolicy extends OutputProcessView
 
     	OutputCallback outputCallback = getCallbackToLocal(streamCount);
     	this.outputCondition = statementContext.getOutputConditionFactory().createCondition(outputLimitSpec, statementContext, outputCallback);
-        this.outputLastOnly = (outputLimitSpec != null) && (outputLimitSpec.isDisplayLastOnly());
-        this.outputSnapshot = (outputLimitSpec != null) && (outputLimitSpec.isDisplaySnapshot());
+        this.outputLastOnly = (outputLimitSpec != null) && (outputLimitSpec.getDisplayLimit() == OutputLimitLimitType.LAST);
+        this.outputSnapshot = (outputLimitSpec != null) && (outputLimitSpec.getDisplayLimit() == OutputLimitLimitType.SNAPSHOT);
     }
 
     /**

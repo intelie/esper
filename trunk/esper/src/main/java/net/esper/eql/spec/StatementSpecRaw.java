@@ -231,31 +231,55 @@ public class StatementSpecRaw implements MetaDefItem
         this.onTriggerDesc = onTriggerDesc;
     }
 
+    /**
+     * Gets the where clause.
+     * @return where clause or null if none
+     */
     public ExprNode getFilterExprRootNode()
     {
         return filterExprRootNode;
     }
 
+    /**
+     * Sets the where clause or null if none
+     * @param filterExprRootNode where clause expression
+     */
     public void setFilterExprRootNode(ExprNode filterExprRootNode)
     {
         this.filterExprRootNode = filterExprRootNode;
     }
 
+    /**
+     * Returns true if a statement (or subquery sub-statements) use variables.
+     * @return indicator if variables are used
+     */
     public boolean isHasVariables()
     {
         return hasVariables;
     }
 
+    /**
+     * Sets the flag indicating the statement uses variables.
+     * @param hasVariables true if variables are used
+     */
     public void setHasVariables(boolean hasVariables)
     {
         this.hasVariables = hasVariables;
     }
 
+    /**
+     * Returns the descriptor for create-variable statements.
+     * @return create-variable info
+     */
     public CreateVariableDesc getCreateVariableDesc()
     {
         return createVariableDesc;
     }
 
+    /**
+     * Sets the descriptor for create-variable statements, if this is one. 
+     * @param createVariableDesc create-variable info
+     */
     public void setCreateVariableDesc(CreateVariableDesc createVariableDesc)
     {
         this.createVariableDesc = createVariableDesc;

@@ -1,9 +1,14 @@
 package net.esper.eql.variable;
 
-import net.esper.eql.core.StreamTypesException;
-
+/**
+ * Exception indicating a variable type error.
+ */
 public class VariableTypeException extends VariableDeclarationException
 {
+    /**
+     * Ctor.
+     * @param msg the exception message.
+     */
     public VariableTypeException(String msg)
     {
         super(msg);

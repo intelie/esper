@@ -40,9 +40,9 @@ public class TestOutputConditionCount extends TestCase
 		    			listener3.update(null, null);
 		    		}
 		    	};
-		fireEvery1 = new OutputConditionCount(1, callback1);
-    	fireEvery2 = new OutputConditionCount(2, callback2);
-    	fireEvery3 = new OutputConditionCount(3, callback3);
+		fireEvery1 = new OutputConditionCount(1, null, callback1);
+    	fireEvery2 = new OutputConditionCount(2, null, callback2);
+    	fireEvery3 = new OutputConditionCount(3, null, callback3);
     	
     }
 
@@ -171,7 +171,7 @@ public class TestOutputConditionCount extends TestCase
 	{
 	    try
 	    {
-	        fireEvery1 = new OutputConditionCount(0, callback1);
+	        fireEvery1 = new OutputConditionCount(0, null, callback1);
 	        fail();
 	    }
 	    catch (IllegalArgumentException ex)
@@ -180,7 +180,7 @@ public class TestOutputConditionCount extends TestCase
 	    }
 	    try
 	    {
-	    	fireEvery1 = new OutputConditionCount(1, null);
+	    	fireEvery1 = new OutputConditionCount(1, null, null);
 	    	fail();
 	    }
 	    catch (NullPointerException ex)

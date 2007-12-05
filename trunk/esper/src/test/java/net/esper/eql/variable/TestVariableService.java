@@ -149,7 +149,7 @@ public class TestVariableService extends TestCase
         }
         catch (VariableExistsException e)
         {
-            assertEquals("Variables by name 'a' has already been created", e.getMessage());
+            assertEquals("Variable by name 'a' has already been created", e.getMessage());
         }
     }
 }

@@ -6,6 +6,20 @@ import org.apache.commons.logging.LogFactory;
 import java.util.ArrayList;
 import java.util.concurrent.locks.Lock;
 
+/**
+ * A self-cleaning list of versioned-values.
+ * <p>
+ * The current and prior version are held for lock-less read access in a transient variable.
+ * <p>
+ * The list relies on transient as well as a read-lock to guard against concurrent modification. However a read lock is only
+ * taken when a list of old versions must be updated.
+ * <p>
+ * When a high watermark is reached, the list on write access removes old versions up to the
+ * number of milliseconds compared to current write timestamp.
+ * <p>
+ * If an older version is requested then held by the list, the list can either throw an exception
+ * or return the current value. 
+ */
 public class VersionedValueList<T>
 {
     private static final Log log = LogFactory.getLog(VersionedValueList.class);
@@ -23,6 +37,18 @@ public class VersionedValueList<T>
     // Holds the older versions
     private ArrayList<VersionedValue<T>> olderVersions;
 
+    /**
+     * Ctor.
+     * @param name variable name
+     * @param initialVersion first version number
+     * @param initialValue first value
+     * @param timestamp timestamp of first version
+     * @param millisecondLifetimeOldVersions number of milliseconds after which older versions get expired and removed
+     * @param readLock for coordinating update to old versions
+     * @param highWatermark when the number of old versions reached high watermark, the list inspects size on every write
+     * @param errorWhenNotFound true if an exception should be throw if the requested version cannot be found,
+     * or false if the engine should log a warning 
+     */
     public VersionedValueList(String name, int initialVersion, T initialValue, long timestamp, long millisecondLifetimeOldVersions, Lock readLock, int highWatermark, boolean errorWhenNotFound)
     {
         this.name = name;
@@ -126,6 +152,13 @@ public class VersionedValueList<T>
         return resultValue;
     }
 
+    /**
+     * Add a value and version to the list, returning the prior value of the variable.
+     * @param version for the value to add
+     * @param value to add
+     * @param timestamp the time associated with the version
+     * @return prior value
+     */
     public Object addValue(int version, T value, long timestamp)
     {
         if (log.isDebugEnabled())
@@ -168,11 +201,19 @@ public class VersionedValueList<T>
         return currentAndPriorValue.getPriorVersion().getValue();
     }
 
+    /**
+     * Returns the current and prior version.
+     * @return value
+     */
     protected CurrentValue<T> getCurrentAndPriorValue()
     {
         return currentAndPriorValue;
     }
 
+    /**
+     * Returns the list of old versions, for testing purposes.
+     * @return list of versions older then current and prior version
+     */
     protected ArrayList<VersionedValue<T>> getOlderVersions()
     {
         return olderVersions;

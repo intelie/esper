@@ -10,6 +10,7 @@ package net.esper.eql.view;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import net.esper.util.ExecutionPathDebugLog;
+import net.esper.eql.variable.VariableReader;
 
 /**
  * Output limit condition that is satisfied when either
@@ -21,10 +22,11 @@ public final class OutputConditionCount implements OutputCondition
     private static final boolean DO_OUTPUT = true;
 	private static final boolean FORCE_UPDATE = false;
 
-    private final int eventRate;
+    private long eventRate;
     private int newEventsCount;
     private int oldEventsCount;
     private final OutputCallback outputCallback;
+    private final VariableReader variableReader;
 
 
     /**
@@ -32,12 +34,13 @@ public final class OutputConditionCount implements OutputCondition
      * @param eventRate is the number of old or new events that
      * must arrive in order for the condition to be satisfied
      * @param outputCallback is the callback that is made when the conditoin is satisfied
+     * @param variableReader is for reading the variable value, if a variable was supplied, else null
      */
-    public OutputConditionCount(int eventRate, OutputCallback outputCallback)
+    public OutputConditionCount(int eventRate, VariableReader variableReader, OutputCallback outputCallback)
     {
-        if (eventRate < 1)
+        if ((eventRate < 1) && (variableReader == null))
         {
-            throw new IllegalArgumentException("Limiting output by event count requires an event count of at least 1");
+            throw new IllegalArgumentException("Limiting output by event count requires an event count of at least 1 or a variable name");
         }
 		if(outputCallback ==  null)
 		{
@@ -45,6 +48,7 @@ public final class OutputConditionCount implements OutputCondition
 		}
         this.eventRate = eventRate;
         this.outputCallback = outputCallback;
+        this.variableReader = variableReader;
     }
 
     /**
@@ -74,6 +78,15 @@ public final class OutputConditionCount implements OutputCondition
 
     public final void updateOutputCondition(int newDataCount, int oldDataCount)
     {
+        if (variableReader != null)
+        {
+            Object value = variableReader.getValue();
+            if (value != null)
+            {
+                eventRate = ((Number) value).longValue();
+            }
+        }
+
         this.newEventsCount += newDataCount;
         this.oldEventsCount += oldDataCount;
 

@@ -12,6 +12,7 @@ public class OnTriggerWindowDesc extends OnTriggerDesc
      * Ctor.
      * @param windowName the window name
      * @param optionalAsName the optional alias
+     * @param isOnDelete true for on-delete and false for on-select
      */
     public OnTriggerWindowDesc(String windowName, String optionalAsName, boolean isOnDelete)
     {

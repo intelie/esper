@@ -175,9 +175,9 @@ havingClause
 	;
 
 outputLimitExpr
-	:	#(e:EVENT_LIMIT_EXPR (ALL|FIRST|LAST|SNAPSHOT)? number { leaveNode(#e); } ) 
-	|   #(sec:SEC_LIMIT_EXPR (ALL|FIRST|LAST|SNAPSHOT)? number { leaveNode(#sec); } )
-	|   #(min:MIN_LIMIT_EXPR (ALL|FIRST|LAST|SNAPSHOT)? number { leaveNode(#min); } )
+	:	#(e:EVENT_LIMIT_EXPR (ALL|FIRST|LAST|SNAPSHOT)? (number|IDENT) { leaveNode(#e); } ) 
+	|   	#(sec:SEC_LIMIT_EXPR (ALL|FIRST|LAST|SNAPSHOT)? (number|IDENT) { leaveNode(#sec); } )
+	|   	#(min:MIN_LIMIT_EXPR (ALL|FIRST|LAST|SNAPSHOT)? (number|IDENT) { leaveNode(#min); } )
 	;
 
 relationalExpr

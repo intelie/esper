@@ -17,6 +17,15 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.Iterator;
 
+/**
+ * View for handling create-variable syntax.
+ * <p>
+ * The view posts to listeners when a variable changes, if it has subviews.
+ * <p>
+ * The view returns the current variable value for the iterator.
+ * <p>
+ * The event type for such posted events is a single field Map with the variable value.
+ */
 public class CreateVariableView extends ViewSupport implements VariableChangeCallback
 {
     private static final Log log = LogFactory.getLog(CreateVariableView.class);
@@ -25,8 +34,13 @@ public class CreateVariableView extends ViewSupport implements VariableChangeCal
     private final EventType eventType;
     private final String variableName;
 
+    /**
+     * Ctor.
+     * @param eventAdapterService for creating events
+     * @param variableService for looking up variables
+     * @param variableName is the name of the variable to create
+     */
     public CreateVariableView(EventAdapterService eventAdapterService, VariableService variableService, String variableName)
-            throws ExprValidationException
     {
         this.eventAdapterService = eventAdapterService;
         this.variableName = variableName;

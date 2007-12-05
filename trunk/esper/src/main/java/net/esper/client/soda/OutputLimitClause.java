@@ -19,7 +19,8 @@ public class OutputLimitClause implements Serializable
     private static final long serialVersionUID = 0L;
 
     private OutputLimitSelector selector;
-    private double frequency;
+    private Double frequency;
+    private String frequencyVariable;
     private OutputLimitUnit unit;
 
     /**
@@ -36,6 +37,18 @@ public class OutputLimitClause implements Serializable
 
     /**
      * Creates an output limit clause.
+     * @param selector is the events to select
+     * @param unit the unit for the frequency
+     * @param frequencyVariable is the variable providing the output limit frequency
+     * @return clause
+     */
+    public static OutputLimitClause create(OutputLimitSelector selector, String frequencyVariable, OutputLimitUnit unit)
+    {
+        return new OutputLimitClause(selector, frequencyVariable, unit);
+    }
+
+    /**
+     * Creates an output limit clause.
      * @param frequency a frequency to output at
      * @param unit the unit for the frequency
      * @return clause
@@ -46,15 +59,54 @@ public class OutputLimitClause implements Serializable
     }
 
     /**
+     * Creates an output limit clause.
+     * @param frequencyVariable is the variable name providing output rate frequency values
+     * @param unit the unit for the frequency
+     * @return clause
+     */
+    public static OutputLimitClause create(String frequencyVariable, OutputLimitUnit unit)
+    {
+        return new OutputLimitClause(OutputLimitSelector.ALL, frequencyVariable, unit);
+    }
+
+    /**
      * Ctor.
      * @param selector is the events to select
      * @param frequency a frequency to output at
      * @param unit the unit for the frequency
      */
-    public OutputLimitClause(OutputLimitSelector selector, double frequency, OutputLimitUnit unit)
+    public OutputLimitClause(OutputLimitSelector selector, Double frequency, OutputLimitUnit unit)
     {
         this.selector = selector;
         this.frequency = frequency;
+        this.unit = unit;
+    }
+
+    /**
+     * Ctor.
+     * @param selector is the events to select
+     * @param unit the unit for the frequency
+     * @param frequencyVariable is the variable name providing output rate frequency values
+     */
+    public OutputLimitClause(OutputLimitSelector selector, String frequencyVariable, OutputLimitUnit unit)
+    {
+        this.selector = selector;
+        this.frequencyVariable = frequencyVariable;
+        this.unit = unit;
+    }
+
+    /**
+     * Ctor.
+     * @param selector is the events to select
+     * @param frequency a frequency to output at
+     * @param unit the unit for the frequency
+     * @param frequencyVariable is the variable name providing output rate frequency values
+     */
+    public OutputLimitClause(OutputLimitSelector selector, Double frequency, String frequencyVariable, OutputLimitUnit unit)
+    {
+        this.selector = selector;
+        this.frequency = frequency;
+        this.frequencyVariable = frequencyVariable;
         this.unit = unit;
     }
 
@@ -80,7 +132,7 @@ public class OutputLimitClause implements Serializable
      * Returns output frequency.
      * @return frequency of output
      */
-    public double getFrequency()
+    public Double getFrequency()
     {
         return frequency;
     }
@@ -113,6 +165,24 @@ public class OutputLimitClause implements Serializable
     }
 
     /**
+     * Returns the variable name of the variable providing output rate frequency values, or null if the frequency is a fixed value.
+     * @return variable name or null if no variable is used
+     */
+    public String getFrequencyVariable()
+    {
+        return frequencyVariable;
+    }
+
+    /**
+     * Sets the variable name of the variable providing output rate frequency values, or null if the frequency is a fixed value.
+     * @param frequencyVariable variable name or null if no variable is used
+     */
+    public void setFrequencyVariable(String frequencyVariable)
+    {
+        this.frequencyVariable = frequencyVariable;
+    }
+
+    /**
      * Renders the clause in textual representation.
      * @param writer to output to
      */
@@ -126,11 +196,25 @@ public class OutputLimitClause implements Serializable
         writer.write("every ");
         if (unit != OutputLimitUnit.EVENTS)
         {
-            writer.write(Double.toString(frequency));
+            if (frequencyVariable == null)
+            {
+                writer.write(Double.toString(frequency));
+            }
+            else
+            {
+                writer.write(frequencyVariable);
+            }
         }
         else
         {
-            writer.write(Integer.toString((int)frequency));
+            if (frequencyVariable == null)
+            {
+                writer.write(Integer.toString(frequency.intValue()));
+            }
+            else
+            {
+                writer.write(frequencyVariable);
+            }
         }
         writer.write(' ');
         writer.write(unit.getText());

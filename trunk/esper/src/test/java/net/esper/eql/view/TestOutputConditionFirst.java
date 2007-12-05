@@ -1,7 +1,8 @@
 package net.esper.eql.view;
 
 import net.esper.eql.spec.OutputLimitSpec;
-import net.esper.eql.spec.OutputLimitSpec.DisplayLimit;
+import net.esper.eql.spec.OutputLimitLimitType;
+import net.esper.eql.spec.OutputLimitRateType;
 import net.esper.support.schedule.SupportSchedulingServiceImpl;
 import net.esper.support.view.SupportStatementContextFactory;
 import net.esper.core.StatementContext;
@@ -33,7 +34,7 @@ public class TestOutputConditionFirst extends TestCase
 	
 	public void testUpdateTime()
 	{
-		OutputLimitSpec outputConditionSpec = new OutputLimitSpec(TEST_INTERVAL_MSEC/1000d, DisplayLimit.FIRST);
+		OutputLimitSpec outputConditionSpec = new OutputLimitSpec(TEST_INTERVAL_MSEC/1000d, null, OutputLimitRateType.TIME_SEC, OutputLimitLimitType.FIRST);
 		SupportSchedulingServiceImpl schedulingServiceStub = new SupportSchedulingServiceImpl();
 		StatementContext statementContext = SupportStatementContextFactory.makeContext(schedulingServiceStub);
 		
@@ -76,7 +77,7 @@ public class TestOutputConditionFirst extends TestCase
 	public void testUpdateCount()
 	{
 		// 'output first every 3 events'
-		OutputLimitSpec outputConditionSpec = new OutputLimitSpec(3, DisplayLimit.FIRST);
+		OutputLimitSpec outputConditionSpec = new OutputLimitSpec(3d, null, OutputLimitRateType.EVENTS, OutputLimitLimitType.FIRST);
 		StatementContext statementContext = SupportStatementContextFactory.makeContext();
 		
 		OutputCondition condition = (new OutputConditionFactoryDefault()).createCondition(outputConditionSpec, statementContext, callback);

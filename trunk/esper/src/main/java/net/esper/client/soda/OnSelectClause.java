@@ -12,6 +12,12 @@ public class OnSelectClause extends OnClause
     private String windowName;
     private String optionalAsName;
 
+    /**
+     * Creates an on-select clause.
+     * @param windowName is the named window name
+     * @param optionalAsName is the optional alias
+     * @return on-select clause 
+     */
     public static OnSelectClause create(String windowName, String optionalAsName)
     {
         return new OnSelectClause(windowName, optionalAsName);

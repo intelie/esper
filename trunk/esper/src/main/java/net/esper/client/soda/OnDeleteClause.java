@@ -12,6 +12,12 @@ public class OnDeleteClause extends OnClause
     private String windowName;
     private String optionalAsName;
 
+    /**
+     * Creates an on-delete clause.
+     * @param windowName is the named window name
+     * @param optionalAsName is the optional alias
+     * @return on-delete clause 
+     */
     public static OnDeleteClause create(String windowName, String optionalAsName)
     {
         return new OnDeleteClause(windowName, optionalAsName);

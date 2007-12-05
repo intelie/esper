@@ -36,6 +36,7 @@ public class ExprNodeAdapter
      * Ctor.
      * @param exprNode is the boolean expression
      * @param prototype is the row of events the we are matching on
+     * @param variableService for setting variable version for evaluating variables, if required
      */
     public ExprNodeAdapter(ExprNode exprNode, EventBean[] prototype, VariableService variableService)
     {

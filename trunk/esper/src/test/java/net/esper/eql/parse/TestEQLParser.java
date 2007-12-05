@@ -569,6 +569,9 @@ public class TestEQLParser extends TestCase implements EqlTokenTypes
         assertIsValid("create variable integer a = 77");
         assertIsValid("create variable sometype b = 77");
         assertIsValid("create variable sometype b");
+        
+        // use variable in output clause
+        assertIsValid("select count(*) from A output every VAR1 events");
     }
 
     public void testBitWiseCases() throws Exception

@@ -32,6 +32,7 @@ public final class FilterSpecParamExprNode extends FilterSpecParam
      * @param filterOperator is expected to be the BOOLEAN_EXPR operator
      * @param exprNode represents the boolean expression
      * @param taggedEventTypes is null if the expression doesn't need other streams, or is filled with a ordered list of stream names and types
+     * @param variableService - provides access to variables
      * @throws IllegalArgumentException for illegal args
      */
     public FilterSpecParamExprNode(String propertyName,

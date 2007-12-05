@@ -40,6 +40,10 @@
         </para>
 
         <para>
+			<emphasis>Variables</emphasis> can come in handy to parameterize statements and change parameters on-the-fly and in response to events. Variables can be used in an expression anywhere in a statement as well as in the output clause for dynamic control of output rates.
+        </para>
+
+        <para>
 			Esper can be extended by plugging-in custom developed views.
         </para>
 
@@ -937,7 +941,7 @@ select symbol, sum(price) from StockTickEvent.std:groupby('symbol').win:length(1
 				<para>
 					Here is the syntax for output rate limiting: 
 				</para>
-				<synopsis>output [all | first | last | snapshot] every <emphasis>number</emphasis> [minutes | seconds | events]</synopsis>
+				<synopsis>output [all | first | last | snapshot] every <emphasis>output_rate</emphasis> [minutes | seconds | events]</synopsis>
 
 				<para>
 					The <literal>all</literal> keyword is the default and specifies that all events in a batch should be output. The batch size can be specified in terms of time or number of events.
@@ -956,6 +960,10 @@ select symbol, sum(price) from StockTickEvent.std:groupby('symbol').win:length(1
 
 				<para>
 					The <literal>snapshot</literal> keyword indicates that the engine output current computation results considering all events as per views specified and/or current aggregation results. While the other keywords control how a batch of events between output intervals is being considered, the <literal>snapshot</literal> keyword outputs all current state of a statement independent of the last batch. 
+				</para>
+
+				<para>
+					The <emphasis>output_rate</emphasis> is the frequency at which the engine outputs events. The value can be a number to denote a fixed output rate, or the name of a variable whose value is the output rate. By means of a variable the output rate can be controlled externally and changed dynamically at runtime. 
 				</para>
 
 				<para>
@@ -1688,7 +1696,7 @@ delete from <emphasis>window_name</emphasis> [as <emphasis>alias_name</emphasis>
 			</para>
 
 			<para>
-				The <literal>iterator</literal> of the <literal>EPStatement</literal> representing the <literal>on delete</literal> clause can also be helpful: It returns the last batch of deleted events in response to the last triggering event, in any order, or null if the last triggering event did not remove any rows.
+				The <literal>iterator</literal> of the <literal>EPStatement</literal> object representing the <literal>on delete</literal> clause can also be helpful: It returns the last batch of deleted events in response to the last triggering event, in any order, or null if the last triggering event did not remove any rows.
 			</para>
 
 			<para>				
@@ -1930,7 +1938,7 @@ from <emphasis>window_name</emphasis> [as <emphasis>alias_name</emphasis>]
 		</orderedlist>
 
 			<para>
-				The <literal>iterator</literal> of the <literal>EPStatement</literal> representing the <literal>on select</literal> clause returns the last batch of selected events in response to the last triggering event, or null if the last triggering event did not select any rows.
+				The <literal>iterator</literal> of the <literal>EPStatement</literal> object representing the <literal>on select</literal> clause returns the last batch of selected events in response to the last triggering event, or null if the last triggering event did not select any rows.
 			</para>
 
 			<para>
@@ -1997,6 +2005,171 @@ select win.* from OrdersNamedWindow as win]]></programlisting>
 				Here is a sample consuming statement of the MyOrderStream. The statement further filters the events provided by the <literal>on insert</literal> statement by user id and reports a total of volume per symbol:
 			</para>
 			<programlisting><![CDATA[select symbol, sum(volume) from MyOrderStream(userId='user1') group by symbol]]></programlisting>
+		</sect2>
+
+	</sect1>
+	
+	<sect1 id="variables_overview" revision="1">
+		<title>Variables</title>
+		
+		<indexterm><primary>variable</primary></indexterm>
+		<indexterm><primary>EQL</primary><secondary>variable</secondary></indexterm>
+
+		<para>
+			A <emphasis>variable</emphasis> is a scalar value that is available for use in all statements including patterns. Variables can be used in an expression anywhere in a statement as well as in the <literal>output</literal> clause for output rate limiting.
+		</para>
+			
+		<para>
+			Variables must first be declared or configured before use, by defining each variable's type and name. Variables can be created via the <literal>create variable</literal> syntax or declared by configuration. Variables can be assigned new values by using the <literal>on set</literal> syntax.
+		</para>
+			
+		<para>
+			 The engine guarantees consistency and atomicity of variable reads and writes on a statement-level (this is a soft guarantee, see below). Variables are optimized for fast read access and are also multithread-safe.
+		</para>		
+		
+		<sect2 id="variable_create" revision="1">
+			<title>Creating Variables: the <literal>Create Variable</literal> clause</title>
+
+			<para>
+				The <literal>create variable</literal> syntax creates a new variable by defining the variable type and name. In alternative to the syntax, variables can also be declared in the runtime and engine configuration options.
+			</para>
+
+			<para>
+				The synopsis for creating a variable is as follows: 
+			</para>
+			<synopsis>create variable <emphasis>variable_type</emphasis> <emphasis>variable_name</emphasis> [ = <emphasis>assignment_expression</emphasis> ]</synopsis>
+				
+			<para>
+				The <emphasis>variable_type</emphasis> can be any of the following:
+			</para>
+			<synopsis>variable_type
+	:  string
+	|  char 
+	|  character
+	|  bool 
+	|  boolean
+	|  byte
+	|  short 
+	|  int 
+	|  integer 
+	|  long 
+	|  double
+	|  float</synopsis>
+				
+			<para>
+				The <emphasis>variable_name</emphasis> is an identifier that names the variable. The variable name should not already be in use by another variable.
+			</para>
+				
+			<para>				
+				The <literal>assignment_expression</literal> is optional. Without an assignment expression the initial value for the variable is <literal>null</literal>. If present, it supplies the initial value for the variable.
+			</para>
+
+			<para>
+				The <literal>EPStatement</literal> object of the <literal>create variable</literal> statement provides access to variable values. The pull API methods <literal>iterator</literal> and <literal>safeIterator</literal> return the current variable value. Listeners to the 
+				<literal>create variable</literal> statement subscribe to changes in variable value: the engine posts new and old value of the variable to all listeners when the variable value is updated by an <literal>on set</literal> statement.
+			</para>
+
+			<para>
+				The example below creates a variable that provides a threshold value. The name of the variable is <literal>var_threshold</literal> and its type is <literal>long</literal>. The variable's initial value is <literal>null</literal> as no other value has been assigned:
+			</para>
+			<programlisting><![CDATA[create variable long var_threshold]]></programlisting>
+
+			<para>
+				This statement creates an integer-type variable named <literal>var_output_rate</literal> and initializes it to the value ten (10):
+			</para>
+			<programlisting><![CDATA[create variable integer var_output_rate = 10]]></programlisting>
+
+			<para>
+				In addition to creating a variable via the <literal>create variable</literal> syntax, the runtime and engine configuration API also allows adding variables. The next code snippet illustrates the
+				use of the runtime configuration API to create a string-typed variable:
+			</para>
+			<programlisting><![CDATA[epService.getEPAdministrator().getConfiguration()
+  .addVariable("myVar", String.class, "init value");]]></programlisting>
+
+		</sect2>
+
+		<sect2 id="variable_set" revision="1">
+			<title>Setting Variable Values: the <literal>On Set</literal> clause</title>
+
+			<para>
+				The <literal>on set</literal> statement assigns a new value to one or more variables when a triggering event arrives or a triggering pattern occurs.
+			</para>
+
+			<para>
+				The synopsis for setting variable values is: 
+			</para>
+			<synopsis>on <emphasis>event_type</emphasis>[<emphasis>(filter_criteria)</emphasis>] [as <emphasis>alias_name</emphasis>]
+  set <emphasis>variable_name</emphasis> = <emphasis>expression</emphasis> [, <emphasis>variable_name</emphasis> = <emphasis>expression</emphasis> [,...]]
+</synopsis>
+								
+			<para>
+				The <emphasis>event_type</emphasis> is the name or alias of the type of events that trigger the variable assignments. It is optionally followed by <emphasis>filter_criteria</emphasis> which are filter expressions to apply to arriving events. The optional <literal>as</literal> keyword can be used to assign an alias. Patterns can also be specified in the <literal>on</literal> clause.
+			</para>
+			
+			<para>
+				The comma-separated list of variable names and expressions set the value of one or more variables. All new variable values are applied atomically: the changes to variable values by the <literal>on set</literal> statement 
+				become visible to other statements all at the same time. No changes are visible to other processing threads until the <literal>on set</literal> statement completed processing, and at that time all changes become visible at once.
+			</para>
+
+			<para>
+				The <literal>EPStatement</literal> object provides access to variable values. The pull API methods <literal>iterator</literal> and <literal>safeIterator</literal> return the current variable values for each of the variables set by the statement. 
+				Listeners to the statement subscribe to changes in variable values: the engine posts new variable values of all variables to any listeners.
+			</para>
+
+			<para>
+				In the following example, a variable by name <literal>var_output_rate</literal> has been declared previously. When a NewOutputRateEvent event arrives, the variable is updated to a new value supplied by the event property 'rate':
+			</para>
+			<programlisting><![CDATA[on NewOutputRateEvent set var_output_rate = rate]]></programlisting>
+
+			<para>
+				The next example shows two variables that are updated when a ThresholdUpdateEvent arrives:
+			</para>
+			<programlisting><![CDATA[on ThresholdUpdateEvent as t 
+  set var_threshold_lower = t.lower,
+      var_threshold_higher = t.higher]]></programlisting>
+
+			<para>
+				The sample statement shown next counts the number of pattern matches using a variable. The pattern looks for OrderEvent events that are followed by CancelEvent events for the same order id within 10 seconds of the OrderEvent:
+			</para>
+			<programlisting><![CDATA[on pattern[every a=OrderEvent -> (CancelEvent(orderId=a.orderId) where timer:within(10 sec))]
+  set var_counter = var_counter + 1]]></programlisting>
+		</sect2>
+
+		<sect2 id="variable_using" revision="1">
+			<title>Using Variables</title>
+
+			<para>
+				A variable name can be used in any expression and can also occur in an output rate limiting clause. This section presents examples and discusses performance, consistency and atomicity attributes of variables.
+			</para>
+
+			<para>
+				The next statement assumes that a variable named 'var_threshold' was created to hold a total price threshold value. 
+				The statement outputs an event when the total price for a symbol is greater then the current threshold value:
+			</para>
+			<programlisting><![CDATA[select symbol, sum(price) from TickEvent 
+group by symbol 
+having sum(price) > var_threshold]]></programlisting>
+
+			<para>
+				In this example we use a variable to dynamically change the output rate on-the-fly. The variable 'var_output_rate' holds the current rate at which the statement posts a current count to listeners:
+			</para>
+			<programlisting><![CDATA[select count(*) from TickEvent output every var_output_rate seconds]]></programlisting>
+			
+			<para>
+				Variables are optimized towards high read frequency and lower write frequency. Variable reads do not incur locking overhead (99% of the time) while variable writes do incur locking overhead. 
+			</para>
+				
+			<para>
+				The engine softly guarantees consistency and atomicity of variables when your statement executes in response to an event or timer invocation. Variables acquire a stable value (implemented by versioning) when your statement starts executing in response to an event or timer invocation, and variables do not change value during execution. When one or more variable values are updated via <literal>on set</literal> statements, the changes to all updated variables become visible to statements as one unit and only when the <literal>on set</literal> statement completes successfully.
+			</para>
+
+			<para>
+				The atomicity and consistency guarantee is a soft guarantee. If any of your application statements, in response to an event or timer invocation, execute for a time interval longer then 15 seconds (default interval length), then the engine may use current variable values after 15 seconds passed, rather then then-current variable values at the time the statement started executing in response to an event or timer invocation.				
+			</para>
+
+			<para>
+				The length of the time interval that variable values are held stable for the duration of execution of a given statement is by default 15 seconds, but can be configured via engine default settings.
+			</para>
 		</sect2>
 
 	</sect1>

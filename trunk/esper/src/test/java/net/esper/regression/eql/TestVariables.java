@@ -24,8 +24,6 @@ public class TestVariables extends TestCase
     private SupportUpdateListener listener;
     private SupportUpdateListener listenerSet;
 
-    // TODO test output rate limiting
-
     public void setUp()
     {
         Configuration config = SupportConfigFactory.getConfiguration();

@@ -13,6 +13,7 @@ import net.esper.core.StatementContext;
 import net.esper.core.EPStatementHandleCallback;
 import net.esper.core.ExtensionServicesContext;
 import net.esper.util.ExecutionPathDebugLog;
+import net.esper.eql.variable.VariableReader;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -26,31 +27,41 @@ public final class OutputConditionTime implements OutputCondition
     private static final boolean DO_OUTPUT = true;
 	private static final boolean FORCE_UPDATE = true;
 
-    private final long msecIntervalSize;
+    private long msecIntervalSize;
     private final OutputCallback outputCallback;
     private final ScheduleSlot scheduleSlot;
 
     private Long currentReferencePoint;
     private StatementContext context;
     private boolean isCallbackScheduled;
+    private final VariableReader reader;
+    private EPStatementHandleCallback handle;
+    private boolean isMinutesUnit;
 
     /**
      * Constructor.
-     * @param secIntervalSize is the number of seconds to batch events for.
+     * @param intervalSize is the number of minutes or seconds to batch events for.
      * @param context is the view context for time scheduling
      * @param outputCallback is the callback to make once the condition is satisfied
+     * @param reader is for reading the variable value, if a variable was supplied, else null
+     * @param isMinutesUnit is true to indicate the unit is minutes, or false for the unit as seconds
      */
-    public OutputConditionTime(double secIntervalSize,
-    						   StatementContext context,
+    public OutputConditionTime(Double intervalSize,
+                               boolean isMinutesUnit,
+                               VariableReader reader,
+                               StatementContext context,
     						   OutputCallback outputCallback)
     {
 		if(outputCallback ==  null)
 		{
 			throw new NullPointerException("Output condition by count requires a non-null callback");
 		}
-        if (secIntervalSize < 0.1)
+        if (!isMinutesUnit)
         {
-            throw new IllegalArgumentException("Output condition by time requires a millisecond interval size of at least 100 msec");
+            if ((intervalSize < 0.1) && (reader == null))
+            {
+                throw new IllegalArgumentException("Output condition by time requires a millisecond interval size of at least 100 msec or a variable");
+            }
         }
         if (context == null)
         {
@@ -58,10 +69,22 @@ public final class OutputConditionTime implements OutputCondition
             throw new NullPointerException(message);
         }
 
-        this.msecIntervalSize = Math.round(1000 * secIntervalSize);
+        this.reader = reader;
         this.context = context;
         this.outputCallback = outputCallback;
         this.scheduleSlot = context.getScheduleBucket().allocateSlot();
+        this.isMinutesUnit = isMinutesUnit;
+
+        if (reader != null)
+        {
+            intervalSize = ((Number)reader.getValue()).doubleValue();
+        }
+        if (isMinutesUnit)
+        {
+            intervalSize = intervalSize * 60d;
+        }
+        this.msecIntervalSize = Math.round(1000 * intervalSize);
+
     }
 
     /**
@@ -87,6 +110,34 @@ public final class OutputConditionTime implements OutputCondition
         	currentReferencePoint = context.getSchedulingService().getTime();
         }
 
+        // If we pull the interval from a variable, then we may need to reschedule
+        if (reader != null)
+        {
+            Object value = reader.getValue();
+            if (value != null)
+            {
+                // Check if the variable changed
+                double intervalSize = ((Number)reader.getValue()).doubleValue();
+                if (isMinutesUnit)
+                {
+                    intervalSize = intervalSize * 60d;
+                }
+
+                long newMsecIntervalSize = Math.round(1000 * intervalSize);
+
+                // reschedule if the interval changed
+                if (newMsecIntervalSize != msecIntervalSize)
+                {
+                    if (isCallbackScheduled)
+                    {
+                        // reschedule
+                        context.getSchedulingService().remove(handle, scheduleSlot);
+                        scheduleCallback();
+                    }
+                }
+            }
+        }
+
         // Schedule the next callback if there is none currently scheduled
         if (!isCallbackScheduled)
         {
@@ -102,6 +153,22 @@ public final class OutputConditionTime implements OutputCondition
 
     private void scheduleCallback()
     {
+        // If we pull the interval from a variable, get the current interval length
+        if (reader != null)
+        {
+            Object value = reader.getValue();
+            if (value != null)
+            {
+                // Check if the variable changed
+                double intervalSize = ((Number)reader.getValue()).doubleValue();
+                if (isMinutesUnit)
+                {
+                    intervalSize = intervalSize * 60d;
+                }
+                msecIntervalSize = Math.round(1000 * intervalSize);
+            }
+        }
+
     	isCallbackScheduled = true;
         long current = context.getSchedulingService().getTime();
         long afterMSec = computeWaitMSec(current, this.currentReferencePoint, this.msecIntervalSize);
@@ -123,7 +190,7 @@ public final class OutputConditionTime implements OutputCondition
                 scheduleCallback();
             }
         };
-        EPStatementHandleCallback handle = new EPStatementHandleCallback(context.getEpStatementHandle(), callback);
+        handle = new EPStatementHandleCallback(context.getEpStatementHandle(), callback);
         context.getSchedulingService().add(afterMSec, handle, scheduleSlot);
     }
 

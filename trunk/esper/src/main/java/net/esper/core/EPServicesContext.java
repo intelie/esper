@@ -80,6 +80,7 @@ public final class EPServicesContext
      * @param filterService the filter service
      * @param streamFactoryService is hooking up filters to streams
      * @param namedWindowService is holding information about the named windows active in the system
+     * @param variableService provides access to variable values
      */
     public EPServicesContext(String engineURI,
                              SchedulingService schedulingService,
@@ -419,6 +420,10 @@ public final class EPServicesContext
         return namedWindowService;
     }
 
+    /**
+     * Returns the variable service.
+     * @return variable service
+     */
     public VariableService getVariableService()
     {
         return variableService;

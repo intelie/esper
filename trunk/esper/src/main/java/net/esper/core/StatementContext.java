@@ -61,6 +61,7 @@ public final class StatementContext
      * @param joinSetComposerFactory is the factory for creating service objects that compose join results
      * @param outputConditionFactory is the factory for output condition objects
      * @param namedWindowService is holding information about the named windows active in the system
+     * @param variableService provides access to variable values
      */
     public StatementContext(String engineURI,
                             String engineInstanceId,
@@ -276,6 +277,10 @@ public final class StatementContext
         return namedWindowService;
     }
 
+    /**
+     * Returns variable service.
+     * @return variable service
+     */
     public VariableService getVariableService()
     {
         return variableService;

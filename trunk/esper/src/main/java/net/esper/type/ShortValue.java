@@ -19,6 +19,11 @@ public final class ShortValue extends PrimitiveValueBase
         return PrimitiveValueType.SHORT;
     }
 
+    /**
+     * Parses a string value as a short.
+     * @param value to parse
+     * @return short value
+     */
     public final static short parseString(String value)
     {
         return Short.parseShort(value);

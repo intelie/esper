@@ -19,6 +19,11 @@ public final class ByteValue extends PrimitiveValueBase
         return PrimitiveValueType.BYTE;
     }
 
+    /**
+     * Parses a string value as a byte.
+     * @param value to parse
+     * @return byte value
+     */
     public static byte parseString(String value)
     {
         return Byte.parseByte(value);

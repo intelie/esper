@@ -340,6 +340,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
      * Start the given statement.
      * @param statementId is the statement id
      * @param desc is the cached statement info
+     * @param isNewStatement indicator whether the statement is new or a stop-restart statement
      */
     public void start(String statementId, EPStatementDesc desc, boolean isNewStatement)
     {

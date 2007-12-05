@@ -27,7 +27,7 @@ public class TestOutputConditionTime extends TestCase
     	
     	schedulingServiceStub = new SupportSchedulingServiceImpl();
     	context = SupportStatementContextFactory.makeContext(schedulingServiceStub);
-		condition = new OutputConditionTime(TEST_INTERVAL_MSEC / 1000d, context, callback);
+		condition = new OutputConditionTime(TEST_INTERVAL_MSEC / 1000d, false, null, context, callback);
     }
 
     public void testUpdateCondtion()
@@ -73,7 +73,7 @@ public class TestOutputConditionTime extends TestCase
     {
 	    try
 	    {
-	        condition = new OutputConditionTime(0.01, context, callback);
+	        condition = new OutputConditionTime(0.01, false, null, context, callback);
 	        fail();
 	    }
 	    catch (IllegalArgumentException ex)
@@ -82,7 +82,7 @@ public class TestOutputConditionTime extends TestCase
 	    }
 	    try
 	    {
-	    	condition = new OutputConditionTime(1, context, null);
+	    	condition = new OutputConditionTime(1d, false, null, context, null);
 	    	fail();
 	    }
 	    catch (NullPointerException ex)
@@ -91,7 +91,7 @@ public class TestOutputConditionTime extends TestCase
 	    }
 	    try
 	    {
-	    	condition = new OutputConditionTime(1, null, callback);
+	    	condition = new OutputConditionTime(1d, false, null, null, callback);
 	    	fail();
 	    }
 	    catch (NullPointerException ex)

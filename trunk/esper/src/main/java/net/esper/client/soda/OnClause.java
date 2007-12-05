@@ -30,8 +30,14 @@ public abstract class OnClause implements Serializable
     public static OnSelectClause createOnSelect(String windowName, String asNameAlias)
     {
         return OnSelectClause.create(windowName, asNameAlias);
-    }    
+    }
 
+    /**
+     * Creates an on-set clause for setting variable values.
+     * @param variableName is the name of the first variable to set, additional ones can be added to the clause itself
+     * @param expression is the assignment expression
+     * @return on-set clause
+     */
     public static OnSetClause createOnSet(String variableName, Expression expression)
     {
         return OnSetClause.create(variableName, expression);

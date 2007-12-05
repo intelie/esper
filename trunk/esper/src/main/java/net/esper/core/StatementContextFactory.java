@@ -19,6 +19,7 @@ public interface StatementContextFactory
      * @param optAdditionalContext addtional context to pass to the statement
      * @param optOnTriggerDesc the on-delete statement descriptor for named window context creation
      * @param optCreateWindowDesc the create-window statement descriptor for named window context creation
+     * @param hasVariables indicator whether the statement uses variables anywhere in the statement
      * @return statement context
      */
     public StatementContext makeContext(String statementId, 

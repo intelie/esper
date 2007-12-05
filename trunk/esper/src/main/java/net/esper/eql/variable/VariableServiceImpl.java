@@ -51,15 +51,33 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  * If the current version is higher (571, newer) then the threadlocal version, then go to the prior value.
  * Use the prior value until a version is found that as old or older then the threadlocal version.
  * <p>
- * If no version can be found that is old enough, output a warning and return the oldest version.
- * This should not happen, unless a thread is executing for very long with a statement such that
- * LOW_WATERMARK_VERSIONS versions passed before the thread asks for variable values.
+ * If no version can be found that is old enough, output a warning and return the newest version.
+ * This should not happen, unless a thread is executing for very long within a single statement such that
+ * lifetime-old-version time speriod passed before the thread asks for variable values.
+ * <p>
+ * As version numbers are counted up they may reach a boundary. Any write transaction after the boundary
+ * is reached performs a roll-over. In a roll-over, all variables version lists are
+ * newly created and any existing threads that read versions go against a (old) high-collection,
+ * while new threads reading the reset version go against a new low-collection.
  */
 public class VariableServiceImpl implements VariableService
 {
-    protected final static int ROLLOVER_READER_BOUNDARY = Integer.MAX_VALUE - 2048;
-    protected final static int ROLLOVER_WRITER_BOUNDARY = ROLLOVER_READER_BOUNDARY + 500;
+    /**
+     * Sets the boundary above which a reader considers the high-version list of variable values.
+     * For use in roll-over when the current version number overflows the ROLLOVER_WRITER_BOUNDARY.
+     */
+    protected final static int ROLLOVER_READER_BOUNDARY = Integer.MAX_VALUE - 100000;
 
+    /**
+     * Sets the boundary above which a write transaction rolls over all variable's
+     * version lists.
+     */
+    protected final static int ROLLOVER_WRITER_BOUNDARY = ROLLOVER_READER_BOUNDARY + 10000;
+
+    /**
+     * Applicable for each variable if more then the number of versions accumulated, check
+     * timestamps to determine if a version can be expired.
+     */
     protected final static int HIGH_WATERMARK_VERSIONS = 50;
 
     // Keep the variable list
@@ -84,11 +102,22 @@ public class VariableServiceImpl implements VariableService
     private transient int currentVersionNumber;
     private int currentVariableNumber;
 
+    /**
+     * Ctor.
+     * @param millisecondLifetimeOldVersions number of milliseconds a version may hang around before expiry
+     * @param timeProvider provides the current time
+     */
     public VariableServiceImpl(long millisecondLifetimeOldVersions, TimeProvider timeProvider)
     {
         this(0, millisecondLifetimeOldVersions, timeProvider);
     }
 
+    /**
+     * Ctor.
+     * @param startVersion the first version number to start from
+     * @param millisecondLifetimeOldVersions number of milliseconds a version may hang around before expiry
+     * @param timeProvider provides the current time
+     */
     protected VariableServiceImpl(int startVersion, long millisecondLifetimeOldVersions, TimeProvider timeProvider)
     {
         this.millisecondLifetimeOldVersions = millisecondLifetimeOldVersions;
@@ -103,11 +132,6 @@ public class VariableServiceImpl implements VariableService
     public void setLocalVersion()
     {
         versionThreadLocal.getCurrentThread().setVersion(currentVersionNumber);
-    }
-
-    public void unsetLocalVersion()
-    {
-        versionThreadLocal.getCurrentThread().setVersion(null);
     }
 
     public void registerCallback(int variableNumber, VariableChangeCallback variableChangeCallback)

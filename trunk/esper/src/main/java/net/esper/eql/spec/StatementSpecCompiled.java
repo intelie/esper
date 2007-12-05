@@ -48,6 +48,8 @@ public class StatementSpecCompiled
      * @param subSelectExpressions list of subqueries
      * @param onTriggerDesc describes on-delete statements
      * @param createWindowDesc describes create-window statements
+     * @param createVariableDesc describes create-variable statements
+     * @param hasVariables indicator whether the statement uses variables
      */
     public StatementSpecCompiled(OnTriggerDesc onTriggerDesc,
                                  CreateWindowDesc createWindowDesc,
@@ -91,6 +93,10 @@ public class StatementSpecCompiled
         return createWindowDesc;
     }
 
+    /**
+     * Returns the create-variable statement descriptor.
+     * @return create-variable spec
+     */
     public CreateVariableDesc getCreateVariableDesc()
     {
         return createVariableDesc;
@@ -212,6 +218,10 @@ public class StatementSpecCompiled
         return onTriggerDesc;
     }
 
+    /**
+     * Returns true to indicate the statement has vaiables.
+     * @return true for statements that use variables
+     */
     public boolean isHasVariables()
     {
         return hasVariables;

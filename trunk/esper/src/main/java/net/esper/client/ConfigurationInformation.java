@@ -93,5 +93,9 @@ public interface ConfigurationInformation
      */
     public ConfigurationEngineDefaults getEngineDefaults();
 
+    /**
+     * Returns the variables by name as key and type plus initialization value as value
+     * @return map of variable name and variable configuration
+     */
     public Map<String, ConfigurationVariable> getVariables();    
 }

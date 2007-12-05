@@ -63,6 +63,7 @@ public class NamedWindowProcessor
      * @param internalEventRouter for insert-into handling
      * @param optionalResultSetProcessor for select-clause processing
      * @param statementHandle is the handle to the statement, used for routing/insert-into
+     * @param joinExpr is the join expression or null if there is none
      * @return on trigger handling view
      */
     public NamedWindowOnExprBaseView addOnExpr(OnTriggerDesc onTriggerDesc, ExprNode joinExpr, EventType filterEventType, StatementStopService statementStopService, InternalEventRouter internalEventRouter, ResultSetProcessor optionalResultSetProcessor, EPStatementHandle statementHandle)

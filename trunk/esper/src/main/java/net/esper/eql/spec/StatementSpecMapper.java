@@ -2,6 +2,7 @@ package net.esper.eql.spec;
 
 import net.esper.client.EPException;
 import net.esper.client.soda.*;
+import net.esper.collection.Pair;
 import net.esper.eql.agg.AggregationSupport;
 import net.esper.eql.core.EngineImportException;
 import net.esper.eql.core.EngineImportService;
@@ -12,7 +13,6 @@ import net.esper.pattern.*;
 import net.esper.type.MathArithTypeEnum;
 import net.esper.type.MinMaxTypeEnum;
 import net.esper.type.RelationalOpEnum;
-import net.esper.collection.Pair;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +26,7 @@ public class StatementSpecMapper
      * Maps the SODA object model to a statement specification.
      * @param sodaStatement is the object model to map
      * @param engineImportService for resolving imports such as plug-in aggregations
+     * @param variableService provides variable values
      * @return statement specification, and internal representation of a statement
      */
     public static StatementSpecRaw map(EPStatementObjectModel sodaStatement, EngineImportService engineImportService, VariableService variableService)
@@ -52,7 +53,7 @@ public class StatementSpecMapper
         mapWhere(sodaStatement.getWhereClause(), raw, mapContext);
         mapGroupBy(sodaStatement.getGroupByClause(), raw, mapContext);
         mapHaving(sodaStatement.getHavingClause(), raw, mapContext);
-        mapOutputLimit(sodaStatement.getOutputLimitClause(), raw);
+        mapOutputLimit(sodaStatement.getOutputLimitClause(), raw, mapContext);
         mapOrderBy(sodaStatement.getOrderByClause(), raw, mapContext);
         return raw;
     }
@@ -158,24 +159,30 @@ public class StatementSpecMapper
         }
 
         OutputLimitSelector selector = OutputLimitSelector.ALL;
-        if (outputLimitSpec.isDisplayFirstOnly())
+        if (outputLimitSpec.getDisplayLimit() == OutputLimitLimitType.FIRST)
         {
             selector = OutputLimitSelector.FIRST;
         }
-        if (outputLimitSpec.isDisplayLastOnly())
+        if (outputLimitSpec.getDisplayLimit() == OutputLimitLimitType.LAST)
         {
             selector = OutputLimitSelector.LAST;
         }
+        if (outputLimitSpec.getDisplayLimit() == OutputLimitLimitType.SNAPSHOT)
+        {
+            selector = OutputLimitSelector.SNAPSHOT;
+        }
 
-        OutputLimitClause clause;
-        if (outputLimitSpec.isEventLimit())
+        OutputLimitUnit unit = OutputLimitUnit.EVENTS;
+        if (outputLimitSpec.getRateType() == OutputLimitRateType.TIME_MIN)
         {
-            clause = new OutputLimitClause(selector, outputLimitSpec.getEventRate(), OutputLimitUnit.EVENTS);
+            unit = OutputLimitUnit.MINUTES;
         }
-        else
+        if (outputLimitSpec.getRateType() == OutputLimitRateType.TIME_SEC)
         {
-            clause = new OutputLimitClause(selector, outputLimitSpec.getTimeRate(), OutputLimitUnit.SECONDS);
+            unit = OutputLimitUnit.SECONDS;
         }
+
+        OutputLimitClause clause = new OutputLimitClause(selector, outputLimitSpec.getRate(), outputLimitSpec.getVariableName(), unit);
         model.setOutputLimitClause(clause);
     }
 
@@ -193,22 +200,38 @@ public class StatementSpecMapper
         }
     }
 
-    private static void mapOutputLimit(OutputLimitClause outputLimitClause, StatementSpecRaw raw)
+    private static void mapOutputLimit(OutputLimitClause outputLimitClause, StatementSpecRaw raw, StatementSpecMapContext mapContext)
     {
         if (outputLimitClause == null)
         {
             return;
         }
-        OutputLimitSpec spec;
-        OutputLimitSpec.DisplayLimit displayLimit = OutputLimitSpec.DisplayLimit.valueOf(outputLimitClause.getSelector().toString().toUpperCase());
+
+        OutputLimitLimitType displayLimit = OutputLimitLimitType.valueOf(outputLimitClause.getSelector().toString().toUpperCase());
+
+        OutputLimitRateType rateType = OutputLimitRateType.TIME_SEC;
         if (outputLimitClause.getUnit() == OutputLimitUnit.EVENTS)
         {
-            spec = new OutputLimitSpec((int) outputLimitClause.getFrequency(), displayLimit);
+            rateType = OutputLimitRateType.EVENTS;
         }
-        else
+        else if (outputLimitClause.getUnit() == OutputLimitUnit.MINUTES)
         {
-            spec = new OutputLimitSpec(outputLimitClause.getFrequency(), displayLimit);
+            rateType = OutputLimitRateType.TIME_MIN;
         }
+        else if (outputLimitClause.getUnit() == OutputLimitUnit.SECONDS)
+        {
+            rateType = OutputLimitRateType.TIME_SEC;
+        }
+        
+        Double frequency = outputLimitClause.getFrequency();
+        String frequencyVariable = outputLimitClause.getFrequencyVariable();
+
+        if (frequencyVariable != null)
+        {
+            mapContext.setHasVariables(true);
+        }
+
+        OutputLimitSpec spec = new OutputLimitSpec(frequency, frequencyVariable, rateType, displayLimit);
         raw.setOutputLimitSpec(spec);
     }
 

@@ -26,6 +26,7 @@ public class EPStatementHandle implements MetaDefItem
      * @param statementId is the statement id uniquely indentifying the handle
      * @param statementLock is the statement resource lock
      * @param expressionText is the expression
+     * @param hasVariables indicator whether the statement uses variables
      */
     public EPStatementHandle(String statementId, ManagedLock statementLock, String expressionText, boolean hasVariables)
     {
@@ -74,6 +75,10 @@ public class EPStatementHandle implements MetaDefItem
         return statementLock;
     }
 
+    /**
+     * Returns true if the statement uses variables, false if not.
+     * @return indicator if variables are used by statement
+     */
     public boolean isHasVariables()
     {
         return hasVariables;

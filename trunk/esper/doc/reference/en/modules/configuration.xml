@@ -51,7 +51,7 @@ EPServiceProvider epService = EPServiceProviderManager.getProvider("sample", con
 
 		<indexterm><primary>configuration</primary><secondary>via XML</secondary></indexterm>
         <para>
-			An alternative approach to configuration is to specify a configuration in an XML file. 
+			An alternative approach to configuration is to specify a configuration in a XML file. 
         </para>
 
         <para>
@@ -198,7 +198,7 @@ config.addEventTypeAutoAlias("com.mycompany.order.event");]]></programlisting>
 				</para>
 
 				<para>
-					When configuring an engine instance from an XML configuration file, the XML snippet below demonstrates the use of the <literal>legacy-type</literal> element and the <literal>accessor-style</literal> attribute.
+					When configuring an engine instance from a XML configuration file, the XML snippet below demonstrates the use of the <literal>legacy-type</literal> element and the <literal>accessor-style</literal> attribute.
 				</para>
 
 				<programlisting><![CDATA[<event-type alias="MyLegacyEvent" class="com.mycompany.mypackage.MyLegacyEventClass">
@@ -447,7 +447,7 @@ configuration.addEventTypeAlias("MyMapEvent", properties);]]></programlisting>
 			</para>
 				
 			<para>
-				For XML documents that follow an XML schema, Esper can load and interrogate your schema and validate event property names and types against the schema information. 
+				For XML documents that follow a XML schema, Esper can load and interrogate your schema and validate event property names and types against the schema information. 
 			</para>
 
 			<para>
@@ -578,7 +578,7 @@ configuration.addEventTypeAlias("MyXMLNodeEvent", desc);]]></programlisting>
 				</para>
 
 				<para>
-					For example, consider the following statement against an event type that is represented by a XML DOM document, assuming the event type GetQuote has been configured with the engine as an XML DOM event type:
+					For example, consider the following statement against an event type that is represented by a XML DOM document, assuming the event type GetQuote has been configured with the engine as a XML DOM event type:
 				</para>
 				<programlisting><![CDATA[select request, request.symbol from GetQuote]]></programlisting>
 
@@ -652,12 +652,34 @@ select java.lang.Math.max(priceOne, priceTwo)</programlisting>
 			</itemizedlist>
 
 			<para>
-				In an XML configuration file the auto-import configuration may look as below. Note that all configuration options are available through the <literal>Configuration</literal> API as well.
+				In a XML configuration file the auto-import configuration may look as below. Note that all configuration options are available through the <literal>Configuration</literal> API as well.
 			</para>
 
-		<programlisting><![CDATA[<auto-import import-name="com.mycompany.mypackage.*"/>
-  <auto-import import-name="com.mycompany.myapp.MyUtilityClass"/>
-]]></programlisting>
+		<programlisting><![CDATA[
+<!-- Declare and initialize to null -->
+<variable name="var_product_name" type="string"/>
+
+<!-- Declare and initialize to a value -->
+<variable name="var_threshold" type="long" initialization-value="100"/>]]></programlisting>
+		</sect2>
+
+		<sect2 id="config-variables" revision="1">
+			<title>Variables</title>
+			
+			<para>
+				Variables can be created dynamically in EQL via the <literal>create variable</literal> syntax but can also be configured at runtime and at configuration time.
+			</para>
+			
+			<para>
+				A variable is declared by specifying a variable name, the variable type and an optional initialization value. The initialization value can be of the same or compatible type as the variable type, or can also be a String value that, when parsed, is compatible to the type declared for the variable.
+			</para>
+
+			<para>
+				In a XML configuration file the variable configuration may look as below. The <literal>Configuration</literal> API can also be used to configure variables.
+			</para>
+
+		<programlisting><![CDATA[<variable name="var_threshold" type="long" initialization-value="100"/>
+<variable name="var_key" type="string"/>]]></programlisting>
 
 		</sect2>
 
@@ -1078,6 +1100,35 @@ config.getEngineDefaults().getLogging().setEnableExecutionDebug(true);]]></progr
 				<para>
 					Note: this is a configuration option that applies to all engine instances of a given Java module or VM.
 				</para>
+			</sect3>
+		</sect2>
+
+		<sect2 id="config-engine-variables" revision="1">
+			<title>Engine Settings related to Variables</title>
+			
+			<sect3 id="config-engine-variables-lifetimeold" revision="1">
+				<title>Variable Version Release Interval</title>
+
+				<para>
+				   This setting controls the length of time that the engine retains variable versions for use by statements that use variables and that execute, within the same statement for the same event, longer then the time interval.
+				   By default, the engine retains 15 seconds of variable versions.
+				</para>
+
+				<para>
+				   For statements that use variables and that execute (in response to a single timer or other event) longer then the time period, the engine returns the current variable version at the time the statement executes, thereby softening the guarantee of consistency of variable values within the long-running statement. Please see <xref linkend="variable_using"/> for more information.
+				</para>
+
+				<para>
+					The XML configuration for this setting is shown below:
+				</para>
+					<programlisting><![CDATA[<engine-settings>
+  <defaults>
+    <variables>
+      <msec-version-release value="15000"/>
+    </variables>
+  </defaults>
+</engine-settings>]]></programlisting>
+
 			</sect3>
 		</sect2>
 

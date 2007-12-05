@@ -137,6 +137,28 @@ public class JavaClassHelper
     }
 
     /**
+      * Determines if the class passed in is one of the numeric classes and not a floating point.
+      * @param clazz to check
+      * @return true if numeric and not a floating point, false if not
+      */
+     public static boolean isNumericNonFP(Class clazz)
+     {
+         if ((clazz == Short.class) ||
+             (clazz == short.class) ||
+             (clazz == Integer.class) ||
+             (clazz == int.class) ||
+             (clazz == Long.class) ||
+             (clazz == long.class) ||
+             (clazz == Byte.class) ||
+             (clazz == byte.class))
+         {
+             return true;
+         }
+
+         return false;
+     }
+
+    /**
      * Returns true if 2 classes are assignment compatible.
      * @param parameterType type to assign from
      * @param parameterization type to assign to
@@ -622,6 +644,7 @@ public class JavaClassHelper
      * Recognizes "int" as Integer.class and "strIng" as String.class, and "Integer" as Integer.class, and so on. 
      * @param className is the name to recognize
      * @return class
+     * @throws EventAdapterException is throw if the class cannot be identified
      */
     public static Class getClassForSimpleName(String className)
             throws EventAdapterException
@@ -649,19 +672,25 @@ public class JavaClassHelper
         }
 
         // use the boxed type for primitives
-        String boxedClassName = JavaClassHelper.getBoxedClassName(className.toLowerCase().trim());
+        String boxedClassName = JavaClassHelper.getBoxedClassName(className.trim());
 
-        Class clazz;
         try
         {
-            clazz = Class.forName(boxedClassName);
+            return Class.forName(boxedClassName);
+        }
+        catch (ClassNotFoundException ex)
+        {
+        }
+
+        boxedClassName = JavaClassHelper.getBoxedClassName(className.toLowerCase().trim());
+        try
+        {
+            return Class.forName(boxedClassName);
         }
         catch (ClassNotFoundException ex)
         {
             throw new EventAdapterException("Unable to load class '" + boxedClassName + "', class not found", ex);
         }
-
-        return clazz;
     }
 
     /**
@@ -713,6 +742,7 @@ public class JavaClassHelper
 
     /**
      * Parse the String using the given Java built-in class for parsing.
+     * @param clazz is the class to parse the value to
      * @param text is the text to parse
      * @return value matching the type passed in
      */

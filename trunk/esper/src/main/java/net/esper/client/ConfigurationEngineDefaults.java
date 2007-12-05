@@ -68,6 +68,10 @@ public class ConfigurationEngineDefaults implements Serializable
         return logging;
     }
 
+    /**
+     * Returns engine defaults applicable to variables.
+     * @return variable engine defaults
+     */
     public Variables getVariables()
     {
         return variables;

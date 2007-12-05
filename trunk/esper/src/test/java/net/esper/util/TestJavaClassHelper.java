@@ -92,6 +92,26 @@ public class TestJavaClassHelper extends TestCase
         }
     }
 
+    public void testIsNumericNonFP()
+    {
+        final Class[] numericClasses = {
+            byte.class, Byte.class, short.class, Short.class, int.class, Integer.class,
+            long.class, Long.class };
+
+        final Class[] nonnumericClasses = {
+            float.class, Float.class, double.class, Double.class, String.class, boolean.class, Boolean.class, TestCase.class };
+
+        for (Class clazz : numericClasses)
+        {
+            assertTrue(JavaClassHelper.isNumericNonFP(clazz));
+        }
+
+        for (Class clazz : nonnumericClasses)
+        {
+            assertFalse(JavaClassHelper.isNumericNonFP(clazz));
+        }
+    }
+
     public void testGetBoxed()
     {
         final Class[] primitiveClasses = {
@@ -285,9 +305,9 @@ public class TestJavaClassHelper extends TestCase
     public void testClassForSimpleName() throws Exception
     {
         Object[][] tests = new Object[][] {
+                {"Boolean", Boolean.class},
                 {"Bool", Boolean.class},
                 {"boolean", Boolean.class},
-                {"Boolean", Boolean.class},
                 {"int", Integer.class},
                 {"inTeger", Integer.class},
                 {"long", Long.class},

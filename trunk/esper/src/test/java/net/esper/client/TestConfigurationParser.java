@@ -40,7 +40,7 @@ public class TestConfigurationParser extends TestCase
 
         assertFalse(config.getEngineDefaults().getLogging().isEnableExecutionDebug());
 
-        assertEquals(60000, config.getEngineDefaults().getVariables().getMsecVersionRelease());
+        assertEquals(15000, config.getEngineDefaults().getVariables().getMsecVersionRelease());
     }
 
     protected static void assertFileConfig(Configuration config)

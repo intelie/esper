@@ -8,7 +8,7 @@
 package net.esper.eql.view;
 
 import net.esper.eql.spec.OutputLimitSpec;
-import net.esper.eql.spec.OutputLimitSpec.DisplayLimit;
+import net.esper.eql.spec.OutputLimitLimitType;
 import net.esper.core.StatementContext;
 
 /**
@@ -34,7 +34,7 @@ public class OutputConditionFirst implements OutputCondition
 			throw new NullPointerException("Output condition by count requires a non-null callback");
 		}
 		this.outputCallback = outputCallback;
-		OutputLimitSpec innerSpec = createInnerSpec(outputLimitSpec);
+		OutputLimitSpec innerSpec = new OutputLimitSpec(outputLimitSpec.getRate(), outputLimitSpec.getVariableName(), outputLimitSpec.getRateType(), OutputLimitLimitType.ALL);
 		OutputCallback localCallback = createCallbackToLocal();
 		this.innerCondition = statementContext.getOutputConditionFactory().createCondition(innerSpec, statementContext, localCallback);
 		this.witnessedFirst = false;
@@ -50,18 +50,6 @@ public class OutputConditionFirst implements OutputCondition
 			outputCallback.continueOutputProcessing(doOutput, forceUpdate);
 		}
 		innerCondition.updateOutputCondition(newEventsCount, oldEventsCount);
-	}
-
-	private static OutputLimitSpec createInnerSpec(OutputLimitSpec outputLimitSpec)
-	{
-		if(outputLimitSpec.isEventLimit())
-		{
-			return new OutputLimitSpec(outputLimitSpec.getEventRate(), DisplayLimit.ALL);
-		}
-		else
-		{
-			return new OutputLimitSpec(outputLimitSpec.getTimeRate(), DisplayLimit.ALL);
-		}
 	}
 
 	private OutputCallback createCallbackToLocal()

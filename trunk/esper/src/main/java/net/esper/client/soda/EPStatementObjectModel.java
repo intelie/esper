@@ -364,11 +364,19 @@ public class EPStatementObjectModel implements Serializable
         this.onExpr = onExpr;
     }
 
+    /**
+     * Returns the create-variable clause if this is a statement creating a variable, or null if not.
+     * @return create-variable clause
+     */
     public CreateVariableClause getCreateVariable()
     {
         return createVariable;
     }
 
+    /**
+     * Sets the create-variable clause if this is a statement creating a variable, or null if not.
+     * @param createVariable create-variable clause
+     */
     public void setCreateVariable(CreateVariableClause createVariable)
     {
         this.createVariable = createVariable;

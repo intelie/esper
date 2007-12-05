@@ -118,5 +118,13 @@ public interface ConfigurationOperations
     public void addEventTypeAlias(String eventTypeAlias, ConfigurationEventTypeXMLDOM xmlDOMEventTypeDesc)
             throws ConfigurationException;
 
+    /**
+     * Add a variable.
+     * @param variableName name of the variable to add
+     * @param type the type of the variable must be a primitive or boxed Java-builtin scalar type.
+     * @param initializationValue is the first assigned value
+     * @throws ConfigurationException if the type and initialization value don't match or the variable name
+     * is already in use
+     */
     public void addVariable(String variableName, Class type, Object initializationValue) throws ConfigurationException;
 }

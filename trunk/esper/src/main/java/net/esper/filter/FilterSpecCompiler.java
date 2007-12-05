@@ -46,6 +46,7 @@ public final class FilterSpecCompiler
      * @param streamTypeService is used to set rules for resolving properties
      * @param methodResolutionService resolved imports for static methods and such
      * @param timeProvider - provides engine current time
+     * @param variableService - provides access to variables
      * @return compiled filter specification
      * @throws ExprValidationException if the expression or type validations failed
      */
@@ -97,6 +98,7 @@ public final class FilterSpecCompiler
      * @param streamTypeService is provding type information for each stream
      * @param methodResolutionService for resolving functions
      * @param timeProvider for providing current time
+     * @param variableService provides access to variables
      * @return list of validated expression nodes
      * @throws ExprValidationException for validation errors
      */

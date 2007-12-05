@@ -13,19 +13,24 @@ package net.esper.client.soda;
 public enum OutputLimitSelector
 {
     /**
-     * Output first event.
+     * Output first event of last interval.
      */
     FIRST ("first"),
 
     /**
-     * Output last event.
+     * Output last event of last interval.
      */
     LAST ("last"),
 
     /**
-     * Output all events.
+     * Output all events of last interval.
      */
-    ALL ("all");
+    ALL ("all"),
+
+    /**
+     * Output all events as a snapshot considering the current state regardless of interval.
+     */
+    SNAPSHOT ("snapshot");
 
     private String text;
 
