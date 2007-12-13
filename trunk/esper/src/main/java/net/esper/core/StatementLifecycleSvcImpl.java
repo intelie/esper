@@ -2,7 +2,6 @@ package net.esper.core;
 
 import net.esper.client.*;
 import net.esper.collection.Pair;
-import net.esper.collection.RefCountedMap;
 import net.esper.eql.core.StreamTypeService;
 import net.esper.eql.core.StreamTypeServiceImpl;
 import net.esper.eql.expression.ExprNode;
@@ -18,8 +17,6 @@ import net.esper.filter.FilterSpecParam;
 import net.esper.pattern.EvalFilterNode;
 import net.esper.pattern.EvalNode;
 import net.esper.pattern.EvalNodeAnalysisResult;
-import net.esper.util.ManagedLock;
-import net.esper.util.ManagedLockImpl;
 import net.esper.util.ManagedReadWriteLock;
 import net.esper.util.UuidGenerator;
 import net.esper.view.ViewProcessingException;
@@ -55,7 +52,6 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
     private final ManagedReadWriteLock eventProcessingRWLock;
 
     private final Map<String, String> stmtNameToIdMap;
-    private final RefCountedMap<String, ManagedLock> insertIntoStreams;
 
     public void destroy()
     {
@@ -83,7 +79,6 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
         this.stmtIdToDescMap = new HashMap<String, EPStatementDesc>();
         this.stmtNameToStmtMap = new HashMap<String, EPStatement>();
         this.stmtNameToIdMap = new HashMap<String, String>();
-        this.insertIntoStreams = new RefCountedMap<String, ManagedLock>();
     }
 
     public synchronized EPStatement createAndStart(StatementSpecRaw statementSpec, String expression, boolean isPattern, String optStatementName)
@@ -170,17 +165,11 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
         if (statementSpec.getInsertIntoDesc() != null)
         {
             String insertIntoStreamName = statementSpec.getInsertIntoDesc().getEventTypeAlias();
-            ManagedLock insertIntoStreamLock = insertIntoStreams.get(insertIntoStreamName);
-            if (insertIntoStreamLock == null)
-            {
-                insertIntoStreamLock = new ManagedLockImpl("insert_stream_" + insertIntoStreamName);
-                insertIntoStreams.put(insertIntoStreamName, insertIntoStreamLock);
-            }
-            else
-            {
-                insertIntoStreams.reference(insertIntoStreamName);
-            }
-            statementContext.getEpStatementHandle().setRoutedInsertStreamLock(insertIntoStreamLock);
+            String latchFactoryName = "insert_stream_" + insertIntoStreamName + "_" + statementId;
+            long msecTimeout = services.getEngineSettingsService().getEngineSettings().getThreading().getInsertIntoDispatchTimeout();
+            ConfigurationEngineDefaults.Threading.Locking locking = services.getEngineSettingsService().getEngineSettings().getThreading().getInsertIntoDispatchLocking();
+            InsertIntoLatchFactory latchFactory = new InsertIntoLatchFactory(latchFactoryName, msecTimeout, locking);
+            statementContext.getEpStatementHandle().setInsertIntoLatchFactory(latchFactory);
         }
 
         // In a join statements if the same event type or it's deep super types are used in the join more then once,
@@ -193,11 +182,12 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
         {
             // create statement - may fail for parser and simple validation errors
             boolean preserveDispatchOrder = services.getEngineSettingsService().getEngineSettings().getThreading().isListenerDispatchPreserveOrder();
+            boolean isSpinLocks = services.getEngineSettingsService().getEngineSettings().getThreading().getListenerDispatchLocking() == ConfigurationEngineDefaults.Threading.Locking.SPIN;
             long blockingTimeout = services.getEngineSettingsService().getEngineSettings().getThreading().getListenerDispatchTimeout();
             long timeLastStateChange = services.getSchedulingService().getTime();
             EPStatementSPI statement = new EPStatementImpl(epServiceProvider, statementId, statementName, expression, isPattern,
-                    services.getDispatchService(), this, timeLastStateChange, preserveDispatchOrder, blockingTimeout,
-                    statementContext.getEpStatementHandle().getStatementLock(), statementContext.getVariableService());
+                    services.getDispatchService(), this, timeLastStateChange, preserveDispatchOrder, isSpinLocks, blockingTimeout,
+                    statementContext.getEpStatementHandle(), statementContext.getVariableService());
 
             // create start method
             startMethod = new EPStatementStartMethod(compiledSpec, services, statementContext);
@@ -483,14 +473,6 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
             stmtNameToStmtMap.remove(statement.getName());
             stmtNameToIdMap.remove(statement.getName());
             stmtIdToDescMap.remove(statementId);
-
-            // For insert-into streams, create a lock taken out as soon as an event is inserted
-            // Makes the processing between chained statements more predictable.
-            String insertIntoStreamName = desc.getOptInsertIntoStream();
-            if (insertIntoStreamName != null)
-            {
-                insertIntoStreams.dereference(insertIntoStreamName);
-            }            
         }
         catch (RuntimeException ex)
         {

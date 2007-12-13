@@ -71,7 +71,7 @@ public class EPServicesContextFactoryDefault implements EPServicesContextFactory
         }
         TimerService timerService = new TimerServiceImpl(msecTimerResolution);
 
-        VariableService variableService = new VariableServiceImpl(configSnapshot.getEngineDefaults().getVariables().getMsecVersionRelease(), schedulingService);
+        VariableService variableService = new VariableServiceImpl(configSnapshot.getEngineDefaults().getVariables().getMsecVersionRelease(), schedulingService, null);
         initVariables(variableService, configSnapshot.getVariables());
 
         StatementLockFactory statementLockFactory = new StatementLockFactoryImpl();
@@ -92,13 +92,13 @@ public class EPServicesContextFactoryDefault implements EPServicesContextFactory
         return services;
     }
 
-    private void initVariables(VariableService variableService, Map<String, ConfigurationVariable> variables)
+    protected static void initVariables(VariableService variableService, Map<String, ConfigurationVariable> variables)
     {
         for (Map.Entry<String, ConfigurationVariable> entry : variables.entrySet())
         {
             try
             {
-                variableService.createNewVariable(entry.getKey(), entry.getValue().getType(), entry.getValue().getInitializationValue());
+                variableService.createNewVariable(entry.getKey(), entry.getValue().getType(), entry.getValue().getInitializationValue(), null);
             }
             catch (VariableExistsException e)
             {
@@ -191,7 +191,8 @@ public class EPServicesContextFactoryDefault implements EPServicesContextFactory
      */
     protected static EngineImportService makeEngineImportService(ConfigurationInformation configSnapshot)
     {
-        EngineImportService engineImportService = new EngineImportServiceImpl();
+        EngineImportServiceImpl engineImportService = new EngineImportServiceImpl();
+        engineImportService.addMethodRefs(configSnapshot.getMethodInvocationReferences());
 
         // Add auto-imports
         try

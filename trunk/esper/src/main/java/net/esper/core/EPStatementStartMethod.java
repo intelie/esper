@@ -1,36 +1,39 @@
 package net.esper.core;
 
 import net.esper.client.EPStatementException;
-import net.esper.collection.Pair;
 import net.esper.collection.FlushedEventBuffer;
+import net.esper.collection.Pair;
 import net.esper.collection.UniformPair;
 import net.esper.eql.core.*;
-import net.esper.eql.db.PollingViewableFactory;
+import net.esper.eql.db.DatabasePollingViewableFactory;
 import net.esper.eql.expression.*;
 import net.esper.eql.join.*;
-import net.esper.eql.join.table.PropertyIndexedEventTable;
-import net.esper.eql.join.table.UnindexedEventTable;
+import net.esper.eql.join.plan.FilterExprAnalyzer;
+import net.esper.eql.join.plan.QueryGraph;
 import net.esper.eql.join.table.EventTable;
 import net.esper.eql.join.table.PropertyIndTableCoerceAdd;
-import net.esper.eql.join.plan.QueryGraph;
-import net.esper.eql.join.plan.FilterExprAnalyzer;
-import net.esper.eql.spec.*;
-import net.esper.eql.view.*;
+import net.esper.eql.join.table.PropertyIndexedEventTable;
+import net.esper.eql.join.table.UnindexedEventTable;
 import net.esper.eql.lookup.*;
 import net.esper.eql.named.*;
+import net.esper.eql.spec.*;
+import net.esper.eql.variable.CreateVariableView;
 import net.esper.eql.variable.OnSetVariableView;
 import net.esper.eql.variable.VariableDeclarationException;
-import net.esper.eql.variable.CreateVariableView;
 import net.esper.eql.variable.VariableExistsException;
+import net.esper.eql.view.*;
 import net.esper.event.EventBean;
 import net.esper.event.EventType;
-import net.esper.pattern.*;
-import net.esper.util.StopCallback;
+import net.esper.pattern.EvalRootNode;
+import net.esper.pattern.PatternContext;
+import net.esper.pattern.PatternMatchCallback;
+import net.esper.pattern.PatternStopCallback;
 import net.esper.util.JavaClassHelper;
 import net.esper.util.ManagedLock;
+import net.esper.util.StopCallback;
 import net.esper.view.*;
-import net.esper.view.internal.BufferView;
 import net.esper.view.internal.BufferObserver;
+import net.esper.view.internal.BufferView;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -328,7 +331,7 @@ public class EPStatementStartMethod
         // Create variable
         try
         {
-            services.getVariableService().createNewVariable(createDesc.getVariableName(), type, value);
+            services.getVariableService().createNewVariable(createDesc.getVariableName(), type, value, statementContext.getExtensionServicesContext());
         }
         catch (VariableExistsException ex)
         {
@@ -432,7 +435,21 @@ public class EPStatementStartMethod
                 }
 
                 DBStatementStreamSpec sqlStreamSpec = (DBStatementStreamSpec) streamSpec;
-                HistoricalEventViewable historicalEventViewable = PollingViewableFactory.createDBStatementView(i, sqlStreamSpec, services.getDatabaseRefService(), services.getEventAdapterService(), statementContext.getEpStatementHandle());
+                HistoricalEventViewable historicalEventViewable = DatabasePollingViewableFactory.createDBStatementView(i, sqlStreamSpec, services.getDatabaseRefService(), services.getEventAdapterService(), statementContext.getEpStatementHandle());
+                unmaterializedViewChain[i] = new ViewFactoryChain(historicalEventViewable.getEventType(), new LinkedList<ViewFactory>());
+                eventStreamParentViewable[i] = historicalEventViewable;
+                stopCallbacks.add(historicalEventViewable);
+            }
+            else if (streamSpec instanceof MethodStreamSpec)
+            {
+                if (!streamSpec.getViewSpecs().isEmpty())
+                {
+                    throw new ExprValidationException("Method data joins do not allow views onto the data, view '"
+                            + streamSpec.getViewSpecs().get(0).getObjectNamespace() + ':' + streamSpec.getViewSpecs().get(0).getObjectName() + "' is not valid in this context");
+                }
+
+                MethodStreamSpec methodStreamSpec = (MethodStreamSpec) streamSpec;
+                HistoricalEventViewable historicalEventViewable = MethodPollingViewableFactory.createPollMethodView(i, methodStreamSpec, services.getEventAdapterService(), statementContext.getEpStatementHandle(), statementContext.getMethodResolutionService(), services.getEngineImportService(), services.getSchedulingService(), statementContext.getScheduleBucket());
                 unmaterializedViewChain[i] = new ViewFactoryChain(historicalEventViewable.getEventType(), new LinkedList<ViewFactory>());
                 eventStreamParentViewable[i] = historicalEventViewable;
                 stopCallbacks.add(historicalEventViewable);
@@ -511,7 +528,10 @@ public class EPStatementStartMethod
             if (viewable instanceof ValidatedView)
             {
                 ValidatedView validatedView = (ValidatedView) viewable;
-                validatedView.validate(typeService);
+                validatedView.validate(typeService,
+                        statementContext.getMethodResolutionService(),
+                        statementContext.getSchedulingService(),
+                        statementContext.getVariableService());
             }
         }
 

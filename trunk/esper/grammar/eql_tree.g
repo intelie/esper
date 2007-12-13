@@ -135,7 +135,7 @@ outerJoinIdent
 	;
 
 streamExpression
-	:	#(v:STREAM_EXPR (eventFilterExpr | patternInclusionExpression | databaseJoinExpression) (viewListExpr)? (IDENT)? { leaveNode(#v); } )
+	:	#(v:STREAM_EXPR (eventFilterExpr | patternInclusionExpression | databaseJoinExpression | methodJoinExpression) (viewListExpr)? (IDENT)? { leaveNode(#v); } )
 	;
 
 patternInclusionExpression
@@ -146,6 +146,10 @@ databaseJoinExpression
 	:	#(d:DATABASE_JOIN_EXPR IDENT (STRING_LITERAL | QUOTED_STRING_LITERAL) (STRING_LITERAL | QUOTED_STRING_LITERAL)?)
 	;
 	
+methodJoinExpression
+	:	#(d:METHOD_JOIN_EXPR IDENT CLASS_IDENT (valueExpr)*)
+	;
+
 viewListExpr
 	:	viewExpr (viewExpr)*
 	;

@@ -16,7 +16,7 @@ public class TestPropertyResolution extends TestCase
 
     public void testWriteOnly()
     {
-        epService = EPServiceProviderManager.getDefaultProvider();
+        epService = EPServiceProviderManager.getDefaultProvider(SupportConfigFactory.getConfiguration());
         epService.initialize();
 
         EPStatement stmt = epService.getEPAdministrator().createEQL("select * from " + SupportBeanWriteOnly.class.getName());
@@ -30,7 +30,7 @@ public class TestPropertyResolution extends TestCase
 
     public void testCaseSensitive()
     {
-        epService = EPServiceProviderManager.getDefaultProvider();
+        epService = EPServiceProviderManager.getDefaultProvider(SupportConfigFactory.getConfiguration());
         epService.initialize();
 
         EPStatement stmt = epService.getEPAdministrator().createEQL("select MYPROPERTY, myproperty, myProperty from " + SupportBeanDupProperty.class.getName());

@@ -34,10 +34,26 @@ public class TestFilterExpressions extends TestCase
         assertEquals(1, listener.assertOneGetNewAndReset().get("event1.id"));
 
         String stmtTwoText = "every event1=SupportEvent(userId in ('100','101'))";
-        statement = epService.getEPAdministrator().createPattern(stmtTwoText);
+        epService.getEPAdministrator().createPattern(stmtTwoText);
 
         epService.getEPRuntime().sendEvent(new SupportTradeEvent(2, "100", 1001));
         assertEquals(2, listener.assertOneGetNewAndReset().get("event1.id"));
+    }
+
+    public void testConstant()
+    {
+        String text = "select * from pattern [" +
+            SupportBean.class.getName() + "(intPrimitive=" + ISupportA.class.getName() + ".VALUE_1)]";
+        EPStatement stmt = epService.getEPAdministrator().createEQL(text);
+        stmt.addListener(listener);
+
+        SupportBean event = new SupportBean("e1", 2);
+        epService.getEPRuntime().sendEvent(event);
+        assertFalse(listener.getAndClearIsInvoked());
+
+        event = new SupportBean("e1", 1);
+        epService.getEPRuntime().sendEvent(event);
+        assertTrue(listener.isInvoked());
     }
 
     public void testEnumSyntaxOne()
@@ -47,9 +63,44 @@ public class TestFilterExpressions extends TestCase
         EPStatement stmt = epService.getEPAdministrator().createEQL(text);
         stmt.addListener(listener);
 
-        SupportBeanWithEnum event = new SupportBeanWithEnum("e1", SupportEnum.ENUM_VALUE_1);
+        SupportBeanWithEnum event = new SupportBeanWithEnum("e1", SupportEnum.ENUM_VALUE_2);
+        epService.getEPRuntime().sendEvent(event);
+        assertFalse(listener.getAndClearIsInvoked());
+
+        event = new SupportBeanWithEnum("e1", SupportEnum.ENUM_VALUE_1);
         epService.getEPRuntime().sendEvent(event);
         assertTrue(listener.isInvoked());
+    }
+
+    public void testEnumSyntaxTwo()
+    {
+        String text = "select * from pattern [" +
+            SupportBeanWithEnum.class.getName() + "(supportEnum=" + SupportEnum.class.getName() + ".ENUM_VALUE_2)]";
+        EPStatement stmt = epService.getEPAdministrator().createEQL(text);
+        stmt.addListener(listener);
+
+        SupportBeanWithEnum event = new SupportBeanWithEnum("e1", SupportEnum.ENUM_VALUE_2);
+        epService.getEPRuntime().sendEvent(event);
+        assertTrue(listener.getAndClearIsInvoked());
+
+        event = new SupportBeanWithEnum("e2", SupportEnum.ENUM_VALUE_1);
+        epService.getEPRuntime().sendEvent(event);
+        assertFalse(listener.isInvoked());
+
+        stmt.destroy();
+
+        // test where clause
+        text = "select * from " + SupportBeanWithEnum.class.getName() + " where supportEnum=" + SupportEnum.class.getName() + ".ENUM_VALUE_2";
+        stmt = epService.getEPAdministrator().createEQL(text);
+        stmt.addListener(listener);
+
+        event = new SupportBeanWithEnum("e1", SupportEnum.ENUM_VALUE_2);
+        epService.getEPRuntime().sendEvent(event);
+        assertTrue(listener.getAndClearIsInvoked());
+
+        event = new SupportBeanWithEnum("e2", SupportEnum.ENUM_VALUE_1);
+        epService.getEPRuntime().sendEvent(event);
+        assertFalse(listener.isInvoked());
     }
 
     public void testNotEqualsNotIn()
@@ -637,6 +688,12 @@ public class TestFilterExpressions extends TestCase
 
         tryInvalid("select * from " + SupportBean.class.getName() + "(5 - 10)",
                 "Filter expression not returning a boolean value: '(5-10)' [select * from net.esper.support.bean.SupportBean(5 - 10)]");
+
+        tryInvalid("select * from " + SupportBeanWithEnum.class.getName() + "(string=" + SupportEnum.class.getName() + ".ENUM_VALUE_1)",
+                "Implicit conversion from datatype 'SupportEnum' to 'String' is not allowed [select * from net.esper.support.bean.SupportBeanWithEnum(string=net.esper.support.bean.SupportEnum.ENUM_VALUE_1)]");
+
+        tryInvalid("select * from " + SupportBeanWithEnum.class.getName() + "(supportEnum=A.b)",
+                "Failed to resolve property 'A.b' to a stream or nested property in a stream [select * from net.esper.support.bean.SupportBeanWithEnum(supportEnum=A.b)]");
 
         tryInvalid("select * from pattern [a=" + SupportBean.class.getName() + " -> b=" +
                 SupportBean.class.getName() + "(doubleBoxed not in (doubleBoxed, x.intBoxed, 9))]",

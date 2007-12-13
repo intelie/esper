@@ -1,10 +1,10 @@
 package net.esper.core;
 
+import net.esper.client.EPServiceProvider;
+import net.esper.client.EPStatement;
 import net.esper.dispatch.DispatchService;
 import net.esper.event.EventBean;
 import net.esper.view.ViewSupport;
-import net.esper.client.EPStatement;
-import net.esper.client.EPServiceProvider;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -12,9 +12,9 @@ import org.apache.commons.logging.LogFactory;
  * Convenience view for dispatching view updates received from a parent view to update listeners
  * via the dispatch service.
  */
-public class UpdateDispatchViewBlocking extends UpdateDispatchViewBase
+public class UpdateDispatchViewBlockingSpin extends UpdateDispatchViewBase
 {
-    private DispatchFuture currentFuture;
+    private UpdateDispatchFutureSpin currentFutureSpin;
     private long msecTimeout;
 
     /**
@@ -25,10 +25,10 @@ public class UpdateDispatchViewBlocking extends UpdateDispatchViewBase
      * @param dispatchService - for performing the dispatch
      * @param msecTimeout - timeout for preserving dispatch order through blocking
      */
-    public UpdateDispatchViewBlocking(EPServiceProvider epServiceProvider, EPStatement statement, EPStatementListenerSet updateListeners, DispatchService dispatchService, long msecTimeout)
+    public UpdateDispatchViewBlockingSpin(EPServiceProvider epServiceProvider, EPStatement statement, EPStatementListenerSet updateListeners, DispatchService dispatchService, long msecTimeout)
     {
         super(epServiceProvider, statement, updateListeners, dispatchService);
-        this.currentFuture = new DispatchFuture(); // use a completed future as a start
+        this.currentFutureSpin = new UpdateDispatchFutureSpin(); // use a completed future as a start
         this.msecTimeout = msecTimeout;
     }
 
@@ -48,18 +48,17 @@ public class UpdateDispatchViewBlocking extends UpdateDispatchViewBase
             lastOldEvents.get().add(oldData);
         }
         if (!isDispatchWaiting.get())
-        {            
-            DispatchFuture nextFuture;
+        {
+            UpdateDispatchFutureSpin nextFutureSpin;
             synchronized(this)
             {
-                nextFuture = new DispatchFuture(this, currentFuture, msecTimeout);
-                currentFuture.setLater(nextFuture);
-                currentFuture = nextFuture;
+                nextFutureSpin = new UpdateDispatchFutureSpin(this, currentFutureSpin, msecTimeout);
+                currentFutureSpin = nextFutureSpin;
             }
-            dispatchService.addExternal(nextFuture);
+            dispatchService.addExternal(nextFutureSpin);
             isDispatchWaiting.set(true);
         }
     }
 
-    private static Log log = LogFactory.getLog(UpdateDispatchViewBlocking.class);
+    private static Log log = LogFactory.getLog(UpdateDispatchViewBlockingSpin.class);
 }

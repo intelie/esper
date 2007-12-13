@@ -4,6 +4,7 @@ import junit.framework.TestCase;
 import net.esper.client.*;
 import net.esper.event.EventBean;
 import net.esper.event.EventType;
+import net.esper.support.client.SupportConfigFactory;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -15,7 +16,7 @@ public class TestGroupedTimeWinUniqueSortMinMax extends TestCase {
 
     private Configuration setup()
     {
-        Configuration config = new Configuration();
+        Configuration config = SupportConfigFactory.getConfiguration();
         config.addEventTypeAlias("Sensor", Sensor.class);
         return config;
     }

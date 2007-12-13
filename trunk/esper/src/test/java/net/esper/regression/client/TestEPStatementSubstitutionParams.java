@@ -152,7 +152,7 @@ public class TestEPStatementSubstitutionParams extends TestCase
         prepared.setObject(2, 2);
         if (statementName != null)
         {
-            statement = epService.getEPAdministrator().create(prepared, statementName);
+            statement = epService.getEPAdministrator().create(prepared, statementName + "_1");
         }
         else
         {

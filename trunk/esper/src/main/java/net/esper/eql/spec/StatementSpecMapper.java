@@ -363,6 +363,17 @@ public class StatementSpecMapper
                 PatternExpr patternExpr = unmapPatternEvalDeep(pattern.getEvalNode(), unmapContext);
                 targetStream = new PatternStream(patternExpr, pattern.getOptionalStreamName());
             }
+            else if (stream instanceof MethodStreamSpec)
+            {
+                MethodStreamSpec method = (MethodStreamSpec) stream;
+                MethodInvocationStream methodStream = new MethodInvocationStream(method.getClassName(), method.getMethodName(), method.getOptionalStreamName());
+                for (ExprNode exprNode : method.getExpressions())
+                {
+                    Expression expr = unmapExpressionDeep(exprNode, unmapContext);
+                    methodStream.addParameter(expr);
+                }
+                targetStream = methodStream;
+            }
             else
             {
                 throw new IllegalArgumentException("Stream modelled by " + stream.getClass() + " cannot be unmapped");
@@ -1031,6 +1042,19 @@ public class StatementSpecMapper
                 PatternStream patternStream = (PatternStream) stream;
                 EvalNode child = mapPatternEvalDeep(patternStream.getExpression(), mapContext);
                 spec = new PatternStreamSpecRaw(child, new ArrayList<ViewSpec>(), patternStream.getStreamName());
+            }
+            else if (stream instanceof MethodInvocationStream)
+            {
+                MethodInvocationStream methodStream = (MethodInvocationStream) stream;
+                List<ExprNode> expressions = new ArrayList<ExprNode>();
+                for (Expression expr : methodStream.getParameterExpressions())
+                {
+                    ExprNode exprNode = mapExpressionDeep(expr, mapContext);
+                    expressions.add(exprNode);
+                }
+
+                spec = new MethodStreamSpec(methodStream.getStreamName(), new ArrayList<ViewSpec>(), "method",
+                        methodStream.getClassName(), methodStream.getMethodName(), expressions);
             }
             else
             {

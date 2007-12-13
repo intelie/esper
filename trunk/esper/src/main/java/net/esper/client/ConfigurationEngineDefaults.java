@@ -84,7 +84,12 @@ public class ConfigurationEngineDefaults implements Serializable
     {
         private boolean isListenerDispatchPreserveOrder;
         private long listenerDispatchTimeout;
+        private Locking listenerDispatchLocking;
+
         private boolean isInsertIntoDispatchPreserveOrder;
+        private long insertIntoDispatchTimeout;
+        private Locking insertIntoDispatchLocking;
+
         private long internalTimerMsecResolution;
         private boolean internalTimerEnabled;
 
@@ -95,7 +100,12 @@ public class ConfigurationEngineDefaults implements Serializable
         {
             listenerDispatchTimeout = 1000;
             isListenerDispatchPreserveOrder = true;
+            listenerDispatchLocking = Locking.SPIN;
+
+            insertIntoDispatchTimeout = 100;
             isInsertIntoDispatchPreserveOrder = true;
+            insertIntoDispatchLocking = Locking.SPIN;
+
             internalTimerEnabled = true;
             internalTimerMsecResolution = 100;
         }
@@ -203,6 +213,86 @@ public class ConfigurationEngineDefaults implements Serializable
         public void setInternalTimerMsecResolution(long internalTimerMsecResolution)
         {
             this.internalTimerMsecResolution = internalTimerMsecResolution;
+        }
+
+        /**
+         * Returns the number of milliseconds that a thread may maximually be blocking
+         * to deliver statement results from a producing statement that employs insert-into
+         * to a consuming statement.
+         * @return millisecond timeout for order-of-delivery blocking between statements 
+         */
+        public long getInsertIntoDispatchTimeout()
+        {
+            return insertIntoDispatchTimeout;
+        }
+
+        /**
+         * Sets the blocking strategy to use when multiple threads deliver results for
+         * a single statement to listeners, and the guarantee of order of delivery must be maintained.
+         * @param listenerDispatchLocking is the blocking technique
+         */
+        public void setListenerDispatchLocking(Locking listenerDispatchLocking)
+        {
+            this.listenerDispatchLocking = listenerDispatchLocking;
+        }
+
+        /**
+         * Sets the number of milliseconds that a thread may maximually be blocking
+         * to deliver statement results from a producing statement that employs insert-into
+         * to a consuming statement.
+         * @param msecTimeout timeout for order-of-delivery blocking between statements 
+         */
+        public void setInsertIntoDispatchTimeout(long msecTimeout)
+        {
+            this.insertIntoDispatchTimeout = msecTimeout;
+        }
+
+        /**
+         * Sets the blocking strategy to use when multiple threads deliver results for
+         * a single statement to consuming statements of an insert-into, and the guarantee of order of delivery must be maintained.
+         * @param insertIntoDispatchLocking is the blocking technique
+         */
+        public void setInsertIntoDispatchLocking(Locking insertIntoDispatchLocking)
+        {
+            this.insertIntoDispatchLocking = insertIntoDispatchLocking;
+        }
+
+        /**
+         * Returns the blocking strategy to use when multiple threads deliver results for
+         * a single statement to listeners, and the guarantee of order of delivery must be maintained.
+         * @return is the blocking technique
+         */
+        public Locking getListenerDispatchLocking()
+        {
+            return listenerDispatchLocking;
+        }
+
+        /**
+         * Returns the blocking strategy to use when multiple threads deliver results for
+         * a single statement to consuming statements of an insert-into, and the guarantee of order of delivery must be maintained.
+         * @return is the blocking technique
+         */
+        public Locking getInsertIntoDispatchLocking()
+        {
+            return insertIntoDispatchLocking;
+        }
+
+        /**
+         * Enumeration of blocking techniques.
+         */
+        public enum Locking
+        {
+            /**
+             * Spin lock blocking is good for locks held very shortly or generally uncontended locks and
+             * is therefore the default.
+             */
+            SPIN,
+
+            /**
+             * Blocking that suspends a thread and notifies a thread to wake up can be
+             * more expensive then spin locks.
+             */
+            SUSPEND
         }
     }
 

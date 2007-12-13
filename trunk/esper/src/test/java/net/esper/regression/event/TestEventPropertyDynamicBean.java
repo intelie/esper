@@ -3,6 +3,7 @@ package net.esper.regression.event;
 import junit.framework.TestCase;
 import net.esper.support.util.SupportUpdateListener;
 import net.esper.support.bean.*;
+import net.esper.support.client.SupportConfigFactory;
 import net.esper.client.EPServiceProvider;
 import net.esper.client.EPServiceProviderManager;
 import net.esper.client.EPStatement;
@@ -21,7 +22,7 @@ public class TestEventPropertyDynamicBean extends TestCase
 
     public void setUp()
     {
-        epService = EPServiceProviderManager.getDefaultProvider();
+        epService = EPServiceProviderManager.getDefaultProvider(SupportConfigFactory.getConfiguration());
         epService.initialize();
         listener = new SupportUpdateListener();
     }

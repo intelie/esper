@@ -6,6 +6,7 @@
 				<xs:element ref="event-type-auto-alias" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:element ref="event-type" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:element ref="auto-import" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="method-reference" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:element ref="database-reference" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:element ref="plugin-view" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:element ref="plugin-aggregation-function" minOccurs="0" maxOccurs="unbounded"/>
@@ -84,6 +85,17 @@
 	<xs:element name="auto-import">
 		<xs:complexType>
 			<xs:attribute name="import-name" type="xs:string" use="required"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="method-reference">
+		<xs:complexType>
+			<xs:choice>
+				<xs:sequence>
+					<xs:element ref="lru-cache" minOccurs="0"/>
+					<xs:element ref="expiry-time-cache" minOccurs="0"/>
+				</xs:sequence>
+			</xs:choice>
+			<xs:attribute name="class-name" type="xs:string" use="required"/>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="legacy-type">
@@ -299,12 +311,15 @@
 	<xs:element name="listener-dispatch">
 		<xs:complexType>
 			<xs:attribute name="preserve-order" type="xs:boolean" use="required"/>
-			<xs:attribute name="timeout-msec" type="xs:long" use="required"/>
+			<xs:attribute name="timeout-msec" type="xs:long" use="optional"/>
+			<xs:attribute name="locking" type="dispatchLockingEnum" use="optional"/>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="insert-into-dispatch">
 		<xs:complexType>
 			<xs:attribute name="preserve-order" type="xs:boolean" use="required"/>
+			<xs:attribute name="timeout-msec" type="xs:long" use="optional"/>
+			<xs:attribute name="locking" type="dispatchLockingEnum" use="optional"/>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="internal-timer">
@@ -397,4 +412,10 @@
 			<xs:attribute name="value" type="xs:long" use="required"/>
 		</xs:complexType>
 	</xs:element>
+	<xs:simpleType name="dispatchLockingEnum">
+		<xs:restriction base="xs:token">
+			<xs:enumeration value="spin"/>
+			<xs:enumeration value="suspend"/>
+		</xs:restriction>
+	</xs:simpleType>
 </xs:schema>

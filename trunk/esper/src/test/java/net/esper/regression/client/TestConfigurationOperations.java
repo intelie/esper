@@ -4,6 +4,7 @@ import net.esper.client.*;
 import net.esper.support.util.SupportUpdateListener;
 import net.esper.support.bean.SupportBean;
 import net.esper.support.bean.SupportBean_A;
+import net.esper.support.client.SupportConfigFactory;
 import junit.framework.TestCase;
 
 import java.util.Properties;
@@ -25,7 +26,7 @@ public class TestConfigurationOperations extends TestCase
     public void setUp()
     {
         testListener = new SupportUpdateListener();
-        epService = EPServiceProviderManager.getDefaultProvider();
+        epService = EPServiceProviderManager.getDefaultProvider(SupportConfigFactory.getConfiguration());
         epService.initialize();
         configOps = epService.getEPAdministrator().getConfiguration();
     }
@@ -44,7 +45,7 @@ public class TestConfigurationOperations extends TestCase
 
     public void testAutoAliasPackageAmbigous()
     {
-        Configuration config = new Configuration();
+        Configuration config = SupportConfigFactory.getConfiguration();
         config.addEventTypeAutoAlias(this.getClass().getPackage().getName());
         configOps.addEventTypeAutoAlias(this.getClass().getPackage().getName());
         configOps.addEventTypeAutoAlias(SupportBean.class.getPackage().getName());

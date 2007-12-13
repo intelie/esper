@@ -4,7 +4,9 @@ import net.esper.pattern.MatchedEventMap;
 import net.esper.pattern.guard.GuardSupport;
 import net.esper.pattern.guard.Quitable;
 
-public class MyCountToPatternGuard extends GuardSupport
+import java.io.Serializable;
+
+public class MyCountToPatternGuard extends GuardSupport implements Serializable
 {
     private final int numCountTo;
     private final Quitable quitable;

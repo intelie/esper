@@ -16,7 +16,7 @@ public class TestEPAdministrator extends TestCase
     public void setUp()
     {
         testListener = new SupportUpdateListener();
-        epService = EPServiceProviderManager.getDefaultProvider(new Configuration());
+        epService = EPServiceProviderManager.getDefaultProvider(SupportConfigFactory.getConfiguration());
         epService.initialize();
     }
 

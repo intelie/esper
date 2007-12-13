@@ -19,10 +19,10 @@ public class StmtIterateCallable implements Callable
     private static final Log log = LogFactory.getLog(StmtIterateCallable.class);
     private final int threadNum;
     private final EPServiceProvider engine;
-    private final EPStatement stmt;
+    private final EPStatement stmt[];
     private final int numRepeats;
 
-    public StmtIterateCallable(int threadNum, EPServiceProvider engine, EPStatement stmt, int numRepeats)
+    public StmtIterateCallable(int threadNum, EPServiceProvider engine, EPStatement stmt[], int numRepeats)
     {
         this.threadNum = threadNum;
         this.engine = engine;
@@ -41,20 +41,23 @@ public class StmtIterateCallable implements Callable
                 SupportBean bean = new SupportBean(id, 0);
                 engine.getEPRuntime().sendEvent(bean);
 
-                log.info(".call Thread " + Thread.currentThread().getId() + " starting iterator " + loop);
-                SafeIterator<EventBean> it = stmt.safeIterator();
-                boolean found = false;
-                for (;it.hasNext();)
+                for (int i = 0; i < stmt.length; i++)
                 {
-                    EventBean event = it.next();
-                    if (event.get("string").equals(id))
+                    log.info(".call Thread " + Thread.currentThread().getId() + " starting iterator " + loop);
+                    SafeIterator<EventBean> it = stmt[i].safeIterator();
+                    boolean found = false;
+                    for (;it.hasNext();)
                     {
-                        found = true;
+                        EventBean event = it.next();
+                        if (event.get("string").equals(id))
+                        {
+                            found = true;
+                        }
                     }
+                    it.close();
+                    Assert.assertTrue(found);
+                    log.info(".call Thread " + Thread.currentThread().getId() + " end iterator " + loop);
                 }
-                it.close();
-                Assert.assertTrue(found);
-                log.info(".call Thread " + Thread.currentThread().getId() + " end iterator " + loop);
             }
         }
         catch (AssertionFailedError ex)
@@ -62,9 +65,9 @@ public class StmtIterateCallable implements Callable
             log.fatal("Assertion error in thread " + Thread.currentThread().getId(), ex);
             return false;
         }
-        catch (Exception ex)
+        catch (Throwable t)
         {
-            log.fatal("Error in thread " + Thread.currentThread().getId(), ex);
+            log.fatal("Error in thread " + Thread.currentThread().getId(), t);
             return false;
         }
         return true;

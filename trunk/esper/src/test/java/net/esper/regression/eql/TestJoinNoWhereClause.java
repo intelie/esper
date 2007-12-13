@@ -25,7 +25,7 @@ public class TestJoinNoWhereClause extends TestCase
         Configuration config = SupportConfigFactory.getConfiguration();
         config.getEngineDefaults().getThreading().setListenerDispatchPreserveOrder(false);
         config.getEngineDefaults().getViewResources().setShareViews(false);
-        epService = EPServiceProviderManager.getDefaultProvider();
+        epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();
         updateListener = new SupportUpdateListener();
 

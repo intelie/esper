@@ -6,6 +6,7 @@ import net.esper.client.EPServiceProviderManager;
 import net.esper.client.Configuration;
 import net.esper.support.bean.*;
 import net.esper.support.util.SupportUpdateListener;
+import net.esper.support.client.SupportConfigFactory;
 import net.esper.event.EventBean;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -19,7 +20,7 @@ public class TestPerf5StreamJoin extends TestCase
 
     public void setUp()
     {
-        epService = EPServiceProviderManager.getDefaultProvider(new Configuration());
+        epService = EPServiceProviderManager.getDefaultProvider(SupportConfigFactory.getConfiguration());
         epService.initialize();
         updateListener = new SupportUpdateListener();
     }

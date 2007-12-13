@@ -45,6 +45,18 @@ public class MethodResolutionServiceImpl implements MethodResolutionService
         return engineImportService.resolveMethod(classNameAlias, methodName, paramTypes);
 	}       
 
+    public Method resolveMethod(String classNameAlias, String methodName)
+			throws EngineImportException
+    {
+        return engineImportService.resolveMethod(classNameAlias, methodName);
+	}
+
+    public Class resolveClass(String classNameAlias)
+			throws EngineImportException
+    {
+        return engineImportService.resolveClass(classNameAlias);
+	}
+
     public AggregationMethod makeCountAggregator(boolean isIgnoreNull)
     {
         if (isIgnoreNull)

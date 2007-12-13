@@ -4,6 +4,7 @@ import net.esper.client.Configuration;
 import net.esper.client.EPServiceProvider;
 import net.esper.client.EPServiceProviderManager;
 import net.esper.support.adapter.SupportAdapterLoader;
+import net.esper.support.client.SupportConfigFactory;
 
 import java.util.Properties;
 
@@ -13,7 +14,7 @@ public class TestAdapterLoader extends TestCase
 {
     public void testAdapterLoader()
     {
-        Configuration config = new Configuration();
+        Configuration config = SupportConfigFactory.getConfiguration();
         config.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
 
         Properties props = new Properties();

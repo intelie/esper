@@ -55,7 +55,7 @@ public class TestStaticFunctions extends TestCase
 	
 	public void testAutoImports()
 	{
-		Configuration configuration = new Configuration();
+		Configuration configuration = SupportConfigFactory.getConfiguration();
         configuration.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
 		configuration.addImport("mull");
 		epService = EPServiceProviderManager.getProvider("1", configuration);
@@ -80,7 +80,7 @@ public class TestStaticFunctions extends TestCase
 	
     public void testRuntimeAutoImports()
     {
-        epService = EPServiceProviderManager.getDefaultProvider();
+        epService = EPServiceProviderManager.getDefaultProvider(SupportConfigFactory.getConfiguration());
         String text = "select SupportStaticMethodLib.minusOne(doublePrimitive) from " + SupportBean.class.getName();
 
         try
@@ -254,7 +254,7 @@ public class TestStaticFunctions extends TestCase
 
     public void testNestedFunction()
     {
-        Configuration configuration = new Configuration();
+        Configuration configuration = SupportConfigFactory.getConfiguration();
         configuration.addImport(SupportStaticMethodLib.class.getName());
         configuration.addEventTypeAlias("Temperature", SupportTemperatureBean.class);
         epService = EPServiceProviderManager.getDefaultProvider(configuration);
@@ -273,7 +273,7 @@ public class TestStaticFunctions extends TestCase
 
     public void testPassthru()
     {
-        Configuration configuration = new Configuration();
+        Configuration configuration = SupportConfigFactory.getConfiguration();
         configuration.addImport(SupportStaticMethodLib.class.getName());
         configuration.addEventTypeAlias("Temperature", SupportTemperatureBean.class);
         epService = EPServiceProviderManager.getDefaultProvider(configuration);
@@ -295,7 +295,7 @@ public class TestStaticFunctions extends TestCase
 
     public void testPerfConstantParameters()
     {
-        Configuration configuration = new Configuration();
+        Configuration configuration = SupportConfigFactory.getConfiguration();
         configuration.addImport(SupportStaticMethodLib.class.getName());
         configuration.addEventTypeAlias("Temperature", SupportTemperatureBean.class);
         epService = EPServiceProviderManager.getDefaultProvider(configuration);
@@ -321,7 +321,7 @@ public class TestStaticFunctions extends TestCase
 
     public void testPerfConstantParametersNested()
     {
-        Configuration configuration = new Configuration();
+        Configuration configuration = SupportConfigFactory.getConfiguration();
         configuration.addImport(SupportStaticMethodLib.class.getName());
         configuration.addEventTypeAlias("Temperature", SupportTemperatureBean.class);
         epService = EPServiceProviderManager.getDefaultProvider(configuration);

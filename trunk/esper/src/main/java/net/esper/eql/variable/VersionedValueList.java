@@ -62,6 +62,11 @@ public class VersionedValueList<T>
                                                    new VersionedValue<T>(-1, null, timestamp));
     }
 
+    public String getName()
+    {
+        return name;
+    }
+
     /**
      * Retrieve a value for the given version or older then then given version.
      * <p>

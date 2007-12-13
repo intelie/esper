@@ -293,6 +293,24 @@ config.getEngineDefaults().getViewResources().setShareViews(false);]]></programl
 
 		</sect2>
 
+		<sect2 id="perf-tips-11">
+			<title>Disable delivery order guarantees</title>
+
+			<para>
+				If your application is not a multithreaded application, or you application is not sensitive to the order of delivery of result events to your application listeners, then consider disabling the delivery order guarantees the engine makes towards ordered delivery of results to listeners:
+			</para>
+<programlisting><![CDATA[Configuration config = new Configuration();
+config.getEngineDefaults().getThreading().setListenerDispatchPreserveOrder(false);]]></programlisting>
+	
+			<para>
+				If your application is not a multithreaded application, or your application uses the <literal>insert into</literal> clause to make results of one statement available for further consuming statements but does not require ordered delivery of results from producing statements to consuming statements, you may disable delivery order guarantees between statements: 
+			</para>
+
+<programlisting><![CDATA[Configuration config = new Configuration();
+config.getEngineDefaults().getThreading().setInsertIntoDispatchPreserveOrder(false);]]></programlisting>
+
+		</sect2>
+
     </sect1>
 
     <sect1 id="performance-kit" revision="1">

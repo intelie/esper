@@ -371,8 +371,20 @@ where address('work').streetName = 'Park Ave'
 			</table>
 		</sect2>
 		
+		<indexterm><primary>constants</primary></indexterm>
+		<indexterm><primary>enumeration</primary></indexterm>
 		<para>
-			Event properties that are enumeration values can be compared by means of the Enumeration <literal>valueOf</literal> method on the <literal>java.lang.Enum</literal> class. An example could look as follows:
+			Constants are public static final fields in Java that may also be participate in expressions of all kinds, as this example shows:
+		</para>
+		<programlisting><![CDATA[every MyEvent(field=MyConstantClass.FIELD_VALUE)]]></programlisting>
+
+		<para>
+			Event properties that are enumeration values can be compared by their Enumeration value:
+		</para>
+		<programlisting><![CDATA[every MyEvent(enumProp=EnumClass.ENUM_VALUE_1)]]></programlisting>
+
+		<para>
+			Alternatively, a static method may be employed on a class, such as the Enumeration class 'EnumClass' as below:
 		</para>
 		<programlisting><![CDATA[every MyEvent(enumProp=EnumClass.valueOf('ENUM_VALUE_1'))]]></programlisting>
 

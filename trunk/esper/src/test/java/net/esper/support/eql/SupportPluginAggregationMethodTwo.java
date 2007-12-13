@@ -2,7 +2,9 @@ package net.esper.support.eql;
 
 import net.esper.eql.agg.AggregationSupport;
 
-public class SupportPluginAggregationMethodTwo extends AggregationSupport
+import java.io.Serializable;
+
+public class SupportPluginAggregationMethodTwo extends AggregationSupport implements Serializable
 {
     public void validate(Class childNodeType)
     {

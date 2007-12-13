@@ -168,7 +168,7 @@ public class ConfigurationDBRef implements Serializable
 
     /**
      * Configures a LRU cache of the given size for the database.
-     * @param size is the maximum number of entries before query results are evicted using.
+     * @param size is the maximum number of entries before query results are evicted
      */
     public void setLRUCache(int size)
     {

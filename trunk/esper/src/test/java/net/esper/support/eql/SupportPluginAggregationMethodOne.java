@@ -2,7 +2,9 @@ package net.esper.support.eql;
 
 import net.esper.eql.agg.AggregationSupport;
 
-public class SupportPluginAggregationMethodOne extends AggregationSupport
+import java.io.Serializable;
+
+public class SupportPluginAggregationMethodOne extends AggregationSupport implements Serializable
 {
     private int count;
 

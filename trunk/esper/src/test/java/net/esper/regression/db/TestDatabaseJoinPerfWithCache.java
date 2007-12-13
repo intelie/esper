@@ -8,6 +8,7 @@ import net.esper.support.bean.SupportBean_S0;
 import net.esper.support.eql.SupportDatabaseService;
 import net.esper.support.util.ArrayAssertionUtil;
 import net.esper.support.util.SupportUpdateListener;
+import net.esper.support.client.SupportConfigFactory;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -28,13 +29,12 @@ public class TestDatabaseJoinPerfWithCache extends TestCase
          * Turn this cache setting off to turn off indexing since without cache there is no point in indexing.
          */
         configDB.setLRUCache(100000);
-        Configuration configuration = new Configuration();
+        Configuration configuration = SupportConfigFactory.getConfiguration();
         configuration.addDatabaseReference("MyDB", configDB);
         configuration.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
 
         epServiceRetained = EPServiceProviderManager.getProvider("TestDatabaseJoinRetained", configuration);
         epServiceRetained.initialize();
-        epServiceRetained.getEPRuntime().sendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
     }
 
     /**

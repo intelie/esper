@@ -8,6 +8,7 @@ import net.esper.event.EventBean;
 import net.esper.support.bean.*;
 import net.esper.support.util.SupportUpdateListener;
 import net.esper.support.eql.SupportStaticMethodLib;
+import net.esper.support.client.SupportConfigFactory;
 import net.esper.util.SerializableObjectCopier;
 
 public class TestSubselectUnfiltered extends TestCase {
@@ -16,7 +17,7 @@ public class TestSubselectUnfiltered extends TestCase {
 
     public void setUp()
     {
-        Configuration config = new Configuration();
+        Configuration config = SupportConfigFactory.getConfiguration();
         config.addEventTypeAlias("S0", SupportBean_S0.class);
         config.addEventTypeAlias("S1", SupportBean_S1.class);
         config.addEventTypeAlias("S2", SupportBean_S2.class);

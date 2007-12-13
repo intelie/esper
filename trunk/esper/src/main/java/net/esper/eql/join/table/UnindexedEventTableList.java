@@ -1,6 +1,7 @@
 package net.esper.eql.join.table;
 
 import net.esper.event.EventBean;
+import net.esper.collection.NullIterator;
 
 import java.util.Iterator;
 import java.util.List;
@@ -11,6 +12,7 @@ import java.util.List;
  */
 public class UnindexedEventTableList implements EventTable
 {
+    private static NullIterator<EventBean> emptyIterator = new NullIterator<EventBean>();
     private List<EventBean> eventSet;
 
     /**
@@ -50,6 +52,10 @@ public class UnindexedEventTableList implements EventTable
 
     public Iterator<EventBean> iterator()
     {
+        if (eventSet == null)
+        {
+            return emptyIterator;
+        }
         return eventSet.iterator();
     }
 

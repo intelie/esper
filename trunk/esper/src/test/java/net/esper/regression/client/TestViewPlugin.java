@@ -3,6 +3,7 @@ package net.esper.regression.client;
 import net.esper.client.*;
 import net.esper.support.util.SupportUpdateListener;
 import net.esper.support.bean.SupportMarketDataBean;
+import net.esper.support.client.SupportConfigFactory;
 import junit.framework.TestCase;
 
 public class TestViewPlugin extends TestCase
@@ -14,7 +15,7 @@ public class TestViewPlugin extends TestCase
     {
         testListener = new SupportUpdateListener();
 
-        Configuration configuration = new Configuration();
+        Configuration configuration = SupportConfigFactory.getConfiguration();
         configuration.addEventTypeAlias("A", SupportMarketDataBean.class);
         configuration.addPlugInView("mynamespace", "trendspotter", MyTrendSpotterViewFactory.class.getName());
         configuration.addPlugInView("mynamespace", "flushedsimple", MyFlushedSimpleViewFactory.class.getName());

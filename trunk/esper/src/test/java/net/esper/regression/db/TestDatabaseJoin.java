@@ -42,7 +42,6 @@ public class TestDatabaseJoin extends TestCase
 
         epService = EPServiceProviderManager.getProvider("TestDatabaseJoinRetained", configuration);
         epService.initialize();
-        epService.getEPRuntime().sendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
     }
 
     public void testTimeBatchEQL()

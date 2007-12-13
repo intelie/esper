@@ -10,6 +10,7 @@ import net.esper.support.bean.SupportBeanConstants;
 import net.esper.support.bean.SupportRFIDEvent;
 import net.esper.support.bean.SupportBean;
 import net.esper.support.util.SupportUpdateListener;
+import net.esper.support.client.SupportConfigFactory;
 import net.esper.client.*;
 import net.esper.client.time.TimerControlEvent;
 import net.esper.client.time.CurrentTimeEvent;
@@ -72,7 +73,7 @@ public class TestEveryOperator extends TestCase implements SupportBeanConstants
 
     public void testEveryAndNot()
     {
-        Configuration config = new Configuration();
+        Configuration config = SupportConfigFactory.getConfiguration();
         config.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
         EPServiceProvider engine = EPServiceProviderManager.getProvider("testRFIDZoneExit", config);
         engine.initialize();

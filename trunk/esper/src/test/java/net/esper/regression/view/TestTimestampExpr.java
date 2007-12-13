@@ -20,7 +20,7 @@ public class TestTimestampExpr extends TestCase
         listener = new SupportUpdateListener();
         Configuration configuration = SupportConfigFactory.getConfiguration();
         configuration.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
-        epService = EPServiceProviderManager.getDefaultProvider();
+        epService = EPServiceProviderManager.getDefaultProvider(SupportConfigFactory.getConfiguration());
         epService.initialize();
     }
 

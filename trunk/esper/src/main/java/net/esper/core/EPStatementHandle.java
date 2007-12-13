@@ -19,7 +19,7 @@ public class EPStatementHandle implements MetaDefItem
     // such that the internal dispatching must occur after both matches are processed
     private boolean canSelfJoin;
     private boolean hasVariables;
-    private ManagedLock routedInsertStreamLock;
+    private InsertIntoLatchFactory insertIntoLatchFactory;
 
     /**
      * Ctor.
@@ -49,21 +49,21 @@ public class EPStatementHandle implements MetaDefItem
     }
 
     /**
-     * Set a insert-into stream lock to use for reserving order in generated streams.
-     * @param routedInsertStreamLock is a lock to use to lock the stream when routing events into it
+     * Sets the factory for latches in insert-into guaranteed order of delivery.
+     * @param insertIntoLatchFactory latch factory for the statement if it performs insert-into (route) of events
      */
-    public void setRoutedInsertStreamLock(ManagedLock routedInsertStreamLock)
+    public void setInsertIntoLatchFactory(InsertIntoLatchFactory insertIntoLatchFactory)
     {
-        this.routedInsertStreamLock = routedInsertStreamLock;
+        this.insertIntoLatchFactory = insertIntoLatchFactory;
     }
 
     /**
-     * Returns the insert-into stream lock to use for reserving order in generated streams.
-     * @return lock
+     * Returns the factory for latches in insert-into guaranteed order of delivery.
+     * @return latch factory for the statement if it performs insert-into (route) of events 
      */
-    public ManagedLock getRoutedInsertStreamLock()
+    public InsertIntoLatchFactory getInsertIntoLatchFactory()
     {
-        return routedInsertStreamLock;
+        return insertIntoLatchFactory;
     }
 
     /**

@@ -1,23 +1,13 @@
 package net.esper.regression.eql;
 
 import junit.framework.TestCase;
-import net.esper.client.*;
-import net.esper.client.soda.*;
-import net.esper.support.util.SupportUpdateListener;
-import net.esper.support.util.ArrayAssertionUtil;
-import net.esper.support.client.SupportConfigFactory;
-import net.esper.support.bean.SupportBean;
-import net.esper.support.bean.SupportBean_A;
-import net.esper.event.EventType;
+import net.esper.client.Configuration;
+import net.esper.client.EPServiceProvider;
+import net.esper.client.EPServiceProviderManager;
+import net.esper.client.EPStatement;
 import net.esper.event.EventBean;
-
-import javax.xml.parsers.DocumentBuilderFactory;
-import java.util.Map;
-import java.util.Arrays;
-import java.io.StringReader;
-
-import org.w3c.dom.Document;
-import org.xml.sax.InputSource;
+import net.esper.support.client.SupportConfigFactory;
+import net.esper.support.util.SupportUpdateListener;
 
 public class TestVariablesTimer extends TestCase
 {
@@ -62,50 +52,5 @@ public class TestVariablesTimer extends TestCase
             assertEquals(var1, var2 - 1);
             assertEquals(var3, var2 + var1);
         }
-    }
-
-    private SupportBean_A sendSupportBean_A(String id)
-    {
-        SupportBean_A bean = new SupportBean_A(id);
-        epService.getEPRuntime().sendEvent(bean);
-        return bean;
-    }
-
-    private SupportBean sendSupportBean(String string, int intPrimitive)
-    {
-        SupportBean bean = new SupportBean();
-        bean.setString(string);
-        bean.setIntPrimitive(intPrimitive);
-        epService.getEPRuntime().sendEvent(bean);
-        return bean;
-    }
-
-    private SupportBean sendSupportBean(String string, int intPrimitive, Integer intBoxed)
-    {
-        SupportBean bean = makeSupportBean(string, intPrimitive, intBoxed);
-        epService.getEPRuntime().sendEvent(bean);
-        return bean;
-    }
-
-    private void sendSupportBeanNewThread(final String string, final int intPrimitive, final Integer intBoxed) throws InterruptedException
-    {
-        Thread t = new Thread() {
-            public void run()
-            {
-                SupportBean bean = makeSupportBean(string, intPrimitive, intBoxed);
-                epService.getEPRuntime().sendEvent(bean);
-            }
-        };
-        t.start();
-        t.join();
-    }
-
-    private SupportBean makeSupportBean(String string, int intPrimitive, Integer intBoxed)
-    {
-        SupportBean bean = new SupportBean();
-        bean.setString(string);
-        bean.setIntPrimitive(intPrimitive);
-        bean.setIntBoxed(intBoxed);
-        return bean;
     }
 }

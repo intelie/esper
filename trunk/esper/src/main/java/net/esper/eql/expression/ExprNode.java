@@ -16,6 +16,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.util.LinkedList;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 
 /**
  * Superclass for filter nodes in a filter expression tree. Allow
@@ -206,7 +208,15 @@ public abstract class ExprNode implements ExprValidator, ExprEvaluator, MetaDefI
         MappedPropertyParseResult parse = parseMappedProperty(mappedProperty.toString());
         if (parse == null)
         {
-            throw propertyException;
+            ExprConstantNode constNode = resolveIdentAsEnumConst(mappedProperty.toString(), methodResolutionService);
+            if (constNode == null)
+            {
+                throw propertyException;
+            }
+            else
+            {
+                return constNode;
+            }
         }
 
         // If there is a class name, assume a static method is possible
@@ -258,6 +268,54 @@ public abstract class ExprNode implements ExprValidator, ExprEvaluator, MetaDefI
 
         // absolutly cannot be resolved
         throw propertyException;
+    }
+
+    private ExprConstantNode resolveIdentAsEnumConst(String constant, MethodResolutionService methodResolutionService)
+            throws ExprValidationException
+    {
+        int lastDotIndex = constant.lastIndexOf('.');
+        if (lastDotIndex == -1)
+        {
+            return null;
+        }
+        String className = constant.substring(0, lastDotIndex);
+        String constName = constant.substring(lastDotIndex + 1);
+
+        Class clazz;
+        try
+        {
+            clazz = methodResolutionService.resolveClass(className);
+        }
+        catch (EngineImportException e)
+        {
+            return null;
+        }
+
+        Field field;
+        try
+        {
+            field = clazz.getField(constName);
+        }
+        catch (NoSuchFieldException e)
+        {
+            return null;
+        }
+        
+        int modifiers = field.getModifiers();
+        if (Modifier.isPublic(modifiers) && Modifier.isStatic(modifiers))
+        {
+            try
+            {
+                Object value = field.get(null);
+                return new ExprConstantNode(value);
+            }
+            catch (IllegalAccessException e)
+            {
+                throw new ExprValidationException("Exception accessing field '" + field.getName() + "': " + e.getMessage(), e);
+            }
+        }
+
+        return null;
     }
 
     /**

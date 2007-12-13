@@ -37,7 +37,7 @@ import java.util.*;
 public class EPRuntimeImpl implements EPRuntime, TimerCallback, InternalEventRouter
 {
     private EPServicesContext services;
-    private boolean isHoldInsertStreamLock;
+    private boolean isLatchStatementInsertStream;
     private volatile UnmatchedListener unmatchedListener;
 
     private ThreadLocal<ArrayBackedCollection<FilterHandle>> matchesArrayThreadLocal = new ThreadLocal<ArrayBackedCollection<FilterHandle>>()
@@ -45,14 +45,6 @@ public class EPRuntimeImpl implements EPRuntime, TimerCallback, InternalEventRou
         protected synchronized ArrayBackedCollection<FilterHandle> initialValue()
         {
             return new ArrayBackedCollection<FilterHandle>(100);
-        }
-    };
-
-    private ThreadLocal<ArrayList<ManagedLock>> locksHeldThreadLocal = new ThreadLocal<ArrayList<ManagedLock>>()
-    {
-        protected synchronized ArrayList<ManagedLock> initialValue()
-        {
-            return new ArrayList<ManagedLock>(100);
         }
     };
 
@@ -89,7 +81,7 @@ public class EPRuntimeImpl implements EPRuntime, TimerCallback, InternalEventRou
     public EPRuntimeImpl(EPServicesContext services)
     {
         this.services = services;
-        isHoldInsertStreamLock = this.services.getEngineSettingsService().getEngineSettings().getThreading().isInsertIntoDispatchPreserveOrder();
+        isLatchStatementInsertStream = this.services.getEngineSettingsService().getEngineSettings().getThreading().isInsertIntoDispatchPreserveOrder();
     }
 
     public void timerCallback()
@@ -174,18 +166,20 @@ public class EPRuntimeImpl implements EPRuntime, TimerCallback, InternalEventRou
     // Internal route of events via insert-into, holds a statement lock
     public void route(EventBean events[], EPStatementHandle epStatementHandle)
     {
-        for (EventBean event : events)
+        if (isLatchStatementInsertStream)
         {
-            ThreadWorkQueue.add(event);
-        }
-
-        if (isHoldInsertStreamLock)
-        {
-            ManagedLock lock = epStatementHandle.getRoutedInsertStreamLock();
-            if (!lock.isHeldByCurrentThread())
+            InsertIntoLatchFactory insertIntoLatchFactory = epStatementHandle.getInsertIntoLatchFactory();
+            for (EventBean event : events)
             {
-                lock.acquireLock(services.getStatementLockFactory());
-                locksHeldThreadLocal.get().add(lock);
+                Object latch = insertIntoLatchFactory.newLatch(event);
+                ThreadWorkQueue.add(latch);
+            }
+        }
+        else
+        {
+            for (EventBean event : events)
+            {
+                ThreadWorkQueue.add(event);
             }
         }
     }
@@ -451,38 +445,22 @@ public class EPRuntimeImpl implements EPRuntime, TimerCallback, InternalEventRou
 
     private void processThreadWorkQueue()
     {
-        Object event;
-        while ( (event = ThreadWorkQueue.next()) != null)
+        Object item;
+        while ( (item = ThreadWorkQueue.next()) != null)
         {
-            EventBean eventBean;
-            if (event instanceof EventBean)
+            if (item instanceof InsertIntoLatchSpin)
             {
-                eventBean = (EventBean) event;
+                processThreadWorkQueueLatchedSpin((InsertIntoLatchSpin) item);
+            }
+            else if (item instanceof InsertIntoLatchWait)
+            {
+                processThreadWorkQueueLatchedWait((InsertIntoLatchWait) item);
             }
             else
             {
-                eventBean = services.getEventAdapterService().adapterForBean(event);
+                processThreadWorkQueueUnlatched(item);
             }
-
-            services.getEventProcessingRWLock().acquireReadLock();
-            try
-            {
-                processMatches(eventBean);
-            }
-            catch (RuntimeException ex)
-            {
-                unlockInsertStreamLocks();
-                throw ex;
-            }
-            finally
-            {
-                services.getEventProcessingRWLock().releaseReadLock();
-            }
-
-            dispatch();
         }
-
-        unlockInsertStreamLocks();
 
         // Process named window deltas
         boolean haveDispatched = services.getNamedWindowService().dispatch();
@@ -498,20 +476,99 @@ public class EPRuntimeImpl implements EPRuntime, TimerCallback, InternalEventRou
         }
     }
 
-    private void unlockInsertStreamLocks()
+    private void processThreadWorkQueueLatchedWait(InsertIntoLatchWait insertIntoLatch)
     {
-        if (!isHoldInsertStreamLock)
+        // wait for the latch to complete
+        Object item = insertIntoLatch.await();
+
+        EventBean eventBean;
+        if (item instanceof EventBean)
         {
-            return;
+            eventBean = (EventBean) item;
         }
-        for (ManagedLock insertStreamLock : locksHeldThreadLocal.get())
+        else
         {
-            if (insertStreamLock.isHeldByCurrentThread())
-            {
-                insertStreamLock.releaseLock(services.getStatementLockFactory());
-            }
+            eventBean = services.getEventAdapterService().adapterForBean(item);
         }
-        locksHeldThreadLocal.get().clear();
+
+        services.getEventProcessingRWLock().acquireReadLock();
+        try
+        {
+            processMatches(eventBean);
+        }
+        catch (RuntimeException ex)
+        {
+            throw ex;
+        }
+        finally
+        {
+            insertIntoLatch.done();
+            services.getEventProcessingRWLock().releaseReadLock();
+        }
+
+        dispatch();
+    }
+
+    private void processThreadWorkQueueLatchedSpin(InsertIntoLatchSpin insertIntoLatch)
+    {
+        // wait for the latch to complete
+        Object item = insertIntoLatch.await();
+
+        EventBean eventBean;
+        if (item instanceof EventBean)
+        {
+            eventBean = (EventBean) item;
+        }
+        else
+        {
+            eventBean = services.getEventAdapterService().adapterForBean(item);
+        }
+
+        services.getEventProcessingRWLock().acquireReadLock();
+        try
+        {
+            processMatches(eventBean);
+        }
+        catch (RuntimeException ex)
+        {
+            throw ex;
+        }
+        finally
+        {
+            insertIntoLatch.done();
+            services.getEventProcessingRWLock().releaseReadLock();
+        }
+
+        dispatch();
+    }
+
+    private void processThreadWorkQueueUnlatched(Object item)
+    {
+        EventBean eventBean;
+        if (item instanceof EventBean)
+        {
+            eventBean = (EventBean) item;
+        }
+        else
+        {
+            eventBean = services.getEventAdapterService().adapterForBean(item);
+        }
+
+        services.getEventProcessingRWLock().acquireReadLock();
+        try
+        {
+            processMatches(eventBean);
+        }
+        catch (RuntimeException ex)
+        {
+            throw ex;
+        }
+        finally
+        {
+            services.getEventProcessingRWLock().releaseReadLock();
+        }
+
+        dispatch();
     }
 
     private void processMatches(EventBean event)
@@ -571,7 +628,6 @@ public class EPRuntimeImpl implements EPRuntime, TimerCallback, InternalEventRou
             }
             catch (RuntimeException ex)
             {
-                unlockInsertStreamLocks();                
                 throw ex;
             }
             finally
@@ -608,7 +664,6 @@ public class EPRuntimeImpl implements EPRuntime, TimerCallback, InternalEventRou
             }
             catch (RuntimeException ex)
             {
-                unlockInsertStreamLocks();
                 throw ex;
             }
             finally
@@ -627,7 +682,6 @@ public class EPRuntimeImpl implements EPRuntime, TimerCallback, InternalEventRou
         }
         catch (RuntimeException ex)
         {
-            unlockInsertStreamLocks();
             throw new EPException(ex);
         }
     }
@@ -640,13 +694,11 @@ public class EPRuntimeImpl implements EPRuntime, TimerCallback, InternalEventRou
         services = null;
 
         matchesArrayThreadLocal.remove();
-        locksHeldThreadLocal.remove();
         matchesPerStmtThreadLocal.remove();
         scheduleArrayThreadLocal.remove();
         schedulePerStmtThreadLocal.remove();
 
         matchesArrayThreadLocal = null;
-        locksHeldThreadLocal = null;
         matchesPerStmtThreadLocal = null;
         scheduleArrayThreadLocal = null;
         schedulePerStmtThreadLocal = null;

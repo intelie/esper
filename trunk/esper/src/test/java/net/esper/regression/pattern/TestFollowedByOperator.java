@@ -349,7 +349,7 @@ public class TestFollowedByOperator extends TestCase implements SupportBeanConst
 
         Configuration config = SupportConfigFactory.getConfiguration();
         config.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
-        EPServiceProvider epService = EPServiceProviderManager.getDefaultProvider();
+        EPServiceProvider epService = EPServiceProviderManager.getDefaultProvider(SupportConfigFactory.getConfiguration());
         epService.initialize();
 
         EPStatement statement = epService.getEPAdministrator().createEQL(expression);

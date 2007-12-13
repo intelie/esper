@@ -5,6 +5,7 @@ import net.esper.client.*;
 import net.esper.client.time.TimerControlEvent;
 import net.esper.event.EventBean;
 import net.esper.support.util.SupportUpdateListener;
+import net.esper.support.client.SupportConfigFactory;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.w3c.dom.Document;
@@ -33,7 +34,7 @@ public class TestNoSchemaXMLEvent extends TestCase
 
     public void setUp()
     {
-        Configuration configuration = new Configuration();
+        Configuration configuration = SupportConfigFactory.getConfiguration();
         configuration.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
         ConfigurationEventTypeXMLDOM xmlDOMEventTypeDesc = new ConfigurationEventTypeXMLDOM();
         xmlDOMEventTypeDesc.setRootElementName("myevent");
@@ -75,7 +76,7 @@ public class TestNoSchemaXMLEvent extends TestCase
 
     public void testNestedXML() throws Exception
     {
-        Configuration configuration = new Configuration();
+        Configuration configuration = SupportConfigFactory.getConfiguration();
         ConfigurationEventTypeXMLDOM xmlDOMEventTypeDesc = new ConfigurationEventTypeXMLDOM();
         xmlDOMEventTypeDesc.setRootElementName("a");
         xmlDOMEventTypeDesc.addXPathProperty("element1", "/a/b/c", XPathConstants.STRING);
@@ -107,7 +108,7 @@ public class TestNoSchemaXMLEvent extends TestCase
 
     public void testEventXML() throws Exception
     {
-        Configuration configuration = new Configuration();
+        Configuration configuration = SupportConfigFactory.getConfiguration();
         ConfigurationEventTypeXMLDOM desc = new ConfigurationEventTypeXMLDOM();
         desc.addXPathProperty("event.type", "/event/@type", XPathConstants.STRING);
         desc.addXPathProperty("event.uid", "/event/@uid", XPathConstants.STRING);
@@ -131,7 +132,7 @@ public class TestNoSchemaXMLEvent extends TestCase
     public void testElementNode() throws Exception
     {
         // test for Esper-129
-        Configuration configuration = new Configuration();
+        Configuration configuration = SupportConfigFactory.getConfiguration();
         ConfigurationEventTypeXMLDOM desc = new ConfigurationEventTypeXMLDOM();
         desc.addXPathProperty("event.type", "//event/@type", XPathConstants.STRING);
         desc.addXPathProperty("event.uid", "//event/@uid", XPathConstants.STRING);
@@ -164,7 +165,7 @@ public class TestNoSchemaXMLEvent extends TestCase
 
     public void testNamespaceXPathRelative() throws Exception
     {
-        Configuration configuration = new Configuration();
+        Configuration configuration = SupportConfigFactory.getConfiguration();
         ConfigurationEventTypeXMLDOM desc = new ConfigurationEventTypeXMLDOM();
         desc.setRootElementName("getQuote");
         desc.setDefaultNamespace("http://services.samples/xsd");
@@ -196,7 +197,7 @@ public class TestNoSchemaXMLEvent extends TestCase
 
     public void testNamespaceXPathAbsolute() throws Exception
     {
-        Configuration configuration = new Configuration();
+        Configuration configuration = SupportConfigFactory.getConfiguration();
         ConfigurationEventTypeXMLDOM desc = new ConfigurationEventTypeXMLDOM();
         desc.addXPathProperty("symbol_a", "//m0:symbol", XPathConstants.STRING);
         desc.addXPathProperty("symbol_b", "//*[local-name(.) = 'getQuote' and namespace-uri(.) = 'http://services.samples/xsd']", XPathConstants.STRING);

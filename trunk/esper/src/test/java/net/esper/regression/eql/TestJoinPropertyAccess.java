@@ -67,6 +67,7 @@ public class TestJoinPropertyAccess extends TestCase
         assertEquals(complex.getMapped("keyOne"), combined.getIndexed(2).getMapped("2ma").getValue());
 
         EventBean event = testListener.getAndResetLastNewData()[0];
+        assertEquals("simple", event.get("s0.simpleProperty"));
         assertSame(complex, event.get("s0"));
         assertSame(combined, event.get("s1"));
     }

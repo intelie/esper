@@ -92,7 +92,7 @@ public class TestMapEvent extends TestCase
         properties.put("long", "long");
         properties.put("astring", "string");
 
-        Configuration configuration = new Configuration();
+        Configuration configuration = SupportConfigFactory.getConfiguration();
         configuration.addEventTypeAlias("MyPrimMapEvent", properties);
         configuration.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
 
@@ -104,7 +104,7 @@ public class TestMapEvent extends TestCase
         properties = new Properties();
         properties.put("astring", "XXXX");
 
-        Configuration configuration = new Configuration();
+        Configuration configuration = SupportConfigFactory.getConfiguration();
         configuration.addEventTypeAlias("MyInvalidEvent", properties);
         configuration.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
 

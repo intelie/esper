@@ -311,9 +311,9 @@ public class SupportExprNodeFactory
         }
         ViewResourceDelegateImpl viewResources = new ViewResourceDelegateImpl(factoriesPerStream, SupportStatementContextFactory.makeContext());
 
-        VariableService variableService = new VariableServiceImpl(0, new SchedulingServiceImpl());
-        variableService.createNewVariable("intPrimitive", Integer.class, 10);
-        variableService.createNewVariable("var1", String.class, "my_variable_value");
+        VariableService variableService = new VariableServiceImpl(0, new SchedulingServiceImpl(), null);
+        variableService.createNewVariable("intPrimitive", Integer.class, 10, null);
+        variableService.createNewVariable("var1", String.class, "my_variable_value", null);
 
         topNode.getValidatedSubtree(streamTypeService, new MethodResolutionServiceImpl(null), viewResources, null, variableService);
     }

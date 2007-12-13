@@ -9,7 +9,7 @@ import net.esper.support.util.SupportUpdateListener;
 
 public class TestUpdateDispatchView extends TestCase
 {
-    private UpdateDispatchViewBlocking updateDispatchView;
+    private UpdateDispatchViewBlockingWait updateDispatchView;
     private SupportUpdateListener listenerOne;
     private SupportUpdateListener listenerTwo;
     private DispatchService dispatchService;
@@ -24,7 +24,7 @@ public class TestUpdateDispatchView extends TestCase
         listenerSet.addListener(listenerTwo);
 
         dispatchService = new DispatchServiceImpl();
-        updateDispatchView = new UpdateDispatchViewBlocking(null, null, listenerSet, dispatchService, 1000);
+        updateDispatchView = new UpdateDispatchViewBlockingWait(null, null, listenerSet, dispatchService, 1000);
     }
 
     public void testUpdateOnceAndDispatch()

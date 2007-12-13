@@ -2,7 +2,9 @@ package net.esper.regression.client;
 
 import net.esper.eql.agg.AggregationSupport;
 
-public class MyConcatAggregationFunction extends AggregationSupport
+import java.io.Serializable;
+
+public class MyConcatAggregationFunction extends AggregationSupport implements Serializable
 {
     private final static char DELIMITER = ' ';
     private StringBuilder builder;

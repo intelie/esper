@@ -3,6 +3,8 @@ package net.esper.eql.core;
 import junit.framework.TestCase;
 import net.esper.support.eql.SupportPluginAggregationMethodOne;
 
+import java.lang.reflect.Method;
+
 public class TestEngineImportServiceImpl extends TestCase
 {
     EngineImportServiceImpl engineImportService;
@@ -10,6 +12,22 @@ public class TestEngineImportServiceImpl extends TestCase
     public void setUp()
     {
         this.engineImportService = new EngineImportServiceImpl();
+    }
+
+    public void testResolveMethodNoArgTypes() throws Exception
+    {
+        Method method = engineImportService.resolveMethod("java.lang.Math", "cbrt");
+        assertEquals(Math.class.getMethod("cbrt", new Class[] {double.class}), method);
+
+        try
+        {
+            engineImportService.resolveMethod("java.lang.Math", "abs");
+            fail();
+        }
+        catch (EngineImportException ex)
+        {
+            assertEquals("Ambiguous method name: method by name 'abs' is overloaded in class 'java.lang.Math'", ex.getMessage());
+        }
     }
 
     public void testAddAggregation() throws EngineImportException
@@ -55,15 +73,15 @@ public class TestEngineImportServiceImpl extends TestCase
     {
         String className = "java.lang.Math";
         Class expected = Math.class;
-        assertEquals(expected, engineImportService.resolveClass(className));
+        assertEquals(expected, engineImportService.resolveClassInternal(className));
 
         engineImportService.addImport("java.lang.Math");
-        assertEquals(expected, engineImportService.resolveClass(className));
+        assertEquals(expected, engineImportService.resolveClassInternal(className));
 
         engineImportService.addImport("java.lang.*");
         className = "String";
         expected = String.class;
-        assertEquals(expected, engineImportService.resolveClass(className));
+        assertEquals(expected, engineImportService.resolveClassInternal(className));
     }
 
     public void testResolveClassInvalid()
@@ -71,7 +89,7 @@ public class TestEngineImportServiceImpl extends TestCase
         String className = "Math";
         try
         {
-            engineImportService.resolveClass(className);
+            engineImportService.resolveClassInternal(className);
             fail();
         }
         catch (ClassNotFoundException e)

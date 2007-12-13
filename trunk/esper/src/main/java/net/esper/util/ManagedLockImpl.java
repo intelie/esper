@@ -10,6 +10,7 @@ package net.esper.util;
 import net.esper.core.StatementLockFactory;
 
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.Arrays;
 
 /**
  * Simple lock based on {@link ReentrantLock} that associates a name with the lock and traces locking and unlocking.
@@ -73,5 +74,10 @@ public class ManagedLockImpl implements ManagedLock
             ThreadLogUtil.traceLock("Held    " + name + " by current:" + isHeld, lock);
         }
         return isHeld;
+    }
+
+    public String toString()
+    {
+        return this.getClass().getSimpleName() + " name=" + name + " lock=" + lock;
     }
 }

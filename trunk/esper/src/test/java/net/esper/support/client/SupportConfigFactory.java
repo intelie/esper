@@ -18,7 +18,7 @@ public class SupportConfigFactory
             {
                 Class clazz = Class.forName(configFactoryClass);
                 Object instance = clazz.newInstance();
-                Method m = clazz.getMethod("getConfiguration");
+                Method m = clazz.getMethod("getConfigurationEsperRegression");
                 Object result = m.invoke(instance);
                 config = (Configuration) result;
             }

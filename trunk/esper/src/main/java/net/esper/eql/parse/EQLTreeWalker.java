@@ -835,6 +835,32 @@ public class EQLTreeWalker extends EQLBaseWalker
 
             streamSpec = new DBStatementStreamSpec(streamName, viewSpecs, dbName, sqlWithParams, sampleSQL);
         }
+        else if (node.getFirstChild().getType() == METHOD_JOIN_EXPR)
+        {
+            AST childNode = node.getFirstChild().getFirstChild();
+            String prefixIdent = childNode.getText();
+            childNode = childNode.getNextSibling();
+
+            String className = childNode.getText();
+            childNode = childNode.getNextSibling();
+
+            int indexDot = className.lastIndexOf('.');
+            String classNamePart;
+            String methodNamePart;
+            if (indexDot == -1)
+            {
+                classNamePart = className;
+                methodNamePart = null;
+            }
+            else
+            {
+                classNamePart = className.substring(0, indexDot);
+                methodNamePart = className.substring(indexDot + 1);
+            }
+            List<ExprNode> exprNodes = getExprNodes(childNode);
+
+            streamSpec = new MethodStreamSpec(streamName, viewSpecs, prefixIdent, classNamePart, methodNamePart, exprNodes);
+        }
         else
         {
             throw new ASTWalkException("Unexpected AST child node to stream expression, type=" + node.getFirstChild().getType());
@@ -1367,18 +1393,7 @@ public class EQLTreeWalker extends EQLBaseWalker
         String eventName = startNode.getText();
 
         AST currentNode = startNode.getNextSibling();
-        List<ExprNode> exprNodes = new LinkedList<ExprNode>();
-        while(currentNode != null)
-        {
-            ExprNode exprNode = astExprNodeMap.get(currentNode);
-            if (exprNode == null)
-            {
-                throw new IllegalStateException("Expression node for AST node not found for type " + currentNode.getType());
-            }
-            exprNodes.add(exprNode);
-            astExprNodeMap.remove(currentNode);
-            currentNode = currentNode.getNextSibling();
-        }
+        List<ExprNode> exprNodes = getExprNodes(currentNode);
 
         FilterSpecRaw rawFilterSpec = new FilterSpecRaw(eventName, exprNodes);
         if (isProcessingPattern)
@@ -1571,6 +1586,23 @@ public class EQLTreeWalker extends EQLBaseWalker
         {
             statementSpec.setSelectStreamDirEnum(SelectClauseStreamSelectorEnum.ISTREAM_ONLY);
         }
+    }
+
+    private List<ExprNode> getExprNodes(AST currentNode)
+    {
+        List<ExprNode> exprNodes = new LinkedList<ExprNode>();
+        while(currentNode != null)
+        {
+            ExprNode exprNode = astExprNodeMap.get(currentNode);
+            if (exprNode == null)
+            {
+                throw new IllegalStateException("Expression node for AST node not found for type " + currentNode.getType());
+            }
+            exprNodes.add(exprNode);
+            astExprNodeMap.remove(currentNode);
+            currentNode = currentNode.getNextSibling();
+        }
+        return exprNodes;
     }
 
     private static final Log log = LogFactory.getLog(EQLTreeWalker.class);

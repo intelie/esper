@@ -8,6 +8,7 @@ import net.esper.support.bean.SupportMarketDataBean;
 import net.esper.support.bean.SupportBean;
 import net.esper.support.bean.SupportBeanCombinedProps;
 import net.esper.support.util.SupportUpdateListener;
+import net.esper.support.client.SupportConfigFactory;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import junit.framework.TestCase;
@@ -20,7 +21,7 @@ public class TestPerfPropertyAccess extends TestCase
 
     public void setUp()
     {
-        epService = EPServiceProviderManager.getDefaultProvider(new Configuration());
+        epService = EPServiceProviderManager.getDefaultProvider(SupportConfigFactory.getConfiguration());
         epService.initialize();
         updateListener = new SupportUpdateListener();
     }

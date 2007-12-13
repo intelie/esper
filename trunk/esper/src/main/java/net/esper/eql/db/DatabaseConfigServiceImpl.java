@@ -103,26 +103,8 @@ public class DatabaseConfigServiceImpl implements DatabaseConfigService
             throw new DatabaseConfigException("Cannot locate configuration information for database '" + databaseName + '\'');
         }
 
-        // default is no cache
-        if (config.getDataCacheDesc() == null)
-        {
-            return new DataCacheNullImpl();
-        }
-
-        if (config.getDataCacheDesc() instanceof ConfigurationDBRef.LRUCacheDesc)
-        {
-            ConfigurationDBRef.LRUCacheDesc lruCache = (ConfigurationDBRef.LRUCacheDesc) config.getDataCacheDesc();
-            return new DataCacheLRUImpl(lruCache.getSize());
-        }
-
-        if (config.getDataCacheDesc() instanceof ConfigurationDBRef.ExpiryTimeCacheDesc)
-        {
-            ConfigurationDBRef.ExpiryTimeCacheDesc expCache = (ConfigurationDBRef.ExpiryTimeCacheDesc) config.getDataCacheDesc();
-            return new DataCacheExpiringImpl(expCache.getMaxAgeSeconds(), expCache.getPurgeIntervalSeconds(), expCache.getCacheReferenceType(),
-                    schedulingService, scheduleBucket.allocateSlot(), epStatementHandle);
-        }
-
-        throw new IllegalStateException("Cache implementation class not configured");
+        ConfigurationDBRef.DataCacheDesc dataCacheDesc = config.getDataCacheDesc();
+        return DataCacheFactory.getDataCache(dataCacheDesc, epStatementHandle, schedulingService, scheduleBucket);
     }
 
     public ColumnSettings getQuerySetting(String databaseName) throws DatabaseConfigException

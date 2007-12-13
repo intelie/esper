@@ -28,22 +28,27 @@ public class TestMTStmtIterate extends TestCase
         engine.initialize();
     }
 
-    public void testIterator() throws Exception
+    public void testIteratorSingleStmt() throws Exception
     {
-        EPStatement stmt = engine.getEPAdministrator().createEQL(
-                " select string from " + SupportBean.class.getName() + ".win:time(5 min)");
-
-        /**
-         * Iterator fail with concurrent mod exception.
-         * (1) copy-on-write would be a performance drag
-         * (2) clients may want to fail if a concurrent mod happened
-         * (3) statement lock could prevent concurrent mod but could also become an issue for deadlock and lock contention
-         */
+        EPStatement stmt[] = new EPStatement[] {engine.getEPAdministrator().createEQL(
+                " select string from " + SupportBean.class.getName() + ".win:time(5 min)")};
 
         trySend(2, 10, stmt);
     }
 
-    private void trySend(int numThreads, int numRepeats, EPStatement stmt) throws Exception
+    public void testIteratorMultiStmt() throws Exception
+    {
+        EPStatement stmt[] = new EPStatement[3];
+        for (int i = 0; i < stmt.length; i++)
+        {
+            String stmtText = " select string from " + SupportBean.class.getName() + ".win:time(5 min)";
+            stmt[i] = engine.getEPAdministrator().createEQL(stmtText);
+        }
+
+        trySend(2, 10, stmt);
+    }
+
+    private void trySend(int numThreads, int numRepeats, EPStatement stmt[]) throws Exception
     {
         ExecutorService threadPool = Executors.newFixedThreadPool(numThreads);
         Future future[] = new Future[numThreads];
@@ -54,7 +59,7 @@ public class TestMTStmtIterate extends TestCase
         }
 
         threadPool.shutdown();
-        threadPool.awaitTermination(10, TimeUnit.SECONDS);
+        threadPool.awaitTermination(5, TimeUnit.SECONDS);
 
         for (int i = 0; i < numThreads; i++)
         {

@@ -10,6 +10,7 @@ import net.esper.event.EventBean;
 
 import java.util.concurrent.*;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.ArrayList;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -20,27 +21,15 @@ import org.apache.commons.logging.LogFactory;
 public class TestMTDeterminismInsertInto extends TestCase
 {
     private static final Log log = LogFactory.getLog(TestMTDeterminismInsertInto.class);
-    private EPServiceProvider engine;
 
-    public void setUp()
+    public void testSceneOneSuspend() throws Exception
     {
-        Configuration config = SupportConfigFactory.getConfiguration();
-        // This should fail all test in this class
-        // config.getEngineDefaults().getThreading().setInsertIntoDispatchPreserveOrder(false);
-
-        engine = EPServiceProviderManager.getDefaultProvider(config);
-        engine.initialize();
-        engine.getEPRuntime().sendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
+        trySendCountFollowedBy(4, 10000, ConfigurationEngineDefaults.Threading.Locking.SUSPEND);
     }
 
-    public void tearDown()
+    public void testSceneOneSpin() throws Exception
     {
-        engine.initialize();
-    }
-
-    public void testSceneOne() throws Exception
-    {
-        trySendCountFollowedBy(4, 10000);
+        trySendCountFollowedBy(4, 10000, ConfigurationEngineDefaults.Threading.Locking.SPIN);
     }
 
     public void testSceneTwo() throws Exception
@@ -55,11 +44,19 @@ public class TestMTDeterminismInsertInto extends TestCase
 
     private void tryMultiInsertGroup(int numThreads, int numStatements, int numEvents) throws Exception
     {
+        Configuration config = SupportConfigFactory.getConfiguration();
+        // This should fail all test in this class
+        // config.getEngineDefaults().getThreading().setInsertIntoDispatchPreserveOrder(false);
+
+        EPServiceProvider engine = EPServiceProviderManager.getDefaultProvider(config);
+        engine.initialize();
+        engine.getEPRuntime().sendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
+
         // setup statements
         EPStatement[] insertIntoStmts = new EPStatement[numStatements];
         for (int i = 0; i < numStatements; i++)
         {
-            insertIntoStmts[i] = engine.getEPAdministrator().createEQL("insert into MyStream select '" + i + "'" + " as ident,count(*) as cnt from " + SupportBean.class.getName());
+            insertIntoStmts[i] = engine.getEPAdministrator().createEQL("insert into MyStream select " + i + " as ident,count(*) as cnt from " + SupportBean.class.getName());
         }
         EPStatement stmtInsertTwo = engine.getEPAdministrator().createEQL("select ident, sum(cnt) as mysum from MyStream group by ident");
         SupportUpdateListener listener = new SupportUpdateListener();
@@ -87,18 +84,24 @@ public class TestMTDeterminismInsertInto extends TestCase
 
         // assert result
         EventBean newEvents[] = listener.getNewDataListFlattened();
-        int count = 0;
-        for (int i = 0; i < numEvents - 1; i++)
+        ArrayList resultsPerIdent[] = new ArrayList[numStatements];
+        for (EventBean event : newEvents)
         {
-            long expected = total(i + 1);
-            for (int j = 0; j < numStatements; j++)
+            int ident = (Integer)event.get("ident");
+            if (resultsPerIdent[ident] == null)
             {
-                String ident = (String) newEvents[count].get("ident");
-                long mysum = (Long) newEvents[count].get("mysum");
-                count++;
+                resultsPerIdent[ident] = new ArrayList();
+            }
+            long mysum = (Long) event.get("mysum");
+            resultsPerIdent[ident].add(mysum);
+        }
 
-                assertEquals(Integer.toString(j), ident);
-                assertEquals(expected, mysum);
+        for (int statement = 0; statement < numStatements; statement++)
+        {
+            for (int i = 0; i < numEvents - 1; i++)
+            {
+                long expected = total(i + 1);
+                assertEquals(expected, resultsPerIdent[statement].get(i));
             }
         }
 
@@ -112,6 +115,14 @@ public class TestMTDeterminismInsertInto extends TestCase
 
     private void tryChainedCountSum(int numThreads, int numEvents) throws Exception
     {
+        Configuration config = SupportConfigFactory.getConfiguration();
+        // This should fail all test in this class
+        // config.getEngineDefaults().getThreading().setInsertIntoDispatchPreserveOrder(false);
+
+        EPServiceProvider engine = EPServiceProviderManager.getDefaultProvider(config);
+        engine.initialize();
+        engine.getEPRuntime().sendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
+
         // setup statements
         EPStatement stmtInsertOne = engine.getEPAdministrator().createEQL("insert into MyStreamOne select count(*) as cnt from " + SupportBean.class.getName());
         EPStatement stmtInsertTwo = engine.getEPAdministrator().createEQL("insert into MyStreamTwo select sum(cnt) as mysum from MyStreamOne");
@@ -162,8 +173,17 @@ public class TestMTDeterminismInsertInto extends TestCase
         return total;
     }
 
-    private void trySendCountFollowedBy(int numThreads, int numEvents) throws Exception
+    private void trySendCountFollowedBy(int numThreads, int numEvents, ConfigurationEngineDefaults.Threading.Locking locking) throws Exception
     {
+        Configuration config = SupportConfigFactory.getConfiguration();
+        config.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
+        config.getEngineDefaults().getThreading().setInsertIntoDispatchLocking(locking);
+        // This should fail all test in this class
+        // config.getEngineDefaults().getThreading().setInsertIntoDispatchPreserveOrder(false);
+
+        EPServiceProvider engine = EPServiceProviderManager.getDefaultProvider(config);
+        engine.initialize();
+
         // setup statements
         EPStatement stmtInsert = engine.getEPAdministrator().createEQL("insert into MyStream select count(*) as cnt from " + SupportBean.class.getName());
         stmtInsert.addListener(new UpdateListener() {

@@ -8,6 +8,7 @@ import net.esper.support.bean.SupportMarketDataBean;
 import net.esper.support.eql.SupportPluginAggregationMethodTwo;
 import net.esper.support.eql.SupportPluginAggregationMethodOne;
 import net.esper.support.util.SupportUpdateListener;
+import net.esper.support.client.SupportConfigFactory;
 import net.esper.util.SerializableObjectCopier;
 
 public class TestAggregationFunctionPlugIn extends TestCase
@@ -19,7 +20,7 @@ public class TestAggregationFunctionPlugIn extends TestCase
     {
         testListener = new SupportUpdateListener();
 
-        Configuration configuration = new Configuration();
+        Configuration configuration = SupportConfigFactory.getConfiguration();
         configuration.addPlugInAggregationFunction("concatstring", MyConcatAggregationFunction.class.getName());
         configuration.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
         epService = EPServiceProviderManager.getProvider("TestAggregationFunctionPlugIn", configuration);
@@ -196,7 +197,7 @@ public class TestAggregationFunctionPlugIn extends TestCase
 
     public void testFailedValidation()
     {
-        Configuration configuration = new Configuration();
+        Configuration configuration = SupportConfigFactory.getConfiguration();
         configuration.addPlugInAggregationFunction("concat", SupportPluginAggregationMethodTwo.class.getName());
         epService = EPServiceProviderManager.getDefaultProvider(configuration);
         epService.initialize();
@@ -224,7 +225,7 @@ public class TestAggregationFunctionPlugIn extends TestCase
 
     public void testInvalidUse()
     {
-        Configuration configuration = new Configuration();
+        Configuration configuration = SupportConfigFactory.getConfiguration();
         configuration.addPlugInAggregationFunction("xxx", String.class.getName());
         configuration.addPlugInAggregationFunction("yyy", "com.NoSuchClass");
         epService = EPServiceProviderManager.getDefaultProvider(configuration);
@@ -257,7 +258,7 @@ public class TestAggregationFunctionPlugIn extends TestCase
         tryInvalidConfigure("abc", "My Class");
 
         // configure twice
-        Configuration configuration = new Configuration();
+        Configuration configuration = SupportConfigFactory.getConfiguration();
         configuration.addPlugInAggregationFunction("abcdef", String.class.getName());
         configuration.addPlugInAggregationFunction("abcdef", String.class.getName());
         try
@@ -277,7 +278,7 @@ public class TestAggregationFunctionPlugIn extends TestCase
     {
         try
         {
-            Configuration configuration = new Configuration();
+            Configuration configuration = SupportConfigFactory.getConfiguration();
             configuration.addPlugInAggregationFunction(funcName, className);
             EPServiceProvider provider = EPServiceProviderManager.getDefaultProvider(configuration);
             provider.initialize();

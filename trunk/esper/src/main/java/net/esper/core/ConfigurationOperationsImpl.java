@@ -100,6 +100,18 @@ public class ConfigurationOperationsImpl implements ConfigurationOperations
         }
     }
 
+    public void addEventTypeAliasSimpleName(Class javaEventClass)
+    {
+        try
+        {
+            eventAdapterService.addBeanType(javaEventClass.getSimpleName(), javaEventClass);
+        }
+        catch (EventAdapterException t)
+        {
+            throw new ConfigurationException(t.getMessage(), t);
+        }
+    }
+
     public void addEventTypeAlias(String eventTypeAlias, Properties typeMap)
     {
         Map<String, Class> types = createPropertyTypes(typeMap);
@@ -171,7 +183,7 @@ public class ConfigurationOperationsImpl implements ConfigurationOperations
     {
         try
         {
-            variableService.createNewVariable(variableName, type, initializationValue);
+            variableService.createNewVariable(variableName, type, initializationValue, null);
         }
         catch (VariableExistsException e)
         {

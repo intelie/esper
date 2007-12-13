@@ -11,7 +11,7 @@ public class TestVariableService extends TestCase
     
     public void setUp()
     {
-        service = new VariableServiceImpl(10000, new SchedulingServiceImpl());
+        service = new VariableServiceImpl(10000, new SchedulingServiceImpl(), null);
     }
 
     public void testPerfSetVersion()
@@ -53,7 +53,7 @@ public class TestVariableService extends TestCase
             char c = 'A';
             c+=i;
             variables[i] = Character.toString(c);
-            service.createNewVariable(variables[i], Integer.class, 0);
+            service.createNewVariable(variables[i], Integer.class, 0, null);
         }
 
         ExecutorService threadPool = Executors.newFixedThreadPool(numThreads);
@@ -87,7 +87,7 @@ public class TestVariableService extends TestCase
     {
         assertNull(service.getReader("a"));
 
-        service.createNewVariable("a", Long.class, 100L);
+        service.createNewVariable("a", Long.class, 100L, null);
         VariableReader reader = service.getReader("a");
         assertEquals(Long.class, reader.getType());
         assertEquals(100L, reader.getValue());
@@ -107,13 +107,13 @@ public class TestVariableService extends TestCase
 
     public void testRollover() throws Exception
     {
-        service = new VariableServiceImpl(VariableServiceImpl.ROLLOVER_READER_BOUNDARY - 100, 10000, new SchedulingServiceImpl());
+        service = new VariableServiceImpl(VariableServiceImpl.ROLLOVER_READER_BOUNDARY - 100, 10000, new SchedulingServiceImpl(), null);
         String[] variables = "a,b,c,d".split(",");
 
         VariableReader readers[] = new VariableReader[variables.length];
         for (int i = 0; i < variables.length; i++)
         {
-            service.createNewVariable(variables[i], Long.class, 100L);
+            service.createNewVariable(variables[i], Long.class, 100L, null);
             readers[i] = service.getReader(variables[i]);
         }
 
@@ -139,12 +139,12 @@ public class TestVariableService extends TestCase
 
     public void testInvalid() throws Exception
     {
-        service.createNewVariable("a", Long.class, null);
+        service.createNewVariable("a", Long.class, null, null);
         assertNull(service.getReader("dummy"));
 
         try
         {
-            service.createNewVariable("a", Long.class, null);
+            service.createNewVariable("a", Long.class, null, null);
             fail();
         }
         catch (VariableExistsException e)

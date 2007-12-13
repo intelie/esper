@@ -28,10 +28,10 @@ public class TestDatabaseJoinInsertInto extends TestCase
 
         Configuration configuration = SupportConfigFactory.getConfiguration();
         configuration.addDatabaseReference("MyDB", configDB);
+        configuration.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
 
         epService = EPServiceProviderManager.getDefaultProvider(configuration);
         epService.initialize();
-        epService.getEPRuntime().sendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
     }
 
     public void testInsertIntoTimeBatch()

@@ -9,6 +9,7 @@ import net.esper.support.bean.SupportBeanConstants;
 import net.esper.support.bean.SupportBean_N;
 import net.esper.support.bean.SupportBean_S0;
 import net.esper.support.bean.SupportTradeEvent;
+import net.esper.support.client.SupportConfigFactory;
 
 import java.util.Random;
 
@@ -164,7 +165,7 @@ public class TestUseResultPattern extends TestCase implements SupportBeanConstan
     public void testFollowedByFilter()
     {
         // Test for ESPER-121
-        Configuration config = new Configuration();
+        Configuration config = SupportConfigFactory.getConfiguration();
         config.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
         config.addEventTypeAlias("FxTradeEvent", SupportTradeEvent.class
                 .getName());

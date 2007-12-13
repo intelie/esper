@@ -7,6 +7,7 @@ import net.esper.client.EPServiceProviderManager;
 import net.esper.client.EPStatement;
 import net.esper.support.bean.SupportMarketDataIDBean;
 import net.esper.support.util.SupportUpdateListener;
+import net.esper.support.client.SupportConfigFactory;
 
 public class TestPerfTimeWindowMinFilter extends TestCase
 {
@@ -15,7 +16,7 @@ public class TestPerfTimeWindowMinFilter extends TestCase
 
     public void setUp()
     {
-        Configuration config = new Configuration();
+        Configuration config = SupportConfigFactory.getConfiguration();
         config.addEventTypeAlias("MD", SupportMarketDataIDBean.class);
         epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();

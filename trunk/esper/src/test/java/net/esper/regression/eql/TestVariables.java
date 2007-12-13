@@ -388,6 +388,7 @@ public class TestVariables extends TestCase
         assertEquals(Boolean.class, typeSet.getPropertyType("p_2"));
         assertEquals(String.class, typeSet.getPropertyType("p_3"));
         assertEquals(Map.class, typeSet.getUnderlyingType());
+        Arrays.sort(typeSet.getPropertyNames());
         assertTrue(Arrays.equals(typeSet.getPropertyNames(), fieldsVar));
 
         sendSupportBean("S1", 3);
@@ -433,6 +434,7 @@ public class TestVariables extends TestCase
         assertEquals(Boolean.class, typeSet.getPropertyType("p_2"));
         assertEquals(Long.class, typeSet.getPropertyType("p_3"));
         assertEquals(Double.class, typeSet.getPropertyType("p_4"));
+        Arrays.sort(typeSet.getPropertyNames());
         assertTrue(Arrays.equals(typeSet.getPropertyNames(), fieldsVar));
 
         SupportBean bean = new SupportBean();

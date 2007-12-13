@@ -7,6 +7,7 @@ import net.esper.client.EPStatement;
 import net.esper.client.Configuration;
 import net.esper.support.util.SupportUpdateListener;
 import net.esper.support.bean.SupportBean;
+import net.esper.support.client.SupportConfigFactory;
 import net.esper.event.EventBean;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -18,7 +19,7 @@ public class TestPerf3StreamOuterJoinCoercion extends TestCase
 
     public void setUp()
     {
-        epService = EPServiceProviderManager.getDefaultProvider(new Configuration());
+        epService = EPServiceProviderManager.getDefaultProvider(SupportConfigFactory.getConfiguration());
         epService.initialize();
         listener = new SupportUpdateListener();
     }

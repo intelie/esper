@@ -9,6 +9,7 @@ import net.esper.support.util.ArrayAssertionUtil;
 import net.esper.support.eql.SupportDatabaseService;
 import net.esper.support.bean.SupportBean_S0;
 import net.esper.support.bean.SupportBean;
+import net.esper.support.client.SupportConfigFactory;
 import net.esper.event.EventBean;
 import java.util.Properties;
 
@@ -26,23 +27,21 @@ public class TestDatabaseJoinPerfNoCache extends TestCase
         ConfigurationDBRef configDB = new ConfigurationDBRef();
         configDB.setDriverManagerConnection(SupportDatabaseService.DRIVER, SupportDatabaseService.FULLURL, new Properties());
         configDB.setConnectionLifecycleEnum(ConfigurationDBRef.ConnectionLifecycleEnum.RETAIN);
-        Configuration configuration = new Configuration();
+        Configuration configuration = SupportConfigFactory.getConfiguration();
         configuration.addDatabaseReference("MyDB", configDB);
         configuration.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
 
         epServiceRetained = EPServiceProviderManager.getProvider("TestDatabaseJoinRetained", configuration);
         epServiceRetained.initialize();
-        epServiceRetained.getEPRuntime().sendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
 
         configDB = new ConfigurationDBRef();
         configDB.setDriverManagerConnection(SupportDatabaseService.DRIVER, SupportDatabaseService.FULLURL, new Properties());
         configDB.setConnectionLifecycleEnum(ConfigurationDBRef.ConnectionLifecycleEnum.POOLED);
-        configuration = new Configuration();
+        configuration = SupportConfigFactory.getConfiguration();
         configuration.addDatabaseReference("MyDB", configDB);
         configuration.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
         epServicePooled = EPServiceProviderManager.getProvider("TestDatabaseJoinPooled", configuration);
         epServicePooled.initialize();
-        epServicePooled.getEPRuntime().sendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
     }
 
     public void test100EventsRetained()

@@ -572,6 +572,11 @@ public class TestEQLParser extends TestCase implements EqlTokenTypes
         
         // use variable in output clause
         assertIsValid("select count(*) from A output every VAR1 events");
+
+        // join with method result
+        assertIsValid("select * from A, method:myClass.myname() as b where a.x = b.x");
+        assertIsValid("select method, a, b from A, METHOD:com.maypack.myClass.myname() as b where a.x = b.x");
+        assertIsValid("select method, a, b from A, someident:com.maypack.myClass.myname() as b where a.x = b.x");
     }
 
     public void testBitWiseCases() throws Exception

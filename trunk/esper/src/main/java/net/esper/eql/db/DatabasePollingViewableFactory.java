@@ -30,7 +30,7 @@ import antlr.TokenStreamException;
 /**
  * Factory for a view onto historical data via SQL statement.
  */
-public class PollingViewableFactory
+public class DatabasePollingViewableFactory
 {
     private static final String SAMPLE_WHERECLAUSE_PLACEHOLDER = "$ESPER-SAMPLE-WHERE";
     
@@ -223,7 +223,7 @@ public class PollingViewableFactory
         PollExecStrategyDBQuery dbPollStrategy = new PollExecStrategyDBQuery(eventAdapterService,
                 eventType, connectionCache, preparedStatementText, queryMetaData.getOutputParameters());
 
-        return new PollingViewable(streamNumber, queryMetaData.getInputParameters(), dbPollStrategy, dataCache, eventType);
+        return new DatabasePollingViewable(streamNumber, queryMetaData.getInputParameters(), dbPollStrategy, dataCache, eventType);
     }
 
     private static QueryMetaData getExampleQueryMetaData(Connection connection, String[] parameters, String sampleSQL, ColumnSettings metadataSetting, boolean isUsingMetadataSQL)
@@ -627,5 +627,5 @@ public class PollingViewableFactory
         return outputProperties;
     }
 
-    private static final Log log = LogFactory.getLog(PollingViewableFactory.class);
+    private static final Log log = LogFactory.getLog(DatabasePollingViewableFactory.class);
 }

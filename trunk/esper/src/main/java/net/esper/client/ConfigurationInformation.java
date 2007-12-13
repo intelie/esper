@@ -97,5 +97,12 @@ public interface ConfigurationInformation
      * Returns the variables by name as key and type plus initialization value as value
      * @return map of variable name and variable configuration
      */
-    public Map<String, ConfigurationVariable> getVariables();    
+    public Map<String, ConfigurationVariable> getVariables();
+
+    /**
+     * Returns a map of class name and cache configurations, for use in
+     * method invocations in the from-clause of methods provided by the class.
+     * @return map of fully-qualified or simple class name and cache configuration
+     */
+    public Map<String, ConfigurationMethodRef> getMethodInvocationReferences();
 }

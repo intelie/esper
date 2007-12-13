@@ -8,6 +8,7 @@ import net.esper.support.bean.SupportMarketDataBean;
 import net.esper.support.bean.SupportBeanDynRoot;
 import net.esper.support.bean.SupportBean_S0;
 import net.esper.support.util.SupportUpdateListener;
+import net.esper.support.client.SupportConfigFactory;
 
 public class TestEventPropertyGetter extends TestCase
 {
@@ -16,7 +17,7 @@ public class TestEventPropertyGetter extends TestCase
 
     public void setUp()
     {
-        epService = EPServiceProviderManager.getDefaultProvider();
+        epService = EPServiceProviderManager.getDefaultProvider(SupportConfigFactory.getConfiguration());
         epService.initialize();
         listener = new SupportUpdateListener();
     }

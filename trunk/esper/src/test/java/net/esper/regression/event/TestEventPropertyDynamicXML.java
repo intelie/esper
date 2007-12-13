@@ -3,6 +3,7 @@ package net.esper.regression.event;
 import junit.framework.TestCase;
 import net.esper.support.util.SupportUpdateListener;
 import net.esper.support.bean.*;
+import net.esper.support.client.SupportConfigFactory;
 import net.esper.client.*;
 import net.esper.event.EventBean;
 import net.esper.event.EventType;
@@ -21,14 +22,14 @@ public class TestEventPropertyDynamicXML extends TestCase
 
     public void setUp()
     {
-        epService = EPServiceProviderManager.getDefaultProvider();
+        epService = EPServiceProviderManager.getDefaultProvider(SupportConfigFactory.getConfiguration());
         epService.initialize();
         listener = new SupportUpdateListener();
     }
 
     public void testNoSchema() throws Exception
     {
-        Configuration configuration = new Configuration();
+        Configuration configuration = SupportConfigFactory.getConfiguration();
         ConfigurationEventTypeXMLDOM desc = new ConfigurationEventTypeXMLDOM();
         desc.setRootElementName("event");
         configuration.addEventTypeAlias("MyEvent", desc);

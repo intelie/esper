@@ -1,6 +1,7 @@
 package net.esper.eql.core;
 
 import net.esper.eql.agg.AggregationSupport;
+import net.esper.client.ConfigurationMethodRef;
 
 import java.lang.reflect.Method;
 
@@ -9,6 +10,13 @@ import java.lang.reflect.Method;
  */
 public interface EngineImportService
 {
+    /**
+     * Returns the method invocation caches for the from-clause for a class.
+     * @param className the class name providing the method
+     * @return cache configs
+     */
+    public ConfigurationMethodRef getConfigurationMethodRef(String className);
+
     /**
      * Add an import, such as "com.mypackage.*" or "com.mypackage.MyClass".
      * @param importName is the import to add
@@ -43,4 +51,23 @@ public interface EngineImportService
      * @throws EngineImportException if the method cannot be resolved to a visible static method
      */
     public Method resolveMethod(String classNameAlias, String methodName, Class[] paramTypes) throws EngineImportException;
+
+    /**
+     * Resolves a given class name, either fully qualified and simple and imported to a class.
+     * @param classNameAlias is the class name to use
+     * @return class this resolves to
+     * @throws EngineImportException if there was an error resolving the class
+     */
+    public Class resolveClass(String classNameAlias) throws EngineImportException;
+
+    /**
+     * Resolves a given class and method name to a static method, expecting the method to exist
+     * exactly once and not be overloaded, with any parameters.
+     * @param classNameAlias is the class name to use
+     * @param methodName is the method name
+     * @return method this resolves to
+     * @throws EngineImportException if the method cannot be resolved to a visible static method, or
+     * if the method is overloaded
+     */
+    public Method resolveMethod(String classNameAlias, String methodName) throws EngineImportException;
 }

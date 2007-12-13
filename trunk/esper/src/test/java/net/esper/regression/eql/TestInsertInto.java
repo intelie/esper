@@ -14,6 +14,7 @@ import net.esper.support.bean.*;
 import net.esper.support.client.SupportConfigFactory;
 import net.esper.support.util.SupportUpdateListener;
 import net.esper.util.SerializableObjectCopier;
+import net.esper.core.InsertIntoLatchSpin;
 
 import java.util.Map;
 

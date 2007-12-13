@@ -2,7 +2,7 @@ package net.esper.eql.db;
 
 import net.esper.eql.spec.DBStatementStreamSpec;
 import net.esper.eql.spec.ViewSpec;
-import net.esper.eql.db.PollingViewableFactory;
+import net.esper.eql.db.DatabasePollingViewableFactory;
 import net.esper.eql.expression.ExprValidationException;
 import net.esper.support.eql.SupportDatabaseService;
 import net.esper.support.event.SupportEventAdapterService;
@@ -20,7 +20,7 @@ public class TestPollingViewableFactory extends TestCase
         DBStatementStreamSpec spec = new DBStatementStreamSpec("s0", new LinkedList<ViewSpec>(),
                 "mydb_part", "select * from mytesttable where mybigint=${idnum}", null);
 
-        EventCollection eventCollection = PollingViewableFactory.createDBStatementView(1, spec,
+        EventCollection eventCollection = DatabasePollingViewableFactory.createDBStatementView(1, spec,
                 SupportDatabaseService.makeService(),
                 SupportEventAdapterService.getService(), null);
         
@@ -52,7 +52,7 @@ public class TestPollingViewableFactory extends TestCase
             String result = null;
             try
             {
-                result = PollingViewableFactory.lexSampleSQL(testcases[i][0]).trim();
+                result = DatabasePollingViewableFactory.lexSampleSQL(testcases[i][0]).trim();
             }
             catch (Exception ex)
             {

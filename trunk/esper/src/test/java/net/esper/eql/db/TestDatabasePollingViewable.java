@@ -13,9 +13,9 @@ import net.esper.support.event.SupportEventAdapterService;
 
 import java.util.*;
 
-public class TestPollingViewable extends TestCase
+public class TestDatabasePollingViewable extends TestCase
 {
-    private PollingViewable pollingViewable;
+    private DatabasePollingViewable pollingViewable;
     private PollResultIndexingStrategy indexingStrategy;
 
     public void setUp() throws Exception
@@ -33,9 +33,9 @@ public class TestPollingViewable extends TestCase
         pollResults.put(new MultiKey<Object>(new Object[] {500}), new LinkedList<EventBean>());
         SupportPollingStrategy supportPollingStrategy = new SupportPollingStrategy(pollResults);
 
-        pollingViewable = new PollingViewable(1, inputProperties, supportPollingStrategy, dataCache, resultEventType);
+        pollingViewable = new DatabasePollingViewable(1, inputProperties, supportPollingStrategy, dataCache, resultEventType);
 
-        pollingViewable.validate(new SupportStreamTypeSvc3Stream());
+        pollingViewable.validate(new SupportStreamTypeSvc3Stream(), null, null, null);
 
         indexingStrategy = new PollResultIndexingStrategy()
         {

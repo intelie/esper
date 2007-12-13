@@ -1,13 +1,12 @@
 package net.esper.core;
 
 import net.esper.client.*;
+import net.esper.collection.SafeIteratorImpl;
 import net.esper.dispatch.DispatchService;
+import net.esper.eql.variable.VariableService;
 import net.esper.event.EventBean;
 import net.esper.event.EventType;
 import net.esper.view.Viewable;
-import net.esper.util.ManagedLock;
-import net.esper.collection.SafeIteratorImpl;
-import net.esper.eql.variable.VariableService;
 
 import java.util.Iterator;
 
@@ -29,7 +28,7 @@ public class EPStatementImpl implements EPStatementSPI
     private Viewable parentView;
     private EPStatementState currentState;
     private EventType eventType;
-    private ManagedLock statementLock;
+    private EPStatementHandle epStatementHandle;
 
     /**
      * Ctor.
@@ -40,10 +39,11 @@ public class EPStatementImpl implements EPStatementSPI
      * @param dispatchService for dispatching events to listeners to the statement
      * @param statementLifecycleSvc handles lifecycle transitions for the statement
      * @param isBlockingDispatch is true if the dispatch to listeners should block to preserve event generation order
+     * @param isSpinBlockingDispatch true to use spin locks blocking to deliver results, as locks are usually uncontended
      * @param msecBlockingTimeout is the max number of milliseconds of block time
      * @param epServiceProvider is the engine instance to provide to statement-aware update listeners
      * @param timeLastStateChange the timestamp the statement was created and started
-     * @param statementLock the lock associated with the statement
+     * @param epStatementHandle the handle and statement lock associated with the statement
      * @param variableService provides access to variable values
      */
     public EPStatementImpl(EPServiceProvider epServiceProvider,
@@ -55,8 +55,9 @@ public class EPStatementImpl implements EPStatementSPI
                               StatementLifecycleSvc statementLifecycleSvc,
                               long timeLastStateChange,
                               boolean isBlockingDispatch,
+                              boolean isSpinBlockingDispatch,
                               long msecBlockingTimeout,
-                              ManagedLock statementLock,
+                              EPStatementHandle epStatementHandle,
                               VariableService variableService)
     {
         this.isPattern = isPattern;
@@ -67,7 +68,14 @@ public class EPStatementImpl implements EPStatementSPI
         statementListenerSet = new EPStatementListenerSet();
         if (isBlockingDispatch)
         {
-            this.dispatchChildView = new UpdateDispatchViewBlocking(epServiceProvider, this, statementListenerSet, dispatchService, msecBlockingTimeout);
+            if (isSpinBlockingDispatch)
+            {
+                this.dispatchChildView = new UpdateDispatchViewBlockingSpin(epServiceProvider, this, statementListenerSet, dispatchService, msecBlockingTimeout);
+            }
+            else
+            {
+                this.dispatchChildView = new UpdateDispatchViewBlockingWait(epServiceProvider, this, statementListenerSet, dispatchService, msecBlockingTimeout);
+            }
         }
         else
         {
@@ -75,7 +83,7 @@ public class EPStatementImpl implements EPStatementSPI
         }
         this.currentState = EPStatementState.STOPPED;
         this.timeLastStateChange = timeLastStateChange;
-        this.statementLock = statementLock;
+        this.epStatementHandle = epStatementHandle;
         this.variableService = variableService;
     }
 
@@ -186,17 +194,17 @@ public class EPStatementImpl implements EPStatementSPI
         }
 
         // Set variable version and acquire the lock first
-        statementLock.acquireLock(null);
+        epStatementHandle.getStatementLock().acquireLock(null);
         variableService.setLocalVersion();
 
         // Provide iterator - that iterator MUST be closed else the lock is not released
         if (isPattern)
         {
-            return new SafeIteratorImpl<EventBean>(statementLock, dispatchChildView.iterator());
+            return new SafeIteratorImpl<EventBean>(epStatementHandle.getStatementLock(), dispatchChildView.iterator());
         }
         else
         {
-            return new SafeIteratorImpl<EventBean>(statementLock, parentView.iterator());
+            return new SafeIteratorImpl<EventBean>(epStatementHandle.getStatementLock(), parentView.iterator());
         }
     }
 

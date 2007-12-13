@@ -2,8 +2,10 @@ package net.esper.eql.core;
 
 import net.esper.eql.agg.AggregationSupport;
 import net.esper.util.StaticMethodResolver;
+import net.esper.client.ConfigurationMethodRef;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -20,14 +22,30 @@ public class EngineImportServiceImpl implements EngineImportService
     private static final Log log = LogFactory.getLog(EngineImportServiceImpl.class);
 	private final List<String> imports;
     private final Map<String, String> aggregationFunctions;
+    private final Map<String, ConfigurationMethodRef> methodInvocationRef;
 
-	/**
+    /**
 	 * Ctor.
 	 */
 	public EngineImportServiceImpl()
     {
         imports = new ArrayList<String>();
         aggregationFunctions = new HashMap<String, String>();
+        methodInvocationRef = new HashMap<String, ConfigurationMethodRef>();
+    }
+
+    public ConfigurationMethodRef getConfigurationMethodRef(String className)
+    {
+        return methodInvocationRef.get(className);
+    }
+
+    /**
+     * Adds cache configs for method invocations for from-clause.
+     * @param configs cache configs
+     */
+    public void addMethodRefs(Map<String, ConfigurationMethodRef> configs)
+    {
+        methodInvocationRef.putAll(configs);
     }
 
     public void addImport(String importName) throws EngineImportException
@@ -104,10 +122,10 @@ public class EngineImportServiceImpl implements EngineImportService
     public Method resolveMethod(String classNameAlias, String methodName, Class[] paramTypes)
 			throws EngineImportException
     {
-        Class clazz = null;
+        Class clazz;
         try
         {
-            clazz = resolveClass(classNameAlias);
+            clazz = resolveClassInternal(classNameAlias);
         }
         catch (ClassNotFoundException e)
         {
@@ -120,8 +138,64 @@ public class EngineImportServiceImpl implements EngineImportService
         }
         catch (NoSuchMethodException e)
         {
-            throw new EngineImportException("Could not find method named '" + methodName + "' in class '" + classNameAlias + "' ", e);
+            throw new EngineImportException("Could not find static method named '" + methodName + "' in class '" + classNameAlias + "' ", e);
         }
+    }
+
+    public Method resolveMethod(String classNameAlias, String methodName)
+			throws EngineImportException
+    {
+        Class clazz;
+        try
+        {
+            clazz = resolveClassInternal(classNameAlias);
+        }
+        catch (ClassNotFoundException e)
+        {
+            throw new EngineImportException("Could not load class by name '" + classNameAlias + "' ", e);
+        }
+
+        Method methods[] = clazz.getMethods();
+        Method methodByName = null;
+
+        // check each method by name
+        for (Method method : methods)
+        {
+            if (method.getName().equals(methodName))
+            {
+                if (methodByName != null)
+                {
+                    throw new EngineImportException("Ambiguous method name: method by name '" + methodName + "' is overloaded in class '" + classNameAlias + "'");
+                }
+                int modifiers = method.getModifiers();
+                if (Modifier.isPublic(modifiers) && Modifier.isStatic(modifiers))
+                {
+                    methodByName = method;
+                }
+            }
+        }
+
+        if (methodByName == null)
+        {
+            throw new EngineImportException("Could not find static method named '" + methodName + "' in class '" + classNameAlias + "'");
+        }
+        return methodByName;
+    }
+
+    public Class resolveClass(String classNameAlias)
+			throws EngineImportException
+    {
+        Class clazz;
+        try
+        {
+            clazz = resolveClassInternal(classNameAlias);
+        }
+        catch (ClassNotFoundException e)
+        {
+            throw new EngineImportException("Could not load class by name '" + classNameAlias + "' ", e);
+        }
+
+        return clazz;
     }
 
     /**
@@ -130,7 +204,7 @@ public class EngineImportServiceImpl implements EngineImportService
      * @return class
      * @throws ClassNotFoundException if the class cannot be loaded
      */
-    protected Class resolveClass(String className) throws ClassNotFoundException
+    protected Class resolveClassInternal(String className) throws ClassNotFoundException
     {
 		// Attempt to retrieve the class with the name as-is
 		try

@@ -1,5 +1,7 @@
 package net.esper.eql.variable;
 
+import net.esper.core.StatementExtensionSvcContext;
+
 import java.util.concurrent.locks.ReadWriteLock;
 
 /**
@@ -26,10 +28,11 @@ public interface VariableService
      * @param variableName name of the variable
      * @param type variable type
      * @param value initialization value; String values are allowed and parsed according to type
+     * @param extensionServicesContext is extensions for implementing resilience attributes of variables
      * @throws VariableExistsException if the variable name is already in use
      * @throws VariableTypeException if the variable type cannot be recognized
      */
-    public void createNewVariable(String variableName, Class type, Object value)
+    public void createNewVariable(String variableName, Class type, Object value, StatementExtensionSvcContext extensionServicesContext)
             throws VariableExistsException, VariableTypeException;
 
     /**

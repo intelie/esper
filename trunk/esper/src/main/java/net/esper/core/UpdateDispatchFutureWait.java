@@ -5,19 +5,19 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- * DispatchFuture can be added to a dispatch queue that is thread-local. It represents
+ * UpdateDispatchFutureWait can be added to a dispatch queue that is thread-local. It represents
  * is a stand-in for a future dispatching of a statement result to statement listeners.
  * <p>
- * DispatchFuture is aware of future and past dispatches:
+ * UpdateDispatchFutureWait is aware of future and past dispatches:
  * (newest) DF3   <-->   DF2  <-->  DF1  (oldest)
  */
-public class DispatchFuture implements Dispatchable
+public class UpdateDispatchFutureWait implements Dispatchable
 {
-    private static final Log log = LogFactory.getLog(DispatchFuture.class);
-    private UpdateDispatchViewBlocking view;
-    private DispatchFuture earlier;
-    private DispatchFuture later;
-    private transient boolean isCompleted;
+    private static final Log log = LogFactory.getLog(UpdateDispatchFutureWait.class);
+    private UpdateDispatchViewBlockingWait view;
+    private UpdateDispatchFutureWait earlier;
+    private UpdateDispatchFutureWait later;
+    private volatile boolean isCompleted;
     private long msecTimeout;
 
     /**
@@ -26,7 +26,7 @@ public class DispatchFuture implements Dispatchable
      * @param earlier is the older future
      * @param msecTimeout is the timeout period to wait for listeners to complete a prior dispatch
      */
-    public DispatchFuture(UpdateDispatchViewBlocking view, DispatchFuture earlier, long msecTimeout)
+    public UpdateDispatchFutureWait(UpdateDispatchViewBlockingWait view, UpdateDispatchFutureWait earlier, long msecTimeout)
     {
         this.view = view;
         this.earlier = earlier;
@@ -36,7 +36,7 @@ public class DispatchFuture implements Dispatchable
     /**
      * Ctor - use for the first future to indicate completion.
      */
-    public DispatchFuture()
+    public UpdateDispatchFutureWait()
     {
         isCompleted = true;
     }
@@ -54,7 +54,7 @@ public class DispatchFuture implements Dispatchable
      * Hand a later future to the dispatch to use for indicating completion via notify.
      * @param later is the later dispatch
      */
-    public void setLater(DispatchFuture later)
+    public void setLater(UpdateDispatchFutureWait later)
     {
         this.later = later;
     }
@@ -65,13 +65,16 @@ public class DispatchFuture implements Dispatchable
         {
             synchronized(this)
             {
-                try
+                if (!earlier.isCompleted)
                 {
-                    this.wait(msecTimeout);
-                }
-                catch (InterruptedException e)
-                {
-                    log.error(e);
+                    try
+                    {
+                        this.wait(msecTimeout);
+                    }
+                    catch (InterruptedException e)
+                    {
+                        log.error(e);
+                    }
                 }
             }
         }

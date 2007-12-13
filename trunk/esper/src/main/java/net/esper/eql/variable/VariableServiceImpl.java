@@ -2,6 +2,8 @@ package net.esper.eql.variable;
 
 import net.esper.schedule.TimeProvider;
 import net.esper.util.JavaClassHelper;
+import net.esper.collection.Pair;
+import net.esper.core.StatementExtensionSvcContext;
 
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -59,6 +61,10 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  * is reached performs a roll-over. In a roll-over, all variables version lists are
  * newly created and any existing threads that read versions go against a (old) high-collection,
  * while new threads reading the reset version go against a new low-collection.
+ * <p>
+ * The class also allows an optional state handler to be plugged in to handle persistence for variable state.
+ * The state handler gets invoked when a variable changes value, and when a variable gets created
+ * to obtain the current value from persistence, if any. 
  */
 public class VariableServiceImpl implements VariableService
 {
@@ -98,6 +104,7 @@ public class VariableServiceImpl implements VariableService
     // Number of milliseconds that old versions of a variable are allowed to live
     private final long millisecondLifetimeOldVersions;
     private final TimeProvider timeProvider;
+    private final VariableStateHandler optionalStateHandler;
 
     private transient int currentVersionNumber;
     private int currentVariableNumber;
@@ -107,9 +114,9 @@ public class VariableServiceImpl implements VariableService
      * @param millisecondLifetimeOldVersions number of milliseconds a version may hang around before expiry
      * @param timeProvider provides the current time
      */
-    public VariableServiceImpl(long millisecondLifetimeOldVersions, TimeProvider timeProvider)
+    public VariableServiceImpl(long millisecondLifetimeOldVersions, TimeProvider timeProvider, VariableStateHandler optionalStateHandler)
     {
-        this(0, millisecondLifetimeOldVersions, timeProvider);
+        this(0, millisecondLifetimeOldVersions, timeProvider, optionalStateHandler);
     }
 
     /**
@@ -118,10 +125,11 @@ public class VariableServiceImpl implements VariableService
      * @param millisecondLifetimeOldVersions number of milliseconds a version may hang around before expiry
      * @param timeProvider provides the current time
      */
-    protected VariableServiceImpl(int startVersion, long millisecondLifetimeOldVersions, TimeProvider timeProvider)
+    protected VariableServiceImpl(int startVersion, long millisecondLifetimeOldVersions, TimeProvider timeProvider, VariableStateHandler optionalStateHandler)
     {
         this.millisecondLifetimeOldVersions = millisecondLifetimeOldVersions;
         this.timeProvider = timeProvider;
+        this.optionalStateHandler = optionalStateHandler;
         this.variables = new HashMap<String, VariableReader>();
         this.variableVersions = new ArrayList<VersionedValueList<Object>>();
         this.readWriteLock = new ReentrantReadWriteLock();
@@ -139,7 +147,7 @@ public class VariableServiceImpl implements VariableService
         changeCallbacks.set(variableNumber, variableChangeCallback);
     }
 
-    public synchronized void createNewVariable(String variableName, Class type, Object value)
+    public synchronized void createNewVariable(String variableName, Class type, Object value, StatementExtensionSvcContext extensionServicesContext)
             throws VariableExistsException, VariableTypeException
     {
         // check type
@@ -200,6 +208,16 @@ public class VariableServiceImpl implements VariableService
         }
 
         long timestamp = timeProvider.getTime();
+
+        // Check current state - see if the variable exists in the state handler
+        if (optionalStateHandler != null)
+        {
+            Pair<Boolean, Object> priorValue = optionalStateHandler.getHasState(variableName, currentVariableNumber, variableType, extensionServicesContext);
+            if (priorValue.getFirst())
+            {
+                coercedValue = priorValue.getSecond(); 
+            }
+        }
 
         // create new holder for versions
         VersionedValueList<Object> valuePerVersion = new VersionedValueList<Object>(variableName, currentVersionNumber, coercedValue, timestamp, millisecondLifetimeOldVersions, readWriteLock.readLock(), HIGH_WATERMARK_VERSIONS, false);
@@ -269,6 +287,13 @@ public class VariableServiceImpl implements VariableService
             if (callback != null)
             {
                 callback.update(uncommittedEntry.getValue(), oldValue);
+            }
+
+            // Check current state - see if the variable exists in the state handler
+            if (optionalStateHandler != null)
+            {
+                String name = versions.getName();
+                optionalStateHandler.setState(name, uncommittedEntry.getKey(), uncommittedEntry.getValue());
             }
         }
 

@@ -78,6 +78,20 @@ public interface ConfigurationOperations
             throws ConfigurationException;
 
     /**
+     * Add an alias for an event type represented by Java-bean plain-old Java object events,
+     * using the simple name of the Java class as the alias.
+     * <p>
+     * For example, if your class is "com.mycompany.MyEvent", then this method
+     * adds the alias "MyEvent" for the class.
+     * <p>
+     * Allows a second alias to be added for the same type.
+     * Does not allow the same alias to be used for different types.
+     * @param javaEventClass is the Java event class for which to create the alias from the class simple name
+     * @throws ConfigurationException if the alias is already in used for a different type
+     */
+    public void addEventTypeAliasSimpleName(Class javaEventClass);
+
+    /**
      * Add an alias for an event type that represents java.util.Map events.
      * <p>
      * Allows a second alias to be added for the same type.

@@ -7,6 +7,7 @@ import net.esper.client.EPServiceProviderManager;
 import net.esper.client.EPStatement;
 import net.esper.event.EventBean;
 import net.esper.support.util.SupportUpdateListener;
+import net.esper.support.client.SupportConfigFactory;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -19,7 +20,7 @@ public class TestEventPropertyDynamicMap extends TestCase
 
     public void setUp()
     {
-        epService = EPServiceProviderManager.getDefaultProvider();
+        epService = EPServiceProviderManager.getDefaultProvider(SupportConfigFactory.getConfiguration());
         epService.initialize();
         listener = new SupportUpdateListener();
     }

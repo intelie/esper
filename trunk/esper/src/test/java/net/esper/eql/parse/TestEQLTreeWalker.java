@@ -31,6 +31,23 @@ public class TestEQLTreeWalker extends TestCase
                     CLASSNAME + "(string='a').win:length(10).std:lastevent() as win1," +
                     CLASSNAME + "(string='b').win:length(10).std:lastevent() as win2 ";
 
+    public void testWalkJoinMethodStatement() throws Exception
+    {
+        String className = SupportBean.class.getName();
+        String expression = "select * from " + className + ", method:com.MyClass.myMethod(string, 2*intPrimitive) as s0";
+
+        EQLTreeWalker walker = parseAndWalkEQL(expression);
+        StatementSpecRaw statementSpec = walker.getStatementSpec();
+        assertEquals(2, statementSpec.getStreamSpecs().size());
+        MethodStreamSpec methodSpec = (MethodStreamSpec) statementSpec.getStreamSpecs().get(1);
+        assertEquals("method", methodSpec.getIdent());
+        assertEquals("com.MyClass", methodSpec.getClassName());
+        assertEquals("myMethod", methodSpec.getMethodName());
+        assertEquals(2, methodSpec.getExpressions().size());
+        assertTrue(methodSpec.getExpressions().get(0) instanceof ExprIdentNode);
+        assertTrue(methodSpec.getExpressions().get(1) instanceof ExprMathNode);
+    }
+
     public void testWalkCreateVariable() throws Exception
     {
         String expression = "create variable sometype var1 = 1";
@@ -45,8 +62,8 @@ public class TestEQLTreeWalker extends TestCase
 
     public void testWalkOnSet() throws Exception
     {
-        VariableService variableService = new VariableServiceImpl(0, new SchedulingServiceImpl());
-        variableService.createNewVariable("var1", Long.class, 100L);
+        VariableService variableService = new VariableServiceImpl(0, new SchedulingServiceImpl(), null);
+        variableService.createNewVariable("var1", Long.class, 100L, null);
 
         String expression = "on com.MyClass as myevent set var1 = 'a', var2 = 2*3, var3 = var1";
         EQLTreeWalker walker = parseAndWalkEQL(expression, null, variableService);
@@ -999,7 +1016,7 @@ public class TestEQLTreeWalker extends TestCase
 
     private static EQLTreeWalker parseAndWalkEQL(String expression) throws Exception
     {
-        return parseAndWalkEQL(expression, new EngineImportServiceImpl(), new VariableServiceImpl(0, null));
+        return parseAndWalkEQL(expression, new EngineImportServiceImpl(), new VariableServiceImpl(0, null, null));
     }
 
     private static EQLTreeWalker parseAndWalkEQL(String expression, EngineImportService engineImportService, VariableService variableService) throws Exception

@@ -18,7 +18,7 @@ public class TestPatternStartStop extends TestCase
 
     public void setUp()
     {
-        epService = EPServiceProviderManager.getDefaultProvider();
+        epService = EPServiceProviderManager.getDefaultProvider(SupportConfigFactory.getConfiguration());
         epService.initialize();
         updateListener = new SupportUpdateListener();
 

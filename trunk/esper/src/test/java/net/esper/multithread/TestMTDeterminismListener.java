@@ -1,18 +1,18 @@
 package net.esper.multithread;
 
 import junit.framework.TestCase;
+import net.esper.client.*;
+import net.esper.event.EventBean;
+import net.esper.support.bean.SupportBean;
+import net.esper.support.client.SupportConfigFactory;
+import net.esper.support.util.SupportMTUpdateListener;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import net.esper.client.*;
-import net.esper.support.bean.SupportBean;
-import net.esper.support.util.SupportMTUpdateListener;
-import net.esper.event.EventBean;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
-import java.util.Arrays;
 
 /**
  * Test for multithread-safety and deterministic behavior when using insert-into.
@@ -27,27 +27,34 @@ public class TestMTDeterminismListener extends TestCase
         engine.initialize();
     }
 
-    public void testOrderedDelivery() throws Exception
+    public void testOrderedDeliverySuspend() throws Exception
     {
-        engine = EPServiceProviderManager.getDefaultProvider();
-        engine.initialize();
-        trySend(3, 1000);
+        trySend(4, 10000, true, ConfigurationEngineDefaults.Threading.Locking.SUSPEND);
+    }
+
+    public void testOrderedDeliverySpin() throws Exception
+    {
+        trySend(4, 10000, true, ConfigurationEngineDefaults.Threading.Locking.SPIN);
     }
 
     public void manualTestOrderedDeliveryFail() throws Exception
     {
         /**
-         * Commented out as this is a manual test
+         * Commented out as this is a manual test -- it should fail since the disable preserve order. 
          */
-        Configuration config = new Configuration();
-        config.getEngineDefaults().getThreading().setListenerDispatchPreserveOrder(false);
-        engine = EPServiceProviderManager.getDefaultProvider(config);
-        engine.initialize();
-        trySend(3, 1000);
+        trySend(3, 1000, false, null);
     }
 
-    private void trySend(int numThreads, int numEvents) throws Exception
+    private void trySend(int numThreads, int numEvents, boolean isPreserveOrder, ConfigurationEngineDefaults.Threading.Locking locking) throws Exception
     {
+        Configuration config = SupportConfigFactory.getConfiguration();
+        config.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
+        config.getEngineDefaults().getThreading().setListenerDispatchPreserveOrder(isPreserveOrder);
+        config.getEngineDefaults().getThreading().setListenerDispatchLocking(locking);
+
+        engine = EPServiceProviderManager.getDefaultProvider(config);
+        engine.initialize();
+
         // setup statements
         EPStatement stmtInsert = engine.getEPAdministrator().createEQL("select count(*) as cnt from " + SupportBean.class.getName());
         SupportMTUpdateListener listener = new SupportMTUpdateListener();       

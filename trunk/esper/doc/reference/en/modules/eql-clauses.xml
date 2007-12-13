@@ -44,7 +44,7 @@
         </para>
 
         <para>
-			Esper can be extended by plugging-in custom developed views.
+			Esper can be extended by plugging-in custom developed views and aggregation functions.
         </para>
 
     </sect1>
@@ -333,6 +333,7 @@ from pattern[every tick=StockTick where timer:within(10 sec)]]]></programlisting
     <sect1 id="eql-from-clause">
         <title>Specifying Event Streams: the <emphasis>From</emphasis> Clause</title>
 
+		<indexterm><primary>join</primary><secondary>from clause</secondary></indexterm>
 		<indexterm><primary>from clause</primary></indexterm>
 		<indexterm><primary>EQL</primary><secondary>from clause</secondary></indexterm>
 		<para>
@@ -904,9 +905,9 @@ having stddev(price) &gt; 0.8</programlisting>
 				The next example shows two queries that produce equivalent results. The query using the <emphasis>group by</emphasis> clause is generally preferable as is easier to read. The second form introduces the <literal>stat:uni</literal> view which computes univariate statistics for a given property:
 			</para>
 
-			<programlisting>select symbol, sum(price) from StockTickEvent group by symbol
+			<programlisting>select symbol, avg(price) from StockTickEvent group by symbol
 // ... is equivalent to ...
-select symbol, sum from StockTickEvent.std:groupby('symbol').stat:uni('price')</programlisting>
+select symbol, average from StockTickEvent.std:groupby('symbol').stat:uni('price')</programlisting>
 
 			<para>
 				The next example shows two queries that are NOT equivalent as the length window is ungrouped in the first query, and grouped in the second query:
@@ -1356,6 +1357,7 @@ from pattern [every linkDown=LinkDownEvent -> linkUp=LinkUpEvent(ip=linkDown.ip)
 		<title>Joining Relational Data via SQL</title>
 		
 		<indexterm><primary>SQL</primary></indexterm>
+		<indexterm><primary>join</primary><secondary>relational data via SQL</secondary></indexterm>
 		<indexterm><primary>relational databases</primary></indexterm>
 		<indexterm><primary>EQL</primary><secondary>joining relational data via SQL</secondary></indexterm>
 
@@ -1585,6 +1587,130 @@ select orderId, orderAmount from
 
 	</sect1>
 	
+	<sect1 id="joining_method" revision="1">
+		<title>Joining Non-Relational Data via Method Invocation</title>
+		
+		<indexterm><primary>join</primary><secondary>non-relational data via method invocation</secondary></indexterm>
+		<indexterm><primary>EQL</primary><secondary>joining non-relational data via method invocation</secondary></indexterm>
+
+		<para>
+			Your application may need to join data that originates from a web service, a distributed cache, an object-oriented database or simply data held in memory by your application. Esper accommodates this need by allowing
+			a method invocation (or procedure call or function) in the <literal>from</literal> clause of a statement. 
+		</para>
+			
+		<para>
+			Esper can join and outer join all types of event streams to the data returned by your method invocation. In addition, Esper can be configured to cache the data returned by your method invocations.
+		</para>
+		
+		<para>
+			The following restrictions currently apply:
+		</para>
+
+		<itemizedlist spacing="compact">
+			<listitem>
+				<para>
+					Only one event stream and one method invocation can be joined; That is, in a join with a method invocation only one other event stream is allowed.
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					Sub-views on a method invocations are not allowed; That is, one cannot create a time or length window on a method invocation. However one can use the <literal>insert into</literal> syntax to make join results available to a further statement.
+				</para>
+			</listitem>
+		</itemizedlist>
+
+		<sect2 id="joining_method_syntax" revision="1">
+			<title>Joining Method Invocation Results</title>
+			<para>
+				The syntax for a method invocation in the <literal>from</literal> clause of an EQL statement is:
+			</para>
+			<synopsis>method:<emphasis>class_name</emphasis>.<emphasis>method_name</emphasis>[(<emphasis>parameter_expressions</emphasis>)]</synopsis>
+	
+			<para>
+				The <literal>method</literal> keyword denotes a method invocation. It is followed by a class name and a method name separated by a dot (.) character. If you have parameters to your method invocation, these are placed in 
+				round brackets after the method name. Any expression is allowed as a parameter, and individual parameter expressions are separated by a comma. Expressions may also use event properties of the joined stream. 
+			</para>
+	
+			<para>
+				In the sample join statement shown next, the method 'lookupAsset' provided by class 'MyLookupLib' returns one or more rows based on the asset id (a property of the AssetMoveEvent) that is passed to the method:
+			</para>
+			<programlisting><![CDATA[select * from AssetMoveEvent, MyLookupLib.lookupAsset(assetId)]]></programlisting>
+	
+			<para>
+				The following statement demonstrates the use of the <literal>where</literal> clause to join events to the rows returned by a method invocation, which in this example does not take parameters:
+			</para>
+			<programlisting><![CDATA[select assetId, assetDesc from AssetMoveEvent as asset, 
+    MyLookupLib.getAssetDescriptions() as desc 
+  where asset.assetid = desc.assetid]]></programlisting>
+	
+			<para>
+				Your method invocation may return zero, one or many rows for each method invocation. If you have caching enabled through configuration, then Esper can avoid the method invocation and instead use cached results. Similar to SQL joins, Esper also indexes cached result rows such that join operations based on the <literal>where</literal> clause can be very efficient, especially if your method invocation returns a large number of rows.
+			</para>
+
+			<para>
+				If the time taken by method invocations is critical to your application, you may configure local caches as <xref linkend="config-method-invocations"/> describes.
+			</para>
+		</sect2>
+				
+		<sect2 id="joining_method_exposing" revision="1">
+			<title>Providing the Method</title>
+			
+			<para>
+				Your application must provide a Java class that exposes a public static method. The method must accept the same number and type of parameters as listed in the parameter expression list. 
+			</para>
+			
+			<para>
+				If your method invocation returns either no row or only one row, then the return type of the method can be a Java class. If your method invocation can return more then one row, then the return type of the method must be an array of Java class. The Java class in the return type must adhere to JavaBean conventions: it must expose properties through getter methods.
+			</para>
+			
+			<para>
+				The method must return either of the following:
+			</para>
+			
+			<orderedlist>
+				<listitem>
+					<para>
+						A <literal>null</literal> value or an empty array to indicate an empty result (no rows).
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						A Java object to indicate a one-row result, or an array that consists of a single Java object.
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						An array of Java objects to return multiple result rows.
+					</para>
+				</listitem>
+			</orderedlist>
+			
+			<para>
+				As an example, consider the method 'getAssetDescriptions' provided by class 'MyLookupLib' as discussed earlier:
+			</para>
+			<programlisting><![CDATA[]]>select assetId, assetDesc from AssetMoveEvent as asset,
+    com.mypackage.MyLookupLib.getAssetDescriptions() as desc 
+  where asset.assetid = desc.assetid</programlisting>
+																	
+			<para>
+				The 'getAssetDescriptions' method may return multiple rows and is therefore declared to return an array of the class 'AssetDesc'. The class AssetDesc is a POJO class (not shown here):
+			</para>
+			<programlisting><![CDATA[public class MyLookupLib {
+  ...
+  public static AssetDesc[] getAssetDescriptions() {
+    ...
+    return new AssetDesc[] {...};
+  }]]></programlisting>
+
+			<para>
+				The example above specifies the full Java class name of the 'MyLookupLib' class in the EQL statement. The package name does not need to be part of the EQL if your application imports the package using the auto-import configuration through the API or XML, as outlined in <xref linkend="config-class--package-imports"/>.
+			</para>
+			
+
+		</sect2>
+
+	</sect1>
+
 	<sect1 id="named_overview" revision="1">
 		<title>Creating and Using Named Windows</title>
 		

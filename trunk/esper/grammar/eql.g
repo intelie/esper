@@ -176,6 +176,7 @@ tokens
 	ON_EXPR_FROM;
 	ON_SET_EXPR;
 	CREATE_VARIABLE_EXPR;
+	METHOD_JOIN_EXPR;
 	
    	INT_TYPE;
    	LONG_TYPE;
@@ -374,7 +375,7 @@ streamSelector
 	;
 	
 streamExpression
-	:	(eventFilterExpression | patternInclusionExpression | databaseJoinExpression)
+	:	(eventFilterExpression | patternInclusionExpression | databaseJoinExpression | methodJoinExpression)
 		(DOT! viewExpression (DOT! viewExpression)*)? (AS! IDENT | IDENT)?
 		{ #streamExpression = #([STREAM_EXPR,"streamExpression"], #streamExpression); }
 	;
@@ -388,12 +389,15 @@ databaseJoinExpression
 	:	SQL! COLON! IDENT LBRACK! (STRING_LITERAL | QUOTED_STRING_LITERAL) (METADATASQL! (STRING_LITERAL | QUOTED_STRING_LITERAL))? RBRACK!
 		{ #databaseJoinExpression = #([DATABASE_JOIN_EXPR,"databaseJoinExpression"], #databaseJoinExpression); }
 	;	
+	
+methodJoinExpression
+    	:   	i:IDENT! COLON! (c:classIdentifier!) (LPAREN! (s:expressionList!)? RPAREN!)?
+       		{ #methodJoinExpression = #([METHOD_JOIN_EXPR,"methodJoinExpression"], #i, #c, #s); }
+    	;
 
 viewExpression
 	:	IDENT COLON! IDENT LPAREN! (parameterSet)? RPAREN!
-		{ 
-		 	#viewExpression = #([VIEW_EXPR,"viewExpression"], #viewExpression); 
-		 }
+		{ #viewExpression = #([VIEW_EXPR,"viewExpression"], #viewExpression); }
 	;
 
 groupByListExpr
@@ -776,7 +780,7 @@ arrayParameterList
 eventFilterExpression
     :   ( i:IDENT! EQUALS! { #i.setType(EVENT_FILTER_NAME_TAG); } )?
     	(c:classIdentifier!)
-       	(LPAREN! (s:filterParamSet!)? RPAREN!)?
+       	(LPAREN! (s:expressionList!)? RPAREN!)?
        	{ #eventFilterExpression = #([EVENT_FILTER_EXPR,"eventFilterExpression"], #i, #c, #s); }
     ;
 
@@ -815,7 +819,7 @@ classIdentifierNonGreedy
 	    }
 	;	
 	
-filterParamSet
+expressionList
     :   expression (COMMA! expression)*
     ;
    	
