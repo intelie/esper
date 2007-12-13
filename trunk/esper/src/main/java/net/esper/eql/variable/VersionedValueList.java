@@ -62,6 +62,10 @@ public class VersionedValueList<T>
                                                    new VersionedValue<T>(-1, null, timestamp));
     }
 
+    /**
+     * Returns the name of the value stored.
+     * @return value name
+     */
     public String getName()
     {
         return name;

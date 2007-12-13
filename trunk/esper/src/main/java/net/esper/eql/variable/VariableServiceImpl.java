@@ -113,6 +113,7 @@ public class VariableServiceImpl implements VariableService
      * Ctor.
      * @param millisecondLifetimeOldVersions number of milliseconds a version may hang around before expiry
      * @param timeProvider provides the current time
+     * @param optionalStateHandler a optional plug-in that may store variable state and retrieve state upon creation
      */
     public VariableServiceImpl(long millisecondLifetimeOldVersions, TimeProvider timeProvider, VariableStateHandler optionalStateHandler)
     {
@@ -124,6 +125,7 @@ public class VariableServiceImpl implements VariableService
      * @param startVersion the first version number to start from
      * @param millisecondLifetimeOldVersions number of milliseconds a version may hang around before expiry
      * @param timeProvider provides the current time
+     * @param optionalStateHandler a optional plug-in that may store variable state and retrieve state upon creation
      */
     protected VariableServiceImpl(int startVersion, long millisecondLifetimeOldVersions, TimeProvider timeProvider, VariableStateHandler optionalStateHandler)
     {

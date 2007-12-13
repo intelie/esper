@@ -92,6 +92,11 @@ public class EPServicesContextFactoryDefault implements EPServicesContextFactory
         return services;
     }
 
+    /**
+     * Adds configured variables to the variable service.
+     * @param variableService service to add to
+     * @param variables configured variables
+     */
     protected static void initVariables(VariableService variableService, Map<String, ConfigurationVariable> variables)
     {
         for (Map.Entry<String, ConfigurationVariable> entry : variables.entrySet())
