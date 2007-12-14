@@ -354,7 +354,7 @@ from pattern[every tick=StockTick where timer:within(10 sec)]]]></programlisting
 		</para>
 
 		<para>
-			The <emphasis>stream_name</emphasis> is an optional identifier assigned to the stream. The stream name can itself occur in any expression and provides access to the event itself from the named stream.
+			The <emphasis>stream_name</emphasis> is an optional identifier assigned to the stream. The stream name can itself occur in any expression and provides access to the event itself from the named stream. Also, a stream name may be combined with a method name to invoke instance methods on events of that stream.
 		</para>
 
         <sect2 id="eql-from-clause-filter" >
@@ -635,10 +635,19 @@ select prod.* from ProductEvent as prod, OrderEvent
 select prod.* as product, ord.* as order from ProductEvent as prod, OrderEvent as ord]]></programlisting>
 
 			<para>
-				Last, the stream name by itself can occur in any expression: The engine passes the event itself to that expression. For example, the engine passes the ProductEvent and the OrderEvent to the user-defined function 'checkOrder':
+				Further, the stream name by itself can occur in any expression: The engine passes the event itself to that expression. For example, the engine passes the ProductEvent and the OrderEvent to the user-defined function 'checkOrder':
 			</para>
             <programlisting><![CDATA[select prod.productId, MyFunc.checkOrder(prod, ord) 
 from ProductEvent as prod, OrderEvent as ord]]></programlisting>
+
+			<para>
+				Last, you may invoke an instance method on each event of a stream, and pass parameters to the instance method as well. Instance method calls are allowed anywhere in an expression.
+			</para>
+				
+			<para>
+				The next statement demonstrates this capability by invoking a method 'computeTotal' on OrderEvent events and a method 'getMultiplier' on ProductEvent events:
+			</para>
+            <programlisting><![CDATA[select ord.computeTotal(prod.getMultiplier()) from ProductEvent as prod, OrderEvent as ord]]></programlisting>
 
 		</sect2>
 
@@ -1206,7 +1215,7 @@ from pattern [every linkDown=LinkDownEvent -> linkUp=LinkUpEvent(ip=linkDown.ip)
 			<programlisting>insert into MergedStream select MyLib.convert(item) from ItemScanEvent as item</programlisting>			
 
 			<para>
-			    The conversion as above is supported for all event representations.
+			    Esper specifically recognizes a conversion function: A conversion function must be the only selected column, and it must return either a Java object or <literal>java.util.Map</literal>.
 			</para>
 		</sect4>
 	</sect1>

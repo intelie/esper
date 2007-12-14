@@ -12,8 +12,7 @@
 		<indexterm><primary>functions</primary><secondary>user-defined</secondary></indexterm>
 		<indexterm><primary>static Java methods</primary></indexterm>
 		<para>
-			Esper allows static Java library methods as single-row functions, and also features built-in
-			single-row functions.
+			Esper allows static Java library methods as single-row functions, and also features built-in single-row functions. In addition, Esper allows instance method invocations on named streams.
 		</para>
 			
 		<para>
@@ -646,6 +645,10 @@ from Trade.std:groupby('symbol').ext:sort('price', false, 1)</programlisting>
 		 <para>
 			 A user-defined function (UDF) can be invoked anywhere as an expression itself or within an expresson. The function must simply be a public static method
 			 that the classloader can resolve at statement creation time. The engine resolves the function reference at statement creation time and verifies parameter types.
+		 </para>
+
+		 <para>
+			 User-defined functions can be also be invoked on instances of an event: Please see <xref linkend="eql-from-clause-stream-name"/> to invoke event instance methods on a named stream.
 		 </para>
 
 		 <para>

@@ -389,6 +389,11 @@ where address('work').streetName = 'Park Ave'
 		<programlisting><![CDATA[select * from MyEvent where enumProp=EnumClass.valueOf('ENUM_VALUE_1')]]></programlisting>
 
 		<para>
+			Instance methods may also be invoked on event instances by specifying a stream name, as shown below:
+		</para>
+		<programlisting><![CDATA[select myevent.computeSomething() as result from MyEvent as myevent]]></programlisting>
+
+		<para>
 			Java classes that do not follow JavaBean conventions, such as legacy Java classes that expose public fields, or methods not following naming conventions, require additional configuration. Via configuration it is also possible to control case sensitivity in property name resolution. The relevant section in the chapter on configuration is <xref linkend="config-java-legacy"/>.
 		</para>
     </sect1>

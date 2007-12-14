@@ -120,7 +120,9 @@ configuration.configure("myengine.esper.cfg.xml");
 					The same configuration but using the <literal>Configuration</literal> class:
 				</para>
 				<programlisting><![CDATA[Configuration config = new Configuration();
-config.addEventTypeAutoAlias("com.mycompany.order.event");]]></programlisting>
+config.addEventTypeAutoAlias("com.mycompany.order.event");
+// ... or ...
+config.addEventTypeAutoAlias(MyEvent.getPackage().getName());]]></programlisting>
 
 			</sect3>
 
@@ -652,11 +654,19 @@ select java.lang.Math.max(priceOne, priceTwo)</programlisting>
 			</itemizedlist>
 
 			<para>
-				In a XML configuration file the auto-import configuration may look as below. Note that all configuration options are available through the <literal>Configuration</literal> API as well.
+				In a XML configuration file the auto-import configuration may look as below:
 			</para>
 
 		<programlisting><![CDATA[<auto-import import-name="com.mycompany.mypackage.*"/>
-  <auto-import import-name="com.mycompany.myapp.MyUtilityClass"/>]]></programlisting>
+<auto-import import-name="com.mycompany.myapp.MyUtilityClass"/>]]></programlisting>
+
+			<para>
+				Here is an example of providing imports via the API:
+			</para>
+
+		<programlisting><![CDATA[Configuration config = new Configuration();
+config.addImport("com.mycompany.mypackage.*");	// package import
+config.addImport("com.mycompany.mypackage.MyLib");   // class import]]></programlisting>
 		</sect2>
 
 		<sect2 id="config-method-invocations" revision="1">
