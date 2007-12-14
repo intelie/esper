@@ -301,7 +301,7 @@ timer:interval(5 min) and not MyEvent]]></programlisting></entry>
 		<para>
 			All expressions can be used in filters, including static method invocations that return a boolean value:
 		 </para>
-		 <programlisting><![CDATA[RfidEvent(MyRFIDLib.isInRange(x, y) or (x<0 and y < 0))]]></programlisting>
+		 <programlisting><![CDATA[RfidEvent(com.mycompany.MyRFIDLib.isInRange(x, y) or (x<0 and y < 0))]]></programlisting>
 			
 		<para>
 			Filter expressions can be separated via a single comma '<literal>,</literal>'. The comma represents a logical AND between expressions:

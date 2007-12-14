@@ -788,4 +788,62 @@ public class JavaClassHelper
         }
         return null;
     }
+
+    /**
+     * Method to check if a given class, and its superclasses and interfaces (deep), implement a given interface.
+     * @param clazz to check, including all its superclasses and their interfaces and extends 
+     * @param interfaceClass is the interface class to look for
+     * @return true if such interface is implemented by any of the clazz or its superclasses or
+     * extends by any interface and superclasses (deep check)
+     */
+    public static boolean isImplementsInterface(Class clazz, Class interfaceClass)
+    {
+        if (!(interfaceClass.isInterface()))
+        {
+            throw new IllegalArgumentException("Interface class passed in is not an interface");
+        }
+        boolean resultThisClass = recursiveIsImplementsInterface(clazz, interfaceClass);
+        if (resultThisClass)
+        {
+            return true;
+        }
+        return recursiveSuperclassImplementsInterface(clazz, interfaceClass);
+    }
+
+    private static boolean recursiveSuperclassImplementsInterface(Class clazz, Class interfaceClass)
+    {
+        Class superClass = clazz.getSuperclass();
+        if ((superClass  == null) || (superClass == Object.class))
+        {
+            return false;
+        }
+        boolean result = recursiveIsImplementsInterface(superClass, interfaceClass);
+        if (result)
+        {
+            return result;
+        }
+        return recursiveSuperclassImplementsInterface(superClass, interfaceClass);
+    }
+
+    private static boolean recursiveIsImplementsInterface(Class clazz, Class interfaceClass)
+    {
+        if (clazz == interfaceClass)
+        {
+            return true;
+        }
+        Class[] interfaces = clazz.getInterfaces();
+        if (interfaces == null)
+        {
+            return false;
+        }
+        for (Class classToCheck : interfaces)
+        {
+            boolean result = recursiveIsImplementsInterface(classToCheck, interfaceClass);
+            if (result)
+            {
+                return result;
+            }
+        }
+        return false;
+    }
 }

@@ -13,6 +13,7 @@ import net.esper.eql.spec.SelectExprElementCompiledSpec;
 import net.esper.eql.expression.ExprNode;
 import net.esper.eql.expression.ExprValidationException;
 import net.esper.util.ExecutionPathDebugLog;
+import net.esper.util.JavaClassHelper;
 
 import java.util.*;
 
@@ -33,6 +34,7 @@ public class SelectExprEvalProcessor implements SelectExprProcessor
     private final EventAdapterService eventAdapterService;
     private final boolean isUsingWildcard;
     private boolean singleStreamWrapper;
+    private boolean singleColumnCoercion;
     private SelectExprJoinWildcardProcessor joinWildcardProcessor;
 
     /**
@@ -145,7 +147,30 @@ public class SelectExprEvalProcessor implements SelectExprProcessor
                 }
                 else
                 {
-                    resultEventType = eventAdapterService.addMapType(insertIntoDesc.getEventTypeAlias(), selPropertyTypes);
+                    resultEventType = null;
+                    if ((columnNames.length == 1) && (insertIntoDesc.getColumnNames().size() == 0))
+                    {
+                        EventType existingType = eventAdapterService.getExistsTypeByAlias(insertIntoDesc.getEventTypeAlias());
+                        if (existingType != null)
+                        {
+                            // check if the existing type and new type are compatible
+                            Class columnOneType = expressionNodes[0].getType();
+                            if (existingType instanceof WrapperEventType)
+                            {
+                                WrapperEventType wrapperType = (WrapperEventType) existingType;
+                                // Map and Object both supported
+                                if (wrapperType.getUnderlyingEventType().getUnderlyingType() == columnOneType)
+                                {
+                                    singleColumnCoercion = true;
+                                    resultEventType = existingType;
+                                }
+                            }
+                        }
+                    }
+                    if (resultEventType == null)
+                    {
+                        resultEventType = eventAdapterService.addMapType(insertIntoDesc.getEventTypeAlias(), selPropertyTypes);
+                    }
                 }
             }
             catch (EventAdapterException ex)
@@ -215,7 +240,25 @@ public class SelectExprEvalProcessor implements SelectExprProcessor
         }
         else
         {
-        	return eventAdapterService.createMapFromValues(props, resultEventType);
+            if (singleColumnCoercion)
+            {
+                Object result = props.get(columnNames[0]);
+                EventBean wrappedEvent;
+                if (result instanceof Map)
+                {
+                    wrappedEvent = eventAdapterService.createMapFromValues((Map)result, resultEventType);
+                }
+                else
+                {
+                    wrappedEvent = eventAdapterService.adapterForBean(result);
+                }
+                props.clear();
+                return eventAdapterService.createWrapper(wrappedEvent, props, resultEventType);
+            }
+            else
+            {
+                return eventAdapterService.createMapFromValues(props, resultEventType);
+            }
         }
     }
 

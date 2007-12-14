@@ -1,7 +1,12 @@
 package net.esper.util;
 
 import junit.framework.TestCase;
-import net.esper.support.bean.SupportBean;
+import net.esper.support.bean.*;
+
+import java.util.Map;
+import java.util.HashMap;
+import java.util.AbstractMap;
+import java.util.TreeMap;
 
 public class TestJavaClassHelper extends TestCase
 {
@@ -488,6 +493,26 @@ public class TestJavaClassHelper extends TestCase
         for (int i = 0; i < tests.length; i++)
         {
             assertEquals(tests[i][1], JavaClassHelper.getPrimitiveClassForName((String) tests[i][0]));
+        }
+    }
+
+    public void testImplementsInterface()
+    {
+        Object[][] tests = new Object[][] {
+                {HashMap.class, Map.class, true},
+                {AbstractMap.class, Map.class, true},
+                {TreeMap.class, Map.class, true},
+                {String.class, Map.class, false},
+                {SupportBean_S0.class, SupportMarkerInterface.class, false},
+                {SupportBean_E.class, SupportMarkerInterface.class, true},
+                {SupportBean_F.class, SupportMarkerInterface.class, true},
+                {SupportBeanBase.class, SupportMarkerInterface.class, true},
+                {SupportOverrideOneB.class, SupportMarkerInterface.class, true}
+                };
+
+        for (int i = 0; i < tests.length; i++)
+        {
+            assertEquals("test failed for " + tests[i][0], tests[i][2], JavaClassHelper.isImplementsInterface((Class)tests[i][0], (Class)tests[i][1]));
         }
     }
 

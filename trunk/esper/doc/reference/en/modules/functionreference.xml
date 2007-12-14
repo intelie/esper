@@ -52,7 +52,7 @@ from StockTickEvent.win:time(30 sec)</programlisting>
 			
 		<para>
 			In general, arbitrary Java class names have to be fully qualified (e.g. java.lang.Math) but Esper provides a mechanism 
-for user-controlled imports of classes and packages as outlined in <xref linkend="configuration"/>.
+for user-controlled imports of classes and packages as outlined in <xref linkend="config-class--package-imports"/>.
 		</para>
 
 		<para>
@@ -640,10 +640,11 @@ from Trade.std:groupby('symbol').ext:sort('price', false, 1)</programlisting>
 	<sect1 id="eql-function-user-defined">
 		<title>User-Defined Functions</title>
 		
-		<indexterm><primary>user-defined aggregation function</primary></indexterm>
-		<indexterm><primary>aggregation functions</primary><secondary>user-defined</secondary></indexterm>
+		<indexterm><primary>user-defined function</primary></indexterm>
+		<indexterm><primary>functions</primary><secondary>user-defined</secondary></indexterm>
+		<indexterm><primary>UDF</primary><secondary>user-defined function</secondary></indexterm>
 		 <para>
-			 A user-defined function can be invoked anywhere as an expression itself or within an expresson. The function must simply be a public static method
+			 A user-defined function (UDF) can be invoked anywhere as an expression itself or within an expresson. The function must simply be a public static method
 			 that the classloader can resolve at statement creation time. The engine resolves the function reference at statement creation time and verifies parameter types.
 		 </para>
 
@@ -652,14 +653,37 @@ from Trade.std:groupby('symbol').ext:sort('price', false, 1)</programlisting>
 			 returing a numeric type such as <literal>double</literal>.
 		 </para>
 		 
-<programlisting><![CDATA[select 3 * MyClass.myFunction(price, volume) as myValue 
+<programlisting><![CDATA[select 3 * com.mycompany.MyClass.myFunction(price, volume) as myValue 
 from StockTick.win:time(30 sec)]]></programlisting>
 
 		 <para>
 			 User-defined functions also take array parameters as this example shows. The section on <xref linkend="eql-operator-ref-array"/> outlines in more detail the types of arrays produced.
+		 </para>		
+		<programlisting><![CDATA[select * from RFIDEvent where com.mycompany.rfid.MyChecker.isInZone(zone, {10, 20, 30})]]></programlisting>
+
+		<para>
+			Java class names have to be fully qualified (e.g. java.lang.Math) but Esper provides a mechanism for user-controlled imports of classes and packages as outlined in <xref linkend="config-class--package-imports"/>.
+		</para>
+
+		 <para>
+			 User-defined functions can return any value including <literal>null</literal>, Java objects or arrays. Therefore user-defined functions can serve to transform, convert or map events, or to extract information and assemble further events.
 		 </para>
-		 
-<programlisting><![CDATA[select * from RFIDEvent where com.mycompany.rfid.MyChecker.isInZone(zone, {10, 20, 30})]]></programlisting>
+
+		 <para>
+			 The following statement is a simple pattern that looks for events of type E1 that are followed by events of type E2. It assigns the tags "e1" and "e2" that the function can use to assemble a final event for output:
+		 </para> 
+		<programlisting><![CDATA[select MyLib.mapEvents(e1, e2) from pattern [every e1=E1 -> e2=E2]]]></programlisting>
+
+		 <para>
+			 A function that converts from one event type to another event type is shown in the next example. The first statement declares a stream that consists of MyEvent events. The second statement employs a conversion function to convert MyOtherEvent events to events of type MyEvent:
+		 </para> 
+		<programlisting><![CDATA[insert into MyStream select * from MyEvent
+insert into MyStream select MyLib.convert(other) from MyOtherEvent as other]]></programlisting>
+
+		 <para>
+			 In the example above, assuming the event classes MyEvent and MyOtherEvent are Java classes and not aliases, the static method should have the following footprint:
+		 </para> 
+		 <programlisting><![CDATA[public static MyEvent convert(MyOtherEvent otherEvent)]]></programlisting>
 	</sect1>
 
 </chapter>

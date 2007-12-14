@@ -2,7 +2,7 @@ package net.esper.support.bean;
 
 import java.io.Serializable;
 
-public class SupportOverrideBase implements Serializable
+public class SupportOverrideBase implements Serializable, SupportMarkerInterface
 {
     private String val;
 

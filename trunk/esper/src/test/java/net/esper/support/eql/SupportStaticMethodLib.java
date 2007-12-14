@@ -1,10 +1,33 @@
 package net.esper.support.eql;
 
 import net.esper.support.bean.SupportBean_S0;
+import net.esper.support.bean.SupportBean;
+import net.esper.support.bean.SupportMarketDataBean;
+
+import java.util.Map;
+import java.util.HashMap;
 
 public class SupportStaticMethodLib 
 {
-	public static Object staticMethod(Object object)
+    public static boolean compareEvents(SupportMarketDataBean beanOne, SupportBean beanTwo)
+    {
+        return beanOne.getSymbol().equals(beanTwo.getString());
+    }
+
+    public static Map convertEventMap(Map<String, Object> values)
+    {
+        Map<String, Object> result = new HashMap<String, Object>();
+        result.put("one", values.get("one"));
+        result.put("two", "|" + values.get("two") + "|");
+        return result;
+    }
+
+    public static SupportBean convertEvent(SupportMarketDataBean bean)
+    {
+        return new SupportBean(bean.getSymbol(), (bean.getVolume()).intValue());
+    }
+
+    public static Object staticMethod(Object object)
 	{
 		return object;
 	}

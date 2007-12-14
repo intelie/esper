@@ -18,8 +18,10 @@ import net.esper.support.bean.SupportMarketDataBean;
 import net.esper.support.client.SupportConfigFactory;
 import net.esper.support.util.ArrayAssertionUtil;
 import net.esper.support.util.SupportUpdateListener;
+import net.esper.support.eql.SupportStaticMethodLib;
 
 import java.util.Map;
+import java.util.HashMap;
 
 public class TestSelectExprStreamSelector extends TestCase
 {
@@ -33,6 +35,138 @@ public class TestSelectExprStreamSelector extends TestCase
         epService = EPServiceProviderManager.getDefaultProvider(SupportConfigFactory.getConfiguration());
         epService.initialize();
         epService.getEPRuntime().sendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
+    }
+
+    public void testJoinStreamSelectNoWildcard()
+    {
+        // try with alias
+        String textOne = "select s0 as s0stream, s1 as s1stream from " +
+                            SupportMarketDataBean.class.getName() + " as s0, " +
+                            SupportBean.class.getName() + " as s1";
+
+        // Attach listener to feed
+        EPStatement stmtOne = epService.getEPAdministrator().createEQL(textOne);
+        EPStatementObjectModel model = epService.getEPAdministrator().compileEQL(stmtOne.getText());
+        assertEquals(textOne, model.toEQL());
+        SupportUpdateListener listenerOne = new SupportUpdateListener();
+        stmtOne.addListener(listenerOne);
+
+        EventType type = stmtOne.getEventType();
+        assertEquals(2, type.getPropertyNames().length);
+        assertEquals(Map.class, type.getUnderlyingType());
+        assertEquals(SupportMarketDataBean.class, type.getPropertyType("s0stream"));
+        assertEquals(SupportBean.class, type.getPropertyType("s1stream"));
+
+        SupportMarketDataBean eventA = new SupportMarketDataBean("ACME", 0, 0L, null);
+        epService.getEPRuntime().sendEvent(eventA);
+
+        SupportBean eventB = new SupportBean();
+        epService.getEPRuntime().sendEvent(eventB);
+        ArrayAssertionUtil.assertProps(listenerOne.assertOneGetNewAndReset(), new String[] {"s0stream", "s1stream"}, new Object[] {eventA, eventB});
+
+        stmtOne.destroy();
+
+        // try no alias
+        textOne = "select s0, s1 from " +
+                            SupportMarketDataBean.class.getName() + " as s0, " +
+                            SupportBean.class.getName() + " as s1";
+
+        // Attach listener to feed
+        stmtOne = epService.getEPAdministrator().createEQL(textOne);
+        stmtOne.addListener(listenerOne);
+
+        type = stmtOne.getEventType();
+        assertEquals(2, type.getPropertyNames().length);
+        assertEquals(Map.class, type.getUnderlyingType());
+        assertEquals(SupportMarketDataBean.class, type.getPropertyType("s0"));
+        assertEquals(SupportBean.class, type.getPropertyType("s1"));
+
+        epService.getEPRuntime().sendEvent(eventA);
+        epService.getEPRuntime().sendEvent(eventB);
+        ArrayAssertionUtil.assertProps(listenerOne.assertOneGetNewAndReset(), new String[] {"s0", "s1"}, new Object[] {eventA, eventB});
+    }
+
+    public void testPatternStreamSelectNoWildcard()
+    {
+        // try with alias
+        String textOne = "select * from pattern [every e1=" + SupportMarketDataBean.class.getName() + " -> e2=" +
+                            SupportBean.class.getName() + "(" + SupportStaticMethodLib.class.getName() + ".compareEvents(e1, e2))]";
+
+        // Attach listener to feed
+        EPStatement stmtOne = epService.getEPAdministrator().createEQL(textOne);
+        SupportUpdateListener listenerOne = new SupportUpdateListener();
+        stmtOne.addListener(listenerOne);
+
+        SupportMarketDataBean eventA = new SupportMarketDataBean("ACME", 0, 0L, null);
+        epService.getEPRuntime().sendEvent(eventA);
+
+        SupportBean eventB = new SupportBean("ACME", 1);
+        epService.getEPRuntime().sendEvent(eventB);
+        ArrayAssertionUtil.assertProps(listenerOne.assertOneGetNewAndReset(), new String[] {"e1", "e2"}, new Object[] {eventA, eventB});
+
+        stmtOne.destroy();
+    }
+
+    public void testStreamSelectConversionFunctionObject()
+    {
+        String textOne = "insert into EventStream select * from " + SupportBean.class.getName() + ".win:length(100)";
+        String textTwo = "insert into EventStream select " + SupportStaticMethodLib.class.getName() + ".convertEvent(s0) from " + SupportMarketDataBean.class.getName() + ".win:length(100) as s0";
+
+        // Attach listener to feed
+        EPStatement stmtOne = epService.getEPAdministrator().createEQL(textOne);
+        SupportUpdateListener listenerOne = new SupportUpdateListener();
+        stmtOne.addListener(listenerOne);
+        EventType type = stmtOne.getEventType();
+        assertEquals(SupportBean.class, type.getUnderlyingType());
+
+        EPStatement stmtTwo = epService.getEPAdministrator().createEQL(textTwo);
+        SupportUpdateListener listenerTwo = new SupportUpdateListener();
+        stmtTwo.addListener(listenerTwo);
+        type = stmtTwo.getEventType();
+        assertEquals(SupportBean.class, type.getUnderlyingType());
+
+        // send event for joins to match on
+        SupportMarketDataBean eventA = new SupportMarketDataBean("ACME", 0, 0L, null);
+        epService.getEPRuntime().sendEvent(eventA);
+        EventBean event = listenerTwo.assertOneGetNewAndReset();
+        assertTrue (event.getUnderlying() instanceof SupportBean);
+        assertEquals("ACME", event.get("string"));
+    }
+
+    public void testStreamSelectConversionFunctionMap()
+    {
+        // try the same with a map
+        Map<String, Class> types = new HashMap<String, Class>();
+        types.put("one", String.class);
+        types.put("two", String.class);
+        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("MapOne", types);
+        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("MapTwo", types);
+
+        String textOne = "insert into Stream0 select * from MapOne";
+        String textTwo = "insert into Stream0 select " + SupportStaticMethodLib.class.getName() + ".convertEventMap(s0) from MapTwo as s0";
+
+        // Attach listener to feed
+        EPStatement stmtOne = epService.getEPAdministrator().createEQL(textOne);
+        SupportUpdateListener listenerOne = new SupportUpdateListener();
+        stmtOne.addListener(listenerOne);
+        EventType type = stmtOne.getEventType();
+        assertEquals(Map.class, type.getUnderlyingType());
+
+        EPStatement stmtTwo = epService.getEPAdministrator().createEQL(textTwo);
+        SupportUpdateListener listenerTwo = new SupportUpdateListener();
+        stmtTwo.addListener(listenerTwo);
+        type = stmtTwo.getEventType();
+        assertEquals(Map.class, type.getUnderlyingType());
+
+        Map<String, Object> values = new HashMap<String, Object>();
+        values.put("one", "1");
+        values.put("two", "2");
+        epService.getEPRuntime().sendEvent(values, "MapTwo");
+
+        EventBean event = listenerTwo.assertOneGetNewAndReset();
+        assertTrue (event.getUnderlying() instanceof Map);
+        assertEquals("1", event.get("one"));
+        assertEquals("|2|", event.get("two"));
     }
 
     public void testInsertFromPattern()

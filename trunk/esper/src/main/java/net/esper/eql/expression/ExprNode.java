@@ -90,17 +90,40 @@ public abstract class ExprNode implements ExprValidator, ExprEvaluator, MetaDefI
         }
         catch(ExprValidationException e)
         {
-            if(this instanceof ExprIdentNode)
+            if (!(this instanceof ExprIdentNode))
             {
-                result = resolveIdentAsStaticMethod(streamTypeService, methodResolutionService, e, timeProvider, variableService);
+                throw e;
+            }
+
+            ExprIdentNode node = (ExprIdentNode) this;
+            if (node.getStreamOrPropertyName() == null)
+            {
+                result = resolveAsStreamName(node.getUnresolvedPropertyName(), streamTypeService, e);
             }
             else
             {
-                throw e;
+                result = resolveStaticMethodOrField(streamTypeService, methodResolutionService, e, timeProvider, variableService);
             }
         }
 
         return result;
+    }
+
+    private ExprNode resolveAsStreamName(String propertyName, StreamTypeService streamTypeService, ExprValidationException existingException)
+            throws ExprValidationException
+    {
+        ExprStreamUnderlyingNode exprStream = new ExprStreamUnderlyingNode(propertyName);
+
+        try
+        {
+            exprStream.validate(streamTypeService, null, null, null, null);
+        }
+        catch (ExprValidationException ex)
+        {
+            throw existingException;
+        }
+
+        return exprStream;
     }
 
     /**
@@ -193,7 +216,7 @@ public abstract class ExprNode implements ExprValidator, ExprEvaluator, MetaDefI
     // look the same, however as the validation could not resolve "Stream.property('key')" before calling this method,
     // this method tries to resolve the mapped property as a static method.
     // Assumes that this is an ExprIdentNode.
-    private ExprNode resolveIdentAsStaticMethod(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ExprValidationException propertyException, TimeProvider timeProvider, VariableService variableService)
+    private ExprNode resolveStaticMethodOrField(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ExprValidationException propertyException, TimeProvider timeProvider, VariableService variableService)
     throws ExprValidationException
     {
         // Reconstruct the original string

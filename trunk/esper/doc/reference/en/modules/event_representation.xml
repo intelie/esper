@@ -374,19 +374,19 @@ where address('work').streetName = 'Park Ave'
 		<indexterm><primary>constants</primary></indexterm>
 		<indexterm><primary>enumeration</primary></indexterm>
 		<para>
-			Constants are public static final fields in Java that may also be participate in expressions of all kinds, as this example shows:
+			Constants are public static final fields in Java that may also participate in expressions of all kinds, as this example shows:
 		</para>
-		<programlisting><![CDATA[every MyEvent(field=MyConstantClass.FIELD_VALUE)]]></programlisting>
+		<programlisting><![CDATA[select * from MyEvent where property=MyConstantClass.FIELD_VALUE]]></programlisting>
 
 		<para>
-			Event properties that are enumeration values can be compared by their Enumeration value:
+			Event properties that are enumeration values can be compared by their enumeration value:
 		</para>
-		<programlisting><![CDATA[every MyEvent(enumProp=EnumClass.ENUM_VALUE_1)]]></programlisting>
+		<programlisting><![CDATA[select * from MyEvent where enumProp=EnumClass.ENUM_VALUE_1]]></programlisting>
 
 		<para>
-			Alternatively, a static method may be employed on a class, such as the Enumeration class 'EnumClass' as below:
+			Alternatively, a static method may be employed on a class, such as the enumeration class 'EnumClass' as below:
 		</para>
-		<programlisting><![CDATA[every MyEvent(enumProp=EnumClass.valueOf('ENUM_VALUE_1'))]]></programlisting>
+		<programlisting><![CDATA[select * from MyEvent where enumProp=EnumClass.valueOf('ENUM_VALUE_1')]]></programlisting>
 
 		<para>
 			Java classes that do not follow JavaBean conventions, such as legacy Java classes that expose public fields, or methods not following naming conventions, require additional configuration. Via configuration it is also possible to control case sensitivity in property name resolution. The relevant section in the chapter on configuration is <xref linkend="config-java-legacy"/>.

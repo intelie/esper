@@ -339,7 +339,7 @@ from pattern[every tick=StockTick where timer:within(10 sec)]]]></programlisting
 		<para>
 			The <literal>from</literal> clause is required in all EQL statements. It specifies one or more event streams or named windows. Each event stream or named window can optionally be given a name by means of the <literal>as</literal> syntax.
 		</para>
-		<synopsis>from <emphasis>stream_def</emphasis> [as <emphasis>name</emphasis>] [, <emphasis>stream_def</emphasis> [as <emphasis>name</emphasis>]] [, ...]</synopsis>
+		<synopsis>from <emphasis>stream_def</emphasis> [as <emphasis>name</emphasis>] [, <emphasis>stream_def</emphasis> [as <emphasis>stream_name</emphasis>]] [, ...]</synopsis>
 
 		<para>
 			The event stream definition <emphasis>stream_def</emphasis> as shown in the syntax above can consists of either a filter-based event stream definition or a pattern-based event stream definition. 
@@ -350,11 +350,15 @@ from pattern[every tick=StockTick where timer:within(10 sec)]]]></programlisting
 		</para>
 
 		<para>
-			Esper supports joins against relational databases for access to historical or reference data as explained in <xref linkend="histdata_overview"/>.
+			Esper supports joins against relational databases for access to historical or reference data as explained in <xref linkend="histdata_overview"/>. Esper can also join results returned by an arbitrary method invocation, as discussed in <xref linkend="joining_method"/>.
+		</para>
+
+		<para>
+			The <emphasis>stream_name</emphasis> is an optional identifier assigned to the stream. The stream name can itself occur in any expression and provides access to the event itself from the named stream.
 		</para>
 
         <sect2 id="eql-from-clause-filter" >
-           <title>Filter-based event streams</title>
+           <title>Filter-based Event Streams</title>
 
 			<para>
 				For filter-based event streams, the event stream definition <emphasis>stream_def</emphasis> as shown in the <literal>from</literal> clause syntax consists of an event type, optional filter expressions and an optional list of views that derive data from a stream. The syntax for a filter-based event stream is as below:
@@ -401,7 +405,7 @@ from pattern[every tick=StockTick where timer:within(10 sec)]]]></programlisting
 				<para>
 					All expressions can be used in filters, including static methods that return a boolean value:
 				 </para>
-				 <programlisting><![CDATA[select * from RfidEvent(MyRFIDLib.isInRange(x, y) or (x < 0 and y < 0))]]></programlisting>
+				 <programlisting><![CDATA[select * from com.mycompany.RfidEvent(MyRFIDLib.isInRange(x, y) or (x < 0 and y < 0))]]></programlisting>
 					
 				<para>
 					Filter expressions can be separated via a single comma '<literal>,</literal>'. The comma represents a logical AND between filter expressions:
@@ -559,7 +563,7 @@ select * from RfidEvent(zone=1 and category=10)]]></programlisting>
 		</sect2>
 		
         <sect2 id="eql-from-clause-patterns" >
-           <title>Pattern-based event streams</title>
+           <title>Pattern-based Event Streams</title>
 			<para>
 				Event pattern expressions can also be used to specify one or more event streams in an EQL statement.
 				For pattern-based event streams, the event stream definition <emphasis>stream_def</emphasis> consists of the keyword <literal>pattern</literal> and a pattern expression in brackets <literal>[]</literal>. The syntax for an event stream definition using a pattern expression is below. As in filter-based event streams, an optional list of views that derive data from the stream can be supplied.
@@ -589,7 +593,7 @@ select * from RfidEvent(zone=1 and category=10)]]></programlisting>
 		</sect2>
 
         <sect2 id="eql-from-clause-view-spec" >
-           <title>Specifying views</title>
+           <title>Specifying Views</title>
 			<para>
 				Views are used to derive or aggregate data. Views can be staggered onto each other. See the section <xref linkend="eql-views"/> on the views available.
 			</para>
@@ -607,10 +611,37 @@ select * from RfidEvent(zone=1 and category=10)]]></programlisting>
 			</para>
 
          <programlisting><![CDATA[select * from CarLocEvent.std:groupby('carId').win:length(4).
-  std:groupby({'expressway', 'direction', 'segment'}).std:size()
-]]></programlisting>
+  std:groupby({'expressway', 'direction', 'segment'}).std:size()]]></programlisting>
 		</sect2>
 		
+        <sect2 id="eql-from-clause-stream-name" >
+           <title>Using the Stream Name</title>
+			<para>
+				Your <literal>from</literal> clause may assign a name to each stream. This assigned stream name can serve any of the following purposes.
+			</para>
+						
+			<para>
+				First, the stream name can be used to disambiguate property names. The <literal>stream_name.property_name</literal> syntax uniquely identifies which property to select if property names overlap between streams. Here is an example:
+			</para>
+            <programlisting><![CDATA[select prod.productId, ord.productId from ProductEvent as prod, OrderEvent as ord]]></programlisting>
+
+			<para>
+				Second, the stream name can be used with a wildcard (*) character to select events in a join, or assign new names to the streams in a join:
+			</para>
+            <programlisting><![CDATA[// Select ProductEvent only
+select prod.* from ProductEvent as prod, OrderEvent
+
+// Assign column names 'product' and 'order' to each event
+select prod.* as product, ord.* as order from ProductEvent as prod, OrderEvent as ord]]></programlisting>
+
+			<para>
+				Last, the stream name by itself can occur in any expression: The engine passes the event itself to that expression. For example, the engine passes the ProductEvent and the OrderEvent to the user-defined function 'checkOrder':
+			</para>
+            <programlisting><![CDATA[select prod.productId, MyFunc.checkOrder(prod, ord) 
+from ProductEvent as prod, OrderEvent as ord]]></programlisting>
+
+		</sect2>
+
     </sect1>
     
     <sect1 id="eql-where-clause">
@@ -1054,45 +1085,31 @@ order by price, volume</programlisting>
 		<indexterm><primary>EQL</primary><secondary>insert into clause</secondary></indexterm>
 
 		<para>
-			The <literal>insert into</literal> clause is optional in Esper. This clause can be specified to make the results of a statement available as an event stream for use
+			The <literal>insert into</literal> clause is optional in Esper. The clause can be specified to make the results of a statement available as an event stream for use
 			in further statements, or to insert events into a named window. The clause can also be used to merge multiple event streams to form a single stream of events.
 		</para>
 
-		<programlisting>insert into CombinedEvent
-select A.customerId as custId, A.timestamp - B.timestamp as latency
-  from EventA.win:time(30 min) A, EventB.win:time(30 min) B
- where A.txnId = B.txnId</programlisting>
-
 		<para>
-			The <literal>insert into</literal> clause in above statement generates events of type <literal>CombinedEvent</literal>. Each generated <literal>CombinedEvent</literal> event has 2 event properties named "custId" and "latency". The events generated by above statement can be used in further statements. The below statement uses the generated events:		
-		</para>
-
-		<programlisting>select custId, sum(latency)
-  from CombinedEvent.win:time(30 min)
- group by custId</programlisting>
-
-		<para>
-			The <literal>insert into</literal> clause can consist of just an event type alias, or of an event type alias and 1 or more event property names.			
 			The syntax for the <literal>insert into</literal> clause is as follows:
 		</para>
 
-		<synopsis>insert [istream | rstream] into <emphasis>event_type_alias</emphasis>  [ (<emphasis>property_name</emphasis> [, property_name] ) ]</synopsis>
+		<synopsis>insert [istream | rstream] into <emphasis>event_stream_name</emphasis>  [ (<emphasis>property_name</emphasis> [, property_name] ) ]</synopsis>
 
 		<para>
 			The <literal>istream</literal> (default) and <literal>rstream</literal> keywords are optional. If no keyword or the <literal>istream</literal> keyword is specified, the engine supplies the insert stream events generated by the statement. The insert stream consists of the events entering the respective window(s) or stream(s). If the <literal>rstream</literal> keyword is specified, the engine supplies the remove stream events generated by the statement. The remove stream consists of the events leaving the respective window(s). 
 		</para>
 
 		<para>
-			The <literal>event_type_alias</literal> is an identifier that names the events generated by the engine. The identifier can be used in statements to filter and
-			process events of the given name.
+			The <literal>event_stream_name</literal> is an identifier that names the event stream (and also implicitly names the types of events in the stream) generated by the engine. The identifier can be used in further statements to filter and
+			process events of that event stream. The <literal>insert into</literal> clause can consist of just an event stream name, or an event stream name and one or more property names.
 		</para>
 
 		<para>
-			The engine also allows listeners to be attached to a statement that contain an <literal>insert into</literal> clause.
+			The engine also allows listeners to be attached to a statement that contain an <literal>insert into</literal> clause. Listeners receive all events posted to the event stream.
 		</para>
 
 		<para>
-			To merge event streams, simply use the same <literal>event_type_alias</literal> identifier in all EQL statements that merge their result event streams. Make sure to use the
+			To merge event streams, simply use the same <literal>event_stream_name</literal> identifier in all EQL statements that merge their result event streams. Make sure to use the
 			same number and names of event properties and event property types match up.
 		</para>
 
@@ -1108,10 +1125,26 @@ select A.customerId as custId, A.timestamp - B.timestamp as latency
 			</listitem>
 			<listitem>
 				<para>
-					If the event type alias has already been defined by a prior statement or configuration, and the event property names and types do not match, an exception is thrown at statement creation time.
+					If the event stream name has already been defined by a prior statement or configuration, and the event property names and/or event types do not match, an exception is thrown at statement creation time.
 				</para>
 			</listitem>
 		</orderedlist>
+
+		<para>
+			The following sample inserts into an event stream by name CombinedEvent:
+		</para>
+		<programlisting>insert into CombinedEvent
+select A.customerId as custId, A.timestamp - B.timestamp as latency
+  from EventA.win:time(30 min) A, EventB.win:time(30 min) B
+ where A.txnId = B.txnId</programlisting>
+
+		<para>
+			Each event in the <literal>CombinedEvent</literal> event stream has two event properties named "custId" and "latency". The events generated by the above statement can be used in further statements, such as shown in the next statement:
+		</para>
+
+		<programlisting>select custId, sum(latency)
+  from CombinedEvent.win:time(30 min)
+ group by custId</programlisting>
 
 		<para>
 			The example statement below shows the alternative form of the <literal>insert into</literal> clause that explicitly defines the property names to use.
@@ -1139,6 +1172,43 @@ select A.customerId as custId, A.timestamp - B.timestamp as latency
 		<programlisting>insert into ReUpEvent
 select linkUp.ip as ip 
 from pattern [every linkDown=LinkDownEvent -> linkUp=LinkUpEvent(ip=linkDown.ip)]</programlisting>
+
+		<sect4 id="insert-into-merging-columns">
+			<title>Merging Streams By Event Type</title>			
+			<para>
+				The <literal>insert into</literal> clause allows to merge multiple event streams into a event single stream. 
+				The clause names an event stream to insert into by specifing an <emphasis>event_stream_name</emphasis>. The first statement that inserts into the named stream defines the stream's event types. Further statements that
+				insert into the same event stream must match the type of events inserted into the stream as declared by the first statement.
+			</para>
+
+			<para>
+			    One approach to merging event streams specifies individual colum names either in the <literal>select</literal> clause or in the <literal>insert into</literal> clause of the statement. This approach has been shown in earlier examples.
+			</para>
+			
+			<para>
+			    Another approach to merging event streams specifies the wildcard (*) in the <literal>select</literal> clause (or the stream wildcard) to select the underlying event. The events in the event stream must then 
+			    have the same event type as generated by the <literal>from</literal> clause.
+			</para>
+			
+			<para>
+			    Assume a statement creates an event stream named MergedStream by selecting OrderEvent events:
+			</para>
+			<programlisting>insert into MergedStream select * from OrderEvent</programlisting>
+
+			<para>
+			    A statement can use the stream wildcard selector to select only OrderEvent events in a join:
+			</para>
+			<programlisting>insert into MergedStream select ord.* from ItemScanEvent, OrderEvent as ord</programlisting>
+
+			<para>
+			    And a statement may also use an application-supplied user-defined function to convert events to OrderEvent instances:
+			</para>
+			<programlisting>insert into MergedStream select MyLib.convert(item) from ItemScanEvent as item</programlisting>			
+
+			<para>
+			    The conversion as above is supported for all event representations.
+			</para>
+		</sect4>
 	</sect1>
 
     <sect1 id="eql-join">
@@ -1921,7 +1991,7 @@ insert into OrdersWindow select name as symbol, vol as volume, price from FXOrde
 insert into OrdersWindow select * from com.mycompany.OrderEvent(symbol='IBM')]]></programlisting>
 
 			<para>
-				The last example adds one column named 'derivedPrice' to the 'OrderEvent' type by specifying a wildcard, and uses a static function to populate the column:
+				The last example adds one column named 'derivedPrice' to the 'OrderEvent' type by specifying a wildcard, and uses a user-defined function to populate the column:
 			</para>
 			<programlisting><![CDATA[create window OrdersWindow as select *, price as derivedPrice from OrderEvent
 insert into OrdersWindow select *, MyFunc.func(price, percent) as derivedPrice from OrderEvent]]></programlisting>
