@@ -1,0 +1,91 @@
+package net.esper.eql.spec;
+
+import net.esper.util.MetaDefItem;
+import net.esper.event.EventAdapterService;
+import net.esper.eql.core.MethodResolutionService;
+import net.esper.eql.named.NamedWindowService;
+import net.esper.eql.variable.VariableService;
+import net.esper.eql.expression.ExprNode;
+import net.esper.eql.expression.ExprValidationException;
+import net.esper.pattern.PatternObjectResolutionService;
+import net.esper.schedule.TimeProvider;
+
+import java.util.List;
+
+/**
+ * Specification object for historical data poll via database SQL statement.
+ */
+public class MethodStreamSpec extends StreamSpecBase implements StreamSpecRaw, StreamSpecCompiled, MetaDefItem
+{
+    private String ident;
+    private String className;
+    private String methodName;
+    private List<ExprNode> expressions;
+
+    /**
+     * Ctor.
+     * @param optionalStreamName is the stream name or null if none defined
+     * @param viewSpecs is an list of view specifications
+     * @param ident the prefix in the clause
+     * @param className the class name
+     * @param methodName the method name
+     * @param expressions the parameter expressions
+     */
+    public MethodStreamSpec(String optionalStreamName, List<ViewSpec> viewSpecs, String ident, String className, String methodName, List<ExprNode> expressions)
+    {
+        super(optionalStreamName, viewSpecs);
+        this.ident = ident;
+        this.className = className;
+        this.methodName = methodName;
+        this.expressions = expressions;
+    }
+
+    /**
+     * Returns the prefix (method) for the method invocation syntax.
+     * @return identifier
+     */
+    public String getIdent()
+    {
+        return ident;
+    }
+
+    /**
+     * Returns the class name.
+     * @return class name
+     */
+    public String getClassName()
+    {
+        return className;
+    }
+
+    /**
+     * Returns the method name.
+     * @return method name
+     */
+    public String getMethodName()
+    {
+        return methodName;
+    }
+
+    /**
+     * Returns the parameter expressions.
+     * @return parameter expressions
+     */
+    public List<ExprNode> getExpressions()
+    {
+        return expressions;
+    }
+
+    public StreamSpecCompiled compile(EventAdapterService eventAdapterService, MethodResolutionService methodResolutionService, PatternObjectResolutionService patternObjectResolutionService, TimeProvider timeProvider, NamedWindowService namedWindowService, VariableService variableService) throws ExprValidationException
+    {
+        if (!ident.equals("method"))
+        {
+            throw new ExprValidationException("Expecting keyword 'method', found '" + ident + "'");
+        }
+        if (methodName == null)
+        {
+            throw new ExprValidationException("No method name specified for method-based join");
+        }
+        return this;
+    }
+}
