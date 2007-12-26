@@ -43,7 +43,7 @@ public class TestMTInsertIntoTimerConcurrency extends TestCase
         eql = eql + " output every 10 seconds";
         createEQL(eql, noActionUpdateListener);
 
-        SendEventRunnable sendTickEventRunnable = new SendEventRunnable();
+        SendEventRunnable sendTickEventRunnable = new SendEventRunnable(10000);
         start(sendTickEventRunnable, 4);
 
         // Adjust here for long-running test
@@ -84,6 +84,13 @@ public class TestMTInsertIntoTimerConcurrency extends TestCase
 
     class SendEventRunnable implements Callable<Object>
     {
+        private int maxSent;
+
+        public SendEventRunnable(int maxSent)
+        {
+            this.maxSent = maxSent;
+        }
+
         public Object call() throws Exception
         {
             int count = 0;
@@ -97,7 +104,14 @@ public class TestMTInsertIntoTimerConcurrency extends TestCase
                 {
                     log.info("Thread " + Thread.currentThread().getId() + " send " + count + " events");
                 }
+
+                if (count > maxSent)
+                {
+                    break;
+                }
             }
+
+            return null;
         }
     }
 }
