@@ -342,7 +342,7 @@ public class StatementSpecMapper
     {
         FromClause from = new FromClause();
         model.setFromClause(from);
-        
+
         for (StreamSpecRaw stream : streamSpecs)
         {
             Stream targetStream;
@@ -350,7 +350,9 @@ public class StatementSpecMapper
             {
                 FilterStreamSpecRaw filterStreamSpec = (FilterStreamSpecRaw) stream;
                 Filter filter = unmapFilter(filterStreamSpec.getRawFilterSpec(), unmapContext);
-                targetStream = new FilterStream(filter, filterStreamSpec.getOptionalStreamName());
+                FilterStream filterStream = new FilterStream(filter, filterStreamSpec.getOptionalStreamName());
+                filterStream.setUnidirectional(stream.isUnidirectional());
+                targetStream = filterStream;
             }
             else if (stream instanceof DBStatementStreamSpec)
             {
@@ -361,7 +363,9 @@ public class StatementSpecMapper
             {
                 PatternStreamSpecRaw pattern = (PatternStreamSpecRaw) stream;
                 PatternExpr patternExpr = unmapPatternEvalDeep(pattern.getEvalNode(), unmapContext);
-                targetStream = new PatternStream(patternExpr, pattern.getOptionalStreamName());
+                PatternStream patternStream = new PatternStream(patternExpr, pattern.getOptionalStreamName());
+                patternStream.setUnidirectional(stream.isUnidirectional());
+                targetStream = patternStream;
             }
             else if (stream instanceof MethodStreamSpec)
             {
@@ -409,7 +413,6 @@ public class StatementSpecMapper
             }
             from.add(new OuterJoinQualifier(desc.getOuterJoinType(), left, right, additionalProperties));
         }
-
     }
 
     private static void unmapSelect(SelectClauseSpec selectClauseSpec, SelectClauseStreamSelectorEnum selectStreamSelectorEnum, EPStatementObjectModel model, StatementSpecUnMapContext unmapContext)
@@ -1029,7 +1032,7 @@ public class StatementSpecMapper
             {
                 FilterStream filterStream = (FilterStream) stream;
                 FilterSpecRaw filterSpecRaw = mapFilter(filterStream.getFilter(), mapContext);
-                spec = new FilterStreamSpecRaw(filterSpecRaw, new ArrayList<ViewSpec>(), filterStream.getStreamName());
+                spec = new FilterStreamSpecRaw(filterSpecRaw, new ArrayList<ViewSpec>(), filterStream.getStreamName(), filterStream.isUnidirectional());
             }
             else if (stream instanceof SQLStream)
             {
@@ -1041,7 +1044,7 @@ public class StatementSpecMapper
             {
                 PatternStream patternStream = (PatternStream) stream;
                 EvalNode child = mapPatternEvalDeep(patternStream.getExpression(), mapContext);
-                spec = new PatternStreamSpecRaw(child, new ArrayList<ViewSpec>(), patternStream.getStreamName());
+                spec = new PatternStreamSpecRaw(child, new ArrayList<ViewSpec>(), patternStream.getStreamName(), patternStream.isUnidirectional());
             }
             else if (stream instanceof MethodInvocationStream)
             {

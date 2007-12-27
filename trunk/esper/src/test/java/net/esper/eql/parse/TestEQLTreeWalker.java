@@ -34,11 +34,13 @@ public class TestEQLTreeWalker extends TestCase
     public void testWalkJoinMethodStatement() throws Exception
     {
         String className = SupportBean.class.getName();
-        String expression = "select * from " + className + ", method:com.MyClass.myMethod(string, 2*intPrimitive) as s0";
+        String expression = "select * from " + className + " unidirectional, method:com.MyClass.myMethod(string, 2*intPrimitive) as s0";
 
         EQLTreeWalker walker = parseAndWalkEQL(expression);
         StatementSpecRaw statementSpec = walker.getStatementSpec();
         assertEquals(2, statementSpec.getStreamSpecs().size());
+        assertTrue(statementSpec.getStreamSpecs().get(0).isUnidirectional());
+
         MethodStreamSpec methodSpec = (MethodStreamSpec) statementSpec.getStreamSpecs().get(1);
         assertEquals("method", methodSpec.getIdent());
         assertEquals("com.MyClass", methodSpec.getClassName());

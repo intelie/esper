@@ -27,9 +27,9 @@ public class FilterStreamSpecCompiled extends StreamSpecBase implements StreamSp
      * @param viewSpecs - specifies what view to use to derive data
      * @param optionalStreamName - stream name, or null if none supplied
      */
-    public FilterStreamSpecCompiled(FilterSpecCompiled filterSpec, List<ViewSpec> viewSpecs, String optionalStreamName)
+    public FilterStreamSpecCompiled(FilterSpecCompiled filterSpec, List<ViewSpec> viewSpecs, String optionalStreamName, boolean isUnidirectional)
     {
-        super(optionalStreamName, viewSpecs);
+        super(optionalStreamName, viewSpecs, isUnidirectional);
         this.filterSpec = filterSpec;
     }
 

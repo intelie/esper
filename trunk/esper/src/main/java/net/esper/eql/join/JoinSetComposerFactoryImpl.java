@@ -53,7 +53,9 @@ public class JoinSetComposerFactoryImpl implements JoinSetComposerFactory
                                                    EventType[] streamTypes,
                                                    String[] streamNames,
                                                    Viewable[] streamViews,
-                                                   SelectClauseStreamSelectorEnum selectStreamSelectorEnum)
+                                                   SelectClauseStreamSelectorEnum selectStreamSelectorEnum,
+                                                   boolean[] isUnidirectional,
+                                                   boolean[] hasChildViews)
             throws ExprValidationException
     {
         // Determine if there is a historical
@@ -84,44 +86,70 @@ public class JoinSetComposerFactoryImpl implements JoinSetComposerFactory
                     makeComposerHistorical(outerJoinDescList, optionalFilterNode, streamTypes, streamViews);
             indexes = indexAndStrategies.getFirst();
             queryStrategies = indexAndStrategies.getSecond();
+
+            return new JoinSetComposerImpl(indexes, queryStrategies, selectStreamSelectorEnum);
+        }
+
+        // Determine if any stream has a unidirectional keyword
+        int unidirectionalStreamNumber = -1;
+        for (int i = 0; i < isUnidirectional.length; i++)
+        {
+            if (isUnidirectional[i])
+            {
+                if (unidirectionalStreamNumber != -1)
+                {
+                    throw new ExprValidationException("The unidirectional keyword can only apply to one stream in a join");
+                }
+                unidirectionalStreamNumber = i;
+            }
+        }
+        if ((unidirectionalStreamNumber != -1) && (hasChildViews[unidirectionalStreamNumber]))
+        {
+            throw new ExprValidationException("The unidirectional keyword requires that no views are declared onto the stream");
+        }
+
+        QueryPlan queryPlan = QueryPlanBuilder.getPlan(streamTypes, outerJoinDescList, optionalFilterNode, streamNames);
+
+        // Build indexes
+        QueryPlanIndex[] indexSpecs = queryPlan.getIndexSpecs();
+        indexes = new EventTable[indexSpecs.length][];
+        for (int streamNo = 0; streamNo < indexSpecs.length; streamNo++)
+        {
+            String[][] indexProps = indexSpecs[streamNo].getIndexProps();
+            Class[][] coercionTypes = indexSpecs[streamNo].getCoercionTypesPerIndex();
+            indexes[streamNo] = new EventTable[indexProps.length];
+            for (int indexNo = 0; indexNo < indexProps.length; indexNo++)
+            {
+                indexes[streamNo][indexNo] = buildIndex(streamNo, indexProps[indexNo], coercionTypes[indexNo], streamTypes[streamNo]);
+            }
+        }
+
+        // Build strategies
+        QueryPlanNode[] queryExecSpecs = queryPlan.getExecNodeSpecs();
+        queryStrategies = new QueryStrategy[queryExecSpecs.length];
+        for (int i = 0; i < queryExecSpecs.length; i++)
+        {
+            QueryPlanNode planNode = queryExecSpecs[i];
+            ExecNode executionNode = planNode.makeExec(indexes, streamTypes);
+
+            if (log.isDebugEnabled())
+            {
+                log.debug(".makeComposer Execution nodes for stream " + i + " '" + streamNames[i] +
+                    "' : \n" + ExecNode.print(executionNode));
+            }
+
+            queryStrategies[i] = new ExecNodeQueryStrategy(i, streamTypes.length, executionNode);
+        }
+
+        // If all streams have views, normal business is a query plan for each stream
+        if (unidirectionalStreamNumber == -1)
+        {
+            return new JoinSetComposerImpl(indexes, queryStrategies, selectStreamSelectorEnum);
         }
         else
         {
-            QueryPlan queryPlan = QueryPlanBuilder.getPlan(streamTypes, outerJoinDescList, optionalFilterNode, streamNames);
-
-            // Build indexes
-            QueryPlanIndex[] indexSpecs = queryPlan.getIndexSpecs();
-            indexes = new EventTable[indexSpecs.length][];
-            for (int streamNo = 0; streamNo < indexSpecs.length; streamNo++)
-            {
-                String[][] indexProps = indexSpecs[streamNo].getIndexProps();
-                Class[][] coercionTypes = indexSpecs[streamNo].getCoercionTypesPerIndex();
-                indexes[streamNo] = new EventTable[indexProps.length];
-                for (int indexNo = 0; indexNo < indexProps.length; indexNo++)
-                {
-                    indexes[streamNo][indexNo] = buildIndex(streamNo, indexProps[indexNo], coercionTypes[indexNo], streamTypes[streamNo]);
-                }
-            }
-
-            // Build strategies
-            QueryPlanNode[] queryExecSpecs = queryPlan.getExecNodeSpecs();
-            queryStrategies = new QueryStrategy[queryExecSpecs.length];
-            for (int i = 0; i < queryExecSpecs.length; i++)
-            {
-                QueryPlanNode planNode = queryExecSpecs[i];
-                ExecNode executionNode = planNode.makeExec(indexes, streamTypes);
-
-                if (log.isDebugEnabled())
-                {
-                    log.debug(".makeComposer Execution nodes for stream " + i + " '" + streamNames[i] +
-                        "' : \n" + ExecNode.print(executionNode));
-                }
-
-                queryStrategies[i] = new ExecNodeQueryStrategy(i, streamTypes.length, executionNode);
-            }
+            return new JoinSetComposerStreamToWinImpl(indexes, unidirectionalStreamNumber, queryStrategies[unidirectionalStreamNumber]);
         }
-
-        return new JoinSetComposerImpl(indexes, queryStrategies, selectStreamSelectorEnum);
     }
 
     private Pair<EventTable[][], QueryStrategy[]> makeComposerHistorical(List<OuterJoinDesc> outerJoinDescList,

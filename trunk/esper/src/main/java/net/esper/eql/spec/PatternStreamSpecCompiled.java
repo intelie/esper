@@ -35,9 +35,9 @@ public class PatternStreamSpecCompiled extends StreamSpecBase implements StreamS
      * @param taggedEventTypes - event tags and their types as specified in the pattern, copied to allow original collection to change
      * @param optionalStreamName - stream name, or null if none supplied
      */
-    public PatternStreamSpecCompiled(EvalNode evalNode, Map<String, EventType> taggedEventTypes, List<ViewSpec> viewSpecs, String optionalStreamName)
+    public PatternStreamSpecCompiled(EvalNode evalNode, Map<String, EventType> taggedEventTypes, List<ViewSpec> viewSpecs, String optionalStreamName, boolean isUnidirectional)
     {
-        super(optionalStreamName, viewSpecs);
+        super(optionalStreamName, viewSpecs, isUnidirectional);
         this.evalNode = evalNode;
 
         Map<String, EventType> copy = new HashMap<String, EventType>();

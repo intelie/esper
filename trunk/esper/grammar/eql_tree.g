@@ -135,7 +135,7 @@ outerJoinIdent
 	;
 
 streamExpression
-	:	#(v:STREAM_EXPR (eventFilterExpr | patternInclusionExpression | databaseJoinExpression | methodJoinExpression) (viewListExpr)? (IDENT)? { leaveNode(#v); } )
+	:	#(v:STREAM_EXPR (eventFilterExpr | patternInclusionExpression | databaseJoinExpression | methodJoinExpression) (viewListExpr)? (IDENT)? (UNIDIRECTIONAL)? { leaveNode(#v); } )
 	;
 
 patternInclusionExpression

@@ -39,9 +39,9 @@ public class FilterStreamSpecRaw extends StreamSpecBase implements StreamSpecRaw
      * @param viewSpecs is the view definition
      * @param optionalStreamName is the stream name if supplied, or null if not supplied
      */
-    public FilterStreamSpecRaw(FilterSpecRaw rawFilterSpec, List<ViewSpec> viewSpecs, String optionalStreamName)
+    public FilterStreamSpecRaw(FilterSpecRaw rawFilterSpec, List<ViewSpec> viewSpecs, String optionalStreamName, boolean isUnidirectional)
     {
-        super(optionalStreamName, viewSpecs);
+        super(optionalStreamName, viewSpecs, isUnidirectional);
         this.rawFilterSpec = rawFilterSpec;
     }
 
@@ -81,7 +81,7 @@ public class FilterStreamSpecRaw extends StreamSpecBase implements StreamSpecRaw
             List<ExprNode> validatedNodes = FilterSpecCompiler.validateDisallowSubquery(rawFilterSpec.getFilterExpressions(),
                 streamTypeService, methodResolutionService, timeProvider, variableService);
             
-            return new NamedWindowConsumerStreamSpec(eventName, this.getOptionalStreamName(), this.getViewSpecs(), validatedNodes);
+            return new NamedWindowConsumerStreamSpec(eventName, this.getOptionalStreamName(), this.getViewSpecs(), validatedNodes, this.isUnidirectional());
         }
         
         EventType eventType = resolveType(eventName, eventAdapterService);
@@ -93,7 +93,7 @@ public class FilterStreamSpecRaw extends StreamSpecBase implements StreamSpecRaw
         FilterSpecCompiled spec = FilterSpecCompiler.makeFilterSpec(eventType, rawFilterSpec.getFilterExpressions(), null,
                 streamTypeService, methodResolutionService, timeProvider, variableService);
 
-        return new FilterStreamSpecCompiled(spec, this.getViewSpecs(), this.getOptionalStreamName());
+        return new FilterStreamSpecCompiled(spec, this.getViewSpecs(), this.getOptionalStreamName(), this.isUnidirectional());
     }
 
     /**

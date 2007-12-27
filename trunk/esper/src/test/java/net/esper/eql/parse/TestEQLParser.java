@@ -577,6 +577,11 @@ public class TestEQLParser extends TestCase implements EqlTokenTypes
         assertIsValid("select * from A, method:myClass.myname() as b where a.x = b.x");
         assertIsValid("select method, a, b from A, METHOD:com.maypack.myClass.myname() as b where a.x = b.x");
         assertIsValid("select method, a, b from A, someident:com.maypack.myClass.myname() as b where a.x = b.x");
+
+        // unidirectional join
+        assertIsValid("select * from A as x unidirectional, method:myClass.myname() as b where a.x = b.x");
+        assertIsValid("select a, b from A as y unidirectional, B as b where a.x = b.x");
+        assertIsValid("select a, b from A as y unidirectional, B unidirectional where a.x = b.x");
     }
 
     public void testBitWiseCases() throws Exception

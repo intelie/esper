@@ -70,6 +70,7 @@ tokens
 	DESC="desc";
 	RSTREAM="rstream";
 	ISTREAM="istream";
+	UNIDIRECTIONAL="unidirectional";
 	PATTERN="pattern";
 	SQL="sql";
 	METADATASQL="metadatasql";
@@ -376,7 +377,7 @@ streamSelector
 	
 streamExpression
 	:	(eventFilterExpression | patternInclusionExpression | databaseJoinExpression | methodJoinExpression)
-		(DOT! viewExpression (DOT! viewExpression)*)? (AS! IDENT | IDENT)?
+		(DOT! viewExpression (DOT! viewExpression)*)? (AS! IDENT | IDENT)? (UNIDIRECTIONAL)?
 		{ #streamExpression = #([STREAM_EXPR,"streamExpression"], #streamExpression); }
 	;
 			

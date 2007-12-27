@@ -47,6 +47,8 @@ public interface JoinSetComposerFactory
                                                    EventType[] streamTypes,
                                                    String[] streamNames,
                                                    Viewable[] streamViews,
-                                                   SelectClauseStreamSelectorEnum selectStreamSelectorEnum)
+                                                   SelectClauseStreamSelectorEnum selectStreamSelectorEnum,
+                                                   boolean[] isUnidirectional,
+                                                   boolean[] hasChildViews)
             throws ExprValidationException;
 }

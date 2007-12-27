@@ -1454,7 +1454,7 @@ public class TestNamedWindowViews extends TestCase
         assertEquals(Long.class, stmtCreate.getEventType().getPropertyType("value"));
 
         String stmtTextInsert = "insert into MyWindow select string as key, longBoxed as value from " + SupportBean.class.getName();
-        EPStatement stmtInsert = epService.getEPAdministrator().createEQL(stmtTextInsert);
+        epService.getEPAdministrator().createEQL(stmtTextInsert);
 
         // send events
         sendSupportBean("E1", 1L);
@@ -1465,7 +1465,7 @@ public class TestNamedWindowViews extends TestCase
 
         // This replays into MyWindow
         String stmtTextSelectTwo = "select key, value, symbol from MyWindow as s0" +
-                                   " left outer join " + SupportMarketDataBean.class.getName() + " as s1" +
+                                   " left outer join " + SupportMarketDataBean.class.getName() + ".win:keepall() as s1" +
                                    " on s0.value = s1.volume";
         EPStatement stmtSelectTwo = epService.getEPAdministrator().createEQL(stmtTextSelectTwo);
         stmtSelectTwo.addListener(listenerStmtTwo);

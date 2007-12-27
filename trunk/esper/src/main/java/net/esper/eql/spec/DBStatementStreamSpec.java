@@ -37,7 +37,7 @@ public class DBStatementStreamSpec extends StreamSpecBase implements StreamSpecR
      */
     public DBStatementStreamSpec(String optionalStreamName, List<ViewSpec> viewSpecs, String databaseName, String sqlWithSubsParams, String metadataSQL)
     {
-        super(optionalStreamName, viewSpecs);
+        super(optionalStreamName, viewSpecs, false);
 
         this.databaseName = databaseName;
         this.sqlWithSubsParams = sqlWithSubsParams;

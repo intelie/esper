@@ -378,9 +378,13 @@ public class EPStatementStartMethod
         // Create streams and views
         Viewable[] eventStreamParentViewable = new Viewable[numStreams];
         ViewFactoryChain[] unmaterializedViewChain = new ViewFactoryChain[numStreams];
+        boolean[] isUnidirectional = new boolean[numStreams];
+        boolean[] hasChildViews = new boolean[numStreams];
         for (int i = 0; i < statementSpec.getStreamSpecs().size(); i++)
         {
             StreamSpecCompiled streamSpec = statementSpec.getStreamSpecs().get(i);
+            isUnidirectional[i] = streamSpec.isUnidirectional();
+            hasChildViews[i] = !streamSpec.getViewSpecs().isEmpty();
 
             // Create view factories and parent view based on a filter specification
             if (streamSpec instanceof FilterStreamSpecCompiled)
@@ -397,7 +401,7 @@ public class EPStatementStartMethod
                 {
                     statementContext.getEpStatementHandle().setStatementLock(streamLockPair.getSecond());
                 }
-                
+
                 unmaterializedViewChain[i] = services.getViewService().createFactories(i, eventStreamParentViewable[i].getEventType(), streamSpec.getViewSpecs(), statementContext);
             }
             // Create view factories and parent view based on a pattern expression
@@ -570,7 +574,7 @@ public class EPStatementStartMethod
         }
         else
         {
-            Pair<Viewable, JoinPreloadMethod> pair = handleJoin(streamNames, streamEventTypes, streamViews, optionalResultSetProcessor, statementSpec.getSelectStreamSelectorEnum(), statementContext, stopCallbacks);
+            Pair<Viewable, JoinPreloadMethod> pair = handleJoin(streamNames, streamEventTypes, streamViews, optionalResultSetProcessor, statementSpec.getSelectStreamSelectorEnum(), statementContext, stopCallbacks, isUnidirectional, hasChildViews);
             finalView = pair.getFirst();
             joinPreloadMethod = pair.getSecond();
         }
@@ -627,16 +631,17 @@ public class EPStatementStartMethod
     }
 
     private Pair<Viewable, JoinPreloadMethod> handleJoin(String[] streamNames,
-                                EventType[] streamTypes,
-                                Viewable[] streamViews,
-                                ResultSetProcessor optionalResultSetProcessor,
-                                SelectClauseStreamSelectorEnum selectStreamSelectorEnum,
-                                StatementContext statementContext,
-                                List<StopCallback> stopCallbacks)
+                                                         EventType[] streamTypes,
+                                                         Viewable[] streamViews,
+                                                         ResultSetProcessor optionalResultSetProcessor,
+                                                         SelectClauseStreamSelectorEnum selectStreamSelectorEnum,
+                                                         StatementContext statementContext,
+                                                         List<StopCallback> stopCallbacks,
+                                                         boolean[] isUnidirectional, boolean[] hasChildViews)
             throws ExprValidationException
     {
         // Handle joins
-        final JoinSetComposer composer = statementContext.getJoinSetComposerFactory().makeComposer(statementSpec.getOuterJoinDescList(), statementSpec.getFilterRootNode(), streamTypes, streamNames, streamViews, selectStreamSelectorEnum);
+        final JoinSetComposer composer = statementContext.getJoinSetComposerFactory().makeComposer(statementSpec.getOuterJoinDescList(), statementSpec.getFilterRootNode(), streamTypes, streamNames, streamViews, selectStreamSelectorEnum, isUnidirectional, hasChildViews);
 
         stopCallbacks.add(new StopCallback(){
             public void stop()

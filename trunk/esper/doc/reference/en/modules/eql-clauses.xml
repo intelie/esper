@@ -346,7 +346,7 @@ from pattern[every tick=StockTick where timer:within(10 sec)]]]></programlisting
 		</para>
 
 		<para>
-			For joins and outer joins, specify two or more event streams. Joins between pattern-based and filter-based event streams are also supported.
+			For joins and outer joins, specify two or more event streams. Joins between pattern-based and filter-based event streams are also supported. Joins are multidirectional (or bidirectional for two streams) by default, and can be made unidirectional by use of the <literal>unidirectional</literal> keyword.
 		</para>
 
 		<para>
@@ -1253,6 +1253,16 @@ from pattern [every linkDown=LinkDownEvent -> linkUp=LinkUpEvent(ip=linkDown.ip)
 		<para>
 			The statement above joins the last 30 minutes of fraud warnings with a pattern. The pattern consists of every withdrawal event that is followed by a PIN change event for the same account number. It joins the two event streams on account number.
 		</para>
+
+		<para>
+			In a join and outer join, if your statement does not declare a data window view or other view onto a stream, then the engine retains all events for the stream equivalent to the keep-all data window.
+		</para>
+
+		<para>
+			The next example joins all FraudWarningEvent events that arrived since the statement was started, with the last 20 seconds of PINChangeEvent events:
+		</para>
+<programlisting><![CDATA[select * from FraudWarningEvent as fraud, PINChangeEvent.win:time(20 sec) as pin
+ where fraud.accountNumber = pin.accountNumber]]></programlisting>
     </sect1>
 
     <sect1 id="eql-outerjoin">
@@ -1315,6 +1325,55 @@ from pattern [every linkDown=LinkDownEvent -> linkUp=LinkUpEvent(ip=linkDown.ip)
         on rfid.productId = refprod.prodId
       left outer join LocationDescription.win:keepall() as refdesc
         on rfid.location = refdesc.locId]]></programlisting>
+    </sect1>
+
+    <sect1 id="eql-unidirectional">
+        <title>Unidirectional Joins and Outer Joins</title>
+
+		<indexterm><primary>unidirectional joins</primary></indexterm>
+		<indexterm><primary>EQL</primary><secondary>join, unidirectional</secondary></indexterm>
+		<indexterm><primary>EQL</primary><secondary>outer join, unidirectional</secondary></indexterm>
+
+		<para>
+			In a join or outer join your statement lists multiple event streams, views and/or patterns in the <literal>from</literal> clause. As events arrive into the engine, each of the streams (views, patterns) provides insert and remove stream events. The engine evaluates each insert and remove stream event provided by each stream, and joins or outer joins each event against data window contents of each stream, and thus generates insert and remove stream join results.
+		</para>
+			
+		<para>
+		    The direction of the join execution depends on which stream or streams are currently providing an insert or remove stream event for executing the join. A join is thus multidirectional, or bidirectional when only two streams are joined.
+			A join can be made unidirectional if your application does not want new results when events arrive on a given stream or streams.
+		</para>
+
+		<para>
+			The <literal>unidirectional</literal> keyword can be used in the <literal>from</literal> clause to identify a single stream that provides the events to execute the join. If the keyword is present for a stream, all other streams in the <literal>from</literal> clause become passive streams. When events arrive or leave a data window of a passive stream then the join does not generate join results. 
+		</para>
+
+		<para>
+			For example, consider a use case that requires us to join stock tick events (TickEvent) and news events (NewsEvent). The <literal>unidirectional</literal> keyword allows to generate results only when TickEvent events arrive, and not when NewsEvent arrive or leave the 10-second time window:
+		</para>
+		<programlisting><![CDATA[select * from TickEvent unidirectional, NewsEvent.win:time(10 sec) 
+where tick.symbol = news.symbol]]></programlisting>
+
+		<para>
+			The following restrictions apply to unidirectional joins:
+		</para>
+
+		<orderedlist spacing="compact">
+			<listitem>
+				<para>
+					The <literal>unidirectional</literal> keyword can only be specified for a single stream in the <literal>from</literal> clause. 
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					Receiving data from a unidirectional join via the pull API (<literal>iterator</literal> method) is not allowed. This is because the engine holds no state for the single stream that provides the events to execute the join.
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					The stream that declares the <literal>unidirectional</literal> keyword cannot declare a data window view or other view for that stream, since remove stream events are not processed for the single stream.
+				</para>
+			</listitem>
+		</orderedlist>
     </sect1>
 
     <sect1 id="eql-subqueries">

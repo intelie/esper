@@ -396,7 +396,7 @@ public class EQLTreeWalker extends EQLBaseWalker
         statementSpec.setCreateWindowDesc(desc);
 
         FilterSpecRaw rawFilterSpec = new FilterSpecRaw(eventName, new LinkedList<ExprNode>());
-        FilterStreamSpecRaw streamSpec = new FilterStreamSpecRaw(rawFilterSpec, new LinkedList<ViewSpec>(), null);
+        FilterStreamSpecRaw streamSpec = new FilterStreamSpecRaw(rawFilterSpec, new LinkedList<ViewSpec>(), null, false);
         statementSpec.getStreamSpecs().add(streamSpec);
     }
 
@@ -467,7 +467,7 @@ public class EQLTreeWalker extends EQLBaseWalker
         StreamSpecRaw streamSpec;
         if (node.getFirstChild().getType() == EVENT_FILTER_EXPR)
         {
-            streamSpec = new FilterStreamSpecRaw(filterSpec, new ArrayList<ViewSpec>(), streamAsName);
+            streamSpec = new FilterStreamSpecRaw(filterSpec, new ArrayList<ViewSpec>(), streamAsName, false);
         }
         else if (node.getFirstChild().getType() == PATTERN_INCL_EXPR)
         {
@@ -477,7 +477,7 @@ public class EQLTreeWalker extends EQLBaseWalker
             }
             // Get expression node sub-tree from the AST nodes placed so far
             EvalNode evalNode = astPatternNodeMap.values().iterator().next();
-            streamSpec = new PatternStreamSpecRaw(evalNode, viewSpecs, streamAsName);
+            streamSpec = new PatternStreamSpecRaw(evalNode, viewSpecs, streamAsName, false);
             astPatternNodeMap.clear();
         }
         else
@@ -700,7 +700,7 @@ public class EQLTreeWalker extends EQLBaseWalker
         // Get expression node sub-tree from the AST nodes placed so far
         EvalNode evalNode = astPatternNodeMap.values().iterator().next();
 
-        PatternStreamSpecRaw streamSpec = new PatternStreamSpecRaw(evalNode, new LinkedList<ViewSpec>(), null);
+        PatternStreamSpecRaw streamSpec = new PatternStreamSpecRaw(evalNode, new LinkedList<ViewSpec>(), null, false);
         statementSpec.getStreamSpecs().add(streamSpec);
         statementSpec.setExistsSubstitutionParameters(substitutionParamNodes.size() > 0);
 
@@ -800,14 +800,29 @@ public class EQLTreeWalker extends EQLBaseWalker
             streamName = streamNameNode.getText();
         }
 
+        // The first child node may be a "stream" keyword
+        boolean isUnidirectional = false;
+        AST child = node.getFirstChild();
+        while (child != null)
+        {
+            if (child.getType() == UNIDIRECTIONAL)
+            {
+                isUnidirectional = true;
+                break;
+            }
+            child = child.getNextSibling();
+        }
+
         // Convert to a stream specification instance
         StreamSpecRaw streamSpec;
+        AST startNode = node.getFirstChild();
+
         // If the first subnode is a filter node, we have a filter stream specification
-        if (node.getFirstChild().getType() == EVENT_FILTER_EXPR)
+        if (startNode.getType() == EVENT_FILTER_EXPR)
         {
-            streamSpec = new FilterStreamSpecRaw(filterSpec, viewSpecs, streamName);
+            streamSpec = new FilterStreamSpecRaw(filterSpec, viewSpecs, streamName, isUnidirectional);
         }
-        else if (node.getFirstChild().getType() == PATTERN_INCL_EXPR)
+        else if (startNode.getType() == PATTERN_INCL_EXPR)
         {
             if ((astPatternNodeMap.size() > 1) || ((astPatternNodeMap.isEmpty())))
             {
@@ -817,12 +832,12 @@ public class EQLTreeWalker extends EQLBaseWalker
             // Get expression node sub-tree from the AST nodes placed so far
             EvalNode evalNode = astPatternNodeMap.values().iterator().next();
 
-            streamSpec = new PatternStreamSpecRaw(evalNode, viewSpecs, streamName);
+            streamSpec = new PatternStreamSpecRaw(evalNode, viewSpecs, streamName, isUnidirectional);
             astPatternNodeMap.clear();
         }
-        else if (node.getFirstChild().getType() == DATABASE_JOIN_EXPR)
+        else if (startNode.getType() == DATABASE_JOIN_EXPR)
         {
-            AST dbchildNode = node.getFirstChild().getFirstChild();
+            AST dbchildNode = startNode.getFirstChild();
             String dbName = dbchildNode.getText();
             String sqlWithParams = StringValue.parseString(dbchildNode.getNextSibling().getText().trim());
 
@@ -835,9 +850,9 @@ public class EQLTreeWalker extends EQLBaseWalker
 
             streamSpec = new DBStatementStreamSpec(streamName, viewSpecs, dbName, sqlWithParams, sampleSQL);
         }
-        else if (node.getFirstChild().getType() == METHOD_JOIN_EXPR)
+        else if (startNode.getType() == METHOD_JOIN_EXPR)
         {
-            AST childNode = node.getFirstChild().getFirstChild();
+            AST childNode = startNode.getFirstChild();
             String prefixIdent = childNode.getText();
             childNode = childNode.getNextSibling();
 

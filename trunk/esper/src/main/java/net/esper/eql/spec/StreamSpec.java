@@ -30,4 +30,6 @@ public interface StreamSpec
      * @return view defs
      */
     public List<ViewSpec> getViewSpecs();
+
+    public boolean isUnidirectional();    
 }
