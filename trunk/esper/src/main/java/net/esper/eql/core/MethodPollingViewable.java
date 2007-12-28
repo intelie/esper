@@ -82,7 +82,7 @@ public class MethodPollingViewable implements HistoricalEventViewable
             count++;
         }
 
-        // Try to resolve the method
+        // Try to resolve the method, also checking parameter types
 		try
 		{
 			methodResolutionService.resolveMethod(methodStreamSpec.getClassName(), methodStreamSpec.getMethodName(), paramTypes);

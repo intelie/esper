@@ -14,6 +14,65 @@ public class SupportStaticMethodLib
         return beanOne.getSymbol().equals(beanTwo.getString());
     }
 
+    public static Map fetchMapMetadata()
+    {
+        Map<String, Class> values = new HashMap<String, Class>();
+        values.put("mapstring", String.class);
+        values.put("mapint", Integer.class);
+        return values;
+    }
+
+    public static Map fetchMapArrayMetadata()
+    {
+        Map<String, Class> values = new HashMap<String, Class>();
+        values.put("mapstring", String.class);
+        values.put("mapint", Integer.class);
+        return values;
+    }
+
+    public static Map[] fetchMapArray(String string, int id)
+    {
+        if (id < 0)
+        {
+            return null;
+        }
+
+        if (id == 0)
+        {
+            return new Map[0];
+        }
+
+        Map[] rows = new Map[id];
+        for (int i = 0; i < id; i++)
+        {
+            Map<String, Object> values = new HashMap<String, Object>();
+            rows[i] = values;
+
+            values.put("mapstring", "|" + string + "_" + i + "|");
+            values.put("mapint", i + 100);
+        }
+
+        return rows;
+    }
+
+    public static Map fetchMap(String string, int id)
+    {
+        if (id < 0)
+        {
+            return null;
+        }
+
+        Map<String, Object> values = new HashMap<String, Object>();
+        if (id == 0)
+        {
+            return values;
+        }
+        
+        values.put("mapstring", "|" + string + "|");
+        values.put("mapint", id + 1);
+        return values;
+    }
+
     public static Map convertEventMap(Map<String, Object> values)
     {
         Map<String, Object> result = new HashMap<String, Object>();

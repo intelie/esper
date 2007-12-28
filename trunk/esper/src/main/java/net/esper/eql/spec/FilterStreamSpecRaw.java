@@ -38,6 +38,7 @@ public class FilterStreamSpecRaw extends StreamSpecBase implements StreamSpecRaw
      * @param rawFilterSpec is unvalidated filter specification
      * @param viewSpecs is the view definition
      * @param optionalStreamName is the stream name if supplied, or null if not supplied
+     * @param isUnidirectional - true to indicate a unidirectional stream in a join, applicable for joins
      */
     public FilterStreamSpecRaw(FilterSpecRaw rawFilterSpec, List<ViewSpec> viewSpecs, String optionalStreamName, boolean isUnidirectional)
     {

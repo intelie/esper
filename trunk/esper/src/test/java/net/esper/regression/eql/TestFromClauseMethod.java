@@ -23,6 +23,60 @@ public class TestFromClauseMethod extends TestCase
         listener = new SupportUpdateListener();
     }
 
+    public void testMapReturnTypeMultipleRow()
+    {
+        String joinStatement = "select string, intPrimitive, mapstring, mapint from " +
+                SupportBean.class.getName() + ".win:keepall() as s1, " +
+                "method:net.esper.support.eql.SupportStaticMethodLib.fetchMapArray(string, intPrimitive)";
+        
+        EPStatement stmt = epService.getEPAdministrator().createEQL(joinStatement);
+        stmt.addListener(listener);
+        String[] fields = new String[] {"string", "intPrimitive", "mapstring", "mapint"};
+
+        sendBeanEvent("E1", 0);
+        assertFalse(listener.isInvoked());
+
+        sendBeanEvent("E2", -1);
+        assertFalse(listener.isInvoked());
+
+        sendBeanEvent("E3", 1);
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E3", 1, "|E3_0|", 100});
+
+        sendBeanEvent("E4", 2);
+        ArrayAssertionUtil.assertPropsPerRow(listener.getLastNewData(), fields,
+                new Object[][] {{"E4", 2, "|E4_0|", 100}, {"E4", 2, "|E4_1|", 101}});
+
+        sendBeanEvent("E5", 3);
+        ArrayAssertionUtil.assertPropsPerRow(listener.getLastNewData(), fields,
+                new Object[][] {{"E5", 3, "|E5_0|", 100}, {"E5", 3, "|E5_1|", 101}, {"E5", 3, "|E5_2|", 102}});
+
+        stmt.destroy();
+    }
+
+    public void testMapReturnTypeSingleRow()
+    {
+        String joinStatement = "select string, intPrimitive, mapstring, mapint from " +
+                SupportBean.class.getName() + ".win:keepall() as s1, " +
+                "method:net.esper.support.eql.SupportStaticMethodLib.fetchMap(string, intPrimitive)";
+        EPStatement stmt = epService.getEPAdministrator().createEQL(joinStatement);        
+        stmt.addListener(listener);
+        String[] fields = new String[] {"string", "intPrimitive", "mapstring", "mapint"};
+
+        sendBeanEvent("E1", 1);
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E1", 1, "|E1|", 2});
+
+        sendBeanEvent("E2", 3);
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E2", 3, "|E2|", 4});
+
+        sendBeanEvent("E3", 0);
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E3", 0, null, null});
+
+        sendBeanEvent("E4", -1);
+        assertFalse(listener.isInvoked());
+
+        stmt.destroy();
+    }
+
     public void testArrayNoArg()
     {
         String joinStatement = "select id, string from " +

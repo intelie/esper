@@ -18,12 +18,19 @@ import net.sf.cglib.reflect.FastClass;
 import net.sf.cglib.reflect.FastMethod;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.InvocationTargetException;
+import java.util.Map;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * Factory for method-invocation data provider streams.
  */
 public class MethodPollingViewableFactory
 {
+    private static final Log log = LogFactory.getLog(MethodPollingViewableFactory.class);
+
     /**
      * Creates a method-invocation polling view for use as a stream that calls a method, or pulls results from cache.
      * @param streamNumber the stream number
@@ -74,8 +81,52 @@ public class MethodPollingViewableFactory
             beanClass = staticMethod.getReturnType().getComponentType();
         }
 
+        // If the method returns a Map, look up the map type
+        Map<String, Class> mapType = null;
+        String mapTypeName = null;
+        if ( (JavaClassHelper.isImplementsInterface(staticMethod.getReturnType(), Map.class)) ||
+             (staticMethod.getReturnType().isArray() && JavaClassHelper.isImplementsInterface(staticMethod.getReturnType().getComponentType(), Map.class)) )
+        {
+            Method typeGetterMethod = null;
+            String getterMethodName = methodStreamSpec.getMethodName() + "Metadata";
+            try
+            {
+                typeGetterMethod = methodResolutionService.resolveMethod(methodStreamSpec.getClassName(), getterMethodName, new Class[0]);
+            }
+            catch(Exception e)
+            {
+                log.warn("Could not find getter method for Map-typed method invocation, expected a method by name '" + getterMethodName + "' accepting no parameters");
+            }
+            if ((typeGetterMethod != null) && (JavaClassHelper.isImplementsInterface(typeGetterMethod.getReturnType(), Map.class)))
+            {
+                Object resultType = null;
+                try
+                {
+                    resultType = typeGetterMethod.invoke(null);
+                }
+                catch (Exception e)
+                {
+                    log.warn("Error invoking getter method for Map-typed method invocation, for method by name '" + getterMethodName + "' accepting no parameters");
+                }
+
+                if ((resultType != null) && (resultType instanceof Map))
+                {
+                    mapTypeName = methodStreamSpec.getClassName() + "." + typeGetterMethod.getName();
+                    mapType = (Map<String, Class>) resultType;
+                }
+            }
+        }
+
         // Determine event type from class and method name
-        EventType eventType = eventAdapterService.addBeanType(beanClass.getName(), beanClass);
+        EventType eventType = null;
+        if (mapType != null)
+        {
+            eventType = eventAdapterService.addMapType(mapTypeName, mapType);
+        }
+        else
+        {
+            eventType = eventAdapterService.addBeanType(beanClass.getName(), beanClass);
+        }
 
         // Construct polling strategy as a method invocation
         ConfigurationMethodRef configCache = engineImportService.getConfigurationMethodRef(declaringClass.getName());
@@ -85,7 +136,7 @@ public class MethodPollingViewableFactory
         }
         ConfigurationDBRef.DataCacheDesc dataCacheDesc = (configCache != null) ? configCache.getDataCacheDesc() : null;
         DataCache dataCache = DataCacheFactory.getDataCache(dataCacheDesc, epStatementHandle, schedulingService, scheduleBucket);
-        PollExecStrategy methodPollStrategy = new MethodPollingExecStrategy(eventAdapterService, staticMethod);
+        PollExecStrategy methodPollStrategy = new MethodPollingExecStrategy(eventAdapterService, staticMethod, mapTypeName != null, eventType);
 
         return new MethodPollingViewable(methodStreamSpec, streamNumber, methodStreamSpec.getExpressions(), methodPollStrategy, dataCache, eventType);
     }

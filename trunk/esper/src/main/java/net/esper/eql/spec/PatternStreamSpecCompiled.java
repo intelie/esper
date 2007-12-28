@@ -34,6 +34,7 @@ public class PatternStreamSpecCompiled extends StreamSpecBase implements StreamS
      * @param viewSpecs - specifies what view to use to derive data
      * @param taggedEventTypes - event tags and their types as specified in the pattern, copied to allow original collection to change
      * @param optionalStreamName - stream name, or null if none supplied
+     * @param isUnidirectional - true to indicate a unidirectional stream in a join, applicable for joins
      */
     public PatternStreamSpecCompiled(EvalNode evalNode, Map<String, EventType> taggedEventTypes, List<ViewSpec> viewSpecs, String optionalStreamName, boolean isUnidirectional)
     {

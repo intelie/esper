@@ -1798,11 +1798,19 @@ select orderId, orderAmount from
 			</para>
 			
 			<para>
-				If your method invocation returns either no row or only one row, then the return type of the method can be a Java class. If your method invocation can return more then one row, then the return type of the method must be an array of Java class. The Java class in the return type must adhere to JavaBean conventions: it must expose properties through getter methods.
+				If your method invocation returns either no row or only one row, then the return type of the method can be a Java class or a <literal>java.util.Map</literal>. If your method invocation can return more then one row, then the return type of the method must be an array of Java class or an array of <literal>Map</literal>.
 			</para>
 			
 			<para>
-				The method must return either of the following:
+				If you are using a Java class or an array of Java class as the return type, then the class must adhere to JavaBean conventions: it must expose properties through getter methods.
+			</para>
+
+			<para>
+				If you are using <literal>java.util.Map</literal> as the return type or an array of <literal>Map</literal>, then the map should have <literal>String</literal>-type keys and object values (<literal>Map&lt;String, Object&gt;</literal>). When using <literal>Map</literal> as the return type, your application must provide a second method that returns property metadata, as the next section outlines.
+			</para>
+
+			<para>
+				Your application method must return either of the following:
 			</para>
 			
 			<orderedlist>
@@ -1813,12 +1821,12 @@ select orderId, orderAmount from
 				</listitem>
 				<listitem>
 					<para>
-						A Java object to indicate a one-row result, or an array that consists of a single Java object.
+						A Java object or <literal>Map</literal> to indicate a one-row result, or an array that consists of a single Java object or <literal>Map</literal>.
 					</para>
 				</listitem>
 				<listitem>
 					<para>
-						An array of Java objects to return multiple result rows.
+						An array of Java objects or <literal>Map</literal> instances to return multiple result rows.
 					</para>
 				</listitem>
 			</orderedlist>
@@ -1841,10 +1849,86 @@ select orderId, orderAmount from
   }]]></programlisting>
 
 			<para>
-				The example above specifies the full Java class name of the 'MyLookupLib' class in the EQL statement. The package name does not need to be part of the EQL if your application imports the package using the auto-import configuration through the API or XML, as outlined in <xref linkend="config-class--package-imports"/>.
+				The example above specifies the full Java class name of the class 'MyLookupLib' class in the EQL statement. The package name does not need to be part of the EQL if your application imports the package using the auto-import configuration through the API or XML, as outlined in <xref linkend="config-class--package-imports"/>.
 			</para>
 			
+		</sect2>
 
+		<sect2 id="joining_method_map" revision="1">
+			<title>Using a <literal>Map</literal> Return Type</title>
+			
+			<para>
+				Your application may return <literal>java.util.Map</literal> or an array of <literal>Map</literal> from method invocations. If doing so, your application must provide metadata about each row: it must declare the property name and property type of each <literal>Map</literal> entry of a row. This information allows the engine to perform type checking of expressions used within the statement.
+			</para>
+			
+			<para>
+				You declare the property names and types of each row by providing a method that returns property metadata. The metadata method must follows these conventions:
+			</para>
+			
+			<orderedlist>
+				<listitem>
+					<para>
+						The method name providing the property metadata must have same method name appended by the literal <literal>Metadata</literal>.
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						The method must have an empty parameter list and must be declared public and static.
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						The method providing the metadata must return a <literal>Map</literal> of <literal>String</literal> property name keys and <literal>java.lang.Class</literal> property name types (<literal>Map&lt;String, Class&gt;</literal>).
+					</para>
+				</listitem>
+			</orderedlist>
+			
+			<para>
+				In the following example, a class 'MyLookupLib' provides a method to return historical data based on asset id and asset code:
+			</para>
+			<programlisting><![CDATA[]]>select assetId, location, x_coord, y_coord from AssetMoveEvent as asset,
+    com.mypackage.MyLookupLib.getAssetHistory(assetId, assetCode) as history</programlisting>
+																	
+			<para>
+				A sample implementation of the class 'MyLookupLib' is shown below. 
+			</para>
+			<programlisting><![CDATA[public class MyLookupLib {
+  ...
+  // For each column in a row, provide the property name and type
+  //
+  public static Map<String, Class> getAssetHistoryMetadata() {
+    Map<String, Class> propertyNames = new HashMap<String, Class>();
+    propertyNames.put("location", String.class);
+    propertyNames.put("x_coord", Integer.class);
+    propertyNames.put("y_coord", Integer.class);
+    return propertyNames;
+  }
+... 
+  // Lookup rows based on assetId and assetCode
+  // 
+  public static Map<String, Object>[] getAssetHistory(String assetId, String assetCode) {
+    Map rows = new Map[2];	// this sample returns 2 rows
+    for (int i = 0; i < 2; i++) {
+      rows[i] = new HashMap();
+      rows[i].put("location", "somevalue");
+      rows[i].put("x_coord", 100);
+      // ... set more values for each row
+    }
+    return rows;
+  }]]></programlisting>
+
+			<para>
+				In the example above, the 'getAssetHistoryMetadata' method provides the property metadata: the names and types of properties in each row.  The engine calls this method once per statement to determine event typing information.
+			</para>
+
+			<para>
+				The 'getAssetHistory' method returns an array of <literal>Map</literal> objects that are two rows. The implementation shown above is a simple example. The parameters to the method are the assetId and assetCode properties of the AssetMoveEvent joined to the method. The engine calls this method for each insert and remove stream event in AssetMoveEvent.
+			</para>
+			
+			<para>
+				To indicate that no rows are found in a join, your application method may return either a <literal>null</literal> value or an array of size zero.
+			</para>
+			
 		</sect2>
 
 	</sect1>

@@ -9,7 +9,7 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 /**
- * Implements the function to determine a join result for a stream-to-window joins,
+ * Implements the function to determine a join result for a unidirectional stream-to-window joins,
  * in which a single stream's events are every only evaluated using a query strategy.
  */
 public class JoinSetComposerStreamToWinImpl implements JoinSetComposer
@@ -24,6 +24,8 @@ public class JoinSetComposerStreamToWinImpl implements JoinSetComposer
     /**
      * Ctor.
      * @param repositories - for each stream an array of (indexed/unindexed) tables for lookup.
+     * @param streamNumber is the undirectional stream
+     * @param queryStrategy is the lookup query strategy for the stream
      */
     public JoinSetComposerStreamToWinImpl(EventTable[][] repositories, int streamNumber, QueryStrategy queryStrategy)
     {
