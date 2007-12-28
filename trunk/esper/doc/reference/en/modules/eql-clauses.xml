@@ -1862,7 +1862,7 @@ select orderId, orderAmount from
 			</para>
 			
 			<para>
-				You declare the property names and types of each row by providing a method that returns property metadata. The metadata method must follows these conventions:
+				You declare the property names and types of each row by providing a method that returns property metadata. The metadata method must follow these conventions:
 			</para>
 			
 			<orderedlist>
