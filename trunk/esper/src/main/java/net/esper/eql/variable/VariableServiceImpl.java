@@ -4,6 +4,8 @@ import net.esper.schedule.TimeProvider;
 import net.esper.util.JavaClassHelper;
 import net.esper.collection.Pair;
 import net.esper.core.StatementExtensionSvcContext;
+import net.esper.eql.expression.ExprValidationException;
+import net.esper.client.VariableValueException;
 
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -335,6 +337,44 @@ public class VariableServiceImpl implements VariableService
         }
     }
 
+    public void checkAndWrite(int variableNumber, Object newValue) throws VariableValueException
+    {
+        if (newValue == null)
+        {
+            write(variableNumber, newValue);
+            return;
+        }
+
+        Class valueType = newValue.getClass();
+        String variableName = variableVersions.get(variableNumber).getName();
+        Class variableType = variables.get(variableName).getType();
+
+        if (valueType.equals(variableType))
+        {
+            write(variableNumber, newValue);
+            return;
+        }
+
+        if ((!JavaClassHelper.isNumeric(variableType)) ||
+            (!JavaClassHelper.isNumeric(valueType)))
+        {
+            throw new VariableValueException("Variable '" + variableName
+                + "' of declared type '" + variableType.getName() +
+                    "' cannot be assigned a value of type '" + valueType.getName() + "'");
+        }
+
+        // determine if the expression type can be assigned
+        if (!(JavaClassHelper.canCoerce(valueType, variableType)))
+        {
+            throw new VariableValueException("Variable '" + variableName
+                + "' of declared type '" + variableType.getName() +
+                    "' cannot be assigned a value of type '" + valueType.getName() + "'");
+        }
+
+        Object valueCoerced = JavaClassHelper.coerceBoxed((Number) newValue, variableType);
+        write(variableNumber, valueCoerced);
+    }
+
     public String toString()
     {
         StringWriter writer = new StringWriter();
@@ -345,5 +385,12 @@ public class VariableServiceImpl implements VariableService
             writer.write("Variable '" + entry.getKey() + "' : " + list.toString() + "\n");
         }
         return writer.toString();
+    }
+
+    public Map<String, VariableReader> getVariables()
+    {
+        Map<String, VariableReader> variables = new HashMap<String, VariableReader>();
+        variables.putAll(this.variables);
+        return variables; 
     }
 }

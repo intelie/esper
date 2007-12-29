@@ -8,6 +8,7 @@
 package net.esper.client;
 
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Interface to event stream processing runtime services.
@@ -121,4 +122,48 @@ public interface EPRuntime
      * previously registered listener
      */
     public void setUnmatchedListener(UnmatchedListener listener);
+
+    /**
+     * Returns the current variable value. A null value is a valid value for a variable.
+     * @param variableName is the name of the variable to return the value for
+     * @return current variable value
+     * @throws VariableNotFoundException if a variable by that name has not been declared
+     */
+    public Object getVariableValue(String variableName) throws VariableNotFoundException;
+
+    /**
+     * Returns current variable values for each of the variable names passed in,
+     * guaranteeing consistency in the face of concurrent updates to the variables.
+     * @param variableNames is a set of variable names for which to return values
+     * @return map of variable name and variable value
+     * @throws VariableNotFoundException if any of the variable names has not been declared
+     */
+    public Map<String, Object> getVariableValue(Set<String> variableNames) throws VariableNotFoundException;
+
+    /**
+     * Returns current variable values for all variables,
+     * guaranteeing consistency in the face of concurrent updates to the variables.
+     * @return map of variable name and variable value
+     */
+    public Map<String, Object> getVariableValueAll();
+
+    /**
+     * Sets the value of a single variable.
+     * @param variableName is the name of the variable to change the value of
+     * @param variableValue is the new value of the variable, with null an allowed value
+     * @throws VariableValueException if the value does not match variable type or cannot be safely coerced
+     * to the variable type
+     * @throws VariableNotFoundException if the variable name has not been declared
+     */
+    public void setVariableValue(String variableName, Object variableValue) throws VariableValueException, VariableNotFoundException;
+
+    /**
+     * Sets the value of multiple variables in one update, applying all or none of the changes
+     * to variable values in one atomic transaction.
+     * @param variableValues is the map of variable name and variable value, with null an allowed value
+     * @throws VariableValueException if any value does not match variable type or cannot be safely coerced
+     * to the variable type
+     * @throws VariableNotFoundException if any of the variable names has not been declared
+     */
+    public void setVariableValue(Map<String, Object> variableValues) throws VariableValueException, VariableNotFoundException;
 }

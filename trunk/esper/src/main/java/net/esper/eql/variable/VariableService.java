@@ -3,6 +3,7 @@ package net.esper.eql.variable;
 import net.esper.core.StatementExtensionSvcContext;
 
 import java.util.concurrent.locks.ReadWriteLock;
+import java.util.Map;
 
 /**
  * Variables service for reading and writing variables, and for setting a version number for the current thread to
@@ -60,6 +61,15 @@ public interface VariableService
     public void write(int variableNumber, Object newValue);
 
     /**
+     * Check type of the value supplied and writes the new variable value.
+     * <p>
+     * Must be followed by either a commit or rollback.
+     * @param variableNumber the index number of the variable to write (from VariableReader)
+     * @param newValue the new value
+     */
+    public void checkAndWrite(int variableNumber, Object newValue);
+
+    /**
      * Commits the variable outstanding changes.
      */
     public void commit();
@@ -68,4 +78,10 @@ public interface VariableService
      * Rolls back the variable outstanding changes.
      */
     public void rollback();
+
+    /**
+     * Returns a map of variable name and reader, for thread-safe iteration.
+     * @return variable names and readers
+     */
+    public Map<String, VariableReader> getVariables();
 }

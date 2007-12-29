@@ -37,6 +37,15 @@ public class VariableReader
     }
 
     /**
+     * Returns the variable name.
+     * @return variable name
+     */
+    public String getVariableName()
+    {
+        return variableName;
+    }
+
+    /**
      * Returns the variable number.
      * @return variable index number
      */

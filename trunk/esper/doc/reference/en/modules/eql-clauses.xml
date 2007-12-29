@@ -2368,7 +2368,7 @@ select win.* from OrdersNamedWindow as win]]></programlisting>
 		</para>
 			
 		<para>
-			Variables must first be declared or configured before use, by defining each variable's type and name. Variables can be created via the <literal>create variable</literal> syntax or declared by configuration. Variables can be assigned new values by using the <literal>on set</literal> syntax.
+			Variables must first be declared or configured before use, by defining each variable's type and name. Variables can be created via the <literal>create variable</literal> syntax or declared by configuration. Variables can be assigned new values by using the <literal>on set</literal> syntax or via the <literal>setVariableValue</literal> methods on <literal>EPRuntime</literal>. The <literal>EPRuntime</literal> also provides method to read variable values.
 		</para>
 			
 		<para>
@@ -2440,7 +2440,7 @@ select win.* from OrdersNamedWindow as win]]></programlisting>
 			<title>Setting Variable Values: the <literal>On Set</literal> clause</title>
 
 			<para>
-				The <literal>on set</literal> statement assigns a new value to one or more variables when a triggering event arrives or a triggering pattern occurs.
+				The <literal>on set</literal> statement assigns a new value to one or more variables when a triggering event arrives or a triggering pattern occurs. Use the <literal>setVariableValue</literal> methods on <literal>EPRuntime</literal> to assign variable values programmatically.
 			</para>
 
 			<para>

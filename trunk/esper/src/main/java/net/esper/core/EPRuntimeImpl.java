@@ -7,10 +7,7 @@
  **************************************************************************************/
 package net.esper.core;
 
-import net.esper.client.EPException;
-import net.esper.client.EPRuntime;
-import net.esper.client.EmittedListener;
-import net.esper.client.UnmatchedListener;
+import net.esper.client.*;
 import net.esper.client.time.CurrentTimeEvent;
 import net.esper.client.time.TimerControlEvent;
 import net.esper.client.time.TimerEvent;
@@ -25,6 +22,7 @@ import net.esper.timer.TimerCallback;
 import net.esper.util.ExecutionPathDebugLog;
 import net.esper.util.ManagedLock;
 import net.esper.util.ThreadLogUtil;
+import net.esper.eql.variable.VariableReader;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -707,6 +705,86 @@ public class EPRuntimeImpl implements EPRuntime, TimerCallback, InternalEventRou
     public void setUnmatchedListener(UnmatchedListener listener)
     {
         this.unmatchedListener = listener;
+    }
+
+    public void setVariableValue(String variableName, Object variableValue) throws EPException
+    {
+        VariableReader reader = services.getVariableService().getReader(variableName);
+        if (reader == null)
+        {
+            throw new VariableNotFoundException("Variable by name '" + variableName + "' has not been declared");
+        }
+
+        services.getVariableService().checkAndWrite(reader.getVariableNumber(), variableValue);
+        services.getVariableService().commit();
+    }
+
+    public void setVariableValue(Map<String, Object> variableValues) throws EPException
+    {
+        for (Map.Entry<String, Object> entry : variableValues.entrySet())
+        {
+            String variableName = entry.getKey();
+            VariableReader reader = services.getVariableService().getReader(variableName);
+            if (reader == null)
+            {
+                services.getVariableService().rollback();
+                throw new VariableNotFoundException("Variable by name '" + variableName + "' has not been declared");
+            }
+
+            try
+            {
+                services.getVariableService().checkAndWrite(reader.getVariableNumber(), entry.getValue());
+            }
+            catch (RuntimeException ex)
+            {
+                services.getVariableService().rollback();
+                throw ex;
+            }
+        }
+
+        services.getVariableService().commit();
+    }
+    
+    public Object getVariableValue(String variableName) throws EPException
+    {
+        services.getVariableService().setLocalVersion();
+        VariableReader reader = services.getVariableService().getReader(variableName);
+        if (reader == null)
+        {
+            throw new VariableNotFoundException("Variable by name '" + variableName + "' has not been declared");
+        }
+        return reader.getValue();
+    }
+
+    public Map<String, Object> getVariableValue(Set<String> variableNames) throws EPException
+    {
+        services.getVariableService().setLocalVersion();
+        Map<String, Object> values = new HashMap<String, Object>();
+        for (String variableName : variableNames)
+        {
+            VariableReader reader = services.getVariableService().getReader(variableName);
+            if (reader == null)
+            {
+                throw new VariableNotFoundException("Variable by name '" + variableName + "' has not been declared");
+            }
+
+            Object value = reader.getValue();
+            values.put(variableName, value);
+        }
+        return values;
+    }
+
+    public Map<String, Object> getVariableValueAll() throws EPException
+    {
+        services.getVariableService().setLocalVersion();
+        Map<String, VariableReader> variables = services.getVariableService().getVariables();
+        Map<String, Object> values = new HashMap<String, Object>();
+        for (Map.Entry<String, VariableReader> entry : variables.entrySet())
+        {
+            Object value = entry.getValue().getValue();
+            values.put(entry.getValue().getVariableName(), value);
+        }
+        return values;
     }
 
     private static final Log log = LogFactory.getLog(EPRuntimeImpl.class);

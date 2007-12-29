@@ -15,8 +15,7 @@ import org.xml.sax.InputSource;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.StringReader;
-import java.util.Arrays;
-import java.util.Map;
+import java.util.*;
 
 public class TestVariables extends TestCase
 {
@@ -33,6 +32,138 @@ public class TestVariables extends TestCase
         epService.initialize();
         listener = new SupportUpdateListener();
         listenerSet = new SupportUpdateListener();
+    }
+
+    // TODO: test invalid type
+    // TODO: test variable does not exist
+    public void testVariableEPRuntime() throws Exception
+    {
+        epService.getEPAdministrator().getConfiguration().addVariable("var1", int.class, -1);
+        epService.getEPAdministrator().getConfiguration().addVariable("var2", String.class, "abc");
+
+        String stmtTextSet = "on " + SupportBean.class.getName() + " set var1 = intPrimitive, var2 = string";
+        epService.getEPAdministrator().createEQL(stmtTextSet);
+        
+        assertVariableValues(new String[] {"var1", "var2"}, new Object[] {-1, "abc"});
+        sendSupportBean(null, 99);
+        assertVariableValues(new String[] {"var1", "var2"}, new Object[] {99, null});
+
+        epService.getEPRuntime().setVariableValue("var2", "def");
+        assertVariableValues(new String[] {"var1", "var2"}, new Object[] {99, "def"});
+
+        epService.getEPRuntime().setVariableValue("var1", 123);
+        assertVariableValues(new String[] {"var1", "var2"}, new Object[] {123, "def"});
+
+        Map<String, Object> newValues = new HashMap<String, Object>();
+        newValues.put("var1", 20);
+        epService.getEPRuntime().setVariableValue(newValues);
+        assertVariableValues(new String[] {"var1", "var2"}, new Object[] {20, "def"});
+
+        newValues.put("var1", (byte) 21);
+        newValues.put("var2", "test");
+        epService.getEPRuntime().setVariableValue(newValues);
+        assertVariableValues(new String[] {"var1", "var2"}, new Object[] {21, "test"});
+
+        newValues.put("var1", null);
+        newValues.put("var2", null);
+        epService.getEPRuntime().setVariableValue(newValues);
+        assertVariableValues(new String[] {"var1", "var2"}, new Object[] {null, null});
+
+        // try variable not found
+        try
+        {
+            epService.getEPRuntime().setVariableValue("dummy", null);
+            fail();
+        }
+        catch (VariableNotFoundException ex)
+        {
+            // expected
+            assertEquals("Variable by name 'dummy' has not been declared", ex.getMessage());
+        }
+
+        // try variable not found
+        try
+        {
+            newValues.put("dummy2", 20);
+            epService.getEPRuntime().setVariableValue(newValues);
+            fail();
+        }
+        catch (VariableNotFoundException ex)
+        {
+            // expected
+            assertEquals("Variable by name 'dummy2' has not been declared", ex.getMessage());
+        }
+
+        // create new variable on the fly
+        epService.getEPAdministrator().createEQL("create variable int dummy = 20 + 20");
+        assertEquals(40, epService.getEPRuntime().getVariableValue("dummy"));
+
+        // try type coercion
+        try
+        {
+            epService.getEPRuntime().setVariableValue("dummy", "abc");
+            fail();
+        }
+        catch (VariableValueException ex)
+        {
+            // expected
+            assertEquals("Variable 'dummy' of declared type 'java.lang.Integer' cannot be assigned a value of type 'java.lang.String'", ex.getMessage());
+        }
+        try
+        {
+            epService.getEPRuntime().setVariableValue("dummy", 100L);
+            fail();
+        }
+        catch (VariableValueException ex)
+        {
+            // expected
+            assertEquals("Variable 'dummy' of declared type 'java.lang.Integer' cannot be assigned a value of type 'java.lang.Long'", ex.getMessage());
+        }
+        try
+        {
+            epService.getEPRuntime().setVariableValue("var2", 0);
+            fail();
+        }
+        catch (VariableValueException ex)
+        {
+            // expected
+            assertEquals("Variable 'var2' of declared type 'java.lang.String' cannot be assigned a value of type 'java.lang.Integer'", ex.getMessage());
+        }
+
+        // coercion
+        epService.getEPRuntime().setVariableValue("var1", (short) -1);
+        assertVariableValues(new String[] {"var1", "var2"}, new Object[] {-1, null});
+
+        // rollback for coercion failed
+        newValues = new LinkedHashMap<String, Object>();    // preserve order
+        newValues.put("var2", "xyz");
+        newValues.put("var1", 4.4d);
+        try
+        {
+            epService.getEPRuntime().setVariableValue(newValues);
+            fail();
+        }
+        catch (VariableValueException ex)
+        {
+            // expected
+        }
+        assertVariableValues(new String[] {"var1", "var2"}, new Object[] {-1, null});
+
+        // rollback for variable not found
+        newValues = new LinkedHashMap<String, Object>();    // preserve order
+        newValues.put("var2", "xyz");
+        newValues.put("var1", 1);
+        newValues.put("notfoundvariable", null);
+        try
+        {
+            epService.getEPRuntime().setVariableValue(newValues);
+            fail();
+        }
+        catch (VariableNotFoundException ex)
+        {
+            // expected
+        }
+        assertVariableValues(new String[] {"var1", "var2"}, new Object[] {-1, null});
     }
 
     public void testVariableInFilterBoolean() throws Exception
@@ -644,5 +775,32 @@ public class TestVariables extends TestCase
         bean.setIntPrimitive(intPrimitive);
         bean.setIntBoxed(intBoxed);
         return bean;
+    }
+
+    private void assertVariableValues(String[] names, Object[] values)
+    {
+        assertEquals(names.length, values.length);
+
+        // assert one-by-one
+        for (int i = 0; i < names.length; i++)
+        {
+            assertEquals(values[i], epService.getEPRuntime().getVariableValue(names[i]));
+        }
+
+        // get and assert all
+        Map<String, Object> all = epService.getEPRuntime().getVariableValueAll();
+        for (int i = 0; i < names.length; i++)
+        {
+            assertEquals(values[i], all.get(names[i]));
+        }
+
+        // get by request
+        Set<String> nameSet = new HashSet<String>();
+        nameSet.addAll(Arrays.asList(names));
+        Map<String, Object> valueSet = epService.getEPRuntime().getVariableValue(nameSet);
+        for (int i = 0; i < names.length; i++)
+        {
+            assertEquals(values[i], valueSet.get(names[i]));
+        }
     }
 }
