@@ -34,6 +34,31 @@ mvn javadoc:javadoc
 		<url>http://svn.codehaus.org/esper</url>
 		<connection>http://xircles.codehaus.org/projects/esper/repo</connection>
 	</scm>
+	<repositories>
+		<repository>
+			<id>central</id>
+			<name>Maven Repository Switchboard</name>
+			<layout>default</layout>
+			<url>http://repo1.maven.org/maven2</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
+	<pluginRepositories>
+		<pluginRepository>
+			<id>codehaus</id>
+			<name>Codehaus Plugin Repository</name>
+			<url>http://repository.codehaus.org/org/codehaus/mojo</url>
+			<layout>default</layout>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+			<releases>
+				<updatePolicy>never</updatePolicy>
+			</releases>
+		</pluginRepository>
+	</pluginRepositories>
 	<dependencies>
 		<dependency>
 			<groupId>log4j</groupId>
@@ -46,9 +71,9 @@ mvn javadoc:javadoc
 			<version>1.0.3</version>
 		</dependency>
 		<dependency>
-			<groupId>antlr</groupId>
-			<artifactId>antlr</artifactId>
-			<version>2.7.5</version>
+			<groupId>org.antlr</groupId>
+			<artifactId>antlr-runtime</artifactId>
+			<version>3.0</version>
 		</dependency>
 		<dependency>
 			<groupId>cglib</groupId>
@@ -77,19 +102,20 @@ mvn javadoc:javadoc
 				</configuration>
 			</plugin>
 			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-antlr-plugin</artifactId>
-				<configuration>
-					<grammars>eql.g eql_tree.g</grammars>
-					<sourceDirectory>grammar</sourceDirectory>
-				</configuration>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>antlr3-maven-plugin</artifactId>
 				<executions>
 					<execution>
 						<goals>
-							<goal>generate</goal>
+							<goal>antlr</goal>
 						</goals>
 					</execution>
 				</executions>
+				<configuration>
+					<sourceDirectory>grammar</sourceDirectory>
+					<outputDirectory>target/generated-sources/antlr/net/esper/eql/generated</outputDirectory>
+					<libDirectory>target/generated-sources/antlr/net/esper/eql/generated</libDirectory>
+				</configuration>
 			</plugin>
 			<plugin>
 				<artifactId>maven-site-plugin</artifactId>

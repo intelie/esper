@@ -1,102 +1,118 @@
 package net.esper.support.eql.parse;
 
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.io.StringReader;
-
-import net.esper.eql.generated.EQLStatementLexer;
-import net.esper.eql.generated.EQLStatementParser;
+import net.esper.antlr.NoCaseSensitiveStream;
+import net.esper.eql.generated.EsperEPLLexer;
+import net.esper.eql.generated.EsperEPLParser;
 import net.esper.eql.parse.ParseRuleSelector;
 import net.esper.util.DebugFacility;
-
+import org.antlr.runtime.CharStream;
+import org.antlr.runtime.CommonTokenStream;
+import org.antlr.runtime.RecognitionException;
+import org.antlr.runtime.Token;
+import org.antlr.runtime.tree.RewriteCardinalityException;
+import org.antlr.runtime.tree.Tree;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import antlr.CommonAST;
-import antlr.RecognitionException;
-import antlr.TokenStreamException;
-import antlr.collections.AST;
-import antlr.debug.misc.ASTFrame;
+import java.io.IOException;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.io.PrintWriter;
 
 public class SupportParserHelper
 {
-    public static void displayAST(AST ast) throws Exception
+    public static void displayAST(Tree ast) throws Exception
     {
-        log.debug(".displayAST list=" + ast.toStringList());
-
-        log.debug(".displayAST DumpASTVisitor...");
+        log.debug(".displayAST...");
         if (log.isDebugEnabled())
         {
             DebugFacility.dumpAST(ast);
         }
     }
 
-    public static void displayASTSwing(AST ast)
-    {
-        // Display in Swing frame
-        CommonAST commonAST = (CommonAST) ast;
-
-        //commonAST.setVerboseStringConversion(true, parser.getTokenNames());
-        antlr.ASTFactory factory = new antlr.ASTFactory();
-        AST r = factory.create(0,"AST ROOT");
-        r.setFirstChild(commonAST);
-
-        final ASTFrame frame = new ASTFrame("Java AST", r);
-        frame.setVisible(true);
-        frame.addWindowListener(
-            new WindowAdapter() {
-               public void windowClosing (WindowEvent e) {
-                   frame.setVisible(false); // hide the Frame
-                   frame.dispose();
-                   System.exit(0);
-               }
-            }
-        );
-        while(true);
-    }
-
-    public static AST parsePattern(String text) throws Exception
+    public static Tree parsePattern(String text) throws Exception
     {
         ParseRuleSelector startRuleSelector = new ParseRuleSelector()
         {
-            public void invokeParseRule(EQLStatementParser parser) throws TokenStreamException, RecognitionException
+            public Tree invokeParseRule(EsperEPLParser parser) throws RecognitionException
             {
-                parser.startPatternExpressionRule();
+                EsperEPLParser.startPatternExpressionRule_return r = parser.startPatternExpressionRule();
+                return (Tree) r.getTree();
             }
         };
         return parse(startRuleSelector, text);
     }
 
-    public static AST parseEQL(String text) throws Exception
+    public static Tree parseEQL(String text) throws Exception
     {
         ParseRuleSelector startRuleSelector = new ParseRuleSelector()
         {
-            public void invokeParseRule(EQLStatementParser parser) throws TokenStreamException, RecognitionException
+            public Tree invokeParseRule(EsperEPLParser parser) throws RecognitionException
             {
-                parser.startEQLExpressionRule();
+                EsperEPLParser.startEPLExpressionRule_return r = parser.startEPLExpressionRule();
+                return (Tree) r.getTree();
             }
         };
         return parse(startRuleSelector, text);
     }
 
-    public static AST parseEventProperty(String text) throws Exception
+    public static Tree parseEventProperty(String text) throws Exception
     {
         ParseRuleSelector startRuleSelector = new ParseRuleSelector()
         {
-            public void invokeParseRule(EQLStatementParser parser) throws TokenStreamException, RecognitionException
+            public Tree invokeParseRule(EsperEPLParser parser) throws RecognitionException
             {
-                parser.startEventPropertyRule();
+                return (Tree) parser.startEventPropertyRule().getTree();
             }
         };
         return parse(startRuleSelector, text);
     }
 
-    public static AST parse(ParseRuleSelector parseRuleSelector, String text) throws Exception
+    public static Tree parse(ParseRuleSelector parseRuleSelector, String text) throws Exception
     {
-        EQLStatementLexer lexer = new EQLStatementLexer(new StringReader(text));
-        EQLStatementParser parser = new EQLStatementParser(lexer);
-        parseRuleSelector.invokeParseRule(parser);
-        return parser.getAST();
+        CharStream input;
+        try
+        {
+            input = new NoCaseSensitiveStream(new StringReader(text));
+        }
+        catch (IOException ex)
+        {
+            throw new RuntimeException("IOException parsing text '" + text + '\'', ex);
+        }
+
+        EsperEPLLexer lex = new EsperEPLLexer(input);
+        CommonTokenStream tokens = new CommonTokenStream(lex);
+
+        if (log.isDebugEnabled())
+        {
+            StringWriter writer = new StringWriter();
+            PrintWriter printer = new PrintWriter(writer);
+            for (int i = 0; i < tokens.size(); i++)
+            {
+                Token t = tokens.get(i);
+                printer.print(t.getText());
+                printer.print('[');
+                printer.print(t.getType());
+                printer.print(']');
+                printer.print(" ");
+            }
+            log.debug("Tokens: " + writer.toString());
+        }        
+
+        EsperEPLParser g = new EsperEPLParser(tokens);
+        EsperEPLParser.startEventPropertyRule_return r;
+
+        Tree tree;
+        try
+        {
+            tree = parseRuleSelector.invokeParseRule(g);
+        }
+        catch (RewriteCardinalityException ex)
+        {
+            log.error(ex.getMessage());
+            throw ex;
+        }
+        return tree;
     }
 
     private static Log log = LogFactory.getLog(SupportParserHelper.class);

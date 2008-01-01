@@ -1,6 +1,5 @@
 package net.esper.eql.spec;
 
-import antlr.collections.AST;
 import junit.framework.TestCase;
 import net.esper.eql.core.EngineImportServiceImpl;
 import net.esper.eql.core.MethodResolutionServiceImpl;
@@ -17,6 +16,8 @@ import net.esper.support.event.SupportEventAdapterService;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.antlr.runtime.tree.Tree;
 
 public class TestFilterStreamSpecRaw extends TestCase
 {
@@ -255,11 +256,11 @@ public class TestFilterStreamSpecRaw extends TestCase
     
     private static FilterStreamSpecRaw makeSpec(String expression) throws Exception
     {
-        AST ast = SupportParserHelper.parseEQL(expression);
+        Tree ast = SupportParserHelper.parseEQL(expression);
         SupportParserHelper.displayAST(ast);
 
-        EQLTreeWalker walker = SupportEQLTreeWalkerFactory.makeWalker();
-        walker.startEQLExpressionRule(ast);
+        EQLTreeWalker walker = SupportEQLTreeWalkerFactory.makeWalker(ast);
+        walker.startEPLExpressionRule();
 
         return (FilterStreamSpecRaw) walker.getStatementSpec().getStreamSpecs().get(0);
     }    

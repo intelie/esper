@@ -1,24 +1,26 @@
 package net.esper.event.xml;
 
-import antlr.RecognitionException;
-import antlr.TokenStreamException;
-import antlr.collections.AST;
-import net.esper.eql.generated.EQLStatementLexer;
-import net.esper.eql.generated.EQLStatementParser;
-import net.esper.eql.generated.EqlTokenTypes;
+import net.esper.antlr.NoCaseSensitiveStream;
+import net.esper.eql.generated.EsperEPLLexer;
+import net.esper.eql.generated.EsperEPLParser;
 import net.esper.event.PropertyAccessException;
 import net.esper.type.IntValue;
 import net.esper.type.StringValue;
+import org.antlr.runtime.CharStream;
+import org.antlr.runtime.CommonTokenStream;
+import org.antlr.runtime.RecognitionException;
+import org.antlr.runtime.tree.Tree;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import java.io.IOException;
 import java.io.StringReader;
 
 /**
  * Parses event property names and transforms to XPath expressions. Supports
  * nested, indexed and mapped event properties.
  */
-public class SimpleXMLPropertyParser implements EqlTokenTypes
+public class SimpleXMLPropertyParser
 {
     /**
      * Return the xPath corresponding to the given property.
@@ -33,7 +35,7 @@ public class SimpleXMLPropertyParser implements EqlTokenTypes
      */
     public static String parse(String propertyName, String rootElementName, String defaultNamespacePrefix, boolean isResolvePropertiesAbsolute)
     {
-        AST ast = parse(propertyName);
+        Tree ast = parse(propertyName);
 
         StringBuilder xPathBuf = new StringBuilder();
         xPathBuf.append('/');
@@ -47,19 +49,16 @@ public class SimpleXMLPropertyParser implements EqlTokenTypes
             xPathBuf.append(rootElementName);
         }
 
-        if (ast.getNumberOfChildren() == 1)
+        if (ast.getChildCount() == 1)
         {
-            xPathBuf.append(makeProperty(ast.getFirstChild(), defaultNamespacePrefix));
+            xPathBuf.append(makeProperty(ast.getChild(0), defaultNamespacePrefix));
         }
         else
         {
-            AST child = ast.getFirstChild();
-            do
+            for (int i = 0; i < ast.getChildCount(); i++)
             {
-                xPathBuf.append(makeProperty(child, defaultNamespacePrefix));
-                child = child.getNextSibling();
+                xPathBuf.append(makeProperty(ast.getChild(i), defaultNamespacePrefix));
             }
-            while (child != null);
         }
 
         String xPath = xPathBuf.toString();
@@ -71,7 +70,7 @@ public class SimpleXMLPropertyParser implements EqlTokenTypes
         return xPath;
     }
 
-    private static String makeProperty(AST child, String defaultNamespacePrefix)
+    private static String makeProperty(Tree child, String defaultNamespacePrefix)
     {
         String prefix = "";
         if (defaultNamespacePrefix != null)
@@ -81,17 +80,17 @@ public class SimpleXMLPropertyParser implements EqlTokenTypes
 
         switch (child.getType())
         {
-            case EVENT_PROP_DYNAMIC_SIMPLE:
-            case EVENT_PROP_SIMPLE:
-                return '/' + prefix + child.getFirstChild().getText();
-            case EVENT_PROP_DYNAMIC_MAPPED:
-            case EVENT_PROP_MAPPED:
-                String key = StringValue.parseString(child.getFirstChild().getNextSibling().getText());
-                return '/' + prefix + child.getFirstChild().getText() + "[@id='" + key + "']";
-            case EVENT_PROP_DYNAMIC_INDEXED:
-            case EVENT_PROP_INDEXED:
-                int index = IntValue.parseString(child.getFirstChild().getNextSibling().getText());
-                return '/' + prefix + child.getFirstChild().getText() + "[position() = " + index + ']';
+            case EsperEPLParser.EVENT_PROP_DYNAMIC_SIMPLE:
+            case EsperEPLParser.EVENT_PROP_SIMPLE:
+                return '/' + prefix + child.getChild(0).getText();
+            case EsperEPLParser.EVENT_PROP_DYNAMIC_MAPPED:
+            case EsperEPLParser.EVENT_PROP_MAPPED:
+                String key = StringValue.parseString(child.getChild(1).getText());
+                return '/' + prefix + child.getChild(0).getText() + "[@id='" + key + "']";
+            case EsperEPLParser.EVENT_PROP_DYNAMIC_INDEXED:
+            case EsperEPLParser.EVENT_PROP_INDEXED:
+                int index = IntValue.parseString(child.getChild(1).getText());
+                return '/' + prefix + child.getChild(0).getText() + "[position() = " + index + ']';
             default:
                 throw new IllegalStateException("Event property AST node not recognized, type=" + child.getType());
         }
@@ -102,25 +101,33 @@ public class SimpleXMLPropertyParser implements EqlTokenTypes
      * @param propertyName to parse
      * @return AST syntax tree
      */
-    protected static AST parse(String propertyName)
+    protected static Tree parse(String propertyName)
     {
-        EQLStatementLexer lexer = new EQLStatementLexer(new StringReader(propertyName));
-        EQLStatementParser parser = new EQLStatementParser(lexer);
-
+        CharStream input;
         try
         {
-            parser.startEventPropertyRule();
+            input = new NoCaseSensitiveStream(new StringReader(propertyName));
         }
-        catch (TokenStreamException e)
+        catch (IOException ex)
         {
-            throw new PropertyAccessException("Failed to parse property name '" + propertyName + '\'', e);
+            throw new PropertyAccessException("IOException parsing property name '" + propertyName + '\'', ex);
+        }
+
+        EsperEPLLexer lex = new EsperEPLLexer(input);
+        CommonTokenStream tokens = new CommonTokenStream(lex);
+        EsperEPLParser g = new EsperEPLParser(tokens);
+        EsperEPLParser.startEventPropertyRule_return r;
+        
+        try
+        {
+             r = g.startEventPropertyRule();
         }
         catch (RecognitionException e)
         {
             throw new PropertyAccessException("Failed to parse property name '" + propertyName + '\'', e);
         }
 
-        return parser.getAST();
+        return (Tree) r.getTree();
     }
 
     private static final Log log = LogFactory.getLog(SimpleXMLPropertyParser.class);

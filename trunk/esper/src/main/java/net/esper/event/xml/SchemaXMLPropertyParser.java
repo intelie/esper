@@ -14,20 +14,20 @@ import com.sun.org.apache.xerces.internal.xs.XSParticle;
 import com.sun.org.apache.xerces.internal.xs.XSTypeDefinition;
 
 import net.esper.collection.Pair;
-import net.esper.eql.generated.EqlTokenTypes;
+import net.esper.eql.generated.EsperEPLParser;
 import net.esper.event.PropertyAccessException;
 import net.esper.event.TypedEventPropertyGetter;
 import net.esper.type.IntValue;
 import net.esper.type.StringValue;
-import antlr.collections.AST;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.antlr.runtime.tree.Tree;
 
 /**
  * Parses event property names and transforms to XPath expressions using the schema information supplied. Supports the
  * nested, indexed and mapped event properties.
  */
-public class SchemaXMLPropertyParser implements EqlTokenTypes
+public class SchemaXMLPropertyParser
 {
     /**
      * Return the xPath corresponding to the given property.
@@ -51,7 +51,7 @@ public class SchemaXMLPropertyParser implements EqlTokenTypes
             ctx.addPrefix("n" + i, namespaces.item(i));
         }
 
-        AST ast = SimpleXMLPropertyParser.parse(propertyName);
+        Tree ast = SimpleXMLPropertyParser.parse(propertyName);
 
         XSElementDeclaration root = SchemaUtil.findRootElement(xsModel, namespace, rootElementName);
 
@@ -79,9 +79,9 @@ public class SchemaXMLPropertyParser implements EqlTokenTypes
         xPathBuf.append(rootElementName);
 
         Pair<String, QName> pair = null;
-        if (ast.getNumberOfChildren() == 1)
+        if (ast.getChildCount() == 1)
         {
-            pair = makeProperty(complexActualElement, ast.getFirstChild(), ctx);
+            pair = makeProperty(complexActualElement, ast.getChild(0), ctx);
             if (pair == null)
             {
                 throw new PropertyAccessException("Failed to locate property '" + propertyName + "' in schema");
@@ -90,16 +90,16 @@ public class SchemaXMLPropertyParser implements EqlTokenTypes
         }
         else
         {
-            AST child = ast.getFirstChild();
-            do
+            for (int i = 0; i < ast.getChildCount(); i++)
             {
+                Tree child = ast.getChild(i);
                 pair = makeProperty(complexActualElement, child, ctx);
                 if (pair == null)
                 {
                     throw new PropertyAccessException("Failed to locate property '" + propertyName + "' nested property part '" + child.toString() + "' in schema");
                 }
 
-                String text = child.getFirstChild().getText();
+                String text = child.getChild(0).getText();
                 XSObject obj = SchemaUtil.findPropertyMapping(complexActualElement, text);
                 if (obj instanceof XSParticle)
                 {
@@ -112,9 +112,7 @@ public class SchemaXMLPropertyParser implements EqlTokenTypes
                     }
                 }
                 xPathBuf.append(pair.getFirst());
-                child = child.getNextSibling();
             }
-            while (child != null);
         }
 
         String xPath = xPathBuf.toString();
@@ -131,9 +129,9 @@ public class SchemaXMLPropertyParser implements EqlTokenTypes
         return new XPathPropertyGetter(propertyName, expr, pair.getSecond());
     }
 
-    private static Pair<String, QName> makeProperty(XSComplexTypeDefinition parent, AST child, XPathNamespaceContext ctx)
+    private static Pair<String, QName> makeProperty(XSComplexTypeDefinition parent, Tree child, XPathNamespaceContext ctx)
     {
-        String text = child.getFirstChild().getText();
+        String text = child.getChild(0).getText();
         XSObject obj = SchemaUtil.findPropertyMapping(parent, text);
         if (obj instanceof XSParticle) {
             return makeElementProperty((XSParticle) obj, child, ctx);
@@ -147,7 +145,7 @@ public class SchemaXMLPropertyParser implements EqlTokenTypes
         }
     }
 
-    private static Pair<String, QName> makeAttributeProperty(XSAttributeUse use, AST child, XPathNamespaceContext ctx)
+    private static Pair<String, QName> makeAttributeProperty(XSAttributeUse use, Tree child, XPathNamespaceContext ctx)
     {
         String prefix = ctx.getPrefix(use.getAttrDeclaration().getNamespace());
         if (prefix == null)
@@ -156,23 +154,23 @@ public class SchemaXMLPropertyParser implements EqlTokenTypes
             prefix = prefix + ':';
         switch (child.getType())
         {
-            case EVENT_PROP_DYNAMIC_SIMPLE:
-            case EVENT_PROP_SIMPLE:
+            case EsperEPLParser.EVENT_PROP_DYNAMIC_SIMPLE:
+            case EsperEPLParser.EVENT_PROP_SIMPLE:
                 QName type = SchemaUtil.simpleTypeToQName((XSSimpleTypeDecl) use.getAttrDeclaration().getTypeDefinition());
-                String path = "/@" + prefix + child.getFirstChild().getText();
+                String path = "/@" + prefix + child.getChild(0).getText();
                 return new Pair<String, QName>(path, type);
-            case EVENT_PROP_DYNAMIC_MAPPED:
-            case EVENT_PROP_MAPPED:
+            case EsperEPLParser.EVENT_PROP_DYNAMIC_MAPPED:
+            case EsperEPLParser.EVENT_PROP_MAPPED:
                 throw new RuntimeException("Mapped properties not applicable to attributes");
-            case EVENT_PROP_DYNAMIC_INDEXED:
-            case EVENT_PROP_INDEXED:
+            case EsperEPLParser.EVENT_PROP_DYNAMIC_INDEXED:
+            case EsperEPLParser.EVENT_PROP_INDEXED:
                 throw new RuntimeException("Mapped properties not applicable to attributes");
             default:
                 throw new IllegalStateException("Event property AST node not recognized, type=" + child.getType());
         }
     }
 
-    private static Pair<String, QName> makeElementProperty(XSParticle particle, AST child, XPathNamespaceContext ctx)
+    private static Pair<String, QName> makeElementProperty(XSParticle particle, Tree child, XPathNamespaceContext ctx)
     {
         XSElementDeclaration decl = (XSElementDeclaration) particle.getTerm();
         QName type = null;
@@ -201,26 +199,26 @@ public class SchemaXMLPropertyParser implements EqlTokenTypes
 
         switch (child.getType())
         {
-            case EVENT_PROP_SIMPLE:
+            case EsperEPLParser.EVENT_PROP_SIMPLE:
                 if ((particle.getMaxOccurs() > 1) || particle.getMaxOccursUnbounded()) {
                     throw new PropertyAccessException("Simple property not allowed in repeating elements");
                 }
-                return new Pair<String, QName>('/' + prefix + child.getFirstChild().getText(), type);
+                return new Pair<String, QName>('/' + prefix + child.getChild(0).getText(), type);
 
-            case EVENT_PROP_MAPPED:
+            case EsperEPLParser.EVENT_PROP_MAPPED:
                 if (!((particle.getMaxOccurs() > 1) || (particle.getMaxOccursUnbounded()))) {
-                    throw new PropertyAccessException("Element " + child.getFirstChild().getText() + " is not a collection, cannot be used as mapped property");
+                    throw new PropertyAccessException("Element " + child.getChild(0).getText() + " is not a collection, cannot be used as mapped property");
                 }
-                String key = StringValue.parseString(child.getFirstChild().getNextSibling().getText());
-                return new Pair<String, QName>('/' + prefix + child.getFirstChild().getText() + "[@id='" + key + "']", type);
+                String key = StringValue.parseString(child.getChild(1).getText());
+                return new Pair<String, QName>('/' + prefix + child.getChild(0).getText() + "[@id='" + key + "']", type);
 
-            case EVENT_PROP_INDEXED:
+            case EsperEPLParser.EVENT_PROP_INDEXED:
                 if (!((particle.getMaxOccurs() > 1) || (particle.getMaxOccursUnbounded()))) {
-                    throw new PropertyAccessException("Element " + child.getFirstChild().getText() + " is not a collection, cannot be used as mapped property");
+                    throw new PropertyAccessException("Element " + child.getChild(0).getText() + " is not a collection, cannot be used as mapped property");
                 }
-                int index = IntValue.parseString(child.getFirstChild().getNextSibling().getText());
+                int index = IntValue.parseString(child.getChild(1).getText());
                 int xPathPosition = index + 1;
-                return new Pair<String, QName>('/' + prefix + child.getFirstChild().getText() + "[position() = " + xPathPosition + ']', type);
+                return new Pair<String, QName>('/' + prefix + child.getChild(0).getText() + "[position() = " + xPathPosition + ']', type);
 
             default:
                 throw new IllegalStateException("Event property AST node not recognized, type=" + child.getType());

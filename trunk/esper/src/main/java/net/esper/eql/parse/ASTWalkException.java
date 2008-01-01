@@ -7,11 +7,6 @@
  **************************************************************************************/
 package net.esper.eql.parse;
 
-import net.esper.client.EPException;
-import net.esper.client.EPStatementException;
-import antlr.TokenStreamException;
-import antlr.RecognitionException;
-
 /**
  * This exception is thrown to indicate a problem in statement creation.
  */

@@ -1,48 +1,48 @@
 package net.esper.eql.parse;
 
-import antlr.collections.AST;
-import antlr.CommonAST;
-import net.esper.eql.generated.EqlEvalTokenTypes;
+import net.esper.eql.generated.EsperEPLParser;
 import net.esper.type.*;
 import junit.framework.TestCase;
+import org.antlr.runtime.tree.Tree;
+import org.antlr.runtime.tree.CommonTree;
 
-public class TestASTParameterHelper extends TestCase implements EqlEvalTokenTypes
+public class TestASTParameterHelper extends TestCase
 {
     public void testSingleConstant() throws Exception
     {
-        AST ast = makeSingleAst(LONG_TYPE, "1");
+        Tree ast = makeSingleAst(EsperEPLParser.LONG_TYPE, "1");
         assertEquals(1L, convert(ast));
 
-        ast = makeSingleAst(STRING_TYPE, "'1'");
+        ast = makeSingleAst(EsperEPLParser.STRING_TYPE, "'1'");
         assertEquals("1", convert(ast));
 
-        ast = makeSingleAst(STRING_TYPE, "\"hello\"");
+        ast = makeSingleAst(EsperEPLParser.STRING_TYPE, "\"hello\"");
         assertEquals("hello", convert(ast));
     }
 
     public void testArray() throws Exception
     {
         // Uniform type array
-        AST ast = makeArrayAst(new int[] { LONG_TYPE, LONG_TYPE },
+        Tree ast = makeArrayAst(new int[] { EsperEPLParser.LONG_TYPE, EsperEPLParser.LONG_TYPE },
                                new String[] { "1", "2" });
         long[] longArr = (long[]) convert(ast);
         assertEquals(1l, longArr[0]);
         assertEquals(2l, longArr[1]);
 
-        ast = makeArrayAst(new int[] { STRING_TYPE, STRING_TYPE },
+        ast = makeArrayAst(new int[] { EsperEPLParser.STRING_TYPE, EsperEPLParser.STRING_TYPE },
                                new String[] { "'1'", "'2'" });
         String[] strArr = (String[]) convert(ast);
         assertEquals("1", strArr[0]);
         assertEquals("2", strArr[1]);
 
-        ast = makeArrayAst(new int[] { BOOL_TYPE, BOOL_TYPE },
+        ast = makeArrayAst(new int[] { EsperEPLParser.BOOL_TYPE, EsperEPLParser.BOOL_TYPE },
                                new String[] { "true", "false" });
         boolean[] boolArr = (boolean[]) convert(ast);
         assertEquals(true, boolArr[0]);
         assertEquals(false, boolArr[1]);
 
         // Mixed type array
-        ast = makeArrayAst(new int[] { STRING_TYPE, INT_TYPE, BOOL_TYPE },
+        ast = makeArrayAst(new int[] { EsperEPLParser.STRING_TYPE, EsperEPLParser.INT_TYPE, EsperEPLParser.BOOL_TYPE },
                                new String[] { "'A'", "10", "true" });
         Object[] mixedArr = (Object[]) convert(ast);
         assertEquals("A", mixedArr[0]);
@@ -65,16 +65,16 @@ public class TestASTParameterHelper extends TestCase implements EqlEvalTokenType
 
     public void testWildcardParameter() throws Exception
     {
-        AST ast = makeSingleAst(STAR,"");
+        Tree ast = makeSingleAst(EsperEPLParser.STAR,"");
         convert(ast);
     }
 
     public void testListParameter() throws Exception
     {
-        AST ast = makeSingleAst(NUMERIC_PARAM_LIST,"");
-        ast.addChild(makeSingleAst(INT_TYPE,"99"));
+        Tree ast = makeSingleAst(EsperEPLParser.NUMERIC_PARAM_LIST,"");
+        ast.addChild(makeSingleAst(EsperEPLParser.INT_TYPE,"99"));
         ast.addChild(makeRangeAst());
-        ast.addChild(makeSingleAst(STAR,""));
+        ast.addChild(makeSingleAst(EsperEPLParser.STAR,""));
         ast.addChild(makeFrequencyAst());
 
         ListParameter result = (ListParameter) convert(ast);
@@ -95,90 +95,90 @@ public class TestASTParameterHelper extends TestCase implements EqlEvalTokenType
 
     public void testTimePeriod() throws Exception
     {
-        AST ast = makeInternal(new int[] {SECOND_PART}, new String[] {"2"}, new int[] {NUM_INT});
+        Tree ast = makeInternal(new int[] {EsperEPLParser.SECOND_PART}, new String[] {"2"}, new int[] {EsperEPLParser.NUM_INT});
         assertEquals(2d, tryTimePeriod(ast));
 
-        ast = makeInternal(new int[] {MILLISECOND_PART}, new String[] {"2"}, new int[] {NUM_INT});
+        ast = makeInternal(new int[] {EsperEPLParser.MILLISECOND_PART}, new String[] {"2"}, new int[] {EsperEPLParser.NUM_INT});
         assertEquals(2/1000d, tryTimePeriod(ast));
 
-        ast = makeInternal(new int[] {MINUTE_PART}, new String[] {"2"}, new int[] {NUM_INT});
+        ast = makeInternal(new int[] {EsperEPLParser.MINUTE_PART}, new String[] {"2"}, new int[] {EsperEPLParser.NUM_INT});
         assertEquals(2 * 60d, tryTimePeriod(ast));
 
-        ast = makeInternal(new int[] {HOUR_PART}, new String[] {"2"}, new int[] {NUM_INT});
+        ast = makeInternal(new int[] {EsperEPLParser.HOUR_PART}, new String[] {"2"}, new int[] {EsperEPLParser.NUM_INT});
         assertEquals(2 * 60 * 60d, tryTimePeriod(ast));
 
-        ast = makeInternal(new int[] {DAY_PART}, new String[] {"2"}, new int[] {NUM_INT});
+        ast = makeInternal(new int[] {EsperEPLParser.DAY_PART}, new String[] {"2"}, new int[] {EsperEPLParser.NUM_INT});
         assertEquals(2 * 24 * 60 * 60d, tryTimePeriod(ast));
 
-        ast = makeInternal(new int[] {DAY_PART, HOUR_PART, MINUTE_PART, SECOND_PART, MILLISECOND_PART},
+        ast = makeInternal(new int[] {EsperEPLParser.DAY_PART, EsperEPLParser.HOUR_PART, EsperEPLParser.MINUTE_PART, EsperEPLParser.SECOND_PART, EsperEPLParser.MILLISECOND_PART},
                         new String[] {"2",      "3",       "4",         "5",         "6"},
-                        new int[] {NUM_INT, LONG_TYPE, NUM_INT, NUM_INT, NUM_INT});
+                        new int[] {EsperEPLParser.NUM_INT, EsperEPLParser.LONG_TYPE, EsperEPLParser.NUM_INT, EsperEPLParser.NUM_INT, EsperEPLParser.NUM_INT});
         assertEquals(2*24*60*60d + 3*60*60 + 4*60 + 5 + 6/1000d, tryTimePeriod(ast));
     }
 
-    private double tryTimePeriod(AST ast) throws Exception
+    private double tryTimePeriod(Tree ast) throws Exception
     {
         TimePeriodParameter result = (TimePeriodParameter) convert(ast);
         return result.getNumSeconds();
     }
 
-    private AST makeInternal(int[] parts, String[] values, int[] types)
+    private Tree makeInternal(int[] parts, String[] values, int[] types)
     {
-        AST ast = makeSingleAst(TIME_PERIOD, "interval");
+        Tree ast = makeSingleAst(EsperEPLParser.TIME_PERIOD, "interval");
         for (int i = 0; i < parts.length; i++)
         {
-            AST childPart = makeSingleAst(parts[i], "part");
-            AST childPartValue = makeSingleAst(types[i], values[i]);
+            Tree childPart = makeSingleAst(parts[i], "part");
+            Tree childPartValue = makeSingleAst(types[i], values[i]);
             ast.addChild(childPart);
             childPart.addChild(childPartValue);
         }
         return ast;
     }
 
-    private Object convert(AST ast) throws Exception
+    private Object convert(Tree ast) throws Exception
     {
         return ASTParameterHelper.makeParameter(ast);
     }
 
-    private AST makeSingleAst(int type, String value)
+    private Tree makeSingleAst(int type, String value)
     {
-        CommonAST ast = new CommonAST();
-        ast.setType(type);
-        ast.setText(value);
+        CommonTree ast = new CommonTree();
+        ast.token.setType(type);
+        ast.token.setText(value);
         return ast;
     }
 
-    private AST makeArrayAst(int[] types, String[] values) throws Exception
+    private Tree makeArrayAst(int[] types, String[] values) throws Exception
     {
-        CommonAST ast = new CommonAST();
-        ast.setType(ARRAY_PARAM_LIST);
+        CommonTree ast = new CommonTree();
+        ast.token.setType(EsperEPLParser.ARRAY_PARAM_LIST);
 
         for (int i = 0; i < types.length; i++)
         {
-            CommonAST child = new CommonAST();
-            child.setType(types[i]);
-            child.setText(values[i]);
+            CommonTree child = new CommonTree();
+            child.token.setType(types[i]);
+            child.token.setText(values[i]);
             ast.addChild(child);
         }
 
         return ast;
     }
 
-    private AST makeRangeAst()
+    private Tree makeRangeAst()
     {
-        AST ast = makeSingleAst(NUMERIC_PARAM_RANGE,"");
-        AST child1 = makeSingleAst(INT_TYPE,"9");
-        AST child2 = makeSingleAst(INT_TYPE,"20");
+        Tree ast = makeSingleAst(EsperEPLParser.NUMERIC_PARAM_RANGE,"");
+        Tree child1 = makeSingleAst(EsperEPLParser.INT_TYPE,"9");
+        Tree child2 = makeSingleAst(EsperEPLParser.INT_TYPE,"20");
         ast.addChild(child1);
         ast.addChild(child2);
 
         return ast;
     }
 
-    private AST makeFrequencyAst()
+    private Tree makeFrequencyAst()
     {
-        AST ast = makeSingleAst(NUMERIC_PARAM_FREQUENCY,"");
-        AST child = makeSingleAst(INT_TYPE,"9");
+        Tree ast = makeSingleAst(EsperEPLParser.NUMERIC_PARAM_FREQUENCY,"");
+        Tree child = makeSingleAst(EsperEPLParser.INT_TYPE,"9");
         ast.addChild(child);
         return ast;
     }

@@ -7,32 +7,32 @@
  **************************************************************************************/
 package net.esper.eql.parse;
 
-import antlr.collections.AST;
 import net.esper.type.*;
-import net.esper.eql.generated.EqlEvalTokenTypes;
+import net.esper.eql.generated.EsperEPLParser;
+import org.antlr.runtime.tree.Tree;
 
 /**
  * Parses constant strings and returns the constant Object.
  */
-public class ASTConstantHelper implements EqlEvalTokenTypes
+public class ASTConstantHelper
 {
     /**
      * Parse the AST constant node and return Object value.
      * @param node - parse node for which to parse the string value
      * @return value matching AST node type
      */
-    public static Object parse(AST node)
+    public static Object parse(Tree node)
     {
         switch(node.getType())
         {
-            case NUM_INT:       return parseIntLong(node.getText());
-            case INT_TYPE:      return parseIntLong(node.getText());
-            case LONG_TYPE:     return LongValue.parseString(node.getText());
-            case BOOL_TYPE:     return BoolValue.parseString(node.getText());
-            case FLOAT_TYPE:    return FloatValue.parseString(node.getText());
-            case DOUBLE_TYPE:   return DoubleValue.parseString(node.getText());
-            case STRING_TYPE:   return StringValue.parseString(node.getText());
-            case NULL_TYPE:     return null;
+            case EsperEPLParser.NUM_INT:       return parseIntLong(node.getText());
+            case EsperEPLParser.INT_TYPE:      return parseIntLong(node.getText());
+            case EsperEPLParser.LONG_TYPE:     return LongValue.parseString(node.getText());
+            case EsperEPLParser.BOOL_TYPE:     return BoolValue.parseString(node.getText());
+            case EsperEPLParser.FLOAT_TYPE:    return FloatValue.parseString(node.getText());
+            case EsperEPLParser.DOUBLE_TYPE:   return DoubleValue.parseString(node.getText());
+            case EsperEPLParser.STRING_TYPE:   return StringValue.parseString(node.getText());
+            case EsperEPLParser.NULL_TYPE:     return null;
             default:
                 throw new IllegalArgumentException("Unexpected constant of non-primitve type " + node.getType() + " encountered");
         }

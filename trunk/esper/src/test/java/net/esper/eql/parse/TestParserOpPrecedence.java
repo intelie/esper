@@ -5,8 +5,7 @@ import net.esper.support.eql.parse.SupportParserHelper;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-import antlr.collections.AST;
+import org.antlr.runtime.tree.Tree;
 
 /**
  * Test operator precedence and on-expression equivalence.
@@ -112,26 +111,26 @@ public class TestParserOpPrecedence extends TestCase
     private void assertEquivalent(String expressionOne, String expressionTwo) throws Exception
     {
         log.debug(".assertEquivalent parsing: " + expressionOne);
-        AST astOne = parse(expressionOne);
+        Tree astOne = parse(expressionOne);
 
         log.debug(".assertEquivalent parsing: " + expressionTwo);
-        AST astTwo = parse(expressionTwo);
+        Tree astTwo = parse(expressionTwo);
 
-        assertTrue(astOne.equalsTree(astTwo));
+        assertTrue(astOne.toStringTree().equals(astTwo.toStringTree()));
     }
 
     private void assertNotEquivalent(String expressionOne, String expressionTwo) throws Exception
     {
         log.debug(".assertEquivalent parsing: " + expressionOne);
-        AST astOne = parse(expressionOne);
+        Tree astOne = parse(expressionOne);
 
         log.debug(".assertEquivalent parsing: " + expressionTwo);
-        AST astTwo = parse(expressionTwo);
+        Tree astTwo = parse(expressionTwo);
 
-        assertFalse(astOne.equalsTree(astTwo));
+        assertFalse(astOne.toStringTree().equals(astTwo.toStringTree()));
     }
 
-    private AST parse(String expression) throws Exception
+    private Tree parse(String expression) throws Exception
     {
         return SupportParserHelper.parsePattern(expression);
     }

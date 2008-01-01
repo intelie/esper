@@ -1,19 +1,19 @@
 package net.esper.eql.parse;
 
 import junit.framework.TestCase;
-import net.esper.eql.generated.EqlEvalTokenTypes;
+import net.esper.eql.generated.EsperEPLParser;
 import net.esper.eql.spec.ViewSpec;
-import antlr.CommonAST;
-import antlr.collections.AST;
+import org.antlr.runtime.tree.Tree;
+import org.antlr.runtime.tree.CommonTree;
 
-public class TestASTViewSpecHelper extends TestCase implements EqlEvalTokenTypes
+public class TestASTViewSpecHelper extends TestCase
 {
     public void testBuildViewSpec() throws Exception
     {
-        AST ast = makeSingleAst(VIEW_EXPR, null);
-        ast.addChild(makeSingleAst(IDENT, "namespace"));
-        ast.addChild(makeSingleAst(IDENT, "name"));
-        ast.addChild(makeSingleAst(NUM_INT, "10"));
+        Tree ast = makeSingleAst(EsperEPLParser.VIEW_EXPR, null);
+        ast.addChild(makeSingleAst(EsperEPLParser.IDENT, "namespace"));
+        ast.addChild(makeSingleAst(EsperEPLParser.IDENT, "name"));
+        ast.addChild(makeSingleAst(EsperEPLParser.NUM_INT, "10"));
 
         ViewSpec spec = ASTViewSpecHelper.buildSpec(ast);
 
@@ -23,11 +23,11 @@ public class TestASTViewSpecHelper extends TestCase implements EqlEvalTokenTypes
         assertEquals(10, spec.getObjectParameters().get(0));
     }
 
-    private AST makeSingleAst(int type, String value)
+    private Tree makeSingleAst(int type, String value)
     {
-        CommonAST ast = new CommonAST();
-        ast.setType(type);
-        ast.setText(value);
+        CommonTree ast = new CommonTree();
+        ast.token.setType(type);
+        ast.token.setText(value);
         return ast;
     }
 }

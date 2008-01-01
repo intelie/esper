@@ -1,6 +1,5 @@
 package net.esper.eql.parse;
 
-import antlr.collections.AST;
 import junit.framework.TestCase;
 import net.esper.eql.expression.*;
 import net.esper.eql.spec.*;
@@ -21,6 +20,7 @@ import net.esper.eql.variable.VariableServiceImpl;
 import net.esper.schedule.SchedulingServiceImpl;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.antlr.runtime.tree.Tree;
 
 import java.util.List;
 
@@ -1005,12 +1005,12 @@ public class TestEQLTreeWalker extends TestCase
     private static EQLTreeWalker parseAndWalkPattern(String expression) throws Exception
     {
         log.debug(".parseAndWalk Trying text=" + expression);
-        AST ast = SupportParserHelper.parsePattern(expression);
+        Tree ast = SupportParserHelper.parsePattern(expression);
         log.debug(".parseAndWalk success, tree walking...");
         SupportParserHelper.displayAST(ast);
 
-        EQLTreeWalker walker = SupportEQLTreeWalkerFactory.makeWalker();        
-        walker.startPatternExpressionRule(ast);
+        EQLTreeWalker walker = SupportEQLTreeWalkerFactory.makeWalker(ast);
+        walker.startPatternExpressionRule();
         return walker;
     }
 
@@ -1022,15 +1022,15 @@ public class TestEQLTreeWalker extends TestCase
     private static EQLTreeWalker parseAndWalkEQL(String expression, EngineImportService engineImportService, VariableService variableService) throws Exception
     {
         log.debug(".parseAndWalk Trying text=" + expression);
-        AST ast = SupportParserHelper.parseEQL(expression);
+        Tree ast = SupportParserHelper.parseEQL(expression);
         log.debug(".parseAndWalk success, tree walking...");
         SupportParserHelper.displayAST(ast);
 
         EventAdapterService eventAdapterService = SupportEventAdapterService.getService();
         eventAdapterService.addBeanType("SupportBean_N", SupportBean_N.class);
 
-        EQLTreeWalker walker = SupportEQLTreeWalkerFactory.makeWalker(engineImportService, variableService);        
-        walker.startEQLExpressionRule(ast);
+        EQLTreeWalker walker = SupportEQLTreeWalkerFactory.makeWalker(ast, engineImportService, variableService);
+        walker.startEPLExpressionRule();
         return walker;
     }
 

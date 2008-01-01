@@ -1,28 +1,27 @@
 package net.esper.eql.parse;
 
-import antlr.collections.AST;
 import junit.framework.TestCase;
-import net.esper.eql.generated.EqlTokenTypes;
 import net.esper.support.bean.SupportBean;
 import net.esper.support.eql.parse.SupportEQLTreeWalkerFactory;
 import net.esper.support.eql.parse.SupportParserHelper;
+import org.antlr.runtime.tree.Tree;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-public class TestEQLParser extends TestCase implements EqlTokenTypes
+public class TestEQLParser extends TestCase
 {
     public void testDisplayAST() throws Exception
     {
         String className = SupportBean.class.getName();
-        String expression = "create variable uu aa = b";
+        String expression = "select * from A where a = 4";
 
         log.debug(".testDisplayAST parsing: " + expression);
-        AST ast = parse(expression);
+        Tree ast = parse(expression);
         SupportParserHelper.displayAST(ast);
 
         log.debug(".testDisplayAST walking...");
-        EQLTreeWalker walker = SupportEQLTreeWalkerFactory.makeWalker();        
-        walker.startEQLExpressionRule(ast);
+        EQLTreeWalker walker = SupportEQLTreeWalkerFactory.makeWalker(ast);
+        walker.startEPLExpressionRule();
     }
 
     public void testInvalidCases() throws Exception
@@ -211,12 +210,6 @@ public class TestEQLParser extends TestCase implements EqlTokenTypes
 
     public void testValidCases() throws Exception
     {
-        assertIsValid("select * " +
-                      "from A " +
-                      "left outer join " +
-                      "B" +
-                      " on a = b and c=d");
-
         String className = SupportBean.class.getName();
         String preFill = "select * from " + className;
 
@@ -250,7 +243,7 @@ public class TestEQLParser extends TestCase implements EqlTokenTypes
         assertIsValid(preFill + "().win:some_view({'count'},'l','a')");
         assertIsValid(preFill + "().win:some_view({})");
         assertIsValid(preFill + "(string != 'test').win:lenght(100)");
-        assertIsValid(preFill + "(string in (1:2) and dodo=3 and lax like '%e%')");
+        assertIsValid(preFill + "(string in (1:2) or katc=3 or lax like '%e%')");
         assertIsValid(preFill + "(string in (1:2) and dodo=3, lax like '%e%' and oppol / yyy = 5, yunc(3))");
 
         assertIsValid("select max(intPrimitive, intBoxed) from " + className + "().std:win(20)");
@@ -291,6 +284,8 @@ public class TestEQLParser extends TestCase implements EqlTokenTypes
         tryJoin("left");
         tryJoin("right");
         tryJoin("full");
+        assertIsValid("select * from A left outer join B on a = b and c=d");
+
 
         // complex property access
         assertIsValid("select array[1], map('a'), map(\"b\"), nested.nested " +
@@ -633,7 +628,7 @@ public class TestEQLParser extends TestCase implements EqlTokenTypes
     private void assertIsValid(String text) throws Exception
     {
         log.debug(".assertIsValid Trying text=" + text);
-        AST ast = parse(text);
+        Tree ast = parse(text);
         log.debug(".assertIsValid success, tree walking...");
 
         SupportParserHelper.displayAST(ast);
@@ -655,7 +650,7 @@ public class TestEQLParser extends TestCase implements EqlTokenTypes
         }
     }
 
-    private AST parse(String expression) throws Exception
+    private Tree parse(String expression) throws Exception
     {
         return SupportParserHelper.parseEQL(expression);
     }

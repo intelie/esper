@@ -9,23 +9,28 @@ package net.esper.eql.db;
 
 import net.esper.eql.spec.DBStatementStreamSpec;
 import net.esper.eql.expression.ExprValidationException;
-import net.esper.eql.generated.EQLStatementLexer;
+import net.esper.eql.generated.EsperEPLLexer;
+import net.esper.eql.generated.EsperEPLParser;
 import net.esper.util.*;
 import net.esper.event.EventAdapterService;
 import net.esper.event.EventType;
+import net.esper.event.PropertyAccessException;
 import net.esper.view.HistoricalEventViewable;
 import net.esper.core.EPStatementHandle;
 import net.esper.client.ConfigurationDBRef;
+import net.esper.antlr.NoCaseSensitiveStream;
 
 import java.sql.*;
 import java.util.*;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.io.IOException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import antlr.Token;
-import antlr.TokenStreamException;
+import org.antlr.runtime.*;
+import org.antlr.runtime.tree.Tree;
+import com.sun.java_cup.internal.lexer;
 
 /**
  * Factory for a view onto historical data via SQL statement.
@@ -302,45 +307,51 @@ public class DatabasePollingViewableFactory
                 throws ExprValidationException
     {
         StringReader reader = new StringReader(querySQL);
-        EQLStatementLexer lexer = new EQLStatementLexer(reader);
+        CharStream input;
+        try
+        {
+            input = new NoCaseSensitiveStream(reader);
+        }
+        catch (IOException ex)
+        {
+            throw new ExprValidationException("IOException lexing query SQL '" + querySQL + '\'', ex);
+        }
+
         int whereIndex = -1;
         int groupbyIndex = -1;
         int havingIndex = -1;
         int orderByIndex = -1;
         List<Integer> unionIndexes = new ArrayList<Integer>();
-        while(true)
+
+        EsperEPLLexer lex = new EsperEPLLexer(input);
+        CommonTokenStream tokens = new CommonTokenStream(lex);
+
+        for (int i = 0; i < tokens.size(); i++)
         {
-            try
+            Token token = tokens.get(i);
+            if ((token == null) || token.getText() == null)
             {
-                Token token = lexer.nextToken();
-                if ((token == null) || token.getText() == null)
-                {
-                    break;
-                }
-                if (token.getText().trim().equals("where"))
-                {
-                    whereIndex = token.getColumn();
-                }
-                if (token.getText().trim().equals("group"))
-                {
-                    groupbyIndex = token.getColumn();
-                }
-                if (token.getText().trim().equals("having"))
-                {
-                    havingIndex = token.getColumn();
-                }
-                if (token.getText().trim().equals("order"))
-                {
-                    orderByIndex = token.getColumn();
-                }
-                if (token.getText().trim().equals("union"))
-                {
-                    unionIndexes.add(token.getColumn());
-                }
+                break;
             }
-            catch (TokenStreamException e)
+            if (token.getText().trim().equals("where"))
             {
-                log.warn("Error parsing string '" + querySQL + "' for analysis :" + e.getMessage(), e);
+                whereIndex = token.getCharPositionInLine();
+            }
+            if (token.getText().trim().equals("group"))
+            {
+                groupbyIndex = token.getCharPositionInLine();
+            }
+            if (token.getText().trim().equals("having"))
+            {
+                havingIndex = token.getCharPositionInLine();
+            }
+            if (token.getText().trim().equals("order"))
+            {
+                orderByIndex = token.getCharPositionInLine();
+            }
+            if (token.getText().trim().equals("union"))
+            {
+                unionIndexes.add(token.getCharPositionInLine());
             }
         }
 

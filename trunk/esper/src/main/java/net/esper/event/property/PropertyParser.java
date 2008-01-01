@@ -1,27 +1,33 @@
 package net.esper.event.property;
 
-import net.esper.eql.generated.EQLStatementLexer;
-import net.esper.eql.generated.EQLStatementParser;
-import net.esper.eql.generated.EqlTokenTypes;
+import net.esper.antlr.NoCaseSensitiveStream;
+import net.esper.eql.generated.EsperEPLLexer;
+import net.esper.eql.generated.EsperEPLParser;
+import net.esper.event.BeanEventTypeFactory;
+import net.esper.event.PropertyAccessException;
 import net.esper.type.IntValue;
 import net.esper.type.StringValue;
-import net.esper.event.PropertyAccessException;
-import net.esper.event.BeanEventTypeFactory;
+import net.esper.util.DebugFacility;
+import org.antlr.runtime.CharStream;
+import org.antlr.runtime.CommonTokenStream;
+import org.antlr.runtime.RecognitionException;
+import org.antlr.runtime.tree.Tree;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
+import java.io.IOException;
 import java.io.StringReader;
-import java.util.List;
 import java.util.LinkedList;
-
-import antlr.collections.AST;
-import antlr.TokenStreamException;
-import antlr.RecognitionException;
+import java.util.List;
 
 /**
  * Parser for property names that can be simple, nested, mapped or a combination of these.
  * Uses ANTLR parser to parse.
  */
-public class PropertyParser implements EqlTokenTypes
+public class PropertyParser
 {
+    private static final Log log = LogFactory.getLog(PropertyParser.class);
+
     /**
      * Parse the given property name returning a Property instance for the property.
      * @param propertyName is the property name to parse
@@ -30,89 +36,99 @@ public class PropertyParser implements EqlTokenTypes
      */
     public static Property parse(String propertyName, BeanEventTypeFactory beanEventTypeFactory)
     {
-        EQLStatementLexer lexer = new EQLStatementLexer(new StringReader(propertyName));
-        EQLStatementParser parser = new EQLStatementParser(lexer);
+        CharStream input;
+        try
+        {
+            input = new NoCaseSensitiveStream(new StringReader(propertyName));
+        }
+        catch (IOException ex)
+        {
+            throw new PropertyAccessException("IOException parsing property name '" + propertyName + '\'', ex);
+        }
+
+        EsperEPLLexer lex = new EsperEPLLexer(input);
+        CommonTokenStream tokens = new CommonTokenStream(lex);
+        EsperEPLParser g = new EsperEPLParser(tokens);
+        EsperEPLParser.startEventPropertyRule_return r;
 
         try
         {
-            parser.startEventPropertyRule();
-        }
-        catch (TokenStreamException e)
-        {
-            throw new PropertyAccessException("Failed to parse property name '" + propertyName + '\'', e);
+             r = g.startEventPropertyRule();
         }
         catch (RecognitionException e)
         {
             throw new PropertyAccessException("Failed to parse property name '" + propertyName + '\'', e);
         }
 
-        AST ast = parser.getAST();
-        //DebugFacility.dumpAST(ast);
+        Tree tree = (Tree) r.getTree();
 
-        if (ast.getNumberOfChildren() == 1)
+        if (log.isDebugEnabled())
         {
-            return makeProperty(ast.getFirstChild(), false);
+            DebugFacility.dumpAST(tree);
         }
 
-        AST child = ast.getFirstChild();
-        List<Property> properties = new LinkedList<Property>();
-
-        boolean isRootedInDynamic = false;
-        do
+        if (tree.getChildCount() == 1)
         {
+            return makeProperty(tree.getChild(0), false);
+        }
+
+        List<Property> properties = new LinkedList<Property>();
+        boolean isRootedInDynamic = false;
+        for (int i = 0; i < tree.getChildCount(); i++)
+        {
+        	Tree child = tree.getChild(i);
+
             Property property = makeProperty(child, isRootedInDynamic);
             if (property instanceof DynamicSimpleProperty)
             {
                 isRootedInDynamic = true;
             }
             properties.add(property);
-            child = child.getNextSibling();
         }
-        while (child != null);
 
         return new NestedProperty(properties, beanEventTypeFactory);
     }
 
-    private static Property makeProperty(AST child, boolean isRootedInDynamic)
+    private static Property makeProperty(Tree child, boolean isRootedInDynamic)
     {
         switch (child.getType()) {
-            case EVENT_PROP_SIMPLE:
+            case EsperEPLParser.EVENT_PROP_SIMPLE:
                 if (!isRootedInDynamic)
                 {
-                    return new SimpleProperty(child.getFirstChild().getText());
+                    return new SimpleProperty(child.getChild(0).getText());
                 }
                 else
                 {
-                    return new DynamicSimpleProperty(child.getFirstChild().getText());
+                    return new DynamicSimpleProperty(child.getChild(0).getText());
                 }
-            case EVENT_PROP_MAPPED:
-                String key = StringValue.parseString(child.getFirstChild().getNextSibling().getText());
+            case EsperEPLParser.EVENT_PROP_MAPPED:
+                String key = StringValue.parseString(child.getChild(1).getText());
                 if (!isRootedInDynamic)
                 {
-                    return new MappedProperty(child.getFirstChild().getText(), key);
+                    return new MappedProperty(child.getChild(0).getText(), key);
                 }
                 else
                 {
-                    return new DynamicMappedProperty(child.getFirstChild().getText(), key);
+                    return new DynamicMappedProperty(child.getChild(0).getText(), key);
                 }
-            case EVENT_PROP_INDEXED:
-                int index = IntValue.parseString(child.getFirstChild().getNextSibling().getText());
+            case EsperEPLParser.EVENT_PROP_INDEXED:
+                int index = IntValue.parseString(child.getChild(1).getText());
                 if (!isRootedInDynamic)
                 {
-                    return new IndexedProperty(child.getFirstChild().getText(), index);
+                    return new IndexedProperty(child.getChild(0).getText(), index);
                 }
                 else
                 {
-                    return new DynamicIndexedProperty(child.getFirstChild().getText(), index);
+                    return new DynamicIndexedProperty(child.getChild(0).getText(), index);
                 }
-            case EVENT_PROP_DYNAMIC_SIMPLE:
-                return new DynamicSimpleProperty(child.getFirstChild().getText());
-            case EVENT_PROP_DYNAMIC_INDEXED:
-                index = IntValue.parseString(child.getFirstChild().getNextSibling().getText());
-                return new DynamicIndexedProperty(child.getFirstChild().getText(), index);
-            case EVENT_PROP_DYNAMIC_MAPPED:
-                key = StringValue.parseString(child.getFirstChild().getNextSibling().getText());
-                return new DynamicMappedProperty(child.getFirstChild().getText(), key);
+            case EsperEPLParser.EVENT_PROP_DYNAMIC_SIMPLE:
+                return new DynamicSimpleProperty(child.getChild(0).getText());
+            case EsperEPLParser.EVENT_PROP_DYNAMIC_INDEXED:
+                index = IntValue.parseString(child.getChild(0).getText());
+                return new DynamicIndexedProperty(child.getChild(0).getText(), index);
+            case EsperEPLParser.EVENT_PROP_DYNAMIC_MAPPED:
+                key = StringValue.parseString(child.getChild(1).getText());
+                return new DynamicMappedProperty(child.getChild(0).getText(), key);
             default:
                 throw new IllegalStateException("Event property AST node not recognized, type=" + child.getType());
         }

@@ -7,19 +7,19 @@
  **************************************************************************************/
 package net.esper.core;
 
-import antlr.RecognitionException;
-import antlr.TokenStreamException;
-import antlr.collections.AST;
 import net.esper.client.*;
 import net.esper.client.soda.EPStatementObjectModel;
-import net.esper.eql.generated.EQLBaseWalker;
-import net.esper.eql.generated.EQLStatementParser;
+import net.esper.eql.generated.EsperEPLParser;
+import net.esper.eql.generated.EsperEPLTree;
 import net.esper.eql.parse.*;
 import net.esper.eql.spec.PatternStreamSpecRaw;
-import net.esper.eql.spec.StatementSpecRaw;
 import net.esper.eql.spec.StatementSpecMapper;
+import net.esper.eql.spec.StatementSpecRaw;
 import net.esper.eql.spec.StatementSpecUnMapResult;
 import net.esper.util.DebugFacility;
+import org.antlr.runtime.RecognitionException;
+import org.antlr.runtime.tree.Tree;
+import org.antlr.runtime.tree.CommonTreeNodeStream;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -40,31 +40,33 @@ public class EPAdministratorImpl implements EPAdministrator
     {
         patternParseRule = new ParseRuleSelector()
         {
-            public void invokeParseRule(EQLStatementParser parser) throws TokenStreamException, RecognitionException
+            public Tree invokeParseRule(EsperEPLParser parser) throws RecognitionException
             {
-                parser.startPatternExpressionRule();
+                EsperEPLParser.startPatternExpressionRule_return r = parser.startPatternExpressionRule();
+                return (Tree) r.getTree();
             }
         };
         patternWalkRule = new WalkRuleSelector()
         {
-            public void invokeWalkRule(EQLBaseWalker walker, AST ast) throws RecognitionException
+            public void invokeWalkRule(EsperEPLTree walker) throws RecognitionException
             {
-                walker.startPatternExpressionRule(ast);
+                walker.startPatternExpressionRule();
             }
         };
 
         eqlParseRule = new ParseRuleSelector()
         {
-            public void invokeParseRule(EQLStatementParser parser) throws TokenStreamException, RecognitionException
+            public Tree invokeParseRule(EsperEPLParser parser) throws RecognitionException
             {
-                parser.startEQLExpressionRule();
+                EsperEPLParser.startEPLExpressionRule_return r = parser.startEPLExpressionRule();
+                return (Tree) r;
             }
         };
         eqlWalkRule = new WalkRuleSelector()
         {
-            public void invokeWalkRule(EQLBaseWalker walker, AST ast) throws RecognitionException
+            public void invokeWalkRule(EsperEPLTree walker) throws RecognitionException
             {
-                walker.startEQLExpressionRule(ast);
+                walker.startEPLExpressionRule();
             }
         };
     }
@@ -242,8 +244,10 @@ public class EPAdministratorImpl implements EPAdministrator
             log.debug(".createEQLStmt statementName=" + statementName + " eqlStatement=" + eqlStatement);
         }
 
-        AST ast = ParseHelper.parse(eqlStatement, eqlParseRule);
-        EQLTreeWalker walker = new EQLTreeWalker(services.getEngineImportService(), services.getVariableService());
+        Tree ast = ParseHelper.parse(eqlStatement, eqlParseRule);
+        CommonTreeNodeStream nodes = new CommonTreeNodeStream(ast);
+
+        EQLTreeWalker walker = new EQLTreeWalker(nodes, services.getEngineImportService(), services.getVariableService());
 
         try
         {
@@ -262,7 +266,7 @@ public class EPAdministratorImpl implements EPAdministrator
 
         if (log.isDebugEnabled())
         {
-            DebugFacility.dumpAST(walker.getAST());
+            DebugFacility.dumpAST(ast);
         }
 
         // Specifies the statement
@@ -272,8 +276,9 @@ public class EPAdministratorImpl implements EPAdministrator
     private StatementSpecRaw compilePattern(String expression)
     {
         // Parse and walk
-        AST ast = ParseHelper.parse(expression, patternParseRule);
-        EQLTreeWalker walker = new EQLTreeWalker(services.getEngineImportService(), services.getVariableService());
+        Tree ast = ParseHelper.parse(expression, patternParseRule);
+        CommonTreeNodeStream nodes = new CommonTreeNodeStream(ast);
+        EQLTreeWalker walker = new EQLTreeWalker(nodes, services.getEngineImportService(), services.getVariableService());
 
         try
         {
@@ -292,7 +297,7 @@ public class EPAdministratorImpl implements EPAdministrator
 
         if (log.isDebugEnabled())
         {
-            DebugFacility.dumpAST(walker.getAST());
+            DebugFacility.dumpAST(ast);
         }
 
         if (walker.getStatementSpec().getStreamSpecs().size() > 1)

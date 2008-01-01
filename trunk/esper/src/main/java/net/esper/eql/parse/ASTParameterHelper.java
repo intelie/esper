@@ -8,19 +8,19 @@
 package net.esper.eql.parse;
 
 import net.esper.type.*;
-import net.esper.eql.generated.EqlEvalTokenTypes;
-import antlr.collections.AST;
+import net.esper.eql.generated.EsperEPLParser;
 
 import java.util.*;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.antlr.runtime.tree.Tree;
 
 /**
  * Parse AST parameter nodes including constants, arrays, lists.
  * Distinguishes between uniform and non-uniform arrays.
  */
-public class ASTParameterHelper implements EqlEvalTokenTypes
+public class ASTParameterHelper
 {
 
     /**
@@ -29,12 +29,12 @@ public class ASTParameterHelper implements EqlEvalTokenTypes
      * @return object value
      * @throws ASTWalkException is thrown to indicate a parse error
      */
-    public static Object makeParameter(AST parameterNode) throws ASTWalkException
+    public static Object makeParameter(Tree parameterNode) throws ASTWalkException
     {
         return parseConstant(parameterNode);
     }
 
-    private static Object parseConstant(AST node) throws ASTWalkException
+    private static Object parseConstant(Tree node) throws ASTWalkException
     {
         if (log.isDebugEnabled())
         {
@@ -43,72 +43,69 @@ public class ASTParameterHelper implements EqlEvalTokenTypes
 
         switch(node.getType())
         {
-            case NUM_INT:
-            case INT_TYPE:
-            case LONG_TYPE:
-            case BOOL_TYPE:
-            case FLOAT_TYPE:
-            case DOUBLE_TYPE:
-            case STRING_TYPE:               return ASTConstantHelper.parse(node);
-            case NUMERIC_PARAM_FREQUENCY:   return makeFrequency(node);
-            case NUMERIC_PARAM_RANGE:       return makeRange(node);
-            case LAST:
-            case LW:
-            case WEEKDAY_OPERATOR:
-            case LAST_OPERATOR:             return makeCronParameter(node);
-            case STAR:                      return new WildcardParameter();
-            case NUMERIC_PARAM_LIST:        return makeList(node);
-            case ARRAY_PARAM_LIST:          return makeArray(node);
-            case TIME_PERIOD:               return makeTimePeriod(node);
+            case EsperEPLParser.NUM_INT:
+            case EsperEPLParser.INT_TYPE:
+            case EsperEPLParser.LONG_TYPE:
+            case EsperEPLParser.BOOL_TYPE:
+            case EsperEPLParser.FLOAT_TYPE:
+            case EsperEPLParser.DOUBLE_TYPE:
+            case EsperEPLParser.STRING_TYPE:               return ASTConstantHelper.parse(node);
+            case EsperEPLParser.NUMERIC_PARAM_FREQUENCY:   return makeFrequency(node);
+            case EsperEPLParser.NUMERIC_PARAM_RANGE:       return makeRange(node);
+            case EsperEPLParser.LAST:
+            case EsperEPLParser.LW:
+            case EsperEPLParser.WEEKDAY_OPERATOR:
+            case EsperEPLParser.LAST_OPERATOR:             return makeCronParameter(node);
+            case EsperEPLParser.STAR:                      return new WildcardParameter();
+            case EsperEPLParser.NUMERIC_PARAM_LIST:        return makeList(node);
+            case EsperEPLParser.ARRAY_PARAM_LIST:          return makeArray(node);
+            case EsperEPLParser.TIME_PERIOD:               return makeTimePeriod(node);
             default:
                 throw new ASTWalkException("Unexpected constant of type " + node.getType() + " encountered");
         }
     }
 
-    private static TimePeriodParameter makeTimePeriod(AST node)
+    private static TimePeriodParameter makeTimePeriod(Tree node)
     {
-        AST child = node.getFirstChild();
         double result = 0;
-
-        while(child != null)
+        for (int i = 0; i < node.getChildCount(); i++)
         {
-            Number numValue = (Number) parseConstant(child.getFirstChild());
+        	Tree child = node.getChild(i);
+            Number numValue = (Number) parseConstant(child.getChild(0));
             double partValue = numValue.doubleValue();
 
             switch (child.getType())
             {
-                case MILLISECOND_PART :
+                case EsperEPLParser.MILLISECOND_PART :
                     result += partValue / 1000d;
                     break;
-                case SECOND_PART :
+                case EsperEPLParser.SECOND_PART :
                     result += partValue;
                     break;
-                case MINUTE_PART :
+                case EsperEPLParser.MINUTE_PART :
                     result += 60 * partValue;
                     break;
-                case HOUR_PART :
+                case EsperEPLParser.HOUR_PART :
                     result += 60 * 60 * partValue;
                     break;
-                case DAY_PART :
+                case EsperEPLParser.DAY_PART :
                     result += 24 * 60 * 60 * partValue;
                     break;
                 default:
                     throw new IllegalStateException("Illegal part of interval encountered, type=" + child.getType() + " text=" + child.getText());
             }
-
-            child = child.getNextSibling();
         }
 
         return new TimePeriodParameter(result);
     }
 
-    private static Object makeList(AST node) throws ASTWalkException
+    private static Object makeList(Tree node) throws ASTWalkException
     {
         ListParameter list = new ListParameter();
 
-        AST child = node.getFirstChild();
-        while(child != null)
+        for (int i = 0; i < node.getChildCount(); i++)
         {
+        	Tree child = node.getChild(i);
             Object parsedChild = parseConstant(child);
 
             if (parsedChild instanceof Integer)
@@ -119,44 +116,42 @@ public class ASTParameterHelper implements EqlEvalTokenTypes
             {
                 list.add((NumberSetParameter) parsedChild);
             }
-            child = child.getNextSibling();
         }
 
         return list;
     }
 
-    private static Object makeFrequency(AST node)
+    private static Object makeFrequency(Tree node)
     {
-        int frequency = IntValue.parseString(node.getFirstChild().getText());
+        int frequency = IntValue.parseString(node.getChild(0).getText());
         return new FrequencyParameter(frequency);
     }
 
-    private static Object makeRange(AST node)
+    private static Object makeRange(Tree node)
     {
-        int low = IntValue.parseString(node.getFirstChild().getText());
-        int high = IntValue.parseString(node.getFirstChild().getNextSibling().getText());
+        int low = IntValue.parseString(node.getChild(0).getText());
+        int high = IntValue.parseString(node.getChild(1).getText());
         return new RangeParameter(low, high);
     }
 
-    private static Object makeCronParameter(AST node)
+    private static Object makeCronParameter(Tree node)
     {
-       if (node.getFirstChild() == null) {
+       if (node.getChild(0) == null) {
            return new CronParameter(node.getText(), null);
        } else {
-        return new CronParameter(node.getText(), node.getFirstChild().getText());
+        return new CronParameter(node.getText(), node.getChild(0).getText());
        }
     }
 
-    private static Object makeArray(AST node) throws ASTWalkException
+    private static Object makeArray(Tree node) throws ASTWalkException
     {
         // Determine the distinct node types in the AST
         Set<Integer> nodeTypes = new HashSet<Integer>();
-        AST child = node.getFirstChild();
 
-        while(child != null)
+        for (int i = 0; i < node.getChildCount(); i++)
         {
-            nodeTypes.add(child.getType());
-            child = child.getNextSibling();
+        	Tree childNode = node.getChild(i);
+            nodeTypes.add(childNode.getType());
         }
 
         if (nodeTypes.isEmpty())
@@ -173,36 +168,32 @@ public class ASTParameterHelper implements EqlEvalTokenTypes
         }
     }
 
-    private static Object makeNonUniform(AST node) throws ASTWalkException
+    private static Object makeNonUniform(Tree node) throws ASTWalkException
     {
-        int count = node.getNumberOfChildren();
+        int count = node.getChildCount();
         Object[] result = new Object[count];
 
-        AST child = node.getFirstChild();
-        int index = 0;
-        while(child != null)
+        for (int i = 0; i < node.getChildCount(); i++)
         {
-            result[index++] = parseConstant(child);
-            child = child.getNextSibling();
+        	Tree child = node.getChild(i);
+            result[i] = parseConstant(child);
         }
 
         return result;
     }
 
-    private static Object makeUniform(AST node) throws ASTWalkException
+    private static Object makeUniform(Tree node) throws ASTWalkException
     {
-        int count = node.getNumberOfChildren();
+        int count = node.getChildCount();
         String[] values = new String[count];
 
-        AST child = node.getFirstChild();
-        int index = 0;
-        while(child != null)
+        for (int i = 0; i < node.getChildCount(); i++)
         {
-            values[index++] = child.getText();
-            child = child.getNextSibling();
+        	Tree child = node.getChild(i);
+            values[i] = child.getText();
         }
 
-        return parseStringArray(node.getFirstChild().getType(), values);
+        return parseStringArray(node.getChild(0).getType(), values);
     }
 
     private static Object parseStringArray(int nodeType, String[] nodeValues) throws ASTWalkException
@@ -214,12 +205,12 @@ public class ASTParameterHelper implements EqlEvalTokenTypes
 
         switch(nodeType)
         {
-            case INT_TYPE:  return IntValue.parseString(nodeValues);
-            case LONG_TYPE:  return LongValue.parseString(nodeValues);
-            case BOOL_TYPE:  return BoolValue.parseString(nodeValues);
-            case FLOAT_TYPE:  return FloatValue.parseString(nodeValues);
-            case DOUBLE_TYPE:  return DoubleValue.parseString(nodeValues);
-            case STRING_TYPE:  return StringValue.parseString(nodeValues);
+            case EsperEPLParser.INT_TYPE:  return IntValue.parseString(nodeValues);
+            case EsperEPLParser.LONG_TYPE:  return LongValue.parseString(nodeValues);
+            case EsperEPLParser.BOOL_TYPE:  return BoolValue.parseString(nodeValues);
+            case EsperEPLParser.FLOAT_TYPE:  return FloatValue.parseString(nodeValues);
+            case EsperEPLParser.DOUBLE_TYPE:  return DoubleValue.parseString(nodeValues);
+            case EsperEPLParser.STRING_TYPE:  return StringValue.parseString(nodeValues);
             default:
                 throw new IllegalStateException("Unexpected constant of type " + nodeType + " encountered");
         }

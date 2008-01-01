@@ -1,10 +1,10 @@
 package net.esper.eql.parse;
 
-import antlr.collections.AST;
 import junit.framework.TestCase;
 import net.esper.support.eql.parse.SupportParserHelper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.antlr.runtime.tree.Tree;
 
 public class TestASTFilterSpecHelper extends TestCase
 {
@@ -13,13 +13,13 @@ public class TestASTFilterSpecHelper extends TestCase
         final String PROPERTY = "a('aa').b[1].c";
 
         // Should parse and result in the exact same property name
-        AST propertyNameExprNode = SupportParserHelper.parseEventProperty(PROPERTY);
-        String propertyName = ASTFilterSpecHelper.getPropertyName(propertyNameExprNode.getFirstChild());
+        Tree propertyNameExprNode = SupportParserHelper.parseEventProperty(PROPERTY);
+        String propertyName = ASTFilterSpecHelper.getPropertyName(propertyNameExprNode.getChild(0), 0);
         assertEquals(PROPERTY, propertyName);
 
         // Try AST with tokens separated, same property name
         propertyNameExprNode = SupportParserHelper.parseEventProperty("a(    'aa'   ). b [ 1 ] . c");
-        propertyName = ASTFilterSpecHelper.getPropertyName(propertyNameExprNode.getFirstChild());
+        propertyName = ASTFilterSpecHelper.getPropertyName(propertyNameExprNode.getChild(0), 0);
         assertEquals(PROPERTY, propertyName);
     }
 

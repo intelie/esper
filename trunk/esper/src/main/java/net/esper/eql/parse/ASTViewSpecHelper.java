@@ -10,14 +10,13 @@ package net.esper.eql.parse;
 import java.util.LinkedList;
 import java.util.List;
 
-import net.esper.eql.generated.EqlTokenTypes;
 import net.esper.eql.spec.ViewSpec;
-import antlr.collections.AST;
+import org.antlr.runtime.tree.Tree;
 
 /**
  * Builds a view specification from view AST nodes.
  */
-public class ASTViewSpecHelper implements EqlTokenTypes
+public class ASTViewSpecHelper
 {
     /**
      * Build a view specification from the AST node supplied.
@@ -25,19 +24,18 @@ public class ASTViewSpecHelper implements EqlTokenTypes
      * @return view spec
      * @throws ASTWalkException is thrown to indicate an error in node parsing
      */
-    public static ViewSpec buildSpec(AST node) throws ASTWalkException
+    public static ViewSpec buildSpec(Tree node) throws ASTWalkException
     {
-        String objectNamespace = node.getFirstChild().getText();
-        String objectName = node.getFirstChild().getNextSibling().getText();
+        String objectNamespace = node.getChild(0).getText();
+        String objectName = node.getChild(1).getText();
 
         List<Object> objectParams = new LinkedList<Object>();
 
-        AST child = node.getFirstChild().getNextSibling().getNextSibling();
-        while (child != null)
+        for (int i = 2; i < node.getChildCount(); i++)
         {
+        	Tree child = node.getChild(i);
             Object object = ASTParameterHelper.makeParameter(child);
             objectParams.add(object);
-            child = child.getNextSibling();
         }
 
         return new ViewSpec(objectNamespace, objectName, objectParams);

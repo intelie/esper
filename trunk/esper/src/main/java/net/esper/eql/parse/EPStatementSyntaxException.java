@@ -7,12 +7,10 @@
  **************************************************************************************/
 package net.esper.eql.parse;
 
-import net.esper.client.EPException;
 import net.esper.client.EPStatementException;
-import antlr.TokenStreamException;
-import antlr.RecognitionException;
-import antlr.NoViableAltException;
-import antlr.Token;
+import org.antlr.runtime.NoViableAltException;
+import org.antlr.runtime.RecognitionException;
+import org.antlr.runtime.Token;
 
 /**
  * This exception is thrown to indicate a problem in statement creation.
@@ -84,20 +82,9 @@ public class EPStatementSyntaxException extends EPStatementException
      */
     public static String getPositionInfo(RecognitionException e)
     {
-        return e.getLine() > 0 && e.getColumn() > 0
-                ? " near line " + e.getLine() + ", column " + e.getColumn()
+        return e.line > 0 && e.charPositionInLine > 0
+                ? " near line " + e.line + ", column " + e.charPositionInLine
                 : "";
-    }
-
-    /**
-     * Converts from a syntax (token stream) error to a nice statement exception.
-     * @param e is the syntax error
-     * @param expression is the expression text
-     * @return syntax exception
-     */
-    public static EPStatementSyntaxException convert(TokenStreamException e, String expression)
-    {
-        return new EPStatementSyntaxException(e.getMessage(), expression);
     }
 }
 

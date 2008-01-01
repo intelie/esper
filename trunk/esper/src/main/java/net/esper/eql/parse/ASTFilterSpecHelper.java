@@ -7,63 +7,61 @@
  **************************************************************************************/
 package net.esper.eql.parse;
 
-import antlr.collections.AST;
-import net.esper.eql.generated.EqlTokenTypes;
+import net.esper.eql.generated.EsperEPLParser;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.antlr.runtime.tree.Tree;
 
 /**
  * Builds a filter specification from filter AST nodes.
  */
-public class ASTFilterSpecHelper implements EqlTokenTypes
+public class ASTFilterSpecHelper
 {
-
     /**
      * Return the generated property name that is defined by the AST child node and it's siblings.
-     * @param propertyNameExprChildNode is the child node from which to start putting the property name together
      * @return property name, ie. indexed[1] or mapped('key') or nested.nested or a combination or just 'simple'.
      */
-    protected static String getPropertyName(AST propertyNameExprChildNode)
+    protected static String getPropertyName(Tree parentNode, int startIndex)
     {
         StringBuilder buffer = new StringBuilder();
         String delimiter = "";
-        AST child = propertyNameExprChildNode;
 
-        do
+        for (int i = startIndex; i < parentNode.getChildCount(); i++)
         {
+        	Tree child = parentNode.getChild(i);
             buffer.append(delimiter);
 
             switch (child.getType()) {
-                case EVENT_PROP_SIMPLE:
-                    buffer.append(child.getFirstChild().getText());
+                case EsperEPLParser.EVENT_PROP_SIMPLE:
+                    buffer.append(child.getChild(0).getText());
                     break;
-                case EVENT_PROP_MAPPED:
-                    buffer.append(child.getFirstChild().getText());
+                case EsperEPLParser.EVENT_PROP_MAPPED:
+                    buffer.append(child.getChild(0).getText());
                     buffer.append('(');
-                    buffer.append(child.getFirstChild().getNextSibling().getText());
+                    buffer.append(child.getChild(1).getText());
                     buffer.append(')');
                     break;
-                case EVENT_PROP_INDEXED:
-                    buffer.append(child.getFirstChild().getText());
+                case EsperEPLParser.EVENT_PROP_INDEXED:
+                    buffer.append(child.getChild(0).getText());
                     buffer.append('[');
-                    buffer.append(child.getFirstChild().getNextSibling().getText());
+                    buffer.append(child.getChild(1).getText());
                     buffer.append(']');
                     break;
-                case EVENT_PROP_DYNAMIC_SIMPLE:
-                    buffer.append(child.getFirstChild().getText());
+                case EsperEPLParser.EVENT_PROP_DYNAMIC_SIMPLE:
+                    buffer.append(child.getChild(0).getText());
                     buffer.append('?');
                     break;
-                case EVENT_PROP_DYNAMIC_MAPPED:
-                    buffer.append(child.getFirstChild().getText());
+                case EsperEPLParser.EVENT_PROP_DYNAMIC_MAPPED:
+                    buffer.append(child.getChild(0).getText());
                     buffer.append('(');
-                    buffer.append(child.getFirstChild().getNextSibling().getText());
+                    buffer.append(child.getChild(1).getText());
                     buffer.append(')');
                     buffer.append('?');
                     break;
-                case EVENT_PROP_DYNAMIC_INDEXED:
-                    buffer.append(child.getFirstChild().getText());
+                case EsperEPLParser.EVENT_PROP_DYNAMIC_INDEXED:
+                    buffer.append(child.getChild(0).getText());
                     buffer.append('[');
-                    buffer.append(child.getFirstChild().getNextSibling().getText());
+                    buffer.append(child.getChild(1).getText());
                     buffer.append(']');
                     buffer.append('?');
                     break;
@@ -72,9 +70,7 @@ public class ASTFilterSpecHelper implements EqlTokenTypes
             }
 
             delimiter = ".";
-            child = child.getNextSibling();
         }
-        while (child != null);
 
         return buffer.toString();
     }

@@ -13,8 +13,6 @@ import net.esper.type.*;
 import java.util.LinkedList;
 import java.util.List;
 
-import antlr.collections.AST;
-
 /**
  * Helper for questions about Java classes such as
  * <p> what is the boxed type for a primitive type

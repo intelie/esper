@@ -22,16 +22,16 @@ public class TestPropertyParser extends TestCase
 
     public void testParse() throws Exception
     {
-        Property property = PropertyParser.parse("i[1]", beanEventTypeFactory);
+        Property property = PropertyParser.parse("a", beanEventTypeFactory);
+        assertEquals("a", ((SimpleProperty)property).getPropertyName());
+
+        property = PropertyParser.parse("i[1]", beanEventTypeFactory);
         assertEquals("i", ((IndexedProperty)property).getPropertyName());
         assertEquals(1, ((IndexedProperty)property).getIndex());
 
         property = PropertyParser.parse("m('key')", beanEventTypeFactory);
         assertEquals("m", ((MappedProperty)property).getPropertyName());
         assertEquals("key", ((MappedProperty)property).getKey());
-
-        property = PropertyParser.parse("a", beanEventTypeFactory);
-        assertEquals("a", ((SimpleProperty)property).getPropertyName());
 
         property = PropertyParser.parse("a.b[2].c('m')", beanEventTypeFactory);
         List<Property> nested = ((NestedProperty)property).getProperties();
