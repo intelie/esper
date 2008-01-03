@@ -58,7 +58,7 @@ public class EPAdministratorImpl implements EPAdministrator
             public Tree invokeParseRule(EsperEPLParser parser) throws RecognitionException
             {
                 EsperEPLParser.startEPLExpressionRule_return r = parser.startEPLExpressionRule();
-                return (Tree) r;
+                return (Tree) r.getTree();
             }
         };
         eqlWalkRule = new WalkRuleSelector()

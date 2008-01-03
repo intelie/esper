@@ -222,6 +222,26 @@ tokens
   protected boolean recoverFromMismatchedElement(IntStream intStream, RecognitionException recognitionException, BitSet bitSet) {
     throw new RuntimeException("Error recovering from mismatched element: " + recognitionException.getMessage(), recognitionException);
   }
+
+  public String getErrorMessage(RecognitionException e, String[] tokenNames) {
+    List stack = getRuleInvocationStack(e, this.getClass().getName());
+    String msg = null;
+    if ( e instanceof NoViableAltException ) {
+      NoViableAltException nvae = (NoViableAltException)e;
+      msg = " no viable alt; token="+e.token+
+            " (decision="+nvae.decisionNumber+
+            " state "+nvae.stateNumber+")"+
+            " decision=<<"+nvae.grammarDecisionDescription+">>";
+    }
+    else {
+      msg = super.getErrorMessage(e, tokenNames);
+    }
+    return stack+" "+msg;
+  }
+
+  public String getTokenErrorDisplay(Token t) {
+    return t.toString();
+  }
 }
 
 startPatternExpressionRule 
@@ -253,7 +273,7 @@ substitution
 	
 constant
 	:  (m=MINUS | p=PLUS)? number
-		-> {$m != null}? number // TODO
+		-> {$m != null}? {adaptor.create($number.tree.getType(), "-" + $number.text)}
 		-> number
 	|   stringconstant
     	|   t='true' -> ^(BOOL_TYPE[$t])
@@ -305,10 +325,10 @@ onSelectExpr
 	;
 	
 onDeleteExpr	
-	:	DELETE!
+	:	DELETE
 		onExprFrom
 		(WHERE whereClause)?		
-//		-> ^(ON_DELETE_EXPR onExprFrom whereClause?)
+		-> ^(ON_DELETE_EXPR onExprFrom whereClause?)
 	;
 	
 onSetExpr
@@ -353,8 +373,8 @@ insertIntoExpr
 	;
 		
 insertIntoColumnList
-	: 	LPAREN c=IDENT (COMMA i=IDENT)* RPAREN
-		-> ^(INSERTINTO_EXPRCOL $c $i*)
+	: 	LPAREN IDENT (COMMA IDENT)* RPAREN
+		-> ^(INSERTINTO_EXPRCOL IDENT*)
 	;
 	
 regularJoin
@@ -367,14 +387,13 @@ outerJoinList
 
 outerJoin
 	:	(tl=LEFT|tr=RIGHT|tf=FULL) OUTER JOIN streamExpression outerJoinIdent
-		-> {$tl != null}? ^(LEFT_OUTERJOIN_EXPR streamExpression outerJoinIdent)
-		-> {$tr != null}? ^(RIGHT_OUTERJOIN_EXPR streamExpression outerJoinIdent)
-		-> ^(FULL_OUTERJOIN_EXPR streamExpression outerJoinIdent)
+		-> {$tl != null}? streamExpression ^(LEFT_OUTERJOIN_EXPR outerJoinIdent)
+		-> {$tr != null}? streamExpression ^(RIGHT_OUTERJOIN_EXPR outerJoinIdent)
+		-> streamExpression ^(FULL_OUTERJOIN_EXPR outerJoinIdent)
 	;
 
 outerJoinIdent
-	:	ON outerJoinIdentPair (AND_EXPR outerJoinIdentPair)*
-		-> ^(OUTERJOIN_EXPR outerJoinIdentPair+)
+	:	ON! outerJoinIdentPair (AND_EXPR! outerJoinIdentPair)*
 	;
 	
 outerJoinIdentPair 
@@ -521,7 +540,6 @@ evalRelationalExpression
 			( 
 			  ( 
 			    (r=LT|r=GT|r=LE|r=GE) concatenationExpr
-			    -> 
 			  )*
 			  -> {$r != null}? ^({adaptor.create($r)} concatenationExpr+)
 			  -> concatenationExpr+
@@ -539,22 +557,22 @@ evalRelationalExpression
 						)
 					  (r=RPAREN | r=RBRACK)	
 					)
-				    -> {$col == null && $n == null}? ^(IN_SET $l expression+ $r)
-				    -> {$col == null && $n != null}? ^(NOT_IN_SET $l expression+ $r)
-				    -> {$col != null && $n == null}? ^(IN_RANGE $l expression+ $r)
-				    -> ^(NOT_IN_RANGE $l expression+ $r)
+				    -> {$col == null && $n == null}? ^(IN_SET concatenationExpr $l expression+ $r)
+				    -> {$col == null && $n != null}? ^(NOT_IN_SET concatenationExpr $l expression+ $r)
+				    -> {$col != null && $n == null}? ^(IN_RANGE concatenationExpr $l expression+ $r)
+				    -> ^(NOT_IN_RANGE concatenationExpr $l expression+ $r)
 				| IN_SET inSubSelectQuery
-				    -> {$n == null}? ^(IN_SUBSELECT_EXPR inSubSelectQuery)
-				    -> ^(NOT_IN_SUBSELECT_EXPR inSubSelectQuery)
+				    -> {$n == null}? ^(IN_SUBSELECT_EXPR concatenationExpr inSubSelectQuery)
+				    -> ^(NOT_IN_SUBSELECT_EXPR concatenationExpr inSubSelectQuery)
 				| BETWEEN betweenList
-				    -> {$n == null}? ^(BETWEEN betweenList)
-				    -> ^(NOT_BETWEEN betweenList)				
+				    -> {$n == null}? ^(BETWEEN concatenationExpr betweenList)
+				    -> ^(NOT_BETWEEN concatenationExpr betweenList)				
 				| LIKE concatenationExpr (ESCAPE stringconstant)?
 				    -> {$n == null}? ^(LIKE concatenationExpr* stringconstant?)
 				    -> ^(NOT_LIKE concatenationExpr* stringconstant?)
 				| REGEXP concatenationExpr
-				    -> {$n == null}? ^(REGEXP concatenationExpr)
-				    -> ^(NOT_REGEXP concatenationExpr)				
+				    -> {$n == null}? ^(REGEXP concatenationExpr+)
+				    -> ^(NOT_REGEXP concatenationExpr+)				
 			)	
 		)
 	;
@@ -565,7 +583,9 @@ inSubSelectQuery
 	;
 			
 concatenationExpr
-	: additiveExpression ( LOR^ additiveExpression)*
+	: additiveExpression ( c=LOR additiveExpression ( LOR additiveExpression)* )?
+	    -> {$c != null}? ^(CONCAT additiveExpression+)
+	    -> additiveExpression
 	;
 
 additiveExpression
@@ -703,8 +723,9 @@ qualifyExpression
 	;
 	
 guardPostFix
-	:	(atomicExpression | LPAREN patternExpression RPAREN)
-		(WHERE guardExpression -> ^(GUARD_EXPR atomicExpression? patternExpression? guardExpression) )?
+	:	(atomicExpression | l=LPAREN patternExpression RPAREN) (w=WHERE guardExpression)?
+		-> {$w != null}? ^(GUARD_EXPR atomicExpression? patternExpression? guardExpression) 
+		-> atomicExpression? patternExpression?
 	;
 
 atomicExpression
@@ -713,7 +734,7 @@ atomicExpression
 		
 observerExpression
 	:	ns=IDENT COLON nm=IDENT LPAREN parameterSet? RPAREN
-		//-> ^(OBSERVER_EXPR $ns $nm parameterSet?)
+		-> ^(OBSERVER_EXPR $ns $nm parameterSet?)
 	;
 
 guardExpression
@@ -830,13 +851,13 @@ eventProperty
 	
 eventPropertyAtomic
 	:	i=IDENT -> ^(EVENT_PROP_SIMPLE $i)
-	|	i=IDENT LBRACK ni=NUM_INT RBRACK (d=QUESTION)?
-			-> {$d == null}? ^(EVENT_PROP_INDEXED $i $ni)
+	|	i=IDENT LBRACK ni=NUM_INT RBRACK (q=QUESTION)?
+			-> {$q == null}? ^(EVENT_PROP_INDEXED $i $ni)
 			-> ^(EVENT_PROP_DYNAMIC_INDEXED $i $ni)
 	|	i=IDENT LPAREN (s=STRING_LITERAL | s=QUOTED_STRING_LITERAL) RPAREN (q=QUESTION)?
-			-> {$d == null}? ^(EVENT_PROP_MAPPED $i $s)
+			-> {$q == null}? ^(EVENT_PROP_MAPPED $i $s)
 			-> ^(EVENT_PROP_DYNAMIC_MAPPED $i $s)
-	|	i=IDENT QUESTION -> EVENT_PROP_DYNAMIC_SIMPLE[$i]
+	|	i=IDENT QUESTION -> ^(EVENT_PROP_DYNAMIC_SIMPLE $i)
 	;
 
 time_period 	

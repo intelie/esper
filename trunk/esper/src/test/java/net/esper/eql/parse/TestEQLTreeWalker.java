@@ -31,13 +31,6 @@ public class TestEQLTreeWalker extends TestCase
                     CLASSNAME + "(string='a').win:length(10).std:lastevent() as win1," +
                     CLASSNAME + "(string='b').win:length(10).std:lastevent() as win2 ";
 
-    // TODO: remove
-    public void testDisplay() throws Exception
-    {
-        String text = "select intPrimitive from " + SupportBean.class.getName() + "().win:lenght(10L) as stream0";
-        EQLTreeWalker walker = parseAndWalkEQL(text);
-    }
-
     public void testWalkJoinMethodStatement() throws Exception
     {
         String className = SupportBean.class.getName();
@@ -882,14 +875,14 @@ public class TestEQLTreeWalker extends TestCase
 
     public void testWalkInAndBetween() throws Exception
     {
-        assertFalse((Boolean) tryRelationalOp("1 in (2,3)"));
-        assertTrue((Boolean) tryRelationalOp("1 in (2,3,1)"));
-        assertTrue((Boolean) tryRelationalOp("1 not in (2,3)"));
-
         assertTrue((Boolean) tryRelationalOp("1 between 0 and 2"));
         assertFalse((Boolean) tryRelationalOp("-1 between 0 and 2"));
         assertFalse((Boolean) tryRelationalOp("1 not between 0 and 2"));
         assertTrue((Boolean) tryRelationalOp("-1 not between 0 and 2"));
+
+        assertFalse((Boolean) tryRelationalOp("1 in (2,3)"));
+        assertTrue((Boolean) tryRelationalOp("1 in (2,3,1)"));
+        assertTrue((Boolean) tryRelationalOp("1 not in (2,3)"));
     }
 
     public void testWalkLikeRegex() throws Exception

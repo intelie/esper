@@ -889,7 +889,7 @@ public class EQLTreeWalker extends EsperEPLTree
         else
         {
             String streamOrNestedPropertyName = node.getChild(0).getChild(0).getText();
-            propertyName = ASTFilterSpecHelper.getPropertyName(node.getChild(0), 1);
+            propertyName = ASTFilterSpecHelper.getPropertyName(node, 1);
             exprNode = new ExprIdentNode(propertyName, streamOrNestedPropertyName);
         }
 
@@ -1320,7 +1320,7 @@ public class EQLTreeWalker extends EsperEPLTree
         if ((child != null) && (child.getType() == INSERTINTO_EXPRCOL))
         {
             // Each child to the insert-into AST node represents a column name
-            for (int i = 0; i < node.getChildCount(); i++)
+            for (int i = 0; i < child.getChildCount(); i++)
             {
                 Tree childNode = child.getChild(i);
                 insertIntoDesc.add(childNode.getText());
