@@ -1,14 +1,13 @@
 package net.esper.support.eql.parse;
 
 import net.esper.antlr.NoCaseSensitiveStream;
+import net.esper.antlr.ASTUtil;
 import net.esper.eql.generated.EsperEPLLexer;
 import net.esper.eql.generated.EsperEPLParser;
 import net.esper.eql.parse.ParseRuleSelector;
-import net.esper.util.DebugFacility;
 import org.antlr.runtime.CharStream;
 import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.RecognitionException;
-import org.antlr.runtime.Token;
 import org.antlr.runtime.tree.RewriteCardinalityException;
 import org.antlr.runtime.tree.Tree;
 import org.apache.commons.logging.Log;
@@ -16,8 +15,6 @@ import org.apache.commons.logging.LogFactory;
 
 import java.io.IOException;
 import java.io.StringReader;
-import java.io.StringWriter;
-import java.io.PrintWriter;
 
 public class SupportParserHelper
 {
@@ -26,7 +23,7 @@ public class SupportParserHelper
         log.debug(".displayAST...");
         if (log.isDebugEnabled())
         {
-            DebugFacility.dumpAST(ast);
+            ASTUtil.dumpAST(ast);
         }
     }
 
@@ -82,23 +79,7 @@ public class SupportParserHelper
 
         EsperEPLLexer lex = new EsperEPLLexer(input);
         CommonTokenStream tokens = new CommonTokenStream(lex);
-
-        if (log.isDebugEnabled())
-        {
-            StringWriter writer = new StringWriter();
-            PrintWriter printer = new PrintWriter(writer);
-            for (int i = 0; i < tokens.size(); i++)
-            {
-                Token t = tokens.get(i);
-                printer.print(t.getText());
-                printer.print('[');
-                printer.print(t.getType());
-                printer.print(']');
-                printer.print(" ");
-            }
-            log.debug("Tokens: " + writer.toString());
-        }        
-
+        ASTUtil.printTokens(tokens);
         EsperEPLParser g = new EsperEPLParser(tokens);
         EsperEPLParser.startEventPropertyRule_return r;
 

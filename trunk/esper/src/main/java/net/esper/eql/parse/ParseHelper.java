@@ -11,12 +11,10 @@ import java.io.StringReader;
 import java.io.IOException;
 
 import net.esper.client.EPException;
-import net.esper.util.DebugFacility;
-import net.esper.eql.generated.EsperEPLTree;
 import net.esper.eql.generated.EsperEPLParser;
 import net.esper.eql.generated.EsperEPLLexer;
-import net.esper.event.PropertyAccessException;
 import net.esper.antlr.NoCaseSensitiveStream;
+import net.esper.antlr.ASTUtil;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -35,7 +33,7 @@ public class ParseHelper
      * @param walkRuleSelector - walk rule
      * @param expression - the expression we are walking in string form
      */
-    public static void walk(Tree ast, EsperEPLTree walker, WalkRuleSelector walkRuleSelector, String expression)
+    public static void walk(Tree ast, EQLTreeWalker walker, WalkRuleSelector walkRuleSelector, String expression)
     {
         // Walk tree
         try
@@ -50,7 +48,7 @@ public class ParseHelper
             if (log.isDebugEnabled())
             {
                 log.debug(".walk AST tree after walking");
-                DebugFacility.dumpAST(ast);
+                ASTUtil.dumpAST(ast);
             }
         }
         catch (RecognitionException e)
@@ -124,7 +122,7 @@ public class ParseHelper
         if (log.isDebugEnabled())
         {
             log.debug(".parse Dumping AST...");
-            DebugFacility.dumpAST(tree);
+            ASTUtil.dumpAST(tree);
         }
 
         return tree;

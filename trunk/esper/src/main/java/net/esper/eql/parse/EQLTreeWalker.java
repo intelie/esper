@@ -1373,7 +1373,7 @@ public class EQLTreeWalker extends EsperEPLTree
         int count = 0;
         Tree startNode = node.getChild(0);
         String optionalPatternTagName = null;
-        if (startNode.getType() == EVENT_FILTER_NAME_TAG)
+        if (startNode.getType() == IDENT)
         {
             optionalPatternTagName = startNode.getText();
             startNode = node.getChild(++count);
@@ -1507,7 +1507,7 @@ public class EQLTreeWalker extends EsperEPLTree
         String objectName = node.getChild(2).getText();
 
         List<Object> objectParams = new LinkedList<Object>();
-        for (int i = 2; i < node.getChildCount(); i++)
+        for (int i = 3; i < node.getChildCount(); i++)
         {
         	Tree childNode = node.getChild(i);
             Object object = ASTParameterHelper.makeParameter(childNode);

@@ -7,9 +7,7 @@
  **************************************************************************************/
 package net.esper.eql.parse;
 
-import net.esper.eql.generated.EsperEPLTree;
 import org.antlr.runtime.RecognitionException;
-import org.antlr.runtime.tree.Tree;
 
 /**
  * For selection of the AST tree walk rule to use.
@@ -21,7 +19,7 @@ public interface WalkRuleSelector
      * @param walker - to invoke walk rule on
      * @throws org.antlr.runtime.RecognitionException - throw on walk errors
      */
-    public void invokeWalkRule(EsperEPLTree walker) throws RecognitionException;
+    public void invokeWalkRule(EQLTreeWalker walker) throws RecognitionException;
 }
 
 

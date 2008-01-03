@@ -13,7 +13,7 @@ public class TestEQLParser extends TestCase
     public void testDisplayAST() throws Exception
     {
         String className = SupportBean.class.getName();
-        String expression = "select * from A where a = 4";
+        String expression = "select b.c.d /* some comment */ from E";
 
         log.debug(".testDisplayAST parsing: " + expression);
         Tree ast = parse(expression);

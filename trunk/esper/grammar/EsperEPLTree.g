@@ -4,12 +4,8 @@ options
 {
 	k = 2;                   	// lookahead is 2 tokens
 	tokenVocab = EsperEPL;
+	//output = AST;
     	ASTLabelType = CommonTree;
-}
-
-tokens
-{
-	BOGUS;          // Used for error state detection, etc.
 }
 
 @header {
@@ -19,25 +15,43 @@ tokens
   import org.apache.commons.logging.LogFactory;
 }
 
-
 @members {
-	private static Log log = LogFactory.getLog(EsperEPLTree.class);
+  private static Log log = LogFactory.getLog(EsperEPLTree.class);
 
-	// For pattern processing within EPL and for create pattern
-	protected void setIsPatternWalk(boolean isPatternWalk) {};
-	protected void endPattern() {};
-	
-	protected void pushStmtContext() {};
-	protected void leaveNode(CommonTree node) {};
-	protected void end() {};
+  // For pattern processing within EPL and for create pattern
+  protected void setIsPatternWalk(boolean isPatternWalk) {};
+  protected void endPattern() {};
+
+  protected void pushStmtContext() {};
+  protected void leaveNode(Tree node) {};
+  protected void end() {};
+
+  protected void mismatch(IntStream input, int ttype, BitSet follow) throws RecognitionException {
+    throw new MismatchedTokenException(ttype, input);  
+  }
+
+  public void recoverFromMismatchedToken(IntStream intStream, RecognitionException recognitionException, int i, BitSet bitSet) throws RecognitionException {
+    throw recognitionException;
+  }
+
+  public void recoverFromMismatchedSet(IntStream intStream, RecognitionException recognitionException, BitSet bitSet) throws RecognitionException {
+    throw recognitionException;
+  }
+
+  protected boolean recoverFromMismatchedElement(IntStream intStream, RecognitionException recognitionException, BitSet bitSet) {
+    throw new RuntimeException("Error recovering from mismatched element: " + recognitionException.getMessage(), recognitionException);
+  }
+  
+  public void recover(org.antlr.runtime.IntStream intStream, org.antlr.runtime.RecognitionException recognitionException) {
+    throw new RuntimeException("Error recovering from recognition exception: " + recognitionException.getMessage(), recognitionException);
+  }
 }
 
 //----------------------------------------------------------------------------
 // EPL expression
 //----------------------------------------------------------------------------
 startEPLExpressionRule
-	:	^(EPL_EXPR eplExpressionRule)
-		{ end(); }
+	:	^(EPL_EXPR eplExpressionRule) { end(); }		
 	;
 
 eplExpressionRule
@@ -201,39 +215,39 @@ evalExprChoice
 	;
 	
 valueExpr
-	: 	c=constant // TODO { leaveNode(); }
-	|	s=substitution // TODO { leaveNode(#s); }
-	| 	a=arithmeticExpr // TODO { leaveNode(#a); }
+	: 	constant[true]
+	|	substitution
+	| 	arithmeticExpr 
 	| 	eventPropertyExpr
 	|   	evalExprChoice
-	|	f=builtinFunc // TODO { leaveNode(#f); }
-	|   	l=libFunc // TODO { leaveNode(#l); }
-	|	cs=caseExpr // TODO { leaveNode(#cs); }
-	|	in=inExpr // TODO { leaveNode(#in); }
-	|	b=betweenExpr // TODO { leaveNode(#b); }
-	|	li=likeExpr // TODO { leaveNode(#li); }
-	|	r=regExpExpr // TODO { leaveNode(#r); }
-	|	arr=arrayExpr // TODO { leaveNode(#arr); }
-	|	subin=subSelectInExpr // TODO {leaveNode(#subin);}
+	|	builtinFunc
+	|   	libFunc
+	|	caseExpr
+	|	inExpr 
+	|	betweenExpr
+	|	likeExpr
+	|	regExpExpr
+	|	arrayExpr
+	|	subSelectInExpr
 	| 	subSelectRowExpr 
 	| 	subSelectExistsExpr
 	;
 
 subSelectRowExpr
-	:	{pushStmtContext();} ^(SUBSELECT_EXPR subQueryExpr) // TODO {leaveNode(#subSelectRowExpr);}
+	:	{pushStmtContext();} ^(s=SUBSELECT_EXPR subQueryExpr) {leaveNode($s);}
 	;
 
 subSelectExistsExpr
-	:	{pushStmtContext();} ^(EXISTS_SUBSELECT_EXPR subQueryExpr) // TODO {leaveNode(#subSelectExistsExpr);}
+	:	{pushStmtContext();} ^(e=EXISTS_SUBSELECT_EXPR subQueryExpr) {leaveNode($e);}
 	;
 	
 subSelectInExpr
-	: 	^(IN_SUBSELECT_EXPR valueExpr subSelectInQueryExpr)
-	| 	^(NOT_IN_SUBSELECT_EXPR valueExpr subSelectInQueryExpr)
+	: 	^(s=IN_SUBSELECT_EXPR valueExpr subSelectInQueryExpr) { leaveNode($s); }
+	| 	^(s=NOT_IN_SUBSELECT_EXPR valueExpr subSelectInQueryExpr) { leaveNode($s); }
 	;
 
 subSelectInQueryExpr
-	:	{pushStmtContext();} ^(IN_SUBSELECT_QUERY_EXPR subQueryExpr) // TODO {leaveNode(#subSelectInQueryExpr);}
+	:	{pushStmtContext();} ^(i=IN_SUBSELECT_QUERY_EXPR subQueryExpr) {leaveNode($i);}
 	;
 	
 subQueryExpr 
@@ -245,66 +259,66 @@ subSelectFilterExpr
 	;
 	
 caseExpr
-	: ^(CASE (valueExpr)*)
-	| ^(CASE2 (valueExpr)*)
+	: ^(c=CASE (valueExpr)*) { leaveNode($c); }
+	| ^(c=CASE2 (valueExpr)*) { leaveNode($c); }
 	;
 	
 inExpr
-	: ^(IN_SET valueExpr (LPAREN|LBRACK) valueExpr (valueExpr)* (RPAREN|RBRACK))
-	| ^(NOT_IN_SET valueExpr (LPAREN|LBRACK) valueExpr (valueExpr)* (RPAREN|RBRACK))
-	| ^(IN_RANGE valueExpr (LPAREN|LBRACK) valueExpr valueExpr (RPAREN|RBRACK))
-	| ^(NOT_IN_RANGE valueExpr (LPAREN|LBRACK) valueExpr valueExpr (RPAREN|RBRACK))
+	: ^(i=IN_SET valueExpr (LPAREN|LBRACK) valueExpr (valueExpr)* (RPAREN|RBRACK)) { leaveNode($i); }
+	| ^(i=NOT_IN_SET valueExpr (LPAREN|LBRACK) valueExpr (valueExpr)* (RPAREN|RBRACK)) { leaveNode($i); }
+	| ^(i=IN_RANGE valueExpr (LPAREN|LBRACK) valueExpr valueExpr (RPAREN|RBRACK)) { leaveNode($i); }
+	| ^(i=NOT_IN_RANGE valueExpr (LPAREN|LBRACK) valueExpr valueExpr (RPAREN|RBRACK)) { leaveNode($i); }
 	;
 		
 betweenExpr
-	: ^(BETWEEN valueExpr valueExpr valueExpr)
-	| ^(NOT_BETWEEN valueExpr valueExpr (valueExpr)*)
+	: ^(b=BETWEEN valueExpr valueExpr valueExpr) { leaveNode($b); }
+	| ^(b=NOT_BETWEEN valueExpr valueExpr (valueExpr)*) { leaveNode($b); }
 	;
 	
 likeExpr
-	: ^(LIKE valueExpr valueExpr (valueExpr)?)
-	| ^(NOT_LIKE valueExpr valueExpr (valueExpr)?)
+	: ^(l=LIKE valueExpr valueExpr (valueExpr)?) { leaveNode($l); }
+	| ^(l=NOT_LIKE valueExpr valueExpr (valueExpr)?) { leaveNode($l); }
 	;
 
 regExpExpr
-	: ^(REGEXP valueExpr valueExpr)
-	| ^(NOT_REGEXP valueExpr valueExpr)
+	: ^(r=REGEXP valueExpr valueExpr) { leaveNode($r); }
+	| ^(r=NOT_REGEXP valueExpr valueExpr) { leaveNode($r); }
 	;
 	
 builtinFunc
-	: 	^(SUM (DISTINCT)? valueExpr)
-	|	^(AVG (DISTINCT)? valueExpr)
-	|	^(COUNT ((DISTINCT)? valueExpr)? )
-	|	^(MEDIAN (DISTINCT)? valueExpr)
-	|	^(STDDEV (DISTINCT)? valueExpr)
-	|	^(AVEDEV (DISTINCT)? valueExpr)
-	| 	^(COALESCE valueExpr valueExpr (valueExpr)* )
-	| 	^(PREVIOUS valueExpr eventPropertyExpr)
-	| 	^(PRIOR c=NUM_INT eventPropertyExpr) {leaveNode($c);}
-	| 	^(INSTANCEOF valueExpr CLASS_IDENT (CLASS_IDENT)*) 
-	| 	^(CAST valueExpr CLASS_IDENT)
-	| 	^(EXISTS eventPropertyExpr)
-	|	^(CURRENT_TIMESTAMP {} )
+	: 	^(f=SUM (DISTINCT)? valueExpr) { leaveNode($f); }
+	|	^(f=AVG (DISTINCT)? valueExpr) { leaveNode($f); }
+	|	^(f=COUNT ((DISTINCT)? valueExpr)? ) { leaveNode($f); }
+	|	^(f=MEDIAN (DISTINCT)? valueExpr) { leaveNode($f); }
+	|	^(f=STDDEV (DISTINCT)? valueExpr) { leaveNode($f); }
+	|	^(f=AVEDEV (DISTINCT)? valueExpr) { leaveNode($f); }
+	| 	^(f=COALESCE valueExpr valueExpr (valueExpr)* ) { leaveNode($f); }
+	| 	^(f=PREVIOUS valueExpr eventPropertyExpr) { leaveNode($f); }
+	| 	^(f=PRIOR c=NUM_INT eventPropertyExpr) {leaveNode($c);}
+	| 	^(f=INSTANCEOF valueExpr CLASS_IDENT (CLASS_IDENT)*) { leaveNode($f); }
+	| 	^(f=CAST valueExpr CLASS_IDENT) { leaveNode($f); }
+	| 	^(f=EXISTS eventPropertyExpr) { leaveNode($f); }
+	|	^(f=CURRENT_TIMESTAMP {}) { leaveNode($f); }
 	;
 	
 arrayExpr
-	:	^(ARRAY_EXPR (valueExpr)*)
+	:	^(a=ARRAY_EXPR (valueExpr)*) { leaveNode($a); }
 	;
 	
 arithmeticExpr
-	: 	^(PLUS valueExpr valueExpr)
-	| 	^(MINUS valueExpr valueExpr)
-	| 	^(DIV valueExpr valueExpr)
-	|	^(STAR valueExpr valueExpr)
-	| 	^(MOD valueExpr valueExpr)
-	|	^(BAND valueExpr valueExpr)	
-	|	^(BOR valueExpr valueExpr)	
-	|	^(BXOR valueExpr valueExpr)		
-	| 	^(CONCAT valueExpr valueExpr (valueExpr)*)
+	: 	^(a=PLUS valueExpr valueExpr) { leaveNode($a); }
+	| 	^(a=MINUS valueExpr valueExpr) { leaveNode($a); }
+	| 	^(a=DIV valueExpr valueExpr) { leaveNode($a); }
+	|	^(a=STAR valueExpr valueExpr) { leaveNode($a); }
+	| 	^(a=MOD valueExpr valueExpr) { leaveNode($a); }
+	|	^(a=BAND valueExpr valueExpr) { leaveNode($a); }
+	|	^(a=BOR valueExpr valueExpr) { leaveNode($a); }
+	|	^(a=BXOR valueExpr valueExpr) { leaveNode($a); }
+	| 	^(a=CONCAT valueExpr valueExpr (valueExpr)*) { leaveNode($a); }
 	;
 	
 libFunc
-	:  ^(LIB_FUNCTION (CLASS_IDENT)? IDENT (DISTINCT)? (valueExpr)*)
+	:  ^(l=LIB_FUNCTION (CLASS_IDENT)? IDENT (DISTINCT)? (valueExpr)*) { leaveNode($l); }
 	;
 	
 //----------------------------------------------------------------------------
@@ -319,7 +333,7 @@ exprChoice
 	|	patternOp
 	| 	^( a=EVERY_EXPR exprChoice { leaveNode($a); } )
 	| 	^( n=NOT_EXPR exprChoice { leaveNode($n); } )
-	| 	^( g=GUARD_EXPR exprChoice IDENT IDENT (constant | time_period)* { leaveNode($g); } )
+	| 	^( g=GUARD_EXPR exprChoice IDENT IDENT (constant[false] | time_period)* { leaveNode($g); } )
 	;
 	
 patternOp
@@ -334,7 +348,7 @@ atomicExpr
 	;
 
 eventFilterExpr
-	:	^( f=EVENT_FILTER_EXPR (EVENT_FILTER_NAME_TAG)? CLASS_IDENT (valueExpr)* { leaveNode($f); } )
+	:	^( f=EVENT_FILTER_EXPR IDENT? CLASS_IDENT (valueExpr)* { leaveNode($f); } )
 	;
 	
 filterParam
@@ -348,16 +362,16 @@ filterParamComparator
 	|	^(LE filterAtom)
 	|	^(GT filterAtom)
 	|	^(GE filterAtom)
-	|	^(EVENT_FILTER_RANGE (LPAREN|LBRACK) (constant|filterIdentifier) (constant|filterIdentifier) (RPAREN|RBRACK))
-	|	^(EVENT_FILTER_NOT_RANGE (LPAREN|LBRACK) (constant|filterIdentifier) (constant|filterIdentifier) (RPAREN|RBRACK))
-	|	^(EVENT_FILTER_IN (LPAREN|LBRACK) (constant|filterIdentifier) (constant|filterIdentifier)* (RPAREN|RBRACK))
-	|	^(EVENT_FILTER_NOT_IN (LPAREN|LBRACK) (constant|filterIdentifier) (constant|filterIdentifier)* (RPAREN|RBRACK))
-	|	^(EVENT_FILTER_BETWEEN (constant|filterIdentifier) (constant|filterIdentifier))
-	|	^(EVENT_FILTER_NOT_BETWEEN (constant|filterIdentifier) (constant|filterIdentifier))
+	|	^(EVENT_FILTER_RANGE (LPAREN|LBRACK) (constant[false]|filterIdentifier) (constant[false]|filterIdentifier) (RPAREN|RBRACK))
+	|	^(EVENT_FILTER_NOT_RANGE (LPAREN|LBRACK) (constant[false]|filterIdentifier) (constant[false]|filterIdentifier) (RPAREN|RBRACK))
+	|	^(EVENT_FILTER_IN (LPAREN|LBRACK) (constant[false]|filterIdentifier) (constant[false]|filterIdentifier)* (RPAREN|RBRACK))
+	|	^(EVENT_FILTER_NOT_IN (LPAREN|LBRACK) (constant[false]|filterIdentifier) (constant[false]|filterIdentifier)* (RPAREN|RBRACK))
+	|	^(EVENT_FILTER_BETWEEN (constant[false]|filterIdentifier) (constant[false]|filterIdentifier))
+	|	^(EVENT_FILTER_NOT_BETWEEN (constant[false]|filterIdentifier) (constant[false]|filterIdentifier))
 	;
 	
 filterAtom
-	:	constant
+	:	constant[false]
 	|	filterIdentifier;
 	
 filterIdentifier
@@ -383,7 +397,7 @@ eventPropertyAtomic
 parameter
 	: 	singleParameter
 	| 	^( NUMERIC_PARAM_LIST (numericParameterList)+ )
-	|	^( ARRAY_PARAM_LIST (constant)*)
+	|	^( ARRAY_PARAM_LIST (constant[false])*)
 	;
 
 singleParameter
@@ -392,7 +406,7 @@ singleParameter
 	|	LW
 	|	lastOperator
 	|	weekDayOperator
-	| 	constant
+	| 	constant[false]
 	| 	^( NUMERIC_PARAM_RANGE NUM_INT NUM_INT)
 	| 	^( NUMERIC_PARAM_FREQUENCY NUM_INT)
 	| 	time_period
@@ -445,17 +459,17 @@ millisecondPart
 	;
 
 substitution
-	:	SUBSTITUTION
+	:	s=SUBSTITUTION { leaveNode($s); }
 	;
 
-constant
-	:	INT_TYPE
-	|	LONG_TYPE
-	|	FLOAT_TYPE
-	|	DOUBLE_TYPE
-    	|   	STRING_TYPE
-    	|   	BOOL_TYPE
-    	|	NULL_TYPE
+constant[boolean isLeaveNode]
+	:	c=INT_TYPE { if ($isLeaveNode) leaveNode($c); }
+	|	c=LONG_TYPE { if ($isLeaveNode) leaveNode($c); }
+	|	c=FLOAT_TYPE { if ($isLeaveNode) leaveNode($c); }
+	|	c=DOUBLE_TYPE { if ($isLeaveNode) leaveNode($c); }
+    	|   	c=STRING_TYPE { if ($isLeaveNode) leaveNode($c); }
+    	|   	c=BOOL_TYPE { if ($isLeaveNode) leaveNode($c); }
+    	|	c=NULL_TYPE { if ($isLeaveNode) leaveNode($c); }
 	;
 
 number

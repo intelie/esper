@@ -2,10 +2,9 @@ grammar EsperEPL;
 
 options
 {
+	k = 4;
 	output = AST;
 	ASTLabelType=CommonTree;
-	backtrack=true;
-	memoize=true;
 }
 
 // language tokens
@@ -89,7 +88,6 @@ tokens
    	FOLLOWED_BY_EXPR;
    	ARRAY_PARAM_LIST;
    	EVENT_FILTER_EXPR;
-   	EVENT_FILTER_NAME_TAG;
    	EVENT_FILTER_IDENT;
    	EVENT_FILTER_PARAM;
    	EVENT_FILTER_RANGE;
@@ -208,6 +206,24 @@ tokens
   }
 }
 
+@members {
+  protected void mismatch(IntStream input, int ttype, BitSet follow) throws RecognitionException {
+    throw new MismatchedTokenException(ttype, input);  
+  }
+
+  public void recoverFromMismatchedToken(IntStream intStream, RecognitionException recognitionException, int i, BitSet bitSet) throws RecognitionException {
+    throw recognitionException;
+  }
+
+  public void recoverFromMismatchedSet(IntStream intStream, RecognitionException recognitionException, BitSet bitSet) throws RecognitionException {
+    throw recognitionException;
+  }
+
+  protected boolean recoverFromMismatchedElement(IntStream intStream, RecognitionException recognitionException, BitSet bitSet) {
+    throw new RuntimeException("Error recovering from mismatched element: " + recognitionException.getMessage(), recognitionException);
+  }
+}
+
 startPatternExpressionRule 
 	:	patternExpression
 		EOF!
@@ -225,10 +241,10 @@ startEventPropertyRule
 	;
 
 number
-    :   ni=NUM_INT -> ^(INT_TYPE[$ni])
-    |   nl=NUM_LONG -> ^(LONG_TYPE[$nl])
-    |   nf=NUM_FLOAT -> ^(FLOAT_TYPE[$nf])
-    |   nd=NUM_DOUBLE -> ^(DOUBLE_TYPE[$nd])
+    :   ni=NUM_INT -> INT_TYPE[$ni]
+    |   nl=NUM_LONG -> LONG_TYPE[$nl]
+    |   nf=NUM_FLOAT -> FLOAT_TYPE[$nf]
+    |   nd=NUM_DOUBLE -> DOUBLE_TYPE[$nd]
     ;
 
 substitution
@@ -236,13 +252,9 @@ substitution
 	;
 	
 constant
-@init {
-	Token firstToken = input.LT(1);
-	Token prevToken = input.LT(-1);
-}
-	:  (m=MINUS | p=PLUS)? n=number
-		-> {$m != null}? ^({adaptor.create(firstToken)} number)
-		-> ^({adaptor.create(firstToken)} number)
+	:  (m=MINUS | p=PLUS)? number
+		-> {$m != null}? number // TODO
+		-> number
 	|   stringconstant
     	|   t='true' -> ^(BOOL_TYPE[$t])
     	|   f='false' -> ^(BOOL_TYPE[$f])
@@ -371,7 +383,7 @@ outerJoinIdentPair
 
 whereClause
 	:	evalOrExpression
-		-> ^(WHERE_EXPR evalOrExpression*)
+		-> ^(WHERE_EXPR evalOrExpression)
 	;
 	
 selectClause
@@ -449,6 +461,14 @@ outputLimit
 	    -> ^(MIN_LIMIT_EXPR $k? number? $i?)		
 	;	
 
+whenClause
+	: (WHEN! expression THEN! expression)
+	;
+
+elseClause
+	: (ELSE! expression)
+	;
+
 // Main expression rule
 expression
 	: caseExpression
@@ -461,24 +481,16 @@ caseExpression
 	| evalOrExpression
 	;
 
-whenClause
-	: (WHEN! expression THEN! expression)
-	;
-
-elseClause
-	: (ELSE! expression)
-	;
-
 evalOrExpression
 	: evalAndExpression (op=OR_EXPR evalAndExpression)*
 	 -> {$op != null}? ^(EVAL_OR_EXPR evalAndExpression*)
-	 ->
+	 -> evalAndExpression
 	;
 
 evalAndExpression
 	: bitWiseExpression (op=AND_EXPR bitWiseExpression)*
 	 -> {$op != null}? ^(EVAL_AND_EXPR bitWiseExpression+)
-	 ->
+	 -> bitWiseExpression
 	;
 
 bitWiseExpression
@@ -497,21 +509,22 @@ evalEqualsExpression
 	      |  isnot=IS NOT_EXPR
 	      |  sqlne=SQL_NE
 	      |  ne=NOT_EQUAL
-	     ) evalRelationalExpression -> ^(EVAL_EQUALS_EXPR evalRelationalExpression*))*	     
-	    -> {$eq != null || $is != null}? ^(EVAL_EQUALS_EXPR evalRelationalExpression*)
-	    -> {$isnot != null || $sqlne != null || $ne != null}? ^(EVAL_NOTEQUALS_EXPR evalRelationalExpression*)
-	    -> ^(EVAL_NOTEQUALS_EXPR evalRelationalExpression*)
+	     ) evalRelationalExpression)*	     
+	    -> {$eq != null || $is != null}? ^(EVAL_EQUALS_EXPR evalRelationalExpression+)
+	    -> {$isnot != null || $sqlne != null || $ne != null}? ^(EVAL_NOTEQUALS_EXPR evalRelationalExpression+)
+	    -> evalRelationalExpression+
 	;
-	
+
 evalRelationalExpression
 	: concatenationExpr 
 		( 
 			( 
 			  ( 
 			    (r=LT|r=GT|r=LE|r=GE) concatenationExpr
-			    -> ^({adaptor.create($r)} concatenationExpr+)
-			  )* 
-			  
+			    -> 
+			  )*
+			  -> {$r != null}? ^({adaptor.create($r)} concatenationExpr+)
+			  -> concatenationExpr+
 			)  
 			| (n=NOT_EXPR)? 
 			(
@@ -552,7 +565,7 @@ inSubSelectQuery
 	;
 			
 concatenationExpr
-	: additiveExpression (LOR additiveExpression (LOR additiveExpression)* -> ^(CONCAT additiveExpression+) )?
+	: additiveExpression ( LOR^ additiveExpression)*
 	;
 
 additiveExpression
@@ -601,7 +614,7 @@ subSelectFilterExpr
 		
 arrayExpression
 	: LCURLY (expression (COMMA expression)* )? RCURLY
-	  -> ^(ARRAY_EXPR expression+)
+	  -> ^(ARRAY_EXPR expression*)
 	;
 
 builtinFunc
@@ -663,19 +676,25 @@ betweenList
 //   On the atomic level an expression has filters, and observer-statements.
 //----------------------------------------------------------------------------
 patternExpression
-	:	followedByExpression
+	: followedByExpression
 	;
 	
 followedByExpression
-	:	orExpression (FOLLOWED_BY orExpression -> ^(FOLLOWED_BY_EXPR orExpression+) )*		
+	: orExpression (f=FOLLOWED_BY orExpression)*
+	    -> {$f != null}? ^(FOLLOWED_BY_EXPR orExpression+)
+	    -> orExpression
 	;
 	
 orExpression
-	:	andExpression (OR_EXPR andExpression -> ^(OR_EXPR andExpression+) )*
+	:	andExpression (o=OR_EXPR andExpression)*
+		-> {$o != null}? ^(OR_EXPR andExpression+)
+		-> andExpression
 	;
 
 andExpression
-	:	qualifyExpression (AND_EXPR qualifyExpression -> ^(AND_EXPR qualifyExpression+) )*
+	:	qualifyExpression (a=AND_EXPR qualifyExpression)*
+		-> {$a != null}? ^(AND_EXPR qualifyExpression+)
+		-> qualifyExpression
 	;
 
 qualifyExpression
@@ -764,7 +783,7 @@ arrayParameterList
 //	 Ranges such as 'property in [a,b]' are allowed and ([ and )] distinguish open/closed range endpoints
 //----------------------------------------------------------------------------
 eventFilterExpression
-    :   ( i=IDENT EQUALS ->EVENT_FILTER_NAME_TAG[$i] )?
+    :   (i=IDENT EQUALS)?
     	classIdentifier
        	(LPAREN expressionList? RPAREN)?
        	-> ^(EVENT_FILTER_EXPR $i? classIdentifier expressionList?)
@@ -861,20 +880,6 @@ millisecondPart
 // LEXER
 //----------------------------------------------------------------------------
 
-
-/*options {
-	exportVocab=Epl;      // call the vocabulary "Java"
-	testLiterals=false;    // don't automatically test for literals
-	k=4;                   // four characters of lookahead
-	charVocabulary='\u0003'..'\u7FFE';
-	// without inlining some bitset tests, couldn't do unicode;
-	// I need to make ANTLR generate smaller bitsets; see
-	// bottom of JavaLexer.java
-	codeGenBitsetTestThreshold=20;
-	caseSensitive=false;
-	caseSensitiveLiterals=false;
-}*/
-
 // Operators
 FOLLOWED_BY /*options {paraphrase = 'an followed-by \"->\"';}*/		:	'->'	;
 EQUALS /*options {paraphrase = 'an equals '='';}*/					:	'='		;
@@ -948,27 +953,8 @@ SL_COMMENT
 
 // multiple-line comments
 ML_COMMENT
-	:	'/*'
-		(	/*	'\r' '\n' can be matched in one alternative or by matching
-				'\r' in one iteration and '\n' in another.  I am trying to
-				handle any flavor of newline that comes in, but the language
-				that allows both "\r\n" and "\r" and "\n" to all be valid
-				newline is ambiguous.  Consequently, the resulting grammar
-				must be ambiguous.  I'm shutting this warning off.
-			 */
-			/*options {
-				generateAmbigWarnings=false;
-			}*/
-		
-			{ input.LA(2)!='/' }? '*'
-		|	'\r' '\n'		
-		|	'\r'			
-		|	'\n'			
-		|	~('*'|'\n'|'\r')
-		)*
-		'*/'
-		{$channel=HIDDEN;}
-	;
+    :   '/*' ( options {greedy=false;} : . )* '*/' {$channel=HIDDEN;}
+    ;
 
 // string literals
 STRING_LITERAL

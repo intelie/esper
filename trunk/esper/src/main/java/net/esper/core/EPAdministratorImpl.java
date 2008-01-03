@@ -10,13 +10,12 @@ package net.esper.core;
 import net.esper.client.*;
 import net.esper.client.soda.EPStatementObjectModel;
 import net.esper.eql.generated.EsperEPLParser;
-import net.esper.eql.generated.EsperEPLTree;
 import net.esper.eql.parse.*;
 import net.esper.eql.spec.PatternStreamSpecRaw;
 import net.esper.eql.spec.StatementSpecMapper;
 import net.esper.eql.spec.StatementSpecRaw;
 import net.esper.eql.spec.StatementSpecUnMapResult;
-import net.esper.util.DebugFacility;
+import net.esper.antlr.ASTUtil;
 import org.antlr.runtime.RecognitionException;
 import org.antlr.runtime.tree.Tree;
 import org.antlr.runtime.tree.CommonTreeNodeStream;
@@ -48,7 +47,7 @@ public class EPAdministratorImpl implements EPAdministrator
         };
         patternWalkRule = new WalkRuleSelector()
         {
-            public void invokeWalkRule(EsperEPLTree walker) throws RecognitionException
+            public void invokeWalkRule(EQLTreeWalker walker) throws RecognitionException
             {
                 walker.startPatternExpressionRule();
             }
@@ -64,7 +63,7 @@ public class EPAdministratorImpl implements EPAdministrator
         };
         eqlWalkRule = new WalkRuleSelector()
         {
-            public void invokeWalkRule(EsperEPLTree walker) throws RecognitionException
+            public void invokeWalkRule(EQLTreeWalker walker) throws RecognitionException
             {
                 walker.startEPLExpressionRule();
             }
@@ -266,7 +265,7 @@ public class EPAdministratorImpl implements EPAdministrator
 
         if (log.isDebugEnabled())
         {
-            DebugFacility.dumpAST(ast);
+            ASTUtil.dumpAST(ast);
         }
 
         // Specifies the statement
@@ -297,7 +296,7 @@ public class EPAdministratorImpl implements EPAdministrator
 
         if (log.isDebugEnabled())
         {
-            DebugFacility.dumpAST(ast);
+            ASTUtil.dumpAST(ast);
         }
 
         if (walker.getStatementSpec().getStreamSpecs().size() > 1)

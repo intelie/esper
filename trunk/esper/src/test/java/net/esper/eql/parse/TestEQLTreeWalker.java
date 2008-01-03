@@ -31,6 +31,13 @@ public class TestEQLTreeWalker extends TestCase
                     CLASSNAME + "(string='a').win:length(10).std:lastevent() as win1," +
                     CLASSNAME + "(string='b').win:length(10).std:lastevent() as win2 ";
 
+    // TODO: remove
+    public void testDisplay() throws Exception
+    {
+        String text = "select intPrimitive from " + SupportBean.class.getName() + "().win:lenght(10L) as stream0";
+        EQLTreeWalker walker = parseAndWalkEQL(text);
+    }
+
     public void testWalkJoinMethodStatement() throws Exception
     {
         String className = SupportBean.class.getName();

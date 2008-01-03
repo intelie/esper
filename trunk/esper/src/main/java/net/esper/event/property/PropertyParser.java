@@ -1,13 +1,13 @@
 package net.esper.event.property;
 
 import net.esper.antlr.NoCaseSensitiveStream;
+import net.esper.antlr.ASTUtil;
 import net.esper.eql.generated.EsperEPLLexer;
 import net.esper.eql.generated.EsperEPLParser;
 import net.esper.event.BeanEventTypeFactory;
 import net.esper.event.PropertyAccessException;
 import net.esper.type.IntValue;
 import net.esper.type.StringValue;
-import net.esper.util.DebugFacility;
 import org.antlr.runtime.CharStream;
 import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.RecognitionException;
@@ -64,7 +64,7 @@ public class PropertyParser
 
         if (log.isDebugEnabled())
         {
-            DebugFacility.dumpAST(tree);
+            ASTUtil.dumpAST(tree);
         }
 
         if (tree.getChildCount() == 1)
