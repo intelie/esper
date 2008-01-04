@@ -165,13 +165,13 @@ public class TestSubselectUnfiltered extends TestCase {
                    "Error starting view: Property named 'dummy' is not valid in any stream [select (select dummy from S1.std:lastevent()) as idS1 from S0]");
 
         tryInvalid("select (select id, id from S1) as idS1 from S0",
-                   "expecting \"from\", found ',' near line 1, column 18 [select (select id, id from S1) as idS1 from S0]");
+                   "Incorrect syntax near ',' expecting 'from' but found a comma ',' at line 1 column 17, please check the subquery within the select clause [select (select id, id from S1) as idS1 from S0]");
 
         tryInvalid("select (select id from S1.std:lastevent() group by id) as idS1 from S0",
-                   "unexpected token: group near line 1, column 43 (tip: check for reserved or misspelled keywords in the online grammar documentation near the token 'group') [select (select id from S1.std:lastevent() group by id) as idS1 from S0]");
+                   "Incorrect syntax near 'group' expecting a closing parenthesis ')' but found 'group' at line 1 column 42, please check the subquery within the select clause [select (select id from S1.std:lastevent() group by id) as idS1 from S0]");
         
         tryInvalid("select (select (select id from S1.std:lastevent()) id from S1.std:lastevent()) as idS1 from S0",
-                   "unexpected token: id near line 1, column 52 (tip: check for reserved or misspelled keywords in the online grammar documentation near the token 'id') [select (select (select id from S1.std:lastevent()) id from S1.std:lastevent()) as idS1 from S0]");
+                   "Incorrect syntax near 'id' at line 1 column 51, please check the subquery within the select clause [select (select (select id from S1.std:lastevent()) id from S1.std:lastevent()) as idS1 from S0]");
 
         tryInvalid("select (select sum(id) from S1.std:lastevent()) as idS1 from S0",
                    "Error starting view: Aggregation functions are not supported within subqueries, consider using insert-into instead [select (select sum(id) from S1.std:lastevent()) as idS1 from S0]");

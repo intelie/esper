@@ -27,10 +27,10 @@ public class TestInvalidPattern extends TestCase
         EPStatement stmt = epService.getEPAdministrator().createEQL("select * from " + SupportBean.class.getName(), null);
     }
 
-    public void testSyntaxException()
+    public void testInvalid()
     {
         String exceptionText = getSyntaxExceptionPattern(EVENT_NUM + "(doublePrimitive='ss'");
-        assertEquals("end of input when expecting a closing parenthesis ')' near line 1, column 58 [net.esper.support.bean.SupportBean_N(doublePrimitive='ss']", exceptionText);
+        assertEquals("Incorrect syntax near ''ss'' expecting a closing parenthesis ')' but found end of input at line 1 column 53, please check the filter specification within the pattern expression [net.esper.support.bean.SupportBean_N(doublePrimitive='ss']", exceptionText);
     }
 
     public void testStatementException() throws Exception

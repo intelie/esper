@@ -1,10 +1,9 @@
 package net.esper.type;
 
-import net.esper.type.IntValue;
-
-import java.util.*;
-import java.text.SimpleDateFormat;
 import java.io.StringWriter;
+import java.util.Calendar;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Hold parameters for timer:at.
@@ -44,12 +43,13 @@ public class CronParameter implements NumberSetParameter {
      * @param cronOperator is the operator as text
      * @param day is the day text
      */
-    public CronParameter(String cronOperator, String day) {
+    public CronParameter(String cronOperator, String day, long engineTime) {
         this.operator = assignOperator(cronOperator);
         if (day != null) {
             this.day = IntValue.parseString(day);
-        }
+        }        
         calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(engineTime);
         calendar.setFirstDayOfWeek(FIRST_DAY_OF_WEEK);
     }
 
@@ -204,21 +204,11 @@ public class CronParameter implements NumberSetParameter {
         return null;
     }
 
-    private void printTime() {
-     Date date = calendar.getTime();
-     String aMonth = new SimpleDateFormat("MMM").format(date);
-     String aDay = new SimpleDateFormat("EEE").format(date);
-     System.out.println("This day: "+ aDay + " of " + aMonth + " " + calendar.get(Calendar.YEAR));
-    }
-
     private void setTime() {
-        Date date = new Date();
-        calendar.setTime(date);
         calendar.set(Calendar.DAY_OF_MONTH, 1);
         if (month != null) {
           calendar.set(Calendar.MONTH, month);
         }
-        //printTime();
     }
 
 }

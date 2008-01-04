@@ -246,7 +246,7 @@ public class EPAdministratorImpl implements EPAdministrator
         Tree ast = ParseHelper.parse(eqlStatement, eqlParseRule);
         CommonTreeNodeStream nodes = new CommonTreeNodeStream(ast);
 
-        EQLTreeWalker walker = new EQLTreeWalker(nodes, services.getEngineImportService(), services.getVariableService());
+        EQLTreeWalker walker = new EQLTreeWalker(nodes, services.getEngineImportService(), services.getVariableService(), services.getSchedulingService().getTime());
 
         try
         {
@@ -256,6 +256,10 @@ public class EPAdministratorImpl implements EPAdministrator
         {
             log.error(".createEQL Error validating expression", ex);
             throw new EPStatementException(ex.getMessage(), eqlStatement);
+        }
+        catch (EPStatementSyntaxException ex)
+        {
+            throw ex;
         }
         catch (RuntimeException ex)
         {
@@ -277,7 +281,7 @@ public class EPAdministratorImpl implements EPAdministrator
         // Parse and walk
         Tree ast = ParseHelper.parse(expression, patternParseRule);
         CommonTreeNodeStream nodes = new CommonTreeNodeStream(ast);
-        EQLTreeWalker walker = new EQLTreeWalker(nodes, services.getEngineImportService(), services.getVariableService());
+        EQLTreeWalker walker = new EQLTreeWalker(nodes, services.getEngineImportService(), services.getVariableService(), services.getSchedulingService().getTime());
 
         try
         {
@@ -287,6 +291,10 @@ public class EPAdministratorImpl implements EPAdministrator
         {
             log.debug(".createPattern Error validating expression", ex);
             throw new EPStatementException(ex.getMessage(), expression);
+        }
+        catch (EPStatementSyntaxException ex)
+        {
+            throw ex;
         }
         catch (RuntimeException ex)
         {

@@ -8,9 +8,14 @@
 package net.esper.eql.parse;
 
 import net.esper.client.EPStatementException;
+import net.esper.eql.generated.EsperEPLParser;
+import net.esper.eql.generated.EsperEPLTree;
+import org.antlr.runtime.MismatchedTokenException;
 import org.antlr.runtime.NoViableAltException;
 import org.antlr.runtime.RecognitionException;
 import org.antlr.runtime.Token;
+
+import java.util.Stack;
 
 /**
  * This exception is thrown to indicate a problem in statement creation.
@@ -33,6 +38,145 @@ public class EPStatementSyntaxException extends EPStatementException
      * @param expression is the expression text
      * @return syntax exception
      */
+    public static EPStatementSyntaxException convert(RecognitionException e, String expression, EsperEPLParser parser)
+    {
+        Token t;
+        if (e.index < parser.getTokenStream().size())
+        {
+            t = parser.getTokenStream().get(e.index);
+        }
+        else
+        {
+            t = parser.getTokenStream().get(parser.getTokenStream().size() - 1);
+        }                
+        String positionInfo = getPositionInfo(t);
+        String token = "'" + t.getText() + "'";
+
+        Stack stack = parser.getParaphrases();
+        String check = "";
+        if (stack.size() > 0)
+        {
+            String delimiter = "";
+            StringBuilder checkList = new StringBuilder();
+            checkList.append(", please check the ");
+            while(stack.size() != 0)
+            {
+                checkList.append(delimiter);
+                checkList.append(stack.pop());
+                delimiter = " within the ";
+            }
+            check = checkList.toString();
+        }
+
+        String message = "Incorrect syntax near " + token + positionInfo + check;
+        if (e instanceof NoViableAltException)
+        {
+            NoViableAltException nvae = (NoViableAltException) e;
+            if (nvae.token.getType() == -1)
+            {
+                message = "Unexpected end of input near " + token + positionInfo + check;
+            }
+            else
+            {
+                if (parser.getParserTokenParaphrases().get(nvae.token.getType()) != null)
+                {
+                    message = "Incorrect syntax near " + token + " (a reserved keyword)" + positionInfo + check;
+                }
+            }
+        }
+
+        if (e instanceof MismatchedTokenException)
+        {
+            MismatchedTokenException mismatched = (MismatchedTokenException) e;
+
+            String expected = "end of input";
+            if ((mismatched.expecting >= 0) && (mismatched.expecting < parser.getTokenNames().length))
+            {
+                expected = parser.getTokenNames()[mismatched.expecting];
+            }
+            if (parser.getLexerTokenParaphrases().get(mismatched.expecting) != null)
+            {
+                expected = parser.getLexerTokenParaphrases().get(mismatched.expecting);
+            }
+            if (parser.getParserTokenParaphrases().get(mismatched.expecting) != null)
+            {
+                expected = parser.getParserTokenParaphrases().get(mismatched.expecting);
+            }
+
+            String unexpected;
+            if ((mismatched.getUnexpectedType() < 0) || (mismatched.getUnexpectedType() >= parser.getTokenNames().length))
+            {
+                unexpected = "end of input";
+            }
+            else
+            {
+                unexpected = parser.getTokenNames()[mismatched.getUnexpectedType()];
+            }
+            if (parser.getLexerTokenParaphrases().get(mismatched.getUnexpectedType()) != null)
+            {
+                unexpected = parser.getLexerTokenParaphrases().get(mismatched.getUnexpectedType());
+            }
+            if (parser.getParserTokenParaphrases().get(mismatched.getUnexpectedType()) != null)
+            {
+                unexpected = parser.getParserTokenParaphrases().get(mismatched.getUnexpectedType());
+            }
+
+            String expecting = " expecting " + expected.trim() + " but found " + unexpected.trim();
+            message = "Incorrect syntax near " + token + expecting + positionInfo + check;
+        }
+
+        return new EPStatementSyntaxException(message, expression);
+    }
+
+    /**
+     * Converts from a syntax error to a nice statement exception.
+     * @param e is the syntax error
+     * @param expression is the expression text
+     * @return syntax exception
+     */
+    public static EPStatementSyntaxException convert(RecognitionException e, String expression, EsperEPLTree treeWalker)
+    {
+        String positionInfo = getPositionInfo(e.token);
+        String tokenName = "end of input";
+        if ((e.token != null) && (e.token.getType() >= 0) && (e.token.getType() < treeWalker.getTokenNames().length))
+        {
+            tokenName = treeWalker.getTokenNames()[e.token.getType()];
+        }
+
+        String message = "Unexpected error processing statement near token " + tokenName + positionInfo;
+
+        if (e instanceof MismatchedTokenException)
+        {
+            MismatchedTokenException mismatched = (MismatchedTokenException) e;
+
+            String expected = "end of input";
+            if ((mismatched.expecting >= 0) && (mismatched.expecting < treeWalker.getTokenNames().length))
+            {
+                expected = treeWalker.getTokenNames()[mismatched.expecting];
+            }
+
+            String unexpected;
+            if ((mismatched.getUnexpectedType() < 0) || (mismatched.getUnexpectedType() >= treeWalker.getTokenNames().length))
+            {
+                unexpected = "end of input";
+            }
+            else
+            {
+                unexpected = treeWalker.getTokenNames()[mismatched.getUnexpectedType()];
+            }
+
+            String expecting = " expecting " + expected.trim() + " but found " + unexpected.trim();
+            message = "Unexpected error processing statement near token " + tokenName + expecting + positionInfo;
+        }
+
+        return new EPStatementSyntaxException(message, expression);
+    }
+
+    /**
+     * Converts from a syntax error to a nice statement exception.
+     * @param e is the syntax error
+     * @param expression is the expression text
+     * @return syntax exception
     public static EPStatementSyntaxException convert(RecognitionException e, String expression)
     {
         String tip = "";
@@ -51,6 +195,7 @@ public class EPStatementSyntaxException extends EPStatementException
         }
         return new EPStatementSyntaxException(e.getMessage() + getPositionInfo(e) + tip, expression);
     }
+     */
 
     /**
      * Converts end-of-input error from a syntax error to a nice statement exception.
@@ -58,32 +203,31 @@ public class EPStatementSyntaxException extends EPStatementException
      * @param expression is the expression text
      * @param tokenNameExpected is the name or paraphrase of the expected token
      * @return syntax exception
-     */
     public static EPStatementSyntaxException convertEndOfInput(RecognitionException e, String tokenNameExpected, String expression)
     {
         return new EPStatementSyntaxException("end of input when expecting " + tokenNameExpected + getPositionInfo(e), expression);
     }
+     */
 
     /**
      * Converts end-of-input error from a syntax error to a nice statement exception.
      * @param e is the syntax error
      * @param expression is the expression text
      * @return syntax exception
-     */
     public static EPStatementSyntaxException convertEndOfInput(RecognitionException e, String expression)
     {
         return new EPStatementSyntaxException("end of input" + getPositionInfo(e), expression);
     }
+     */
 
     /**
      * Returns the position information string for a parser exception.
-     * @param e is the parser exception
      * @return is a string with line and column information
      */
-    public static String getPositionInfo(RecognitionException e)
+    private static String getPositionInfo(Token t)
     {
-        return e.line > 0 && e.charPositionInLine > 0
-                ? " near line " + e.line + ", column " + e.charPositionInLine
+        return t.getLine() > 0 && t.getCharPositionInLine() > 0
+                ? " at line " + t.getLine() + " column " + t.getCharPositionInLine()
                 : "";
     }
 }

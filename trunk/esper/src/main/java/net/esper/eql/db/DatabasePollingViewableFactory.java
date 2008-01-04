@@ -325,33 +325,35 @@ public class DatabasePollingViewableFactory
 
         EsperEPLLexer lex = new EsperEPLLexer(input);
         CommonTokenStream tokens = new CommonTokenStream(lex);
+        List tokenList = tokens.getTokens();
 
-        for (int i = 0; i < tokens.size(); i++)
+        for (int i = 0; i < tokenList.size(); i++)
         {
-            Token token = tokens.get(i);
+            Token token = (Token) tokenList.get(i);
             if ((token == null) || token.getText() == null)
             {
                 break;
             }
-            if (token.getText().trim().equals("where"))
+            String text = token.getText().toLowerCase().trim();
+            if (text.equals("where"))
             {
-                whereIndex = token.getCharPositionInLine();
+                whereIndex = token.getCharPositionInLine() + 1;
             }
-            if (token.getText().trim().equals("group"))
+            if (text.equals("group"))
             {
-                groupbyIndex = token.getCharPositionInLine();
+                groupbyIndex = token.getCharPositionInLine() + 1;
             }
-            if (token.getText().trim().equals("having"))
+            if (text.equals("having"))
             {
-                havingIndex = token.getCharPositionInLine();
+                havingIndex = token.getCharPositionInLine() + 1;
             }
-            if (token.getText().trim().equals("order"))
+            if (text.equals("order"))
             {
-                orderByIndex = token.getCharPositionInLine();
+                orderByIndex = token.getCharPositionInLine() + 1;
             }
-            if (token.getText().trim().equals("union"))
+            if (text.equals("union"))
             {
-                unionIndexes.add(token.getCharPositionInLine());
+                unionIndexes.add(token.getCharPositionInLine() + 1);
             }
         }
 

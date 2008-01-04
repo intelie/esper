@@ -5,6 +5,7 @@ import net.esper.eql.generated.EsperEPLParser;
 import net.esper.eql.spec.ViewSpec;
 import org.antlr.runtime.tree.Tree;
 import org.antlr.runtime.tree.CommonTree;
+import org.antlr.runtime.CommonToken;
 
 public class TestASTViewSpecHelper extends TestCase
 {
@@ -15,7 +16,7 @@ public class TestASTViewSpecHelper extends TestCase
         ast.addChild(makeSingleAst(EsperEPLParser.IDENT, "name"));
         ast.addChild(makeSingleAst(EsperEPLParser.NUM_INT, "10"));
 
-        ViewSpec spec = ASTViewSpecHelper.buildSpec(ast);
+        ViewSpec spec = ASTViewSpecHelper.buildSpec(ast, System.currentTimeMillis());
 
         assertEquals("namespace", spec.getObjectNamespace());
         assertEquals("name", spec.getObjectName());
@@ -26,8 +27,7 @@ public class TestASTViewSpecHelper extends TestCase
     private Tree makeSingleAst(int type, String value)
     {
         CommonTree ast = new CommonTree();
-        ast.token.setType(type);
-        ast.token.setText(value);
+        ast.token = new CommonToken(type, value);
         return ast;
     }
 }

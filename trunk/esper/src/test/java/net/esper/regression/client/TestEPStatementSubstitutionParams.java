@@ -343,14 +343,14 @@ public class TestEPStatementSubstitutionParams extends TestCase
 
     public void testInvalidViewParameter()
     {
-        String stmt = "select * from " + SupportBean.class.getName() + "win:length(?)";
+        String stmt = "select * from " + SupportBean.class.getName() + ".win:length(?)";
         try
         {
             epService.getEPAdministrator().prepareEQL(stmt);
         }
         catch (EPException ex)
         {
-            assertEquals("unexpected token: ? near line 1, column 60 (tip: check for reserved or misspelled keywords in the online grammar documentation near the token '?') [select * from net.esper.support.bean.SupportBeanwin:length(?)]", ex.getMessage());
+            assertEquals("Incorrect syntax near '?' expecting a closing parenthesis ')' but found a questionmark '?' at line 1 column 60, please check the view specifications within the from clause [select * from net.esper.support.bean.SupportBean.win:length(?)]", ex.getMessage());
         }
     }
 }

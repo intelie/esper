@@ -27,10 +27,10 @@ public class TestInvalidView extends TestCase
         epService.initialize();
     }
 
-    public void testSyntaxException()
+    public void testInvalidSyntax()
     {
         String exceptionText = getSyntaxExceptionView("select * * from " + EVENT_NUM);
-        assertEquals("expecting \"from\", found '*' near line 1, column 10 [select * * from net.esper.support.bean.SupportBean_N]", exceptionText);
+        assertEquals("Incorrect syntax near '*' expecting 'from' but found a star '*' at line 1 column 9 [select * * from net.esper.support.bean.SupportBean_N]", exceptionText);
     }
 
     public void testStatementException() throws Exception

@@ -31,7 +31,7 @@ public class TestEventPatternParser extends TestCase
         assertIsInvalid("a(a=2 3)");
         assertIsInvalid("a(a=2a)");
         assertIsInvalid("a(a=\"2)");
-        assertIsInvalid("a(a=1EE5)");
+        assertIsInvalid("a(a=1x5)");
         assertIsInvalid("a(a=)");
         assertIsInvalid("a(=2)");
         assertIsInvalid("a(a=2b=3)");

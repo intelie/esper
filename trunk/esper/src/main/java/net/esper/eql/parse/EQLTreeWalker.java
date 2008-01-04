@@ -50,17 +50,19 @@ public class EQLTreeWalker extends EsperEPLTree
 
     private final EngineImportService engineImportService;
     private final VariableService variableService;
+    private final long engineTime;
 
     /**
      * Ctor.
      * @param engineImportService is required to resolve lib-calls into static methods or configured aggregation functions
      * @param variableService for variable access
      */
-    public EQLTreeWalker(TreeNodeStream input, EngineImportService engineImportService, VariableService variableService)
+    public EQLTreeWalker(TreeNodeStream input, EngineImportService engineImportService, VariableService variableService, long engineTime)
     {
         super(input);
         this.engineImportService = engineImportService;
         this.variableService = variableService;
+        this.engineTime = engineTime;
         
         statementSpec = new StatementSpecRaw();
         statementSpecStack = new Stack<StatementSpecRaw>();
@@ -769,7 +771,7 @@ public class EQLTreeWalker extends EsperEPLTree
     private void leaveView(Tree node) throws ASTWalkException
     {
         log.debug(".leaveView");
-        ViewSpec spec = ASTViewSpecHelper.buildSpec(node);
+        ViewSpec spec = ASTViewSpecHelper.buildSpec(node, engineTime);
         viewSpecs.add(spec);
     }
 
@@ -1510,7 +1512,7 @@ public class EQLTreeWalker extends EsperEPLTree
         for (int i = 3; i < node.getChildCount(); i++)
         {
         	Tree childNode = node.getChild(i);
-            Object object = ASTParameterHelper.makeParameter(childNode);
+            Object object = ASTParameterHelper.makeParameter(childNode, engineTime);
             objectParams.add(object);
         }
 
@@ -1531,7 +1533,7 @@ public class EQLTreeWalker extends EsperEPLTree
             throw new ASTWalkException("Unexpected AST tree contains zero child element for case node");
         }
         Tree childNode = node.getChild(0);
-        if (astExprNodeMap.size() == 1) // TODO: took out WHEN check here
+        if (astExprNodeMap.size() == 1)
         {
             throw new ASTWalkException("AST tree doesn not contain at least when node for case node");
         }
@@ -1552,7 +1554,7 @@ public class EQLTreeWalker extends EsperEPLTree
         for (int i = 2; i < node.getChildCount(); i++)
         {
         	Tree child = node.getChild(i);
-            Object object = ASTParameterHelper.makeParameter(child);
+            Object object = ASTParameterHelper.makeParameter(child, engineTime);
             objectParams.add(object);
         }
 

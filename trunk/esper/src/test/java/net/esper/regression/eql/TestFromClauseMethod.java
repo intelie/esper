@@ -175,6 +175,9 @@ public class TestFromClauseMethod extends TestCase
 
     public void testInvalid()
     {
+        tryInvalid("select * from SupportBean, method:.abc where 1=2",
+                   "Incorrect syntax near '.' expecting an identifier but found a dot '.' at line 1 column 34, please check the method invocation join within the from clause [select * from SupportBean, method:.abc where 1=2]");
+
         tryInvalid("select * from SupportBean, method:net.esper.support.eql.SupportStaticMethodLib.fetchArrayGen()",
                    "Error starting view: Method footprint does not match the number or type of expression parameters, expecting no parameters in method: Could not find static method named 'fetchArrayGen' in class 'net.esper.support.eql.SupportStaticMethodLib'  [select * from SupportBean, method:net.esper.support.eql.SupportStaticMethodLib.fetchArrayGen()]");
 
@@ -185,10 +188,7 @@ public class TestFromClauseMethod extends TestCase
                    "Error starting view: Invalid return type for static method 'sleep' of class 'net.esper.support.eql.SupportStaticMethodLib', expecting a Java class [select * from SupportBean, method:net.esper.support.eql.SupportStaticMethodLib.sleep(100) where 1=2]");
 
         tryInvalid("select * from SupportBean, method:AClass. where 1=2",
-                   "expecting an identifier, found 'where' near line 1, column 43 [select * from SupportBean, method:AClass. where 1=2]");
-
-        tryInvalid("select * from SupportBean, method:.abc where 1=2",
-                   "expecting an identifier, found '.' near line 1, column 35 [select * from SupportBean, method:.abc where 1=2]");
+                   "Incorrect syntax near 'where' expecting an identifier but found 'where' at line 1 column 42, please check the view specifications within the from clause [select * from SupportBean, method:AClass. where 1=2]");
 
         tryInvalid("select * from SupportBean, method:Dummy.abc where 1=2",
                    "Error starting view: Could not load class by name 'Dummy'  [select * from SupportBean, method:Dummy.abc where 1=2]");

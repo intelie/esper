@@ -29,12 +29,12 @@ public class ASTParameterHelper
      * @return object value
      * @throws ASTWalkException is thrown to indicate a parse error
      */
-    public static Object makeParameter(Tree parameterNode) throws ASTWalkException
+    public static Object makeParameter(Tree parameterNode, long engineTime) throws ASTWalkException
     {
-        return parseConstant(parameterNode);
+        return parseConstant(parameterNode, engineTime);
     }
 
-    private static Object parseConstant(Tree node) throws ASTWalkException
+    private static Object parseConstant(Tree node, long engineTime) throws ASTWalkException
     {
         if (log.isDebugEnabled())
         {
@@ -55,23 +55,23 @@ public class ASTParameterHelper
             case EsperEPLParser.LAST:
             case EsperEPLParser.LW:
             case EsperEPLParser.WEEKDAY_OPERATOR:
-            case EsperEPLParser.LAST_OPERATOR:             return makeCronParameter(node);
+            case EsperEPLParser.LAST_OPERATOR:             return makeCronParameter(node, engineTime);
             case EsperEPLParser.STAR:                      return new WildcardParameter();
-            case EsperEPLParser.NUMERIC_PARAM_LIST:        return makeList(node);
-            case EsperEPLParser.ARRAY_PARAM_LIST:          return makeArray(node);
-            case EsperEPLParser.TIME_PERIOD:               return makeTimePeriod(node);
+            case EsperEPLParser.NUMERIC_PARAM_LIST:        return makeList(node, engineTime);
+            case EsperEPLParser.ARRAY_PARAM_LIST:          return makeArray(node, engineTime);
+            case EsperEPLParser.TIME_PERIOD:               return makeTimePeriod(node, engineTime);
             default:
                 throw new ASTWalkException("Unexpected constant of type " + node.getType() + " encountered");
         }
     }
 
-    private static TimePeriodParameter makeTimePeriod(Tree node)
+    private static TimePeriodParameter makeTimePeriod(Tree node, long engineTime)
     {
         double result = 0;
         for (int i = 0; i < node.getChildCount(); i++)
         {
         	Tree child = node.getChild(i);
-            Number numValue = (Number) parseConstant(child.getChild(0));
+            Number numValue = (Number) parseConstant(child.getChild(0), engineTime);
             double partValue = numValue.doubleValue();
 
             switch (child.getType())
@@ -99,14 +99,14 @@ public class ASTParameterHelper
         return new TimePeriodParameter(result);
     }
 
-    private static Object makeList(Tree node) throws ASTWalkException
+    private static Object makeList(Tree node, long engineTime) throws ASTWalkException
     {
         ListParameter list = new ListParameter();
 
         for (int i = 0; i < node.getChildCount(); i++)
         {
         	Tree child = node.getChild(i);
-            Object parsedChild = parseConstant(child);
+            Object parsedChild = parseConstant(child, engineTime);
 
             if (parsedChild instanceof Integer)
             {
@@ -134,16 +134,16 @@ public class ASTParameterHelper
         return new RangeParameter(low, high);
     }
 
-    private static Object makeCronParameter(Tree node)
+    private static Object makeCronParameter(Tree node, long engineTime)
     {
        if (node.getChild(0) == null) {
-           return new CronParameter(node.getText(), null);
+           return new CronParameter(node.getText(), null, engineTime);
        } else {
-        return new CronParameter(node.getText(), node.getChild(0).getText());
+        return new CronParameter(node.getText(), node.getChild(0).getText(), engineTime);
        }
     }
 
-    private static Object makeArray(Tree node) throws ASTWalkException
+    private static Object makeArray(Tree node, long engineTime) throws ASTWalkException
     {
         // Determine the distinct node types in the AST
         Set<Integer> nodeTypes = new HashSet<Integer>();
@@ -164,11 +164,11 @@ public class ASTParameterHelper
         }
         else
         {
-            return makeNonUniform(node);
+            return makeNonUniform(node, engineTime);
         }
     }
 
-    private static Object makeNonUniform(Tree node) throws ASTWalkException
+    private static Object makeNonUniform(Tree node, long engineTime) throws ASTWalkException
     {
         int count = node.getChildCount();
         Object[] result = new Object[count];
@@ -176,7 +176,7 @@ public class ASTParameterHelper
         for (int i = 0; i < node.getChildCount(); i++)
         {
         	Tree child = node.getChild(i);
-            result[i] = parseConstant(child);
+            result[i] = parseConstant(child, engineTime);
         }
 
         return result;

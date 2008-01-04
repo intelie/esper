@@ -9,6 +9,7 @@ package net.esper.eql.parse;
 
 import java.io.StringReader;
 import java.io.IOException;
+import java.util.Stack;
 
 import net.esper.client.EPException;
 import net.esper.eql.generated.EsperEPLParser;
@@ -51,9 +52,22 @@ public class ParseHelper
                 ASTUtil.dumpAST(ast);
             }
         }
+        catch (RuntimeException e)
+        {
+            log.info("Error walking statement [" + expression + "]", e);
+            if (e.getCause() instanceof RecognitionException)
+            {
+                throw EPStatementSyntaxException.convert((RecognitionException)e.getCause(), expression, walker);
+            }
+            else
+            {
+                throw e;
+            }
+        }
         catch (RecognitionException e)
         {
-            throw EPStatementSyntaxException.convert(e, expression);
+            log.info("Error walking statement [" + expression + "]", e);
+            throw EPStatementSyntaxException.convert(e, expression, walker);
         }
     }
 
@@ -86,37 +100,27 @@ public class ParseHelper
         EsperEPLParser parser = new EsperEPLParser(tokens);
         EsperEPLParser.startEventPropertyRule_return r;
 
-        Tree tree = null;
+        Tree tree;
         try
         {
             tree = parseRuleSelector.invokeParseRule(parser);
         }
-        catch(MismatchedTokenException mte)
+        catch (RuntimeException e)
         {
-            if(mte.token.getText() == null)
+            log.info("Error parsing statement [" + expression + "]", e);
+            if (e.getCause() instanceof RecognitionException)
             {
-                // TODO: passing null for tokens
-                throw EPStatementSyntaxException.convertEndOfInput(mte, null, expression);
+                throw EPStatementSyntaxException.convert((RecognitionException)e.getCause(), expression, parser);
             }
             else
             {
-                throw EPStatementSyntaxException.convert(mte, expression);
+                throw e;
             }
         }
-        catch (NoViableAltException e)
+        catch (RecognitionException ex)
         {
-            if(e.token.getText() == null)
-            {
-                throw EPStatementSyntaxException.convertEndOfInput(e, expression);
-            }
-            else
-            {
-                throw EPStatementSyntaxException.convert(e, expression);
-            }
-        }
-        catch (RecognitionException e)
-        {
-            throw EPStatementSyntaxException.convert(e, expression);
+            log.info("Error parsing statement [" + expression + "]", ex);
+            throw EPStatementSyntaxException.convert(ex, expression, parser);
         }
 
         if (log.isDebugEnabled())

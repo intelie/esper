@@ -39,11 +39,16 @@ options
   }
 
   protected boolean recoverFromMismatchedElement(IntStream intStream, RecognitionException recognitionException, BitSet bitSet) {
-    throw new RuntimeException("Error recovering from mismatched element: " + recognitionException.getMessage(), recognitionException);
+    throw new RuntimeException("Error recovering from mismatched element", recognitionException);
   }
   
   public void recover(org.antlr.runtime.IntStream intStream, org.antlr.runtime.RecognitionException recognitionException) {
-    throw new RuntimeException("Error recovering from recognition exception: " + recognitionException.getMessage(), recognitionException);
+    throw new RuntimeException("Error recovering from recognition exception", recognitionException);
+  }
+}
+@rulecatch {
+  catch (RecognitionException rex) {
+    throw rex;
   }
 }
 
@@ -294,7 +299,7 @@ builtinFunc
 	|	^(f=AVEDEV (DISTINCT)? valueExpr) { leaveNode($f); }
 	| 	^(f=COALESCE valueExpr valueExpr (valueExpr)* ) { leaveNode($f); }
 	| 	^(f=PREVIOUS valueExpr eventPropertyExpr) { leaveNode($f); }
-	| 	^(f=PRIOR c=NUM_INT eventPropertyExpr) {leaveNode($c);}
+	| 	^(f=PRIOR c=NUM_INT eventPropertyExpr) {leaveNode($c); leaveNode($f);}
 	| 	^(f=INSTANCEOF valueExpr CLASS_IDENT (CLASS_IDENT)*) { leaveNode($f); }
 	| 	^(f=CAST valueExpr CLASS_IDENT) { leaveNode($f); }
 	| 	^(f=EXISTS eventPropertyExpr) { leaveNode($f); }

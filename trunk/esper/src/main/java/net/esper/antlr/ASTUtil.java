@@ -9,6 +9,7 @@ import org.apache.commons.logging.LogFactory;
 import java.io.StringWriter;
 import java.io.PrintWriter;
 import java.util.Arrays;
+import java.util.List;
 
 public class ASTUtil
 {
@@ -39,6 +40,11 @@ public class ASTUtil
         char[] identChars = new char[ident];
         Arrays.fill(identChars, ' ');
 
+        if (ast == null)
+        {
+            renderNode(identChars, ast, printer);
+            return;
+        }
         for (int i = 0; i < ast.getChildCount(); i++)
         {
             Tree node = ast.getChild(i);
@@ -55,11 +61,13 @@ public class ASTUtil
     {
         if (log.isDebugEnabled())
         {
+            List tokenList = tokens.getTokens();
+
             StringWriter writer = new StringWriter();
             PrintWriter printer = new PrintWriter(writer);
             for (int i = 0; i < tokens.size(); i++)
             {
-                Token t = tokens.get(i);
+                Token t = (Token) tokenList.get(i);
                 String text = t.getText();
                 if (text.trim().length() == 0)
                 {
@@ -82,10 +90,17 @@ public class ASTUtil
     private static void renderNode(char[] ident, Tree node, PrintWriter printer)
     {
         printer.print(ident);
-        printer.print(node.getText());
-        printer.print(" [");
-        printer.print(node.getType());
-        printer.print("]");
+        if (node == null)
+        {
+            printer.print("NULL NODE");
+        }
+        else
+        {
+            printer.print(node.getText());
+            printer.print(" [");
+            printer.print(node.getType());
+            printer.print("]");
+        }
         printer.println();
     }
 

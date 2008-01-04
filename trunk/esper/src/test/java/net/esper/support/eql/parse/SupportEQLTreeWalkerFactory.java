@@ -13,7 +13,7 @@ public class SupportEQLTreeWalkerFactory
 {
     public static EQLTreeWalker makeWalker(Tree tree, EngineImportService engineImportService, VariableService variableService)
     {
-        return new EQLTreeWalker(new CommonTreeNodeStream(tree), engineImportService, variableService);
+        return new EQLTreeWalker(new CommonTreeNodeStream(tree), engineImportService, variableService, System.currentTimeMillis());
     }
 
     public static EQLTreeWalker makeWalker(Tree tree)

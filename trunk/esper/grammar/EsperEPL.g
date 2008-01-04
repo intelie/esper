@@ -196,17 +196,161 @@ tokens
     throw new MismatchedTokenException(ttype, input);  
   }
 
-  public void recoverFromMismatchedSet(IntStream input, RecognitionException e, BitSet follow) throws RecognitionException {
-    throw e;
+  public void recoverFromMismatchedToken(IntStream intStream, RecognitionException recognitionException, int i, BitSet bitSet) throws RecognitionException {
+    throw recognitionException;
   }
-}
-@rulecatch {
-  catch (RecognitionException recoge) {
-    throw recoge;
-  }
-}
 
+  public void recoverFromMismatchedSet(IntStream intStream, RecognitionException recognitionException, BitSet bitSet) throws RecognitionException {
+    throw recognitionException;
+  }
+
+  protected boolean recoverFromMismatchedElement(IntStream intStream, RecognitionException recognitionException, BitSet bitSet) {
+    throw new RuntimeException("Error recovering from mismatched element", recognitionException);
+  }
+}
 @members {
+  // provide nice error messages
+  private Stack<String> paraphrases = new Stack<String>();
+  private Map<Integer, String> lexerTokenParaphases = new HashMap<Integer, String>();
+  private Map<Integer, String> parserTokenParaphases = new HashMap<Integer, String>();
+  
+  public Stack getParaphrases() {
+    return paraphrases;
+  }
+  
+  public Map<Integer, String> getLexerTokenParaphrases() {
+    if (lexerTokenParaphases.size() == 0) {
+      	lexerTokenParaphases.put(IDENT, "an identifier");
+      	lexerTokenParaphases.put(NUM_INT, "a numeric literal");
+	lexerTokenParaphases.put(FOLLOWED_BY, "an followed-by '->'");
+	lexerTokenParaphases.put(EQUALS, "an equals '='");
+	lexerTokenParaphases.put(SQL_NE, "a sql-style not equals '<>'");
+	lexerTokenParaphases.put(QUESTION, "a questionmark '?'");
+	lexerTokenParaphases.put(LPAREN, "an opening parenthesis '('");
+	lexerTokenParaphases.put(RPAREN, "a closing parenthesis ')'");
+	lexerTokenParaphases.put(LBRACK, "a left angle bracket '['");
+	lexerTokenParaphases.put(RBRACK, "a right angle bracket ']'");
+	lexerTokenParaphases.put(LCURLY, "a left curly bracket '{'");
+	lexerTokenParaphases.put(RCURLY, "a right curly bracket '}'");
+	lexerTokenParaphases.put(COLON, "a colon ':'");
+	lexerTokenParaphases.put(COMMA, "a comma ','");
+	lexerTokenParaphases.put(EQUAL, "an equals compare '=='");
+	lexerTokenParaphases.put(LNOT, "a not '!'");
+	lexerTokenParaphases.put(BNOT, "a binary not '~'");
+	lexerTokenParaphases.put(NOT_EQUAL, "a not equals '!='");
+	lexerTokenParaphases.put(DIV, "a division operator '\'");
+	lexerTokenParaphases.put(DIV_ASSIGN, "a division assign '/='");
+	lexerTokenParaphases.put(PLUS, "a plus operator '+'");
+	lexerTokenParaphases.put(PLUS_ASSIGN, "a plus assign '+='");
+	lexerTokenParaphases.put(INC, "an increment operator '++'");
+	lexerTokenParaphases.put(MINUS, "a minus '-'");
+	lexerTokenParaphases.put(MINUS_ASSIGN, "a minus assign '-='");
+	lexerTokenParaphases.put(DEC, "a decrement operator '--'");
+	lexerTokenParaphases.put(STAR, "a star '*'");
+	lexerTokenParaphases.put(STAR_ASSIGN, "a star assign '*='");
+	lexerTokenParaphases.put(MOD, "a modulo");
+	lexerTokenParaphases.put(MOD_ASSIGN, "a modulo assign");
+	lexerTokenParaphases.put(SR, "a shift right '>>'");
+	lexerTokenParaphases.put(SR_ASSIGN, "a shift right assign '>>='");
+	lexerTokenParaphases.put(BSR, "a binary shift right '>>>'");
+	lexerTokenParaphases.put(BSR_ASSIGN, "a binary shift right assign '>>>='");
+	lexerTokenParaphases.put(GE, "a greater equals '>='");
+	lexerTokenParaphases.put(GT, "a greater then '>'");
+	lexerTokenParaphases.put(SL, "a shift left '<<'");
+	lexerTokenParaphases.put(SL_ASSIGN, "a shift left assign '<<='");
+	lexerTokenParaphases.put(LE, "a less equals '<='");
+	lexerTokenParaphases.put(LT, "a lesser then '<'");
+	lexerTokenParaphases.put(BXOR, "a binary xor '^'");
+	lexerTokenParaphases.put(BXOR_ASSIGN, "a binary xor assign '^='");
+	lexerTokenParaphases.put(BOR, "a binary or '|'");
+	lexerTokenParaphases.put(BOR_ASSIGN, "a binary or assign '|='");
+	lexerTokenParaphases.put(LOR, "a logical or '||'");
+	lexerTokenParaphases.put(BAND, "a binary and '&'");
+	lexerTokenParaphases.put(BAND_ASSIGN, "a binary and assign '&='");
+	lexerTokenParaphases.put(LAND, "a logical and '&&'");
+	lexerTokenParaphases.put(SEMI, "a semicolon ';'");
+	lexerTokenParaphases.put(DOT, "a dot '.'");	
+    }
+    return lexerTokenParaphases;
+  }
+  
+  public Map<Integer, String> getParserTokenParaphrases() {
+    if (parserTokenParaphases.size() == 0) {
+	parserTokenParaphases.put(CREATE, "'create'");
+	parserTokenParaphases.put(WINDOW, "'window'");
+	parserTokenParaphases.put(IN_SET, "'in'");
+	parserTokenParaphases.put(BETWEEN, "'between'");
+	parserTokenParaphases.put(LIKE, "'like'");
+	parserTokenParaphases.put(REGEXP, "'regexp'");
+	parserTokenParaphases.put(ESCAPE, "'escape'");
+	parserTokenParaphases.put(OR_EXPR, "'or'");
+	parserTokenParaphases.put(AND_EXPR, "'and'");
+	parserTokenParaphases.put(NOT_EXPR, "'not'");
+	parserTokenParaphases.put(EVERY_EXPR, "'every'");
+	parserTokenParaphases.put(WHERE, "'where'");
+	parserTokenParaphases.put(AS, "'as'");	
+	parserTokenParaphases.put(SUM, "'sum'");
+	parserTokenParaphases.put(AVG, "'avg'");
+	parserTokenParaphases.put(MAX, "'max'");
+	parserTokenParaphases.put(MIN, "'min'");
+	parserTokenParaphases.put(COALESCE, "'coalesce'");
+	parserTokenParaphases.put(MEDIAN, "'median'");
+	parserTokenParaphases.put(STDDEV, "'stddev'");
+	parserTokenParaphases.put(AVEDEV, "'avedev'");
+	parserTokenParaphases.put(COUNT, "'count'");
+	parserTokenParaphases.put(SELECT, "'select'");
+	parserTokenParaphases.put(CASE, "'case'");
+	parserTokenParaphases.put(CASE2, "'case'");
+	parserTokenParaphases.put(ELSE, "'else'");
+	parserTokenParaphases.put(WHEN, "'when'");
+	parserTokenParaphases.put(THEN, "'then'");
+	parserTokenParaphases.put(END, "'end'");
+	parserTokenParaphases.put(FROM, "'from'");
+	parserTokenParaphases.put(OUTER, "'outer'");
+	parserTokenParaphases.put(JOIN, "'join'");
+	parserTokenParaphases.put(LEFT, "'left'");
+	parserTokenParaphases.put(RIGHT, "'right'");
+	parserTokenParaphases.put(FULL, "'full'");
+	parserTokenParaphases.put(ON, "'on'");	
+	parserTokenParaphases.put(IS, "'is'");
+	parserTokenParaphases.put(BY, "'by'");
+	parserTokenParaphases.put(GROUP, "'group'");
+	parserTokenParaphases.put(HAVING, "'having'");
+	parserTokenParaphases.put(DISTINCT, "'distinct'");
+	parserTokenParaphases.put(ALL, "'all'");
+	parserTokenParaphases.put(OUTPUT, "'output'");
+	parserTokenParaphases.put(EVENTS, "'events'");
+	parserTokenParaphases.put(SECONDS, "'seconds'");
+	parserTokenParaphases.put(MINUTES, "'minutes'");
+	parserTokenParaphases.put(FIRST, "'first'");
+	parserTokenParaphases.put(LAST, "'last'");
+	parserTokenParaphases.put(INSERT, "'insert'");
+	parserTokenParaphases.put(INTO, "'into'");
+	parserTokenParaphases.put(ORDER, "'order'");
+	parserTokenParaphases.put(ASC, "'asc'");
+	parserTokenParaphases.put(DESC, "'desc'");
+	parserTokenParaphases.put(RSTREAM, "'rstream'");
+	parserTokenParaphases.put(ISTREAM, "'istream'");
+	parserTokenParaphases.put(UNIDIRECTIONAL, "'unidirectional'");
+	parserTokenParaphases.put(PATTERN, "'pattern'");
+	parserTokenParaphases.put(SQL, "'sql'");
+	parserTokenParaphases.put(METADATASQL, "'metadatasql'");
+	parserTokenParaphases.put(PREVIOUS, "'prev'");
+	parserTokenParaphases.put(PRIOR, "'prior'");
+	parserTokenParaphases.put(EXISTS, "'exists'");
+	parserTokenParaphases.put(WEEKDAY, "'weekday'");
+	parserTokenParaphases.put(LW, "'lastweekday'");
+	parserTokenParaphases.put(INSTANCEOF, "'instanceof'");
+	parserTokenParaphases.put(CAST, "'cast'");
+	parserTokenParaphases.put(CURRENT_TIMESTAMP, "'current_timestamp'");
+	parserTokenParaphases.put(DELETE, "'delete'");
+	parserTokenParaphases.put(SNAPSHOT, "'snapshot'");
+	parserTokenParaphases.put(SET, "'set'");
+	parserTokenParaphases.put(VARIABLE, "'variable'");
+    }
+    return parserTokenParaphases;
+  }
+
   protected void mismatch(IntStream input, int ttype, BitSet follow) throws RecognitionException {
     throw new MismatchedTokenException(ttype, input);  
   }
@@ -222,25 +366,10 @@ tokens
   protected boolean recoverFromMismatchedElement(IntStream intStream, RecognitionException recognitionException, BitSet bitSet) {
     throw new RuntimeException("Error recovering from mismatched element: " + recognitionException.getMessage(), recognitionException);
   }
-
-  public String getErrorMessage(RecognitionException e, String[] tokenNames) {
-    List stack = getRuleInvocationStack(e, this.getClass().getName());
-    String msg = null;
-    if ( e instanceof NoViableAltException ) {
-      NoViableAltException nvae = (NoViableAltException)e;
-      msg = " no viable alt; token="+e.token+
-            " (decision="+nvae.decisionNumber+
-            " state "+nvae.stateNumber+")"+
-            " decision=<<"+nvae.grammarDecisionDescription+">>";
-    }
-    else {
-      msg = super.getErrorMessage(e, tokenNames);
-    }
-    return stack+" "+msg;
-  }
-
-  public String getTokenErrorDisplay(Token t) {
-    return t.toString();
+}
+@rulecatch {
+  catch (RecognitionException rex) {
+    throw rex;
   }
 }
 
@@ -299,7 +428,7 @@ eplExpression
 selectExpr
 	:	(INSERT! insertIntoExpr)?
 		SELECT! selectClause
-		FROM! streamExpression (regularJoin | outerJoinList)
+		FROM! fromClause
 		(WHERE! whereClause)?
 		(GROUP! BY! groupByListExpr)?
 		(HAVING! havingClause)?
@@ -314,6 +443,8 @@ onExpr
 	;
 	
 onSelectExpr	
+@init  { paraphrases.push("on-select clause"); }
+@after { paraphrases.pop(); }
 	:	(INSERT insertIntoExpr)?
 		SELECT selectionList
 		onExprFrom
@@ -325,6 +456,8 @@ onSelectExpr
 	;
 	
 onDeleteExpr	
+@init  { paraphrases.push("on-delete clause"); }
+@after { paraphrases.pop(); }
 	:	DELETE
 		onExprFrom
 		(WHERE whereClause)?		
@@ -332,6 +465,8 @@ onDeleteExpr
 	;
 	
 onSetExpr
+@init  { paraphrases.push("on-set clause"); }
+@after { paraphrases.pop(); }
 	:	SET onSetAssignment (COMMA onSetAssignment)*
 		-> ^(ON_SET_EXPR onSetAssignment+)
 	;
@@ -356,6 +491,8 @@ createVariableExpr
 	;
 
 createSelectionList 	
+@init  { paraphrases.push("select clause"); }
+@after { paraphrases.pop(); }
 	:	createSelectionListElement (COMMA createSelectionListElement)*
 		-> ^(CREATE_WINDOW_SELECT_EXPR createSelectionListElement+)
 	;
@@ -368,6 +505,8 @@ createSelectionListElement
 	;
 
 insertIntoExpr
+@init  { paraphrases.push("insert-into clause"); }
+@after { paraphrases.pop(); }
 	:	(s=ISTREAM | s=RSTREAM)? INTO i=IDENT (insertIntoColumnList)?
 		-> ^(INSERTINTO_EXPR $s? $i insertIntoColumnList?)
 	;
@@ -375,6 +514,12 @@ insertIntoExpr
 insertIntoColumnList
 	: 	LPAREN IDENT (COMMA IDENT)* RPAREN
 		-> ^(INSERTINTO_EXPRCOL IDENT*)
+	;
+	
+fromClause 
+@init  { paraphrases.push("from clause"); }
+@after { paraphrases.pop(); }
+	:	streamExpression (regularJoin | outerJoinList)
 	;
 	
 regularJoin
@@ -386,6 +531,8 @@ outerJoinList
 	;
 
 outerJoin
+@init  { paraphrases.push("outer join"); }
+@after { paraphrases.pop(); }
 	:	(tl=LEFT|tr=RIGHT|tf=FULL) OUTER JOIN streamExpression outerJoinIdent
 		-> {$tl != null}? streamExpression ^(LEFT_OUTERJOIN_EXPR outerJoinIdent)
 		-> {$tr != null}? streamExpression ^(RIGHT_OUTERJOIN_EXPR outerJoinIdent)
@@ -401,11 +548,15 @@ outerJoinIdentPair
 	;
 
 whereClause
+@init  { paraphrases.push("where clause"); }
+@after { paraphrases.pop(); }
 	:	evalOrExpression
 		-> ^(WHERE_EXPR evalOrExpression)
 	;
 	
 selectClause
+@init  { paraphrases.push("select clause"); }
+@after { paraphrases.pop(); }
 	:	(s=RSTREAM | s=ISTREAM)? selectionList
 		-> ^(SELECTION_EXPR $s? selectionList)
 	;
@@ -439,26 +590,36 @@ patternInclusionExpression
 	;
 	
 databaseJoinExpression
+@init  { paraphrases.push("relational data join"); }
+@after { paraphrases.pop(); }
 	:	SQL COLON i=IDENT LBRACK (s=STRING_LITERAL | s=QUOTED_STRING_LITERAL) (METADATASQL (s2=STRING_LITERAL | s2=QUOTED_STRING_LITERAL))? RBRACK
 		-> ^(DATABASE_JOIN_EXPR $i $s $s2?)
 	;	
 	
 methodJoinExpression
+@init  { paraphrases.push("method invocation join"); }
+@after { paraphrases.pop(); }
     	:   	i=IDENT COLON classIdentifier (LPAREN expressionList? RPAREN)?
        		-> ^(METHOD_JOIN_EXPR $i classIdentifier expressionList?)
     	;
 
 viewExpression
+@init  { paraphrases.push("view specifications"); }
+@after { paraphrases.pop(); }
 	:	ns=IDENT COLON nm=IDENT LPAREN parameterSet? RPAREN
 		-> ^(VIEW_EXPR $ns $nm parameterSet?)
 	;
 
 groupByListExpr
+@init  { paraphrases.push("group-by clause"); }
+@after { paraphrases.pop(); }
 	:	expression (COMMA expression)*
 		-> ^(GROUP_BY_EXPR expression+)
 	;
 
 orderByListExpr
+@init  { paraphrases.push("order by clause"); }
+@after { paraphrases.pop(); }
 	:	orderByListElement (COMMA orderByListElement)*
 		-> ^(ORDER_BY_EXPR orderByListElement+) 
 	;
@@ -469,11 +630,15 @@ orderByListElement
 	;
 
 havingClause
+@init  { paraphrases.push("having clause"); }
+@after { paraphrases.pop(); }
 	:	evalOrExpression
 		-> ^(HAVING_EXPR evalOrExpression) 
 	;
 
 outputLimit
+@init  { paraphrases.push("output rate clause"); }
+@after { paraphrases.pop(); }
 	:   (k=ALL|k=FIRST|k=LAST|k=SNAPSHOT)? EVERY_EXPR (number | i=IDENT) (e=EVENTS|sec=SECONDS|min=MINUTES)
 	    -> {$e != null}? ^(EVENT_LIMIT_EXPR $k? number? $i?)
 	    -> {$sec != null}? ^(SEC_LIMIT_EXPR $k? number? $i?)
@@ -494,8 +659,8 @@ expression
 	;
 
 caseExpression
-	: CASE^ whenClause+ elseClause? END!
-	| CASE expression whenClause+ elseClause? END
+	: { paraphrases.push("case expression"); }  CASE^ whenClause+ elseClause? END! { paraphrases.pop(); }
+	| { paraphrases.push("case expression"); }  CASE expression whenClause+ elseClause? END { paraphrases.pop(); }
 	  -> ^(CASE2 expression whenClause+ elseClause?)
 	| evalOrExpression
 	;
@@ -619,6 +784,8 @@ existsSubSelectExpression
 	;
 
 subQueryExpr 
+@init  { paraphrases.push("subquery"); }
+@after { paraphrases.pop(); }
 	:	LPAREN! 
 		SELECT! selectionListElement
 	    FROM! subSelectFilterExpr
@@ -627,6 +794,8 @@ subQueryExpr
 	;
 	
 subSelectFilterExpr
+@init  { paraphrases.push("subquery filter specification"); }
+@after { paraphrases.pop(); }
 	:	eventFilterExpression
 		(DOT viewExpression (DOT viewExpression)*)? (AS i=IDENT | i=IDENT)?
 		-> ^(STREAM_EXPR eventFilterExpression viewExpression* $i?)
@@ -696,6 +865,8 @@ betweenList
 //   On the atomic level an expression has filters, and observer-statements.
 //----------------------------------------------------------------------------
 patternExpression
+@init  { paraphrases.push("pattern expression"); }
+@after { paraphrases.pop(); }
 	: followedByExpression
 	;
 	
@@ -767,7 +938,7 @@ singleParameter
 	;
 
 frequencyOperand
-	:	STAR DIV ni=NUM_INT -> NUMERIC_PARAM_FREQUENCY[$ni]
+	:	STAR DIV NUM_INT -> ^(NUMERIC_PARAM_FREQUENCY NUM_INT)
 	;
 
 rangeOperand
@@ -804,6 +975,8 @@ arrayParameterList
 //	 Ranges such as 'property in [a,b]' are allowed and ([ and )] distinguish open/closed range endpoints
 //----------------------------------------------------------------------------
 eventFilterExpression
+@init  { paraphrases.push("filter specification"); }
+@after { paraphrases.pop(); }
     :   (i=IDENT EQUALS)?
     	classIdentifier
        	(LPAREN expressionList? RPAREN)?
@@ -902,54 +1075,54 @@ millisecondPart
 //----------------------------------------------------------------------------
 
 // Operators
-FOLLOWED_BY /*options {paraphrase = 'an followed-by \"->\"';}*/		:	'->'	;
-EQUALS /*options {paraphrase = 'an equals '='';}*/					:	'='		;
-SQL_NE /*options {paraphrase = 'a sql-style not equals \"<>\"';}*/	: 	'<>'	;
-QUESTION /*options {paraphrase = 'a questionmark '?'';}*/			:	'?'		;
-LPAREN /*options {paraphrase = 'an opening parenthesis '('';}*/		:	'('		;
-RPAREN /*options {paraphrase = 'a closing parenthesis ')'';}*/		:	')'		;
-LBRACK /*options {paraphrase = 'a left angle bracket '['';}*/		:	'['		;
-RBRACK /*options {paraphrase = 'a right angle bracket ']'';}*/		:	']'		;
-LCURLY /*options {paraphrase = 'a left curly bracket '{'';}*/		:	'{'		;
-RCURLY /*options {paraphrase = 'a right curly bracket '}'';}*/		:	'}'		;
-COLON /*options {paraphrase = 'a colon ':'';}*/						:	':'		;
-COMMA /*options {paraphrase = 'a comma ','';}*/						:	','		;
-EQUAL /*options {paraphrase = 'an equals compare \"==\"';}*/		:	'=='	;
-LNOT /*options {paraphrase = 'a not '!'';}*/						:	'!'		;
-BNOT /*options {paraphrase = 'a binary not '~'';}*/					:	'~'		;
-NOT_EQUAL /*options {paraphrase = 'a not equals \"!=\"';}*/			:	'!='	;
-DIV /*options {paraphrase = 'a division operator '\'';}*/			:	'/'		;
-DIV_ASSIGN /*options {paraphrase = 'a division assign \"/=\"';}*/	:	'/='	;
-PLUS /*options {paraphrase = 'a plus operator '+'';}*/				:	'+'		;
-PLUS_ASSIGN	/*options {paraphrase = 'a plus assign \"+=\"';}*/		:	'+='	;
-INC /*options {paraphrase = 'an increment operator '++'';}*/		:	'++'	;
-MINUS /*options {paraphrase = 'a minus '-'';}*/					:	'-'		;
-MINUS_ASSIGN /*options {paraphrase = 'a minus assign \"-=\"';}*/	:	'-='	;
-DEC /*options {paraphrase = 'a decrement operator '--'';}*/		:	'--'	;
-STAR /*options {paraphrase = 'a star '*'';}*/						:	'*'		;
-STAR_ASSIGN /*options {paraphrase = 'a star assign '*='';}*/		:	'*='	;
-MOD /*options {paraphrase = 'a modulo '%'';}*/						:	'%'		;
-MOD_ASSIGN /*options {paraphrase = 'a module assign \"%=\"';}*/		:	'%='	;
-SR /*options {paraphrase = 'a shift right '>>'';}*/				:	'>>'	;
-SR_ASSIGN /*options {paraphrase = 'a shift right assign '>>='';}*/	:	'>>='	;
-BSR /*options {paraphrase = 'a binary shift right \">>>\"';}*/		:	'>>>'	;
-BSR_ASSIGN /*options {paraphrase = 'a binary shift right assign \">>>=\"';}*/		:	'>>>='	;
-GE /*options {paraphrase = 'a greater equals \">=\"';}*/			:	'>='	;
-GT /*options {paraphrase = 'a greater then '>'';}*/					:	'>'		;
-SL /*options {paraphrase = 'a shift left \"<<\"';}*/				:	'<<'	;
-SL_ASSIGN /*options {paraphrase = 'a shift left assign \"<<=\"';}*/	:	'<<='	;
-LE /*options {paraphrase = 'a less equals \"<=\"';}*/				:	'<='	;
-LT /*options {paraphrase = 'a lesser then '<'';}*/					:	'<'		;
-BXOR /*options {paraphrase = 'a binary xor '^'';}*/					:	'^'		;
-BXOR_ASSIGN /*options {paraphrase = 'a binary xor assign \"^=\"';}*/:	'^='	;
-BOR	/*options {paraphrase = 'a binary or '|'';}*/					:	'|'		;
-BOR_ASSIGN /*options {paraphrase = 'a binary or assign \"|=\"';}*/	:	'|='	;
-LOR	/*options {paraphrase = 'a logical or \"||\"';}*/				:	'||'	;
-BAND /*options {paraphrase = 'a binary and '&'';}*/					:	'&'		;
-BAND_ASSIGN /*options {paraphrase = 'a binary and assign \"&=\"';}*/:	'&='	;
-LAND /*options {paraphrase = 'a logical and \"&&\"';}*/				:	'&&'	;
-SEMI /*options {paraphrase = 'a semicolon ';'';}*/					:	';'		;
-DOT : '.';
+FOLLOWED_BY 	: '->';
+EQUALS 		: '=';
+SQL_NE 		: '<>';
+QUESTION 	: '?';
+LPAREN 		: '(';
+RPAREN 		: ')';
+LBRACK 		: '[';
+RBRACK 		: ']';
+LCURLY 		: '{';
+RCURLY 		: '}';
+COLON 		: ':';
+COMMA 		: ',';
+EQUAL 		: '==';
+LNOT 		: '!';
+BNOT 		: '~';
+NOT_EQUAL 	: '!=';
+DIV 		: '/';
+DIV_ASSIGN 	: '/=';
+PLUS 		: '+';
+PLUS_ASSIGN	: '+=';
+INC 		: '++';
+MINUS 		: '-';
+MINUS_ASSIGN 	: '-=';
+DEC 		: '--';
+STAR 		: '*';
+STAR_ASSIGN 	: '*=';
+MOD 		: '%';
+MOD_ASSIGN 	: '%=';
+SR 		: '>>';
+SR_ASSIGN 	: '>>=';
+BSR 		: '>>>';
+BSR_ASSIGN 	: '>>>=';
+GE 		: '>=';
+GT 		: '>';
+SL 		: '<<';
+SL_ASSIGN 	: '<<=';
+LE 		: '<=';
+LT 		: '<';
+BXOR 		: '^';
+BXOR_ASSIGN 	: '^=';
+BOR		: '|';
+BOR_ASSIGN 	: '|=';
+LOR		: '||';
+BAND 		: '&';
+BAND_ASSIGN 	: '&=';
+LAND 		: '&&';
+SEMI 		: ';';
+DOT 		: '.';
 
 // Whitespace -- ignored
 WS	:	(	' '

@@ -17,48 +17,43 @@ public class TestInvalidSyntaxMsg extends TestCase
         epService.initialize();
     }
 
-    public void testSyntaxError()
+    public void testInvalidSyntax()
     {
-        // This could be a better exception - outlining viable alternatives in ANTLR 2.7.5 cannot be done
-        // Use ANTLR version 3 once out.
-        tryCompile("select * from pattern[A -> B - C]",
-                   "unexpected token: B near line 1, column 28 (tip: check for reserved or misspelled keywords in the online grammar documentation near the token 'B') [select * from pattern[A -> B - C]]");
-
-        tryCompile("insert into A (a",
-                   "end of input when expecting a closing parenthesis ')' near line 1, column 17 [insert into A (a]");
-
-        tryCompile("select case when 1>2 from A",
-                   "expecting \"then\", found 'from' near line 1, column 22 [select case when 1>2 from A]");
-
-        tryCompile("select * from A full outer join B on A.field < B.field",
-                   "expecting an equals '=', found '<' near line 1, column 46 [select * from A full outer join B on A.field < B.field]");
-
-        tryCompile("select a.b('aa\") from A",
-                   "end of input when expecting a singe quote \"'\" near line 1, column 24 [select a.b('aa\") from A]");
-
-        tryCompile("select a.b('aa\") from A",
-                   "end of input when expecting a singe quote \"'\" near line 1, column 24 [select a.b('aa\") from A]");
-
-        tryCompile("select * from A, sql:mydb [\"",
-                   "end of input when expecting '\"' near line 1, column 29 [select * from A, sql:mydb [\"]");
-
-        tryCompile("select * from A, into",
-                   "unexpected token: into near line 1, column 18 (tip: check for reserved or misspelled keywords in the online grammar documentation near the token 'into') [select * from A, into]");
+        tryCompile("select foo, seconds from " + SupportBeanReservedKeyword.class.getName(),
+                   "Incorrect syntax near 'seconds' (a reserved keyword) at line 1 column 12, please check the select clause [select foo, seconds from net.esper.support.bean.SupportBeanReservedKeyword]");
 
         tryCompile("select * from pattern [",
-                   "end of input near line 1, column 24 [select * from pattern []");
+                   "Unexpected end of input near '[' at line 1 column 22, please check the pattern expression within the from clause [select * from pattern []");
+
+        tryCompile("select * from A, into",
+                   "Incorrect syntax near 'into' (a reserved keyword) at line 1 column 17, please check the from clause [select * from A, into]");
+
+        tryCompile("select * from pattern[A -> B - C]",
+                   "Incorrect syntax near 'B' at line 1 column 27, please check the pattern expression within the from clause [select * from pattern[A -> B - C]]");
+
+        tryCompile("insert into A (a",
+                   "Incorrect syntax near 'a' expecting a closing parenthesis ')' but found end of input at line 1 column 15, please check the insert-into clause [insert into A (a]");
+
+        tryCompile("select case when 1>2 from A",
+                   "Incorrect syntax near 'from' expecting 'then' but found 'from' at line 1 column 21, please check the case expression within the select clause [select case when 1>2 from A]");
+
+        tryCompile("select * from A full outer join B on A.field < B.field",
+                   "Incorrect syntax near '<' expecting an equals '=' but found a lesser then '<' at line 1 column 45, please check the outer join within the from clause [select * from A full outer join B on A.field < B.field]");
+
+        tryCompile("select a.b('aa\") from A",
+                   "Incorrect syntax near '(' expecting a closing parenthesis ')' but found end of input at line 1 column 10, please check the select clause [select a.b('aa\") from A]");
+
+        tryCompile("select * from A, sql:mydb [\"",
+                   "Unexpected end of input near '[' at line 1 column 26, please check the relational data join within the from clause [select * from A, sql:mydb [\"]");
 
         tryCompile("select * google",
-                   "expecting \"from\", found 'google' near line 1, column 10 [select * google]");
+                   "Incorrect syntax near 'google' expecting 'from' but found an identifier at line 1 column 9 [select * google]");
 
         tryCompile("insert into into",
-                   "expecting an identifier, found 'into' near line 1, column 13 [insert into into]");
-
-        tryCompile("select foo, seconds from " + SupportBeanReservedKeyword.class.getName(),
-                   "unexpected token: foo near line 1, column 8 (tip: check for reserved or misspelled keywords in the online grammar documentation near the token 'foo') [select foo, seconds from net.esper.support.bean.SupportBeanReservedKeyword]");
+                   "Incorrect syntax near 'into' expecting an identifier but found 'into' at line 1 column 12, please check the insert-into clause [insert into into]");
 
         tryCompile("select prior(A, x) from A",
-                   "unexpected token: prior near line 1, column 8 (tip: check for reserved or misspelled keywords in the online grammar documentation near the token 'prior') [select prior(A, x) from A]");
+                   "Incorrect syntax near 'prior' (a reserved keyword) at line 1 column 7, please check the select clause [select prior(A, x) from A]");
     }
 
     private void tryCompile(String expression, String expectedMsg)

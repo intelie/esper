@@ -34,9 +34,9 @@ public class TestPollingViewableFactory extends TestCase
     public void testLexSampleSQL() throws ExprValidationException
     {
         String[][] testcases = new String[][] {
-                {"select * from A", "select * from A where 1=0"},
-                {"select * from A where 1=0", "select * from A where 1=0 and 1=0"},
                 {"select * from A where a=b and c=d", "select * from A where 1=0 and a=b and c=d"},
+                {"select * from A where 1=0", "select * from A where 1=0 and 1=0"},
+                {"select * from A", "select * from A where 1=0"},
                 {"select * from A group by x", "select * from A where 1=0 group by x"},
                 {"select * from A having a>b", "select * from A where 1=0 having a>b"},
                 {"select * from A order by d", "select * from A where 1=0 order by d"},
@@ -59,7 +59,7 @@ public class TestPollingViewableFactory extends TestCase
                 fail("failed case with exception:" + testcases[i][0]);
             }
             String expected = testcases[i][1].trim();
-            assertEquals("failed case :" + testcases[i][0], expected, result);
+            assertEquals("failed case " + i + " :" + testcases[i][0], expected, result);
         }
     }
 }

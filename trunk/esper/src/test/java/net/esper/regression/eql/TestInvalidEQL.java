@@ -22,10 +22,10 @@ public class TestInvalidEQL extends TestCase
         listener = new SupportUpdateListener();
     }
 
-    public void testSyntaxException()
+    public void testInvalidSyntax()
     {
         String exceptionText = getSyntaxExceptionEQL("select * from *");
-        assertEquals("unexpected token: * near line 1, column 15 (tip: check for reserved or misspelled keywords in the online grammar documentation near the token '*') [select * from *]", exceptionText);
+        assertEquals("Incorrect syntax near '*' at line 1 column 14, please check the from clause [select * from *]", exceptionText);
     }
 
     public void testLongTypeConstant()

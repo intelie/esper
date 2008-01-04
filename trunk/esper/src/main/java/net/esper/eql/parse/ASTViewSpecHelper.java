@@ -24,7 +24,7 @@ public class ASTViewSpecHelper
      * @return view spec
      * @throws ASTWalkException is thrown to indicate an error in node parsing
      */
-    public static ViewSpec buildSpec(Tree node) throws ASTWalkException
+    public static ViewSpec buildSpec(Tree node, long engineTime) throws ASTWalkException
     {
         String objectNamespace = node.getChild(0).getText();
         String objectName = node.getChild(1).getText();
@@ -34,7 +34,7 @@ public class ASTViewSpecHelper
         for (int i = 2; i < node.getChildCount(); i++)
         {
         	Tree child = node.getChild(i);
-            Object object = ASTParameterHelper.makeParameter(child);
+            Object object = ASTParameterHelper.makeParameter(child, engineTime);
             objectParams.add(object);
         }
 

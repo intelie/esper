@@ -3,6 +3,8 @@ package net.esper.eql.parse;
 import junit.framework.TestCase;
 import org.antlr.runtime.tree.CommonTree;
 import org.antlr.runtime.tree.Tree;
+import org.antlr.runtime.Token;
+import org.antlr.runtime.CommonToken;
 import net.esper.eql.generated.EsperEPLParser;
 
 public class TestASTConstantHelper extends TestCase
@@ -22,8 +24,7 @@ public class TestASTConstantHelper extends TestCase
     private Tree makeAST(int type, String text)
     {
         CommonTree ast = new CommonTree();
-        ast.token.setType(type);
-        ast.token.setText(text);
+        ast.token = new CommonToken(type, text);
         return ast;
     }
 }

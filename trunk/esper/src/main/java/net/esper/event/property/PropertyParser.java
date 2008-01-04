@@ -124,7 +124,7 @@ public class PropertyParser
             case EsperEPLParser.EVENT_PROP_DYNAMIC_SIMPLE:
                 return new DynamicSimpleProperty(child.getChild(0).getText());
             case EsperEPLParser.EVENT_PROP_DYNAMIC_INDEXED:
-                index = IntValue.parseString(child.getChild(0).getText());
+                index = IntValue.parseString(child.getChild(1).getText());
                 return new DynamicIndexedProperty(child.getChild(0).getText(), index);
             case EsperEPLParser.EVENT_PROP_DYNAMIC_MAPPED:
                 key = StringValue.parseString(child.getChild(1).getText());

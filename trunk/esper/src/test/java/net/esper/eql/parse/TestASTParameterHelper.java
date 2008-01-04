@@ -5,6 +5,7 @@ import net.esper.type.*;
 import junit.framework.TestCase;
 import org.antlr.runtime.tree.Tree;
 import org.antlr.runtime.tree.CommonTree;
+import org.antlr.runtime.CommonToken;
 
 public class TestASTParameterHelper extends TestCase
 {
@@ -137,27 +138,26 @@ public class TestASTParameterHelper extends TestCase
 
     private Object convert(Tree ast) throws Exception
     {
-        return ASTParameterHelper.makeParameter(ast);
+        return ASTParameterHelper.makeParameter(ast, System.currentTimeMillis());
     }
 
     private Tree makeSingleAst(int type, String value)
     {
         CommonTree ast = new CommonTree();
-        ast.token.setType(type);
-        ast.token.setText(value);
+        ast.token = new CommonToken(type, value);
         return ast;
     }
 
     private Tree makeArrayAst(int[] types, String[] values) throws Exception
     {
         CommonTree ast = new CommonTree();
+        ast.token = new CommonToken(EsperEPLParser.ARRAY_PARAM_LIST, "array_list");
         ast.token.setType(EsperEPLParser.ARRAY_PARAM_LIST);
 
         for (int i = 0; i < types.length; i++)
         {
             CommonTree child = new CommonTree();
-            child.token.setType(types[i]);
-            child.token.setText(values[i]);
+            child.token = new CommonToken(types[i], values[i]);
             ast.addChild(child);
         }
 
