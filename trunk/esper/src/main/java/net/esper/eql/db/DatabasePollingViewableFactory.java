@@ -7,30 +7,27 @@
  **************************************************************************************/
 package net.esper.eql.db;
 
-import net.esper.eql.spec.DBStatementStreamSpec;
+import net.esper.antlr.NoCaseSensitiveStream;
+import net.esper.client.ConfigurationDBRef;
+import net.esper.core.EPStatementHandle;
 import net.esper.eql.expression.ExprValidationException;
-import net.esper.eql.generated.EsperEPLLexer;
-import net.esper.eql.generated.EsperEPLParser;
-import net.esper.util.*;
+import net.esper.eql.generated.EsperEPL2GrammarLexer;
+import net.esper.eql.spec.DBStatementStreamSpec;
 import net.esper.event.EventAdapterService;
 import net.esper.event.EventType;
-import net.esper.event.PropertyAccessException;
+import net.esper.util.*;
 import net.esper.view.HistoricalEventViewable;
-import net.esper.core.EPStatementHandle;
-import net.esper.client.ConfigurationDBRef;
-import net.esper.antlr.NoCaseSensitiveStream;
-
-import java.sql.*;
-import java.util.*;
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.io.IOException;
-
+import org.antlr.runtime.CharStream;
+import org.antlr.runtime.CommonTokenStream;
+import org.antlr.runtime.Token;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.antlr.runtime.*;
-import org.antlr.runtime.tree.Tree;
-import com.sun.java_cup.internal.lexer;
+
+import java.io.IOException;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.sql.*;
+import java.util.*;
 
 /**
  * Factory for a view onto historical data via SQL statement.
@@ -323,7 +320,7 @@ public class DatabasePollingViewableFactory
         int orderByIndex = -1;
         List<Integer> unionIndexes = new ArrayList<Integer>();
 
-        EsperEPLLexer lex = new EsperEPLLexer(input);
+        EsperEPL2GrammarLexer lex = new EsperEPL2GrammarLexer(input);
         CommonTokenStream tokens = new CommonTokenStream(lex);
         List tokenList = tokens.getTokens();
 

@@ -15,7 +15,7 @@ import net.esper.eql.core.EngineImportUndefinedException;
 import net.esper.eql.expression.*;
 import net.esper.eql.spec.*;
 import net.esper.eql.variable.VariableService;
-import net.esper.eql.generated.EsperEPLTree;
+import net.esper.eql.generated.EsperEPL2Ast;
 import net.esper.pattern.*;
 import net.esper.type.*;
 import org.apache.commons.logging.Log;
@@ -29,7 +29,7 @@ import java.util.*;
  * Called during the walks of a EQL expression AST tree as specified in the grammar file.
  * Constructs filter and view specifications etc.
  */
-public class EQLTreeWalker extends EsperEPLTree
+public class EQLTreeWalker extends EsperEPL2Ast
 {
     // private holding areas for accumulated info
     private Map<Tree, ExprNode> astExprNodeMap = new HashMap<Tree, ExprNode>();

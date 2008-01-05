@@ -2,8 +2,8 @@ package net.esper.support.eql.parse;
 
 import net.esper.antlr.NoCaseSensitiveStream;
 import net.esper.antlr.ASTUtil;
-import net.esper.eql.generated.EsperEPLLexer;
-import net.esper.eql.generated.EsperEPLParser;
+import net.esper.eql.generated.EsperEPL2GrammarLexer;
+import net.esper.eql.generated.EsperEPL2GrammarParser;
 import net.esper.eql.parse.ParseRuleSelector;
 import org.antlr.runtime.CharStream;
 import org.antlr.runtime.CommonTokenStream;
@@ -31,9 +31,9 @@ public class SupportParserHelper
     {
         ParseRuleSelector startRuleSelector = new ParseRuleSelector()
         {
-            public Tree invokeParseRule(EsperEPLParser parser) throws RecognitionException
+            public Tree invokeParseRule(EsperEPL2GrammarParser parser) throws RecognitionException
             {
-                EsperEPLParser.startPatternExpressionRule_return r = parser.startPatternExpressionRule();
+                EsperEPL2GrammarParser.startPatternExpressionRule_return r = parser.startPatternExpressionRule();
                 return (Tree) r.getTree();
             }
         };
@@ -44,9 +44,9 @@ public class SupportParserHelper
     {
         ParseRuleSelector startRuleSelector = new ParseRuleSelector()
         {
-            public Tree invokeParseRule(EsperEPLParser parser) throws RecognitionException
+            public Tree invokeParseRule(EsperEPL2GrammarParser parser) throws RecognitionException
             {
-                EsperEPLParser.startEPLExpressionRule_return r = parser.startEPLExpressionRule();
+                EsperEPL2GrammarParser.startEPLExpressionRule_return r = parser.startEPLExpressionRule();
                 return (Tree) r.getTree();
             }
         };
@@ -57,7 +57,7 @@ public class SupportParserHelper
     {
         ParseRuleSelector startRuleSelector = new ParseRuleSelector()
         {
-            public Tree invokeParseRule(EsperEPLParser parser) throws RecognitionException
+            public Tree invokeParseRule(EsperEPL2GrammarParser parser) throws RecognitionException
             {
                 return (Tree) parser.startEventPropertyRule().getTree();
             }
@@ -77,11 +77,11 @@ public class SupportParserHelper
             throw new RuntimeException("IOException parsing text '" + text + '\'', ex);
         }
 
-        EsperEPLLexer lex = new EsperEPLLexer(input);
+        EsperEPL2GrammarLexer lex = new EsperEPL2GrammarLexer(input);
         CommonTokenStream tokens = new CommonTokenStream(lex);
         ASTUtil.printTokens(tokens);
-        EsperEPLParser g = new EsperEPLParser(tokens);
-        EsperEPLParser.startEventPropertyRule_return r;
+        EsperEPL2GrammarParser g = new EsperEPL2GrammarParser(tokens);
+        EsperEPL2GrammarParser.startEventPropertyRule_return r;
 
         Tree tree;
         try

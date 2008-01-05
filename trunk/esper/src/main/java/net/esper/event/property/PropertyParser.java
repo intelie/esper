@@ -2,12 +2,12 @@ package net.esper.event.property;
 
 import net.esper.antlr.NoCaseSensitiveStream;
 import net.esper.antlr.ASTUtil;
-import net.esper.eql.generated.EsperEPLLexer;
-import net.esper.eql.generated.EsperEPLParser;
 import net.esper.event.BeanEventTypeFactory;
 import net.esper.event.PropertyAccessException;
 import net.esper.type.IntValue;
 import net.esper.type.StringValue;
+import net.esper.eql.generated.EsperEPL2GrammarLexer;
+import net.esper.eql.generated.EsperEPL2GrammarParser;
 import org.antlr.runtime.CharStream;
 import org.antlr.runtime.CommonTokenStream;
 import org.antlr.runtime.RecognitionException;
@@ -46,10 +46,10 @@ public class PropertyParser
             throw new PropertyAccessException("IOException parsing property name '" + propertyName + '\'', ex);
         }
 
-        EsperEPLLexer lex = new EsperEPLLexer(input);
+        EsperEPL2GrammarLexer lex = new EsperEPL2GrammarLexer(input);
         CommonTokenStream tokens = new CommonTokenStream(lex);
-        EsperEPLParser g = new EsperEPLParser(tokens);
-        EsperEPLParser.startEventPropertyRule_return r;
+        EsperEPL2GrammarParser g = new EsperEPL2GrammarParser(tokens);
+        EsperEPL2GrammarParser.startEventPropertyRule_return r;
 
         try
         {
@@ -92,7 +92,7 @@ public class PropertyParser
     private static Property makeProperty(Tree child, boolean isRootedInDynamic)
     {
         switch (child.getType()) {
-            case EsperEPLParser.EVENT_PROP_SIMPLE:
+            case EsperEPL2GrammarParser.EVENT_PROP_SIMPLE:
                 if (!isRootedInDynamic)
                 {
                     return new SimpleProperty(child.getChild(0).getText());
@@ -101,7 +101,7 @@ public class PropertyParser
                 {
                     return new DynamicSimpleProperty(child.getChild(0).getText());
                 }
-            case EsperEPLParser.EVENT_PROP_MAPPED:
+            case EsperEPL2GrammarParser.EVENT_PROP_MAPPED:
                 String key = StringValue.parseString(child.getChild(1).getText());
                 if (!isRootedInDynamic)
                 {
@@ -111,7 +111,7 @@ public class PropertyParser
                 {
                     return new DynamicMappedProperty(child.getChild(0).getText(), key);
                 }
-            case EsperEPLParser.EVENT_PROP_INDEXED:
+            case EsperEPL2GrammarParser.EVENT_PROP_INDEXED:
                 int index = IntValue.parseString(child.getChild(1).getText());
                 if (!isRootedInDynamic)
                 {
@@ -121,12 +121,12 @@ public class PropertyParser
                 {
                     return new DynamicIndexedProperty(child.getChild(0).getText(), index);
                 }
-            case EsperEPLParser.EVENT_PROP_DYNAMIC_SIMPLE:
+            case EsperEPL2GrammarParser.EVENT_PROP_DYNAMIC_SIMPLE:
                 return new DynamicSimpleProperty(child.getChild(0).getText());
-            case EsperEPLParser.EVENT_PROP_DYNAMIC_INDEXED:
+            case EsperEPL2GrammarParser.EVENT_PROP_DYNAMIC_INDEXED:
                 index = IntValue.parseString(child.getChild(1).getText());
                 return new DynamicIndexedProperty(child.getChild(0).getText(), index);
-            case EsperEPLParser.EVENT_PROP_DYNAMIC_MAPPED:
+            case EsperEPL2GrammarParser.EVENT_PROP_DYNAMIC_MAPPED:
                 key = StringValue.parseString(child.getChild(1).getText());
                 return new DynamicMappedProperty(child.getChild(0).getText(), key);
             default:

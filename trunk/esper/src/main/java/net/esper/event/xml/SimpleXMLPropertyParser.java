@@ -1,8 +1,8 @@
 package net.esper.event.xml;
 
 import net.esper.antlr.NoCaseSensitiveStream;
-import net.esper.eql.generated.EsperEPLLexer;
-import net.esper.eql.generated.EsperEPLParser;
+import net.esper.eql.generated.EsperEPL2GrammarLexer;
+import net.esper.eql.generated.EsperEPL2GrammarParser;
 import net.esper.event.PropertyAccessException;
 import net.esper.type.IntValue;
 import net.esper.type.StringValue;
@@ -80,15 +80,15 @@ public class SimpleXMLPropertyParser
 
         switch (child.getType())
         {
-            case EsperEPLParser.EVENT_PROP_DYNAMIC_SIMPLE:
-            case EsperEPLParser.EVENT_PROP_SIMPLE:
+            case EsperEPL2GrammarParser.EVENT_PROP_DYNAMIC_SIMPLE:
+            case EsperEPL2GrammarParser.EVENT_PROP_SIMPLE:
                 return '/' + prefix + child.getChild(0).getText();
-            case EsperEPLParser.EVENT_PROP_DYNAMIC_MAPPED:
-            case EsperEPLParser.EVENT_PROP_MAPPED:
+            case EsperEPL2GrammarParser.EVENT_PROP_DYNAMIC_MAPPED:
+            case EsperEPL2GrammarParser.EVENT_PROP_MAPPED:
                 String key = StringValue.parseString(child.getChild(1).getText());
                 return '/' + prefix + child.getChild(0).getText() + "[@id='" + key + "']";
-            case EsperEPLParser.EVENT_PROP_DYNAMIC_INDEXED:
-            case EsperEPLParser.EVENT_PROP_INDEXED:
+            case EsperEPL2GrammarParser.EVENT_PROP_DYNAMIC_INDEXED:
+            case EsperEPL2GrammarParser.EVENT_PROP_INDEXED:
                 int index = IntValue.parseString(child.getChild(1).getText());
                 return '/' + prefix + child.getChild(0).getText() + "[position() = " + index + ']';
             default:
@@ -113,10 +113,10 @@ public class SimpleXMLPropertyParser
             throw new PropertyAccessException("IOException parsing property name '" + propertyName + '\'', ex);
         }
 
-        EsperEPLLexer lex = new EsperEPLLexer(input);
+        EsperEPL2GrammarLexer lex = new EsperEPL2GrammarLexer(input);
         CommonTokenStream tokens = new CommonTokenStream(lex);
-        EsperEPLParser g = new EsperEPLParser(tokens);
-        EsperEPLParser.startEventPropertyRule_return r;
+        EsperEPL2GrammarParser g = new EsperEPL2GrammarParser(tokens);
+        EsperEPL2GrammarParser.startEventPropertyRule_return r;
         
         try
         {

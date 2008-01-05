@@ -1,7 +1,7 @@
 package net.esper.eql.parse;
 
 import junit.framework.TestCase;
-import net.esper.eql.generated.EsperEPLParser;
+import net.esper.eql.generated.EsperEPL2GrammarParser;
 import net.esper.eql.spec.ViewSpec;
 import org.antlr.runtime.tree.Tree;
 import org.antlr.runtime.tree.CommonTree;
@@ -11,10 +11,10 @@ public class TestASTViewSpecHelper extends TestCase
 {
     public void testBuildViewSpec() throws Exception
     {
-        Tree ast = makeSingleAst(EsperEPLParser.VIEW_EXPR, null);
-        ast.addChild(makeSingleAst(EsperEPLParser.IDENT, "namespace"));
-        ast.addChild(makeSingleAst(EsperEPLParser.IDENT, "name"));
-        ast.addChild(makeSingleAst(EsperEPLParser.NUM_INT, "10"));
+        Tree ast = makeSingleAst(EsperEPL2GrammarParser.VIEW_EXPR, null);
+        ast.addChild(makeSingleAst(EsperEPL2GrammarParser.IDENT, "namespace"));
+        ast.addChild(makeSingleAst(EsperEPL2GrammarParser.IDENT, "name"));
+        ast.addChild(makeSingleAst(EsperEPL2GrammarParser.NUM_INT, "10"));
 
         ViewSpec spec = ASTViewSpecHelper.buildSpec(ast, System.currentTimeMillis());
 

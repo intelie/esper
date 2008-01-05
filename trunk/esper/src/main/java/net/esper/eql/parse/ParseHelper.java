@@ -12,8 +12,8 @@ import java.io.IOException;
 import java.util.Stack;
 
 import net.esper.client.EPException;
-import net.esper.eql.generated.EsperEPLParser;
-import net.esper.eql.generated.EsperEPLLexer;
+import net.esper.eql.generated.EsperEPL2GrammarParser;
+import net.esper.eql.generated.EsperEPL2GrammarLexer;
 import net.esper.antlr.NoCaseSensitiveStream;
 import net.esper.antlr.ASTUtil;
 
@@ -95,10 +95,10 @@ public class ParseHelper
             throw new EPException("IOException parsing expression '" + expression + '\'', ex);
         }
 
-        EsperEPLLexer lex = new EsperEPLLexer(input);
+        EsperEPL2GrammarLexer lex = new EsperEPL2GrammarLexer(input);
         CommonTokenStream tokens = new CommonTokenStream(lex);
-        EsperEPLParser parser = new EsperEPLParser(tokens);
-        EsperEPLParser.startEventPropertyRule_return r;
+        EsperEPL2GrammarParser parser = new EsperEPL2GrammarParser(tokens);
+        EsperEPL2GrammarParser.startEventPropertyRule_return r;
 
         Tree tree;
         try

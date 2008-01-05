@@ -7,7 +7,7 @@
  **************************************************************************************/
 package net.esper.eql.parse;
 
-import net.esper.eql.generated.EsperEPLParser;
+import net.esper.eql.generated.EsperEPL2GrammarParser;
 import org.antlr.runtime.RecognitionException;
 import org.antlr.runtime.tree.Tree;
 
@@ -21,7 +21,7 @@ public interface ParseRuleSelector
      * @param parser - to invoke parse rule on
      * @throws RecognitionException is a parse exception
      */
-    public Tree invokeParseRule(EsperEPLParser parser) throws RecognitionException;
+    public Tree invokeParseRule(EsperEPL2GrammarParser parser) throws RecognitionException;
 }
 
 

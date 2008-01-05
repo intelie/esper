@@ -8,7 +8,7 @@
 package net.esper.eql.parse;
 
 import net.esper.type.*;
-import net.esper.eql.generated.EsperEPLParser;
+import net.esper.eql.generated.EsperEPL2GrammarParser;
 
 import java.util.*;
 
@@ -43,23 +43,23 @@ public class ASTParameterHelper
 
         switch(node.getType())
         {
-            case EsperEPLParser.NUM_INT:
-            case EsperEPLParser.INT_TYPE:
-            case EsperEPLParser.LONG_TYPE:
-            case EsperEPLParser.BOOL_TYPE:
-            case EsperEPLParser.FLOAT_TYPE:
-            case EsperEPLParser.DOUBLE_TYPE:
-            case EsperEPLParser.STRING_TYPE:               return ASTConstantHelper.parse(node);
-            case EsperEPLParser.NUMERIC_PARAM_FREQUENCY:   return makeFrequency(node);
-            case EsperEPLParser.NUMERIC_PARAM_RANGE:       return makeRange(node);
-            case EsperEPLParser.LAST:
-            case EsperEPLParser.LW:
-            case EsperEPLParser.WEEKDAY_OPERATOR:
-            case EsperEPLParser.LAST_OPERATOR:             return makeCronParameter(node, engineTime);
-            case EsperEPLParser.STAR:                      return new WildcardParameter();
-            case EsperEPLParser.NUMERIC_PARAM_LIST:        return makeList(node, engineTime);
-            case EsperEPLParser.ARRAY_PARAM_LIST:          return makeArray(node, engineTime);
-            case EsperEPLParser.TIME_PERIOD:               return makeTimePeriod(node, engineTime);
+            case EsperEPL2GrammarParser.NUM_INT:
+            case EsperEPL2GrammarParser.INT_TYPE:
+            case EsperEPL2GrammarParser.LONG_TYPE:
+            case EsperEPL2GrammarParser.BOOL_TYPE:
+            case EsperEPL2GrammarParser.FLOAT_TYPE:
+            case EsperEPL2GrammarParser.DOUBLE_TYPE:
+            case EsperEPL2GrammarParser.STRING_TYPE:               return ASTConstantHelper.parse(node);
+            case EsperEPL2GrammarParser.NUMERIC_PARAM_FREQUENCY:   return makeFrequency(node);
+            case EsperEPL2GrammarParser.NUMERIC_PARAM_RANGE:       return makeRange(node);
+            case EsperEPL2GrammarParser.LAST:
+            case EsperEPL2GrammarParser.LW:
+            case EsperEPL2GrammarParser.WEEKDAY_OPERATOR:
+            case EsperEPL2GrammarParser.LAST_OPERATOR:             return makeCronParameter(node, engineTime);
+            case EsperEPL2GrammarParser.STAR:                      return new WildcardParameter();
+            case EsperEPL2GrammarParser.NUMERIC_PARAM_LIST:        return makeList(node, engineTime);
+            case EsperEPL2GrammarParser.ARRAY_PARAM_LIST:          return makeArray(node, engineTime);
+            case EsperEPL2GrammarParser.TIME_PERIOD:               return makeTimePeriod(node, engineTime);
             default:
                 throw new ASTWalkException("Unexpected constant of type " + node.getType() + " encountered");
         }
@@ -76,19 +76,19 @@ public class ASTParameterHelper
 
             switch (child.getType())
             {
-                case EsperEPLParser.MILLISECOND_PART :
+                case EsperEPL2GrammarParser.MILLISECOND_PART :
                     result += partValue / 1000d;
                     break;
-                case EsperEPLParser.SECOND_PART :
+                case EsperEPL2GrammarParser.SECOND_PART :
                     result += partValue;
                     break;
-                case EsperEPLParser.MINUTE_PART :
+                case EsperEPL2GrammarParser.MINUTE_PART :
                     result += 60 * partValue;
                     break;
-                case EsperEPLParser.HOUR_PART :
+                case EsperEPL2GrammarParser.HOUR_PART :
                     result += 60 * 60 * partValue;
                     break;
-                case EsperEPLParser.DAY_PART :
+                case EsperEPL2GrammarParser.DAY_PART :
                     result += 24 * 60 * 60 * partValue;
                     break;
                 default:
@@ -137,9 +137,10 @@ public class ASTParameterHelper
     private static Object makeCronParameter(Tree node, long engineTime)
     {
        if (node.getChild(0) == null) {
-           return new CronParameter(node.getText(), null, engineTime);
-       } else {
-        return new CronParameter(node.getText(), node.getChild(0).getText(), engineTime);
+          return new CronParameter(node.getType(), null, engineTime);
+       }
+       else {
+          return new CronParameter(node.getType(), node.getChild(0).getText(), engineTime);
        }
     }
 
@@ -205,12 +206,12 @@ public class ASTParameterHelper
 
         switch(nodeType)
         {
-            case EsperEPLParser.INT_TYPE:  return IntValue.parseString(nodeValues);
-            case EsperEPLParser.LONG_TYPE:  return LongValue.parseString(nodeValues);
-            case EsperEPLParser.BOOL_TYPE:  return BoolValue.parseString(nodeValues);
-            case EsperEPLParser.FLOAT_TYPE:  return FloatValue.parseString(nodeValues);
-            case EsperEPLParser.DOUBLE_TYPE:  return DoubleValue.parseString(nodeValues);
-            case EsperEPLParser.STRING_TYPE:  return StringValue.parseString(nodeValues);
+            case EsperEPL2GrammarParser.INT_TYPE:  return IntValue.parseString(nodeValues);
+            case EsperEPL2GrammarParser.LONG_TYPE:  return LongValue.parseString(nodeValues);
+            case EsperEPL2GrammarParser.BOOL_TYPE:  return BoolValue.parseString(nodeValues);
+            case EsperEPL2GrammarParser.FLOAT_TYPE:  return FloatValue.parseString(nodeValues);
+            case EsperEPL2GrammarParser.DOUBLE_TYPE:  return DoubleValue.parseString(nodeValues);
+            case EsperEPL2GrammarParser.STRING_TYPE:  return StringValue.parseString(nodeValues);
             default:
                 throw new IllegalStateException("Unexpected constant of type " + nodeType + " encountered");
         }

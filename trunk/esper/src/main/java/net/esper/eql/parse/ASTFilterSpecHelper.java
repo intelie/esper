@@ -7,7 +7,7 @@
  **************************************************************************************/
 package net.esper.eql.parse;
 
-import net.esper.eql.generated.EsperEPLParser;
+import net.esper.eql.generated.EsperEPL2GrammarParser;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.antlr.runtime.tree.Tree;
@@ -32,33 +32,33 @@ public class ASTFilterSpecHelper
             buffer.append(delimiter);
 
             switch (child.getType()) {
-                case EsperEPLParser.EVENT_PROP_SIMPLE:
+                case EsperEPL2GrammarParser.EVENT_PROP_SIMPLE:
                     buffer.append(child.getChild(0).getText());
                     break;
-                case EsperEPLParser.EVENT_PROP_MAPPED:
+                case EsperEPL2GrammarParser.EVENT_PROP_MAPPED:
                     buffer.append(child.getChild(0).getText());
                     buffer.append('(');
                     buffer.append(child.getChild(1).getText());
                     buffer.append(')');
                     break;
-                case EsperEPLParser.EVENT_PROP_INDEXED:
+                case EsperEPL2GrammarParser.EVENT_PROP_INDEXED:
                     buffer.append(child.getChild(0).getText());
                     buffer.append('[');
                     buffer.append(child.getChild(1).getText());
                     buffer.append(']');
                     break;
-                case EsperEPLParser.EVENT_PROP_DYNAMIC_SIMPLE:
+                case EsperEPL2GrammarParser.EVENT_PROP_DYNAMIC_SIMPLE:
                     buffer.append(child.getChild(0).getText());
                     buffer.append('?');
                     break;
-                case EsperEPLParser.EVENT_PROP_DYNAMIC_MAPPED:
+                case EsperEPL2GrammarParser.EVENT_PROP_DYNAMIC_MAPPED:
                     buffer.append(child.getChild(0).getText());
                     buffer.append('(');
                     buffer.append(child.getChild(1).getText());
                     buffer.append(')');
                     buffer.append('?');
                     break;
-                case EsperEPLParser.EVENT_PROP_DYNAMIC_INDEXED:
+                case EsperEPL2GrammarParser.EVENT_PROP_DYNAMIC_INDEXED:
                     buffer.append(child.getChild(0).getText());
                     buffer.append('[');
                     buffer.append(child.getChild(1).getText());

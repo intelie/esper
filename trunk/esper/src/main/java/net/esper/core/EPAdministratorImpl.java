@@ -9,7 +9,7 @@ package net.esper.core;
 
 import net.esper.client.*;
 import net.esper.client.soda.EPStatementObjectModel;
-import net.esper.eql.generated.EsperEPLParser;
+import net.esper.eql.generated.EsperEPL2GrammarParser;
 import net.esper.eql.parse.*;
 import net.esper.eql.spec.PatternStreamSpecRaw;
 import net.esper.eql.spec.StatementSpecMapper;
@@ -39,9 +39,9 @@ public class EPAdministratorImpl implements EPAdministrator
     {
         patternParseRule = new ParseRuleSelector()
         {
-            public Tree invokeParseRule(EsperEPLParser parser) throws RecognitionException
+            public Tree invokeParseRule(EsperEPL2GrammarParser parser) throws RecognitionException
             {
-                EsperEPLParser.startPatternExpressionRule_return r = parser.startPatternExpressionRule();
+                EsperEPL2GrammarParser.startPatternExpressionRule_return r = parser.startPatternExpressionRule();
                 return (Tree) r.getTree();
             }
         };
@@ -55,9 +55,9 @@ public class EPAdministratorImpl implements EPAdministrator
 
         eqlParseRule = new ParseRuleSelector()
         {
-            public Tree invokeParseRule(EsperEPLParser parser) throws RecognitionException
+            public Tree invokeParseRule(EsperEPL2GrammarParser parser) throws RecognitionException
             {
-                EsperEPLParser.startEPLExpressionRule_return r = parser.startEPLExpressionRule();
+                EsperEPL2GrammarParser.startEPLExpressionRule_return r = parser.startEPLExpressionRule();
                 return (Tree) r.getTree();
             }
         };

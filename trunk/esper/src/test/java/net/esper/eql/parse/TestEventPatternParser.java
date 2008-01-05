@@ -6,7 +6,7 @@ import org.apache.commons.logging.LogFactory;
 import org.antlr.runtime.tree.Tree;
 import net.esper.support.eql.parse.SupportParserHelper;
 import net.esper.support.bean.SupportBean;
-import net.esper.eql.generated.EsperEPLParser;
+import net.esper.eql.generated.EsperEPL2GrammarParser;
 
 public class TestEventPatternParser extends TestCase
 {
@@ -372,37 +372,37 @@ public class TestEventPatternParser extends TestCase
         Tree ast = parse(expression);
         SupportParserHelper.displayAST(ast);
 
-        assertTrue(ast.getType() == EsperEPLParser.FOLLOWED_BY_EXPR);
+        assertTrue(ast.getType() == EsperEPL2GrammarParser.FOLLOWED_BY_EXPR);
 
         // 2 Children: filter a  and  or-subexpression with the rest
         assertTrue(ast.getChildCount() == 2);
-        assertTrue(ast.getChild(0).getType() == EsperEPLParser.EVENT_FILTER_EXPR);
+        assertTrue(ast.getChild(0).getType() == EsperEPL2GrammarParser.EVENT_FILTER_EXPR);
 
         // Assert on or-subexpression
         Tree orExpr = ast.getChild(1);
-        assertTrue(orExpr.getType() == EsperEPLParser.OR_EXPR);
+        assertTrue(orExpr.getType() == EsperEPL2GrammarParser.OR_EXPR);
         assertTrue(orExpr.getChildCount() == 2);
-        assertTrue(orExpr.getChild(0).getType() == EsperEPLParser.NOT_EXPR);
+        assertTrue(orExpr.getChild(0).getType() == EsperEPL2GrammarParser.NOT_EXPR);
         assertTrue(orExpr.getChild(0).getChildCount() == 1);
-        assertTrue(orExpr.getChild(0).getChild(0).getType() == EsperEPLParser.EVENT_FILTER_EXPR);
+        assertTrue(orExpr.getChild(0).getChild(0).getType() == EsperEPL2GrammarParser.EVENT_FILTER_EXPR);
 
         // Assert on and-subexpression
         Tree andExpr = orExpr.getChild(1);
-        assertTrue(andExpr.getType() == EsperEPLParser.AND_EXPR);
+        assertTrue(andExpr.getType() == EsperEPL2GrammarParser.AND_EXPR);
         assertTrue(andExpr.getChildCount() == 3);
-        assertTrue(andExpr.getChild(0).getType() == EsperEPLParser.EVERY_EXPR);
+        assertTrue(andExpr.getChild(0).getType() == EsperEPL2GrammarParser.EVERY_EXPR);
         assertTrue(andExpr.getChild(0).getChildCount() == 1);
-        assertTrue(andExpr.getChild(0).getChild(0).getType() == EsperEPLParser.EVENT_FILTER_EXPR);
+        assertTrue(andExpr.getChild(0).getChild(0).getType() == EsperEPL2GrammarParser.EVENT_FILTER_EXPR);
 
         // Assert on where a:b and timer:interval sub-expressions
         Tree guardPostFix = andExpr.getChild(1);
         assertTrue(guardPostFix.getChildCount() == 4);
-        assertTrue(guardPostFix.getChild(0).getType() == EsperEPLParser.EVENT_FILTER_EXPR);
-        assertTrue(guardPostFix.getChild(1).getType() == EsperEPLParser.IDENT);
+        assertTrue(guardPostFix.getChild(0).getType() == EsperEPL2GrammarParser.EVENT_FILTER_EXPR);
+        assertTrue(guardPostFix.getChild(1).getType() == EsperEPL2GrammarParser.IDENT);
 
         Tree timerIntervalExpr = andExpr.getChild(2);
         assertTrue(timerIntervalExpr.getChildCount() == 3);
-        assertTrue(timerIntervalExpr.getChild(0).getType() == EsperEPLParser.IDENT);
+        assertTrue(timerIntervalExpr.getChild(0).getType() == EsperEPL2GrammarParser.IDENT);
 
         // The tree generated....
         /*

@@ -8,7 +8,7 @@
 package net.esper.eql.parse;
 
 import net.esper.type.*;
-import net.esper.eql.generated.EsperEPLParser;
+import net.esper.eql.generated.EsperEPL2GrammarParser;
 import org.antlr.runtime.tree.Tree;
 
 /**
@@ -25,14 +25,14 @@ public class ASTConstantHelper
     {
         switch(node.getType())
         {
-            case EsperEPLParser.NUM_INT:       return parseIntLong(node.getText());
-            case EsperEPLParser.INT_TYPE:      return parseIntLong(node.getText());
-            case EsperEPLParser.LONG_TYPE:     return LongValue.parseString(node.getText());
-            case EsperEPLParser.BOOL_TYPE:     return BoolValue.parseString(node.getText());
-            case EsperEPLParser.FLOAT_TYPE:    return FloatValue.parseString(node.getText());
-            case EsperEPLParser.DOUBLE_TYPE:   return DoubleValue.parseString(node.getText());
-            case EsperEPLParser.STRING_TYPE:   return StringValue.parseString(node.getText());
-            case EsperEPLParser.NULL_TYPE:     return null;
+            case EsperEPL2GrammarParser.NUM_INT:       return parseIntLong(node.getText());
+            case EsperEPL2GrammarParser.INT_TYPE:      return parseIntLong(node.getText());
+            case EsperEPL2GrammarParser.LONG_TYPE:     return LongValue.parseString(node.getText());
+            case EsperEPL2GrammarParser.BOOL_TYPE:     return BoolValue.parseString(node.getText());
+            case EsperEPL2GrammarParser.FLOAT_TYPE:    return FloatValue.parseString(node.getText());
+            case EsperEPL2GrammarParser.DOUBLE_TYPE:   return DoubleValue.parseString(node.getText());
+            case EsperEPL2GrammarParser.STRING_TYPE:   return StringValue.parseString(node.getText());
+            case EsperEPL2GrammarParser.NULL_TYPE:     return null;
             default:
                 throw new IllegalArgumentException("Unexpected constant of non-primitve type " + node.getType() + " encountered");
         }

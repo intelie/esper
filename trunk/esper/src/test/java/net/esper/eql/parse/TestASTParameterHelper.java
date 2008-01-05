@@ -1,6 +1,6 @@
 package net.esper.eql.parse;
 
-import net.esper.eql.generated.EsperEPLParser;
+import net.esper.eql.generated.EsperEPL2GrammarParser;
 import net.esper.type.*;
 import junit.framework.TestCase;
 import org.antlr.runtime.tree.Tree;
@@ -11,39 +11,39 @@ public class TestASTParameterHelper extends TestCase
 {
     public void testSingleConstant() throws Exception
     {
-        Tree ast = makeSingleAst(EsperEPLParser.LONG_TYPE, "1");
+        Tree ast = makeSingleAst(EsperEPL2GrammarParser.LONG_TYPE, "1");
         assertEquals(1L, convert(ast));
 
-        ast = makeSingleAst(EsperEPLParser.STRING_TYPE, "'1'");
+        ast = makeSingleAst(EsperEPL2GrammarParser.STRING_TYPE, "'1'");
         assertEquals("1", convert(ast));
 
-        ast = makeSingleAst(EsperEPLParser.STRING_TYPE, "\"hello\"");
+        ast = makeSingleAst(EsperEPL2GrammarParser.STRING_TYPE, "\"hello\"");
         assertEquals("hello", convert(ast));
     }
 
     public void testArray() throws Exception
     {
         // Uniform type array
-        Tree ast = makeArrayAst(new int[] { EsperEPLParser.LONG_TYPE, EsperEPLParser.LONG_TYPE },
+        Tree ast = makeArrayAst(new int[] { EsperEPL2GrammarParser.LONG_TYPE, EsperEPL2GrammarParser.LONG_TYPE },
                                new String[] { "1", "2" });
         long[] longArr = (long[]) convert(ast);
         assertEquals(1l, longArr[0]);
         assertEquals(2l, longArr[1]);
 
-        ast = makeArrayAst(new int[] { EsperEPLParser.STRING_TYPE, EsperEPLParser.STRING_TYPE },
+        ast = makeArrayAst(new int[] { EsperEPL2GrammarParser.STRING_TYPE, EsperEPL2GrammarParser.STRING_TYPE },
                                new String[] { "'1'", "'2'" });
         String[] strArr = (String[]) convert(ast);
         assertEquals("1", strArr[0]);
         assertEquals("2", strArr[1]);
 
-        ast = makeArrayAst(new int[] { EsperEPLParser.BOOL_TYPE, EsperEPLParser.BOOL_TYPE },
+        ast = makeArrayAst(new int[] { EsperEPL2GrammarParser.BOOL_TYPE, EsperEPL2GrammarParser.BOOL_TYPE },
                                new String[] { "true", "false" });
         boolean[] boolArr = (boolean[]) convert(ast);
         assertEquals(true, boolArr[0]);
         assertEquals(false, boolArr[1]);
 
         // Mixed type array
-        ast = makeArrayAst(new int[] { EsperEPLParser.STRING_TYPE, EsperEPLParser.INT_TYPE, EsperEPLParser.BOOL_TYPE },
+        ast = makeArrayAst(new int[] { EsperEPL2GrammarParser.STRING_TYPE, EsperEPL2GrammarParser.INT_TYPE, EsperEPL2GrammarParser.BOOL_TYPE },
                                new String[] { "'A'", "10", "true" });
         Object[] mixedArr = (Object[]) convert(ast);
         assertEquals("A", mixedArr[0]);
@@ -66,16 +66,16 @@ public class TestASTParameterHelper extends TestCase
 
     public void testWildcardParameter() throws Exception
     {
-        Tree ast = makeSingleAst(EsperEPLParser.STAR,"");
+        Tree ast = makeSingleAst(EsperEPL2GrammarParser.STAR,"");
         convert(ast);
     }
 
     public void testListParameter() throws Exception
     {
-        Tree ast = makeSingleAst(EsperEPLParser.NUMERIC_PARAM_LIST,"");
-        ast.addChild(makeSingleAst(EsperEPLParser.INT_TYPE,"99"));
+        Tree ast = makeSingleAst(EsperEPL2GrammarParser.NUMERIC_PARAM_LIST,"");
+        ast.addChild(makeSingleAst(EsperEPL2GrammarParser.INT_TYPE,"99"));
         ast.addChild(makeRangeAst());
-        ast.addChild(makeSingleAst(EsperEPLParser.STAR,""));
+        ast.addChild(makeSingleAst(EsperEPL2GrammarParser.STAR,""));
         ast.addChild(makeFrequencyAst());
 
         ListParameter result = (ListParameter) convert(ast);
@@ -96,24 +96,24 @@ public class TestASTParameterHelper extends TestCase
 
     public void testTimePeriod() throws Exception
     {
-        Tree ast = makeInternal(new int[] {EsperEPLParser.SECOND_PART}, new String[] {"2"}, new int[] {EsperEPLParser.NUM_INT});
+        Tree ast = makeInternal(new int[] {EsperEPL2GrammarParser.SECOND_PART}, new String[] {"2"}, new int[] {EsperEPL2GrammarParser.NUM_INT});
         assertEquals(2d, tryTimePeriod(ast));
 
-        ast = makeInternal(new int[] {EsperEPLParser.MILLISECOND_PART}, new String[] {"2"}, new int[] {EsperEPLParser.NUM_INT});
+        ast = makeInternal(new int[] {EsperEPL2GrammarParser.MILLISECOND_PART}, new String[] {"2"}, new int[] {EsperEPL2GrammarParser.NUM_INT});
         assertEquals(2/1000d, tryTimePeriod(ast));
 
-        ast = makeInternal(new int[] {EsperEPLParser.MINUTE_PART}, new String[] {"2"}, new int[] {EsperEPLParser.NUM_INT});
+        ast = makeInternal(new int[] {EsperEPL2GrammarParser.MINUTE_PART}, new String[] {"2"}, new int[] {EsperEPL2GrammarParser.NUM_INT});
         assertEquals(2 * 60d, tryTimePeriod(ast));
 
-        ast = makeInternal(new int[] {EsperEPLParser.HOUR_PART}, new String[] {"2"}, new int[] {EsperEPLParser.NUM_INT});
+        ast = makeInternal(new int[] {EsperEPL2GrammarParser.HOUR_PART}, new String[] {"2"}, new int[] {EsperEPL2GrammarParser.NUM_INT});
         assertEquals(2 * 60 * 60d, tryTimePeriod(ast));
 
-        ast = makeInternal(new int[] {EsperEPLParser.DAY_PART}, new String[] {"2"}, new int[] {EsperEPLParser.NUM_INT});
+        ast = makeInternal(new int[] {EsperEPL2GrammarParser.DAY_PART}, new String[] {"2"}, new int[] {EsperEPL2GrammarParser.NUM_INT});
         assertEquals(2 * 24 * 60 * 60d, tryTimePeriod(ast));
 
-        ast = makeInternal(new int[] {EsperEPLParser.DAY_PART, EsperEPLParser.HOUR_PART, EsperEPLParser.MINUTE_PART, EsperEPLParser.SECOND_PART, EsperEPLParser.MILLISECOND_PART},
+        ast = makeInternal(new int[] {EsperEPL2GrammarParser.DAY_PART, EsperEPL2GrammarParser.HOUR_PART, EsperEPL2GrammarParser.MINUTE_PART, EsperEPL2GrammarParser.SECOND_PART, EsperEPL2GrammarParser.MILLISECOND_PART},
                         new String[] {"2",      "3",       "4",         "5",         "6"},
-                        new int[] {EsperEPLParser.NUM_INT, EsperEPLParser.LONG_TYPE, EsperEPLParser.NUM_INT, EsperEPLParser.NUM_INT, EsperEPLParser.NUM_INT});
+                        new int[] {EsperEPL2GrammarParser.NUM_INT, EsperEPL2GrammarParser.LONG_TYPE, EsperEPL2GrammarParser.NUM_INT, EsperEPL2GrammarParser.NUM_INT, EsperEPL2GrammarParser.NUM_INT});
         assertEquals(2*24*60*60d + 3*60*60 + 4*60 + 5 + 6/1000d, tryTimePeriod(ast));
     }
 
@@ -125,7 +125,7 @@ public class TestASTParameterHelper extends TestCase
 
     private Tree makeInternal(int[] parts, String[] values, int[] types)
     {
-        Tree ast = makeSingleAst(EsperEPLParser.TIME_PERIOD, "interval");
+        Tree ast = makeSingleAst(EsperEPL2GrammarParser.TIME_PERIOD, "interval");
         for (int i = 0; i < parts.length; i++)
         {
             Tree childPart = makeSingleAst(parts[i], "part");
@@ -151,8 +151,8 @@ public class TestASTParameterHelper extends TestCase
     private Tree makeArrayAst(int[] types, String[] values) throws Exception
     {
         CommonTree ast = new CommonTree();
-        ast.token = new CommonToken(EsperEPLParser.ARRAY_PARAM_LIST, "array_list");
-        ast.token.setType(EsperEPLParser.ARRAY_PARAM_LIST);
+        ast.token = new CommonToken(EsperEPL2GrammarParser.ARRAY_PARAM_LIST, "array_list");
+        ast.token.setType(EsperEPL2GrammarParser.ARRAY_PARAM_LIST);
 
         for (int i = 0; i < types.length; i++)
         {
@@ -166,9 +166,9 @@ public class TestASTParameterHelper extends TestCase
 
     private Tree makeRangeAst()
     {
-        Tree ast = makeSingleAst(EsperEPLParser.NUMERIC_PARAM_RANGE,"");
-        Tree child1 = makeSingleAst(EsperEPLParser.INT_TYPE,"9");
-        Tree child2 = makeSingleAst(EsperEPLParser.INT_TYPE,"20");
+        Tree ast = makeSingleAst(EsperEPL2GrammarParser.NUMERIC_PARAM_RANGE,"");
+        Tree child1 = makeSingleAst(EsperEPL2GrammarParser.INT_TYPE,"9");
+        Tree child2 = makeSingleAst(EsperEPL2GrammarParser.INT_TYPE,"20");
         ast.addChild(child1);
         ast.addChild(child2);
 
@@ -177,8 +177,8 @@ public class TestASTParameterHelper extends TestCase
 
     private Tree makeFrequencyAst()
     {
-        Tree ast = makeSingleAst(EsperEPLParser.NUMERIC_PARAM_FREQUENCY,"");
-        Tree child = makeSingleAst(EsperEPLParser.INT_TYPE,"9");
+        Tree ast = makeSingleAst(EsperEPL2GrammarParser.NUMERIC_PARAM_FREQUENCY,"");
+        Tree child = makeSingleAst(EsperEPL2GrammarParser.INT_TYPE,"9");
         ast.addChild(child);
         return ast;
     }

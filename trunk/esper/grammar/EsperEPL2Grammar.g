@@ -1,4 +1,4 @@
-grammar EsperEPL;
+grammar EsperEPL2Grammar;
 
 options
 {
@@ -946,11 +946,11 @@ rangeOperand
 	;
 
 lastOperator
-	:	l=NUM_INT LAST -> LAST_OPERATOR[$l]
+	:	l=NUM_INT LAST -> ^(LAST_OPERATOR $l)
 	;
 
 weekDayOperator:
-		wd=NUM_INT WEEKDAY -> WEEKDAY_OPERATOR[$wd]
+		wd=NUM_INT WEEKDAY -> ^(WEEKDAY_OPERATOR $wd)
 	;
 
 numericParameterList
@@ -987,27 +987,16 @@ classIdentifier
   @init { String identifier = ""; }
 	:	i1=IDENT { identifier = $i1.getText(); }
 	    ( 
-	    	// Ambigous since exit block may also be identifier, not yet seen a problem testing this
-	    	// so suppressing warning here.
-	    	/*options 
-	    	{ 	
-	    		warnWhenFollowAmbig=false; 
-	    	}*/ 
 	    	 DOT i2=IDENT { identifier += "." + $i2.getText(); }
 	    )* 
 	    -> ^(CLASS_IDENT[identifier])
 	;
 	
 classIdentifierNonGreedy
-  @init { String identifier = ""; }
+  @init { String identifier = ""; } 
 	:	i1=IDENT { identifier = $i1.getText(); }
 	    ( 
-	    	// Ambigous since exit block may also be identifier, not yet seen a problem testing this
-	    	// so suppressing warning here.
-	    	/*options 
-	    	{ 	
-	    		warnWhenFollowAmbig=false; 
-	    	}*/ 
+	    	 options {greedy=false;} :
 	    	 DOT i2=IDENT { identifier += "." + $i2.getText(); }
 	    )* 
 	    -> ^(CLASS_IDENT[identifier])
@@ -1123,15 +1112,17 @@ BAND_ASSIGN 	: '&=';
 LAND 		: '&&';
 SEMI 		: ';';
 DOT 		: '.';
+NUM_LONG	: '\u18FF';  // assign bogus unicode characters so the token exists
+NUM_DOUBLE	: '\u18FE';
+NUM_FLOAT	: '\u18FD';
 
 // Whitespace -- ignored
 WS	:	(	' '
 		|	'\t'
 		|	'\f'
 			// handle newlines
-		|	(	/*options {generateAmbigWarnings=false;}*/
-				'\r\n'  // Evil DOS
-			|	'\r'    // Macintosh
+		|	(
+				'\r'    // Macintosh
 			|	'\n'    // Unix (the right way)
 			)
 		)+
@@ -1181,22 +1172,13 @@ ESC
 		|	('u')+ HEX_DIGIT HEX_DIGIT HEX_DIGIT HEX_DIGIT
 		|	'0'..'3'
 			(
-				/*options {
-					warnWhenFollowAmbig = false;
-				}*/
 				'0'..'7'
 				(
-					/*options {
-						warnWhenFollowAmbig = false;
-					}*/
 					'0'..'7'
 				)?
 			)?
 		|	'4'..'7'
 			(
-				/*options {
-					warnWhenFollowAmbig = false;
-				}*/
 				'0'..'7'
 			)?
 		)
@@ -1213,15 +1195,13 @@ HEX_DIGIT
 // an identifier.  Note that testLiterals is set to true!  This means
 // that after we match the rule, we look in the literals table to see
 // if it's a literal or really an identifer
-IDENT
-	/*options {testLiterals=true; paraphrase = 'an identifier';}*/		   
+IDENT	
 	:	('a'..'z'|'_'|'$') ('a'..'z'|'_'|'0'..'9'|'$')*
 	;
 
 
 // a numeric literal
-NUM_INT
-	/*options {paraphrase = 'a numeric literal';}*/		   
+NUM_INT	
 	@init {boolean isDecimal=false; Token t=null;}
     :   '.' {$type = DOT;}
             (	('0'..'9')+ (EXPONENT)? (f1=FLOAT_SUFFIX {t=f1;})?
@@ -1243,9 +1223,6 @@ NUM_INT
 					// know when to stop: ambig.  ANTLR resolves
 					// it correctly by matching immediately.  It
 					// is therefor ok to hush warning.
-					/*options {
-						warnWhenFollowAmbig=false;
-					}*/
 					HEX_DIGIT
 				)+
 

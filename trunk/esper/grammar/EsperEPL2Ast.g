@@ -1,9 +1,9 @@
-tree grammar EsperEPLTree;
+tree grammar EsperEPL2Ast;
 
 options
 {
 	k = 2;                   	// lookahead is 2 tokens
-	tokenVocab = EsperEPL;
+	tokenVocab = EsperEPL2Grammar;
 	//output = AST;
     	ASTLabelType = CommonTree;
 }
@@ -16,7 +16,7 @@ options
 }
 
 @members {
-  private static Log log = LogFactory.getLog(EsperEPLTree.class);
+  private static Log log = LogFactory.getLog(EsperEPL2Ast.class);
 
   // For pattern processing within EPL and for create pattern
   protected void setIsPatternWalk(boolean isPatternWalk) {};

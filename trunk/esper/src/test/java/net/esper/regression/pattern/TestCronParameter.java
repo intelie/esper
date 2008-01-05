@@ -43,8 +43,19 @@ public class TestCronParameter extends TestCase implements SupportBeanConstants
 
     public void testOperator() throws Exception
     {
+        // Observer for last Sunday of month, 0 = Sunday
+        int lastDayOfWeek = getLastDayOfWeekInMonth(0, 2007);
+        calendar.set(2007, getCurrentMonth(2007), lastDayOfWeek, 8, 00, 00);
+        printCurrentTime(calendar);
+        baseTime = calendar.getTimeInMillis();
+        testData = getEventSet(baseTime, 1000 * 60 * 10);
+        expressionText = "timer:at(*, *,*,*,0 last,*)";
+        testCase = new EventExpressionCase(expressionText);
+        testCase.add("A1");
+        runTestEvent();
+
         // Observer for last day of current month
-        calendar.set(2007, getCurrentMonth(), getLastDayOfMonth(), 8, 00, 00);
+        calendar.set(2007, getCurrentMonth(2007), getLastDayOfMonth(2007), 8, 00, 00);
         printCurrentTime(calendar);
         baseTime = calendar.getTimeInMillis();
         testData = getEventSet(baseTime, 1000 * 60 * 10);
@@ -91,27 +102,6 @@ public class TestCronParameter extends TestCase implements SupportBeanConstants
         testCase.add("A1");
         runTestEvent();
 
-        // Observer for last Friday of current month,
-        // 0=Sunday, 1=Monday, 2=Tuesday, 3=Wednesday, 4= Thursday, 5=Friday, 6=Saturday
-        calendar.set(2007, getCurrentMonth(), getLastDayOfWeekInMonth(5), 8, 00, 00);
-        printCurrentTime(calendar);
-        baseTime = calendar.getTimeInMillis();
-        testData = getEventSet(baseTime, 1000 * 60 * 10);
-        expressionText = "timer:at(*, *,*,*,5 last,*)";
-        testCase = new EventExpressionCase(expressionText);
-        testCase.add("A1");
-        runTestEvent();
-
-        // Observer for last Sunday of month, 0 = Sunday
-        calendar.set(2007, getCurrentMonth(), getLastDayOfWeekInMonth(0), 8, 00, 00);
-        printCurrentTime(calendar);
-        baseTime = calendar.getTimeInMillis();
-        testData = getEventSet(baseTime, 1000 * 60 * 10);
-        expressionText = "timer:at(*, *,*,*,0 last,*)";
-        testCase = new EventExpressionCase(expressionText);
-        testCase.add("A1");
-        runTestEvent();
-
         // Observer for last Friday of June
         calendar.set(2007, Calendar.JUNE, 29, 8, 00, 00);
         printCurrentTime(calendar);
@@ -123,7 +113,7 @@ public class TestCronParameter extends TestCase implements SupportBeanConstants
         runTestEvent();
 
         // Observer for last weekday of the current month
-        calendar.set(2007, getCurrentMonth(), getLastWeekDayOfMonth(null), 8, 00, 00);
+        calendar.set(2007, getCurrentMonth(2007), getLastWeekDayOfMonth(null, 2007), 8, 00, 00);
         printCurrentTime(calendar);
         baseTime = calendar.getTimeInMillis();
         testData = getEventSet(baseTime, 1000 * 60 * 10);
@@ -153,7 +143,7 @@ public class TestCronParameter extends TestCase implements SupportBeanConstants
         runTestEvent();
 
         // Observer for nearest weekday for current month on the 10th
-        calendar.set(2007, getCurrentMonth(), getLastWeekDayOfMonth(10), 8, 00, 00);
+        calendar.set(2007, getCurrentMonth(2007), getLastWeekDayOfMonth(10, 2007), 8, 00, 00);
         printCurrentTime(calendar);
         baseTime = calendar.getTimeInMillis();
         testData = getEventSet(baseTime, 1000 * 60 * 10);
@@ -178,6 +168,17 @@ public class TestCronParameter extends TestCase implements SupportBeanConstants
         baseTime = calendar.getTimeInMillis();
         testData = getEventSet(baseTime, 1000 * 60 * 10);
         expressionText = "timer:at(*, *,30 weekday,9,*,*)";
+        testCase = new EventExpressionCase(expressionText);
+        testCase.add("A1");
+        runTestEvent();
+
+        // Observer for last Friday of current month,
+        // 0=Sunday, 1=Monday, 2=Tuesday, 3=Wednesday, 4= Thursday, 5=Friday, 6=Saturday
+        calendar.set(2007, getCurrentMonth(2007), getLastDayOfWeekInMonth(5, 2007), 8, 00, 00);
+        printCurrentTime(calendar);
+        baseTime = calendar.getTimeInMillis();
+        testData = getEventSet(baseTime, 1000 * 60 * 10);
+        expressionText = "timer:at(*, *,*,*,5 last,*)";
         testCase = new EventExpressionCase(expressionText);
         testCase.add("A1");
         runTestEvent();
@@ -442,27 +443,27 @@ public class TestCronParameter extends TestCase implements SupportBeanConstants
         return testDataTimers;
     }
 
-    private int getCurrentMonth()
+    private int getCurrentMonth(int year)
     {
-        setTime();
+        setTime(year);
         return calendar.get(Calendar.MONTH);
     }
 
-    private int getLastDayOfMonth()
+    private int getLastDayOfMonth(int year)
     {
-        setTime();
+        setTime(year);
         calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMaximum(Calendar.DAY_OF_MONTH));
         return calendar.get(Calendar.DAY_OF_MONTH);
     }
 
-    private int getLastDayOfWeekInMonth(int day)
+    private int getLastDayOfWeekInMonth(int day, int year)
     {
         if (day < 0 || day > 7)
         {
             throw new IllegalArgumentException("Last xx day of the month has to be a day of week (0-7)");
         }
-        int dayOfWeek = getDayOfWeek(day);
-        setTime();
+        int dayOfWeek = getDayOfWeek(day, year);
+        setTime(year);
         calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMaximum(Calendar.DAY_OF_MONTH));
         int dayDiff = calendar.get(Calendar.DAY_OF_WEEK) - dayOfWeek;
         if (dayDiff > 0)
@@ -476,10 +477,10 @@ public class TestCronParameter extends TestCase implements SupportBeanConstants
         return calendar.get(Calendar.DAY_OF_MONTH);
     }
 
-    private int getLastWeekDayOfMonth(Integer day)
+    private int getLastWeekDayOfMonth(Integer day, int year)
     {
-        int computeDay = (day == null) ? getLastDayOfMonth() : day;
-        setTime();
+        int computeDay = (day == null) ? getLastDayOfMonth(year) : day;
+        setTime(year);
         if (!checkDayValidInMonth(computeDay, calendar.get(Calendar.MONTH), calendar.get(Calendar.YEAR)))
         {
             throw new IllegalArgumentException("Invalid day for " + calendar.get(Calendar.MONTH));
@@ -515,17 +516,18 @@ public class TestCronParameter extends TestCase implements SupportBeanConstants
         return calendar.get(Calendar.DAY_OF_MONTH);
     }
 
-    private int getDayOfWeek(int day)
+    private int getDayOfWeek(int day, int year)
     {
-        setTime();
+        setTime(year);
         calendar.set(Calendar.DAY_OF_WEEK, day + 1);
         return calendar.get(Calendar.DAY_OF_WEEK);
     }
 
-    private void setTime()
+    private void setTime(int year)
     {
         Date date = new Date();
         calendar.setTime(date);
+        calendar.set(Calendar.YEAR, year);
         calendar.set(Calendar.DAY_OF_MONTH, 1);
     }
 

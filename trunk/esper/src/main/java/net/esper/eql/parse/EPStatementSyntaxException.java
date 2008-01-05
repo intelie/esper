@@ -8,8 +8,8 @@
 package net.esper.eql.parse;
 
 import net.esper.client.EPStatementException;
-import net.esper.eql.generated.EsperEPLParser;
-import net.esper.eql.generated.EsperEPLTree;
+import net.esper.eql.generated.EsperEPL2GrammarParser;
+import net.esper.eql.generated.EsperEPL2Ast;
 import org.antlr.runtime.MismatchedTokenException;
 import org.antlr.runtime.NoViableAltException;
 import org.antlr.runtime.RecognitionException;
@@ -38,7 +38,7 @@ public class EPStatementSyntaxException extends EPStatementException
      * @param expression is the expression text
      * @return syntax exception
      */
-    public static EPStatementSyntaxException convert(RecognitionException e, String expression, EsperEPLParser parser)
+    public static EPStatementSyntaxException convert(RecognitionException e, String expression, EsperEPL2GrammarParser parser)
     {
         Token t;
         if (e.index < parser.getTokenStream().size())
@@ -134,7 +134,7 @@ public class EPStatementSyntaxException extends EPStatementException
      * @param expression is the expression text
      * @return syntax exception
      */
-    public static EPStatementSyntaxException convert(RecognitionException e, String expression, EsperEPLTree treeWalker)
+    public static EPStatementSyntaxException convert(RecognitionException e, String expression, EsperEPL2Ast treeWalker)
     {
         String positionInfo = getPositionInfo(e.token);
         String tokenName = "end of input";

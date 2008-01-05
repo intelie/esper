@@ -10,7 +10,7 @@ package net.esper.eql.parse;
 import net.esper.eql.spec.OutputLimitSpec;
 import net.esper.eql.spec.OutputLimitLimitType;
 import net.esper.eql.spec.OutputLimitRateType;
-import net.esper.eql.generated.EsperEPLParser;
+import net.esper.eql.generated.EsperEPL2GrammarParser;
 import org.antlr.runtime.tree.Tree;
 
 /**
@@ -30,29 +30,29 @@ public class ASTOutputLimitHelper
         Tree child = node.getChild(count);
 
         OutputLimitLimitType displayLimit = OutputLimitLimitType.ALL;
-        if (child.getType() == EsperEPLParser.FIRST)
+        if (child.getType() == EsperEPL2GrammarParser.FIRST)
         {
             displayLimit = OutputLimitLimitType.FIRST;
             child = node.getChild(++count);
         }
-        else if (child.getType() == EsperEPLParser.LAST)
+        else if (child.getType() == EsperEPL2GrammarParser.LAST)
         {
             displayLimit = OutputLimitLimitType.LAST;
             child = node.getChild(++count);
         }
-        else if (child.getType() == EsperEPLParser.SNAPSHOT)
+        else if (child.getType() == EsperEPL2GrammarParser.SNAPSHOT)
         {
             displayLimit = OutputLimitLimitType.SNAPSHOT;
             child = node.getChild(++count);
         }
-        else if (child.getType() == EsperEPLParser.ALL)
+        else if (child.getType() == EsperEPL2GrammarParser.ALL)
         {
             child = node.getChild(++count);
         }
 
         String variableName = null;
         double rate = -1;
-        if (child.getType() == EsperEPLParser.IDENT)
+        if (child.getType() == EsperEPL2GrammarParser.IDENT)
         {
             variableName = child.getText();
         }
@@ -63,11 +63,11 @@ public class ASTOutputLimitHelper
 
         switch (node.getType())
         {
-            case EsperEPLParser.EVENT_LIMIT_EXPR:
+            case EsperEPL2GrammarParser.EVENT_LIMIT_EXPR:
                 return new OutputLimitSpec(rate, variableName, OutputLimitRateType.EVENTS, displayLimit);
-            case EsperEPLParser.SEC_LIMIT_EXPR:
+            case EsperEPL2GrammarParser.SEC_LIMIT_EXPR:
                 return new OutputLimitSpec(rate, variableName, OutputLimitRateType.TIME_SEC, displayLimit);
-            case EsperEPLParser.MIN_LIMIT_EXPR:
+            case EsperEPL2GrammarParser.MIN_LIMIT_EXPR:
                 return new OutputLimitSpec(rate, variableName, OutputLimitRateType.TIME_MIN, displayLimit);
             default:
                 throw new IllegalArgumentException("Node type " + node.getType() + " not a recognized output limit type");
