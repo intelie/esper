@@ -25,8 +25,8 @@ public class TestUniqueByPropertyViewFactory extends TestCase
     {
         factory.setViewParameters(null, Arrays.asList(new Object[] {"a"}));
         assertFalse(factory.canReuse(new SizeView(SupportStatementContextFactory.makeContext())));
-        assertTrue(factory.canReuse(new UniqueByPropertyView("a")));
-        assertFalse(factory.canReuse(new UniqueByPropertyView("c")));
+        assertTrue(factory.canReuse(new UniqueByPropertyView(new String[] {"a"})));
+        assertFalse(factory.canReuse(new UniqueByPropertyView(new String[] {"c"})));
     }
 
     private void tryInvalidParameter(Object param) throws Exception
@@ -48,6 +48,6 @@ public class TestUniqueByPropertyViewFactory extends TestCase
         UniqueByPropertyViewFactory factory = new UniqueByPropertyViewFactory();
         factory.setViewParameters(null, Arrays.asList(new Object[] {param}));
         UniqueByPropertyView view = (UniqueByPropertyView) factory.makeView(SupportStatementContextFactory.makeContext());
-        assertEquals(fieldName, view.getUniqueFieldName());
+        assertEquals(fieldName, view.getUniqueFieldNames()[0]);
     }
 }

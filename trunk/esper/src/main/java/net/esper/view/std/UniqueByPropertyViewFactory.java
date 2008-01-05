@@ -10,6 +10,7 @@ import net.esper.eql.named.RemoveStreamViewCapability;
 import net.esper.core.StatementContext;
 
 import java.util.List;
+import java.util.Arrays;
 
 /**
  * Factory for {@link UniqueByPropertyView} instances. 
@@ -19,33 +20,25 @@ public class UniqueByPropertyViewFactory implements DataWindowViewFactory
     /**
      * Property name to evaluate unique values.
      */
-    protected String propertyName;
+    protected String[] propertyNames;
     
     private EventType eventType;
 
     public void setViewParameters(ViewFactoryContext viewFactoryContext, List<Object> viewParameters) throws ViewParameterException
     {
-        String errorMessage = "'Unique' view requires a single string parameter";
-        if (viewParameters.size() != 1)
-        {
-            throw new ViewParameterException(errorMessage);
-        }
-
-        Object parameter = viewParameters.get(0);
-        if (!(parameter instanceof String))
-        {
-            throw new ViewParameterException(errorMessage);
-        }
-        propertyName = (String) parameter;
+        propertyNames = GroupByViewFactory.getFieldNameParams(viewParameters, "Unique");         
     }
 
     public void attach(EventType parentEventType, StatementContext statementContext, ViewFactory optionalParentFactory, List<ViewFactory> parentViewFactories) throws ViewAttachException
     {
-        // Attaches to just about anything as long as the field exists
-        String message = PropertyCheckHelper.exists(parentEventType, propertyName);
-        if (message != null)
+        // Attaches to just about anything as long as all the fields exists
+        for (int i = 0; i < propertyNames.length; i++)
         {
-            throw new ViewAttachException(message);
+            String message = PropertyCheckHelper.exists(parentEventType, propertyNames[i]);
+            if (message != null)
+            {
+                throw new ViewAttachException(message);
+            }
         }
         this.eventType = parentEventType;
     }
@@ -70,7 +63,7 @@ public class UniqueByPropertyViewFactory implements DataWindowViewFactory
 
     public View makeView(StatementContext statementContext)
     {
-        return new UniqueByPropertyView(propertyName);
+        return new UniqueByPropertyView(propertyNames);
     }
 
     public EventType getEventType()
@@ -86,7 +79,7 @@ public class UniqueByPropertyViewFactory implements DataWindowViewFactory
         }
 
         UniqueByPropertyView myView = (UniqueByPropertyView) view;
-        if (!myView.getUniqueFieldName().equals(propertyName))
+        if (!Arrays.deepEquals(myView.getUniqueFieldNames(), propertyNames))
         {
             return false;
         }

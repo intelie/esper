@@ -18,7 +18,7 @@ public class TestUniqueByPropertyView extends TestCase
     public void setUp()
     {
         // Set up length window view and a test child view
-        myView = new UniqueByPropertyView("symbol");
+        myView = new UniqueByPropertyView(new String[] {"symbol"});
         childView = new SupportBeanClassView(SupportMarketDataBean.class);
         myView.addView(childView);
     }
@@ -75,7 +75,7 @@ public class TestUniqueByPropertyView extends TestCase
         myView.setParent(parent);
 
         UniqueByPropertyView copied = (UniqueByPropertyView) myView.cloneView(SupportStatementContextFactory.makeContext());
-        assertEquals(myView.getUniqueFieldName(), copied.getUniqueFieldName());
+        assertEquals(myView.getUniqueFieldNames()[0], copied.getUniqueFieldNames()[0]);
     }
 
     private EventBean makeTradeBean(String symbol, int price)

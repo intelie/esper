@@ -87,13 +87,13 @@
 					</row>
 					<row>
 						<entry>Unique</entry>
-						<entry>std:unique(<emphasis>property name</emphasis>)</entry>
-						<entry>Retains only the most recent among events having the same value for the specified property. Acts as a length window of size 1 for each distinct value of the property</entry>
+						<entry>std:unique(<emphasis>property name(s)</emphasis>)</entry>
+						<entry>Retains only the most recent among events having the same value for the specified property or properties. Acts as a length window of size 1 for each distinct value of the property</entry>
 					</row>
 					<row>
 						<entry>Group By</entry>
-						<entry>std:groupby(<emphasis>property name</emphasis>)</entry>
-						<entry>Groups events into sub-views by the value of the specified field, generally used to provide a separate data window per group</entry>
+						<entry>std:groupby(<emphasis>property name(s)</emphasis>)</entry>
+						<entry>Groups events into sub-views by the value of the specified field or fields, generally used to provide a separate data window per group</entry>
 					</row>
 					<row>
 						<entry>Last Event</entry>
@@ -426,19 +426,27 @@ following conditions occurs, whichever occurs first: the data window has collect
 				<indexterm><primary>data window views</primary><secondary>unique window</secondary></indexterm>
 
 				<para>
-					The <literal>unique</literal> view is a view that includes only the most recent among events having the same value for the specified field:
+					The <literal>unique</literal> view is a view that includes only the most recent among events having the same value for the specified field or list of fields.
 				</para>
-				<synopsis>std:unique(<emphasis>event_property_name</emphasis>)</synopsis>
+				
+				<para>
+					The synopsis is:
+				</para>
+				<synopsis>std:unique(<emphasis>property_name</emphasis> [, <emphasis>property_name</emphasis> ...])</synopsis>
 
 				<para>
-					The view acts as a length window of size 1 for each distinct value of the event property. It thus posts as old events the prior event of the same property value, if any.
+					The view acts as a length window of size 1 for each distinct value of the event property, or combination of event property values. It thus posts as old events the prior event of the same property value(s), if any.
 				</para>
 
 				<para>
 					The below example creates a view that retains only the last event per symbol.
 				</para>
-	
 				<programlisting><![CDATA[select * from StockTickEvent.std:unique('symbol')]]></programlisting>
+				
+				<para>
+					The next example creates a view that retains the last event per symbol and feed.
+				</para>
+				<programlisting><![CDATA[select * from StockTickEvent.std:unique('symbol', 'feed')]]></programlisting>
 			</sect2>
 
 			<sect2 id="view-std-groupby" >
@@ -449,11 +457,10 @@ following conditions occurs, whichever occurs first: the data window has collect
 				<indexterm><primary>data window views</primary><secondary>group-by window</secondary></indexterm>
 				
 				<para>
-					This view groups events into sub-views by the value of the specified field. The view takes a single property name to supply the group-by values, or a list of property names as the synopsis shows:
+					This view groups events into sub-views by the value of the specified field or combination of fields. The view takes a single property name to supply the group-by values, or a list of property names as the synopsis shows:
 				</para>
 
-				<synopsis>std:groupby(<emphasis>property_name</emphasis>)</synopsis>
-				<synopsis>std:groupby({<emphasis>property_name</emphasis> [, <emphasis>property_name</emphasis> ...] })</synopsis>
+				<synopsis>std:groupby(<emphasis>property_name</emphasis> [, <emphasis>property_name</emphasis> ...])</synopsis>
 
 				<para>
 					This example calculates statistics on price separately for each symbol.					
@@ -462,10 +469,10 @@ following conditions occurs, whichever occurs first: the data window has collect
 				<programlisting><![CDATA[select * from StockTickEvent.std:groupby('symbol').stat:uni('price')]]></programlisting>
 
 				<para>
-					The group-by view can also take multiple fields to group by. This example calculates statistics on price for each symbol and feed.					
+					The group-by view can also take multiple fields to group by. This example calculates statistics on price for each symbol and feed:				
 				</para>
 	
-				<programlisting><![CDATA[select * from StockTickEvent.std:groupby({'symbol', 'feed'}).stat:uni('price')]]></programlisting>
+				<programlisting><![CDATA[select * from StockTickEvent.std:groupby('symbol', 'feed').stat:uni('price')]]></programlisting>
 
 				<para>
 					The order in which the group-by view appears within sub-views of a stream controls the data the engine derives from events for each group. The next 2 statements demonstrate this using a length window.

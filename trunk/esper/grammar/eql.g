@@ -496,7 +496,7 @@ evalRelationalExpression
 	: concatenationExpr 
 		( 
 			( ( (LT^|GT^|LE^|GE^) concatenationExpr )* )
-	| 		(n:NOT_EXPR!)? 
+		  | (n:NOT_EXPR!)? 
 			(
 				// Represent the optional NOT prefix using the token type by
 				// testing 'n' and setting the token type accordingly.

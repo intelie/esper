@@ -1,53 +1,103 @@
 package net.esper.regression.view;
 
 import junit.framework.TestCase;
-import net.esper.client.EPRuntime;
-import net.esper.client.EPServiceProvider;
-import net.esper.client.EPServiceProviderManager;
-import net.esper.client.EPStatement;
+import net.esper.client.*;
 import net.esper.client.time.CurrentTimeEvent;
-import net.esper.client.time.TimerControlEvent;
 import net.esper.support.bean.SupportMarketDataBean;
-import net.esper.support.util.SupportUpdateListener;
 import net.esper.support.client.SupportConfigFactory;
+import net.esper.support.util.SupportUpdateListener;
+import net.esper.support.util.ArrayAssertionUtil;
 
 public class TestViewTimeWindowUnique extends TestCase
 {
     private EPServiceProvider epService;
-    private SupportUpdateListener testListener;
-    private EPStatement windowUniqueView;
+    private SupportUpdateListener listener;
 
     public void setUp()
     {
-        testListener = new SupportUpdateListener();
-        epService = EPServiceProviderManager.getDefaultProvider(SupportConfigFactory.getConfiguration());
+        listener = new SupportUpdateListener();
+        Configuration config = SupportConfigFactory.getConfiguration();
+        config.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
+        epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();
-
-        // Set up a time window with a unique view attached
-        windowUniqueView = epService.getEPAdministrator().createEQL(
-                "select * from " + SupportMarketDataBean.class.getName() +
-                ".win:time(3.0).std:unique('symbol')");
-        windowUniqueView.addListener(testListener);
-
-        // External clocking
-        epService.getEPRuntime().sendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
     }
 
     // Make sure the timer and dispatch works for externally timed events and views
     public void testWindowUnique()
     {
+        // Set up a time window with a unique view attached
+        EPStatement windowUniqueView = epService.getEPAdministrator().createEQL(
+                "select * from " + SupportMarketDataBean.class.getName() +
+                ".win:time(3.0).std:unique('symbol')");
+        windowUniqueView.addListener(listener);
+
         sendTimer(0);
 
         sendEvent("IBM");
 
-        assertNull(testListener.getLastOldData());
+        assertNull(listener.getLastOldData());
         sendTimer(4000);
-        assertEquals(1, testListener.getLastOldData().length);
+        assertEquals(1, listener.getLastOldData().length);
+    }
+
+    // Make sure the timer and dispatch works for externally timed events and views
+    public void testWindowUniqueMultiKey()
+    {
+        sendTimer(0);
+
+        // Set up a time window with a unique view attached
+        EPStatement windowUniqueView = epService.getEPAdministrator().createEQL(
+                "select * from " + SupportMarketDataBean.class.getName() +
+                ".win:time(3.0).std:unique('symbol', 'price')");
+        windowUniqueView.addListener(listener);
+        String[] fields = new String[] {"symbol", "price", "volume"};
+
+        sendEvent("IBM", 10, 1L);
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"IBM", 10.0, 1L});
+
+        sendEvent("IBM", 11, 2L);
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"IBM", 11.0, 2L});
+
+        sendEvent("IBM", 10, 3L);
+        ArrayAssertionUtil.assertProps(listener.getLastNewData()[0], fields, new Object[] {"IBM", 10.0, 3L});
+        ArrayAssertionUtil.assertProps(listener.getLastOldData()[0], fields, new Object[] {"IBM", 10.0, 1L});
+        listener.reset();
+
+        sendEvent("IBM", 11, 4L);
+        ArrayAssertionUtil.assertProps(listener.getLastNewData()[0], fields, new Object[] {"IBM", 11.0, 4L});
+        ArrayAssertionUtil.assertProps(listener.getLastOldData()[0], fields, new Object[] {"IBM", 11.0, 2L});
+        listener.reset();
+
+        sendTimer(2000);
+        sendEvent(null, 11, 5L);
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {null, 11.0, 5L});
+
+        sendTimer(3000);
+        assertEquals(2, listener.getLastOldData().length);
+        ArrayAssertionUtil.assertProps(listener.getLastOldData()[0], fields, new Object[] {"IBM", 10.0, 3L});
+        ArrayAssertionUtil.assertProps(listener.getLastOldData()[1], fields, new Object[] {"IBM", 11.0, 4L});
+        listener.reset();
+
+        sendEvent(null, 11, 6L);
+        ArrayAssertionUtil.assertProps(listener.getLastNewData()[0], fields, new Object[] {null, 11.0, 6L});
+        ArrayAssertionUtil.assertProps(listener.getLastOldData()[0], fields, new Object[] {null, 11.0, 5L});
+        listener.reset();
+
+        sendTimer(6000);
+        assertEquals(1, listener.getLastOldData().length);
+        ArrayAssertionUtil.assertProps(listener.getLastOldData()[0], fields, new Object[] {null, 11.0, 6L});
+        listener.reset();
     }
 
     private void sendEvent(String symbol)
     {
         SupportMarketDataBean event = new SupportMarketDataBean(symbol, 0, 0L, "");
+        epService.getEPRuntime().sendEvent(event);
+    }
+
+    private void sendEvent(String symbol, double price, Long volume)
+    {
+        SupportMarketDataBean event = new SupportMarketDataBean(symbol, price, volume, "");
         epService.getEPRuntime().sendEvent(event);
     }
 
