@@ -448,13 +448,13 @@ select current_timestamp from MyEvent]]></programlisting>
 				<para>
 					The statement that follows solves this problem. It declares a group-by view grouping on the symbol property and a time window of 1 minute. As a result, when the engine encounters a new symbol value that it hasn't seen before, it creates a new time window specifically to hold events for that symbol. Consequently, the previous function returns the previous event within the respective time window for that event's symbol value. 
 				</para>
-				<programlisting>select prev(1, price) as prevPrice from Trade.std:groupby('symbol').win:time(1 min)</programlisting>
+				<programlisting>select prev(1, price) as prevPrice from Trade.std:groupby(symbol).win:time(1 min)</programlisting>
 
 				<para>
 					In a second example, assume we need to return, for each event, the current top price per symbol. We can use the <literal>prev</literal> to obtain the highest price from a sorted data window, and use the group-by view to group by symbol:
 				</para>
 				<programlisting>select prev(0, price) as topPricePerSymbol 
-from Trade.std:groupby('symbol').ext:sort('price', false, 1)</programlisting>
+from Trade.std:groupby(symbol).ext:sort(price, false, 1)</programlisting>
 			</sect3>
 			
 			<sect3 id="eql-single-row-function-ref-prev-restrictions">
@@ -534,7 +534,7 @@ from Trade.std:groupby('symbol').ext:sort('price', false, 1)</programlisting>
 				employs the <literal>prior</literal> function to select the current average and the average before the current average:
 			</para>
 			<programlisting>select average, prior(1, average) 
-    from TradeAverages.win:time_batch(1 min).stat:uni('volume')</programlisting>
+    from TradeAverages.win:time_batch(1 min).stat:uni(volume)</programlisting>
 	
 		</sect2>
 	</sect1>		

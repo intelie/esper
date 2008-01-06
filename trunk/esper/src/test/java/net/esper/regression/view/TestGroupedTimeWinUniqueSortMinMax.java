@@ -37,8 +37,8 @@ public class TestGroupedTimeWinUniqueSortMinMax extends TestCase {
               " max(high.measurement) as highMeasurement, max(high.confidence) as confidenceOfHigh, max(high.device) as deviceOfHigh\n" +
               ",min(low.measurement) as lowMeasurement, min(low.confidence) as confidenceOfLow, min(low.device) as deviceOfLow\n" +
               "FROM\n" +
-              " Sensor.std:groupby('type').win:time(1 hour).std:unique('device').ext:sort('measurement',true,1) as high " +
-              ",Sensor.std:groupby('type').win:time(1 hour).std:unique('device').ext:sort('measurement',false,1) as low ";
+              " Sensor.std:groupby(type).win:time(1 hour).std:unique(device).ext:sort(measurement,true,1) as high " +
+              ",Sensor.std:groupby(type).win:time(1 hour).std:unique(device).ext:sort(measurement,false,1) as low ";
 
         EPStatement stmt = epService.getEPAdministrator().createEQL(stmtString);
         log.info(stmtString);

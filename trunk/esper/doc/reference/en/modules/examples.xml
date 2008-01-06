@@ -564,7 +564,7 @@ output all every 1 minutes]]></programlisting>
 
 <programlisting><![CDATA[insert into CountZone_G1
 select 1 as groupId, zone, count(*) as cnt
-from LocationReport(assetId in 1, 2, 3).std:unique('assetId')
+from LocationReport(assetId in 1, 2, 3).std:unique(assetId)
 group by zone
 
 select Part.zone from pattern [

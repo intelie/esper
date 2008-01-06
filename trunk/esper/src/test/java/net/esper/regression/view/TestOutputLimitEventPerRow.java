@@ -41,7 +41,7 @@ public class TestOutputLimitEventPerRow extends TestCase
         sendTimer(0);
 
         String viewExpr = "select symbol, volume, max(price) as maxVol" +
-                          " from " + SupportMarketDataBean.class.getName() + ".ext:sort('volume', true, 1) as s0," +
+                          " from " + SupportMarketDataBean.class.getName() + ".ext:sort(volume, true, 1) as s0," +
                           SupportBean.class.getName() + " as s1 where s1.string = s0.symbol " +
                           "group by symbol output every 1 seconds";
         EPStatement stmt = epService.getEPAdministrator().createEQL(viewExpr);

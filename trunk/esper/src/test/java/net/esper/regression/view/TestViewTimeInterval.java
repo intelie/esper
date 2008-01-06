@@ -77,7 +77,7 @@ public class TestViewTimeInterval extends TestCase
         // Set up a time window with a unique view attached
         EPStatement view = epService.getEPAdministrator().createEQL(
                 "select * from " + SupportBean.class.getName() +
-                ".win:ext_timed('longPrimitive', 10 minutes)");
+                ".win:ext_timed(longPrimitive, 10 minutes)");
         testListener = new SupportUpdateListener();
         view.addListener(testListener);
 

@@ -195,7 +195,7 @@ select * from MyEvent  /* this also works */]]></programlisting>
 			<para>
 				The following statement selects the count and standard deviation properties for the last 100 events of IBM stock ticks for volume.
 			</para>
-			<programlisting><![CDATA[select count, stdev from StockTick(symbol='IBM').win:length(100).stat:uni('volume')
+			<programlisting><![CDATA[select count, stdev from StockTick(symbol='IBM').win:length(100).stat:uni(volume)
 ]]></programlisting>
 		</sect2>
 
@@ -370,7 +370,7 @@ from pattern[every tick=StockTick where timer:within(10 sec)]]]></programlisting
 				The following EQL statement shows event type, filter criteria and views combined in one statement. It selects all event properties for the last 100 events of IBM stock ticks for volume. In the example, the event type is the fully qualified Java class name <literal>org.esper.example.StockTick</literal>. The expression filters for events where the property <literal>symbol</literal> has a value of "IBM". The optional view specifications for deriving data from the StockTick events are a length window and a view for computing statistics on volume. The name for the event stream is "volumeStats".
 			</para>
 			<programlisting><![CDATA[select * from 
-  org.esper.example.StockTick(symbol='IBM').win:length(100).stat:uni('volume') as volumeStats]]></programlisting>
+  org.esper.example.StockTick(symbol='IBM').win:length(100).stat:uni(volume) as volumeStats]]></programlisting>
 	
 			<para>
 				Esper filters out events in an event stream as defined by filter criteria before it sends events to subsequent views. Thus, compared to search conditions in a <literal>where</literal> clause, filter criteria remove unneeded events early. In the above example, events with a symbol other then IBM do not enter the time window.
@@ -607,11 +607,11 @@ select * from RfidEvent(zone=1 and category=10)]]></programlisting>
 			</para>
 				
 			<para>
-				The first view <literal>std:groupby('carId')</literal> groups car location events by car id. The second view <literal>win:length(4)</literal> keeps a length window of the 4 last events, with one length window for each car id. The next view <literal>std:groupby({'expressway', 'direction', 'segment'})</literal> groups each event by its expressway, direction and segment property values. Again, the grouping is done for each car id considering the last 4 events only. The last view <literal>std:size()</literal> is used to report the number of events. Thus the below example reports the number of events per car id and per expressway, direction and segment considering the last 4 events for each car id only. 
+				The first view <literal>std:groupby(carId)</literal> groups car location events by car id. The second view <literal>win:length(4)</literal> keeps a length window of the 4 last events, with one length window for each car id. The next view <literal>std:groupby(expressway, direction, segment)</literal> groups each event by its expressway, direction and segment property values. Again, the grouping is done for each car id considering the last 4 events only. The last view <literal>std:size()</literal> is used to report the number of events. Thus the below example reports the number of events per car id and per expressway, direction and segment considering the last 4 events for each car id only. 
 			</para>
 
-         <programlisting><![CDATA[select * from CarLocEvent.std:groupby('carId').win:length(4).
-  std:groupby({'expressway', 'direction', 'segment'}).std:size()]]></programlisting>
+         <programlisting><![CDATA[select * from CarLocEvent.std:groupby(carId).win:length(4).
+  std:groupby(expressway, direction, segment).std:size()]]></programlisting>
 		</sect2>
 		
         <sect2 id="eql-from-clause-stream-name" >
@@ -947,7 +947,7 @@ having stddev(price) &gt; 0.8</programlisting>
 
 			<programlisting>select symbol, avg(price) from StockTickEvent group by symbol
 // ... is equivalent to ...
-select symbol, average from StockTickEvent.std:groupby('symbol').stat:uni('price')</programlisting>
+select symbol, average from StockTickEvent.std:groupby(symbol).stat:uni(price)</programlisting>
 
 			<para>
 				The next example shows two queries that are NOT equivalent as the length window is ungrouped in the first query, and grouped in the second query:
@@ -955,7 +955,7 @@ select symbol, average from StockTickEvent.std:groupby('symbol').stat:uni('price
 
 			<programlisting>select symbol, sum(price) from StockTickEvent.win:length(10) group by symbol
 // ... NOT equivalent to ...
-select symbol, sum(price) from StockTickEvent.std:groupby('symbol').win:length(10)</programlisting>
+select symbol, sum(price) from StockTickEvent.std:groupby(symbol).win:length(10)</programlisting>
 
 			<para>
 				The key difference between the two statements is that in the first statement the length window is ungrouped and applies to all events regardless of group. While in the second query each group gets its own instance of a length window. For example, in the second query events arriving for symbol "ABC" get a length window of 10 events, and events arriving for symbol "DEF" get their own length window of 10 events. 
@@ -1338,7 +1338,7 @@ from pattern [every linkDown=LinkDownEvent -> linkUp=LinkUpEvent(ip=linkDown.ip)
 	    </para>
 
 		<programlisting><![CDATA[select * from RfidEvent as RFID where 'Dock 1' = 
-  (select name from Zones.std:unique('zoneId') where zoneId = RFID.zoneId)]]></programlisting>
+  (select name from Zones.std:unique(zoneId) where zoneId = RFID.zoneId)]]></programlisting>
 		
 		<para>
 			The example above shows a subquery in the <literal>where</literal> clause. The statement selects RFID events in which the zone name matches a string constant based on zone id. The statement uses the view <literal>std:unique</literal> to guarantee that only the last event per zone id is held from processing by the subquery.
@@ -1348,7 +1348,7 @@ from pattern [every linkDown=LinkDownEvent -> linkUp=LinkUpEvent(ip=linkDown.ip)
 			The next example is a correlated subquery within a <literal>select</literal> clause. In this statement the <literal>select</literal> clause retrieves the zone name by means of a subquery against the Zones set of events correlated by zone id:
 		</para>
 
-		<programlisting><![CDATA[select zoneId, (select name from Zones.std:unique('zoneId') 
+		<programlisting><![CDATA[select zoneId, (select name from Zones.std:unique(zoneId) 
   where zoneId = RFID.zoneId) as name from RFIDEvent]]></programlisting>
 
 		<para>

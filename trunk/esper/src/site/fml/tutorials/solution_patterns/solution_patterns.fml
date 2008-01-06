@@ -177,13 +177,13 @@ The pattern is to match only if all 3 events have a different user. The time win
           stock tick events per symbol. Notice we are not using the last 10 events overall, we are looking at the last 10 events per symbol.
         </p>
 <div class="source"><pre>select symbol, avg(price) as avgPrice 
-from StockTick.std:groupby('symbol').win:length(10) 
+from StockTick.std:groupby(symbol).win:length(10) 
 group by symbol</pre></div>      
         <p>
           We can also specify multiple categories:
         </p>
 <div class="source"><pre>select symbol, location, avg(price) as avgPrice 
-from StockTick.std:groupby({'symbol','location'}).win:length(10) 
+from StockTick.std:groupby(symbol,location).win:length(10) 
 group by symbol, location</pre></div>
 
         <p>
@@ -192,7 +192,7 @@ group by symbol, location</pre></div>
           This can be accpmlished by leaving the group-by clause off. Now the engine computes the average price over all symbols, considering only the last 10 events per symbol:
         </p>
 <div class="source"><pre>select symbol, location, avg(price) as avgPrice 
-from StockTick.std:groupby('symbol').win:length(10)</pre></div>
+from StockTick.std:groupby(symbol).win:length(10)</pre></div>
       </answer>
     </faq>    
 

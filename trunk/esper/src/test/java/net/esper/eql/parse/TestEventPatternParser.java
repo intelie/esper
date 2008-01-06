@@ -87,7 +87,6 @@ public class TestEventPatternParser extends TestCase
 
         // where a:b
         assertIsInvalid("a() where a:b(a=b)");
-        assertIsInvalid("a() where a:b(A)");
         assertIsInvalid("a() where a:b(g=5l)");
         assertIsInvalid("a() where a:b(33s)");
         assertIsInvalid("a() where a:b(m=3.3)");

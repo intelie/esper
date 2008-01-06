@@ -8,7 +8,7 @@ mvn site
 mvn site-deploy
 
 Use these plugin goals (plugin:goal or pluginGroupId:pluginArtifactId:pluginVersion:goal)
-mvn antlr:generate
+mvn antlr3:antlr
 mvn jar:jar
 mvn install:install
 mvn javadoc:javadoc

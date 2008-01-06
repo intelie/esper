@@ -24,7 +24,7 @@ public class ASTOutputLimitHelper
      * @param node - parse node
      * @return output limit spec
      */
-    public static OutputLimitSpec buildSpec(Tree node)
+    public static OutputLimitSpec buildOutputLimitSpec(Tree node)
     {
         int count = 0;
         Tree child = node.getChild(count);

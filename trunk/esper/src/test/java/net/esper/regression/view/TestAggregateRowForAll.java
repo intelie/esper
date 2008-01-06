@@ -123,7 +123,7 @@ public class TestAggregateRowForAll extends TestCase
     public void testAvgPerSym() throws Throwable
     {
         EPStatement stmt = epService.getEPAdministrator().createEQL(
-                "select avg(price) as avgp, sym from " + SupportPriceEvent.class.getName() + ".std:groupby('sym').win:length(2)"
+                "select avg(price) as avgp, sym from " + SupportPriceEvent.class.getName() + ".std:groupby(sym).win:length(2)"
         );
         SupportUpdateListener listener = new SupportUpdateListener();
         stmt.addListener(listener);
@@ -159,7 +159,7 @@ public class TestAggregateRowForAll extends TestCase
 
     public void testSelectStarStdGroupBy() {
         String stmtText = "select istream * from "+ SupportMarketDataBean.class.getName()
-                +".std:groupby('symbol').win:length(2)";
+                +".std:groupby(symbol).win:length(2)";
         EPStatement statement = epService.getEPAdministrator().createEQL(stmtText);
         statement.addListener(listener);
 
@@ -171,7 +171,7 @@ public class TestAggregateRowForAll extends TestCase
 
     public void testSelectExprStdGroupBy() {
         String stmtText = "select istream price from "+ SupportMarketDataBean.class.getName()
-                +".std:groupby('symbol').win:length(2)";
+                +".std:groupby(symbol).win:length(2)";
         EPStatement statement = epService.getEPAdministrator().createEQL(stmtText);
         statement.addListener(listener);
 
@@ -182,7 +182,7 @@ public class TestAggregateRowForAll extends TestCase
 
     public void testSelectAvgExprStdGroupBy() {
         String stmtText = "select istream avg(price) as aprice from "+ SupportMarketDataBean.class.getName()
-                +".std:groupby('symbol').win:length(2)";
+                +".std:groupby(symbol).win:length(2)";
         EPStatement statement = epService.getEPAdministrator().createEQL(stmtText);
         statement.addListener(listener);
 
@@ -196,7 +196,7 @@ public class TestAggregateRowForAll extends TestCase
 
     public void testSelectAvgStdGroupByUni() {
         String stmtText = "select istream average as aprice from "+ SupportMarketDataBean.class.getName()
-                +".std:groupby('symbol').win:length(2).stat:uni('price')";
+                +".std:groupby(symbol).win:length(2).stat:uni(price)";
         EPStatement statement = epService.getEPAdministrator().createEQL(stmtText);
         statement.addListener(listener);
 

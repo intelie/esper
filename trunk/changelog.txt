@@ -1,6 +1,13 @@
 Esper Changelog
 ===================
 
+Changes in version 2.0.0
+------------------------
+
+ANTLR V3 Upgrade: excellent error handling, incremental parsing, easy-to-read grammar
+Event properties in view parameters don't need to appear in quotes
+
+
 Changes in version 1.12.0
 ------------------------
 

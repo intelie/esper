@@ -338,7 +338,7 @@ exprChoice
 	|	patternOp
 	| 	^( a=EVERY_EXPR exprChoice { leaveNode($a); } )
 	| 	^( n=NOT_EXPR exprChoice { leaveNode($n); } )
-	| 	^( g=GUARD_EXPR exprChoice IDENT IDENT (constant[false] | time_period)* { leaveNode($g); } )
+	| 	^( g=GUARD_EXPR exprChoice IDENT IDENT parameter* { leaveNode($g); } )
 	;
 	
 patternOp
@@ -349,7 +349,7 @@ patternOp
 	
 atomicExpr
 	:	eventFilterExpr
-	|   	^( ac=OBSERVER_EXPR IDENT IDENT (parameter)* { leaveNode($ac); } )
+	|   	^( ac=OBSERVER_EXPR IDENT IDENT parameter* { leaveNode($ac); } )
 	;
 
 eventFilterExpr
@@ -400,9 +400,10 @@ eventPropertyAtomic
 // Parameter set
 //----------------------------------------------------------------------------
 parameter
-	: 	singleParameter
+	: 	(singleParameter) => singleParameter
 	| 	^( NUMERIC_PARAM_LIST (numericParameterList)+ )
 	|	^( ARRAY_PARAM_LIST (constant[false])*)
+	|	eventPropertyExpr
 	;
 
 singleParameter

@@ -32,7 +32,7 @@ public class TestViewPlugin extends TestCase
 
     public void testPlugInViewFlushed()
     {
-        String text = "select * from A.mynamespace:flushedsimple('price')";
+        String text = "select * from A.mynamespace:flushedsimple(price)";
         EPStatement stmt = epService.getEPAdministrator().createEQL(text);
         stmt.addListener(testListener);
 
@@ -46,7 +46,7 @@ public class TestViewPlugin extends TestCase
 
     public void testPlugInViewTrend()
     {
-        String text = "select * from A.mynamespace:trendspotter('price')";
+        String text = "select * from A.mynamespace:trendspotter(price)";
         EPStatement stmt = epService.getEPAdministrator().createEQL(text);
         stmt.addListener(testListener);
 

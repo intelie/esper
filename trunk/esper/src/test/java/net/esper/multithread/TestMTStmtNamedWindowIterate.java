@@ -30,7 +30,7 @@ public class TestMTStmtNamedWindowIterate extends TestCase
         engine.getEPRuntime().sendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
 
         engine.getEPAdministrator().createEQL(
-                "create window MyWindow.std:groupby('string').win:keepall() as select string, longPrimitive from " + SupportBean.class.getName());
+                "create window MyWindow.std:groupby(string).win:keepall() as select string, longPrimitive from " + SupportBean.class.getName());
 
         engine.getEPAdministrator().createEQL(
                 "insert into MyWindow(string, longPrimitive) " +

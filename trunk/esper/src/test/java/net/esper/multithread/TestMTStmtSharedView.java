@@ -50,7 +50,7 @@ public class TestMTStmtSharedView extends TestCase
         {
             stmt[i] = engine.getEPAdministrator().createEQL(
                 " select * " +
-                " from " + SupportMarketDataBean.class.getName() + ".std:groupby('symbol').stat:uni('price')");
+                " from " + SupportMarketDataBean.class.getName() + ".std:groupby(symbol).stat:uni(price)");
             listeners[i] = new SupportMTUpdateListener();
             stmt[i].addListener(listeners[i]);
         }

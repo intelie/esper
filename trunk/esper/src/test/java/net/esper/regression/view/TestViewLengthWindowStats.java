@@ -64,7 +64,7 @@ public class TestViewLengthWindowStats extends TestCase
     public void testWindowStats()
     {
         String viewExpr = "select * from " + SupportMarketDataBean.class.getName() +
-                "(symbol='" + SYMBOL + "').win:length(3).stat:uni('price')";
+                "(symbol='" + SYMBOL + "').win:length(3).stat:uni(price)";
         statement = epService.getEPAdministrator().createEQL(viewExpr);
         statement.addListener(testListener);
         testListener.reset();

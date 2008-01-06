@@ -920,9 +920,10 @@ parameterSet
 	;			
 	
 parameter
-	:	singleParameter
-	| 	numericParameterList
-	|	arrayParameterList
+	:	(singleParameter) => singleParameter
+	| 	(numericParameterList) => numericParameterList
+	|	(arrayParameterList) => arrayParameterList
+	|	eventProperty
 	;
 
 singleParameter

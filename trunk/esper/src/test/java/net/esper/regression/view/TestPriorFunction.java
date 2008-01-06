@@ -254,7 +254,7 @@ public class TestPriorFunction extends TestCase
     {
         String viewExpr = "select symbol as currSymbol, " +
                           " prior(3, symbol) as prior0Symbol " +
-                          "from " + SupportMarketDataBean.class.getName() + ".ext:sort('symbol', false, 3)";
+                          "from " + SupportMarketDataBean.class.getName() + ".ext:sort(symbol, false, 3)";
 
         EPStatement selectTestView = epService.getEPAdministrator().createEQL(viewExpr);
         selectTestView.addListener(testListener);
@@ -315,7 +315,7 @@ public class TestPriorFunction extends TestCase
                           " prior(1, price) as prior1Price, " +
                           " prior(2, price) as prior2Price, " +
                           " prior(3, price) as prior3Price " +
-                          "from " + SupportMarketDataBean.class.getName() + ".ext:sort('symbol', false, 3)";
+                          "from " + SupportMarketDataBean.class.getName() + ".ext:sort(symbol, false, 3)";
 
         EPStatement selectTestView = epService.getEPAdministrator().createEQL(viewExpr);
         selectTestView.addListener(testListener);
@@ -422,7 +422,7 @@ public class TestPriorFunction extends TestCase
                           " prior(1, price) as prior1Price, " +
                           " prior(2, price) as prior2Price, " +
                           " prior(3, price) as prior3Price " +
-                          "from " + SupportMarketDataBean.class.getName() + ".ext:sort('symbol', false, 3)";
+                          "from " + SupportMarketDataBean.class.getName() + ".ext:sort(symbol, false, 3)";
         tryPriorSortWindow(viewExpr);
 
         viewExpr = "select symbol as currSymbol, " +
@@ -434,7 +434,7 @@ public class TestPriorFunction extends TestCase
                           " prior(1, price) as prior1Price, " +
                           " prior(0, price) as prior0Price, " +
                           " prior(3, price) as prior3Price " +
-                          "from " + SupportMarketDataBean.class.getName() + ".ext:sort('symbol', false, 3)";
+                          "from " + SupportMarketDataBean.class.getName() + ".ext:sort(symbol, false, 3)";
         tryPriorSortWindow(viewExpr);
     }
 

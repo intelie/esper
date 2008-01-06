@@ -287,12 +287,12 @@
 			<para>
 				The new view is now ready to use in a statement:
 			</para>		
-			<programlisting><![CDATA[select * from StockTick.custom:trendspotter('price')]]></programlisting>
+			<programlisting><![CDATA[select * from StockTick.custom:trendspotter(price)]]></programlisting>
 
 			<para>
 				Note that the view must implement the <literal>copyView</literal> method to enable the view to work in a grouping context as shown in the next statement:
 			</para>		
-			<programlisting><![CDATA[select * from StockTick.std:groupby('symbol').custom:trendspotter('price')]]></programlisting>
+			<programlisting><![CDATA[select * from StockTick.std:groupby(symbol).custom:trendspotter(price)]]></programlisting>
 
 		</sect2>
     </sect1>

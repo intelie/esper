@@ -572,6 +572,11 @@ public class TestEQLParser extends TestCase
         assertIsValid("select * from A, method:myClass.myname() as b where a.x = b.x");
         assertIsValid("select method, a, b from A, METHOD:com.maypack.myClass.myname() as b where a.x = b.x");
         assertIsValid("select method, a, b from A, someident:com.maypack.myClass.myname() as b where a.x = b.x");
+
+        // expessions and event properties are view/guard/observer parameters
+        assertIsValid("select * from A.win:x(myprop.nested, a.c('s'), 'ss', *, null)");
+        assertIsValid("select * from pattern[every X where a:b(myprop.nested, a.c('s'), 'ss', *, null)]");
+        assertIsValid("select * from pattern[every X:b(myprop.nested, a.c('s'), 'ss', *, null)]");
     }
 
     public void testBitWiseCases() throws Exception

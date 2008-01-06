@@ -18,7 +18,7 @@ import java.util.concurrent.*;
  * Statements:
  * <pre>
     insert into CountZone_[Nx] select [Nx] as groupId, zone, count(*) as cnt
-    from LocationReport(assetId in ([aNx1], [aNx2], [aNx3])).std:unique('assetId')
+    from LocationReport(assetId in ([aNx1], [aNx2], [aNx3])).std:unique(assetId)
     group by zone
 
     select * from pattern [every a=CountZone_[Nx](cnt in [1:2]) ->
@@ -173,7 +173,7 @@ public class LRMovingSimMain
 
             String textOne = "insert into " + streamName +
                     " select " + i + " as groupId, zone, count(*) as cnt " +
-                    "from LocationReport(assetId in (" + assetIdList + ")).std:unique('assetId') " +
+                    "from LocationReport(assetId in (" + assetIdList + ")).std:unique(assetId) " +
                     "group by zone";
             EPStatement stmtOne = epService.getEPAdministrator().createEQL(textOne);
             // stmtOne.addListener(new AssetGroupCountListener());  for debugging

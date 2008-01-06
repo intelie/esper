@@ -149,7 +149,7 @@ statement.addListener(myListener);]]></programlisting>
 			<para>
 				The next code snippet shows a short example of use of safe iterators:
 			</para>
-			<programlisting><![CDATA[EPStatement statement = epAdmin.createEQL("select avg('price') as avgPrice from MyTick");
+			<programlisting><![CDATA[EPStatement statement = epAdmin.createEQL("select avg(price) as avgPrice from MyTick");
 // .. send events into the engine
 // then use the pull API...
 SafeIterator<EventBean> safeIter = statement.safeIterator();
@@ -378,7 +378,7 @@ runtime.sendEvent(new CurrentTimeEvent(timeInMillis));
 			The engine may generate artificial events that contain information derived from event streams. A typical example for artificial events is the events posted for a statement to calculate univariate statistics on an event property. The below example shows such a statement and queries the generated events for an average value.
         </para>
 		<programlisting><![CDATA[// Derive univariate statistics on price for the last 100 market data events
-String stmt = "select * from MarketDataBean(symbol='IBM').win:length(100).stat:uni('price')";
+String stmt = "select * from MarketDataBean(symbol='IBM').win:length(100).stat:uni(price)";
 EPStatement priceStatsView = epService.getEPAdministrator().createEQL(stmt);
 priceStatsView.addListener(testListener);
 ]]></programlisting>

@@ -771,8 +771,38 @@ public class EQLTreeWalker extends EsperEPL2Ast
     private void leaveView(Tree node) throws ASTWalkException
     {
         log.debug(".leaveView");
-        ViewSpec spec = ASTViewSpecHelper.buildSpec(node, engineTime);
-        viewSpecs.add(spec);
+        String objectNamespace = node.getChild(0).getText();
+        String objectName = node.getChild(1).getText();
+
+        List<Object> objectParams = new LinkedList<Object>();
+
+        for (int i = 2; i < node.getChildCount(); i++)
+        {
+        	Tree child = node.getChild(i);
+
+            // if there is an expression for this parameter, add the expression to the parameter list
+            if (this.astExprNodeMap.containsKey(child))
+            {
+                ExprNode expr = astExprNodeMap.get(child);
+                if (expr instanceof ExprIdentNode)
+                {
+                    ExprIdentNode property = (ExprIdentNode) expr;
+                    objectParams.add(property.getFullUnresolvedName());
+                }
+                else
+                {
+                    objectParams.add(expr);
+                }
+                astExprNodeMap.remove(child);
+            }
+            else
+            {
+                Object object = ASTParameterHelper.makeParameter(child, engineTime);
+                objectParams.add(object);
+            }
+        }
+
+        viewSpecs.add(new ViewSpec(objectNamespace, objectName, objectParams));
     }
 
     private void leaveStreamExpr(Tree node)
@@ -1207,7 +1237,7 @@ public class EQLTreeWalker extends EsperEPL2Ast
     {
         log.debug(".leaveOutputLimit");
 
-        OutputLimitSpec spec = ASTOutputLimitHelper.buildSpec(node);
+        OutputLimitSpec spec = ASTOutputLimitHelper.buildOutputLimitSpec(node);
         statementSpec.setOutputLimitSpec(spec);
 
         if (spec.getVariableName() != null)

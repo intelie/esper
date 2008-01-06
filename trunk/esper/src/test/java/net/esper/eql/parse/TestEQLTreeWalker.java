@@ -1,26 +1,25 @@
 package net.esper.eql.parse;
 
 import junit.framework.TestCase;
+import net.esper.eql.core.EngineImportService;
+import net.esper.eql.core.EngineImportServiceImpl;
 import net.esper.eql.expression.*;
 import net.esper.eql.spec.*;
-import net.esper.eql.core.EngineImportServiceImpl;
-import net.esper.eql.core.EngineImportService;
+import net.esper.eql.variable.VariableService;
+import net.esper.eql.variable.VariableServiceImpl;
 import net.esper.event.EventAdapterService;
 import net.esper.pattern.*;
+import net.esper.schedule.SchedulingServiceImpl;
 import net.esper.support.bean.*;
-import net.esper.support.eql.parse.SupportParserHelper;
-import net.esper.support.eql.parse.SupportEQLTreeWalkerFactory;
 import net.esper.support.eql.SupportPluginAggregationMethodOne;
+import net.esper.support.eql.parse.SupportEQLTreeWalkerFactory;
+import net.esper.support.eql.parse.SupportParserHelper;
 import net.esper.support.event.SupportEventAdapterService;
 import net.esper.type.OuterJoinType;
 import net.esper.type.TimePeriodParameter;
-import net.esper.eql.spec.ViewSpec;
-import net.esper.eql.variable.VariableService;
-import net.esper.eql.variable.VariableServiceImpl;
-import net.esper.schedule.SchedulingServiceImpl;
+import org.antlr.runtime.tree.Tree;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.antlr.runtime.tree.Tree;
 
 import java.util.List;
 
@@ -30,6 +29,25 @@ public class TestEQLTreeWalker extends TestCase
     private static String EXPRESSION = "select * from " +
                     CLASSNAME + "(string='a').win:length(10).std:lastevent() as win1," +
                     CLASSNAME + "(string='b').win:length(10).std:lastevent() as win2 ";
+
+    // TODO: test time window size using variable
+    // TODO: test timer:interval length using variable
+    // TODO: test timer:within length using variable
+    // TODO: change all docs to remove 'property' singe quotes
+
+    public void testWalkViewExpressions() throws Exception
+    {
+        String className = SupportBean.class.getName();
+        String expression = "select * from " + className + ".win:x(intPrimitive, a.nested, b, c.nested.nested)";
+
+        EQLTreeWalker walker = parseAndWalkEQL(expression);
+        List<ViewSpec> viewSpecs = walker.getStatementSpec().getStreamSpecs().get(0).getViewSpecs();
+        List<Object> parameters = viewSpecs.get(0).getObjectParameters();
+        assertEquals("intPrimitive", parameters.get(0));
+        assertEquals("a.nested", parameters.get(1));
+        assertEquals("b", parameters.get(2));
+        assertEquals("c.nested.nested", parameters.get(3));
+    }
 
     public void testWalkJoinMethodStatement() throws Exception
     {
@@ -187,7 +205,7 @@ public class TestEQLTreeWalker extends TestCase
 
     public void testWalkCreateWindow() throws Exception
     {
-        String expression = "create window MyWindow.std:groupby('symbol').win:length(20) as select *, aprop, bprop as someval from com.MyClass";
+        String expression = "create window MyWindow.std:groupby(symbol).win:length(20) as select *, aprop, bprop as someval from com.MyClass";
         EQLTreeWalker walker = parseAndWalkEQL(expression);
         StatementSpecRaw raw = walker.getStatementSpec();
 
@@ -393,7 +411,7 @@ public class TestEQLTreeWalker extends TestCase
 
     public void testWalkView() throws Exception
     {
-        String text = "select * from " + SupportBean.class.getName() + "(string=\"IBM\").win:lenght(10, 1.1, \"a\").stat:uni('price', false)";
+        String text = "select * from " + SupportBean.class.getName() + "(string=\"IBM\").win:lenght(10, 1.1, \"a\").stat:uni(price, false)";
 
         EQLTreeWalker walker = parseAndWalkEQL(text);
         FilterSpecRaw filterSpec = ((FilterStreamSpecRaw) walker.getStatementSpec().getStreamSpecs().get(0)).getRawFilterSpec();

@@ -78,7 +78,7 @@ public class TestGroupByEventPerGroup extends TestCase
         sendTimer(0);
 
         String viewExpr = "select symbol " +
-                          "from MyStream.win:time_batch(1 sec).std:unique('symbol') " +
+                          "from MyStream.win:time_batch(1 sec).std:unique(symbol) " +
                           "group by symbol";
 
         selectTestView = epService.getEPAdministrator().createEQL(viewExpr);

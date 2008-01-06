@@ -261,7 +261,7 @@ public class TestIterator extends TestCase
         String[] fields = new String[] {"symbol", "msg"};
         String stmtText = "insert into Cutoff " +
                           "select symbol, (String.valueOf(count(*)) || 'x1000.0') as msg " +
-                          "from " + SupportMarketDataBean.class.getName() + ".std:groupby('symbol').win:length(1) " +
+                          "from " + SupportMarketDataBean.class.getName() + ".std:groupby(symbol).win:length(1) " +
                           "where price - volume >= 1000.0 group by symbol having count(*) = 1";
         EPStatement stmt = epService.getEPAdministrator().createEQL(stmtText);
         assertFalse(stmt.iterator().hasNext());

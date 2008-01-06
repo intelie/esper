@@ -28,7 +28,7 @@ public class TestViewTimeOrder extends TestCase
         sendTimer(1000);
         EPStatement stmt = epService.getEPAdministrator().createEQL(
                 "select * from " + SupportBeanTimestamp.class.getName() +
-                ".ext:time_order('timestamp', 10 sec)");
+                ".ext:time_order(timestamp, 10 sec)");
         stmt.addListener(listener);
         ArrayAssertionUtil.assertEqualsExactOrder(stmt.iterator(), new String[] {"id"}, null);
 
@@ -190,7 +190,7 @@ public class TestViewTimeOrder extends TestCase
         sendTimer(20000);
         EPStatement stmt = epService.getEPAdministrator().createEQL(
                 "select * from " + SupportBeanTimestamp.class.getName() +
-                ".std:groupby('groupId').ext:time_order('timestamp', 10 sec)");
+                ".std:groupby(groupId).ext:time_order(timestamp, 10 sec)");
         stmt.addListener(listener);
 
         // 1st event is old
@@ -252,14 +252,14 @@ public class TestViewTimeOrder extends TestCase
 
     public void testInvalid()
     {
-        assertEquals("Error starting view: Error attaching view to event stream: Parent view does not contain a field named 'bump' [select * from net.esper.support.bean.SupportBeanTimestamp.ext:time_order('bump', 10 sec)]",
-                    tryInvalid("select * from " + SupportBeanTimestamp.class.getName() + ".ext:time_order('bump', 10 sec)"));
+        assertEquals("Error starting view: Error attaching view to event stream: Parent view does not contain a field named 'bump' [select * from net.esper.support.bean.SupportBeanTimestamp.ext:time_order(bump, 10 sec)]",
+                    tryInvalid("select * from " + SupportBeanTimestamp.class.getName() + ".ext:time_order(bump, 10 sec)"));
 
         assertEquals("Error starting view: Error in view 'ext:time_order', Time order view requires the property name supplying timestamp values, and a numeric or time period parameter for interval size [select * from net.esper.support.bean.SupportBeanTimestamp.ext:time_order(10 sec)]",
                     tryInvalid("select * from " + SupportBeanTimestamp.class.getName() + ".ext:time_order(10 sec)"));
 
-        assertEquals("Error starting view: Error in view 'ext:time_order', Time order view requires the property name supplying timestamp values, and a numeric or time period parameter for interval size [select * from net.esper.support.bean.SupportBeanTimestamp.ext:time_order('timestamp', 'abc')]",
-                    tryInvalid("select * from " + SupportBeanTimestamp.class.getName() + ".ext:time_order('timestamp', 'abc')"));
+        assertEquals("Error starting view: Error in view 'ext:time_order', Time order view requires the property name supplying timestamp values, and a numeric or time period parameter for interval size [select * from net.esper.support.bean.SupportBeanTimestamp.ext:time_order(timestamp, abc)]",
+                    tryInvalid("select * from " + SupportBeanTimestamp.class.getName() + ".ext:time_order(timestamp, abc)"));
     }
 
     private String tryInvalid(String stmtText)

@@ -85,6 +85,18 @@ public class ExprIdentNode extends ExprNode
         return streamOrPropertyName;
     }
 
+    public String getFullUnresolvedName()
+    {
+        if (streamOrPropertyName == null)
+        {
+            return unresolvedPropertyName;
+        }
+        else
+        {
+            return streamOrPropertyName + "." + unresolvedPropertyName;
+        }
+    }
+
     public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService) throws ExprValidationException
     {
         Pair<PropertyResolutionDescriptor, String> propertyInfoPair = getTypeFromStream(streamTypeService, unresolvedPropertyName, streamOrPropertyName);

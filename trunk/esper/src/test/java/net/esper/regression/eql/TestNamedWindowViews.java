@@ -264,7 +264,7 @@ public class TestNamedWindowViews extends TestCase
         String[] fields = new String[] {"key", "value"};
 
         // create window
-        String stmtTextCreate = "create window MyWindow.win:ext_timed('value', 10 sec) as MyMap";
+        String stmtTextCreate = "create window MyWindow.win:ext_timed(value, 10 sec) as MyMap";
         EPStatement stmtCreate = epService.getEPAdministrator().createEQL(stmtTextCreate);
         stmtCreate.addListener(listenerWindow);
 
@@ -325,7 +325,7 @@ public class TestNamedWindowViews extends TestCase
         String[] fields = new String[] {"key", "value"};
 
         // create window
-        String stmtTextCreate = "create window MyWindow.ext:time_order('value', 10 sec) as MyMap";
+        String stmtTextCreate = "create window MyWindow.ext:time_order(value, 10 sec) as MyMap";
         EPStatement stmtCreate = epService.getEPAdministrator().createEQL(stmtTextCreate);
         stmtCreate.addListener(listenerWindow);
 
@@ -743,7 +743,7 @@ public class TestNamedWindowViews extends TestCase
         String[] fields = new String[] {"key", "value"};
 
         // create window
-        String stmtTextCreate = "create window MyWindow.ext:sort('value', false, 3) as MyMap";
+        String stmtTextCreate = "create window MyWindow.ext:sort(value, false, 3) as MyMap";
         EPStatement stmtCreate = epService.getEPAdministrator().createEQL(stmtTextCreate);
         stmtCreate.addListener(listenerWindow);
 
@@ -901,7 +901,7 @@ public class TestNamedWindowViews extends TestCase
         String[] fields = new String[] {"key", "value"};
 
         // create window
-        String stmtTextCreate = "create window MyWindow.std:groupby('value').win:length(2) as MyMap";
+        String stmtTextCreate = "create window MyWindow.std:groupby(value).win:length(2) as MyMap";
         EPStatement stmtCreate = epService.getEPAdministrator().createEQL(stmtTextCreate);
         stmtCreate.addListener(listenerWindow);
 
@@ -977,7 +977,7 @@ public class TestNamedWindowViews extends TestCase
         String[] fields = new String[] {"key", "value"};
 
         // create window
-        String stmtTextCreate = "create window MyWindow.std:groupby('value').win:time_batch(10 sec) as MyMap";
+        String stmtTextCreate = "create window MyWindow.std:groupby(value).win:time_batch(10 sec) as MyMap";
         EPStatement stmtCreate = epService.getEPAdministrator().createEQL(stmtTextCreate);
         stmtCreate.addListener(listenerWindow);
 
@@ -1112,7 +1112,7 @@ public class TestNamedWindowViews extends TestCase
         String[] fields = new String[] {"key", "value"};
 
         // create window
-        String stmtTextCreate = "create window MyWindow.std:unique('key') as MyMap";
+        String stmtTextCreate = "create window MyWindow.std:unique(key) as MyMap";
         EPStatement stmtCreate = epService.getEPAdministrator().createEQL(stmtTextCreate);
         stmtCreate.addListener(listenerWindow);
 
@@ -1177,7 +1177,7 @@ public class TestNamedWindowViews extends TestCase
         String[] fields = new String[] {"key", "value"};
 
         // create window
-        String stmtTextCreate = "create window MyWindow.std:unique('key') as select string as key, intPrimitive as value from " + SupportBean.class.getName();
+        String stmtTextCreate = "create window MyWindow.std:unique(key) as select string as key, intPrimitive as value from " + SupportBean.class.getName();
         EPStatement stmtCreate = epService.getEPAdministrator().createEQL(stmtTextCreate);
         stmtCreate.addListener(listenerWindow);
 
@@ -1416,8 +1416,8 @@ public class TestNamedWindowViews extends TestCase
 
     public void testInvalidNoDataWindow()
     {
-        assertEquals("Error starting view: Named windows require one or more child views that are data window views [create window MyWindow.std:groupby('value').stat:uni('value') as MyMap]",
-                     tryInvalid("create window MyWindow.std:groupby('value').stat:uni('value') as MyMap"));        
+        assertEquals("Error starting view: Named windows require one or more child views that are data window views [create window MyWindow.std:groupby(value).stat:uni(value) as MyMap]",
+                     tryInvalid("create window MyWindow.std:groupby(value).stat:uni(value) as MyMap"));
         assertEquals("Named windows require one or more child views that are data window views [create window MyWindow as MyMap]",
                      tryInvalid("create window MyWindow as MyMap"));
         assertEquals("Named window 'dummy' has not been declared [on MyMap delete from dummy]",
@@ -1485,7 +1485,7 @@ public class TestNamedWindowViews extends TestCase
         EPStatement stmtSelectOne = epService.getEPAdministrator().createEQL(stmtTextSelectOne);
         stmtSelectOne.addListener(listenerStmtOne);
 
-        String stmtTextSelectThree = "select average from MyWindow.stat:uni('value')";
+        String stmtTextSelectThree = "select average from MyWindow.stat:uni(value)";
         EPStatement stmtSelectThree = epService.getEPAdministrator().createEQL(stmtTextSelectThree);
         stmtSelectThree.addListener(listenerStmtThree);
 
@@ -1534,7 +1534,7 @@ public class TestNamedWindowViews extends TestCase
         sendSupportBean("E2", 2L);
         ArrayAssertionUtil.assertProps(listenerWindow.assertOneGetNewAndReset(), fieldsWin, new Object[] {"E2", 2L});
 
-        String stmtTextSelectOne = "select average from MyWindow.stat:uni('value')";
+        String stmtTextSelectOne = "select average from MyWindow.stat:uni(value)";
         EPStatement stmtSelectOne = epService.getEPAdministrator().createEQL(stmtTextSelectOne);
         stmtSelectOne.addListener(listenerStmtOne);
         ArrayAssertionUtil.assertEqualsExactOrder(stmtSelectOne.iterator(), fieldsStat, new Object[][] {{1.5d}});
