@@ -63,6 +63,19 @@ public class CreateWindowClause implements Serializable
     }
 
     /**
+     * Adds a parameterized view to the named window.
+     * @param namespace is the view namespace, for example "win" for most data windows
+     * @param name is the view name, for example "length" for a length window
+     * @param parameters is a list of view parameters
+     * @return named window creation clause
+     */
+    public CreateWindowClause addView(String namespace, String name, Object... parameters)
+    {
+        views.add(View.create(namespace, name, parameters));
+        return this;
+    }
+
+    /**
      * Ctor.
      * @param windowName is the name of the window to create
      * @param viewArr is the list of data window views

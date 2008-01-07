@@ -72,6 +72,18 @@ public class FilterStream extends ProjectedStream
     }
 
     /**
+     * Creates a stream of events of the given event type name and names that stream. Example: "select * from MyEventTypeAlias as StreamName".
+     * @param eventTypeAlias is the event type name or alias to filter for
+     * @param filter is the filter expression removing events from the stream
+     * @param streamName is an optional stream name
+     * @return stream
+     */
+    public static FilterStream create(String eventTypeAlias, String streamName, Expression filter)
+    {
+        return new FilterStream(Filter.create(eventTypeAlias, filter), streamName);
+    }
+
+    /**
      * Ctor.
      * @param filter specifies what events to look for
      */

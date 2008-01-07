@@ -48,7 +48,14 @@ public class View extends EPBaseNamedObject
      */
     public static View create(String namespace, String name, Object ...parameters)
     {
-        return new View(namespace, name, Arrays.asList(parameters));
+        if (parameters != null)
+        {
+            return new View(namespace, name, Arrays.asList(parameters));
+        }
+        else
+        {
+            return new View(namespace, name, new ArrayList<Object>());
+        }
     }
 
     /**
