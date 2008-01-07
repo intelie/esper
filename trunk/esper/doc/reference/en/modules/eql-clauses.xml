@@ -1052,13 +1052,18 @@ Second, the <literal>last</literal> and <literal>all</literal> keywords have spe
     <sect1 id="eql-order-by">
         <title>Sorting Output: the <emphasis>Order By</emphasis> Clause</title>
 
+		<indexterm><primary>ordering output</primary></indexterm>
+		<indexterm><primary>output ordering</primary></indexterm>
 		<indexterm><primary>order by clause</primary></indexterm>
 		<indexterm><primary>EQL</primary><secondary>order by clause</secondary></indexterm>
 
 		<para>
-			The <literal>order by</literal> clause is optional in Esper. It is used for ordering output events by their properties, or by expressions involving those properties. For example, the following statement outputs batches of 5 or more stock tick events that are sorted first by price and then by volume.				
+			The <literal>order by</literal> clause is optional. It is used for ordering output events by their properties, or by expressions involving those properties. .				
 		</para>
 
+		<para>
+			For example, the following statement outputs batches of 5 or more stock tick events that are sorted first by price ascending and then by volume ascending:
+		</para>
 		<programlisting>select symbol from StockTickEvent.win:time(60 sec) 
 output every 5 events 
 order by price, volume</programlisting>
@@ -1066,8 +1071,23 @@ order by price, volume</programlisting>
 		<para>
 			Here is the syntax for the <literal>order by</literal> clause:				
 		</para>
-
 		<synopsis>order by <emphasis>expression</emphasis> [asc | desc] [, <emphasis>expression</emphasis> [asc | desc]] [, ...]</synopsis>
+
+		<para>
+			If the <literal>order by</literal> clause is absent then the engine still makes certain guarantees about the ordering of output: 
+		</para>
+		<itemizedlist spacing="compact">
+			<listitem>
+				<para>
+					If the statement is not a join, does not group via <literal>group by</literal> clause and does not declare grouped data windows via <literal>std:groupby</literal> view, the order in which events are delivered to listeners and through the <literal>iterator</literal> pull API is the order of event arrival.
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					If the statement is a join or outer join, or groups, then the order in which events are delivered to listeners and through the <literal>iterator</literal> pull API is not well-defined. Use the <literal>order by</literal> clause if your application requires events to be delivered in a well-defined order.
+				</para>
+			</listitem>
+		</itemizedlist>
 
 		<para>
 			Esper places the following restrictions on the expressions in the <literal>order by</literal> clause:
@@ -2068,6 +2088,10 @@ insert into OrdersWindow select * from ServiceProductEvent]]></programlisting>
 			
 			<para>
 				By adding a filter to the named window, the aggregation and grouping as well as any views that may be declared onto to the named window receive a filtered insert and remove stream. The above statement thus outputs, continuously, the average price per symbol for all orders in the named window that belong to a certain sector.
+			</para>
+
+			<para>
+				A side note on variables in filters filtering events from named windows: The engine initializes consuming statements at statement creation time and changes aggregation state continuously as events arrive. If the filter criteria contain variables and variable values changes, then the engine does not re-evaluate or re-build aggregation state. In such a case you may want to place variables in the <literal>having</literal> clause which evaluates on already-built aggregation state.
 			</para>
 
 			<para>
