@@ -121,4 +121,7 @@ public interface EPRuntime
      * previously registered listener
      */
     public void setUnmatchedListener(UnmatchedListener listener);
+
+    void write(Object active) throws EPException, EPStatementException;
+    void take(Object active) throws EPException, EPStatementException;
 }

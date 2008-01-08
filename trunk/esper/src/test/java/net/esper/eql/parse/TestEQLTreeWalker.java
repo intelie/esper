@@ -30,11 +30,6 @@ public class TestEQLTreeWalker extends TestCase
                     CLASSNAME + "(string='a').win:length(10).std:lastevent() as win1," +
                     CLASSNAME + "(string='b').win:length(10).std:lastevent() as win2 ";
 
-    // TODO: test time window size using variable
-    // TODO: test timer:interval length using variable
-    // TODO: test timer:within length using variable
-    // TODO: change all docs to remove 'property' singe quotes
-
     public void testWalkViewExpressions() throws Exception
     {
         String className = SupportBean.class.getName();

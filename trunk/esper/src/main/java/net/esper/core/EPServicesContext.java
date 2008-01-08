@@ -55,6 +55,7 @@ public final class EPServicesContext
     private OutputConditionFactory outputConditionFactory;
     private NamedWindowService namedWindowService;
     private VariableService variableService;
+    private ActiveObjectSpace activeObjectSpace;
 
     // Supplied after construction to avoid circular dependency
     private StatementLifecycleSvc statementLifecycleSvc;
@@ -427,5 +428,15 @@ public final class EPServicesContext
     public VariableService getVariableService()
     {
         return variableService;
+    }
+
+    public void setActiveObjectSpace(ActiveObjectSpace activeObjectSpace)
+    {
+        this.activeObjectSpace = activeObjectSpace;
+    }
+
+    public ActiveObjectSpace getActiveObjectSpace()
+    {
+        return activeObjectSpace;
     }
 }

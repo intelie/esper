@@ -83,11 +83,14 @@ public class EPServicesContextFactoryDefault implements EPServicesContextFactory
         EPServicesContext services = new EPServicesContext(epServiceProvider.getURI(), schedulingService,
                 eventAdapterService, engineImportService, engineSettingsService, databaseConfigService, plugInViews,
                 statementLockFactory, eventProcessingRWLock, null, jndiContext, statementContextFactory,
-                plugInPatternObj, outputConditionFactory, timerService, filterService, streamFactoryService, namedWindowService, variableService);
+                plugInPatternObj, outputConditionFactory, timerService, filterService, streamFactoryService,
+                namedWindowService, variableService);
 
         // Circular dependency
         StatementLifecycleSvc statementLifecycleSvc = new StatementLifecycleSvcImpl(epServiceProvider, services);
         services.setStatementLifecycleSvc(statementLifecycleSvc);
+        ActiveObjectSpace activeObjectSpace = new ActiveObjectSpaceImpl(statementLifecycleSvc);
+        services.setActiveObjectSpace(activeObjectSpace);
 
         return services;
     }

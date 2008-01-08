@@ -12,6 +12,7 @@ import java.io.StringWriter;
 import java.io.PrintWriter;
 
 import net.esper.event.EventBean;
+import net.esper.support.event.SupportEventAdapterService;
 
 public class ArrayAssertionUtil
 {
@@ -441,6 +442,12 @@ public class ArrayAssertionUtil
             Object eventProp = received.get(name);
             Assert.assertEquals("Error asserting property named '" + name + "'",value,eventProp);
         }
+    }
+
+    public static void assertProps(Object pojo, String[] propertyNames, Object... propertiesThisRow)
+    {
+        EventBean pojoEvent = SupportEventAdapterService.getService().adapterForBean(pojo);
+        assertProps(pojoEvent, propertyNames, propertiesThisRow);
     }
 
     public static void assertEqualsAnyOrder(Iterator<EventBean> iterator, String[] propertyNames, Object[][] propertiesListPerRow)
