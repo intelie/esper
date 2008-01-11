@@ -78,7 +78,7 @@ public class NamedWindowOnSelectView extends NamedWindowOnExprBaseView
             }
             
             // process matches
-            Pair<EventBean[], EventBean[]> pair = optionalResultSetProcessor.processJoinResult(newEvents, oldEvents);
+            Pair<EventBean[], EventBean[]> pair = optionalResultSetProcessor.processJoinResult(newEvents, oldEvents, false);
             newData = pair.getFirst();
         }
         else

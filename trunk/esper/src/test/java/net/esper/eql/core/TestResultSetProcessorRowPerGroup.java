@@ -41,7 +41,7 @@ public class TestResultSetProcessorRowPerGroup extends TestCase
         EventBean[] newData = new EventBean[] {makeEvent(1, 2), makeEvent(3, 4)};
         EventBean[] oldData = new EventBean[] {makeEvent(1, 2), makeEvent(1, 10)};
 
-        Pair<EventBean[], EventBean[]> result = processor.processViewResult(newData, oldData);
+        Pair<EventBean[], EventBean[]> result = processor.processViewResult(newData, oldData, false);
 
         assertEquals(2, supportAggregationService.getEnterList().size());
         assertEquals(2, supportAggregationService.getLeaveList().size());

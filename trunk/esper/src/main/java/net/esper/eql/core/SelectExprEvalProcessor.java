@@ -7,18 +7,16 @@
  **************************************************************************************/
 package net.esper.eql.core;
 
-import net.esper.event.*;
-import net.esper.eql.spec.InsertIntoDesc;
-import net.esper.eql.spec.SelectExprElementCompiledSpec;
 import net.esper.eql.expression.ExprNode;
 import net.esper.eql.expression.ExprValidationException;
+import net.esper.eql.spec.InsertIntoDesc;
+import net.esper.eql.spec.SelectExprElementCompiledSpec;
+import net.esper.event.*;
 import net.esper.util.ExecutionPathDebugLog;
-import net.esper.util.JavaClassHelper;
-
-import java.util.*;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import java.util.*;
 
 /**
  * Processor for select-clause expressions that handles a list of selection items represented by
@@ -196,7 +194,7 @@ public class SelectExprEvalProcessor implements SelectExprProcessor
         }
     }
 
-    public EventBean process(EventBean[] eventsPerStream, boolean isNewData)
+    public EventBean process(EventBean[] eventsPerStream, boolean isNewData, boolean isSynthesize)
     {
         // Evaluate all expressions and build a map of name-value pairs
         Map<String, Object> props = new HashMap<String, Object>();
@@ -227,7 +225,7 @@ public class SelectExprEvalProcessor implements SelectExprProcessor
             EventBean event;
             if(joinWildcardProcessor != null)
             {
-                event = joinWildcardProcessor.process(eventsPerStream, isNewData);
+                event = joinWildcardProcessor.process(eventsPerStream, isNewData, isSynthesize);
             }
             else
             {

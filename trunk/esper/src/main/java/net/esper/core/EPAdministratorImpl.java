@@ -116,7 +116,7 @@ public class EPAdministratorImpl implements EPAdministrator
 
     private EPStatement createEQLStmt(String eqlStatement, String statementName) throws EPException
     {
-        StatementSpecRaw statementSpec = compileEQL(eqlStatement, statementName);
+        StatementSpecRaw statementSpec = compileEQL(eqlStatement, statementName, services);
         EPStatement statement = services.getStatementLifecycleSvc().createAndStart(statementSpec, eqlStatement, false, statementName);
 
         log.debug(".createEQLStmt Statement created and started");
@@ -149,7 +149,7 @@ public class EPAdministratorImpl implements EPAdministrator
     public EPPreparedStatement prepareEQL(String eqlExpression) throws EPException
     {
         // compile to specification
-        StatementSpecRaw statementSpec = compileEQL(eqlExpression, null);
+        StatementSpecRaw statementSpec = compileEQL(eqlExpression, null, services);
 
         // map to object model thus finding all substitution parameters and their indexes
         StatementSpecUnMapResult unmapped = StatementSpecMapper.unmap(statementSpec);
@@ -188,7 +188,7 @@ public class EPAdministratorImpl implements EPAdministrator
 
     public EPStatementObjectModel compileEQL(String eqlStatement) throws EPException
     {
-        StatementSpecRaw statementSpec = compileEQL(eqlStatement, null);
+        StatementSpecRaw statementSpec = compileEQL(eqlStatement, null, services);
         StatementSpecUnMapResult unmapped = StatementSpecMapper.unmap(statementSpec);
         if (unmapped.getIndexedParams().size() != 0)
         {
@@ -236,7 +236,7 @@ public class EPAdministratorImpl implements EPAdministrator
         configurationOperations = null;        
     }
 
-    private StatementSpecRaw compileEQL(String eqlStatement, String statementName)
+    protected static StatementSpecRaw compileEQL(String eqlStatement, String statementName, EPServicesContext services)
     {
         if (log.isDebugEnabled())
         {

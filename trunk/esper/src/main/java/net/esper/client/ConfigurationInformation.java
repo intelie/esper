@@ -105,4 +105,17 @@ public interface ConfigurationInformation
      * @return map of fully-qualified or simple class name and cache configuration
      */
     public Map<String, ConfigurationMethodRef> getMethodInvocationReferences();
+
+    /**
+     * Returns a set of Java package names that Java event classes reside in.
+     * <p>
+     * This setting allows an application to place all it's events into one or more Java packages
+     * and then declare these packages via this method. The engine
+     * attempts to resolve an event type alias to a Java class residing in each declared package.
+     * <p>
+     * For example, in the statement "select * from MyEvent" the engine attempts to load class "javaPackageName.MyEvent"
+     * and if successful, uses that class as the event type.
+     * @return set of Java package names to look for events types when encountering a new event type alias
+     */
+    public Set<String> getEventTypeAutoAliasPackages();    
 }

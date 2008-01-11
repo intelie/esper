@@ -89,7 +89,7 @@ public class ResultSetProcessorAggregateGrouped implements ResultSetProcessor
         return selectExprProcessor.getResultEventType();
     }
 
-    public Pair<EventBean[], EventBean[]> processJoinResult(Set<MultiKey<EventBean>> newEvents, Set<MultiKey<EventBean>> oldEvents)
+    public Pair<EventBean[], EventBean[]> processJoinResult(Set<MultiKey<EventBean>> newEvents, Set<MultiKey<EventBean>> oldEvents, boolean isSynthesize)
     {
         // Generate group-by keys for all events
         MultiKeyUntyped[] newDataGroupByKeys = generateGroupKeys(newEvents, true);
@@ -100,7 +100,7 @@ public class ResultSetProcessorAggregateGrouped implements ResultSetProcessor
         {
             log.debug(".processJoinResults creating old output events");
         }
-        EventBean[] selectOldEvents = generateOutputEventsJoin(oldEvents, oldDataGroupByKeys, optionalHavingNode, oldEventGroupReps, oldGenerators, false);
+        EventBean[] selectOldEvents = generateOutputEventsJoin(oldEvents, oldDataGroupByKeys, optionalHavingNode, oldEventGroupReps, oldGenerators, false, isSynthesize);
 
         // update aggregates
         if (!newEvents.isEmpty())
@@ -129,7 +129,7 @@ public class ResultSetProcessorAggregateGrouped implements ResultSetProcessor
         {
             log.debug(".processJoinResults creating new output events");
         }
-        EventBean[] selectNewEvents = generateOutputEventsJoin(newEvents, newDataGroupByKeys, optionalHavingNode, newEventGroupReps, newGenerators, true);
+        EventBean[] selectNewEvents = generateOutputEventsJoin(newEvents, newDataGroupByKeys, optionalHavingNode, newEventGroupReps, newGenerators, true, isSynthesize);
 
         if ((selectNewEvents != null) || (selectOldEvents != null))
         {
@@ -138,7 +138,7 @@ public class ResultSetProcessorAggregateGrouped implements ResultSetProcessor
         return null;
     }
 
-    public Pair<EventBean[], EventBean[]> processViewResult(EventBean[] newData, EventBean[] oldData)
+    public Pair<EventBean[], EventBean[]> processViewResult(EventBean[] newData, EventBean[] oldData, boolean isSynthesize)
     {
         // Generate group-by keys for all events
         MultiKeyUntyped[] newDataGroupByKeys = generateGroupKeys(newData, true);
@@ -149,7 +149,7 @@ public class ResultSetProcessorAggregateGrouped implements ResultSetProcessor
         {
             log.debug(".processViewResults creating old output events");
         }
-        EventBean[] selectOldEvents = generateOutputEventsView(oldData, oldDataGroupByKeys, optionalHavingNode, oldEventGroupReps, oldGenerators, false);
+        EventBean[] selectOldEvents = generateOutputEventsView(oldData, oldDataGroupByKeys, optionalHavingNode, oldEventGroupReps, oldGenerators, false, isSynthesize);
 
         // update aggregates
         EventBean[] eventsPerStream = new EventBean[1];
@@ -177,7 +177,7 @@ public class ResultSetProcessorAggregateGrouped implements ResultSetProcessor
         {
             log.debug(".processViewResults creating new output events");
         }
-        EventBean[] selectNewEvents = generateOutputEventsView(newData, newDataGroupByKeys, optionalHavingNode, newEventGroupReps, newGenerators, true);
+        EventBean[] selectNewEvents = generateOutputEventsView(newData, newDataGroupByKeys, optionalHavingNode, newEventGroupReps, newGenerators, true, isSynthesize);
 
         if ((selectNewEvents != null) || (selectOldEvents != null))
         {
@@ -258,7 +258,7 @@ public class ResultSetProcessorAggregateGrouped implements ResultSetProcessor
 		return events;
 	}
 
-	private EventBean[] generateOutputEventsView(EventBean[] outputEvents, MultiKeyUntyped[] groupByKeys, ExprNode optionalHavingExpr, Map<MultiKeyUntyped, EventBean> groupReps, Map<MultiKeyUntyped, EventBean[]> generators, boolean isNewData)
+	private EventBean[] generateOutputEventsView(EventBean[] outputEvents, MultiKeyUntyped[] groupByKeys, ExprNode optionalHavingExpr, Map<MultiKeyUntyped, EventBean> groupReps, Map<MultiKeyUntyped, EventBean[]> generators, boolean isNewData, boolean isSynthesize)
     {
         if (outputEvents == null)
         {
@@ -290,7 +290,7 @@ public class ResultSetProcessorAggregateGrouped implements ResultSetProcessor
                 }
             }
 
-            events[count] = selectExprProcessor.process(eventsPerStream, isNewData);
+            events[count] = selectExprProcessor.process(eventsPerStream, isNewData, isSynthesize);
             keys[count] = groupByKeys[count];
             if(isSorting)
             {
@@ -389,7 +389,7 @@ public class ResultSetProcessorAggregateGrouped implements ResultSetProcessor
         return new MultiKeyUntyped(keys);
     }
 
-    private EventBean[] generateOutputEventsJoin(Set<MultiKey<EventBean>> resultSet, MultiKeyUntyped[] groupByKeys, ExprNode optionalHavingExpr, Map<MultiKeyUntyped, EventBean> groupReps, Map<MultiKeyUntyped, EventBean[]> generators, boolean isNewData)
+    private EventBean[] generateOutputEventsJoin(Set<MultiKey<EventBean>> resultSet, MultiKeyUntyped[] groupByKeys, ExprNode optionalHavingExpr, Map<MultiKeyUntyped, EventBean> groupReps, Map<MultiKeyUntyped, EventBean[]> generators, boolean isNewData, boolean isSynthesize)
     {
         if (resultSet.isEmpty())
         {
@@ -421,7 +421,7 @@ public class ResultSetProcessorAggregateGrouped implements ResultSetProcessor
                 }
             }
 
-            events[count] = selectExprProcessor.process(eventsPerStream, isNewData);
+            events[count] = selectExprProcessor.process(eventsPerStream, isNewData, isSynthesize);
             keys[count] = groupByKeys[count];
             if(isSorting)
             {
@@ -497,7 +497,7 @@ public class ResultSetProcessorAggregateGrouped implements ResultSetProcessor
             }
             else
             {
-                outgoingEvents.add(selectExprProcessor.process(eventsPerStream, true));
+                outgoingEvents.add(selectExprProcessor.process(eventsPerStream, true, true));
             }
 
             MultiKeyUntyped orderKey = orderByProcessor.getSortKey(eventsPerStream, true);
@@ -534,7 +534,7 @@ public class ResultSetProcessorAggregateGrouped implements ResultSetProcessor
     {
         // Generate group-by keys for all events
         MultiKeyUntyped[] groupByKeys = generateGroupKeys(joinSet, true);
-        EventBean[] result = generateOutputEventsJoin(joinSet, groupByKeys, optionalHavingNode, newEventGroupReps, newGenerators, true);
+        EventBean[] result = generateOutputEventsJoin(joinSet, groupByKeys, optionalHavingNode, newEventGroupReps, newGenerators, true, true);
         return new ArrayEventIterator(result);
     }
 

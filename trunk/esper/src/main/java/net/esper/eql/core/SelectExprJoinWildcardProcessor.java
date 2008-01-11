@@ -65,7 +65,7 @@ public class SelectExprJoinWildcardProcessor implements SelectExprProcessor
         }
     }
 
-    public EventBean process(EventBean[] eventsPerStream, boolean isNewData)
+    public EventBean process(EventBean[] eventsPerStream, boolean isNewData, boolean isSynthesize)
     {
         Map<String, Object> tuple = new HashMap<String, Object>();
         for (int i = 0; i < streamNames.length; i++)

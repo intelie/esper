@@ -90,7 +90,7 @@ public class ResultSetAggregateGroupedIterator implements Iterator<EventBean>
             }
             else
             {
-                nextResult = resultSetProcessor.getSelectExprProcessor().process(eventsPerStream, true);
+                nextResult = resultSetProcessor.getSelectExprProcessor().process(eventsPerStream, true, false);
             }
 
             break;

@@ -13,7 +13,7 @@ public class SupportSelectExprProcessor implements SelectExprProcessor
         return SupportEventTypeFactory.createBeanType(SupportBean.class);
     }
 
-    public EventBean process(EventBean[] eventsPerStream, boolean isNewData)
+    public EventBean process(EventBean[] eventsPerStream, boolean isNewData, boolean isSynthesize)
     {
         return eventsPerStream[0];
     }

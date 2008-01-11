@@ -430,13 +430,11 @@ public final class EPServicesContext
         return variableService;
     }
 
-    public void setActiveObjectSpace(ActiveObjectSpace activeObjectSpace)
-    {
-        this.activeObjectSpace = activeObjectSpace;
+    public ActiveObjectSpace getActiveObjectSpace() {
+        return activeObjectSpace;
     }
 
-    public ActiveObjectSpace getActiveObjectSpace()
-    {
-        return activeObjectSpace;
+    public void setActiveObjectSpace(ActiveObjectSpace activeObjectSpace) {
+        this.activeObjectSpace = activeObjectSpace;
     }
 }

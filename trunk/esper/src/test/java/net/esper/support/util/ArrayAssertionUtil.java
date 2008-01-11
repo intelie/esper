@@ -401,6 +401,32 @@ public class ArrayAssertionUtil
         }
     }
 
+    public static void assertPropsPerRow(List<Object[]> received, Object[][] propertiesListPerRow)
+    {
+        if (propertiesListPerRow == null)
+        {
+            if ((received == null) || (received.size() == 0))
+            {
+                return;
+            }
+        }
+        Assert.assertEquals(propertiesListPerRow.length, received.size());
+
+        for (int i = 0; i < propertiesListPerRow.length; i++)
+        {
+            Object[] receivedThisRow = received.get(i);
+            Object[] propertiesThisRow = propertiesListPerRow[i];
+            Assert.assertEquals(receivedThisRow.length, propertiesThisRow.length);
+
+            for (int j = 0; j < propertiesThisRow.length; j++)
+            {
+                Object expectedValue = propertiesThisRow[j];
+                Object receivedValue = receivedThisRow[j];
+                Assert.assertEquals("Error asserting property", expectedValue, receivedValue);
+            }
+        }
+    }
+
     public static void assertPropsPerRow(EventBean[] received, String[] propertyNames, Object[][] propertiesListPerRow)
     {
         if (propertiesListPerRow == null)

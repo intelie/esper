@@ -7,28 +7,20 @@
  **************************************************************************************/
 package net.esper.eql.core;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Set;
-
 import net.esper.collection.Pair;
+import net.esper.eql.agg.AggregationService;
+import net.esper.eql.agg.AggregationServiceFactory;
 import net.esper.eql.expression.*;
 import net.esper.eql.spec.*;
-import net.esper.eql.agg.AggregationServiceFactory;
-import net.esper.eql.agg.AggregationService;
 import net.esper.eql.variable.VariableService;
 import net.esper.event.EventAdapterService;
-import net.esper.event.CompositeEventType;
 import net.esper.event.TaggedCompositeEventType;
 import net.esper.schedule.TimeProvider;
-import net.esper.util.JavaClassHelper;
-
+import net.esper.core.ActiveObjectSpace;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import java.util.*;
 
 /**
  * Factory for output processors. Output processors process the result set of a join or of a view
@@ -78,7 +70,8 @@ public class ResultSetProcessorFactory
      */
     public static ResultSetProcessor getProcessor(SelectClauseSpec selectClauseSpec,
                                                   InsertIntoDesc insertIntoDesc,
-                                               	  List<ExprNode> groupByNodes,
+                                                  ActiveObjectSpec activeObjectSpec,
+                                                  List<ExprNode> groupByNodes,
                                                	  ExprNode optionalHavingNode,
                                                	  OutputLimitSpec outputLimitSpec,
                                                	  List<OrderByItem> orderByList,
@@ -87,7 +80,8 @@ public class ResultSetProcessorFactory
                                                   MethodResolutionService methodResolutionService,
                                                   ViewResourceDelegate viewResourceDelegate,
                                                   TimeProvider timeProvider,
-                                                  VariableService variableService)
+                                                  VariableService variableService,
+                                                  ActiveObjectSpace activeObjectSpace)
             throws ExprValidationException
     {
         if (log.isDebugEnabled())
@@ -255,7 +249,7 @@ public class ResultSetProcessorFactory
                 groupByNodes, orderByList, aggregationService, eventAdapterService);
 
         // Construct the processor for evaluating the select clause
-        SelectExprProcessor selectExprProcessor = SelectExprProcessorFactory.getProcessor(namedSelectionList, namedStreamList, isUsingWildcard, insertIntoDesc, typeService, eventAdapterService);
+        SelectExprProcessor selectExprProcessor = SelectExprProcessorFactory.getProcessor(namedSelectionList, namedStreamList, isUsingWildcard, insertIntoDesc, activeObjectSpec, typeService, eventAdapterService, activeObjectSpace);
 
         // Get a list of event properties being aggregated in the select clause, if any
         Set<Pair<Integer, String>> propertiesAggregatedSelect = getAggregatedProperties(selectAggregateExprNodes);

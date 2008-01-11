@@ -38,13 +38,14 @@ public class OutputProcessViewPolicy extends OutputProcessView
      * @param streamCount is the number of streams, indicates whether or not this view participates in a join
      * @param outputLimitSpec is the specification for limiting output (the output condition and the result set processor)
      * @param statementContext is the services the output condition may depend on
+     * @param outputStrategy is the execution of output to sub-views or natively
      */
-    public OutputProcessViewPolicy(ResultSetProcessor resultSetProcessor,
+    public OutputProcessViewPolicy(ResultSetProcessor resultSetProcessor, OutputStrategy outputStrategy,
     					  int streamCount,
     					  OutputLimitSpec outputLimitSpec,
     					  StatementContext statementContext)
     {
-        super(resultSetProcessor);
+        super(resultSetProcessor, outputStrategy);
         log.debug(".ctor");
 
     	if(streamCount < 1)
@@ -151,7 +152,7 @@ public class OutputProcessViewPolicy extends OutputProcessView
 		if(resultSetProcessor != null)
 		{
 			// Process the events and get the result
-			Pair<EventBean[], EventBean[]> newOldEvents = resultSetProcessor.processViewResult(newEvents, oldEvents);
+			Pair<EventBean[], EventBean[]> newOldEvents = resultSetProcessor.processViewResult(newEvents, oldEvents, false);
 			newEvents = newOldEvents != null ? newOldEvents.getFirst() : null;
 			oldEvents = newOldEvents != null ? newOldEvents.getSecond() : null;
 		}
@@ -191,14 +192,7 @@ public class OutputProcessViewPolicy extends OutputProcessView
 
 	private void output(boolean forceUpdate, EventBean[] newEvents, EventBean[] oldEvents)
 	{
-		if(newEvents != null || oldEvents != null)
-		{
-			updateChildren(newEvents, oldEvents);
-		}
-		else if(forceUpdate)
-		{
-			updateChildren(null, null);
-		}
+        outputStrategy.output(forceUpdate, newEvents, oldEvents, this);
 	}
 
 	private void resetEventBatches()
@@ -223,7 +217,7 @@ public class OutputProcessViewPolicy extends OutputProcessView
 		EventBean[] newEvents = null;
 		EventBean[] oldEvents = null;
 
-		Pair<EventBean[], EventBean[]> newOldEvents = resultSetProcessor.processJoinResult(newEventsSet, oldEventsSet);
+		Pair<EventBean[], EventBean[]> newOldEvents = resultSetProcessor.processJoinResult(newEventsSet, oldEventsSet, false);
 		if (newOldEvents != null)
 		{
 			newEvents = newOldEvents.getFirst();

@@ -82,7 +82,7 @@ public class ResultSetAggregateAllIterator implements Iterator<EventBean>
             }
             else
             {
-                nextResult = resultSetProcessor.getSelectExprProcessor().process(eventsPerStream, true);
+                nextResult = resultSetProcessor.getSelectExprProcessor().process(eventsPerStream, true, true);
             }
 
             break;

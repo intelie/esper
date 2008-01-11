@@ -89,7 +89,7 @@ public class EPServicesContextFactoryDefault implements EPServicesContextFactory
         // Circular dependency
         StatementLifecycleSvc statementLifecycleSvc = new StatementLifecycleSvcImpl(epServiceProvider, services);
         services.setStatementLifecycleSvc(statementLifecycleSvc);
-        ActiveObjectSpace activeObjectSpace = new ActiveObjectSpaceImpl(statementLifecycleSvc);
+        ActiveObjectSpace activeObjectSpace = new ActiveObjectSpaceImpl(services);
         services.setActiveObjectSpace(activeObjectSpace);
 
         return services;
@@ -144,6 +144,10 @@ public class EPServicesContextFactoryDefault implements EPServicesContextFactory
         }
         eventAdapterService.setClassLegacyConfigs(classLegacyInfo);
         eventAdapterService.setDefaultPropertyResolutionStyle(configSnapshot.getEngineDefaults().getEventMeta().getClassPropertyResolutionStyle());
+        for (String javaPackage : configSnapshot.getEventTypeAutoAliasPackages())
+        {
+            eventAdapterService.addAutoAliasPackage(javaPackage);    
+        }
 
         // Add from the configuration the Java event class aliases
         Map<String, String> javaClassAliases = configSnapshot.getEventTypeAliases();

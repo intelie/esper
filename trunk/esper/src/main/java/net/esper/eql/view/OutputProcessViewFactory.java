@@ -1,22 +1,17 @@
 package net.esper.eql.view;
 
-import net.esper.view.ViewSupport;
-import net.esper.eql.join.JoinSetIndicator;
-import net.esper.eql.core.ResultSetProcessor;
-import net.esper.eql.spec.OutputLimitSpec;
-import net.esper.eql.expression.ExprValidationException;
-import net.esper.event.EventBean;
-import net.esper.event.EventType;
-import net.esper.collection.MultiKey;
-import net.esper.collection.Pair;
-import net.esper.collection.TransformEventIterator;
-import net.esper.collection.TransformEventMethod;
+import net.esper.core.ActiveObjectSpace;
+import net.esper.core.InternalEventRouter;
 import net.esper.core.StatementContext;
-
-import java.util.*;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import net.esper.dispatch.DispatchService;
+import net.esper.eql.core.ResultSetProcessor;
+import net.esper.eql.expression.ExprValidationException;
+import net.esper.eql.spec.ActiveObjectSpec;
+import net.esper.eql.spec.OutputLimitSpec;
+import net.esper.eql.spec.SelectClauseStreamSelectorEnum;
+import net.esper.eql.spec.StatementSpecCompiled;
+import net.sf.cglib.reflect.FastClass;
+import net.sf.cglib.reflect.FastMethod;
 
 /**
  * Factory for output processing views.
@@ -28,30 +23,87 @@ public class OutputProcessViewFactory
     /**
      * Creates an output processor view depending on the presence of output limiting requirements.
      * @param resultSetProcessor is the processing for select-clause and grouping
-     * @param streamCount is the number of streams
-     * @param outputLimitSpec is the output rate limiting requirements
      * @param statementContext is the statement-level services
      * @return output processing view
      * @throws ExprValidationException to indicate 
      */
     public static OutputProcessView makeView(ResultSetProcessor resultSetProcessor,
-    					  int streamCount,
-    					  OutputLimitSpec outputLimitSpec,
-    					  StatementContext statementContext)
+                          StatementSpecCompiled statementSpec,
+                          StatementContext statementContext,
+                          ActiveObjectSpace activeObjectSpace,
+                          DispatchService dispatchService,
+                          InternalEventRouter internalEventRouter)
             throws ExprValidationException
     {
+        OutputStrategy outputStrategy;
+        if ((statementSpec.getInsertIntoDesc() != null) || statementSpec.getSelectStreamSelectorEnum() != SelectClauseStreamSelectorEnum.RSTREAM_ISTREAM_BOTH)
+        {
+            boolean isRoute = false;
+            boolean isRouteRStream = false;
+            if (statementSpec.getInsertIntoDesc() != null)
+            {
+                isRoute = true;
+                isRouteRStream = !statementSpec.getInsertIntoDesc().isIStream();
+            }
+
+            outputStrategy = new OutputStrategyPostProcess(isRoute, isRouteRStream, statementSpec.getSelectStreamSelectorEnum(), internalEventRouter, statementContext.getEpStatementHandle());
+        }
+        else
+        {
+            outputStrategy = new OutputStrategySimple();
+        }
+
+        // Generate an outer/wrapping output strategy for method delivery
+        if (statementSpec.getActiveObjectSpec() != null)
+        {
+            // TODO: error handling
+            ActiveObjectSpec spec = statementSpec.getActiveObjectSpec();
+            Object target = activeObjectSpace.getSubscriber(spec.getSubscriberUuid());
+            FastClass fastClass = FastClass.create(target.getClass());
+            FastMethod fastMethod = fastClass.getMethod(spec.getMethodName(), spec.getParameters());
+            boolean isRoute = statementSpec.getInsertIntoDesc() != null;
+            outputStrategy = new OutputStrategyNatural(isRoute, 
+                    statementSpec.getSelectStreamSelectorEnum(), dispatchService, outputStrategy, target, fastMethod);
+        }
+
+        // Do we need to enforce an output policy?
+        int streamCount = statementSpec.getStreamSpecs().size();
+        OutputLimitSpec outputLimitSpec = statementSpec.getOutputLimitSpec();
+
         try
         {
-            // Do we need to enforce an output policy?
             if (outputLimitSpec != null)
             {
-                return new OutputProcessViewPolicy(resultSetProcessor, streamCount, outputLimitSpec, statementContext);
+                return new OutputProcessViewPolicy(resultSetProcessor, outputStrategy, streamCount, outputLimitSpec, statementContext);
             }
-            return new OutputProcessViewDirect(resultSetProcessor);
+            if (resultSetProcessor == null)
+            {
+                return new OutputProcessViewHandThrough(outputStrategy);
+            }
+            return new OutputProcessViewDirect(resultSetProcessor, outputStrategy);
         }
         catch (RuntimeException ex)
         {
             throw new ExprValidationException("Error in the output rate limiting clause: " + ex.getMessage(), ex);
         }
+
+        /**
+         *  TODO
+            Object subscriber = null;
+            Method method = null;
+            if (activeObjectSpec != null)
+            {
+                subscriber = activeObjectSpace.getSubscriber(activeObjectSpec.getSubscriberUuid());
+                try
+                {
+                    method = subscriber.getClass().getMethod(activeObjectSpec.getMethodName(), activeObjectSpec.getParameters());
+                }
+                catch (NoSuchMethodException e)
+                {
+                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                }
+            }
+        }
+        */
     }
 }

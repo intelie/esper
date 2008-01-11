@@ -8,10 +8,13 @@
 package net.esper.eql.core;
 
 import net.esper.eql.expression.ExprValidationException;
+import net.esper.eql.expression.ExprNode;
 import net.esper.eql.spec.InsertIntoDesc;
 import net.esper.eql.spec.SelectExprElementCompiledSpec;
 import net.esper.eql.spec.SelectExprElementStreamCompiledSpec;
+import net.esper.eql.spec.ActiveObjectSpec;
 import net.esper.event.EventAdapterService;
+import net.esper.core.ActiveObjectSpace;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -39,16 +42,54 @@ public class SelectExprProcessorFactory
                                                    List<SelectExprElementStreamCompiledSpec> selectedStreams,
                                                    boolean isUsingWildcard,
                                                    InsertIntoDesc insertIntoDesc,
+                                                   ActiveObjectSpec activeObjectSpec,
                                                    StreamTypeService typeService, 
-                                                   EventAdapterService eventAdapterService)
+                                                   EventAdapterService eventAdapterService,
+                                                   ActiveObjectSpace activeObjectSpace)
         throws ExprValidationException
     {
-    	// Wildcard not allowed when insert into specifies column order
+        SelectExprProcessor synthetic = getProcessorInternal(selectionList, selectedStreams,
+                                                   isUsingWildcard, insertIntoDesc, activeObjectSpec,
+                                                   typeService, eventAdapterService, activeObjectSpace);
+        if (activeObjectSpec == null)
+        {
+            return synthetic;
+        }
+
+        // If this is a wildcard
+        if ((selectionList.isEmpty() && (selectedStreams.isEmpty())))
+        {
+            // TODO
+            // For joins
+            if (typeService.getStreamNames().length > 1)
+            {
+                log.debug(".getProcessor Using SelectExprJoinWildcardProcessor");
+                return new SelectExprJoinWildcardProcessor(typeService.getStreamNames(), typeService.getEventTypes(), eventAdapterService, insertIntoDesc);
+            }
+            // NaturalSelectExprProcessor natural = new NaturalSelectExprProcessor(synthetic);
+            return null;
+        }
+        
+        return new SelectExprMethodProcessor(synthetic, selectionList, activeObjectSpec);
+    }
+
+    private static SelectExprProcessor getProcessorInternal(
+                                                   List<SelectExprElementCompiledSpec> selectionList,
+                                                   List<SelectExprElementStreamCompiledSpec> selectedStreams,
+                                                   boolean isUsingWildcard,
+                                                   InsertIntoDesc insertIntoDesc,
+                                                   ActiveObjectSpec activeObjectSpec,
+                                                   StreamTypeService typeService,
+                                                   EventAdapterService eventAdapterService,
+                                                   ActiveObjectSpace activeObjectSpace)
+        throws ExprValidationException
+    {
+        // Wildcard not allowed when insert into specifies column order
     	if(isUsingWildcard && insertIntoDesc != null && !insertIntoDesc.getColumnNames().isEmpty())
     	{
     		throw new ExprValidationException("Wildcard not allowed when insert-into specifies column order");
     	}
-    	
+
         // Determine wildcard processor (select *)
         if ((selectionList.isEmpty() && (selectedStreams.isEmpty())))
         {
@@ -58,7 +99,7 @@ public class SelectExprProcessorFactory
                 log.debug(".getProcessor Using SelectExprJoinWildcardProcessor");
                 return new SelectExprJoinWildcardProcessor(typeService.getStreamNames(), typeService.getEventTypes(), eventAdapterService, insertIntoDesc);
             }
-            // Single-table selects with no insert-into 
+            // Single-table selects with no insert-into
             // don't need extra processing
             else if (insertIntoDesc == null)
             {

@@ -51,6 +51,6 @@ public class JoinPreloadMethodImpl implements JoinPreloadMethod
     {
         Set<MultiKey<EventBean>> newEvents = joinSetComposer.staticJoin();
         Set<MultiKey<EventBean>> oldEvents = new HashSet<MultiKey<EventBean>>();
-        resultSetProcessor.processJoinResult(newEvents, oldEvents);
+        resultSetProcessor.processJoinResult(newEvents, oldEvents, false);
     }
 }

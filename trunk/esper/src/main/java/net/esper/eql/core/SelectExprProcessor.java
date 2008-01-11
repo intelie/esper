@@ -28,5 +28,5 @@ public interface SelectExprProcessor
      * @param isNewData - indicates whether we are dealing with new data (istream) or old data (rstream)
      * @return event with properties containing selected items
      */
-    public EventBean process(EventBean[] eventsPerStream, boolean isNewData);
+    public EventBean process(EventBean[] eventsPerStream, boolean isNewData, boolean isSynthesize);
 }

@@ -40,7 +40,7 @@ public class TestResultSetProcessorSimple extends TestCase
 
     public void testUpdateAll() throws Exception
     {
-        assertNull(ResultSetProcessorSimple.getSelectEventsNoHaving(selectExprProcessor, orderByProcessor, (EventBean[]) null, false, false, true));
+        assertNull(ResultSetProcessorSimple.getSelectEventsNoHaving(selectExprProcessor, orderByProcessor, (EventBean[]) null, false, false, true, false));
 
         EventBean testEvent1 = makeEvent(10, 5, 6);
 	    EventBean testEvent2 = makeEvent(11, 6, 7);
@@ -50,7 +50,7 @@ public class TestResultSetProcessorSimple extends TestCase
 	    EventBean testEvent4 = makeEvent(21, 3, 4);
 	    EventBean[] oldData = new EventBean[] {testEvent3, testEvent4};
 
-        Pair<EventBean[], EventBean[]> result = outputProcessorAll.processViewResult(newData, oldData);
+        Pair<EventBean[], EventBean[]> result = outputProcessorAll.processViewResult(newData, oldData, false);
         EventBean[] newEvents = result.getFirst();
         EventBean[] oldEvents = result.getSecond();
 
@@ -71,7 +71,7 @@ public class TestResultSetProcessorSimple extends TestCase
 
     public void testProcessAll() throws Exception
     {
-        assertNull(ResultSetProcessorSimple.getSelectEventsNoHaving(selectExprProcessor, orderByProcessor, new HashSet<MultiKey<EventBean>>(), false, false, true));
+        assertNull(ResultSetProcessorSimple.getSelectEventsNoHaving(selectExprProcessor, orderByProcessor, new HashSet<MultiKey<EventBean>>(), false, false, true, false));
 
         EventBean testEvent1 = makeEvent(10, 5, 6);
 	    EventBean testEvent2 = makeEvent(11, 6, 7);
@@ -83,7 +83,7 @@ public class TestResultSetProcessorSimple extends TestCase
         Set<MultiKey<EventBean>> oldEventSet = makeEventSet(testEvent3);
 	    oldEventSet.add(new MultiKey<EventBean>(new EventBean[] {testEvent4}));
 
-        Pair<EventBean[], EventBean[]> result = outputProcessorAll.processJoinResult(newEventSet, oldEventSet);
+        Pair<EventBean[], EventBean[]> result = outputProcessorAll.processJoinResult(newEventSet, oldEventSet, false);
         EventBean[] newEvents = result.getFirst();
         EventBean[] oldEvents = result.getSecond();
 
@@ -120,7 +120,7 @@ public class TestResultSetProcessorSimple extends TestCase
 
 	public void testProcessLast() throws Exception
 	{
-        assertNull(ResultSetProcessorSimple.getSelectEventsNoHaving(selectExprProcessor, orderByProcessor, new HashSet<MultiKey<EventBean>>(), false, false, true));
+        assertNull(ResultSetProcessorSimple.getSelectEventsNoHaving(selectExprProcessor, orderByProcessor, new HashSet<MultiKey<EventBean>>(), false, false, true, false));
 
         EventBean testEvent1 = makeEvent(10, 5, 6);
 	    EventBean testEvent2 = makeEvent(11, 6, 7);
@@ -132,7 +132,7 @@ public class TestResultSetProcessorSimple extends TestCase
         Set<MultiKey<EventBean>> oldEventSet = makeEventSet(testEvent3);
 	    oldEventSet.add(new MultiKey<EventBean>(new EventBean[] {testEvent4}));
 
-        Pair<EventBean[], EventBean[]> result = outputProcessorLast.processJoinResult(newEventSet, oldEventSet);
+        Pair<EventBean[], EventBean[]> result = outputProcessorLast.processJoinResult(newEventSet, oldEventSet, false);
         EventBean[] newEvents = result.getFirst();
         EventBean[] oldEvents = result.getSecond();
 
@@ -147,7 +147,7 @@ public class TestResultSetProcessorSimple extends TestCase
 
 	public void testUpdateLast() throws Exception
 	{
-	       assertNull(ResultSetProcessorSimple.getSelectEventsNoHaving(selectExprProcessor, orderByProcessor, (EventBean[]) null, false, false, true));
+	       assertNull(ResultSetProcessorSimple.getSelectEventsNoHaving(selectExprProcessor, orderByProcessor, (EventBean[]) null, false, false, true, false));
 
 	        EventBean testEvent1 = makeEvent(10, 5, 6);
 		    EventBean testEvent2 = makeEvent(11, 6, 7);
@@ -157,7 +157,7 @@ public class TestResultSetProcessorSimple extends TestCase
 		    EventBean testEvent4 = makeEvent(21, 3, 4);
 		    EventBean[] oldData = new EventBean[] {testEvent3, testEvent4};
 
-	        Pair<EventBean[], EventBean[]> result = outputProcessorLast.processViewResult(newData, oldData);
+	        Pair<EventBean[], EventBean[]> result = outputProcessorLast.processViewResult(newData, oldData, false);
 	        EventBean[] newEvents = result.getFirst();
 	        EventBean[] oldEvents = result.getSecond();
 

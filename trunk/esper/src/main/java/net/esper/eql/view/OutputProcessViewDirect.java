@@ -21,10 +21,11 @@ public class OutputProcessViewDirect extends OutputProcessView
     /**
      * Ctor.
      * @param resultSetProcessor is processing the result set for publishing it out
+     * @param outputStrategy is the execution of output to sub-views or natively
      */
-    public OutputProcessViewDirect(ResultSetProcessor resultSetProcessor)
+    public OutputProcessViewDirect(ResultSetProcessor resultSetProcessor, OutputStrategy outputStrategy)
     {
-        super(resultSetProcessor);
+        super(resultSetProcessor, outputStrategy);
 
         log.debug(".ctor");
         if (resultSetProcessor == null)
@@ -47,15 +48,14 @@ public class OutputProcessViewDirect extends OutputProcessView
                     "  oldData.length==" + ((oldData == null) ? 0 : oldData.length));
         }
 
-        Pair<EventBean[], EventBean[]> newOldEvents = resultSetProcessor.processViewResult(newData, oldData);
+        boolean hasChildViews = this.hasViews();
+
+        Pair<EventBean[], EventBean[]> newOldEvents = resultSetProcessor.processViewResult(newData, oldData, hasChildViews);
 
         EventBean[] newEventArr = newOldEvents != null ? newOldEvents.getFirst() : null;
         EventBean[] oldEventArr = newOldEvents != null ? newOldEvents.getSecond() : null;
 
-        if(newEventArr != null || oldEventArr != null)
-        {
-            updateChildren(newEventArr, oldEventArr);
-        }        
+        outputStrategy.output(false, newEventArr, oldEventArr, this);
     }
 
     /**
@@ -77,7 +77,7 @@ public class OutputProcessViewDirect extends OutputProcessView
             log.debug(".continueOutputProcessingJoin");
         }
 
-        Pair<EventBean[], EventBean[]> newOldEvents = resultSetProcessor.processJoinResult(newEvents, oldEvents);
+        Pair<EventBean[], EventBean[]> newOldEvents = resultSetProcessor.processJoinResult(newEvents, oldEvents, false);
 
         if (newOldEvents == null)
         {
@@ -86,9 +86,6 @@ public class OutputProcessViewDirect extends OutputProcessView
         EventBean[] newEventArr = newOldEvents.getFirst();
         EventBean[] oldEventArr = newOldEvents.getSecond();
 
-        if (newEventArr != null || oldEventArr != null)
-        {
-            updateChildren(newEventArr, oldEventArr);
-        }
+        outputStrategy.output(false, newEventArr, oldEventArr, this);
     }
 }

@@ -31,14 +31,16 @@ public abstract class OutputProcessView extends ViewSupport implements JoinSetIn
      */
     protected final ResultSetProcessor resultSetProcessor;
     private JoinExecutionStrategy joinExecutionStrategy;
+    protected final OutputStrategy outputStrategy;
 
     /**
      * Ctor.
      * @param resultSetProcessor processes the results posted by parent view or joins
      */
-    protected OutputProcessView(ResultSetProcessor resultSetProcessor)
+    protected OutputProcessView(ResultSetProcessor resultSetProcessor, OutputStrategy outputStrategy)
     {
         this.resultSetProcessor = resultSetProcessor;
+        this.outputStrategy = outputStrategy;
     }
 
     public EventType getEventType()

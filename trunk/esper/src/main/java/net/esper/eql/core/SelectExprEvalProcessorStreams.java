@@ -235,7 +235,7 @@ public class SelectExprEvalProcessorStreams implements SelectExprProcessor
         }
     }
 
-    public EventBean process(EventBean[] eventsPerStream, boolean isNewData)
+    public EventBean process(EventBean[] eventsPerStream, boolean isNewData, boolean isSynthesize)
     {
         // Evaluate all expressions and build a map of name-value pairs
         Map<String, Object> props = new HashMap<String, Object>();

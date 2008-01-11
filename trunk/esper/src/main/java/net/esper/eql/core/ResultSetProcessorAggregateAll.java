@@ -65,18 +65,18 @@ public class ResultSetProcessorAggregateAll implements ResultSetProcessor
         return selectExprProcessor.getResultEventType();
     }
 
-    public Pair<EventBean[], EventBean[]> processJoinResult(Set<MultiKey<EventBean>> newEvents, Set<MultiKey<EventBean>> oldEvents)
+    public Pair<EventBean[], EventBean[]> processJoinResult(Set<MultiKey<EventBean>> newEvents, Set<MultiKey<EventBean>> oldEvents, boolean isSynthesize)
     {
         EventBean[] selectOldEvents = null;
         EventBean[] selectNewEvents = null;
 
         if (optionalHavingNode == null)
         {
-            selectOldEvents = ResultSetProcessorSimple.getSelectEventsNoHaving(selectExprProcessor, orderByProcessor, oldEvents, isOutputLimiting, isOutputLimitLastOnly, false);
+            selectOldEvents = ResultSetProcessorSimple.getSelectEventsNoHaving(selectExprProcessor, orderByProcessor, oldEvents, isOutputLimiting, isOutputLimitLastOnly, false, isSynthesize);
         }
         else
         {
-            selectOldEvents = ResultSetProcessorSimple.getSelectEventsHaving(selectExprProcessor, orderByProcessor, oldEvents, optionalHavingNode, isOutputLimiting, isOutputLimitLastOnly, false);
+            selectOldEvents = ResultSetProcessorSimple.getSelectEventsHaving(selectExprProcessor, orderByProcessor, oldEvents, optionalHavingNode, isOutputLimiting, isOutputLimitLastOnly, false, isSynthesize);
         }
 
         if (!newEvents.isEmpty())
@@ -99,11 +99,11 @@ public class ResultSetProcessorAggregateAll implements ResultSetProcessor
 
         if (optionalHavingNode == null)
         {
-            selectNewEvents = ResultSetProcessorSimple.getSelectEventsNoHaving(selectExprProcessor, orderByProcessor, newEvents, isOutputLimiting, isOutputLimitLastOnly, true);
+            selectNewEvents = ResultSetProcessorSimple.getSelectEventsNoHaving(selectExprProcessor, orderByProcessor, newEvents, isOutputLimiting, isOutputLimitLastOnly, true, isSynthesize);
         }
         else
         {
-            selectNewEvents = ResultSetProcessorSimple.getSelectEventsHaving(selectExprProcessor, orderByProcessor, newEvents, optionalHavingNode, isOutputLimiting, isOutputLimitLastOnly, true);
+            selectNewEvents = ResultSetProcessorSimple.getSelectEventsHaving(selectExprProcessor, orderByProcessor, newEvents, optionalHavingNode, isOutputLimiting, isOutputLimitLastOnly, true, isSynthesize);
         }
 
         if ((selectNewEvents == null) && (selectOldEvents == null))
@@ -113,7 +113,7 @@ public class ResultSetProcessorAggregateAll implements ResultSetProcessor
         return new Pair<EventBean[], EventBean[]>(selectNewEvents, selectOldEvents);
     }
 
-    public Pair<EventBean[], EventBean[]> processViewResult(EventBean[] newData, EventBean[] oldData)
+    public Pair<EventBean[], EventBean[]> processViewResult(EventBean[] newData, EventBean[] oldData, boolean isSynthesize)
     {
         EventBean[] selectOldEvents = null;
         EventBean[] selectNewEvents = null;
@@ -121,12 +121,12 @@ public class ResultSetProcessorAggregateAll implements ResultSetProcessor
         // generate old events using select expressions
         if (optionalHavingNode == null)
         {
-            selectOldEvents = ResultSetProcessorSimple.getSelectEventsNoHaving(selectExprProcessor, orderByProcessor, oldData, isOutputLimiting, isOutputLimitLastOnly, false);
+            selectOldEvents = ResultSetProcessorSimple.getSelectEventsNoHaving(selectExprProcessor, orderByProcessor, oldData, isOutputLimiting, isOutputLimitLastOnly, false, isSynthesize);
         }
         // generate old events using having then select
         else
         {
-            selectOldEvents = ResultSetProcessorSimple.getSelectEventsHaving(selectExprProcessor, orderByProcessor, oldData, optionalHavingNode, isOutputLimiting, isOutputLimitLastOnly, false);
+            selectOldEvents = ResultSetProcessorSimple.getSelectEventsHaving(selectExprProcessor, orderByProcessor, oldData, optionalHavingNode, isOutputLimiting, isOutputLimitLastOnly, false, isSynthesize);
         }
 
         EventBean[] eventsPerStream = new EventBean[1];
@@ -152,11 +152,11 @@ public class ResultSetProcessorAggregateAll implements ResultSetProcessor
         // generate new events using select expressions
         if (optionalHavingNode == null)
         {
-            selectNewEvents = ResultSetProcessorSimple.getSelectEventsNoHaving(selectExprProcessor, orderByProcessor, newData, isOutputLimiting, isOutputLimitLastOnly, true);
+            selectNewEvents = ResultSetProcessorSimple.getSelectEventsNoHaving(selectExprProcessor, orderByProcessor, newData, isOutputLimiting, isOutputLimitLastOnly, true, isSynthesize);
         }
         else
         {
-            selectNewEvents = ResultSetProcessorSimple.getSelectEventsHaving(selectExprProcessor, orderByProcessor, newData, optionalHavingNode, isOutputLimiting, isOutputLimitLastOnly, true);
+            selectNewEvents = ResultSetProcessorSimple.getSelectEventsHaving(selectExprProcessor, orderByProcessor, newData, optionalHavingNode, isOutputLimiting, isOutputLimitLastOnly, true, isSynthesize);
         }
 
         if ((selectNewEvents == null) && (selectOldEvents == null))
@@ -200,7 +200,7 @@ public class ResultSetProcessorAggregateAll implements ResultSetProcessor
             }
             else
             {
-                outgoingEvents.add(selectExprProcessor.process(eventsPerStream, true));
+                outgoingEvents.add(selectExprProcessor.process(eventsPerStream, true, true));
             }
 
             MultiKeyUntyped orderKey = orderByProcessor.getSortKey(eventsPerStream, true);
@@ -238,11 +238,11 @@ public class ResultSetProcessorAggregateAll implements ResultSetProcessor
         EventBean[] result;
         if (optionalHavingNode == null)
         {
-            result = ResultSetProcessorSimple.getSelectEventsNoHaving(selectExprProcessor, orderByProcessor, joinSet, isOutputLimiting, isOutputLimitLastOnly, true);
+            result = ResultSetProcessorSimple.getSelectEventsNoHaving(selectExprProcessor, orderByProcessor, joinSet, isOutputLimiting, isOutputLimitLastOnly, true, true);
         }
         else
         {
-            result = ResultSetProcessorSimple.getSelectEventsHaving(selectExprProcessor, orderByProcessor, joinSet, optionalHavingNode, isOutputLimiting, isOutputLimitLastOnly, true);
+            result = ResultSetProcessorSimple.getSelectEventsHaving(selectExprProcessor, orderByProcessor, joinSet, optionalHavingNode, isOutputLimiting, isOutputLimitLastOnly, true, true);
         }
         return new ArrayEventIterator(result);
     }

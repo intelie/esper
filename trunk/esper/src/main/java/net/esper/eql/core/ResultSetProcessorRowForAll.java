@@ -51,12 +51,12 @@ public class ResultSetProcessorRowForAll implements ResultSetProcessor
         return selectExprProcessor.getResultEventType();
     }
 
-    public Pair<EventBean[], EventBean[]> processJoinResult(Set<MultiKey<EventBean>> newEvents, Set<MultiKey<EventBean>> oldEvents)
+    public Pair<EventBean[], EventBean[]> processJoinResult(Set<MultiKey<EventBean>> newEvents, Set<MultiKey<EventBean>> oldEvents, boolean isSynthesize)
     {
         EventBean[] selectOldEvents;
         EventBean[] selectNewEvents;
 
-        selectOldEvents = getSelectListEvents(selectExprProcessor, optionalHavingNode, false);
+        selectOldEvents = getSelectListEvents(selectExprProcessor, optionalHavingNode, false, isSynthesize);
 
         if (!newEvents.isEmpty())
         {
@@ -75,7 +75,7 @@ public class ResultSetProcessorRowForAll implements ResultSetProcessor
             }
         }
 
-        selectNewEvents = getSelectListEvents(selectExprProcessor, optionalHavingNode, true);
+        selectNewEvents = getSelectListEvents(selectExprProcessor, optionalHavingNode, true, isSynthesize);
 
         if ((selectNewEvents == null) && (selectOldEvents == null))
         {
@@ -84,12 +84,12 @@ public class ResultSetProcessorRowForAll implements ResultSetProcessor
         return new Pair<EventBean[], EventBean[]>(selectNewEvents, selectOldEvents);
     }
 
-    public Pair<EventBean[], EventBean[]> processViewResult(EventBean[] newData, EventBean[] oldData)
+    public Pair<EventBean[], EventBean[]> processViewResult(EventBean[] newData, EventBean[] oldData, boolean isSynthesize)
     {
         EventBean[] selectOldEvents = null;
         EventBean[] selectNewEvents = null;
 
-        selectOldEvents = getSelectListEvents(selectExprProcessor, optionalHavingNode, false);
+        selectOldEvents = getSelectListEvents(selectExprProcessor, optionalHavingNode, false, isSynthesize);
 
         EventBean[] eventsPerStream = new EventBean[1];
         if (newData != null)
@@ -112,7 +112,7 @@ public class ResultSetProcessorRowForAll implements ResultSetProcessor
         }
 
         // generate new events using select expressions
-        selectNewEvents = getSelectListEvents(selectExprProcessor, optionalHavingNode, true);
+        selectNewEvents = getSelectListEvents(selectExprProcessor, optionalHavingNode, true, isSynthesize);
 
         if ((selectNewEvents == null) && (selectOldEvents == null))
         {
@@ -122,10 +122,10 @@ public class ResultSetProcessorRowForAll implements ResultSetProcessor
         return new Pair<EventBean[], EventBean[]>(selectNewEvents, selectOldEvents);
     }
 
-    private static EventBean[] getSelectListEvents(SelectExprProcessor exprProcessor, ExprNode optionalHavingNode, boolean isNewData)
+    private static EventBean[] getSelectListEvents(SelectExprProcessor exprProcessor, ExprNode optionalHavingNode, boolean isNewData, boolean isSynthesize)
     {
         // Since we are dealing with strictly aggregation nodes, there are no events required for evaluating
-        EventBean event = exprProcessor.process(null, isNewData);
+        EventBean event = exprProcessor.process(null, isNewData, isSynthesize);
 
         if (optionalHavingNode != null)
         {
@@ -142,7 +142,7 @@ public class ResultSetProcessorRowForAll implements ResultSetProcessor
 
     public Iterator<EventBean> getIterator(Viewable parent)
     {
-        EventBean[] selectNewEvents = getSelectListEvents(selectExprProcessor, optionalHavingNode, true);
+        EventBean[] selectNewEvents = getSelectListEvents(selectExprProcessor, optionalHavingNode, true, true);
         if (selectNewEvents == null)
         {
             return new NullIterator();
@@ -152,7 +152,7 @@ public class ResultSetProcessorRowForAll implements ResultSetProcessor
 
     public Iterator<EventBean> getIterator(Set<MultiKey<EventBean>> joinSet)
     {
-        EventBean[] result = getSelectListEvents(selectExprProcessor, optionalHavingNode, true);
+        EventBean[] result = getSelectListEvents(selectExprProcessor, optionalHavingNode, true, true);
         return new ArrayEventIterator(result);
     }
 

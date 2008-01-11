@@ -757,7 +757,8 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
                 spec.getOutputLimitSpec(),
                 spec.getOrderByList(),
                 visitor.getSubselects(),
-                spec.isHasVariables()
+                spec.isHasVariables(),
+                spec.getActiveObjectSpec()
                 );
     }
 

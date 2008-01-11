@@ -197,6 +197,7 @@ public class EPStatementStartMethod
             ResultSetProcessor optionalResultSetProcessor = ResultSetProcessorFactory.getProcessor(
                     statementSpec.getSelectClauseSpec(),
                     statementSpec.getInsertIntoDesc(),
+                    statementSpec.getActiveObjectSpec(),
                     statementSpec.getGroupByExpressions(),
                     statementSpec.getHavingExprRootNode(),
                     statementSpec.getOutputLimitSpec(),
@@ -206,7 +207,8 @@ public class EPStatementStartMethod
                     statementContext.getMethodResolutionService(),
                     null,
                     statementContext.getSchedulingService(),
-                    statementContext.getVariableService());
+                    statementContext.getVariableService(),
+                    null);
 
             // validate join expression
             ExprNode validatedJoin = validateJoinNamedWindow(statementSpec.getFilterRootNode(),
@@ -540,6 +542,7 @@ public class EPStatementStartMethod
         ResultSetProcessor optionalResultSetProcessor = ResultSetProcessorFactory.getProcessor(
                 statementSpec.getSelectClauseSpec(),
                 statementSpec.getInsertIntoDesc(),
+                statementSpec.getActiveObjectSpec(),
                 statementSpec.getGroupByExpressions(),
                 statementSpec.getHavingExprRootNode(),
                 statementSpec.getOutputLimitSpec(),
@@ -549,7 +552,8 @@ public class EPStatementStartMethod
                 statementContext.getMethodResolutionService(),
                 viewResourceDelegate,
                 statementContext.getSchedulingService(),
-                statementContext.getVariableService());
+                statementContext.getVariableService(),
+                services.getActiveObjectSpace());
 
         // Validate where-clause filter tree and outer join clause
         validateNodes(typeService, statementContext.getMethodResolutionService(), viewResourceDelegate);
@@ -614,21 +618,6 @@ public class EPStatementStartMethod
             }
         }
 
-        // Hook up internal event route for insert-into if required
-        if (statementSpec.getInsertIntoDesc() != null)
-        {
-            InternalRouteView routeView = new InternalRouteView(statementSpec.getInsertIntoDesc().isIStream(), services.getInternalEventRouter(), statementContext.getEpStatementHandle());
-            finalView.addView(routeView);
-            finalView = routeView;
-        }
-
-        if (statementSpec.getSelectStreamSelectorEnum() != SelectClauseStreamSelectorEnum.RSTREAM_ISTREAM_BOTH)
-        {
-            IStreamRStreamSelectorView streamSelectorView = new IStreamRStreamSelectorView(statementSpec.getSelectStreamSelectorEnum());
-            finalView.addView(streamSelectorView);
-            finalView = streamSelectorView;
-        }
-
         log.debug(".start Statement start completed");
 
         return new Pair<Viewable, EPStatementStopMethod>(finalView, stopMethod);
@@ -654,7 +643,8 @@ public class EPStatementStartMethod
         });
         
         JoinSetFilter filter = new JoinSetFilter(statementSpec.getFilterRootNode());
-        OutputProcessView indicatorView = OutputProcessViewFactory.makeView(optionalResultSetProcessor, statementSpec.getStreamSpecs().size(), statementSpec.getOutputLimitSpec(), statementContext);
+        OutputProcessView indicatorView = OutputProcessViewFactory.makeView(optionalResultSetProcessor, statementSpec,
+                statementContext, services.getActiveObjectSpace(), services.getDispatchService(), services.getInternalEventRouter());
 
         // Create strategy for join execution
         JoinExecutionStrategy execution = new JoinExecutionStrategyImpl(composer, filter, indicatorView);
@@ -832,9 +822,13 @@ public class EPStatementStartMethod
         }
 
         // Add select expression view if there is any
-       if (optionalResultSetProcessor != null || statementSpec.getOutputLimitSpec() != null)
+       if ((optionalResultSetProcessor != null) ||
+           (statementSpec.getOutputLimitSpec() != null) ||
+           (statementSpec.getInsertIntoDesc() != null) ||
+           (statementSpec.getSelectStreamSelectorEnum() != SelectClauseStreamSelectorEnum.RSTREAM_ISTREAM_BOTH))            
         {
-            OutputProcessView selectView = OutputProcessViewFactory.makeView(optionalResultSetProcessor, statementSpec.getStreamSpecs().size(), statementSpec.getOutputLimitSpec(), statementContext);
+            OutputProcessView selectView = OutputProcessViewFactory.makeView(optionalResultSetProcessor, statementSpec,
+                    statementContext, services.getActiveObjectSpace(), services.getDispatchService(), services.getInternalEventRouter());
             finalView.addView(selectView);
             finalView = selectView;
         }
