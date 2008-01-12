@@ -3,7 +3,6 @@ package net.esper.core;
 import net.esper.client.UpdateListener;
 import net.esper.client.StatementAwareUpdateListener;
 
-import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 /**
@@ -18,6 +17,8 @@ public class EPStatementListenerSet
 {
     CopyOnWriteArraySet<UpdateListener> listeners;
     CopyOnWriteArraySet<StatementAwareUpdateListener> stmtAwareListeners;
+    private transient EPStatementListenerSetCallback epStatementListenerSetCallback;
+    
 
     /**
      * Ctor.
@@ -37,6 +38,10 @@ public class EPStatementListenerSet
     {
         this.listeners = listeners;
         this.stmtAwareListeners = stmtAwareListeners;
+    }
+
+    public void setEpStatementListenerSetCallback(EPStatementListenerSetCallback epStatementListenerSetCallback) {
+        this.epStatementListenerSetCallback = epStatementListenerSetCallback;
     }
 
     /**
@@ -65,6 +70,10 @@ public class EPStatementListenerSet
     {
         this.listeners = listenerSet.getListeners();
         this.stmtAwareListeners = listenerSet.getStmtAwareListeners();
+        if (epStatementListenerSetCallback != null)
+        {
+            epStatementListenerSetCallback.newListenerSet(this);
+        }
     }
 
     /**
@@ -79,6 +88,10 @@ public class EPStatementListenerSet
         }
 
         listeners.add(listener);
+        if (epStatementListenerSetCallback != null)
+        {
+            epStatementListenerSetCallback.newListenerSet(this);
+        }
     }
 
     /**
@@ -93,6 +106,10 @@ public class EPStatementListenerSet
         }
 
         listeners.remove(listener);
+        if (epStatementListenerSetCallback != null)
+        {
+            epStatementListenerSetCallback.newListenerSet(this);
+        }
     }
 
     /**
@@ -102,6 +119,10 @@ public class EPStatementListenerSet
     {
         listeners.clear();
         stmtAwareListeners.clear();
+        if (epStatementListenerSetCallback != null)
+        {
+            epStatementListenerSetCallback.newListenerSet(this);
+        }
     }
 
     /**
@@ -116,6 +137,10 @@ public class EPStatementListenerSet
         }
 
         stmtAwareListeners.add(listener);
+        if (epStatementListenerSetCallback != null)
+        {
+            epStatementListenerSetCallback.newListenerSet(this);
+        }
     }
 
     /**
@@ -130,5 +155,9 @@ public class EPStatementListenerSet
         }
 
         stmtAwareListeners.remove(listener);
+        if (epStatementListenerSetCallback != null)
+        {
+            epStatementListenerSetCallback.newListenerSet(this);
+        }
     }
 }

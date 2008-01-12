@@ -56,11 +56,9 @@ public class TestMTStmtTwoPatternsStartStop extends TestCase
         // Create a second pattern, wait 200 msec, destroy second pattern in a loop
         for (int i = 0; i < 10; i++)
         {
-            System.out.println("Creating second statement");
             EPStatement statement = engine.getEPAdministrator().createPattern(statementTwo);
             Thread.sleep(200);
             statement.destroy();
-            System.out.println("Destroying second statement");
         }
 
         runnable.setShutdown(true);

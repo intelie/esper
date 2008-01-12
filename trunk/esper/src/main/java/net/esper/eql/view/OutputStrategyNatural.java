@@ -1,15 +1,14 @@
 package net.esper.eql.view;
 
-import net.esper.event.EventBean;
-import net.esper.view.ViewSupport;
 import net.esper.dispatch.DispatchService;
-import net.esper.eql.spec.SelectClauseStreamSelectorEnum;
 import net.esper.eql.core.NaturalEventBean;
+import net.esper.eql.spec.SelectClauseStreamSelectorEnum;
+import net.esper.event.EventBean;
+import net.esper.view.View;
 import net.sf.cglib.reflect.FastMethod;
 
 public class OutputStrategyNatural implements OutputStrategy
 {
-    private final boolean isRoute;
     private final SelectClauseStreamSelectorEnum selectStreamDirEnum;
     private final DispatchService dispatchService;
     private final OutputStrategy syntheticStrategy;
@@ -21,16 +20,15 @@ public class OutputStrategyNatural implements OutputStrategy
         }
     };
 
-    public OutputStrategyNatural(boolean isRoute, SelectClauseStreamSelectorEnum selectStreamDirEnum, DispatchService dispatchService, OutputStrategy syntheticStrategy, Object target, FastMethod method)
+    public OutputStrategyNatural(SelectClauseStreamSelectorEnum selectStreamDirEnum, DispatchService dispatchService, OutputStrategy syntheticStrategy, Object target, FastMethod method)
     {
         this.selectStreamDirEnum = selectStreamDirEnum;
-        this.isRoute = isRoute;
         this.dispatchService = dispatchService;
         this.syntheticStrategy = syntheticStrategy;
         naturalDispatchable = new NaturalDispatchable(target, method, isDispatchWaiting);
     }
 
-    public void output(boolean forceUpdate, EventBean[] newEvents, EventBean[] oldEvents, ViewSupport finalView)
+    public void output(boolean forceUpdate, EventBean[] newEvents, EventBean[] oldEvents, View postProcessView)
     {
         // TODO: second strategy that doesn't route and just dispatches for speed
         if ((selectStreamDirEnum == SelectClauseStreamSelectorEnum.RSTREAM_ISTREAM_BOTH) ||
@@ -71,10 +69,35 @@ public class OutputStrategyNatural implements OutputStrategy
             throw new IllegalStateException("Unknown stream selector " + selectStreamDirEnum);
         }
 
-        // if there are listeners, invoke the synthetic output strategy
-        if (finalView.hasViews() || isRoute)
+        // Invoke the synthetic output strategy - there may be listeners or insert-into
+        EventBean[] unpackedNew = unpack(newEvents);
+        EventBean[] unpackedOld = unpack(oldEvents);
+        if ((unpackedNew != null) || (unpackedOld != null) || (forceUpdate))
         {
-            syntheticStrategy.output(forceUpdate, newEvents, oldEvents, finalView);
-        }        
+            syntheticStrategy.output(forceUpdate, unpackedNew, unpackedOld, postProcessView);
+        }
+    }
+
+    private EventBean[] unpack(EventBean[] events)
+    {
+        if ((events == null) || (events.length == 0))
+        {
+            return events;
+        }
+        EventBean[] unpacked = new EventBean[events.length];
+        for (int i = 0; i < unpacked.length; i++)
+        {
+            NaturalEventBean natural = (NaturalEventBean) events[i];
+            if (natural.getOptionalSynthetic() == null)
+            {
+                return null; // no events
+            }
+            if (unpacked == null)
+            {
+                unpacked = new EventBean[events.length];
+            }
+            unpacked[i] = natural.getOptionalSynthetic();
+        }
+        return unpacked;
     }
 }

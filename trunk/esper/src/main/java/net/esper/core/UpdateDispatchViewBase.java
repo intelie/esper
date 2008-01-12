@@ -21,7 +21,7 @@ import java.util.LinkedList;
  * Convenience view for dispatching view updates received from a parent view to update listeners
  * via the dispatch service.
  */
-public abstract class UpdateDispatchViewBase extends ViewSupport implements Dispatchable
+public abstract class UpdateDispatchViewBase extends ViewSupport implements Dispatchable, UpdateDispatchView
 {
     private final EPServiceProvider epServiceProvider;
     private final EPStatement statement;
@@ -76,6 +76,10 @@ public abstract class UpdateDispatchViewBase extends ViewSupport implements Disp
         this.statement = statement;
         this.statementListenerSet = updateListeners;
         this.dispatchService = dispatchService;
+    }
+
+    public void registerCallback(EPStatementListenerSetCallback callback) {
+        statementListenerSet.setEpStatementListenerSetCallback(callback);
     }
 
     /**

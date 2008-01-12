@@ -2,19 +2,18 @@ package net.esper.eql.view;
 
 import net.esper.event.EventBean;
 import net.esper.view.View;
-import net.esper.view.ViewSupport;
 
 public class OutputStrategySimple implements OutputStrategy
 {
-    public void output(boolean forceUpdate, EventBean[] newEvents, EventBean[] oldEvents, ViewSupport finalView)
+    public void output(boolean forceUpdate, EventBean[] newEvents, EventBean[] oldEvents, View finalView)
     {
         if(newEvents != null || oldEvents != null)
         {
-            finalView.updateChildren(newEvents, oldEvents);
+            finalView.update(newEvents, oldEvents);
         }
         else if(forceUpdate)
         {
-            finalView.updateChildren(null, null);
+            finalView.update(null, null);
         }
     }
 }

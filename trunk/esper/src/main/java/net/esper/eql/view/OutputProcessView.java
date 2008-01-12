@@ -13,10 +13,13 @@ import net.esper.eql.join.JoinExecutionStrategy;
 import net.esper.eql.join.JoinSetIndicator;
 import net.esper.event.EventBean;
 import net.esper.event.EventType;
-import net.esper.view.ViewSupport;
+import net.esper.view.View;
+import net.esper.view.Viewable;
+import net.esper.core.UpdateDispatchView;
+import net.esper.core.EPStatementListenerSetCallback;
+import net.esper.core.EPStatementListenerSet;
 
-import java.util.Iterator;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Base output processing view that has the responsibility to serve up event type and
@@ -24,7 +27,7 @@ import java.util.Set;
  * <p>
  * Implementation classes may enforce an output rate stabilizing or limiting policy.
  */
-public abstract class OutputProcessView extends ViewSupport implements JoinSetIndicator
+public abstract class OutputProcessView implements View, JoinSetIndicator
 {
     /**
      * Processes the parent views result set generating events for pushing out to child view.
@@ -32,15 +35,70 @@ public abstract class OutputProcessView extends ViewSupport implements JoinSetIn
     protected final ResultSetProcessor resultSetProcessor;
     private JoinExecutionStrategy joinExecutionStrategy;
     protected final OutputStrategy outputStrategy;
+    private final boolean isInsertInto;
+    protected UpdateDispatchView childView;
+    protected Viewable parentView;
+    protected boolean isGenerateSynthetic;
 
     /**
      * Ctor.
      * @param resultSetProcessor processes the results posted by parent view or joins
      */
-    protected OutputProcessView(ResultSetProcessor resultSetProcessor, OutputStrategy outputStrategy)
+    protected OutputProcessView(ResultSetProcessor resultSetProcessor, OutputStrategy outputStrategy, boolean isInsertInto)
     {
         this.resultSetProcessor = resultSetProcessor;
         this.outputStrategy = outputStrategy;
+        this.isInsertInto = isInsertInto;
+
+        // by default, generate synthetic events only if we insert-into or if there are listeners to a statement
+        this.isGenerateSynthetic = isInsertInto;
+    }
+
+    public Viewable getParent() {
+        return parentView;
+    }
+
+    public void setParent(Viewable parent) {
+        this.parentView = parent;
+    }
+
+    public View addView(View view) {
+        if (childView != null)
+        {
+            throw new IllegalStateException("Child view has already been supplied");
+        }
+        childView = (UpdateDispatchView) view;
+        childView.registerCallback(new EPStatementListenerSetCallback()
+        {
+            public void newListenerSet(EPStatementListenerSet epStatementListenerSet) {
+                isGenerateSynthetic = (epStatementListenerSet.getListeners().size() != 0) ||
+                        (epStatementListenerSet.getStmtAwareListeners().size() != 0) ||
+                        isInsertInto;
+            }
+        });
+        return this;
+    }
+
+    public List<View> getViews() {
+        ArrayList<View> views = new ArrayList<View>();
+        if (childView != null)
+        {
+            views.add(childView);
+        }
+        return views;
+    }
+
+    public boolean removeView(View view) {
+        if (view != childView)
+        {
+            throw new IllegalStateException("Cannot remove child view, view has not been supplied");
+        }
+        childView = null;
+        return true;
+    }
+
+    public boolean hasViews() {
+        return childView != null;
     }
 
     public EventType getEventType()
@@ -52,11 +110,11 @@ public abstract class OutputProcessView extends ViewSupport implements JoinSetIn
             {
                 return eventType;
             }
-            return parent.getEventType();
+            return parentView.getEventType();
     	}
     	else
     	{
-    		return parent.getEventType();
+    		return parentView.getEventType();
     	}
     }
 
@@ -78,11 +136,11 @@ public abstract class OutputProcessView extends ViewSupport implements JoinSetIn
         }
         if(resultSetProcessor != null)
     	{
-            return resultSetProcessor.getIterator(parent); 
+            return resultSetProcessor.getIterator(parentView);
     	}
     	else
     	{
-    		return parent.iterator();
+    		return parentView.iterator();
     	}
     }
 }

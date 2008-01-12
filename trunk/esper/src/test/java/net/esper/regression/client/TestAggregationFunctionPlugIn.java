@@ -269,7 +269,6 @@ public class TestAggregationFunctionPlugIn extends TestCase
         }
         catch (ConfigurationException ex)
         {
-            System.out.println(ex.getMessage());
             // expected
         }
     }
@@ -286,7 +285,6 @@ public class TestAggregationFunctionPlugIn extends TestCase
         }
         catch (ConfigurationException ex)
         {
-            System.out.println(ex.getMessage());
             // expected
         }        
     }

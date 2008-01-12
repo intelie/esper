@@ -238,11 +238,12 @@ public class TestUseResultPattern extends TestCase implements SupportBeanConstan
                             tradeevent1.getUserId().equals(tradeevent3.getUserId()) ||
                             tradeevent2.getUserId().equals(tradeevent3.getUserId())))
             {
+                /*
                 System.out.println("Bad Match : ");
                 System.out.println(tradeevent1);
                 System.out.println(tradeevent2);
-                System.out.println(tradeevent3 +
-                        "\n");
+                System.out.println(tradeevent3 + "\n");
+                */
                 badMatchCount++;
             }
             else

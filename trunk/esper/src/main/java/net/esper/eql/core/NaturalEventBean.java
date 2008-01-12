@@ -36,4 +36,8 @@ public class NaturalEventBean implements EventBean
     {
         return natural;
     }
+
+    public EventBean getOptionalSynthetic() {
+        return optionalSynthetic;
+    }
 }

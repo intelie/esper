@@ -552,9 +552,10 @@ public class TestCronParameter extends TestCase implements SupportBeanConstants
     private void printCurrentTime(Calendar cal)
     {
         Date date = cal.getTime();
-        System.out.println(new SimpleDateFormat("EEEE").format(date) + " " + new SimpleDateFormat("MMM").format(date) +
-                " " + cal.get(Calendar.DAY_OF_MONTH) + " " + cal.get(Calendar.YEAR));
+        //System.out.println(new SimpleDateFormat("EEEE").format(date) + " " + new SimpleDateFormat("MMM").format(date) +
+        //        " " + cal.get(Calendar.DAY_OF_MONTH) + " " + cal.get(Calendar.YEAR));
     }
 }
+
 
 

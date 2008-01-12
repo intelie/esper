@@ -22,9 +22,9 @@ public class OutputProcessViewHandThrough extends OutputProcessView
      * Ctor.
      * @param outputStrategy is the execution of output to sub-views or natively
      */
-    public OutputProcessViewHandThrough(OutputStrategy outputStrategy)
+    public OutputProcessViewHandThrough(OutputStrategy outputStrategy, boolean isInsertInto)
     {
-        super(null, outputStrategy);
+        super(null, outputStrategy, isInsertInto);
     }
 
     /**
@@ -41,7 +41,7 @@ public class OutputProcessViewHandThrough extends OutputProcessView
                     "  oldData.length==" + ((oldData == null) ? 0 : oldData.length));
         }
 
-        outputStrategy.output(false, newData, oldData, this);
+        outputStrategy.output(false, newData, oldData, childView);
     }
 
     /**

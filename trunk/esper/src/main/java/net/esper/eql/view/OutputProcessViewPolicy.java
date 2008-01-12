@@ -41,11 +41,12 @@ public class OutputProcessViewPolicy extends OutputProcessView
      * @param outputStrategy is the execution of output to sub-views or natively
      */
     public OutputProcessViewPolicy(ResultSetProcessor resultSetProcessor, OutputStrategy outputStrategy,
-    					  int streamCount,
-    					  OutputLimitSpec outputLimitSpec,
-    					  StatementContext statementContext)
+                                   boolean isInsertInto,
+                                   int streamCount,
+                                   OutputLimitSpec outputLimitSpec,
+                                   StatementContext statementContext)
     {
-        super(resultSetProcessor, outputStrategy);
+        super(resultSetProcessor, outputStrategy, isInsertInto);
         log.debug(".ctor");
 
     	if(streamCount < 1)
@@ -192,7 +193,7 @@ public class OutputProcessViewPolicy extends OutputProcessView
 
 	private void output(boolean forceUpdate, EventBean[] newEvents, EventBean[] oldEvents)
 	{
-        outputStrategy.output(forceUpdate, newEvents, oldEvents, this);
+        outputStrategy.output(forceUpdate, newEvents, oldEvents, childView);
 	}
 
 	private void resetEventBatches()

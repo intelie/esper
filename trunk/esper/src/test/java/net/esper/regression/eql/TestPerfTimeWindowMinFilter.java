@@ -60,7 +60,6 @@ public class TestPerfTimeWindowMinFilter extends TestCase
                 long now = System.currentTimeMillis();
                 double deltaSec = (now - start) / 1000.0;
                 double throughput = 10000.0 / deltaSec;
-                System.out.println("total=" + i + " deltaSec=" + deltaSec + " per sec:" + throughput);
                 for (int j = 0; j < listeners.length; j++)
                 {
                     listeners[j].reset();

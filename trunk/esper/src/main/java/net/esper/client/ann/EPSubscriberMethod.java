@@ -10,4 +10,5 @@ import java.lang.annotation.Retention;
 public @interface EPSubscriberMethod
 {
     String epl();
+    String name();
 }

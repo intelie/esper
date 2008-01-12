@@ -2,6 +2,7 @@ package net.esper.core;
 
 import net.esper.client.ann.EPSubscriberMethod;
 import net.esper.client.EPException;
+import net.esper.client.EPStatement;
 import net.esper.util.UuidGenerator;
 import net.esper.eql.spec.StatementSpecRaw;
 import net.esper.eql.spec.ActiveObjectSpec;
@@ -11,16 +12,20 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.List;
+import java.util.ArrayList;
 
 public class ActiveObjectSpaceImpl implements ActiveObjectSpace
 {
     private EPServicesContext services;
     private Map<String, Object> subscribers;
+    private Map<Object, List<EPStatement>> statements;
 
     public ActiveObjectSpaceImpl(EPServicesContext services)
     {
         this.services = services;
         subscribers = new HashMap<String, Object>();
+        statements = new HashMap<Object, List<EPStatement>>();
     }
 
     public Object getSubscriber(String subscriberId)
@@ -55,31 +60,33 @@ public class ActiveObjectSpaceImpl implements ActiveObjectSpace
                 // Eligible annotation
                 EPSubscriberMethod subAnn = (EPSubscriberMethod) annotation;
                 String epl = subAnn.epl();
+                String stmtName = subAnn.name();
 
-                StatementSpecRaw raw = EPAdministratorImpl.compileEQL(epl, null, services);
+                // Compile and start
+                StatementSpecRaw raw = EPAdministratorImpl.compileEQL(epl, stmtName, services);
                 raw.setActiveObjectSpec(new ActiveObjectSpec(objectId, method.getName(), method.getParameterTypes()));
-                services.getStatementLifecycleSvc().createAndStart(raw, epl, false, null);
+                EPStatement stmt = services.getStatementLifecycleSvc().createAndStart(raw, epl, false, stmtName);
+
+                List<EPStatement> statementList = statements.get(activeObject);
+                if (statementList == null)
+                {
+                    statementList = new ArrayList<EPStatement>();
+                    statements.put(activeObject, statementList);
+                }
+                statementList.add(stmt);
             }
-        }
-        
-        // TODO
-        // (1) Minimal version: mapping to select to method, performance, base API
-        // (2) Support parameterized annotations
-        // (3) Support insert into
-        // (4) Support start/stop
-        // (5) Handle iterator
-        // (6) Handle persistence
-        // (7) Support for detecting a pattern or a epl
-
-        // Interrogate all methods; get annotations
-        // Compile and start statement; put Map<Object, List<EPStatement>>
-        // Take: stops and removes statements
-
-        
+        }        
     }
 
     public void take(Object activeObject)
     {
-
+        List<EPStatement> statementList = statements.get(activeObject);
+        if (statementList != null)
+        {
+            for (EPStatement stmt : statementList)
+            {
+                stmt.stop();
+            }
+        }        
     }
 }

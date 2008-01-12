@@ -23,9 +23,9 @@ public class OutputProcessViewDirect extends OutputProcessView
      * @param resultSetProcessor is processing the result set for publishing it out
      * @param outputStrategy is the execution of output to sub-views or natively
      */
-    public OutputProcessViewDirect(ResultSetProcessor resultSetProcessor, OutputStrategy outputStrategy)
+    public OutputProcessViewDirect(ResultSetProcessor resultSetProcessor, OutputStrategy outputStrategy, boolean isInsertInto)
     {
-        super(resultSetProcessor, outputStrategy);
+        super(resultSetProcessor, outputStrategy, isInsertInto);
 
         log.debug(".ctor");
         if (resultSetProcessor == null)
@@ -48,14 +48,12 @@ public class OutputProcessViewDirect extends OutputProcessView
                     "  oldData.length==" + ((oldData == null) ? 0 : oldData.length));
         }
 
-        boolean hasChildViews = this.hasViews();
-
-        Pair<EventBean[], EventBean[]> newOldEvents = resultSetProcessor.processViewResult(newData, oldData, hasChildViews);
+        Pair<EventBean[], EventBean[]> newOldEvents = resultSetProcessor.processViewResult(newData, oldData, isGenerateSynthetic);
 
         EventBean[] newEventArr = newOldEvents != null ? newOldEvents.getFirst() : null;
         EventBean[] oldEventArr = newOldEvents != null ? newOldEvents.getSecond() : null;
 
-        outputStrategy.output(false, newEventArr, oldEventArr, this);
+        outputStrategy.output(false, newEventArr, oldEventArr, childView);
     }
 
     /**
@@ -77,7 +75,7 @@ public class OutputProcessViewDirect extends OutputProcessView
             log.debug(".continueOutputProcessingJoin");
         }
 
-        Pair<EventBean[], EventBean[]> newOldEvents = resultSetProcessor.processJoinResult(newEvents, oldEvents, false);
+        Pair<EventBean[], EventBean[]> newOldEvents = resultSetProcessor.processJoinResult(newEvents, oldEvents, isGenerateSynthetic);
 
         if (newOldEvents == null)
         {
@@ -86,6 +84,6 @@ public class OutputProcessViewDirect extends OutputProcessView
         EventBean[] newEventArr = newOldEvents.getFirst();
         EventBean[] oldEventArr = newOldEvents.getSecond();
 
-        outputStrategy.output(false, newEventArr, oldEventArr, this);
+        outputStrategy.output(false, newEventArr, oldEventArr, childView);
     }
 }

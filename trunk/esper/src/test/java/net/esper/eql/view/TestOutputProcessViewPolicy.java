@@ -24,8 +24,8 @@ public class TestOutputProcessViewPolicy extends TestCase
     {
         OutputStrategy outputStrategy = new OutputStrategySimple();
         resultSetProcessor = new SupportResultSetProcessor();
-        outputProcessViewUpdate = new OutputProcessViewPolicy(resultSetProcessor, outputStrategy, 1, null, SupportStatementContextFactory.makeContext());
-        outputProcessViewProcess = new OutputProcessViewPolicy(resultSetProcessor, outputStrategy, 2, null, SupportStatementContextFactory.makeContext());
+        outputProcessViewUpdate = new OutputProcessViewPolicy(resultSetProcessor, outputStrategy, false, 1, null, SupportStatementContextFactory.makeContext());
+        outputProcessViewProcess = new OutputProcessViewPolicy(resultSetProcessor, outputStrategy, false, 2, null, SupportStatementContextFactory.makeContext());
         
         childViewNoJoin = new SupportSchemaNeutralView();
         outputProcessViewUpdate.addView(childViewNoJoin);

@@ -15,8 +15,6 @@ import net.sf.cglib.reflect.FastMethod;
 
 /**
  * Factory for output processing views.
- * <p>
- *
  */
 public class OutputProcessViewFactory
 {
@@ -35,18 +33,22 @@ public class OutputProcessViewFactory
                           InternalEventRouter internalEventRouter)
             throws ExprValidationException
     {
+        boolean isRouted = false;
+        if (statementSpec.getInsertIntoDesc() != null)
+        {
+            isRouted = true;
+        }
+
         OutputStrategy outputStrategy;
         if ((statementSpec.getInsertIntoDesc() != null) || statementSpec.getSelectStreamSelectorEnum() != SelectClauseStreamSelectorEnum.RSTREAM_ISTREAM_BOTH)
         {
-            boolean isRoute = false;
             boolean isRouteRStream = false;
             if (statementSpec.getInsertIntoDesc() != null)
             {
-                isRoute = true;
                 isRouteRStream = !statementSpec.getInsertIntoDesc().isIStream();
             }
 
-            outputStrategy = new OutputStrategyPostProcess(isRoute, isRouteRStream, statementSpec.getSelectStreamSelectorEnum(), internalEventRouter, statementContext.getEpStatementHandle());
+            outputStrategy = new OutputStrategyPostProcess(isRouted, isRouteRStream, statementSpec.getSelectStreamSelectorEnum(), internalEventRouter, statementContext.getEpStatementHandle());
         }
         else
         {
@@ -61,9 +63,7 @@ public class OutputProcessViewFactory
             Object target = activeObjectSpace.getSubscriber(spec.getSubscriberUuid());
             FastClass fastClass = FastClass.create(target.getClass());
             FastMethod fastMethod = fastClass.getMethod(spec.getMethodName(), spec.getParameters());
-            boolean isRoute = statementSpec.getInsertIntoDesc() != null;
-            outputStrategy = new OutputStrategyNatural(isRoute, 
-                    statementSpec.getSelectStreamSelectorEnum(), dispatchService, outputStrategy, target, fastMethod);
+            outputStrategy = new OutputStrategyNatural(statementSpec.getSelectStreamSelectorEnum(), dispatchService, outputStrategy, target, fastMethod);
         }
 
         // Do we need to enforce an output policy?
@@ -74,13 +74,13 @@ public class OutputProcessViewFactory
         {
             if (outputLimitSpec != null)
             {
-                return new OutputProcessViewPolicy(resultSetProcessor, outputStrategy, streamCount, outputLimitSpec, statementContext);
+                return new OutputProcessViewPolicy(resultSetProcessor, outputStrategy, isRouted, streamCount, outputLimitSpec, statementContext);
             }
             if (resultSetProcessor == null)
             {
-                return new OutputProcessViewHandThrough(outputStrategy);
+                return new OutputProcessViewHandThrough(outputStrategy, isRouted);
             }
-            return new OutputProcessViewDirect(resultSetProcessor, outputStrategy);
+            return new OutputProcessViewDirect(resultSetProcessor, outputStrategy, isRouted);
         }
         catch (RuntimeException ex)
         {
