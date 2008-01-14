@@ -13,21 +13,95 @@ import junit.framework.TestCase;
 import java.util.List;
 import java.util.ArrayList;
 
+/**
+ * Dispatching
+===========
+
+Input:
+  - select clause expressions
+  - annotation values
+  - parameter types of the method in order
+
+Output:
+  - Select expression processing to Object or Object[]
+  - Dispatch strategy (array, i/rstream, one or more methods)
+
+
+Use Cases
+=========
+- Interface and abstract classes honored
+- istream and rstream can point to a method name to deliver events to
+- POJO, Map and DOM are underlying events and map to "*", "s0.*" or "s0"
+
+Wildcard-only and single-stream select: Delivers underlying event
+-----------------------------------------------------------------
+To get the underlying event of the insert stream (POJO):
+  @epsubscribe(epl="select * from OrderEvent.win:time(30 sec)")
+  public void indicate(OrderEvent orderEvent)
+  or
+  public void indicate(OrderEvent[] orderEvent)
+
+To get the underlying event of the insert stream (Map):
+  @epsubscribe(epl="select * from OrderEvent.win:time(30 sec)")
+  public void indicate(Map event)
+  or
+  public void indicate(Map[] event)
+
+To get the underlying event of the insert stream (DOM):
+  @epsubscribe(epl="select * from OrderEvent.win:time(30 sec)")
+  public void indicate(org.w3c.dom.Node node)
+  or
+  public void indicate(org.w3c.dom.Node[] node)
+
+To get the underlying event of the remove stream:
+  @epsubscribe(epl="select rstream * from OrderEvent.win:time(30 sec)")
+  public void indicate(OrderEvent orderEvent)
+  or
+  public void indicate(OrderEvent[] orderEvent)
+
+To get the underlying event of the insert and remove stream:
+  @epsubscribe(epl="select * from OrderEvent.win:time(30 sec)" rstream="indicateRStream")
+  public void indicateIStream(OrderEvent orderEvent)
+  public void indicateRStream(OrderEvent orderEvent)
+  or
+  public void indicateIStream(OrderEvent[] orderEvent)
+  public void indicateRStream(OrderEvent[] orderEvent)
+
+Generalized delivery:
+  @epsubscribe(epl="select * from OrderEvent.win:time(30 sec)")
+  public void indicate(Object event)
+  or
+  public void indicate(Object[] events)
+  or
+  public void indicate(Object... events)
+
+
+Wildcard-only and join: Delivers underlying events
+-----------------------------------------------------------------
+
+To get the underlying events of the insert stream (POJO, order must match order in from-clause):
+  @epsubscribe(epl="select * from OrderEvent.win:time(30 sec), PriceEvent.win:time(30 sec)")
+  public void indicate(OrderEvent orderEvent, PriceEvent priceEvent)
+
+
+List of columns plus or without wildcard: deliver expression values matching columns selected, single-column special case for joins
+-----------------------------------------------------------------
+
+ */
 public class TestAnnotatedSubscriber extends TestCase
 {
     // TODO: test iterator
     // TODO: test listener + method delivery
     // TODO: test join
     // TODO: test select istream/rstream selector
+    // TODO: test static method
 
     // TODO: support named parameter names, support rstream delivery through alt method
-    // TODO: test synthetic delivery
     // TODO: test wildcard, stream wildcard, wildcard with extra columns
     // TODO: test multirow delivery
     // TODO: test array delivery
     // TODO: test bean array delivery
     // TODO: test outside statement start/stop + statement name
-    // TODO: test insert into
     // TODO: test named windows
     // TODO: test performance
     // TODO: test non-selecting views: on-delete, create window/variable
@@ -38,10 +112,14 @@ public class TestAnnotatedSubscriber extends TestCase
     // TODO: test take and remove
     // TODO: test invalid
     // TODO: test with and without statement name
-    // TODO: Support parameterized annotations
-    // TODO: Handle persistence
+    // TODO: Support parameterized annotations, i.e. a->b(var=$var1)
+    // TODO: Handle persistence (EHA)
     // TODO: Support for detecting a pattern or a epl
     // TODO: test write same object twice
+    // TODO: test provide method to start and stop expressions (or not)
+    // TODO: subscriber read API
+    // TODO: should there be a begin-delivery(length) and end-delivery method
+    // TODO: annotation on the class level pointing to the method name to deliver to
 
     private EPServiceProvider epService;
 

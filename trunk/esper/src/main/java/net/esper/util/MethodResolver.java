@@ -102,8 +102,13 @@ public class MethodResolver
 		MethodResolver.wideningConversions.put(double.class, new HashSet<Class>(wideningConversions));
 		MethodResolver.wideningConversions.put(Double.class, new HashSet<Class>(wideningConversions));
 	}
-	
-	/**
+
+    public static Map<Class, Set<Class>> getWideningConversions()
+    {
+        return wideningConversions;
+    }
+
+    /**
 	 * Attempts to find the static or instance method described by the parameters,
 	 * or a method of the same name that will accept the same type of
 	 * parameters.

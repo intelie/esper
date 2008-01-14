@@ -7,19 +7,19 @@
  **************************************************************************************/
 package net.esper.eql.core;
 
+import net.esper.core.ActiveObjectSpace;
 import net.esper.eql.expression.ExprValidationException;
-import net.esper.eql.expression.ExprNode;
+import net.esper.eql.spec.ActiveObjectSpec;
 import net.esper.eql.spec.InsertIntoDesc;
 import net.esper.eql.spec.SelectExprElementCompiledSpec;
 import net.esper.eql.spec.SelectExprElementStreamCompiledSpec;
-import net.esper.eql.spec.ActiveObjectSpec;
 import net.esper.event.EventAdapterService;
-import net.esper.core.ActiveObjectSpace;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -49,8 +49,7 @@ public class SelectExprProcessorFactory
         throws ExprValidationException
     {
         SelectExprProcessor synthetic = getProcessorInternal(selectionList, selectedStreams,
-                                                   isUsingWildcard, insertIntoDesc, activeObjectSpec,
-                                                   typeService, eventAdapterService, activeObjectSpace);
+                                                   isUsingWildcard, insertIntoDesc, typeService, eventAdapterService);
         if (activeObjectSpec == null)
         {
             return synthetic;
@@ -66,11 +65,27 @@ public class SelectExprProcessorFactory
                 log.debug(".getProcessor Using SelectExprJoinWildcardProcessor");
                 return new SelectExprJoinWildcardProcessor(typeService.getStreamNames(), typeService.getEventTypes(), eventAdapterService, insertIntoDesc);
             }
-            // NaturalSelectExprProcessor natural = new NaturalSelectExprProcessor(synthetic);
-            return null;
+
+            return new SelectExprBindProcessor(new SelectExprWildcardProcessor(typeService.getEventTypes()[0]), new BindStrategyNoJoinWildcard(activeObjectSpec, typeService.getEventTypes()[0]));
+        }
+
+        BindStrategy bindStrategy;
+        // Bind single Map
+        if ((activeObjectSpec.getParameters().length == 1) && (activeObjectSpec.getParameters()[0] == Map.class))
+        {
+            bindStrategy = new BindStrategyMap(selectionList);
+        }
+        // Bind Object varargs or Object[]
+        else if ((activeObjectSpec.getParameters().length == 1) && (activeObjectSpec.getParameters()[0] == Object[].class))
+        {
+            bindStrategy = new BindStrategyObjectArray(selectionList);
+        }
+        else
+        {
+            bindStrategy = new BindStrategyFieldWise(selectionList, activeObjectSpec);
         }
         
-        return new SelectExprMethodProcessor(synthetic, selectionList, activeObjectSpec);
+        return new SelectExprBindProcessor(synthetic, bindStrategy);
     }
 
     private static SelectExprProcessor getProcessorInternal(
@@ -78,10 +93,8 @@ public class SelectExprProcessorFactory
                                                    List<SelectExprElementStreamCompiledSpec> selectedStreams,
                                                    boolean isUsingWildcard,
                                                    InsertIntoDesc insertIntoDesc,
-                                                   ActiveObjectSpec activeObjectSpec,
                                                    StreamTypeService typeService,
-                                                   EventAdapterService eventAdapterService,
-                                                   ActiveObjectSpace activeObjectSpace)
+                                                   EventAdapterService eventAdapterService)
         throws ExprValidationException
     {
         // Wildcard not allowed when insert into specifies column order

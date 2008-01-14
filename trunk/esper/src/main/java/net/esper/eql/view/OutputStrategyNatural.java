@@ -12,7 +12,7 @@ public class OutputStrategyNatural implements OutputStrategy
     private final SelectClauseStreamSelectorEnum selectStreamDirEnum;
     private final DispatchService dispatchService;
     private final OutputStrategy syntheticStrategy;
-    private final NaturalDispatchable naturalDispatchable;
+    private final NaturalDispatchableRIStreamArray naturalDispatchable;
 
     private ThreadLocal<Boolean> isDispatchWaiting = new ThreadLocal<Boolean>() {
         protected synchronized Boolean initialValue() {
@@ -25,7 +25,8 @@ public class OutputStrategyNatural implements OutputStrategy
         this.selectStreamDirEnum = selectStreamDirEnum;
         this.dispatchService = dispatchService;
         this.syntheticStrategy = syntheticStrategy;
-        naturalDispatchable = new NaturalDispatchable(target, method, isDispatchWaiting);
+        //naturalDispatchable = new NaturalDispatchableNonArray(target, method, isDispatchWaiting);
+        naturalDispatchable = new NaturalDispatchableRIStreamArray(target, method, isDispatchWaiting);
     }
 
     public void output(boolean forceUpdate, EventBean[] newEvents, EventBean[] oldEvents, View postProcessView)
@@ -36,11 +37,7 @@ public class OutputStrategyNatural implements OutputStrategy
         {
             if (newEvents != null)
             {
-                for (EventBean newEvent : newEvents)
-                {
-                    NaturalEventBean natural = (NaturalEventBean) newEvent;
-                    naturalDispatchable.addParameters(natural.getNatural());
-                }
+                naturalDispatchable.addParameters(newEvents, oldEvents);
 
                 if (!isDispatchWaiting.get())
                 {
@@ -52,11 +49,7 @@ public class OutputStrategyNatural implements OutputStrategy
         {
             if (oldEvents != null)
             {
-                for (EventBean oldEvent : oldEvents)
-                {
-                    NaturalEventBean natural = (NaturalEventBean) oldEvent;
-                    naturalDispatchable.addParameters(natural.getNatural());
-                }
+                naturalDispatchable.addParameters(null, oldEvents);
 
                 if (!isDispatchWaiting.get())
                 {

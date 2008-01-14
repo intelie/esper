@@ -470,6 +470,25 @@ public class ArrayAssertionUtil
         }
     }
 
+    public static void assertProps(Map pojo, String[] propertyNames, Object... propertiesThisRow)
+    {
+        if (propertiesThisRow == null)
+        {
+            if (pojo == null)
+            {
+                return;
+            }
+        }
+
+        for (int j = 0; j < propertiesThisRow.length; j++)
+        {
+            String name = propertyNames[j].trim();
+            Object value = propertiesThisRow[j];
+            Object eventProp = pojo.get(name);
+            Assert.assertEquals("Error asserting property named '" + name + "'",value,eventProp);
+        }
+    }
+
     public static void assertProps(Object pojo, String[] propertyNames, Object... propertiesThisRow)
     {
         EventBean pojoEvent = SupportEventAdapterService.getService().adapterForBean(pojo);

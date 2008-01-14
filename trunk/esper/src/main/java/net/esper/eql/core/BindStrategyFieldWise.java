@@ -1,29 +1,22 @@
 package net.esper.eql.core;
 
-import net.esper.eql.spec.SelectExprElementCompiledSpec;
-import net.esper.eql.spec.ActiveObjectSpec;
 import net.esper.eql.expression.ExprNode;
 import net.esper.eql.expression.ExprValidationException;
-import net.esper.event.EventType;
+import net.esper.eql.spec.ActiveObjectSpec;
+import net.esper.eql.spec.SelectExprElementCompiledSpec;
 import net.esper.event.EventBean;
 import net.esper.util.JavaClassHelper;
 
 import java.util.List;
 
-public class SelectExprMethodProcessor implements SelectExprProcessor
+public class BindStrategyFieldWise implements BindStrategy
 {
-    private final SelectExprProcessor syntheticProcessor;
-    private final List<SelectExprElementCompiledSpec> selectionList;
     private ExprNode[] expressionNodes;
 
-    public SelectExprMethodProcessor(SelectExprProcessor syntheticProcessor,
-                                     List<SelectExprElementCompiledSpec> selectionList,
-                                     ActiveObjectSpec activeObjectSpec)
+    public BindStrategyFieldWise(List<SelectExprElementCompiledSpec> selectionList,
+                                   ActiveObjectSpec activeObjectSpec)
             throws ExprValidationException
     {
-        this.syntheticProcessor = syntheticProcessor;
-        this.selectionList = selectionList;
-
         // Get expression nodes
         expressionNodes = new ExprNode[selectionList.size()];
         Class[] exprTypes = new Class[selectionList.size()];
@@ -45,7 +38,7 @@ public class SelectExprMethodProcessor implements SelectExprProcessor
         {
             Class boxedExpressionType = JavaClassHelper.getBoxedType(exprTypes[i]);
             Class boxedParameterType = JavaClassHelper.getBoxedType(paramTypes[i]);
-            if ((exprTypes[i] != null && (!boxedParameterType.isAssignableFrom(boxedExpressionType))))
+            if ((exprTypes[i] != null) && (!JavaClassHelper.isAssignmentCompatible(boxedExpressionType, boxedParameterType)))
             {
                 throw new ExprValidationException("Method parameter type '" + paramTypes[i].getName() +
                         "' is not assignable from select column typed '" + exprTypes[i].getName() +
@@ -54,12 +47,7 @@ public class SelectExprMethodProcessor implements SelectExprProcessor
         }
     }
 
-    public EventType getResultEventType()
-    {
-        return syntheticProcessor.getResultEventType();
-    }
-
-    public EventBean process(EventBean[] eventsPerStream, boolean isNewData, boolean isSynthesize)
+    public Object[] process(EventBean[] eventsPerStream, boolean isNewData)
     {
         Object[] parameters = new Object[expressionNodes.length];
 
@@ -69,14 +57,6 @@ public class SelectExprMethodProcessor implements SelectExprProcessor
             parameters[i] = result;
         }
 
-        EventBean syntheticEvent = null;
-        EventType syntheticEventType = null;
-        if (isSynthesize)
-        {
-            syntheticEvent = syntheticProcessor.process(eventsPerStream, isNewData, isSynthesize);
-            syntheticEventType = syntheticEvent.getEventType();
-        }
-
-        return new NaturalEventBean(syntheticEventType, parameters, syntheticEvent);
+        return parameters;
     }
 }

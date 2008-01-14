@@ -3,10 +3,11 @@ package net.esper.util;
 import junit.framework.TestCase;
 import net.esper.support.bean.*;
 
-import java.util.Map;
-import java.util.HashMap;
-import java.util.AbstractMap;
-import java.util.TreeMap;
+import java.util.*;
+import java.io.Serializable;
+import java.io.LineNumberReader;
+import java.io.BufferedReader;
+import java.io.Reader;
 
 public class TestJavaClassHelper extends TestCase
 {
@@ -179,11 +180,116 @@ public class TestJavaClassHelper extends TestCase
 
     public void testIsAssignmentCompatible()
     {
-        assertTrue(JavaClassHelper.isAssignmentCompatible(boolean.class, Boolean.class));
-        assertFalse(JavaClassHelper.isAssignmentCompatible(String.class, Boolean.class));
-        assertFalse(JavaClassHelper.isAssignmentCompatible(int.class, Long.class));
-        assertTrue(JavaClassHelper.isAssignmentCompatible(long.class, Long.class));
-        assertTrue(JavaClassHelper.isAssignmentCompatible(double.class, double.class));
+        Class[][] successCases = new Class[][] {
+                {boolean.class, Boolean.class},
+                {byte.class, short.class},
+                {byte.class, Short.class},
+                {byte.class, int.class},
+                {byte.class, Integer.class},
+                {Byte.class, long.class},
+                {byte.class, Long.class},
+                {byte.class, Double.class},
+                {byte.class, double.class},
+                {Byte.class, float.class},
+                {byte.class, Float.class},
+                {short.class, short.class},
+                {Short.class, Short.class},
+                {short.class, int.class},
+                {short.class, Integer.class},
+                {short.class, long.class},
+                {Short.class, Long.class},
+                {short.class, Double.class},
+                {short.class, double.class},
+                {short.class, float.class},
+                {short.class, Float.class},
+                {char.class, char.class},
+                {Character.class, char.class},
+                {char.class, Character.class},
+                {char.class, int.class},
+                {char.class, Integer.class},
+                {char.class, long.class},
+                {Character.class, Long.class},
+                {char.class, Double.class},
+                {char.class, double.class},
+                {Character.class, float.class},
+                {char.class, Float.class},
+                {int.class, long.class},
+                {Integer.class, Long.class},
+                {int.class, Double.class},
+                {Integer.class, double.class},
+                {int.class, float.class},
+                {int.class, Float.class},
+                {Long.class, long.class},
+                {long.class, Long.class},
+                {long.class, Double.class},
+                {Long.class, double.class},
+                {long.class, float.class},
+                {long.class, Float.class},
+                {float.class, Double.class},
+                {float.class, double.class},
+                {float.class, float.class},
+                {Float.class, Float.class},
+                {HashSet.class, Set.class},
+                {HashSet.class, Collection.class},
+                {HashSet.class, Iterable.class},
+                {HashSet.class, Cloneable.class},
+                {HashSet.class, Serializable.class},
+                {LineNumberReader.class, BufferedReader.class},
+                {LineNumberReader.class, Reader.class},
+                {LineNumberReader.class, Object.class},
+                {LineNumberReader.class, Readable.class},
+                {SortedSet.class, Set.class},
+                {Set.class, Collection.class},
+                {Set.class, Object.class},
+                // widening of arrays allowed if supertype
+                {Integer[].class, Number[].class},
+                {Integer[].class, Object[].class},
+                {LineNumberReader[].class, Reader[].class},
+                {LineNumberReader[].class, Readable[].class},
+                {LineNumberReader[].class, Object[].class},
+                {ISupportAImplSuperG.class, ISupportA.class},
+                {ISupportAImplSuperGImpl.class, ISupportA.class},
+                {ISupportAImplSuperGImplPlus.class, ISupportA.class},
+                {ISupportAImplSuperGImplPlus.class, ISupportB.class},
+                {ISupportAImplSuperGImplPlus.class, ISupportC.class},
+                {ISupportAImplSuperGImplPlus.class, ISupportAImplSuperG.class},
+                {null, Object.class},
+        };
+
+        Class[][] failCases = new Class[][] {
+                {int.class, Byte.class},
+                {short.class, byte.class},
+                {String.class, Boolean.class},
+                {Boolean.class, String.class},
+                {Byte.class, String.class},
+                {char.class, byte.class},
+                {char.class, short.class},
+                {Character.class, short.class},
+                {int.class, short.class},
+                {long.class, int.class},
+                {float.class, long.class},
+                {Float.class, byte.class},
+                {Double.class, char.class},
+                {double.class, long.class},
+                {Collection.class, Set.class},
+                {Object.class, Collection.class},
+                {Integer[].class, Float[].class},
+                {Integer[].class, int[].class},
+                {Integer[].class, double[].class},
+                {Reader[].class, LineNumberReader[].class},
+                {Readable[].class, Reader[].class},
+        };
+
+        for (int i = 0; i < successCases.length; i++)
+        {
+            assertTrue("Failed asserting success case " + successCases[i][0] +
+                    " and " + successCases[i][1],  JavaClassHelper.isAssignmentCompatible(successCases[i][0], successCases[i][1]));
+        }
+        for (int i = 0; i < failCases.length; i++)
+        {
+            assertFalse("Failed asserting fail case " + failCases[i][0] +
+                    " and " + failCases[i][1],  JavaClassHelper.isAssignmentCompatible(failCases[i][0], failCases[i][1]));
+        }
     }
 
     public void testIsBoolean()

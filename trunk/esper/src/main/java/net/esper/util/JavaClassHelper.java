@@ -12,6 +12,7 @@ import net.esper.type.*;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Helper for questions about Java classes such as
@@ -158,27 +159,53 @@ public class JavaClassHelper
 
     /**
      * Returns true if 2 classes are assignment compatible.
-     * @param parameterType type to assign from
-     * @param parameterization type to assign to
+     * @param invocationType type to assign from
+     * @param declarationType type to assign to
      * @return true if assignment compatible, false if not
      */
-    public static boolean isAssignmentCompatible(Class parameterType, Class parameterization)
+    public static boolean isAssignmentCompatible(Class invocationType, Class declarationType)
     {
-        if (parameterType.isAssignableFrom(parameterization))
+        if (invocationType == null)
+        {
+            return true;
+        }
+        if (declarationType.isAssignableFrom(invocationType))
         {
             return true;
         }
 
-        if (parameterType.isPrimitive())
+        if (declarationType.isPrimitive())
         {
-            Class parameterWrapperClazz = getBoxedType(parameterType);
+            Class parameterWrapperClazz = getBoxedType(declarationType);
             if (parameterWrapperClazz != null)
             {
-                return parameterWrapperClazz.equals(parameterization);
+                if (parameterWrapperClazz.equals(invocationType))
+                {
+                    return true;
+                }
             }
         }
 
-        return false;
+        if (getBoxedType(invocationType) == declarationType)
+        {
+            return true;
+        }
+
+        Set<Class> widenings = MethodResolver.getWideningConversions().get(declarationType);
+        if (widenings != null)
+        {
+            return widenings.contains(invocationType);
+        }
+
+        if (declarationType.isInterface())
+        {
+            if (isImplementsInterface(invocationType, declarationType))
+            {
+                return true;
+            }
+        }
+        
+        return recursiveIsSuperClass(invocationType, declarationType);
     }
 
     /**
@@ -806,6 +833,28 @@ public class JavaClassHelper
             return true;
         }
         return recursiveSuperclassImplementsInterface(clazz, interfaceClass);
+    }
+
+    private static boolean recursiveIsSuperClass(Class clazz, Class superClass)
+    {
+        if (clazz == null)
+        {
+            return false;
+        }
+        if (clazz.isPrimitive())
+        {
+            return false;
+        }
+        Class mySuperClass = clazz.getSuperclass();
+        if (mySuperClass == superClass)
+        {
+            return true;
+        }
+        if (mySuperClass == Object.class)
+        {
+            return false;
+        }
+        return recursiveIsSuperClass(mySuperClass, superClass);
     }
 
     private static boolean recursiveSuperclassImplementsInterface(Class clazz, Class interfaceClass)

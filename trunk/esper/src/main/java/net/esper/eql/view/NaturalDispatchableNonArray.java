@@ -9,9 +9,9 @@ import java.lang.reflect.InvocationTargetException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-public class NaturalDispatchable implements Dispatchable
+public class NaturalDispatchableNonArray implements Dispatchable
 {
-    private static final Log log = LogFactory.getLog(NaturalDispatchable.class);
+    private static final Log log = LogFactory.getLog(NaturalDispatchableNonArray.class);
 
     private final Object target;
     private final FastMethod method;
@@ -20,7 +20,7 @@ public class NaturalDispatchable implements Dispatchable
     private Object[] parameters;
     private ArrayList<Object[]> moreParameters;
 
-    public NaturalDispatchable(Object target, FastMethod method, ThreadLocal<Boolean> isDispatchWaiting)
+    public NaturalDispatchableNonArray(Object target, FastMethod method, ThreadLocal<Boolean> isDispatchWaiting)
     {
         this.target = target;
         this.method = method;
