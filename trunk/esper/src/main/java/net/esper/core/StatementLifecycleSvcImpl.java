@@ -727,9 +727,30 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
         // Look for expressions with sub-selects in select expression list and filter expression
         // Recursively compile the statement within the statement.
         ExprNodeSubselectVisitor visitor = new ExprNodeSubselectVisitor();
-        for (SelectExprElementRawSpec raw : spec.getSelectClauseSpec().getSelectExprList())
+        List<SelectClauseElementCompiled> selectElements = new ArrayList<SelectClauseElementCompiled>();
+        SelectClauseSpecCompiled selectClauseCompiled = new SelectClauseSpecCompiled(selectElements);
+        for (SelectClauseElementRaw raw : spec.getSelectClauseSpec().getSelectExprList())
         {
-            raw.getSelectExpression().accept(visitor);
+            if (raw instanceof SelectClauseExprRawSpec)
+            {
+                SelectClauseExprRawSpec rawExpr = (SelectClauseExprRawSpec) raw; 
+                rawExpr.getSelectExpression().accept(visitor);
+                selectElements.add(new SelectClauseExprCompiledSpec(rawExpr.getSelectExpression(), rawExpr.getOptionalAsName()));
+            }
+            else if (raw instanceof SelectClauseStreamRawSpec)
+            {
+                SelectClauseStreamRawSpec rawExpr = (SelectClauseStreamRawSpec) raw;
+                selectElements.add(new SelectClauseStreamCompiledSpec(rawExpr.getStreamAliasName(), rawExpr.getOptionalAsName()));
+            }
+            else if (raw instanceof SelectClauseElementWildcard)
+            {
+                SelectClauseElementWildcard wildcard = (SelectClauseElementWildcard) raw;
+                selectElements.add(wildcard);
+            }
+            else
+            {
+                throw new IllegalStateException("Unexpected select clause element class : " + raw.getClass().getName());
+            }
         }
         if (spec.getFilterRootNode() != null)
         {
@@ -748,7 +769,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
                 spec.getCreateVariableDesc(),
                 spec.getInsertIntoDesc(),
                 spec.getSelectStreamSelectorEnum(),
-                spec.getSelectClauseSpec(),
+                selectClauseCompiled,
                 compiledStreams,
                 spec.getOuterJoinDescList(),
                 spec.getFilterRootNode(),
@@ -777,13 +798,13 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
         EventType targetType = null;
 
         // Validate the select expressions which consists of properties only
-        List<SelectExprElementCompiledSpec> select = compileLimitedSelect(spec.getSelectClauseSpec(), eqlStatement, selectFromType);
+        List<SelectClauseExprCompiledSpec> select = compileLimitedSelect(spec.getSelectClauseSpec(), eqlStatement, selectFromType);
 
         // Create Map or Wrapper event type from the select clause of the window.
         // If no columns selected, simply create a wrapper type
         // Build a list of properties
         Map<String, Class> properties = new HashMap<String, Class>();
-        for (SelectExprElementCompiledSpec selectElement : select)
+        for (SelectClauseExprCompiledSpec selectElement : select)
         {
             properties.put(selectElement.getAssignedName(), selectElement.getSelectExpression().getType());
         }
@@ -821,17 +842,22 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
         return new FilterSpecCompiled(targetType, new ArrayList<FilterSpecParam>());
     }
 
-    private static List<SelectExprElementCompiledSpec> compileLimitedSelect(SelectClauseSpec spec, String eqlStatement, EventType singleType)
+    private static List<SelectClauseExprCompiledSpec> compileLimitedSelect(SelectClauseSpecRaw spec, String eqlStatement, EventType singleType)
     {
-        List<SelectExprElementCompiledSpec> selectProps = new LinkedList<SelectExprElementCompiledSpec>();
+        List<SelectClauseExprCompiledSpec> selectProps = new LinkedList<SelectClauseExprCompiledSpec>();
         StreamTypeService streams = new StreamTypeServiceImpl(new EventType[] {singleType}, new String[] {"stream_0"});
 
-        for (SelectExprElementRawSpec raw : spec.getSelectExprList())
+        for (SelectClauseElementRaw raw : spec.getSelectExprList())
         {
+            if (!(raw instanceof SelectClauseExprRawSpec))
+            {
+                continue;
+            }
+            SelectClauseExprRawSpec exprSpec = (SelectClauseExprRawSpec) raw;
             ExprNode validatedExpression = null;
             try
             {
-                validatedExpression = raw.getSelectExpression().getValidatedSubtree(streams, null, null, null, null);
+                validatedExpression = exprSpec.getSelectExpression().getValidatedSubtree(streams, null, null, null, null);
             }
             catch (ExprValidationException e)
             {
@@ -839,13 +865,13 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
             }
 
             // determine an element name if none assigned
-            String asName = raw.getOptionalAsName();
+            String asName = exprSpec.getOptionalAsName();
             if (asName == null)
             {
                 asName = validatedExpression.toExpressionString();
             }
 
-            SelectExprElementCompiledSpec validatedElement = new SelectExprElementCompiledSpec(validatedExpression, asName);
+            SelectClauseExprCompiledSpec validatedElement = new SelectClauseExprCompiledSpec(validatedExpression, asName);
             selectProps.add(validatedElement);
         }
 

@@ -15,7 +15,7 @@ import java.io.StringWriter;
  * For example:
  * <pre>select streamOne.* from StreamOne as streamOne, StreamTwo as streamTwo</pre>
  */
-public class SelectClauseStreamWildcard implements Serializable
+public class SelectClauseStreamWildcard implements SelectClauseElement
 {
     private String streamAliasName;
     private String optionalColumnAlias;
@@ -54,7 +54,7 @@ public class SelectClauseStreamWildcard implements Serializable
      * Renders the element in textual representation.
      * @param writer to output to
      */
-    public void toEQL(StringWriter writer)
+    public void toEQLElement(StringWriter writer)
     {
         writer.write(streamAliasName);
         writer.write(".*");

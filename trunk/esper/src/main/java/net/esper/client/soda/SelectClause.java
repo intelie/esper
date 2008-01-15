@@ -13,8 +13,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A select-clause consists of selection expressions and optionally an indicator that a wildcard is selected and an
- * optional stream selector.
+ * A select-clause consists of a list of selection elements (expressions, wildcard(s), stream wildcard and the like)
+ * and an optional stream selector.
  */
 public class SelectClause implements Serializable
 {
@@ -22,8 +22,6 @@ public class SelectClause implements Serializable
 
     private StreamSelector streamSelector;
     private List<SelectClauseElement> selectList;
-    private List<SelectClauseStreamWildcard> streamWildcardSelectList;
-    private boolean isWildcard;
 
     /**
      * Creates a wildcard select-clause, additional expressions can still be added.
@@ -31,7 +29,9 @@ public class SelectClause implements Serializable
      */
     public static SelectClause createWildcard()
     {
-        return new SelectClause(StreamSelector.RSTREAM_ISTREAM_BOTH, true);
+        List<SelectClauseElement> selectList = new ArrayList<SelectClauseElement>();
+        selectList.add(new SelectClauseWildcard());
+        return new SelectClause(StreamSelector.RSTREAM_ISTREAM_BOTH, selectList);
     }
 
     /**
@@ -40,7 +40,7 @@ public class SelectClause implements Serializable
      */
     public static SelectClause create()
     {
-        return new SelectClause(StreamSelector.RSTREAM_ISTREAM_BOTH, false);
+        return new SelectClause(StreamSelector.RSTREAM_ISTREAM_BOTH, new ArrayList<SelectClauseElement>());
     }
 
     /**
@@ -50,7 +50,12 @@ public class SelectClause implements Serializable
      */
     public static SelectClause create(String ...propertyNames)
     {
-        return new SelectClause(StreamSelector.RSTREAM_ISTREAM_BOTH, propertyNames);
+        List<SelectClauseElement> selectList = new ArrayList<SelectClauseElement>();
+        for (String name : propertyNames)
+        {
+            selectList.add(new SelectClauseExpression(new PropertyValueExpression(name)));
+        }
+        return new SelectClause(StreamSelector.RSTREAM_ISTREAM_BOTH, selectList);
     }
 
     /**
@@ -60,9 +65,9 @@ public class SelectClause implements Serializable
      */
     public static SelectClause createStreamWildcard(String streamAliasName)
     {
-        SelectClause clause = new SelectClause(StreamSelector.RSTREAM_ISTREAM_BOTH, false);
-        clause.addStreamWildcard(streamAliasName);
-        return clause;
+        List<SelectClauseElement> selectList = new ArrayList<SelectClauseElement>();
+        selectList.add(new SelectClauseStreamWildcard(streamAliasName, null));
+        return new SelectClause(StreamSelector.RSTREAM_ISTREAM_BOTH, selectList);
     }
 
     /**
@@ -72,7 +77,9 @@ public class SelectClause implements Serializable
      */
     public static SelectClause createWildcard(StreamSelector streamSelector)
     {
-        return new SelectClause(streamSelector, true);
+        List<SelectClauseElement> selectList = new ArrayList<SelectClauseElement>();
+        selectList.add(new SelectClauseWildcard());
+        return new SelectClause(streamSelector, selectList);
     }
 
     /**
@@ -82,7 +89,7 @@ public class SelectClause implements Serializable
      */
     public static SelectClause create(StreamSelector streamSelector)
     {
-        return new SelectClause(streamSelector, false);
+        return new SelectClause(streamSelector, new ArrayList<SelectClauseElement>());
     }
 
     /**
@@ -93,34 +100,23 @@ public class SelectClause implements Serializable
      */
     public static SelectClause create(StreamSelector streamSelector, String ...propertyNames)
     {
-        return new SelectClause(streamSelector, propertyNames);
+        List<SelectClauseElement> selectList = new ArrayList<SelectClauseElement>();
+        for (String name : propertyNames)
+        {
+            selectList.add(new SelectClauseExpression(new PropertyValueExpression(name)));
+        }
+        return new SelectClause(streamSelector, selectList);
     }
 
     /**
      * Ctor.
      * @param streamSelector selects the stream
-     * @param isWildcard is true for wildcard selects
+     * @param selectList is a list of elements in the select-clause
      */
-    protected SelectClause(StreamSelector streamSelector, boolean isWildcard)
+    protected SelectClause(StreamSelector streamSelector, List<SelectClauseElement> selectList)
     {
         this.streamSelector = streamSelector;
-        this.selectList = new ArrayList<SelectClauseElement>();
-        this.streamWildcardSelectList = new ArrayList<SelectClauseStreamWildcard>();
-        this.isWildcard = isWildcard;
-    }
-
-    /**
-     * Ctor.
-     * @param streamSelector select the stream
-     * @param propertyNames is a list of properties
-     */
-    public SelectClause(StreamSelector streamSelector, String ...propertyNames)
-    {
-        this(streamSelector, false);
-        for (String name : propertyNames)
-        {
-            selectList.add(new SelectClauseElement(new PropertyValueExpression(name)));
-        }
+        this.selectList = selectList;
     }
 
     /**
@@ -132,7 +128,7 @@ public class SelectClause implements Serializable
     {
         for (String name : propertyNames)
         {
-            selectList.add(new SelectClauseElement(new PropertyValueExpression(name)));
+            selectList.add(new SelectClauseExpression(new PropertyValueExpression(name)));
         }
         return this;
     }
@@ -145,7 +141,7 @@ public class SelectClause implements Serializable
      */
     public SelectClause addWithAlias(String propertyName, String asName)
     {
-        selectList.add(new SelectClauseElement(new PropertyValueExpression(propertyName), asName));
+        selectList.add(new SelectClauseExpression(new PropertyValueExpression(propertyName), asName));
         return this;
     }
 
@@ -156,7 +152,7 @@ public class SelectClause implements Serializable
      */
     public SelectClause add(Expression expression)
     {
-        selectList.add(new SelectClauseElement(expression));
+        selectList.add(new SelectClauseExpression(expression));
         return this;
     }
 
@@ -168,7 +164,7 @@ public class SelectClause implements Serializable
      */
     public SelectClause add(Expression expression, String asName)
     {
-        selectList.add(new SelectClauseElement(expression, asName));
+        selectList.add(new SelectClauseExpression(expression, asName));
         return this;
     }
 
@@ -197,7 +193,17 @@ public class SelectClause implements Serializable
      */
     public SelectClause addStreamWildcard(String streamAliasName)
     {
-        streamWildcardSelectList.add(new SelectClauseStreamWildcard(streamAliasName, null));
+        selectList.add(new SelectClauseStreamWildcard(streamAliasName, null));
+        return this;
+    }
+
+    /**
+     * Adds to the select-clause a  wildcard selector (e.g. select * from MyStream as streamAliasName)
+     * @return select-clause
+     */
+    public SelectClause addWildcard()
+    {
+        selectList.add(new SelectClauseWildcard());
         return this;
     }
 
@@ -209,26 +215,8 @@ public class SelectClause implements Serializable
      */
     public SelectClause addStreamWildcard(String streamAliasName, String columnAlias)
     {
-        streamWildcardSelectList.add(new SelectClauseStreamWildcard(streamAliasName, columnAlias));
+        selectList.add(new SelectClauseStreamWildcard(streamAliasName, columnAlias));
         return this;
-    }
-
-    /**
-     * Returns the list of stream wildcard selectors (e.g. select streamAliasName.* as colAlias from MyStream as streamAliasName)
-     * @return list of stream wildcard selectors
-     */
-    public List<SelectClauseStreamWildcard> getStreamWildcardSelectList()
-    {
-        return streamWildcardSelectList;
-    }
-
-    /**
-     * Returns true is a wildcard is part of the select clause, or false if not.
-     * @return true for wildcard
-     */
-    public boolean isWildcard()
-    {
-        return isWildcard;
     }
 
     /**
@@ -250,15 +238,6 @@ public class SelectClause implements Serializable
     }
 
     /**
-     * Set to true if a wildcard is part of the select clause, or false if not.
-     * @param wildcard true for wildcard
-     */
-    public void setWildcard(boolean wildcard)
-    {
-        isWildcard = wildcard;
-    }    
-
-    /**
      * Renders the clause in textual representation.
      * @param writer to output to
      */
@@ -276,23 +255,10 @@ public class SelectClause implements Serializable
         }
 
         String delimiter = "";
-        if (isWildcard)
-        {
-            writer.write("*");
-            delimiter = ", ";
-        }
-
-        for (SelectClauseStreamWildcard element : streamWildcardSelectList)
-        {
-            writer.write(delimiter);
-            element.toEQL(writer);
-            delimiter = ", ";
-        }
-
         for (SelectClauseElement element : selectList)
         {
             writer.write(delimiter);
-            element.toEQL(writer);
+            element.toEQLElement(writer);
             delimiter = ", ";
         }
         writer.write(' ');

@@ -1,6 +1,5 @@
 package net.esper.eql.core;
 
-import java.util.Arrays;
 import java.util.List;
 
 import junit.framework.TestCase;
@@ -14,7 +13,7 @@ import net.esper.support.event.SupportEventBeanFactory;
 import net.esper.support.event.SupportEventAdapterService;
 import net.esper.support.util.ArrayAssertionUtil;
 import net.esper.eql.spec.InsertIntoDesc;
-import net.esper.eql.spec.SelectExprElementCompiledSpec;
+import net.esper.eql.spec.SelectClauseExprCompiledSpec;
 
 public class TestSelectExprEvalProcessor extends TestCase
 {
@@ -23,7 +22,7 @@ public class TestSelectExprEvalProcessor extends TestCase
 
     public void setUp() throws Exception
     {
-        List<SelectExprElementCompiledSpec> selectList = SupportSelectExprFactory.makeNoAggregateSelectList();
+        List<SelectClauseExprCompiledSpec> selectList = SupportSelectExprFactory.makeNoAggregateSelectList();
         EventAdapterService eventAdapterService = SupportEventAdapterService.getService();
 
         methodOne = new SelectExprEvalProcessor(selectList, null, false, new SupportStreamTypeSvc1Stream(), eventAdapterService);

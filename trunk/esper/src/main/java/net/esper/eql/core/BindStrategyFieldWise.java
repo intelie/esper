@@ -3,7 +3,7 @@ package net.esper.eql.core;
 import net.esper.eql.expression.ExprNode;
 import net.esper.eql.expression.ExprValidationException;
 import net.esper.eql.spec.ActiveObjectSpec;
-import net.esper.eql.spec.SelectExprElementCompiledSpec;
+import net.esper.eql.spec.SelectClauseExprCompiledSpec;
 import net.esper.event.EventBean;
 import net.esper.util.JavaClassHelper;
 
@@ -13,7 +13,7 @@ public class BindStrategyFieldWise implements BindStrategy
 {
     private ExprNode[] expressionNodes;
 
-    public BindStrategyFieldWise(List<SelectExprElementCompiledSpec> selectionList,
+    public BindStrategyFieldWise(List<SelectClauseExprCompiledSpec> selectionList,
                                    ActiveObjectSpec activeObjectSpec)
             throws ExprValidationException
     {

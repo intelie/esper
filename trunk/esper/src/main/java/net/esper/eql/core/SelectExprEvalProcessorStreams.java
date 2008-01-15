@@ -4,9 +4,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import net.esper.eql.expression.ExprNode;
 import net.esper.eql.expression.ExprValidationException;
-import net.esper.eql.spec.SelectExprElementCompiledSpec;
+import net.esper.eql.spec.SelectClauseExprCompiledSpec;
 import net.esper.eql.spec.InsertIntoDesc;
-import net.esper.eql.spec.SelectExprElementStreamCompiledSpec;
+import net.esper.eql.spec.SelectClauseStreamCompiledSpec;
 import net.esper.event.*;
 import net.esper.util.ExecutionPathDebugLog;
 
@@ -21,8 +21,8 @@ public class SelectExprEvalProcessorStreams implements SelectExprProcessor
 	private static final Log log = LogFactory.getLog(SelectExprEvalProcessorStreams.class);
 
     private final EventAdapterService eventAdapterService;
-    private final List<SelectExprElementStreamCompiledSpec> aliasedStreams;
-    private final List<SelectExprElementStreamCompiledSpec> unaliasedStreams;
+    private final List<SelectClauseStreamCompiledSpec> aliasedStreams;
+    private final List<SelectClauseStreamCompiledSpec> unaliasedStreams;
     private boolean singleStreamWrapper;
     private boolean isUsingWildcard;
 
@@ -43,8 +43,8 @@ public class SelectExprEvalProcessorStreams implements SelectExprProcessor
      * @param selectedStreams - list of stream selectors (e.g. select alias.* from Event as alias)
      * @throws net.esper.eql.expression.ExprValidationException thrown if any of the expressions don't validate
      */
-    public SelectExprEvalProcessorStreams(List<SelectExprElementCompiledSpec> selectionList,
-                                   List<SelectExprElementStreamCompiledSpec> selectedStreams,
+    public SelectExprEvalProcessorStreams(List<SelectClauseExprCompiledSpec> selectionList,
+                                   List<SelectClauseStreamCompiledSpec> selectedStreams,
                                    InsertIntoDesc insertIntoDesc,
                                    boolean isUsingWildcard,
                                    StreamTypeService typeService,
@@ -54,9 +54,9 @@ public class SelectExprEvalProcessorStreams implements SelectExprProcessor
         this.isUsingWildcard = isUsingWildcard;
 
         // Get the un-aliased stream selectors (i.e. select s0.* from S0 as s0)
-        unaliasedStreams = new ArrayList<SelectExprElementStreamCompiledSpec>();
-        aliasedStreams = new ArrayList<SelectExprElementStreamCompiledSpec>();
-        for (SelectExprElementStreamCompiledSpec spec : selectedStreams)
+        unaliasedStreams = new ArrayList<SelectClauseStreamCompiledSpec>();
+        aliasedStreams = new ArrayList<SelectClauseStreamCompiledSpec>();
+        for (SelectClauseStreamCompiledSpec spec : selectedStreams)
         {
             if (spec.getOptionalAliasName() == null)
             {
@@ -122,8 +122,8 @@ public class SelectExprEvalProcessorStreams implements SelectExprProcessor
         init(selectionList, aliasedStreams, insertIntoDesc, eventAdapterService, typeService);
     }
 
-    private void init(List<SelectExprElementCompiledSpec> selectionList,
-                      List<SelectExprElementStreamCompiledSpec> aliasedStreams,
+    private void init(List<SelectClauseExprCompiledSpec> selectionList,
+                      List<SelectClauseStreamCompiledSpec> aliasedStreams,
                       InsertIntoDesc insertIntoDesc,
                       EventAdapterService eventAdapterService,
                       StreamTypeService typeService)
@@ -150,12 +150,12 @@ public class SelectExprEvalProcessorStreams implements SelectExprProcessor
             }
             columnNames = new String[selectionList.size() + aliasedStreams.size() + numStreamColumnsJoin];
             int count = 0;
-            for (SelectExprElementCompiledSpec aSelectionList : selectionList)
+            for (SelectClauseExprCompiledSpec aSelectionList : selectionList)
             {
                 columnNames[count] = aSelectionList.getAssignedName();
                 count++;
             }
-            for (SelectExprElementStreamCompiledSpec aSelectionList : aliasedStreams)
+            for (SelectClauseStreamCompiledSpec aSelectionList : aliasedStreams)
             {
                 columnNames[count] = aSelectionList.getOptionalAliasName();
                 count++;
@@ -180,7 +180,7 @@ public class SelectExprEvalProcessorStreams implements SelectExprProcessor
             selPropertyTypes.put(columnNames[count], expressionReturnType);
             count++;
         }
-        for (SelectExprElementStreamCompiledSpec element : aliasedStreams)
+        for (SelectClauseStreamCompiledSpec element : aliasedStreams)
         {
             EventType eventTypeStream = typeService.getEventTypes()[element.getStreamNumber()];
             Class expressionReturnType = eventTypeStream.getUnderlyingType();
@@ -246,7 +246,7 @@ public class SelectExprEvalProcessorStreams implements SelectExprProcessor
             props.put(columnNames[count], evalResult);
             count++;
         }
-        for (SelectExprElementStreamCompiledSpec element : aliasedStreams)
+        for (SelectClauseStreamCompiledSpec element : aliasedStreams)
         {
             Object value = eventsPerStream[element.getStreamNumber()].getUnderlying();
             props.put(columnNames[count], value);
@@ -307,8 +307,8 @@ public class SelectExprEvalProcessorStreams implements SelectExprProcessor
     }
 
     private static void verifyInsertInto(InsertIntoDesc insertIntoDesc,
-                                         List<SelectExprElementCompiledSpec> selectionList,
-                                         List<SelectExprElementStreamCompiledSpec> aliasedStreams,
+                                         List<SelectClauseExprCompiledSpec> selectionList,
+                                         List<SelectClauseStreamCompiledSpec> aliasedStreams,
                                          boolean isUsingWildcard,
                                          StreamTypeService typeService)
         throws ExprValidationException

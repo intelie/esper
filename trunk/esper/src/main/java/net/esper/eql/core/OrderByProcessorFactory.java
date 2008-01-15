@@ -12,7 +12,7 @@ import net.esper.eql.expression.ExprAggregateNode;
 import net.esper.eql.expression.ExprNode;
 import net.esper.eql.expression.ExprValidationException;
 import net.esper.eql.spec.OrderByItem;
-import net.esper.eql.spec.SelectExprElementCompiledSpec;
+import net.esper.eql.spec.SelectClauseExprCompiledSpec;
 import net.esper.event.EventAdapterService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -35,7 +35,7 @@ public class OrderByProcessorFactory {
      * @return ordering processor instance
      * @throws net.esper.eql.expression.ExprValidationException when validation of expressions fails
      */
-    public static OrderByProcessor getProcessor(List<SelectExprElementCompiledSpec> selectionList,
+    public static OrderByProcessor getProcessor(List<SelectClauseExprCompiledSpec> selectionList,
 											   List<ExprNode> groupByNodes,
 											   List<OrderByItem> orderByList,
 											   AggregationService aggregationService,
@@ -58,7 +58,7 @@ public class OrderByProcessorFactory {
 		
         // Determine aggregate functions used in select, if any
         List<ExprAggregateNode> selectAggNodes = new LinkedList<ExprAggregateNode>();
-        for (SelectExprElementCompiledSpec element : selectionList)
+        for (SelectClauseExprCompiledSpec element : selectionList)
         {
             ExprAggregateNode.getAggregatesBottomUp(element.getSelectExpression(), selectAggNodes);
         }

@@ -7,13 +7,19 @@
  **************************************************************************************/
 package net.esper.client.soda;
 
-import java.io.Serializable;
 import java.io.StringWriter;
 
 /**
- * Item in a select-clause to describe individual select-clause expressions or wildcard(s).
+ * Represents a wildcard in the select-clause.
  */
-public interface SelectClauseElement extends Serializable
+public class SelectClauseWildcard implements SelectClauseElement
 {
-    public void toEQLElement(StringWriter writer);
+    /**
+     * Renders the element in textual representation.
+     * @param writer to output to
+     */
+    public void toEQLElement(StringWriter writer)
+    {
+        writer.write("*");
+    }
 }

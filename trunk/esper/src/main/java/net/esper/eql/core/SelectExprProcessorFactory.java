@@ -11,9 +11,10 @@ import net.esper.core.ActiveObjectSpace;
 import net.esper.eql.expression.ExprValidationException;
 import net.esper.eql.spec.ActiveObjectSpec;
 import net.esper.eql.spec.InsertIntoDesc;
-import net.esper.eql.spec.SelectExprElementCompiledSpec;
-import net.esper.eql.spec.SelectExprElementStreamCompiledSpec;
+import net.esper.eql.spec.SelectClauseExprCompiledSpec;
+import net.esper.eql.spec.SelectClauseStreamCompiledSpec;
 import net.esper.event.EventAdapterService;
+import net.esper.client.soda.SelectClauseElement;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -30,7 +31,6 @@ public class SelectExprProcessorFactory
     /**
      * Returns the processor to use for a given select-clause.
      * @param selectionList - the list of select clause elements/items, which are expected to have been validated
-     * @param selectedStreams - list of stream selectors (e.g. select alias.* from Event as alias)
      * @param isUsingWildcard - true if the wildcard (*) occurs in the select clause
      * @param insertIntoDesc - contains column names for the optional insert-into clause (if supplied)
      * @param typeService - serves stream type information
@@ -38,8 +38,7 @@ public class SelectExprProcessorFactory
      * @return select-clause expression processor
      * @throws net.esper.eql.expression.ExprValidationException to indicate the select expression cannot be validated
      */
-    public static SelectExprProcessor getProcessor(List<SelectExprElementCompiledSpec> selectionList,
-                                                   List<SelectExprElementStreamCompiledSpec> selectedStreams,
+    public static SelectExprProcessor getProcessor(List<SelectClauseElement> selectionList,
                                                    boolean isUsingWildcard,
                                                    InsertIntoDesc insertIntoDesc,
                                                    ActiveObjectSpec activeObjectSpec,
@@ -48,8 +47,7 @@ public class SelectExprProcessorFactory
                                                    ActiveObjectSpace activeObjectSpace)
         throws ExprValidationException
     {
-        SelectExprProcessor synthetic = getProcessorInternal(selectionList, selectedStreams,
-                                                   isUsingWildcard, insertIntoDesc, typeService, eventAdapterService);
+        SelectExprProcessor synthetic = getProcessorInternal(selectionList, isUsingWildcard, insertIntoDesc, typeService, eventAdapterService);
         if (activeObjectSpec == null)
         {
             return synthetic;
@@ -89,8 +87,7 @@ public class SelectExprProcessorFactory
     }
 
     private static SelectExprProcessor getProcessorInternal(
-                                                   List<SelectExprElementCompiledSpec> selectionList,
-                                                   List<SelectExprElementStreamCompiledSpec> selectedStreams,
+                                                   List<SelectClauseElement> selectionList,
                                                    boolean isUsingWildcard,
                                                    InsertIntoDesc insertIntoDesc,
                                                    StreamTypeService typeService,
@@ -144,10 +141,10 @@ public class SelectExprProcessorFactory
      * @param selectedStreams - list of stream selectors (e.g. select alias.* from Event as alias)
      * @throws net.esper.eql.expression.ExprValidationException thrown if a name occured more then once
      */
-    protected static void verifyNameUniqueness(List<SelectExprElementCompiledSpec> selectionList, List<SelectExprElementStreamCompiledSpec> selectedStreams) throws ExprValidationException
+    protected static void verifyNameUniqueness(List<SelectClauseExprCompiledSpec> selectionList, List<SelectClauseStreamCompiledSpec> selectedStreams) throws ExprValidationException
     {
         Set<String> names = new HashSet<String>();
-        for (SelectExprElementCompiledSpec element : selectionList)
+        for (SelectClauseExprCompiledSpec element : selectionList)
         {
             if (names.contains(element.getAssignedName()))
             {
@@ -155,7 +152,7 @@ public class SelectExprProcessorFactory
             }
             names.add(element.getAssignedName());
         }
-        for (SelectExprElementStreamCompiledSpec element : selectedStreams)
+        for (SelectClauseStreamCompiledSpec element : selectedStreams)
         {
             if (element.getOptionalAliasName() == null)
             {

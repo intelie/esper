@@ -742,7 +742,7 @@ public class EQLTreeWalker extends EsperEPL2Ast
         }
 
         // Add as selection element
-        statementSpec.getSelectClauseSpec().add(new SelectExprElementRawSpec(exprNode, optionalName));
+        statementSpec.getSelectClauseSpec().add(new SelectClauseExprRawSpec(exprNode, optionalName));
     }
 
     private void leaveSelectionStream(Tree node) throws ASTWalkException
@@ -759,13 +759,13 @@ public class EQLTreeWalker extends EsperEPL2Ast
         }
 
         // Add as selection element
-        statementSpec.getSelectClauseSpec().add(new SelectExprElementStreamRawSpec(streamName, optionalName));
+        statementSpec.getSelectClauseSpec().add(new SelectClauseStreamRawSpec(streamName, optionalName));
     }
 
     private void leaveWildcardSelect()
     {
     	log.debug(".leaveWildcardSelect");
-    	statementSpec.getSelectClauseSpec().setIsUsingWildcard(true);
+        statementSpec.getSelectClauseSpec().add(new SelectClauseElementWildcard());
     }
 
     private void leaveView(Tree node) throws ASTWalkException

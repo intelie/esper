@@ -5,15 +5,13 @@
  * The software in this package is published under the terms of the GPL license       *
  * a copy of which has been included with this distribution in the license.txt file.  *
  **************************************************************************************/
-package net.esper.client.soda;
+package net.esper.eql.spec;
 
-import java.io.Serializable;
-import java.io.StringWriter;
+import net.esper.util.MetaDefItem;
 
-/**
- * Item in a select-clause to describe individual select-clause expressions or wildcard(s).
- */
-public interface SelectClauseElement extends Serializable
+import java.util.ArrayList;
+import java.util.List;
+
+public class SelectClauseElementWildcard implements SelectClauseElementRaw, SelectClauseElementCompiled
 {
-    public void toEQLElement(StringWriter writer);
 }

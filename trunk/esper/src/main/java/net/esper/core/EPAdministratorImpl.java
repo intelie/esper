@@ -11,10 +11,7 @@ import net.esper.client.*;
 import net.esper.client.soda.EPStatementObjectModel;
 import net.esper.eql.generated.EsperEPL2GrammarParser;
 import net.esper.eql.parse.*;
-import net.esper.eql.spec.PatternStreamSpecRaw;
-import net.esper.eql.spec.StatementSpecMapper;
-import net.esper.eql.spec.StatementSpecRaw;
-import net.esper.eql.spec.StatementSpecUnMapResult;
+import net.esper.eql.spec.*;
 import net.esper.antlr.ASTUtil;
 import org.antlr.runtime.RecognitionException;
 import org.antlr.runtime.tree.Tree;
@@ -318,7 +315,8 @@ public class EPAdministratorImpl implements EPAdministrator
         // Create statement spec, set pattern stream, set wildcard select
         StatementSpecRaw statementSpec = new StatementSpecRaw();
         statementSpec.getStreamSpecs().add(patternStreamSpec);
-        statementSpec.getSelectClauseSpec().setIsUsingWildcard(true);
+        statementSpec.getSelectClauseSpec().getSelectExprList().clear();
+        statementSpec.getSelectClauseSpec().getSelectExprList().add(new SelectClauseElementWildcard());
 
         return statementSpec;
     }

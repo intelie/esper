@@ -412,19 +412,31 @@ public class StatementSpecMapper
 
     }
 
-    private static void unmapSelect(SelectClauseSpec selectClauseSpec, SelectClauseStreamSelectorEnum selectStreamSelectorEnum, EPStatementObjectModel model, StatementSpecUnMapContext unmapContext)
+    private static void unmapSelect(SelectClauseSpecRaw selectClauseSpec, SelectClauseStreamSelectorEnum selectStreamSelectorEnum, EPStatementObjectModel model, StatementSpecUnMapContext unmapContext)
     {
         SelectClause clause = SelectClause.create();
-        clause.setWildcard(selectClauseSpec.isUsingWildcard());
         clause.setStreamSelector(SelectClauseStreamSelectorEnum.mapFromSODA(selectStreamSelectorEnum));
-        for (SelectExprElementRawSpec raw : selectClauseSpec.getSelectExprList())
+        for (SelectClauseElementRaw raw : selectClauseSpec.getSelectExprList())
         {
-            Expression expression = unmapExpressionDeep(raw.getSelectExpression(), unmapContext);
-            clause.add(expression, raw.getOptionalAsName());
-        }
-        for (SelectExprElementStreamRawSpec raw : selectClauseSpec.getSelectStreamsList())
-        {
-            clause.addStreamWildcard(raw.getStreamAliasName(), raw.getOptionalAsName());
+            if (raw instanceof SelectClauseStreamRawSpec)
+            {
+                SelectClauseStreamRawSpec streamSpec = (SelectClauseStreamRawSpec) raw;
+                clause.addStreamWildcard(streamSpec.getStreamAliasName(), streamSpec.getOptionalAsName());
+            }
+            else if (raw instanceof SelectClauseElementWildcard)
+            {
+                clause.addWildcard();
+            }
+            else if (raw instanceof SelectClauseExprRawSpec)
+            {
+                SelectClauseExprRawSpec rawSpec = (SelectClauseExprRawSpec) raw;
+                Expression expression = unmapExpressionDeep(rawSpec.getSelectExpression(), unmapContext);
+                clause.add(expression, rawSpec.getOptionalAsName());
+            }
+            else
+            {
+                throw new IllegalStateException("Unexpected select clause element typed " + raw.getClass().getName());
+            }
         }
         model.setSelectClause(clause);
     }
@@ -496,23 +508,30 @@ public class StatementSpecMapper
         {
             return;
         }
-        SelectClauseSpec spec = new SelectClauseSpec();
-        spec.setIsUsingWildcard(selectClause.isWildcard());
+        SelectClauseSpecRaw spec = new SelectClauseSpecRaw();
         raw.setSelectStreamDirEnum(SelectClauseStreamSelectorEnum.mapFromSODA(selectClause.getStreamSelector()));
         raw.setSelectClauseSpec(spec);
 
         for (SelectClauseElement element : selectClause.getSelectList())
         {
-            Expression expr = element.getExpression();
-            ExprNode exprNode = mapExpressionDeep(expr, mapContext);
-
-            SelectExprElementRawSpec rawElement = new SelectExprElementRawSpec(exprNode, element.getAsName());
-            spec.add(rawElement);
-        }
-        for (SelectClauseStreamWildcard element : selectClause.getStreamWildcardSelectList())
-        {
-            SelectExprElementStreamRawSpec rawElement = new SelectExprElementStreamRawSpec(element.getStreamAliasName(), element.getOptionalColumnAlias());
-            spec.add(rawElement);
+            if (element instanceof SelectClauseWildcard)
+            {
+                spec.add(new SelectClauseElementWildcard());
+            }
+            else if (element instanceof SelectClauseExpression)
+            {
+                SelectClauseExpression selectExpr = (SelectClauseExpression) element;
+                Expression expr = selectExpr.getExpression();
+                ExprNode exprNode = mapExpressionDeep(expr, mapContext);
+                SelectClauseExprRawSpec rawElement = new SelectClauseExprRawSpec(exprNode, selectExpr.getAsName());
+                spec.add(rawElement);
+            }
+            else if (element instanceof SelectClauseStreamWildcard)
+            {
+                SelectClauseStreamWildcard streamWild = (SelectClauseStreamWildcard) element;
+                SelectClauseStreamRawSpec rawElement = new SelectClauseStreamRawSpec(streamWild.getStreamAliasName(), streamWild.getOptionalColumnAlias());
+                spec.add(rawElement);
+            }
         }
     }
 

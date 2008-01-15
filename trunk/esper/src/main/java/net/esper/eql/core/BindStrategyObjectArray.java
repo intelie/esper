@@ -2,9 +2,7 @@ package net.esper.eql.core;
 
 import net.esper.eql.expression.ExprNode;
 import net.esper.eql.expression.ExprValidationException;
-import net.esper.eql.spec.SelectExprElementCompiledSpec;
-import net.esper.eql.spec.ActiveObjectSpec;
-import net.esper.util.JavaClassHelper;
+import net.esper.eql.spec.SelectClauseExprCompiledSpec;
 import net.esper.event.EventBean;
 
 import java.util.List;
@@ -13,7 +11,7 @@ public class BindStrategyObjectArray implements BindStrategy
 {
     private ExprNode[] expressionNodes;
 
-    public BindStrategyObjectArray(List<SelectExprElementCompiledSpec> selectionList)
+    public BindStrategyObjectArray(List<SelectClauseExprCompiledSpec> selectionList)
             throws ExprValidationException
     {
         // Get expression nodes

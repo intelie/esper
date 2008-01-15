@@ -2,8 +2,7 @@ package net.esper.eql.core;
 
 import net.esper.eql.expression.ExprNode;
 import net.esper.eql.expression.ExprValidationException;
-import net.esper.eql.spec.ActiveObjectSpec;
-import net.esper.eql.spec.SelectExprElementCompiledSpec;
+import net.esper.eql.spec.SelectClauseExprCompiledSpec;
 import net.esper.event.EventBean;
 
 import java.util.HashMap;
@@ -15,7 +14,7 @@ public class BindStrategyMap implements BindStrategy
     private ExprNode[] expressionNodes;
     private String[] columnNames;
 
-    public BindStrategyMap(List<SelectExprElementCompiledSpec> selectionList)
+    public BindStrategyMap(List<SelectClauseExprCompiledSpec> selectionList)
             throws ExprValidationException
     {
         // Get expression nodes

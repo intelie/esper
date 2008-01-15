@@ -846,7 +846,7 @@ public class EPStatementStartMethod
         for (ExprSubselectNode subselect : statementSpec.getSubSelectExpressions())
         {
             StatementSpecCompiled statementSpec = subselect.getStatementSpecCompiled();
-            SelectClauseSpec selectClauseSpec = statementSpec.getSelectClauseSpec();
+            SelectClauseSpecCompiled selectClauseSpec = statementSpec.getSelectClauseSpec();
 
             if (statementSpec.getStreamSpecs().get(0) instanceof FilterStreamSpecCompiled)
             {
@@ -882,12 +882,17 @@ public class EPStatementStartMethod
             // no aggregation functions allowed in select
             if (selectClauseSpec.getSelectExprList().size() > 0)
             {
-                ExprNode selectExpression = selectClauseSpec.getSelectExprList().get(0).getSelectExpression();
-                List<ExprAggregateNode> aggExprNodes = new LinkedList<ExprAggregateNode>();
-                ExprAggregateNode.getAggregatesBottomUp(selectExpression, aggExprNodes);
-                if (aggExprNodes.size() > 0)
+                SelectClauseElementCompiled compiledExpr = selectClauseSpec.getSelectExprList().get(0);
+                if (compiledExpr instanceof SelectClauseExprCompiledSpec)
                 {
-                    throw new ExprValidationException("Aggregation functions are not supported within subqueries, consider using insert-into instead");
+                    SelectClauseExprCompiledSpec selectExpr = (SelectClauseExprCompiledSpec) compiledExpr;
+                    ExprNode selectExpression = selectExpr.getSelectExpression();
+                    List<ExprAggregateNode> aggExprNodes = new LinkedList<ExprAggregateNode>();
+                    ExprAggregateNode.getAggregatesBottomUp(selectExpression, aggExprNodes);
+                    if (aggExprNodes.size() > 0)
+                    {
+                        throw new ExprValidationException("Aggregation functions are not supported within subqueries, consider using insert-into instead");
+                    }
                 }
             }
 
@@ -942,13 +947,18 @@ public class EPStatementStartMethod
             ViewResourceDelegate viewResourceDelegateSubselect = new ViewResourceDelegateImpl(new ViewFactoryChain[] {viewFactoryChain}, statementContext);
 
             // Validate select expression
-            SelectClauseSpec selectClauseSpec = subselect.getStatementSpecCompiled().getSelectClauseSpec();
+            SelectClauseSpecCompiled selectClauseSpec = subselect.getStatementSpecCompiled().getSelectClauseSpec();
             if (selectClauseSpec.getSelectExprList().size() > 0)
             {
-                ExprNode selectExpression = selectClauseSpec.getSelectExprList().get(0).getSelectExpression();
-                selectExpression = selectExpression.getValidatedSubtree(subselectTypeService, statementContext.getMethodResolutionService(), viewResourceDelegateSubselect, statementContext.getSchedulingService(), statementContext.getVariableService());
-                subselect.setSelectClause(selectExpression);
-                subselect.setSelectAsName(selectClauseSpec.getSelectExprList().get(0).getOptionalAsName());
+                SelectClauseElementCompiled element = selectClauseSpec.getSelectExprList().get(0);
+                if (element instanceof SelectClauseExprCompiledSpec)
+                {
+                    SelectClauseExprCompiledSpec compiled = (SelectClauseExprCompiledSpec) element;
+                    ExprNode selectExpression = compiled.getSelectExpression();
+                    selectExpression = selectExpression.getValidatedSubtree(subselectTypeService, statementContext.getMethodResolutionService(), viewResourceDelegateSubselect, statementContext.getSchedulingService(), statementContext.getVariableService());
+                    subselect.setSelectClause(selectExpression);
+                    subselect.setSelectAsName(compiled.getAssignedName());
+                }
             }
 
             // Validate filter expression, if there is one
