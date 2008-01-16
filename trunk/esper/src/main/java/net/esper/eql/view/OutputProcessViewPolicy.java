@@ -193,8 +193,12 @@ public class OutputProcessViewPolicy extends OutputProcessView
 
 	private void output(boolean forceUpdate, EventBean[] newEvents, EventBean[] oldEvents)
 	{
-        outputStrategy.output(forceUpdate, newEvents, oldEvents, childView);
-	}
+        // Child view can be null in replay from named window
+        if (childView != null)
+        {
+            outputStrategy.output(forceUpdate, newEvents, oldEvents, childView);
+        }
+    }
 
 	private void resetEventBatches()
 	{

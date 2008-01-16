@@ -34,8 +34,13 @@ public class SupportStaticMethodLib
 	
 	public static void throwException() throws Exception
 	{
-		throw new Exception("SupportStaticMethod.exceptionThrower throwing a fit");
+		throw new Exception("throwException text here");
 	}
+
+    public static SupportBean throwExceptionBeanReturn() throws Exception
+    {
+        throw new Exception("throwException text here");
+    }
 
     public static boolean isStringEquals(String value, String compareTo)
     {

@@ -173,6 +173,25 @@ public class TestFromClauseMethod extends TestCase
         ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"|E2|", "E2"});
     }
 
+    public void testInvocationTargetEx()
+    {
+        String joinStatement = "select s1.string from " +
+                SupportBean.class.getName() + "().win:length(3) as s1, " +
+                " method:net.esper.support.eql.SupportStaticMethodLib.throwExceptionBeanReturn()";
+
+        epService.getEPAdministrator().createEQL(joinStatement);
+
+        try
+        {
+            sendBeanEvent("E1");
+            fail();
+        }
+        catch (EPException ex)
+        {
+            assertEquals("net.esper.client.EPException: Method 'throwExceptionBeanReturn' of class 'net.esper.support.eql.SupportStaticMethodLib' reported an exception: java.lang.Exception: throwException text here", ex.getMessage());
+        }
+    }
+
     public void testInvalid()
     {
         tryInvalid("select * from SupportBean, method:.abc where 1=2",

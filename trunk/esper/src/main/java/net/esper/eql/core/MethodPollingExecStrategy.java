@@ -79,7 +79,8 @@ public class MethodPollingExecStrategy implements PollExecStrategy
         }
         catch (InvocationTargetException ex)
         {
-            throw new EPException("Error invoking method '" + method.getName() + " on '" + method.getJavaMethod().getDeclaringClass().getName() + "'", ex);
+            throw new EPException("Method '" + method.getName() + "' of class '" + method.getJavaMethod().getDeclaringClass().getName() +
+                    "' reported an exception: " + ex.getTargetException(), ex.getTargetException());
         }
 
         return rowResult;

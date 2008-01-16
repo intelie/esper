@@ -200,7 +200,11 @@ public class ExprStaticMethodNode extends ExprNode
 		}
 		catch (InvocationTargetException e)
 		{
-			throw new EPException(e);
+            String message = "Method '" + staticMethod.getName() +
+                    "' of class '" + className +
+                    "' reported an exception: " +
+                    e.getTargetException();
+            throw new EPException(message, e.getTargetException());
 		}
 	}
 }

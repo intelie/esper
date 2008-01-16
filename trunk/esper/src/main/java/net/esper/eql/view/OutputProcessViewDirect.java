@@ -53,7 +53,11 @@ public class OutputProcessViewDirect extends OutputProcessView
         EventBean[] newEventArr = newOldEvents != null ? newOldEvents.getFirst() : null;
         EventBean[] oldEventArr = newOldEvents != null ? newOldEvents.getSecond() : null;
 
-        outputStrategy.output(false, newEventArr, oldEventArr, childView);
+        // Child view can be null in replay from named window
+        if (childView != null)
+        {
+            outputStrategy.output(false, newEventArr, oldEventArr, childView);
+        }
     }
 
     /**
@@ -84,6 +88,10 @@ public class OutputProcessViewDirect extends OutputProcessView
         EventBean[] newEventArr = newOldEvents.getFirst();
         EventBean[] oldEventArr = newOldEvents.getSecond();
 
-        outputStrategy.output(false, newEventArr, oldEventArr, childView);
+        // Child view can be null in replay from named window
+        if (childView != null)
+        {
+            outputStrategy.output(false, newEventArr, oldEventArr, childView);
+        }
     }
 }

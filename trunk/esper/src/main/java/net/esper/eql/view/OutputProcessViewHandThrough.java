@@ -41,7 +41,11 @@ public class OutputProcessViewHandThrough extends OutputProcessView
                     "  oldData.length==" + ((oldData == null) ? 0 : oldData.length));
         }
 
-        outputStrategy.output(false, newData, oldData, childView);
+        // Child view can be null in replay from named window
+        if (childView != null)
+        {
+            outputStrategy.output(false, newData, oldData, childView);
+        }
     }
 
     /**

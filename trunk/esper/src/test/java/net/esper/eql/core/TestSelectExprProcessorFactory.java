@@ -5,6 +5,7 @@ import net.esper.eql.expression.ExprNode;
 import net.esper.eql.expression.ExprValidationException;
 import net.esper.eql.spec.SelectClauseExprCompiledSpec;
 import net.esper.eql.spec.SelectClauseStreamCompiledSpec;
+import net.esper.eql.spec.SelectClauseElementCompiled;
 import net.esper.support.eql.SupportExprNodeFactory;
 import net.esper.support.eql.SupportStreamTypeSvc3Stream;
 import net.esper.support.event.SupportEventAdapterService;
@@ -19,7 +20,7 @@ public class TestSelectExprProcessorFactory extends TestCase
 
     public void testGetProcessorInvalid() throws Exception
     {
-        List<SelectClauseExprCompiledSpec> selectionList = new LinkedList<SelectClauseExprCompiledSpec>();
+        List<SelectClauseElementCompiled> selectionList = new LinkedList<SelectClauseElementCompiled>();
         ExprNode identNode = SupportExprNodeFactory.makeIdentNode("doubleBoxed", "s0");
         ExprNode mathNode = SupportExprNodeFactory.makeMathNode();
         selectionList.add(new SelectClauseExprCompiledSpec(identNode, "result"));
@@ -27,7 +28,7 @@ public class TestSelectExprProcessorFactory extends TestCase
 
         try
         {
-            SelectExprProcessorFactory.getProcessor(selectionList, listOfStreamsSelected, false, null, null,
+            SelectExprProcessorFactory.getProcessor(selectionList, false, null, null,
                     new SupportStreamTypeSvc3Stream(), null, null);
             fail();
         }
@@ -39,18 +40,18 @@ public class TestSelectExprProcessorFactory extends TestCase
 
     public void testGetProcessorWildcard() throws Exception
     {
-        List<SelectClauseExprCompiledSpec> selectionList = new LinkedList<SelectClauseExprCompiledSpec>();
-        SelectExprProcessor processor = SelectExprProcessorFactory.getProcessor(selectionList, listOfStreamsSelected, false, null, null,
+        List<SelectClauseElementCompiled> selectionList = new LinkedList<SelectClauseElementCompiled>();
+        SelectExprProcessor processor = SelectExprProcessorFactory.getProcessor(selectionList, false, null, null,
                 new SupportStreamTypeSvc3Stream(), SupportEventAdapterService.getService(), null);
         assertTrue(processor instanceof SelectExprJoinWildcardProcessor);
     }
 
     public void testGetProcessorValid() throws Exception
     {
-        List<SelectClauseExprCompiledSpec> selectionList = new LinkedList<SelectClauseExprCompiledSpec>();
+        List<SelectClauseElementCompiled> selectionList = new LinkedList<SelectClauseElementCompiled>();
         ExprNode identNode = SupportExprNodeFactory.makeIdentNode("doubleBoxed", "s0");
         selectionList.add(new SelectClauseExprCompiledSpec(identNode, "result"));
-        SelectExprProcessor processor = SelectExprProcessorFactory.getProcessor(selectionList, listOfStreamsSelected, false, null, null,
+        SelectExprProcessor processor = SelectExprProcessorFactory.getProcessor(selectionList, false, null, null,
                 new SupportStreamTypeSvc3Stream(), SupportEventAdapterService.getService(), null);
         assertTrue(processor != null);
     }
@@ -58,21 +59,19 @@ public class TestSelectExprProcessorFactory extends TestCase
     public void testVerifyNameUniqueness() throws Exception
     {
         // try valid case
-        List<SelectClauseExprCompiledSpec> elements = new LinkedList<SelectClauseExprCompiledSpec>();
+        List<SelectClauseElementCompiled> elements = new LinkedList<SelectClauseElementCompiled>();
         elements.add(new SelectClauseExprCompiledSpec(null, "xx"));
         elements.add(new SelectClauseExprCompiledSpec(null, "yy"));
+        elements.add(new SelectClauseStreamCompiledSpec("win", null));
+        elements.add(new SelectClauseStreamCompiledSpec("s2", "abc"));
 
-        List<SelectClauseStreamCompiledSpec> streams = new LinkedList<SelectClauseStreamCompiledSpec>();
-        streams.add(new SelectClauseStreamCompiledSpec("win", null));
-        streams.add(new SelectClauseStreamCompiledSpec("s2", "abc"));
-
-        SelectExprProcessorFactory.verifyNameUniqueness(elements, streams);
+        SelectExprProcessorFactory.verifyNameUniqueness(elements);
 
         // try invalid case
         elements.add(new SelectClauseExprCompiledSpec(null, "yy"));
         try
         {
-            SelectExprProcessorFactory.verifyNameUniqueness(elements, streams);
+            SelectExprProcessorFactory.verifyNameUniqueness(elements);
             fail();
         }
         catch (ExprValidationException ex)
@@ -82,10 +81,11 @@ public class TestSelectExprProcessorFactory extends TestCase
 
         // try invalid case
         elements.clear();
-        streams.add(new SelectClauseStreamCompiledSpec("s0", "abc"));
+        elements.add(new SelectClauseExprCompiledSpec(null, "abc"));
+        elements.add(new SelectClauseStreamCompiledSpec("s0", "abc"));
         try
         {
-            SelectExprProcessorFactory.verifyNameUniqueness(elements, streams);
+            SelectExprProcessorFactory.verifyNameUniqueness(elements);
             fail();
         }
         catch (ExprValidationException ex)

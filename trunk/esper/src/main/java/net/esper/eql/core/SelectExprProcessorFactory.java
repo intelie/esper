@@ -9,25 +9,20 @@ package net.esper.eql.core;
 
 import net.esper.core.ActiveObjectSpace;
 import net.esper.eql.expression.ExprValidationException;
-import net.esper.eql.spec.ActiveObjectSpec;
-import net.esper.eql.spec.InsertIntoDesc;
-import net.esper.eql.spec.SelectClauseExprCompiledSpec;
-import net.esper.eql.spec.SelectClauseStreamCompiledSpec;
+import net.esper.eql.spec.*;
 import net.esper.event.EventAdapterService;
-import net.esper.client.soda.SelectClauseElement;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Factory for select expression processors.
  */
 public class SelectExprProcessorFactory
 {
+    private static final Log log = LogFactory.getLog(SelectExprProcessorFactory.class);
+
     /**
      * Returns the processor to use for a given select-clause.
      * @param selectionList - the list of select clause elements/items, which are expected to have been validated
@@ -38,7 +33,7 @@ public class SelectExprProcessorFactory
      * @return select-clause expression processor
      * @throws net.esper.eql.expression.ExprValidationException to indicate the select expression cannot be validated
      */
-    public static SelectExprProcessor getProcessor(List<SelectClauseElement> selectionList,
+    public static SelectExprProcessor getProcessor(List<SelectClauseElementCompiled> selectionList,
                                                    boolean isUsingWildcard,
                                                    InsertIntoDesc insertIntoDesc,
                                                    ActiveObjectSpec activeObjectSpec,
@@ -53,8 +48,8 @@ public class SelectExprProcessorFactory
             return synthetic;
         }
 
-        // If this is a wildcard
-        if ((selectionList.isEmpty() && (selectedStreams.isEmpty())))
+        // If there is nothing else then wildcard(s)
+        if (isWildcardsOnly(selectionList))
         {
             // TODO
             // For joins
@@ -87,7 +82,7 @@ public class SelectExprProcessorFactory
     }
 
     private static SelectExprProcessor getProcessorInternal(
-                                                   List<SelectClauseElement> selectionList,
+                                                   List<SelectClauseElementCompiled> selectionList,
                                                    boolean isUsingWildcard,
                                                    InsertIntoDesc insertIntoDesc,
                                                    StreamTypeService typeService,
@@ -101,7 +96,7 @@ public class SelectExprProcessorFactory
     	}
 
         // Determine wildcard processor (select *)
-        if ((selectionList.isEmpty() && (selectedStreams.isEmpty())))
+        if (isWildcardsOnly(selectionList))
         {
             // For joins
             if (typeService.getStreamNames().length > 1)
@@ -119,53 +114,94 @@ public class SelectExprProcessorFactory
         }
 
         // Verify the assigned or alias name used is unique
-        verifyNameUniqueness(selectionList, selectedStreams);
+        verifyNameUniqueness(selectionList);
 
         // Construct processor
         log.debug(".getProcessor Using SelectExprEvalProcessor");
-        if (selectedStreams.size() == 0)
+        List<SelectClauseExprCompiledSpec> expressionList = getExpressions(selectionList);
+        List<SelectClauseStreamCompiledSpec> streamWildcards = getStreamWildcards(selectionList);
+        if (streamWildcards.size() == 0)
         {
             // This one only deals with wildcards and expressions in the selection
-            return new SelectExprEvalProcessor(selectionList, insertIntoDesc, isUsingWildcard, typeService, eventAdapterService);
+            return new SelectExprEvalProcessor(expressionList, insertIntoDesc, isUsingWildcard, typeService, eventAdapterService);
         }
         else
         {
             // This one also deals with stream selectors (e.g. select *, p1, s0.* from S0 as s0)
-            return new SelectExprEvalProcessorStreams(selectionList, selectedStreams, insertIntoDesc, isUsingWildcard, typeService, eventAdapterService);
+            return new SelectExprEvalProcessorStreams(expressionList, streamWildcards, insertIntoDesc, isUsingWildcard, typeService, eventAdapterService);
         }
     }
 
     /**
      * Verify that each given name occurs exactly one.
      * @param selectionList is the list of select items to verify names
-     * @param selectedStreams - list of stream selectors (e.g. select alias.* from Event as alias)
      * @throws net.esper.eql.expression.ExprValidationException thrown if a name occured more then once
      */
-    protected static void verifyNameUniqueness(List<SelectClauseExprCompiledSpec> selectionList, List<SelectClauseStreamCompiledSpec> selectedStreams) throws ExprValidationException
+    protected static void verifyNameUniqueness(List<SelectClauseElementCompiled> selectionList) throws ExprValidationException
     {
         Set<String> names = new HashSet<String>();
-        for (SelectClauseExprCompiledSpec element : selectionList)
+        for (SelectClauseElementCompiled element : selectionList)
         {
-            if (names.contains(element.getAssignedName()))
+            if (element instanceof SelectClauseExprCompiledSpec)
             {
-                throw new ExprValidationException("Property alias name '" + element.getAssignedName() + "' appears more then once in select clause");
+                SelectClauseExprCompiledSpec expr = (SelectClauseExprCompiledSpec) element;
+                if (names.contains(expr.getAssignedName()))
+                {
+                    throw new ExprValidationException("Property alias name '" + expr.getAssignedName() + "' appears more then once in select clause");
+                }
+                names.add(expr.getAssignedName());
             }
-            names.add(element.getAssignedName());
-        }
-        for (SelectClauseStreamCompiledSpec element : selectedStreams)
-        {
-            if (element.getOptionalAliasName() == null)
+            else if (element instanceof SelectClauseStreamCompiledSpec)
             {
-                continue; // ignore no-alias stream selectors
+                SelectClauseStreamCompiledSpec stream = (SelectClauseStreamCompiledSpec) element;
+                if (stream.getOptionalAliasName() == null)
+                {
+                    continue; // ignore no-alias stream selectors
+                }
+                if (names.contains(stream.getOptionalAliasName()))
+                {
+                    throw new ExprValidationException("Property alias name '" + stream.getOptionalAliasName() + "' appears more then once in select clause");
+                }
+                names.add(stream.getOptionalAliasName());
             }
-            if (names.contains(element.getOptionalAliasName()))
-            {
-                throw new ExprValidationException("Property alias name '" + element.getOptionalAliasName() + "' appears more then once in select clause");
-            }
-            names.add(element.getOptionalAliasName());
         }
     }
 
+    private static boolean isWildcardsOnly(List<SelectClauseElementCompiled> elements)
+    {
+        for (SelectClauseElementCompiled element : elements)
+        {
+            if (!(element instanceof SelectClauseElementWildcard))
+            {
+                return false;
+            }
+        }
+        return true;
+    }
 
-    private static final Log log = LogFactory.getLog(SelectExprProcessorFactory.class);
+    private static List<SelectClauseExprCompiledSpec> getExpressions(List<SelectClauseElementCompiled> elements)
+    {
+        List<SelectClauseExprCompiledSpec> result = new ArrayList<SelectClauseExprCompiledSpec>();
+        for (SelectClauseElementCompiled element : elements)
+        {
+            if (element instanceof SelectClauseExprCompiledSpec)
+            {
+                result.add((SelectClauseExprCompiledSpec)element);
+            }
+        }
+        return result;
+    }
+
+    private static List<SelectClauseStreamCompiledSpec> getStreamWildcards(List<SelectClauseElementCompiled> elements)
+    {
+        List<SelectClauseStreamCompiledSpec> result = new ArrayList<SelectClauseStreamCompiledSpec>();
+        for (SelectClauseElementCompiled element : elements)
+        {
+            if (element instanceof SelectClauseStreamCompiledSpec)
+            {
+                result.add((SelectClauseStreamCompiledSpec)element);
+            }
+        }
+        return result;
+    }
 }

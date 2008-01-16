@@ -4,6 +4,7 @@ import net.esper.eql.expression.ExprNode;
 import net.esper.eql.expression.ExprValidationException;
 import net.esper.eql.spec.ActiveObjectSpec;
 import net.esper.eql.spec.SelectClauseExprCompiledSpec;
+import net.esper.eql.spec.SelectClauseElementCompiled;
 import net.esper.event.EventBean;
 import net.esper.util.JavaClassHelper;
 
@@ -13,7 +14,7 @@ public class BindStrategyFieldWise implements BindStrategy
 {
     private ExprNode[] expressionNodes;
 
-    public BindStrategyFieldWise(List<SelectClauseExprCompiledSpec> selectionList,
+    public BindStrategyFieldWise(List<SelectClauseElementCompiled> selectionList,
                                    ActiveObjectSpec activeObjectSpec)
             throws ExprValidationException
     {
@@ -22,7 +23,7 @@ public class BindStrategyFieldWise implements BindStrategy
         Class[] exprTypes = new Class[selectionList.size()];
         for (int i = 0; i < selectionList.size(); i++)
         {
-            expressionNodes[i] = selectionList.get(i).getSelectExpression();
+            // TODO expressionNodes[i] = selectionList.get(i).getSelectExpression();
             exprTypes[i] = expressionNodes[i].getType();
         }
 
