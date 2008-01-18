@@ -1,14 +1,13 @@
 package net.esper.eql.core;
 
 import net.esper.eql.expression.ExprValidationException;
-import net.esper.eql.spec.ActiveObjectSpec;
 import net.esper.util.JavaClassHelper;
 import net.esper.event.EventBean;
 import net.esper.event.EventType;
 
 public class BindStrategyNoJoinWildcard implements BindStrategy
 {
-    public BindStrategyNoJoinWildcard(ActiveObjectSpec activeObjectSpec, EventType eventType)
+    public BindStrategyNoJoinWildcard(BindStrategySpec activeObjectSpec, EventType eventType)
             throws ExprValidationException
     {
         Class[] paramTypes = activeObjectSpec.getParameters();

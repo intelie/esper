@@ -33,7 +33,6 @@ public class StatementSpecRaw implements MetaDefItem
     private List<OrderByItem> orderByList = new LinkedList<OrderByItem>();
     private boolean existsSubstitutionParameters;
     private boolean hasVariables;
-    private ActiveObjectSpec activeObjectSpec;
 
     /**
      * Returns the FROM-clause stream definitions.
@@ -284,15 +283,5 @@ public class StatementSpecRaw implements MetaDefItem
     public void setCreateVariableDesc(CreateVariableDesc createVariableDesc)
     {
         this.createVariableDesc = createVariableDesc;
-    }
-
-    public ActiveObjectSpec getActiveObjectSpec()
-    {
-        return activeObjectSpec;
-    }
-
-    public void setActiveObjectSpec(ActiveObjectSpec activeObjectSpec)
-    {
-        this.activeObjectSpec = activeObjectSpec;
     }
 }

@@ -7,14 +7,16 @@
  **************************************************************************************/
 package net.esper.eql.core;
 
-import net.esper.core.ActiveObjectSpace;
 import net.esper.eql.expression.ExprValidationException;
 import net.esper.eql.spec.*;
 import net.esper.event.EventAdapterService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Factory for select expression processors.
@@ -36,49 +38,12 @@ public class SelectExprProcessorFactory
     public static SelectExprProcessor getProcessor(List<SelectClauseElementCompiled> selectionList,
                                                    boolean isUsingWildcard,
                                                    InsertIntoDesc insertIntoDesc,
-                                                   ActiveObjectSpec activeObjectSpec,
                                                    StreamTypeService typeService, 
-                                                   EventAdapterService eventAdapterService,
-                                                   ActiveObjectSpace activeObjectSpace)
+                                                   EventAdapterService eventAdapterService)
         throws ExprValidationException
     {
         SelectExprProcessor synthetic = getProcessorInternal(selectionList, isUsingWildcard, insertIntoDesc, typeService, eventAdapterService);
-        if (activeObjectSpec == null)
-        {
-            return synthetic;
-        }
-
-        // If there is nothing else then wildcard(s)
-        if (isWildcardsOnly(selectionList))
-        {
-            // TODO
-            // For joins
-            if (typeService.getStreamNames().length > 1)
-            {
-                log.debug(".getProcessor Using SelectExprJoinWildcardProcessor");
-                return new SelectExprJoinWildcardProcessor(typeService.getStreamNames(), typeService.getEventTypes(), eventAdapterService, insertIntoDesc);
-            }
-
-            return new SelectExprBindProcessor(new SelectExprWildcardProcessor(typeService.getEventTypes()[0]), new BindStrategyNoJoinWildcard(activeObjectSpec, typeService.getEventTypes()[0]));
-        }
-
-        BindStrategy bindStrategy;
-        // Bind single Map
-        if ((activeObjectSpec.getParameters().length == 1) && (activeObjectSpec.getParameters()[0] == Map.class))
-        {
-            bindStrategy = new BindStrategyMap(selectionList);
-        }
-        // Bind Object varargs or Object[]
-        else if ((activeObjectSpec.getParameters().length == 1) && (activeObjectSpec.getParameters()[0] == Object[].class))
-        {
-            bindStrategy = new BindStrategyObjectArray(selectionList);
-        }
-        else
-        {
-            bindStrategy = new BindStrategyFieldWise(selectionList, activeObjectSpec);
-        }
-        
-        return new SelectExprBindProcessor(synthetic, bindStrategy);
+        return synthetic;        
     }
 
     private static SelectExprProcessor getProcessorInternal(

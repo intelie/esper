@@ -181,7 +181,6 @@ public class TestAnnotatedSubscriber extends TestCase
     {
         final int NUM_LOOP = 10;
         MyAnnotatedSimpleSubscriber subscriber = new MyAnnotatedSimpleSubscriber();
-        epService.getEPRuntime().write(subscriber);
 
         long start = System.currentTimeMillis();
         for (int i = 0; i < NUM_LOOP; i++)
@@ -235,7 +234,6 @@ public class TestAnnotatedSubscriber extends TestCase
         String fields[] = "string,intPrimitive".split(",");
 
         MyAnnotatedSimpleSubscriber subscriber = new MyAnnotatedSimpleSubscriber();
-        epService.getEPRuntime().write(subscriber);
 
         // get statement, attach listener
         EPStatement stmt = epService.getEPAdministrator().getStatement("SimpleSelectStmt");
@@ -274,7 +272,6 @@ public class TestAnnotatedSubscriber extends TestCase
         assertFalse(stmtAwareListener.isInvoked());
 
         // remove
-        epService.getEPRuntime().take(subscriber);
 
         epService.getEPRuntime().sendEvent(new SupportBean("E2", 1000));
         assertEquals(0, subscriber.getAndResetIndicateSimple().size());
@@ -285,7 +282,6 @@ public class TestAnnotatedSubscriber extends TestCase
         String fields[] = "symbol,volume".split(",");
 
         MyAnnotatedSimpleSubscriber subscriber = new MyAnnotatedSimpleSubscriber();
-        epService.getEPRuntime().write(subscriber);
 
         // get statement, attach listener
         EPStatement stmtIIRR = epService.getEPAdministrator().getStatement("IIRR");
@@ -333,7 +329,6 @@ public class TestAnnotatedSubscriber extends TestCase
         ArrayAssertionUtil.assertProps(listenerIIRI.assertOneGetNewAndReset(), fields, new Object[] {"E1",200L});
 
         // remove, stops statement
-        epService.getEPRuntime().take(subscriber);
 
         // send event
         epService.getEPRuntime().sendEvent(new SupportMarketDataBean("E1", 0d, 300L, ""));
@@ -350,7 +345,6 @@ public class TestAnnotatedSubscriber extends TestCase
         String fields[] = "symbol,volume".split(",");
 
         MyAnnotatedSimpleSubscriber subscriber = new MyAnnotatedSimpleSubscriber();
-        epService.getEPRuntime().write(subscriber);
 
         // get statement, attach listener
         EPStatement stmt = epService.getEPAdministrator().getStatement("InsertIntoStmt");
@@ -389,7 +383,6 @@ public class TestAnnotatedSubscriber extends TestCase
         assertFalse(listener.isInvoked());
 
         // remove, stops statement
-        epService.getEPRuntime().take(subscriber);
 
         // send event
         epService.getEPRuntime().sendEvent(new SupportMarketDataBean("E2", 0d, 300L, ""));
@@ -402,7 +395,6 @@ public class TestAnnotatedSubscriber extends TestCase
         String fields[] = "string,intPrimitive".split(",");
 
         MyAnnotatedNonSelectSubscriber subscriber = new MyAnnotatedNonSelectSubscriber();
-        epService.getEPRuntime().write(subscriber);
 
         epService.getEPAdministrator().createEQL("insert into MyWindow select string, intPrimitive from SupportBean");
 

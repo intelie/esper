@@ -197,7 +197,6 @@ public class EPStatementStartMethod
             ResultSetProcessor optionalResultSetProcessor = ResultSetProcessorFactory.getProcessor(
                     statementSpec.getSelectClauseSpec(),
                     statementSpec.getInsertIntoDesc(),
-                    statementSpec.getActiveObjectSpec(),
                     statementSpec.getGroupByExpressions(),
                     statementSpec.getHavingExprRootNode(),
                     statementSpec.getOutputLimitSpec(),
@@ -207,8 +206,7 @@ public class EPStatementStartMethod
                     statementContext.getMethodResolutionService(),
                     null,
                     statementContext.getSchedulingService(),
-                    statementContext.getVariableService(),
-                    null);
+                    statementContext.getVariableService());
 
             // validate join expression
             ExprNode validatedJoin = validateJoinNamedWindow(statementSpec.getFilterRootNode(),
@@ -542,7 +540,6 @@ public class EPStatementStartMethod
         ResultSetProcessor optionalResultSetProcessor = ResultSetProcessorFactory.getProcessor(
                 statementSpec.getSelectClauseSpec(),
                 statementSpec.getInsertIntoDesc(),
-                statementSpec.getActiveObjectSpec(),
                 statementSpec.getGroupByExpressions(),
                 statementSpec.getHavingExprRootNode(),
                 statementSpec.getOutputLimitSpec(),
@@ -552,8 +549,8 @@ public class EPStatementStartMethod
                 statementContext.getMethodResolutionService(),
                 viewResourceDelegate,
                 statementContext.getSchedulingService(),
-                statementContext.getVariableService(),
-                services.getActiveObjectSpace());
+                statementContext.getVariableService()
+                );
 
         // Validate where-clause filter tree and outer join clause
         validateNodes(typeService, statementContext.getMethodResolutionService(), viewResourceDelegate);
@@ -644,7 +641,7 @@ public class EPStatementStartMethod
         
         JoinSetFilter filter = new JoinSetFilter(statementSpec.getFilterRootNode());
         OutputProcessView indicatorView = OutputProcessViewFactory.makeView(optionalResultSetProcessor, statementSpec,
-                statementContext, services.getActiveObjectSpace(), services.getDispatchService(), services.getInternalEventRouter());
+                statementContext, services.getDispatchService(), services.getInternalEventRouter());
 
         // Create strategy for join execution
         JoinExecutionStrategy execution = new JoinExecutionStrategyImpl(composer, filter, indicatorView);
@@ -828,7 +825,7 @@ public class EPStatementStartMethod
            (statementSpec.getSelectStreamSelectorEnum() != SelectClauseStreamSelectorEnum.RSTREAM_ISTREAM_BOTH))            
         {
             OutputProcessView selectView = OutputProcessViewFactory.makeView(optionalResultSetProcessor, statementSpec,
-                    statementContext, services.getActiveObjectSpace(), services.getDispatchService(), services.getInternalEventRouter());
+                    statementContext, services.getDispatchService(), services.getInternalEventRouter());
             finalView.addView(selectView);
             finalView = selectView;
         }

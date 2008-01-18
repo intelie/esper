@@ -16,7 +16,6 @@ import net.esper.eql.variable.VariableService;
 import net.esper.event.EventAdapterService;
 import net.esper.event.TaggedCompositeEventType;
 import net.esper.schedule.TimeProvider;
-import net.esper.core.ActiveObjectSpace;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -70,7 +69,6 @@ public class ResultSetProcessorFactory
      */
     public static ResultSetProcessor getProcessor(SelectClauseSpecCompiled selectClauseSpec,
                                                   InsertIntoDesc insertIntoDesc,
-                                                  ActiveObjectSpec activeObjectSpec,
                                                   List<ExprNode> groupByNodes,
                                                	  ExprNode optionalHavingNode,
                                                	  OutputLimitSpec outputLimitSpec,
@@ -80,8 +78,7 @@ public class ResultSetProcessorFactory
                                                   MethodResolutionService methodResolutionService,
                                                   ViewResourceDelegate viewResourceDelegate,
                                                   TimeProvider timeProvider,
-                                                  VariableService variableService,
-                                                  ActiveObjectSpace activeObjectSpace)
+                                                  VariableService variableService)
             throws ExprValidationException
     {
         if (log.isDebugEnabled())
@@ -256,7 +253,7 @@ public class ResultSetProcessorFactory
                 groupByNodes, orderByList, aggregationService, eventAdapterService);
 
         // Construct the processor for evaluating the select clause
-        SelectExprProcessor selectExprProcessor = SelectExprProcessorFactory.getProcessor(selectClauseSpec.getSelectExprList(), isUsingWildcard, insertIntoDesc, activeObjectSpec, typeService, eventAdapterService, activeObjectSpace);
+        SelectExprProcessor selectExprProcessor = SelectExprProcessorFactory.getProcessor(selectClauseSpec.getSelectExprList(), isUsingWildcard, insertIntoDesc, typeService, eventAdapterService);
 
         // Get a list of event properties being aggregated in the select clause, if any
         Set<Pair<Integer, String>> propertiesAggregatedSelect = getAggregatedProperties(selectAggregateExprNodes);

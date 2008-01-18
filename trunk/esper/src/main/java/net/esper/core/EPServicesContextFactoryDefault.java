@@ -89,8 +89,6 @@ public class EPServicesContextFactoryDefault implements EPServicesContextFactory
         // Circular dependency
         StatementLifecycleSvc statementLifecycleSvc = new StatementLifecycleSvcImpl(epServiceProvider, services);
         services.setStatementLifecycleSvc(statementLifecycleSvc);
-        ActiveObjectSpace activeObjectSpace = new ActiveObjectSpaceImpl(services);
-        services.setActiveObjectSpace(activeObjectSpace);
 
         return services;
     }

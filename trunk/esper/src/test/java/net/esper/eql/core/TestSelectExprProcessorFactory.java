@@ -3,9 +3,9 @@ package net.esper.eql.core;
 import junit.framework.TestCase;
 import net.esper.eql.expression.ExprNode;
 import net.esper.eql.expression.ExprValidationException;
+import net.esper.eql.spec.SelectClauseElementCompiled;
 import net.esper.eql.spec.SelectClauseExprCompiledSpec;
 import net.esper.eql.spec.SelectClauseStreamCompiledSpec;
-import net.esper.eql.spec.SelectClauseElementCompiled;
 import net.esper.support.eql.SupportExprNodeFactory;
 import net.esper.support.eql.SupportStreamTypeSvc3Stream;
 import net.esper.support.event.SupportEventAdapterService;
@@ -28,8 +28,8 @@ public class TestSelectExprProcessorFactory extends TestCase
 
         try
         {
-            SelectExprProcessorFactory.getProcessor(selectionList, false, null, null,
-                    new SupportStreamTypeSvc3Stream(), null, null);
+            SelectExprProcessorFactory.getProcessor(selectionList, false, null,
+                    new SupportStreamTypeSvc3Stream(), null);
             fail();
         }
         catch (ExprValidationException ex)
@@ -41,8 +41,8 @@ public class TestSelectExprProcessorFactory extends TestCase
     public void testGetProcessorWildcard() throws Exception
     {
         List<SelectClauseElementCompiled> selectionList = new LinkedList<SelectClauseElementCompiled>();
-        SelectExprProcessor processor = SelectExprProcessorFactory.getProcessor(selectionList, false, null, null,
-                new SupportStreamTypeSvc3Stream(), SupportEventAdapterService.getService(), null);
+        SelectExprProcessor processor = SelectExprProcessorFactory.getProcessor(selectionList, false, null,
+                new SupportStreamTypeSvc3Stream(), SupportEventAdapterService.getService());
         assertTrue(processor instanceof SelectExprJoinWildcardProcessor);
     }
 
@@ -51,8 +51,8 @@ public class TestSelectExprProcessorFactory extends TestCase
         List<SelectClauseElementCompiled> selectionList = new LinkedList<SelectClauseElementCompiled>();
         ExprNode identNode = SupportExprNodeFactory.makeIdentNode("doubleBoxed", "s0");
         selectionList.add(new SelectClauseExprCompiledSpec(identNode, "result"));
-        SelectExprProcessor processor = SelectExprProcessorFactory.getProcessor(selectionList, false, null, null,
-                new SupportStreamTypeSvc3Stream(), SupportEventAdapterService.getService(), null);
+        SelectExprProcessor processor = SelectExprProcessorFactory.getProcessor(selectionList, false, null,
+                new SupportStreamTypeSvc3Stream(), SupportEventAdapterService.getService());
         assertTrue(processor != null);
     }
 

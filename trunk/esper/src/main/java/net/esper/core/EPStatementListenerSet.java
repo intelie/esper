@@ -15,6 +15,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
  */
 public class EPStatementListenerSet
 {
+    Object subscriber;
     CopyOnWriteArraySet<UpdateListener> listeners;
     CopyOnWriteArraySet<StatementAwareUpdateListener> stmtAwareListeners;
     private transient EPStatementListenerSetCallback epStatementListenerSetCallback;
@@ -155,6 +156,15 @@ public class EPStatementListenerSet
         }
 
         stmtAwareListeners.remove(listener);
+        if (epStatementListenerSetCallback != null)
+        {
+            epStatementListenerSetCallback.newListenerSet(this);
+        }
+    }
+
+    public void setSubscriber(Object subscriber)
+    {
+        this.subscriber = subscriber;
         if (epStatementListenerSetCallback != null)
         {
             epStatementListenerSetCallback.newListenerSet(this);

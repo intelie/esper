@@ -709,15 +709,5 @@ public class EPRuntimeImpl implements EPRuntime, TimerCallback, InternalEventRou
         this.unmatchedListener = listener;
     }
 
-    public void write(Object active)
-    {
-        services.getActiveObjectSpace().write(active);
-    }
-
-    public void take(Object active)
-    {
-        services.getActiveObjectSpace().take(active);
-    }
-
     private static final Log log = LogFactory.getLog(EPRuntimeImpl.class);
 }

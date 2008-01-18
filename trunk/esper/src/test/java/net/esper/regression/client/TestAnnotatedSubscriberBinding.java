@@ -24,7 +24,6 @@ public class TestAnnotatedSubscriberBinding extends TestCase
     public void testBindMap()
     {
         MyAnnotatedMapSubscriber subscriber = new MyAnnotatedMapSubscriber();
-        epService.getEPRuntime().write(subscriber);
 
         epService.getEPRuntime().sendEvent(new SupportBean("E1", 1));
         ArrayAssertionUtil.assertProps(subscriber.getAndResetIndicateMap().get(0), fields, new Object[] {"E1", 1});
@@ -36,7 +35,6 @@ public class TestAnnotatedSubscriberBinding extends TestCase
     public void testBindObjectVarargs()
     {
         MyAnnotatedMapSubscriber subscriber = new MyAnnotatedMapSubscriber();
-        epService.getEPRuntime().write(subscriber);
 
         epService.getEPRuntime().sendEvent(new SupportBean("E2", 2));
         ArrayAssertionUtil.assertEqualsExactOrder(subscriber.getAndResetIndicateObjectVarags().get(0), new Object[] {"E2", 2});
@@ -45,7 +43,6 @@ public class TestAnnotatedSubscriberBinding extends TestCase
     public void testBindObjectArray()
     {
         MyAnnotatedMapSubscriber subscriber = new MyAnnotatedMapSubscriber();
-        epService.getEPRuntime().write(subscriber);
 
         epService.getEPRuntime().sendEvent(new SupportMarketDataBean("E1", 0, 1L, ""));
         ArrayAssertionUtil.assertEqualsExactOrder(subscriber.getAndResetIndicateObjectVarags().get(0), new Object[] {"E1", 1L});
@@ -54,7 +51,6 @@ public class TestAnnotatedSubscriberBinding extends TestCase
     public void testBindWidening()
     {
         MyAnnotatedWideningSubscriber subscriber = new MyAnnotatedWideningSubscriber();
-        epService.getEPRuntime().write(subscriber);
 
         SupportBean bean = new SupportBean();
         bean.setString("E1");
@@ -69,7 +65,6 @@ public class TestAnnotatedSubscriberBinding extends TestCase
     public void testNested()
     {
         MyAnnotatedWideningSubscriber subscriber = new MyAnnotatedWideningSubscriber();
-        epService.getEPRuntime().write(subscriber);
 
         SupportBeanComplexProps event = SupportBeanComplexProps.makeDefaultBean();
         epService.getEPRuntime().sendEvent(event);
@@ -79,7 +74,6 @@ public class TestAnnotatedSubscriberBinding extends TestCase
     public void testEnum()
     {
         MyAnnotatedWideningSubscriber subscriber = new MyAnnotatedWideningSubscriber();
-        epService.getEPRuntime().write(subscriber);
 
         SupportBeanWithEnum event = new SupportBeanWithEnum("abc", SupportEnum.ENUM_VALUE_1);
         epService.getEPRuntime().sendEvent(event);
@@ -89,7 +83,6 @@ public class TestAnnotatedSubscriberBinding extends TestCase
     public void testWildcardBean()
     {
         MyAnnotatedWideningSubscriber subscriber = new MyAnnotatedWideningSubscriber();
-        epService.getEPRuntime().write(subscriber);
 
         SupportBean event = new SupportBean("E2", 1);
         epService.getEPRuntime().sendEvent(event);
@@ -99,7 +92,6 @@ public class TestAnnotatedSubscriberBinding extends TestCase
     public void testWildcardBeanBatch()
     {
         MyAnnotatedWideningSubscriber subscriber = new MyAnnotatedWideningSubscriber();
-        epService.getEPRuntime().write(subscriber);
 
         SupportBean eventOne = new SupportBean("E3", 1);
         SupportBean eventTwo = new SupportBean("E3", 2);
@@ -113,7 +105,6 @@ public class TestAnnotatedSubscriberBinding extends TestCase
     public void testWildcardBeanBatchArrayObject()
     {
         MyAnnotatedArraySubscriber subscriber = new MyAnnotatedArraySubscriber();
-        epService.getEPRuntime().write(subscriber);
 
         SupportBean eventOne = new SupportBean("E1", 1);
         SupportBean eventTwo = new SupportBean("E1", 2);
@@ -128,7 +119,6 @@ public class TestAnnotatedSubscriberBinding extends TestCase
     public void testWildcardBeanBatchArrayBean()
     {
         MyAnnotatedArraySubscriber subscriber = new MyAnnotatedArraySubscriber();
-        epService.getEPRuntime().write(subscriber);
 
         SupportBean eventOne = new SupportBean("E2", 1);
         SupportBean eventTwo = new SupportBean("E2", 2);
@@ -143,7 +133,6 @@ public class TestAnnotatedSubscriberBinding extends TestCase
     public void testWildcardBeanBatchArrayBeanIR()
     {
         MyAnnotatedArraySubscriber subscriber = new MyAnnotatedArraySubscriber();
-        epService.getEPRuntime().write(subscriber);
 
         SupportBean eventOne = new SupportBean("E3", 1);
         SupportBean eventTwo = new SupportBean("E3", 2);
