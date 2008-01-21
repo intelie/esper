@@ -16,6 +16,7 @@ import net.esper.eql.variable.VariableService;
 import net.esper.event.EventAdapterService;
 import net.esper.event.TaggedCompositeEventType;
 import net.esper.schedule.TimeProvider;
+import net.esper.core.StatementResultService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -78,7 +79,8 @@ public class ResultSetProcessorFactory
                                                   MethodResolutionService methodResolutionService,
                                                   ViewResourceDelegate viewResourceDelegate,
                                                   TimeProvider timeProvider,
-                                                  VariableService variableService)
+                                                  VariableService variableService,
+                                                  StatementResultService statementResultService)
             throws ExprValidationException
     {
         if (log.isDebugEnabled())
@@ -253,7 +255,7 @@ public class ResultSetProcessorFactory
                 groupByNodes, orderByList, aggregationService, eventAdapterService);
 
         // Construct the processor for evaluating the select clause
-        SelectExprProcessor selectExprProcessor = SelectExprProcessorFactory.getProcessor(selectClauseSpec.getSelectExprList(), isUsingWildcard, insertIntoDesc, typeService, eventAdapterService);
+        SelectExprProcessor selectExprProcessor = SelectExprProcessorFactory.getProcessor(selectClauseSpec.getSelectExprList(), isUsingWildcard, insertIntoDesc, typeService, eventAdapterService, statementResultService);
 
         // Get a list of event properties being aggregated in the select clause, if any
         Set<Pair<Integer, String>> propertiesAggregatedSelect = getAggregatedProperties(selectAggregateExprNodes);
@@ -281,10 +283,10 @@ public class ResultSetProcessorFactory
             // (1a)
             // There is no need to perform select expression processing, the single view itself (no join) generates
             // events in the desired format, therefore there is no output processor. There are no order-by expressions.
-            if (selectExprProcessor == null && orderByNodes.isEmpty() && optionalHavingNode == null)
+            if (orderByNodes.isEmpty() && optionalHavingNode == null && !isOutputLimiting)
             {
                 log.debug(".getProcessor Using no result processor");
-                return null;
+                return new ResultSetProcessorHandThrough(selectExprProcessor);
             }
 
             // (1b)

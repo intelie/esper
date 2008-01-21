@@ -3,8 +3,6 @@ package net.esper.core;
 import net.esper.dispatch.DispatchService;
 import net.esper.event.EventBean;
 import net.esper.view.ViewSupport;
-import net.esper.client.EPStatement;
-import net.esper.client.EPServiceProvider;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -16,14 +14,11 @@ public class UpdateDispatchViewNonBlocking extends UpdateDispatchViewBase
 {
     /**
      * Ctor.
-     * @param epServiceProvider - engine instance to supply to statement-aware listeners
-     * @param statement - the statement instance to supply to statement-aware listeners
-     * @param updateListeners - listeners to update
      * @param dispatchService - for performing the dispatch
      */
-    public UpdateDispatchViewNonBlocking(EPServiceProvider epServiceProvider, EPStatement statement, EPStatementListenerSet updateListeners, DispatchService dispatchService)
+    public UpdateDispatchViewNonBlocking(StatementResultService statementResultServiceImpl, DispatchService dispatchService)
     {
-        super(epServiceProvider, statement, updateListeners, dispatchService);
+        super(statementResultServiceImpl, dispatchService);
     }
 
     public void update(EventBean[] newData, EventBean[] oldData)
@@ -32,15 +27,7 @@ public class UpdateDispatchViewNonBlocking extends UpdateDispatchViewBase
         {
             ViewSupport.dumpUpdateParams(".update for view " + this, newData, oldData);
         }
-        if (newData != null)
-        {
-            lastIterableEvent = newData[0];
-            lastNewEvents.get().add(newData);
-        }
-        if (oldData != null)
-        {
-            lastOldEvents.get().add(oldData);
-        }
+        statementResultServiceImpl.indicate(newData, oldData);
         if (!isDispatchWaiting.get())
         {
             dispatchService.addExternal(this);

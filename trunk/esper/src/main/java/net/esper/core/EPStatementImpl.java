@@ -1,7 +1,11 @@
 package net.esper.core;
 
-import net.esper.client.*;
+import net.esper.client.EPStatementState;
+import net.esper.client.SafeIterator;
+import net.esper.client.StatementAwareUpdateListener;
+import net.esper.client.UpdateListener;
 import net.esper.collection.SafeIteratorImpl;
+import net.esper.collection.SingleEventIterator;
 import net.esper.dispatch.DispatchService;
 import net.esper.eql.variable.VariableService;
 import net.esper.event.EventBean;
@@ -29,6 +33,7 @@ public class EPStatementImpl implements EPStatementSPI
     private EPStatementState currentState;
     private EventType eventType;
     private EPStatementHandle epStatementHandle;
+    private StatementResultService statementResultService;
 
     /**
      * Ctor.
@@ -41,13 +46,11 @@ public class EPStatementImpl implements EPStatementSPI
      * @param isBlockingDispatch is true if the dispatch to listeners should block to preserve event generation order
      * @param isSpinBlockingDispatch true to use spin locks blocking to deliver results, as locks are usually uncontended
      * @param msecBlockingTimeout is the max number of milliseconds of block time
-     * @param epServiceProvider is the engine instance to provide to statement-aware update listeners
      * @param timeLastStateChange the timestamp the statement was created and started
      * @param epStatementHandle the handle and statement lock associated with the statement
      * @param variableService provides access to variable values
      */
-    public EPStatementImpl(EPServiceProvider epServiceProvider,
-                           String statementId,
+    public EPStatementImpl(String statementId,
                               String statementName,
                               String expressionText,
                               boolean isPattern,
@@ -58,7 +61,8 @@ public class EPStatementImpl implements EPStatementSPI
                               boolean isSpinBlockingDispatch,
                               long msecBlockingTimeout,
                               EPStatementHandle epStatementHandle,
-                              VariableService variableService)
+                              VariableService variableService,
+                              StatementResultService statementResultService)
     {
         this.isPattern = isPattern;
         this.statementId = statementId;
@@ -70,21 +74,23 @@ public class EPStatementImpl implements EPStatementSPI
         {
             if (isSpinBlockingDispatch)
             {
-                this.dispatchChildView = new UpdateDispatchViewBlockingSpin(epServiceProvider, this, statementListenerSet, dispatchService, msecBlockingTimeout);
+                this.dispatchChildView = new UpdateDispatchViewBlockingSpin(statementResultService, dispatchService, msecBlockingTimeout);
             }
             else
             {
-                this.dispatchChildView = new UpdateDispatchViewBlockingWait(epServiceProvider, this, statementListenerSet, dispatchService, msecBlockingTimeout);
+                this.dispatchChildView = new UpdateDispatchViewBlockingWait(statementResultService, dispatchService, msecBlockingTimeout);
             }
         }
         else
         {
-            this.dispatchChildView = new UpdateDispatchViewNonBlocking(epServiceProvider, this, statementListenerSet, dispatchService);
+            this.dispatchChildView = new UpdateDispatchViewNonBlocking(statementResultService, dispatchService);
         }
         this.currentState = EPStatementState.STOPPED;
         this.timeLastStateChange = timeLastStateChange;
         this.epStatementHandle = epStatementHandle;
         this.variableService = variableService;
+        this.statementResultService = statementResultService;
+        statementResultService.setUpdateListeners(statementListenerSet);
     }
 
     public String getStatementId()
@@ -110,7 +116,7 @@ public class EPStatementImpl implements EPStatementSPI
         statementLifecycleSvc.stop(statementId);
 
         // On stop, we give the dispatch view a chance to dispatch final results, if any
-        dispatchChildView.dispatchOnStop();
+        statementResultService.dispatchOnStop();
         
         dispatchChildView.clear();
     }
@@ -177,7 +183,7 @@ public class EPStatementImpl implements EPStatementSPI
         }
         if (isPattern)
         {
-            return dispatchChildView.iterator();        // Which simply keeps the last event
+            return new SingleEventIterator(statementResultService.getLastIterableEvent());
         }
         else
         {
@@ -225,10 +231,7 @@ public class EPStatementImpl implements EPStatementSPI
     public void setListeners(EPStatementListenerSet listenerSet)
     {
         statementListenerSet.setListeners(listenerSet);
-        if (dispatchChildView != null)
-        {
-            dispatchChildView.setUpdateListeners(listenerSet);
-        }
+        statementResultService.setUpdateListeners(listenerSet);
     }
 
     /**
@@ -243,6 +246,7 @@ public class EPStatementImpl implements EPStatementSPI
         }
 
         statementListenerSet.addListener(listener);
+        statementResultService.setUpdateListeners(statementListenerSet);
         statementLifecycleSvc.updatedListeners(statementId, statementName, statementListenerSet);
     }
 
@@ -258,6 +262,7 @@ public class EPStatementImpl implements EPStatementSPI
         }
 
         statementListenerSet.removeListener(listener);
+        statementResultService.setUpdateListeners(statementListenerSet);
         statementLifecycleSvc.updatedListeners(statementId, statementName, statementListenerSet);
     }
 
@@ -267,6 +272,7 @@ public class EPStatementImpl implements EPStatementSPI
     public void removeAllListeners()
     {
         statementListenerSet.removeAllListeners();
+        statementResultService.setUpdateListeners(statementListenerSet);
         statementLifecycleSvc.updatedListeners(statementId, statementName, statementListenerSet);
     }
 
@@ -278,6 +284,7 @@ public class EPStatementImpl implements EPStatementSPI
         }
 
         statementListenerSet.addListener(listener);
+        statementResultService.setUpdateListeners(statementListenerSet);
         statementLifecycleSvc.updatedListeners(statementId, statementName, statementListenerSet);
     }
 
@@ -289,6 +296,7 @@ public class EPStatementImpl implements EPStatementSPI
         }
 
         statementListenerSet.removeListener(listener);
+        statementResultService.setUpdateListeners(statementListenerSet);
         statementLifecycleSvc.updatedListeners(statementId, statementName, statementListenerSet);
     }
 

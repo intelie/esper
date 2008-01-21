@@ -185,9 +185,10 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
             boolean isSpinLocks = services.getEngineSettingsService().getEngineSettings().getThreading().getListenerDispatchLocking() == ConfigurationEngineDefaults.Threading.Locking.SPIN;
             long blockingTimeout = services.getEngineSettingsService().getEngineSettings().getThreading().getListenerDispatchTimeout();
             long timeLastStateChange = services.getSchedulingService().getTime();
-            EPStatementSPI statement = new EPStatementImpl(epServiceProvider, statementId, statementName, expression, isPattern,
+            EPStatementSPI statement = new EPStatementImpl(statementId, statementName, expression, isPattern,
                     services.getDispatchService(), this, timeLastStateChange, preserveDispatchOrder, isSpinLocks, blockingTimeout,
-                    statementContext.getEpStatementHandle(), statementContext.getVariableService());
+                    statementContext.getEpStatementHandle(), statementContext.getVariableService(), statementContext.getStatementResultService());
+            statementContext.getStatementResultService().setContext(statement, epServiceProvider);
 
             // create start method
             startMethod = new EPStatementStartMethod(compiledSpec, services, statementContext);

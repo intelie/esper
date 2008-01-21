@@ -50,12 +50,7 @@ public class ResultSetProcessorSimple implements ResultSetProcessor
 
     public EventType getResultEventType()
     {
-        // the type depends on whether we are post-processing a selection result, or not
-        if (selectExprProcessor != null)
-        {
-            return selectExprProcessor.getResultEventType();
-        }
-        return null;
+        return selectExprProcessor.getResultEventType();
     }
 
     public Pair<EventBean[], EventBean[]> processJoinResult(Set<MultiKey<EventBean>> newEvents, Set<MultiKey<EventBean>> oldEvents, boolean isSynthesize)

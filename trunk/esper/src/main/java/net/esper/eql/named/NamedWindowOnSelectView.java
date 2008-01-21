@@ -24,7 +24,7 @@ public class NamedWindowOnSelectView extends NamedWindowOnExprBaseView
     private static final Log log = LogFactory.getLog(NamedWindowOnSelectView.class);
 
     private final InternalEventRouter internalEventRouter;
-    private final ResultSetProcessor optionalResultSetProcessor;
+    private final ResultSetProcessor resultSetProcessor;
     private final EPStatementHandle statementHandle;
     private EventBean[] lastResult;
     private Set<MultiKey<EventBean>> oldEvents = new HashSet<MultiKey<EventBean>>();
@@ -35,19 +35,19 @@ public class NamedWindowOnSelectView extends NamedWindowOnExprBaseView
      * @param lookupStrategy for handling trigger events to determine deleted events
      * @param rootView the named window root view
      * @param internalEventRouter for insert-into behavior
-     * @param optionalResultSetProcessor for processing aggregation, having and ordering
+     * @param resultSetProcessor for processing aggregation, having and ordering
      * @param statementHandle required for routing events
      */
     public NamedWindowOnSelectView(StatementStopService statementStopService,
                                    LookupStrategy lookupStrategy,
                                    NamedWindowRootView rootView,
                                    InternalEventRouter internalEventRouter,
-                                   ResultSetProcessor optionalResultSetProcessor,
+                                   ResultSetProcessor resultSetProcessor,
                                    EPStatementHandle statementHandle)
     {
         super(statementStopService, lookupStrategy, rootView);
         this.internalEventRouter = internalEventRouter;
-        this.optionalResultSetProcessor = optionalResultSetProcessor;
+        this.resultSetProcessor = resultSetProcessor;
         this.statementHandle = statementHandle;
     }
 
@@ -55,36 +55,29 @@ public class NamedWindowOnSelectView extends NamedWindowOnExprBaseView
     {
         EventBean[] newData = null;
 
-        if (optionalResultSetProcessor != null)
-        {
-            // clear state from prior results
-            optionalResultSetProcessor.clear();
+        // clear state from prior results
+        resultSetProcessor.clear();
 
-            // build join result
-            Set<MultiKey<EventBean>> newEvents = new HashSet<MultiKey<EventBean>>();
-            for (int i = 0; i < triggerEvents.length; i++)
+        // build join result
+        Set<MultiKey<EventBean>> newEvents = new HashSet<MultiKey<EventBean>>();
+        for (int i = 0; i < triggerEvents.length; i++)
+        {
+            EventBean triggerEvent = triggerEvents[0];
+            if (matchingEvents != null)
             {
-                EventBean triggerEvent = triggerEvents[0];
-                if (matchingEvents != null)
+                for (int j = 0; j < matchingEvents.length; j++)
                 {
-                    for (int j = 0; j < matchingEvents.length; j++)
-                    {
-                        EventBean[] eventsPerStream = new EventBean[2];
-                        eventsPerStream[0] = matchingEvents[j];
-                        eventsPerStream[1] = triggerEvent;
-                        newEvents.add(new MultiKey<EventBean>(eventsPerStream));
-                    }
+                    EventBean[] eventsPerStream = new EventBean[2];
+                    eventsPerStream[0] = matchingEvents[j];
+                    eventsPerStream[1] = triggerEvent;
+                    newEvents.add(new MultiKey<EventBean>(eventsPerStream));
                 }
             }
-            
-            // process matches
-            Pair<EventBean[], EventBean[]> pair = optionalResultSetProcessor.processJoinResult(newEvents, oldEvents, false);
-            newData = pair.getFirst();
         }
-        else
-        {
-            newData = matchingEvents;
-        }
+
+        // process matches
+        Pair<EventBean[], EventBean[]> pair = resultSetProcessor.processJoinResult(newEvents, oldEvents, false);
+        newData = pair.getFirst();
 
         if (internalEventRouter != null)
         {
@@ -101,9 +94,9 @@ public class NamedWindowOnSelectView extends NamedWindowOnExprBaseView
 
     public EventType getEventType()
     {
-        if (optionalResultSetProcessor != null)
+        if (resultSetProcessor != null)
         {
-            return optionalResultSetProcessor.getResultEventType();
+            return resultSetProcessor.getResultEventType();
         }
         else
         {

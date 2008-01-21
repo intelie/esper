@@ -314,7 +314,7 @@ public class TestOutputLimitEventPerRow extends TestCase
         sendEvent(SYMBOL_IBM, 10000, 20);
         assertTwoEvents(SYMBOL_DELL, 30000, 173,
         				SYMBOL_IBM, 10000, 20);
-  }
+    }
 
     private void assertTwoEvents(String symbol1, long volume1, double sum1,
     							 String symbol2, long volume2, double sum2)
@@ -327,12 +327,12 @@ public class TestOutputLimitEventPerRow extends TestCase
 
         if(matchesEvent(newData[0], symbol1, volume1, sum1))
         {
-        	assertTrue(matchesEvent(newData[1], symbol2, volume2, sum2));
+        	assertEvent(newData[1], symbol2, volume2, sum2);
         }
         else
         {
-        	assertTrue(matchesEvent(newData[0], symbol2, volume2, sum2));
-        	assertTrue(matchesEvent(newData[1], symbol1, volume1, sum1));
+        	assertEvent(newData[0], symbol2, volume2, sum2);
+        	assertEvent(newData[1], symbol1, volume1, sum1);
         }
 
         listener.reset();
@@ -365,24 +365,24 @@ public class TestOutputLimitEventPerRow extends TestCase
     	{
     		if(matchesEvent(newData[1], symbol1, volume1, sum1))
     		{
-    			assertTrue(matchesEvent(newData[2], symbol3, volume3, sum3));
+    			assertEvent(newData[2], symbol3, volume3, sum3);
     		}
     		else
     		{
-    			assertTrue(matchesEvent(newData[1], symbol3, volume3, sum3));
-    			assertTrue(matchesEvent(newData[2], symbol1, volume1, sum1));
+    			assertEvent(newData[1], symbol3, volume3, sum3);
+    			assertEvent(newData[2], symbol1, volume1, sum1);
     		}
     	}
     	else
     	{
     		if(matchesEvent(newData[1], symbol1, volume1, sum1))
     		{
-    			assertTrue(matchesEvent(newData[2], symbol2, volume2, sum2));
+    			assertEvent(newData[2], symbol2, volume2, sum2);
     		}
     		else
     		{
-    			assertTrue(matchesEvent(newData[1], symbol2, volume2, sum2));
-    			assertTrue(matchesEvent(newData[2], symbol1, volume1, sum1));
+    			assertEvent(newData[1], symbol2, volume2, sum2);
+    			assertEvent(newData[2], symbol1, volume1, sum1);
     		}
     	}
 
@@ -396,6 +396,13 @@ public class TestOutputLimitEventPerRow extends TestCase
         symbol.equals(event.get("symbol")) &&
         new Long(volume).equals(event.get("volume")) &&
         new Double(sum).equals(event.get("mySum"));
+    }
+
+    private void assertEvent(EventBean event, String symbol, long volume, double sum)
+    {
+        assertEquals(symbol, event.get("symbol"));
+        assertEquals(volume, event.get("volume"));
+        assertEquals(sum, event.get("mySum"));
     }
 
     private void sendEvent(String symbol, long volume, double price)

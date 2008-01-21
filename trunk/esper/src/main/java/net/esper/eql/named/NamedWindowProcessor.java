@@ -62,14 +62,14 @@ public class NamedWindowProcessor
      * @param filterEventType event type to trigger on
      * @param statementStopService to indicate a on-delete was stopped
      * @param internalEventRouter for insert-into handling
-     * @param optionalResultSetProcessor for select-clause processing
+     * @param resultSetProcessor for select-clause processing
      * @param statementHandle is the handle to the statement, used for routing/insert-into
      * @param joinExpr is the join expression or null if there is none
      * @return on trigger handling view
      */
-    public NamedWindowOnExprBaseView addOnExpr(OnTriggerDesc onTriggerDesc, ExprNode joinExpr, EventType filterEventType, StatementStopService statementStopService, InternalEventRouter internalEventRouter, ResultSetProcessor optionalResultSetProcessor, EPStatementHandle statementHandle)
+    public NamedWindowOnExprBaseView addOnExpr(OnTriggerDesc onTriggerDesc, ExprNode joinExpr, EventType filterEventType, StatementStopService statementStopService, InternalEventRouter internalEventRouter, ResultSetProcessor resultSetProcessor, EPStatementHandle statementHandle)
     {
-        return rootView.addOnExpr(onTriggerDesc, joinExpr, filterEventType, statementStopService, internalEventRouter, optionalResultSetProcessor, statementHandle);
+        return rootView.addOnExpr(onTriggerDesc, joinExpr, filterEventType, statementStopService, internalEventRouter, resultSetProcessor, statementHandle);
     }
 
     /**

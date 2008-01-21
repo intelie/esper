@@ -193,10 +193,10 @@ public class TestOrderByAggregation extends TestCase {
 	public void testLast()
 	{
 		String statementString = "select symbol, sum(price) from " +
-		SupportMarketDataBean.class.getName() + ".win:length(20) " +
-		"group by symbol " +
-		"output last every 6 events " +
-		"order by sum(price)";
+                                    SupportMarketDataBean.class.getName() + ".win:length(20) " +
+                                    "group by symbol " +
+                                    "output last every 6 events " +
+                                    "order by sum(price)";
 		createAndSendAggregate(statementString);
 		orderValuesBySumPriceGroup();
 		assertValues(prices, "sum(price)");

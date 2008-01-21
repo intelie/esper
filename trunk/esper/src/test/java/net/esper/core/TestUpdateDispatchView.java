@@ -13,6 +13,7 @@ public class TestUpdateDispatchView extends TestCase
     private SupportUpdateListener listenerOne;
     private SupportUpdateListener listenerTwo;
     private DispatchService dispatchService;
+    private StatementResultServiceImpl statementResultService;
 
     public void setUp()
     {
@@ -24,7 +25,11 @@ public class TestUpdateDispatchView extends TestCase
         listenerSet.addListener(listenerTwo);
 
         dispatchService = new DispatchServiceImpl();
-        updateDispatchView = new UpdateDispatchViewBlockingWait(null, null, listenerSet, dispatchService, 1000);
+
+        statementResultService = new StatementResultServiceImpl();
+        statementResultService.setUpdateListeners(listenerSet);
+
+        updateDispatchView = new UpdateDispatchViewBlockingWait(statementResultService, dispatchService, 1000);
     }
 
     public void testUpdateOnceAndDispatch()

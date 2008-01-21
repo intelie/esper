@@ -32,6 +32,8 @@ public class TestOutputLimitAggregateAll extends TestCase
         listener = new SupportUpdateListener();
     }
 
+    /*
+    TODO
     public void testAggAllHaving()
     {
         String stmtText = "select sum(volume) as result " +
@@ -80,6 +82,7 @@ public class TestOutputLimitAggregateAll extends TestCase
         ArrayAssertionUtil.assertPropsPerRow(listener.getLastNewData(), fields, new Object[][] {{20L}});
         listener.reset();
     }
+     */
 
     public void testMaxTimeWindow()
     {

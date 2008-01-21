@@ -8,6 +8,7 @@
 package net.esper.eql.view;
 
 import net.esper.collection.MultiKey;
+import net.esper.core.UpdateDispatchView;
 import net.esper.eql.core.ResultSetProcessor;
 import net.esper.eql.join.JoinExecutionStrategy;
 import net.esper.eql.join.JoinSetIndicator;
@@ -15,11 +16,11 @@ import net.esper.event.EventBean;
 import net.esper.event.EventType;
 import net.esper.view.View;
 import net.esper.view.Viewable;
-import net.esper.core.UpdateDispatchView;
-import net.esper.core.EPStatementListenerSetCallback;
-import net.esper.core.EPStatementListenerSet;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Base output processing view that has the responsibility to serve up event type and
@@ -68,14 +69,7 @@ public abstract class OutputProcessView implements View, JoinSetIndicator
             throw new IllegalStateException("Child view has already been supplied");
         }
         childView = (UpdateDispatchView) view;
-        childView.registerCallback(new EPStatementListenerSetCallback()
-        {
-            public void newListenerSet(EPStatementListenerSet epStatementListenerSet) {
-                isGenerateSynthetic = (epStatementListenerSet.getListeners().size() != 0) ||
-                        (epStatementListenerSet.getStmtAwareListeners().size() != 0) ||
-                        isInsertInto;
-            }
-        });
+        // TODO
         return this;
     }
 
@@ -103,19 +97,12 @@ public abstract class OutputProcessView implements View, JoinSetIndicator
 
     public EventType getEventType()
     {
-    	if(resultSetProcessor != null)
-    	{
-            EventType eventType = resultSetProcessor.getResultEventType();
-            if (eventType != null)
-            {
-                return eventType;
-            }
-            return parentView.getEventType();
-    	}
-    	else
-    	{
-    		return parentView.getEventType();
-    	}
+        EventType eventType = resultSetProcessor.getResultEventType();
+        if (eventType != null)
+        {
+            return eventType;
+        }
+        return parentView.getEventType();
     }
 
     /**

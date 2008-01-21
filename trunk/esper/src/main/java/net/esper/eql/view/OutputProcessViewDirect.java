@@ -53,10 +53,16 @@ public class OutputProcessViewDirect extends OutputProcessView
         EventBean[] newEventArr = newOldEvents != null ? newOldEvents.getFirst() : null;
         EventBean[] oldEventArr = newOldEvents != null ? newOldEvents.getSecond() : null;
 
+        boolean forceOutput = false;
+        if ((newData == null) && (oldData == null) && (newEventArr == null) && (oldEventArr == null))
+        {
+            forceOutput = true;
+        }
+
         // Child view can be null in replay from named window
         if (childView != null)
         {
-            outputStrategy.output(false, newEventArr, oldEventArr, childView);
+            outputStrategy.output(forceOutput, newEventArr, oldEventArr, childView);
         }
     }
 

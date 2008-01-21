@@ -113,6 +113,7 @@ public class StatementContextFactoryDefault implements StatementContextFactory
                 new JoinSetComposerFactoryImpl(),
                 engineServices.getOutputConditionFactory(),
                 engineServices.getNamedWindowService(),
-                engineServices.getVariableService());
+                engineServices.getVariableService(),
+                new StatementResultServiceImpl());
     }
 }

@@ -194,7 +194,7 @@ public class EPStatementStartMethod
 
             // Construct a processor for results; for use in on-select to process selection results
             // May return null if we don't need to post-process results posted by views or joins.
-            ResultSetProcessor optionalResultSetProcessor = ResultSetProcessorFactory.getProcessor(
+            ResultSetProcessor resultSetProcessor = ResultSetProcessorFactory.getProcessor(
                     statementSpec.getSelectClauseSpec(),
                     statementSpec.getInsertIntoDesc(),
                     statementSpec.getGroupByExpressions(),
@@ -206,7 +206,8 @@ public class EPStatementStartMethod
                     statementContext.getMethodResolutionService(),
                     null,
                     statementContext.getSchedulingService(),
-                    statementContext.getVariableService());
+                    statementContext.getVariableService(),
+                    statementContext.getStatementResultService());
 
             // validate join expression
             ExprNode validatedJoin = validateJoinNamedWindow(statementSpec.getFilterRootNode(),
@@ -214,7 +215,7 @@ public class EPStatementStartMethod
                     streamEventType, streamAlias);
 
             InternalEventRouter routerService = (statementSpec.getInsertIntoDesc() == null)?  null : services.getInternalEventRouter();
-            onExprView = processor.addOnExpr(onTriggerDesc, validatedJoin, streamEventType, statementContext.getStatementStopService(), routerService, optionalResultSetProcessor, statementContext.getEpStatementHandle());
+            onExprView = processor.addOnExpr(onTriggerDesc, validatedJoin, streamEventType, statementContext.getStatementStopService(), routerService, resultSetProcessor, statementContext.getEpStatementHandle());
             eventStreamParentViewable.addView(onExprView);
         }
         else
@@ -537,7 +538,7 @@ public class EPStatementStartMethod
 
         // Construct a processor for results posted by views and joins, which takes care of aggregation if required.
         // May return null if we don't need to post-process results posted by views or joins.
-        ResultSetProcessor optionalResultSetProcessor = ResultSetProcessorFactory.getProcessor(
+        ResultSetProcessor resultSetProcessor = ResultSetProcessorFactory.getProcessor(
                 statementSpec.getSelectClauseSpec(),
                 statementSpec.getInsertIntoDesc(),
                 statementSpec.getGroupByExpressions(),
@@ -549,7 +550,8 @@ public class EPStatementStartMethod
                 statementContext.getMethodResolutionService(),
                 viewResourceDelegate,
                 statementContext.getSchedulingService(),
-                statementContext.getVariableService()
+                statementContext.getVariableService(),
+                statementContext.getStatementResultService()
                 );
 
         // Validate where-clause filter tree and outer join clause
@@ -567,11 +569,11 @@ public class EPStatementStartMethod
         JoinPreloadMethod joinPreloadMethod = null;
         if (streamNames.length == 1)
         {
-            finalView = handleSimpleSelect(streamViews[0], optionalResultSetProcessor, statementContext);
+            finalView = handleSimpleSelect(streamViews[0], resultSetProcessor, statementContext);
         }
         else
         {
-            Pair<Viewable, JoinPreloadMethod> pair = handleJoin(streamNames, streamEventTypes, streamViews, optionalResultSetProcessor, statementSpec.getSelectStreamSelectorEnum(), statementContext, stopCallbacks);
+            Pair<Viewable, JoinPreloadMethod> pair = handleJoin(streamNames, streamEventTypes, streamViews, resultSetProcessor, statementSpec.getSelectStreamSelectorEnum(), statementContext, stopCallbacks);
             finalView = pair.getFirst();
             joinPreloadMethod = pair.getSecond();
         }
@@ -611,7 +613,7 @@ public class EPStatementStartMethod
             // last, for aggregation we need to send the current join results to the result set processor
             if ((hasNamedWindow) && (joinPreloadMethod != null))
             {
-                joinPreloadMethod.preloadAggregation(optionalResultSetProcessor);
+                joinPreloadMethod.preloadAggregation(resultSetProcessor);
             }
         }
 
@@ -623,7 +625,7 @@ public class EPStatementStartMethod
     private Pair<Viewable, JoinPreloadMethod> handleJoin(String[] streamNames,
                                 EventType[] streamTypes,
                                 Viewable[] streamViews,
-                                ResultSetProcessor optionalResultSetProcessor,
+                                ResultSetProcessor resultSetProcessor,
                                 SelectClauseStreamSelectorEnum selectStreamSelectorEnum,
                                 StatementContext statementContext,
                                 List<StopCallback> stopCallbacks)
@@ -640,8 +642,8 @@ public class EPStatementStartMethod
         });
         
         JoinSetFilter filter = new JoinSetFilter(statementSpec.getFilterRootNode());
-        OutputProcessView indicatorView = OutputProcessViewFactory.makeView(optionalResultSetProcessor, statementSpec,
-                statementContext, services.getDispatchService(), services.getInternalEventRouter());
+        OutputProcessView indicatorView = OutputProcessViewFactory.makeView(resultSetProcessor, statementSpec,
+                statementContext, services.getInternalEventRouter());
 
         // Create strategy for join execution
         JoinExecutionStrategy execution = new JoinExecutionStrategyImpl(composer, filter, indicatorView);
@@ -804,7 +806,7 @@ public class EPStatementStartMethod
 
 
     private Viewable handleSimpleSelect(Viewable view,
-                                        ResultSetProcessor optionalResultSetProcessor,
+                                        ResultSetProcessor resultSetProcessor,
                                         StatementContext statementContext)
             throws ExprValidationException
     {
@@ -818,17 +820,10 @@ public class EPStatementStartMethod
             finalView = filterView;
         }
 
-        // Add select expression view if there is any
-       if ((optionalResultSetProcessor != null) ||
-           (statementSpec.getOutputLimitSpec() != null) ||
-           (statementSpec.getInsertIntoDesc() != null) ||
-           (statementSpec.getSelectStreamSelectorEnum() != SelectClauseStreamSelectorEnum.RSTREAM_ISTREAM_BOTH))            
-        {
-            OutputProcessView selectView = OutputProcessViewFactory.makeView(optionalResultSetProcessor, statementSpec,
-                    statementContext, services.getDispatchService(), services.getInternalEventRouter());
-            finalView.addView(selectView);
-            finalView = selectView;
-        }
+        OutputProcessView selectView = OutputProcessViewFactory.makeView(resultSetProcessor, statementSpec,
+                statementContext, services.getInternalEventRouter());
+        finalView.addView(selectView);
+        finalView = selectView;
 
         return finalView;
     }

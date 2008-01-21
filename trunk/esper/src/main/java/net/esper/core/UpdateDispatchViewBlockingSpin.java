@@ -19,15 +19,12 @@ public class UpdateDispatchViewBlockingSpin extends UpdateDispatchViewBase
 
     /**
      * Ctor.
-     * @param epServiceProvider - engine instance to supply to statement-aware listeners
-     * @param statement - the statement instance to supply to statement-aware listeners
-     * @param updateListeners - listeners to update
      * @param dispatchService - for performing the dispatch
      * @param msecTimeout - timeout for preserving dispatch order through blocking
      */
-    public UpdateDispatchViewBlockingSpin(EPServiceProvider epServiceProvider, EPStatement statement, EPStatementListenerSet updateListeners, DispatchService dispatchService, long msecTimeout)
+    public UpdateDispatchViewBlockingSpin(StatementResultService statementResultService, DispatchService dispatchService, long msecTimeout)
     {
-        super(epServiceProvider, statement, updateListeners, dispatchService);
+        super(statementResultService, dispatchService);
         this.currentFutureSpin = new UpdateDispatchFutureSpin(); // use a completed future as a start
         this.msecTimeout = msecTimeout;
     }
@@ -38,15 +35,8 @@ public class UpdateDispatchViewBlockingSpin extends UpdateDispatchViewBase
         {
             ViewSupport.dumpUpdateParams(".update for view " + this, newData, oldData);
         }
-        if ((newData != null) && (newData.length != 0))
-        {
-            lastIterableEvent = newData[0];
-            lastNewEvents.get().add(newData);
-        }
-        if ((oldData != null) && (oldData.length != 0))
-        {
-            lastOldEvents.get().add(oldData);
-        }
+        statementResultServiceImpl.indicate(newData, oldData);
+
         if (!isDispatchWaiting.get())
         {
             UpdateDispatchFutureSpin nextFutureSpin;

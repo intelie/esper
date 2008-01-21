@@ -2,13 +2,11 @@ package net.esper.eql.view;
 
 import net.esper.collection.MultiKey;
 import net.esper.collection.Pair;
-import net.esper.collection.UniformPair;
 import net.esper.core.StatementContext;
 import net.esper.eql.core.ResultSetProcessor;
 import net.esper.eql.spec.OutputLimitLimitType;
 import net.esper.eql.spec.OutputLimitSpec;
 import net.esper.event.EventBean;
-import net.esper.event.EventBeanUtility;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -22,13 +20,14 @@ import java.util.*;
  */
 public class OutputProcessViewPolicy extends OutputProcessView
 {
-    private final boolean outputLastOnly;
     private final OutputCondition outputCondition;
     private final boolean outputSnapshot;
 
     // Posted events in ordered form (for applying to aggregates) and summarized per type
-    private ArrayList<UniformPair<EventBean[]>> newEventsList = new ArrayList<UniformPair<EventBean[]>>();
-	private ArrayList<UniformPair<Set<MultiKey<EventBean>>>> newEventsSet = new ArrayList<UniformPair<Set<MultiKey<EventBean>>>>();
+    private List<EventBean> newEventsList = new ArrayList<EventBean>();
+	private List<EventBean> oldEventsList = new ArrayList<EventBean>();
+	private Set<MultiKey<EventBean>> newEventsSet = new LinkedHashSet<MultiKey<EventBean>>();
+	private Set<MultiKey<EventBean>> oldEventsSet = new LinkedHashSet<MultiKey<EventBean>>();
 
 	private static final Log log = LogFactory.getLog(OutputProcessViewPolicy.class);
 
@@ -38,13 +37,13 @@ public class OutputProcessViewPolicy extends OutputProcessView
      * @param streamCount is the number of streams, indicates whether or not this view participates in a join
      * @param outputLimitSpec is the specification for limiting output (the output condition and the result set processor)
      * @param statementContext is the services the output condition may depend on
-     * @param outputStrategy is the execution of output to sub-views or natively
      */
-    public OutputProcessViewPolicy(ResultSetProcessor resultSetProcessor, OutputStrategy outputStrategy,
-                                   boolean isInsertInto,
-                                   int streamCount,
-                                   OutputLimitSpec outputLimitSpec,
-                                   StatementContext statementContext)
+    public OutputProcessViewPolicy(ResultSetProcessor resultSetProcessor,
+                          OutputStrategy outputStrategy,
+                          boolean isInsertInto,
+                          int streamCount,
+    					  OutputLimitSpec outputLimitSpec,
+    					  StatementContext statementContext)
     {
         super(resultSetProcessor, outputStrategy, isInsertInto);
         log.debug(".ctor");
@@ -56,7 +55,6 @@ public class OutputProcessViewPolicy extends OutputProcessView
 
     	OutputCallback outputCallback = getCallbackToLocal(streamCount);
     	this.outputCondition = statementContext.getOutputConditionFactory().createCondition(outputLimitSpec, statementContext, outputCallback);
-        this.outputLastOnly = (outputLimitSpec != null) && (outputLimitSpec.getDisplayLimit() == OutputLimitLimitType.LAST);
         this.outputSnapshot = (outputLimitSpec != null) && (outputLimitSpec.getDisplayLimit() == OutputLimitLimitType.SNAPSHOT);
     }
 
@@ -77,17 +75,23 @@ public class OutputProcessViewPolicy extends OutputProcessView
         // add the incoming events to the event batches
         int newDataLength = 0;
         int oldDataLength = 0;
-
         if(newData != null)
         {
         	newDataLength = newData.length;
+        	for(EventBean event : newData)
+        	{
+        		newEventsList.add(event);
+        	}
         }
         if(oldData != null)
         {
         	oldDataLength = oldData.length;
+        	for(EventBean event : oldData)
+        	{
+        		oldEventsList.add(event);
+        	}
         }
 
-        newEventsList.add(new UniformPair<EventBean[]>(newData, oldData));
         outputCondition.updateOutputCondition(newDataLength, oldDataLength);
     }
 
@@ -108,19 +112,24 @@ public class OutputProcessViewPolicy extends OutputProcessView
         int newEventsSize = 0;
         if (newEvents != null)
         {
+            // add the incoming events to the event batches
             newEventsSize = newEvents.size();
+            for(MultiKey<EventBean> event : newEvents)
+            {
+                newEventsSet.add(event);
+            }
         }
 
         int oldEventsSize = 0;
         if (oldEvents != null)
         {
             oldEventsSize = oldEvents.size();
+            for(MultiKey<EventBean> event : oldEvents)
+            {
+                oldEventsSet.add(event);
+            }
         }
 
-        Set<MultiKey<EventBean>> newEventsCopySet = new HashSet<MultiKey<EventBean>>(newEvents);
-        Set<MultiKey<EventBean>> oldEventsCopySet = new HashSet<MultiKey<EventBean>>(oldEvents);
-
-        newEventsSet.add(new UniformPair<Set<MultiKey<EventBean>>>(newEventsCopySet, oldEventsCopySet));
         outputCondition.updateOutputCondition(newEventsSize, oldEventsSize);
     }
 
@@ -136,65 +145,15 @@ public class OutputProcessViewPolicy extends OutputProcessView
 		log.debug(".continueOutputProcessingView");
 
 		// Get the arrays of new and old events, or null if none
-		EventBean[] newEvents = null;
-		EventBean[] oldEvents = null;
+		EventBean[] newEvents = !newEventsList.isEmpty() ? newEventsList.toArray(new EventBean[0]) : null;
+		EventBean[] oldEvents = !oldEventsList.isEmpty() ? oldEventsList.toArray(new EventBean[0]) : null;
 
-		if(resultSetProcessor != null)
-		{
-            LinkedList<EventBean[]> oldEventPost = null;
-            LinkedList<EventBean[]> newEventPost = null;
+        // Process the events and get the result
+        Pair<EventBean[], EventBean[]> newOldEvents = resultSetProcessor.processViewResult(newEvents, oldEvents, false);
+        newEvents = newOldEvents != null ? newOldEvents.getFirst() : null;
+        oldEvents = newOldEvents != null ? newOldEvents.getSecond() : null;
 
-            for (UniformPair<EventBean[]> batch : newEventsList)
-            {
-                Pair<EventBean[], EventBean[]> pair = resultSetProcessor.processViewResult(batch.getFirst(), batch.getSecond(), false);
-
-                if (pair == null)
-                {
-                    continue;
-                }
-                if (pair.getFirst() != null)
-                {
-                    if (newEventPost == null)
-                    {
-                        newEventPost = new LinkedList<EventBean[]>();
-                    }
-                    newEventPost.add(pair.getFirst());
-                }
-                if (pair.getSecond() != null)
-                {
-                    if (oldEventPost == null)
-                    {
-                        oldEventPost = new LinkedList<EventBean[]>();
-                    }
-                    oldEventPost.add(pair.getSecond());
-                }
-            }
-            // Process the events and get the result
-            if (newEventPost != null)
-            {
-                newEvents = EventBeanUtility.flatten(newEventPost);
-            }
-            if (oldEventPost != null)
-            {
-                oldEvents = EventBeanUtility.flatten(oldEventPost);
-            }
-        }
-		else if(outputLastOnly)
-		{
-            for (int i = newEventsList.size() - 1; i >= 0; i--)
-            {
-                UniformPair<EventBean[]> pair = newEventsList.get(i);
-                if ((newEvents == null) && (pair.getFirst() != null) && (pair.getFirst().length != 0))
-                {
-                    newEvents = new EventBean[] {pair.getFirst()[pair.getFirst().length - 1]};
-                }
-                if ((oldEvents == null) && (pair.getSecond() != null) && (pair.getSecond().length != 0))
-                {
-                    oldEvents = new EventBean[] {pair.getSecond()[pair.getSecond().length - 1]};
-                }
-            }
-		}
-        else if(outputSnapshot)
+        if (outputSnapshot)
         {
             Iterator<EventBean> it = this.iterator();
             if (it.hasNext())
@@ -213,49 +172,6 @@ public class OutputProcessViewPolicy extends OutputProcessView
                 oldEvents = null;
             }
         }
-        else
-        {
-            // flatten
-            if (newEventsList.size() == 1)
-            {
-                UniformPair<EventBean[]> pair = newEventsList.get(0);
-                newEvents = pair.getFirst();
-                oldEvents = pair.getSecond();
-            }
-            else if (newEventsList.size() > 1)
-            {
-                LinkedList<EventBean[]> oldEventPost = null;
-                LinkedList<EventBean[]> newEventPost = null;
-                for (UniformPair<EventBean[]> batch : newEventsList)
-                {
-                    if (batch.getFirst() != null)
-                    {
-                        if (newEventPost == null)
-                        {
-                            newEventPost = new LinkedList<EventBean[]>();
-                        }
-                        newEventPost.add(batch.getFirst());
-                    }
-                    if (batch.getSecond() != null)
-                    {
-                        if (oldEventPost == null)
-                        {
-                            oldEventPost = new LinkedList<EventBean[]>();
-                        }
-                        oldEventPost.add(batch.getSecond());
-                    }
-                }
-                // Process the events and get the result
-                if (newEventPost != null)
-                {
-                    newEvents = EventBeanUtility.flatten(newEventPost);
-                }
-                if (oldEventPost != null)
-                {
-                    oldEvents = EventBeanUtility.flatten(oldEventPost);
-                }
-            }
-        }
 
         if(doOutput)
 		{
@@ -271,12 +187,14 @@ public class OutputProcessViewPolicy extends OutputProcessView
         {
             outputStrategy.output(forceUpdate, newEvents, oldEvents, childView);
         }
-    }
+	}
 
 	private void resetEventBatches()
 	{
 		newEventsList.clear();
+		oldEventsList.clear();
 		newEventsSet.clear();
+		oldEventsSet.clear();
     }
 
 	/**
@@ -293,45 +211,14 @@ public class OutputProcessViewPolicy extends OutputProcessView
 		EventBean[] newEvents = null;
 		EventBean[] oldEvents = null;
 
-        LinkedList<EventBean[]> oldEventPost = null;
-        LinkedList<EventBean[]> newEventPost = null;
+		Pair<EventBean[], EventBean[]> newOldEvents = resultSetProcessor.processJoinResult(newEventsSet, oldEventsSet, false);
+		if (newOldEvents != null)
+		{
+			newEvents = newOldEvents.getFirst();
+			oldEvents = newOldEvents.getSecond();
+		}
 
-        for (UniformPair<Set<MultiKey<EventBean>>> batch : newEventsSet)
-        {
-            Pair<EventBean[], EventBean[]> pair = resultSetProcessor.processJoinResult(batch.getFirst(), batch.getSecond(), false);
-
-            if (pair == null)
-            {
-                continue;
-            }
-            if (pair.getFirst() != null)
-            {
-                if (newEventPost == null)
-                {
-                    newEventPost = new LinkedList<EventBean[]>();
-                }
-                newEventPost.add(pair.getFirst());
-            }
-            if (pair.getSecond() != null)
-            {
-                if (oldEventPost == null)
-                {
-                    oldEventPost = new LinkedList<EventBean[]>();
-                }
-                oldEventPost.add(pair.getSecond());
-            }
-        }
-        // Process the events and get the result
-        if (newEventPost != null)
-        {
-            newEvents = EventBeanUtility.flatten(newEventPost);
-        }
-        if (oldEventPost != null)
-        {
-            oldEvents = EventBeanUtility.flatten(oldEventPost);
-        }
-        
-        if(doOutput)
+		if(doOutput)
 		{
 			output(forceUpdate, newEvents, oldEvents);
 		}

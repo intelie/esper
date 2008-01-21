@@ -3,8 +3,6 @@ package net.esper.core;
 import net.esper.dispatch.DispatchService;
 import net.esper.event.EventBean;
 import net.esper.view.ViewSupport;
-import net.esper.client.EPStatement;
-import net.esper.client.EPServiceProvider;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -19,15 +17,12 @@ public class UpdateDispatchViewBlockingWait extends UpdateDispatchViewBase
 
     /**
      * Ctor.
-     * @param epServiceProvider - engine instance to supply to statement-aware listeners
-     * @param statement - the statement instance to supply to statement-aware listeners
-     * @param updateListeners - listeners to update
      * @param dispatchService - for performing the dispatch
      * @param msecTimeout - timeout for preserving dispatch order through blocking
      */
-    public UpdateDispatchViewBlockingWait(EPServiceProvider epServiceProvider, EPStatement statement, EPStatementListenerSet updateListeners, DispatchService dispatchService, long msecTimeout)
+    public UpdateDispatchViewBlockingWait(StatementResultService statementResultServiceImpl, DispatchService dispatchService, long msecTimeout)
     {
-        super(epServiceProvider, statement, updateListeners, dispatchService);
+        super(statementResultServiceImpl, dispatchService);
         this.currentFutureWait = new UpdateDispatchFutureWait(); // use a completed future as a start
         this.msecTimeout = msecTimeout;
     }
@@ -38,15 +33,9 @@ public class UpdateDispatchViewBlockingWait extends UpdateDispatchViewBase
         {
             ViewSupport.dumpUpdateParams(".update for view " + this, newData, oldData);
         }
-        if ((newData != null) && (newData.length != 0))
-        {
-            lastIterableEvent = newData[0];
-            lastNewEvents.get().add(newData);
-        }
-        if ((oldData != null) && (oldData.length != 0))
-        {
-            lastOldEvents.get().add(oldData);
-        }
+
+        statementResultServiceImpl.indicate(newData, oldData);
+
         if (!isDispatchWaiting.get())
         {            
             UpdateDispatchFutureWait nextFutureWait;

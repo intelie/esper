@@ -24,7 +24,6 @@ public class OutputProcessViewFactory
     public static OutputProcessView makeView(ResultSetProcessor resultSetProcessor,
                           StatementSpecCompiled statementSpec,
                           StatementContext statementContext,
-                          DispatchService dispatchService,
                           InternalEventRouter internalEventRouter)
             throws ExprValidationException
     {
@@ -59,10 +58,6 @@ public class OutputProcessViewFactory
             if (outputLimitSpec != null)
             {
                 return new OutputProcessViewPolicy(resultSetProcessor, outputStrategy, isRouted, streamCount, outputLimitSpec, statementContext);
-            }
-            if (resultSetProcessor == null)
-            {
-                return new OutputProcessViewHandThrough(outputStrategy, isRouted);
             }
             return new OutputProcessViewDirect(resultSetProcessor, outputStrategy, isRouted);
         }

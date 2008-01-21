@@ -194,14 +194,7 @@ public class ResultSetProcessorAggregateAll implements ResultSetProcessor
                 continue;
             }
 
-            if (selectExprProcessor == null)
-            {
-                outgoingEvents.add(candidate);
-            }
-            else
-            {
-                outgoingEvents.add(selectExprProcessor.process(eventsPerStream, true, true));
-            }
+            outgoingEvents.add(selectExprProcessor.process(eventsPerStream, true, true));
 
             MultiKeyUntyped orderKey = orderByProcessor.getSortKey(eventsPerStream, true);
             orderKeys.add(orderKey);

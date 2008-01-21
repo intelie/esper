@@ -1,21 +1,15 @@
 package net.esper.core;
 
-import net.esper.client.StatementAwareUpdateListener;
-import net.esper.client.UpdateListener;
-import net.esper.client.EPStatement;
-import net.esper.client.EPServiceProvider;
 import net.esper.collection.SingleEventIterator;
 import net.esper.dispatch.DispatchService;
 import net.esper.dispatch.Dispatchable;
 import net.esper.event.EventBean;
-import net.esper.event.EventBeanUtility;
 import net.esper.event.EventType;
 import net.esper.view.ViewSupport;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.util.Iterator;
-import java.util.LinkedList;
 
 /**
  * Convenience view for dispatching view updates received from a parent view to update listeners
@@ -23,9 +17,7 @@ import java.util.LinkedList;
  */
 public abstract class UpdateDispatchViewBase extends ViewSupport implements Dispatchable, UpdateDispatchView
 {
-    private final EPServiceProvider epServiceProvider;
-    private final EPStatement statement;
-    private EPStatementListenerSet statementListenerSet;
+    protected final StatementResultService statementResultServiceImpl;
 
     /**
      * Dispatches events to listeners.
@@ -47,48 +39,13 @@ public abstract class UpdateDispatchViewBase extends ViewSupport implements Disp
     };
 
     /**
-     * Buffer for holding dispatchable events.
-     */
-    protected ThreadLocal<LinkedList<EventBean[]>> lastNewEvents = new ThreadLocal<LinkedList<EventBean[]>>() {
-        protected synchronized LinkedList<EventBean[]> initialValue() {
-            return new LinkedList<EventBean[]>();
-        }
-    };
-    /**
-     * Buffer for holding dispatchable events.
-     */
-    protected ThreadLocal<LinkedList<EventBean[]>> lastOldEvents = new ThreadLocal<LinkedList<EventBean[]>>() {
-        protected synchronized LinkedList<EventBean[]> initialValue() {
-            return new LinkedList<EventBean[]>();
-        }
-    };
-
-    /**
      * Ctor.
-     * @param epServiceProvider - the engine instance to provided to statement-aware listener
-     * @param updateListeners - listeners to update
      * @param dispatchService - for performing the dispatch
-     * @param statement is the statement to supply to statement-aware listener
      */
-    public UpdateDispatchViewBase(EPServiceProvider epServiceProvider, EPStatement statement, EPStatementListenerSet updateListeners, DispatchService dispatchService)
+    public UpdateDispatchViewBase(StatementResultService statementResultServiceImpl, DispatchService dispatchService)
     {
-        this.epServiceProvider = epServiceProvider;
-        this.statement = statement;
-        this.statementListenerSet = updateListeners;
         this.dispatchService = dispatchService;
-    }
-
-    public void registerCallback(EPStatementListenerSetCallback callback) {
-        statementListenerSet.setEpStatementListenerSetCallback(callback);
-    }
-
-    /**
-     * Set new update listeners.
-     * @param updateListeners to set
-     */
-    public void setUpdateListeners(EPStatementListenerSet updateListeners)
-    {
-        this.statementListenerSet = updateListeners;
+        this.statementResultServiceImpl = statementResultServiceImpl;
     }
 
     public EventType getEventType()
@@ -98,47 +55,13 @@ public abstract class UpdateDispatchViewBase extends ViewSupport implements Disp
 
     public Iterator<EventBean> iterator()
     {
-        // Iterates over the last new event. For Pattern statements
-        // to allow polling the last event that fired.
-        return new SingleEventIterator(lastIterableEvent);
-    }
-
-    /**
-     * Dispatches when the statement is stopped any remaining results.
-     */
-    public void dispatchOnStop()
-    {
-        if ((lastNewEvents.get().size() > 0) || (lastOldEvents.get().size() > 0))
-        {
-            execute();
-        }
+        throw new UnsupportedOperationException();
     }
 
     public void execute()
     {
         isDispatchWaiting.set(false);
-        EventBean[] newEvents = EventBeanUtility.flatten(lastNewEvents.get());
-        EventBean[] oldEvents = EventBeanUtility.flatten(lastOldEvents.get());
-
-        if (log.isDebugEnabled())
-        {
-            ViewSupport.dumpUpdateParams(".execute", newEvents, oldEvents);
-        }
-
-        for (UpdateListener listener : statementListenerSet.listeners)
-        {
-            listener.update(newEvents, oldEvents);
-        }
-        if (!(statementListenerSet.stmtAwareListeners.isEmpty()))
-        {
-            for (StatementAwareUpdateListener listener : statementListenerSet.getStmtAwareListeners())
-            {
-                listener.update(newEvents, oldEvents, statement, epServiceProvider);
-            }
-        }
-
-        lastNewEvents.get().clear();
-        lastOldEvents.get().clear();
+        statementResultServiceImpl.execute();
     }
 
     /**

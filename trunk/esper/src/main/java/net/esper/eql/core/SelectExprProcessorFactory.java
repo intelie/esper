@@ -7,6 +7,7 @@
  **************************************************************************************/
 package net.esper.eql.core;
 
+import net.esper.core.StatementResultService;
 import net.esper.eql.expression.ExprValidationException;
 import net.esper.eql.spec.*;
 import net.esper.event.EventAdapterService;
@@ -39,11 +40,12 @@ public class SelectExprProcessorFactory
                                                    boolean isUsingWildcard,
                                                    InsertIntoDesc insertIntoDesc,
                                                    StreamTypeService typeService, 
-                                                   EventAdapterService eventAdapterService)
+                                                   EventAdapterService eventAdapterService,
+                                                   StatementResultService statementResultService)
         throws ExprValidationException
     {
         SelectExprProcessor synthetic = getProcessorInternal(selectionList, isUsingWildcard, insertIntoDesc, typeService, eventAdapterService);
-        return synthetic;        
+        return new SelectExprResultProcessor(statementResultService, synthetic);        
     }
 
     private static SelectExprProcessor getProcessorInternal(
@@ -73,8 +75,8 @@ public class SelectExprProcessorFactory
             // don't need extra processing
             else if (insertIntoDesc == null)
             {
-            	log.debug(".getProcessor Using no select expr processor");
-                return null;
+            	log.debug(".getProcessor Using wildcard processor");
+                return new SelectExprWildcardProcessor(typeService.getEventTypes()[0]);
             }
         }
 
