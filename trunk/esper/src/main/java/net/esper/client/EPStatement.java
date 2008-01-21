@@ -81,5 +81,7 @@ public interface EPStatement extends EPListenable, EPIterable
      * @return time in milliseconds of last statement state change
      */
     public long getTimeLastStateChange();
+
+    public void setSubscriber(Object subscriber);
 }
 

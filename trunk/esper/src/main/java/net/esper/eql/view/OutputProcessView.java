@@ -36,7 +36,6 @@ public abstract class OutputProcessView implements View, JoinSetIndicator
     protected final ResultSetProcessor resultSetProcessor;
     private JoinExecutionStrategy joinExecutionStrategy;
     protected final OutputStrategy outputStrategy;
-    private final boolean isInsertInto;
     protected UpdateDispatchView childView;
     protected Viewable parentView;
     protected boolean isGenerateSynthetic;
@@ -49,9 +48,8 @@ public abstract class OutputProcessView implements View, JoinSetIndicator
     {
         this.resultSetProcessor = resultSetProcessor;
         this.outputStrategy = outputStrategy;
-        this.isInsertInto = isInsertInto;
 
-        // by default, generate synthetic events only if we insert-into or if there are listeners to a statement
+        // by default, generate synthetic events only if we insert-into
         this.isGenerateSynthetic = isInsertInto;
     }
 

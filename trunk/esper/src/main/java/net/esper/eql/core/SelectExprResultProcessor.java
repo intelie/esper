@@ -9,13 +9,16 @@ public class SelectExprResultProcessor implements SelectExprProcessor
 {
     private final StatementResultService statementResultService;
     private final SelectExprProcessor syntheticProcessor;
+    private final BindProcessor bindProcessor;
 
     public SelectExprResultProcessor(StatementResultService statementResultService,
-                                     SelectExprProcessor syntheticProcessor)
+                                     SelectExprProcessor syntheticProcessor,
+                                     BindProcessor bindProcessor)
             throws ExprValidationException
     {
         this.statementResultService = statementResultService;
         this.syntheticProcessor = syntheticProcessor;
+        this.bindProcessor = bindProcessor;
     }
 
     public EventType getResultEventType()
@@ -45,7 +48,12 @@ public class SelectExprResultProcessor implements SelectExprProcessor
             syntheticEventType = syntheticProcessor.getResultEventType();
         }
 
-        Object[] parameters = statementResultService.getNatural(eventsPerStream, isNewData);
+        if (!statementResultService.isMakeNatural())
+        {
+            return null; // neither synthetic nor natural required, be cheap and generate no output event
+        }
+
+        Object[] parameters = bindProcessor.process(eventsPerStream, isNewData);
         return new NaturalEventBean(syntheticEventType, parameters, syntheticEvent);
     }
 }

@@ -90,7 +90,7 @@ public class EPStatementImpl implements EPStatementSPI
         this.epStatementHandle = epStatementHandle;
         this.variableService = variableService;
         this.statementResultService = statementResultService;
-        statementResultService.setUpdateListeners(statementListenerSet);
+        statementResultService.setUpdateListeners(statementListenerSet, isPattern);
     }
 
     public String getStatementId()
@@ -231,7 +231,7 @@ public class EPStatementImpl implements EPStatementSPI
     public void setListeners(EPStatementListenerSet listenerSet)
     {
         statementListenerSet.setListeners(listenerSet);
-        statementResultService.setUpdateListeners(listenerSet);
+        statementResultService.setUpdateListeners(listenerSet, isPattern);
     }
 
     /**
@@ -246,7 +246,7 @@ public class EPStatementImpl implements EPStatementSPI
         }
 
         statementListenerSet.addListener(listener);
-        statementResultService.setUpdateListeners(statementListenerSet);
+        statementResultService.setUpdateListeners(statementListenerSet, isPattern);
         statementLifecycleSvc.updatedListeners(statementId, statementName, statementListenerSet);
     }
 
@@ -262,7 +262,7 @@ public class EPStatementImpl implements EPStatementSPI
         }
 
         statementListenerSet.removeListener(listener);
-        statementResultService.setUpdateListeners(statementListenerSet);
+        statementResultService.setUpdateListeners(statementListenerSet, isPattern);
         statementLifecycleSvc.updatedListeners(statementId, statementName, statementListenerSet);
     }
 
@@ -272,7 +272,7 @@ public class EPStatementImpl implements EPStatementSPI
     public void removeAllListeners()
     {
         statementListenerSet.removeAllListeners();
-        statementResultService.setUpdateListeners(statementListenerSet);
+        statementResultService.setUpdateListeners(statementListenerSet, isPattern);
         statementLifecycleSvc.updatedListeners(statementId, statementName, statementListenerSet);
     }
 
@@ -284,7 +284,7 @@ public class EPStatementImpl implements EPStatementSPI
         }
 
         statementListenerSet.addListener(listener);
-        statementResultService.setUpdateListeners(statementListenerSet);
+        statementResultService.setUpdateListeners(statementListenerSet, isPattern);
         statementLifecycleSvc.updatedListeners(statementId, statementName, statementListenerSet);
     }
 
@@ -296,7 +296,7 @@ public class EPStatementImpl implements EPStatementSPI
         }
 
         statementListenerSet.removeListener(listener);
-        statementResultService.setUpdateListeners(statementListenerSet);
+        statementResultService.setUpdateListeners(statementListenerSet, isPattern);
         statementLifecycleSvc.updatedListeners(statementId, statementName, statementListenerSet);
     }
 
@@ -328,5 +328,11 @@ public class EPStatementImpl implements EPStatementSPI
     public boolean isDestroyed()
     {
         return currentState == EPStatementState.DESTROYED;
+    }
+
+    public void setSubscriber(Object subscriber)
+    {
+        statementListenerSet.setSubscriber(subscriber);
+        statementResultService.setUpdateListeners(statementListenerSet, isPattern);
     }
 }

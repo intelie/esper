@@ -149,7 +149,7 @@ public class OutputProcessViewPolicy extends OutputProcessView
 		EventBean[] oldEvents = !oldEventsList.isEmpty() ? oldEventsList.toArray(new EventBean[0]) : null;
 
         // Process the events and get the result
-        Pair<EventBean[], EventBean[]> newOldEvents = resultSetProcessor.processViewResult(newEvents, oldEvents, false);
+        Pair<EventBean[], EventBean[]> newOldEvents = resultSetProcessor.processViewResult(newEvents, oldEvents, isGenerateSynthetic);
         newEvents = newOldEvents != null ? newOldEvents.getFirst() : null;
         oldEvents = newOldEvents != null ? newOldEvents.getSecond() : null;
 
@@ -211,7 +211,7 @@ public class OutputProcessViewPolicy extends OutputProcessView
 		EventBean[] newEvents = null;
 		EventBean[] oldEvents = null;
 
-		Pair<EventBean[], EventBean[]> newOldEvents = resultSetProcessor.processJoinResult(newEventsSet, oldEventsSet, false);
+		Pair<EventBean[], EventBean[]> newOldEvents = resultSetProcessor.processJoinResult(newEventsSet, oldEventsSet, isGenerateSynthetic);
 		if (newOldEvents != null)
 		{
 			newEvents = newOldEvents.getFirst();

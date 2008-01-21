@@ -3,7 +3,6 @@ package net.esper.support.view;
 import net.esper.event.EventBean;
 import net.esper.view.Viewable;
 import net.esper.core.UpdateDispatchView;
-import net.esper.core.EPStatementListenerSetCallback;
 
 public class SupportSchemaNeutralView extends SupportBaseView implements UpdateDispatchView
 {
@@ -34,9 +33,5 @@ public class SupportSchemaNeutralView extends SupportBaseView implements UpdateD
         {
             setEventType(null);
         }
-    }
-
-    public void registerCallback(EPStatementListenerSetCallback callback)
-    {               
     }
 }

@@ -76,14 +76,7 @@ public class ResultSetAggregateAllIterator implements Iterator<EventBean>
                 continue;
             }
 
-            if (resultSetProcessor.getSelectExprProcessor() == null)
-            {
-                nextResult = candidate;
-            }
-            else
-            {
-                nextResult = resultSetProcessor.getSelectExprProcessor().process(eventsPerStream, true, true);
-            }
+            nextResult = resultSetProcessor.getSelectExprProcessor().process(eventsPerStream, true, true);
 
             break;
         }

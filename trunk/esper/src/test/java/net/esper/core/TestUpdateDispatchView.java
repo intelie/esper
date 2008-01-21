@@ -27,7 +27,7 @@ public class TestUpdateDispatchView extends TestCase
         dispatchService = new DispatchServiceImpl();
 
         statementResultService = new StatementResultServiceImpl();
-        statementResultService.setUpdateListeners(listenerSet);
+        statementResultService.setUpdateListeners(listenerSet, false);
 
         updateDispatchView = new UpdateDispatchViewBlockingWait(statementResultService, dispatchService, 1000);
     }

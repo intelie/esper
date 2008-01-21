@@ -20,21 +20,8 @@ public class StatementResultServiceImpl implements StatementResultService
     private EPStatementListenerSet statementListenerSet;
     private EventBean lastIterableEvent;
 
-    public void setContext(EPStatement epStatement, EPServiceProvider epServiceProvider)
-    {
-        this.epStatement = epStatement;
-        this.epServiceProvider = epServiceProvider;
-    }
-
-    public boolean isMakeNatural()
-    {
-        return false;
-    }
-
-    public EventBean getLastIterableEvent()
-    {
-        return lastIterableEvent;
-    }
+    private boolean isMakeNatural;
+    private boolean isMakeSynthetic;
 
     /**
      * Buffer for holding dispatchable events.
@@ -53,26 +40,33 @@ public class StatementResultServiceImpl implements StatementResultService
         }
     };
 
-    public void setUpdateListeners(EPStatementListenerSet statementListenerSet)
+    public void setContext(EPStatement epStatement, EPServiceProvider epServiceProvider)
     {
-        this.statementListenerSet = statementListenerSet;
+        this.epStatement = epStatement;
+        this.epServiceProvider = epServiceProvider;
     }
 
-    // Called by SelectExprProcessor
     public boolean isMakeSynthetic()
     {
-        return true;
+        return isMakeSynthetic;
     }
 
-    public Object[] getNatural(EventBean[] eventsPerStream, boolean isNewData)
+    public boolean isMakeNatural()
     {
-        return new Object[0];  //To change body of implemented methods use File | Settings | File Templates.
+        return isMakeNatural;
     }
 
-    // Called by EPStatement
-    public void updatedListeners(EPStatementListenerSet listenerSet)
+    public EventBean getLastIterableEvent()
     {
-        //To change body of implemented methods use File | Settings | File Templates.
+        return lastIterableEvent;
+    }
+
+    public void setUpdateListeners(EPStatementListenerSet statementListenerSet, boolean isPatternStmt)
+    {
+        this.statementListenerSet = statementListenerSet;
+
+        isMakeNatural = statementListenerSet.getSubscriber() != null;
+        isMakeSynthetic = !(statementListenerSet.getListeners().isEmpty() && statementListenerSet.getStmtAwareListeners().isEmpty()) || isPatternStmt;
     }
 
     // Called by OutputProcessView

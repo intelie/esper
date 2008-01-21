@@ -93,14 +93,7 @@ public class ResultSetRowPerGroupIterator implements Iterator<EventBean>
             }
             priorSeenGroups.add(groupKey);
 
-            if (resultSetProcessor.getSelectExprProcessor() == null)
-            {
-                nextResult = candidate;
-            }
-            else
-            {
-                nextResult = resultSetProcessor.getSelectExprProcessor().process(eventsPerStream, true, true);
-            }
+            nextResult = resultSetProcessor.getSelectExprProcessor().process(eventsPerStream, true, true);
 
             break;
         }

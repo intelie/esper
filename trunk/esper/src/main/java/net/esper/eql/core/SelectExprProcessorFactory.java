@@ -45,7 +45,8 @@ public class SelectExprProcessorFactory
         throws ExprValidationException
     {
         SelectExprProcessor synthetic = getProcessorInternal(selectionList, isUsingWildcard, insertIntoDesc, typeService, eventAdapterService);
-        return new SelectExprResultProcessor(statementResultService, synthetic);        
+        BindProcessor bindProcessor = new BindProcessor(selectionList, typeService.getEventTypes());
+        return new SelectExprResultProcessor(statementResultService, synthetic, bindProcessor);        
     }
 
     private static SelectExprProcessor getProcessorInternal(
