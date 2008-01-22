@@ -50,11 +50,9 @@ public class OutputProcessViewDirect extends OutputProcessView
 
         Pair<EventBean[], EventBean[]> newOldEvents = resultSetProcessor.processViewResult(newData, oldData, isGenerateSynthetic);
 
-        EventBean[] newEventArr = newOldEvents != null ? newOldEvents.getFirst() : null;
-        EventBean[] oldEventArr = newOldEvents != null ? newOldEvents.getSecond() : null;
-
         boolean forceOutput = false;
-        if ((newData == null) && (oldData == null) && (newEventArr == null) && (oldEventArr == null))
+        if ((newData == null) && (oldData == null) &&
+                ((newOldEvents == null) || (newOldEvents.getFirst() == null && newOldEvents.getSecond() == null)))
         {
             forceOutput = true;
         }
@@ -62,7 +60,7 @@ public class OutputProcessViewDirect extends OutputProcessView
         // Child view can be null in replay from named window
         if (childView != null)
         {
-            outputStrategy.output(forceOutput, newEventArr, oldEventArr, childView);
+            outputStrategy.output(forceOutput, newOldEvents, childView);
         }
     }
 
@@ -91,13 +89,11 @@ public class OutputProcessViewDirect extends OutputProcessView
         {
             return;
         }
-        EventBean[] newEventArr = newOldEvents.getFirst();
-        EventBean[] oldEventArr = newOldEvents.getSecond();
 
         // Child view can be null in replay from named window
         if (childView != null)
         {
-            outputStrategy.output(false, newEventArr, oldEventArr, childView);
+            outputStrategy.output(false, newOldEvents, childView);
         }
     }
 }

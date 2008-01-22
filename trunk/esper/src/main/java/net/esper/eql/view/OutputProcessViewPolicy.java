@@ -150,8 +150,6 @@ public class OutputProcessViewPolicy extends OutputProcessView
 
         // Process the events and get the result
         Pair<EventBean[], EventBean[]> newOldEvents = resultSetProcessor.processViewResult(newEvents, oldEvents, isGenerateSynthetic);
-        newEvents = newOldEvents != null ? newOldEvents.getFirst() : null;
-        oldEvents = newOldEvents != null ? newOldEvents.getSecond() : null;
 
         if (outputSnapshot)
         {
@@ -171,21 +169,22 @@ public class OutputProcessViewPolicy extends OutputProcessView
                 newEvents = null;
                 oldEvents = null;
             }
+            newOldEvents = new Pair<EventBean[], EventBean[]>(newEvents, oldEvents); 
         }
 
         if(doOutput)
 		{
-			output(forceUpdate, newEvents, oldEvents);
+			output(forceUpdate, newOldEvents);
 		}
 		resetEventBatches();
 	}
 
-	private void output(boolean forceUpdate, EventBean[] newEvents, EventBean[] oldEvents)
+	private void output(boolean forceUpdate, Pair<EventBean[], EventBean[]> results)
 	{
         // Child view can be null in replay from named window
         if (childView != null)
         {
-            outputStrategy.output(forceUpdate, newEvents, oldEvents, childView);
+            outputStrategy.output(forceUpdate, results, childView);
         }
 	}
 
@@ -208,19 +207,11 @@ public class OutputProcessViewPolicy extends OutputProcessView
 	{
 		log.debug(".continueOutputProcessingJoin");
 
-		EventBean[] newEvents = null;
-		EventBean[] oldEvents = null;
-
 		Pair<EventBean[], EventBean[]> newOldEvents = resultSetProcessor.processJoinResult(newEventsSet, oldEventsSet, isGenerateSynthetic);
-		if (newOldEvents != null)
-		{
-			newEvents = newOldEvents.getFirst();
-			oldEvents = newOldEvents.getSecond();
-		}
 
 		if(doOutput)
 		{
-			output(forceUpdate, newEvents, oldEvents);
+			output(forceUpdate, newOldEvents);
 		}
 		resetEventBatches();
 	}

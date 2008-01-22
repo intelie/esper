@@ -9,6 +9,8 @@ import net.esper.view.ViewEnumHelper;
 import net.esper.pattern.PatternObjectResolutionServiceImpl;
 import net.esper.eql.view.OutputConditionFactory;
 import net.esper.eql.view.OutputConditionFactoryDefault;
+import net.esper.eql.core.MethodResolutionServiceImpl;
+import net.esper.eql.core.EngineImportServiceImpl;
 
 public class SupportStatementContextFactory
 {
@@ -33,7 +35,7 @@ public class SupportStatementContextFactory
                 new PatternObjectResolutionServiceImpl(null),
                 null,
                 null,
-                null,
+                new MethodResolutionServiceImpl(new EngineImportServiceImpl()),
                 null,
                 null,
                 null,

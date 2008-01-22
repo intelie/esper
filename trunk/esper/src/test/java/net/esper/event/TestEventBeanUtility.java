@@ -4,12 +4,42 @@ import java.util.*;
 
 import junit.framework.TestCase;
 import net.esper.collection.MultiKeyUntyped;
+import net.esper.collection.Pair;
 import net.esper.support.bean.SupportBean;
 import net.esper.support.event.SupportEventBeanFactory;
 import net.esper.support.event.SupportEventTypeFactory;
+import net.esper.support.util.ArrayAssertionUtil;
 
 public class TestEventBeanUtility extends TestCase
 {
+    public void testFlattenList()
+    {
+        // test many arrays
+        EventBean[] testEvents = makeEventArray(new String[] {"a1", "a2", "b1", "b2", "b3", "c1", "c2"});
+        LinkedList<Pair<EventBean[], EventBean[]>> eventVector = new LinkedList<Pair<EventBean[], EventBean[]>>();
+
+        eventVector.add(new Pair<EventBean[], EventBean[]>(null, new EventBean[] {testEvents[0], testEvents[1]}));
+        eventVector.add(new Pair<EventBean[], EventBean[]>(new EventBean[] {testEvents[2]}, null));
+        eventVector.add(new Pair<EventBean[], EventBean[]>(null, new EventBean[] {testEvents[3], testEvents[4], testEvents[5]}));
+        eventVector.add(new Pair<EventBean[], EventBean[]>(new EventBean[] {testEvents[6]}, null));
+
+        Pair<EventBean[], EventBean[]> events = EventBeanUtility.flattenList(eventVector);
+        ArrayAssertionUtil.assertEqualsExactOrder(events.getFirst(), new EventBean[] {testEvents[2], testEvents[6]});
+        ArrayAssertionUtil.assertEqualsExactOrder(events.getSecond(), new EventBean[] {testEvents[0], testEvents[1], testEvents[3], testEvents[4], testEvents[5]});
+
+        // test just one array
+        eventVector.clear();
+        eventVector.add(new Pair<EventBean[], EventBean[]>(new EventBean[] {testEvents[2]}, null));
+        events = EventBeanUtility.flattenList(eventVector);
+        ArrayAssertionUtil.assertEqualsExactOrder(events.getFirst(), new EventBean[] {testEvents[2]});
+        ArrayAssertionUtil.assertEqualsExactOrder(events.getSecond(), null);
+
+        // test empty vector
+        eventVector.clear();
+        events = EventBeanUtility.flattenList(eventVector);
+        assertNull(events);
+    }
+
     public void testFlatten()
     {
         // test many arrays

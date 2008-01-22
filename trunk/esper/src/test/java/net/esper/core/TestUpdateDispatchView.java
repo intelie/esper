@@ -6,6 +6,7 @@ import net.esper.dispatch.DispatchServiceImpl;
 import net.esper.event.EventBean;
 import net.esper.support.event.SupportEventBeanFactory;
 import net.esper.support.util.SupportUpdateListener;
+import net.esper.collection.Pair;
 
 public class TestUpdateDispatchView extends TestCase
 {
@@ -36,7 +37,7 @@ public class TestUpdateDispatchView extends TestCase
     {
         EventBean[] oldData = makeEvents("old");
         EventBean[] newData = makeEvents("new");
-        updateDispatchView.update(newData, oldData);
+        updateDispatchView.newResult(new Pair<EventBean[], EventBean[]>(newData, oldData));
 
         assertFalse(listenerOne.isInvoked() || listenerTwo.isInvoked());
         dispatchService.dispatch();
@@ -49,11 +50,11 @@ public class TestUpdateDispatchView extends TestCase
     {
         EventBean[] oldDataOne = makeEvents("old1");
         EventBean[] newDataOne = makeEvents("new1");
-        updateDispatchView.update(newDataOne, oldDataOne);
+        updateDispatchView.newResult(new Pair<EventBean[], EventBean[]>(newDataOne, oldDataOne));
 
         EventBean[] oldDataTwo = makeEvents("old2");
         EventBean[] newDataTwo = makeEvents("new2");
-        updateDispatchView.update(newDataTwo, oldDataTwo);
+        updateDispatchView.newResult(new Pair<EventBean[], EventBean[]>(newDataTwo, oldDataTwo));
 
         assertFalse(listenerOne.isInvoked() || listenerTwo.isInvoked());
         dispatchService.dispatch();

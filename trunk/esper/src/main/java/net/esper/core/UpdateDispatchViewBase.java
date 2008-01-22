@@ -1,6 +1,7 @@
 package net.esper.core;
 
 import net.esper.collection.SingleEventIterator;
+import net.esper.collection.Pair;
 import net.esper.dispatch.DispatchService;
 import net.esper.dispatch.Dispatchable;
 import net.esper.event.EventBean;
@@ -70,6 +71,11 @@ public abstract class UpdateDispatchViewBase extends ViewSupport implements Disp
     public void clear()
     {
         lastIterableEvent = null;
+    }
+
+    public void update(EventBean[] newData, EventBean[] oldData)
+    {
+        throw new UnsupportedOperationException("Update not supported");
     }
 
     private static Log log = LogFactory.getLog(UpdateDispatchViewBase.class);

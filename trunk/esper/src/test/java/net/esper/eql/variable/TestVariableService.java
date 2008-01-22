@@ -17,7 +17,7 @@ public class TestVariableService extends TestCase
     public void testPerfSetVersion()
     {
         long start = System.currentTimeMillis();
-        for (int i = 0; i < 1000000; i++)
+        for (int i = 0; i < 100000; i++)
         {
             service.setLocalVersion();
         }

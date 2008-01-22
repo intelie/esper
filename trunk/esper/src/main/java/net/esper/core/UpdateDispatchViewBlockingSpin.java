@@ -1,7 +1,6 @@
 package net.esper.core;
 
-import net.esper.client.EPServiceProvider;
-import net.esper.client.EPStatement;
+import net.esper.collection.Pair;
 import net.esper.dispatch.DispatchService;
 import net.esper.event.EventBean;
 import net.esper.view.ViewSupport;
@@ -29,13 +28,13 @@ public class UpdateDispatchViewBlockingSpin extends UpdateDispatchViewBase
         this.msecTimeout = msecTimeout;
     }
 
-    public void update(EventBean[] newData, EventBean[] oldData)
+    public void newResult(Pair<EventBean[], EventBean[]> result)
     {
         if (log.isDebugEnabled())
         {
-            ViewSupport.dumpUpdateParams(".update for view " + this, newData, oldData);
+            ViewSupport.dumpUpdateParams(".update for view " + this, result);
         }
-        statementResultServiceImpl.indicate(newData, oldData);
+        statementResultServiceImpl.indicate(result);
 
         if (!isDispatchWaiting.get())
         {

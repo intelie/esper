@@ -3,6 +3,7 @@ package net.esper.core;
 import net.esper.event.EventBean;
 import net.esper.client.EPStatement;
 import net.esper.client.EPServiceProvider;
+import net.esper.collection.Pair;
 
 public interface StatementResultService
 {
@@ -21,6 +22,6 @@ public interface StatementResultService
     public void setUpdateListeners(EPStatementListenerSet updateListeners, boolean isPatternStmt);
 
     // Called by OutputProcessView
-    public void indicate(EventBean[] newData, EventBean[] oldData);
+    public void indicate(Pair<EventBean[], EventBean[]> results);
     public void execute();
 }

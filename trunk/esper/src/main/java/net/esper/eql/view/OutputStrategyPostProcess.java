@@ -1,10 +1,11 @@
 package net.esper.eql.view;
 
+import net.esper.collection.Pair;
 import net.esper.core.EPStatementHandle;
 import net.esper.core.InternalEventRouter;
+import net.esper.core.UpdateDispatchView;
 import net.esper.eql.spec.SelectClauseStreamSelectorEnum;
 import net.esper.event.EventBean;
-import net.esper.view.View;
 
 public class OutputStrategyPostProcess implements OutputStrategy
 {
@@ -23,8 +24,11 @@ public class OutputStrategyPostProcess implements OutputStrategy
         this.epStatementHandle = epStatementHandle;
     }
 
-    public void output(boolean forceUpdate, EventBean[] newEvents, EventBean[] oldEvents, View finalView)
+    public void output(boolean forceUpdate, Pair<EventBean[], EventBean[]> result, UpdateDispatchView finalView)
     {
+        EventBean[] newEvents = result != null ? result.getFirst() : null;
+        EventBean[] oldEvents = result != null ? result.getSecond() : null;
+
         // route first
         if (isRoute)
         {
@@ -61,11 +65,11 @@ public class OutputStrategyPostProcess implements OutputStrategy
         // dispatch
         if(newEvents != null || oldEvents != null)
         {
-            finalView.update(newEvents, oldEvents);
+            finalView.newResult(new Pair<EventBean[], EventBean[]>(newEvents, oldEvents));
         }
         else if(forceUpdate)
         {
-            finalView.update(null, null);
+            finalView.newResult(new Pair<EventBean[], EventBean[]>(null, null));
         }
     }
 

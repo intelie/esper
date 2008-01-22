@@ -3,6 +3,7 @@ package net.esper.event;
 import net.esper.collection.MultiKeyUntyped;
 import net.esper.collection.UniformPair;
 import net.esper.collection.MultiKey;
+import net.esper.collection.Pair;
 
 import java.util.*;
 import java.io.PrintWriter;
@@ -13,6 +14,80 @@ import java.io.StringWriter;
  */
 public class EventBeanUtility
 {
+    /**
+     * Flatten the vector of arrays to an array. Return null if an empty vector was passed, else
+     * return an array containing all the events.
+     * @param eventVector vector
+     * @return array with all events
+     */
+    public static Pair<EventBean[], EventBean[]> flattenList(List<Pair<EventBean[], EventBean[]>> eventVector)
+    {
+        if (eventVector.isEmpty())
+        {
+            return null;
+        }
+
+        if (eventVector.size() == 1)
+        {
+            return eventVector.get(0);
+        }
+
+        int totalNew = 0;
+        int totalOld = 0;
+        for (Pair<EventBean[], EventBean[]> pair : eventVector)
+        {
+            if (pair != null)
+            {
+                if (pair.getFirst() != null)
+                {
+                    totalNew += pair.getFirst().length;
+                }
+                if (pair.getSecond() != null)
+                {
+                    totalOld += pair.getSecond().length;
+                }
+            }
+        }
+
+        if ((totalNew + totalOld) == 0)
+        {
+            return null;
+        }
+
+        EventBean[] resultNew = null;
+        if (totalNew > 0)
+        {
+            resultNew = new EventBean[totalNew];
+        }
+
+        EventBean[] resultOld = null;
+        if (totalOld > 0)
+        {
+            resultOld = new EventBean[totalOld];
+        }
+        
+        int destPosNew = 0;
+        int destPosOld = 0;
+        for (Pair<EventBean[], EventBean[]> pair : eventVector)
+        {
+            if (pair != null)
+            {
+                if (pair.getFirst() != null)
+                {
+                    System.arraycopy(pair.getFirst(), 0, resultNew, destPosNew, pair.getFirst().length);
+                    destPosNew += pair.getFirst().length;
+                }
+                if (pair.getSecond() != null)
+                {
+                    System.arraycopy(pair.getSecond(), 0, resultOld, destPosOld, pair.getSecond().length);
+                    destPosOld += pair.getSecond().length;
+                }
+            }
+        }
+
+        return new Pair<EventBean[], EventBean[]>(resultNew, resultOld);
+    }
+
     /**
      * Flatten the vector of arrays to an array. Return null if an empty vector was passed, else
      * return an array containing all the events.

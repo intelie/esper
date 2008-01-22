@@ -3,6 +3,7 @@ package net.esper.core;
 import net.esper.dispatch.DispatchService;
 import net.esper.event.EventBean;
 import net.esper.view.ViewSupport;
+import net.esper.collection.Pair;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -27,14 +28,14 @@ public class UpdateDispatchViewBlockingWait extends UpdateDispatchViewBase
         this.msecTimeout = msecTimeout;
     }
 
-    public void update(EventBean[] newData, EventBean[] oldData)
+    public void newResult(Pair<EventBean[], EventBean[]> results)
     {
         if (log.isDebugEnabled())
         {
-            ViewSupport.dumpUpdateParams(".update for view " + this, newData, oldData);
+            ViewSupport.dumpUpdateParams(".update for view " + this, results);
         }
 
-        statementResultServiceImpl.indicate(newData, oldData);
+        statementResultServiceImpl.indicate(results);
 
         if (!isDispatchWaiting.get())
         {            

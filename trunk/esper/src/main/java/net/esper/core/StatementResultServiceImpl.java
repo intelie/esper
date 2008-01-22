@@ -7,6 +7,7 @@ import net.esper.client.UpdateListener;
 import net.esper.event.EventBean;
 import net.esper.event.EventBeanUtility;
 import net.esper.view.ViewSupport;
+import net.esper.collection.Pair;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -26,17 +27,9 @@ public class StatementResultServiceImpl implements StatementResultService
     /**
      * Buffer for holding dispatchable events.
      */
-    protected ThreadLocal<LinkedList<EventBean[]>> lastNewEvents = new ThreadLocal<LinkedList<EventBean[]>>() {
-        protected synchronized LinkedList<EventBean[]> initialValue() {
-            return new LinkedList<EventBean[]>();
-        }
-    };
-    /**
-     * Buffer for holding dispatchable events.
-     */
-    protected ThreadLocal<LinkedList<EventBean[]>> lastOldEvents = new ThreadLocal<LinkedList<EventBean[]>>() {
-        protected synchronized LinkedList<EventBean[]> initialValue() {
-            return new LinkedList<EventBean[]>();
+    protected ThreadLocal<LinkedList<Pair<EventBean[], EventBean[]>>> lastResults = new ThreadLocal<LinkedList<Pair<EventBean[], EventBean[]>>>() {
+        protected synchronized LinkedList<Pair<EventBean[], EventBean[]>> initialValue() {
+            return new LinkedList<Pair<EventBean[], EventBean[]>>();
         }
     };
 
@@ -67,46 +60,57 @@ public class StatementResultServiceImpl implements StatementResultService
 
         isMakeNatural = statementListenerSet.getSubscriber() != null;
         isMakeSynthetic = !(statementListenerSet.getListeners().isEmpty() && statementListenerSet.getStmtAwareListeners().isEmpty()) || isPatternStmt;
+
+        // TODO
+        log.info(".setUpdateListeners " + this.hashCode() + " Thread " + Thread.currentThread().getId() + " isMakeNatural=" + isMakeNatural + " isMakeSynthetic=" + isMakeSynthetic);
     }
 
     // Called by OutputProcessView
-    public void indicate(EventBean[] newData, EventBean[] oldData)
+    public void indicate(Pair<EventBean[], EventBean[]> results)
     {
-        if ((newData != null) && (newData.length != 0))
+        if (results != null)
         {
-            lastIterableEvent = newData[0];
-            lastNewEvents.get().add(newData);
-        }
-        if ((oldData != null) && (oldData.length != 0))
-        {
-            lastOldEvents.get().add(oldData);
+            if ((results.getFirst() != null) && (results.getFirst().length != 0))
+            {
+                lastResults.get().add(results);
+                lastIterableEvent = results.getFirst()[0];
+            }
+            else if ((results.getSecond() != null) && (results.getSecond().length != 0))
+            {
+                lastResults.get().add(results);
+            }
         }
     }
 
     public void execute()
     {
-        EventBean[] newEvents = EventBeanUtility.flatten(lastNewEvents.get());
-        EventBean[] oldEvents = EventBeanUtility.flatten(lastOldEvents.get());
+        // TODO
+        log.info(".execute " + this.hashCode() + " Thread " + Thread.currentThread().getId() + " isMakeNatural=" + isMakeNatural + " isMakeSynthetic=" + isMakeSynthetic);
+
+        LinkedList<Pair<EventBean[], EventBean[]>> dispatches = lastResults.get();
+        Pair<EventBean[], EventBean[]> events = EventBeanUtility.flattenList(dispatches);
 
         if (log.isDebugEnabled())
         {
-            ViewSupport.dumpUpdateParams(".execute", newEvents, oldEvents);
+            ViewSupport.dumpUpdateParams(".execute", events);
         }
+
+        EventBean[] newEventArr = events != null ? events.getFirst() : null;
+        EventBean[] oldEventArr = events != null ? events.getSecond() : null;
 
         for (UpdateListener listener : statementListenerSet.listeners)
         {
-            listener.update(newEvents, oldEvents);
+            listener.update(newEventArr, oldEventArr);
         }
         if (!(statementListenerSet.stmtAwareListeners.isEmpty()))
         {
             for (StatementAwareUpdateListener listener : statementListenerSet.getStmtAwareListeners())
             {
-                listener.update(newEvents, oldEvents, epStatement, epServiceProvider);
+                listener.update(newEventArr, oldEventArr, epStatement, epServiceProvider);
             }
         }
 
-        lastNewEvents.get().clear();
-        lastOldEvents.get().clear();
+        dispatches.clear();
     }
 
     /**
@@ -114,10 +118,12 @@ public class StatementResultServiceImpl implements StatementResultService
      */
     public void dispatchOnStop()
     {
-        if ((lastNewEvents.get().size() > 0) || (lastOldEvents.get().size() > 0))
-        {
-            execute();
-        }
         lastIterableEvent = null;
+        LinkedList<Pair<EventBean[], EventBean[]>> dispatches = lastResults.get();
+        if (dispatches.isEmpty())
+        {
+            return;
+        }
+        execute();
     }
 }

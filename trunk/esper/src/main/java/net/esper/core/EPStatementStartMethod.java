@@ -172,6 +172,7 @@ public class EPStatementStartMethod
         View onExprView;
         EventType streamEventType = eventStreamParentViewable.getEventType();
 
+        ResultSetProcessor resultSetProcessor;
         if (statementSpec.getOnTriggerDesc() instanceof OnTriggerWindowDesc)
         {
             // Determine event types
@@ -192,27 +193,14 @@ public class EPStatementStartMethod
 
             StreamTypeService typeService = new StreamTypeServiceImpl(new EventType[] {namedWindowType, streamEventType}, new String[] {namedWindowAlias, streamAlias});
 
-            // Construct a processor for results; for use in on-select to process selection results
-            // May return null if we don't need to post-process results posted by views or joins.
-            ResultSetProcessor resultSetProcessor = ResultSetProcessorFactory.getProcessor(
-                    statementSpec.getSelectClauseSpec(),
-                    statementSpec.getInsertIntoDesc(),
-                    statementSpec.getGroupByExpressions(),
-                    statementSpec.getHavingExprRootNode(),
-                    statementSpec.getOutputLimitSpec(),
-                    statementSpec.getOrderByList(),
-                    typeService,
-                    services.getEventAdapterService(),
-                    statementContext.getMethodResolutionService(),
-                    null,
-                    statementContext.getSchedulingService(),
-                    statementContext.getVariableService(),
-                    statementContext.getStatementResultService());
-
             // validate join expression
             ExprNode validatedJoin = validateJoinNamedWindow(statementSpec.getFilterRootNode(),
                     namedWindowType, namedWindowAlias,
                     streamEventType, streamAlias);
+
+            // Construct a processor for results; for use in on-select to process selection results
+            resultSetProcessor = ResultSetProcessorFactory.getProcessor(
+                    statementSpec, statementContext, typeService, null);
 
             InternalEventRouter routerService = (statementSpec.getInsertIntoDesc() == null)?  null : services.getInternalEventRouter();
             onExprView = processor.addOnExpr(onTriggerDesc, validatedJoin, streamEventType, statementContext.getStatementStopService(), routerService, resultSetProcessor, statementContext.getEpStatementHandle());
@@ -233,9 +221,20 @@ public class EPStatementStartMethod
             eventStreamParentViewable.addView(onExprView);
         }
 
+        // Create an output processor that passes on as a wildcard the underlying event
+        StatementSpecCompiled defaultSelectAllSpec = new StatementSpecCompiled();
+        defaultSelectAllSpec.getSelectClauseSpec().add(new SelectClauseElementWildcard());
+        ResultSetProcessor outputResultSetProcessor = ResultSetProcessorFactory.getProcessor(
+                defaultSelectAllSpec, statementContext,
+                new StreamTypeServiceImpl(new EventType[] {onExprView.getEventType()}, new String[] {"set_variable"}), null);
+
+        // Attach output view
+        OutputProcessView outputView = OutputProcessViewFactory.makeView(outputResultSetProcessor, defaultSelectAllSpec, statementContext, services.getInternalEventRouter());
+        onExprView.addView(outputView);
+
         log.debug(".start Statement start completed");
 
-        return new Pair<Viewable, EPStatementStopMethod>(onExprView, stopMethod);
+        return new Pair<Viewable, EPStatementStopMethod>(outputView, stopMethod);
     }
 
     private Pair<Viewable, EPStatementStopMethod> startCreateWindow()
@@ -297,6 +296,15 @@ public class EPStatementStartMethod
         finalView.addView(tailView);
         finalView = tailView;
 
+        ResultSetProcessor resultSetProcessor = ResultSetProcessorFactory.getProcessor(
+                statementSpec, statementContext,
+                new StreamTypeServiceImpl(new EventType[] {windowType}, new String[] {windowName}), null);
+
+        // Attach output view
+        OutputProcessView outputView = OutputProcessViewFactory.makeView(resultSetProcessor, statementSpec, statementContext, services.getInternalEventRouter());
+        finalView.addView(outputView);
+        finalView = outputView;
+
         log.debug(".start Statement start completed");
 
         return new Pair<Viewable, EPStatementStopMethod>(finalView, stopMethod);
@@ -355,8 +363,17 @@ public class EPStatementStartMethod
 
         CreateVariableView createView = new CreateVariableView(services.getEventAdapterService(), services.getVariableService(), createDesc.getVariableName());
         services.getVariableService().registerCallback(services.getVariableService().getReader(createDesc.getVariableName()).getVariableNumber(), createView);
-        
-        return new Pair<Viewable, EPStatementStopMethod>(createView, new EPStatementStopMethod(){
+
+        // Create result set processor
+        ResultSetProcessor resultSetProcessor = ResultSetProcessorFactory.getProcessor(
+                statementSpec, statementContext,
+                new StreamTypeServiceImpl(new EventType[] {createView .getEventType()}, new String[] {"create_variable"}), null);
+
+        // Attach output view
+        OutputProcessView outputView = OutputProcessViewFactory.makeView(resultSetProcessor, statementSpec, statementContext, services.getInternalEventRouter());
+        createView.addView(outputView);
+
+        return new Pair<Viewable, EPStatementStopMethod>(outputView, new EPStatementStopMethod(){
             public void stop()
             {
             }
@@ -539,20 +556,7 @@ public class EPStatementStartMethod
         // Construct a processor for results posted by views and joins, which takes care of aggregation if required.
         // May return null if we don't need to post-process results posted by views or joins.
         ResultSetProcessor resultSetProcessor = ResultSetProcessorFactory.getProcessor(
-                statementSpec.getSelectClauseSpec(),
-                statementSpec.getInsertIntoDesc(),
-                statementSpec.getGroupByExpressions(),
-                statementSpec.getHavingExprRootNode(),
-                statementSpec.getOutputLimitSpec(),
-                statementSpec.getOrderByList(),
-                typeService,
-                services.getEventAdapterService(),
-                statementContext.getMethodResolutionService(),
-                viewResourceDelegate,
-                statementContext.getSchedulingService(),
-                statementContext.getVariableService(),
-                statementContext.getStatementResultService()
-                );
+                statementSpec, statementContext, typeService, viewResourceDelegate);
 
         // Validate where-clause filter tree and outer join clause
         validateNodes(typeService, statementContext.getMethodResolutionService(), viewResourceDelegate);
