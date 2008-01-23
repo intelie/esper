@@ -4,10 +4,10 @@ import net.esper.client.EPServiceProvider;
 import net.esper.client.EPStatement;
 import net.esper.client.StatementAwareUpdateListener;
 import net.esper.client.UpdateListener;
+import net.esper.collection.Pair;
 import net.esper.event.EventBean;
 import net.esper.event.EventBeanUtility;
 import net.esper.view.ViewSupport;
-import net.esper.collection.Pair;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -16,13 +16,26 @@ import java.util.LinkedList;
 public class StatementResultServiceImpl implements StatementResultService
 {
     private static Log log = LogFactory.getLog(StatementResultServiceImpl.class);
+
+    // Part of the statement context
     private EPStatement epStatement;
     private EPServiceProvider epServiceProvider;
-    private EPStatementListenerSet statementListenerSet;
-    private EventBean lastIterableEvent;
+    private boolean isInsertInto;
+    private boolean isPattern;
 
+    // For natural delivery derived out of select-clause expressions
+    private Class[] selectClauseTypes;
+    private String[] selectClauseColumnNames;
+
+    // Listeners and subscribers and derived information
+    private EPStatementListenerSet statementListenerSet;
     private boolean isMakeNatural;
     private boolean isMakeSynthetic;
+
+    // For iteration over patterns
+    private EventBean lastIterableEvent;
+
+
 
     /**
      * Buffer for holding dispatchable events.
@@ -33,10 +46,19 @@ public class StatementResultServiceImpl implements StatementResultService
         }
     };
 
-    public void setContext(EPStatement epStatement, EPServiceProvider epServiceProvider)
+    public void setContext(EPStatement epStatement, EPServiceProvider epServiceProvider, boolean isInsertInto, boolean isPattern)
     {
         this.epStatement = epStatement;
         this.epServiceProvider = epServiceProvider;
+        this.isInsertInto = isInsertInto;
+        this.isPattern = isPattern;
+        isMakeSynthetic = isInsertInto || isPattern;
+    }
+
+    public void setNaturalConditions(Class[] selectClauseTypes, String[] selectClauseColumnNames)
+    {
+        this.selectClauseTypes = selectClauseTypes;
+        this.selectClauseColumnNames = selectClauseColumnNames;
     }
 
     public boolean isMakeSynthetic()
@@ -54,15 +76,16 @@ public class StatementResultServiceImpl implements StatementResultService
         return lastIterableEvent;
     }
 
-    public void setUpdateListeners(EPStatementListenerSet statementListenerSet, boolean isPatternStmt)
+    public void setUpdateListeners(EPStatementListenerSet statementListenerSet)
     {
         this.statementListenerSet = statementListenerSet;
 
         isMakeNatural = statementListenerSet.getSubscriber() != null;
-        isMakeSynthetic = !(statementListenerSet.getListeners().isEmpty() && statementListenerSet.getStmtAwareListeners().isEmpty()) || isPatternStmt;
+        isMakeSynthetic = !(statementListenerSet.getListeners().isEmpty() && statementListenerSet.getStmtAwareListeners().isEmpty())
+                || isPattern || isInsertInto;
 
         // TODO
-        log.info(".setUpdateListeners " + this.hashCode() + " Thread " + Thread.currentThread().getId() + " isMakeNatural=" + isMakeNatural + " isMakeSynthetic=" + isMakeSynthetic);
+        // log.info(".setUpdateListeners " + this.hashCode() + " Thread " + Thread.currentThread().getId() + " isMakeNatural=" + isMakeNatural + " isMakeSynthetic=" + isMakeSynthetic);
     }
 
     // Called by OutputProcessView
@@ -85,7 +108,7 @@ public class StatementResultServiceImpl implements StatementResultService
     public void execute()
     {
         // TODO
-        log.info(".execute " + this.hashCode() + " Thread " + Thread.currentThread().getId() + " isMakeNatural=" + isMakeNatural + " isMakeSynthetic=" + isMakeSynthetic);
+        // log.info(".execute " + this.hashCode() + " Thread " + Thread.currentThread().getId() + " isMakeNatural=" + isMakeNatural + " isMakeSynthetic=" + isMakeSynthetic);
 
         LinkedList<Pair<EventBean[], EventBean[]>> dispatches = lastResults.get();
         Pair<EventBean[], EventBean[]> events = EventBeanUtility.flattenList(dispatches);

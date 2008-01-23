@@ -9,6 +9,7 @@ package net.esper.eql.view;
 
 import net.esper.collection.MultiKey;
 import net.esper.core.UpdateDispatchView;
+import net.esper.core.StatementResultService;
 import net.esper.eql.core.ResultSetProcessor;
 import net.esper.eql.join.JoinExecutionStrategy;
 import net.esper.eql.join.JoinSetIndicator;
@@ -36,6 +37,7 @@ public abstract class OutputProcessView implements View, JoinSetIndicator
     protected final ResultSetProcessor resultSetProcessor;
     private JoinExecutionStrategy joinExecutionStrategy;
     protected final OutputStrategy outputStrategy;
+    protected final StatementResultService statementResultService;
     protected UpdateDispatchView childView;
     protected Viewable parentView;
     protected boolean isGenerateSynthetic;
@@ -44,10 +46,11 @@ public abstract class OutputProcessView implements View, JoinSetIndicator
      * Ctor.
      * @param resultSetProcessor processes the results posted by parent view or joins
      */
-    protected OutputProcessView(ResultSetProcessor resultSetProcessor, OutputStrategy outputStrategy, boolean isInsertInto)
+    protected OutputProcessView(ResultSetProcessor resultSetProcessor, OutputStrategy outputStrategy, boolean isInsertInto, StatementResultService statementResultService)
     {
         this.resultSetProcessor = resultSetProcessor;
         this.outputStrategy = outputStrategy;
+        this.statementResultService = statementResultService;
 
         // by default, generate synthetic events only if we insert-into
         this.isGenerateSynthetic = isInsertInto;

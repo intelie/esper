@@ -1,7 +1,5 @@
 package net.esper.core;
 
-import net.esper.collection.SingleEventIterator;
-import net.esper.collection.Pair;
 import net.esper.dispatch.DispatchService;
 import net.esper.dispatch.Dispatchable;
 import net.esper.event.EventBean;

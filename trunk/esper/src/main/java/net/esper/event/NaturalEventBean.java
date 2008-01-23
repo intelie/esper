@@ -1,4 +1,4 @@
-package net.esper.eql.core;
+package net.esper.event;
 
 import net.esper.event.EventBean;
 import net.esper.event.EventType;

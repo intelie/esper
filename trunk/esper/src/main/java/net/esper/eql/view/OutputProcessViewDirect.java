@@ -5,6 +5,7 @@ import net.esper.collection.Pair;
 import net.esper.eql.core.ResultSetProcessor;
 import net.esper.event.EventBean;
 import net.esper.util.ExecutionPathDebugLog;
+import net.esper.core.StatementResultService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -23,9 +24,9 @@ public class OutputProcessViewDirect extends OutputProcessView
      * @param resultSetProcessor is processing the result set for publishing it out
      * @param outputStrategy is the execution of output to sub-views or natively
      */
-    public OutputProcessViewDirect(ResultSetProcessor resultSetProcessor, OutputStrategy outputStrategy, boolean isInsertInto)
+    public OutputProcessViewDirect(ResultSetProcessor resultSetProcessor, OutputStrategy outputStrategy, boolean isInsertInto, StatementResultService statementResultService)
     {
-        super(resultSetProcessor, outputStrategy, isInsertInto);
+        super(resultSetProcessor, outputStrategy, isInsertInto, statementResultService);
 
         log.debug(".ctor");
         if (resultSetProcessor == null)
@@ -48,7 +49,14 @@ public class OutputProcessViewDirect extends OutputProcessView
                     "  oldData.length==" + ((oldData == null) ? 0 : oldData.length));
         }
 
+        boolean isGenerateSynthetic = statementResultService.isMakeSynthetic();
+
         Pair<EventBean[], EventBean[]> newOldEvents = resultSetProcessor.processViewResult(newData, oldData, isGenerateSynthetic);
+
+        if (!isGenerateSynthetic)
+        {
+            return;
+        }
 
         boolean forceOutput = false;
         if ((newData == null) && (oldData == null) &&
@@ -78,12 +86,14 @@ public class OutputProcessViewDirect extends OutputProcessView
                     "  oldData.length==" + ((oldEvents == null) ? 0 : oldEvents.size()));
         }
 
-        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
-        {
-            log.debug(".continueOutputProcessingJoin");
-        }
+        boolean isGenerateSynthetic = statementResultService.isMakeSynthetic();
 
         Pair<EventBean[], EventBean[]> newOldEvents = resultSetProcessor.processJoinResult(newEvents, oldEvents, isGenerateSynthetic);
+
+        if (!isGenerateSynthetic)
+        {
+            return;
+        }
 
         if (newOldEvents == null)
         {

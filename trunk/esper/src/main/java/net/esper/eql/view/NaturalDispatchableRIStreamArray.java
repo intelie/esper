@@ -1,7 +1,7 @@
 package net.esper.eql.view;
 
 import net.esper.dispatch.Dispatchable;
-import net.esper.eql.core.NaturalEventBean;
+import net.esper.event.NaturalEventBean;
 import net.esper.event.EventBean;
 import net.sf.cglib.reflect.FastMethod;
 import org.apache.commons.logging.Log;

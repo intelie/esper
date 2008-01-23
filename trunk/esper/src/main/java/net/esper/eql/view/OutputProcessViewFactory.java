@@ -2,7 +2,6 @@ package net.esper.eql.view;
 
 import net.esper.core.InternalEventRouter;
 import net.esper.core.StatementContext;
-import net.esper.dispatch.DispatchService;
 import net.esper.eql.core.ResultSetProcessor;
 import net.esper.eql.expression.ExprValidationException;
 import net.esper.eql.spec.OutputLimitSpec;
@@ -59,7 +58,7 @@ public class OutputProcessViewFactory
             {
                 return new OutputProcessViewPolicy(resultSetProcessor, outputStrategy, isRouted, streamCount, outputLimitSpec, statementContext);
             }
-            return new OutputProcessViewDirect(resultSetProcessor, outputStrategy, isRouted);
+            return new OutputProcessViewDirect(resultSetProcessor, outputStrategy, isRouted, statementContext.getStatementResultService());
         }
         catch (RuntimeException ex)
         {

@@ -8,7 +8,7 @@ import net.esper.collection.Pair;
 public interface StatementResultService
 {
     // Called by StatementLifecycleSvcImpl 
-    public void setContext(EPStatement epStatement, EPServiceProvider epServiceProvider);
+    public void setContext(EPStatement epStatement, EPServiceProvider epServiceProvider, boolean isInsertInto, boolean isPattern);
 
     // Called by SelectExprProcessor
     public boolean isMakeSynthetic();
@@ -19,7 +19,7 @@ public interface StatementResultService
     public EventBean getLastIterableEvent();
 
     // Called by UpdateDispatchViewBase
-    public void setUpdateListeners(EPStatementListenerSet updateListeners, boolean isPatternStmt);
+    public void setUpdateListeners(EPStatementListenerSet updateListeners);
 
     // Called by OutputProcessView
     public void indicate(Pair<EventBean[], EventBean[]> results);

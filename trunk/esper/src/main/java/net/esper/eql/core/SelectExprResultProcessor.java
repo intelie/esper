@@ -3,6 +3,7 @@ package net.esper.eql.core;
 import net.esper.eql.expression.ExprValidationException;
 import net.esper.event.EventType;
 import net.esper.event.EventBean;
+import net.esper.event.NaturalEventBean;
 import net.esper.core.StatementResultService;
 
 public class SelectExprResultProcessor implements SelectExprProcessor

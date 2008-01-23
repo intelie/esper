@@ -45,7 +45,7 @@ public class OutputProcessViewPolicy extends OutputProcessView
     					  OutputLimitSpec outputLimitSpec,
     					  StatementContext statementContext)
     {
-        super(resultSetProcessor, outputStrategy, isInsertInto);
+        super(resultSetProcessor, outputStrategy, isInsertInto, statementContext.getStatementResultService());
         log.debug(".ctor");
 
     	if(streamCount < 1)

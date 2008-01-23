@@ -16,13 +16,16 @@ public class BindProcessor
 {
     private ExprEvaluator[] expressionNodes;
     private Class[] expressionTypes;
+    private String[] columnNames;
 
     public BindProcessor(List<SelectClauseElementCompiled> selectionList,
-                         EventType[] typesPerStream)
+                         EventType[] typesPerStream,
+                         )
             throws ExprValidationException
     {
         ArrayList<ExprEvaluator> expressions = new ArrayList<ExprEvaluator>();
         ArrayList<Class> types = new ArrayList<Class>();
+        ArrayList<String> columnNames = new ArrayList<String>();
 
         for (SelectClauseElementCompiled element : selectionList)
         {
@@ -48,6 +51,7 @@ public class BindProcessor
                         }
                     });
                     types.add(typesPerStream[streamNum].getUnderlyingType());
+                    columnNames.add()
                 }
             }
 
