@@ -1,17 +1,11 @@
 package net.esper.regression.client;
 
-import net.esper.client.*;
-import net.esper.support.client.SupportConfigFactory;
-import net.esper.support.bean.SupportBean;
-import net.esper.support.bean.SupportMarketDataBean;
-import net.esper.support.util.ArrayAssertionUtil;
-import net.esper.support.util.SupportUpdateListener;
-import net.esper.support.util.SupportStmtAwareUpdateListener;
-import net.esper.event.EventBean;
 import junit.framework.TestCase;
-
-import java.util.List;
-import java.util.ArrayList;
+import net.esper.client.Configuration;
+import net.esper.client.EPServiceProvider;
+import net.esper.client.EPServiceProviderManager;
+import net.esper.support.bean.SupportBean;
+import net.esper.support.client.SupportConfigFactory;
 
 /**
  * Dispatching
@@ -92,78 +86,42 @@ Example:
 - istream and rstream can point to a method name to deliver events to
 - POJO, Map and DOM are underlying events and map to "*", "s0.*" or "s0"
 
-Wildcard-only and single-stream select: Delivers underlying event
+Defaults: row-by-row delivery
 -----------------------------------------------------------------
-To get the underlying event of the insert stream (POJO, Map and DOM):
-  @eplsubscribe(epl="select * from OrderEvent.win:time(30 sec)")
-  public void indicate(OrderEvent orderEvent)
-  or
-  public void indicate(OrderEvent[] orderEvent)
-  or
-  public void indicate(OrderEvent[] orderEventNew, OrderEvent[] orderEventOld)
-
-To get the underlying event of the insert and remove stream:
-  @epsubscribe(epl="select * from OrderEvent.win:time(30 sec)" rstream="indicateRStream")
-  public void indicateIStream(OrderEvent orderEvent)
-  public void indicateRStream(OrderEvent orderEvent)
-  or
-  public void indicateIStream(OrderEvent[] orderEvent)
-  public void indicateRStream(OrderEvent[] orderEvent)
-
-Generalized delivery:
-  @epsubscribe(epl="select * from OrderEvent.win:time(30 sec)")
-  public void indicate(Object event)
-  or
-  public void indicate(Object[] events)
-  or
-  public void indicate(Object... events)
-
-Wildcard-only and join: Delivers underlying events
------------------------------------------------------------------
-To get the underlying events of the insert stream (POJO, order must match order in from-clause):
-  @epsubscribe(epl="select * from OrderEvent.win:time(30 sec), PriceEvent.win:time(30 sec)")
-  public void indicate(OrderEvent orderEvent, PriceEvent priceEvent)
-
-Row-by-row delivery for a list of columns: deliver expression values matching columns selected
------------------------------------------------------------------
-  @epsubscribe(epl="select string, int, s0, s1.*, * from A s0, B s1"
-  public void indicate(String s, int i, A s0, B s1)
-  public void start(int length)
+  public void start(int newDataLength, int oldDataLength)
+  public void update(String s, int i, A s0, B s1)
+  public void updateRStream(String s, int i, A s0, B s1)
   public void end()
- 
+  or
+  public void update(Object[])
+  or
+  public void update(Map row)
+
+Defaults: multirow delivery
+-----------------------------------------------------------------
+  public void update(Object[][] newData, Object[][] oldData)
+  or
+  public void update(Map[] newData, Map[] oldData)
+
+Defaults: multirow delivery for single-column selects
+-----------------------------------------------------------------
+  public void update(ColumnType[] newData, ColumnType[] oldData)
  */
 public class TestAnnotatedSubscriber extends TestCase
 {
-    // TODO: test iterator
-    // TODO: test listener + method delivery
-    // TODO: test join
     // TODO: test select istream/rstream selector
     // TODO: test static method
-
-    // TODO: support named parameter names, support rstream delivery through alt method
-    // TODO: test wildcard, stream wildcard, wildcard with extra columns
-    // TODO: test multirow delivery
-    // TODO: test array delivery
-    // TODO: test bean array delivery
-    // TODO: test outside statement start/stop + statement name
-    // TODO: test named windows
+    // TODO: test wildcard, stream wildcard
+    // TODO: test multirow delivery of underlying type
+    // TODO: test output rate limiting+join
+    
+    // TODO: test statement start/stop
+    // TODO: test on-delete, create window, create variable, on-set, on-select
     // TODO: test performance
-    // TODO: test non-selecting views: on-delete, create window/variable
-    // TODO: test on-select view
-    // TODO: test widening, test inheritance and polymorphism
-    // TODO: test null value delivery
-    // TODO: test ordered delivery and MT thread safety
-    // TODO: test take and remove
+    // TODO: test MT thread safety of set listener/subscriber
     // TODO: test invalid
-    // TODO: test with and without statement name
-    // TODO: Support parameterized annotations, i.e. a->b(var=$var1)
     // TODO: Handle persistence (EHA)
-    // TODO: Support for detecting a pattern or a epl
-    // TODO: test write same object twice
-    // TODO: test provide method to start and stop expressions (or not)
     // TODO: subscriber read API
-    // TODO: should there be a begin-delivery(length) and end-delivery method
-    // TODO: annotation on the class level pointing to the method name to deliver to
 
     private EPServiceProvider epService;
 
@@ -177,6 +135,7 @@ public class TestAnnotatedSubscriber extends TestCase
         epService.initialize();
     }
 
+    /*
     public void testPerformanceNatural()
     {
         final int NUM_LOOP = 10;
@@ -189,7 +148,7 @@ public class TestAnnotatedSubscriber extends TestCase
         }
         long end = System.currentTimeMillis();
 
-        List<Object[]> results = subscriber.getAndResetIndicateSimple();
+        List<Object[]> results = subscriber.getAndResetIndicate();
         assertEquals(NUM_LOOP, results.size());
         for (int i = 0; i < NUM_LOOP; i++)
         {
@@ -228,178 +187,5 @@ public class TestAnnotatedSubscriber extends TestCase
         }
         System.out.println("delta=" + (end - start));
     }
-
-    public void testSimpleSelect()
-    {
-        String fields[] = "string,intPrimitive".split(",");
-
-        MyAnnotatedSimpleSubscriber subscriber = new MyAnnotatedSimpleSubscriber();
-
-        // get statement, attach listener
-        EPStatement stmt = epService.getEPAdministrator().getStatement("SimpleSelectStmt");
-        SupportUpdateListener listener = new SupportUpdateListener();
-        stmt.addListener(listener);
-
-        // send event
-        epService.getEPRuntime().sendEvent(new SupportBean("E1", 100));
-        ArrayAssertionUtil.assertPropsPerRow(subscriber.getAndResetIndicateSimple(), new Object[][] {{"E1", 100}});
-        ArrayAssertionUtil.assertEqualsExactOrder(stmt.iterator(), fields, new Object[][] {{"E1", 100}});
-        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E1", 100});
-
-        // remove listener
-        stmt.removeAllListeners();
-
-        // send event
-        epService.getEPRuntime().sendEvent(new SupportBean("E2", 200));
-        ArrayAssertionUtil.assertPropsPerRow(subscriber.getAndResetIndicateSimple(), new Object[][] {{"E2", 200}});
-        ArrayAssertionUtil.assertEqualsExactOrder(stmt.iterator(), fields, new Object[][] {{"E2", 200}});
-        assertFalse(listener.isInvoked());
-
-        // add listener
-        SupportStmtAwareUpdateListener stmtAwareListener = new SupportStmtAwareUpdateListener();
-        stmt.addListener(stmtAwareListener);
-
-        // send event
-        epService.getEPRuntime().sendEvent(new SupportBean("E3", 300));
-        ArrayAssertionUtil.assertPropsPerRow(subscriber.getAndResetIndicateSimple(), new Object[][] {{"E3", 300}});
-        ArrayAssertionUtil.assertEqualsExactOrder(stmt.iterator(), fields, new Object[][] {{"E3", 300}});
-        ArrayAssertionUtil.assertProps(stmtAwareListener.assertOneGetNewAndReset(), fields, new Object[] {"E3", 300});
-
-        // send no-pass event
-        epService.getEPRuntime().sendEvent(new SupportBean("E4", -1));
-        ArrayAssertionUtil.assertPropsPerRow(subscriber.getAndResetIndicateSimple(), null);
-        ArrayAssertionUtil.assertEqualsExactOrder(stmt.iterator(), fields, new Object[][] {{"E3", 300}});
-        assertFalse(stmtAwareListener.isInvoked());
-
-        // remove
-
-        epService.getEPRuntime().sendEvent(new SupportBean("E2", 1000));
-        assertEquals(0, subscriber.getAndResetIndicateSimple().size());
-    }
-
-    public void testInsertInsertRemoveStream()
-    {
-        String fields[] = "symbol,volume".split(",");
-
-        MyAnnotatedSimpleSubscriber subscriber = new MyAnnotatedSimpleSubscriber();
-
-        // get statement, attach listener
-        EPStatement stmtIIRR = epService.getEPAdministrator().getStatement("IIRR");
-        EPStatement stmtIIIR = epService.getEPAdministrator().getStatement("IIIR");
-        EPStatement stmtIIRI = epService.getEPAdministrator().getStatement("IIRI");
-
-        // TODO: error is failed to load class if an event stream was not found
-
-        // attach listeners to insert-into streams
-        SupportUpdateListener listenerIIRR = new SupportUpdateListener();
-        epService.getEPAdministrator().createEQL("select * from IIRRStream").addListener(listenerIIRR);
-        SupportUpdateListener listenerIIRI = new SupportUpdateListener();
-        epService.getEPAdministrator().createEQL("select * from IIRIStream").addListener(listenerIIRI);
-        SupportUpdateListener listenerIIIR = new SupportUpdateListener();
-        epService.getEPAdministrator().createEQL("select * from IIIRStream").addListener(listenerIIIR);
-
-        // send event
-        epService.getEPRuntime().sendEvent(new SupportMarketDataBean("E1", 0d, 100L, ""));
-
-        assertEquals(0, subscriber.getAndResetIIRR().size());
-        assertEquals(0, subscriber.getAndResetIIRI().size());
-        ArrayAssertionUtil.assertPropsPerRow(subscriber.getAndResetIIIR(), new Object[][] {{"E1", 100L}});
-
-        ArrayAssertionUtil.assertEqualsExactOrder(stmtIIRR.iterator(), fields, new Object[][] {{"E1",100L}});
-        ArrayAssertionUtil.assertEqualsExactOrder(stmtIIRI.iterator(), fields, new Object[][] {{"E1",100L}});
-        ArrayAssertionUtil.assertEqualsExactOrder(stmtIIIR.iterator(), fields, new Object[][] {{"E1",100L}});
-
-        assertFalse(listenerIIRR.isInvoked());
-        assertFalse(listenerIIIR.isInvoked());
-        ArrayAssertionUtil.assertProps(listenerIIRI.assertOneGetNewAndReset(), fields, new Object[] {"E1",100L});
-
-        // send event, generates an insert and remove stream event
-        epService.getEPRuntime().sendEvent(new SupportMarketDataBean("E1", 0d, 200L, ""));
-
-        ArrayAssertionUtil.assertPropsPerRow(subscriber.getAndResetIIRI(), new Object[][] {{"E1", 100L}});
-        ArrayAssertionUtil.assertPropsPerRow(subscriber.getAndResetIIRR(), new Object[][] {{"E1", 100L}});
-        ArrayAssertionUtil.assertPropsPerRow(subscriber.getAndResetIIIR(), new Object[][] {{"E1", 200L}});
-
-        ArrayAssertionUtil.assertEqualsExactOrder(stmtIIRR.iterator(), fields, new Object[][] {{"E1",200L}});
-        ArrayAssertionUtil.assertEqualsExactOrder(stmtIIRI.iterator(), fields, new Object[][] {{"E1",200L}});
-        ArrayAssertionUtil.assertEqualsExactOrder(stmtIIIR.iterator(), fields, new Object[][] {{"E1",200L}});
-
-        ArrayAssertionUtil.assertProps(listenerIIIR.assertOneGetNewAndReset(), fields, new Object[] {"E1",100L});
-        ArrayAssertionUtil.assertProps(listenerIIRR.assertOneGetNewAndReset(), fields, new Object[] {"E1",100L});
-        ArrayAssertionUtil.assertProps(listenerIIRI.assertOneGetNewAndReset(), fields, new Object[] {"E1",200L});
-
-        // remove, stops statement
-
-        // send event
-        epService.getEPRuntime().sendEvent(new SupportMarketDataBean("E1", 0d, 300L, ""));
-        assertEquals(0, subscriber.getAndResetIIRI().size());
-        assertEquals(0, subscriber.getAndResetIIRR().size());
-        assertEquals(0, subscriber.getAndResetIIIR().size());
-        assertFalse(listenerIIIR.isInvoked());
-        assertFalse(listenerIIRI.isInvoked());
-        assertFalse(listenerIIRR.isInvoked());
-    }
-    
-    public void testUniqueSelectInsertInto()
-    {
-        String fields[] = "symbol,volume".split(",");
-
-        MyAnnotatedSimpleSubscriber subscriber = new MyAnnotatedSimpleSubscriber();
-
-        // get statement, attach listener
-        EPStatement stmt = epService.getEPAdministrator().getStatement("InsertIntoStmt");
-
-        // create insert-into catch
-        SupportUpdateListener listenerMyStream = new SupportUpdateListener();
-        epService.getEPAdministrator().createEQL("select * from MyStream").addListener(listenerMyStream);
-
-        // send event
-        epService.getEPRuntime().sendEvent(new SupportMarketDataBean("E1", 0d, 100L, ""));
-        ArrayAssertionUtil.assertPropsPerRow(subscriber.getAndResetIndicateInsertInto(), new Object[][] {{"E1", 200L}});
-        ArrayAssertionUtil.assertEqualsExactOrder(stmt.iterator(), fields, new Object[][] {{"E1", 200L}});
-        ArrayAssertionUtil.assertProps(listenerMyStream.assertOneGetNewAndReset(), fields, new Object[] {"E1", 200L});
-
-        // add listener
-        SupportUpdateListener listener = new SupportUpdateListener();
-        stmt.addListener(listener);
-
-        // send event
-        epService.getEPRuntime().sendEvent(new SupportMarketDataBean("E1", 0d, 200L, ""));
-        ArrayAssertionUtil.assertPropsPerRow(subscriber.getAndResetIndicateInsertInto(), new Object[][] {{"E1", 400L}});
-        ArrayAssertionUtil.assertEqualsExactOrder(stmt.iterator(), fields, new Object[][] {{"E1", 400L}});
-        ArrayAssertionUtil.assertProps(listener.getLastNewData()[0], fields, new Object[] {"E1", 400L});
-        ArrayAssertionUtil.assertProps(listener.getLastOldData()[0], fields, new Object[] {"E1", 200L});
-        ArrayAssertionUtil.assertProps(listenerMyStream.assertOneGetNewAndReset(), fields, new Object[] {"E1", 400L});
-        listener.reset();
-
-        // remove listener
-        stmt.removeListener(listener);
-
-        // send event
-        epService.getEPRuntime().sendEvent(new SupportMarketDataBean("E2", 0d, 300L, ""));
-        ArrayAssertionUtil.assertPropsPerRow(subscriber.getAndResetIndicateInsertInto(), new Object[][] {{"E2", 600L}});
-        ArrayAssertionUtil.assertEqualsExactOrder(stmt.iterator(), fields, new Object[][] {{"E1", 400L}, {"E2", 600L}});
-        ArrayAssertionUtil.assertProps(listenerMyStream.assertOneGetNewAndReset(), fields, new Object[] {"E2", 600L});
-        assertFalse(listener.isInvoked());
-
-        // remove, stops statement
-
-        // send event
-        epService.getEPRuntime().sendEvent(new SupportMarketDataBean("E2", 0d, 300L, ""));
-        ArrayAssertionUtil.assertPropsPerRow(subscriber.getAndResetIndicateInsertInto(), null);
-        assertFalse(listener.isInvoked());
-    }
-
-    public void testCreateWindow()
-    {
-        String fields[] = "string,intPrimitive".split(",");
-
-        MyAnnotatedNonSelectSubscriber subscriber = new MyAnnotatedNonSelectSubscriber();
-
-        epService.getEPAdministrator().createEQL("insert into MyWindow select string, intPrimitive from SupportBean");
-
-        // send event
-        epService.getEPRuntime().sendEvent(new SupportMarketDataBean("E1", 0d, 100L, ""));
-        ArrayAssertionUtil.assertPropsPerRow(subscriber.getResetIStream(), new Object[][] {{"E1", 200L}});
-    }
+    */
 }

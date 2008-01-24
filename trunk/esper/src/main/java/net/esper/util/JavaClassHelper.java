@@ -66,6 +66,38 @@ public class JavaClassHelper
     }
 
     /**
+     * Returns a comma-separated parameter type list in readable form,
+     * considering arrays and null-type parameters.
+     * @param parameters is the parameter types to render
+     * @return rendered list of parameters
+     */
+    public static String getParameterAsString(Class[] parameters)
+    {
+        StringBuilder builder = new StringBuilder();
+        String delimiterComma = ", ";
+        String delimiter = "";
+        for (Class param : parameters)
+        {
+            builder.append(delimiter);
+            if (param == null)
+            {
+                builder.append("null (any type)");
+            }
+            else
+            {
+                builder.append(parameterToString(param));
+            }
+            delimiter = delimiterComma;
+        }
+        return builder.toString();
+    }
+
+    private static String parameterToString(Class param)
+    {
+        return param.getSimpleName();
+    }
+
+    /**
      * Returns the un-boxed class for the given class, or the class itself if already un-boxed or not a primitive type.
      * For primitive boxed types returns the unboxed primitive type, e.g. returns int.class for passing Integer.class.
      * For any other class, returns the class passed.

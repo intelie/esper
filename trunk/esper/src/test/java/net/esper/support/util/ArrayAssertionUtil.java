@@ -427,6 +427,54 @@ public class ArrayAssertionUtil
         }
     }
 
+    public static void assertPropsPerRow(Map[] received, String[] propertyNames, Object[][] propertiesListPerRow)
+    {
+        if (propertiesListPerRow == null)
+        {
+            if ((received == null) || (received.length == 0))
+            {
+                return;
+            }
+        }
+        Assert.assertEquals(propertiesListPerRow.length, received.length);
+
+        for (int i = 0; i < propertiesListPerRow.length; i++)
+        {
+            Object[] propertiesThisRow = propertiesListPerRow[i];
+            for (int j = 0; j < propertiesThisRow.length; j++)
+            {
+                String name = propertyNames[j];
+                Object value = propertiesThisRow[j];
+                Object eventProp = received[i].get(name);
+                Assert.assertEquals("Error asserting property named " + name,value,eventProp);
+            }
+        }
+    }
+
+    public static void assertPropsPerRow(Object[][] received, String[] propertyNames, Object[][] propertiesListPerRow)
+    {
+        if (propertiesListPerRow == null)
+        {
+            if ((received == null) || (received.length == 0))
+            {
+                return;
+            }
+        }
+        Assert.assertEquals(propertiesListPerRow.length, received.length);
+
+        for (int i = 0; i < propertiesListPerRow.length; i++)
+        {
+            Object[] propertiesThisRow = propertiesListPerRow[i];
+            for (int j = 0; j < propertiesThisRow.length; j++)
+            {
+                String name = propertyNames[j];
+                Object value = propertiesThisRow[j];
+                Object eventProp = received[i][j];
+                Assert.assertEquals("Error asserting property named " + name,value,eventProp);
+            }
+        }
+    }
+
     public static void assertPropsPerRow(EventBean[] received, String[] propertyNames, Object[][] propertiesListPerRow)
     {
         if (propertiesListPerRow == null)

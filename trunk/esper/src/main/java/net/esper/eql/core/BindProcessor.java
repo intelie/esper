@@ -16,11 +16,11 @@ public class BindProcessor
 {
     private ExprEvaluator[] expressionNodes;
     private Class[] expressionTypes;
-    private String[] columnNames;
+    private String[] columnNamesAssigned;
 
     public BindProcessor(List<SelectClauseElementCompiled> selectionList,
                          EventType[] typesPerStream,
-                         )
+                         String[] streamNames)
             throws ExprValidationException
     {
         ArrayList<ExprEvaluator> expressions = new ArrayList<ExprEvaluator>();
@@ -51,7 +51,7 @@ public class BindProcessor
                         }
                     });
                     types.add(typesPerStream[streamNum].getUnderlyingType());
-                    columnNames.add()
+                    columnNames.add(streamNames[streamNum]);
                 }
             }
 
@@ -75,6 +75,7 @@ public class BindProcessor
                     }
                 });
                 types.add(typesPerStream[streamSpec.getStreamNumber()].getUnderlyingType());
+                columnNames.add(streamNames[streamSpec.getStreamNumber()]);
             }
 
             // handle expressions
@@ -83,6 +84,14 @@ public class BindProcessor
                 SelectClauseExprCompiledSpec expr = (SelectClauseExprCompiledSpec) element;
                 expressions.add(expr.getSelectExpression());
                 types.add(expr.getSelectExpression().getType());
+                if (expr.getAssignedName() != null)
+                {
+                    columnNames.add(expr.getAssignedName());
+                }
+                else
+                {
+                    columnNames.add(expr.getSelectExpression().toExpressionString());
+                }
             }
             else
             {
@@ -92,6 +101,7 @@ public class BindProcessor
 
         expressionNodes = expressions.toArray(new ExprEvaluator[0]);
         expressionTypes = types.toArray(new Class[0]);
+        columnNamesAssigned = columnNames.toArray(new String[0]);
     }
 
     public Object[] process(EventBean[] eventsPerStream, boolean isNewData)
@@ -105,5 +115,13 @@ public class BindProcessor
         }
 
         return parameters;
+    }
+
+    public Class[] getExpressionTypes() {
+        return expressionTypes;
+    }
+
+    public String[] getColumnNamesAssigned() {
+        return columnNamesAssigned;
     }
 }

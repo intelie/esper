@@ -82,6 +82,7 @@ public interface EPStatement extends EPListenable, EPIterable
      */
     public long getTimeLastStateChange();
 
-    public void setSubscriber(Object subscriber);
+    public void setSubscriber(Object subscriber) throws EPSubscriberException;
 }
+
 

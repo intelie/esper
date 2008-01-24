@@ -10,6 +10,9 @@ public interface StatementResultService
     // Called by StatementLifecycleSvcImpl 
     public void setContext(EPStatement epStatement, EPServiceProvider epServiceProvider, boolean isInsertInto, boolean isPattern);
 
+    // Called by SelectExprProcessorFactory
+    public void setSelectClause(Class[] selectClauseTypes, String[] selectClauseColumnNames);
+    
     // Called by SelectExprProcessor
     public boolean isMakeSynthetic();
     public boolean isMakeNatural();

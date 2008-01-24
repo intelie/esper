@@ -29,7 +29,7 @@ public class SelectExprResultProcessor implements SelectExprProcessor
 
     public EventBean process(EventBean[] eventsPerStream, boolean isNewData, boolean isSynthesize)
     {
-        if (isSynthesize)
+        if ((isSynthesize) && (!statementResultService.isMakeNatural()))
         {
             return syntheticProcessor.process(eventsPerStream, isNewData, isSynthesize);
         }
@@ -37,7 +37,7 @@ public class SelectExprResultProcessor implements SelectExprProcessor
         // TODO: can remove isSynthesize parameter from other select expr processors
         EventBean syntheticEvent = null;
         EventType syntheticEventType = null;
-        if (statementResultService.isMakeSynthetic())
+        if (statementResultService.isMakeSynthetic() || isSynthesize)
         {
             syntheticEvent = syntheticProcessor.process(eventsPerStream, isNewData, isSynthesize);
 

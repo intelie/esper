@@ -38,6 +38,7 @@ public class TestAnnotatedSubscriberPerf extends TestCase
         System.out.println("delta=" + (end - start));
     }
 
+    /*
     public void testPerformanceNatural()
     {
         final int NUM_LOOP = 10;
@@ -50,7 +51,7 @@ public class TestAnnotatedSubscriberPerf extends TestCase
         }
         long end = System.currentTimeMillis();
 
-        List<Object[]> results = subscriber.getAndResetIndicateSimple();
+        List<Object[]> results = subscriber.getAndResetIndicate();
         assertEquals(NUM_LOOP, results.size());
         for (int i = 0; i < NUM_LOOP; i++)
         {
@@ -58,7 +59,7 @@ public class TestAnnotatedSubscriberPerf extends TestCase
         }
         System.out.println("delta=" + (end - start));
     }
-
+    */
     public void testPerformanceSynthetic()
     {
         final int NUM_LOOP = 100000;

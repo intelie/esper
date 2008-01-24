@@ -3,14 +3,33 @@ package net.esper.util;
 import junit.framework.TestCase;
 import net.esper.support.bean.*;
 
-import java.util.*;
-import java.io.Serializable;
-import java.io.LineNumberReader;
 import java.io.BufferedReader;
+import java.io.LineNumberReader;
 import java.io.Reader;
+import java.io.Serializable;
+import java.util.*;
 
 public class TestJavaClassHelper extends TestCase
 {
+    public void testGetParameterAsString()
+    {
+        Object[][] testCases = {
+                {new Class[] {String.class, int.class}, "String, int"},
+                {new Class[] {Integer.class, Boolean.class}, "Integer, Boolean"},
+                {new Class[] {}, ""},
+                {new Class[] {null}, "null (any type)"},
+                {new Class[] {byte.class, null}, "byte, null (any type)"},
+                {new Class[] {SupportBean.class, int[].class, int[][].class, Map.class}, "SupportBean, int[], int[][], Map"},
+                {new Class[] {SupportBean[].class, SupportEnum.class, SupportBeanComplexProps.SupportBeanSpecialGetterNested.class}, "SupportBean[], SupportEnum, SupportBeanSpecialGetterNested"},
+            };
+
+        for (int i = 0; i < testCases.length; i++)
+        {
+            Class[] params = (Class[]) testCases[i][0];
+            assertEquals(testCases[i][1], JavaClassHelper.getParameterAsString(params));
+        }
+    }
+
     public void testCanCoerce()
     {
         final Class[] primitiveClasses = {

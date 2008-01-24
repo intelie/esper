@@ -50,10 +50,12 @@ public class OutputProcessViewDirect extends OutputProcessView
         }
 
         boolean isGenerateSynthetic = statementResultService.isMakeSynthetic();
+        boolean isGenerateNatural = statementResultService.isMakeNatural();
 
         Pair<EventBean[], EventBean[]> newOldEvents = resultSetProcessor.processViewResult(newData, oldData, isGenerateSynthetic);
 
-        if (!isGenerateSynthetic)
+        // TODO: add logic for output-rate-limiting
+        if ((!isGenerateSynthetic) && (!isGenerateNatural))
         {
             return;
         }
@@ -87,10 +89,12 @@ public class OutputProcessViewDirect extends OutputProcessView
         }
 
         boolean isGenerateSynthetic = statementResultService.isMakeSynthetic();
+        boolean isGenerateNatural = statementResultService.isMakeNatural();
 
         Pair<EventBean[], EventBean[]> newOldEvents = resultSetProcessor.processJoinResult(newEvents, oldEvents, isGenerateSynthetic);
 
-        if (!isGenerateSynthetic)
+        // TODO: add logic for output-rate-limiting
+        if ((!isGenerateSynthetic) && (!isGenerateNatural))
         {
             return;
         }

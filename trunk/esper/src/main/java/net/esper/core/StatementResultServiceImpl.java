@@ -1,17 +1,19 @@
 package net.esper.core;
 
-import net.esper.client.EPServiceProvider;
-import net.esper.client.EPStatement;
-import net.esper.client.StatementAwareUpdateListener;
-import net.esper.client.UpdateListener;
+import net.esper.client.*;
 import net.esper.collection.Pair;
 import net.esper.event.EventBean;
 import net.esper.event.EventBeanUtility;
 import net.esper.view.ViewSupport;
+import net.esper.util.JavaClassHelper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.util.LinkedList;
+import java.util.Map;
+import java.util.ArrayList;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 
 public class StatementResultServiceImpl implements StatementResultService
 {
@@ -31,11 +33,10 @@ public class StatementResultServiceImpl implements StatementResultService
     private EPStatementListenerSet statementListenerSet;
     private boolean isMakeNatural;
     private boolean isMakeSynthetic;
+    private StatementResultNaturalStrategy statementResultNaturalStrategy;
 
     // For iteration over patterns
     private EventBean lastIterableEvent;
-
-
 
     /**
      * Buffer for holding dispatchable events.
@@ -55,7 +56,7 @@ public class StatementResultServiceImpl implements StatementResultService
         isMakeSynthetic = isInsertInto || isPattern;
     }
 
-    public void setNaturalConditions(Class[] selectClauseTypes, String[] selectClauseColumnNames)
+    public void setSelectClause(Class[] selectClauseTypes, String[] selectClauseColumnNames)
     {
         this.selectClauseTypes = selectClauseTypes;
         this.selectClauseColumnNames = selectClauseColumnNames;
@@ -84,8 +85,16 @@ public class StatementResultServiceImpl implements StatementResultService
         isMakeSynthetic = !(statementListenerSet.getListeners().isEmpty() && statementListenerSet.getStmtAwareListeners().isEmpty())
                 || isPattern || isInsertInto;
 
-        // TODO
-        // log.info(".setUpdateListeners " + this.hashCode() + " Thread " + Thread.currentThread().getId() + " isMakeNatural=" + isMakeNatural + " isMakeSynthetic=" + isMakeSynthetic);
+        if (statementListenerSet.getSubscriber() == null)
+        {
+            statementResultNaturalStrategy = null;
+            isMakeNatural = false;
+            return;
+        }
+
+        statementResultNaturalStrategy = StatementResultNaturalStrategyFactory.create(statementListenerSet.getSubscriber(),
+                selectClauseTypes, selectClauseColumnNames);
+        isMakeNatural = true;
     }
 
     // Called by OutputProcessView
@@ -116,6 +125,11 @@ public class StatementResultServiceImpl implements StatementResultService
         if (log.isDebugEnabled())
         {
             ViewSupport.dumpUpdateParams(".execute", events);
+        }
+
+        if (statementResultNaturalStrategy != null)
+        {
+            statementResultNaturalStrategy.execute(events);
         }
 
         EventBean[] newEventArr = events != null ? events.getFirst() : null;
