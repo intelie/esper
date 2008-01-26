@@ -1,0 +1,92 @@
+package net.esper.eql.core;
+
+import net.esper.client.ConfigurationDBRef;
+import net.esper.client.ConfigurationMethodRef;
+import net.esper.core.EPStatementHandle;
+import net.esper.eql.db.DataCache;
+import net.esper.eql.db.DataCacheFactory;
+import net.esper.eql.db.PollExecStrategy;
+import net.esper.eql.expression.ExprValidationException;
+import net.esper.eql.spec.MethodStreamSpec;
+import net.esper.event.EventAdapterService;
+import net.esper.event.EventType;
+import net.esper.schedule.ScheduleBucket;
+import net.esper.schedule.SchedulingService;
+import net.esper.util.JavaClassHelper;
+import net.esper.view.HistoricalEventViewable;
+import net.sf.cglib.reflect.FastClass;
+import net.sf.cglib.reflect.FastMethod;
+
+import java.lang.reflect.Method;
+
+/**
+ * Factory for method-invocation data provider streams.
+ */
+public class MethodPollingViewableFactory
+{
+    /**
+     * Creates a method-invocation polling view for use as a stream that calls a method, or pulls results from cache.
+     * @param streamNumber the stream number
+     * @param methodStreamSpec defines the class and method to call
+     * @param eventAdapterService for creating event types and events
+     * @param epStatementHandle for time-based callbacks
+     * @param methodResolutionService for resolving classes and imports
+     * @param engineImportService for resolving configurations
+     * @param schedulingService for scheduling callbacks in expiry-time based caches
+     * @param scheduleBucket for schedules within the statement
+     * @return pollable view
+     * @throws ExprValidationException if the expressions cannot be validated or the method descriptor
+     * has incorrect class and method names, or parameter number and types don't match
+     */
+    public static HistoricalEventViewable createPollMethodView(int streamNumber,
+                                                               MethodStreamSpec methodStreamSpec,
+                                                               EventAdapterService eventAdapterService,
+                                                               EPStatementHandle epStatementHandle,
+                                                               MethodResolutionService methodResolutionService,
+                                                               EngineImportService engineImportService,
+                                                               SchedulingService schedulingService,
+                                                               ScheduleBucket scheduleBucket)
+            throws ExprValidationException
+    {
+        // Try to resolve the method
+        FastMethod staticMethod;
+        Class declaringClass = null;
+        try
+		{
+			Method method = methodResolutionService.resolveMethod(methodStreamSpec.getClassName(), methodStreamSpec.getMethodName());
+            declaringClass = method.getDeclaringClass();
+            FastClass declaringFastClass = FastClass.create(method.getDeclaringClass());
+			staticMethod = declaringFastClass.getMethod(method);
+		}
+		catch(Exception e)
+		{
+			throw new ExprValidationException(e.getMessage());
+		}
+
+        // Determine object type returned by method
+        Class beanClass = staticMethod.getReturnType();
+        if ((beanClass == void.class) || (beanClass == Void.class) || (JavaClassHelper.isJavaBuiltinDataType(beanClass)))
+        {
+            throw new ExprValidationException("Invalid return type for static method '" + staticMethod.getName() + "' of class '" + methodStreamSpec.getClassName() + "', expecting a Java class");
+        }
+        if (staticMethod.getReturnType().isArray())
+        {
+            beanClass = staticMethod.getReturnType().getComponentType();
+        }
+
+        // Determine event type from class and method name
+        EventType eventType = eventAdapterService.addBeanType(beanClass.getName(), beanClass);
+
+        // Construct polling strategy as a method invocation
+        ConfigurationMethodRef configCache = engineImportService.getConfigurationMethodRef(declaringClass.getName());
+        if (configCache == null)
+        {
+            configCache = engineImportService.getConfigurationMethodRef(declaringClass.getSimpleName());
+        }
+        ConfigurationDBRef.DataCacheDesc dataCacheDesc = (configCache != null) ? configCache.getDataCacheDesc() : null;
+        DataCache dataCache = DataCacheFactory.getDataCache(dataCacheDesc, epStatementHandle, schedulingService, scheduleBucket);
+        PollExecStrategy methodPollStrategy = new MethodPollingExecStrategy(eventAdapterService, staticMethod);
+
+        return new MethodPollingViewable(methodStreamSpec, streamNumber, methodStreamSpec.getExpressions(), methodPollStrategy, dataCache, eventType);
+    }
+}

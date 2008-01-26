@@ -1,0 +1,71 @@
+package net.esper.eql.variable;
+
+import net.esper.core.StatementExtensionSvcContext;
+
+import java.util.concurrent.locks.ReadWriteLock;
+
+/**
+ * Variables service for reading and writing variables, and for setting a version number for the current thread to
+ * consider variables for.
+ * <p>
+ * See implementation class for further details.
+ */
+public interface VariableService
+{
+    /**
+     * Sets the variable version that subsequent reads consider.
+     */
+    public void setLocalVersion();
+
+    /**
+     * Lock for use in atomic writes to the variable space.
+     * @return read write lock for external coordinated write
+     */
+    public ReadWriteLock getReadWriteLock();
+
+    /**
+     * Creates a new variable.
+     * @param variableName name of the variable
+     * @param type variable type
+     * @param value initialization value; String values are allowed and parsed according to type
+     * @param extensionServicesContext is extensions for implementing resilience attributes of variables
+     * @throws VariableExistsException if the variable name is already in use
+     * @throws VariableTypeException if the variable type cannot be recognized
+     */
+    public void createNewVariable(String variableName, Class type, Object value, StatementExtensionSvcContext extensionServicesContext)
+            throws VariableExistsException, VariableTypeException;
+
+    /**
+     * Returns a reader that provides access to variable values. The reader considers the
+     * version currently set via setLocalVersion.
+     * @param variableName the variable that the reader should read
+     * @return reader
+     */
+    public VariableReader getReader(String variableName);
+
+    /**
+     * Registers a callback invoked when the variable is written with a new value.
+     * @param variableNumber the variable index number
+     * @param variableChangeCallback a callback 
+     */
+    public void registerCallback(int variableNumber, VariableChangeCallback variableChangeCallback);
+
+    /**
+     * Writes a new variable value.
+     * <p>
+     * Must be followed by either a commit or rollback.
+     * @param variableNumber the index number of the variable to write (from VariableReader)
+     * @param newValue the new value
+     */
+    public void write(int variableNumber, Object newValue);
+
+    /**
+     * Commits the variable outstanding changes.
+     */
+    public void commit();
+
+    /**
+     * Rolls back the variable outstanding changes.
+     */
+    public void rollback();
+}
