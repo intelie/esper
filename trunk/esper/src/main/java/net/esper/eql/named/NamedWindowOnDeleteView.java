@@ -4,6 +4,7 @@ import net.esper.event.EventBean;
 import net.esper.event.EventType;
 import net.esper.view.*;
 import net.esper.collection.ArrayEventIterator;
+import net.esper.core.StatementResultService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -16,6 +17,7 @@ public class NamedWindowOnDeleteView extends NamedWindowOnExprBaseView
 {
     private static final Log log = LogFactory.getLog(NamedWindowOnDeleteView.class);
     private EventBean[] lastResult;
+    private final StatementResultService statementResultService;
 
     /**
      * Ctor.
@@ -25,9 +27,11 @@ public class NamedWindowOnDeleteView extends NamedWindowOnExprBaseView
      */
     public NamedWindowOnDeleteView(StatementStopService statementStopService,
                                  LookupStrategy lookupStrategy,
-                                 NamedWindowRootView removeStreamView)
+                                 NamedWindowRootView removeStreamView,
+                                 StatementResultService statementResultService)
     {
         super(statementStopService, lookupStrategy, removeStreamView);
+        this.statementResultService = statementResultService;
     }
 
     public void handleMatching(EventBean[] triggerEvents, EventBean[] matchingEvents)
@@ -37,8 +41,10 @@ public class NamedWindowOnDeleteView extends NamedWindowOnExprBaseView
             // Events to delete are indicated via old data
             this.rootView.update(null, matchingEvents);
 
-            // The on-delete listeners receive the events deleted
-            updateChildren(matchingEvents, null);
+            // The on-delete listeners receive the events deleted, but only if there is interest
+            if (statementResultService.isMakeNatural() || statementResultService.isMakeSynthetic()) {
+                updateChildren(matchingEvents, null);
+            }
         }
 
         // Keep the last delete records

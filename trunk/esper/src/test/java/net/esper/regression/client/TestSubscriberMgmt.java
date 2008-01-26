@@ -27,6 +27,33 @@ public class TestSubscriberMgmt extends TestCase
         epService.initialize();
     }
 
+    public void testStartStopStatement()
+    {
+        SubscriberInterface subscriber = new SubscriberInterface();
+        EPStatement stmt = epService.getEPAdministrator().createEQL("select * from SupportMarkerInterface");
+        stmt.setSubscriber(subscriber);
+
+        SupportBean_A a1 = new SupportBean_A("A1");
+        epService.getEPRuntime().sendEvent(a1);
+        ArrayAssertionUtil.assertEqualsExactOrder(subscriber.getAndResetIndicate().toArray(), new Object[] {a1});
+
+        SupportBean_B b1 = new SupportBean_B("B1");
+        epService.getEPRuntime().sendEvent(b1);
+        ArrayAssertionUtil.assertEqualsExactOrder(subscriber.getAndResetIndicate().toArray(), new Object[] {b1});
+        
+        stmt.stop();
+
+        SupportBean_C c1 = new SupportBean_C("C1");
+        epService.getEPRuntime().sendEvent(c1);
+        assertEquals(0, subscriber.getAndResetIndicate().size());
+
+        stmt.start();
+
+        SupportBean_D d1 = new SupportBean_D("D1");
+        epService.getEPRuntime().sendEvent(d1);
+        ArrayAssertionUtil.assertEqualsExactOrder(subscriber.getAndResetIndicate().toArray(), new Object[] {d1});
+    }
+
     public void testVariables()
     {
         String fields[] = "myvar".split(",");
@@ -131,6 +158,23 @@ public class TestSubscriberMgmt extends TestCase
         {
             List<Object[]> result = indicate;
             indicate = new ArrayList<Object[]>();
+            return result;
+        }
+    }
+
+    public class SubscriberInterface
+    {
+        private ArrayList<SupportMarkerInterface> indicate = new ArrayList<SupportMarkerInterface>();
+
+        public void update(SupportMarkerInterface impl)
+        {
+            indicate.add(impl);
+        }
+
+        public List<SupportMarkerInterface> getAndResetIndicate()
+        {
+            List<SupportMarkerInterface> result = indicate;
+            indicate = new ArrayList<SupportMarkerInterface>();
             return result;
         }
     }

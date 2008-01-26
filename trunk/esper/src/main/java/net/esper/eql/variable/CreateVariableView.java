@@ -1,21 +1,17 @@
 package net.esper.eql.variable;
 
-import net.esper.view.ViewSupport;
-import net.esper.eql.spec.OnTriggerSetDesc;
-import net.esper.eql.spec.OnTriggerSetAssignment;
-import net.esper.eql.expression.ExprValidationException;
-import net.esper.event.EventAdapterService;
-import net.esper.event.EventType;
-import net.esper.event.EventBean;
-import net.esper.util.JavaClassHelper;
-import net.esper.util.ExecutionPathDebugLog;
 import net.esper.collection.SingleEventIterator;
+import net.esper.core.StatementResultService;
+import net.esper.event.EventAdapterService;
+import net.esper.event.EventBean;
+import net.esper.event.EventType;
+import net.esper.view.ViewSupport;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.util.Map;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 /**
  * View for handling create-variable syntax.
@@ -33,6 +29,7 @@ public class CreateVariableView extends ViewSupport implements VariableChangeCal
     private final VariableReader reader;
     private final EventType eventType;
     private final String variableName;
+    private final StatementResultService statementResultService;
 
     /**
      * Ctor.
@@ -40,10 +37,11 @@ public class CreateVariableView extends ViewSupport implements VariableChangeCal
      * @param variableService for looking up variables
      * @param variableName is the name of the variable to create
      */
-    public CreateVariableView(EventAdapterService eventAdapterService, VariableService variableService, String variableName)
+    public CreateVariableView(EventAdapterService eventAdapterService, VariableService variableService, String variableName, StatementResultService statementResultService)
     {
         this.eventAdapterService = eventAdapterService;
         this.variableName = variableName;
+        this.statementResultService = statementResultService;
         reader = variableService.getReader(variableName);
 
         Map<String, Class> variableTypes = new HashMap<String, Class>();
@@ -53,7 +51,7 @@ public class CreateVariableView extends ViewSupport implements VariableChangeCal
 
     public void update(Object newValue, Object oldValue)
     {
-        if (this.hasViews())
+        if (statementResultService.isMakeNatural() || statementResultService.isMakeSynthetic())
         {
             Map<String, Object> valuesOld = new HashMap<String, Object>();
             valuesOld.put(variableName, oldValue);

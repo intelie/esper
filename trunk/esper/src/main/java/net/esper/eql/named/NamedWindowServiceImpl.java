@@ -2,6 +2,7 @@ package net.esper.eql.named;
 
 import net.esper.core.EPStatementHandle;
 import net.esper.core.StatementLockFactory;
+import net.esper.core.StatementResultService;
 import net.esper.event.EventBean;
 import net.esper.event.EventType;
 import net.esper.util.ManagedLock;
@@ -82,14 +83,14 @@ public class NamedWindowServiceImpl implements NamedWindowService
         return processor;
     }
 
-    public NamedWindowProcessor addProcessor(String name, EventType eventType, EPStatementHandle createWindowStmtHandle) throws ViewProcessingException
+    public NamedWindowProcessor addProcessor(String name, EventType eventType, EPStatementHandle createWindowStmtHandle, StatementResultService statementResultService) throws ViewProcessingException
     {
         if (processors.containsKey(name))
         {
             throw new ViewProcessingException("A named window by name '" + name + "' has already been created");
         }
 
-        NamedWindowProcessor processor = new NamedWindowProcessor(this, name, eventType, createWindowStmtHandle);
+        NamedWindowProcessor processor = new NamedWindowProcessor(this, name, eventType, createWindowStmtHandle, statementResultService);
         processors.put(name, processor);
         
         return processor;

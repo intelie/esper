@@ -7,6 +7,7 @@ import net.esper.view.StatementStopService;
 import net.esper.event.EventType;
 import net.esper.core.EPStatementHandle;
 import net.esper.core.InternalEventRouter;
+import net.esper.core.StatementResultService;
 
 import java.util.List;
 
@@ -27,12 +28,12 @@ public class NamedWindowProcessor
      * @param eventType the type of event held by the named window
      * @param createWindowStmtHandle the statement handle of the statement that created the named window
      */
-    public NamedWindowProcessor(NamedWindowService namedWindowService, String windowName, EventType eventType, EPStatementHandle createWindowStmtHandle)
+    public NamedWindowProcessor(NamedWindowService namedWindowService, String windowName, EventType eventType, EPStatementHandle createWindowStmtHandle, StatementResultService statementResultService)
     {
         this.eventType = eventType;
 
         rootView = new NamedWindowRootView();
-        tailView = new NamedWindowTailView(eventType, namedWindowService, rootView, createWindowStmtHandle);
+        tailView = new NamedWindowTailView(eventType, namedWindowService, rootView, createWindowStmtHandle, statementResultService);
         rootView.setDataWindowContents(tailView);   // for iteration used for delete without index
     }
 
@@ -67,9 +68,9 @@ public class NamedWindowProcessor
      * @param joinExpr is the join expression or null if there is none
      * @return on trigger handling view
      */
-    public NamedWindowOnExprBaseView addOnExpr(OnTriggerDesc onTriggerDesc, ExprNode joinExpr, EventType filterEventType, StatementStopService statementStopService, InternalEventRouter internalEventRouter, ResultSetProcessor resultSetProcessor, EPStatementHandle statementHandle)
+    public NamedWindowOnExprBaseView addOnExpr(OnTriggerDesc onTriggerDesc, ExprNode joinExpr, EventType filterEventType, StatementStopService statementStopService, InternalEventRouter internalEventRouter, ResultSetProcessor resultSetProcessor, EPStatementHandle statementHandle, StatementResultService statementResultService)
     {
-        return rootView.addOnExpr(onTriggerDesc, joinExpr, filterEventType, statementStopService, internalEventRouter, resultSetProcessor, statementHandle);
+        return rootView.addOnExpr(onTriggerDesc, joinExpr, filterEventType, statementStopService, internalEventRouter, resultSetProcessor, statementHandle, statementResultService);
     }
 
     /**

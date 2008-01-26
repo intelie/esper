@@ -2,6 +2,7 @@ package net.esper.eql.named;
 
 import net.esper.event.EventType;
 import net.esper.core.EPStatementHandle;
+import net.esper.core.StatementResultService;
 import net.esper.view.ViewProcessingException;
 import net.esper.util.ManagedLock;
 
@@ -35,10 +36,11 @@ public interface NamedWindowService
      * @param name window name
      * @param eventType the event type of the window
      * @param createWindowStmtHandle is the handle and lock of the create-named-window statement
+     * @param statementResultService
      * @return processor for the named window
      * @throws ViewProcessingException if the named window already exists
      */
-    public NamedWindowProcessor addProcessor(String name, EventType eventType, EPStatementHandle createWindowStmtHandle) throws ViewProcessingException;
+    public NamedWindowProcessor addProcessor(String name, EventType eventType, EPStatementHandle createWindowStmtHandle, StatementResultService statementResultService) throws ViewProcessingException;
 
     /**
      * Returns the processing instance for a given named window.

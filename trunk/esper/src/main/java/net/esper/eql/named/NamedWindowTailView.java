@@ -3,6 +3,7 @@ package net.esper.eql.named;
 import net.esper.collection.ArrayEventIterator;
 import net.esper.collection.NullIterator;
 import net.esper.core.EPStatementHandle;
+import net.esper.core.StatementResultService;
 import net.esper.eql.expression.ExprNode;
 import net.esper.event.EventBean;
 import net.esper.event.EventType;
@@ -23,6 +24,7 @@ public class NamedWindowTailView extends ViewSupport implements Iterable<EventBe
     private final NamedWindowService namedWindowService;
     private transient Map<EPStatementHandle, List<NamedWindowConsumerView>> consumers;
     private final EPStatementHandle createWindowStmtHandle;
+    private final StatementResultService statementResultService;
 
     /**
      * Ctor.
@@ -30,14 +32,16 @@ public class NamedWindowTailView extends ViewSupport implements Iterable<EventBe
      * @param namedWindowService the service for dispatches to consumers for hooking into the dispatch loop
      * @param namedWindowRootView the root data window view for indicating remove stream events to be removed from possible on-delete indexes
      * @param createWindowStmtHandle statement handle for the statement that created the named window, for safe iteration
+     * @param statementResultService
      */
-    public NamedWindowTailView(EventType eventType, NamedWindowService namedWindowService, NamedWindowRootView namedWindowRootView, EPStatementHandle createWindowStmtHandle)
+    public NamedWindowTailView(EventType eventType, NamedWindowService namedWindowService, NamedWindowRootView namedWindowRootView, EPStatementHandle createWindowStmtHandle, StatementResultService statementResultService)
     {
         this.eventType = eventType;
         this.namedWindowService = namedWindowService;
         consumers = new HashMap<EPStatementHandle, List<NamedWindowConsumerView>>();
         this.namedWindowRootView = namedWindowRootView;
         this.createWindowStmtHandle = createWindowStmtHandle;
+        this.statementResultService = statementResultService;
     }
 
     public void update(EventBean[] newData, EventBean[] oldData)
@@ -48,8 +52,11 @@ public class NamedWindowTailView extends ViewSupport implements Iterable<EventBe
             namedWindowRootView.removeOldData(oldData);
         }
 
-        // Post to child views
-        updateChildren(newData, oldData);        
+        // Post to child views, only if there are listeners or subscribers
+        if (statementResultService.isMakeNatural() || statementResultService.isMakeSynthetic())
+        {
+            updateChildren(newData, oldData);
+        }
 
         // Add to dispatch list for later result dispatch by runtime
         NamedWindowDeltaData delta = new NamedWindowDeltaData(newData, oldData);

@@ -210,7 +210,7 @@ public class EPStatementStartMethod
                     statementSpec, statementContext, typeService, null);
 
             InternalEventRouter routerService = (statementSpec.getInsertIntoDesc() == null)?  null : services.getInternalEventRouter();
-            onExprView = processor.addOnExpr(onTriggerDesc, validatedJoin, streamEventType, statementContext.getStatementStopService(), routerService, resultSetProcessor, statementContext.getEpStatementHandle());
+            onExprView = processor.addOnExpr(onTriggerDesc, validatedJoin, streamEventType, statementContext.getStatementStopService(), routerService, resultSetProcessor, statementContext.getEpStatementHandle(), statementContext.getStatementResultService());
             eventStreamParentViewable.addView(onExprView);
         }
         else
@@ -224,7 +224,7 @@ public class EPStatementStartMethod
                 assignment.setExpression(validated);
             }
 
-            onExprView = new OnSetVariableView(desc, statementContext.getEventAdapterService(), statementContext.getVariableService());
+            onExprView = new OnSetVariableView(desc, statementContext.getEventAdapterService(), statementContext.getVariableService(), statementContext.getStatementResultService());
             eventStreamParentViewable.addView(onExprView);
         }
 
@@ -256,7 +256,7 @@ public class EPStatementStartMethod
         final FilterStreamSpecCompiled filterStreamSpec = (FilterStreamSpecCompiled) statementSpec.getStreamSpecs().get(0);
         String windowName = statementSpec.getCreateWindowDesc().getWindowName();
         EventType windowType = filterStreamSpec.getFilterSpec().getEventType();
-        services.getNamedWindowService().addProcessor(windowName, windowType, statementContext.getEpStatementHandle());
+        services.getNamedWindowService().addProcessor(windowName, windowType, statementContext.getEpStatementHandle(), statementContext.getStatementResultService());
 
         // Create streams and views
         Viewable eventStreamParentViewable;
@@ -377,7 +377,7 @@ public class EPStatementStartMethod
             throw new ExprValidationException("Cannot create variable: " + ex.getMessage());
         }
 
-        CreateVariableView createView = new CreateVariableView(services.getEventAdapterService(), services.getVariableService(), createDesc.getVariableName());
+        CreateVariableView createView = new CreateVariableView(services.getEventAdapterService(), services.getVariableService(), createDesc.getVariableName(), statementContext.getStatementResultService());
         services.getVariableService().registerCallback(services.getVariableService().getReader(createDesc.getVariableName()).getVariableNumber(), createView);
 
         // Create result set processor, use wildcard selection

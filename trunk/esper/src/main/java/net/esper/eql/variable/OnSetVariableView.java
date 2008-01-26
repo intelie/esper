@@ -10,6 +10,7 @@ import net.esper.util.ExecutionPathDebugLog;
 import net.esper.util.JavaClassHelper;
 import net.esper.view.ViewSupport;
 import net.esper.collection.SingleEventIterator;
+import net.esper.core.StatementResultService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -33,6 +34,7 @@ public class OnSetVariableView extends ViewSupport
     private final VariableReader[] readers;
     private final EventBean[] eventsPerStream = new EventBean[1];
     private final boolean[] mustCoerce;
+    private final StatementResultService statementResultService;
 
     /**
      * Ctor.
@@ -41,12 +43,13 @@ public class OnSetVariableView extends ViewSupport
      * @param variableService for setting variables
      * @throws ExprValidationException if the assignment expressions are invalid
      */
-    public OnSetVariableView(OnTriggerSetDesc desc, EventAdapterService eventAdapterService, VariableService variableService)
+    public OnSetVariableView(OnTriggerSetDesc desc, EventAdapterService eventAdapterService, VariableService variableService, StatementResultService statementResultService)
             throws ExprValidationException
     {
         this.desc = desc;
         this.eventAdapterService = eventAdapterService;
         this.variableService = variableService;
+        this.statementResultService = statementResultService;
 
         Map<String, Class> variableTypes = new HashMap<String, Class>();
         readers = new VariableReader[desc.getAssignments().size()];
@@ -108,7 +111,9 @@ public class OnSetVariableView extends ViewSupport
         }
 
         Map<String, Object> values = null;
-        if (this.hasViews())
+        boolean produceOutputEvents = (statementResultService.isMakeNatural() || statementResultService.isMakeSynthetic());
+
+        if (produceOutputEvents)
         {
             values = new HashMap<String, Object>();
         }

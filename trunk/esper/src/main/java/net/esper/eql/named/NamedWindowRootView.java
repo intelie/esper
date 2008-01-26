@@ -22,6 +22,7 @@ import net.esper.view.ViewSupport;
 import net.esper.view.Viewable;
 import net.esper.core.InternalEventRouter;
 import net.esper.core.EPStatementHandle;
+import net.esper.core.StatementResultService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -107,7 +108,7 @@ public class NamedWindowRootView extends ViewSupport
      * @param joinExpr is the join expression or null if there is none
      * @return base view for on-trigger expression
      */
-    public NamedWindowOnExprBaseView addOnExpr(OnTriggerDesc onTriggerDesc, ExprNode joinExpr, EventType filterEventType, StatementStopService statementStopService, InternalEventRouter internalEventRouter, ResultSetProcessor resultSetProcessor, EPStatementHandle statementHandle)
+    public NamedWindowOnExprBaseView addOnExpr(OnTriggerDesc onTriggerDesc, ExprNode joinExpr, EventType filterEventType, StatementStopService statementStopService, InternalEventRouter internalEventRouter, ResultSetProcessor resultSetProcessor, EPStatementHandle statementHandle, StatementResultService statementResultService)
     {
         // Determine strategy for deletion and index table to use (if any)
         Pair<LookupStrategy,PropertyIndexedEventTable> strategy = getStrategyPair(onTriggerDesc, joinExpr, filterEventType);
@@ -120,11 +121,11 @@ public class NamedWindowRootView extends ViewSupport
 
         if (onTriggerDesc.getOnTriggerType() == OnTriggerType.ON_DELETE)
         {
-            return new NamedWindowOnDeleteView(statementStopService, strategy.getFirst(), this);
+            return new NamedWindowOnDeleteView(statementStopService, strategy.getFirst(), this, statementResultService);
         }
         else
         {
-            return new NamedWindowOnSelectView(statementStopService, strategy.getFirst(), this, internalEventRouter, resultSetProcessor, statementHandle);
+            return new NamedWindowOnSelectView(statementStopService, strategy.getFirst(), this, internalEventRouter, resultSetProcessor, statementHandle, statementResultService);
         }
     }
 

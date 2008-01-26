@@ -5,6 +5,7 @@ import net.esper.collection.MultiKey;
 import net.esper.collection.Pair;
 import net.esper.core.EPStatementHandle;
 import net.esper.core.InternalEventRouter;
+import net.esper.core.StatementResultService;
 import net.esper.eql.core.ResultSetProcessor;
 import net.esper.event.EventBean;
 import net.esper.event.EventType;
@@ -26,6 +27,7 @@ public class NamedWindowOnSelectView extends NamedWindowOnExprBaseView
     private final InternalEventRouter internalEventRouter;
     private final ResultSetProcessor resultSetProcessor;
     private final EPStatementHandle statementHandle;
+    private final StatementResultService statementResultService;
     private EventBean[] lastResult;
     private Set<MultiKey<EventBean>> oldEvents = new HashSet<MultiKey<EventBean>>();
 
@@ -43,12 +45,14 @@ public class NamedWindowOnSelectView extends NamedWindowOnExprBaseView
                                    NamedWindowRootView rootView,
                                    InternalEventRouter internalEventRouter,
                                    ResultSetProcessor resultSetProcessor,
-                                   EPStatementHandle statementHandle)
+                                   EPStatementHandle statementHandle,
+                                   StatementResultService statementResultService)
     {
         super(statementStopService, lookupStrategy, rootView);
         this.internalEventRouter = internalEventRouter;
         this.resultSetProcessor = resultSetProcessor;
         this.statementHandle = statementHandle;
+        this.statementResultService = statementResultService;
     }
 
     public void handleMatching(EventBean[] triggerEvents, EventBean[] matchingEvents)
@@ -90,7 +94,11 @@ public class NamedWindowOnSelectView extends NamedWindowOnExprBaseView
         // The on-select listeners receive the events selected
         if ((newData != null) && (newData.length > 0))
         {
-            updateChildren(newData, null);
+            // And post only if we have listeners/subscribers that need the data 
+            if (statementResultService.isMakeNatural() || statementResultService.isMakeSynthetic())
+            {
+                updateChildren(newData, null);
+            }
         }
         lastResult = newData;
     }
