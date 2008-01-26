@@ -36,15 +36,39 @@ public abstract class OutputProcessView implements View, JoinSetIndicator
      */
     protected final ResultSetProcessor resultSetProcessor;
     private JoinExecutionStrategy joinExecutionStrategy;
+
+    /**
+     * Strategy to performs the output once it's decided we need to output.
+     */
     protected final OutputStrategy outputStrategy;
+
+    /**
+     * Manages listeners/subscribers to a statement, informing about
+     * current result generation needs.
+     */
     protected final StatementResultService statementResultService;
+
+    /**
+     * The view to ultimately dispatch to.
+     */
     protected UpdateDispatchView childView;
+
+    /**
+     * The parent view for iteration.
+     */
     protected Viewable parentView;
+
+    /**
+     * An indicator on whether we always need synthetic events such as for insert-into.
+     */
     protected boolean isGenerateSynthetic;
 
     /**
      * Ctor.
      * @param resultSetProcessor processes the results posted by parent view or joins
+     * @param outputStrategy the strategy to use for producing output
+     * @param isInsertInto true if this is an insert-into
+     * @param statementResultService for awareness of listeners and subscriber
      */
     protected OutputProcessView(ResultSetProcessor resultSetProcessor, OutputStrategy outputStrategy, boolean isInsertInto, StatementResultService statementResultService)
     {
@@ -70,7 +94,6 @@ public abstract class OutputProcessView implements View, JoinSetIndicator
             throw new IllegalStateException("Child view has already been supplied");
         }
         childView = (UpdateDispatchView) view;
-        // TODO
         return this;
     }
 

@@ -26,6 +26,7 @@ public class ASTParameterHelper
     /**
      * Returns the parse Object for the parameter/constant AST node whose text to parse.
      * @param parameterNode - AST node to parse
+     * @param engineTime the engine current time
      * @return object value
      * @throws ASTWalkException is thrown to indicate a parse error
      */

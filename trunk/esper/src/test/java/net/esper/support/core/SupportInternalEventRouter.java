@@ -11,12 +11,9 @@ public class SupportInternalEventRouter implements InternalEventRouter
 {
     private List<EventBean> routed  = new LinkedList<EventBean>();
 
-    public void route(EventBean[] events, EPStatementHandle epStatementHandle)
+    public void route(EventBean event, EPStatementHandle epStatementHandle)
     {
-        for (int i = 0; i < events.length; i++)
-        {
-            routed.add(events[i]);
-        }
+        routed.add(event);
     }
 
     public List<EventBean> getRouted()

@@ -66,10 +66,18 @@ public class SelectClauseStreamCompiledSpec implements SelectClauseElementCompil
         return isTaggedEvent;
     }
 
+    /**
+     * Sets the stream number of the selected stream within the context of the from-clause.
+     * @param streamNumber to set
+     */
     public void setStreamNumber(int streamNumber) {
         this.streamNumber = streamNumber;
     }
 
+    /**
+     * Sets a flag indicating whether the stream wildcard is for a tagged event in a pattern.
+     * @param taggedEvent in pattern
+     */
     public void setTaggedEvent(boolean taggedEvent) {
         isTaggedEvent = taggedEvent;
     }

@@ -85,6 +85,9 @@ public class StatementSpecCompiled
         this.hasVariables = hasVariables;
     }
 
+    /**
+     * Ctor.
+     */
     public StatementSpecCompiled()
     {
         onTriggerDesc = null;

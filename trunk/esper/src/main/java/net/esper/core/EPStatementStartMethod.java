@@ -173,6 +173,7 @@ public class EPStatementStartMethod
         EventType streamEventType = eventStreamParentViewable.getEventType();
 
         ResultSetProcessor resultSetProcessor;
+        // For on-delete and on-select triggers
         if (statementSpec.getOnTriggerDesc() instanceof OnTriggerWindowDesc)
         {
             // Determine event types
@@ -199,6 +200,12 @@ public class EPStatementStartMethod
                     streamEventType, streamAlias);
 
             // Construct a processor for results; for use in on-select to process selection results
+            // Use a wildcard select if the select-clause is empty, such as for on-delete.
+            // For on-select the select clause is not empty.
+            if (statementSpec.getSelectClauseSpec().getSelectExprList().size() == 0)
+            {
+                statementSpec.getSelectClauseSpec().add(new SelectClauseElementWildcard());
+            }
             resultSetProcessor = ResultSetProcessorFactory.getProcessor(
                     statementSpec, statementContext, typeService, null);
 
@@ -221,20 +228,26 @@ public class EPStatementStartMethod
             eventStreamParentViewable.addView(onExprView);
         }
 
-        // Create an output processor that passes on as a wildcard the underlying event
-        StatementSpecCompiled defaultSelectAllSpec = new StatementSpecCompiled();
-        defaultSelectAllSpec.getSelectClauseSpec().add(new SelectClauseElementWildcard());
-        ResultSetProcessor outputResultSetProcessor = ResultSetProcessorFactory.getProcessor(
-                defaultSelectAllSpec, statementContext,
-                new StreamTypeServiceImpl(new EventType[] {onExprView.getEventType()}, new String[] {"set_variable"}), null);
+        // For on-delete, create an output processor that passes on as a wildcard the underlying event
+        if ((statementSpec.getOnTriggerDesc().getOnTriggerType() == OnTriggerType.ON_DELETE) ||
+            (statementSpec.getOnTriggerDesc().getOnTriggerType() == OnTriggerType.ON_SET))
+        {
+            StatementSpecCompiled defaultSelectAllSpec = new StatementSpecCompiled();
+            defaultSelectAllSpec.getSelectClauseSpec().add(new SelectClauseElementWildcard());
 
-        // Attach output view
-        OutputProcessView outputView = OutputProcessViewFactory.makeView(outputResultSetProcessor, defaultSelectAllSpec, statementContext, services.getInternalEventRouter());
-        onExprView.addView(outputView);
+            ResultSetProcessor outputResultSetProcessor = ResultSetProcessorFactory.getProcessor(
+                    defaultSelectAllSpec, statementContext,
+                    new StreamTypeServiceImpl(new EventType[] {onExprView.getEventType()}, new String[] {"trigger_stream"}), null);
+
+            // Attach output view
+            OutputProcessView outputView = OutputProcessViewFactory.makeView(outputResultSetProcessor, defaultSelectAllSpec, statementContext, services.getInternalEventRouter());
+            onExprView.addView(outputView);
+            onExprView = outputView;
+        }
 
         log.debug(".start Statement start completed");
 
-        return new Pair<Viewable, EPStatementStopMethod>(outputView, stopMethod);
+        return new Pair<Viewable, EPStatementStopMethod>(onExprView, stopMethod);
     }
 
     private Pair<Viewable, EPStatementStopMethod> startCreateWindow()
@@ -296,6 +309,9 @@ public class EPStatementStartMethod
         finalView.addView(tailView);
         finalView = tailView;
 
+        // Add a wildcard to the select clause as subscribers received the window contents
+        statementSpec.getSelectClauseSpec().getSelectExprList().clear();
+        statementSpec.getSelectClauseSpec().add(new SelectClauseElementWildcard());
         ResultSetProcessor resultSetProcessor = ResultSetProcessorFactory.getProcessor(
                 statementSpec, statementContext,
                 new StreamTypeServiceImpl(new EventType[] {windowType}, new String[] {windowName}), null);
@@ -364,7 +380,9 @@ public class EPStatementStartMethod
         CreateVariableView createView = new CreateVariableView(services.getEventAdapterService(), services.getVariableService(), createDesc.getVariableName());
         services.getVariableService().registerCallback(services.getVariableService().getReader(createDesc.getVariableName()).getVariableNumber(), createView);
 
-        // Create result set processor
+        // Create result set processor, use wildcard selection
+        statementSpec.getSelectClauseSpec().getSelectExprList().clear();
+        statementSpec.getSelectClauseSpec().add(new SelectClauseElementWildcard());
         ResultSetProcessor resultSetProcessor = ResultSetProcessorFactory.getProcessor(
                 statementSpec, statementContext,
                 new StreamTypeServiceImpl(new EventType[] {createView .getEventType()}, new String[] {"create_variable"}), null);

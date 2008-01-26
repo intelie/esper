@@ -20,12 +20,17 @@ public class UpdateDispatchViewBlockingSpin extends UpdateDispatchViewBase
      * Ctor.
      * @param dispatchService - for performing the dispatch
      * @param msecTimeout - timeout for preserving dispatch order through blocking
+     * @param statementResultService - handles result delivery
      */
     public UpdateDispatchViewBlockingSpin(StatementResultService statementResultService, DispatchService dispatchService, long msecTimeout)
     {
         super(statementResultService, dispatchService);
         this.currentFutureSpin = new UpdateDispatchFutureSpin(); // use a completed future as a start
         this.msecTimeout = msecTimeout;
+    }
+
+    public void update(EventBean[] newData, EventBean[] oldData) {
+        newResult(new Pair<EventBean[], EventBean[]>(newData, oldData));
     }
 
     public void newResult(Pair<EventBean[], EventBean[]> result)

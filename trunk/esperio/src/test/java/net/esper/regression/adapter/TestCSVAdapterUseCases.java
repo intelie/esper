@@ -146,7 +146,9 @@ public class TestCSVAdapterUseCases extends TestCase
     {
         CSVInputAdapterSpec spec = new CSVInputAdapterSpec(new AdapterInputSource(CSV_FILENAME_ONELINE_TRADE), "TypeB");
 
-        epService = EPServiceProviderManager.getDefaultProvider();
+        Configuration config = new Configuration();
+        config.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
+        epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();
 
         InputAdapter feed = new CSVInputAdapter(epService, spec);

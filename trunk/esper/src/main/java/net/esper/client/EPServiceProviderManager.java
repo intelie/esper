@@ -9,10 +9,9 @@ package net.esper.client;
 
 import net.esper.core.EPServiceProviderImpl;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Collections;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Factory for instances of {@link EPServiceProvider}.
@@ -64,7 +63,15 @@ public final class EPServiceProviderManager
         if (runtimes.containsKey(uri))
         {
             EPServiceProviderImpl provider = runtimes.get(uri);
-            provider.setConfiguration(configuration);
+            if (provider.isDestroyed())
+            {
+                provider = new EPServiceProviderImpl(configuration, uri);
+                runtimes.put(uri, provider);
+            }
+            else
+            {
+                provider.setConfiguration(configuration);
+            }
             return provider;
         }
 

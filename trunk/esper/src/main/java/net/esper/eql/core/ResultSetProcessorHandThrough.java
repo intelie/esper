@@ -9,14 +9,11 @@ import org.apache.commons.logging.LogFactory;
 
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedHashSet;
 import java.util.Set;
 
 /**
- * // TODO: fix javadoc
- * Result set processor for the simplest case: no aggregation functions used in the select clause, and no group-by.
- * <p>
- * The processor generates one row for each event entering (new event) and one row for each event leaving (old event).
+ * Result set processor for the hand-through case:
+ * no aggregation functions used in the select clause, and no group-by, no having and ordering.
  */
 public class ResultSetProcessorHandThrough implements ResultSetProcessor
 {
@@ -65,6 +62,7 @@ public class ResultSetProcessorHandThrough implements ResultSetProcessor
      * @param exprProcessor - processes each input event and returns output event
      * @param events - input events
      * @param isNewData - indicates whether we are dealing with new data (istream) or old data (rstream)
+     * @param isSynthesize - set to true to indicate that synthetic events are required for an iterator result set
      * @return output events, one for each input event
      */
     protected static EventBean[] getSelectEventsNoHaving(SelectExprProcessor exprProcessor, EventBean[] events, boolean isNewData, boolean isSynthesize)
@@ -96,32 +94,12 @@ public class ResultSetProcessorHandThrough implements ResultSetProcessor
     }
 
     /**
-     * Applies the last/all event output limit clause.
-     * @param eventSet to output
-     * @param isOutputLimitLastOnly - flag to indicate output all versus output last
-     * @return events to output
-     */
-    protected static Set<MultiKey<EventBean>> applyOutputLimit(Set<MultiKey<EventBean>> eventSet, boolean isOutputLimitLastOnly)
-    {
-        if(isOutputLimitLastOnly && eventSet != null && !eventSet.isEmpty())
-        {
-            Object[] events = eventSet.toArray();
-            Set<MultiKey<EventBean>> resultSet = new LinkedHashSet<MultiKey<EventBean>>();
-            resultSet.add((MultiKey<EventBean>)events[events.length - 1]);
-            return resultSet;
-        }
-        else
-        {
-            return eventSet;
-        }
-    }
-
-    /**
      * Applies the select-clause to the given events returning the selected events. The number of events stays the
      * same, i.e. this method does not filter it just transforms the result set.
      * @param exprProcessor - processes each input event and returns output event
      * @param events - input events
      * @param isNewData - indicates whether we are dealing with new data (istream) or old data (rstream)
+     * @param isSynthesize - set to true to indicate that synthetic events are required for an iterator result set
      * @return output events, one for each input event
      */
     protected static EventBean[] getSelectEventsNoHaving(SelectExprProcessor exprProcessor, Set<MultiKey<EventBean>> events, boolean isNewData, boolean isSynthesize)

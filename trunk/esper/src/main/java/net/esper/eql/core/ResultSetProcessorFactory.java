@@ -52,6 +52,8 @@ public class ResultSetProcessorFactory
      * having clause given a set of types describing each stream in the from-clause.
      * @param typeService - for information about the streams in the from clause
      * @param viewResourceDelegate - delegates views resource factory to expression resources requirements
+     * @param statementSpecCompiled - the statement specification
+     * @param stmtContext - engine and statement level services
      * @return result set processor instance
      * @throws ExprValidationException when any of the expressions is invalid
      */

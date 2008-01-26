@@ -1,11 +1,8 @@
 package net.esper.regression.client;
 
-import net.esper.client.ann.EPSubscriberMethod;
-import net.esper.collection.Pair;
 import net.esper.collection.UniformPair;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 public class MySubscriberMultirowMap

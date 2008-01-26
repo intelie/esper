@@ -28,6 +28,7 @@ public interface ResultSetProcessor
      * old events as specified.
      * @param newData - new events posted by view
      * @param oldData - old events posted by view
+     * @param isSynthesize - set to true to indicate that synthetic events are required for an iterator result set
      * @return pair of new events and old events
      */
     public Pair<EventBean[], EventBean[]> processViewResult(EventBean[] newData, EventBean[] oldData, boolean isSynthesize);
@@ -38,6 +39,7 @@ public interface ResultSetProcessor
      * old events as specified.
      * @param newEvents - new events posted by join
      * @param oldEvents - old events posted by join
+     * @param isSynthesize - set to true to indicate that synthetic events are required for an iterator result set
      * @return pair of new events and old events
      */
     public Pair<EventBean[], EventBean[]> processJoinResult(Set<MultiKey<EventBean>> newEvents, Set<MultiKey<EventBean>> oldEvents, boolean isSynthesize);

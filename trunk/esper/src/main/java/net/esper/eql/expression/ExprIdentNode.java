@@ -85,6 +85,11 @@ public class ExprIdentNode extends ExprNode
         return streamOrPropertyName;
     }
 
+    /**
+     * Returns the unresolved property name in it's complete form, including
+     * the stream name if there is one.
+     * @return property name
+     */
     public String getFullUnresolvedName()
     {
         if (streamOrPropertyName == null)

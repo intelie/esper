@@ -233,6 +233,13 @@ public class EPAdministratorImpl implements EPAdministrator
         configurationOperations = null;        
     }
 
+    /**
+     * Compile the EQL.
+     * @param eqlStatement expression to compile
+     * @param statementName is the name of the statement
+     * @param services is the context
+     * @return statement specification
+     */
     protected static StatementSpecRaw compileEQL(String eqlStatement, String statementName, EPServicesContext services)
     {
         if (log.isDebugEnabled())

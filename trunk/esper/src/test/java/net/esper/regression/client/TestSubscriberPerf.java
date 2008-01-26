@@ -2,17 +2,20 @@ package net.esper.regression.client;
 
 import junit.framework.TestCase;
 import net.esper.client.*;
-import net.esper.event.EventBean;
-import net.esper.support.bean.SupportBean;
+import net.esper.collection.UniformPair;
+import net.esper.support.bean.*;
 import net.esper.support.client.SupportConfigFactory;
 import net.esper.support.util.ArrayAssertionUtil;
+import net.esper.event.EventBean;
 
-import java.util.ArrayList;
+import java.util.Map;
 import java.util.List;
+import java.util.ArrayList;
 
-public class TestAnnotatedSubscriberPerf extends TestCase
+public class TestSubscriberPerf extends TestCase
 {
     private EPServiceProvider epService;
+    private final String fields[] = "string,intPrimitive".split(",");
 
     public void setUp()
     {

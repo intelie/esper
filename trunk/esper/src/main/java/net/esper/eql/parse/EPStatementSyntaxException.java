@@ -36,6 +36,7 @@ public class EPStatementSyntaxException extends EPStatementException
      * Converts from a syntax error to a nice statement exception.
      * @param e is the syntax error
      * @param expression is the expression text
+     * @param parser the parser that parsed the expression 
      * @return syntax exception
      */
     public static EPStatementSyntaxException convert(RecognitionException e, String expression, EsperEPL2GrammarParser parser)
@@ -132,6 +133,7 @@ public class EPStatementSyntaxException extends EPStatementException
      * Converts from a syntax error to a nice statement exception.
      * @param e is the syntax error
      * @param expression is the expression text
+     * @param treeWalker the tree walker that walked the tree 
      * @return syntax exception
      */
     public static EPStatementSyntaxException convert(RecognitionException e, String expression, EsperEPL2Ast treeWalker)
@@ -222,6 +224,7 @@ public class EPStatementSyntaxException extends EPStatementException
 
     /**
      * Returns the position information string for a parser exception.
+     * @param t the token to return the information for
      * @return is a string with line and column information
      */
     private static String getPositionInfo(Token t)
@@ -231,4 +234,5 @@ public class EPStatementSyntaxException extends EPStatementException
                 : "";
     }
 }
+
 

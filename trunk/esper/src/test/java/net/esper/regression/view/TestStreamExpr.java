@@ -24,7 +24,7 @@ public class TestStreamExpr extends TestCase
     {
         Configuration config = SupportConfigFactory.getConfiguration();
         config.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
-        epService = EPServiceProviderManager.getDefaultProvider();
+        epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();
     }
 

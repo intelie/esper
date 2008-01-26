@@ -20,12 +20,17 @@ public class UpdateDispatchViewBlockingWait extends UpdateDispatchViewBase
      * Ctor.
      * @param dispatchService - for performing the dispatch
      * @param msecTimeout - timeout for preserving dispatch order through blocking
+     * @param statementResultServiceImpl - handles result delivery
      */
     public UpdateDispatchViewBlockingWait(StatementResultService statementResultServiceImpl, DispatchService dispatchService, long msecTimeout)
     {
         super(statementResultServiceImpl, dispatchService);
         this.currentFutureWait = new UpdateDispatchFutureWait(); // use a completed future as a start
         this.msecTimeout = msecTimeout;
+    }
+
+    public void update(EventBean[] newData, EventBean[] oldData) {
+        newResult(new Pair<EventBean[], EventBean[]>(newData, oldData));
     }
 
     public void newResult(Pair<EventBean[], EventBean[]> results)

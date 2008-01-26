@@ -79,21 +79,24 @@ public class JavaClassHelper
         for (Class param : parameters)
         {
             builder.append(delimiter);
-            if (param == null)
-            {
-                builder.append("null (any type)");
-            }
-            else
-            {
-                builder.append(parameterToString(param));
-            }
+            builder.append(getParameterAsString(param));
             delimiter = delimiterComma;
         }
         return builder.toString();
     }
 
-    private static String parameterToString(Class param)
+    /**
+     * Returns a parameter as a string text, allowing null values to represent a null
+     * select expression type.
+     * @param param is the parameter type
+     * @return string representation of parameter
+     */
+    public static String getParameterAsString(Class param)
     {
+        if (param == null)
+        {
+            return "null (any type)";
+        }
         return param.getSimpleName();
     }
 

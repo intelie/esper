@@ -26,6 +26,7 @@ public interface SelectExprProcessor
      * properties, the selected items.
      * @param eventsPerStream - is per stream the event
      * @param isNewData - indicates whether we are dealing with new data (istream) or old data (rstream)
+     * @param isSynthesize - set to true to indicate that synthetic events are required for an iterator result set
      * @return event with properties containing selected items
      */
     public EventBean process(EventBean[] eventsPerStream, boolean isNewData, boolean isSynthesize);

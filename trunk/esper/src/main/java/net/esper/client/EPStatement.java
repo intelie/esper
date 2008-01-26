@@ -82,7 +82,23 @@ public interface EPStatement extends EPListenable, EPIterable
      */
     public long getTimeLastStateChange();
 
+    /**
+     * Attaches a subscriber to receive statement results,
+     * or removes a previously set subscriber (by providing a null value).
+     * @param subscriber to attach, or null to remove the previously set subscriber
+     * @throws EPSubscriberException if the subscriber does not provide the methods
+     *   needed to receive statement results
+     */
     public void setSubscriber(Object subscriber) throws EPSubscriberException;
+
+    /**
+     * Returns the current subscriber instance that receives statement results.
+     * @return subscriber object, or null to indicate that no subscriber is attached
+     * @throws EPSubscriberException if the subscriber does not provide the methods
+     *   needed to receive statement results
+     */
+    public Object getSubscriber();
 }
+
 
 

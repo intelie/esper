@@ -1,6 +1,7 @@
 package net.esper.support.view;
 
 import net.esper.core.StatementContext;
+import net.esper.core.StatementResultServiceImpl;
 import net.esper.schedule.SchedulingService;
 import net.esper.support.event.SupportEventAdapterService;
 import net.esper.support.schedule.SupportSchedulingServiceImpl;
@@ -42,7 +43,7 @@ public class SupportStatementContextFactory
                 new OutputConditionFactoryDefault(),
                 null,
                 null,
-                null // statement result svc
+                new StatementResultServiceImpl() // statement result svc
                 );
     }
 }

@@ -23,6 +23,8 @@ public class OutputProcessViewDirect extends OutputProcessView
      * Ctor.
      * @param resultSetProcessor is processing the result set for publishing it out
      * @param outputStrategy is the execution of output to sub-views or natively
+     * @param isInsertInto is true if the statement is a insert-into
+     * @param statementResultService service for managing listener/subscribers and result generation needs
      */
     public OutputProcessViewDirect(ResultSetProcessor resultSetProcessor, OutputStrategy outputStrategy, boolean isInsertInto, StatementResultService statementResultService)
     {
@@ -54,7 +56,6 @@ public class OutputProcessViewDirect extends OutputProcessView
 
         Pair<EventBean[], EventBean[]> newOldEvents = resultSetProcessor.processViewResult(newData, oldData, isGenerateSynthetic);
 
-        // TODO: add logic for output-rate-limiting
         if ((!isGenerateSynthetic) && (!isGenerateNatural))
         {
             return;
@@ -93,7 +94,6 @@ public class OutputProcessViewDirect extends OutputProcessView
 
         Pair<EventBean[], EventBean[]> newOldEvents = resultSetProcessor.processJoinResult(newEvents, oldEvents, isGenerateSynthetic);
 
-        // TODO: add logic for output-rate-limiting
         if ((!isGenerateSynthetic) && (!isGenerateNatural))
         {
             return;

@@ -3,6 +3,7 @@ package net.esper.example.linearroad;
 import net.esper.client.EPServiceProvider;
 import net.esper.client.EPServiceProviderManager;
 import net.esper.client.EPStatement;
+import net.esper.client.Configuration;
 import net.esper.client.time.CurrentTimeEvent;
 import net.esper.client.time.TimerControlEvent;
 import net.esper.example.support.ArrayAssertionUtil;
@@ -22,9 +23,11 @@ public class TestCarSegmentCount extends TestCase
 
     public void setUp()
     {
-        epService = EPServiceProviderManager.getDefaultProvider();
+        // This code runs as part of the automated regression test suite; Therefore disable internal timer theading to safe resources
+        Configuration config = new Configuration();
+        config.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
+        epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();
-        epService.getEPRuntime().sendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
 
         String carLocEvent = CarLocEvent.class.getName();
 

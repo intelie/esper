@@ -19,6 +19,8 @@ public class ASTFilterSpecHelper
 {
     /**
      * Return the generated property name that is defined by the AST child node and it's siblings.
+     * @param parentNode the AST node to consider as the parent for the child nodes to look at
+     * @param startIndex the index of the child node to start looking at
      * @return property name, ie. indexed[1] or mapped('key') or nested.nested or a combination or just 'simple'.
      */
     protected static String getPropertyName(Tree parentNode, int startIndex)

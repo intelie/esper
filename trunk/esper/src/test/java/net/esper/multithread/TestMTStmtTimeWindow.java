@@ -4,6 +4,7 @@ import junit.framework.TestCase;
 import net.esper.client.EPServiceProvider;
 import net.esper.client.EPServiceProviderManager;
 import net.esper.client.EPStatement;
+import net.esper.client.Configuration;
 import net.esper.client.time.TimerControlEvent;
 import net.esper.client.time.CurrentTimeEvent;
 import net.esper.support.util.SupportMTUpdateListener;
@@ -23,9 +24,9 @@ public class TestMTStmtTimeWindow extends TestCase
 
     public void setUp()
     {
-        engine = EPServiceProviderManager.getProvider("TestMTStmtTimeWindow");
-        // Need external time for this test
-        engine.getEPRuntime().sendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
+        Configuration config = new Configuration();
+        config.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
+        engine = EPServiceProviderManager.getProvider("TestMTStmtTimeWindow", config);
     }
 
     public void tearDown()

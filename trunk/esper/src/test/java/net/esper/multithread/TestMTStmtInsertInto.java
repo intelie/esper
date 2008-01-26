@@ -4,10 +4,12 @@ import junit.framework.TestCase;
 import net.esper.client.EPServiceProvider;
 import net.esper.client.EPServiceProviderManager;
 import net.esper.client.EPStatement;
+import net.esper.client.Configuration;
 import net.esper.event.EventBean;
 import net.esper.support.bean.SupportBean;
 import net.esper.support.bean.SupportMarketDataBean;
 import net.esper.support.util.SupportMTUpdateListener;
+import net.esper.support.client.SupportConfigFactory;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -25,10 +27,10 @@ public class TestMTStmtInsertInto extends TestCase
 
     public void setUp()
     {
-        engine = EPServiceProviderManager.getDefaultProvider();
+        Configuration configuration = SupportConfigFactory.getConfiguration();
+        configuration.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
+        engine = EPServiceProviderManager.getDefaultProvider(configuration);
         engine.initialize();
-        // Less much debug output can be obtained by using external times
-        //engine.getEPRuntime().sendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
     }
 
     public void testInsertInto() throws Exception

@@ -4,11 +4,13 @@ import junit.framework.TestCase;
 import net.esper.client.EPServiceProvider;
 import net.esper.client.EPServiceProviderManager;
 import net.esper.client.EPStatement;
+import net.esper.client.Configuration;
 import net.esper.client.time.TimerControlEvent;
 import net.esper.support.util.SupportMTUpdateListener;
 import net.esper.support.bean.SupportBean;
 import net.esper.support.bean.SupportMarketDataBean;
 import net.esper.support.bean.SupportBean_A;
+import net.esper.support.client.SupportConfigFactory;
 import net.esper.event.EventBean;
 
 import java.util.concurrent.*;
@@ -25,9 +27,10 @@ public class TestMTStmtNamedWindowDelete extends TestCase
 
     public void setUp()
     {
-        engine = EPServiceProviderManager.getDefaultProvider();
+        Configuration configuration = SupportConfigFactory.getConfiguration();
+        configuration.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
+        engine = EPServiceProviderManager.getDefaultProvider(configuration);
         engine.initialize();
-        engine.getEPRuntime().sendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
     }
 
     public void testNamedWindow() throws Exception

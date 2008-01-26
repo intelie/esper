@@ -10,8 +10,12 @@ public class TestAverageLatencyAlertMonitor extends TestCase
 
     public void setUp()
     {
+        // This code runs as part of the automated regression test suite; Therefore disable internal timer theading to safe resources
+        Configuration config = new Configuration();
+        config.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
+
         new AverageLatencyMonitor();
-        runtime = EPServiceProviderManager.getDefaultProvider().getEPRuntime();
+        runtime = EPServiceProviderManager.getDefaultProvider(config).getEPRuntime();
     }
 
     public void testLatencyAlert()

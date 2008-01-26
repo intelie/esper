@@ -37,6 +37,8 @@ public class OutputProcessViewPolicy extends OutputProcessView
      * @param streamCount is the number of streams, indicates whether or not this view participates in a join
      * @param outputLimitSpec is the specification for limiting output (the output condition and the result set processor)
      * @param statementContext is the services the output condition may depend on
+     * @param isInsertInto is true if the statement is a insert-into
+     * @param outputStrategy is the method to use to produce output
      */
     public OutputProcessViewPolicy(ResultSetProcessor resultSetProcessor,
                           OutputStrategy outputStrategy,
@@ -148,8 +150,16 @@ public class OutputProcessViewPolicy extends OutputProcessView
 		EventBean[] newEvents = !newEventsList.isEmpty() ? newEventsList.toArray(new EventBean[0]) : null;
 		EventBean[] oldEvents = !oldEventsList.isEmpty() ? oldEventsList.toArray(new EventBean[0]) : null;
 
+        boolean isGenerateSynthetic = statementResultService.isMakeSynthetic();
+        boolean isGenerateNatural = statementResultService.isMakeNatural();
+
         // Process the events and get the result
         Pair<EventBean[], EventBean[]> newOldEvents = resultSetProcessor.processViewResult(newEvents, oldEvents, isGenerateSynthetic);
+
+        if ((!isGenerateSynthetic) && (!isGenerateNatural))
+        {
+            return;
+        }
 
         if (outputSnapshot)
         {
@@ -207,7 +217,16 @@ public class OutputProcessViewPolicy extends OutputProcessView
 	{
 		log.debug(".continueOutputProcessingJoin");
 
-		Pair<EventBean[], EventBean[]> newOldEvents = resultSetProcessor.processJoinResult(newEventsSet, oldEventsSet, isGenerateSynthetic);
+        boolean isGenerateSynthetic = statementResultService.isMakeSynthetic();
+        boolean isGenerateNatural = statementResultService.isMakeNatural();
+
+        // Process the events and get the result
+        Pair<EventBean[], EventBean[]> newOldEvents = resultSetProcessor.processJoinResult(newEventsSet, oldEventsSet, isGenerateSynthetic);
+
+        if ((!isGenerateSynthetic) && (!isGenerateNatural))
+        {
+            return;
+        }
 
 		if(doOutput)
 		{

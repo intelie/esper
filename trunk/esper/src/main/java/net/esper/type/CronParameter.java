@@ -45,6 +45,7 @@ public class CronParameter implements NumberSetParameter {
      * Ctor.
      * @param cronOperator is the operator as text
      * @param day is the day text
+     * @param engineTime is the current engine time
      */
     public CronParameter(int cronOperator, String day, long engineTime) {
         this.operator = assignOperator(cronOperator);

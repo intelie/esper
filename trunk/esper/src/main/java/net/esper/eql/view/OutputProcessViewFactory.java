@@ -17,6 +17,8 @@ public class OutputProcessViewFactory
      * Creates an output processor view depending on the presence of output limiting requirements.
      * @param resultSetProcessor is the processing for select-clause and grouping
      * @param statementContext is the statement-level services
+     * @param internalEventRouter service for routing events internally
+     * @param statementSpec the statement specification
      * @return output processing view
      * @throws ExprValidationException to indicate 
      */

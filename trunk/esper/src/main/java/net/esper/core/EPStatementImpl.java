@@ -49,6 +49,7 @@ public class EPStatementImpl implements EPStatementSPI
      * @param timeLastStateChange the timestamp the statement was created and started
      * @param epStatementHandle the handle and statement lock associated with the statement
      * @param variableService provides access to variable values
+     * @param statementResultService handles statement result generation
      */
     public EPStatementImpl(String statementId,
                               String statementName,
@@ -334,5 +335,10 @@ public class EPStatementImpl implements EPStatementSPI
     {
         statementListenerSet.setSubscriber(subscriber);
         statementResultService.setUpdateListeners(statementListenerSet);
+    }
+
+    public Object getSubscriber()
+    {
+        return statementListenerSet.getSubscriber();
     }
 }

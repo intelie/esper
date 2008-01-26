@@ -4,6 +4,7 @@ import junit.framework.TestCase;
 import net.esper.client.EPServiceProvider;
 import net.esper.client.EPServiceProviderManager;
 import net.esper.client.EPStatement;
+import net.esper.client.Configuration;
 import net.esper.support.bean.SupportBean;
 
 import java.util.concurrent.ExecutorService;
@@ -21,7 +22,9 @@ public class TestMTStmtFilter extends TestCase
 
     public void setUp()
     {
-        engine = EPServiceProviderManager.getProvider("TestMTStmtFilter");
+        Configuration config = new Configuration();
+        config.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
+        engine = EPServiceProviderManager.getProvider("TestMTStmtFilter", config);
     }
 
     public void tearDown()

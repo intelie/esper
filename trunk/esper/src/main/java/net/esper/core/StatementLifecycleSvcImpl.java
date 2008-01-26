@@ -4,10 +4,7 @@ import net.esper.client.*;
 import net.esper.collection.Pair;
 import net.esper.eql.core.StreamTypeService;
 import net.esper.eql.core.StreamTypeServiceImpl;
-import net.esper.eql.expression.ExprNode;
-import net.esper.eql.expression.ExprNodeSubselectVisitor;
-import net.esper.eql.expression.ExprSubselectNode;
-import net.esper.eql.expression.ExprValidationException;
+import net.esper.eql.expression.*;
 import net.esper.eql.named.NamedWindowService;
 import net.esper.eql.spec.*;
 import net.esper.event.EventType;
@@ -708,8 +705,9 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
             {
                 FilterStreamSpecCompiled filterStreamSpec = (FilterStreamSpecCompiled) compiledStreams.get(0);
                 EventType selectFromType = filterStreamSpec.getFilterSpec().getEventType();
-                FilterSpecCompiled newFilter = handleCreateWindow(selectFromType, spec, eqlStatement, statementContext);
-                filterStreamSpec.setFilterSpec(newFilter);
+                Pair<FilterSpecCompiled, SelectClauseSpecRaw> newFilter = handleCreateWindow(selectFromType, spec, eqlStatement, statementContext);
+                filterStreamSpec.setFilterSpec(newFilter.getFirst());
+                spec.setSelectClauseSpec(newFilter.getSecond());
 
                 // view must be non-empty list
                 if (spec.getCreateWindowDesc().getViewSpecs().isEmpty())
@@ -717,9 +715,6 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
                     throw new ExprValidationException(NamedWindowService.ERROR_MSG_DATAWINDOWS);
                 }
                 filterStreamSpec.getViewSpecs().addAll(spec.getCreateWindowDesc().getViewSpecs());
-
-                // clear the select clause, there is none as the views post directly to consuming statements via dispatch
-                spec.getSelectClauseSpec().getSelectExprList().clear();
             }
             catch (ExprValidationException e)
             {
@@ -790,7 +785,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
     //
     // This section expected s single FilterStreamSpecCompiled representing the selected type.
     // It creates a new event type representing the window type and a sets the type selected on the filter stream spec.
-    private static FilterSpecCompiled handleCreateWindow(EventType selectFromType,
+    private static Pair<FilterSpecCompiled, SelectClauseSpecRaw> handleCreateWindow(EventType selectFromType,
                                            StatementSpecRaw spec,
                                            String eqlStatement,
                                            StatementContext statementContext)
@@ -805,10 +800,14 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
         // Create Map or Wrapper event type from the select clause of the window.
         // If no columns selected, simply create a wrapper type
         // Build a list of properties
+        SelectClauseSpecRaw newSelectClauseSpecRaw = new SelectClauseSpecRaw();
         Map<String, Class> properties = new HashMap<String, Class>();
         for (SelectClauseExprCompiledSpec selectElement : select)
         {
             properties.put(selectElement.getAssignedName(), selectElement.getSelectExpression().getType());
+
+            // Add any properties to the new select clause for use by consumers to the statement itself
+            newSelectClauseSpecRaw.add(new SelectClauseExprRawSpec(new ExprIdentNode(selectElement.getAssignedName()), null));
         }
 
         // Create Map or Wrapper event type from the select clause of the window.
@@ -841,7 +840,8 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
             }
         }
 
-        return new FilterSpecCompiled(targetType, new ArrayList<FilterSpecParam>());
+        FilterSpecCompiled filter = new FilterSpecCompiled(targetType, new ArrayList<FilterSpecParam>());
+        return new Pair<FilterSpecCompiled, SelectClauseSpecRaw>(filter, newSelectClauseSpecRaw);
     }
 
     private static List<SelectClauseExprCompiledSpec> compileLimitedSelect(SelectClauseSpecRaw spec, String eqlStatement, EventType singleType)

@@ -16,6 +16,9 @@ import java.util.Iterator;
  */
 public abstract class UpdateDispatchViewBase extends ViewSupport implements Dispatchable, UpdateDispatchView
 {
+    /**
+     * Handles result delivery
+     */
     protected final StatementResultService statementResultServiceImpl;
 
     /**
@@ -40,6 +43,7 @@ public abstract class UpdateDispatchViewBase extends ViewSupport implements Disp
     /**
      * Ctor.
      * @param dispatchService - for performing the dispatch
+     * @param statementResultServiceImpl - handles result delivery
      */
     public UpdateDispatchViewBase(StatementResultService statementResultServiceImpl, DispatchService dispatchService)
     {
@@ -69,11 +73,6 @@ public abstract class UpdateDispatchViewBase extends ViewSupport implements Disp
     public void clear()
     {
         lastIterableEvent = null;
-    }
-
-    public void update(EventBean[] newData, EventBean[] oldData)
-    {
-        throw new UnsupportedOperationException("Update not supported");
     }
 
     private static Log log = LogFactory.getLog(UpdateDispatchViewBase.class);

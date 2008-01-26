@@ -1,20 +1,14 @@
 package net.esper.core;
 
-import net.esper.event.EventBean;
-import net.esper.event.NaturalEventBean;
-import net.esper.collection.Pair;
-import net.sf.cglib.reflect.FastMethod;
-import net.sf.cglib.reflect.FastClass;
-
-import java.lang.reflect.Method;
-import java.lang.reflect.InvocationTargetException;
-import java.util.Map;
-import java.util.HashMap;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
+/**
+ * Converts a row of column selection results into a result for dispatch to a method.
+ */
 public interface DeliveryConvertor
 {
+    /**
+     * Convert result row to dispatchable.
+     * @param row to convert
+     * @return converted row
+     */
     public Object[] convertRow(Object[] row);
 }

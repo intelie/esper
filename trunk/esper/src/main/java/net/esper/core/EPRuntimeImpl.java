@@ -164,23 +164,17 @@ public class EPRuntimeImpl implements EPRuntime, TimerCallback, InternalEventRou
     }
 
     // Internal route of events via insert-into, holds a statement lock
-    public void route(EventBean events[], EPStatementHandle epStatementHandle)
+    public void route(EventBean event, EPStatementHandle epStatementHandle)
     {
         if (isLatchStatementInsertStream)
         {
             InsertIntoLatchFactory insertIntoLatchFactory = epStatementHandle.getInsertIntoLatchFactory();
-            for (EventBean event : events)
-            {
-                Object latch = insertIntoLatchFactory.newLatch(event);
-                ThreadWorkQueue.add(latch);
-            }
+            Object latch = insertIntoLatchFactory.newLatch(event);
+            ThreadWorkQueue.add(latch);
         }
         else
         {
-            for (EventBean event : events)
-            {
-                ThreadWorkQueue.add(event);
-            }
+            ThreadWorkQueue.add(event);
         }
     }
 

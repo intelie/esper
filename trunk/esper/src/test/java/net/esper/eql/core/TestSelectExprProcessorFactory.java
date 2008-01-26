@@ -1,9 +1,12 @@
 package net.esper.eql.core;
 
 import junit.framework.TestCase;
+import net.esper.core.StatementResultService;
+import net.esper.core.StatementResultServiceImpl;
 import net.esper.eql.expression.ExprNode;
 import net.esper.eql.expression.ExprValidationException;
 import net.esper.eql.spec.SelectClauseElementCompiled;
+import net.esper.eql.spec.SelectClauseElementWildcard;
 import net.esper.eql.spec.SelectClauseExprCompiledSpec;
 import net.esper.eql.spec.SelectClauseStreamCompiledSpec;
 import net.esper.support.eql.SupportExprNodeFactory;
@@ -17,6 +20,7 @@ import java.util.List;
 public class TestSelectExprProcessorFactory extends TestCase
 {
     private List<SelectClauseStreamCompiledSpec> listOfStreamsSelected = new ArrayList<SelectClauseStreamCompiledSpec>();
+    private StatementResultService statementResultService = new StatementResultServiceImpl(); 
 
     public void testGetProcessorInvalid() throws Exception
     {
@@ -41,8 +45,9 @@ public class TestSelectExprProcessorFactory extends TestCase
     public void testGetProcessorWildcard() throws Exception
     {
         List<SelectClauseElementCompiled> selectionList = new LinkedList<SelectClauseElementCompiled>();
+        selectionList.add(new SelectClauseElementWildcard());
         SelectExprProcessor processor = SelectExprProcessorFactory.getProcessor(selectionList, false, null,
-                new SupportStreamTypeSvc3Stream(), SupportEventAdapterService.getService(), null);
+                new SupportStreamTypeSvc3Stream(), SupportEventAdapterService.getService(), statementResultService);
         assertTrue(processor instanceof SelectExprResultProcessor);
     }
 
@@ -52,7 +57,7 @@ public class TestSelectExprProcessorFactory extends TestCase
         ExprNode identNode = SupportExprNodeFactory.makeIdentNode("doubleBoxed", "s0");
         selectionList.add(new SelectClauseExprCompiledSpec(identNode, "result"));
         SelectExprProcessor processor = SelectExprProcessorFactory.getProcessor(selectionList, false, null,
-                new SupportStreamTypeSvc3Stream(), SupportEventAdapterService.getService(), null);
+                new SupportStreamTypeSvc3Stream(), SupportEventAdapterService.getService(), statementResultService);
         assertTrue(processor != null);
     }
 

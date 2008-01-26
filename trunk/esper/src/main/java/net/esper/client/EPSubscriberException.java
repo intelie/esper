@@ -8,7 +8,8 @@
 package net.esper.client;
 
 /**
- * This exception is thrown to indicate a problem in TODO
+ * This exception is thrown to indicate that a subscriber registration failed
+ * such as when the subscribe does not expose an acceptable method to receive statement results.
  */
 public class EPSubscriberException extends EPException
 {

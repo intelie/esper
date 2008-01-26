@@ -4,7 +4,9 @@ import junit.framework.TestCase;
 import net.esper.client.EPServiceProvider;
 import net.esper.client.EPServiceProviderManager;
 import net.esper.client.EPStatement;
+import net.esper.client.Configuration;
 import net.esper.support.bean.SupportMarketDataBean;
+import net.esper.support.client.SupportConfigFactory;
 
 import java.util.concurrent.*;
 
@@ -17,7 +19,9 @@ public class TestMTEmitListener extends TestCase
 
     public void setUp()
     {
-        engine = EPServiceProviderManager.getDefaultProvider();
+        Configuration configuration = SupportConfigFactory.getConfiguration();
+        configuration.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
+        engine = EPServiceProviderManager.getDefaultProvider(configuration);
     }
 
     public void testEQL() throws Exception

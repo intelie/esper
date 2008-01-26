@@ -4,6 +4,7 @@ import junit.framework.TestCase;
 import net.esper.client.EPServiceProvider;
 import net.esper.client.EPServiceProviderManager;
 import net.esper.client.EPStatement;
+import net.esper.client.Configuration;
 import net.esper.support.bean.SupportMarketDataBean;
 import net.esper.support.util.SupportMTUpdateListener;
 
@@ -20,9 +21,9 @@ public class TestMTStmtListenerAddRemove extends TestCase
 
     public void setUp()
     {
-        engine = EPServiceProviderManager.getProvider("TestMTStmtListenerAddRemove");
-        // Less much debug output can be obtained by using external times
-        //engine.getEPRuntime().sendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
+        Configuration config = new Configuration();
+        config.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
+        engine = EPServiceProviderManager.getProvider("TestMTStmtListenerAddRemove", config);
     }
 
     public void tearDown()

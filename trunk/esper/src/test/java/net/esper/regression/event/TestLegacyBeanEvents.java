@@ -260,12 +260,13 @@ public class TestLegacyBeanEvents extends TestCase
     private void tryFinalClass(ConfigurationEventTypeLegacy.CodeGeneration codeGeneration)
     {
         Configuration config = SupportConfigFactory.getConfiguration();
+        config.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
         ConfigurationEventTypeLegacy legacyDef = new ConfigurationEventTypeLegacy();
         legacyDef.setAccessorStyle(ConfigurationEventTypeLegacy.AccessorStyle.JAVABEAN);
         legacyDef.setCodeGeneration(codeGeneration);
         config.addEventTypeAlias("MyFinalEvent", SupportBeanFinal.class.getName(), legacyDef);
 
-        epService = EPServiceProviderManager.getProvider(this.getClass().getName() + ".test4" + codeGeneration);
+        epService = EPServiceProviderManager.getProvider(this.getClass().getName() + ".test4" + codeGeneration, config);
         epService.initialize();
 
         String statementText = "select intPrimitive " +

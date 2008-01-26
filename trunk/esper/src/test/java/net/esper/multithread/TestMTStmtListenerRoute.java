@@ -4,9 +4,11 @@ import junit.framework.TestCase;
 import net.esper.client.EPServiceProvider;
 import net.esper.client.EPServiceProviderManager;
 import net.esper.client.EPStatement;
+import net.esper.client.Configuration;
 import net.esper.support.util.SupportMTUpdateListener;
 import net.esper.support.bean.SupportBean;
 import net.esper.support.bean.SupportMarketDataBean;
+import net.esper.support.client.SupportConfigFactory;
 import net.esper.event.EventBean;
 
 import java.util.concurrent.*;
@@ -24,7 +26,9 @@ public class TestMTStmtListenerRoute extends TestCase
 
     public void setUp()
     {
-        engine = EPServiceProviderManager.getDefaultProvider();
+        Configuration configuration = SupportConfigFactory.getConfiguration();
+        configuration.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
+        engine = EPServiceProviderManager.getDefaultProvider(configuration);
     }
 
     public void testListenerCreateStmt() throws Exception

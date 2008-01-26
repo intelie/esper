@@ -103,6 +103,11 @@ public class MethodResolver
 		MethodResolver.wideningConversions.put(Double.class, new HashSet<Class>(wideningConversions));
 	}
 
+    /**
+     * Returns the allowable widening conversions.
+     * @return map where key is the class that we are asking to be widened into, and
+     * a set of classes that can be widened from
+     */
     public static Map<Class, Set<Class>> getWideningConversions()
     {
         return wideningConversions;

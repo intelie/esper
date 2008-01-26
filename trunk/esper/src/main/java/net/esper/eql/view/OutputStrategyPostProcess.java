@@ -6,7 +6,11 @@ import net.esper.core.InternalEventRouter;
 import net.esper.core.UpdateDispatchView;
 import net.esper.eql.spec.SelectClauseStreamSelectorEnum;
 import net.esper.event.EventBean;
+import net.esper.event.NaturalEventBean;
 
+/**
+ * An output strategy that handles routing (insert-into) and stream selection.
+ */
 public class OutputStrategyPostProcess implements OutputStrategy
 {
     private final boolean isRoute;
@@ -15,6 +19,14 @@ public class OutputStrategyPostProcess implements OutputStrategy
     private final InternalEventRouter internalEventRouter;
     private final EPStatementHandle epStatementHandle;
 
+    /**
+     * Ctor.
+     * @param route true if this is insert-into
+     * @param routeRStream true if routing the remove stream events, false if routing insert stream events
+     * @param selectStreamDirEnum enumerator selecting what stream(s) are selected
+     * @param internalEventRouter for performing the route operation
+     * @param epStatementHandle for use in routing to determine which statement routed
+     */
     public OutputStrategyPostProcess(boolean route, boolean routeRStream, SelectClauseStreamSelectorEnum selectStreamDirEnum, InternalEventRouter internalEventRouter, EPStatementHandle epStatementHandle)
     {
         isRoute = route;
@@ -75,6 +87,18 @@ public class OutputStrategyPostProcess implements OutputStrategy
 
     private void route(EventBean[] events)
     {
-        internalEventRouter.route(events, epStatementHandle);
+        for (int i = 0; i < events.length; i++)
+        {
+            EventBean routed = events[i];
+            if (routed instanceof NaturalEventBean)
+            {
+                NaturalEventBean natural = (NaturalEventBean) routed;
+                internalEventRouter.route(natural.getOptionalSynthetic(), epStatementHandle);
+            }
+            else
+            {
+                internalEventRouter.route(routed, epStatementHandle);
+            }
+        }
     }
 }

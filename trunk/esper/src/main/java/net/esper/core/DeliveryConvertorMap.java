@@ -14,10 +14,17 @@ import java.util.HashMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+/**
+ * Converts column results into a Map of key-value pairs.
+ */
 public class DeliveryConvertorMap implements DeliveryConvertor
 {
     private final String[] columnNames;
 
+    /**
+     * Ctor.
+     * @param columnNames the names for columns
+     */
     public DeliveryConvertorMap(String[] columnNames) {
         this.columnNames = columnNames;
     }

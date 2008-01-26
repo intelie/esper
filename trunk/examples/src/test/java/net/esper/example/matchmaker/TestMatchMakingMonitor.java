@@ -6,6 +6,7 @@ import net.esper.example.matchmaker.monitor.MatchMakingMonitor;
 import net.esper.example.matchmaker.eventbean.*;
 import net.esper.client.EPServiceProvider;
 import net.esper.client.EPServiceProviderManager;
+import net.esper.client.Configuration;
 
 public class TestMatchMakingMonitor extends TestCase
 {
@@ -17,8 +18,12 @@ public class TestMatchMakingMonitor extends TestCase
 
     protected void setUp() throws Exception
     {
+        // This code runs as part of the automated regression test suite; Therefore disable internal timer theading to safe resources
+        Configuration config = new Configuration();
+        config.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
+
         listener = new MatchAlertListener();
-        epService = EPServiceProviderManager.getDefaultProvider();
+        epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();
         epService.getEPRuntime().addEmittedListener(listener, null);
 

@@ -2,10 +2,7 @@ package net.esper.example.matchmaker.monitor;
 
 import java.util.HashSet;
 
-import net.esper.client.EPServiceProvider;
-import net.esper.client.EPStatement;
-import net.esper.client.EPServiceProviderManager;
-import net.esper.client.UpdateListener;
+import net.esper.client.*;
 import net.esper.example.matchmaker.eventbean.MobileUserBean;
 import net.esper.example.matchmaker.eventbean.MatchAlertBean;
 import net.esper.event.EventBean;
@@ -24,7 +21,11 @@ public class MatchMakingMonitor
 
     public MatchMakingMonitor()
     {
-        epService = EPServiceProviderManager.getDefaultProvider();
+        // This code runs as part of the automated regression test suite; Therefore disable internal timer theading to safe resources
+        Configuration config = new Configuration();
+        config.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
+
+        epService = EPServiceProviderManager.getDefaultProvider(config);
 
         // Get called for any user showing up
         EPStatement factory = epService.getEPAdministrator().createPattern("every user=" + MobileUserBean.class.getName());

@@ -1,16 +1,19 @@
 package net.esper.antlr;
 
-import org.antlr.runtime.Token;
 import org.antlr.runtime.CommonTokenStream;
+import org.antlr.runtime.Token;
 import org.antlr.runtime.tree.Tree;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.io.StringWriter;
 import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * Utility class for AST node handling.
+ */
 public class ASTUtil
 {
     private static Log log = LogFactory.getLog(ASTUtil.class);
@@ -57,6 +60,10 @@ public class ASTUtil
         }
     }
 
+    /**
+     * Print the token stream to the logger.
+     * @param tokens to print
+     */
     public static void printTokens(CommonTokenStream tokens)
     {
         if (log.isDebugEnabled())

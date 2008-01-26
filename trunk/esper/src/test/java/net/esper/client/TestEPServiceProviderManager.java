@@ -30,6 +30,13 @@ public class TestEPServiceProviderManager extends TestCase
         assertEquals("B", runtimeB.getURI());
         assertNull(runtimeDef1.getURI());
         assertNull(runtimeDef2.getURI());
+
+        runtimeDef1.destroy();
+        runtimeA1.destroy();
+        runtimeB.destroy();
+        runtimeA2.destroy();
+        runtimeDef2.destroy();
+        runtimeA3.destroy();
     }
 
     public void testInvalid()

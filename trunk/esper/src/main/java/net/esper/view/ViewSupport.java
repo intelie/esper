@@ -121,6 +121,11 @@ public abstract class ViewSupport implements View
         }
     }
 
+    /**
+     * Convenience method for logging the parameters passed to the update method. Only logs if debug is enabled.
+     * @param prefix is a prefix text to output for each line
+     * @param result is the data in an update call
+     */
     public static void dumpUpdateParams(String prefix, Pair<EventBean[], EventBean[]> result)
     {
         EventBean[] newEventArr = result != null ? result.getFirst() : null;

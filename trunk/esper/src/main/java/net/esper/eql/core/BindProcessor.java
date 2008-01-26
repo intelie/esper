@@ -12,12 +12,23 @@ import net.esper.event.EventType;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Works in conjunction with {@link SelectExprResultProcessor} to present
+ * a result as an object array for 'natural' delivery.
+ */
 public class BindProcessor
 {
     private ExprEvaluator[] expressionNodes;
     private Class[] expressionTypes;
     private String[] columnNamesAssigned;
 
+    /**
+     * Ctor.
+     * @param selectionList the select clause
+     * @param typesPerStream the event types per stream
+     * @param streamNames the stream names
+     * @throws ExprValidationException when the validation of the select clause failed
+     */
     public BindProcessor(List<SelectClauseElementCompiled> selectionList,
                          EventType[] typesPerStream,
                          String[] streamNames)

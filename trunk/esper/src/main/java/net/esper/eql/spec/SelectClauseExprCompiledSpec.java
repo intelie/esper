@@ -48,11 +48,19 @@ public class SelectClauseExprCompiledSpec implements SelectClauseElementCompiled
         return assignedName;
     }
 
+    /**
+     * Sets the select expression to use.
+     * @param selectExpression to set
+     */
     public void setSelectExpression(ExprNode selectExpression)
     {
         this.selectExpression = selectExpression;
     }
 
+    /**
+     * Sets the column name for the select expression.
+     * @param assignedName is the column name
+     */
     public void setAssignedName(String assignedName)
     {
         this.assignedName = assignedName;

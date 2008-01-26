@@ -33,6 +33,7 @@ public class SelectExprProcessorFactory
      * @param insertIntoDesc - contains column names for the optional insert-into clause (if supplied)
      * @param typeService - serves stream type information
      * @param eventAdapterService - for generating wrapper instances for events
+     * @param statementResultService handles listeners/subscriptions awareness to reduce output result generation
      * @return select-clause expression processor
      * @throws net.esper.eql.expression.ExprValidationException to indicate the select expression cannot be validated
      */
@@ -46,8 +47,8 @@ public class SelectExprProcessorFactory
     {
         SelectExprProcessor synthetic = getProcessorInternal(selectionList, isUsingWildcard, insertIntoDesc, typeService, eventAdapterService);
         BindProcessor bindProcessor = new BindProcessor(selectionList, typeService.getEventTypes(), typeService.getStreamNames());
-
         statementResultService.setSelectClause(bindProcessor.getExpressionTypes(), bindProcessor.getColumnNamesAssigned());
+        
         return new SelectExprResultProcessor(statementResultService, synthetic, bindProcessor);        
     }
 

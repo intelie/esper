@@ -12,6 +12,9 @@ import net.esper.util.MetaDefItem;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Represents a wildcard as a select clause element.
+ */
 public class SelectClauseElementWildcard implements SelectClauseElementRaw, SelectClauseElementCompiled
 {
 }

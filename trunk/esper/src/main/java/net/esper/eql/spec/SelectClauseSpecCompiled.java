@@ -54,6 +54,10 @@ public class SelectClauseSpecCompiled implements MetaDefItem
 		return selectClauseElements;
 	}
 
+    /**
+     * Returns true if the select clause contains at least one wildcard.
+     * @return true if clause contains wildcard, false if not
+     */
     public boolean isUsingWildcard()
     {
         for (SelectClauseElementCompiled element : selectClauseElements)

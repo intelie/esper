@@ -89,6 +89,7 @@ public class ResultSetProcessorSimple implements ResultSetProcessor
      * @param isOutputLimiting - true to indicate that we limit output
      * @param isOutputLimitLastOnly - true to indicate that we limit output to the last event
      * @param isNewData - indicates whether we are dealing with new data (istream) or old data (rstream)
+     * @param isSynthesize - set to true to indicate that synthetic events are required for an iterator result set
      * @return output events, one for each input event
      */
     protected static EventBean[] getSelectEventsNoHaving(SelectExprProcessor exprProcessor, OrderByProcessor orderByProcessor, EventBean[] events, boolean isOutputLimiting, boolean isOutputLimitLastOnly, boolean isNewData, boolean isSynthesize)
@@ -189,6 +190,7 @@ public class ResultSetProcessorSimple implements ResultSetProcessor
      * @param isOutputLimiting - true to indicate that we limit output
      * @param isOutputLimitLastOnly - true to indicate that we limit output to the last event
      * @param isNewData - indicates whether we are dealing with new data (istream) or old data (rstream)
+     * @param isSynthesize - set to true to indicate that synthetic events are required for an iterator result set
      * @return output events, one for each input event
      */
     protected static EventBean[] getSelectEventsNoHaving(SelectExprProcessor exprProcessor, OrderByProcessor orderByProcessor, Set<MultiKey<EventBean>> events, boolean isOutputLimiting, boolean isOutputLimitLastOnly, boolean isNewData, boolean isSynthesize)
@@ -245,6 +247,7 @@ public class ResultSetProcessorSimple implements ResultSetProcessor
      * @param isOutputLimiting - true to indicate that we limit output
      * @param isOutputLimitLastOnly - true to indicate that we limit output to the last event
      * @param isNewData - indicates whether we are dealing with new data (istream) or old data (rstream)
+     * @param isSynthesize - set to true to indicate that synthetic events are required for an iterator result set
      * @return output events, one for each input event
      */
     protected static EventBean[] getSelectEventsHaving(SelectExprProcessor exprProcessor, OrderByProcessor orderByProcessor, EventBean[] events, ExprNode optionalHavingNode, boolean isOutputLimiting, boolean isOutputLimitLastOnly, boolean isNewData, boolean isSynthesize)
@@ -313,6 +316,7 @@ public class ResultSetProcessorSimple implements ResultSetProcessor
      * @param isOutputLimiting - true to indicate that we limit output
      * @param isOutputLimitLastOnly - true to indicate that we limit output to the last event
      * @param isNewData - indicates whether we are dealing with new data (istream) or old data (rstream)
+     * @param isSynthesize - set to true to indicate that synthetic events are required for an iterator result set
      * @return output events, one for each input event
      */
     protected static EventBean[] getSelectEventsHaving(SelectExprProcessor exprProcessor, OrderByProcessor orderByProcessor, Set<MultiKey<EventBean>> events, ExprNode optionalHavingNode, boolean isOutputLimiting, boolean isOutputLimitLastOnly, boolean isNewData, boolean isSynthesize)

@@ -3,6 +3,7 @@ package net.esper.example.linearroad;
 import net.esper.client.EPServiceProvider;
 import net.esper.client.EPServiceProviderManager;
 import net.esper.client.EPStatement;
+import net.esper.client.Configuration;
 import net.esper.client.time.TimerControlEvent;
 import junit.framework.TestCase;
 import org.apache.commons.logging.Log;
@@ -15,8 +16,10 @@ public class TestAccidentNotify extends TestCase
 
     public void setUp()
     {
-        epService = EPServiceProviderManager.getDefaultProvider();
-        epService.getEPRuntime().sendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
+        // This code runs as part of the automated regression test suite; Therefore disable internal timer theading to safe resources
+        Configuration config = new Configuration();
+        config.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
+        epService = EPServiceProviderManager.getDefaultProvider(config);
 
         String carLocEvent = CarLocEvent.class.getName();
 

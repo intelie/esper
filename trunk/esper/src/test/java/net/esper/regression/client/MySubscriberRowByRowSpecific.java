@@ -48,6 +48,11 @@ public class MySubscriberRowByRowSpecific
         indicate.add(new Object[] {nullableValue, longBoxed});
     }
 
+    public void update(String value, SupportMarketDataBean s1, SupportBean s0)
+    {
+        indicate.add(new Object[] {value, s1, s0});
+    }
+
     public void update(SupportBean s0, SupportMarketDataBean s1)
     {
         indicate.add(new Object[] {s0, s1});

@@ -4,6 +4,7 @@ import junit.framework.TestCase;
 import net.esper.client.EPServiceProvider;
 import net.esper.client.EPServiceProviderManager;
 import net.esper.client.EPStatement;
+import net.esper.client.Configuration;
 import net.esper.client.time.TimerControlEvent;
 import net.esper.support.bean.SupportBean;
 
@@ -20,7 +21,9 @@ public class TestMTStmtJoin extends TestCase
 
     public void setUp()
     {
-        engine = EPServiceProviderManager.getProvider("TestMTStmtJoin");
+        Configuration config = new Configuration();
+        config.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
+        engine = EPServiceProviderManager.getProvider("TestMTStmtJoin", config);
     }
 
     public void tearDown()

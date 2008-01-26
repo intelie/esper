@@ -19,10 +19,12 @@ public interface ParseRuleSelector
     /**
      * Implementations can invoke a parse rule of their choice on the parser.
      * @param parser - to invoke parse rule on
+     * @return the AST tree as a result of the parsing
      * @throws RecognitionException is a parse exception
      */
     public Tree invokeParseRule(EsperEPL2GrammarParser parser) throws RecognitionException;
 }
+
 
 
 

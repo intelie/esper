@@ -56,6 +56,8 @@ public class EQLTreeWalker extends EsperEPL2Ast
      * Ctor.
      * @param engineImportService is required to resolve lib-calls into static methods or configured aggregation functions
      * @param variableService for variable access
+     * @param input is the tree nodes to walk
+     * @param engineTime is the current engine time
      */
     public EQLTreeWalker(TreeNodeStream input, EngineImportService engineImportService, VariableService variableService, long engineTime)
     {

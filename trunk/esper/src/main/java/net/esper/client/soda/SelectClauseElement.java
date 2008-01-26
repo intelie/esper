@@ -15,5 +15,9 @@ import java.io.StringWriter;
  */
 public interface SelectClauseElement extends Serializable
 {
+    /**
+     * Output the string rendering of the select clause element.
+     * @param writer to output to
+     */
     public void toEQLElement(StringWriter writer);
 }

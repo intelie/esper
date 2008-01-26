@@ -16,10 +16,15 @@ public class UpdateDispatchViewNonBlocking extends UpdateDispatchViewBase
     /**
      * Ctor.
      * @param dispatchService - for performing the dispatch
+     * @param statementResultServiceImpl - handles result delivery
      */
     public UpdateDispatchViewNonBlocking(StatementResultService statementResultServiceImpl, DispatchService dispatchService)
     {
         super(statementResultServiceImpl, dispatchService);
+    }
+
+    public void update(EventBean[] newData, EventBean[] oldData) {
+        newResult(new Pair<EventBean[], EventBean[]>(newData, oldData));
     }
 
     public void newResult(Pair<EventBean[], EventBean[]> results)

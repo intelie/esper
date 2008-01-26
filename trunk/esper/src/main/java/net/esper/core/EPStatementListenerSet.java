@@ -133,11 +133,19 @@ public class EPStatementListenerSet
         stmtAwareListeners.remove(listener);
     }
 
+    /**
+     * Sets a subscriber instance.
+     * @param subscriber is the subscriber to set
+     */
     public void setSubscriber(Object subscriber)
     {
         this.subscriber = subscriber;
     }
 
+    /**
+     * Returns the subscriber instance.
+     * @return subscriber
+     */
     public Object getSubscriber()
     {
         return subscriber;

@@ -5,16 +5,17 @@ import net.esper.collection.Pair;
 import net.esper.event.EventBean;
 import net.esper.event.EventBeanUtility;
 import net.esper.view.ViewSupport;
-import net.esper.util.JavaClassHelper;
+import net.esper.util.ExecutionPathDebugLog;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.util.LinkedList;
-import java.util.Map;
-import java.util.ArrayList;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 
+/**
+ * Implements tracking of statement listeners and subscribers for a given statement
+ * such as to efficiently dispatch in situations where 0, 1 or more listeners
+ * are attached and/or 0 or 1 subscriber (such as iteration-only statement).
+ */
 public class StatementResultServiceImpl implements StatementResultService
 {
     private static Log log = LogFactory.getLog(StatementResultServiceImpl.class);
@@ -33,7 +34,7 @@ public class StatementResultServiceImpl implements StatementResultService
     private EPStatementListenerSet statementListenerSet;
     private boolean isMakeNatural;
     private boolean isMakeSynthetic;
-    private StatementResultNaturalStrategy statementResultNaturalStrategy;
+    private ResultDeliveryStrategy statementResultNaturalStrategy;
 
     // For iteration over patterns
     private EventBean lastIterableEvent;
@@ -58,6 +59,14 @@ public class StatementResultServiceImpl implements StatementResultService
 
     public void setSelectClause(Class[] selectClauseTypes, String[] selectClauseColumnNames)
     {
+        if ((selectClauseTypes == null) || (selectClauseTypes.length == 0))
+        {
+            throw new IllegalArgumentException("Invalid null or zero-element list of select clause expression types");
+        }
+        if ((selectClauseColumnNames == null) || (selectClauseColumnNames.length == 0))
+        {
+            throw new IllegalArgumentException("Invalid null or zero-element list of select clause column names");
+        }
         this.selectClauseTypes = selectClauseTypes;
         this.selectClauseColumnNames = selectClauseColumnNames;
     }
@@ -92,7 +101,7 @@ public class StatementResultServiceImpl implements StatementResultService
             return;
         }
 
-        statementResultNaturalStrategy = StatementResultNaturalStrategyFactory.create(statementListenerSet.getSubscriber(),
+        statementResultNaturalStrategy = ResultDeliveryStrategyFactory.create(statementListenerSet.getSubscriber(),
                 selectClauseTypes, selectClauseColumnNames);
         isMakeNatural = true;
     }
@@ -116,10 +125,12 @@ public class StatementResultServiceImpl implements StatementResultService
 
     public void execute()
     {
-        // TODO
-        // log.info(".execute " + this.hashCode() + " Thread " + Thread.currentThread().getId() + " isMakeNatural=" + isMakeNatural + " isMakeSynthetic=" + isMakeSynthetic);
-
         LinkedList<Pair<EventBean[], EventBean[]>> dispatches = lastResults.get();
+        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
+        {
+            log.debug(".execute dispatches: " + dispatches.size());
+        }
+
         Pair<EventBean[], EventBean[]> events = EventBeanUtility.flattenList(dispatches);
 
         if (log.isDebugEnabled())

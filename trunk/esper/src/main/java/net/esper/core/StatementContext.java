@@ -63,6 +63,7 @@ public final class StatementContext
      * @param outputConditionFactory is the factory for output condition objects
      * @param namedWindowService is holding information about the named windows active in the system
      * @param variableService provides access to variable values
+     * @param statementResultService handles awareness of listeners/subscriptions for a statement customizing output produced
      */
     public StatementContext(String engineURI,
                             String engineInstanceId,
@@ -289,6 +290,10 @@ public final class StatementContext
         return variableService;
     }
 
+    /**
+     * Returns the service that handles awareness of listeners/subscriptions for a statement customizing output produced
+     * @return statement result svc
+     */
     public StatementResultService getStatementResultService()
     {
         return statementResultService;

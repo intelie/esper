@@ -3,7 +3,6 @@ package net.esper.regression.eql;
 import junit.framework.TestCase;
 import net.esper.client.*;
 import net.esper.event.EventType;
-import net.esper.event.EventBean;
 import net.esper.support.bean.SupportBean;
 import net.esper.support.bean.SupportBean_A;
 import net.esper.support.bean.SupportBean_B;
