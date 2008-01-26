@@ -581,12 +581,34 @@ model.setFromClause(FromClause.create(FilterStream.create("com.chipmaker.ReadyEv
 			<para>
 				Last, the code snippet below creates a statement from the object model:
 			</para>
-
 			<programlisting><![CDATA[EPStatement stmt = epService.getEPAdministrator().create(model);]]></programlisting>
+
+			<para>
+				Notes on usage: 
+			</para>			
+			<itemizedlist spacing="compact">
+				<listitem>
+					<para>
+						Variable names can simply be treated as property names
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						When selecting from named windows, the name of the named window is the event type alias for us in <literal>FilterStream</literal> instances or patterns
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						To compile an arbitrary sub-expression text into an <literal>Expression</literal> object representation, simply add the expression text to a <literal>where</literal> clause,
+						compile the EQL string into an object model via the <literal>compileEQL</literal> on <literal>EPAdministrator</literal>, and obtain the compiled <literal>where</literal>
+						from the <literal>EPStatementObjectModel</literal> via the <literal>getWhereClause</literal> method.
+					</para>
+				</listitem>
+			</itemizedlist>
 		</sect2>
 		
 		<sect2 id="api-soda-building-step2">
-			<title>Building Complex Expressions</title>
+			<title>Building Expressions</title>
 			
 			<para>
 				The <literal>EPStatementObjectModel</literal> includes an optional where-clause. The where-clause is a filter expression that the engine applies to events in one or more streams. The key interface for all expressions is the <literal>Expression</literal> interface.
@@ -630,7 +652,7 @@ where (line=8) or (line=10 and age<5)]]></programlisting>
 		</sect2>
 		
 		<sect2 id="api-soda-building-step3">
-			<title>Building Patterns</title>
+			<title>Building A Pattern Statement</title>
 			
 			<para>
 				The <literal>Patterns</literal> class is a factory for building pattern expressions. It provides convenient methods to create all pattern expressions of the pattern language.
@@ -657,7 +679,7 @@ model.setFromClause(FromClause.create(PatternStream.create(pattern)));]]></progr
 		</sect2>
 
 		<sect2 id="api-soda-building-step4">
-			<title>Building Complete Statements</title>
+			<title>Building a Select Statement</title>
 			
 			<para>
 				In this section we build a complete example statement and include all optional clauses in one EQL statement, to demonstrate the object model API.
@@ -692,6 +714,89 @@ model.setGroupByClause(GroupByClause.create("line"));
 model.setHavingClause(Expressions.lt(Expressions.avg("age"), Expressions.constant(0)));
 model.setOutputLimitClause(OutputLimitClause.create(10, OutputLimitUnit.SECONDS));
 model.setOrderByClause(OrderByClause.create("line"));]]></programlisting>
+		</sect2>
+
+		<sect2 id="api-soda-building-step5">
+			<title>Building a Create-Variable and On-Set Statement</title>
+			
+			<para>
+				This sample statement creates a variable:
+			</para>
+			<programlisting><![CDATA[create variable integer var_output_rate = 10]]></programlisting>
+
+			<para>
+				The code to build the above statement using the object model:
+			</para>			
+			<programlisting><![CDATA[EPStatementObjectModel model = new EPStatementObjectModel();
+model.setCreateVariable(CreateVariableClause.create("integer", "var_output_rate", 10));
+epService.getEPAdministrator().create(model);]]></programlisting>
+
+			<para>
+				A second statement sets the variable to a new value:
+			</para>
+			<programlisting><![CDATA[on NewValueEvent set var_output_rate = new_rate]]></programlisting>
+
+			<para>
+				The code to build the above statement using the object model:
+			</para>			
+			<programlisting><![CDATA[EPStatementObjectModel model = new EPStatementObjectModel();
+model.setOnExpr(OnClause.createOnSet("var_output_rate", Expressions.property("new_rate")));
+model.setFromClause(FromClause.create(FilterStream.create("NewValueEvent")));
+EPStatement stmtSet = epService.getEPAdministrator().create(model);]]></programlisting>
+		</sect2>
+
+		<sect2 id="api-soda-building-step6">
+			<title>Building Create-Window, On-Delete and On-Select Statements</title>
+			
+			<para>
+				This sample statement creates a named window:
+			</para>
+			<programlisting><![CDATA[create window OrdersTimeWindow.win:time(30 sec) as select symbol as sym, volume as vol, price from OrderEvent]]></programlisting>
+
+			<para>
+				The is the code that builds the create-window statement as above::
+			</para>			
+			<programlisting><![CDATA[EPStatementObjectModel model = new EPStatementObjectModel();
+model.setCreateWindow(CreateWindowClause.create("OrdersTimeWindow").addView("win", "time", 30));
+model.setSelectClause(SelectClause.create()
+		.addWithAlias("symbol", "sym")
+		.addWithAlias("volume", "vol")
+		.add("price"));
+model.setFromClause(FromClause.create(FilterStream.create("OrderEvent)));]]></programlisting>
+
+			<para>
+				A second statement deletes from the named window:
+			</para>
+			<programlisting><![CDATA[on NewOrderEvent as myNewOrders
+delete from AllOrdersNamedWindow as myNamedWindow
+where myNamedWindow.symbol = myNewOrders.symbol]]></programlisting>
+
+			<para>
+				The object model is built by:
+			</para>			
+			<programlisting><![CDATA[EPStatementObjectModel model = new EPStatementObjectModel();
+model.setOnExpr(OnClause.createOnDelete("AllOrdersNamedWindow", "myNamedWindow"));
+model.setFromClause(FromClause.create(FilterStream.create("NewOrderEvent", "myNewOrders")));
+model.setWhereClause(Expressions.eqProperty("myNamedWindow.symbol", "myNewOrders.symbol"));
+EPStatement stmtOnDelete = epService.getEPAdministrator().create(model);]]></programlisting>
+
+			<para>
+				A third statement selects from the named window using the non-continuous on-demand selection via on-select:
+			</para>
+			<programlisting><![CDATA[on QueryEvent(volume>0) as query
+select count(*) from OrdersNamedWindow as win
+where win.symbol = query.symbol]]></programlisting>
+
+			<para>
+				The on-select statement is built from scratch via the object model as follows:
+			</para>			
+			<programlisting><![CDATA[EPStatementObjectModel model = new EPStatementObjectModel();
+model.setOnExpr(OnClause.createOnSelect("OrdersNamedWindow", "win"));
+model.setWhereClause(Expressions.eqProperty("win.symbol", "query.symbol"));
+model.setFromClause(FromClause.create(FilterStream.create("QueryEvent", "query", 
+  Expressions.gt("volume", 0))));
+model.setSelectClause(SelectClause.create().add(Expressions.countStar()));
+EPStatement stmtOnSelect = epService.getEPAdministrator().create(model);]]></programlisting>
 		</sect2>
 
     </sect1>
