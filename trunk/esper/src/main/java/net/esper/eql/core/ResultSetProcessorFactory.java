@@ -264,6 +264,10 @@ public class ResultSetProcessorFactory
 
         // Determine if any output rate limiting must be performed early while processing results
         boolean isOutputLimiting = outputLimitSpec != null;
+        if ((outputLimitSpec != null) && outputLimitSpec.getDisplayLimit() == OutputLimitLimitType.SNAPSHOT)
+        {
+            isOutputLimiting = false;   // Snapshot output does not count in terms of limiting output
+        }
         boolean isOutputLimitLastOnly = outputLimitSpec != null ? (outputLimitSpec.getDisplayLimit() == OutputLimitLimitType.LAST) : false;
 
         // (1)

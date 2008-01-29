@@ -199,6 +199,69 @@ public class TestOutputLimitRowForAll extends TestCase
         listener.reset();
     }
 
+    public void testLimitSnapshotJoin()
+    {
+        SupportUpdateListener listener = new SupportUpdateListener();
+
+        sendTimer(0);
+        String selectStmt = "select count(*) as cnt from " +
+                SupportBean.class.getName() + ".win:time(10 seconds) as s, " +
+                SupportMarketDataBean.class.getName() + " as m where m.symbol = s.string and intPrimitive > 0 output snapshot every 1 seconds";
+
+        EPStatement stmt = epService.getEPAdministrator().createEQL(selectStmt);
+        stmt.addListener(listener);
+
+        epService.getEPRuntime().sendEvent(new SupportMarketDataBean("s0", 0, 0L, ""));
+        epService.getEPRuntime().sendEvent(new SupportMarketDataBean("s1", 0, 0L, ""));
+        epService.getEPRuntime().sendEvent(new SupportMarketDataBean("s2", 0, 0L, ""));
+        epService.getEPRuntime().sendEvent(new SupportMarketDataBean("s4", 0, 0L, ""));
+        epService.getEPRuntime().sendEvent(new SupportMarketDataBean("s5", 0, 0L, ""));
+
+        sendEvent("s0", 1);
+
+        sendTimer(500);
+        sendEvent("s1", 1);
+        sendEvent("s2", -1);
+        assertFalse(listener.getAndClearIsInvoked());
+
+        sendTimer(1000);
+        ArrayAssertionUtil.assertPropsPerRow(listener.getLastNewData(), new String[] {"cnt"}, new Object[][] {{2L}});
+        assertNull(listener.getLastOldData());
+        listener.reset();
+
+        sendTimer(1500);
+        sendEvent("s4", 2);
+        sendEvent("s5", 3);
+        assertFalse(listener.getAndClearIsInvoked());
+
+        sendTimer(2000);
+        ArrayAssertionUtil.assertPropsPerRow(listener.getLastNewData(), new String[] {"cnt"}, new Object[][] {{4L}});
+        assertNull(listener.getLastOldData());
+        listener.reset();
+
+        sendEvent("s5", 4);
+        assertFalse(listener.getAndClearIsInvoked());
+
+        sendTimer(9000);
+        ArrayAssertionUtil.assertPropsPerRow(listener.getLastNewData(), new String[] {"cnt"}, new Object[][] {{5L}});
+        assertNull(listener.getLastOldData());
+        listener.reset();
+
+        // The execution of the join is after the snapshot, as joins are internal dispatch
+        sendTimer(10000);
+        ArrayAssertionUtil.assertPropsPerRow(listener.getLastNewData(), new String[] {"cnt"}, new Object[][] {{5L}});
+        assertNull(listener.getLastOldData());
+        listener.reset();
+
+        sendTimer(10999);
+        assertFalse(listener.getAndClearIsInvoked());
+
+        sendTimer(11000);
+        ArrayAssertionUtil.assertPropsPerRow(listener.getLastNewData(), new String[] {"cnt"}, new Object[][] {{3L}});
+        assertNull(listener.getLastOldData());
+        listener.reset();
+    }
+
     private void sendEvent(String s)
 	{
 	    SupportBean bean = new SupportBean();

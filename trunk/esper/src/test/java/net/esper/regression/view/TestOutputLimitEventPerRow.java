@@ -112,6 +112,64 @@ public class TestOutputLimitEventPerRow extends TestCase
         listener.reset();
     }
 
+    public void testLimitSnapshotJoin()
+    {
+        epService.getEPRuntime().sendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
+        sendTimer(0);
+        String selectStmt = "select symbol, volume, sum(price) as sumprice from " + SupportMarketDataBean.class.getName() +
+                ".win:time(10 seconds) as m, " + SupportBean.class.getName() +
+                ".win:keepall() as s where s.string = m.symbol group by symbol output snapshot every 1 seconds order by symbol, volume asc";
+
+        EPStatement stmt = epService.getEPAdministrator().createEQL(selectStmt);
+        stmt.addListener(listener);
+
+        epService.getEPRuntime().sendEvent(new SupportBean("s0", 1));
+        epService.getEPRuntime().sendEvent(new SupportBean("s1", 2));
+        epService.getEPRuntime().sendEvent(new SupportBean("s2", 3));
+
+        sendEvent("s0", 1, 20);
+
+        sendTimer(500);
+        sendEvent("s1", 2, 16);
+        sendEvent("s0", 3, 14);
+        assertFalse(listener.getAndClearIsInvoked());
+
+        sendTimer(1000);
+        String fields[] = new String[] {"symbol", "volume", "sumprice"};
+        ArrayAssertionUtil.assertPropsPerRow(listener.getLastNewData(), fields, new Object[][] {{"s0", 1L, 34d}, {"s0", 3L, 34d}, {"s1", 2L, 16d}});
+        assertNull(listener.getLastOldData());
+        listener.reset();
+
+        sendTimer(1500);
+        sendEvent("s2", 4, 18);
+        sendEvent("s1", 5, 30);
+
+        sendTimer(10000);
+        ArrayAssertionUtil.assertPropsPerRow(listener.getLastNewData(), fields,
+                new Object[][] {{"s0", 1L, 34d}, {"s0", 3L, 34d}, {"s1", 2L, 46d}, {"s1", 5L, 46d}, {"s2", 4L, 18d}, });
+        assertNull(listener.getLastOldData());
+        listener.reset();
+
+        sendTimer(10500);
+        sendTimer(11000);
+        ArrayAssertionUtil.assertPropsPerRow(listener.getLastNewData(), fields, new Object[][] {{"s1", 5L, 30d}, {"s2", 4L, 18d}});
+        assertNull(listener.getLastOldData());
+        listener.reset();
+
+        sendTimer(11500);
+        sendTimer(12000);
+        assertTrue(listener.isInvoked());
+        assertNull(listener.getLastNewData());
+        assertNull(listener.getLastOldData());
+        listener.reset();
+
+        sendTimer(13000);
+        assertTrue(listener.isInvoked());
+        assertNull(listener.getLastNewData());
+        assertNull(listener.getLastOldData());
+        listener.reset();
+    }
+
     public void testMaxTimeWindow()
     {
         epService.getEPRuntime().sendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));

@@ -409,6 +409,74 @@ public class TestOutputLimitSimple extends TestCase
         assertFalse(listener.isInvoked());
     }
 
+    public void testLimitSnapshotJoin()
+    {
+        SupportUpdateListener listener = new SupportUpdateListener();
+
+        sendTimer(0);
+        String selectStmt = "select string from " + SupportBean.class.getName() + ".win:time(10) as s," +
+                SupportMarketDataBean.class.getName() + ".win:keepall() as m where s.string = m.symbol output snapshot every 3 events order by symbol asc";
+
+        EPStatement stmt = epService.getEPAdministrator().createEQL(selectStmt);
+        stmt.addListener(listener);
+
+        for (String symbol : "s0,s1,s2,s3,s4,s5,s6,s7,s8,s9,s10,s11".split(","))
+        {
+            epService.getEPRuntime().sendEvent(new SupportMarketDataBean(symbol, 0, 0L, ""));
+        }
+
+        sendTimer(1000);
+        sendEvent("s1");
+        sendEvent("s2");
+        assertFalse(listener.getAndClearIsInvoked());
+
+        sendTimer(2000);
+        sendEvent("s3");
+        ArrayAssertionUtil.assertPropsPerRow(listener.getLastNewData(), new String[] {"string"}, new Object[][] {{"s1"}, {"s2"}, {"s3"}});
+        assertNull(listener.getLastOldData());
+        listener.reset();
+
+        sendTimer(3000);
+        sendEvent("s4");
+        sendEvent("s5");
+        assertFalse(listener.getAndClearIsInvoked());
+
+        sendTimer(10000);
+        sendEvent("s6");
+        ArrayAssertionUtil.assertPropsPerRow(listener.getLastNewData(), new String[] {"string"}, new Object[][] {{"s1"}, {"s2"}, {"s3"}, {"s4"}, {"s5"}, {"s6"}});
+        assertNull(listener.getLastOldData());
+        listener.reset();
+
+        sendTimer(11000);
+        sendEvent("s7");
+        assertFalse(listener.isInvoked());
+
+        sendEvent("s8");
+        assertFalse(listener.isInvoked());
+
+        sendEvent("s9");
+        ArrayAssertionUtil.assertPropsPerRow(listener.getLastNewData(), new String[] {"string"}, new Object[][] {{"s3"}, {"s4"}, {"s5"}, {"s6"}, {"s7"}, {"s8"}, {"s9"}});
+        assertNull(listener.getLastOldData());
+        listener.reset();
+
+        sendTimer(14000);
+        ArrayAssertionUtil.assertPropsPerRow(listener.getLastNewData(), new String[] {"string"}, new Object[][] {{"s6"}, {"s7"}, {"s8"}, {"s9"}});
+        assertNull(listener.getLastOldData());
+        listener.reset();
+
+        sendEvent("s10");
+        sendEvent("s11");
+        assertFalse(listener.isInvoked());
+
+        sendTimer(23000);
+        ArrayAssertionUtil.assertPropsPerRow(listener.getLastNewData(), new String[] {"string"}, new Object[][] {{"s10"}, {"s11"}});
+        assertNull(listener.getLastOldData());
+        listener.reset();
+
+        sendEvent("s12");
+        assertFalse(listener.isInvoked());
+    }
+
     private SupportUpdateListener createStmtAndListenerJoin(String viewExpr) {
 		epService.initialize();
 

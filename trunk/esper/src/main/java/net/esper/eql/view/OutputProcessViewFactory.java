@@ -4,6 +4,7 @@ import net.esper.view.ViewSupport;
 import net.esper.eql.join.JoinSetIndicator;
 import net.esper.eql.core.ResultSetProcessor;
 import net.esper.eql.spec.OutputLimitSpec;
+import net.esper.eql.spec.OutputLimitLimitType;
 import net.esper.eql.expression.ExprValidationException;
 import net.esper.event.EventBean;
 import net.esper.event.EventType;
@@ -45,7 +46,14 @@ public class OutputProcessViewFactory
             // Do we need to enforce an output policy?
             if (outputLimitSpec != null)
             {
-                return new OutputProcessViewPolicy(resultSetProcessor, streamCount, outputLimitSpec, statementContext);
+                if (outputLimitSpec.getDisplayLimit() == OutputLimitLimitType.SNAPSHOT)
+                {
+                    return new OutputProcessViewSnapshot(resultSetProcessor, streamCount, outputLimitSpec, statementContext);
+                }
+                else
+                {
+                    return new OutputProcessViewPolicy(resultSetProcessor, streamCount, outputLimitSpec, statementContext);
+                }
             }
             return new OutputProcessViewDirect(resultSetProcessor);
         }

@@ -107,6 +107,65 @@ public class TestOutputLimitAggregateAll extends TestCase
         listener.reset();
     }
 
+    public void testLimitSnapshotJoin()
+    {
+        epService.getEPRuntime().sendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
+        sendTimer(0);
+        String selectStmt = "select symbol, sum(price) as sumprice from " + SupportMarketDataBean.class.getName() +
+                ".win:time(10 seconds) as m, " + SupportBean.class.getName() +
+                ".win:keepall() as s where s.string = m.symbol output snapshot every 1 seconds order by symbol asc";
+
+        EPStatement stmt = epService.getEPAdministrator().createEQL(selectStmt);
+        stmt.addListener(listener);
+
+        epService.getEPRuntime().sendEvent(new SupportBean("s0", 1));
+        epService.getEPRuntime().sendEvent(new SupportBean("s1", 2));
+        epService.getEPRuntime().sendEvent(new SupportBean("s2", 3));
+        epService.getEPRuntime().sendEvent(new SupportBean("s3", 4));
+        epService.getEPRuntime().sendEvent(new SupportBean("s4", 5));
+
+        sendEvent("s0", 20);
+
+        sendTimer(500);
+        sendEvent("s1", 16);
+        sendEvent("s2", 14);
+        assertFalse(listener.getAndClearIsInvoked());
+
+        sendTimer(1000);
+        String fields[] = new String[] {"symbol", "sumprice"};
+        ArrayAssertionUtil.assertPropsPerRow(listener.getLastNewData(), fields, new Object[][] {{"s0", 50d}, {"s1", 50d}, {"s2", 50d}});
+        assertNull(listener.getLastOldData());
+        listener.reset();
+
+        sendTimer(1500);
+        sendEvent("s3", 18);
+        sendEvent("s4", 30);
+
+        sendTimer(10000);
+        ArrayAssertionUtil.assertPropsPerRow(listener.getLastNewData(), fields, new Object[][] {{"s0", 98d}, {"s1", 98d}, {"s2", 98d}, {"s3", 98d}, {"s4", 98d}});
+        assertNull(listener.getLastOldData());
+        listener.reset();
+
+        sendTimer(10500);
+        sendTimer(11000);
+        ArrayAssertionUtil.assertPropsPerRow(listener.getLastNewData(), fields, new Object[][] {{"s3", 48d}, {"s4", 48d}});
+        assertNull(listener.getLastOldData());
+        listener.reset();
+
+        sendTimer(11500);
+        sendTimer(12000);
+        assertTrue(listener.isInvoked());
+        assertNull(listener.getLastNewData());
+        assertNull(listener.getLastOldData());
+        listener.reset();
+
+        sendTimer(13000);
+        assertTrue(listener.isInvoked());
+        assertNull(listener.getLastNewData());
+        assertNull(listener.getLastOldData());
+        listener.reset();
+    }
+
     public void testJoinSortWindow()
     {
         epService.getEPRuntime().sendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));

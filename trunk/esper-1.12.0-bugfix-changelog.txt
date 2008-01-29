@@ -1,0 +1,30 @@
+Esper Changelog for Esper version esper-1.12.0e
+===================
+
+* Fixed issue ESPER-188 Output snapshot buffers events until output condition is reached
+
+
+Esper Changelog for Esper version esper-1.12.0d
+===================
+
+* Fixed issue ESPER-187 Join of two or more named windows on late start may not return correct aggregation state on iterate
+* Fixed issue ESPER-186 Iterator not honoring order by clause for grouped join query with output-rate clause
+
+
+Esper Changelog for Esper version esper-1.12.0c
+===================
+
+* Fixed issue ESPER-185 Remove limitation whereas grouped-by properties cannot also occur within aggregation functions  
+
+
+Esper Changelog for Esper version esper-1.12.0b
+===================
+
+* Fixed issue ESPER-180 Null aggregation results outer joining a named window on filled named window  
+
+
+Esper Changelog for Esper version esper-1.12.0a
+===================
+
+* Fixed issue ESPER-179 Iterator on select statement selecting from a named window may return incomplete results  
+
