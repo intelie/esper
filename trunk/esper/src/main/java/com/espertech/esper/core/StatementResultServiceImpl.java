@@ -6,6 +6,7 @@ import com.espertech.esper.client.StatementAwareUpdateListener;
 import com.espertech.esper.client.UpdateListener;
 import com.espertech.esper.collection.ArrayDequeJDK6Backport;
 import com.espertech.esper.collection.Pair;
+import com.espertech.esper.collection.UniformPair;
 import com.espertech.esper.event.EventBean;
 import com.espertech.esper.event.EventBeanUtility;
 import com.espertech.esper.util.ExecutionPathDebugLog;
@@ -44,9 +45,9 @@ public class StatementResultServiceImpl implements StatementResultService
     /**
      * Buffer for holding dispatchable events.
      */
-    protected ThreadLocal<ArrayDequeJDK6Backport<Pair<EventBean[], EventBean[]>>> lastResults = new ThreadLocal<ArrayDequeJDK6Backport<Pair<EventBean[], EventBean[]>>>() {
-        protected synchronized ArrayDequeJDK6Backport<Pair<EventBean[], EventBean[]>> initialValue() {
-            return new ArrayDequeJDK6Backport<Pair<EventBean[], EventBean[]>>();
+    protected ThreadLocal<ArrayDequeJDK6Backport<UniformPair<EventBean[]>>> lastResults = new ThreadLocal<ArrayDequeJDK6Backport<UniformPair<EventBean[]>>>() {
+        protected synchronized ArrayDequeJDK6Backport<UniformPair<EventBean[]>> initialValue() {
+            return new ArrayDequeJDK6Backport<UniformPair<EventBean[]>>();
         }
     };
 
@@ -109,7 +110,7 @@ public class StatementResultServiceImpl implements StatementResultService
     }
 
     // Called by OutputProcessView
-    public void indicate(Pair<EventBean[], EventBean[]> results)
+    public void indicate(UniformPair<EventBean[]> results)
     {
         if (results != null)
         {
@@ -127,13 +128,13 @@ public class StatementResultServiceImpl implements StatementResultService
 
     public void execute()
     {
-        ArrayDequeJDK6Backport<Pair<EventBean[], EventBean[]>> dispatches = lastResults.get();
+        ArrayDequeJDK6Backport<UniformPair<EventBean[]>> dispatches = lastResults.get();
         if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
         {
             log.debug(".execute dispatches: " + dispatches.size());
         }
 
-        Pair<EventBean[], EventBean[]> events = EventBeanUtility.flattenList(dispatches);
+        UniformPair<EventBean[]> events = EventBeanUtility.flattenList(dispatches);
 
         if (log.isDebugEnabled())
         {
@@ -169,7 +170,7 @@ public class StatementResultServiceImpl implements StatementResultService
     public void dispatchOnStop()
     {
         lastIterableEvent = null;
-        ArrayDequeJDK6Backport<Pair<EventBean[], EventBean[]>> dispatches = lastResults.get();
+        ArrayDequeJDK6Backport<UniformPair<EventBean[]>> dispatches = lastResults.get();
         if (dispatches.isEmpty())
         {
             return;

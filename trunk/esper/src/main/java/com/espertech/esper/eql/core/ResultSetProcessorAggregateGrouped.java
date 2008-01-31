@@ -7,21 +7,21 @@
  **************************************************************************************/
 package com.espertech.esper.eql.core;
 
-import java.util.*;
-
-import com.espertech.esper.collection.MultiKey;
-import com.espertech.esper.collection.Pair;
-import com.espertech.esper.collection.MultiKeyUntyped;
 import com.espertech.esper.collection.ArrayEventIterator;
-import com.espertech.esper.event.EventBean;
-import com.espertech.esper.event.EventType;
-import com.espertech.esper.eql.expression.ExprNode;
+import com.espertech.esper.collection.MultiKey;
+import com.espertech.esper.collection.MultiKeyUntyped;
+import com.espertech.esper.collection.UniformPair;
 import com.espertech.esper.eql.agg.AggregationService;
-import com.espertech.esper.view.Viewable;
+import com.espertech.esper.eql.expression.ExprNode;
+import com.espertech.esper.event.EventBean;
+import com.espertech.esper.event.EventBeanUtility;
+import com.espertech.esper.event.EventType;
 import com.espertech.esper.util.ExecutionPathDebugLog;
-
+import com.espertech.esper.view.Viewable;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import java.util.*;
 
 /**
  * Result-set processor for the aggregate-grouped case:
@@ -89,7 +89,7 @@ public class ResultSetProcessorAggregateGrouped implements ResultSetProcessor
         return selectExprProcessor.getResultEventType();
     }
 
-    public Pair<EventBean[], EventBean[]> processJoinResult(Set<MultiKey<EventBean>> newEvents, Set<MultiKey<EventBean>> oldEvents, boolean isSynthesize)
+    public UniformPair<EventBean[]> processJoinResult(Set<MultiKey<EventBean>> newEvents, Set<MultiKey<EventBean>> oldEvents, boolean isSynthesize)
     {
         // Generate group-by keys for all events
         MultiKeyUntyped[] newDataGroupByKeys = generateGroupKeys(newEvents, true);
@@ -133,12 +133,12 @@ public class ResultSetProcessorAggregateGrouped implements ResultSetProcessor
 
         if ((selectNewEvents != null) || (selectOldEvents != null))
         {
-            return new Pair<EventBean[], EventBean[]>(selectNewEvents, selectOldEvents);
+            return new UniformPair<EventBean[]>(selectNewEvents, selectOldEvents);
         }
         return null;
     }
 
-    public Pair<EventBean[], EventBean[]> processViewResult(EventBean[] newData, EventBean[] oldData, boolean isSynthesize)
+    public UniformPair<EventBean[]> processViewResult(EventBean[] newData, EventBean[] oldData, boolean isSynthesize)
     {
         // Generate group-by keys for all events
         MultiKeyUntyped[] newDataGroupByKeys = generateGroupKeys(newData, true);
@@ -181,7 +181,7 @@ public class ResultSetProcessorAggregateGrouped implements ResultSetProcessor
 
         if ((selectNewEvents != null) || (selectOldEvents != null))
         {
-            return new Pair<EventBean[], EventBean[]>(selectNewEvents, selectOldEvents);
+            return new UniformPair<EventBean[]>(selectNewEvents, selectOldEvents);
         }
         return null;
     }
@@ -534,5 +534,37 @@ public class ResultSetProcessorAggregateGrouped implements ResultSetProcessor
     public void clear()
     {
         aggregationService.clearResults();
+    }
+
+    public UniformPair<EventBean[]> processOutputLimitedJoin(List<UniformPair<Set<MultiKey<EventBean>>>> joinEventsSet, boolean generateSynthetic)
+    {
+        List<UniformPair<EventBean[]>> resultList = new LinkedList<UniformPair<EventBean[]>>();
+
+        for (UniformPair<Set<MultiKey<EventBean>>> pair : joinEventsSet)
+        {
+            UniformPair<EventBean[]> result = processJoinResult(pair.getFirst(), pair.getSecond(), generateSynthetic);
+            if (result != null)
+            {
+                resultList.add(result);
+            }
+        }
+
+        return EventBeanUtility.flattenBatchStream(resultList);
+    }
+
+    public UniformPair<EventBean[]> processOutputLimitedView(List<UniformPair<EventBean[]>> viewEventsList, boolean generateSynthetic)
+    {
+        List<UniformPair<EventBean[]>> resultList = new LinkedList<UniformPair<EventBean[]>>();
+        
+        for (UniformPair<EventBean[]> pair : viewEventsList)
+        {
+            UniformPair<EventBean[]> result = processViewResult(pair.getFirst(), pair.getSecond(), generateSynthetic);
+            if (result != null)
+            {
+                resultList.add(result);
+            }
+        }
+
+        return EventBeanUtility.flattenBatchStream(resultList);
     }
 }

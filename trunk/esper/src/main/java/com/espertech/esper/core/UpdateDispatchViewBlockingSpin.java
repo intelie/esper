@@ -1,6 +1,7 @@
 package com.espertech.esper.core;
 
 import com.espertech.esper.collection.Pair;
+import com.espertech.esper.collection.UniformPair;
 import com.espertech.esper.dispatch.DispatchService;
 import com.espertech.esper.event.EventBean;
 import com.espertech.esper.view.ViewSupport;
@@ -30,10 +31,10 @@ public class UpdateDispatchViewBlockingSpin extends UpdateDispatchViewBase
     }
 
     public void update(EventBean[] newData, EventBean[] oldData) {
-        newResult(new Pair<EventBean[], EventBean[]>(newData, oldData));
+        newResult(new UniformPair<EventBean[]>(newData, oldData));
     }
 
-    public void newResult(Pair<EventBean[], EventBean[]> result)
+    public void newResult(UniformPair<EventBean[]> result)
     {
         if (log.isDebugEnabled())
         {

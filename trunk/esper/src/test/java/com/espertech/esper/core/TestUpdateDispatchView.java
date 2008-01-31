@@ -1,12 +1,12 @@
 package com.espertech.esper.core;
 
-import junit.framework.TestCase;
+import com.espertech.esper.collection.UniformPair;
 import com.espertech.esper.dispatch.DispatchService;
 import com.espertech.esper.dispatch.DispatchServiceImpl;
 import com.espertech.esper.event.EventBean;
 import com.espertech.esper.support.event.SupportEventBeanFactory;
 import com.espertech.esper.support.util.SupportUpdateListener;
-import com.espertech.esper.collection.Pair;
+import junit.framework.TestCase;
 
 public class TestUpdateDispatchView extends TestCase
 {
@@ -37,7 +37,7 @@ public class TestUpdateDispatchView extends TestCase
     {
         EventBean[] oldData = makeEvents("old");
         EventBean[] newData = makeEvents("new");
-        updateDispatchView.newResult(new Pair<EventBean[], EventBean[]>(newData, oldData));
+        updateDispatchView.newResult(new UniformPair<EventBean[]>(newData, oldData));
 
         assertFalse(listenerOne.isInvoked() || listenerTwo.isInvoked());
         dispatchService.dispatch();
@@ -50,11 +50,11 @@ public class TestUpdateDispatchView extends TestCase
     {
         EventBean[] oldDataOne = makeEvents("old1");
         EventBean[] newDataOne = makeEvents("new1");
-        updateDispatchView.newResult(new Pair<EventBean[], EventBean[]>(newDataOne, oldDataOne));
+        updateDispatchView.newResult(new UniformPair<EventBean[]>(newDataOne, oldDataOne));
 
         EventBean[] oldDataTwo = makeEvents("old2");
         EventBean[] newDataTwo = makeEvents("new2");
-        updateDispatchView.newResult(new Pair<EventBean[], EventBean[]>(newDataTwo, oldDataTwo));
+        updateDispatchView.newResult(new UniformPair<EventBean[]>(newDataTwo, oldDataTwo));
 
         assertFalse(listenerOne.isInvoked() || listenerTwo.isInvoked());
         dispatchService.dispatch();

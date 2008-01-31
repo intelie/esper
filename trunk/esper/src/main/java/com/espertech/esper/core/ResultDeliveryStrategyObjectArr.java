@@ -1,6 +1,6 @@
 package com.espertech.esper.core;
 
-import com.espertech.esper.collection.Pair;
+import com.espertech.esper.collection.UniformPair;
 import com.espertech.esper.event.EventBean;
 import com.espertech.esper.event.NaturalEventBean;
 import net.sf.cglib.reflect.FastClass;
@@ -32,7 +32,7 @@ public class ResultDeliveryStrategyObjectArr implements ResultDeliveryStrategy
         this.fastMethod = fastClass.getMethod(method);
     }
 
-    public void execute(Pair<EventBean[], EventBean[]> result)
+    public void execute(UniformPair<EventBean[]> result)
     {
         Object[][] newData = convert(result.getFirst());
         Object[][] oldData = convert(result.getSecond());

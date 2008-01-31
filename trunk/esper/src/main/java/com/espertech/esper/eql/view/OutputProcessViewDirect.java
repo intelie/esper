@@ -1,11 +1,11 @@
 package com.espertech.esper.eql.view;
 
 import com.espertech.esper.collection.MultiKey;
-import com.espertech.esper.collection.Pair;
+import com.espertech.esper.collection.UniformPair;
+import com.espertech.esper.core.StatementResultService;
 import com.espertech.esper.eql.core.ResultSetProcessor;
 import com.espertech.esper.event.EventBean;
 import com.espertech.esper.util.ExecutionPathDebugLog;
-import com.espertech.esper.core.StatementResultService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -54,7 +54,7 @@ public class OutputProcessViewDirect extends OutputProcessView
         boolean isGenerateSynthetic = statementResultService.isMakeSynthetic();
         boolean isGenerateNatural = statementResultService.isMakeNatural();
 
-        Pair<EventBean[], EventBean[]> newOldEvents = resultSetProcessor.processViewResult(newData, oldData, isGenerateSynthetic);
+        UniformPair<EventBean[]> newOldEvents = resultSetProcessor.processViewResult(newData, oldData, isGenerateSynthetic);
 
         if ((!isGenerateSynthetic) && (!isGenerateNatural))
         {
@@ -92,7 +92,7 @@ public class OutputProcessViewDirect extends OutputProcessView
         boolean isGenerateSynthetic = statementResultService.isMakeSynthetic();
         boolean isGenerateNatural = statementResultService.isMakeNatural();
 
-        Pair<EventBean[], EventBean[]> newOldEvents = resultSetProcessor.processJoinResult(newEvents, oldEvents, isGenerateSynthetic);
+        UniformPair<EventBean[]> newOldEvents = resultSetProcessor.processJoinResult(newEvents, oldEvents, isGenerateSynthetic);
 
         if ((!isGenerateSynthetic) && (!isGenerateNatural))
         {

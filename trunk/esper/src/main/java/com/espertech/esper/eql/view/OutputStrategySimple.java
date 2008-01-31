@@ -1,6 +1,7 @@
 package com.espertech.esper.eql.view;
 
 import com.espertech.esper.collection.Pair;
+import com.espertech.esper.collection.UniformPair;
 import com.espertech.esper.core.UpdateDispatchView;
 import com.espertech.esper.event.EventBean;
 
@@ -10,7 +11,7 @@ import com.espertech.esper.event.EventBean;
  */
 public class OutputStrategySimple implements OutputStrategy
 {
-    public void output(boolean forceUpdate, Pair<EventBean[], EventBean[]> result, UpdateDispatchView finalView)
+    public void output(boolean forceUpdate, UniformPair<EventBean[]> result, UpdateDispatchView finalView)
     {
         EventBean[] newEvents = result != null ? result.getFirst() : null;
         EventBean[] oldEvents = result != null ? result.getSecond() : null;

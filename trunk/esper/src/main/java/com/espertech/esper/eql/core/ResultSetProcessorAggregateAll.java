@@ -7,10 +7,7 @@
  **************************************************************************************/
 package com.espertech.esper.eql.core;
 
-import com.espertech.esper.collection.MultiKey;
-import com.espertech.esper.collection.Pair;
-import com.espertech.esper.collection.MultiKeyUntyped;
-import com.espertech.esper.collection.ArrayEventIterator;
+import com.espertech.esper.collection.*;
 import com.espertech.esper.eql.agg.AggregationService;
 import com.espertech.esper.eql.expression.ExprNode;
 import com.espertech.esper.event.EventBean;
@@ -65,7 +62,7 @@ public class ResultSetProcessorAggregateAll implements ResultSetProcessor
         return selectExprProcessor.getResultEventType();
     }
 
-    public Pair<EventBean[], EventBean[]> processJoinResult(Set<MultiKey<EventBean>> newEvents, Set<MultiKey<EventBean>> oldEvents, boolean isSynthesize)
+    public UniformPair<EventBean[]> processJoinResult(Set<MultiKey<EventBean>> newEvents, Set<MultiKey<EventBean>> oldEvents, boolean isSynthesize)
     {
         EventBean[] selectOldEvents = null;
         EventBean[] selectNewEvents = null;
@@ -110,10 +107,10 @@ public class ResultSetProcessorAggregateAll implements ResultSetProcessor
         {
             return null;
         }
-        return new Pair<EventBean[], EventBean[]>(selectNewEvents, selectOldEvents);
+        return new UniformPair<EventBean[]>(selectNewEvents, selectOldEvents);
     }
 
-    public Pair<EventBean[], EventBean[]> processViewResult(EventBean[] newData, EventBean[] oldData, boolean isSynthesize)
+    public UniformPair<EventBean[]> processViewResult(EventBean[] newData, EventBean[] oldData, boolean isSynthesize)
     {
         EventBean[] selectOldEvents = null;
         EventBean[] selectNewEvents = null;
@@ -164,7 +161,7 @@ public class ResultSetProcessorAggregateAll implements ResultSetProcessor
             return null;
         }
 
-        return new Pair<EventBean[], EventBean[]>(selectNewEvents, selectOldEvents);
+        return new UniformPair<EventBean[]>(selectNewEvents, selectOldEvents);
     }
 
     public Iterator<EventBean> getIterator(Viewable parent)
@@ -243,5 +240,15 @@ public class ResultSetProcessorAggregateAll implements ResultSetProcessor
     public void clear()
     {
         aggregationService.clearResults();
+    }
+
+    public UniformPair<EventBean[]> processOutputLimitedJoin(List<UniformPair<Set<MultiKey<EventBean>>>> joinEventsSet, boolean generateSynthetic)
+    {
+        return null;  //TODO
+    }
+
+    public UniformPair<EventBean[]> processOutputLimitedView(List<UniformPair<EventBean[]>> viewEventsList, boolean generateSynthetic)
+    {
+        return null;  //TODO
     }
 }

@@ -4,6 +4,7 @@ import com.espertech.esper.event.EventBean;
 import com.espertech.esper.view.Viewable;
 import com.espertech.esper.core.UpdateDispatchView;
 import com.espertech.esper.collection.Pair;
+import com.espertech.esper.collection.UniformPair;
 
 public class SupportSchemaNeutralView extends SupportBaseView implements UpdateDispatchView
 {
@@ -36,7 +37,7 @@ public class SupportSchemaNeutralView extends SupportBaseView implements UpdateD
         }
     }
 
-    public void newResult(Pair<EventBean[], EventBean[]> result)
+    public void newResult(UniformPair<EventBean[]> result)
     {
         //To change body of implemented methods use File | Settings | File Templates.
     }

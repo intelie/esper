@@ -2,6 +2,7 @@ package com.espertech.esper.eql.view;
 
 import com.espertech.esper.collection.MultiKey;
 import com.espertech.esper.collection.Pair;
+import com.espertech.esper.collection.UniformPair;
 import com.espertech.esper.core.StatementContext;
 import com.espertech.esper.eql.core.ResultSetProcessor;
 import com.espertech.esper.eql.spec.OutputLimitSpec;
@@ -139,7 +140,7 @@ public class OutputProcessViewSnapshot extends OutputProcessView
             oldEvents = null;
         }
 
-        Pair<EventBean[], EventBean[]> newOldEvents = new Pair<EventBean[], EventBean[]>(newEvents, oldEvents);
+        UniformPair<EventBean[]> newOldEvents = new UniformPair<EventBean[]>(newEvents, oldEvents);
 
         if(doOutput)
 		{
@@ -147,7 +148,7 @@ public class OutputProcessViewSnapshot extends OutputProcessView
 		}
 	}
 
-	private void output(boolean forceUpdate, Pair<EventBean[], EventBean[]> results)
+	private void output(boolean forceUpdate, UniformPair<EventBean[]> results)
 	{
         // Child view can be null in replay from named window
         if (childView != null)

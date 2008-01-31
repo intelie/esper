@@ -7,6 +7,7 @@ import net.sf.cglib.reflect.FastClass;
 import com.espertech.esper.event.EventBean;
 import com.espertech.esper.event.NaturalEventBean;
 import com.espertech.esper.collection.Pair;
+import com.espertech.esper.collection.UniformPair;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.InvocationTargetException;
@@ -36,7 +37,7 @@ public class ResultDeliveryStrategyTypeArr implements ResultDeliveryStrategy
         componentType = method.getParameterTypes()[0].getComponentType();
     }
 
-    public void execute(Pair<EventBean[], EventBean[]> result)
+    public void execute(UniformPair<EventBean[]> result)
     {
         Object newData = convert(result.getFirst());
         Object oldData = convert(result.getSecond());

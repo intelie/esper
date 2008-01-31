@@ -2,7 +2,7 @@ package com.espertech.esper.eql.named;
 
 import com.espertech.esper.collection.ArrayEventIterator;
 import com.espertech.esper.collection.MultiKey;
-import com.espertech.esper.collection.Pair;
+import com.espertech.esper.collection.UniformPair;
 import com.espertech.esper.core.EPStatementHandle;
 import com.espertech.esper.core.InternalEventRouter;
 import com.espertech.esper.core.StatementResultService;
@@ -80,7 +80,7 @@ public class NamedWindowOnSelectView extends NamedWindowOnExprBaseView
         }
 
         // process matches
-        Pair<EventBean[], EventBean[]> pair = resultSetProcessor.processJoinResult(newEvents, oldEvents, false);
+        UniformPair<EventBean[]> pair = resultSetProcessor.processJoinResult(newEvents, oldEvents, false);
         newData = pair.getFirst();
 
         if (internalEventRouter != null)

@@ -7,9 +7,9 @@
  **************************************************************************************/
 package com.espertech.esper.view;
 
+import com.espertech.esper.collection.UniformPair;
 import com.espertech.esper.event.EventBean;
 import com.espertech.esper.util.ExecutionPathDebugLog;
-import com.espertech.esper.collection.Pair;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -126,7 +126,7 @@ public abstract class ViewSupport implements View
      * @param prefix is a prefix text to output for each line
      * @param result is the data in an update call
      */
-    public static void dumpUpdateParams(String prefix, Pair<EventBean[], EventBean[]> result)
+    public static void dumpUpdateParams(String prefix, UniformPair<EventBean[]> result)
     {
         EventBean[] newEventArr = result != null ? result.getFirst() : null;
         EventBean[] oldEventArr = result != null ? result.getSecond() : null;

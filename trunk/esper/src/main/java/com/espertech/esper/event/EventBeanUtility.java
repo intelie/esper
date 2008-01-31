@@ -17,7 +17,7 @@ public class EventBeanUtility
      * @param eventVector vector
      * @return array with all events
      */
-    public static Pair<EventBean[], EventBean[]> flattenList(ArrayDequeJDK6Backport<Pair<EventBean[], EventBean[]>> eventVector)
+    public static UniformPair<EventBean[]> flattenList(ArrayDequeJDK6Backport<UniformPair<EventBean[]>> eventVector)
     {
         if (eventVector.isEmpty())
         {
@@ -31,7 +31,7 @@ public class EventBeanUtility
 
         int totalNew = 0;
         int totalOld = 0;
-        for (Pair<EventBean[], EventBean[]> pair : eventVector)
+        for (UniformPair<EventBean[]> pair : eventVector)
         {
             if (pair != null)
             {
@@ -65,7 +65,7 @@ public class EventBeanUtility
 
         int destPosNew = 0;
         int destPosOld = 0;
-        for (Pair<EventBean[], EventBean[]> pair : eventVector)
+        for (UniformPair<EventBean[]> pair : eventVector)
         {
             if (pair != null)
             {
@@ -82,7 +82,7 @@ public class EventBeanUtility
             }
         }
 
-        return new Pair<EventBean[], EventBean[]>(resultNew, resultOld);
+        return new UniformPair<EventBean[]>(resultNew, resultOld);
     }
 
     /**

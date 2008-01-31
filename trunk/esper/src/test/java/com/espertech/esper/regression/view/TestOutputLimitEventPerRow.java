@@ -41,20 +41,63 @@ public class TestOutputLimitEventPerRow extends TestCase
         sendTimer(0);
 
         String viewExpr = "select symbol, volume, sum(price) as sumprice" +
-                          " from " + SupportMarketDataBean.class.getName() + ".win:keepall() " +
+                          " from " + SupportMarketDataBean.class.getName() + ".win:time(10 sec) " +
                           "group by symbol " +
                           "having sum(price) >= 10 " +
                           "output every 3 events";
         EPStatement stmt = epService.getEPAdministrator().createEQL(viewExpr);
         stmt.addListener(listener);
 
+        runAssertionHavingOutputAll();
+    }
+
+    public void testHavingOutputAllJoin()
+    {
+        epService.getEPRuntime().sendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
+        sendTimer(0);
+
+        String viewExpr = "select symbol, volume, sum(price) as sumprice" +
+                          " from " + SupportMarketDataBean.class.getName() + ".win:time(10 sec) as s0," +
+                          SupportBean.class.getName() + ".win:keepall() as s1 " +
+                          "where s0.symbol = s1.string " +
+                          "group by symbol " +
+                          "having sum(price) >= 10 " +
+                          "output every 3 events";
+        EPStatement stmt = epService.getEPAdministrator().createEQL(viewExpr);
+        stmt.addListener(listener);
+
+        epService.getEPRuntime().sendEvent(new SupportBean("S1", 0));
+
+        runAssertionHavingOutputAll();
+    }
+
+    private void runAssertionHavingOutputAll()
+    {
         sendEvent("S1", 1, 5);
         sendEvent("S1", 2, 6);
         assertFalse(listener.isInvoked());
 
         sendEvent("S1", 3, -3);
         String fields[] = "symbol,volume,sumprice".split(",");
-        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"S1", 2, 11});
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"S1", 2L, 11.0});
+
+        sendTimer(5000);
+        sendEvent("S1", 4, 10);
+        sendEvent("S1", 5, 0);
+        assertFalse(listener.isInvoked());
+
+        sendEvent("S1", 6, 1);
+        assertEquals(3, listener.getLastNewData().length);
+        ArrayAssertionUtil.assertProps(listener.getLastNewData()[0], fields, new Object[] {"S1", 4L, 18.0});
+        ArrayAssertionUtil.assertProps(listener.getLastNewData()[1], fields, new Object[] {"S1", 5L, 18.0});
+        ArrayAssertionUtil.assertProps(listener.getLastNewData()[2], fields, new Object[] {"S1", 6L, 19.0});
+        listener.reset();
+
+        sendTimer(11000);
+        assertEquals(3, listener.getLastOldData().length);
+        ArrayAssertionUtil.assertProps(listener.getLastOldData()[0], fields, new Object[] {"S1", 1L, 19.0});
+        ArrayAssertionUtil.assertProps(listener.getLastOldData()[1], fields, new Object[] {"S1", 2L, 19.0});
+        listener.reset();
     }
 
     public void testJoinSortWindow()

@@ -16,6 +16,7 @@ import com.espertech.esper.view.Viewable;
 
 import java.util.Set;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * Result set processor for the case: aggregation functions used in the select clause, and no group-by,
@@ -51,7 +52,7 @@ public class ResultSetProcessorRowForAll implements ResultSetProcessor
         return selectExprProcessor.getResultEventType();
     }
 
-    public Pair<EventBean[], EventBean[]> processJoinResult(Set<MultiKey<EventBean>> newEvents, Set<MultiKey<EventBean>> oldEvents, boolean isSynthesize)
+    public UniformPair<EventBean[]> processJoinResult(Set<MultiKey<EventBean>> newEvents, Set<MultiKey<EventBean>> oldEvents, boolean isSynthesize)
     {
         EventBean[] selectOldEvents;
         EventBean[] selectNewEvents;
@@ -81,10 +82,10 @@ public class ResultSetProcessorRowForAll implements ResultSetProcessor
         {
             return null;
         }
-        return new Pair<EventBean[], EventBean[]>(selectNewEvents, selectOldEvents);
+        return new UniformPair<EventBean[]>(selectNewEvents, selectOldEvents);
     }
 
-    public Pair<EventBean[], EventBean[]> processViewResult(EventBean[] newData, EventBean[] oldData, boolean isSynthesize)
+    public UniformPair<EventBean[]> processViewResult(EventBean[] newData, EventBean[] oldData, boolean isSynthesize)
     {
         EventBean[] selectOldEvents = null;
         EventBean[] selectNewEvents = null;
@@ -119,7 +120,7 @@ public class ResultSetProcessorRowForAll implements ResultSetProcessor
             return null;
         }
 
-        return new Pair<EventBean[], EventBean[]>(selectNewEvents, selectOldEvents);
+        return new UniformPair<EventBean[]>(selectNewEvents, selectOldEvents);
     }
 
     private static EventBean[] getSelectListEvents(SelectExprProcessor exprProcessor, ExprNode optionalHavingNode, boolean isNewData, boolean isSynthesize)
@@ -159,5 +160,15 @@ public class ResultSetProcessorRowForAll implements ResultSetProcessor
     public void clear()
     {
         aggregationService.clearResults();
-    }        
+    }
+
+    public UniformPair<EventBean[]> processOutputLimitedJoin(List<UniformPair<Set<MultiKey<EventBean>>>> joinEventsSet, boolean generateSynthetic)
+    {
+        return null;  //TODO
+    }
+
+    public UniformPair<EventBean[]> processOutputLimitedView(List<UniformPair<EventBean[]>> viewEventsList, boolean generateSynthetic)
+    {
+        return null;  //TODO
+    }
 }

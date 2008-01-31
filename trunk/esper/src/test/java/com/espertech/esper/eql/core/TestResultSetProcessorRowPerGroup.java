@@ -1,10 +1,7 @@
 package com.espertech.esper.eql.core;
 
-import java.util.LinkedList;
-import java.util.List;
-
-import junit.framework.TestCase;
-import com.espertech.esper.collection.Pair;
+import com.espertech.esper.collection.UniformPair;
+import com.espertech.esper.eql.expression.ExprNode;
 import com.espertech.esper.event.EventBean;
 import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.eql.SupportAggregationService;
@@ -13,10 +10,10 @@ import com.espertech.esper.support.eql.SupportSelectExprFactory;
 import com.espertech.esper.support.eql.SupportStreamTypeSvc1Stream;
 import com.espertech.esper.support.event.SupportEventAdapterService;
 import com.espertech.esper.support.event.SupportEventBeanFactory;
-import com.espertech.esper.eql.core.ResultSetProcessorRowPerGroup;
-import com.espertech.esper.eql.core.SelectExprEvalProcessor;
-import com.espertech.esper.eql.core.SelectExprProcessor;
-import com.espertech.esper.eql.expression.ExprNode;
+import junit.framework.TestCase;
+
+import java.util.LinkedList;
+import java.util.List;
 
 public class TestResultSetProcessorRowPerGroup extends TestCase
 {
@@ -41,7 +38,7 @@ public class TestResultSetProcessorRowPerGroup extends TestCase
         EventBean[] newData = new EventBean[] {makeEvent(1, 2), makeEvent(3, 4)};
         EventBean[] oldData = new EventBean[] {makeEvent(1, 2), makeEvent(1, 10)};
 
-        Pair<EventBean[], EventBean[]> result = processor.processViewResult(newData, oldData, false);
+        UniformPair<EventBean[]> result = processor.processViewResult(newData, oldData, false);
 
         assertEquals(2, supportAggregationService.getEnterList().size());
         assertEquals(2, supportAggregationService.getLeaveList().size());

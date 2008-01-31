@@ -1,6 +1,6 @@
 package com.espertech.esper.core;
 
-import com.espertech.esper.collection.Pair;
+import com.espertech.esper.collection.UniformPair;
 import com.espertech.esper.event.EventBean;
 import com.espertech.esper.event.NaturalEventBean;
 import net.sf.cglib.reflect.FastClass;
@@ -37,7 +37,7 @@ public class ResultDeliveryStrategyMap implements ResultDeliveryStrategy
         this.columnNames = columnNames;
     }
 
-    public void execute(Pair<EventBean[], EventBean[]> result)
+    public void execute(UniformPair<EventBean[]> result)
     {
         Map[] newData = convert(result.getFirst());
         Map[] oldData = convert(result.getSecond());

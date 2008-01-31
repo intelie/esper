@@ -4,6 +4,7 @@ import com.espertech.esper.dispatch.DispatchService;
 import com.espertech.esper.event.EventBean;
 import com.espertech.esper.view.ViewSupport;
 import com.espertech.esper.collection.Pair;
+import com.espertech.esper.collection.UniformPair;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -24,10 +25,10 @@ public class UpdateDispatchViewNonBlocking extends UpdateDispatchViewBase
     }
 
     public void update(EventBean[] newData, EventBean[] oldData) {
-        newResult(new Pair<EventBean[], EventBean[]>(newData, oldData));
+        newResult(new UniformPair<EventBean[]>(newData, oldData));
     }
 
-    public void newResult(Pair<EventBean[], EventBean[]> results)
+    public void newResult(UniformPair<EventBean[]> results)
     {
         if (log.isDebugEnabled())
         {

@@ -1,18 +1,17 @@
 package com.espertech.esper.core;
 
+import com.espertech.esper.client.EPException;
+import com.espertech.esper.collection.UniformPair;
 import com.espertech.esper.event.EventBean;
 import com.espertech.esper.event.NaturalEventBean;
-import com.espertech.esper.collection.Pair;
-import com.espertech.esper.client.EPException;
-import net.sf.cglib.reflect.FastMethod;
 import net.sf.cglib.reflect.FastClass;
-
-import java.lang.reflect.Method;
-import java.lang.reflect.InvocationTargetException;
-import java.util.Arrays;
-
+import net.sf.cglib.reflect.FastMethod;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.Arrays;
 
 /**
  * A result delivery strategy that uses a matching "update" method and
@@ -73,7 +72,7 @@ public class ResultDeliveryStrategyImpl implements ResultDeliveryStrategy
         }
     }
 
-    public void execute(Pair<EventBean[], EventBean[]> result)
+    public void execute(UniformPair<EventBean[]> result)
     {
         if (startFastMethod != null)
         {

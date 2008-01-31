@@ -1,9 +1,9 @@
 package com.espertech.esper.core;
 
-import com.espertech.esper.event.EventBean;
-import com.espertech.esper.client.EPStatement;
 import com.espertech.esper.client.EPServiceProvider;
-import com.espertech.esper.collection.Pair;
+import com.espertech.esper.client.EPStatement;
+import com.espertech.esper.collection.UniformPair;
+import com.espertech.esper.event.EventBean;
 
 public interface StatementResultService
 {
@@ -58,7 +58,7 @@ public interface StatementResultService
      * Stores for dispatching the statement results.
      * @param results is the insert and remove stream data
      */
-    public void indicate(Pair<EventBean[], EventBean[]> results);
+    public void indicate(UniformPair<EventBean[]> results);
 
     /**
      * Execution of result indication.

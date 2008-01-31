@@ -1,6 +1,7 @@
 package com.espertech.esper.eql.view;
 
 import com.espertech.esper.collection.Pair;
+import com.espertech.esper.collection.UniformPair;
 import com.espertech.esper.core.UpdateDispatchView;
 import com.espertech.esper.event.EventBean;
 
@@ -15,5 +16,5 @@ public interface OutputStrategy
      * @param result the output to indicate
      * @param outputView the view to output to
      */
-    public void output(boolean forceUpdate, Pair<EventBean[], EventBean[]> result, UpdateDispatchView outputView);
+    public void output(boolean forceUpdate, UniformPair<EventBean[]> result, UpdateDispatchView outputView);
 }

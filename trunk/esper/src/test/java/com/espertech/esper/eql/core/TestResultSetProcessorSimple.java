@@ -3,6 +3,7 @@ package com.espertech.esper.eql.core;
 import junit.framework.TestCase;
 import com.espertech.esper.collection.MultiKey;
 import com.espertech.esper.collection.Pair;
+import com.espertech.esper.collection.UniformPair;
 import com.espertech.esper.eql.spec.OutputLimitSpec;
 import com.espertech.esper.eql.spec.OutputLimitLimitType;
 import com.espertech.esper.eql.spec.OutputLimitRateType;
@@ -50,7 +51,7 @@ public class TestResultSetProcessorSimple extends TestCase
 	    EventBean testEvent4 = makeEvent(21, 3, 4);
 	    EventBean[] oldData = new EventBean[] {testEvent3, testEvent4};
 
-        Pair<EventBean[], EventBean[]> result = outputProcessorAll.processViewResult(newData, oldData, false);
+        UniformPair<EventBean[]> result = outputProcessorAll.processViewResult(newData, oldData, false);
         EventBean[] newEvents = result.getFirst();
         EventBean[] oldEvents = result.getSecond();
 
@@ -83,7 +84,7 @@ public class TestResultSetProcessorSimple extends TestCase
         Set<MultiKey<EventBean>> oldEventSet = makeEventSet(testEvent3);
 	    oldEventSet.add(new MultiKey<EventBean>(new EventBean[] {testEvent4}));
 
-        Pair<EventBean[], EventBean[]> result = outputProcessorAll.processJoinResult(newEventSet, oldEventSet, false);
+        UniformPair<EventBean[]> result = outputProcessorAll.processJoinResult(newEventSet, oldEventSet, false);
         EventBean[] newEvents = result.getFirst();
         EventBean[] oldEvents = result.getSecond();
 
@@ -132,7 +133,7 @@ public class TestResultSetProcessorSimple extends TestCase
         Set<MultiKey<EventBean>> oldEventSet = makeEventSet(testEvent3);
 	    oldEventSet.add(new MultiKey<EventBean>(new EventBean[] {testEvent4}));
 
-        Pair<EventBean[], EventBean[]> result = outputProcessorLast.processJoinResult(newEventSet, oldEventSet, false);
+        UniformPair<EventBean[]> result = outputProcessorLast.processJoinResult(newEventSet, oldEventSet, false);
         EventBean[] newEvents = result.getFirst();
         EventBean[] oldEvents = result.getSecond();
 
@@ -157,7 +158,7 @@ public class TestResultSetProcessorSimple extends TestCase
 		    EventBean testEvent4 = makeEvent(21, 3, 4);
 		    EventBean[] oldData = new EventBean[] {testEvent3, testEvent4};
 
-	        Pair<EventBean[], EventBean[]> result = outputProcessorLast.processViewResult(newData, oldData, false);
+	        UniformPair<EventBean[]> result = outputProcessorLast.processViewResult(newData, oldData, false);
 	        EventBean[] newEvents = result.getFirst();
 	        EventBean[] oldEvents = result.getSecond();
 

@@ -1,15 +1,18 @@
 package com.espertech.esper.event;
 
-import java.util.*;
-
-import junit.framework.TestCase;
-import com.espertech.esper.collection.MultiKeyUntyped;
-import com.espertech.esper.collection.Pair;
 import com.espertech.esper.collection.ArrayDequeJDK6Backport;
+import com.espertech.esper.collection.MultiKeyUntyped;
+import com.espertech.esper.collection.UniformPair;
 import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.event.SupportEventBeanFactory;
 import com.espertech.esper.support.event.SupportEventTypeFactory;
 import com.espertech.esper.support.util.ArrayAssertionUtil;
+import junit.framework.TestCase;
+
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 public class TestEventBeanUtility extends TestCase
 {
@@ -17,20 +20,20 @@ public class TestEventBeanUtility extends TestCase
     {
         // test many arrays
         EventBean[] testEvents = makeEventArray(new String[] {"a1", "a2", "b1", "b2", "b3", "c1", "c2"});
-        ArrayDequeJDK6Backport<Pair<EventBean[], EventBean[]>> eventVector = new ArrayDequeJDK6Backport<Pair<EventBean[], EventBean[]>>();
+        ArrayDequeJDK6Backport<UniformPair<EventBean[]>> eventVector = new ArrayDequeJDK6Backport<UniformPair<EventBean[]>>();
 
-        eventVector.add(new Pair<EventBean[], EventBean[]>(null, new EventBean[] {testEvents[0], testEvents[1]}));
-        eventVector.add(new Pair<EventBean[], EventBean[]>(new EventBean[] {testEvents[2]}, null));
-        eventVector.add(new Pair<EventBean[], EventBean[]>(null, new EventBean[] {testEvents[3], testEvents[4], testEvents[5]}));
-        eventVector.add(new Pair<EventBean[], EventBean[]>(new EventBean[] {testEvents[6]}, null));
+        eventVector.add(new UniformPair<EventBean[]>(null, new EventBean[] {testEvents[0], testEvents[1]}));
+        eventVector.add(new UniformPair<EventBean[]>(new EventBean[] {testEvents[2]}, null));
+        eventVector.add(new UniformPair<EventBean[]>(null, new EventBean[] {testEvents[3], testEvents[4], testEvents[5]}));
+        eventVector.add(new UniformPair<EventBean[]>(new EventBean[] {testEvents[6]}, null));
 
-        Pair<EventBean[], EventBean[]> events = EventBeanUtility.flattenList(eventVector);
+        UniformPair<EventBean[]> events = EventBeanUtility.flattenList(eventVector);
         ArrayAssertionUtil.assertEqualsExactOrder(events.getFirst(), new EventBean[] {testEvents[2], testEvents[6]});
         ArrayAssertionUtil.assertEqualsExactOrder(events.getSecond(), new EventBean[] {testEvents[0], testEvents[1], testEvents[3], testEvents[4], testEvents[5]});
 
         // test just one array
         eventVector.clear();
-        eventVector.add(new Pair<EventBean[], EventBean[]>(new EventBean[] {testEvents[2]}, null));
+        eventVector.add(new UniformPair<EventBean[]>(new EventBean[] {testEvents[2]}, null));
         events = EventBeanUtility.flattenList(eventVector);
         ArrayAssertionUtil.assertEqualsExactOrder(events.getFirst(), new EventBean[] {testEvents[2]});
         ArrayAssertionUtil.assertEqualsExactOrder(events.getSecond(), null);

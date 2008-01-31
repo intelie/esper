@@ -10,6 +10,7 @@ import org.apache.commons.logging.LogFactory;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.List;
 
 /**
  * Result set processor for the hand-through case:
@@ -37,7 +38,7 @@ public class ResultSetProcessorHandThrough implements ResultSetProcessor
         return selectExprProcessor.getResultEventType();
     }
 
-    public Pair<EventBean[], EventBean[]> processJoinResult(Set<MultiKey<EventBean>> newEvents, Set<MultiKey<EventBean>> oldEvents, boolean isSynthesize)
+    public UniformPair<EventBean[]> processJoinResult(Set<MultiKey<EventBean>> newEvents, Set<MultiKey<EventBean>> oldEvents, boolean isSynthesize)
     {
         EventBean[] selectOldEvents;
         EventBean[] selectNewEvents;
@@ -45,15 +46,15 @@ public class ResultSetProcessorHandThrough implements ResultSetProcessor
         selectOldEvents = getSelectEventsNoHaving(selectExprProcessor, oldEvents, false, isSynthesize);
         selectNewEvents = getSelectEventsNoHaving(selectExprProcessor, newEvents, true, isSynthesize);
 
-        return new Pair<EventBean[], EventBean[]>(selectNewEvents, selectOldEvents);
+        return new UniformPair<EventBean[]>(selectNewEvents, selectOldEvents);
     }
 
-    public Pair<EventBean[], EventBean[]> processViewResult(EventBean[] newData, EventBean[] oldData, boolean isSynthesize)
+    public UniformPair<EventBean[]> processViewResult(EventBean[] newData, EventBean[] oldData, boolean isSynthesize)
     {
         EventBean[] selectOldEvents = getSelectEventsNoHaving(selectExprProcessor, oldData, false, isSynthesize);
         EventBean[] selectNewEvents = getSelectEventsNoHaving(selectExprProcessor, newData, true, isSynthesize);
 
-        return new Pair<EventBean[], EventBean[]>(selectNewEvents, selectOldEvents);
+        return new UniformPair<EventBean[]>(selectNewEvents, selectOldEvents);
     }
 
     /**
@@ -131,8 +132,18 @@ public class ResultSetProcessorHandThrough implements ResultSetProcessor
     public Iterator<EventBean> getIterator(Set<MultiKey<EventBean>> joinSet)
     {
         // Process join results set as a regular join, includes sorting and having-clause filter
-        Pair<EventBean[], EventBean[]> result = processJoinResult(joinSet, emptyRowSet, true);
+        UniformPair<EventBean[]> result = processJoinResult(joinSet, emptyRowSet, true);
         return new ArrayEventIterator(result.getFirst());
+    }
+
+    public UniformPair<EventBean[]> processOutputLimitedJoin(List<UniformPair<Set<MultiKey<EventBean>>>> joinEventsSet, boolean generateSynthetic)
+    {
+        return null;  //TODO
+    }
+
+    public UniformPair<EventBean[]> processOutputLimitedView(List<UniformPair<EventBean[]>> viewEventsList, boolean generateSynthetic)
+    {
+        return null;  //TODO
     }
 
     public void clear()
@@ -160,7 +171,7 @@ public class ResultSetProcessorHandThrough implements ResultSetProcessor
         public EventBean transform(EventBean event)
         {
             newData[0] = event;
-            Pair<EventBean[], EventBean[]> pair = resultSetProcessor.processViewResult(newData, null, true);
+            UniformPair<EventBean[]> pair = resultSetProcessor.processViewResult(newData, null, true);
             return pair.getFirst()[0];
         }
     }

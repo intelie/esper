@@ -1,6 +1,7 @@
 package com.espertech.esper.eql.view;
 
 import com.espertech.esper.collection.Pair;
+import com.espertech.esper.collection.UniformPair;
 import com.espertech.esper.core.EPStatementHandle;
 import com.espertech.esper.core.InternalEventRouter;
 import com.espertech.esper.core.UpdateDispatchView;
@@ -36,7 +37,7 @@ public class OutputStrategyPostProcess implements OutputStrategy
         this.epStatementHandle = epStatementHandle;
     }
 
-    public void output(boolean forceUpdate, Pair<EventBean[], EventBean[]> result, UpdateDispatchView finalView)
+    public void output(boolean forceUpdate, UniformPair<EventBean[]> result, UpdateDispatchView finalView)
     {
         EventBean[] newEvents = result != null ? result.getFirst() : null;
         EventBean[] oldEvents = result != null ? result.getSecond() : null;
@@ -77,11 +78,11 @@ public class OutputStrategyPostProcess implements OutputStrategy
         // dispatch
         if(newEvents != null || oldEvents != null)
         {
-            finalView.newResult(new Pair<EventBean[], EventBean[]>(newEvents, oldEvents));
+            finalView.newResult(new UniformPair<EventBean[]>(newEvents, oldEvents));
         }
         else if(forceUpdate)
         {
-            finalView.newResult(new Pair<EventBean[], EventBean[]>(null, null));
+            finalView.newResult(new UniformPair<EventBean[]>(null, null));
         }
     }
 
