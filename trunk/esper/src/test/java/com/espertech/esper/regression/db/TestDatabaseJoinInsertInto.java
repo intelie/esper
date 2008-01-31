@@ -1,0 +1,84 @@
+package com.espertech.esper.regression.db;
+
+import junit.framework.TestCase;
+import com.espertech.esper.client.*;
+import com.espertech.esper.client.time.CurrentTimeEvent;
+import com.espertech.esper.client.time.TimerControlEvent;
+import com.espertech.esper.event.EventBean;
+import com.espertech.esper.support.client.SupportConfigFactory;
+import com.espertech.esper.support.eql.SupportDatabaseService;
+import com.espertech.esper.support.util.SupportUpdateListener;
+
+import java.util.Properties;
+
+public class TestDatabaseJoinInsertInto extends TestCase
+{
+    private EPServiceProvider epService;
+    private SupportUpdateListener listener;
+
+    public void setUp()
+    {
+        ConfigurationDBRef configDB = new ConfigurationDBRef();
+        configDB.setDriverManagerConnection(SupportDatabaseService.DRIVER, SupportDatabaseService.FULLURL, new Properties());
+        configDB.setConnectionLifecycleEnum(ConfigurationDBRef.ConnectionLifecycleEnum.RETAIN);
+        configDB.setConnectionCatalog("test");
+        configDB.setConnectionReadOnly(true);
+        configDB.setConnectionTransactionIsolation(1);
+        configDB.setConnectionAutoCommit(true);
+
+        Configuration configuration = SupportConfigFactory.getConfiguration();
+        configuration.addDatabaseReference("MyDB", configDB);
+        configuration.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
+
+        epService = EPServiceProviderManager.getDefaultProvider(configuration);
+        epService.initialize();
+    }
+
+    public void testInsertIntoTimeBatch()
+    {
+        epService.getEPRuntime().sendEvent(new CurrentTimeEvent(0));
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("insert into ReservationEvents(type, cid, elapsed, series) ");
+        sb.append("select istream 'type_1' as type, C.myvarchar as cid, C.myint as elapsed, C.mychar as series ");
+        sb.append("from pattern [every timer:interval(20 sec)], ");
+        sb.append("sql:MyDB [' select myvarchar, myint, mychar from mytesttable '] as C ");
+        epService.getEPAdministrator().createEQL(sb.toString());
+
+        // Reservation Events status change, aggregation, sla definition and DB cache update
+        sb = new StringBuilder();
+        sb.append("insert into SumOfReservations(cid, type, series, total, insla, bordersla, outsla) ");
+        sb.append("select istream cid, type, series, ");
+        sb.append("count(*) as total, ");
+        sb.append("sum(case when elapsed < 600000 then 1 else 0 end) as insla, ");
+        sb.append("sum(case when elapsed between 600000 and 900000 then 1 else 0 end) as bordersla, ");
+        sb.append("sum(case when elapsed > 900000 then 1 else 0 end) as outsla ");
+        sb.append("from ReservationEvents.win:time_batch(10 sec) ");
+        sb.append("group by cid, type, series order by series asc");
+
+        EPStatement stmt = epService.getEPAdministrator().createEQL(sb.toString());
+        listener = new SupportUpdateListener();
+        stmt.addListener(listener);
+
+        epService.getEPRuntime().sendEvent(new CurrentTimeEvent(20000));
+        assertFalse(listener.isInvoked());
+
+        epService.getEPRuntime().sendEvent(new CurrentTimeEvent(30000));
+        EventBean[] received = listener.getLastNewData();
+        assertEquals(10, received.length);
+        listener.reset();
+
+        epService.getEPRuntime().sendEvent(new CurrentTimeEvent(31000));
+        assertFalse(listener.isInvoked());
+        epService.getEPRuntime().sendEvent(new CurrentTimeEvent(39000));
+        assertFalse(listener.isInvoked());
+
+        epService.getEPRuntime().sendEvent(new CurrentTimeEvent(40000));
+        received = listener.getLastNewData();
+        assertEquals(10, received.length);
+        listener.reset();
+
+        epService.getEPRuntime().sendEvent(new CurrentTimeEvent(41000));
+        assertFalse(listener.isInvoked());
+    }
+}

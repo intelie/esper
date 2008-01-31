@@ -1,0 +1,257 @@
+<chapter id="adapter_csv">
+    <title>The CSV Input Adapter</title>
+    
+    <para>
+        This chapter discusses the CSV input adapter. CSV is an abbreviation for comma-separated values. CSV files are simple text files in which each line
+        is a comma-separated list of values. CSV-formatted text can be read from many different input sources via <literal>com.espertech.esper.adapter.AdapterInputSource</literal>.
+        Please consult the JavaDoc for additional information on <literal>AdapterInputSource</literal> and the CSV adapter.
+    </para>
+    
+    <sect1 id="csv-intro">
+        <title>Introduction</title>
+
+        <para>
+            In summary the CSV input adapter API performs the following functions. 
+        </para>
+
+		<itemizedlist spacing="compact">
+			<listitem>
+				<para>
+					Read events from an input source providing CSV-formatted text and send the events to an Esper engine instance
+				</para>
+				<itemizedlist spacing="compact">
+					<listitem>
+						<para>
+							Read from different types of input sources
+						</para>
+					</listitem>
+					<listitem>
+						<para>
+							Use a timestamp column to schedule events being sent into the engine							
+						</para>
+					</listitem>
+					<listitem>
+						<para>
+							Playback with options such as file looping, events per second and other options
+						</para>
+					</listitem>
+					<listitem>
+						<para>
+							Use the Esper engine timer thread to read the CSV file
+						</para>
+					</listitem>
+				</itemizedlist>
+			</listitem>
+			<listitem>
+				<para>
+					Read multiple CSV files using a timestamp column to simulate events coming from different streams
+				</para>
+			</listitem>
+		</itemizedlist>
+
+        <para>
+            The following formatting rules and restrictions apply to CSV-formatted text:
+        </para>
+		<itemizedlist spacing="compact">
+			<listitem>
+				<para>
+					Comment lines are prefixed with a single hash or pound <literal>#</literal> character
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					Strings are placed in double quotes, e.g. <literal>"value"</literal>
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					Escape rules follow common spreadsheet conventions, i.e. double quotes can be escaped via double quote
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					A column header is required unless a property order is defined explicitly
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					The value of the timestamp column, if one is given, must be in ascending order
+				</para>
+			</listitem>
+		</itemizedlist>
+    </sect1>
+    
+    <sect1 id="csv-step-1">
+        <title>Playback of CSV-formatted Events</title>
+
+        <para>
+				The adapter reads events from a CSV input source and sends events to an engine using the class <literal>com.espertech.esper.adapter.csv.CSVInputAdapter</literal>.
+        </para>
+		
+        <para>
+				The below code snippet reads the CSV-formatted text file "simulation.csv" expecting the file in the classpath. The <literal>AdapterInputSource</literal> class can take other input sources.
+        </para>
+
+		<synopsis>AdapterInputSource source = new AdapterInputSource("simulation.csv");
+(new CSVInputAdapter(epServiceProvider, source, "PriceEvent")).start();</synopsis>
+
+
+        <para>
+				To use the CSVInputAdapter without any options, the event type <literal>PriceEvent</literal> and its property names and value types must be known to the engine. The next section elaborates on adapter options.
+        </para>
+
+		<itemizedlist spacing="compact">
+			<listitem>
+				<para>
+					Configure the engine instance for a Map-based event type
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					Place a header record in your CSV file that names each column as specified in the event type
+				</para>
+			</listitem>
+		</itemizedlist>
+		
+        <para>
+				The sample application code below shows all the steps to configure, via API, a Map-based event type and play the CSV file without setting any of the available options.
+        </para>
+
+			<programlisting><![CDATA[Map<String, Class> eventProperties = new HashMap<String, Class>();
+eventProperties.put("symbol", String.class);
+eventProperties.put("price", double.class);
+eventProperties.put("volume", Integer.class);
+
+Configuration configuration = new Configuration();
+configuration.addEventTypeAlias("PriceEvent", eventProperties);
+
+epService = EPServiceProviderManager.getDefaultProvider(configuration);
+
+EPStatement stmt = epService.getEPAdministrator().createEQL(
+   "select symbol, price, volume from PriceEvent.win:length(100)");
+
+(new CSVInputAdapter(epService, new AdapterInputSource(filename), "PriceEvent")).start();]]></programlisting>		
+
+        <para>
+				The contents of a sample CSV file is shown next.
+        </para>
+
+		<programlisting><![CDATA[symbol,price,volume
+IBM,55.5,1000]]></programlisting>		
+
+        <para>
+				The next code snippet outlines using a <literal>java.io.Reader</literal> as an alternative input source :
+        </para>
+		<programlisting><![CDATA[String myCSV = "symbol, price, volume" + NEW_LINE + "IBM, 10.2, 10000";
+StringReader reader = new StringReader(myCSV);
+(new CSVInputAdapter(epService, new AdapterInputSource(reader), "PriceEvent")).start();]]></programlisting>		
+
+    </sect1>
+    
+    <sect1 id="csv-step-2">
+        <title>CSV Playback Options</title>
+
+        <para>
+				Use the <literal>CSVInputAdapterSpec</literal> class to set playback options. The following options are available:
+        </para>
+        
+		<itemizedlist spacing="compact">
+			<listitem>
+				<para>
+					Loop - Reads the CSV input source in a loop; When the end is reached, the input adapter rewinds to the beginning
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					Events per second - Controls the number of events per second that the adapter sends to the engine
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					Property order - Controls the order of event property values in the CSV input source, for use when the CSV input source does not have a header column
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					Property types - Defines a new Map-based event type given a map of event property names and types. No engine configuration for the event type is required as long as the input adapter is created before statements against the event type are created.
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					Engine thread - Instructs the adapter to use the engine timer thread to read the CSV input source and send events to the engine
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					Timestamp column name - Defines the name of the timestamp column in the CSV input source; The timestamp column must carry long-typed timestamp values relative to the current time; Use zero for the current time
+				</para>
+			</listitem>
+		</itemizedlist>
+
+        <para>
+				The next code snippet shows the use of <literal>CSVInputAdapterSpec</literal> to set playback options.
+        </para>
+
+		<programlisting><![CDATA[CSVInputAdapterSpec spec = new CSVInputAdapterSpec(new AdapterInputSource(myURL), "PriceEvent");
+spec.setEventsPerSec(1000);
+spec.setLooping(true);
+  
+InputAdapter inputAdapter = new CSVInputAdapter(epService, spec);
+inputAdapter.start();	// method blocks unless engine thread option is set]]></programlisting>
+    </sect1>
+    
+    <sect1 id="csv-step-3">
+        <title>Simulating Multiple Event Streams</title>
+
+        <para>
+				The CSV input adapter can run simulations of events arriving in time-order from different input streams. Use the <literal>AdapterCoordinator</literal> as a specialized input adapter for coordinating multiple CSV input sources by timestamp.
+        </para>
+        
+        <para>
+				The sample application code listed below simulates price and trade events arriving in timestamp order. Via the adapter the application reads two CSV-formatted files from a URL that each contain a timestamp column as well as price or trade events. The <literal>AdapterCoordinator</literal> uses the timestamp column to send events to the engine in the exact ordering prescribed by the timestamp values.
+        </para>
+
+		<programlisting><![CDATA[AdapterInputSource sourceOne = new AdapterInputSource(new URL("FILE://prices.csv"));
+CSVInputAdapterSpec inputOne = new CSVInputAdapterSpec(sourceOne, "PriceEvent");
+inputOne.setTimestampColumn("timestamp");
+
+AdapterInputSource sourceTwo = new AdapterInputSource(new URL("FILE://trades.csv"));
+CSVInputAdapterSpec inputTwo = new CSVInputAdapterSpec(sourceTwo, "TradeEvent");
+inputTwo.setTimestampColumn("timestamp");
+
+AdapterCoordinator coordinator = new AdapterCoordinatorImpl(epService, true);
+coordinator.coordinate(new CSVInputAdapter(inputOne));
+coordinator.coordinate(new CSVInputAdapter(inputTwo));
+coordinator.start();]]></programlisting>
+        
+        <para>
+				The <literal>AdapterCoordinatorImpl</literal> is provided with two parameters: the engine instance, and a boolean value 
+				that instructs the adapter to use the engine timer thread if set to true, and the adapter can use the application thread if the flag passed is false.
+        </para>
+
+    </sect1>
+
+    <sect1 id="csv-step-4">
+        <title>Pausing and Resuming Operation</title>
+
+        <para>
+				The CSV adapter can employ the engine timer thread of an Esper engine instance to read and send events. This can be controlled via the <literal>setUsingEngineThread</literal> method on <literal>CSVInputAdapterSpec</literal>. We use that feature in the sample code below to pause and resume a running CSV input adapter.
+        </para>
+        
+		<programlisting><![CDATA[CSVInputAdapterSpec spec = new CSVInputAdapterSpec(new AdapterInputSource(myURL), "PriceEvent");
+spec.setEventsPerSec(100);
+spec.setUsingEngineThread(true);
+  
+InputAdapter inputAdapter = new CSVInputAdapter(epService, spec);
+inputAdapter.start();	// method starts adapter and returns, non-blocking
+Thread.sleep(5000);	// sleep 5 seconds
+inputAdapter.pause();
+Thread.sleep(5000);	// sleep 5 seconds
+inputAdapter.resume();
+Thread.sleep(5000);	// sleep 5 seconds
+inputAdapter.stop();]]></programlisting>
+        
+    </sect1>
+
+</chapter>
+
