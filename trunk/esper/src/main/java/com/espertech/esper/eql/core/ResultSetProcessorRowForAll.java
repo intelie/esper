@@ -10,8 +10,10 @@ package com.espertech.esper.eql.core;
 import com.espertech.esper.collection.*;
 import com.espertech.esper.eql.agg.AggregationService;
 import com.espertech.esper.eql.expression.ExprNode;
+import com.espertech.esper.eql.spec.OutputLimitLimitType;
 import com.espertech.esper.event.EventBean;
 import com.espertech.esper.event.EventType;
+import com.espertech.esper.event.EventBeanUtility;
 import com.espertech.esper.view.Viewable;
 
 import java.util.Set;
@@ -162,13 +164,47 @@ public class ResultSetProcessorRowForAll implements ResultSetProcessor
         aggregationService.clearResults();
     }
 
-    public UniformPair<EventBean[]> processOutputLimitedJoin(List<UniformPair<Set<MultiKey<EventBean>>>> joinEventsSet, boolean generateSynthetic)
+    public UniformPair<EventBean[]> processOutputLimitedJoin(List<UniformPair<Set<MultiKey<EventBean>>>> joinEventsSet, boolean generateSynthetic, OutputLimitLimitType outputLimitLimitType)
     {
         return null;  //TODO
     }
 
-    public UniformPair<EventBean[]> processOutputLimitedView(List<UniformPair<EventBean[]>> viewEventsList, boolean generateSynthetic)
+    public UniformPair<EventBean[]> processOutputLimitedView(List<UniformPair<EventBean[]>> viewEventsList, boolean generateSynthetic, OutputLimitLimitType outputLimitLimitType)
     {
-        return null;  //TODO
+        // TODO
+        if (outputLimitLimitType != OutputLimitLimitType.LAST)
+        {
+            UniformPair<EventBean[]> pair = EventBeanUtility.flattenBatchStream(viewEventsList);
+            return processViewResult(pair.getFirst(), pair.getSecond(), generateSynthetic);
+        }
+
+        // select sum(price) from A output every 5 sec
+        
+        EventBean[] lastNonEmptyNew = null;
+        EventBean[] lastNonEmptyOld = null;
+        for (UniformPair<EventBean[]> pair : viewEventsList)
+        {
+            if ((pair.getFirst() != null) && (pair.getFirst().length != 0))
+            {
+                lastNonEmptyNew = pair.getFirst();
+            }
+            if ((pair.getSecond() != null) && (pair.getSecond().length != 0))
+            {
+                lastNonEmptyOld = pair.getSecond();
+            }
+        }
+
+        UniformPair<EventBean[]> result = processViewResult(lastNonEmptyNew, lastNonEmptyOld, generateSynthetic);
+
+        EventBean[] lastNew = null;
+        if ((result.getFirst() != null) && (result.getFirst().length != 0)) {
+            lastNew = new EventBean[] {result.getFirst()[result.getFirst().length - 1]};
+        }
+        EventBean[] lastOld = null;
+        if ((result.getSecond() != null) && (result.getSecond().length != 0)) {
+            lastOld = new EventBean[] {result.getSecond()[result.getSecond().length - 1]};
+        }
+
+        return new UniformPair<EventBean[]>(lastNew, lastOld);
     }
 }

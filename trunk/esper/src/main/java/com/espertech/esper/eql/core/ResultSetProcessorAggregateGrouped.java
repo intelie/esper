@@ -13,6 +13,7 @@ import com.espertech.esper.collection.MultiKeyUntyped;
 import com.espertech.esper.collection.UniformPair;
 import com.espertech.esper.eql.agg.AggregationService;
 import com.espertech.esper.eql.expression.ExprNode;
+import com.espertech.esper.eql.spec.OutputLimitLimitType;
 import com.espertech.esper.event.EventBean;
 import com.espertech.esper.event.EventBeanUtility;
 import com.espertech.esper.event.EventType;
@@ -536,7 +537,7 @@ public class ResultSetProcessorAggregateGrouped implements ResultSetProcessor
         aggregationService.clearResults();
     }
 
-    public UniformPair<EventBean[]> processOutputLimitedJoin(List<UniformPair<Set<MultiKey<EventBean>>>> joinEventsSet, boolean generateSynthetic)
+    public UniformPair<EventBean[]> processOutputLimitedJoin(List<UniformPair<Set<MultiKey<EventBean>>>> joinEventsSet, boolean generateSynthetic, OutputLimitLimitType outputLimitLimitType)
     {
         List<UniformPair<EventBean[]>> resultList = new LinkedList<UniformPair<EventBean[]>>();
 
@@ -552,7 +553,7 @@ public class ResultSetProcessorAggregateGrouped implements ResultSetProcessor
         return EventBeanUtility.flattenBatchStream(resultList);
     }
 
-    public UniformPair<EventBean[]> processOutputLimitedView(List<UniformPair<EventBean[]>> viewEventsList, boolean generateSynthetic)
+    public UniformPair<EventBean[]> processOutputLimitedView(List<UniformPair<EventBean[]>> viewEventsList, boolean generateSynthetic, OutputLimitLimitType outputLimitLimitType)
     {
         List<UniformPair<EventBean[]>> resultList = new LinkedList<UniformPair<EventBean[]>>();
         

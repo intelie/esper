@@ -1,18 +1,17 @@
 package com.espertech.esper.eql.core;
 
-import junit.framework.TestCase;
 import com.espertech.esper.collection.MultiKey;
-import com.espertech.esper.collection.Pair;
 import com.espertech.esper.collection.UniformPair;
-import com.espertech.esper.eql.spec.OutputLimitSpec;
 import com.espertech.esper.eql.spec.OutputLimitLimitType;
 import com.espertech.esper.eql.spec.OutputLimitRateType;
+import com.espertech.esper.eql.spec.OutputLimitSpec;
 import com.espertech.esper.event.EventBean;
 import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.eql.SupportSelectExprFactory;
 import com.espertech.esper.support.eql.SupportStreamTypeSvc1Stream;
 import com.espertech.esper.support.event.SupportEventAdapterService;
 import com.espertech.esper.support.event.SupportEventBeanFactory;
+import junit.framework.TestCase;
 
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -33,15 +32,15 @@ public class TestResultSetProcessorSimple extends TestCase
         orderByProcessor = null;
 
 		outputLimitSpecAll = new OutputLimitSpec(1d, null, OutputLimitRateType.EVENTS, OutputLimitLimitType.ALL);
-		outputProcessorAll = new ResultSetProcessorSimple(selectExprProcessor, orderByProcessor, null, true, false);
+		outputProcessorAll = new ResultSetProcessorSimple(selectExprProcessor, orderByProcessor, null);
 
 		outputLimitSpecLast = new OutputLimitSpec(1d, null, OutputLimitRateType.EVENTS, OutputLimitLimitType.LAST);
-		outputProcessorLast = new ResultSetProcessorSimple(selectExprProcessor, orderByProcessor, null, true, true);
+		outputProcessorLast = new ResultSetProcessorSimple(selectExprProcessor, orderByProcessor, null);
     }
 
     public void testUpdateAll() throws Exception
     {
-        assertNull(ResultSetProcessorSimple.getSelectEventsNoHaving(selectExprProcessor, orderByProcessor, (EventBean[]) null, false, false, true, false));
+        assertNull(ResultSetProcessorSimple.getSelectEventsNoHaving(selectExprProcessor, orderByProcessor, (EventBean[]) null, true, false));
 
         EventBean testEvent1 = makeEvent(10, 5, 6);
 	    EventBean testEvent2 = makeEvent(11, 6, 7);
@@ -72,7 +71,7 @@ public class TestResultSetProcessorSimple extends TestCase
 
     public void testProcessAll() throws Exception
     {
-        assertNull(ResultSetProcessorSimple.getSelectEventsNoHaving(selectExprProcessor, orderByProcessor, new HashSet<MultiKey<EventBean>>(), false, false, true, false));
+        assertNull(ResultSetProcessorSimple.getSelectEventsNoHaving(selectExprProcessor, orderByProcessor, new HashSet<MultiKey<EventBean>>(), true, false));
 
         EventBean testEvent1 = makeEvent(10, 5, 6);
 	    EventBean testEvent2 = makeEvent(11, 6, 7);
@@ -121,7 +120,7 @@ public class TestResultSetProcessorSimple extends TestCase
 
 	public void testProcessLast() throws Exception
 	{
-        assertNull(ResultSetProcessorSimple.getSelectEventsNoHaving(selectExprProcessor, orderByProcessor, new HashSet<MultiKey<EventBean>>(), false, false, true, false));
+        assertNull(ResultSetProcessorSimple.getSelectEventsNoHaving(selectExprProcessor, orderByProcessor, new HashSet<MultiKey<EventBean>>(), true, false));
 
         EventBean testEvent1 = makeEvent(10, 5, 6);
 	    EventBean testEvent2 = makeEvent(11, 6, 7);
@@ -148,7 +147,7 @@ public class TestResultSetProcessorSimple extends TestCase
 
 	public void testUpdateLast() throws Exception
 	{
-	       assertNull(ResultSetProcessorSimple.getSelectEventsNoHaving(selectExprProcessor, orderByProcessor, (EventBean[]) null, false, false, true, false));
+	       assertNull(ResultSetProcessorSimple.getSelectEventsNoHaving(selectExprProcessor, orderByProcessor, (EventBean[]) null, true, false));
 
 	        EventBean testEvent1 = makeEvent(10, 5, 6);
 		    EventBean testEvent2 = makeEvent(11, 6, 7);

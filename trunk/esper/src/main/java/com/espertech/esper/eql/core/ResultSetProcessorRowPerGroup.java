@@ -14,6 +14,7 @@ import com.espertech.esper.event.EventBean;
 import com.espertech.esper.event.EventType;
 import com.espertech.esper.eql.expression.ExprNode;
 import com.espertech.esper.eql.agg.AggregationService;
+import com.espertech.esper.eql.spec.OutputLimitLimitType;
 import com.espertech.esper.view.Viewable;
 
 /**
@@ -479,12 +480,12 @@ public class ResultSetProcessorRowPerGroup implements ResultSetProcessor
         aggregationService.clearResults();
     }
 
-    public UniformPair<EventBean[]> processOutputLimitedJoin(List<UniformPair<Set<MultiKey<EventBean>>>> joinEventsSet, boolean generateSynthetic)
+    public UniformPair<EventBean[]> processOutputLimitedJoin(List<UniformPair<Set<MultiKey<EventBean>>>> joinEventsSet, boolean generateSynthetic, OutputLimitLimitType outputLimitLimitType)
     {
         return null;  //TODO
     }
 
-    public UniformPair<EventBean[]> processOutputLimitedView(List<UniformPair<EventBean[]>> viewEventsList, boolean generateSynthetic)
+    public UniformPair<EventBean[]> processOutputLimitedView(List<UniformPair<EventBean[]>> viewEventsList, boolean generateSynthetic, OutputLimitLimitType outputLimitLimitType)
     {
         return null;  //TODO
     }

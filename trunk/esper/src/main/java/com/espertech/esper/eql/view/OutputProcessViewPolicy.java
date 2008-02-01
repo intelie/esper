@@ -5,6 +5,7 @@ import com.espertech.esper.collection.UniformPair;
 import com.espertech.esper.core.StatementContext;
 import com.espertech.esper.eql.core.ResultSetProcessor;
 import com.espertech.esper.eql.spec.OutputLimitSpec;
+import com.espertech.esper.eql.spec.OutputLimitLimitType;
 import com.espertech.esper.event.EventBean;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -23,6 +24,7 @@ import java.util.LinkedHashSet;
 public class OutputProcessViewPolicy extends OutputProcessView
 {
     private final OutputCondition outputCondition;
+    private final OutputLimitLimitType outputLimitLimitType;
 
     // Posted events in ordered form (for applying to aggregates) and summarized per type
     private List<UniformPair<EventBean[]>> viewEventsList = new ArrayList<UniformPair<EventBean[]>>();
@@ -56,6 +58,7 @@ public class OutputProcessViewPolicy extends OutputProcessView
 
     	OutputCallback outputCallback = getCallbackToLocal(streamCount);
     	this.outputCondition = statementContext.getOutputConditionFactory().createCondition(outputLimitSpec, statementContext, outputCallback);
+        outputLimitLimitType = outputLimitSpec.getDisplayLimit();
     }
 
     /**
@@ -138,7 +141,7 @@ public class OutputProcessViewPolicy extends OutputProcessView
         boolean isGenerateNatural = statementResultService.isMakeNatural();
 
         // Process the events and get the result
-        UniformPair<EventBean[]> newOldEvents = resultSetProcessor.processOutputLimitedView(viewEventsList, isGenerateSynthetic);
+        UniformPair<EventBean[]> newOldEvents = resultSetProcessor.processOutputLimitedView(viewEventsList, isGenerateSynthetic, outputLimitLimitType);
 
         if ((!isGenerateSynthetic) && (!isGenerateNatural))
         {
@@ -182,7 +185,7 @@ public class OutputProcessViewPolicy extends OutputProcessView
         boolean isGenerateNatural = statementResultService.isMakeNatural();
 
         // Process the events and get the result
-        UniformPair<EventBean[]> newOldEvents = resultSetProcessor.processOutputLimitedJoin(joinEventsSet, isGenerateSynthetic);
+        UniformPair<EventBean[]> newOldEvents = resultSetProcessor.processOutputLimitedJoin(joinEventsSet, isGenerateSynthetic, outputLimitLimitType);
 
         if ((!isGenerateSynthetic) && (!isGenerateNatural))
         {

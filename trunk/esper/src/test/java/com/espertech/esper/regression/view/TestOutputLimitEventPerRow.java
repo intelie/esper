@@ -121,10 +121,10 @@ public class TestOutputLimitEventPerRow extends TestCase
         sendTimer(1000);        // newdata is 2 eventa, old data is the same 2 events, therefore the sum is null
         UniformPair<EventBean[]> result = listener.getDataListsFlattened();
         assertEquals(2, result.getFirst().length);
-        assertEquals(2.0, result.getFirst()[0].get("maxVol"));
+        assertEquals(1.0, result.getFirst()[0].get("maxVol"));
         assertEquals(2.0, result.getFirst()[1].get("maxVol"));
         assertEquals(1, result.getSecond().length);
-        assertEquals(null, result.getSecond()[0].get("maxVol"));
+        assertEquals(1.0, result.getSecond()[0].get("maxVol"));
     }
 
     public void testLimitSnapshot()
@@ -255,11 +255,11 @@ public class TestOutputLimitEventPerRow extends TestCase
         sendTimer(1000);        // newdata is 2 eventa, old data is the same 2 events, therefore the sum is null
         UniformPair<EventBean[]> result = listener.getDataListsFlattened();
         assertEquals(2, result.getFirst().length);
-        assertEquals(null, result.getFirst()[0].get("maxVol"));
-        assertEquals(null, result.getFirst()[1].get("maxVol"));
+        assertEquals(1.0, result.getFirst()[0].get("maxVol"));
+        assertEquals(2.0, result.getFirst()[1].get("maxVol"));
         assertEquals(2, result.getSecond().length);
-        assertEquals(null, result.getSecond()[0].get("maxVol"));
-        assertEquals(null, result.getSecond()[1].get("maxVol"));
+        assertEquals(2.0, result.getSecond()[0].get("maxVol"));
+        assertEquals(2.0, result.getSecond()[1].get("maxVol"));
     }
 
     public void testNoJoinLast()
@@ -428,7 +428,7 @@ public class TestOutputLimitEventPerRow extends TestCase
         assertFalse(listener.getAndClearIsInvoked());
 
         sendEvent(SYMBOL_DELL, 20000, 52);
-        assertTwoEvents(SYMBOL_DELL, 10000, 103,
+        assertTwoEvents(SYMBOL_DELL, 10000, 51,
         				SYMBOL_DELL, 20000, 103);
 
         sendEvent(SYMBOL_DELL, 30000, 70);

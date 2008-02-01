@@ -179,7 +179,8 @@ public abstract class ViewSupport implements View
         int count = 0;
         for (Object object : objects)
         {
-            writer.println(prefix + " #" + count + " = " + object.toString());
+            String objectToString = (object == null) ? "null" : object.toString();
+            writer.println(prefix + " #" + count + " = " + objectToString);
         }
     }
 

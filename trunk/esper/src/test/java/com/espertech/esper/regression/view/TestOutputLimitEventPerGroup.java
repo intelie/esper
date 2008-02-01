@@ -16,7 +16,7 @@ import com.espertech.esper.support.util.ArrayAssertionUtil;
 import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.collection.UniformPair;
 
-public class TestOutputLimitlEventPerGroup extends TestCase
+public class TestOutputLimitEventPerGroup extends TestCase
 {
     private static String SYMBOL_DELL = "DELL";
     private static String SYMBOL_IBM = "IBM";

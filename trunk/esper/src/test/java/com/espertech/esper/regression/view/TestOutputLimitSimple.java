@@ -28,6 +28,58 @@ public class TestOutputLimitSimple extends TestCase
         epService.initialize();
     }
 
+    public void testAggAllHaving()
+    {
+        String stmtText = "select symbol, volume " +
+                            "from " + SupportMarketDataBean.class.getName() + ".win:length(10) as two " +
+                            "having volume > 0 " +
+                            "output every 5 events";
+
+        EPStatement stmt = epService.getEPAdministrator().createEQL(stmtText);
+        SupportUpdateListener listener = new SupportUpdateListener();
+        stmt.addListener(listener);
+        String fields[] = new String[] {"symbol", "volume"};
+
+        sendMDEvent("S0", 20);
+        sendMDEvent("S1", -1);
+        sendMDEvent("S2", -2);
+        sendMDEvent("S3", 10);
+        assertFalse(listener.isInvoked());
+
+        sendMDEvent("S1", 0);
+        ArrayAssertionUtil.assertPropsPerRow(listener.getLastNewData(), fields, new Object[][] {{"S0", 20L}, {"S3", 10L}});
+        listener.reset();
+    }
+
+    public void testAggAllHavingJoin()
+    {
+        String stmtText = "select symbol, volume " +
+                            "from " + SupportMarketDataBean.class.getName() + ".win:length(10) as one," +
+                            SupportBean.class.getName() + ".win:length(10) as two " +
+                            "where one.symbol=two.string " +
+                            "having volume > 0 " +
+                            "output every 5 events";
+
+        EPStatement stmt = epService.getEPAdministrator().createEQL(stmtText);
+        SupportUpdateListener listener = new SupportUpdateListener();
+        stmt.addListener(listener);
+        String fields[] = new String[] {"symbol", "volume"};
+        epService.getEPRuntime().sendEvent(new SupportBean("S0", 0));
+        epService.getEPRuntime().sendEvent(new SupportBean("S1", 0));
+        epService.getEPRuntime().sendEvent(new SupportBean("S2", 0));
+        epService.getEPRuntime().sendEvent(new SupportBean("S3", 0));
+
+        sendMDEvent("S0", 20);
+        sendMDEvent("S1", -1);
+        sendMDEvent("S2", -2);
+        sendMDEvent("S3", 10);
+        assertFalse(listener.isInvoked());
+
+        sendMDEvent("S1", 0);
+        ArrayAssertionUtil.assertPropsPerRow(listener.getLastNewData(), fields, new Object[][] {{"S0", 20L}, {"S3", 10L}});
+        listener.reset();
+    }
+
     public void testIterator()
 	{
         String[] fields = new String[] {"symbol", "price"};
@@ -629,6 +681,12 @@ public class TestOutputLimitSimple extends TestCase
 
 	    epService.getEPRuntime().sendEvent(event1);
 	    epService.getEPRuntime().sendEvent(event2);
+	}
+
+    private void sendMDEvent(String symbol, long volume)
+	{
+	    SupportMarketDataBean bean = new SupportMarketDataBean(symbol, 0, volume, null);
+	    epService.getEPRuntime().sendEvent(bean);
 	}
 
     private void sendEvent(String symbol, double price)
