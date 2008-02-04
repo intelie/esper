@@ -4,6 +4,11 @@ Esper Changelog
 Changes in version 2.0.0
 ------------------------
 
+* new DEFAULT keyword for output rate limiting
+* refactored select clause API in SODA slightly
+
+
+
 * TODO Fixed issue ESPER-178 Problem selecting "sum" as a property of event posted by stat:uni view
 * TODO Fixed issue ESPER-138 Allow Map event type to contain nested Map values
 * TODO Fixed issue ESPER-145 Ignore start or stop commands on already started or stopped EPStatements.

@@ -1,28 +1,20 @@
 package com.espertech.esper.regression.view;
 
+import com.espertech.esper.client.EPServiceProvider;
+import com.espertech.esper.client.EPServiceProviderManager;
+import com.espertech.esper.client.EPStatement;
+import com.espertech.esper.support.bean.SupportBeanString;
+import com.espertech.esper.support.bean.SupportMarketDataBean;
+import com.espertech.esper.support.client.SupportConfigFactory;
+import com.espertech.esper.support.util.ArrayAssertionUtil;
 import junit.framework.TestCase;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import com.espertech.esper.client.EPServiceProvider;
-import com.espertech.esper.client.EPStatement;
-import com.espertech.esper.client.EPServiceProviderManager;
-import com.espertech.esper.support.util.SupportUpdateListener;
-import com.espertech.esper.support.util.ArrayAssertionUtil;
-import com.espertech.esper.support.bean.SupportMarketDataBean;
-import com.espertech.esper.support.bean.SupportBeanString;
-import com.espertech.esper.support.client.SupportConfigFactory;
-
-import java.util.List;
-import java.util.LinkedList;
 
 public class TestOrderByRowForAll extends TestCase
 {
 	private static final Log log = LogFactory.getLog(TestOrderByRowForAll.class);
 	private EPServiceProvider epService;
-    private List<String> symbols;
-    private List<Double> prices;
-    private List<Long> volumes;
-	private SupportUpdateListener testListener;
 
     public void testIteratorAggregateRowForAll()
 	{
@@ -63,8 +55,5 @@ public class TestOrderByRowForAll extends TestCase
 	{
 	    epService = EPServiceProviderManager.getDefaultProvider(SupportConfigFactory.getConfiguration());
 	    epService.initialize();
-	    symbols = new LinkedList<String>();
-	    prices = new LinkedList<Double>();
-	    volumes = new LinkedList<Long>();
 	}
 }

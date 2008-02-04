@@ -29,7 +29,7 @@ public class ASTOutputLimitHelper
         int count = 0;
         Tree child = node.getChild(count);
 
-        OutputLimitLimitType displayLimit = OutputLimitLimitType.ALL;
+        OutputLimitLimitType displayLimit = OutputLimitLimitType.DEFAULT;
         if (child.getType() == EsperEPL2GrammarParser.FIRST)
         {
             displayLimit = OutputLimitLimitType.FIRST;
@@ -47,6 +47,7 @@ public class ASTOutputLimitHelper
         }
         else if (child.getType() == EsperEPL2GrammarParser.ALL)
         {
+            displayLimit = OutputLimitLimitType.ALL;
             child = node.getChild(++count);
         }
 

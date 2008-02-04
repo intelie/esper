@@ -11,8 +11,7 @@ import com.espertech.esper.collection.MultiKeyUntyped;
 import com.espertech.esper.event.EventBean;
 
 /**
- * A processor for ordering output events according to the order
- * specified in the order-by clause. 
+ * A processor for ordering output events according to the order specified in the order-by clause.
  */
 public interface OrderByProcessor {
 

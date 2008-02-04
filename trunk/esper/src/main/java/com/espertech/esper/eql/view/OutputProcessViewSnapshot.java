@@ -136,7 +136,7 @@ public class OutputProcessViewSnapshot extends OutputProcessView
             {
                 snapshot.add(bean);
             }
-            newEvents = snapshot.toArray(new EventBean[0]);
+            newEvents = snapshot.toArray(new EventBean[snapshot.size()]);
             oldEvents = null;
         }
 

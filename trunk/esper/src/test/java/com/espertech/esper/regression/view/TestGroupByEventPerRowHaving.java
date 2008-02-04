@@ -119,27 +119,6 @@ public class TestGroupByEventPerRowHaving extends TestCase
         assertFalse(testListener.isInvoked());
     }
 
-    private void assertEvents(String symbolOld, long volumeOld, double sumOld,
-                              String symbolNew, long volumeNew, double sumNew)
-    {
-        EventBean[] oldData = testListener.getLastOldData();
-        EventBean[] newData = testListener.getLastNewData();
-
-        assertEquals(1, oldData.length);
-        assertEquals(1, newData.length);
-
-        assertEquals(symbolOld, oldData[0].get("symbol"));
-        assertEquals(volumeOld, oldData[0].get("volume"));
-        assertEquals(sumOld, oldData[0].get("mySum"));
-
-        assertEquals(symbolNew, newData[0].get("symbol"));
-        assertEquals(volumeNew, newData[0].get("volume"));
-        assertEquals(sumNew, newData[0].get("mySum"));
-
-        testListener.reset();
-        assertFalse(testListener.isInvoked());
-    }
-
     private void sendEvent(String symbol, long volume, double price)
     {
         SupportMarketDataBean bean = new SupportMarketDataBean(symbol, price, volume, null);

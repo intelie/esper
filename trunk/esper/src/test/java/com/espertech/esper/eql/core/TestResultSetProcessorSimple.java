@@ -2,9 +2,6 @@ package com.espertech.esper.eql.core;
 
 import com.espertech.esper.collection.MultiKey;
 import com.espertech.esper.collection.UniformPair;
-import com.espertech.esper.eql.spec.OutputLimitLimitType;
-import com.espertech.esper.eql.spec.OutputLimitRateType;
-import com.espertech.esper.eql.spec.OutputLimitSpec;
 import com.espertech.esper.event.EventBean;
 import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.eql.SupportSelectExprFactory;
@@ -23,18 +20,13 @@ public class TestResultSetProcessorSimple extends TestCase
     private ResultSetProcessorSimple outputProcessorAll;
     private SelectExprProcessor selectExprProcessor;
     private OrderByProcessor orderByProcessor;
-	private OutputLimitSpec outputLimitSpecLast;
-	private OutputLimitSpec outputLimitSpecAll;
 
     public void setUp() throws Exception
     {
         selectExprProcessor = new SelectExprEvalProcessor(SupportSelectExprFactory.makeNoAggregateSelectList(), null, false, new SupportStreamTypeSvc1Stream(), SupportEventAdapterService.getService());
         orderByProcessor = null;
 
-		outputLimitSpecAll = new OutputLimitSpec(1d, null, OutputLimitRateType.EVENTS, OutputLimitLimitType.ALL);
 		outputProcessorAll = new ResultSetProcessorSimple(selectExprProcessor, orderByProcessor, null);
-
-		outputLimitSpecLast = new OutputLimitSpec(1d, null, OutputLimitRateType.EVENTS, OutputLimitLimitType.LAST);
 		outputProcessorLast = new ResultSetProcessorSimple(selectExprProcessor, orderByProcessor, null);
     }
 

@@ -158,7 +158,7 @@ public class StatementSpecMapper
             return;
         }
 
-        OutputLimitSelector selector = OutputLimitSelector.ALL;
+        OutputLimitSelector selector = OutputLimitSelector.DEFAULT;
         if (outputLimitSpec.getDisplayLimit() == OutputLimitLimitType.FIRST)
         {
             selector = OutputLimitSelector.FIRST;
@@ -170,6 +170,10 @@ public class StatementSpecMapper
         if (outputLimitSpec.getDisplayLimit() == OutputLimitLimitType.SNAPSHOT)
         {
             selector = OutputLimitSelector.SNAPSHOT;
+        }
+        if (outputLimitSpec.getDisplayLimit() == OutputLimitLimitType.ALL)
+        {
+            selector = OutputLimitSelector.ALL;
         }
 
         OutputLimitUnit unit = OutputLimitUnit.EVENTS;

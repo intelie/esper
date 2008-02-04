@@ -34,7 +34,7 @@ public class OutputConditionFirst implements OutputCondition
 			throw new NullPointerException("Output condition by count requires a non-null callback");
 		}
 		this.outputCallback = outputCallback;
-		OutputLimitSpec innerSpec = new OutputLimitSpec(outputLimitSpec.getRate(), outputLimitSpec.getVariableName(), outputLimitSpec.getRateType(), OutputLimitLimitType.ALL);
+		OutputLimitSpec innerSpec = new OutputLimitSpec(outputLimitSpec.getRate(), outputLimitSpec.getVariableName(), outputLimitSpec.getRateType(), OutputLimitLimitType.DEFAULT);
 		OutputCallback localCallback = createCallbackToLocal();
 		this.innerCondition = statementContext.getOutputConditionFactory().createCondition(innerSpec, statementContext, localCallback);
 		this.witnessedFirst = false;

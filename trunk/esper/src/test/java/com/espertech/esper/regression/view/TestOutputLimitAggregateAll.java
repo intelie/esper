@@ -1,20 +1,16 @@
 package com.espertech.esper.regression.view;
 
-import junit.framework.TestCase;
-import com.espertech.esper.client.EPServiceProvider;
-import com.espertech.esper.client.EPServiceProviderManager;
-import com.espertech.esper.client.EPStatement;
-import com.espertech.esper.client.EPRuntime;
-import com.espertech.esper.client.time.TimerControlEvent;
+import com.espertech.esper.client.*;
 import com.espertech.esper.client.time.CurrentTimeEvent;
+import com.espertech.esper.collection.UniformPair;
+import com.espertech.esper.event.EventBean;
 import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.bean.SupportBeanString;
 import com.espertech.esper.support.bean.SupportMarketDataBean;
-import com.espertech.esper.support.util.SupportUpdateListener;
-import com.espertech.esper.support.util.ArrayAssertionUtil;
 import com.espertech.esper.support.client.SupportConfigFactory;
-import com.espertech.esper.event.EventBean;
-import com.espertech.esper.collection.UniformPair;
+import com.espertech.esper.support.util.ArrayAssertionUtil;
+import com.espertech.esper.support.util.SupportUpdateListener;
+import junit.framework.TestCase;
 
 public class TestOutputLimitAggregateAll extends TestCase
 {
@@ -27,66 +23,67 @@ public class TestOutputLimitAggregateAll extends TestCase
 
     public void setUp()
     {
-        epService = EPServiceProviderManager.getDefaultProvider(SupportConfigFactory.getConfiguration());
+        Configuration config = SupportConfigFactory.getConfiguration();
+        config.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
+        epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();
         listener = new SupportUpdateListener();
     }
 
-    /*
-    TODO
-    public void testAggAllHaving()
+    public void testHaving()
     {
-        String stmtText = "select sum(volume) as result " +
-                            "from " + SupportMarketDataBean.class.getName() + ".win:length(10) as two " +
-                            "having sum(volume) > 0 " +
-                            "output every 5 events";
+        sendTimer(0);
 
-        EPStatement stmt = epService.getEPAdministrator().createEQL(stmtText);
+        String viewExpr = "select symbol, avg(price) as avgPrice " +
+                          "from " + SupportMarketDataBean.class.getName() + ".win:time(3 sec) " +
+                          "having avg(price) > 10" +
+                          "output every 1 seconds";
+        EPStatement stmt = epService.getEPAdministrator().createEQL(viewExpr);
         stmt.addListener(listener);
-        String fields[] = new String[] {"result"};
 
-        sendMDEvent(20);
-        sendMDEvent(-100);
-        sendMDEvent(0);
-        sendMDEvent(0);
-        assertFalse(listener.isInvoked());
-
-        sendMDEvent(0);
-        ArrayAssertionUtil.assertPropsPerRow(listener.getLastNewData(), fields, new Object[][] {{20L}});
-        ArrayAssertionUtil.assertPropsPerRow(listener.getLastNewData(), fields, new Object[][] {{20L}});
-        listener.reset();
+        runHavingAssertion();
     }
 
-    public void testAggAllHavingJoin()
+    public void testHavingJoin()
     {
-        String stmtText = "select sum(volume) as result " +
-                            "from " + SupportMarketDataBean.class.getName() + ".win:length(10) as one," +
-                            SupportBean.class.getName() + ".win:length(10) as two " +
-                            "where one.symbol=two.string " +
-                            "having sum(volume) > 0 " +
-                            "output every 5 events";
+        sendTimer(0);
 
-        EPStatement stmt = epService.getEPAdministrator().createEQL(stmtText);
+        String viewExpr = "select symbol, avg(price) as avgPrice " +
+                          "from " + SupportMarketDataBean.class.getName() + ".win:time(3 sec) as md, " +
+                          SupportBean.class.getName() + ".win:keepall() as s where s.string = md.symbol " +
+                          "having avg(price) > 10" +
+                          "output every 1 seconds";
+        EPStatement stmt = epService.getEPAdministrator().createEQL(viewExpr);
         stmt.addListener(listener);
-        String fields[] = new String[] {"result"};
-        epService.getEPRuntime().sendEvent(new SupportBean("S0", 0));
 
-        sendMDEvent(20);
-        sendMDEvent(-100);
-        sendMDEvent(0);
-        sendMDEvent(0);
-        assertFalse(listener.isInvoked());
+        epService.getEPRuntime().sendEvent(new SupportBean("SYM1", -1));
 
-        sendMDEvent(0);
-        ArrayAssertionUtil.assertPropsPerRow(listener.getLastNewData(), fields, new Object[][] {{20L}});
-        ArrayAssertionUtil.assertPropsPerRow(listener.getLastNewData(), fields, new Object[][] {{20L}});
-        listener.reset();
+        runHavingAssertion();
     }
-     */
+
+    private void runHavingAssertion()
+    {
+        sendEvent("SYM1", 10d);
+        sendEvent("SYM1", 11d);
+        sendEvent("SYM1", 9);
+
+        sendTimer(1000);
+        String fields[] = "symbol,avgPrice".split(",");
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"SYM1", 10.5});
+
+        sendEvent("SYM1", 13d);
+        sendEvent("SYM1", 10d);
+        sendEvent("SYM1", 9);
+        sendTimer(2000);
+
+        assertEquals(3, listener.getLastNewData().length);
+        assertNull(listener.getLastOldData());
+        ArrayAssertionUtil.assertPropsPerRow(listener.getLastNewData(), fields,
+                new Object[][] {{"SYM1", 43/4.0}, {"SYM1", 53.0/5.0}, {"SYM1", 62/6.0}});
+    }
 
     public void testMaxTimeWindow()
     {
-        epService.getEPRuntime().sendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
         sendTimer(0);
 
         String viewExpr = "select volume, max(price) as maxVol" +
@@ -103,16 +100,15 @@ public class TestOutputLimitAggregateAll extends TestCase
         sendTimer(1000);        // newdata is 2 eventa, old data is the same 2 events, therefore the sum is null
         UniformPair<EventBean[]> result = listener.getDataListsFlattened();
         assertEquals(2, result.getFirst().length);
-        assertEquals(null, result.getFirst()[0].get("maxVol"));
-        assertEquals(null, result.getFirst()[1].get("maxVol"));
+        assertEquals(1.0, result.getFirst()[0].get("maxVol"));
+        assertEquals(2.0, result.getFirst()[1].get("maxVol"));
         assertEquals(2, result.getSecond().length);
-        assertEquals(null, result.getSecond()[0].get("maxVol"));
-        assertEquals(null, result.getSecond()[1].get("maxVol"));
+        assertEquals(2.0, result.getSecond()[0].get("maxVol"));
+        assertEquals(2.0, result.getSecond()[1].get("maxVol"));
     }
 
     public void testLimitSnapshot()
     {
-        epService.getEPRuntime().sendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
         sendTimer(0);
         String selectStmt = "select symbol, sum(price) as sumprice from " + SupportMarketDataBean.class.getName() +
                 ".win:time(10 seconds) output snapshot every 1 seconds order by symbol asc";
@@ -161,7 +157,6 @@ public class TestOutputLimitAggregateAll extends TestCase
 
     public void testLimitSnapshotJoin()
     {
-        epService.getEPRuntime().sendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
         sendTimer(0);
         String selectStmt = "select symbol, sum(price) as sumprice from " + SupportMarketDataBean.class.getName() +
                 ".win:time(10 seconds) as m, " + SupportBean.class.getName() +
@@ -220,7 +215,6 @@ public class TestOutputLimitAggregateAll extends TestCase
 
     public void testJoinSortWindow()
     {
-        epService.getEPRuntime().sendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
         sendTimer(0);
 
         String viewExpr = "select volume, max(price) as maxVol" +
@@ -239,10 +233,10 @@ public class TestOutputLimitAggregateAll extends TestCase
         sendTimer(1000);        // newdata is 2 eventa, old data is the same 2 events, therefore the sum is null
         UniformPair<EventBean[]> result = listener.getDataListsFlattened();
         assertEquals(2, result.getFirst().length);
-        assertEquals(2.0, result.getFirst()[0].get("maxVol"));
+        assertEquals(1.0, result.getFirst()[0].get("maxVol"));
         assertEquals(2.0, result.getFirst()[1].get("maxVol"));
         assertEquals(1, result.getSecond().length);
-        assertEquals(null, result.getSecond()[0].get("maxVol"));
+        assertEquals(1.0, result.getSecond()[0].get("maxVol"));
     }
 
 	public void testAggregateAllNoJoinLast()
@@ -299,12 +293,6 @@ public class TestOutputLimitAggregateAll extends TestCase
 
     public void testTime()
     {
-        // Clear any old events
-        epService.initialize();
-
-        // Turn off external clocking
-        epService.getEPRuntime().sendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
-
         // Set the clock to 0
         currentTime = 0;
         sendTimeEvent(0);
@@ -421,7 +409,7 @@ public class TestOutputLimitAggregateAll extends TestCase
 	    assertTrue(updateListener.getAndClearIsInvoked());
 	    assertEquals(2, updateListener.getLastNewData().length);
 	    assertEquals(1L, updateListener.getLastNewData()[0].get("longBoxed"));
-	    assertEquals(3L, updateListener.getLastNewData()[0].get("result"));
+	    assertEquals(1L, updateListener.getLastNewData()[0].get("result"));
 	    assertEquals(2L, updateListener.getLastNewData()[1].get("longBoxed"));
 	    assertEquals(3L, updateListener.getLastNewData()[1].get("result"));
 	    assertNull(updateListener.getLastOldData());
@@ -495,12 +483,6 @@ public class TestOutputLimitAggregateAll extends TestCase
     private void sendEvent(String symbol, double price)
 	{
 	    SupportMarketDataBean bean = new SupportMarketDataBean(symbol, price, 0L, null);
-	    epService.getEPRuntime().sendEvent(bean);
-	}
-
-    private void sendMDEvent(long volume)
-	{
-	    SupportMarketDataBean bean = new SupportMarketDataBean("S0", 0, volume, null);
 	    epService.getEPRuntime().sendEvent(bean);
 	}
 

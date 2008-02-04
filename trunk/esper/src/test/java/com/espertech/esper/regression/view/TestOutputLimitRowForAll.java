@@ -28,6 +28,55 @@ public class TestOutputLimitRowForAll extends TestCase
         listener = new SupportUpdateListener();
     }
 
+    public void testAggAllHaving()
+    {
+        String stmtText = "select sum(volume) as result " +
+                            "from " + SupportMarketDataBean.class.getName() + ".win:length(10) as two " +
+                            "having sum(volume) > 0 " +
+                            "output every 5 events";
+
+        EPStatement stmt = epService.getEPAdministrator().createEQL(stmtText);
+        stmt.addListener(listener);
+        String fields[] = new String[] {"result"};
+
+        sendMDEvent(20);
+        sendMDEvent(-100);
+        sendMDEvent(0);
+        sendMDEvent(0);
+        assertFalse(listener.isInvoked());
+
+        sendMDEvent(0);
+        ArrayAssertionUtil.assertPropsPerRow(listener.getLastNewData(), fields, new Object[][] {{20L}});
+        ArrayAssertionUtil.assertPropsPerRow(listener.getLastNewData(), fields, new Object[][] {{20L}});
+        listener.reset();
+    }
+
+    public void testAggAllHavingJoin()
+    {
+        String stmtText = "select sum(volume) as result " +
+                            "from " + SupportMarketDataBean.class.getName() + ".win:length(10) as one," +
+                            SupportBean.class.getName() + ".win:length(10) as two " +
+                            "where one.symbol=two.string " +
+                            "having sum(volume) > 0 " +
+                            "output every 5 events";
+
+        EPStatement stmt = epService.getEPAdministrator().createEQL(stmtText);
+        stmt.addListener(listener);
+        String fields[] = new String[] {"result"};
+        epService.getEPRuntime().sendEvent(new SupportBean("S0", 0));
+
+        sendMDEvent(20);
+        sendMDEvent(-100);
+        sendMDEvent(0);
+        sendMDEvent(0);
+        assertFalse(listener.isInvoked());
+
+        sendMDEvent(0);
+        ArrayAssertionUtil.assertPropsPerRow(listener.getLastNewData(), fields, new Object[][] {{20L}});
+        ArrayAssertionUtil.assertPropsPerRow(listener.getLastNewData(), fields, new Object[][] {{20L}});
+        listener.reset();
+    }
+
     public void testJoinSortWindow()
     {
         epService.getEPRuntime().sendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
@@ -48,10 +97,11 @@ public class TestOutputLimitRowForAll extends TestCase
         // moves all events out of the window,
         sendTimer(1000);        // newdata is 2 eventa, old data is the same 2 events, therefore the sum is null
         UniformPair<EventBean[]> result = listener.getDataListsFlattened();
-        assertEquals(1, result.getFirst().length);
-        assertEquals(2.0, result.getFirst()[0].get("maxVol"));
+        assertEquals(2, result.getFirst().length);
+        assertEquals(1.0, result.getFirst()[0].get("maxVol"));
+        assertEquals(2.0, result.getFirst()[1].get("maxVol"));
         assertEquals(1, result.getSecond().length);
-        assertEquals(null, result.getSecond()[0].get("maxVol"));
+        assertEquals(1.0, result.getSecond()[0].get("maxVol"));
     }
 
     public void testMaxTimeWindow()
@@ -72,10 +122,12 @@ public class TestOutputLimitRowForAll extends TestCase
         // moves all events out of the window,
         sendTimer(1000);        // newdata is 2 eventa, old data is the same 2 events, therefore the sum is null
         UniformPair<EventBean[]> result = listener.getDataListsFlattened();
-        assertEquals(1, result.getFirst().length);
-        assertEquals(null, result.getFirst()[0].get("maxVol"));
-        assertEquals(1, result.getSecond().length);
-        assertEquals(null, result.getSecond()[0].get("maxVol"));
+        assertEquals(2, result.getFirst().length);
+        assertEquals(1.0, result.getFirst()[0].get("maxVol"));
+        assertEquals(2.0, result.getFirst()[1].get("maxVol"));
+        assertEquals(2, result.getSecond().length);
+        assertEquals(2.0, result.getSecond()[0].get("maxVol"));
+        assertEquals(2.0, result.getSecond()[1].get("maxVol"));
     }
 
     public void testTimeWindowOutputCount()
@@ -97,7 +149,7 @@ public class TestOutputLimitRowForAll extends TestCase
         sendTimer(30000);
         EventBean[] newEvents = listener.getAndResetLastNewData();
         assertEquals(1, newEvents.length);
-        assertEquals(0L, newEvents[0].get("cnt"));
+        assertEquals(1L, newEvents[0].get("cnt"));
 
         sendTimer(31000);
 
@@ -105,8 +157,9 @@ public class TestOutputLimitRowForAll extends TestCase
         sendEvent("e3");
         sendTimer(40000);
         newEvents = listener.getAndResetLastNewData();
-        assertEquals(1, newEvents.length);
-        assertEquals(2L, newEvents[0].get("cnt"));
+        assertEquals(2, newEvents.length);
+        assertEquals(1L, newEvents[0].get("cnt"));
+        assertEquals(2L, newEvents[1].get("cnt"));
     }
 
     public void testTimeBatchOutputCount()
@@ -131,7 +184,7 @@ public class TestOutputLimitRowForAll extends TestCase
         EventBean[] newEvents = listener.getAndResetLastNewData();
         assertEquals(1, newEvents.length);
         // output limiting starts 10 seconds after, therefore the old batch was posted already and the cnt is zero
-        assertEquals(0L, newEvents[0].get("cnt"));
+        assertEquals(1L, newEvents[0].get("cnt"));
 
         sendTimer(50000);
         EventBean[] newData = listener.getLastNewData();
@@ -142,8 +195,9 @@ public class TestOutputLimitRowForAll extends TestCase
         sendEvent("e3");
         sendTimer(60000);
         newEvents = listener.getAndResetLastNewData();
-        assertEquals(1, newEvents.length);
+        assertEquals(2, newEvents.length);
         assertEquals(2L, newEvents[0].get("cnt"));
+        assertEquals(2L, newEvents[1].get("cnt"));
     }
 
     public void testLimitSnapshot()
@@ -290,6 +344,12 @@ public class TestOutputLimitRowForAll extends TestCase
     private void sendEvent(String symbol, double price)
 	{
 	    SupportMarketDataBean bean = new SupportMarketDataBean(symbol, price, 0L, null);
+	    epService.getEPRuntime().sendEvent(bean);
+	}
+
+    private void sendMDEvent(long volume)
+	{
+	    SupportMarketDataBean bean = new SupportMarketDataBean("S0", 0, volume, null);
 	    epService.getEPRuntime().sendEvent(bean);
 	}
 

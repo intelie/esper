@@ -17,6 +17,23 @@ public class TestPerfCompareDispatch extends TestCase
 {
     private EPServiceProvider epService;
 
+    public void testPerfToArray()
+    {
+        LinkedList<String> col = new LinkedList<String>();
+        col.add("abc");
+        col.add("def");
+        col.add("erg");
+        col.add("yyy");
+
+        long start = System.currentTimeMillis();
+        for (int i = 0; i < 1000000; i++)
+        {
+            String[] str = col.toArray(new String[col.size()]);
+        }
+        long end = System.currentTimeMillis();
+        System.out.println("delta=" + (end - start));
+    }
+
     public void testPerfDequeLinkedList()
     {
         long start = System.currentTimeMillis();

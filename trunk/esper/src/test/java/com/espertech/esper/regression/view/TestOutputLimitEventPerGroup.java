@@ -37,6 +37,7 @@ public class TestOutputLimitEventPerGroup extends TestCase
         epService.getEPRuntime().sendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
         sendTimer(0);
 
+        String fields[] = "symbol,maxVol".split(",");
         String viewExpr = "select symbol, max(price) as maxVol" +
                           " from " + SupportMarketDataBean.class.getName() + ".ext:sort(volume, true, 1) as s0," +
                           SupportBean.class.getName() + " as s1 " +
@@ -52,10 +53,10 @@ public class TestOutputLimitEventPerGroup extends TestCase
         // moves all events out of the window,
         sendTimer(1000);        // newdata is 2 eventa, old data is the same 2 events, therefore the sum is null
         UniformPair<EventBean[]> result = listener.getDataListsFlattened();
-        assertEquals(1, result.getFirst().length);
-        assertEquals(2.0, result.getFirst()[0].get("maxVol"));
-        assertEquals(1, result.getSecond().length);
-        assertEquals(null, result.getSecond()[0].get("maxVol"));
+        assertEquals(2, result.getFirst().length);
+        ArrayAssertionUtil.assertPropsPerRow(result.getFirst(), fields, new Object[][] {{"JOIN_KEY", 1.0}, {"JOIN_KEY", 2.0}});
+        assertEquals(2, result.getSecond().length);
+        ArrayAssertionUtil.assertPropsPerRow(result.getSecond(), fields, new Object[][] {{"JOIN_KEY", null}, {"JOIN_KEY", 1.0}});
     }
 
     public void testLimitSnapshot()
@@ -154,8 +155,36 @@ public class TestOutputLimitEventPerGroup extends TestCase
         listener.reset();
     }
 
-    public void testWithGroupBy()
+    public void testGroupBy_All()
     {
+        String fields[] = "symbol,sum(price)".split(",");
+    	String eventName = SupportMarketDataBean.class.getName();
+    	String statementString = "select symbol, sum(price) from " + eventName + ".win:length(5) group by symbol output all every 5 events";
+    	EPStatement statement = epService.getEPAdministrator().createEQL(statementString);
+    	SupportUpdateListener updateListener = new SupportUpdateListener();
+    	statement.addListener(updateListener);
+
+    	// send some events and check that only the most recent
+    	// ones are kept
+    	sendEvent("IBM", 1D);
+    	sendEvent("IBM", 2D);
+    	sendEvent("HP", 1D);
+    	sendEvent("IBM", 3D);
+    	sendEvent("MAC", 1D);
+
+    	assertTrue(updateListener.getAndClearIsInvoked());
+    	EventBean[] newData = updateListener.getLastNewData();
+    	assertEquals(3, newData.length);
+        ArrayAssertionUtil.assertPropsPerRow(newData, fields, new Object[][] {
+                {"IBM", 6d}, {"HP", 1d}, {"MAC", 1d}});
+    	EventBean[] oldData = updateListener.getLastOldData();
+        ArrayAssertionUtil.assertPropsPerRow(oldData, fields, new Object[][] {
+                {"IBM", null}, {"HP", null}, {"MAC", null}});
+    }
+
+    public void testGroupBy_Default()
+    {
+        String fields[] = "symbol,sum(price)".split(",");
     	String eventName = SupportMarketDataBean.class.getName();
     	String statementString = "select symbol, sum(price) from " + eventName + ".win:length(5) group by symbol output every 5 events";
     	EPStatement statement = epService.getEPAdministrator().createEQL(statementString);
@@ -172,14 +201,13 @@ public class TestOutputLimitEventPerGroup extends TestCase
 
     	assertTrue(updateListener.getAndClearIsInvoked());
     	EventBean[] newData = updateListener.getLastNewData();
-    	assertEquals(3, newData.length);
-    	assertSingleInstance(newData, "IBM");
-    	assertSingleInstance(newData, "HP");
-    	assertSingleInstance(newData, "MAC");
-    	EventBean[] oldData = updateListener.getLastOldData();
-    	assertSingleInstance(oldData, "IBM");
-    	assertSingleInstance(oldData, "HP");
-    	assertSingleInstance(oldData, "MAC");
+        EventBean[] oldData = updateListener.getLastOldData();
+    	assertEquals(5, newData.length);
+        assertEquals(5, oldData.length);
+        ArrayAssertionUtil.assertPropsPerRow(newData, fields, new Object[][] {
+                {"IBM", 1d}, {"IBM", 3d}, {"HP", 1d}, {"IBM", 6d}, {"MAC", 1d}});
+        ArrayAssertionUtil.assertPropsPerRow(oldData, fields, new Object[][] {
+                {"IBM", null}, {"IBM", 1d}, {"HP", null}, {"IBM", 3d}, {"MAC", null}});        
     }
 
     public void testMaxTimeWindow()
@@ -187,8 +215,8 @@ public class TestOutputLimitEventPerGroup extends TestCase
         epService.getEPRuntime().sendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
         sendTimer(0);
 
-        String viewExpr = "select symbol, " +
-                                  "max(price) as maxVol" +
+        String fields[] = "symbol,maxVol".split(",");
+        String viewExpr = "select symbol, max(price) as maxVol" +
                           " from " + SupportMarketDataBean.class.getName() + ".win:time(1 sec) " +
                           "group by symbol output every 1 seconds";
         selectTestView = epService.getEPAdministrator().createEQL(viewExpr);
@@ -201,10 +229,10 @@ public class TestOutputLimitEventPerGroup extends TestCase
         // moves all events out of the window,
         sendTimer(1000);        // newdata is 2 eventa, old data is the same 2 events, therefore the sum is null
         UniformPair<EventBean[]> result = listener.getDataListsFlattened();
-        assertEquals(1, result.getFirst().length);
-        assertEquals(null, result.getFirst()[0].get("maxVol"));
-        assertEquals(1, result.getSecond().length);
-        assertEquals(null, result.getSecond()[0].get("maxVol"));
+        assertEquals(3, result.getFirst().length);
+        ArrayAssertionUtil.assertPropsPerRow(result.getFirst(), fields, new Object[][] {{"SYM1", 1.0}, {"SYM1", 2.0}, {"SYM1", null}});
+        assertEquals(3, result.getSecond().length);
+        ArrayAssertionUtil.assertPropsPerRow(result.getSecond(), fields, new Object[][] {{"SYM1", null}, {"SYM1", 1.0}, {"SYM1", 2.0}});
     }
 
     public void testNoJoinLast()
@@ -389,7 +417,7 @@ public class TestOutputLimitEventPerGroup extends TestCase
 
         sendEvent(SYMBOL_DELL, 100);
         assertEvents(SYMBOL_IBM,
-        		null, null,
+        		70d, 70d,
         		70d, 70d,
         		SYMBOL_DELL,
                 10d, 10d,
@@ -463,18 +491,5 @@ public class TestOutputLimitEventPerGroup extends TestCase
         CurrentTimeEvent event = new CurrentTimeEvent(timeInMSec);
         EPRuntime runtime = epService.getEPRuntime();
         runtime.sendEvent(event);
-    }
-
-    private void assertSingleInstance(EventBean[] data, String symbol)
-    {
-        int instanceCount = 0;
-        for(EventBean event : data)
-        {
-            if(event.get("symbol").equals(symbol))
-            {
-                instanceCount++;
-            }
-        }
-        assertEquals(1, instanceCount);
     }
 }

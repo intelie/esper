@@ -29,27 +29,43 @@ public class TestOrderByEventPerGroup extends TestCase {
 
     public void testRowPerGroup()
 	{
+        String fields[] = "symbol,sum(price)".split(",");
 		String statementString = "select symbol, sum(price) from " +
-		SupportMarketDataBean.class.getName() + ".win:length(20) " +
-		"group by symbol " +
-		"output every 6 events " +
-		"order by sum(price)";
-		createAndSendAggregate(statementString);
-		orderValuesBySumPriceGroup();
-		assertValues(prices, "sum(price)");
-		assertValues(symbols, "symbol");
-	   	assertOnlyProperties(Arrays.asList(new String[] {"symbol", "sum(price)"}));
-		clearValues();
+                                SupportMarketDataBean.class.getName() + ".win:length(20) " +
+                                "group by symbol " +
+                                "output every 6 events " +
+                                "order by sum(price)";
 
-		sendAdditionalAggregate();
-		orderValuesBySumPriceAdditionalGroup();
-		assertValues(prices, "sum(price)");
-		assertValues(symbols, "symbol");
-		clearValues();
+        testListener = new SupportUpdateListener();
+        EPStatement statement = epService.getEPAdministrator().createEQL(statementString);
+        statement.addListener(testListener);
+        sendEvent("IBM", 3);
+        sendEvent("IBM", 4);
+        sendEvent("CMU", 1);
+        sendEvent("CMU", 2);
+        sendEvent("CAT", 5);
+        sendEvent("CAT", 6);
+        ArrayAssertionUtil.assertPropsPerRow(testListener.getLastNewData(), fields,
+                new Object[][] {{"IBM", 3.0}, {"IBM", 7.0}, {"CMU", 1.0}, {"CMU", 3.0}, {"CAT", 5.0}, {"CAT", 11.0} });
+        ArrayAssertionUtil.assertPropsPerRow(testListener.getLastOldData(), fields,
+                new Object[][] {{"IBM", null}, {"IBM", 3.0}, {"CMU", null}, {"CMU", 1.0}, {"CAT", null}, {"CAT", 5.0} });
+        testListener.reset();
 
-		epService.initialize();
+        sendEvent("IBM", 3);
+        sendEvent("IBM", 4);
+        sendEvent("CMU", 5);
+        sendEvent("CMU", 5);
+        sendEvent("DOG", 0);
+        sendEvent("DOG", 1);
+        ArrayAssertionUtil.assertPropsPerRow(testListener.getLastNewData(), fields,
+                new Object[][] {{"IBM", 10.0}, {"IBM", 14.0}, {"CMU", 8.0}, {"CMU", 13.0}, {"DOG", 0.0}, {"DOG", 1.0} });
+        ArrayAssertionUtil.assertPropsPerRow(testListener.getLastOldData(), fields,
+                new Object[][] {{"IBM", 7.0}, {"IBM", 10.0}, {"CMU", 3.0}, {"CMU", 8.0}, {"DOG", null}, {"DOG", 0.0} });
+    }
 
-		statementString = "select symbol, sum(price) from " +
+    public void testRowPerGroupHaving()
+    {
+		String statementString = "select symbol, sum(price) from " +
 		SupportMarketDataBean.class.getName() + ".win:length(20) " +
 		"group by symbol " +
 		"having sum(price) > 0 " +
@@ -119,17 +135,7 @@ public class TestOrderByEventPerGroup extends TestCase {
 
 	public void testAliases()
 	{
-		String statementString = "select symbol as mySymbol, sum(price) as mySum from " +
-		SupportMarketDataBean.class.getName() + ".win:length(10) " +
-		"output every 6 events " +
-		"order by mySymbol";
-		createAndSendAggregate(statementString);
-		orderValuesBySymbolAggregateAll();
-		assertValues(symbols, "mySymbol");
-		assertValues(prices, "mySum");
-		clearValues();
-
-		statementString = "select symbol, sum(price) as mySum from " +
+		String statementString = "select symbol, sum(price) as mySum from " +
 		SupportMarketDataBean.class.getName() + ".win:length(20) " +
 		"group by symbol " +
 		"output every 6 events " +
@@ -267,22 +273,6 @@ public class TestOrderByEventPerGroup extends TestCase {
 		epService.getEPRuntime().sendEvent(new SupportBeanString("DOG"));
 	}
 
-	private void orderValuesBySumPriceEvent()
-    {
-    	symbols.add(0, "CMU");
-    	symbols.add(1, "CMU");
-    	symbols.add(2, "IBM");
-    	symbols.add(3, "IBM");
-    	symbols.add(4, "CAT");
-    	symbols.add(5, "CAT");
-    	prices.add(0, 3d);
-    	prices.add(1, 3d);
-    	prices.add(2, 7d);
-    	prices.add(3, 7d);
-    	prices.add(4, 11d);
-    	prices.add(5, 11d);
-    }
-
     private void orderValuesBySumPriceAdditionalGroup() {
     	symbols.add(0, "DOG");
     	symbols.add(1, "CAT");
@@ -310,21 +300,6 @@ public class TestOrderByEventPerGroup extends TestCase {
     	sendEvent("CMU", 5);
     	sendEvent("DOG", 0);
     	sendEvent("DOG", 1);
-	}
-
-	private void orderValuesBySymbolAggregateAll() {
-    	symbols.add("CAT");
-    	symbols.add("CAT");
-    	symbols.add("CMU");
-    	symbols.add("CMU");
-    	symbols.add("IBM");
-    	symbols.add("IBM");
-    	prices.add(21d);
-    	prices.add(21d);
-    	prices.add(21d);
-    	prices.add(21d);
-    	prices.add(21d);
-    	prices.add(21d);
 	}
 
 	private void createAndSendAggregate(String statementString) {

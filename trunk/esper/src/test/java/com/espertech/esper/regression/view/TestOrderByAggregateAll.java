@@ -16,23 +16,18 @@ import org.apache.commons.logging.LogFactory;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
 
 public class TestOrderByAggregateAll extends TestCase
 {
 	private static final Log log = LogFactory.getLog(TestOrderByAggregateAll.class);
 	private EPServiceProvider epService;
-    private List<Double> prices;
-    private List<String> symbols;
     private SupportUpdateListener testListener;
 
     public void setUp()
 	{
 	    epService = EPServiceProviderManager.getDefaultProvider(SupportConfigFactory.getConfiguration());
 	    epService.initialize();
-	    symbols = new LinkedList<String>();
-	    prices = new LinkedList<Double>();
 	}
 
     public void testIteratorAggregateRowPerEvent()
@@ -44,7 +39,11 @@ public class TestOrderByAggregateAll extends TestCase
                     "where one.symbol = two.string " +
                     "order by symbol";
         EPStatement statement = epService.getEPAdministrator().createEQL(statementString);
-        sendJoinEvents();
+
+        epService.getEPRuntime().sendEvent(new SupportBeanString("CAT"));
+        epService.getEPRuntime().sendEvent(new SupportBeanString("IBM"));
+        epService.getEPRuntime().sendEvent(new SupportBeanString("KGB"));
+
         sendEvent("CAT", 50);
         sendEvent("IBM", 49);
         sendEvent("CAT", 15);
@@ -71,206 +70,259 @@ public class TestOrderByAggregateAll extends TestCase
     public void testAliases()
     {
         String statementString = "select symbol as mySymbol, sum(price) as mySum from " +
-        SupportMarketDataBean.class.getName() + ".win:length(10) " +
-        "output every 6 events " +
-        "order by mySymbol";
-        createAndSendAggregate(statementString);
-        orderValuesBySymbolAggregateAll();
-        assertValues(symbols, "mySymbol");
-        assertValues(prices, "mySum");
-        clearValues();
+                                SupportMarketDataBean.class.getName() + ".win:length(10) " +
+                                "output every 6 events " +
+                                "order by mySymbol";
 
-        statementString = "select symbol, sum(price) as mySum from " +
-        SupportMarketDataBean.class.getName() + ".win:length(20) " +
-        "group by symbol " +
-        "output every 6 events " +
-        "order by mySum";
-        createAndSendAggregate(statementString);
-        orderValuesBySumPriceGroup();
-        assertValues(prices, "mySum");
-        assertValues(symbols, "symbol");
-           assertOnlyProperties(Arrays.asList(new String[] {"symbol", "mySum"}));
-        clearValues();
+        testListener = new SupportUpdateListener();
+        EPStatement statement = epService.getEPAdministrator().createEQL(statementString);
+        statement.addListener(testListener);
+
+        sendEvent("IBM", 3);
+        sendEvent("IBM", 4);
+        sendEvent("CMU", 1);
+        sendEvent("CMU", 2);
+        sendEvent("CAT", 5);
+        sendEvent("CAT", 6);
+
+        String fields[] = "mySymbol,mySum".split(",");
+        ArrayAssertionUtil.assertPropsPerRow(testListener.getLastNewData(), fields, new Object[][] {
+                {"CAT", 15.0}, {"CAT", 21.0}, {"CMU", 8.0}, {"CMU", 10.0}, {"IBM", 3.0}, {"IBM", 7.0}});
     }
-
+    
     public void testAggregateAllJoinOrderFunction()
     {
     	String statementString = "select symbol, sum(price) from " +
-    	SupportMarketDataBean.class.getName() + ".win:length(10) as one, " +
-    	SupportBeanString.class.getName() + ".win:length(100) as two " +
-    	"where one.symbol = two.string " +
-     	"output every 6 events "  +
-     	"order by volume*sum(price), symbol";
-     	createAndSend(statementString);
-     	sendJoinEvents();
-     	orderValuesBySymbol();
-     	assertValues(symbols, "symbol");
-       	assertOnlyProperties(Arrays.asList(new String[] {"symbol", "sum(price)"}));
-     	clearValues();
+                                SupportMarketDataBean.class.getName() + ".win:length(10) as one, " +
+                                SupportBeanString.class.getName() + ".win:length(100) as two " +
+                                "where one.symbol = two.string " +
+                                "output every 6 events "  +
+                                "order by volume*sum(price), symbol";
+
+        testListener = new SupportUpdateListener();
+        EPStatement statement = epService.getEPAdministrator().createEQL(statementString);
+        statement.addListener(testListener);
+        sendEvent("IBM", 2);
+        sendEvent("KGB", 1);
+        sendEvent("CMU", 3);
+        sendEvent("IBM", 6);
+        sendEvent("CAT", 6);
+        sendEvent("CAT", 5);
+
+        epService.getEPRuntime().sendEvent(new SupportBeanString("CAT"));
+        epService.getEPRuntime().sendEvent(new SupportBeanString("IBM"));
+        epService.getEPRuntime().sendEvent(new SupportBeanString("CMU"));
+        epService.getEPRuntime().sendEvent(new SupportBeanString("KGB"));
+        epService.getEPRuntime().sendEvent(new SupportBeanString("DOG"));
+
+        String fields[] = "symbol".split(",");
+        ArrayAssertionUtil.assertPropsPerRow(testListener.getLastNewData(), fields, new Object[][] {
+                {"CAT"}, {"CAT"}, {"CMU"}, {"IBM"}, {"IBM"}, {"KGB"}});
     }
 
     public void testAggregateAllOrderFunction()
     {
         String statementString = "select symbol, sum(price) from " +
-	 	SupportMarketDataBean.class.getName() + ".win:length(10) " +
-	 	"output every 6 events "  +
-	 	"order by volume*sum(price), symbol";
-	 	createAndSend(statementString);
-	 	orderValuesBySymbol();
-	 	assertValues(symbols, "symbol");
-	   	assertOnlyProperties(Arrays.asList(new String[] {"symbol", "sum(price)"}));
-	 	clearValues();
+                                SupportMarketDataBean.class.getName() + ".win:length(10) " +
+                                "output every 6 events "  +
+                                "order by volume*sum(price), symbol";
+
+        testListener = new SupportUpdateListener();
+        EPStatement statement = epService.getEPAdministrator().createEQL(statementString);
+        statement.addListener(testListener);
+
+        sendEvent("IBM", 2);
+        sendEvent("KGB", 1);
+        sendEvent("CMU", 3);
+        sendEvent("IBM", 6);
+        sendEvent("CAT", 6);
+        sendEvent("CAT", 5);
+
+        String fields[] = "symbol".split(",");
+        ArrayAssertionUtil.assertPropsPerRow(testListener.getLastNewData(), fields, new Object[][] {
+                {"CAT"}, {"CAT"}, {"CMU"}, {"IBM"}, {"IBM"}, {"KGB"}});
 	}
 
-    public void testAggregateAll()
+    public void testAggregateAllSum()
 	{
 		String statementString = "select symbol, sum(price) from " +
-		SupportMarketDataBean.class.getName() + ".win:length(10) " +
-		"output every 6 events " +
-		"order by symbol";
-		createAndSendAggregate(statementString);
-		orderValuesBySymbolAggregateAll();
-		assertValues(symbols, "symbol");
-		assertValues(prices, "sum(price)");
-		assertOnlyProperties(Arrays.asList(new String[] {"symbol", "sum(price)"}));
-		clearValues();
+		                    SupportMarketDataBean.class.getName() + ".win:length(10) " +
+                            "output every 6 events " +
+                            "order by symbol";
 
-		epService.initialize();
+        testListener = new SupportUpdateListener();
+        EPStatement statement = epService.getEPAdministrator().createEQL(statementString);
+        statement.addListener(testListener);
 
-		statementString = "select symbol, max(sum(price)) from " +
+        sendEvent("IBM", 3);
+        sendEvent("IBM", 4);
+        sendEvent("CMU", 1);
+        sendEvent("CMU", 2);
+        sendEvent("CAT", 5);
+        sendEvent("CAT", 6);
+
+        String fields[] = "symbol,sum(price)".split(",");
+        ArrayAssertionUtil.assertPropsPerRow(testListener.getLastNewData(), fields, new Object[][] {
+                {"CAT", 15.0}, {"CAT", 21.0}, {"CMU", 8.0}, {"CMU", 10.0}, {"IBM", 3.0}, {"IBM", 7.0}});
+    }
+
+    public void testAggregateAllMaxSum()
+    {
+        String statementString = "select symbol, max(sum(price)) from " +
                             SupportMarketDataBean.class.getName() + ".win:length(10) " +
                             "output every 6 events " +
                             "order by symbol";
-		createAndSendAggregate(statementString);
-		orderValuesBySymbolAggregateAll();
-		assertValues(symbols, "symbol");
-		assertValues(prices, "max(sum(price))");
-		assertOnlyProperties(Arrays.asList(new String[] {"symbol", "max(sum(price))"}));
-		clearValues();
 
-		epService.initialize();
+        testListener = new SupportUpdateListener();
+        EPStatement statement = epService.getEPAdministrator().createEQL(statementString);
+        statement.addListener(testListener);
 
-		statementString = "select symbol, sum(price) from " +
-		SupportMarketDataBean.class.getName() + ".win:length(10) " +
-		"having sum(price) > 0 " +
-		"output every 6 events " +
-		"order by symbol";
-		createAndSendAggregate(statementString);
-		orderValuesBySymbolAggregateAll();
-		assertValues(symbols, "symbol");
-		assertValues(prices, "sum(price)");
-		assertOnlyProperties(Arrays.asList(new String[] {"symbol", "sum(price)"}));
-		clearValues();
+        sendEvent("IBM", 3);
+        sendEvent("IBM", 4);
+        sendEvent("CMU", 1);
+        sendEvent("CMU", 2);
+        sendEvent("CAT", 5);
+        sendEvent("CAT", 6);
 
-		epService.initialize();
+        String fields[] = "symbol,max(sum(price))".split(",");
+        ArrayAssertionUtil.assertPropsPerRow(testListener.getLastNewData(), fields, new Object[][] {
+                {"CAT", 15.0}, {"CAT", 21.0}, {"CMU", 8.0}, {"CMU", 10.0}, {"IBM", 3.0}, {"IBM", 7.0}});
+    }
 
-		statementString = "select symbol, sum(price) from " +
-		SupportMarketDataBean.class.getName() + ".win:length(10) " +
-		"output every 6 events "  +
-		"order by symbol, sum(price)";
-		createAndSendAggregate(statementString);
-		orderValuesBySymbolAggregateAll();
-		assertValues(symbols, "symbol");
-		assertValues(prices, "sum(price)");
-		assertOnlyProperties(Arrays.asList(new String[] {"symbol", "sum(price)"}));
-		clearValues();
+    public void testAggregateAllSumHaving()
+    {
+        String statementString = "select symbol, sum(price) from " +
+                                SupportMarketDataBean.class.getName() + ".win:length(10) " +
+                                "having sum(price) > 0 " +
+                                "output every 6 events " +
+                                "order by symbol";
 
-		epService.initialize();
+        testListener = new SupportUpdateListener();
+        EPStatement statement = epService.getEPAdministrator().createEQL(statementString);
+        statement.addListener(testListener);
 
-		statementString = "select symbol, 21+sum(price)*0 from " +
-		SupportMarketDataBean.class.getName() + ".win:length(10) " +
-		"output every 6 events "  +
-		"order by symbol, 2*sum(price)+1";
-		createAndSendAggregate(statementString);
-		orderValuesBySymbolAggregateAll();
-		assertValues(symbols, "symbol");
-		assertValues(prices, "(21+(sum(price)*0))");
-		assertOnlyProperties(Arrays.asList(new String[] {"symbol", "(21+(sum(price)*0))"}));
-		clearValues();
-	}
+        sendEvent("IBM", 3);
+        sendEvent("IBM", 4);
+        sendEvent("CMU", 1);
+        sendEvent("CMU", 2);
+        sendEvent("CAT", 5);
+        sendEvent("CAT", 6);
+
+        String fields[] = "symbol,sum(price)".split(",");
+        ArrayAssertionUtil.assertPropsPerRow(testListener.getLastNewData(), fields, new Object[][] {
+                {"CAT", 15.0}, {"CAT", 21.0}, {"CMU", 8.0}, {"CMU", 10.0}, {"IBM", 3.0}, {"IBM", 7.0}});
+    }
+
+    public void testAggOrderWithSum()
+    {
+        String statementString = "select symbol, sum(price) from " +
+                                SupportMarketDataBean.class.getName() + ".win:length(10) " +
+                                "output every 6 events "  +
+                                "order by symbol, sum(price)";
+
+        testListener = new SupportUpdateListener();
+        EPStatement statement = epService.getEPAdministrator().createEQL(statementString);
+        statement.addListener(testListener);
+
+        sendEvent("IBM", 3);
+        sendEvent("IBM", 4);
+        sendEvent("CMU", 1);
+        sendEvent("CMU", 2);
+        sendEvent("CAT", 5);
+        sendEvent("CAT", 6);
+
+        String fields[] = "symbol,sum(price)".split(",");
+        ArrayAssertionUtil.assertPropsPerRow(testListener.getLastNewData(), fields, new Object[][] {
+                {"CAT", 15.0}, {"CAT", 21.0}, {"CMU", 8.0}, {"CMU", 10.0}, {"IBM", 3.0}, {"IBM", 7.0}});
+    }
 
 	public void testAggregateAllJoin()
     {
     	String statementString = "select symbol, sum(price) from " +
-    	SupportMarketDataBean.class.getName() + ".win:length(10) as one, " +
-    	SupportBeanString.class.getName() + ".win:length(100) as two " +
-    	"where one.symbol = two.string " +
-    	"output every 6 events " +
-    	"order by symbol";
-    	createAndSendAggregate(statementString);
-    	sendJoinEvents();
-    	orderValuesBySymbolAggregateAll();
-    	assertValues(symbols, "symbol");
-    	assertValues(prices, "sum(price)");
-    	assertOnlyProperties(Arrays.asList(new String[] {"symbol", "sum(price)"}));
-    	clearValues();
+                                SupportMarketDataBean.class.getName() + ".win:length(10) as one, " +
+                                SupportBeanString.class.getName() + ".win:length(100) as two " +
+                                "where one.symbol = two.string " +
+                                "output every 6 events " +
+                                "order by symbol, sum(price)";
 
-    	epService.initialize();
+        testListener = new SupportUpdateListener();
+        EPStatement statement = epService.getEPAdministrator().createEQL(statementString);
+        statement.addListener(testListener);
 
-    	statementString = "select symbol, max(sum(price)) from " +
-    	SupportMarketDataBean.class.getName() + ".win:length(10) as one, " +
-    	SupportBeanString.class.getName() + ".win:length(100) as two " +
-    	"where one.symbol = two.string " +
-    	"output every 6 events " +
-    	"order by symbol";
-    	createAndSendAggregate(statementString);
-    	sendJoinEvents();
-    	orderValuesBySymbolAggregateAll();
-    	assertValues(symbols, "symbol");
-    	assertValues(prices, "max(sum(price))");
-    	assertOnlyProperties(Arrays.asList(new String[] {"symbol", "max(sum(price))"}));
-    	clearValues();
+        sendEvent("IBM", 3);
+        sendEvent("IBM", 4);
+        sendEvent("CMU", 1);
+        sendEvent("CMU", 2);
+        sendEvent("CAT", 5);
+        sendEvent("CAT", 6);
 
-    	epService.initialize();
+        epService.getEPRuntime().sendEvent(new SupportBeanString("CAT"));
+        epService.getEPRuntime().sendEvent(new SupportBeanString("IBM"));
+        epService.getEPRuntime().sendEvent(new SupportBeanString("CMU"));
 
-    	statementString = "select symbol, sum(price) from " +
-    	SupportMarketDataBean.class.getName() + ".win:length(10) as one, " +
-    	SupportBeanString.class.getName() + ".win:length(100) as two " +
-    	"where one.symbol = two.string " +
-    	"having sum(price) > 0 " +
-    	"output every 6 events " +
-    	"order by symbol";
-    	createAndSendAggregate(statementString);
-    	sendJoinEvents();
-    	orderValuesBySymbolAggregateAll();
-    	assertValues(symbols, "symbol");
-    	assertValues(prices, "sum(price)");
-    	assertOnlyProperties(Arrays.asList(new String[] {"symbol", "sum(price)"}));
-    	clearValues();
-
-    	epService.initialize();
-
-    	statementString = "select symbol, sum(price) from " +
-    	SupportMarketDataBean.class.getName() + ".win:length(10) as one, " +
-    	SupportBeanString.class.getName() + ".win:length(100) as two " +
-    	"where one.symbol = two.string " +
-    	"output every 6 events "  +
-    	"order by symbol, sum(price)";
-    	createAndSendAggregate(statementString);
-    	sendJoinEvents();
-    	orderValuesBySymbolAggregateAll();
-    	assertValues(symbols, "symbol");
-    	assertValues(prices, "sum(price)");
-    	assertOnlyProperties(Arrays.asList(new String[] {"symbol", "sum(price)"}));
-    	clearValues();
-
-    	epService.initialize();
-
-    	statementString = "select symbol, 21+sum(price)*0 from " +
-    	SupportMarketDataBean.class.getName() + ".win:length(10) as one, " +
-    	SupportBeanString.class.getName() + ".win:length(100) as two " +
-    	"where one.symbol = two.string " +
-    	"output every 6 events "  +
-    	"order by symbol, 2*sum(price)+1";
-    	createAndSendAggregate(statementString);
-    	sendJoinEvents();
-    	orderValuesBySymbolAggregateAll();
-    	assertValues(symbols, "symbol");
-    	assertValues(prices, "(21+(sum(price)*0))");
-    	assertOnlyProperties(Arrays.asList(new String[] {"symbol", "(21+(sum(price)*0))"}));
-    	clearValues();
+        String fields[] = "symbol,sum(price)".split(",");
+        ArrayAssertionUtil.assertPropsPerRow(testListener.getLastNewData(), fields, new Object[][] {
+                {"CAT", 11.0}, {"CAT", 11.0}, {"CMU", 21.0}, {"CMU", 21.0}, {"IBM", 18.0}, {"IBM", 18.0}});
     }
 
+    public void testAggregateAllJoinMax()
+    {
+    	String statementString = "select symbol, max(sum(price)) from " +
+                                SupportMarketDataBean.class.getName() + ".win:length(10) as one, " +
+                                SupportBeanString.class.getName() + ".win:length(100) as two " +
+                                "where one.symbol = two.string " +
+                                "output every 6 events " +
+                                "order by symbol";
+
+        testListener = new SupportUpdateListener();
+        EPStatement statement = epService.getEPAdministrator().createEQL(statementString);
+        statement.addListener(testListener);
+
+        sendEvent("IBM", 3);
+        sendEvent("IBM", 4);
+        sendEvent("CMU", 1);
+        sendEvent("CMU", 2);
+        sendEvent("CAT", 5);
+        sendEvent("CAT", 6);
+
+        epService.getEPRuntime().sendEvent(new SupportBeanString("CAT"));
+        epService.getEPRuntime().sendEvent(new SupportBeanString("IBM"));
+        epService.getEPRuntime().sendEvent(new SupportBeanString("CMU"));
+
+        String fields[] = "symbol,max(sum(price))".split(",");
+        ArrayAssertionUtil.assertPropsPerRow(testListener.getLastNewData(), fields, new Object[][] {
+                {"CAT", 11.0}, {"CAT", 11.0}, {"CMU", 21.0}, {"CMU", 21.0}, {"IBM", 18.0}, {"IBM", 18.0}});
+    }
+
+    public void testAggHaving()
+    {
+        String statementString = "select symbol, sum(price) from " +
+                                SupportMarketDataBean.class.getName() + ".win:length(10) as one, " +
+                                SupportBeanString.class.getName() + ".win:length(100) as two " +
+                                "where one.symbol = two.string " +
+                                "having sum(price) > 0 " +
+                                "output every 6 events " +
+                                "order by symbol";
+        testListener = new SupportUpdateListener();
+        EPStatement statement = epService.getEPAdministrator().createEQL(statementString);
+        statement.addListener(testListener);
+
+        sendEvent("IBM", 3);
+        sendEvent("IBM", 4);
+        sendEvent("CMU", 1);
+        sendEvent("CMU", 2);
+        sendEvent("CAT", 5);
+        sendEvent("CAT", 6);
+
+        epService.getEPRuntime().sendEvent(new SupportBeanString("CAT"));
+        epService.getEPRuntime().sendEvent(new SupportBeanString("IBM"));
+        epService.getEPRuntime().sendEvent(new SupportBeanString("CMU"));
+
+        String fields[] = "symbol,sum(price)".split(",");
+        ArrayAssertionUtil.assertPropsPerRow(testListener.getLastNewData(), fields, new Object[][] {
+                {"CAT", 11.0}, {"CAT", 11.0}, {"CMU", 21.0}, {"CMU", 21.0}, {"IBM", 18.0}, {"IBM", 18.0}});
+    }
+    
 	private void assertOnlyProperties(List<String> requiredProperties)
     {
     	EventBean[] events = testListener.getLastNewData();
@@ -298,12 +350,6 @@ public class TestOrderByAggregateAll extends TestCase
     	}
     }
 
-	private void clearValues()
-    {
-    	prices.clear();
-    	symbols.clear();
-    }
-
 	private void createAndSend(String statementString) {
 		testListener = new SupportUpdateListener();
         EPStatement statement = epService.getEPAdministrator().createEQL(statementString);
@@ -316,71 +362,9 @@ public class TestOrderByAggregateAll extends TestCase
     	sendEvent("CAT", 5);
 	}
 
-	private void orderValuesBySymbol()
-    {
-    	symbols.add(0, "CAT");
-    	symbols.add(1, "CAT");
-    	symbols.add(2, "CMU");
-    	symbols.add(3, "IBM");
-    	symbols.add(4, "IBM");
-    	symbols.add(5, "KGB");
-    	prices.add(0, 6d);
-    	prices.add(1, 5d);
-    	prices.add(2, 3d);
-    	prices.add(3, 2d);
-    	prices.add(4, 6d);
-    	prices.add(5, 1d);
-    }
-
 	private void sendEvent(String symbol, double price)
 	{
 	    SupportMarketDataBean bean = new SupportMarketDataBean(symbol, price, 0L, null);
 	    epService.getEPRuntime().sendEvent(bean);
 	}
-
-    private void sendJoinEvents()
-    {
-        epService.getEPRuntime().sendEvent(new SupportBeanString("CAT"));
-        epService.getEPRuntime().sendEvent(new SupportBeanString("IBM"));
-        epService.getEPRuntime().sendEvent(new SupportBeanString("CMU"));
-        epService.getEPRuntime().sendEvent(new SupportBeanString("KGB"));
-        epService.getEPRuntime().sendEvent(new SupportBeanString("DOG"));
-    }
-
-    private void createAndSendAggregate(String statementString) {
-        testListener = new SupportUpdateListener();
-        EPStatement statement = epService.getEPAdministrator().createEQL(statementString);
-        statement.addListener(testListener);
-        sendEvent("IBM", 3);
-        sendEvent("IBM", 4);
-        sendEvent("CMU", 1);
-        sendEvent("CMU", 2);
-        sendEvent("CAT", 5);
-        sendEvent("CAT", 6);
-    }
-
-    private void orderValuesBySymbolAggregateAll() {
-        symbols.add("CAT");
-        symbols.add("CAT");
-        symbols.add("CMU");
-        symbols.add("CMU");
-        symbols.add("IBM");
-        symbols.add("IBM");
-        prices.add(21d);
-        prices.add(21d);
-        prices.add(21d);
-        prices.add(21d);
-        prices.add(21d);
-        prices.add(21d);
-    }
-
-    private void orderValuesBySumPriceGroup()
-    {
-        symbols.add(0, "CMU");
-        symbols.add(1, "IBM");
-        symbols.add(2, "CAT");
-        prices.add(0, 3d);
-        prices.add(1, 7d);
-        prices.add(2, 11d);
-    }    
 }
