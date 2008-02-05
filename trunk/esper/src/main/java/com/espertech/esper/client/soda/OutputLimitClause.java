@@ -55,7 +55,7 @@ public class OutputLimitClause implements Serializable
      */
     public static OutputLimitClause create(double frequency, OutputLimitUnit unit)
     {
-        return new OutputLimitClause(OutputLimitSelector.ALL, frequency, unit);
+        return new OutputLimitClause(OutputLimitSelector.DEFAULT, frequency, unit);
     }
 
     /**
@@ -66,7 +66,7 @@ public class OutputLimitClause implements Serializable
      */
     public static OutputLimitClause create(String frequencyVariable, OutputLimitUnit unit)
     {
-        return new OutputLimitClause(OutputLimitSelector.ALL, frequencyVariable, unit);
+        return new OutputLimitClause(OutputLimitSelector.DEFAULT, frequencyVariable, unit);
     }
 
     /**
@@ -188,7 +188,7 @@ public class OutputLimitClause implements Serializable
      */
     public void toEQL(StringWriter writer)
     {
-        if (selector != OutputLimitSelector.ALL)
+        if (selector != OutputLimitSelector.DEFAULT)
         {
             writer.write(selector.getText());
             writer.write(" ");

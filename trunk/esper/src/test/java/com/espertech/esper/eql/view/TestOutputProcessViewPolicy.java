@@ -11,6 +11,9 @@ import com.espertech.esper.support.eql.SupportResultSetProcessor;
 import com.espertech.esper.support.view.SupportSchemaNeutralView;
 import com.espertech.esper.support.view.SupportStatementContextFactory;
 import com.espertech.esper.support.event.SupportEventBeanFactory;
+import com.espertech.esper.eql.spec.OutputLimitSpec;
+import com.espertech.esper.eql.spec.OutputLimitRateType;
+import com.espertech.esper.eql.spec.OutputLimitLimitType;
 
 public class TestOutputProcessViewPolicy extends TestCase
 {
@@ -24,8 +27,9 @@ public class TestOutputProcessViewPolicy extends TestCase
     {
         OutputStrategy outputStrategy = new OutputStrategySimple();
         resultSetProcessor = new SupportResultSetProcessor();
-        outputProcessViewUpdate = new OutputProcessViewPolicy(resultSetProcessor, outputStrategy, false, 1, null, SupportStatementContextFactory.makeContext());
-        outputProcessViewProcess = new OutputProcessViewPolicy(resultSetProcessor, outputStrategy, false, 2, null, SupportStatementContextFactory.makeContext());
+        OutputLimitSpec spec = new OutputLimitSpec(1d, null, OutputLimitRateType.EVENTS, OutputLimitLimitType.DEFAULT);
+        outputProcessViewUpdate = new OutputProcessViewPolicy(resultSetProcessor, outputStrategy, false, 1, spec, SupportStatementContextFactory.makeContext());
+        outputProcessViewProcess = new OutputProcessViewPolicy(resultSetProcessor, outputStrategy, false, 2, spec, SupportStatementContextFactory.makeContext());
         
         childViewNoJoin = new SupportSchemaNeutralView();
         outputProcessViewUpdate.addView(childViewNoJoin);

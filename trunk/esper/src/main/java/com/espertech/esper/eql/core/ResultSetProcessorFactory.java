@@ -255,7 +255,7 @@ public class ResultSetProcessorFactory
         // Validate the having-clause (selected aggregate nodes and all in group-by are allowed)
         if (optionalHavingNode != null)
         {
-            validateHaving(selectAggregateExprNodes, propertiesGroupBy, optionalHavingNode);
+            validateHaving(propertiesGroupBy, optionalHavingNode);
         }
 
         // Determine if any output rate limiting must be performed early while processing results
@@ -264,7 +264,6 @@ public class ResultSetProcessorFactory
         {
             isOutputLimiting = false;   // Snapshot output does not count in terms of limiting output for grouping/aggregation purposes
         }
-        boolean isOutputLimitLastOnly = outputLimitSpec != null ? (outputLimitSpec.getDisplayLimit() == OutputLimitLimitType.LAST) : false;
 
         // (1)
         // There is no group-by clause and no aggregate functions with event properties in the select clause and having clause (simplest case)
@@ -369,11 +368,10 @@ public class ResultSetProcessorFactory
         // There is a group-by clause, and one or more event properties in the select clause that are not under an aggregation
         // function are not listed in the group-by clause (output one row per event, not one row per group)
         log.debug(".getProcessor Using ResultSetProcessorAggregateGrouped");
-        return new ResultSetProcessorAggregateGrouped(selectExprProcessor, orderByProcessor, aggregationService, groupByNodes, optionalHavingNode, isOutputLimiting, isOutputLimitLastOnly);
+        return new ResultSetProcessorAggregateGrouped(selectExprProcessor, orderByProcessor, aggregationService, groupByNodes, optionalHavingNode);
     }
 
-    private static void validateHaving(List<ExprAggregateNode> selectAggregateExprNodes,
-                                       Set<Pair<Integer, String>> propertiesGroupedBy,
+    private static void validateHaving(Set<Pair<Integer, String>> propertiesGroupedBy,
                                        ExprNode havingNode)
         throws ExprValidationException
     {

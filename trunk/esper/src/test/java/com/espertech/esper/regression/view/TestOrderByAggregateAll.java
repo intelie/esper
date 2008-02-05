@@ -3,6 +3,7 @@ package com.espertech.esper.regression.view;
 import com.espertech.esper.client.EPServiceProvider;
 import com.espertech.esper.client.EPServiceProviderManager;
 import com.espertech.esper.client.EPStatement;
+import com.espertech.esper.client.Configuration;
 import com.espertech.esper.event.EventBean;
 import com.espertech.esper.event.EventType;
 import com.espertech.esper.support.bean.SupportBeanString;
@@ -25,10 +26,12 @@ public class TestOrderByAggregateAll extends TestCase
     private SupportUpdateListener testListener;
 
     public void setUp()
-	{
-	    epService = EPServiceProviderManager.getDefaultProvider(SupportConfigFactory.getConfiguration());
-	    epService.initialize();
-	}
+    {
+        Configuration config = SupportConfigFactory.getConfiguration();
+        config.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
+        epService = EPServiceProviderManager.getDefaultProvider(config);
+        epService.initialize();
+    }
 
     public void testIteratorAggregateRowPerEvent()
 	{

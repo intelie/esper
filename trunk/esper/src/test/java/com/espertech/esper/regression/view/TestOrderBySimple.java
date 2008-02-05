@@ -1,10 +1,7 @@
 package com.espertech.esper.regression.view;
 
 import junit.framework.TestCase;
-import com.espertech.esper.client.EPServiceProvider;
-import com.espertech.esper.client.EPServiceProviderManager;
-import com.espertech.esper.client.EPStatement;
-import com.espertech.esper.client.EPStatementException;
+import com.espertech.esper.client.*;
 import com.espertech.esper.client.soda.*;
 import com.espertech.esper.client.time.CurrentTimeEvent;
 import com.espertech.esper.client.time.TimerControlEvent;
@@ -32,13 +29,15 @@ public class TestOrderBySimple extends TestCase {
 	private List<Long> volumes;
 
     public void setUp()
-	{
-	    epService = EPServiceProviderManager.getDefaultProvider(SupportConfigFactory.getConfiguration());
-	    epService.initialize();
-	    symbols = new LinkedList<String>();
-	    prices = new LinkedList<Double>();
-	    volumes = new LinkedList<Long>();
-	}
+    {
+        Configuration config = SupportConfigFactory.getConfiguration();
+        config.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
+        epService = EPServiceProviderManager.getDefaultProvider(config);
+        epService.initialize();
+        symbols = new LinkedList<String>();
+        prices = new LinkedList<Double>();
+        volumes = new LinkedList<Long>();
+    }
 
     public void testIterator()
 	{

@@ -35,7 +35,7 @@ public class TestOutputLimitEventPerRow extends TestCase
         epService.initialize();
     }
 
-    public void testHavingOutputAll()
+    public void testHaving()
     {
         epService.getEPRuntime().sendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
         sendTimer(0);
@@ -48,10 +48,10 @@ public class TestOutputLimitEventPerRow extends TestCase
         EPStatement stmt = epService.getEPAdministrator().createEQL(viewExpr);
         stmt.addListener(listener);
 
-        runAssertionHavingOutputAll();
+        runAssertionHavingDefault();
     }
 
-    public void testHavingOutputAllJoin()
+    public void testHavingJoin()
     {
         epService.getEPRuntime().sendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
         sendTimer(0);
@@ -68,36 +68,7 @@ public class TestOutputLimitEventPerRow extends TestCase
 
         epService.getEPRuntime().sendEvent(new SupportBean("S1", 0));
 
-        runAssertionHavingOutputAll();
-    }
-
-    private void runAssertionHavingOutputAll()
-    {
-        sendEvent("S1", 1, 5);
-        sendEvent("S1", 2, 6);
-        assertFalse(listener.isInvoked());
-
-        sendEvent("S1", 3, -3);
-        String fields[] = "symbol,volume,sumprice".split(",");
-        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"S1", 2L, 11.0});
-
-        sendTimer(5000);
-        sendEvent("S1", 4, 10);
-        sendEvent("S1", 5, 0);
-        assertFalse(listener.isInvoked());
-
-        sendEvent("S1", 6, 1);
-        assertEquals(3, listener.getLastNewData().length);
-        ArrayAssertionUtil.assertProps(listener.getLastNewData()[0], fields, new Object[] {"S1", 4L, 18.0});
-        ArrayAssertionUtil.assertProps(listener.getLastNewData()[1], fields, new Object[] {"S1", 5L, 18.0});
-        ArrayAssertionUtil.assertProps(listener.getLastNewData()[2], fields, new Object[] {"S1", 6L, 19.0});
-        listener.reset();
-
-        sendTimer(11000);
-        assertEquals(3, listener.getLastOldData().length);
-        ArrayAssertionUtil.assertProps(listener.getLastOldData()[0], fields, new Object[] {"S1", 1L, 19.0});
-        ArrayAssertionUtil.assertProps(listener.getLastOldData()[1], fields, new Object[] {"S1", 2L, 19.0});
-        listener.reset();
+        runAssertionHavingDefault();
     }
 
     public void testJoinSortWindow()
@@ -319,7 +290,42 @@ public class TestOutputLimitEventPerRow extends TestCase
 	    runAssertionSingle();
 	}
 
-	public void testNoJoinAll()
+	public void testNoJoinDefault()
+    {
+        // Every event generates a new row, this time we sum the price by symbol and output volume
+        String viewExpr = "select symbol, volume, sum(price) as mySum " +
+                          "from " + SupportMarketDataBean.class.getName() + ".win:length(5) " +
+                          "where symbol='DELL' or symbol='IBM' or symbol='GE' " +
+                          "group by symbol " +
+                          "output every 2 events";
+
+        selectTestView = epService.getEPAdministrator().createEQL(viewExpr);
+        selectTestView.addListener(listener);
+
+        runAssertionDefault();
+    }
+
+    public void testJoinDefault()
+	{
+	    // Every event generates a new row, this time we sum the price by symbol and output volume
+	    String viewExpr = "select symbol, volume, sum(price) as mySum " +
+	                      "from " + SupportBeanString.class.getName() + ".win:length(100) as one, " +
+	                                SupportMarketDataBean.class.getName() + ".win:length(5) as two " +
+	                      "where (symbol='DELL' or symbol='IBM' or symbol='GE') " +
+	                      "  and one.string = two.symbol " +
+	                      "group by symbol " +
+	                      "output every 2 events";
+
+	    selectTestView = epService.getEPAdministrator().createEQL(viewExpr);
+	    selectTestView.addListener(listener);
+
+	    epService.getEPRuntime().sendEvent(new SupportBeanString(SYMBOL_DELL));
+	    epService.getEPRuntime().sendEvent(new SupportBeanString(SYMBOL_IBM));
+
+	    runAssertionDefault();
+	}
+
+    public void testNoJoinAll()
     {
         // Every event generates a new row, this time we sum the price by symbol and output volume
         String viewExpr = "select symbol, volume, sum(price) as mySum " +
@@ -335,24 +341,24 @@ public class TestOutputLimitEventPerRow extends TestCase
     }
 
     public void testJoinAll()
-	{
-	    // Every event generates a new row, this time we sum the price by symbol and output volume
-	    String viewExpr = "select symbol, volume, sum(price) as mySum " +
-	                      "from " + SupportBeanString.class.getName() + ".win:length(100) as one, " +
-	                                SupportMarketDataBean.class.getName() + ".win:length(5) as two " +
-	                      "where (symbol='DELL' or symbol='IBM' or symbol='GE') " +
-	                      "  and one.string = two.symbol " +
-	                      "group by symbol " +
-	                      "output all every 2 events";
+    {
+        // Every event generates a new row, this time we sum the price by symbol and output volume
+        String viewExpr = "select symbol, volume, sum(price) as mySum " +
+                          "from " + SupportBeanString.class.getName() + ".win:length(100) as one, " +
+                                    SupportMarketDataBean.class.getName() + ".win:length(5) as two " +
+                          "where (symbol='DELL' or symbol='IBM' or symbol='GE') " +
+                          "  and one.string = two.symbol " +
+                          "group by symbol " +
+                          "output all every 2 events";
 
-	    selectTestView = epService.getEPAdministrator().createEQL(viewExpr);
-	    selectTestView.addListener(listener);
+        selectTestView = epService.getEPAdministrator().createEQL(viewExpr);
+        selectTestView.addListener(listener);
 
-	    epService.getEPRuntime().sendEvent(new SupportBeanString(SYMBOL_DELL));
-	    epService.getEPRuntime().sendEvent(new SupportBeanString(SYMBOL_IBM));
+        epService.getEPRuntime().sendEvent(new SupportBeanString(SYMBOL_DELL));
+        epService.getEPRuntime().sendEvent(new SupportBeanString(SYMBOL_IBM));
 
-	    runAssertionAll();
-	}
+        runAssertionAll();
+    }
 
 	public void testJoinLast()
 	{
@@ -394,6 +400,72 @@ public class TestOutputLimitEventPerRow extends TestCase
         runAssertionLast();
     }
 
+    private void runAssertionHavingDefault()
+    {
+        sendEvent("S1", 1, 5);
+        sendEvent("S1", 2, 6);
+        assertFalse(listener.isInvoked());
+
+        sendEvent("S1", 3, -3);
+        String fields[] = "symbol,volume,sumprice".split(",");
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"S1", 2L, 11.0});
+
+        sendTimer(5000);
+        sendEvent("S1", 4, 10);
+        sendEvent("S1", 5, 0);
+        assertFalse(listener.isInvoked());
+
+        sendEvent("S1", 6, 1);
+        assertEquals(3, listener.getLastNewData().length);
+        ArrayAssertionUtil.assertProps(listener.getLastNewData()[0], fields, new Object[] {"S1", 4L, 18.0});
+        ArrayAssertionUtil.assertProps(listener.getLastNewData()[1], fields, new Object[] {"S1", 5L, 18.0});
+        ArrayAssertionUtil.assertProps(listener.getLastNewData()[2], fields, new Object[] {"S1", 6L, 19.0});
+        listener.reset();
+
+        sendTimer(11000);
+        assertEquals(3, listener.getLastOldData().length);
+        ArrayAssertionUtil.assertProps(listener.getLastOldData()[0], fields, new Object[] {"S1", 1L, 19.0});
+        ArrayAssertionUtil.assertProps(listener.getLastOldData()[1], fields, new Object[] {"S1", 2L, 19.0});
+        listener.reset();
+    }
+
+    private void runAssertionDefault()
+    {
+    	// assert select result type
+    	assertEquals(String.class, selectTestView.getEventType().getPropertyType("symbol"));
+    	assertEquals(Long.class, selectTestView.getEventType().getPropertyType("volume"));
+    	assertEquals(Double.class, selectTestView.getEventType().getPropertyType("mySum"));
+
+    	sendEvent(SYMBOL_IBM, 500, 20);
+    	assertFalse(listener.getAndClearIsInvoked());
+
+    	sendEvent(SYMBOL_DELL, 10000, 51);
+        String fields[] = "symbol,volume,mySum".split(",");
+        UniformPair<EventBean[]> events = listener.getDataListsFlattened();
+        if (events.getFirst()[0].get("symbol").equals(SYMBOL_IBM))
+        {
+            ArrayAssertionUtil.assertPropsPerRow(events.getFirst(), fields,
+                    new Object[][] {{SYMBOL_IBM, 500L, 20.0}, {SYMBOL_DELL, 10000L, 51.0}});
+        }
+        else
+        {
+            ArrayAssertionUtil.assertPropsPerRow(events.getFirst(), fields,
+                    new Object[][] {{SYMBOL_DELL, 10000L, 51.0}, {SYMBOL_IBM, 500L, 20.0}});
+        }
+        assertNull(listener.getLastOldData());
+
+        listener.reset();
+
+        sendEvent(SYMBOL_DELL, 20000, 52);
+    	assertFalse(listener.getAndClearIsInvoked());
+
+    	sendEvent(SYMBOL_DELL, 40000, 45);
+        events = listener.getDataListsFlattened();
+        ArrayAssertionUtil.assertPropsPerRow(events.getFirst(), fields,
+                new Object[][] {{SYMBOL_DELL, 20000L, 51.0+52.0}, {SYMBOL_DELL, 40000L, 51.0+52.0+45.0}});
+        assertNull(listener.getLastOldData());
+    }
+
     private void runAssertionAll()
     {
     	// assert select result type
@@ -401,132 +473,74 @@ public class TestOutputLimitEventPerRow extends TestCase
     	assertEquals(Long.class, selectTestView.getEventType().getPropertyType("volume"));
     	assertEquals(Double.class, selectTestView.getEventType().getPropertyType("mySum"));
 
-    	sendEvent(SYMBOL_IBM, 10000, 20);
+    	sendEvent(SYMBOL_IBM, 500, 20);
     	assertFalse(listener.getAndClearIsInvoked());
 
     	sendEvent(SYMBOL_DELL, 10000, 51);
-    	assertTwoEvents(SYMBOL_IBM, 10000, 20,
-    			SYMBOL_DELL, 10000, 51);
+        String fields[] = "symbol,volume,mySum".split(",");
+        UniformPair<EventBean[]> events = listener.getDataListsFlattened();
+        if (events.getFirst()[0].get("symbol").equals(SYMBOL_IBM))
+        {
+            ArrayAssertionUtil.assertPropsPerRow(events.getFirst(), fields,
+                    new Object[][] {{SYMBOL_IBM, 500L, 20.0}, {SYMBOL_DELL, 10000L, 51.0}});
+        }
+        else
+        {
+            ArrayAssertionUtil.assertPropsPerRow(events.getFirst(), fields,
+                    new Object[][] {{SYMBOL_DELL, 10000L, 51.0}, {SYMBOL_IBM, 500L, 20.0}});
+        }
+        assertNull(listener.getLastOldData());
+        listener.reset();
 
-    	sendEvent(SYMBOL_DELL, 20000, 52);
+        sendEvent(SYMBOL_DELL, 20000, 52);
     	assertFalse(listener.getAndClearIsInvoked());
 
     	sendEvent(SYMBOL_DELL, 40000, 45);
-    	assertThreeEvents(SYMBOL_IBM, 10000, 20,
-    					  SYMBOL_DELL, 20000, 51+52+45,
-    					  SYMBOL_DELL, 40000, 51+52+45);
+        events = listener.getDataListsFlattened();
+        if (events.getFirst()[0].get("symbol").equals(SYMBOL_IBM))
+        {
+            ArrayAssertionUtil.assertPropsPerRow(events.getFirst(), fields,
+                    new Object[][] {{SYMBOL_IBM, 500L, 20.0}, {SYMBOL_DELL, 20000L, 51.0+52.0}, {SYMBOL_DELL, 40000L, 51.0+52.0+45.0}});
+        }
+        else
+        {
+            ArrayAssertionUtil.assertPropsPerRow(events.getFirst(), fields,
+                    new Object[][] {{SYMBOL_DELL, 20000L, 51.0+52.0}, {SYMBOL_DELL, 40000L, 51.0+52.0+45.0}, {SYMBOL_IBM, 500L, 20.0}});
+        }
+        assertNull(listener.getLastOldData());
     }
 
 	private void runAssertionLast()
     {
-        // assert select result type
-        assertEquals(String.class, selectTestView.getEventType().getPropertyType("symbol"));
-        assertEquals(Long.class, selectTestView.getEventType().getPropertyType("volume"));
-        assertEquals(Double.class, selectTestView.getEventType().getPropertyType("mySum"));
-
+        String fields[] = "symbol,volume,mySum".split(",");
         sendEvent(SYMBOL_DELL, 10000, 51);
         assertFalse(listener.getAndClearIsInvoked());
 
         sendEvent(SYMBOL_DELL, 20000, 52);
-        assertTwoEvents(SYMBOL_DELL, 10000, 51,
-        				SYMBOL_DELL, 20000, 103);
+        UniformPair<EventBean[]> events = listener.getDataListsFlattened();
+        ArrayAssertionUtil.assertPropsPerRow(events.getFirst(), fields,
+                new Object[][] {{SYMBOL_DELL, 20000L, 103.0}});
+        assertNull(listener.getLastOldData());
+        listener.reset();
 
         sendEvent(SYMBOL_DELL, 30000, 70);
         assertFalse(listener.getAndClearIsInvoked());
 
         sendEvent(SYMBOL_IBM, 10000, 20);
-        assertTwoEvents(SYMBOL_DELL, 30000, 173,
-        				SYMBOL_IBM, 10000, 20);
-    }
-
-    private void assertTwoEvents(String symbol1, long volume1, double sum1,
-    							 String symbol2, long volume2, double sum2)
-    {
-        EventBean[] oldData = listener.getLastOldData();
-        EventBean[] newData = listener.getLastNewData();
-
-        assertNull(oldData);
-        assertEquals(2, newData.length);
-
-        if(matchesEvent(newData[0], symbol1, volume1, sum1))
+        events = listener.getDataListsFlattened();
+        if (events.getFirst()[0].get("symbol").equals(SYMBOL_DELL))
         {
-        	assertEvent(newData[1], symbol2, volume2, sum2);
+            ArrayAssertionUtil.assertPropsPerRow(events.getFirst(), fields,
+                    new Object[][] {{SYMBOL_DELL, 30000L, 173.0}, {SYMBOL_IBM, 10000L, 20.0}});
         }
         else
         {
-        	assertEvent(newData[0], symbol2, volume2, sum2);
-        	assertEvent(newData[1], symbol1, volume1, sum1);
+            ArrayAssertionUtil.assertPropsPerRow(events.getFirst(), fields,
+                    new Object[][] {{SYMBOL_IBM, 10000L, 20.0}, {SYMBOL_DELL, 30000L, 173.0}});
         }
-
-        listener.reset();
-        assertFalse(listener.isInvoked());
+        assertNull(listener.getLastOldData());
     }
 
-    private void assertThreeEvents(String symbol1, long volume1, double sum1,
-    		String symbol2, long volume2, double sum2,
-    		String symbol3, long volume3, double sum3)
-    {
-    	EventBean[] oldData = listener.getLastOldData();
-    	EventBean[] newData = listener.getLastNewData();
-
-    	assertNull(oldData);
-    	assertEquals(3, newData.length);
-
-    	if(matchesEvent(newData[0], symbol1, volume1, sum1))
-    	{
-    		if(matchesEvent(newData[1], symbol2, volume2, sum2))
-    		{
-    			assertTrue(matchesEvent(newData[2], symbol3, volume3, sum3));
-    		}
-    		else
-    		{
-    			assertTrue(matchesEvent(newData[1], symbol3, volume3, sum3));
-    			assertTrue(matchesEvent(newData[2], symbol2, volume2, sum2));
-    		}
-    	}
-    	else if(matchesEvent(newData[0], symbol2, volume2, sum2))
-    	{
-    		if(matchesEvent(newData[1], symbol1, volume1, sum1))
-    		{
-    			assertEvent(newData[2], symbol3, volume3, sum3);
-    		}
-    		else
-    		{
-    			assertEvent(newData[1], symbol3, volume3, sum3);
-    			assertEvent(newData[2], symbol1, volume1, sum1);
-    		}
-    	}
-    	else
-    	{
-    		if(matchesEvent(newData[1], symbol1, volume1, sum1))
-    		{
-    			assertEvent(newData[2], symbol2, volume2, sum2);
-    		}
-    		else
-    		{
-    			assertEvent(newData[1], symbol2, volume2, sum2);
-    			assertEvent(newData[2], symbol1, volume1, sum1);
-    		}
-    	}
-
-        listener.reset();
-        assertFalse(listener.isInvoked());
-    }
-
-    private boolean matchesEvent(EventBean event, String symbol, long volume, double sum)
-    {
-    	return
-        symbol.equals(event.get("symbol")) &&
-        new Long(volume).equals(event.get("volume")) &&
-        new Double(sum).equals(event.get("mySum"));
-    }
-
-    private void assertEvent(EventBean event, String symbol, long volume, double sum)
-    {
-        assertEquals(symbol, event.get("symbol"));
-        assertEquals(volume, event.get("volume"));
-        assertEquals(sum, event.get("mySum"));
-    }
 
     private void sendEvent(String symbol, long volume, double price)
     {

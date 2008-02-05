@@ -71,6 +71,6 @@ public class ExprNodeAdapter
         {
             return false;
         }
-        return true;
+        return result;
     }
 }

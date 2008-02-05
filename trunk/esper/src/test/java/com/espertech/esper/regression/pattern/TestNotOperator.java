@@ -162,7 +162,7 @@ public class TestNotOperator extends TestCase implements SupportBeanConstants
 
         sendTimer(40000, epService);
         String fields[] = new String[] {"string"};
-        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E2", 123});
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E2"});
 
         statement.stop();
     }

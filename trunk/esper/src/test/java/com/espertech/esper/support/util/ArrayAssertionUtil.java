@@ -484,7 +484,11 @@ public class ArrayAssertionUtil
                 return;
             }
         }
-        Assert.assertEquals(propertiesListPerRow.length, received.length);
+        if (received == null)
+        {
+            Assert.fail("No events received");
+        }
+        Assert.assertEquals("Mismatch in the number of rows received", propertiesListPerRow.length, received.length);
 
         for (int i = 0; i < propertiesListPerRow.length; i++)
         {
@@ -494,7 +498,7 @@ public class ArrayAssertionUtil
                 String name = propertyNames[j];
                 Object value = propertiesThisRow[j];
                 Object eventProp = received[i].get(name);
-                Assert.assertEquals("Error asserting property named " + name,value,eventProp);
+                Assert.assertEquals("Error asserting property named " + name + " for row " + i,value,eventProp);
             }
         }
     }

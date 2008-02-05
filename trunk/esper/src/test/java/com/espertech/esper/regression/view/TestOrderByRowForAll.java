@@ -3,6 +3,7 @@ package com.espertech.esper.regression.view;
 import com.espertech.esper.client.EPServiceProvider;
 import com.espertech.esper.client.EPServiceProviderManager;
 import com.espertech.esper.client.EPStatement;
+import com.espertech.esper.client.Configuration;
 import com.espertech.esper.support.bean.SupportBeanString;
 import com.espertech.esper.support.bean.SupportMarketDataBean;
 import com.espertech.esper.support.client.SupportConfigFactory;
@@ -15,6 +16,14 @@ public class TestOrderByRowForAll extends TestCase
 {
 	private static final Log log = LogFactory.getLog(TestOrderByRowForAll.class);
 	private EPServiceProvider epService;
+
+    public void setUp()
+    {
+        Configuration config = SupportConfigFactory.getConfiguration();
+        config.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
+        epService = EPServiceProviderManager.getDefaultProvider(config);
+        epService.initialize();
+    }
 
     public void testIteratorAggregateRowForAll()
 	{
@@ -49,11 +58,5 @@ public class TestOrderByRowForAll extends TestCase
 		epService.getEPRuntime().sendEvent(new SupportBeanString("CMU"));
 		epService.getEPRuntime().sendEvent(new SupportBeanString("KGB"));
 		epService.getEPRuntime().sendEvent(new SupportBeanString("DOG"));
-	}
-
-	public void setUp()
-	{
-	    epService = EPServiceProviderManager.getDefaultProvider(SupportConfigFactory.getConfiguration());
-	    epService.initialize();
 	}
 }

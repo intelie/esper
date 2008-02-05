@@ -315,7 +315,6 @@ public class ResultSetProcessorRowForAll implements ResultSetProcessor
 
     public UniformPair<EventBean[]> processOutputLimitedView(List<UniformPair<EventBean[]>> viewEventsList, boolean generateSynthetic, OutputLimitLimitType outputLimitLimitType)
     {
-        // TODO: implementation same as in AggregateAll case?
         if (outputLimitLimitType == OutputLimitLimitType.LAST)
         {
             EventBean lastOldEvent = null;

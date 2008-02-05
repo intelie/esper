@@ -29,7 +29,7 @@ public class TestVariablesOutputRate extends TestCase
     {
         epService.getEPAdministrator().getConfiguration().addVariable("var_output_limit", long.class, "3");
 
-        String stmtTextSelect = "select count(*) as cnt from " + SupportBean.class.getName() + " output all every var_output_limit events";
+        String stmtTextSelect = "select count(*) as cnt from " + SupportBean.class.getName() + " output last every var_output_limit events";
         EPStatement stmtSelect = epService.getEPAdministrator().createEQL(stmtTextSelect);
         stmtSelect.addListener(listener);
 
@@ -43,9 +43,9 @@ public class TestVariablesOutputRate extends TestCase
         EPStatementObjectModel model = new EPStatementObjectModel();
         model.setSelectClause(SelectClause.create().add(Expressions.countStar(), "cnt"));
         model.setFromClause(FromClause.create(FilterStream.create(SupportBean.class.getName())));
-        model.setOutputLimitClause(OutputLimitClause.create("var_output_limit", OutputLimitUnit.EVENTS));
+        model.setOutputLimitClause(OutputLimitClause.create(OutputLimitSelector.LAST, "var_output_limit", OutputLimitUnit.EVENTS));
 
-        String stmtTextSelect = "select count(*) as cnt from " + SupportBean.class.getName() + " output every var_output_limit events";
+        String stmtTextSelect = "select count(*) as cnt from " + SupportBean.class.getName() + " output last every var_output_limit events";
         EPStatement stmtSelect = epService.getEPAdministrator().create(model);
         stmtSelect.addListener(listener);
         assertEquals(stmtTextSelect, model.toEQL());
@@ -57,7 +57,7 @@ public class TestVariablesOutputRate extends TestCase
     {
         epService.getEPAdministrator().getConfiguration().addVariable("var_output_limit", long.class, "3");
 
-        String stmtTextSelect = "select count(*) as cnt from " + SupportBean.class.getName() + " output every var_output_limit events";
+        String stmtTextSelect = "select count(*) as cnt from " + SupportBean.class.getName() + " output last every var_output_limit events";
         EPStatementObjectModel model = epService.getEPAdministrator().compileEQL(stmtTextSelect);
         EPStatement stmtSelect = epService.getEPAdministrator().create(model);
         stmtSelect.addListener(listener);
@@ -121,7 +121,7 @@ public class TestVariablesOutputRate extends TestCase
         epService.getEPAdministrator().getConfiguration().addVariable("var_output_limit", long.class, "3");
         sendTimer(0);
 
-        String stmtTextSelect = "select count(*) as cnt from " + SupportBean.class.getName() + " output all every var_output_limit seconds";
+        String stmtTextSelect = "select count(*) as cnt from " + SupportBean.class.getName() + " output snapshot every var_output_limit seconds";
         EPStatement stmtSelect = epService.getEPAdministrator().createEQL(stmtTextSelect);
         stmtSelect.addListener(listener);
 
