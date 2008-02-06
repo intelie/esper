@@ -205,7 +205,7 @@ public class ResultSetProcessorAggregateGrouped implements ResultSetProcessor
             if (optionalHavingNode != null)
             {
                 Boolean result = (Boolean) optionalHavingNode.evaluate(eventsPerStream, isNewData);
-                if (!result)
+                if ((result == null) || (!result))
                 {
                     continue;
                 }
@@ -338,7 +338,7 @@ public class ResultSetProcessorAggregateGrouped implements ResultSetProcessor
             if (optionalHavingNode != null)
             {
                 Boolean result = (Boolean) optionalHavingNode.evaluate(eventsPerStream, isNewData);
-                if (!result)
+                if ((result == null) || (!result))
                 {
                     continue;
                 }
@@ -407,7 +407,8 @@ public class ResultSetProcessorAggregateGrouped implements ResultSetProcessor
             if (optionalHavingNode != null) {
                 pass = (Boolean) optionalHavingNode.evaluate(eventsPerStream, true);
             }
-            if (!pass) {
+            if ((pass == null) || (!pass))
+            {
                 continue;
             }
 
@@ -905,7 +906,7 @@ public class ResultSetProcessorAggregateGrouped implements ResultSetProcessor
             if (optionalHavingNode != null)
             {
                 Boolean result = (Boolean) optionalHavingNode.evaluate(eventsPerStream, isNewData);
-                if (!result)
+                if ((result == null) || (!result))
                 {
                     continue;
                 }
@@ -939,7 +940,7 @@ public class ResultSetProcessorAggregateGrouped implements ResultSetProcessor
             if (optionalHavingNode != null)
             {
                 Boolean result = (Boolean) optionalHavingNode.evaluate(eventsPerStream, isNewData);
-                if (!result)
+                if ((result == null) || (!result))
                 {
                     continue;
                 }
@@ -974,7 +975,7 @@ public class ResultSetProcessorAggregateGrouped implements ResultSetProcessor
             if (optionalHavingNode != null)
             {
                 Boolean result = (Boolean) optionalHavingNode.evaluate(eventsPerStream, isNewData);
-                if (!result)
+                if ((result == null) || (!result))
                 {
                     continue;
                 }
@@ -1010,7 +1011,7 @@ public class ResultSetProcessorAggregateGrouped implements ResultSetProcessor
             if (optionalHavingNode != null)
             {
                 Boolean result = (Boolean) optionalHavingNode.evaluate(eventsPerStream, isNewData);
-                if (!result)
+                if ((result == null) || (!result))
                 {
                     continue;
                 }
@@ -1043,7 +1044,7 @@ public class ResultSetProcessorAggregateGrouped implements ResultSetProcessor
             if (optionalHavingNode != null)
             {
                 Boolean result = (Boolean) optionalHavingNode.evaluate(row.getArray(), isNewData);
-                if (!result)
+                if ((result == null) || (!result))
                 {
                     continue;
                 }

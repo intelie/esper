@@ -477,16 +477,25 @@ public class ArrayAssertionUtil
 
     public static void assertPropsPerRow(EventBean[] received, String[] propertyNames, Object[][] propertiesListPerRow)
     {
+        assertPropsPerRow(received, propertyNames, propertiesListPerRow, "");
+    }
+
+    public static void assertPropsPerRow(EventBean[] received, String[] propertyNames, Object[][] propertiesListPerRow, String streamName)
+    {
         if (propertiesListPerRow == null)
         {
             if ((received == null) || (received.length == 0))
             {
                 return;
             }
+            else
+            {
+                Assert.fail("No events expected by received one or more for stream " + streamName);
+            }
         }
         if (received == null)
         {
-            Assert.fail("No events received");
+            Assert.fail("No events received, however some were expected for stream " + streamName);
         }
         Assert.assertEquals("Mismatch in the number of rows received", propertiesListPerRow.length, received.length);
 

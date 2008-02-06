@@ -181,7 +181,7 @@ public class ResultSetProcessorRowPerGroup implements ResultSetProcessor
             if (optionalHavingNode != null)
             {
                 Boolean result = (Boolean) optionalHavingNode.evaluate(eventsPerStream, isNewData);
-                if (!result)
+                if ((result == null) || (!result))
                 {
                     continue;
                 }
@@ -245,7 +245,7 @@ public class ResultSetProcessorRowPerGroup implements ResultSetProcessor
             if (optionalHavingNode != null)
             {
                 Boolean result = (Boolean) optionalHavingNode.evaluate(eventsPerStream, isNewData);
-                if (!result)
+                if ((result == null) || (!result))
                 {
                     continue;
                 }
@@ -273,7 +273,7 @@ public class ResultSetProcessorRowPerGroup implements ResultSetProcessor
             if (optionalHavingNode != null)
             {
                 Boolean result = (Boolean) optionalHavingNode.evaluate(eventsPerStream, isNewData);
-                if (!result)
+                if ((result == null) || (!result))
                 {
                     continue;
                 }
@@ -308,7 +308,7 @@ public class ResultSetProcessorRowPerGroup implements ResultSetProcessor
             if (optionalHavingNode != null)
             {
                 Boolean result = (Boolean) optionalHavingNode.evaluate(eventsPerStream, isNewData);
-                if (!result)
+                if ((result == null) || (!result))
                 {
                     continue;
                 }
@@ -460,7 +460,7 @@ public class ResultSetProcessorRowPerGroup implements ResultSetProcessor
             {
                 pass = (Boolean) optionalHavingNode.evaluate(eventsPerStream, true);
             }
-            if (!pass)
+            if ((pass == null) || (!pass))
             {
                 continue;
             }

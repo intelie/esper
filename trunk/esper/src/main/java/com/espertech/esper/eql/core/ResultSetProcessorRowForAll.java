@@ -62,7 +62,7 @@ public class ResultSetProcessorRowForAll implements ResultSetProcessor
         EventBean[] selectOldEvents;
         EventBean[] selectNewEvents;
 
-        selectOldEvents = getSelectListEvents(selectExprProcessor, optionalHavingNode, false, isSynthesize);
+        selectOldEvents = getSelectListEvents(false, isSynthesize);
 
         if (!newEvents.isEmpty())
         {
@@ -81,7 +81,7 @@ public class ResultSetProcessorRowForAll implements ResultSetProcessor
             }
         }
 
-        selectNewEvents = getSelectListEvents(selectExprProcessor, optionalHavingNode, true, isSynthesize);
+        selectNewEvents = getSelectListEvents(true, isSynthesize);
 
         if ((selectNewEvents == null) && (selectOldEvents == null))
         {
@@ -92,10 +92,10 @@ public class ResultSetProcessorRowForAll implements ResultSetProcessor
 
     public UniformPair<EventBean[]> processViewResult(EventBean[] newData, EventBean[] oldData, boolean isSynthesize)
     {
-        EventBean[] selectOldEvents = null;
-        EventBean[] selectNewEvents = null;
+        EventBean[] selectOldEvents;
+        EventBean[] selectNewEvents;
 
-        selectOldEvents = getSelectListEvents(selectExprProcessor, optionalHavingNode, false, isSynthesize);
+        selectOldEvents = getSelectListEvents(false, isSynthesize);
 
         EventBean[] eventsPerStream = new EventBean[1];
         if (newData != null)
@@ -118,7 +118,7 @@ public class ResultSetProcessorRowForAll implements ResultSetProcessor
         }
 
         // generate new events using select expressions
-        selectNewEvents = getSelectListEvents(selectExprProcessor, optionalHavingNode, true, isSynthesize);
+        selectNewEvents = getSelectListEvents(true, isSynthesize);
 
         if ((selectNewEvents == null) && (selectOldEvents == null))
         {
@@ -128,15 +128,15 @@ public class ResultSetProcessorRowForAll implements ResultSetProcessor
         return new UniformPair<EventBean[]>(selectNewEvents, selectOldEvents);
     }
 
-    private static EventBean[] getSelectListEvents(SelectExprProcessor exprProcessor, ExprNode optionalHavingNode, boolean isNewData, boolean isSynthesize)
+    private EventBean[] getSelectListEvents(boolean isNewData, boolean isSynthesize)
     {
         // Since we are dealing with strictly aggregation nodes, there are no events required for evaluating
-        EventBean event = exprProcessor.process(null, isNewData, isSynthesize);
+        EventBean event = selectExprProcessor.process(null, isNewData, isSynthesize);
 
         if (optionalHavingNode != null)
         {
             Boolean result = (Boolean) optionalHavingNode.evaluate(null, isNewData);
-            if (!result)
+            if ((result == null) || (!result))
             {
                 return null;
             }
@@ -148,7 +148,7 @@ public class ResultSetProcessorRowForAll implements ResultSetProcessor
 
     public Iterator<EventBean> getIterator(Viewable parent)
     {
-        EventBean[] selectNewEvents = getSelectListEvents(selectExprProcessor, optionalHavingNode, true, true);
+        EventBean[] selectNewEvents = getSelectListEvents(true, true);
         if (selectNewEvents == null)
         {
             return new NullIterator();
@@ -158,7 +158,7 @@ public class ResultSetProcessorRowForAll implements ResultSetProcessor
 
     public Iterator<EventBean> getIterator(Set<MultiKey<EventBean>> joinSet)
     {
-        EventBean[] result = getSelectListEvents(selectExprProcessor, optionalHavingNode, true, true);
+        EventBean[] result = getSelectListEvents(true, true);
         return new ArrayEventIterator(result);
     }
 
@@ -169,7 +169,6 @@ public class ResultSetProcessorRowForAll implements ResultSetProcessor
 
     public UniformPair<EventBean[]> processOutputLimitedJoin(List<UniformPair<Set<MultiKey<EventBean>>>> joinEventsSet, boolean generateSynthetic, OutputLimitLimitType outputLimitLimitType)
     {
-        // TODO: implementation same as in AggregateAll case?
         if (outputLimitLimitType == OutputLimitLimitType.LAST)
         {
             EventBean lastOldEvent = null;
@@ -250,16 +249,7 @@ public class ResultSetProcessorRowForAll implements ResultSetProcessor
                 Set<MultiKey<EventBean>> newData = pair.getFirst();
                 Set<MultiKey<EventBean>> oldData = pair.getSecond();
 
-                // generate old events using select expressions
-                if (optionalHavingNode == null)
-                {
-                    ResultSetProcessorSimple.getSelectEventsNoHaving(selectExprProcessor, orderByProcessor, oldData, false, generateSynthetic, oldEvents, oldEventsSortKey);
-                }
-                // generate old events using having then select
-                else
-                {
-                    ResultSetProcessorSimple.getSelectEventsHaving(selectExprProcessor, orderByProcessor, oldData, optionalHavingNode, false, generateSynthetic, oldEvents, oldEventsSortKey);
-                }
+                getSelectListEvent(false, generateSynthetic, oldEvents);
 
                 if (newData != null)
                 {
@@ -278,15 +268,7 @@ public class ResultSetProcessorRowForAll implements ResultSetProcessor
                     }
                 }
 
-                // generate new events using select expressions
-                if (optionalHavingNode == null)
-                {
-                    ResultSetProcessorSimple.getSelectEventsNoHaving(selectExprProcessor, orderByProcessor, newData, true, generateSynthetic, newEvents, newEventsSortKey);
-                }
-                else
-                {
-                    ResultSetProcessorSimple.getSelectEventsHaving(selectExprProcessor, orderByProcessor, newData, optionalHavingNode, true, generateSynthetic, newEvents, newEventsSortKey);
-                }
+                getSelectListEvent(false, generateSynthetic, newEvents);
             }
 
             EventBean[] newEventsArr = (newEvents.isEmpty()) ? null : newEvents.toArray(new EventBean[newEvents.size()]);
@@ -301,8 +283,8 @@ public class ResultSetProcessorRowForAll implements ResultSetProcessor
 
             if (joinEventsSet.isEmpty())
             {
-                oldEventsArr = getSelectListEvents(selectExprProcessor, optionalHavingNode, false, generateSynthetic);
-                newEventsArr = getSelectListEvents(selectExprProcessor, optionalHavingNode, true, generateSynthetic);
+                oldEventsArr = getSelectListEvents(false, generateSynthetic);
+                newEventsArr = getSelectListEvents(true, generateSynthetic);
             }
 
             if ((newEventsArr == null) && (oldEventsArr == null))
@@ -325,8 +307,8 @@ public class ResultSetProcessorRowForAll implements ResultSetProcessor
             // if empty (nothing to post)
             if (viewEventsList.isEmpty())
             {
-                selectOldEvents = getSelectListEvents(selectExprProcessor, optionalHavingNode, false, generateSynthetic);
-                selectNewEvents = getSelectListEvents(selectExprProcessor, optionalHavingNode, true, generateSynthetic);
+                selectOldEvents = getSelectListEvents(false, generateSynthetic);
+                selectNewEvents = getSelectListEvents(true, generateSynthetic);
             }
 
             for (UniformPair<EventBean[]> pair : viewEventsList)
@@ -405,16 +387,7 @@ public class ResultSetProcessorRowForAll implements ResultSetProcessor
                 EventBean[] newData = pair.getFirst();
                 EventBean[] oldData = pair.getSecond();
 
-                // generate old events using select expressions
-                if (optionalHavingNode == null)
-                {
-                    ResultSetProcessorSimple.getSelectEventsNoHaving(selectExprProcessor, orderByProcessor, oldData, false, generateSynthetic, oldEvents, oldEventsSortKey);
-                }
-                // generate old events using having then select
-                else
-                {
-                    ResultSetProcessorSimple.getSelectEventsHaving(selectExprProcessor, orderByProcessor, oldData, optionalHavingNode, false, generateSynthetic, oldEvents, oldEventsSortKey);
-                }
+                getSelectListEvent(false, generateSynthetic, oldEvents);
 
                 EventBean[] eventsPerStream = new EventBean[1];
                 if (newData != null)
@@ -436,15 +409,7 @@ public class ResultSetProcessorRowForAll implements ResultSetProcessor
                     }
                 }
 
-                // generate new events using select expressions
-                if (optionalHavingNode == null)
-                {
-                    ResultSetProcessorSimple.getSelectEventsNoHaving(selectExprProcessor, orderByProcessor, newData, true, generateSynthetic, newEvents, newEventsSortKey);
-                }
-                else
-                {
-                    ResultSetProcessorSimple.getSelectEventsHaving(selectExprProcessor, orderByProcessor, newData, optionalHavingNode, true, generateSynthetic, newEvents, newEventsSortKey);
-                }
+                getSelectListEvent(true, generateSynthetic, newEvents);
             }
 
             EventBean[] newEventsArr = (newEvents.isEmpty()) ? null : newEvents.toArray(new EventBean[newEvents.size()]);
@@ -459,8 +424,8 @@ public class ResultSetProcessorRowForAll implements ResultSetProcessor
 
             if (viewEventsList.isEmpty())
             {
-                oldEventsArr = getSelectListEvents(selectExprProcessor, optionalHavingNode, false, generateSynthetic);
-                newEventsArr = getSelectListEvents(selectExprProcessor, optionalHavingNode, true, generateSynthetic);
+                oldEventsArr = getSelectListEvents(false, generateSynthetic);
+                newEventsArr = getSelectListEvents(true, generateSynthetic);
             }
 
             if ((newEventsArr == null) && (oldEventsArr == null))
@@ -469,5 +434,22 @@ public class ResultSetProcessorRowForAll implements ResultSetProcessor
             }
             return new UniformPair<EventBean[]>(newEventsArr, oldEventsArr);
         }
+    }
+
+    private void getSelectListEvent(boolean isNewData, boolean isSynthesize, List<EventBean> resultEvents)
+    {
+        // Since we are dealing with strictly aggregation nodes, there are no events required for evaluating
+        EventBean event = selectExprProcessor.process(null, isNewData, isSynthesize);
+
+        if (optionalHavingNode != null)
+        {
+            Boolean result = (Boolean) optionalHavingNode.evaluate(null, isNewData);
+            if ((result == null) || (!result))
+            {
+                return;
+            }
+        }
+
+        resultEvents.add(event);
     }
 }

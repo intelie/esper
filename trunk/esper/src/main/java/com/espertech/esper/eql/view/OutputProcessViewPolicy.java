@@ -27,6 +27,7 @@ public class OutputProcessViewPolicy extends OutputProcessView
     private final OutputLimitLimitType outputLimitLimitType;
 
     // Posted events in ordered form (for applying to aggregates) and summarized per type
+    // Using ArrayList as random access is a requirement.
     private List<UniformPair<EventBean[]>> viewEventsList = new ArrayList<UniformPair<EventBean[]>>();
 	private List<UniformPair<Set<MultiKey<EventBean>>>> joinEventsSet = new ArrayList<UniformPair<Set<MultiKey<EventBean>>>>();
 

@@ -3,6 +3,14 @@
 
 <log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/" debug="false">
 
+   <appender name="terminalunformatted" class="org.apache.log4j.ConsoleAppender">
+      <param name="Threshold" value="DEBUG"/>
+      <param name="Target" value="System.out"/>
+      <layout class="org.apache.log4j.PatternLayout">
+         <param name="ConversionPattern" value="%m%n"/>
+      </layout>
+   </appender>
+
    <appender name="terminal" class="org.apache.log4j.ConsoleAppender">
       <param name="Threshold" value="DEBUG"/>
       <param name="Target" value="System.out"/>
@@ -15,9 +23,18 @@
       <level value="INFO"/>
    </logger>
 
+   <logger name="com.espertech.esper.regression.support">
+      <level value="WARN"/>
+   </logger>
+
+   <logger name="PREFORMATTED">
+      <level value="DEBUG"/>
+      <appender-ref ref="terminalunformatted"/>
+   </logger>
+
    <root>
       <level value="WARN"/>
-      <appender-ref ref="terminal"/>
+      <!-- <appender-ref ref="terminal"/> -->
    </root>
    
 </log4j:configuration>

@@ -20,7 +20,6 @@ import java.util.Set;
 public abstract class ResultSetProcessorBaseSimple implements ResultSetProcessor
 {
     private static final Log log = LogFactory.getLog(ResultSetProcessorBaseSimple.class);
-    private final Set<MultiKey<EventBean>> emptyRowSet = new HashSet<MultiKey<EventBean>>();
 
     public void clear()
     {
@@ -35,38 +34,43 @@ public abstract class ResultSetProcessorBaseSimple implements ResultSetProcessor
             return processJoinResult(flattened.getFirst(), flattened.getSecond(), generateSynthetic);
         }
 
-        Set<MultiKey<EventBean>> lastNonEmptyNew = null;
-        Set<MultiKey<EventBean>> lastNonEmptyOld = null;
-        for (UniformPair<Set<MultiKey<EventBean>>> pair : joinEventsSet)
+        // Determine the last event of the insert and remove stream that matches having-criteria
+        int index = joinEventsSet.size() - 1;
+        EventBean lastNonEmptyNew = null;
+        EventBean lastNonEmptyOld = null;
+        while(index >= 0)
         {
-            if (!pair.getFirst().isEmpty())
+            UniformPair<Set<MultiKey<EventBean>>> pair = joinEventsSet.get(index);
+            if ( ((pair.getFirst() != null) && (!pair.getFirst().isEmpty()) && (lastNonEmptyNew == null)) ||
+                 ((pair.getSecond() != null) && (!pair.getSecond().isEmpty()) && (lastNonEmptyOld == null)) )
             {
-                lastNonEmptyNew = pair.getFirst();
-            }
-            if (!pair.getSecond().isEmpty())
-            {
-                lastNonEmptyOld = pair.getSecond();
-            }
-        }
+                UniformPair<EventBean[]> result = processJoinResult(pair.getFirst(), pair.getSecond(), generateSynthetic);
 
-        if (lastNonEmptyNew == null)
-        {
-            lastNonEmptyNew = emptyRowSet;
+                if ((lastNonEmptyNew == null) && (result != null) && (result.getFirst() != null) && (result.getFirst().length > 0))
+                {
+                    lastNonEmptyNew = result.getFirst()[result.getFirst().length - 1];
+                }
+                if ((lastNonEmptyOld == null) && (result != null) && (result.getSecond() != null) && (result.getSecond().length > 0))
+                {
+                    lastNonEmptyOld = result.getSecond()[result.getSecond().length - 1];
+                }
+            }
+            if ((lastNonEmptyNew != null) && (lastNonEmptyOld != null))
+            {
+                break;
+            }
+            index--;
         }
-        if (lastNonEmptyOld == null)
-        {
-            lastNonEmptyOld = emptyRowSet;
-        }
-        UniformPair<EventBean[]> result = processJoinResult(lastNonEmptyNew, lastNonEmptyOld, generateSynthetic);
 
         EventBean[] lastNew = null;
-        if ((result.getFirst() != null) && (result.getFirst().length != 0)) {
-            lastNew = new EventBean[] {result.getFirst()[result.getFirst().length - 1]};
+        if (lastNonEmptyNew != null) {
+            lastNew = new EventBean[] {lastNonEmptyNew};
         }
         EventBean[] lastOld = null;
-        if ((result.getSecond() != null) && (result.getSecond().length != 0)) {
-            lastOld = new EventBean[] {result.getSecond()[result.getSecond().length - 1]};
+        if (lastNonEmptyOld != null) {
+            lastOld = new EventBean[] {lastNonEmptyOld};
         }
+
         return new UniformPair<EventBean[]>(lastNew, lastOld);
     }
 
@@ -78,29 +82,41 @@ public abstract class ResultSetProcessorBaseSimple implements ResultSetProcessor
             return processViewResult(pair.getFirst(), pair.getSecond(), generateSynthetic);
         }
 
-        EventBean[] lastNonEmptyNew = null;
-        EventBean[] lastNonEmptyOld = null;
-        for (UniformPair<EventBean[]> pair : viewEventsList)
+        // Determine the last event of the insert and remove stream that matches having-criteria
+        int index = viewEventsList.size() - 1;
+        EventBean lastNonEmptyNew = null;
+        EventBean lastNonEmptyOld = null;
+        while(index >= 0)
         {
-            if ((pair.getFirst() != null) && (pair.getFirst().length != 0))
+            UniformPair<EventBean[]> pair = viewEventsList.get(index);
+            if ( ((pair.getFirst() != null) && (pair.getFirst().length != 0) && (lastNonEmptyNew == null)) ||
+                 ((pair.getSecond() != null) && (pair.getSecond().length != 0) && (lastNonEmptyOld == null)) )
             {
-                lastNonEmptyNew = pair.getFirst();
+                UniformPair<EventBean[]> result = processViewResult(pair.getFirst(), pair.getSecond(), generateSynthetic);
+
+                if ((lastNonEmptyNew == null) && (result != null) && (result.getFirst() != null) && (result.getFirst().length > 0))
+                {
+                    lastNonEmptyNew = result.getFirst()[result.getFirst().length - 1];
+                }
+                if ((lastNonEmptyOld == null) && (result != null) && (result.getSecond() != null) && (result.getSecond().length > 0))
+                {
+                    lastNonEmptyOld = result.getSecond()[result.getSecond().length - 1];
+                }
             }
-            if ((pair.getSecond() != null) && (pair.getSecond().length != 0))
+            if ((lastNonEmptyNew != null) && (lastNonEmptyOld != null))
             {
-                lastNonEmptyOld = pair.getSecond();
+                break;
             }
+            index--;
         }
-
-        UniformPair<EventBean[]> result = processViewResult(lastNonEmptyNew, lastNonEmptyOld, generateSynthetic);
-
+        
         EventBean[] lastNew = null;
-        if ((result.getFirst() != null) && (result.getFirst().length != 0)) {
-            lastNew = new EventBean[] {result.getFirst()[result.getFirst().length - 1]};
+        if (lastNonEmptyNew != null) {
+            lastNew = new EventBean[] {lastNonEmptyNew};
         }
         EventBean[] lastOld = null;
-        if ((result.getSecond() != null) && (result.getSecond().length != 0)) {
-            lastOld = new EventBean[] {result.getSecond()[result.getSecond().length - 1]};
+        if (lastNonEmptyOld != null) {
+            lastOld = new EventBean[] {lastNonEmptyOld};
         }
 
         return new UniformPair<EventBean[]>(lastNew, lastOld);

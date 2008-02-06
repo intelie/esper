@@ -181,7 +181,7 @@ public class ResultSetProcessorAggregateAll implements ResultSetProcessor
             {
                 pass = (Boolean) optionalHavingNode.evaluate(eventsPerStream, true);
             }
-            if (!pass)
+            if ((pass == null) || (!pass))
             {
                 continue;
             }

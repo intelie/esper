@@ -148,11 +148,11 @@ public class ResultSetProcessorSimple extends ResultSetProcessorBaseSimple
      */
     protected static EventBean[] getSelectEventsNoHaving(SelectExprProcessor exprProcessor, OrderByProcessor orderByProcessor, Set<MultiKey<EventBean>> events, boolean isNewData, boolean isSynthesize)
     {
-        int length = events.size();
-        if (length == 0)
+        if ((events == null) || (events.isEmpty()))
         {
             return null;
         }
+        int length = events.size();
 
         EventBean[] result = new EventBean[length];
         EventBean[][] eventGenerators = null;
@@ -216,7 +216,7 @@ public class ResultSetProcessorSimple extends ResultSetProcessorBaseSimple
             eventsPerStream[0] = event;
 
             Boolean passesHaving = (Boolean) optionalHavingNode.evaluate(eventsPerStream, isNewData);
-            if (!passesHaving)
+            if ((passesHaving == null) || (!passesHaving))
             {
                 continue;
             }
@@ -260,6 +260,11 @@ public class ResultSetProcessorSimple extends ResultSetProcessorBaseSimple
      */
     protected static EventBean[] getSelectEventsHaving(SelectExprProcessor exprProcessor, OrderByProcessor orderByProcessor, Set<MultiKey<EventBean>> events, ExprNode optionalHavingNode, boolean isNewData, boolean isSynthesize)
     {
+        if ((events == null) || (events.isEmpty()))
+        {
+            return null;
+        }
+
         LinkedList<EventBean> result = new LinkedList<EventBean>();
         List<EventBean[]> eventGenerators = null;
         if(orderByProcessor != null)
@@ -272,7 +277,7 @@ public class ResultSetProcessorSimple extends ResultSetProcessorBaseSimple
             EventBean[] eventsPerStream = key.getArray();
 
             Boolean passesHaving = (Boolean) optionalHavingNode.evaluate(eventsPerStream, isNewData);
-            if (!passesHaving)
+            if ((passesHaving == null) || (!passesHaving))
             {
                 continue;
             }
@@ -380,11 +385,11 @@ public class ResultSetProcessorSimple extends ResultSetProcessorBaseSimple
      */
     protected static EventBean[] getSelectEventsNoHaving(SelectExprProcessor exprProcessor, Set<MultiKey<EventBean>> events, boolean isNewData, boolean isSynthesize)
     {
-        int length = events.size();
-        if (length == 0)
+        if ((events == null) || (events.isEmpty()))
         {
             return null;
         }
+        int length = events.size();
 
         EventBean[] result = new EventBean[length];
 
@@ -426,7 +431,7 @@ public class ResultSetProcessorSimple extends ResultSetProcessorBaseSimple
             eventsPerStream[0] = event;
 
             Boolean passesHaving = (Boolean) optionalHavingNode.evaluate(eventsPerStream, isNewData);
-            if (!passesHaving)
+            if ((passesHaving == null) || (!passesHaving))
             {
                 continue;
             }
@@ -465,7 +470,7 @@ public class ResultSetProcessorSimple extends ResultSetProcessorBaseSimple
             EventBean[] eventsPerStream = key.getArray();
 
             Boolean passesHaving = (Boolean) optionalHavingNode.evaluate(eventsPerStream, isNewData);
-            if (!passesHaving)
+            if ((passesHaving == null) || (!passesHaving))
             {
                 continue;
             }
@@ -566,7 +571,7 @@ public class ResultSetProcessorSimple extends ResultSetProcessorBaseSimple
             eventsPerStream[0] = event;
 
             Boolean passesHaving = (Boolean) optionalHavingNode.evaluate(eventsPerStream, isNewData);
-            if (!passesHaving)
+            if ((passesHaving == null) || (!passesHaving))
             {
                 continue;
             }
@@ -598,7 +603,7 @@ public class ResultSetProcessorSimple extends ResultSetProcessorBaseSimple
             EventBean[] eventsPerStream = key.getArray();
 
             Boolean passesHaving = (Boolean) optionalHavingNode.evaluate(eventsPerStream, isNewData);
-            if (!passesHaving)
+            if ((passesHaving == null) || (!passesHaving))
             {
                 continue;
             }
