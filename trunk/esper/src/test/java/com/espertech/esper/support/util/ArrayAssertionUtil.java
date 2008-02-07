@@ -507,7 +507,7 @@ public class ArrayAssertionUtil
                 String name = propertyNames[j];
                 Object value = propertiesThisRow[j];
                 Object eventProp = received[i].get(name);
-                Assert.assertEquals("Error asserting property named " + name + " for row " + i,value,eventProp);
+                Assert.assertEquals("Error asserting property named " + name + " for row " + i + " for " + streamName,value,eventProp);
             }
         }
     }

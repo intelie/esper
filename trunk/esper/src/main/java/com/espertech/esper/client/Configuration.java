@@ -39,7 +39,7 @@ public class Configuration implements ConfigurationOperations, ConfigurationInfo
     protected static final String ESPER_DEFAULT_CONFIG = "esper.cfg.xml";
 
     /**
-     * Map of event name and fully-qualified Java class name.
+     * Map of event name and fully-qualified class name.
      */
 	protected Map<String, String> eventClasses;
 
@@ -60,13 +60,13 @@ public class Configuration implements ConfigurationOperations, ConfigurationInfo
 	protected Map<String, Properties> mapAliases;
 
 	/**
-	 * The java-style class and package name imports that
+	 * The class and package name imports that
 	 * will be used to resolve partial class names.
 	 */
 	protected List<String> imports;
 
     /**
-     * The java-style class and package name imports that
+     * The class and package name imports that
      * will be used to resolve partial class names.
      */
     protected Map<String, ConfigurationDBRef> databaseReferences;
@@ -107,7 +107,7 @@ public class Configuration implements ConfigurationOperations, ConfigurationInfo
     protected ConfigurationEngineDefaults engineDefaults;
 
     /**
-     * Saves the Java packages to search to resolve event type aliases.
+     * Saves the packages to search to resolve event type aliases.
      */
     protected Set<String> eventTypeAutoAliasPackages;
 
@@ -156,31 +156,31 @@ public class Configuration implements ConfigurationOperations, ConfigurationInfo
     /**
      * Add an alias for an event type represented by Java-bean plain-old Java object events.
      * @param eventTypeAlias is the alias for the event type
-     * @param javaEventClassName fully-qualified class name of the event type
+     * @param eventClassName fully-qualified class name of the event type
      */
-    public void addEventTypeAlias(String eventTypeAlias, String javaEventClassName)
+    public void addEventTypeAlias(String eventTypeAlias, String eventClassName)
     {
-        eventClasses.put(eventTypeAlias, javaEventClassName);
+        eventClasses.put(eventTypeAlias, eventClassName);
     }
 
     /**
      * Add an alias for an event type represented by Java-bean plain-old Java object events.
      * @param eventTypeAlias is the alias for the event type
-     * @param javaEventClass is the Java event class for which to create the alias
+     * @param eventClass is the Java event class for which to create the alias
      */
-    public void addEventTypeAlias(String eventTypeAlias, Class javaEventClass)
+    public void addEventTypeAlias(String eventTypeAlias, Class eventClass)
     {
-        addEventTypeAlias(eventTypeAlias, javaEventClass.getName());
+        addEventTypeAlias(eventTypeAlias, eventClass.getName());
     }
 
     /**
      * Add an alias for an event type represented by Java-bean plain-old Java object events,
      * and the alias is the simple class name of the class.
-     * @param javaEventClass is the Java event class for which to create the alias
+     * @param eventClass is the Java event class for which to create the alias
      */
-    public void addEventTypeAliasSimpleName(Class javaEventClass)
+    public void addEventTypeAliasSimpleName(Class eventClass)
     {
-        addEventTypeAlias(javaEventClass.getSimpleName(), javaEventClass.getName());
+        addEventTypeAlias(eventClass.getSimpleName(), eventClass.getName());
     }
 
     /**
@@ -236,12 +236,12 @@ public class Configuration implements ConfigurationOperations, ConfigurationInfo
     /**
      * Add an alias for an event type that represents legacy Java type (non-JavaBean style) events.
      * @param eventTypeAlias is the alias for the event type
-     * @param javaEventClass fully-qualified class name of the event type
+     * @param eventClass fully-qualified class name of the event type
      * @param legacyEventTypeDesc descriptor containing property and mapping information for Legacy Java type events
      */
-    public void addEventTypeAlias(String eventTypeAlias, String javaEventClass, ConfigurationEventTypeLegacy legacyEventTypeDesc)
+    public void addEventTypeAlias(String eventTypeAlias, String eventClass, ConfigurationEventTypeLegacy legacyEventTypeDesc)
     {
-        eventClasses.put(eventTypeAlias, javaEventClass);
+        eventClasses.put(eventTypeAlias, eventClass);
         eventTypesLegacy.put(eventTypeAlias, legacyEventTypeDesc);
     }
 
@@ -397,9 +397,9 @@ public class Configuration implements ConfigurationOperations, ConfigurationInfo
         plugInPatternObjects.add(entry);
     }
 
-    public void addEventTypeAutoAlias(String javaPackageName)
+    public void addEventTypeAutoAlias(String packageName)
     {
-        eventTypeAutoAliasPackages.add(javaPackageName);
+        eventTypeAutoAliasPackages.add(packageName);
     }
 
     public void addVariable(String variableName, Class type, Object initializationValue)

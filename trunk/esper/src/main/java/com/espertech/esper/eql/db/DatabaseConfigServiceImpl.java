@@ -8,6 +8,7 @@
 package com.espertech.esper.eql.db;
 
 import com.espertech.esper.client.ConfigurationDBRef;
+import com.espertech.esper.client.ConfigurationDataCache;
 import com.espertech.esper.schedule.SchedulingService;
 import com.espertech.esper.schedule.ScheduleBucket;
 import com.espertech.esper.core.EPStatementHandle;
@@ -103,7 +104,7 @@ public class DatabaseConfigServiceImpl implements DatabaseConfigService
             throw new DatabaseConfigException("Cannot locate configuration information for database '" + databaseName + '\'');
         }
 
-        ConfigurationDBRef.DataCacheDesc dataCacheDesc = config.getDataCacheDesc();
+        ConfigurationDataCache dataCacheDesc = config.getDataCacheDesc();
         return DataCacheFactory.getDataCache(dataCacheDesc, epStatementHandle, schedulingService, scheduleBucket);
     }
 

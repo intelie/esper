@@ -115,7 +115,7 @@ public class TestConfigurationParser extends TestCase
         assertNull(configDBRef.getConnectionSettings().getCatalog());
         assertNull(configDBRef.getConnectionSettings().getReadOnly());
         assertNull(configDBRef.getConnectionSettings().getTransactionIsolation());
-        ConfigurationDBRef.LRUCacheDesc lruCache = (ConfigurationDBRef.LRUCacheDesc) configDBRef.getDataCacheDesc();
+        ConfigurationLRUCache lruCache = (ConfigurationLRUCache) configDBRef.getDataCacheDesc();
         assertEquals(10, lruCache.getSize());
         assertEquals(ConfigurationDBRef.ColumnChangeCaseEnum.LOWERCASE, configDBRef.getColumnChangeCase());
         assertEquals(ConfigurationDBRef.MetadataOriginEnum.SAMPLE, configDBRef.getMetadataRetrievalEnum());
@@ -136,10 +136,10 @@ public class TestConfigurationParser extends TestCase
         assertEquals("test", configDBRef.getConnectionSettings().getCatalog());
         assertEquals(Boolean.TRUE, configDBRef.getConnectionSettings().getReadOnly());
         assertEquals(new Integer(3), configDBRef.getConnectionSettings().getTransactionIsolation());
-        ConfigurationDBRef.ExpiryTimeCacheDesc expCache = (ConfigurationDBRef.ExpiryTimeCacheDesc) configDBRef.getDataCacheDesc();
+        ConfigurationExpiryTimeCache expCache = (ConfigurationExpiryTimeCache) configDBRef.getDataCacheDesc();
         assertEquals(60.5, expCache.getMaxAgeSeconds());
         assertEquals(120.1, expCache.getPurgeIntervalSeconds());
-        assertEquals(ConfigurationDBRef.CacheReferenceType.HARD, expCache.getCacheReferenceType());
+        assertEquals(ConfigurationCacheReferenceType.HARD, expCache.getCacheReferenceType());
         assertEquals(ConfigurationDBRef.ColumnChangeCaseEnum.UPPERCASE, configDBRef.getColumnChangeCase());
         assertEquals(ConfigurationDBRef.MetadataOriginEnum.METADATA, configDBRef.getMetadataRetrievalEnum());
         assertEquals(1, configDBRef.getJavaSqlTypesMapping().size());
@@ -231,13 +231,13 @@ public class TestConfigurationParser extends TestCase
         // method references
         assertEquals(2, config.getMethodInvocationReferences().size());
         ConfigurationMethodRef ref = config.getMethodInvocationReferences().get("abc");
-        expCache = (ConfigurationDBRef.ExpiryTimeCacheDesc) ref.getDataCacheDesc();
+        expCache = (ConfigurationExpiryTimeCache) ref.getDataCacheDesc();
         assertEquals(91.0, expCache.getMaxAgeSeconds());
         assertEquals(92.2, expCache.getPurgeIntervalSeconds());
-        assertEquals(ConfigurationDBRef.CacheReferenceType.WEAK, expCache.getCacheReferenceType());
+        assertEquals(ConfigurationCacheReferenceType.WEAK, expCache.getCacheReferenceType());
 
         ref = config.getMethodInvocationReferences().get("def");
-        lruCache = (ConfigurationDBRef.LRUCacheDesc) ref.getDataCacheDesc();
+        lruCache = (ConfigurationLRUCache) ref.getDataCacheDesc();
         assertEquals(20, lruCache.getSize());
     }
 }

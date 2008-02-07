@@ -7,7 +7,7 @@ import java.io.Serializable;
  */
 public class ConfigurationMethodRef implements Serializable
 {
-    private ConfigurationDBRef.DataCacheDesc dataCacheDesc;
+    private ConfigurationDataCache dataCacheDesc;
 
     /**
      * Configures a LRU cache of the given size for the method invocation.
@@ -15,7 +15,7 @@ public class ConfigurationMethodRef implements Serializable
      */
     public void setLRUCache(int size)
     {
-        dataCacheDesc = new ConfigurationDBRef.LRUCacheDesc(size);
+        dataCacheDesc = new ConfigurationLRUCache(size);
     }
 
     /**
@@ -28,7 +28,7 @@ public class ConfigurationMethodRef implements Serializable
      */
     public void setExpiryTimeCache(double maxAgeSeconds, double purgeIntervalSeconds)
     {
-        dataCacheDesc = new ConfigurationDBRef.ExpiryTimeCacheDesc(maxAgeSeconds, purgeIntervalSeconds, ConfigurationDBRef.CacheReferenceType.getDefault());
+        dataCacheDesc = new ConfigurationExpiryTimeCache(maxAgeSeconds, purgeIntervalSeconds, ConfigurationCacheReferenceType.getDefault());
     }
 
     /**
@@ -38,16 +38,16 @@ public class ConfigurationMethodRef implements Serializable
      * @param purgeIntervalSeconds is the interval at which the engine purges stale data from the cache
      * @param cacheReferenceType specifies the reference type to use
      */
-    public void setExpiryTimeCache(double maxAgeSeconds, double purgeIntervalSeconds, ConfigurationDBRef.CacheReferenceType cacheReferenceType)
+    public void setExpiryTimeCache(double maxAgeSeconds, double purgeIntervalSeconds, ConfigurationCacheReferenceType cacheReferenceType)
     {
-        dataCacheDesc = new ConfigurationDBRef.ExpiryTimeCacheDesc(maxAgeSeconds, purgeIntervalSeconds, cacheReferenceType);
+        dataCacheDesc = new ConfigurationExpiryTimeCache(maxAgeSeconds, purgeIntervalSeconds, cacheReferenceType);
     }
 
     /**
      * Return a method invocation result data cache descriptor.
      * @return cache descriptor
      */
-    public ConfigurationDBRef.DataCacheDesc getDataCacheDesc()
+    public ConfigurationDataCache getDataCacheDesc()
     {
         return dataCacheDesc;
     }

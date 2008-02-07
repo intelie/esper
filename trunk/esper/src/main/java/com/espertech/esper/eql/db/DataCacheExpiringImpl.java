@@ -1,6 +1,7 @@
 package com.espertech.esper.eql.db;
 
 import com.espertech.esper.client.ConfigurationDBRef;
+import com.espertech.esper.client.ConfigurationCacheReferenceType;
 import com.espertech.esper.collection.MultiKey;
 import com.espertech.esper.collection.apachecommons.ReferenceMap;
 import com.espertech.esper.core.EPStatementHandle;
@@ -45,7 +46,7 @@ public class DataCacheExpiringImpl implements DataCache, ScheduleHandleCallback
      */
     public DataCacheExpiringImpl(double maxAgeSec,
                                  double purgeIntervalSec,
-                                 ConfigurationDBRef.CacheReferenceType cacheReferenceType,
+                                 ConfigurationCacheReferenceType cacheReferenceType,
                                  SchedulingService schedulingService,
                                  ScheduleSlot scheduleSlot,
                                  EPStatementHandle epStatementHandle)
@@ -55,11 +56,11 @@ public class DataCacheExpiringImpl implements DataCache, ScheduleHandleCallback
         this.schedulingService = schedulingService;
         this.scheduleSlot = scheduleSlot;
 
-        if (cacheReferenceType == ConfigurationDBRef.CacheReferenceType.HARD)
+        if (cacheReferenceType == ConfigurationCacheReferenceType.HARD)
         {
             this.cache = new HashMap<MultiKey<Object>, Item>();
         }
-        else if (cacheReferenceType == ConfigurationDBRef.CacheReferenceType.SOFT)
+        else if (cacheReferenceType == ConfigurationCacheReferenceType.SOFT)
         {
             this.cache = new ReferenceMap(ReferenceMap.SOFT, ReferenceMap.SOFT);
         }

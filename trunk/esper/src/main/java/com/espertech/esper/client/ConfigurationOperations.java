@@ -24,9 +24,9 @@ public interface ConfigurationOperations
      * <p>
      * For example, in the statement "select * from MyEvent" the engine attempts to load class "javaPackageName.MyEvent"
      * and if successful, uses that class as the event type.
-     * @param javaPackageName is the fully-qualified Java package name of the Java package that event classes reside in
+     * @param packageName is the fully-qualified Java package name of the Java package that event classes reside in
      */
-    public void addEventTypeAutoAlias(String javaPackageName);
+    public void addEventTypeAutoAlias(String packageName);
 
     /**
      * Adds a plug-in aggregation function given a function name and an aggregation class name.
@@ -59,10 +59,10 @@ public interface ConfigurationOperations
      * Allows a second alias to be added for the same type.
      * Does not allow the same alias to be used for different types.
      * @param eventTypeAlias is the alias for the event type
-     * @param javaEventClassName fully-qualified class name of the event type
+     * @param eventClassName fully-qualified class name of the event type
      * @throws ConfigurationException if the alias is already in used for a different type
      */
-    public void addEventTypeAlias(String eventTypeAlias, String javaEventClassName)
+    public void addEventTypeAlias(String eventTypeAlias, String eventClassName)
             throws ConfigurationException;
 
     /**
@@ -71,10 +71,10 @@ public interface ConfigurationOperations
      * Allows a second alias to be added for the same type.
      * Does not allow the same alias to be used for different types.
      * @param eventTypeAlias is the alias for the event type
-     * @param javaEventClass is the Java event class for which to create the alias
+     * @param eventClass is the Java event class for which to create the alias
      * @throws ConfigurationException if the alias is already in used for a different type
      */
-    public void addEventTypeAlias(String eventTypeAlias, Class javaEventClass)
+    public void addEventTypeAlias(String eventTypeAlias, Class eventClass)
             throws ConfigurationException;
 
     /**
@@ -86,10 +86,10 @@ public interface ConfigurationOperations
      * <p>
      * Allows a second alias to be added for the same type.
      * Does not allow the same alias to be used for different types.
-     * @param javaEventClass is the Java event class for which to create the alias from the class simple name
+     * @param eventClass is the Java event class for which to create the alias from the class simple name
      * @throws ConfigurationException if the alias is already in used for a different type
      */
-    public void addEventTypeAliasSimpleName(Class javaEventClass);
+    public void addEventTypeAliasSimpleName(Class eventClass);
 
     /**
      * Add an alias for an event type that represents java.util.Map events.

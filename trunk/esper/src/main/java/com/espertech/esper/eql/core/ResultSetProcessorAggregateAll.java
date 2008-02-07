@@ -243,23 +243,24 @@ public class ResultSetProcessorAggregateAll implements ResultSetProcessor
         {
             EventBean lastOldEvent = null;
             EventBean lastNewEvent = null;
-            EventBean[] selectOldEvents;
-            EventBean[] selectNewEvents;
 
             for (UniformPair<Set<MultiKey<EventBean>>> pair : joinEventsSet)
             {
                 Set<MultiKey<EventBean>> newData = pair.getFirst();
                 Set<MultiKey<EventBean>> oldData = pair.getSecond();
 
-                // generate old events using select expressions
+                EventBean[] selectOldEvents;
                 if (optionalHavingNode == null)
                 {
                     selectOldEvents = ResultSetProcessorSimple.getSelectEventsNoHaving(selectExprProcessor, oldData, false, generateSynthetic);
                 }
-                // generate old events using having then select
                 else
                 {
                     selectOldEvents = ResultSetProcessorSimple.getSelectEventsHaving(selectExprProcessor, oldData, optionalHavingNode, false, generateSynthetic);
+                }
+                if ((selectOldEvents != null) && (selectOldEvents.length > 0))
+                {
+                    lastOldEvent = selectOldEvents[selectOldEvents.length - 1];
                 }
 
                 if (newData != null)
@@ -280,6 +281,7 @@ public class ResultSetProcessorAggregateAll implements ResultSetProcessor
                 }
 
                 // generate new events using select expressions
+                EventBean[] selectNewEvents;
                 if (optionalHavingNode == null)
                 {
                     selectNewEvents = ResultSetProcessorSimple.getSelectEventsNoHaving(selectExprProcessor, newData, true, generateSynthetic);
@@ -288,9 +290,10 @@ public class ResultSetProcessorAggregateAll implements ResultSetProcessor
                 {
                     selectNewEvents = ResultSetProcessorSimple.getSelectEventsHaving(selectExprProcessor, newData, optionalHavingNode, true, generateSynthetic);
                 }
-
-                lastNewEvent = (selectNewEvents != null) ? selectNewEvents[selectNewEvents.length - 1] : null;
-                lastOldEvent = (selectOldEvents != null) ? selectOldEvents[selectOldEvents.length - 1] : null;
+                if ((selectNewEvents != null) && (selectNewEvents.length > 0))
+                {
+                    lastNewEvent = selectNewEvents[selectNewEvents.length - 1];
+                }
             }
 
             EventBean[] lastNew = (lastNewEvent != null) ? new EventBean[] {lastNewEvent} : null;
@@ -382,26 +385,27 @@ public class ResultSetProcessorAggregateAll implements ResultSetProcessor
         {
             EventBean lastOldEvent = null;
             EventBean lastNewEvent = null;
-            EventBean[] selectOldEvents;
-            EventBean[] selectNewEvents;
+            EventBean[] eventsPerStream = new EventBean[1];
 
             for (UniformPair<EventBean[]> pair : viewEventsList)
             {
                 EventBean[] newData = pair.getFirst();
                 EventBean[] oldData = pair.getSecond();
 
-                // generate old events using select expressions
+                EventBean[] selectOldEvents;
                 if (optionalHavingNode == null)
                 {
                     selectOldEvents = ResultSetProcessorSimple.getSelectEventsNoHaving(selectExprProcessor, oldData, false, generateSynthetic);
                 }
-                // generate old events using having then select
                 else
                 {
                     selectOldEvents = ResultSetProcessorSimple.getSelectEventsHaving(selectExprProcessor, oldData, optionalHavingNode, false, generateSynthetic);
                 }
+                if ((selectOldEvents != null) && (selectOldEvents.length > 0))
+                {
+                    lastOldEvent = selectOldEvents[selectOldEvents.length - 1];
+                }
 
-                EventBean[] eventsPerStream = new EventBean[1];
                 if (newData != null)
                 {
                     // apply new data to aggregates
@@ -422,6 +426,7 @@ public class ResultSetProcessorAggregateAll implements ResultSetProcessor
                 }
 
                 // generate new events using select expressions
+                EventBean[] selectNewEvents;
                 if (optionalHavingNode == null)
                 {
                     selectNewEvents = ResultSetProcessorSimple.getSelectEventsNoHaving(selectExprProcessor, newData, true, generateSynthetic);
@@ -430,9 +435,10 @@ public class ResultSetProcessorAggregateAll implements ResultSetProcessor
                 {
                     selectNewEvents = ResultSetProcessorSimple.getSelectEventsHaving(selectExprProcessor, newData, optionalHavingNode, true, generateSynthetic);
                 }
-
-                lastNewEvent = (selectNewEvents != null) ? selectNewEvents[selectNewEvents.length - 1] : null;
-                lastOldEvent = (selectOldEvents != null) ? selectOldEvents[selectOldEvents.length - 1] : null;
+                if ((selectNewEvents != null) && (selectNewEvents.length > 0))
+                {
+                    lastNewEvent = selectNewEvents[selectNewEvents.length - 1];
+                }
             }
 
             EventBean[] lastNew = (lastNewEvent != null) ? new EventBean[] {lastNewEvent} : null;

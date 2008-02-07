@@ -1,3 +1,19 @@
+Principles
+==========
+
+- The engine does not hide properties or events
+- In fully-aggregated cases the engine presents the before-apply data as remove stream events
+- The engine evaluates the having-clause at the granularity of the data posted by views
+- The LAST keyword in output-rate limiting, when used with queries tha aggregate data, returns the oldest event 
+matching the having clause, if any. This is useful for comparing the before and after values between output, such as count(*) before 10 after 15.
+
+Release notes:
+==============
+In release 2.0 we have made changes to the output produced by queries that utilize output-rate limiting (the output-clause) in conjunction with aggregation and/or group-by. Queries that don't use the output-clause, or that use the output-clause and don't use aggregation and group-by, are not affected. The changes are designed to make the output more useful and consistent between different types of queries.
+
+In fully-aggregated queries that specify an output-clause, the default output (no keyword) for the release 2.0 engine is one row per event in the output batch, while the prior version output one row per group. The ALL and the LAST keyword provide output of one row per group. Fully-aggregated queries are queries in which all properties are under aggregation functions, except for grouped-by properties.
+
+
 JIRA
 ====
 

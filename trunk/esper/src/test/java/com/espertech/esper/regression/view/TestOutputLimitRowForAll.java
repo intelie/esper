@@ -173,27 +173,6 @@ public class TestOutputLimitRowForAll extends TestCase
         runAssertion15_16(stmtText, "last");
     }
 
-    private void runAssertion15_16(String stmtText, String outputLimit)
-    {
-        sendTimer(0);
-        EPStatement stmt = epService.getEPAdministrator().createEQL(stmtText);
-        stmt.addListener(listener);
-
-        String fields[] = new String[] {"sum(price)"};
-        ResultAssertTestResult expected = new ResultAssertTestResult(CATEGORY, outputLimit, stmtText, fields);
-
-        expected.addResultInsert(1200, 0, new Object[][] {{"S1", 100L, 25d}});
-        expected.addResultInsert(2200, 0, new Object[][] {{"S1", 155L, 23.5d}});
-        expected.addResultInsRem(3200, 0, null, null);
-        expected.addResultInsRem(4200, 0, null, null);
-        expected.addResultInsert(5200, 0, new Object[][] {{"S1", 150L, 22d}});
-        expected.addResultInsRem(6200, 0, null, new Object[][] {{"S1", 100L, 25d}});
-        expected.addResultRemove(7200, 0, new Object[][] {{"S1", 150L, 24d}});
-
-        ResultAssertExecution execution = new ResultAssertExecution(epService, listener, expected);
-        execution.execute();
-    }
-
     private void runAssertion12(String stmtText, String outputLimit)
     {
         sendTimer(0);
@@ -250,6 +229,26 @@ public class TestOutputLimitRowForAll extends TestCase
         expected.addResultInsRem(5200, 0, new Object[][] {{112d}}, new Object[][] {{87d}});
         expected.addResultInsRem(6200, 0, new Object[][] {{88d}}, new Object[][] {{112d}});
         expected.addResultInsRem(7200, 0, new Object[][] {{54d}}, new Object[][] {{88d}});
+
+        ResultAssertExecution execution = new ResultAssertExecution(epService, listener, expected);
+        execution.execute();
+    }
+
+    private void runAssertion15_16(String stmtText, String outputLimit)
+    {
+        sendTimer(0);
+        EPStatement stmt = epService.getEPAdministrator().createEQL(stmtText);
+        stmt.addListener(listener);
+
+        String fields[] = new String[] {"sum(price)"};
+        ResultAssertTestResult expected = new ResultAssertTestResult(CATEGORY, outputLimit, stmtText, fields);
+        expected.addResultInsRem(1200, 0, null, null);
+        expected.addResultInsRem(2200, 0, null, null);
+        expected.addResultInsRem(3200, 0, null, null);
+        expected.addResultInsRem(4200, 0, null, null);
+        expected.addResultInsRem(5200, 0, new Object[][] {{112d}}, new Object[][] {{109d}});
+        expected.addResultInsRem(6200, 0, null, new Object[][] {{112d}});
+        expected.addResultInsRem(7200, 0, null, null);
 
         ResultAssertExecution execution = new ResultAssertExecution(epService, listener, expected);
         execution.execute();
@@ -367,8 +366,9 @@ public class TestOutputLimitRowForAll extends TestCase
         assertEquals(2, result.getFirst().length);
         assertEquals(1.0, result.getFirst()[0].get("maxVol"));
         assertEquals(2.0, result.getFirst()[1].get("maxVol"));
-        assertEquals(1, result.getSecond().length);
-        assertEquals(1.0, result.getSecond()[0].get("maxVol"));
+        assertEquals(2, result.getSecond().length);
+        assertEquals(null, result.getSecond()[0].get("maxVol"));
+        assertEquals(1.0, result.getSecond()[1].get("maxVol"));
     }
 
     public void testMaxTimeWindow()
@@ -377,7 +377,7 @@ public class TestOutputLimitRowForAll extends TestCase
         sendTimer(0);
 
         String viewExpr = "select max(price) as maxVol" +
-                          " from " + SupportMarketDataBean.class.getName() + ".win:time(1 sec) " +
+                          " from " + SupportMarketDataBean.class.getName() + ".win:time(1.1 sec) " +
                           "output every 1 seconds";
         EPStatement stmt = epService.getEPAdministrator().createEQL(viewExpr);
         stmt.addListener(listener);
@@ -393,11 +393,11 @@ public class TestOutputLimitRowForAll extends TestCase
         assertEquals(1.0, result.getFirst()[0].get("maxVol"));
         assertEquals(2.0, result.getFirst()[1].get("maxVol"));
         assertEquals(2, result.getSecond().length);
-        assertEquals(2.0, result.getSecond()[0].get("maxVol"));
-        assertEquals(2.0, result.getSecond()[1].get("maxVol"));
+        assertEquals(null, result.getSecond()[0].get("maxVol"));
+        assertEquals(1.0, result.getSecond()[1].get("maxVol"));
     }
 
-    public void testTimeWindowOutputCount()
+    public void testTimeWindowOutputCountLast()
     {
         epService.getEPRuntime().sendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
 
@@ -415,8 +415,9 @@ public class TestOutputLimitRowForAll extends TestCase
         sendEvent("e1");
         sendTimer(30000);
         EventBean[] newEvents = listener.getAndResetLastNewData();
-        assertEquals(1, newEvents.length);
+        assertEquals(2, newEvents.length);
         assertEquals(1L, newEvents[0].get("cnt"));
+        assertEquals(0L, newEvents[1].get("cnt"));
 
         sendTimer(31000);
 
@@ -449,9 +450,10 @@ public class TestOutputLimitRowForAll extends TestCase
         assertFalse(listener.isInvoked());
         sendTimer(40000);
         EventBean[] newEvents = listener.getAndResetLastNewData();
-        assertEquals(1, newEvents.length);
+        assertEquals(2, newEvents.length);
         // output limiting starts 10 seconds after, therefore the old batch was posted already and the cnt is zero
         assertEquals(1L, newEvents[0].get("cnt"));
+        assertEquals(0L, newEvents[1].get("cnt"));
 
         sendTimer(50000);
         EventBean[] newData = listener.getLastNewData();
@@ -462,9 +464,8 @@ public class TestOutputLimitRowForAll extends TestCase
         sendEvent("e3");
         sendTimer(60000);
         newEvents = listener.getAndResetLastNewData();
-        assertEquals(2, newEvents.length);
+        assertEquals(1, newEvents.length);
         assertEquals(2L, newEvents[0].get("cnt"));
-        assertEquals(2L, newEvents[1].get("cnt"));
     }
 
     public void testLimitSnapshot()
@@ -622,6 +623,7 @@ public class TestOutputLimitRowForAll extends TestCase
 
     private static Log log = LogFactory.getLog(TestOutputLimitRowForAll.class);
 }
+
 
 
 

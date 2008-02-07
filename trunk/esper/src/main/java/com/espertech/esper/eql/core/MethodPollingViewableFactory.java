@@ -2,6 +2,7 @@ package com.espertech.esper.eql.core;
 
 import com.espertech.esper.client.ConfigurationDBRef;
 import com.espertech.esper.client.ConfigurationMethodRef;
+import com.espertech.esper.client.ConfigurationDataCache;
 import com.espertech.esper.core.EPStatementHandle;
 import com.espertech.esper.eql.db.DataCache;
 import com.espertech.esper.eql.db.DataCacheFactory;
@@ -134,7 +135,7 @@ public class MethodPollingViewableFactory
         {
             configCache = engineImportService.getConfigurationMethodRef(declaringClass.getSimpleName());
         }
-        ConfigurationDBRef.DataCacheDesc dataCacheDesc = (configCache != null) ? configCache.getDataCacheDesc() : null;
+        ConfigurationDataCache dataCacheDesc = (configCache != null) ? configCache.getDataCacheDesc() : null;
         DataCache dataCache = DataCacheFactory.getDataCache(dataCacheDesc, epStatementHandle, schedulingService, scheduleBucket);
         PollExecStrategy methodPollStrategy = new MethodPollingExecStrategy(eventAdapterService, staticMethod, mapTypeName != null, eventType);
 

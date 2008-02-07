@@ -10,6 +10,8 @@ import com.espertech.esper.support.bean.SupportMarketDataBean;
 import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.support.util.ArrayAssertionUtil;
 import com.espertech.esper.support.util.SupportUpdateListener;
+import com.espertech.esper.regression.support.ResultAssertTestResult;
+import com.espertech.esper.regression.support.ResultAssertExecution;
 import junit.framework.TestCase;
 
 public class TestOutputLimitAggregateAll extends TestCase
@@ -20,14 +22,278 @@ public class TestOutputLimitAggregateAll extends TestCase
     private SupportUpdateListener listener;
 	private EPServiceProvider epService;
     private long currentTime;
+    private final static String CATEGORY = "Aggregated and Un-grouped";
 
     public void setUp()
     {
         Configuration config = SupportConfigFactory.getConfiguration();
         config.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
+        config.addEventTypeAlias("MarketData", SupportMarketDataBean.class);
+        config.addEventTypeAlias("SupportBean", SupportBean.class);
         epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();
         listener = new SupportUpdateListener();
+    }
+
+    public void test1NoneNoHavingNoJoin()
+    {
+        String stmtText = "select symbol, sum(price) " +
+                            "from MarketData.win:time(5.5 sec)";
+        runAssertion12(stmtText, "none");
+    }
+
+    public void test2NoneNoHavingJoin()
+    {
+        String stmtText = "select symbol, sum(price) " +
+                            "from MarketData.win:time(5.5 sec), " +
+                            "SupportBean.win:keepall() where string=symbol";
+        runAssertion12(stmtText, "none");
+    }
+
+    public void test3NoneHavingNoJoin()
+    {
+        String stmtText = "select symbol, sum(price) " +
+                            "from MarketData.win:time(5.5 sec) " +
+                            " having sum(price) > 100";
+        runAssertion34(stmtText, "none");
+    }
+
+    public void test4NoneHavingJoin()
+    {
+        String stmtText = "select symbol, sum(price) " +
+                            "from MarketData.win:time(5.5 sec), " +
+                            "SupportBean.win:keepall() where string=symbol " +
+                            " having sum(price) > 100";
+        runAssertion34(stmtText, "none");
+    }
+
+    public void test5DefaultNoHavingNoJoin()
+    {
+        String stmtText = "select symbol, sum(price) " +
+                            "from MarketData.win:time(5.5 sec) " +
+                            "output every 1 seconds";
+        runAssertion56(stmtText, "default");
+    }
+
+    public void test6DefaultNoHavingJoin()
+    {
+        String stmtText = "select symbol, sum(price) " +
+                            "from MarketData.win:time(5.5 sec), " +
+                            "SupportBean.win:keepall() where string=symbol " +
+                            "output every 1 seconds";
+        runAssertion56(stmtText, "default");
+    }
+
+    public void test7DefaultHavingNoJoin()
+    {
+        String stmtText = "select symbol, sum(price) " +
+                            "from MarketData.win:time(5.5 sec) \n" +
+                            "having sum(price) > 100" +
+                            "output every 1 seconds";
+        runAssertion78(stmtText, "default");
+    }
+
+    public void test8DefaultHavingJoin()
+    {
+        String stmtText = "select symbol, sum(price) " +
+                            "from MarketData.win:time(5.5 sec), " +
+                            "SupportBean.win:keepall() where string=symbol " +
+                            "having sum(price) > 100" +
+                            "output every 1 seconds";
+        runAssertion78(stmtText, "default");
+    }
+
+    public void test9AllNoHavingNoJoin()
+    {
+        String stmtText = "select symbol, sum(price) " +
+                            "from MarketData.win:time(5.5 sec) " +
+                            "output all every 1 seconds";
+        runAssertion56(stmtText, "all");
+    }
+
+    public void test10AllNoHavingJoin()
+    {
+        String stmtText = "select symbol, sum(price) " +
+                            "from MarketData.win:time(5.5 sec), " +
+                            "SupportBean.win:keepall() where string=symbol " +
+                            "output all every 1 seconds";
+        runAssertion56(stmtText, "all");
+    }
+
+    public void test11AllHavingNoJoin()
+    {
+        String stmtText = "select symbol, sum(price) " +
+                            "from MarketData.win:time(5.5 sec) " +
+                            "having sum(price) > 100" +
+                            "output all every 1 seconds";
+        runAssertion78(stmtText, "all");
+    }
+
+    public void test12AllHavingJoin()
+    {
+        String stmtText = "select symbol, sum(price) " +
+                            "from MarketData.win:time(5.5 sec), " +
+                            "SupportBean.win:keepall() where string=symbol " +
+                            "having sum(price) > 100" +
+                            "output all every 1 seconds";
+        runAssertion78(stmtText, "all");
+    }
+
+    public void test13LastNoHavingNoJoin()
+    {
+        String stmtText = "select symbol, sum(price) " +
+                            "from MarketData.win:time(5.5 sec)" +
+                            "output last every 1 seconds";
+        runAssertion13_14(stmtText, "last");
+    }
+
+    public void test14LastNoHavingJoin()
+    {
+        String stmtText = "select symbol, sum(price) " +
+                            "from MarketData.win:time(5.5 sec), " +
+                            "SupportBean.win:keepall() where string=symbol " +
+                            "output last every 1 seconds";
+        runAssertion13_14(stmtText, "last");
+    }
+
+    public void test15LastHavingNoJoin()
+    {
+        String stmtText = "select symbol, sum(price) " +
+                            "from MarketData.win:time(5.5 sec)" +
+                            "having sum(price) > 100 " +
+                            "output last every 1 seconds";
+        runAssertion15_16(stmtText, "last");
+    }
+
+    public void test16LastHavingJoin()
+    {
+        String stmtText = "select symbol, sum(price) " +
+                            "from MarketData.win:time(5.5 sec), " +
+                            "SupportBean.win:keepall() where string=symbol " +
+                            "having sum(price) > 100 " +
+                            "output last every 1 seconds";
+        runAssertion15_16(stmtText, "last");
+    }
+
+    private void runAssertion12(String stmtText, String outputLimit)
+    {
+        sendTimer(0);
+        EPStatement stmt = epService.getEPAdministrator().createEQL(stmtText);
+        stmt.addListener(listener);
+
+        String fields[] = new String[] {"symbol", "sum(price)"};
+        ResultAssertTestResult expected = new ResultAssertTestResult(CATEGORY, outputLimit, stmtText, fields);
+        expected.addResultInsert(200, 1, new Object[][] {{"S1", 25d}});
+        expected.addResultInsert(800, 1, new Object[][] {{"S2", 34d}});
+        expected.addResultInsert(1500, 1, new Object[][] {{"S1", 58d}});
+        expected.addResultInsert(1500, 2, new Object[][] {{"S3", 59d}});
+        expected.addResultInsert(2100, 1, new Object[][] {{"S1", 85d}});
+        expected.addResultInsert(3500, 1, new Object[][] {{"S3", 87d}});
+        expected.addResultInsert(4300, 1, new Object[][] {{"S1", 109d}});
+        expected.addResultInsert(4900, 1, new Object[][] {{"S3", 112d}});
+        expected.addResultRemove(5700, 0, new Object[][] {{"S1", 112d}});
+        expected.addResultInsert(5900, 1, new Object[][] {{"S3", 88d}});
+        expected.addResultRemove(6300, 0, new Object[][] {{"S2", 88d}});
+        expected.addResultRemove(7000, 0, new Object[][] {{"S1", 79d}, {"S3", 79d}});
+
+        ResultAssertExecution execution = new ResultAssertExecution(epService, listener, expected);
+        execution.execute();
+    }
+
+    private void runAssertion34(String stmtText, String outputLimit)
+    {
+        sendTimer(0);
+        EPStatement stmt = epService.getEPAdministrator().createEQL(stmtText);
+        stmt.addListener(listener);
+
+        String fields[] = new String[] {"symbol", "sum(price)"};
+        ResultAssertTestResult expected = new ResultAssertTestResult(CATEGORY, outputLimit, stmtText, fields);
+        expected.addResultInsert(4300, 1, new Object[][] {{"S1", 109d}});
+        expected.addResultInsert(4900, 1, new Object[][] {{"S3", 112d}});
+        expected.addResultRemove(5700, 0, new Object[][] {{"S1", 112d}});
+
+        ResultAssertExecution execution = new ResultAssertExecution(epService, listener, expected);
+        execution.execute();
+    }
+
+    private void runAssertion13_14(String stmtText, String outputLimit)
+    {
+        sendTimer(0);
+        EPStatement stmt = epService.getEPAdministrator().createEQL(stmtText);
+        stmt.addListener(listener);
+
+        String fields[] = new String[] {"symbol", "sum(price)"};
+        ResultAssertTestResult expected = new ResultAssertTestResult(CATEGORY, outputLimit, stmtText, fields);
+        expected.addResultInsert(1200, 0, new Object[][] {{"S2", 34d}});
+        expected.addResultInsert(2200, 0, new Object[][] {{"S1", 85d}});
+        expected.addResultInsRem(3200, 0, null, null);
+        expected.addResultInsert(4200, 0, new Object[][] {{"S3", 87d}});
+        expected.addResultInsert(5200, 0, new Object[][] {{"S3", 112d}});
+        expected.addResultInsRem(6200, 0, new Object[][] {{"S3", 88d}}, new Object[][] {{"S1", 112d}});
+        expected.addResultRemove(7200, 0, new Object[][] {{"S3", 79d}});
+
+        ResultAssertExecution execution = new ResultAssertExecution(epService, listener, expected);
+        execution.execute();
+    }
+
+    private void runAssertion15_16(String stmtText, String outputLimit)
+    {
+        sendTimer(0);
+        EPStatement stmt = epService.getEPAdministrator().createEQL(stmtText);
+        stmt.addListener(listener);
+
+        String fields[] = new String[] {"symbol", "sum(price)"};
+        ResultAssertTestResult expected = new ResultAssertTestResult(CATEGORY, outputLimit, stmtText, fields);
+        expected.addResultInsRem(1200, 0, null, null);
+        expected.addResultInsRem(2200, 0, null, null);
+        expected.addResultInsRem(3200, 0, null, null);
+        expected.addResultInsRem(4200, 0, null, null);
+        expected.addResultInsert(5200, 0, new Object[][] {{"S3", 112d}});
+        expected.addResultInsRem(6200, 0, null, new Object[][] {{"S1", 112d}});
+        expected.addResultInsRem(7200, 0, null, null);
+
+        ResultAssertExecution execution = new ResultAssertExecution(epService, listener, expected);
+        execution.execute();
+    }
+
+    private void runAssertion78(String stmtText, String outputLimit)
+    {
+        sendTimer(0);
+        EPStatement stmt = epService.getEPAdministrator().createEQL(stmtText);
+        stmt.addListener(listener);
+
+        String fields[] = new String[] {"symbol", "sum(price)"};
+        ResultAssertTestResult expected = new ResultAssertTestResult(CATEGORY, outputLimit, stmtText, fields);
+        expected.addResultInsRem(1200, 0, null, null);
+        expected.addResultInsRem(2200, 0, null, null);
+        expected.addResultInsRem(3200, 0, null, null);
+        expected.addResultInsRem(4200, 0, null, null);
+        expected.addResultInsRem(5200, 0, new Object[][] {{"S1", 109d}, {"S3", 112d}}, null);
+        expected.addResultInsRem(6200, 0, null, new Object[][] {{"S1", 112d}});
+        expected.addResultInsRem(7200, 0, null, null);
+
+        ResultAssertExecution execution = new ResultAssertExecution(epService, listener, expected);
+        execution.execute();
+    }
+
+    private void runAssertion56(String stmtText, String outputLimit)
+    {
+        sendTimer(0);
+        EPStatement stmt = epService.getEPAdministrator().createEQL(stmtText);
+        stmt.addListener(listener);
+
+        String fields[] = new String[] {"symbol", "sum(price)"};
+        ResultAssertTestResult expected = new ResultAssertTestResult(CATEGORY, outputLimit, stmtText, fields);
+        expected.addResultInsert(1200, 0, new Object[][] {{"S1", 25d}, {"S2", 34d}});
+        expected.addResultInsert(2200, 0, new Object[][] {{"S1", 58d}, {"S3", 59d}, {"S1", 85d}});
+        expected.addResultInsRem(3200, 0, null, null);
+        expected.addResultInsert(4200, 0, new Object[][] {{"S3", 87d}});
+        expected.addResultInsert(5200, 0, new Object[][] {{"S1", 109d}, {"S3", 112d}});
+        expected.addResultInsRem(6200, 0, new Object[][] {{"S3", 88d}}, new Object[][] {{"S1", 112d}});
+        expected.addResultRemove(7200, 0, new Object[][] {{"S2", 88d}, {"S1", 79d}, {"S3", 79d}});
+
+        ResultAssertExecution execution = new ResultAssertExecution(epService, listener, expected);
+        execution.execute();
     }
 
     public void testHaving()

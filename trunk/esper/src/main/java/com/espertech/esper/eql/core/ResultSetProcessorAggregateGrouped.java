@@ -567,7 +567,6 @@ public class ResultSetProcessorAggregateGrouped implements ResultSetProcessor
                     int count = 0;
                     for (MultiKey<EventBean> anOldData : oldData)
                     {
-                        workCollection.put(newDataMultiKey[count], anOldData.getArray());
                         aggregationService.applyLeave(anOldData.getArray(), oldDataMultiKey[count]);
                         count++;
                     }
@@ -643,7 +642,7 @@ public class ResultSetProcessorAggregateGrouped implements ResultSetProcessor
                     int count = 0;
                     for (MultiKey<EventBean> anOldData : oldData)
                     {
-                        workCollection.put(newDataMultiKey[count], anOldData.getArray());
+                        workCollection.put(oldDataMultiKey[count], anOldData.getArray());
                         aggregationService.applyLeave(anOldData.getArray(), oldDataMultiKey[count]);
                         count++;
                     }
@@ -786,7 +785,6 @@ public class ResultSetProcessorAggregateGrouped implements ResultSetProcessor
                     int count = 0;
                     for (EventBean anOldData : oldData)
                     {
-                        workCollection.put(newDataMultiKey[count], eventsPerStream);
                         eventsPerStream[0] = anOldData;
                         aggregationService.applyLeave(eventsPerStream, oldDataMultiKey[count]);
                         count++;
@@ -865,7 +863,7 @@ public class ResultSetProcessorAggregateGrouped implements ResultSetProcessor
                     int count = 0;
                     for (EventBean anOldData : oldData)
                     {
-                        workCollection.put(newDataMultiKey[count], eventsPerStream);
+                        workCollection.put(oldDataMultiKey[count], eventsPerStream);
                         eventsPerStream[0] = anOldData;
                         aggregationService.applyLeave(eventsPerStream, oldDataMultiKey[count]);
                         count++;

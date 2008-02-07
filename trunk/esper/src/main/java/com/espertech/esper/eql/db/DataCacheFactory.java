@@ -1,6 +1,9 @@
 package com.espertech.esper.eql.db;
 
 import com.espertech.esper.client.ConfigurationDBRef;
+import com.espertech.esper.client.ConfigurationDataCache;
+import com.espertech.esper.client.ConfigurationLRUCache;
+import com.espertech.esper.client.ConfigurationExpiryTimeCache;
 import com.espertech.esper.core.EPStatementHandle;
 import com.espertech.esper.schedule.ScheduleBucket;
 import com.espertech.esper.schedule.SchedulingService;
@@ -18,7 +21,7 @@ public class DataCacheFactory
      * @param scheduleBucket for ordered timer invokation
      * @return data cache implementation
      */
-    public static DataCache getDataCache(ConfigurationDBRef.DataCacheDesc cacheDesc,
+    public static DataCache getDataCache(ConfigurationDataCache cacheDesc,
                                          EPStatementHandle epStatementHandle,
                                          SchedulingService schedulingService,
                                          ScheduleBucket scheduleBucket)
@@ -28,15 +31,15 @@ public class DataCacheFactory
             return new DataCacheNullImpl();
         }
 
-        if (cacheDesc instanceof ConfigurationDBRef.LRUCacheDesc)
+        if (cacheDesc instanceof ConfigurationLRUCache)
         {
-            ConfigurationDBRef.LRUCacheDesc lruCache = (ConfigurationDBRef.LRUCacheDesc) cacheDesc;
+            ConfigurationLRUCache lruCache = (ConfigurationLRUCache) cacheDesc;
             return new DataCacheLRUImpl(lruCache.getSize());
         }
 
-        if (cacheDesc instanceof ConfigurationDBRef.ExpiryTimeCacheDesc)
+        if (cacheDesc instanceof ConfigurationExpiryTimeCache)
         {
-            ConfigurationDBRef.ExpiryTimeCacheDesc expCache = (ConfigurationDBRef.ExpiryTimeCacheDesc) cacheDesc;
+            ConfigurationExpiryTimeCache expCache = (ConfigurationExpiryTimeCache) cacheDesc;
             return new DataCacheExpiringImpl(expCache.getMaxAgeSeconds(), expCache.getPurgeIntervalSeconds(), expCache.getCacheReferenceType(),
                     schedulingService, scheduleBucket.allocateSlot(), epStatementHandle);
         }

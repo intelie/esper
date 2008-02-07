@@ -9,11 +9,11 @@ package com.espertech.esper.client;
 
 import com.espertech.esper.util.DatabaseTypeEnum;
 
-import java.util.Properties;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Arrays;
 import java.io.Serializable;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
 
 /**
  * Container for database configuration information, such as
@@ -25,10 +25,10 @@ public class ConfigurationDBRef implements Serializable
     private ConnectionFactoryDesc connectionFactoryDesc;
     private ConnectionSettings connectionSettings;
     private ConnectionLifecycleEnum connectionLifecycleEnum;
-    private DataCacheDesc dataCacheDesc;
+    private ConfigurationDataCache dataCacheDesc;
     private MetadataOriginEnum metadataOrigin;
     private ColumnChangeCaseEnum columnChangeCase;
-    private Map<Integer, String> javaSqlTypesMapping;
+    private Map<Integer, String> sqlTypesMapping;
 
     /**
      * Ctor.
@@ -39,7 +39,7 @@ public class ConfigurationDBRef implements Serializable
         connectionSettings = new ConnectionSettings();
         metadataOrigin = MetadataOriginEnum.DEFAULT;
         columnChangeCase = ColumnChangeCaseEnum.NONE;
-        javaSqlTypesMapping = new HashMap<Integer, String>();
+        sqlTypesMapping = new HashMap<Integer, String>();
     }
 
     /**
@@ -172,7 +172,7 @@ public class ConfigurationDBRef implements Serializable
      */
     public void setLRUCache(int size)
     {
-        dataCacheDesc = new LRUCacheDesc(size);
+        dataCacheDesc = new ConfigurationLRUCache(size);
     }
 
     /**
@@ -185,7 +185,7 @@ public class ConfigurationDBRef implements Serializable
      */
     public void setExpiryTimeCache(double maxAgeSeconds, double purgeIntervalSeconds)
     {
-        dataCacheDesc = new ExpiryTimeCacheDesc(maxAgeSeconds, purgeIntervalSeconds, CacheReferenceType.getDefault());
+        dataCacheDesc = new ConfigurationExpiryTimeCache(maxAgeSeconds, purgeIntervalSeconds, ConfigurationCacheReferenceType.getDefault());
     }
 
     /**
@@ -195,16 +195,16 @@ public class ConfigurationDBRef implements Serializable
      * @param purgeIntervalSeconds is the interval at which the engine purges stale data from the cache
      * @param cacheReferenceType specifies the reference type to use
      */
-    public void setExpiryTimeCache(double maxAgeSeconds, double purgeIntervalSeconds, CacheReferenceType cacheReferenceType)
+    public void setExpiryTimeCache(double maxAgeSeconds, double purgeIntervalSeconds, ConfigurationCacheReferenceType cacheReferenceType)
     {
-        dataCacheDesc = new ExpiryTimeCacheDesc(maxAgeSeconds, purgeIntervalSeconds, cacheReferenceType);
+        dataCacheDesc = new ConfigurationExpiryTimeCache(maxAgeSeconds, purgeIntervalSeconds, cacheReferenceType);
     }
 
     /**
      * Return a query result data cache descriptor.
      * @return cache descriptor
      */
-    public DataCacheDesc getDataCacheDesc()
+    public ConfigurationDataCache getDataCacheDesc()
     {
         return dataCacheDesc;
     }
@@ -266,7 +266,7 @@ public class ConfigurationDBRef implements Serializable
      * @param sqlType is a java.sql.Types constant, for which output columns are converted to java type
      * @param javaTypeName is a Java class name
      */
-    public void addJavaSqlTypesBinding(int sqlType, String javaTypeName)
+    public void addSqlTypesBinding(int sqlType, String javaTypeName)
     {
         DatabaseTypeEnum typeEnum = DatabaseTypeEnum.getEnum(javaTypeName);
         if (typeEnum == null)
@@ -274,7 +274,7 @@ public class ConfigurationDBRef implements Serializable
             String supported = Arrays.toString(DatabaseTypeEnum.values());
             throw new ConfigurationException("Unsupported java type '" + javaTypeName + "' when expecting any of: " + supported);
         }
-        this.javaSqlTypesMapping.put(sqlType, javaTypeName);
+        this.sqlTypesMapping.put(sqlType, javaTypeName);
     }
 
     /**
@@ -287,9 +287,9 @@ public class ConfigurationDBRef implements Serializable
      * @param sqlType is a java.sql.Types constant, for which output columns are converted to java type
      * @param javaTypeName is a Java class
      */
-    public void addJavaSqlTypesBinding(int sqlType, Class javaTypeName)
+    public void addSqlTypesBinding(int sqlType, Class javaTypeName)
     {
-        addJavaSqlTypesBinding(sqlType, javaTypeName.getName());
+        addSqlTypesBinding(sqlType, javaTypeName.getName());
     }
 
     /**
@@ -297,9 +297,9 @@ public class ConfigurationDBRef implements Serializable
      * when receiving output columns of that sql types.
      * @return map of {@link java.sql.Types} types to Java types
      */
-    public Map<Integer, String> getJavaSqlTypesMapping()
+    public Map<Integer, String> getSqlTypesMapping()
     {
-        return javaSqlTypesMapping;
+        return sqlTypesMapping;
     }
 
     /**
@@ -548,99 +548,6 @@ public class ConfigurationDBRef implements Serializable
     }
 
     /**
-     * Marker for different cache settings.
-     */
-    public interface DataCacheDesc{}
-
-    /**
-     * LRU cache settings.
-     */
-    public static class LRUCacheDesc implements DataCacheDesc, Serializable
-    {
-        private int size;
-
-        /**
-         * Ctor.
-         * @param size is the maximum cache size
-         */
-        public LRUCacheDesc(int size)
-        {
-            this.size = size;
-        }
-
-        /**
-         * Returns the maximum cache size.
-         * @return max cache size
-         */
-        public int getSize()
-        {
-            return size;
-        }
-
-        public String toString()
-        {
-            return "LRUCacheDesc size=" + size;
-        }
-    }
-
-    /**
-     * Expiring cache settings.
-     */
-    public static class ExpiryTimeCacheDesc implements DataCacheDesc, Serializable
-    {
-        private CacheReferenceType cacheReferenceType;
-        private double maxAgeSeconds;
-        private double purgeIntervalSeconds;
-
-        /**
-         * Ctor.
-         * @param maxAgeSeconds is the maximum age in seconds
-         * @param purgeIntervalSeconds is the purge interval
-         * @param cacheReferenceType the reference type may allow garbage collection to remove entries from
-         * cache unless HARD reference type indicates otherwise
-         */
-        public ExpiryTimeCacheDesc(double maxAgeSeconds, double purgeIntervalSeconds, CacheReferenceType cacheReferenceType)
-        {
-            this.maxAgeSeconds = maxAgeSeconds;
-            this.purgeIntervalSeconds = purgeIntervalSeconds;
-            this.cacheReferenceType = cacheReferenceType;
-        }
-
-        /**
-         * Returns the maximum age in seconds.
-         * @return number of seconds
-         */
-        public double getMaxAgeSeconds()
-        {
-            return maxAgeSeconds;
-        }
-
-        /**
-         * Returns the purge interval length.
-         * @return purge interval in seconds
-         */
-        public double getPurgeIntervalSeconds()
-        {
-            return purgeIntervalSeconds;
-        }
-
-        /**
-         * Returns the enumeration whether hard, soft or weak reference type are used
-         * to control whether the garbage collection can remove entries from cache.
-         * @return reference type
-         */
-        public CacheReferenceType getCacheReferenceType()
-        {
-            return cacheReferenceType;
-        }
-
-        public String toString()
-        {
-            return "ExpiryTimeCacheDesc maxAgeSeconds=" + maxAgeSeconds + " purgeIntervalSeconds=" + purgeIntervalSeconds;
-        }
-    }
-
-    /**
      * Indicates how the engine retrieves metadata about a statement's output columns.
      */
     public enum MetadataOriginEnum
@@ -664,43 +571,6 @@ public class ConfigurationDBRef implements Serializable
          * See the documentation for the generation or specication of the sample query statement.
          */
         SAMPLE
-    }
-
-    /**
-     * Enum indicating what kind of references are used to store the cache map's keys and values.
-     */
-    public enum CacheReferenceType
-    {
-        /**
-         * Constant indicating that hard references should be used.
-         * <p>
-         * Does not allow garbage collection to remove cache entries.
-         */
-        HARD,
-
-        /**
-         * Constant indicating that soft references should be used.
-         * <p>
-         * Allows garbage collection to remove cache entries only after all weak references have been collected.
-         */
-        SOFT,
-
-        /**
-         * Constant indicating that weak references should be used.
-         * <p>
-         * Allows garbage collection to remove cache entries.
-         */
-        WEAK;
-
-        /**
-         * The default policy is set to WEAK to reduce the chance that out-of-memory errors occur
-         * as caches fill, and stay backwards compatible with prior Esper releases.
-         * @return default reference type
-         */
-        public static CacheReferenceType getDefault()
-        {
-            return WEAK;
-        }
     }
 
     /**
