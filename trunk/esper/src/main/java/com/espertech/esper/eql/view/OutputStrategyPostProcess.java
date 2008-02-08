@@ -1,6 +1,5 @@
 package com.espertech.esper.eql.view;
 
-import com.espertech.esper.collection.Pair;
 import com.espertech.esper.collection.UniformPair;
 import com.espertech.esper.core.EPStatementHandle;
 import com.espertech.esper.core.InternalEventRouter;
@@ -64,15 +63,7 @@ public class OutputStrategyPostProcess implements OutputStrategy
         }
         else if (selectStreamDirEnum == SelectClauseStreamSelectorEnum.ISTREAM_ONLY)
         {
-            oldEvents = null;
-        }
-        else if (selectStreamDirEnum == SelectClauseStreamSelectorEnum.RSTREAM_ISTREAM_BOTH)
-        {
-            // no action required
-        }
-        else
-        {
-            throw new IllegalStateException("Unknown stream selector " + selectStreamDirEnum);
+            oldEvents = null;   // since the insert-into may require rstream
         }
 
         // dispatch
@@ -88,16 +79,11 @@ public class OutputStrategyPostProcess implements OutputStrategy
 
     private void route(EventBean[] events)
     {
-        for (int i = 0; i < events.length; i++)
-        {
-            EventBean routed = events[i];
-            if (routed instanceof NaturalEventBean)
-            {
+        for (EventBean routed : events) {
+            if (routed instanceof NaturalEventBean) {
                 NaturalEventBean natural = (NaturalEventBean) routed;
                 internalEventRouter.route(natural.getOptionalSynthetic(), epStatementHandle);
-            }
-            else
-            {
+            } else {
                 internalEventRouter.route(routed, epStatementHandle);
             }
         }

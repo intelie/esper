@@ -26,8 +26,8 @@ public class TestResultSetProcessorSimple extends TestCase
         selectExprProcessor = new SelectExprEvalProcessor(SupportSelectExprFactory.makeNoAggregateSelectList(), null, false, new SupportStreamTypeSvc1Stream(), SupportEventAdapterService.getService());
         orderByProcessor = null;
 
-		outputProcessorAll = new ResultSetProcessorSimple(selectExprProcessor, orderByProcessor, null);
-		outputProcessorLast = new ResultSetProcessorSimple(selectExprProcessor, orderByProcessor, null);
+		outputProcessorAll = new ResultSetProcessorSimple(selectExprProcessor, orderByProcessor, null, true);
+		outputProcessorLast = new ResultSetProcessorSimple(selectExprProcessor, orderByProcessor, null, true);
     }
 
     public void testUpdateAll() throws Exception

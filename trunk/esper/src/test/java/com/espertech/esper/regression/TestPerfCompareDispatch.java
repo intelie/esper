@@ -5,6 +5,8 @@ import com.espertech.esper.client.*;
 import com.espertech.esper.event.EventBean;
 import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.util.ArrayAssertionUtil;
+import com.espertech.esper.support.util.SupportUpdateListener;
+import com.espertech.esper.support.util.NoActionUpdateListener;
 import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.collection.ArrayDequeJDK6Backport;
 
@@ -16,6 +18,32 @@ import java.util.LinkedList;
 public class TestPerfCompareDispatch extends TestCase
 {
     private EPServiceProvider epService;
+
+    public void setUp()
+    {
+        Configuration config = SupportConfigFactory.getConfiguration();
+        config.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
+        config.addEventTypeAlias("SupportBean", SupportBean.class.getName());
+        epService = EPServiceProviderManager.getDefaultProvider(config);
+        epService.initialize();
+    }
+
+    public void testPerfRemoveStream()
+    {
+        String text = "select count(*) from SupportBean.win:length(10)";
+        EPStatement stmt = epService.getEPAdministrator().createEQL(text);
+        NoActionUpdateListener listener = new NoActionUpdateListener();
+        stmt.addListener(listener);
+
+        long start = System.currentTimeMillis();
+        for (int i = 0; i < 500000; i++)
+        {
+            epService.getEPRuntime().sendEvent(new SupportBean("E1", 1000 + i));
+        }
+        long end = System.currentTimeMillis();
+        System.out.println("delta=" + (end - start));
+        System.out.println(stmt.iterator().next().get("count(*)"));
+    }
 
     public void testPerfToArray()
     {
@@ -57,15 +85,6 @@ public class TestPerfCompareDispatch extends TestCase
         }
         long end = System.currentTimeMillis();
         System.out.println("delta=" + (end - start));
-    }
-
-    public void setUp()
-    {
-        Configuration config = SupportConfigFactory.getConfiguration();
-        config.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
-        config.addEventTypeAlias("SupportBean", SupportBean.class.getName());
-        epService = EPServiceProviderManager.getDefaultProvider(config);
-        epService.initialize();
     }
 
     public void testPerformanceSyntheticUndelivered()

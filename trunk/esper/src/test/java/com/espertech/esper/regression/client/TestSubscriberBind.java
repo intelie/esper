@@ -139,7 +139,7 @@ public class TestSubscriberBind extends TestCase
     public void testBindWildcardIRStream()
     {
         MySubscriberMultirowUnderlying subscriber = new MySubscriberMultirowUnderlying();
-        EPStatement stmt = epService.getEPAdministrator().createEQL("select * from SupportBean.win:length_batch(2)");
+        EPStatement stmt = epService.getEPAdministrator().createEQL("select irstream * from SupportBean.win:length_batch(2)");
         stmt.setSubscriber(subscriber);
 
         SupportBean s0 = new SupportBean("E1", 100);
@@ -167,7 +167,7 @@ public class TestSubscriberBind extends TestCase
     public void testBindUpdateIRStream()
     {
         MySubscriberRowByRowFull subscriber = new MySubscriberRowByRowFull();
-        String stmtText = "select string, intPrimitive from " + SupportBean.class.getName() + ".win:length_batch(2)";
+        String stmtText = "select irstream string, intPrimitive from " + SupportBean.class.getName() + ".win:length_batch(2)";
         EPStatement stmt = epService.getEPAdministrator().createEQL(stmtText);
         stmt.setSubscriber(subscriber);
 
@@ -197,7 +197,7 @@ public class TestSubscriberBind extends TestCase
     public void testBindObjectArr()
     {
         MySubscriberMultirowObjectArr subscriber = new MySubscriberMultirowObjectArr();
-        String stmtText = "select string, intPrimitive from " + SupportBean.class.getName() + ".win:length_batch(2)";
+        String stmtText = "select irstream string, intPrimitive from " + SupportBean.class.getName() + ".win:length_batch(2)";
         EPStatement stmt = epService.getEPAdministrator().createEQL(stmtText);
         stmt.setSubscriber(subscriber);
 
@@ -224,7 +224,7 @@ public class TestSubscriberBind extends TestCase
     public void testBindMap()
     {
         MySubscriberMultirowMap subscriber = new MySubscriberMultirowMap();
-        String stmtText = "select string, intPrimitive from " + SupportBean.class.getName() + ".win:length_batch(2)";
+        String stmtText = "select irstream string, intPrimitive from " + SupportBean.class.getName() + ".win:length_batch(2)";
         EPStatement stmt = epService.getEPAdministrator().createEQL(stmtText);
         stmt.setSubscriber(subscriber);
 
@@ -323,7 +323,7 @@ public class TestSubscriberBind extends TestCase
     public void testRowMapDelivery()
     {
         MySubscriberRowByRowMap subscriber = new MySubscriberRowByRowMap();
-        EPStatement stmt = epService.getEPAdministrator().createEQL("select string, intPrimitive from SupportBean.std:unique(string)");
+        EPStatement stmt = epService.getEPAdministrator().createEQL("select irstream string, intPrimitive from SupportBean.std:unique(string)");
         stmt.setSubscriber(subscriber);
 
         epService.getEPRuntime().sendEvent(new SupportBean("E1", 1));

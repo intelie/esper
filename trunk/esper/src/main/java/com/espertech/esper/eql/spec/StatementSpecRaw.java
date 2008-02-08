@@ -22,7 +22,7 @@ public class StatementSpecRaw implements MetaDefItem
     private CreateWindowDesc createWindowDesc;
     private CreateVariableDesc createVariableDesc;
     private InsertIntoDesc insertIntoDesc;
-    private SelectClauseStreamSelectorEnum selectStreamDirEnum = SelectClauseStreamSelectorEnum.RSTREAM_ISTREAM_BOTH;
+    private SelectClauseStreamSelectorEnum selectStreamDirEnum = SelectClauseStreamSelectorEnum.ISTREAM_ONLY;
     private SelectClauseSpecRaw selectClauseSpec = new SelectClauseSpecRaw();
     private List<StreamSpecRaw> streamSpecs = new LinkedList<StreamSpecRaw>();
     private List<OuterJoinDesc> outerJoinDescList = new LinkedList<OuterJoinDesc>();

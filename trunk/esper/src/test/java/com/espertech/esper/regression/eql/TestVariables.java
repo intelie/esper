@@ -34,8 +34,6 @@ public class TestVariables extends TestCase
         listenerSet = new SupportUpdateListener();
     }
 
-    // TODO: test invalid type
-    // TODO: test variable does not exist
     public void testVariableEPRuntime() throws Exception
     {
         epService.getEPAdministrator().getConfiguration().addVariable("var1", int.class, -1);
@@ -596,7 +594,7 @@ public class TestVariables extends TestCase
         String[] fieldsVar = new String[] {"var1", "var2", "var3"};
         ArrayAssertionUtil.assertEqualsExactOrder(stmtSet.iterator(), fieldsVar, new Object[][] {{null, null, null}});
 
-        String stmtText = "select var1, var2, var3, id from " + SupportBean_A.class.getName() + ".win:length(2)";
+        String stmtText = "select irstream var1, var2, var3, id from " + SupportBean_A.class.getName() + ".win:length(2)";
         EPStatement stmtSelect = epService.getEPAdministrator().createEQL(stmtText);
         stmtSelect.addListener(listener);
         String[] fieldsSelect = new String[] {"var1", "var2", "var3", "id"};

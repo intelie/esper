@@ -34,10 +34,10 @@ public class TestAggregationFunctionPlugIn extends TestCase
 
     public void testGrouped_OM() throws Exception
     {
-        String text = "select concatstring(string) as val from " + SupportBean.class.getName() + ".win:length(10) group by intPrimitive";
+        String text = "select irstream concatstring(string) as val from " + SupportBean.class.getName() + ".win:length(10) group by intPrimitive";
 
         EPStatementObjectModel model = new EPStatementObjectModel();
-        model.setSelectClause(SelectClause.create()
+        model.setSelectClause(SelectClause.create().setStreamSelector(StreamSelector.RSTREAM_ISTREAM_BOTH)
                 .add(Expressions.plugInAggregation("concatstring", Expressions.property("string")), "val"));
         model.setFromClause(FromClause.create(FilterStream.create(SupportBean.class.getName()).addView("win", "length", 10)));
         model.setGroupByClause(GroupByClause.create("intPrimitive"));
@@ -49,7 +49,7 @@ public class TestAggregationFunctionPlugIn extends TestCase
 
     public void testGrouped_Compile() throws Exception
     {
-        String text = "select concatstring(string) as val from " + SupportBean.class.getName() + ".win:length(10) group by intPrimitive";
+        String text = "select irstream concatstring(string) as val from " + SupportBean.class.getName() + ".win:length(10) group by intPrimitive";
 
         EPStatementObjectModel model = epService.getEPAdministrator().compileEQL(text);
         SerializableObjectCopier.copy(model);
@@ -60,13 +60,13 @@ public class TestAggregationFunctionPlugIn extends TestCase
 
     public void testGroupedLowercase()
     {
-        String text = "select CONCATSTRING(string) as val from " + SupportBean.class.getName() + ".win:length(10) group by intPrimitive";
+        String text = "select irstream CONCATSTRING(string) as val from " + SupportBean.class.getName() + ".win:length(10) group by intPrimitive";
         tryGrouped(text, null);
     }
 
     public void testGroupedUppercase()
     {
-        String text = "select concatstring(string) as val from " + SupportBean.class.getName() + ".win:length(10) group by intPrimitive";
+        String text = "select irstream concatstring(string) as val from " + SupportBean.class.getName() + ".win:length(10) group by intPrimitive";
         tryGrouped(text, null);
     }
 
@@ -107,7 +107,7 @@ public class TestAggregationFunctionPlugIn extends TestCase
 
     public void testWindow()
     {
-        String text = "select concatstring(string) as val from " + SupportBean.class.getName() + ".win:length(2)";
+        String text = "select irstream concatstring(string) as val from " + SupportBean.class.getName() + ".win:length(2)";
         EPStatement statement = epService.getEPAdministrator().createEQL(text);
         SupportUpdateListener listener = new SupportUpdateListener();
         statement.addListener(listener);
@@ -127,7 +127,7 @@ public class TestAggregationFunctionPlugIn extends TestCase
 
     public void testDistinct()
     {
-        String text = "select concatstring(distinct string) as val from " + SupportBean.class.getName();
+        String text = "select irstream concatstring(distinct string) as val from " + SupportBean.class.getName();
         EPStatement statement = epService.getEPAdministrator().createEQL(text);
         SupportUpdateListener listener = new SupportUpdateListener();
         statement.addListener(listener);
@@ -152,7 +152,7 @@ public class TestAggregationFunctionPlugIn extends TestCase
     {
         epService.getEPAdministrator().getConfiguration().addPlugInAggregationFunction("countback", SupportPluginAggregationMethodOne.class.getName());
 
-        String text = "select countback({1,2,intPrimitive}) as val from " + SupportBean.class.getName();
+        String text = "select irstream countback({1,2,intPrimitive}) as val from " + SupportBean.class.getName();
         EPStatement statement = epService.getEPAdministrator().createEQL(text);
         SupportUpdateListener listener = new SupportUpdateListener();
         statement.addListener(listener);
@@ -165,7 +165,7 @@ public class TestAggregationFunctionPlugIn extends TestCase
     {
         epService.getEPAdministrator().getConfiguration().addPlugInAggregationFunction("countback", SupportPluginAggregationMethodOne.class.getName());
 
-        String text = "select countback() as val from " + SupportBean.class.getName();
+        String text = "select irstream countback() as val from " + SupportBean.class.getName();
         EPStatement statement = epService.getEPAdministrator().createEQL(text);
         SupportUpdateListener listener = new SupportUpdateListener();
         statement.addListener(listener);
@@ -179,7 +179,7 @@ public class TestAggregationFunctionPlugIn extends TestCase
 
     public void testMappedPropertyLookAlike()
     {
-        String text = "select concatstring('a') as val from " + SupportBean.class.getName();
+        String text = "select irstream concatstring('a') as val from " + SupportBean.class.getName();
         EPStatement statement = epService.getEPAdministrator().createEQL(text);
         SupportUpdateListener listener = new SupportUpdateListener();
         statement.addListener(listener);

@@ -66,7 +66,7 @@ public class TestViewKeepAllWindow extends TestCase
 
     public void testWindowStats()
     {
-        String viewExpr = "select symbol, count(*) as cnt, sum(price) as mysum from " + SupportMarketDataBean.class.getName() +
+        String viewExpr = "select irstream symbol, count(*) as cnt, sum(price) as mysum from " + SupportMarketDataBean.class.getName() +
                 ".win:keepall() group by symbol";
         statement = epService.getEPAdministrator().createEQL(viewExpr);
         statement.addListener(listener);

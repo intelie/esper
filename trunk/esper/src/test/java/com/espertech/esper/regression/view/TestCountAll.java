@@ -24,7 +24,7 @@ public class TestCountAll extends TestCase
 
     public void testSize()
     {
-        String statementText = "select size from " + SupportMarketDataBean.class.getName() + ".std:size()";
+        String statementText = "select irstream size from " + SupportMarketDataBean.class.getName() + ".std:size()";
         selectTestView = epService.getEPAdministrator().createEQL(statementText);
         selectTestView.addListener(listener);
 
@@ -86,7 +86,7 @@ public class TestCountAll extends TestCase
     public void testCountHaving()
     {
         String event = SupportBean.class.getName();
-        String statementText = "select sum(intPrimitive) as mysum from " + event + " having sum(intPrimitive) = 2";
+        String statementText = "select irstream sum(intPrimitive) as mysum from " + event + " having sum(intPrimitive) = 2";
         selectTestView = epService.getEPAdministrator().createEQL(statementText);
         selectTestView.addListener(listener);
 
@@ -101,7 +101,7 @@ public class TestCountAll extends TestCase
     public void testSumHaving()
     {
         String event = SupportBean.class.getName();
-        String statementText = "select count(*) as mysum from " + event + " having count(*) = 2";
+        String statementText = "select irstream count(*) as mysum from " + event + " having count(*) = 2";
         selectTestView = epService.getEPAdministrator().createEQL(statementText);
         selectTestView.addListener(listener);
 

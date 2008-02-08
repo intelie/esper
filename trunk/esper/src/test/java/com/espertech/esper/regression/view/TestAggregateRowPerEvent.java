@@ -34,7 +34,7 @@ public class TestAggregateRowPerEvent extends TestCase
 
     public void testSumOneView()
     {
-        String viewExpr = "select longPrimitive, sum(longBoxed) as mySum " +
+        String viewExpr = "select irstream longPrimitive, sum(longBoxed) as mySum " +
                           "from " + SupportBean.class.getName() + ".win:length(3)";
         selectTestView = epService.getEPAdministrator().createEQL(viewExpr);
         selectTestView.addListener(testListener);
@@ -44,7 +44,7 @@ public class TestAggregateRowPerEvent extends TestCase
 
     public void testSumJoin()
     {
-        String viewExpr = "select longPrimitive, sum(longBoxed) as mySum " +
+        String viewExpr = "select irstream longPrimitive, sum(longBoxed) as mySum " +
                           "from " + SupportBeanString.class.getName() + ".win:length(3) as one, " +
                                     SupportBean.class.getName() + ".win:length(3) as two " +
                           "where one.string = two.string";

@@ -823,6 +823,10 @@ public class TestEQLTreeWalker extends TestCase
 
         text = "select 'a' from " + SupportBean_N.class.getName();
         walker = parseAndWalkEQL(text);
+        assertEquals(SelectClauseStreamSelectorEnum.ISTREAM_ONLY, walker.getStatementSpec().getSelectStreamSelectorEnum());
+
+        text = "select irstream 'a' from " + SupportBean_N.class.getName();
+        walker = parseAndWalkEQL(text);
         assertEquals(SelectClauseStreamSelectorEnum.RSTREAM_ISTREAM_BOTH, walker.getStatementSpec().getSelectStreamSelectorEnum());
     }
 

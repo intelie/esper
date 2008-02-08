@@ -1620,6 +1620,10 @@ public class EQLTreeWalker extends EsperEPL2Ast
         {
             statementSpec.setSelectStreamDirEnum(SelectClauseStreamSelectorEnum.ISTREAM_ONLY);
         }
+        if (nodeType == IRSTREAM)
+        {
+            statementSpec.setSelectStreamDirEnum(SelectClauseStreamSelectorEnum.RSTREAM_ISTREAM_BOTH);
+        }
     }
 
     private List<ExprNode> getExprNodes(Tree parentNode, int startIndex)

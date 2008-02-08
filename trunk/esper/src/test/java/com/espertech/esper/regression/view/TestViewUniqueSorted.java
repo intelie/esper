@@ -87,7 +87,7 @@ public class TestViewUniqueSorted extends TestCase
 
     public void testSensorPerEvent() throws Exception {
         String stmtString =
-              "SELECT * " +
+              "SELECT irstream * " +
               "FROM\n " +
               SupportSensorEvent.class.getName() + ".std:groupby(type).win:time(1 hour).std:unique(device).ext:sort(measurement,true,1) as high ";
 

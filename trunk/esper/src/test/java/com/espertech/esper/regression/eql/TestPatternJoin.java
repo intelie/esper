@@ -26,7 +26,7 @@ public class TestPatternJoin extends TestCase
 
     public void testPatternFilterJoin()
     {
-        String stmtText = "select es0a.id as es0aId, " +
+        String stmtText = "select irstream es0a.id as es0aId, " +
                                  "es0a.p00 as es0ap00, " +
                                  "es0b.id as es0bId, " +
                                  "es0b.p00 as es0bp00, " +
@@ -99,7 +99,7 @@ public class TestPatternJoin extends TestCase
 
     public void test2PatternJoinSelect()
     {
-        String stmtText = "select s0.es0.id as s0es0Id," +
+        String stmtText = "select irstream s0.es0.id as s0es0Id," +
                                  "s0.es1.id as s0es1Id, " +
                                  "s1.es2.id as s1es2Id, " +
                                  "s1.es3.id as s1es3Id, " +

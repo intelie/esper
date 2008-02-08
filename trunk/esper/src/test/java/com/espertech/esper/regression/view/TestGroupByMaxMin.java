@@ -32,7 +32,7 @@ public class TestGroupByMaxMin extends TestCase
 
     public void testMinMaxView()
     {
-        String viewExpr = "select symbol, " +
+        String viewExpr = "select irstream symbol, " +
                                   "min(all volume) as minVol," +
                                   "max(all volume) as maxVol," +
                                   "min(distinct volume) as minDistVol," +
@@ -50,7 +50,7 @@ public class TestGroupByMaxMin extends TestCase
     public void testMinMaxView_OM() throws Exception
     {
         EPStatementObjectModel model = new EPStatementObjectModel();
-        model.setSelectClause(SelectClause.create()
+        model.setSelectClause(SelectClause.create().setStreamSelector(StreamSelector.RSTREAM_ISTREAM_BOTH)
             .add("symbol")
             .add(Expressions.min("volume"), "minVol")
             .add(Expressions.max("volume"), "maxVol")
@@ -65,7 +65,7 @@ public class TestGroupByMaxMin extends TestCase
         model.setGroupByClause(GroupByClause.create("symbol"));
         model = (EPStatementObjectModel) SerializableObjectCopier.copy(model);
 
-        String viewExpr = "select symbol, " +
+        String viewExpr = "select irstream symbol, " +
                                   "min(volume) as minVol, " +
                                   "max(volume) as maxVol, " +
                                   "min(distinct volume) as minDistVol, " +
@@ -83,7 +83,7 @@ public class TestGroupByMaxMin extends TestCase
 
     public void testMinMaxView_Compile()
     {
-        String viewExpr = "select symbol, " +
+        String viewExpr = "select irstream symbol, " +
                                   "min(volume) as minVol, " +
                                   "max(volume) as maxVol, " +
                                   "min(distinct volume) as minDistVol, " +
@@ -102,7 +102,7 @@ public class TestGroupByMaxMin extends TestCase
 
     public void testMinMaxJoin()
     {
-        String viewExpr = "select symbol, " +
+        String viewExpr = "select irstream symbol, " +
                                   "min(volume) as minVol," +
                                   "max(volume) as maxVol," +
                                   "min(distinct volume) as minDistVol," +

@@ -22,7 +22,7 @@ public class StatementSpecCompiled
     private final CreateWindowDesc createWindowDesc;
     private final CreateVariableDesc createVariableDesc;
     private final InsertIntoDesc insertIntoDesc;
-    private final SelectClauseStreamSelectorEnum selectStreamDirEnum;
+    private SelectClauseStreamSelectorEnum selectStreamDirEnum;
     private final SelectClauseSpecCompiled selectClauseSpec;
     private final List<StreamSpecCompiled> streamSpecs;
     private final List<OuterJoinDesc> outerJoinDescList;
@@ -248,5 +248,9 @@ public class StatementSpecCompiled
     public boolean isHasVariables()
     {
         return hasVariables;
+    }
+
+    public void setSelectStreamDirEnum(SelectClauseStreamSelectorEnum selectStreamDirEnum) {
+        this.selectStreamDirEnum = selectStreamDirEnum;
     }
 }

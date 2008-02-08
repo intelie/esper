@@ -44,7 +44,7 @@ public class TestNamedWindowSubquery extends TestCase
         epService.getEPAdministrator().createEQL(stmtTextInsertOne);
 
         // create consumer
-        String stmtTextSelectOne = "select (select a from MyWindow) as value, symbol from " + SupportMarketDataBean.class.getName();
+        String stmtTextSelectOne = "select irstream (select a from MyWindow) as value, symbol from " + SupportMarketDataBean.class.getName();
         EPStatement stmtSelectOne = epService.getEPAdministrator().createEQL(stmtTextSelectOne);
         stmtSelectOne.addListener(listenerStmtOne);
         ArrayAssertionUtil.assertEqualsAnyOrder(stmtSelectOne.getEventType().getPropertyNames(), new String[] {"value", "symbol"});
@@ -61,7 +61,7 @@ public class TestNamedWindowSubquery extends TestCase
         ArrayAssertionUtil.assertProps(listenerWindow.assertOneGetNewAndReset(), fieldsWin, new Object[] {"S1", 1L, 2L});
 
         // create consumer 2 -- note that this one should not start empty now
-        String stmtTextSelectTwo = "select (select a from MyWindow) as value, symbol from " + SupportMarketDataBean.class.getName();
+        String stmtTextSelectTwo = "select irstream (select a from MyWindow) as value, symbol from " + SupportMarketDataBean.class.getName();
         EPStatement stmtSelectTwo = epService.getEPAdministrator().createEQL(stmtTextSelectTwo);
         stmtSelectTwo.addListener(listenerStmtTwo);
 

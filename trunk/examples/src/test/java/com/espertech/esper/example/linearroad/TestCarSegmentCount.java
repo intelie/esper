@@ -37,7 +37,7 @@ public class TestCarSegmentCount extends TestCase
         // Number of cars currently in each segment (volume per segment)
         // Each car sends an update every 30 seconds therefore each car must be counted exactly once.
 
-        String joinStatement = "select * from " +
+        String joinStatement = "select irstream * from " +
             carLocEvent + ".win:time(5 min).std:groupby(expressway, direction, segment).stat:uni(speed) as segAvgSpeed," +
             carLocEvent + ".win:time(30 sec).std:unique(carId).std:groupby(expressway, direction, segment).std:size() as segVolView" +
             " where segAvgSpeed.expressway = segVolView.expressway" +

@@ -43,6 +43,7 @@ public class ResultSetProcessorAggregateGrouped implements ResultSetProcessor
     private final List<ExprNode> groupKeyNodes;
     private final ExprNode optionalHavingNode;
     private final boolean isSorting;
+    private final boolean isSelectRStream;
 
     // For output limiting, keep a representative of each group-by group
     private final Map<MultiKeyUntyped, EventBean[]> eventGroupReps = new HashMap<MultiKeyUntyped, EventBean[]>();
@@ -67,7 +68,8 @@ public class ResultSetProcessorAggregateGrouped implements ResultSetProcessor
                                       		  OrderByProcessor orderByProcessor,
                                       		  AggregationService aggregationService,
                                       		  List<ExprNode> groupKeyNodes,
-                                      		  ExprNode optionalHavingNode)
+                                      		  ExprNode optionalHavingNode,
+                                                boolean isSelectRStream)
     {
         this.selectExprProcessor = selectExprProcessor;
         this.orderByProcessor = orderByProcessor;
@@ -75,6 +77,7 @@ public class ResultSetProcessorAggregateGrouped implements ResultSetProcessor
         this.groupKeyNodes = groupKeyNodes;
         this.optionalHavingNode = optionalHavingNode;
         this.isSorting = orderByProcessor != null;
+        this.isSelectRStream = isSelectRStream;
     }
 
     public EventType getResultEventType()
@@ -93,7 +96,12 @@ public class ResultSetProcessorAggregateGrouped implements ResultSetProcessor
         {
             log.debug(".processJoinResults creating old output events");
         }
-        EventBean[] selectOldEvents = generateOutputEventsJoin(oldEvents, oldDataGroupByKeys, oldGenerators, false, isSynthesize);
+
+        EventBean[] selectOldEvents = null;
+        if (isSelectRStream)
+        {
+            selectOldEvents = generateOutputEventsJoin(oldEvents, oldDataGroupByKeys, oldGenerators, false, isSynthesize);
+        }
 
         // update aggregates
         if (!newEvents.isEmpty())
@@ -142,7 +150,12 @@ public class ResultSetProcessorAggregateGrouped implements ResultSetProcessor
         {
             log.debug(".processViewResults creating old output events");
         }
-        EventBean[] selectOldEvents = generateOutputEventsView(oldData, oldDataGroupByKeys, oldGenerators, false, isSynthesize);
+
+        EventBean[] selectOldEvents = null;
+        if (isSelectRStream)
+        {
+            selectOldEvents = generateOutputEventsView(oldData, oldDataGroupByKeys, oldGenerators, false, isSynthesize);
+        }
 
         // update aggregates
         EventBean[] eventsPerStream = new EventBean[1];
@@ -462,13 +475,21 @@ public class ResultSetProcessorAggregateGrouped implements ResultSetProcessor
         if (outputLimitLimitType == OutputLimitLimitType.DEFAULT)
         {
             List<EventBean> newEvents = new LinkedList<EventBean>();
-            List<EventBean> oldEvents = new LinkedList<EventBean>();
+            List<EventBean> oldEvents = null;
+            if (isSelectRStream)
+            {
+                 oldEvents = new LinkedList<EventBean>();
+            }
+
             List<MultiKeyUntyped> newEventsSortKey = null;
             List<MultiKeyUntyped> oldEventsSortKey = null;
             if (orderByProcessor != null)
             {
                 newEventsSortKey = new LinkedList<MultiKeyUntyped>();
-                oldEventsSortKey = new LinkedList<MultiKeyUntyped>();
+                if (isSelectRStream)
+                {
+                    oldEventsSortKey = new LinkedList<MultiKeyUntyped>();
+                }
             }
 
             for (UniformPair<Set<MultiKey<EventBean>>> pair : joinEventsSet)
@@ -479,7 +500,10 @@ public class ResultSetProcessorAggregateGrouped implements ResultSetProcessor
                 MultiKeyUntyped[] newDataMultiKey = generateGroupKeys(newData, true);
                 MultiKeyUntyped[] oldDataMultiKey = generateGroupKeys(oldData, false);
 
-                generateOutputBatchedJoin(oldData, oldDataMultiKey, false, generateSynthetic, oldEvents, oldEventsSortKey);
+                if (isSelectRStream)
+                {
+                    generateOutputBatchedJoin(oldData, oldDataMultiKey, false, generateSynthetic, oldEvents, oldEventsSortKey);
+                }
 
                 if (newData != null)
                 {
@@ -506,13 +530,21 @@ public class ResultSetProcessorAggregateGrouped implements ResultSetProcessor
             }
 
             EventBean[] newEventsArr = (newEvents.isEmpty()) ? null : newEvents.toArray(new EventBean[newEvents.size()]);
-            EventBean[] oldEventsArr = (oldEvents.isEmpty()) ? null : oldEvents.toArray(new EventBean[oldEvents.size()]);
+            EventBean[] oldEventsArr = null;
+            if (isSelectRStream)
+            {
+                oldEventsArr = (oldEvents.isEmpty()) ? null : oldEvents.toArray(new EventBean[oldEvents.size()]);
+            }
+
             if (orderByProcessor != null)
             {
                 MultiKeyUntyped[] sortKeysNew = (newEventsSortKey.isEmpty()) ? null : newEventsSortKey.toArray(new MultiKeyUntyped[newEventsSortKey.size()]);
-                MultiKeyUntyped[] sortKeysOld = (oldEventsSortKey.isEmpty()) ? null : oldEventsSortKey.toArray(new MultiKeyUntyped[oldEventsSortKey.size()]);
                 newEventsArr = orderByProcessor.sort(newEventsArr, sortKeysNew);
-                oldEventsArr = orderByProcessor.sort(oldEventsArr, sortKeysOld);
+                if (isSelectRStream)
+                {
+                    MultiKeyUntyped[] sortKeysOld = (oldEventsSortKey.isEmpty()) ? null : oldEventsSortKey.toArray(new MultiKeyUntyped[oldEventsSortKey.size()]);
+                    oldEventsArr = orderByProcessor.sort(oldEventsArr, sortKeysOld);
+                }
             }
 
             if ((newEventsArr == null) && (oldEventsArr == null))
@@ -524,14 +556,21 @@ public class ResultSetProcessorAggregateGrouped implements ResultSetProcessor
         else if (outputLimitLimitType == OutputLimitLimitType.ALL)
         {
             List<EventBean> newEvents = new LinkedList<EventBean>();
-            List<EventBean> oldEvents = new LinkedList<EventBean>();
+            List<EventBean> oldEvents = null;
+            if (isSelectRStream)
+            {
+                oldEvents = new LinkedList<EventBean>();
+            }
 
             List<MultiKeyUntyped> newEventsSortKey = null;
             List<MultiKeyUntyped> oldEventsSortKey = null;
             if (orderByProcessor != null)
             {
                 newEventsSortKey = new LinkedList<MultiKeyUntyped>();
-                oldEventsSortKey = new LinkedList<MultiKeyUntyped>();
+                if (isSelectRStream)
+                {
+                    oldEventsSortKey = new LinkedList<MultiKeyUntyped>();
+                }
             }
 
             workCollection.clear();
@@ -544,7 +583,10 @@ public class ResultSetProcessorAggregateGrouped implements ResultSetProcessor
                 MultiKeyUntyped[] newDataMultiKey = generateGroupKeys(newData, true);
                 MultiKeyUntyped[] oldDataMultiKey = generateGroupKeys(oldData, false);
 
-                generateOutputBatchedJoin(oldData, oldDataMultiKey, false, generateSynthetic, oldEvents, oldEventsSortKey);
+                if (isSelectRStream)
+                {
+                    generateOutputBatchedJoin(oldData, oldDataMultiKey, false, generateSynthetic, oldEvents, oldEventsSortKey);
+                }
 
                 if (newData != null)
                 {
@@ -587,13 +629,21 @@ public class ResultSetProcessorAggregateGrouped implements ResultSetProcessor
             }
 
             EventBean[] newEventsArr = (newEvents.isEmpty()) ? null : newEvents.toArray(new EventBean[newEvents.size()]);
-            EventBean[] oldEventsArr = (oldEvents.isEmpty()) ? null : oldEvents.toArray(new EventBean[oldEvents.size()]);
+            EventBean[] oldEventsArr = null;
+            if (isSelectRStream)
+            {
+                oldEventsArr = (oldEvents.isEmpty()) ? null : oldEvents.toArray(new EventBean[oldEvents.size()]);
+            }
+
             if (orderByProcessor != null)
             {
                 MultiKeyUntyped[] sortKeysNew = (newEventsSortKey.isEmpty()) ? null : newEventsSortKey.toArray(new MultiKeyUntyped[newEventsSortKey.size()]);
-                MultiKeyUntyped[] sortKeysOld = (oldEventsSortKey.isEmpty()) ? null : oldEventsSortKey.toArray(new MultiKeyUntyped[oldEventsSortKey.size()]);
                 newEventsArr = orderByProcessor.sort(newEventsArr, sortKeysNew);
-                oldEventsArr = orderByProcessor.sort(oldEventsArr, sortKeysOld);
+                if (isSelectRStream)
+                {
+                    MultiKeyUntyped[] sortKeysOld = (oldEventsSortKey.isEmpty()) ? null : oldEventsSortKey.toArray(new MultiKeyUntyped[oldEventsSortKey.size()]);
+                    oldEventsArr = orderByProcessor.sort(oldEventsArr, sortKeysOld);
+                }
             }
 
             if ((newEventsArr == null) && (oldEventsArr == null))
@@ -605,14 +655,21 @@ public class ResultSetProcessorAggregateGrouped implements ResultSetProcessor
         else // (outputLimitLimitType == OutputLimitLimitType.LAST) Compute last per group
         {
             Map<MultiKeyUntyped, EventBean> lastPerGroupNew = new LinkedHashMap<MultiKeyUntyped, EventBean>();
-            Map<MultiKeyUntyped, EventBean> lastPerGroupOld = new LinkedHashMap<MultiKeyUntyped, EventBean>();
+            Map<MultiKeyUntyped, EventBean> lastPerGroupOld = null;
+            if (isSelectRStream)
+            {
+                lastPerGroupOld = new LinkedHashMap<MultiKeyUntyped, EventBean>();
+            }
 
             Map<MultiKeyUntyped, MultiKeyUntyped> newEventsSortKey = null; // group key to sort key
             Map<MultiKeyUntyped, MultiKeyUntyped> oldEventsSortKey = null;
             if (orderByProcessor != null)
             {
                 newEventsSortKey = new LinkedHashMap<MultiKeyUntyped, MultiKeyUntyped>();
-                oldEventsSortKey = new LinkedHashMap<MultiKeyUntyped, MultiKeyUntyped>();
+                if (isSelectRStream)
+                {
+                    oldEventsSortKey = new LinkedHashMap<MultiKeyUntyped, MultiKeyUntyped>();
+                }
             }
 
             for (UniformPair<Set<MultiKey<EventBean>>> pair : joinEventsSet)
@@ -623,7 +680,10 @@ public class ResultSetProcessorAggregateGrouped implements ResultSetProcessor
                 MultiKeyUntyped[] newDataMultiKey = generateGroupKeys(newData, true);
                 MultiKeyUntyped[] oldDataMultiKey = generateGroupKeys(oldData, false);
 
-                generateOutputBatchedJoin(oldData, oldDataMultiKey, false, generateSynthetic, lastPerGroupOld, oldEventsSortKey);
+                if (isSelectRStream)
+                {
+                    generateOutputBatchedJoin(oldData, oldDataMultiKey, false, generateSynthetic, lastPerGroupOld, oldEventsSortKey);
+                }
 
                 if (newData != null)
                 {
@@ -652,13 +712,21 @@ public class ResultSetProcessorAggregateGrouped implements ResultSetProcessor
             }
 
             EventBean[] newEventsArr = (lastPerGroupNew.isEmpty()) ? null : lastPerGroupNew.values().toArray(new EventBean[lastPerGroupNew.size()]);
-            EventBean[] oldEventsArr = (lastPerGroupOld.isEmpty()) ? null : lastPerGroupOld.values().toArray(new EventBean[lastPerGroupOld.size()]);
+            EventBean[] oldEventsArr = null;
+            if (isSelectRStream)
+            {
+                oldEventsArr = (lastPerGroupOld.isEmpty()) ? null : lastPerGroupOld.values().toArray(new EventBean[lastPerGroupOld.size()]);
+            }
+
             if (orderByProcessor != null)
             {
                 MultiKeyUntyped[] sortKeysNew = (newEventsSortKey.isEmpty()) ? null : newEventsSortKey.values().toArray(new MultiKeyUntyped[newEventsSortKey.size()]);
-                MultiKeyUntyped[] sortKeysOld = (oldEventsSortKey.isEmpty()) ? null : oldEventsSortKey.values().toArray(new MultiKeyUntyped[oldEventsSortKey.size()]);
                 newEventsArr = orderByProcessor.sort(newEventsArr, sortKeysNew);
-                oldEventsArr = orderByProcessor.sort(oldEventsArr, sortKeysOld);
+                if (isSelectRStream)
+                {
+                    MultiKeyUntyped[] sortKeysOld = (oldEventsSortKey.isEmpty()) ? null : oldEventsSortKey.values().toArray(new MultiKeyUntyped[oldEventsSortKey.size()]);
+                    oldEventsArr = orderByProcessor.sort(oldEventsArr, sortKeysOld);
+                }
             }
 
             if ((newEventsArr == null) && (oldEventsArr == null))
@@ -676,13 +744,21 @@ public class ResultSetProcessorAggregateGrouped implements ResultSetProcessor
         if (outputLimitLimitType == OutputLimitLimitType.DEFAULT)
         {
             List<EventBean> newEvents = new LinkedList<EventBean>();
-            List<EventBean> oldEvents = new LinkedList<EventBean>();
+            List<EventBean> oldEvents = null;
+            if (isSelectRStream)
+            {
+                oldEvents = new LinkedList<EventBean>();
+            }
+
             List<MultiKeyUntyped> newEventsSortKey = null;
             List<MultiKeyUntyped> oldEventsSortKey = null;
             if (orderByProcessor != null)
             {
                 newEventsSortKey = new LinkedList<MultiKeyUntyped>();
-                oldEventsSortKey = new LinkedList<MultiKeyUntyped>();
+                if (isSelectRStream)
+                {
+                    oldEventsSortKey = new LinkedList<MultiKeyUntyped>();
+                }
             }
 
             for (UniformPair<EventBean[]> pair : viewEventsList)
@@ -693,7 +769,10 @@ public class ResultSetProcessorAggregateGrouped implements ResultSetProcessor
                 MultiKeyUntyped[] newDataMultiKey = generateGroupKeys(newData, true);
                 MultiKeyUntyped[] oldDataMultiKey = generateGroupKeys(oldData, false);
 
-                generateOutputBatchedView(oldData, oldDataMultiKey, false, generateSynthetic, oldEvents, oldEventsSortKey);
+                if (isSelectRStream)
+                {
+                    generateOutputBatchedView(oldData, oldDataMultiKey, false, generateSynthetic, oldEvents, oldEventsSortKey);
+                }
 
                 if (newData != null)
                 {
@@ -722,13 +801,21 @@ public class ResultSetProcessorAggregateGrouped implements ResultSetProcessor
             }
 
             EventBean[] newEventsArr = (newEvents.isEmpty()) ? null : newEvents.toArray(new EventBean[newEvents.size()]);
-            EventBean[] oldEventsArr = (oldEvents.isEmpty()) ? null : oldEvents.toArray(new EventBean[oldEvents.size()]);
+            EventBean[] oldEventsArr = null;
+            if (isSelectRStream)
+            {
+                oldEventsArr = (oldEvents.isEmpty()) ? null : oldEvents.toArray(new EventBean[oldEvents.size()]);
+            }
+
             if (orderByProcessor != null)
             {
                 MultiKeyUntyped[] sortKeysNew = (newEventsSortKey.isEmpty()) ? null : newEventsSortKey.toArray(new MultiKeyUntyped[newEventsSortKey.size()]);
-                MultiKeyUntyped[] sortKeysOld = (oldEventsSortKey.isEmpty()) ? null : oldEventsSortKey.toArray(new MultiKeyUntyped[oldEventsSortKey.size()]);
                 newEventsArr = orderByProcessor.sort(newEventsArr, sortKeysNew);
-                oldEventsArr = orderByProcessor.sort(oldEventsArr, sortKeysOld);
+                if (isSelectRStream)
+                {
+                    MultiKeyUntyped[] sortKeysOld = (oldEventsSortKey.isEmpty()) ? null : oldEventsSortKey.toArray(new MultiKeyUntyped[oldEventsSortKey.size()]);
+                    oldEventsArr = orderByProcessor.sort(oldEventsArr, sortKeysOld);
+                }
             }
 
             if ((newEventsArr == null) && (oldEventsArr == null))
@@ -740,14 +827,21 @@ public class ResultSetProcessorAggregateGrouped implements ResultSetProcessor
         else if (outputLimitLimitType == OutputLimitLimitType.ALL)
         {
             List<EventBean> newEvents = new LinkedList<EventBean>();
-            List<EventBean> oldEvents = new LinkedList<EventBean>();
+            List<EventBean> oldEvents = null;
+            if (isSelectRStream)
+            {
+                oldEvents = new LinkedList<EventBean>();
+            }
 
             List<MultiKeyUntyped> newEventsSortKey = null;
             List<MultiKeyUntyped> oldEventsSortKey = null;
             if (orderByProcessor != null)
             {
                 newEventsSortKey = new LinkedList<MultiKeyUntyped>();
-                oldEventsSortKey = new LinkedList<MultiKeyUntyped>();
+                if (isSelectRStream)
+                {
+                    oldEventsSortKey = new LinkedList<MultiKeyUntyped>();
+                }
             }
 
             workCollection.clear();
@@ -760,7 +854,10 @@ public class ResultSetProcessorAggregateGrouped implements ResultSetProcessor
                 MultiKeyUntyped[] newDataMultiKey = generateGroupKeys(newData, true);
                 MultiKeyUntyped[] oldDataMultiKey = generateGroupKeys(oldData, false);
 
-                generateOutputBatchedView(oldData, oldDataMultiKey, false, generateSynthetic, oldEvents, oldEventsSortKey);
+                if (isSelectRStream)
+                {
+                    generateOutputBatchedView(oldData, oldDataMultiKey, false, generateSynthetic, oldEvents, oldEventsSortKey);
+                }
 
                 eventsPerStream = new EventBean[1];
                 if (newData != null)
@@ -806,13 +903,21 @@ public class ResultSetProcessorAggregateGrouped implements ResultSetProcessor
             }
 
             EventBean[] newEventsArr = (newEvents.isEmpty()) ? null : newEvents.toArray(new EventBean[newEvents.size()]);
-            EventBean[] oldEventsArr = (oldEvents.isEmpty()) ? null : oldEvents.toArray(new EventBean[oldEvents.size()]);
+            EventBean[] oldEventsArr = null;
+            if (isSelectRStream)
+            {
+                oldEventsArr = (oldEvents.isEmpty()) ? null : oldEvents.toArray(new EventBean[oldEvents.size()]);
+            }
+
             if (orderByProcessor != null)
             {
                 MultiKeyUntyped[] sortKeysNew = (newEventsSortKey.isEmpty()) ? null : newEventsSortKey.toArray(new MultiKeyUntyped[newEventsSortKey.size()]);
-                MultiKeyUntyped[] sortKeysOld = (oldEventsSortKey.isEmpty()) ? null : oldEventsSortKey.toArray(new MultiKeyUntyped[oldEventsSortKey.size()]);
                 newEventsArr = orderByProcessor.sort(newEventsArr, sortKeysNew);
-                oldEventsArr = orderByProcessor.sort(oldEventsArr, sortKeysOld);
+                if (isSelectRStream)
+                {
+                    MultiKeyUntyped[] sortKeysOld = (oldEventsSortKey.isEmpty()) ? null : oldEventsSortKey.toArray(new MultiKeyUntyped[oldEventsSortKey.size()]);
+                    oldEventsArr = orderByProcessor.sort(oldEventsArr, sortKeysOld);
+                }
             }
 
             if ((newEventsArr == null) && (oldEventsArr == null))
@@ -824,14 +929,21 @@ public class ResultSetProcessorAggregateGrouped implements ResultSetProcessor
         else // (outputLimitLimitType == OutputLimitLimitType.LAST) Compute last per group
         {
             Map<MultiKeyUntyped, EventBean> lastPerGroupNew = new LinkedHashMap<MultiKeyUntyped, EventBean>();
-            Map<MultiKeyUntyped, EventBean> lastPerGroupOld = new LinkedHashMap<MultiKeyUntyped, EventBean>();
+            Map<MultiKeyUntyped, EventBean> lastPerGroupOld = null;
+            if (isSelectRStream)
+            {
+                lastPerGroupOld = new LinkedHashMap<MultiKeyUntyped, EventBean>();
+            }
 
             Map<MultiKeyUntyped, MultiKeyUntyped> newEventsSortKey = null; // group key to sort key
             Map<MultiKeyUntyped, MultiKeyUntyped> oldEventsSortKey = null;
             if (orderByProcessor != null)
             {
                 newEventsSortKey = new LinkedHashMap<MultiKeyUntyped, MultiKeyUntyped>();
-                oldEventsSortKey = new LinkedHashMap<MultiKeyUntyped, MultiKeyUntyped>();
+                if (isSelectRStream)
+                {
+                    oldEventsSortKey = new LinkedHashMap<MultiKeyUntyped, MultiKeyUntyped>();
+                }
             }
 
             for (UniformPair<EventBean[]> pair : viewEventsList)
@@ -842,7 +954,10 @@ public class ResultSetProcessorAggregateGrouped implements ResultSetProcessor
                 MultiKeyUntyped[] newDataMultiKey = generateGroupKeys(newData, true);
                 MultiKeyUntyped[] oldDataMultiKey = generateGroupKeys(oldData, false);
 
-                generateOutputBatchedView(oldData, oldDataMultiKey, false, generateSynthetic, lastPerGroupOld, oldEventsSortKey);
+                if (isSelectRStream)
+                {
+                    generateOutputBatchedView(oldData, oldDataMultiKey, false, generateSynthetic, lastPerGroupOld, oldEventsSortKey);
+                }
 
                 eventsPerStream = new EventBean[1];
                 if (newData != null)
@@ -874,13 +989,21 @@ public class ResultSetProcessorAggregateGrouped implements ResultSetProcessor
             }
 
             EventBean[] newEventsArr = (lastPerGroupNew.isEmpty()) ? null : lastPerGroupNew.values().toArray(new EventBean[lastPerGroupNew.size()]);
-            EventBean[] oldEventsArr = (lastPerGroupOld.isEmpty()) ? null : lastPerGroupOld.values().toArray(new EventBean[lastPerGroupOld.size()]);
+            EventBean[] oldEventsArr = null;
+            if (isSelectRStream)
+            {
+                oldEventsArr = (lastPerGroupOld.isEmpty()) ? null : lastPerGroupOld.values().toArray(new EventBean[lastPerGroupOld.size()]);
+            }
+
             if (orderByProcessor != null)
             {
                 MultiKeyUntyped[] sortKeysNew = (newEventsSortKey.isEmpty()) ? null : newEventsSortKey.values().toArray(new MultiKeyUntyped[newEventsSortKey.size()]);
-                MultiKeyUntyped[] sortKeysOld = (oldEventsSortKey.isEmpty()) ? null : oldEventsSortKey.values().toArray(new MultiKeyUntyped[oldEventsSortKey.size()]);
                 newEventsArr = orderByProcessor.sort(newEventsArr, sortKeysNew);
-                oldEventsArr = orderByProcessor.sort(oldEventsArr, sortKeysOld);
+                if (isSelectRStream)
+                {
+                    MultiKeyUntyped[] sortKeysOld = (oldEventsSortKey.isEmpty()) ? null : oldEventsSortKey.values().toArray(new MultiKeyUntyped[oldEventsSortKey.size()]);
+                    oldEventsArr = orderByProcessor.sort(oldEventsArr, sortKeysOld);
+                }
             }
 
             if ((newEventsArr == null) && (oldEventsArr == null))

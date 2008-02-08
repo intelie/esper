@@ -29,7 +29,7 @@ public class TestGroupByTimeBatch extends TestCase
     public void testTimeBatchRowForAllNoJoin()
     {
         sendTimer(0);
-        String stmtText = "select sum(price) as sumPrice from MarketData.win:time_batch(1 sec)";
+        String stmtText = "select irstream sum(price) as sumPrice from MarketData.win:time_batch(1 sec)";
         EPStatement stmt = epService.getEPAdministrator().createEQL(stmtText);
         stmt.addListener(listener);
 
@@ -59,7 +59,7 @@ public class TestGroupByTimeBatch extends TestCase
     public void testTimeBatchRowForAllJoin()
     {
         sendTimer(0);
-        String stmtText = "select sum(price) as sumPrice from MarketData.win:time_batch(1 sec) as S0, SupportBean as S1 where S0.symbol = S1.string";
+        String stmtText = "select irstream sum(price) as sumPrice from MarketData.win:time_batch(1 sec) as S0, SupportBean as S1 where S0.symbol = S1.string";
         EPStatement stmt = epService.getEPAdministrator().createEQL(stmtText);
         stmt.addListener(listener);
 
@@ -92,7 +92,7 @@ public class TestGroupByTimeBatch extends TestCase
     public void testTimeBatchAggregateAllNoJoin()
     {
         sendTimer(0);
-        String stmtText = "select symbol, sum(price) as sumPrice from MarketData.win:time_batch(1 sec)";
+        String stmtText = "select irstream symbol, sum(price) as sumPrice from MarketData.win:time_batch(1 sec)";
         EPStatement stmt = epService.getEPAdministrator().createEQL(stmtText);
         stmt.addListener(listener);
 
@@ -126,7 +126,7 @@ public class TestGroupByTimeBatch extends TestCase
     public void testTimeBatchAggregateAllJoin()
     {
         sendTimer(0);
-        String stmtText = "select symbol, sum(price) as sumPrice from MarketData.win:time_batch(1 sec) as S0, SupportBean as S1 where S0.symbol = S1.string";
+        String stmtText = "select irstream symbol, sum(price) as sumPrice from MarketData.win:time_batch(1 sec) as S0, SupportBean as S1 where S0.symbol = S1.string";
         EPStatement stmt = epService.getEPAdministrator().createEQL(stmtText);
         stmt.addListener(listener);
 
@@ -163,7 +163,7 @@ public class TestGroupByTimeBatch extends TestCase
     public void testTimeBatchRowPerGroupNoJoin()
     {
         sendTimer(0);
-        String stmtText = "select symbol, sum(price) as sumPrice from MarketData.win:time_batch(1 sec) group by symbol";
+        String stmtText = "select irstream symbol, sum(price) as sumPrice from MarketData.win:time_batch(1 sec) group by symbol";
         EPStatement stmt = epService.getEPAdministrator().createEQL(stmtText);
         stmt.addListener(listener);
 
@@ -196,7 +196,7 @@ public class TestGroupByTimeBatch extends TestCase
     public void testTimeBatchRowPerGroupJoin()
     {
         sendTimer(0);
-        String stmtText = "select symbol, sum(price) as sumPrice " +
+        String stmtText = "select irstream symbol, sum(price) as sumPrice " +
                          " from MarketData.win:time_batch(1 sec) as S0, SupportBean as S1" +
                          " where S0.symbol = S1.string " +
                          " group by symbol";
@@ -235,7 +235,7 @@ public class TestGroupByTimeBatch extends TestCase
     public void testTimeBatchAggrGroupedNoJoin()
     {
         sendTimer(0);
-        String stmtText = "select symbol, sum(price) as sumPrice, volume from MarketData.win:time_batch(1 sec) group by symbol";
+        String stmtText = "select irstream symbol, sum(price) as sumPrice, volume from MarketData.win:time_batch(1 sec) group by symbol";
         EPStatement stmt = epService.getEPAdministrator().createEQL(stmtText);
         stmt.addListener(listener);
 
@@ -265,7 +265,7 @@ public class TestGroupByTimeBatch extends TestCase
     public void testTimeBatchAggrGroupedJoin()
     {
         sendTimer(0);
-        String stmtText = "select symbol, sum(price) as sumPrice, volume " +
+        String stmtText = "select irstream symbol, sum(price) as sumPrice, volume " +
                           "from MarketData.win:time_batch(1 sec) as S0, SupportBean as S1" +
                           " where S0.symbol = S1.string " +
                           " group by symbol";

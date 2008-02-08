@@ -223,7 +223,7 @@ public class TestNamedWindowJoin extends TestCase
 
         // create consumer
         String[] fields = new String[] {"symbol", "a", "b"};
-        String stmtTextSelectOne = "select symbol, a, b " +
+        String stmtTextSelectOne = "select irstream symbol, a, b " +
                                    " from " + SupportMarketDataBean.class.getName() + ".win:length(10) as s0," +
                                              "MyWindow as s1 where s1.a = symbol";
         EPStatement stmtSelectOne = epService.getEPAdministrator().createEQL(stmtTextSelectOne);
@@ -296,7 +296,7 @@ public class TestNamedWindowJoin extends TestCase
         epService.getEPAdministrator().createEQL(stmtTextInsert);
 
         // create consumers
-        String stmtTextSelectOne = "select a1, b1, a2, b2 " +
+        String stmtTextSelectOne = "select irstream a1, b1, a2, b2 " +
                                    " from MyWindowOne as s0," +
                                          "MyWindowTwo as s1 where s0.a1 = s1.a2";
         EPStatement stmtSelectOne = epService.getEPAdministrator().createEQL(stmtTextSelectOne);
@@ -354,7 +354,7 @@ public class TestNamedWindowJoin extends TestCase
         epService.getEPAdministrator().createEQL(stmtTextInsert);
 
         // create consumers
-        String stmtTextSelectOne = "select s0.a as a0, s0.b as b0, s1.a as a1, s1.b as b1 " +
+        String stmtTextSelectOne = "select irstream s0.a as a0, s0.b as b0, s1.a as a1, s1.b as b1 " +
                                    " from MyWindow as s0," +
                                          "MyWindow as s1 where s0.a = s1.a";
         EPStatement stmtSelectOne = epService.getEPAdministrator().createEQL(stmtTextSelectOne);
@@ -402,7 +402,7 @@ public class TestNamedWindowJoin extends TestCase
         epService.getEPAdministrator().createEQL(stmtTextInsert);
 
         // create consumers
-        String stmtTextSelectOne = "select a1, b1, a2, b2 " +
+        String stmtTextSelectOne = "select irstream a1, b1, a2, b2 " +
                                    " from MyWindowOne as s0," +
                                          "MyWindowTwo as s1 where s0.a1 = s1.a2";
         EPStatement stmtSelectOne = epService.getEPAdministrator().createEQL(stmtTextSelectOne);

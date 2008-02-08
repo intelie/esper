@@ -48,7 +48,7 @@ public class TestDatabaseJoinOptions extends TestCase
     {
         ConfigurationDBRef dbconfig = getDBConfig();
         dbconfig.setColumnChangeCase(ConfigurationDBRef.ColumnChangeCaseEnum.LOWERCASE);
-        dbconfig.addJavaSqlTypesBinding(java.sql.Types.INTEGER, "string");
+        dbconfig.addSqlTypesBinding(java.sql.Types.INTEGER, "string");
         Configuration configuration = getConfig(dbconfig);
         epService = EPServiceProviderManager.getDefaultProvider(configuration);
         epService.initialize();

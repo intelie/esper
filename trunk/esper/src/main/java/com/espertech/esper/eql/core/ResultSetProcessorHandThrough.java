@@ -22,6 +22,7 @@ public class ResultSetProcessorHandThrough extends ResultSetProcessorBaseSimple
 {
     private static final Log log = LogFactory.getLog(ResultSetProcessorHandThrough.class);
 
+    private final boolean isSelectRStream;
     private final SelectExprProcessor selectExprProcessor;
     private final Set<MultiKey<EventBean>> emptyRowSet = new HashSet<MultiKey<EventBean>>();
 
@@ -30,9 +31,10 @@ public class ResultSetProcessorHandThrough extends ResultSetProcessorBaseSimple
      * @param selectExprProcessor - for processing the select expression and generting the final output rows
      * a row per group even if groups didn't change
      */
-    public ResultSetProcessorHandThrough(SelectExprProcessor selectExprProcessor)
+    public ResultSetProcessorHandThrough(SelectExprProcessor selectExprProcessor, boolean isSelectRStream)
     {
         this.selectExprProcessor = selectExprProcessor;
+        this.isSelectRStream = isSelectRStream;
     }
 
     public EventType getResultEventType()
@@ -42,10 +44,13 @@ public class ResultSetProcessorHandThrough extends ResultSetProcessorBaseSimple
 
     public UniformPair<EventBean[]> processJoinResult(Set<MultiKey<EventBean>> newEvents, Set<MultiKey<EventBean>> oldEvents, boolean isSynthesize)
     {
-        EventBean[] selectOldEvents;
+        EventBean[] selectOldEvents = null;
         EventBean[] selectNewEvents;
 
-        selectOldEvents = getSelectEventsNoHaving(selectExprProcessor, oldEvents, false, isSynthesize);
+        if (isSelectRStream)
+        {
+            selectOldEvents = getSelectEventsNoHaving(selectExprProcessor, oldEvents, false, isSynthesize);
+        }
         selectNewEvents = getSelectEventsNoHaving(selectExprProcessor, newEvents, true, isSynthesize);
 
         return new UniformPair<EventBean[]>(selectNewEvents, selectOldEvents);
@@ -53,7 +58,12 @@ public class ResultSetProcessorHandThrough extends ResultSetProcessorBaseSimple
 
     public UniformPair<EventBean[]> processViewResult(EventBean[] newData, EventBean[] oldData, boolean isSynthesize)
     {
-        EventBean[] selectOldEvents = getSelectEventsNoHaving(selectExprProcessor, oldData, false, isSynthesize);
+        EventBean[] selectOldEvents = null;
+        
+        if (isSelectRStream)
+        {
+            selectOldEvents = getSelectEventsNoHaving(selectExprProcessor, oldData, false, isSynthesize);
+        }
         EventBean[] selectNewEvents = getSelectEventsNoHaving(selectExprProcessor, newData, true, isSynthesize);
 
         return new UniformPair<EventBean[]>(selectNewEvents, selectOldEvents);

@@ -50,11 +50,11 @@ public class TestNamedWindowOM extends TestCase
         EPStatementObjectModel modelInsert = epService.getEPAdministrator().compileEQL(stmtTextInsert);
         EPStatement stmtInsert = epService.getEPAdministrator().create(modelInsert);
 
-        String stmtTextSelectOne = "select key, value*2 as value from MyWindow(key != null)";
+        String stmtTextSelectOne = "select irstream key, value*2 as value from MyWindow(key != null)";
         EPStatementObjectModel modelSelect = epService.getEPAdministrator().compileEQL(stmtTextSelectOne);
         EPStatement stmtSelectOne = epService.getEPAdministrator().create(modelSelect);
         stmtSelectOne.addListener(listenerStmtOne);
-        assertEquals("select key, (value * 2) as value from MyWindow((key != null))", modelSelect.toEQL());
+        assertEquals("select irstream key, (value * 2) as value from MyWindow((key != null))", modelSelect.toEQL());
 
         // send events
         sendSupportBean("E1", 10L);
@@ -129,14 +129,14 @@ public class TestNamedWindowOM extends TestCase
         // Consumer statement object model
         model = new EPStatementObjectModel();
         Expression multi = Expressions.multiply(Expressions.property("value"), Expressions.constant(2));
-        model.setSelectClause(SelectClause.create()
+        model.setSelectClause(SelectClause.create().setStreamSelector(StreamSelector.RSTREAM_ISTREAM_BOTH)
                 .add("key")
                 .add(multi, "value"));
         model.setFromClause(FromClause.create(FilterStream.create("MyWindow", Expressions.isNotNull("value"))));
 
         EPStatement stmtSelectOne = epService.getEPAdministrator().create(model);
         stmtSelectOne.addListener(listenerStmtOne);
-        String stmtTextSelectOne = "select key, (value * 2) as value from MyWindow((value != null))";
+        String stmtTextSelectOne = "select irstream key, (value * 2) as value from MyWindow((value != null))";
         assertEquals(stmtTextSelectOne, model.toEQL());
 
         // send events

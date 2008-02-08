@@ -76,7 +76,7 @@ public class TestViewTimeInterval extends TestCase
     {
         // Set up a time window with a unique view attached
         EPStatement view = epService.getEPAdministrator().createEQL(
-                "select * from " + SupportBean.class.getName() +
+                "select irstream * from " + SupportBean.class.getName() +
                 ".win:ext_timed(longPrimitive, 10 minutes)");
         testListener = new SupportUpdateListener();
         view.addListener(testListener);
@@ -96,7 +96,7 @@ public class TestViewTimeInterval extends TestCase
     {
         // Set up a time window with a unique view attached
         EPStatement view = epService.getEPAdministrator().createEQL(
-                "select * from " + SupportBean.class.getName() +
+                "select irstream * from " + SupportBean.class.getName() +
                 ".win:time(" + intervalSpec + ")");
         testListener = new SupportUpdateListener();
         view.addListener(testListener);

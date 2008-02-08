@@ -33,7 +33,7 @@ public class TestAggregateRowForAllHaving extends TestCase
 
     public void testSumOneView()
     {
-        String viewExpr = "select sum(longBoxed) as mySum " +
+        String viewExpr = "select irstream sum(longBoxed) as mySum " +
                           "from " + SupportBean.class.getName() + ".win:time(10 seconds) " +
                           "having sum(longBoxed) > 10";
         selectTestView = epService.getEPAdministrator().createEQL(viewExpr);
@@ -44,7 +44,7 @@ public class TestAggregateRowForAllHaving extends TestCase
 
     public void testSumJoin()
     {
-        String viewExpr = "select sum(longBoxed) as mySum " +
+        String viewExpr = "select irstream sum(longBoxed) as mySum " +
                           "from " + SupportBeanString.class.getName() + ".win:time(10 seconds) as one, " +
                                     SupportBean.class.getName() + ".win:time(10 seconds) as two " +
                           "where one.string = two.string " +

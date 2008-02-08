@@ -19,6 +19,7 @@ public class ResultSetProcessorSimple extends ResultSetProcessorBaseSimple
 {
     private static final Log log = LogFactory.getLog(ResultSetProcessorSimple.class);
 
+    private final boolean isSelectRStream;
     private final SelectExprProcessor selectExprProcessor;
     private final OrderByProcessor orderByProcessor;
     private final ExprNode optionalHavingExpr;
@@ -32,11 +33,13 @@ public class ResultSetProcessorSimple extends ResultSetProcessorBaseSimple
      */
     public ResultSetProcessorSimple(SelectExprProcessor selectExprProcessor,
                                     OrderByProcessor orderByProcessor,
-                                    ExprNode optionalHavingNode)
+                                    ExprNode optionalHavingNode,
+                                    boolean isSelectRStream)
     {
         this.selectExprProcessor = selectExprProcessor;
         this.orderByProcessor = orderByProcessor;
         this.optionalHavingExpr = optionalHavingNode;
+        this.isSelectRStream = isSelectRStream;
     }
 
     public EventType getResultEventType()
@@ -46,17 +49,23 @@ public class ResultSetProcessorSimple extends ResultSetProcessorBaseSimple
 
     public UniformPair<EventBean[]> processJoinResult(Set<MultiKey<EventBean>> newEvents, Set<MultiKey<EventBean>> oldEvents, boolean isSynthesize)
     {
-        EventBean[] selectOldEvents;
+        EventBean[] selectOldEvents = null;
         EventBean[] selectNewEvents;
 
         if (optionalHavingExpr == null)
         {
-            selectOldEvents = getSelectEventsNoHaving(selectExprProcessor, orderByProcessor, oldEvents, false, isSynthesize);
+            if (isSelectRStream)
+            {
+                selectOldEvents = getSelectEventsNoHaving(selectExprProcessor, orderByProcessor, oldEvents, false, isSynthesize);
+            }
             selectNewEvents = getSelectEventsNoHaving(selectExprProcessor, orderByProcessor, newEvents, true, isSynthesize);
         }
         else
         {
-            selectOldEvents = getSelectEventsHaving(selectExprProcessor, orderByProcessor, oldEvents, optionalHavingExpr, false, isSynthesize);
+            if (isSelectRStream)
+            {
+                selectOldEvents = getSelectEventsHaving(selectExprProcessor, orderByProcessor, oldEvents, optionalHavingExpr, false, isSynthesize);
+            }
             selectNewEvents = getSelectEventsHaving(selectExprProcessor, orderByProcessor, newEvents, optionalHavingExpr, true, isSynthesize);
         }
 
@@ -65,16 +74,22 @@ public class ResultSetProcessorSimple extends ResultSetProcessorBaseSimple
 
     public UniformPair<EventBean[]> processViewResult(EventBean[] newData, EventBean[] oldData, boolean isSynthesize)
     {
-        EventBean[] selectOldEvents;
+        EventBean[] selectOldEvents = null;
         EventBean[] selectNewEvents;
         if (optionalHavingExpr == null)
         {
-            selectOldEvents = getSelectEventsNoHaving(selectExprProcessor, orderByProcessor, oldData, false, isSynthesize);
+            if (isSelectRStream)
+            {
+                selectOldEvents = getSelectEventsNoHaving(selectExprProcessor, orderByProcessor, oldData, false, isSynthesize);
+            }
             selectNewEvents = getSelectEventsNoHaving(selectExprProcessor, orderByProcessor, newData, true, isSynthesize);
         }
         else
         {
-            selectOldEvents = getSelectEventsHaving(selectExprProcessor, orderByProcessor, oldData, optionalHavingExpr, false, isSynthesize);
+            if (isSelectRStream)
+            {
+                selectOldEvents = getSelectEventsHaving(selectExprProcessor, orderByProcessor, oldData, optionalHavingExpr, false, isSynthesize);
+            }
             selectNewEvents = getSelectEventsHaving(selectExprProcessor, orderByProcessor, newData, optionalHavingExpr, true, isSynthesize);
         }
 

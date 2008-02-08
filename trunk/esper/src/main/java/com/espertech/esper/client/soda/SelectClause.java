@@ -31,7 +31,7 @@ public class SelectClause implements Serializable
     {
         List<SelectClauseElement> selectList = new ArrayList<SelectClauseElement>();
         selectList.add(new SelectClauseWildcard());
-        return new SelectClause(StreamSelector.RSTREAM_ISTREAM_BOTH, selectList);
+        return new SelectClause(StreamSelector.ISTREAM_ONLY, selectList);
     }
 
     /**
@@ -40,7 +40,7 @@ public class SelectClause implements Serializable
      */
     public static SelectClause create()
     {
-        return new SelectClause(StreamSelector.RSTREAM_ISTREAM_BOTH, new ArrayList<SelectClauseElement>());
+        return new SelectClause(StreamSelector.ISTREAM_ONLY, new ArrayList<SelectClauseElement>());
     }
 
     /**
@@ -55,7 +55,7 @@ public class SelectClause implements Serializable
         {
             selectList.add(new SelectClauseExpression(new PropertyValueExpression(name)));
         }
-        return new SelectClause(StreamSelector.RSTREAM_ISTREAM_BOTH, selectList);
+        return new SelectClause(StreamSelector.ISTREAM_ONLY, selectList);
     }
 
     /**
@@ -67,7 +67,7 @@ public class SelectClause implements Serializable
     {
         List<SelectClauseElement> selectList = new ArrayList<SelectClauseElement>();
         selectList.add(new SelectClauseStreamWildcard(streamAliasName, null));
-        return new SelectClause(StreamSelector.RSTREAM_ISTREAM_BOTH, selectList);
+        return new SelectClause(StreamSelector.ISTREAM_ONLY, selectList);
     }
 
     /**
@@ -223,9 +223,10 @@ public class SelectClause implements Serializable
      * Sets the stream selector.
      * @param streamSelector stream selector to set
      */
-    public void setStreamSelector(StreamSelector streamSelector)
+    public SelectClause setStreamSelector(StreamSelector streamSelector)
     {
         this.streamSelector = streamSelector;
+        return this;
     }
 
     /**
@@ -247,11 +248,15 @@ public class SelectClause implements Serializable
 
         if (streamSelector == StreamSelector.ISTREAM_ONLY)
         {
-            writer.write("istream ");
+            // the default, no action
         }
         else if (streamSelector == StreamSelector.RSTREAM_ONLY)
         {
             writer.write("rstream ");
+        }
+        else if (streamSelector == StreamSelector.RSTREAM_ISTREAM_BOTH)
+        {
+            writer.write("irstream ");
         }
 
         String delimiter = "";

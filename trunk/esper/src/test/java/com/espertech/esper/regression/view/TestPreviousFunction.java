@@ -28,7 +28,7 @@ public class TestPreviousFunction extends TestCase
 
     public void testPrevCountStarWithStaticMethod()
     {
-        String text = "select count(*) as total, " +
+        String text = "select irstream count(*) as total, " +
                       "prev(" + TestPreviousFunction.class.getName() + ".intToLong(count(*)) - 1, price) as firstPrice from " + SupportMarketDataBean.class.getName() + ".win:time(60)";
         EPStatement stmt = epService.getEPAdministrator().createEQL(text);
         stmt.addListener(testListener);
@@ -38,7 +38,7 @@ public class TestPreviousFunction extends TestCase
 
     public void testPrevCountStar()
     {
-        String text = "select count(*) as total, " +
+        String text = "select irstream count(*) as total, " +
                       "prev(count(*) - 1, price) as firstPrice from " + SupportMarketDataBean.class.getName() + ".win:time(60)";
         EPStatement stmt = epService.getEPAdministrator().createEQL(text);
         stmt.addListener(testListener);
@@ -206,7 +206,7 @@ public class TestPreviousFunction extends TestCase
 
     public void testLengthBatchPerGroup()
     {
-        String viewExpr = "select symbol, prev(1, price) as prevPrice, prev(2, price) as prevPrevPrice " +
+        String viewExpr = "select irstream symbol, prev(1, price) as prevPrice, prev(2, price) as prevPrevPrice " +
                           "from " + SupportMarketDataBean.class.getName() + ".std:groupby(symbol).win:length_batch(3) ";
 
         EPStatement selectTestView = epService.getEPAdministrator().createEQL(viewExpr);
@@ -291,7 +291,7 @@ public class TestPreviousFunction extends TestCase
 
     public void testPreviousTimeWindow()
     {
-        String viewExpr = "select symbol as currSymbol, " +
+        String viewExpr = "select irstream symbol as currSymbol, " +
                           " prev(2, symbol) as prevSymbol, " +
                           " prev(2, price) as prevPrice " +
                           "from " + SupportMarketDataBean.class.getName() + ".win:time(1 min) ";
@@ -357,7 +357,7 @@ public class TestPreviousFunction extends TestCase
 
     public void testPreviousExtTimedWindow()
     {
-        String viewExpr = "select symbol as currSymbol, " +
+        String viewExpr = "select irstream symbol as currSymbol, " +
                           " prev(2, symbol) as prevSymbol, " +
                           " prev(2, price) as prevPrice " +
                           "from " + SupportMarketDataBean.class.getName() + ".win:ext_timed(volume, 1 min) ";
@@ -400,7 +400,7 @@ public class TestPreviousFunction extends TestCase
 
     public void testPreviousTimeBatchWindow()
     {
-        String viewExpr = "select symbol as currSymbol, " +
+        String viewExpr = "select irstream symbol as currSymbol, " +
                           " prev(2, symbol) as prevSymbol, " +
                           " prev(2, price) as prevPrice " +
                           "from " + SupportMarketDataBean.class.getName() + ".win:time_batch(1 min) ";
@@ -494,7 +494,7 @@ public class TestPreviousFunction extends TestCase
 
     public void testPreviousLengthWindow()
     {
-        String viewExpr =   "select symbol as currSymbol, " +
+        String viewExpr =   "select irstream symbol as currSymbol, " +
                             "prev(0, symbol) as prev0Symbol, " +
                             "prev(1, symbol) as prev1Symbol, " +
                             "prev(2, symbol) as prev2Symbol, " +
@@ -525,7 +525,7 @@ public class TestPreviousFunction extends TestCase
 
     public void testPreviousLengthBatch()
     {
-        String viewExpr =   "select symbol as currSymbol, " +
+        String viewExpr =   "select irstream symbol as currSymbol, " +
                             "prev(0, symbol) as prev0Symbol, " +
                             "prev(1, symbol) as prev1Symbol, " +
                             "prev(2, symbol) as prev2Symbol, " +

@@ -123,13 +123,13 @@ public class TestFromClauseMethod extends TestCase
 
     public void testArrayWithArg()
     {
-        String joinStatement = "select id, string from " +
+        String joinStatement = "select irstream id, string from " +
                 SupportBean.class.getName() + "().win:length(3) as s1, " +
                 " method:com.espertech.esper.support.eql.SupportStaticMethodLib.fetchArrayGen(intPrimitive)";
         EPStatement stmt = epService.getEPAdministrator().createEQL(joinStatement);
         tryArrayWithArg(stmt);
 
-        joinStatement = "select id, string from " +
+        joinStatement = "select irstream id, string from " +
                 "method:com.espertech.esper.support.eql.SupportStaticMethodLib.fetchArrayGen(intPrimitive) as s0, " +
                 SupportBean.class.getName() + ".win:length(3)";
         stmt = epService.getEPAdministrator().createEQL(joinStatement);
@@ -141,7 +141,7 @@ public class TestFromClauseMethod extends TestCase
         tryArrayWithArg(stmt);
 
         model = new EPStatementObjectModel();
-        model.setSelectClause(SelectClause.create("id", "string"));
+        model.setSelectClause(SelectClause.create("id", "string").setStreamSelector(StreamSelector.RSTREAM_ISTREAM_BOTH));
         model.setFromClause(FromClause.create()
             .add(MethodInvocationStream.create(SupportStaticMethodLib.class.getName(), "fetchArrayGen", "s0")
                 .addParameter(Expressions.property("intPrimitive")))

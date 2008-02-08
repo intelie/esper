@@ -35,12 +35,12 @@ public class TestHavingNoGroupBy extends TestCase
     public void testSumOneViewOM() throws Exception
     {
         EPStatementObjectModel model = new EPStatementObjectModel();
-        model.setSelectClause(SelectClause.create("symbol", "price").add(Expressions.avg("price"), "avgPrice"));
+        model.setSelectClause(SelectClause.create("symbol", "price").setStreamSelector(StreamSelector.RSTREAM_ISTREAM_BOTH).add(Expressions.avg("price"), "avgPrice"));
         model.setFromClause(FromClause.create(FilterStream.create(SupportMarketDataBean.class.getName()).addView("win", "length", 5)));
         model.setHavingClause(Expressions.lt(Expressions.property("price"), Expressions.avg("price")));
         model = (EPStatementObjectModel) SerializableObjectCopier.copy(model);
 
-        String viewExpr = "select symbol, price, avg(price) as avgPrice " +
+        String viewExpr = "select irstream symbol, price, avg(price) as avgPrice " +
                           "from " + SupportMarketDataBean.class.getName() + ".win:length(5) " +
                           "having (price < avg(price))";
         assertEquals(viewExpr, model.toEQL());
@@ -53,7 +53,7 @@ public class TestHavingNoGroupBy extends TestCase
 
     public void testSumOneView()
     {
-        String viewExpr = "select symbol, price, avg(price) as avgPrice " +
+        String viewExpr = "select irstream symbol, price, avg(price) as avgPrice " +
                           "from " + SupportMarketDataBean.class.getName() + ".win:length(5) " +
                           "having price < avg(price)";
 
@@ -65,7 +65,7 @@ public class TestHavingNoGroupBy extends TestCase
 
     public void testSumJoin()
     {
-        String viewExpr = "select symbol, price, avg(price) as avgPrice " +
+        String viewExpr = "select irstream symbol, price, avg(price) as avgPrice " +
                           "from " + SupportBeanString.class.getName() + ".win:length(100) as one, " +
                                     SupportMarketDataBean.class.getName() + ".win:length(5) as two " +
                           "where one.string = two.symbol " +
@@ -81,7 +81,7 @@ public class TestHavingNoGroupBy extends TestCase
 
     public void testSumHavingNoAggregatedProp()
     {
-        String viewExpr = "select symbol, price, avg(price) as avgPrice " +
+        String viewExpr = "select irstream symbol, price, avg(price) as avgPrice " +
                           "from " + SupportMarketDataBean.class.getName() + ".win:length(5) as two " +
                           "having volume < avg(price)";
 
@@ -101,7 +101,7 @@ public class TestHavingNoGroupBy extends TestCase
 
     private void runNoAggregationJoin(String filterClause)
     {
-        String viewExpr = "select a.price as aPrice, b.price as bPrice, Math.max(a.price, b.price) - Math.min(a.price, b.price) as spread " +
+        String viewExpr = "select irstream a.price as aPrice, b.price as bPrice, Math.max(a.price, b.price) - Math.min(a.price, b.price) as spread " +
                           "from " + SupportMarketDataBean.class.getName() + "(symbol='SYM1').win:length(1) as a, " +
                                     SupportMarketDataBean.class.getName() + "(symbol='SYM2').win:length(1) as b " +
                           filterClause + " Math.max(a.price, b.price) - Math.min(a.price, b.price) >= 1.4";
@@ -225,7 +225,7 @@ public class TestHavingNoGroupBy extends TestCase
 
     public void testHavingSum()
     {
-        String stmt = "select sum(myEvent.intPrimitive) as mysum from pattern [every myEvent=" + SupportBean.class.getName() +
+        String stmt = "select irstream sum(myEvent.intPrimitive) as mysum from pattern [every myEvent=" + SupportBean.class.getName() +
                 "] having sum(myEvent.intPrimitive) = 2";
         selectTestView = epService.getEPAdministrator().createEQL(stmt);
         selectTestView.addListener(testListener);

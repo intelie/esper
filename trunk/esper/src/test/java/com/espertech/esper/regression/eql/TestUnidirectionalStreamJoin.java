@@ -26,7 +26,7 @@ public class TestUnidirectionalStreamJoin extends TestCase
 
     public void test2TableJoinGrouped()
     {
-        String stmtText = "select symbol, count(*) as cnt " +
+        String stmtText = "select irstream symbol, count(*) as cnt " +
                       "from " + SupportMarketDataBean.class.getName() + " unidirectional, " +
                       SupportBean.class.getName() + ".win:keepall() " +
                       "where string = symbol group by string, symbol";
@@ -65,7 +65,7 @@ public class TestUnidirectionalStreamJoin extends TestCase
 
     public void test2TableJoinRowForAll()
     {
-        String stmtText = "select count(*) as cnt " +
+        String stmtText = "select irstream count(*) as cnt " +
                       "from " + SupportMarketDataBean.class.getName() + " unidirectional, " +
                       SupportBean.class.getName() + ".win:keepall() " +
                       "where string = symbol";

@@ -115,6 +115,6 @@ public class DatabaseConfigServiceImpl implements DatabaseConfigService
         {
             throw new DatabaseConfigException("Cannot locate configuration information for database '" + databaseName + '\'');
         }
-        return new ColumnSettings(config.getMetadataRetrievalEnum(), config.getColumnChangeCase(), config.getJavaSqlTypesMapping());
+        return new ColumnSettings(config.getMetadataRetrievalEnum(), config.getColumnChangeCase(), config.getSqlTypesMapping());
     }
 }

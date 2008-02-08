@@ -31,7 +31,7 @@ public class TestGroupByEventPerGroupHaving extends TestCase
 
     public void testSumJoin()
     {
-        String viewExpr = "select symbol, sum(price) as mySum " +
+        String viewExpr = "select irstream symbol, sum(price) as mySum " +
                           "from " + SupportBeanString.class.getName() + ".win:length(100) as one, " +
                           " " + SupportMarketDataBean.class.getName() + ".win:length(3) as two " +
                           "where (symbol='DELL' or symbol='IBM' or symbol='GE')" +
@@ -51,7 +51,7 @@ public class TestGroupByEventPerGroupHaving extends TestCase
 
     public void testSumOneView()
     {
-        String viewExpr = "select symbol, sum(price) as mySum " +
+        String viewExpr = "select irstream symbol, sum(price) as mySum " +
                           "from " + SupportMarketDataBean.class.getName() + ".win:length(3) " +
                           "where symbol='DELL' or symbol='IBM' or symbol='GE' " +
                           "group by symbol " +

@@ -78,15 +78,15 @@ public class TestNamedWindowViews extends TestCase
         String stmtTextInsert = "insert into MyWindow select string as key, longBoxed as value from " + SupportBean.class.getName();
         EPStatement stmtInsert = epService.getEPAdministrator().createEQL(stmtTextInsert);
 
-        String stmtTextSelectOne = "select key, value*2 as value from MyWindow";
+        String stmtTextSelectOne = "select irstream key, value*2 as value from MyWindow";
         EPStatement stmtSelectOne = epService.getEPAdministrator().createEQL(stmtTextSelectOne);
         stmtSelectOne.addListener(listenerStmtOne);
 
-        String stmtTextSelectTwo = "select key, sum(value) as value from MyWindow group by key";
+        String stmtTextSelectTwo = "select irstream key, sum(value) as value from MyWindow group by key";
         EPStatement stmtSelectTwo = epService.getEPAdministrator().createEQL(stmtTextSelectTwo);
         stmtSelectTwo.addListener(listenerStmtTwo);
 
-        String stmtTextSelectThree = "select key, value from MyWindow where value >= 10";
+        String stmtTextSelectThree = "select irstream key, value from MyWindow where value >= 10";
         EPStatement stmtSelectThree = epService.getEPAdministrator().createEQL(stmtTextSelectThree);
         stmtSelectThree.addListener(listenerStmtThree);
 
@@ -187,7 +187,7 @@ public class TestNamedWindowViews extends TestCase
         epService.getEPAdministrator().createEQL(stmtTextInsert);
 
         // create consumer
-        String stmtTextSelectOne = "select key, value as value from MyWindow";
+        String stmtTextSelectOne = "select irstream key, value as value from MyWindow";
         EPStatement stmtSelectOne = epService.getEPAdministrator().createEQL(stmtTextSelectOne);
         stmtSelectOne.addListener(listenerStmtOne);
 
@@ -273,7 +273,7 @@ public class TestNamedWindowViews extends TestCase
         epService.getEPAdministrator().createEQL(stmtTextInsert);
 
         // create consumer
-        String stmtTextSelectOne = "select key, value as value from MyWindow";
+        String stmtTextSelectOne = "select irstream key, value as value from MyWindow";
         EPStatement stmtSelectOne = epService.getEPAdministrator().createEQL(stmtTextSelectOne);
         stmtSelectOne.addListener(listenerStmtOne);
 
@@ -334,7 +334,7 @@ public class TestNamedWindowViews extends TestCase
         epService.getEPAdministrator().createEQL(stmtTextInsert);
 
         // create consumer
-        String stmtTextSelectOne = "select key, value as value from MyWindow";
+        String stmtTextSelectOne = "select irstream key, value as value from MyWindow";
         EPStatement stmtSelectOne = epService.getEPAdministrator().createEQL(stmtTextSelectOne);
         stmtSelectOne.addListener(listenerStmtOne);
 
@@ -399,7 +399,7 @@ public class TestNamedWindowViews extends TestCase
         epService.getEPAdministrator().createEQL(stmtTextInsert);
 
         // create consumer
-        String stmtTextSelectOne = "select key, value as value from MyWindow";
+        String stmtTextSelectOne = "select irstream key, value as value from MyWindow";
         EPStatement stmtSelectOne = epService.getEPAdministrator().createEQL(stmtTextSelectOne);
         stmtSelectOne.addListener(listenerStmtOne);
 
@@ -467,7 +467,7 @@ public class TestNamedWindowViews extends TestCase
         epService.getEPAdministrator().createEQL(stmtTextInsert);
 
         // create consumer
-        String stmtTextSelectOne = "select key, value as value from MyWindow";
+        String stmtTextSelectOne = "select irstream key, value as value from MyWindow";
         EPStatement stmtSelectOne = epService.getEPAdministrator().createEQL(stmtTextSelectOne);
         stmtSelectOne.addListener(listenerStmtOne);
 
@@ -910,7 +910,7 @@ public class TestNamedWindowViews extends TestCase
         epService.getEPAdministrator().createEQL(stmtTextInsert);
 
         // create consumer
-        String stmtTextSelectOne = "select key, value as value from MyWindow";
+        String stmtTextSelectOne = "select irstream key, value as value from MyWindow";
         EPStatement stmtSelectOne = epService.getEPAdministrator().createEQL(stmtTextSelectOne);
         stmtSelectOne.addListener(listenerStmtOne);
 
@@ -1056,7 +1056,7 @@ public class TestNamedWindowViews extends TestCase
         epService.getEPAdministrator().createEQL(stmtTextInsert);
 
         // create consumer
-        String stmtTextSelectOne = "select key, value as value from MyWindow";
+        String stmtTextSelectOne = "select irstream key, value as value from MyWindow";
         EPStatement stmtSelectOne = epService.getEPAdministrator().createEQL(stmtTextSelectOne);
         stmtSelectOne.addListener(listenerStmtOne);
 
@@ -1121,7 +1121,7 @@ public class TestNamedWindowViews extends TestCase
         epService.getEPAdministrator().createEQL(stmtTextInsert);
 
         // create consumer
-        String stmtTextSelectOne = "select key, value as value from MyWindow";
+        String stmtTextSelectOne = "select irstream key, value as value from MyWindow";
         EPStatement stmtSelectOne = epService.getEPAdministrator().createEQL(stmtTextSelectOne);
         stmtSelectOne.addListener(listenerStmtOne);
 
@@ -1186,7 +1186,7 @@ public class TestNamedWindowViews extends TestCase
         epService.getEPAdministrator().createEQL(stmtTextInsert);
 
         // create consumer
-        String stmtTextSelectOne = "select key, value as value from MyWindow(value > 0, value < 10)";
+        String stmtTextSelectOne = "select irstream key, value as value from MyWindow(value > 0, value < 10)";
         EPStatement stmtSelectOne = epService.getEPAdministrator().createEQL(stmtTextSelectOne);
         stmtSelectOne.addListener(listenerStmtOne);
 
@@ -1374,7 +1374,7 @@ public class TestNamedWindowViews extends TestCase
         sendSupportBeanInt("G3", 2);
 
         // create consumer
-        String stmtTextSelectOne = "select sum(value) as sumvalue from MyWindow(value > 0, value < 10)";
+        String stmtTextSelectOne = "select irstream sum(value) as sumvalue from MyWindow(value > 0, value < 10)";
         EPStatement stmtSelectOne = epService.getEPAdministrator().createEQL(stmtTextSelectOne);
         stmtSelectOne.addListener(listenerStmtOne);
         ArrayAssertionUtil.assertEqualsExactOrder(stmtSelectOne.iterator(), fields, new Object[][] {{7}});
@@ -1534,7 +1534,7 @@ public class TestNamedWindowViews extends TestCase
         sendSupportBean("E2", 2L);
         ArrayAssertionUtil.assertProps(listenerWindow.assertOneGetNewAndReset(), fieldsWin, new Object[] {"E2", 2L});
 
-        String stmtTextSelectOne = "select average from MyWindow.stat:uni(value)";
+        String stmtTextSelectOne = "select irstream average from MyWindow.stat:uni(value)";
         EPStatement stmtSelectOne = epService.getEPAdministrator().createEQL(stmtTextSelectOne);
         stmtSelectOne.addListener(listenerStmtOne);
         ArrayAssertionUtil.assertEqualsExactOrder(stmtSelectOne.iterator(), fieldsStat, new Object[][] {{1.5d}});

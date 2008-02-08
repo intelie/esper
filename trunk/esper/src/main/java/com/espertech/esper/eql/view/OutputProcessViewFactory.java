@@ -36,7 +36,7 @@ public class OutputProcessViewFactory
         }
 
         OutputStrategy outputStrategy;
-        if ((statementSpec.getInsertIntoDesc() != null) || statementSpec.getSelectStreamSelectorEnum() != SelectClauseStreamSelectorEnum.RSTREAM_ISTREAM_BOTH)
+        if ((statementSpec.getInsertIntoDesc() != null) || (statementSpec.getSelectStreamSelectorEnum() == SelectClauseStreamSelectorEnum.RSTREAM_ONLY))
         {
             boolean isRouteRStream = false;
             if (statementSpec.getInsertIntoDesc() != null)

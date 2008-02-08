@@ -27,7 +27,7 @@ public class TestViewTimeOrder extends TestCase
     {
         sendTimer(1000);
         EPStatement stmt = epService.getEPAdministrator().createEQL(
-                "select * from " + SupportBeanTimestamp.class.getName() +
+                "select irstream * from " + SupportBeanTimestamp.class.getName() +
                 ".ext:time_order(timestamp, 10 sec)");
         stmt.addListener(listener);
         ArrayAssertionUtil.assertEqualsExactOrder(stmt.iterator(), new String[] {"id"}, null);
@@ -189,7 +189,7 @@ public class TestViewTimeOrder extends TestCase
     {
         sendTimer(20000);
         EPStatement stmt = epService.getEPAdministrator().createEQL(
-                "select * from " + SupportBeanTimestamp.class.getName() +
+                "select irstream * from " + SupportBeanTimestamp.class.getName() +
                 ".std:groupby(groupId).ext:time_order(timestamp, 10 sec)");
         stmt.addListener(listener);
 
@@ -280,7 +280,7 @@ public class TestViewTimeOrder extends TestCase
     {
         sendTimer(1000);
         EPStatement stmt = epService.getEPAdministrator().createEQL(
-                "select id, " +
+                "select irstream id, " +
                 " prev(0, id) as prevIdZero, " +
                 " prev(1, id) as prevIdOne, " +
                 " prior(1, id) as priorIdOne from " + SupportBeanTimestamp.class.getName() +

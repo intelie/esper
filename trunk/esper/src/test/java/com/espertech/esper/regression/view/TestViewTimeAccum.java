@@ -36,7 +36,7 @@ public class TestViewTimeAccum extends TestCase
         final long startTime = 1000;
         sendTimer(startTime);
         EPStatement stmt = epService.getEPAdministrator().createEQL(
-                "select * from " + SupportMarketDataBean.class.getName() +
+                "select irstream * from " + SupportMarketDataBean.class.getName() +
                 ".win:time_accum(10 sec)");
         stmt.addListener(listener);
         EPRuntime engine = epService.getEPRuntime();
@@ -143,7 +143,7 @@ public class TestViewTimeAccum extends TestCase
         final long startTime = 1000;
         sendTimer(startTime);
         EPStatement stmt = epService.getEPAdministrator().createEQL(
-                "select price, prev(1, price) as prevPrice, prior(1, price) as priorPrice from " + SupportMarketDataBean.class.getName() +
+                "select irstream price, prev(1, price) as prevPrice, prior(1, price) as priorPrice from " + SupportMarketDataBean.class.getName() +
                 ".win:time_accum(10 sec)");
         stmt.addListener(listener);
         EPRuntime engine = epService.getEPRuntime();
@@ -181,7 +181,7 @@ public class TestViewTimeAccum extends TestCase
         final long startTime = 1000;
         sendTimer(startTime);
         EPStatement stmt = epService.getEPAdministrator().createEQL(
-                "select sum(price) as sumPrice from " + SupportMarketDataBean.class.getName() +
+                "select irstream sum(price) as sumPrice from " + SupportMarketDataBean.class.getName() +
                 ".win:time_accum(10 sec)");
         stmt.addListener(listener);
         EPRuntime engine = epService.getEPRuntime();
@@ -214,7 +214,7 @@ public class TestViewTimeAccum extends TestCase
         final long startTime = 1000;
         sendTimer(startTime);
         EPStatement stmt = epService.getEPAdministrator().createEQL(
-                "select * from " + SupportMarketDataBean.class.getName() +
+                "select irstream * from " + SupportMarketDataBean.class.getName() +
                 ".std:groupby(symbol).win:time_accum(10 sec)");
         stmt.addListener(listener);
         EPRuntime engine = epService.getEPRuntime();

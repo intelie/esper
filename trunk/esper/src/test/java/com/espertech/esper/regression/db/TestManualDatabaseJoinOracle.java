@@ -94,7 +94,7 @@ public class TestManualDatabaseJoinOracle
     {
         ConfigurationDBRef dbconfig = getConfigOracle();
         dbconfig.setColumnChangeCase(ConfigurationDBRef.ColumnChangeCaseEnum.LOWERCASE);
-        dbconfig.addJavaSqlTypesBinding(2, "int");
+        dbconfig.addSqlTypesBinding(2, "int");
         Configuration configuration = getConfig(dbconfig);
         epService = EPServiceProviderManager.getDefaultProvider(configuration);
         epService.initialize();

@@ -182,7 +182,7 @@ public class TestOutputLimitSimple extends TestCase
         stmt.addListener(listener);
         String fields[] = new String[] {"symbol", "volume", "price"};
 
-        ResultAssertTestResult expected = new ResultAssertTestResult(CATEGORY, outputLimit, stmtText, fields);
+        ResultAssertTestResult expected = new ResultAssertTestResult(CATEGORY, outputLimit, fields);
         expected.addResultInsert(200, 1, new Object[][] {{"S1", 100L, 25d}});
         expected.addResultInsert(1500, 1, new Object[][] {{"S1", 150L, 24d}});
         expected.addResultInsert(2100, 1, new Object[][] {{"S1", 155L, 26d}});
@@ -190,7 +190,7 @@ public class TestOutputLimitSimple extends TestCase
         expected.addResultRemove(5700, 0, new Object[][] {{"S1", 100L, 25d}});
         expected.addResultRemove(7000, 0, new Object[][] {{"S1", 150L, 24d}});
 
-        ResultAssertExecution execution = new ResultAssertExecution(epService, listener, expected);
+        ResultAssertExecution execution = new ResultAssertExecution(epService, stmt, listener, expected);
         execution.execute();
     }
 
@@ -201,7 +201,7 @@ public class TestOutputLimitSimple extends TestCase
         stmt.addListener(listener);
 
         String fields[] = new String[] {"symbol", "volume", "price"};
-        ResultAssertTestResult expected = new ResultAssertTestResult(CATEGORY, outputLimit, stmtText, fields);
+        ResultAssertTestResult expected = new ResultAssertTestResult(CATEGORY, outputLimit, fields);
 
         expected.addResultInsert(1200, 0, new Object[][] {{"S1", 100L, 25d}});
         expected.addResultInsert(2200, 0, new Object[][] {{"S1", 155L, 26d}});
@@ -211,7 +211,7 @@ public class TestOutputLimitSimple extends TestCase
         expected.addResultInsRem(6200, 0, null, new Object[][] {{"S1", 100L, 25d}});
         expected.addResultRemove(7200, 0, new Object[][] {{"S1", 150L, 24d}});
 
-        ResultAssertExecution execution = new ResultAssertExecution(epService, listener, expected);
+        ResultAssertExecution execution = new ResultAssertExecution(epService, stmt, listener, expected);
         execution.execute();
     }
 
@@ -222,7 +222,7 @@ public class TestOutputLimitSimple extends TestCase
         stmt.addListener(listener);
 
         String fields[] = new String[] {"symbol", "volume", "price"};
-        ResultAssertTestResult expected = new ResultAssertTestResult(CATEGORY, outputLimit, stmtText, fields);
+        ResultAssertTestResult expected = new ResultAssertTestResult(CATEGORY, outputLimit, fields);
         expected.addResultInsert(200, 1, new Object[][] {{"S1", 100L, 25d}});
         expected.addResultInsert(800, 1, new Object[][] {{"S2", 5000L, 9d}});
         expected.addResultInsert(1500, 1, new Object[][] {{"S1", 150L, 24d}});
@@ -236,7 +236,7 @@ public class TestOutputLimitSimple extends TestCase
         expected.addResultRemove(6300, 0, new Object[][] {{"S2", 5000L, 9d}});
         expected.addResultRemove(7000, 0, new Object[][] {{"S1", 150L, 24d}, {"S3", 10000L, 1d}});
 
-        ResultAssertExecution execution = new ResultAssertExecution(epService, listener, expected);
+        ResultAssertExecution execution = new ResultAssertExecution(epService, stmt, listener, expected);
         execution.execute();
     }
 
@@ -247,7 +247,7 @@ public class TestOutputLimitSimple extends TestCase
         stmt.addListener(listener);
 
         String fields[] = new String[] {"symbol", "volume", "price"};
-        ResultAssertTestResult expected = new ResultAssertTestResult(CATEGORY, outputLimit, stmtText, fields);
+        ResultAssertTestResult expected = new ResultAssertTestResult(CATEGORY, outputLimit, fields);
         expected.addResultInsert(1200, 0, new Object[][] {{"S2", 5000L, 9d}});
         expected.addResultInsert(2200, 0, new Object[][] {{"S1", 155L, 26d}});
         expected.addResultInsRem(3200, 0, null, null);
@@ -256,7 +256,7 @@ public class TestOutputLimitSimple extends TestCase
         expected.addResultInsRem(6200, 0, new Object[][] {{"S3", 10500L, 1d}}, new Object[][] {{"S1", 100L, 25d}});
         expected.addResultRemove(7200, 0, new Object[][] {{"S3", 10000L, 1d}, });
 
-        ResultAssertExecution execution = new ResultAssertExecution(epService, listener, expected);
+        ResultAssertExecution execution = new ResultAssertExecution(epService, stmt, listener, expected);
         execution.execute();
     }
 
@@ -267,7 +267,7 @@ public class TestOutputLimitSimple extends TestCase
         stmt.addListener(listener);
 
         String fields[] = new String[] {"symbol", "volume", "price"};
-        ResultAssertTestResult expected = new ResultAssertTestResult(CATEGORY, outputLimit, stmtText, fields);
+        ResultAssertTestResult expected = new ResultAssertTestResult(CATEGORY, outputLimit, fields);
         expected.addResultInsert(1200, 0, new Object[][] {{"S1", 100L, 25d}});
         expected.addResultInsert(2200, 0, new Object[][] {{"S1", 150L, 24d}, {"S1", 155L, 26d}});
         expected.addResultInsRem(3200, 0, null, null);
@@ -276,7 +276,7 @@ public class TestOutputLimitSimple extends TestCase
         expected.addResultInsRem(6200, 0, null, new Object[][] {{"S1", 100L, 25d}});
         expected.addResultRemove(7200, 0, new Object[][] {{"S1", 150L, 24d}});
 
-        ResultAssertExecution execution = new ResultAssertExecution(epService, listener, expected);
+        ResultAssertExecution execution = new ResultAssertExecution(epService, stmt, listener, expected);
         execution.execute();
     }
 
@@ -287,7 +287,7 @@ public class TestOutputLimitSimple extends TestCase
         stmt.addListener(listener);
 
         String fields[] = new String[] {"symbol", "volume", "price"};
-        ResultAssertTestResult expected = new ResultAssertTestResult(CATEGORY, outputLimit, stmtText, fields);
+        ResultAssertTestResult expected = new ResultAssertTestResult(CATEGORY, outputLimit, fields);
         expected.addResultInsert(1200, 0, new Object[][] {{"S1", 100L, 25d}, {"S2", 5000L, 9d}});
         expected.addResultInsert(2200, 0, new Object[][] {{"S1", 150L, 24d}, {"S3", 10000L, 1d}, {"S1", 155L, 26d}});
         expected.addResultInsRem(3200, 0, null, null);
@@ -296,7 +296,7 @@ public class TestOutputLimitSimple extends TestCase
         expected.addResultInsRem(6200, 0, new Object[][] {{"S3", 10500L, 1d}}, new Object[][] {{"S1", 100L, 25d}});
         expected.addResultRemove(7200, 0, new Object[][] {{"S2", 5000L, 9d}, {"S1", 150L, 24d}, {"S3", 10000L, 1d}, });
 
-        ResultAssertExecution execution = new ResultAssertExecution(epService, listener, expected);
+        ResultAssertExecution execution = new ResultAssertExecution(epService, stmt, listener, expected);
         execution.execute();
     }
 

@@ -30,7 +30,7 @@ public class TestSingleOpJoin extends TestCase
         String eventA = SupportBean_A.class.getName();
         String eventB = SupportBean_B.class.getName();
 
-        String joinStatement = "select * from " +
+        String joinStatement = "select irstream * from " +
             eventA + "().win:length(3) as streamA," +
             eventB + "().win:length(3) as streamB" +
             " where streamA.id = streamB.id";

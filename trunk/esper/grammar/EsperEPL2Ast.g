@@ -126,7 +126,7 @@ insertIntoExprCol
 	;
 
 selectClause
-	:	^(s=SELECTION_EXPR (RSTREAM | ISTREAM)? selectionList { leaveNode($s); })
+	:	^(s=SELECTION_EXPR (RSTREAM | ISTREAM | IRSTREAM)? selectionList { leaveNode($s); })
 	;
 
 fromClause

@@ -203,7 +203,7 @@ public class TestOutputLimitEventPerGroup extends TestCase
         stmt.addListener(listener);
 
         String fields[] = new String[] {"symbol", "sum(price)"};
-        ResultAssertTestResult expected = new ResultAssertTestResult(CATEGORY, outputLimit, stmtText, fields);
+        ResultAssertTestResult expected = new ResultAssertTestResult(CATEGORY, outputLimit, fields);
         expected.addResultInsRem(200, 1, new Object[][] {{"S1", 25d}}, new Object[][] {{"S1", null}});
         expected.addResultInsRem(800, 1, new Object[][] {{"S2", 9d}}, new Object[][] {{"S2", null}});
         expected.addResultInsRem(1500, 1, new Object[][] {{"S1", 49d}}, new Object[][] {{"S1", 25d}});
@@ -217,7 +217,7 @@ public class TestOutputLimitEventPerGroup extends TestCase
         expected.addResultInsRem(6300, 0, new Object[][] {{"S2", null}}, new Object[][] {{"S2", 9d}});
         expected.addResultInsRem(7000, 0, new Object[][] {{"S3", 6d}, {"S1", 48d}}, new Object[][] {{"S3", 7d}, {"S1", 72d}});
 
-        ResultAssertExecution execution = new ResultAssertExecution(epService, listener, expected);
+        ResultAssertExecution execution = new ResultAssertExecution(epService, stmt, listener, expected);
         execution.execute();
     }
 
@@ -228,13 +228,13 @@ public class TestOutputLimitEventPerGroup extends TestCase
         stmt.addListener(listener);
 
         String fields[] = new String[] {"symbol", "sum(price)"};
-        ResultAssertTestResult expected = new ResultAssertTestResult(CATEGORY, outputLimit, stmtText, fields);
+        ResultAssertTestResult expected = new ResultAssertTestResult(CATEGORY, outputLimit, fields);
         expected.addResultInsRem(2100, 1, new Object[][] {{"S1", 75d}}, null);
         expected.addResultInsRem(4300, 1, new Object[][] {{"S1", 97d}}, new Object[][] {{"S1", 75d}});
         expected.addResultInsRem(5700, 0, new Object[][] {{"S1", 72d}}, new Object[][] {{"S1", 97d}});
         expected.addResultInsRem(7000, 0, null, new Object[][] {{"S1", 72d}});
 
-        ResultAssertExecution execution = new ResultAssertExecution(epService, listener, expected);
+        ResultAssertExecution execution = new ResultAssertExecution(epService, stmt, listener, expected);
         execution.execute();
     }
 
@@ -245,7 +245,7 @@ public class TestOutputLimitEventPerGroup extends TestCase
         stmt.addListener(listener);
 
         String fields[] = new String[] {"symbol", "sum(price)"};
-        ResultAssertTestResult expected = new ResultAssertTestResult(CATEGORY, outputLimit, stmtText, fields);
+        ResultAssertTestResult expected = new ResultAssertTestResult(CATEGORY, outputLimit, fields);
         expected.addResultInsRem(1200, 0, new Object[][] {{"S1", 25d}, {"S2", 9d}}, new Object[][] {{"S1", null}, {"S2", null}});
         expected.addResultInsRem(2200, 0, new Object[][] {{"S1", 75d}, {"S3", 1d}}, new Object[][] {{"S1", 25d}, {"S3", null}});
         expected.addResultInsRem(3200, 0, null, null);
@@ -254,7 +254,7 @@ public class TestOutputLimitEventPerGroup extends TestCase
         expected.addResultInsRem(6200, 0, new Object[][] {{"S1", 72d}, {"S3", 7d}}, new Object[][] {{"S1", 97d}, {"S3", 6d}});
         expected.addResultInsRem(7200, 0, new Object[][] {{"S1", 48d}, {"S2", null}, {"S3", 6d}}, new Object[][] {{"S1", 72d}, {"S2", 9d}, {"S3", 7d}});
 
-        ResultAssertExecution execution = new ResultAssertExecution(epService, listener, expected);
+        ResultAssertExecution execution = new ResultAssertExecution(epService, stmt, listener, expected);
         execution.execute();
     }
 
@@ -265,7 +265,7 @@ public class TestOutputLimitEventPerGroup extends TestCase
         stmt.addListener(listener);
 
         String fields[] = new String[] {"symbol", "sum(price)"};
-        ResultAssertTestResult expected = new ResultAssertTestResult(CATEGORY, outputLimit, stmtText, fields);
+        ResultAssertTestResult expected = new ResultAssertTestResult(CATEGORY, outputLimit, fields);
         expected.addResultInsRem(1200, 0, null, null);
         expected.addResultInsRem(2200, 0, new Object[][] {{"S1", 75d}}, null);
         expected.addResultInsRem(3200, 0, null, null);
@@ -274,7 +274,7 @@ public class TestOutputLimitEventPerGroup extends TestCase
         expected.addResultInsRem(6200, 0, new Object[][] {{"S1", 72d}}, new Object[][] {{"S1", 97d}});
         expected.addResultInsRem(7200, 0, null, new Object[][] {{"S1", 72d}});
 
-        ResultAssertExecution execution = new ResultAssertExecution(epService, listener, expected);
+        ResultAssertExecution execution = new ResultAssertExecution(epService, stmt, listener, expected);
         execution.execute();
     }
 
@@ -285,7 +285,7 @@ public class TestOutputLimitEventPerGroup extends TestCase
         stmt.addListener(listener);
 
         String fields[] = new String[] {"symbol", "sum(price)"};
-        ResultAssertTestResult expected = new ResultAssertTestResult(CATEGORY, outputLimit, stmtText, fields);
+        ResultAssertTestResult expected = new ResultAssertTestResult(CATEGORY, outputLimit, fields);
         expected.addResultInsRem(1200, 0, null, null);
         expected.addResultInsRem(2200, 0, new Object[][] {{"S1", 75d}}, null);
         expected.addResultInsRem(3200, 0, null, null);
@@ -294,7 +294,7 @@ public class TestOutputLimitEventPerGroup extends TestCase
         expected.addResultInsRem(6200, 0, new Object[][] {{"S1", 72d}}, new Object[][] {{"S1", 97d}});
         expected.addResultInsRem(7200, 0, null, new Object[][] {{"S1", 72d}});
 
-        ResultAssertExecution execution = new ResultAssertExecution(epService, listener, expected);
+        ResultAssertExecution execution = new ResultAssertExecution(epService, stmt, listener, expected);
         execution.execute();
     }
 
@@ -305,7 +305,7 @@ public class TestOutputLimitEventPerGroup extends TestCase
         stmt.addListener(listener);
 
         String fields[] = new String[] {"symbol", "sum(price)"};
-        ResultAssertTestResult expected = new ResultAssertTestResult(CATEGORY, outputLimit, stmtText, fields);
+        ResultAssertTestResult expected = new ResultAssertTestResult(CATEGORY, outputLimit, fields);
         expected.addResultInsRem(1200, 0, new Object[][] {{"S1", 25d}, {"S2", 9d}}, new Object[][] {{"S1", null}, {"S2", null}});
         expected.addResultInsRem(2200, 0, new Object[][] {{"S1", 49d}, {"S3", 1d}, {"S1", 75d}}, new Object[][] {{"S1", 25d}, {"S3", null}, {"S1", 49d}});
         expected.addResultInsRem(3200, 0, null, null);
@@ -314,7 +314,7 @@ public class TestOutputLimitEventPerGroup extends TestCase
         expected.addResultInsRem(6200, 0, new Object[][] {{"S1", 72d}, {"S3", 7d}}, new Object[][] {{"S1", 97d}, {"S3", 6d}});
         expected.addResultInsRem(7200, 0, new Object[][] {{"S2", null}, {"S3", 6d}, {"S1", 48d}}, new Object[][] {{"S2", 9d}, {"S3", 7d}, {"S1", 72d}});
 
-        ResultAssertExecution execution = new ResultAssertExecution(epService, listener, expected);
+        ResultAssertExecution execution = new ResultAssertExecution(epService, stmt, listener, expected);
         execution.execute();
     }
 
@@ -325,7 +325,7 @@ public class TestOutputLimitEventPerGroup extends TestCase
         stmt.addListener(listener);
 
         String fields[] = new String[] {"symbol", "sum(price)"};
-        ResultAssertTestResult expected = new ResultAssertTestResult(CATEGORY, outputLimit, stmtText, fields);
+        ResultAssertTestResult expected = new ResultAssertTestResult(CATEGORY, outputLimit, fields);
         expected.addResultInsRem(1200, 0, new Object[][] {{"S1", 25d}, {"S2", 9d}}, new Object[][] {{"S1", null}, {"S2", null}});
         expected.addResultInsRem(2200, 0, new Object[][] {{"S1", 75d}, {"S2", 9d}, {"S3", 1d}}, new Object[][] {{"S1", 25d}, {"S2", 9d}, {"S3", null}});
         expected.addResultInsRem(3200, 0, new Object[][] {{"S1", 75d}, {"S2", 9d}, {"S3", 1d}}, new Object[][] {{"S1", 75d}, {"S2", 9d}, {"S3", 1d}});
@@ -334,7 +334,7 @@ public class TestOutputLimitEventPerGroup extends TestCase
         expected.addResultInsRem(6200, 0, new Object[][] {{"S1", 72d}, {"S2", 9d}, {"S3", 7d}}, new Object[][] {{"S1", 97d}, {"S2", 9d}, {"S3", 6d}});
         expected.addResultInsRem(7200, 0, new Object[][] {{"S1", 48d}, {"S2", null}, {"S3", 6d}}, new Object[][] {{"S1", 72d}, {"S2", 9d}, {"S3", 7d}});
 
-        ResultAssertExecution execution = new ResultAssertExecution(epService, listener, expected);
+        ResultAssertExecution execution = new ResultAssertExecution(epService, stmt, listener, expected);
         execution.execute();
     }
 
@@ -345,7 +345,7 @@ public class TestOutputLimitEventPerGroup extends TestCase
         stmt.addListener(listener);
 
         String fields[] = new String[] {"symbol", "sum(price)"};
-        ResultAssertTestResult expected = new ResultAssertTestResult(CATEGORY, outputLimit, stmtText, fields);
+        ResultAssertTestResult expected = new ResultAssertTestResult(CATEGORY, outputLimit, fields);
         expected.addResultInsRem(1200, 0, null, null);
         expected.addResultInsRem(2200, 0, new Object[][] {{"S1", 75d}}, null);
         expected.addResultInsRem(3200, 0, new Object[][] {{"S1", 75d}}, new Object[][] {{"S1", 75d}});
@@ -354,7 +354,7 @@ public class TestOutputLimitEventPerGroup extends TestCase
         expected.addResultInsRem(6200, 0, new Object[][] {{"S1", 72d}}, new Object[][] {{"S1", 97d}});
         expected.addResultInsRem(7200, 0, null, new Object[][] {{"S1", 72d}});
 
-        ResultAssertExecution execution = new ResultAssertExecution(epService, listener, expected);
+        ResultAssertExecution execution = new ResultAssertExecution(epService, stmt, listener, expected);
         execution.execute();
     }
 
@@ -364,7 +364,7 @@ public class TestOutputLimitEventPerGroup extends TestCase
         sendTimer(0);
 
         String fields[] = "symbol,maxVol".split(",");
-        String viewExpr = "select symbol, max(price) as maxVol" +
+        String viewExpr = "select irstream symbol, max(price) as maxVol" +
                           " from " + SupportMarketDataBean.class.getName() + ".ext:sort(volume, true, 1) as s0," +
                           SupportBean.class.getName() + " as s1 " +
                           "group by symbol output every 1 seconds";
@@ -485,7 +485,7 @@ public class TestOutputLimitEventPerGroup extends TestCase
     {
         String fields[] = "symbol,sum(price)".split(",");
     	String eventName = SupportMarketDataBean.class.getName();
-    	String statementString = "select symbol, sum(price) from " + eventName + ".win:length(5) group by symbol output all every 5 events";
+    	String statementString = "select irstream symbol, sum(price) from " + eventName + ".win:length(5) group by symbol output all every 5 events";
     	EPStatement statement = epService.getEPAdministrator().createEQL(statementString);
     	SupportUpdateListener updateListener = new SupportUpdateListener();
     	statement.addListener(updateListener);
@@ -512,7 +512,7 @@ public class TestOutputLimitEventPerGroup extends TestCase
     {
         String fields[] = "symbol,sum(price)".split(",");
     	String eventName = SupportMarketDataBean.class.getName();
-    	String statementString = "select symbol, sum(price) from " + eventName + ".win:length(5) group by symbol output every 5 events";
+    	String statementString = "select irstream symbol, sum(price) from " + eventName + ".win:length(5) group by symbol output every 5 events";
     	EPStatement statement = epService.getEPAdministrator().createEQL(statementString);
     	SupportUpdateListener updateListener = new SupportUpdateListener();
     	statement.addListener(updateListener);
@@ -542,7 +542,7 @@ public class TestOutputLimitEventPerGroup extends TestCase
         sendTimer(0);
 
         String fields[] = "symbol,maxVol".split(",");
-        String viewExpr = "select symbol, max(price) as maxVol" +
+        String viewExpr = "select irstream symbol, max(price) as maxVol" +
                           " from " + SupportMarketDataBean.class.getName() + ".win:time(1 sec) " +
                           "group by symbol output every 1 seconds";
         selectTestView = epService.getEPAdministrator().createEQL(viewExpr);
@@ -563,7 +563,7 @@ public class TestOutputLimitEventPerGroup extends TestCase
 
     public void testNoJoinLast()
 	{
-	    String viewExpr = "select symbol," +
+	    String viewExpr = "select irstream symbol," +
 	                             "sum(price) as mySum," +
 	                             "avg(price) as myAvg " +
 	                      "from " + SupportMarketDataBean.class.getName() + ".win:length(3) " +
@@ -579,7 +579,7 @@ public class TestOutputLimitEventPerGroup extends TestCase
 
     public void testNoOutputClauseView()
     {
-    	String viewExpr = "select symbol," +
+    	String viewExpr = "select irstream symbol," +
     	"sum(price) as mySum," +
     	"avg(price) as myAvg " +
     	"from " + SupportMarketDataBean.class.getName() + ".win:length(3) " +
@@ -594,7 +594,7 @@ public class TestOutputLimitEventPerGroup extends TestCase
 
     public void testNoOutputClauseJoin()
     {
-    	String viewExpr = "select symbol," +
+    	String viewExpr = "select irstream symbol," +
     	"sum(price) as mySum," +
     	"avg(price) as myAvg " +
     	"from " + SupportBeanString.class.getName() + ".win:length(100) as one, " +
@@ -615,7 +615,7 @@ public class TestOutputLimitEventPerGroup extends TestCase
 
 	public void testNoJoinAll()
     {
-        String viewExpr = "select symbol," +
+        String viewExpr = "select irstream symbol," +
                                  "sum(price) as mySum," +
                                  "avg(price) as myAvg " +
                           "from " + SupportMarketDataBean.class.getName() + ".win:length(5) " +
@@ -631,7 +631,7 @@ public class TestOutputLimitEventPerGroup extends TestCase
 
     public void testJoinLast()
 	{
-	    String viewExpr = "select symbol," +
+	    String viewExpr = "select irstream symbol," +
 	                             "sum(price) as mySum," +
 	                             "avg(price) as myAvg " +
 	                      "from " + SupportBeanString.class.getName() + ".win:length(100) as one, " +
@@ -653,7 +653,7 @@ public class TestOutputLimitEventPerGroup extends TestCase
 
 	public void testJoinAll()
     {
-        String viewExpr = "select symbol," +
+        String viewExpr = "select irstream symbol," +
                                  "sum(price) as mySum," +
                                  "avg(price) as myAvg " +
                           "from " + SupportBeanString.class.getName() + ".win:length(100) as one, " +

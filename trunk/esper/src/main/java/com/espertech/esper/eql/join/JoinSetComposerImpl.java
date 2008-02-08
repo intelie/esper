@@ -75,14 +75,11 @@ public class JoinSetComposerImpl implements JoinSetComposer
         newResults.clear();
 
         // join old data
-        if (!selectStreamSelectorEnum.equals(SelectClauseStreamSelectorEnum.ISTREAM_ONLY))
+        for (int i = 0; i < oldDataPerStream.length; i++)
         {
-            for (int i = 0; i < oldDataPerStream.length; i++)
+            if (oldDataPerStream[i] != null)
             {
-                if (oldDataPerStream[i] != null)
-                {
-                    queryStrategies[i].lookup(oldDataPerStream[i], oldResults);
-                }
+                queryStrategies[i].lookup(oldDataPerStream[i], oldResults);
             }
         }
 
@@ -112,14 +109,11 @@ public class JoinSetComposerImpl implements JoinSetComposer
         }
 
         // join new data
-        if (!selectStreamSelectorEnum.equals(SelectClauseStreamSelectorEnum.RSTREAM_ONLY))
+        for (int i = 0; i < newDataPerStream.length; i++)
         {
-            for (int i = 0; i < newDataPerStream.length; i++)
+            if (newDataPerStream[i] != null)
             {
-                if (newDataPerStream[i] != null)
-                {
-                    queryStrategies[i].lookup(newDataPerStream[i], newResults);
-                }
+                queryStrategies[i].lookup(newDataPerStream[i], newResults);
             }
         }
 

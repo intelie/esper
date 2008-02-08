@@ -153,7 +153,7 @@ public class TestNamedWindowDelete extends TestCase
 
         // create consumer
         String[] fields = new String[] {"a", "b"};
-        String stmtTextSelect = "select a, b from MyWindow as s1";
+        String stmtTextSelect = "select irstream a, b from MyWindow as s1";
         EPStatement stmtSelect = epService.getEPAdministrator().createEQL(stmtTextSelect);
         stmtSelect.addListener(listenerSelect);
 

@@ -504,7 +504,7 @@ public class Test2StreamOuterJoin extends TestCase
 
     private EPStatement setupStatement(String outerJoinType)
     {
-        String joinStatement = "select s0.id, s0.p00, s1.id, s1.p10 from " +
+        String joinStatement = "select irstream s0.id, s0.p00, s1.id, s1.p10 from " +
             SupportBean_S0.class.getName() + ".win:length(3) as s0 " +
             outerJoinType + " outer join " +
             SupportBean_S1.class.getName() + ".win:length(5) as s1" +

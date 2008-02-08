@@ -48,7 +48,7 @@ public class TestMTStmtNamedWindowDelete extends TestCase
         String stmtTextDelete = "on " + SupportBean_A.class.getName() + " as s0 delete from MyWindow as win where win.string = s0.id";
         engine.getEPAdministrator().createEQL(stmtTextDelete);
 
-        EPStatement stmtConsumer = engine.getEPAdministrator().createEQL("select string, longPrimitive from MyWindow");
+        EPStatement stmtConsumer = engine.getEPAdministrator().createEQL("select irstream string, longPrimitive from MyWindow");
         listenerConsumer = new SupportMTUpdateListener();
         stmtConsumer.addListener(listenerConsumer);
 

@@ -180,7 +180,7 @@ public class TestOutputLimitRowForAll extends TestCase
         stmt.addListener(listener);
 
         String fields[] = new String[] {"sum(price)"};
-        ResultAssertTestResult expected = new ResultAssertTestResult(CATEGORY, outputLimit, stmtText, fields);
+        ResultAssertTestResult expected = new ResultAssertTestResult(CATEGORY, outputLimit, fields);
         expected.addResultInsRem(200, 1, new Object[][] {{25d}}, new Object[][] {{null}});
         expected.addResultInsRem(800, 1, new Object[][] {{34d}}, new Object[][] {{25d}});
         expected.addResultInsRem(1500, 1, new Object[][] {{58d}}, new Object[][] {{34d}});
@@ -194,7 +194,7 @@ public class TestOutputLimitRowForAll extends TestCase
         expected.addResultInsRem(6300, 0, new Object[][] {{79d}}, new Object[][] {{88d}});
         expected.addResultInsRem(7000, 0, new Object[][] {{54d}}, new Object[][] {{79d}});
 
-        ResultAssertExecution execution = new ResultAssertExecution(epService, listener, expected);
+        ResultAssertExecution execution = new ResultAssertExecution(epService, stmt, listener, expected);
         execution.execute();
     }
 
@@ -205,12 +205,12 @@ public class TestOutputLimitRowForAll extends TestCase
         stmt.addListener(listener);
 
         String fields[] = new String[] {"sum(price)"};
-        ResultAssertTestResult expected = new ResultAssertTestResult(CATEGORY, outputLimit, stmtText, fields);
+        ResultAssertTestResult expected = new ResultAssertTestResult(CATEGORY, outputLimit, fields);
         expected.addResultInsRem(4300, 1, new Object[][] {{109d}}, null);
         expected.addResultInsRem(4900, 1, new Object[][] {{112d}}, new Object[][] {{109d}});
         expected.addResultInsRem(5700, 0, null, new Object[][] {{112d}});
 
-        ResultAssertExecution execution = new ResultAssertExecution(epService, listener, expected);
+        ResultAssertExecution execution = new ResultAssertExecution(epService, stmt, listener, expected);
         execution.execute();
     }
 
@@ -221,7 +221,7 @@ public class TestOutputLimitRowForAll extends TestCase
         stmt.addListener(listener);
 
         String fields[] = new String[] {"sum(price)"};
-        ResultAssertTestResult expected = new ResultAssertTestResult(CATEGORY, outputLimit, stmtText, fields);
+        ResultAssertTestResult expected = new ResultAssertTestResult(CATEGORY, outputLimit, fields);
         expected.addResultInsRem(1200, 0, new Object[][] {{34d}}, new Object[][] {{null}});
         expected.addResultInsRem(2200, 0, new Object[][] {{85d}}, new Object[][] {{34d}});
         expected.addResultInsRem(3200, 0, new Object[][] {{85d}}, new Object[][] {{85d}});
@@ -230,7 +230,7 @@ public class TestOutputLimitRowForAll extends TestCase
         expected.addResultInsRem(6200, 0, new Object[][] {{88d}}, new Object[][] {{112d}});
         expected.addResultInsRem(7200, 0, new Object[][] {{54d}}, new Object[][] {{88d}});
 
-        ResultAssertExecution execution = new ResultAssertExecution(epService, listener, expected);
+        ResultAssertExecution execution = new ResultAssertExecution(epService, stmt, listener, expected);
         execution.execute();
     }
 
@@ -241,7 +241,7 @@ public class TestOutputLimitRowForAll extends TestCase
         stmt.addListener(listener);
 
         String fields[] = new String[] {"sum(price)"};
-        ResultAssertTestResult expected = new ResultAssertTestResult(CATEGORY, outputLimit, stmtText, fields);
+        ResultAssertTestResult expected = new ResultAssertTestResult(CATEGORY, outputLimit, fields);
         expected.addResultInsRem(1200, 0, null, null);
         expected.addResultInsRem(2200, 0, null, null);
         expected.addResultInsRem(3200, 0, null, null);
@@ -250,7 +250,7 @@ public class TestOutputLimitRowForAll extends TestCase
         expected.addResultInsRem(6200, 0, null, new Object[][] {{112d}});
         expected.addResultInsRem(7200, 0, null, null);
 
-        ResultAssertExecution execution = new ResultAssertExecution(epService, listener, expected);
+        ResultAssertExecution execution = new ResultAssertExecution(epService, stmt, listener, expected);
         execution.execute();
     }
 
@@ -261,7 +261,7 @@ public class TestOutputLimitRowForAll extends TestCase
         stmt.addListener(listener);
 
         String fields[] = new String[] {"sum(price)"};
-        ResultAssertTestResult expected = new ResultAssertTestResult(CATEGORY, outputLimit, stmtText, fields);
+        ResultAssertTestResult expected = new ResultAssertTestResult(CATEGORY, outputLimit, fields);
         expected.addResultInsRem(1200, 0, null, null);
         expected.addResultInsRem(2200, 0, null, null);
         expected.addResultInsRem(3200, 0, null, null);
@@ -270,7 +270,7 @@ public class TestOutputLimitRowForAll extends TestCase
         expected.addResultInsRem(6200, 0, null, new Object[][] {{112d}});
         expected.addResultInsRem(7200, 0, null, null);
 
-        ResultAssertExecution execution = new ResultAssertExecution(epService, listener, expected);
+        ResultAssertExecution execution = new ResultAssertExecution(epService, stmt, listener, expected);
         execution.execute();
     }
 
@@ -281,7 +281,7 @@ public class TestOutputLimitRowForAll extends TestCase
         stmt.addListener(listener);
 
         String fields[] = new String[] {"sum(price)"};
-        ResultAssertTestResult expected = new ResultAssertTestResult(CATEGORY, outputLimit, stmtText, fields);
+        ResultAssertTestResult expected = new ResultAssertTestResult(CATEGORY, outputLimit, fields);
         expected.addResultInsRem(1200, 0, new Object[][] {{25d}, {34d}}, new Object[][] {{null}, {25d}});
         expected.addResultInsRem(2200, 0, new Object[][] {{58d}, {59d}, {85d}}, new Object[][] {{34d}, {58d}, {59d}});
         expected.addResultInsRem(3200, 0, new Object[][] {{85d}}, new Object[][] {{85d}});
@@ -290,7 +290,7 @@ public class TestOutputLimitRowForAll extends TestCase
         expected.addResultInsRem(6200, 0, new Object[][] {{87d}, {88d}}, new Object[][] {{112d}, {87d}});
         expected.addResultInsRem(7200, 0, new Object[][] {{79d}, {54d}}, new Object[][] {{88d}, {79d}});
 
-        ResultAssertExecution execution = new ResultAssertExecution(epService, listener, expected);
+        ResultAssertExecution execution = new ResultAssertExecution(epService, stmt, listener, expected);
         execution.execute();
     }
 
@@ -348,7 +348,7 @@ public class TestOutputLimitRowForAll extends TestCase
         epService.getEPRuntime().sendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
         sendTimer(0);
 
-        String viewExpr = "select max(price) as maxVol" +
+        String viewExpr = "select irstream max(price) as maxVol" +
                           " from " + SupportMarketDataBean.class.getName() + ".ext:sort(volume, true, 1) as s0," +
                           SupportBean.class.getName() + " as s1 where s1.string = s0.symbol " +
                           "output every 1 seconds";
@@ -376,7 +376,7 @@ public class TestOutputLimitRowForAll extends TestCase
         epService.getEPRuntime().sendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
         sendTimer(0);
 
-        String viewExpr = "select max(price) as maxVol" +
+        String viewExpr = "select irstream max(price) as maxVol" +
                           " from " + SupportMarketDataBean.class.getName() + ".win:time(1.1 sec) " +
                           "output every 1 seconds";
         EPStatement stmt = epService.getEPAdministrator().createEQL(viewExpr);
@@ -623,6 +623,7 @@ public class TestOutputLimitRowForAll extends TestCase
 
     private static Log log = LogFactory.getLog(TestOutputLimitRowForAll.class);
 }
+
 
 
 

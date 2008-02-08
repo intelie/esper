@@ -34,7 +34,7 @@ public class TestGroupByMedianAndDeviation extends TestCase
 
     public void testSumOneView()
     {
-        String viewExpr = "select symbol," +
+        String viewExpr = "select irstream symbol," +
                                  "median(all price) as myMedian," +
                                  "median(distinct price) as myDistMedian," +
                                  "stddev(all price) as myStdev," +
@@ -57,6 +57,7 @@ public class TestGroupByMedianAndDeviation extends TestCase
                 .add(Expressions.medianDistinct("price"), "myDistMedian")
                 .add(Expressions.stddev("price"), "myStdev")
                 .add(Expressions.avedev("price"), "myAvedev")
+                .setStreamSelector(StreamSelector.RSTREAM_ISTREAM_BOTH)
         );
         FromClause fromClause = FromClause.create(
                 FilterStream.create(SupportBeanString.class.getName(), "one").addView(View.create("win", "length", 100)),
@@ -72,7 +73,7 @@ public class TestGroupByMedianAndDeviation extends TestCase
         model.setGroupByClause(GroupByClause.create("symbol"));
         model = (EPStatementObjectModel) SerializableObjectCopier.copy(model);
 
-        String viewExpr = "select symbol, " +
+        String viewExpr = "select irstream symbol, " +
                                  "median(price) as myMedian, " +
                                  "median(distinct price) as myDistMedian, " +
                                  "stddev(price) as myStdev, " +
@@ -96,7 +97,7 @@ public class TestGroupByMedianAndDeviation extends TestCase
 
     public void testSumJoin()
     {
-        String viewExpr = "select symbol," +
+        String viewExpr = "select irstream symbol," +
                                  "median(price) as myMedian," +
                                  "median(distinct price) as myDistMedian," +
                                  "stddev(price) as myStdev," +

@@ -37,7 +37,7 @@ public class TestMTStmtTimeWindow extends TestCase
     public void testTimeWin() throws Exception
     {
         EPStatement stmt = engine.getEPAdministrator().createEQL(
-                " select intPrimitive, string as key " +
+                " select irstream intPrimitive, string as key " +
                 " from " + SupportBean.class.getName() + ".win:time(1 sec)");
 
         listener = new SupportMTUpdateListener();

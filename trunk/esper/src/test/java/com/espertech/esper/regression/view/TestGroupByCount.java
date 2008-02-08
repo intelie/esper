@@ -34,7 +34,7 @@ public class TestGroupByCount extends TestCase
     public void testCountOneViewOM() throws Exception
     {
         EPStatementObjectModel model = new EPStatementObjectModel();
-        model.setSelectClause(SelectClause.create()
+        model.setSelectClause(SelectClause.create().setStreamSelector(StreamSelector.RSTREAM_ISTREAM_BOTH)
                 .add("symbol")
                 .add(Expressions.countStar(), "countAll")
                 .add(Expressions.countDistinct("volume"), "countDistVol")
@@ -47,7 +47,7 @@ public class TestGroupByCount extends TestCase
         model.setGroupByClause(GroupByClause.create("symbol"));
         model = (EPStatementObjectModel) SerializableObjectCopier.copy(model);
 
-        String viewExpr = "select symbol, " +
+        String viewExpr = "select irstream symbol, " +
                                   "count(*) as countAll, " +
                                   "count(distinct volume) as countDistVol, " +
                                   "count(volume) as countVol" +
@@ -64,7 +64,7 @@ public class TestGroupByCount extends TestCase
 
     public void testCountOneViewCompile() throws Exception
     {
-        String viewExpr = "select symbol, " +
+        String viewExpr = "select irstream symbol, " +
                                   "count(*) as countAll, " +
                                   "count(distinct volume) as countDistVol, " +
                                   "count(volume) as countVol" +
@@ -83,7 +83,7 @@ public class TestGroupByCount extends TestCase
 
     public void testCountOneView()
     {
-        String viewExpr = "select symbol, " +
+        String viewExpr = "select irstream symbol, " +
                                   "count(*) as countAll," +
                                   "count(distinct volume) as countDistVol," +
                                   "count(all volume) as countVol" +
@@ -99,7 +99,7 @@ public class TestGroupByCount extends TestCase
 
     public void testCountJoin()
     {
-        String viewExpr = "select symbol, " +
+        String viewExpr = "select irstream symbol, " +
                                   "count(*) as countAll," +
                                   "count(distinct volume) as countDistVol," +
                                   "count(volume) as countVol " +

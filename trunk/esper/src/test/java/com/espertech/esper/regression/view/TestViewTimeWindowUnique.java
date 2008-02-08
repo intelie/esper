@@ -27,7 +27,7 @@ public class TestViewTimeWindowUnique extends TestCase
     {
         // Set up a time window with a unique view attached
         EPStatement windowUniqueView = epService.getEPAdministrator().createEQL(
-                "select * from " + SupportMarketDataBean.class.getName() +
+                "select irstream * from " + SupportMarketDataBean.class.getName() +
                 ".win:time(3.0).std:unique(symbol)");
         windowUniqueView.addListener(listener);
 
@@ -47,7 +47,7 @@ public class TestViewTimeWindowUnique extends TestCase
 
         // Set up a time window with a unique view attached
         EPStatement windowUniqueView = epService.getEPAdministrator().createEQL(
-                "select * from " + SupportMarketDataBean.class.getName() +
+                "select irstream * from " + SupportMarketDataBean.class.getName() +
                 ".win:time(3.0).std:unique('symbol', 'price')");
         windowUniqueView.addListener(listener);
         String[] fields = new String[] {"symbol", "price", "volume"};

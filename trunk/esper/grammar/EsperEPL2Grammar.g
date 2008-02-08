@@ -65,6 +65,7 @@ tokens
 	DESC='desc';
 	RSTREAM='rstream';
 	ISTREAM='istream';
+	IRSTREAM='irstream';
 	UNIDIRECTIONAL='unidirectional';
 	PATTERN='pattern';
 	SQL='sql';
@@ -331,6 +332,7 @@ tokens
 	parserTokenParaphases.put(DESC, "'desc'");
 	parserTokenParaphases.put(RSTREAM, "'rstream'");
 	parserTokenParaphases.put(ISTREAM, "'istream'");
+	parserTokenParaphases.put(IRSTREAM, "'irstream'");
 	parserTokenParaphases.put(UNIDIRECTIONAL, "'unidirectional'");
 	parserTokenParaphases.put(PATTERN, "'pattern'");
 	parserTokenParaphases.put(SQL, "'sql'");
@@ -557,7 +559,7 @@ whereClause
 selectClause
 @init  { paraphrases.push("select clause"); }
 @after { paraphrases.pop(); }
-	:	(s=RSTREAM | s=ISTREAM)? selectionList
+	:	(s=RSTREAM | s=ISTREAM | s=IRSTREAM)? selectionList
 		-> ^(SELECTION_EXPR $s? selectionList)
 	;
 

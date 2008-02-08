@@ -34,7 +34,7 @@ public class TestAggregateRowForAll extends TestCase
 
     public void testSumOneView()
     {
-        String viewExpr = "select sum(longBoxed) as mySum " +
+        String viewExpr = "select irstream sum(longBoxed) as mySum " +
                           "from " + SupportBean.class.getName() + ".win:time(10 sec)";
         selectTestView = epService.getEPAdministrator().createEQL(viewExpr);
         selectTestView.addListener(listener);
@@ -44,7 +44,7 @@ public class TestAggregateRowForAll extends TestCase
 
     public void testSumJoin()
     {
-        String viewExpr = "select sum(longBoxed) as mySum " +
+        String viewExpr = "select irstream sum(longBoxed) as mySum " +
                           "from " + SupportBeanString.class.getName() + ".win:time(10) as one, " +
                                     SupportBean.class.getName() + ".win:time(10 sec) as two " +
                           "where one.string = two.string";
@@ -123,7 +123,7 @@ public class TestAggregateRowForAll extends TestCase
     public void testAvgPerSym() throws Throwable
     {
         EPStatement stmt = epService.getEPAdministrator().createEQL(
-                "select avg(price) as avgp, sym from " + SupportPriceEvent.class.getName() + ".std:groupby(sym).win:length(2)"
+                "select irstream avg(price) as avgp, sym from " + SupportPriceEvent.class.getName() + ".std:groupby(sym).win:length(2)"
         );
         SupportUpdateListener listener = new SupportUpdateListener();
         stmt.addListener(listener);

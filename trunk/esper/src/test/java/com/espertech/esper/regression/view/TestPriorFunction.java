@@ -29,7 +29,7 @@ public class TestPriorFunction extends TestCase
 
     public void testPriorTimeWindow()
     {
-        String viewExpr = "select symbol as currSymbol, " +
+        String viewExpr = "select irstream symbol as currSymbol, " +
                           " prior(2, symbol) as priorSymbol, " +
                           " prior(2, price) as priorPrice " +
                           "from " + SupportMarketDataBean.class.getName() + ".win:time(1 min) ";
@@ -112,7 +112,7 @@ public class TestPriorFunction extends TestCase
 
     public void testPriorExtTimedWindow()
     {
-        String viewExpr = "select symbol as currSymbol, " +
+        String viewExpr = "select irstream symbol as currSymbol, " +
                           " prior(2, symbol) as priorSymbol, " +
                           " prior(3, price) as priorPrice " +
                           "from " + SupportMarketDataBean.class.getName() + ".win:ext_timed('volume', 1 min) ";
@@ -170,7 +170,7 @@ public class TestPriorFunction extends TestCase
 
     public void testPriorTimeBatchWindow()
     {
-        String viewExpr = "select symbol as currSymbol, " +
+        String viewExpr = "select irstream symbol as currSymbol, " +
                           " prior(3, symbol) as priorSymbol, " +
                           " prior(2, price) as priorPrice " +
                           "from " + SupportMarketDataBean.class.getName() + ".win:time_batch(1 min) ";
@@ -340,7 +340,7 @@ public class TestPriorFunction extends TestCase
 
     public void testPriorLengthWindow()
     {
-        String viewExpr =   "select symbol as currSymbol, " +
+        String viewExpr =   "select irstream symbol as currSymbol, " +
                             "prior(0, symbol) as prior0Symbol, " +
                             "prior(1, symbol) as prior1Symbol, " +
                             "prior(2, symbol) as prior2Symbol, " +
@@ -413,7 +413,7 @@ public class TestPriorFunction extends TestCase
 
     public void testPriorSortWindow()
     {
-        String viewExpr = "select symbol as currSymbol, " +
+        String viewExpr = "select irstream symbol as currSymbol, " +
                           " prior(0, symbol) as prior0Symbol, " +
                           " prior(1, symbol) as prior1Symbol, " +
                           " prior(2, symbol) as prior2Symbol, " +
@@ -425,7 +425,7 @@ public class TestPriorFunction extends TestCase
                           "from " + SupportMarketDataBean.class.getName() + ".ext:sort(symbol, false, 3)";
         tryPriorSortWindow(viewExpr);
 
-        viewExpr = "select symbol as currSymbol, " +
+        viewExpr = "select irstream symbol as currSymbol, " +
                           " prior(3, symbol) as prior3Symbol, " +
                           " prior(1, symbol) as prior1Symbol, " +
                           " prior(2, symbol) as prior2Symbol, " +

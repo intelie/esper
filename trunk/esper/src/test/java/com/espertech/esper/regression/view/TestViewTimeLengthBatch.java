@@ -35,7 +35,7 @@ public class TestViewTimeLengthBatch extends TestCase
         final long startTime = 1000;
         sendTimer(startTime);
         EPStatement stmt = epService.getEPAdministrator().createEQL(
-                "select * from " + SupportMarketDataBean.class.getName() +
+                "select irstream * from " + SupportMarketDataBean.class.getName() +
                 ".win:time_length_batch(10 sec, 3)");
         stmt.addListener(listener);
         EPRuntime engine = epService.getEPRuntime();
@@ -195,7 +195,7 @@ public class TestViewTimeLengthBatch extends TestCase
         sendTimer(startTime);
 
         EPStatement stmt = epService.getEPAdministrator().createEQL(
-                "select * from " + SupportMarketDataBean.class.getName() +
+                "select irstream * from " + SupportMarketDataBean.class.getName() +
                 ".win:time_length_batch(10 sec, 3, 'FORCE_UPDATE')");
         stmt.addListener(listener);
         EPRuntime engine = epService.getEPRuntime();

@@ -2,6 +2,7 @@ package com.espertech.esper.regression.support;
 
 import com.espertech.esper.client.EPServiceProvider;
 import com.espertech.esper.client.EPRuntime;
+import com.espertech.esper.client.EPStatement;
 import com.espertech.esper.client.time.CurrentTimeEvent;
 import com.espertech.esper.support.util.SupportUpdateListener;
 import com.espertech.esper.support.util.ArrayAssertionUtil;
@@ -24,14 +25,17 @@ public class ResultAssertExecution
     private static final Log preformatlog = LogFactory.getLog("PREFORMATTED");
 
     private final EPServiceProvider engine;
+    private EPStatement stmt;
     private final SupportUpdateListener listener;
     private final ResultAssertTestResult expected;
     private static final TreeMap<Long, TimeAction> input = ResultAssertInput.getActions();
 
     public ResultAssertExecution(EPServiceProvider engine,
+                                 EPStatement stmt,
                                  SupportUpdateListener listener,
                                  ResultAssertTestResult expected) {
         this.engine = engine;
+        this.stmt = stmt;
         this.listener = listener;
         this.expected = expected;
     }
@@ -40,10 +44,19 @@ public class ResultAssertExecution
     {
         boolean isAssert = System.getProperty("ASSERTION_DISABLED") == null;
 
-        execute(isAssert);
+        // First execution is for ISTREAM only, which is the default
+        execute(isAssert, true);
+
+        // Second execution is for IRSTREAM, asserting both the insert and remove stream
+        stmt.stop();
+        String eql = stmt.getText();
+        String irStreamEQL = eql.replace("select ", "select irstream ");
+        stmt = engine.getEPAdministrator().createEQL(irStreamEQL);
+        stmt.addListener(listener);
+        execute(isAssert, false);
     }
 
-    public void execute(boolean isAssert)
+    private void execute(boolean isAssert, boolean isExpectNullRemoveStream)
     {
         // For use in join tests, send join-to events
         engine.getEPRuntime().sendEvent(new SupportBean("S1", 0));
@@ -55,7 +68,7 @@ public class ResultAssertExecution
             preformatlog.debug(String.format("Category: %s   Output rate limiting: %s", expected.getCategory(), expected.getTitle()));
             preformatlog.debug("");
             preformatlog.debug("Statement:");
-            preformatlog.debug(indentLines(expected.getExpressionText()));
+            preformatlog.debug(indentLines(stmt.getText()));
             preformatlog.debug("");
             preformatlog.debug(String.format("%28s  %38s", "Input", "Output"));
             preformatlog.debug(String.format("%45s  %15s  %15s", "", "Insert Stream", "Remove Stream"));
@@ -78,16 +91,16 @@ public class ResultAssertExecution
                 preformatlog.debug(String.format("%5s %24s %s", timeInSec, "", comment));
             }
 
-            processAction(time, timeInSec, timeEntry.getValue(), isAssert);
+            processAction(time, timeInSec, timeEntry.getValue(), isAssert, isExpectNullRemoveStream);
         }
     }
 
-    private void processAction(long currentTime, String timeInSec, TimeAction value, boolean isAssert) {
+    private void processAction(long currentTime, String timeInSec, TimeAction value, boolean isAssert, boolean isExpectNullRemoveStream) {
 
         Map<Integer, StepDesc> assertions = expected.getAssertions().get(currentTime);
 
         // Assert step 0 which is the timer event result then send events and assert remaining
-        assertStep(timeInSec, 0, assertions, expected.getProperties(), isAssert);
+        assertStep(timeInSec, 0, assertions, expected.getProperties(), isAssert, isExpectNullRemoveStream);
 
         for (int step = 1; step < 10; step++)
         {
@@ -104,11 +117,11 @@ public class ResultAssertExecution
                 }
             }
 
-            assertStep(timeInSec, step, assertions, expected.getProperties(), isAssert);
+            assertStep(timeInSec, step, assertions, expected.getProperties(), isAssert, isExpectNullRemoveStream);
         }
     }
 
-    private void assertStep(String timeInSec, int step, Map<Integer, StepDesc> stepAssertions, String[] fields, boolean isAssert) {
+    private void assertStep(String timeInSec, int step, Map<Integer, StepDesc> stepAssertions, String[] fields, boolean isAssert, boolean isExpectNullRemoveStream) {
 
         if (preformatlog.isDebugEnabled())
         {
@@ -117,11 +130,11 @@ public class ResultAssertExecution
                 UniformPair<String[]> received = renderReceived(fields);
                 for (String newRow : received.getFirst())
                 {
-                    preformatlog.debug(String.format("%50s %s", "", newRow));
+                    preformatlog.debug(String.format("%48s %s", "", newRow));
                 }
                 for (String oldRow : received.getSecond())
                 {
-                    preformatlog.debug(String.format("%70s %s", "", oldRow));
+                    preformatlog.debug(String.format("%68s %s", "", oldRow));
                 }
             }
         }
@@ -145,11 +158,34 @@ public class ResultAssertExecution
         }
         else
         {
-            Assert.assertTrue("At time " + timeInSec + " expected events but received none", listener.isInvoked());
-            ArrayAssertionUtil.assertPropsPerRow(listener.getLastNewData(), expected.getProperties(),
-                    stepDesc.getNewDataPerRow(), "newData");
-            ArrayAssertionUtil.assertPropsPerRow(listener.getLastOldData(), expected.getProperties(),
-                    stepDesc.getOldDataPerRow(), "oldData");
+            // If we do expect remove stream events, asset both
+            if (!isExpectNullRemoveStream)
+            {
+                Assert.assertTrue("At time " + timeInSec + " expected events but received none", listener.isInvoked());
+                ArrayAssertionUtil.assertPropsPerRow(listener.getLastNewData(), expected.getProperties(),
+                        stepDesc.getNewDataPerRow(), "newData");
+
+                ArrayAssertionUtil.assertPropsPerRow(listener.getLastOldData(), expected.getProperties(),
+                        stepDesc.getOldDataPerRow(), "oldData");
+            }
+            // If we don't expect remove stream events (istream only), then asset new data only if there
+            else
+            {
+                // If we do expect new data, assert
+                if (stepDesc.getNewDataPerRow() != null)
+                {
+                    Assert.assertTrue("At time " + timeInSec + " expected events but received none", listener.isInvoked());
+                    ArrayAssertionUtil.assertPropsPerRow(listener.getLastNewData(), expected.getProperties(),
+                            stepDesc.getNewDataPerRow(), "newData");
+                }
+                else
+                {
+                    // If we don't expect new data, make sure its null
+                    Assert.assertNull("At time " + timeInSec + " expected no insert stream events but received some", listener.getLastNewData());
+                }
+
+                Assert.assertNull("At time " + timeInSec + " expected no remove stream events but received some", listener.getLastOldData());
+            }
         }
         listener.reset();
     }
@@ -197,7 +233,7 @@ public class ResultAssertExecution
         boolean delimiter = false;
         while (true)
         {
-            String line = null;
+            String line;
             try {
                 line = lineReader.readLine();
             } catch (IOException e) {

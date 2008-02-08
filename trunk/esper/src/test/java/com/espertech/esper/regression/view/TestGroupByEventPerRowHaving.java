@@ -32,7 +32,7 @@ public class TestGroupByEventPerRowHaving extends TestCase
     public void testSumOneView()
     {
         // Every event generates a new row, this time we sum the price by symbol and output volume
-        String viewExpr = "select symbol, volume, sum(price) as mySum " +
+        String viewExpr = "select irstream symbol, volume, sum(price) as mySum " +
                           "from " + SupportMarketDataBean.class.getName() + ".win:length(3) " +
                           "where symbol='DELL' or symbol='IBM' or symbol='GE' " +
                           "group by symbol " +
@@ -47,7 +47,7 @@ public class TestGroupByEventPerRowHaving extends TestCase
     public void testSumJoin()
     {
         // Every event generates a new row, this time we sum the price by symbol and output volume
-        String viewExpr = "select symbol, volume, sum(price) as mySum " +
+        String viewExpr = "select irstream symbol, volume, sum(price) as mySum " +
                           "from " + SupportBeanString.class.getName() + ".win:length(100) as one, " +
                                     SupportMarketDataBean.class.getName() + ".win:length(3) as two " +
                           "where (symbol='DELL' or symbol='IBM' or symbol='GE') " +

@@ -33,7 +33,7 @@ public class TestViewLengthBatch extends TestCase
     public void testLengthBatchSize2()
     {
         EPStatement stmt = epService.getEPAdministrator().createEQL(
-                "select * from " + SupportBean.class.getName() + ".win:length_batch(2)");
+                "select irstream * from " + SupportBean.class.getName() + ".win:length_batch(2)");
         stmt.addListener(listener);
 
         sendEvent(events[0]);
@@ -64,7 +64,7 @@ public class TestViewLengthBatch extends TestCase
     public void testLengthBatchSize1()
     {
         EPStatement stmt = epService.getEPAdministrator().createEQL(
-                "select * from " + SupportBean.class.getName() + ".win:length_batch(1)");
+                "select irstream * from " + SupportBean.class.getName() + ".win:length_batch(1)");
         stmt.addListener(listener);
 
         sendEvent(events[0]);
@@ -83,7 +83,7 @@ public class TestViewLengthBatch extends TestCase
     public void testLengthBatchSize3()
     {
         EPStatement stmt = epService.getEPAdministrator().createEQL(
-                "select * from " + SupportBean.class.getName() + ".win:length_batch(3)");
+                "select irstream * from " + SupportBean.class.getName() + ".win:length_batch(3)");
         stmt.addListener(listener);
 
         sendEvent(events[0]);
@@ -114,7 +114,7 @@ public class TestViewLengthBatch extends TestCase
     public void testLengthBatchSize3And2Staggered()
     {
         EPStatement stmt = epService.getEPAdministrator().createEQL(
-                "select * from " + SupportBean.class.getName() + ".win:length_batch(3).win:length_batch(2)");
+                "select irstream * from " + SupportBean.class.getName() + ".win:length_batch(3).win:length_batch(2)");
         stmt.addListener(listener);
 
         sendEvent(events[0]);

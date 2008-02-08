@@ -9,7 +9,7 @@ public class TestConfigurationDBRef extends TestCase
         tryInvalid("sometype", "Unsupported java type 'sometype' when expecting any of: [String, BigDecimal, Boolean, Byte, Short, Int, Long, Float, Double, ByteArray, SqlDate, SqlTime, SqlTimestamp]");
 
         ConfigurationDBRef config = new ConfigurationDBRef();
-        config.addJavaSqlTypesBinding(1, "int");
+        config.addSqlTypesBinding(1, "int");
     }
 
     private void tryInvalid(String type, String text)
@@ -17,7 +17,7 @@ public class TestConfigurationDBRef extends TestCase
         try
         {
             ConfigurationDBRef config = new ConfigurationDBRef();
-            config.addJavaSqlTypesBinding(1, type);
+            config.addSqlTypesBinding(1, type);
         }
         catch (ConfigurationException ex)
         {

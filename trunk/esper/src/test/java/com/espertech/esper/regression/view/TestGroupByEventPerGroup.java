@@ -38,7 +38,7 @@ public class TestGroupByEventPerGroup extends TestCase
     {
         // test for ESPER-185
         String fields[] = "mycount".split(",");
-        String viewExpr = "select count(price) as mycount " +
+        String viewExpr = "select irstream count(price) as mycount " +
                           "from " + SupportMarketDataBean.class.getName() + ".win:length(5) " +
                           "group by price";
 
@@ -68,7 +68,7 @@ public class TestGroupByEventPerGroup extends TestCase
     {
         // test for ESPER-185
         String fields[] = "mycount".split(",");
-        String viewExpr = "select count(price) as mycount " +
+        String viewExpr = "select irstream count(price) as mycount " +
                           "from " + SupportMarketDataBean.class.getName() + ".win:length(5) " +
                           "group by symbol, price";
 
@@ -104,7 +104,7 @@ public class TestGroupByEventPerGroup extends TestCase
     {
         // test for ESPER-185
         String fields[] = "symbol,price,mycount".split(",");
-        String viewExpr = "select symbol,price,count(price) as mycount " +
+        String viewExpr = "select irstream symbol,price,count(price) as mycount " +
                           "from " + SupportMarketDataBean.class.getName() + ".win:length(5) " +
                           "group by symbol, price";
 
@@ -164,7 +164,7 @@ public class TestGroupByEventPerGroup extends TestCase
 
     public void testSumOneView()
     {
-        String viewExpr = "select symbol," +
+        String viewExpr = "select irstream symbol," +
                                  "sum(price) as mySum," +
                                  "avg(price) as myAvg " +
                           "from " + SupportMarketDataBean.class.getName() + ".win:length(3) " +
@@ -179,7 +179,7 @@ public class TestGroupByEventPerGroup extends TestCase
 
     public void testSumJoin()
     {
-        String viewExpr = "select symbol," +
+        String viewExpr = "select irstream symbol," +
                                  "sum(price) as mySum," +
                                  "avg(price) as myAvg " +
                           "from " + SupportBeanString.class.getName() + ".win:length(100) as one, " +

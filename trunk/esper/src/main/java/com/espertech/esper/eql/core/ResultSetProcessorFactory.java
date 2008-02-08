@@ -258,6 +258,14 @@ public class ResultSetProcessorFactory
             validateHaving(propertiesGroupBy, optionalHavingNode);
         }
 
+        // We only generate Remove-Stream events if they are explicitly selected, or the insert-into requires them
+        boolean isSelectRStream = (statementSpecCompiled.getSelectStreamSelectorEnum() == SelectClauseStreamSelectorEnum.RSTREAM_ISTREAM_BOTH
+                || statementSpecCompiled.getSelectStreamSelectorEnum() == SelectClauseStreamSelectorEnum.RSTREAM_ONLY);
+        if ((statementSpecCompiled.getInsertIntoDesc() != null) && (!statementSpecCompiled.getInsertIntoDesc().isIStream()))
+        {
+            isSelectRStream = true;
+        }
+
         // Determine if any output rate limiting must be performed early while processing results
         boolean isOutputLimiting = outputLimitSpec != null;
         if ((outputLimitSpec != null) && outputLimitSpec.getDisplayLimit() == OutputLimitLimitType.SNAPSHOT)
@@ -275,7 +283,7 @@ public class ResultSetProcessorFactory
             if (orderByNodes.isEmpty() && optionalHavingNode == null && !isOutputLimiting)
             {
                 log.debug(".getProcessor Using no result processor");
-                return new ResultSetProcessorHandThrough(selectExprProcessor);
+                return new ResultSetProcessorHandThrough(selectExprProcessor, isSelectRStream);
             }
 
             // (1b)
@@ -283,7 +291,7 @@ public class ResultSetProcessorFactory
             // directly generating one row, and no need to update aggregate state since there is no aggregate function.
             // There might be some order-by expressions.
             log.debug(".getProcessor Using ResultSetProcessorSimple");
-            return new ResultSetProcessorSimple(selectExprProcessor, orderByProcessor, optionalHavingNode);
+            return new ResultSetProcessorSimple(selectExprProcessor, orderByProcessor, optionalHavingNode, isSelectRStream);
         }
 
         // (2)
@@ -291,7 +299,7 @@ public class ResultSetProcessorFactory
         if ((namedSelectionList.isEmpty()) && (propertiesAggregatedHaving.isEmpty()))
         {
             log.debug(".getProcessor Using ResultSetProcessorSimple");
-            return new ResultSetProcessorSimple(selectExprProcessor, orderByProcessor, optionalHavingNode);
+            return new ResultSetProcessorSimple(selectExprProcessor, orderByProcessor, optionalHavingNode, isSelectRStream);
         }
 
         boolean hasAggregation = (!selectAggregateExprNodes.isEmpty()) || (!propertiesAggregatedHaving.isEmpty());
@@ -303,14 +311,14 @@ public class ResultSetProcessorFactory
             if ((nonAggregatedProps.isEmpty()) && (!isUsingWildcard))
             {
                 log.debug(".getProcessor Using ResultSetProcessorRowForAll");
-                return new ResultSetProcessorRowForAll(selectExprProcessor, aggregationService, orderByProcessor, optionalHavingNode);
+                return new ResultSetProcessorRowForAll(selectExprProcessor, aggregationService, orderByProcessor, optionalHavingNode, isSelectRStream);
             }
 
             // (4)
             // There is no group-by clause but there are aggregate functions with event properties in the select clause (aggregation case)
             // or having clause and not all event properties are aggregated (some properties are not under aggregation functions).
             log.debug(".getProcessor Using ResultSetProcessorAggregateAll");
-            return new ResultSetProcessorAggregateAll(selectExprProcessor, orderByProcessor, aggregationService, optionalHavingNode);
+            return new ResultSetProcessorAggregateAll(selectExprProcessor, orderByProcessor, aggregationService, optionalHavingNode, isSelectRStream);
         }
 
         // Handle group-by cases
@@ -361,14 +369,14 @@ public class ResultSetProcessorFactory
         if (allInGroupBy && allInSelect)
         {
             log.debug(".getProcessor Using ResultSetProcessorRowPerGroup");
-            return new ResultSetProcessorRowPerGroup(selectExprProcessor, orderByProcessor, aggregationService, groupByNodes, optionalHavingNode);
+            return new ResultSetProcessorRowPerGroup(selectExprProcessor, orderByProcessor, aggregationService, groupByNodes, optionalHavingNode, isSelectRStream);
         }
 
         // (6)
         // There is a group-by clause, and one or more event properties in the select clause that are not under an aggregation
         // function are not listed in the group-by clause (output one row per event, not one row per group)
         log.debug(".getProcessor Using ResultSetProcessorAggregateGrouped");
-        return new ResultSetProcessorAggregateGrouped(selectExprProcessor, orderByProcessor, aggregationService, groupByNodes, optionalHavingNode);
+        return new ResultSetProcessorAggregateGrouped(selectExprProcessor, orderByProcessor, aggregationService, groupByNodes, optionalHavingNode, isSelectRStream);
     }
 
     private static void validateHaving(Set<Pair<Integer, String>> propertiesGroupedBy,

@@ -1,6 +1,7 @@
 Principles
 ==========
 
+- The remove stream for aggregation values is also useful: it posts the last value before the aggregation changed
 - The engine does not hide properties or events
 - In fully-aggregated cases the engine presents the before-apply data as remove stream events
 - The engine evaluates the having-clause at the granularity of the data posted by views
@@ -132,6 +133,7 @@ Statement:
   7.2                          
 
 Process finished with exit code 0
+
 
 
 

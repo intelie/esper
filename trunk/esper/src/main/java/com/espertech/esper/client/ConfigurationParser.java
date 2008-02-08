@@ -395,7 +395,7 @@ class ConfigurationParser {
                 {
                     throw new ConfigurationException("Error converting sql type '" + sqlType + "' to integer java.sql.Types constant");
                 }
-                configDBRef.addJavaSqlTypesBinding(sqlTypeInt, javaType);
+                configDBRef.addSqlTypesBinding(sqlTypeInt, javaType);
             }
             else if (subElement.getNodeName().equals("expiry-time-cache"))
             {
