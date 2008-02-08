@@ -8,6 +8,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
 
+import com.espertech.esper.client.soda.StreamSelector;
+
 public class TestConfigurationParser extends TestCase
 {
     private Configuration config;
@@ -44,6 +46,8 @@ public class TestConfigurationParser extends TestCase
         assertFalse(config.getEngineDefaults().getLogging().isEnableExecutionDebug());
 
         assertEquals(15000, config.getEngineDefaults().getVariables().getMsecVersionRelease());
+
+        assertEquals(StreamSelector.ISTREAM_ONLY, config.getEngineDefaults().getStreamSelection().getDefaultStreamSelector());
     }
 
     protected static void assertFileConfig(Configuration config)
@@ -218,6 +222,7 @@ public class TestConfigurationParser extends TestCase
         assertEquals(Configuration.PropertyResolutionStyle.DISTINCT_CASE_INSENSITIVE, config.getEngineDefaults().getEventMeta().getClassPropertyResolutionStyle());
         assertTrue(config.getEngineDefaults().getLogging().isEnableExecutionDebug());
         assertEquals(30000, config.getEngineDefaults().getVariables().getMsecVersionRelease());
+        assertEquals(StreamSelector.RSTREAM_ISTREAM_BOTH, config.getEngineDefaults().getStreamSelection().getDefaultStreamSelector());
 
         // variables
         assertEquals(2, config.getVariables().size());

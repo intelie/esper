@@ -1177,5 +1177,32 @@ config.getEngineDefaults().getLogging().setEnableExecutionDebug(true);]]></progr
 			</sect3>
 		</sect2>
 
+		<sect2 id="config-engine-stream-selection" revision="1">
+			<title>Engine Settings related to Stream Selection</title>
+			
+			<sect3 id="config-engine-streamselect-choices" revision="1">
+				<title>Default Statement Stream Selection</title>
+
+				<para>
+				   This configuration item is for 
+				</para>
+
+				<para>
+				   For statements that use variables and that execute (in response to a single timer or other event) longer then the time period, the engine returns the current variable version at the time the statement executes, thereby softening the guarantee of consistency of variable values within the long-running statement. Please see <xref linkend="variable_using"/> for more information.
+				</para>
+
+				<para>
+					The XML configuration for this setting is shown below:
+				</para>
+					<programlisting><![CDATA[<engine-settings>
+  <defaults>
+    <variables>
+      <msec-version-release value="15000"/>
+    </variables>
+  </defaults>
+</engine-settings>]]></programlisting>
+
+			</sect3>
+		</sect2>
     </sect1>
 </chapter>

@@ -10,6 +10,7 @@ package com.espertech.esper.client;
 import com.espertech.esper.util.DOMElementIterator;
 import com.espertech.esper.util.JavaClassHelper;
 import com.espertech.esper.event.EventAdapterException;
+import com.espertech.esper.client.soda.StreamSelector;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.w3c.dom.Document;
@@ -561,6 +562,10 @@ class ConfigurationParser {
             {
                 handleDefaultsVariables(configuration, subElement);
             }
+            if (subElement.getNodeName().equals("stream-selection"))
+            {
+                handleDefaultsStreamSelection(configuration, subElement);
+            }
         }
     }
 
@@ -663,6 +668,42 @@ class ConfigurationParser {
                 String valueText = subElement.getAttributes().getNamedItem("value").getTextContent();
                 Long value = Long.parseLong(valueText);
                 configuration.getEngineDefaults().getVariables().setMsecVersionRelease(value);
+            }
+        }
+    }
+
+    private static void handleDefaultsStreamSelection(Configuration configuration, Element parentElement)
+    {
+        DOMElementIterator nodeIterator = new DOMElementIterator(parentElement.getChildNodes());
+        while (nodeIterator.hasNext())
+        {
+            Element subElement = nodeIterator.next();
+            if (subElement.getNodeName().equals("stream-selector"))
+            {
+                String valueText = subElement.getAttributes().getNamedItem("value").getTextContent();
+                if (valueText == null)
+                {
+                    throw new ConfigurationException("No value attribute supplied for stream-selector element");
+                }
+                StreamSelector defaultSelector;
+                if (valueText.toUpperCase().trim().equals("ISTREAM"))
+                {
+                    defaultSelector = StreamSelector.ISTREAM_ONLY;
+                }
+                else if (valueText.toUpperCase().trim().equals("RSTREAM"))
+                {
+                    defaultSelector = StreamSelector.RSTREAM_ONLY;
+                }
+                else if (valueText.toUpperCase().trim().equals("IRSTREAM"))
+                {
+                    defaultSelector = StreamSelector.RSTREAM_ISTREAM_BOTH;
+                }
+                else
+                {
+                    throw new ConfigurationException("Value attribute for stream-selector element invalid, " +
+                            "expected on of the following keywords: istream, irstream, rstream");
+                }
+                configuration.getEngineDefaults().getStreamSelection().setDefaultStreamSelector(defaultSelector);
             }
         }
     }

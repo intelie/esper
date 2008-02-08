@@ -285,6 +285,7 @@
 				<xs:element ref="view-resources" minOccurs="0"/>
 				<xs:element ref="logging" minOccurs="0"/>
 				<xs:element ref="variables" minOccurs="0"/>
+				<xs:element ref="stream-selection" minOccurs="0"/>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
@@ -365,6 +366,15 @@
 			</xs:choice>
 		</xs:complexType>
 	</xs:element>
+	<xs:element name="stream-selection">
+		<xs:complexType>
+			<xs:choice>
+				<xs:sequence>
+					<xs:element ref="stream-selector" minOccurs="0"/>
+				</xs:sequence>
+			</xs:choice>
+		</xs:complexType>
+	</xs:element>
 	<xs:element name="execution-path">
 		<xs:complexType>
 			<xs:attribute name="enabled" type="xs:boolean" use="required"/>
@@ -416,6 +426,18 @@
 		<xs:restriction base="xs:token">
 			<xs:enumeration value="spin"/>
 			<xs:enumeration value="suspend"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:element name="stream-selector">
+		<xs:complexType>
+			<xs:attribute name="value" type="streamSelectorEnum" use="required"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:simpleType name="streamSelectorEnum">
+		<xs:restriction base="xs:token">
+			<xs:enumeration value="irstream"/>
+			<xs:enumeration value="istream"/>
+			<xs:enumeration value="rstream"/>
 		</xs:restriction>
 	</xs:simpleType>
 </xs:schema>

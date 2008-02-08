@@ -7,6 +7,8 @@
  **************************************************************************************/
 package com.espertech.esper.client;
 
+import com.espertech.esper.client.soda.StreamSelector;
+
 import java.io.Serializable;
 
 /**
@@ -19,6 +21,7 @@ public class ConfigurationEngineDefaults implements Serializable
     private EventMeta eventMeta;
     private Logging logging;
     private Variables variables;
+    private StreamSelection streamSelection;
 
     /**
      * Ctor.
@@ -30,6 +33,7 @@ public class ConfigurationEngineDefaults implements Serializable
         eventMeta = new EventMeta();
         logging = new Logging();
         variables = new Variables();
+        streamSelection = new StreamSelection();
     }
 
     /**
@@ -75,6 +79,15 @@ public class ConfigurationEngineDefaults implements Serializable
     public Variables getVariables()
     {
         return variables;
+    }
+
+    /**
+     * Returns engine defaults applicable to streams (insert and remove, insert only or remove only) selected for a statement.
+     * @return stream selection defaults
+     */
+    public StreamSelection getStreamSelection()
+    {
+        return streamSelection;
     }
 
     /**
@@ -449,6 +462,56 @@ public class ConfigurationEngineDefaults implements Serializable
         public void setMsecVersionRelease(long msecVersionRelease)
         {
             this.msecVersionRelease = msecVersionRelease;
+        }
+    }
+
+    /**
+     * Holds default settings for stream selection in the select-clause.
+     */
+    public static class StreamSelection implements Serializable
+    {
+        private StreamSelector defaultStreamSelector;
+
+        /**
+         * Ctor - sets up defaults.
+         */
+        protected StreamSelection()
+        {
+            defaultStreamSelector = StreamSelector.ISTREAM_ONLY;
+        }
+
+        /**
+         * Returns the default stream selector.
+         * <p>
+         * Statements that select data from streams and that do not use one of the explicit stream
+         * selection keywords (istream/rstream/irstream), by default,
+         * generate selection results for the insert stream only, and not for the remove stream.
+         * <p>
+         * This setting can be used to change the default behavior: Use the {@see StreamSelector.RSTREAM_ISTREAM_BOTH}
+         * value to have your statements generate both insert and remove stream results
+         * without the use of the "irstream" keyword in the select clause. 
+         * @return default stream selector, which is {@see StreamSelector.ISTREAM_ONLY} unless changed
+         */
+        public StreamSelector getDefaultStreamSelector()
+        {
+            return defaultStreamSelector;
+        }
+
+        /**
+         * Sets the default stream selector.
+         * <p>
+         * Statements that select data from streams and that do not use one of the explicit stream
+         * selection keywords (istream/rstream/irstream), by default,
+         * generate selection results for the insert stream only, and not for the remove stream.
+         * <p>
+         * This setting can be used to change the default behavior: Use the {@see StreamSelector.RSTREAM_ISTREAM_BOTH}
+         * value to have your statements generate both insert and remove stream results
+         * without the use of the "irstream" keyword in the select clause.
+         * @param defaultStreamSelector default stream selector
+         */
+        public void setDefaultStreamSelector(StreamSelector defaultStreamSelector)
+        {
+            this.defaultStreamSelector = defaultStreamSelector;
         }
     }
 }
