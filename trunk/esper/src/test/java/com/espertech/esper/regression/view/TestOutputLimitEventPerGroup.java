@@ -40,7 +40,8 @@ public class TestOutputLimitEventPerGroup extends TestCase
     {
         String stmtText = "select symbol, sum(price) " +
                           "from MarketData.win:time(5.5 sec)" +
-                          "group by symbol";
+                          "group by symbol " +
+                          "order by symbol asc";
         runAssertion12(stmtText, "none");
     }
 
@@ -49,7 +50,8 @@ public class TestOutputLimitEventPerGroup extends TestCase
         String stmtText = "select symbol, sum(price) " +
                             "from MarketData.win:time(5.5 sec), " +
                             "SupportBean.win:keepall() where string=symbol " +
-                          "group by symbol";
+                            "group by symbol " +
+                            "order by symbol asc";
         runAssertion12(stmtText, "none");
     }
 
@@ -196,6 +198,25 @@ public class TestOutputLimitEventPerGroup extends TestCase
         runAssertion15_16(stmtText, "last");
     }
 
+    public void test17FirstNoHavingNoJoin()
+    {
+        String stmtText = "select symbol, sum(price) " +
+                            "from MarketData.win:time(5.5 sec) " +
+                            "group by symbol " +
+                            "output first every 1 seconds";
+        runAssertion17(stmtText, "first");
+    }
+
+    public void test18SnapshotNoHavingNoJoin()
+    {
+        String stmtText = "select symbol, sum(price) " +
+                            "from MarketData.win:time(5.5 sec) " +
+                            "group by symbol " +
+                            "output snapshot every 1 seconds " +
+                            "order by symbol";
+        runAssertion18(stmtText, "snapshot");
+    }
+
     private void runAssertion12(String stmtText, String outputLimit)
     {
         sendTimer(0);
@@ -204,18 +225,18 @@ public class TestOutputLimitEventPerGroup extends TestCase
 
         String fields[] = new String[] {"symbol", "sum(price)"};
         ResultAssertTestResult expected = new ResultAssertTestResult(CATEGORY, outputLimit, fields);
-        expected.addResultInsRem(200, 1, new Object[][] {{"S1", 25d}}, new Object[][] {{"S1", null}});
-        expected.addResultInsRem(800, 1, new Object[][] {{"S2", 9d}}, new Object[][] {{"S2", null}});
-        expected.addResultInsRem(1500, 1, new Object[][] {{"S1", 49d}}, new Object[][] {{"S1", 25d}});
-        expected.addResultInsRem(1500, 2, new Object[][] {{"S3", 1d}}, new Object[][] {{"S3", null}});
-        expected.addResultInsRem(2100, 1, new Object[][] {{"S1", 75d}}, new Object[][] {{"S1", 49d}});
-        expected.addResultInsRem(3500, 1, new Object[][] {{"S3", 3d}}, new Object[][] {{"S3", 1d}});
-        expected.addResultInsRem(4300, 1, new Object[][] {{"S1", 97d}}, new Object[][] {{"S1", 75d}});
-        expected.addResultInsRem(4900, 1, new Object[][] {{"S3", 6d}}, new Object[][] {{"S3", 3d}});
-        expected.addResultInsRem(5700, 0, new Object[][] {{"S1", 72d}}, new Object[][] {{"S1", 97d}});
-        expected.addResultInsRem(5900, 1, new Object[][] {{"S3", 7d}}, new Object[][] {{"S3", 6d}});
-        expected.addResultInsRem(6300, 0, new Object[][] {{"S2", null}}, new Object[][] {{"S2", 9d}});
-        expected.addResultInsRem(7000, 0, new Object[][] {{"S3", 6d}, {"S1", 48d}}, new Object[][] {{"S3", 7d}, {"S1", 72d}});
+        expected.addResultInsRem(200, 1, new Object[][] {{"IBM", 25d}}, new Object[][] {{"IBM", null}});
+        expected.addResultInsRem(800, 1, new Object[][] {{"MSFT", 9d}}, new Object[][] {{"MSFT", null}});
+        expected.addResultInsRem(1500, 1, new Object[][] {{"IBM", 49d}}, new Object[][] {{"IBM", 25d}});
+        expected.addResultInsRem(1500, 2, new Object[][] {{"YAH", 1d}}, new Object[][] {{"YAH", null}});
+        expected.addResultInsRem(2100, 1, new Object[][] {{"IBM", 75d}}, new Object[][] {{"IBM", 49d}});
+        expected.addResultInsRem(3500, 1, new Object[][] {{"YAH", 3d}}, new Object[][] {{"YAH", 1d}});
+        expected.addResultInsRem(4300, 1, new Object[][] {{"IBM", 97d}}, new Object[][] {{"IBM", 75d}});
+        expected.addResultInsRem(4900, 1, new Object[][] {{"YAH", 6d}}, new Object[][] {{"YAH", 3d}});
+        expected.addResultInsRem(5700, 0, new Object[][] {{"IBM", 72d}}, new Object[][] {{"IBM", 97d}});
+        expected.addResultInsRem(5900, 1, new Object[][] {{"YAH", 7d}}, new Object[][] {{"YAH", 6d}});
+        expected.addResultInsRem(6300, 0, new Object[][] {{"MSFT", null}}, new Object[][] {{"MSFT", 9d}});
+        expected.addResultInsRem(7000, 0, new Object[][] {{"IBM", 48d}, {"YAH", 6d}}, new Object[][] {{"IBM", 72d}, {"YAH", 7d}});
 
         ResultAssertExecution execution = new ResultAssertExecution(epService, stmt, listener, expected);
         execution.execute();
@@ -229,10 +250,10 @@ public class TestOutputLimitEventPerGroup extends TestCase
 
         String fields[] = new String[] {"symbol", "sum(price)"};
         ResultAssertTestResult expected = new ResultAssertTestResult(CATEGORY, outputLimit, fields);
-        expected.addResultInsRem(2100, 1, new Object[][] {{"S1", 75d}}, null);
-        expected.addResultInsRem(4300, 1, new Object[][] {{"S1", 97d}}, new Object[][] {{"S1", 75d}});
-        expected.addResultInsRem(5700, 0, new Object[][] {{"S1", 72d}}, new Object[][] {{"S1", 97d}});
-        expected.addResultInsRem(7000, 0, null, new Object[][] {{"S1", 72d}});
+        expected.addResultInsRem(2100, 1, new Object[][] {{"IBM", 75d}}, null);
+        expected.addResultInsRem(4300, 1, new Object[][] {{"IBM", 97d}}, new Object[][] {{"IBM", 75d}});
+        expected.addResultInsRem(5700, 0, new Object[][] {{"IBM", 72d}}, new Object[][] {{"IBM", 97d}});
+        expected.addResultInsRem(7000, 0, null, new Object[][] {{"IBM", 72d}});
 
         ResultAssertExecution execution = new ResultAssertExecution(epService, stmt, listener, expected);
         execution.execute();
@@ -246,13 +267,13 @@ public class TestOutputLimitEventPerGroup extends TestCase
 
         String fields[] = new String[] {"symbol", "sum(price)"};
         ResultAssertTestResult expected = new ResultAssertTestResult(CATEGORY, outputLimit, fields);
-        expected.addResultInsRem(1200, 0, new Object[][] {{"S1", 25d}, {"S2", 9d}}, new Object[][] {{"S1", null}, {"S2", null}});
-        expected.addResultInsRem(2200, 0, new Object[][] {{"S1", 75d}, {"S3", 1d}}, new Object[][] {{"S1", 25d}, {"S3", null}});
+        expected.addResultInsRem(1200, 0, new Object[][] {{"IBM", 25d}, {"MSFT", 9d}}, new Object[][] {{"IBM", null}, {"MSFT", null}});
+        expected.addResultInsRem(2200, 0, new Object[][] {{"IBM", 75d}, {"YAH", 1d}}, new Object[][] {{"IBM", 25d}, {"YAH", null}});
         expected.addResultInsRem(3200, 0, null, null);
-        expected.addResultInsRem(4200, 0, new Object[][] {{"S3", 3d}}, new Object[][] {{"S3", 1d}});
-        expected.addResultInsRem(5200, 0, new Object[][] {{"S1", 97d}, {"S3", 6d}}, new Object[][] {{"S1", 75d}, {"S3", 3d}});
-        expected.addResultInsRem(6200, 0, new Object[][] {{"S1", 72d}, {"S3", 7d}}, new Object[][] {{"S1", 97d}, {"S3", 6d}});
-        expected.addResultInsRem(7200, 0, new Object[][] {{"S1", 48d}, {"S2", null}, {"S3", 6d}}, new Object[][] {{"S1", 72d}, {"S2", 9d}, {"S3", 7d}});
+        expected.addResultInsRem(4200, 0, new Object[][] {{"YAH", 3d}}, new Object[][] {{"YAH", 1d}});
+        expected.addResultInsRem(5200, 0, new Object[][] {{"IBM", 97d}, {"YAH", 6d}}, new Object[][] {{"IBM", 75d}, {"YAH", 3d}});
+        expected.addResultInsRem(6200, 0, new Object[][] {{"IBM", 72d}, {"YAH", 7d}}, new Object[][] {{"IBM", 97d}, {"YAH", 6d}});
+        expected.addResultInsRem(7200, 0, new Object[][] {{"IBM", 48d}, {"MSFT", null}, {"YAH", 6d}}, new Object[][] {{"IBM", 72d}, {"MSFT", 9d}, {"YAH", 7d}});
 
         ResultAssertExecution execution = new ResultAssertExecution(epService, stmt, listener, expected);
         execution.execute();
@@ -267,12 +288,12 @@ public class TestOutputLimitEventPerGroup extends TestCase
         String fields[] = new String[] {"symbol", "sum(price)"};
         ResultAssertTestResult expected = new ResultAssertTestResult(CATEGORY, outputLimit, fields);
         expected.addResultInsRem(1200, 0, null, null);
-        expected.addResultInsRem(2200, 0, new Object[][] {{"S1", 75d}}, null);
+        expected.addResultInsRem(2200, 0, new Object[][] {{"IBM", 75d}}, null);
         expected.addResultInsRem(3200, 0, null, null);
         expected.addResultInsRem(4200, 0, null, null);
-        expected.addResultInsRem(5200, 0, new Object[][] {{"S1", 97d}}, new Object[][] {{"S1", 75d}});
-        expected.addResultInsRem(6200, 0, new Object[][] {{"S1", 72d}}, new Object[][] {{"S1", 97d}});
-        expected.addResultInsRem(7200, 0, null, new Object[][] {{"S1", 72d}});
+        expected.addResultInsRem(5200, 0, new Object[][] {{"IBM", 97d}}, new Object[][] {{"IBM", 75d}});
+        expected.addResultInsRem(6200, 0, new Object[][] {{"IBM", 72d}}, new Object[][] {{"IBM", 97d}});
+        expected.addResultInsRem(7200, 0, null, new Object[][] {{"IBM", 72d}});
 
         ResultAssertExecution execution = new ResultAssertExecution(epService, stmt, listener, expected);
         execution.execute();
@@ -287,12 +308,12 @@ public class TestOutputLimitEventPerGroup extends TestCase
         String fields[] = new String[] {"symbol", "sum(price)"};
         ResultAssertTestResult expected = new ResultAssertTestResult(CATEGORY, outputLimit, fields);
         expected.addResultInsRem(1200, 0, null, null);
-        expected.addResultInsRem(2200, 0, new Object[][] {{"S1", 75d}}, null);
+        expected.addResultInsRem(2200, 0, new Object[][] {{"IBM", 75d}}, null);
         expected.addResultInsRem(3200, 0, null, null);
         expected.addResultInsRem(4200, 0, null, null);
-        expected.addResultInsRem(5200, 0, new Object[][] {{"S1", 97d}}, new Object[][] {{"S1", 75d}});
-        expected.addResultInsRem(6200, 0, new Object[][] {{"S1", 72d}}, new Object[][] {{"S1", 97d}});
-        expected.addResultInsRem(7200, 0, null, new Object[][] {{"S1", 72d}});
+        expected.addResultInsRem(5200, 0, new Object[][] {{"IBM", 97d}}, new Object[][] {{"IBM", 75d}});
+        expected.addResultInsRem(6200, 0, new Object[][] {{"IBM", 72d}}, new Object[][] {{"IBM", 97d}});
+        expected.addResultInsRem(7200, 0, null, new Object[][] {{"IBM", 72d}});
 
         ResultAssertExecution execution = new ResultAssertExecution(epService, stmt, listener, expected);
         execution.execute();
@@ -306,13 +327,13 @@ public class TestOutputLimitEventPerGroup extends TestCase
 
         String fields[] = new String[] {"symbol", "sum(price)"};
         ResultAssertTestResult expected = new ResultAssertTestResult(CATEGORY, outputLimit, fields);
-        expected.addResultInsRem(1200, 0, new Object[][] {{"S1", 25d}, {"S2", 9d}}, new Object[][] {{"S1", null}, {"S2", null}});
-        expected.addResultInsRem(2200, 0, new Object[][] {{"S1", 49d}, {"S3", 1d}, {"S1", 75d}}, new Object[][] {{"S1", 25d}, {"S3", null}, {"S1", 49d}});
+        expected.addResultInsRem(1200, 0, new Object[][] {{"IBM", 25d}, {"MSFT", 9d}}, new Object[][] {{"IBM", null}, {"MSFT", null}});
+        expected.addResultInsRem(2200, 0, new Object[][] {{"IBM", 49d}, {"YAH", 1d}, {"IBM", 75d}}, new Object[][] {{"IBM", 25d}, {"YAH", null}, {"IBM", 49d}});
         expected.addResultInsRem(3200, 0, null, null);
-        expected.addResultInsRem(4200, 0, new Object[][] {{"S3", 3d}}, new Object[][] {{"S3", 1d}});
-        expected.addResultInsRem(5200, 0, new Object[][] {{"S1", 97d}, {"S3", 6d}}, new Object[][] {{"S1", 75d}, {"S3", 3d}});
-        expected.addResultInsRem(6200, 0, new Object[][] {{"S1", 72d}, {"S3", 7d}}, new Object[][] {{"S1", 97d}, {"S3", 6d}});
-        expected.addResultInsRem(7200, 0, new Object[][] {{"S2", null}, {"S3", 6d}, {"S1", 48d}}, new Object[][] {{"S2", 9d}, {"S3", 7d}, {"S1", 72d}});
+        expected.addResultInsRem(4200, 0, new Object[][] {{"YAH", 3d}}, new Object[][] {{"YAH", 1d}});
+        expected.addResultInsRem(5200, 0, new Object[][] {{"IBM", 97d}, {"YAH", 6d}}, new Object[][] {{"IBM", 75d}, {"YAH", 3d}});
+        expected.addResultInsRem(6200, 0, new Object[][] {{"IBM", 72d}, {"YAH", 7d}}, new Object[][] {{"IBM", 97d}, {"YAH", 6d}});
+        expected.addResultInsRem(7200, 0, new Object[][] {{"MSFT", null}, {"YAH", 6d}, {"IBM", 48d}}, new Object[][] {{"MSFT", 9d}, {"YAH", 7d}, {"IBM", 72d}});
 
         ResultAssertExecution execution = new ResultAssertExecution(epService, stmt, listener, expected);
         execution.execute();
@@ -326,13 +347,13 @@ public class TestOutputLimitEventPerGroup extends TestCase
 
         String fields[] = new String[] {"symbol", "sum(price)"};
         ResultAssertTestResult expected = new ResultAssertTestResult(CATEGORY, outputLimit, fields);
-        expected.addResultInsRem(1200, 0, new Object[][] {{"S1", 25d}, {"S2", 9d}}, new Object[][] {{"S1", null}, {"S2", null}});
-        expected.addResultInsRem(2200, 0, new Object[][] {{"S1", 75d}, {"S2", 9d}, {"S3", 1d}}, new Object[][] {{"S1", 25d}, {"S2", 9d}, {"S3", null}});
-        expected.addResultInsRem(3200, 0, new Object[][] {{"S1", 75d}, {"S2", 9d}, {"S3", 1d}}, new Object[][] {{"S1", 75d}, {"S2", 9d}, {"S3", 1d}});
-        expected.addResultInsRem(4200, 0, new Object[][] {{"S1", 75d}, {"S2", 9d}, {"S3", 3d}}, new Object[][] {{"S1", 75d}, {"S2", 9d}, {"S3", 1d}});
-        expected.addResultInsRem(5200, 0, new Object[][] {{"S1", 97d}, {"S2", 9d}, {"S3", 6d}}, new Object[][] {{"S1", 75d}, {"S2", 9d}, {"S3", 3d}});
-        expected.addResultInsRem(6200, 0, new Object[][] {{"S1", 72d}, {"S2", 9d}, {"S3", 7d}}, new Object[][] {{"S1", 97d}, {"S2", 9d}, {"S3", 6d}});
-        expected.addResultInsRem(7200, 0, new Object[][] {{"S1", 48d}, {"S2", null}, {"S3", 6d}}, new Object[][] {{"S1", 72d}, {"S2", 9d}, {"S3", 7d}});
+        expected.addResultInsRem(1200, 0, new Object[][] {{"IBM", 25d}, {"MSFT", 9d}}, new Object[][] {{"IBM", null}, {"MSFT", null}});
+        expected.addResultInsRem(2200, 0, new Object[][] {{"IBM", 75d}, {"MSFT", 9d}, {"YAH", 1d}}, new Object[][] {{"IBM", 25d}, {"MSFT", 9d}, {"YAH", null}});
+        expected.addResultInsRem(3200, 0, new Object[][] {{"IBM", 75d}, {"MSFT", 9d}, {"YAH", 1d}}, new Object[][] {{"IBM", 75d}, {"MSFT", 9d}, {"YAH", 1d}});
+        expected.addResultInsRem(4200, 0, new Object[][] {{"IBM", 75d}, {"MSFT", 9d}, {"YAH", 3d}}, new Object[][] {{"IBM", 75d}, {"MSFT", 9d}, {"YAH", 1d}});
+        expected.addResultInsRem(5200, 0, new Object[][] {{"IBM", 97d}, {"MSFT", 9d}, {"YAH", 6d}}, new Object[][] {{"IBM", 75d}, {"MSFT", 9d}, {"YAH", 3d}});
+        expected.addResultInsRem(6200, 0, new Object[][] {{"IBM", 72d}, {"MSFT", 9d}, {"YAH", 7d}}, new Object[][] {{"IBM", 97d}, {"MSFT", 9d}, {"YAH", 6d}});
+        expected.addResultInsRem(7200, 0, new Object[][] {{"IBM", 48d}, {"MSFT", null}, {"YAH", 6d}}, new Object[][] {{"IBM", 72d}, {"MSFT", 9d}, {"YAH", 7d}});
 
         ResultAssertExecution execution = new ResultAssertExecution(epService, stmt, listener, expected);
         execution.execute();
@@ -347,12 +368,52 @@ public class TestOutputLimitEventPerGroup extends TestCase
         String fields[] = new String[] {"symbol", "sum(price)"};
         ResultAssertTestResult expected = new ResultAssertTestResult(CATEGORY, outputLimit, fields);
         expected.addResultInsRem(1200, 0, null, null);
-        expected.addResultInsRem(2200, 0, new Object[][] {{"S1", 75d}}, null);
-        expected.addResultInsRem(3200, 0, new Object[][] {{"S1", 75d}}, new Object[][] {{"S1", 75d}});
-        expected.addResultInsRem(4200, 0, new Object[][] {{"S1", 75d}}, new Object[][] {{"S1", 75d}});
-        expected.addResultInsRem(5200, 0, new Object[][] {{"S1", 97d}}, new Object[][] {{"S1", 75d}});
-        expected.addResultInsRem(6200, 0, new Object[][] {{"S1", 72d}}, new Object[][] {{"S1", 97d}});
-        expected.addResultInsRem(7200, 0, null, new Object[][] {{"S1", 72d}});
+        expected.addResultInsRem(2200, 0, new Object[][] {{"IBM", 75d}}, null);
+        expected.addResultInsRem(3200, 0, new Object[][] {{"IBM", 75d}}, new Object[][] {{"IBM", 75d}});
+        expected.addResultInsRem(4200, 0, new Object[][] {{"IBM", 75d}}, new Object[][] {{"IBM", 75d}});
+        expected.addResultInsRem(5200, 0, new Object[][] {{"IBM", 97d}}, new Object[][] {{"IBM", 75d}});
+        expected.addResultInsRem(6200, 0, new Object[][] {{"IBM", 72d}}, new Object[][] {{"IBM", 97d}});
+        expected.addResultInsRem(7200, 0, null, new Object[][] {{"IBM", 72d}});
+
+        ResultAssertExecution execution = new ResultAssertExecution(epService, stmt, listener, expected);
+        execution.execute();
+    }
+
+    private void runAssertion17(String stmtText, String outputLimit)
+    {
+        sendTimer(0);
+        EPStatement stmt = epService.getEPAdministrator().createEQL(stmtText);
+        stmt.addListener(listener);
+
+        String fields[] = new String[] {"symbol", "sum(price)"};
+        ResultAssertTestResult expected = new ResultAssertTestResult(CATEGORY, outputLimit, fields);
+        expected.addResultInsRem(200, 1, new Object[][] {{"IBM", 25d}}, new Object[][] {{"IBM", null}});
+        expected.addResultInsRem(1500, 1, new Object[][] {{"IBM", 49d}}, new Object[][] {{"IBM", 25d}});
+        expected.addResultInsRem(3200, 0, null, null);
+        expected.addResultInsRem(3500, 1, new Object[][] {{"YAH", 3d}}, new Object[][] {{"YAH", 1d}});
+        expected.addResultInsRem(4300, 1, new Object[][] {{"IBM", 97d}}, new Object[][] {{"IBM", 75d}});
+        expected.addResultInsRem(5700, 0, new Object[][] {{"IBM", 72d}}, new Object[][] {{"IBM", 97d}});
+        expected.addResultInsRem(6300, 0, new Object[][] {{"MSFT", null}}, new Object[][] {{"MSFT", 9d}});
+
+        ResultAssertExecution execution = new ResultAssertExecution(epService, stmt, listener, expected);
+        execution.execute();
+    }
+
+    private void runAssertion18(String stmtText, String outputLimit)
+    {
+        sendTimer(0);
+        EPStatement stmt = epService.getEPAdministrator().createEQL(stmtText);
+        stmt.addListener(listener);
+
+        String fields[] = new String[] {"symbol", "sum(price)"};
+        ResultAssertTestResult expected = new ResultAssertTestResult(CATEGORY, outputLimit, fields);
+        expected.addResultInsert(1200, 0, new Object[][] {{"IBM", 25d}, {"MSFT", 9d}});
+        expected.addResultInsert(2200, 0, new Object[][] {{"IBM", 75d}, {"MSFT", 9d}, {"YAH", 1d}});
+        expected.addResultInsert(3200, 0, new Object[][] {{"IBM", 75d}, {"MSFT", 9d}, {"YAH", 1d}});
+        expected.addResultInsert(4200, 0, new Object[][] {{"IBM", 75d}, {"MSFT", 9d}, {"YAH", 3d}});
+        expected.addResultInsert(5200, 0, new Object[][] {{"IBM", 97d}, {"MSFT", 9d}, {"YAH", 6d}});
+        expected.addResultInsert(6200, 0, new Object[][] {{"IBM", 72d}, {"MSFT", 9d}, {"YAH", 7d}});
+        expected.addResultInsert(7200, 0, new Object[][] {{"IBM", 48d}, {"YAH", 6d}});
 
         ResultAssertExecution execution = new ResultAssertExecution(epService, stmt, listener, expected);
         execution.execute();
@@ -394,30 +455,30 @@ public class TestOutputLimitEventPerGroup extends TestCase
 
         EPStatement stmt = epService.getEPAdministrator().createEQL(selectStmt);
         stmt.addListener(listener);
-        sendEvent("s0", 20);
+        sendEvent("ABC", 20);
 
         sendTimer(500);
-        sendEvent("s1", 16);
-        sendEvent("s0", 14);
+        sendEvent("IBM", 16);
+        sendEvent("ABC", 14);
         assertFalse(listener.getAndClearIsInvoked());
 
         sendTimer(1000);
         String fields[] = new String[] {"symbol", "minprice"};
-        ArrayAssertionUtil.assertPropsPerRow(listener.getLastNewData(), fields, new Object[][] {{"s0", 14d}, {"s1", 16d}});
+        ArrayAssertionUtil.assertPropsPerRow(listener.getLastNewData(), fields, new Object[][] {{"ABC", 14d}, {"IBM", 16d}});
         assertNull(listener.getLastOldData());
         listener.reset();
 
         sendTimer(1500);
-        sendEvent("s1", 18);
-        sendEvent("s2", 30);
+        sendEvent("IBM", 18);
+        sendEvent("MSFT", 30);
 
         sendTimer(10000);
-        ArrayAssertionUtil.assertPropsPerRow(listener.getLastNewData(), fields, new Object[][] {{"s0", 14d}, {"s1", 16d}, {"s2", 30d}});
+        ArrayAssertionUtil.assertPropsPerRow(listener.getLastNewData(), fields, new Object[][] {{"ABC", 14d}, {"IBM", 16d}, {"MSFT", 30d}});
         assertNull(listener.getLastOldData());
         listener.reset();
 
         sendTimer(11000);
-        ArrayAssertionUtil.assertPropsPerRow(listener.getLastNewData(), fields, new Object[][] {{"s1", 18d}, {"s2", 30d}});
+        ArrayAssertionUtil.assertPropsPerRow(listener.getLastNewData(), fields, new Object[][] {{"IBM", 18d}, {"MSFT", 30d}});
         assertNull(listener.getLastOldData());
         listener.reset();
 
@@ -440,36 +501,36 @@ public class TestOutputLimitEventPerGroup extends TestCase
         EPStatement stmt = epService.getEPAdministrator().createEQL(selectStmt);
         stmt.addListener(listener);
 
-        for (String string : "s0,s1,s2".split(","))
+        for (String string : "ABC,IBM,MSFT".split(","))
         {
             epService.getEPRuntime().sendEvent(new SupportBean(string, 1));
         }
 
-        sendEvent("s0", 20);
+        sendEvent("ABC", 20);
 
         sendTimer(500);
-        sendEvent("s1", 16);
-        sendEvent("s0", 14);
+        sendEvent("IBM", 16);
+        sendEvent("ABC", 14);
         assertFalse(listener.getAndClearIsInvoked());
 
         sendTimer(1000);
         String fields[] = new String[] {"symbol", "minprice"};
-        ArrayAssertionUtil.assertPropsPerRow(listener.getLastNewData(), fields, new Object[][] {{"s0", 14d}, {"s1", 16d}});
+        ArrayAssertionUtil.assertPropsPerRow(listener.getLastNewData(), fields, new Object[][] {{"ABC", 14d}, {"IBM", 16d}});
         assertNull(listener.getLastOldData());
         listener.reset();
 
         sendTimer(1500);
-        sendEvent("s1", 18);
-        sendEvent("s2", 30);
+        sendEvent("IBM", 18);
+        sendEvent("MSFT", 30);
 
         sendTimer(10000);
-        ArrayAssertionUtil.assertPropsPerRow(listener.getLastNewData(), fields, new Object[][] {{"s0", 14d}, {"s1", 16d}, {"s2", 30d}});
+        ArrayAssertionUtil.assertPropsPerRow(listener.getLastNewData(), fields, new Object[][] {{"ABC", 14d}, {"IBM", 16d}, {"MSFT", 30d}});
         assertNull(listener.getLastOldData());
         listener.reset();
 
         sendTimer(10500);
         sendTimer(11000);
-        ArrayAssertionUtil.assertPropsPerRow(listener.getLastNewData(), fields, new Object[][] {{"s1", 18d}, {"s2", 30d}});
+        ArrayAssertionUtil.assertPropsPerRow(listener.getLastNewData(), fields, new Object[][] {{"IBM", 18d}, {"MSFT", 30d}});
         assertNull(listener.getLastOldData());
         listener.reset();
 

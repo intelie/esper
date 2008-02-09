@@ -22,7 +22,7 @@ public class StatementSpecRaw implements MetaDefItem
     private CreateWindowDesc createWindowDesc;
     private CreateVariableDesc createVariableDesc;
     private InsertIntoDesc insertIntoDesc;
-    private SelectClauseStreamSelectorEnum selectStreamDirEnum = SelectClauseStreamSelectorEnum.ISTREAM_ONLY;
+    private SelectClauseStreamSelectorEnum selectStreamDirEnum;
     private SelectClauseSpecRaw selectClauseSpec = new SelectClauseSpecRaw();
     private List<StreamSpecRaw> streamSpecs = new LinkedList<StreamSpecRaw>();
     private List<OuterJoinDesc> outerJoinDescList = new LinkedList<OuterJoinDesc>();
@@ -33,6 +33,11 @@ public class StatementSpecRaw implements MetaDefItem
     private List<OrderByItem> orderByList = new LinkedList<OrderByItem>();
     private boolean existsSubstitutionParameters;
     private boolean hasVariables;
+
+    public StatementSpecRaw(SelectClauseStreamSelectorEnum defaultStreamSelector)
+    {
+        selectStreamDirEnum = defaultStreamSelector;
+    }
 
     /**
      * Returns the FROM-clause stream definitions.

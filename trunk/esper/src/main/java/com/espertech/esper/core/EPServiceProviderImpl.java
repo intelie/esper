@@ -14,6 +14,7 @@ import com.espertech.esper.schedule.SchedulingService;
 import com.espertech.esper.filter.FilterService;
 import com.espertech.esper.util.ExecutionPathDebugLog;
 import com.espertech.esper.util.SerializableObjectCopier;
+import com.espertech.esper.eql.spec.SelectClauseStreamSelectorEnum;
 
 import javax.naming.Context;
 import javax.naming.NamingException;
@@ -202,7 +203,8 @@ public class EPServiceProviderImpl implements EPServiceProviderSPI
 
         // New admin
         ConfigurationOperations configOps = new ConfigurationOperationsImpl(services.getEventAdapterService(), services.getEngineImportService(), services.getVariableService());
-        EPAdministratorImpl admin = new EPAdministratorImpl(services, configOps);
+        SelectClauseStreamSelectorEnum defaultStreamSelector = SelectClauseStreamSelectorEnum.mapFromSODA(configSnapshot.getEngineDefaults().getStreamSelection().getDefaultStreamSelector());
+        EPAdministratorImpl admin = new EPAdministratorImpl(services, configOps, defaultStreamSelector);
 
         // Start clocking
         if (configSnapshot.getEngineDefaults().getThreading().isInternalTimerEnabled())

@@ -154,7 +154,7 @@ public class TestAggregateRowForAll extends TestCase
         assertEquals((2 + 9 + 18 + 5) / 4.0, event.get("avgp"));
         event = listener.getLastOldData()[0];
         assertEquals("A", event.get("sym"));
-        assertEquals((1 + 2 + 9 + 18) / 4.0, event.get("avgp"));
+        assertEquals((5 + 2 + 9 + 18) / 4.0, event.get("avgp"));
     }
 
     public void testSelectStarStdGroupBy() {

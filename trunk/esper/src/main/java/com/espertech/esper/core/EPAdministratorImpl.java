@@ -31,6 +31,7 @@ public class EPAdministratorImpl implements EPAdministrator
 
     private EPServicesContext services;
     private ConfigurationOperations configurationOperations;
+    private SelectClauseStreamSelectorEnum defaultStreamSelector;
 
     static
     {
@@ -72,10 +73,13 @@ public class EPAdministratorImpl implements EPAdministrator
      * @param services - references to services
      * @param configurationOperations - runtime configuration operations
      */
-    public EPAdministratorImpl(EPServicesContext services, ConfigurationOperations configurationOperations)
+    public EPAdministratorImpl(EPServicesContext services,
+                               ConfigurationOperations configurationOperations,
+                               SelectClauseStreamSelectorEnum defaultStreamSelector)
     {
         this.services = services;
         this.configurationOperations = configurationOperations;
+        this.defaultStreamSelector = defaultStreamSelector;
     }
 
     public EPStatement createPattern(String onExpression) throws EPException
@@ -113,7 +117,7 @@ public class EPAdministratorImpl implements EPAdministrator
 
     private EPStatement createEQLStmt(String eqlStatement, String statementName) throws EPException
     {
-        StatementSpecRaw statementSpec = compileEQL(eqlStatement, statementName, services);
+        StatementSpecRaw statementSpec = compileEQL(eqlStatement, statementName, services, defaultStreamSelector);
         EPStatement statement = services.getStatementLifecycleSvc().createAndStart(statementSpec, eqlStatement, false, statementName);
 
         log.debug(".createEQLStmt Statement created and started");
@@ -146,7 +150,7 @@ public class EPAdministratorImpl implements EPAdministrator
     public EPPreparedStatement prepareEQL(String eqlExpression) throws EPException
     {
         // compile to specification
-        StatementSpecRaw statementSpec = compileEQL(eqlExpression, null, services);
+        StatementSpecRaw statementSpec = compileEQL(eqlExpression, null, services, defaultStreamSelector);
 
         // map to object model thus finding all substitution parameters and their indexes
         StatementSpecUnMapResult unmapped = StatementSpecMapper.unmap(statementSpec);
@@ -185,7 +189,7 @@ public class EPAdministratorImpl implements EPAdministrator
 
     public EPStatementObjectModel compileEQL(String eqlStatement) throws EPException
     {
-        StatementSpecRaw statementSpec = compileEQL(eqlStatement, null, services);
+        StatementSpecRaw statementSpec = compileEQL(eqlStatement, null, services, defaultStreamSelector);
         StatementSpecUnMapResult unmapped = StatementSpecMapper.unmap(statementSpec);
         if (unmapped.getIndexedParams().size() != 0)
         {
@@ -240,7 +244,7 @@ public class EPAdministratorImpl implements EPAdministrator
      * @param services is the context
      * @return statement specification
      */
-    protected static StatementSpecRaw compileEQL(String eqlStatement, String statementName, EPServicesContext services)
+    protected static StatementSpecRaw compileEQL(String eqlStatement, String statementName, EPServicesContext services, SelectClauseStreamSelectorEnum defaultStreamSelector)
     {
         if (log.isDebugEnabled())
         {
@@ -250,7 +254,7 @@ public class EPAdministratorImpl implements EPAdministrator
         Tree ast = ParseHelper.parse(eqlStatement, eqlParseRule);
         CommonTreeNodeStream nodes = new CommonTreeNodeStream(ast);
 
-        EQLTreeWalker walker = new EQLTreeWalker(nodes, services.getEngineImportService(), services.getVariableService(), services.getSchedulingService().getTime());
+        EQLTreeWalker walker = new EQLTreeWalker(nodes, services.getEngineImportService(), services.getVariableService(), services.getSchedulingService().getTime(), defaultStreamSelector);
 
         try
         {
@@ -285,7 +289,7 @@ public class EPAdministratorImpl implements EPAdministrator
         // Parse and walk
         Tree ast = ParseHelper.parse(expression, patternParseRule);
         CommonTreeNodeStream nodes = new CommonTreeNodeStream(ast);
-        EQLTreeWalker walker = new EQLTreeWalker(nodes, services.getEngineImportService(), services.getVariableService(), services.getSchedulingService().getTime());
+        EQLTreeWalker walker = new EQLTreeWalker(nodes, services.getEngineImportService(), services.getVariableService(), services.getSchedulingService().getTime(), defaultStreamSelector);
 
         try
         {
@@ -320,7 +324,7 @@ public class EPAdministratorImpl implements EPAdministrator
         PatternStreamSpecRaw patternStreamSpec = (PatternStreamSpecRaw) walker.getStatementSpec().getStreamSpecs().get(0);
 
         // Create statement spec, set pattern stream, set wildcard select
-        StatementSpecRaw statementSpec = new StatementSpecRaw();
+        StatementSpecRaw statementSpec = new StatementSpecRaw(SelectClauseStreamSelectorEnum.ISTREAM_ONLY);
         statementSpec.getStreamSpecs().add(patternStreamSpec);
         statementSpec.getSelectClauseSpec().getSelectExprList().clear();
         statementSpec.getSelectClauseSpec().getSelectExprList().add(new SelectClauseElementWildcard());

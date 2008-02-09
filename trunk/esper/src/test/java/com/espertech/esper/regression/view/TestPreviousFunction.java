@@ -71,7 +71,7 @@ public class TestPreviousFunction extends TestCase
         assertEquals(1, testListener.getOldDataList().size());
         EventBean[] oldData = testListener.getLastOldData();
         assertEquals(2, oldData.length);
-        assertCountAndPrice(oldData[0], 5L, null);
+        assertCountAndPrice(oldData[0], 3L, null);
         testListener.reset();
 
         sendMarketEvent("IBM", 80);
@@ -84,7 +84,7 @@ public class TestPreviousFunction extends TestCase
         assertEquals(1, testListener.getOldDataList().size());
         oldData = testListener.getLastOldData();
         assertEquals(1, oldData.length);
-        assertCountAndPrice(oldData[0], 4L, null);
+        assertCountAndPrice(oldData[0], 3L, null);
         testListener.reset();
 
         sendTimer(80000);

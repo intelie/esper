@@ -129,7 +129,7 @@
         </para>
 
         <para>
-			Note EQL supports optional <literal>istream</literal> and <literal>rstream</literal> keywords on select-clauses and on insert-into clauses. These instruct the engine to only forward events that enter or leave data windows, or select only current or prior aggregation values, i.e. the insert stream or the remove stream.
+			Note: By default the engine only delivers the insert stream to listeners and observers. EQL supports optional <literal>istream</literal>, <literal>irstream</literal> and <literal>rstream</literal> keywords on select-clauses and on insert-into clauses to control which stream to deliver, see <xref linkend="eql-select-using-istream-rstream"/>. There is also a related, engine-wide configuration setting described in <xref linkend="config-engine-stream-selection"/>.		
         </para>
 
     </sect1>
@@ -388,7 +388,7 @@ having amount > 1000]]></programlisting>
 		</sect2>
 		
 		<sect2 id="processingmodel_aggregation_output" revision="1">
-			<title>Output for Aggregations</title>
+			<title>Output for Aggregation and Group-By</title>
 
 			<para>
 				Following SQL (Standard Query Language) standards for queries against relational databases, the presence or absence of aggregation functions and the presence or absence of the <literal>group by</literal> clause dictates the number of rows posted by the engine to listeners. The next sections outline the output model for batched events under aggregation and grouping. The examples also apply to data windows that don't batch events and post results continously as events arrive or leave data windows. The examples also apply to patterns providing events when a complete pattern matches.
@@ -403,7 +403,7 @@ having amount > 1000]]></programlisting>
 			</para>
 
 			<para>
-				The next sections provide examples for each case.
+				The documentation provides output examples for query types in <xref linkend="appendix_outputspec"/>, and the next sections outlines each query type.
 			</para>
 
 			<sect3 id="processingmodel_aggregation_batch_unagg" revision="1">
@@ -416,6 +416,10 @@ having amount > 1000]]></programlisting>
 				<para>
 					At the end of a time interval, the engine posts to listeners one row for each event arriving during the time interval.
 				</para>
+				
+				<para>
+					The appendix provides a complete example including input and output events over time at <xref linkend="outputspec-simple"/>
+				</para>				
 			</sect3>
 
 			<sect3 id="processingmodel_aggregation_batch_full_agg" revision="1">
@@ -429,6 +433,10 @@ from Withdrawal.win:time_batch(1 sec)]]></programlisting>
 				<para>
 					At the end of a time interval, the engine posts to listeners a single row indicating the aggregation result. The aggregation result aggregates all events collected during the time interval.
 				</para>
+
+				<para>
+					The appendix provides a complete example including input and output events over time at <xref linkend="outputspec-rowforall"/>
+				</para>				
 			</sect3>
 
 			<sect3 id="processingmodel_aggregation_batch_event_agg" revision="1">
@@ -442,6 +450,9 @@ from Withdrawal.win:time_batch(1 sec)]]></programlisting>
 				<para>
 					At the end of a time interval, the engine posts to listeners one row per event. The aggregation result aggregates all events collected during the time interval.
 				</para>
+				<para>
+					The appendix provides a complete example including input and output events over time at <xref linkend="outputspec-aggregateall"/>
+				</para>				
 			</sect3>
 
 			<sect3 id="processingmodel_aggregation_batch_group_agg" revision="1">
@@ -456,6 +467,9 @@ group by account]]></programlisting>
 				<para>
 					At the end of a time interval, the engine posts to listeners one row per unique account number. The aggregation result aggregates per unique account.
 				</para>
+				<para>
+					The appendix provides a complete example including input and output events over time at <xref linkend="outputspec-groupedrowpergroup"/>
+				</para>				
 			</sect3>
 
 			<sect3 id="processingmodel_aggregation_batch_event_agg_group" revision="1">
@@ -470,6 +484,9 @@ group by account]]></programlisting>
 				<para>
 					At the end of a time interval, the engine posts to listeners one row per event. The aggregation result aggregates per unique account.
 				</para>
+				<para>
+					The appendix provides a complete example including input and output events over time at <xref linkend="outputspec-aggregategrouped"/>
+				</para>				
 			</sect3>
 
 		</sect2>

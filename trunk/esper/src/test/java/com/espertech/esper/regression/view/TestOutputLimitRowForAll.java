@@ -173,6 +173,22 @@ public class TestOutputLimitRowForAll extends TestCase
         runAssertion15_16(stmtText, "last");
     }
 
+    public void test17FirstNoHavingNoJoin()
+    {
+        String stmtText = "select sum(price) " +
+                            "from MarketData.win:time(5.5 sec) " +
+                            "output first every 1 seconds";
+        runAssertion17(stmtText, "first");
+    }
+
+    public void test18SnapshotNoHavingNoJoin()
+    {
+        String stmtText = "select sum(price) " +
+                            "from MarketData.win:time(5.5 sec) " +
+                            "output snapshot every 1 seconds";
+        runAssertion18(stmtText, "first");
+    }
+
     private void runAssertion12(String stmtText, String outputLimit)
     {
         sendTimer(0);
@@ -289,6 +305,46 @@ public class TestOutputLimitRowForAll extends TestCase
         expected.addResultInsRem(5200, 0, new Object[][] {{109d}, {112d}}, new Object[][] {{87d}, {109d}});
         expected.addResultInsRem(6200, 0, new Object[][] {{87d}, {88d}}, new Object[][] {{112d}, {87d}});
         expected.addResultInsRem(7200, 0, new Object[][] {{79d}, {54d}}, new Object[][] {{88d}, {79d}});
+
+        ResultAssertExecution execution = new ResultAssertExecution(epService, stmt, listener, expected);
+        execution.execute();
+    }
+
+    private void runAssertion17(String stmtText, String outputLimit)
+    {
+        sendTimer(0);
+        EPStatement stmt = epService.getEPAdministrator().createEQL(stmtText);
+        stmt.addListener(listener);
+
+        String fields[] = new String[] {"sum(price)"};
+        ResultAssertTestResult expected = new ResultAssertTestResult(CATEGORY, outputLimit, fields);
+        expected.addResultInsRem(200, 1, new Object[][] {{25d}}, new Object[][] {{null}});
+        expected.addResultInsRem(1500, 1, new Object[][] {{58d}}, new Object[][] {{34d}});
+        expected.addResultInsRem(3200, 0, new Object[][] {{85d}}, new Object[][] {{85d}});
+        expected.addResultInsRem(3500, 1, new Object[][] {{87d}}, new Object[][] {{85d}});
+        expected.addResultInsRem(4300, 1, new Object[][] {{109d}}, new Object[][] {{87d}});
+        expected.addResultInsRem(5700, 0, new Object[][] {{87d}}, new Object[][] {{112d}});
+        expected.addResultInsRem(6300, 0, new Object[][] {{79d}}, new Object[][] {{88d}});
+
+        ResultAssertExecution execution = new ResultAssertExecution(epService, stmt, listener, expected);
+        execution.execute();
+    }
+
+    private void runAssertion18(String stmtText, String outputLimit)
+    {
+        sendTimer(0);
+        EPStatement stmt = epService.getEPAdministrator().createEQL(stmtText);
+        stmt.addListener(listener);
+
+        String fields[] = new String[] {"sum(price)"};
+        ResultAssertTestResult expected = new ResultAssertTestResult(CATEGORY, outputLimit, fields);
+        expected.addResultInsRem(1200, 0, new Object[][] {{34d}}, null);
+        expected.addResultInsRem(2200, 0, new Object[][] {{85d}}, null);
+        expected.addResultInsRem(3200, 0, new Object[][] {{85d}}, null);
+        expected.addResultInsRem(4200, 0, new Object[][] {{87d}}, null);
+        expected.addResultInsRem(5200, 0, new Object[][] {{112d}}, null);
+        expected.addResultInsRem(6200, 0, new Object[][] {{88d}}, null);
+        expected.addResultInsRem(7200, 0, new Object[][] {{54d}}, null);
 
         ResultAssertExecution execution = new ResultAssertExecution(epService, stmt, listener, expected);
         execution.execute();

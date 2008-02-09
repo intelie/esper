@@ -3,6 +3,7 @@ package com.espertech.esper.regression.view;
 import com.espertech.esper.client.EPServiceProvider;
 import com.espertech.esper.client.EPServiceProviderManager;
 import com.espertech.esper.client.EPStatement;
+import com.espertech.esper.client.Configuration;
 import com.espertech.esper.client.soda.*;
 import com.espertech.esper.support.util.SupportUpdateListener;
 import com.espertech.esper.support.bean.SupportBean;
@@ -20,13 +21,57 @@ public class TestIStreamRStreamKeywords extends TestCase
     {
         testListener = new SupportUpdateListener();
         testListenerInsertInto = new SupportUpdateListener();
+    }
 
-        epService = EPServiceProviderManager.getDefaultProvider(SupportConfigFactory.getConfiguration());
+    public void testChangeEngineDefaultRStream()
+    {
+        Configuration config = SupportConfigFactory.getConfiguration();
+        config.getEngineDefaults().getStreamSelection().setDefaultStreamSelector(StreamSelector.RSTREAM_ONLY);
+        epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();
+
+        String stmtText = "select * from " + SupportBean.class.getName() + ".win:length(3)";
+        EPStatement statement = epService.getEPAdministrator().createEQL(stmtText);
+        statement.addListener(testListener);
+
+        Object event = sendEvent("a");
+        sendEvent("b");
+        sendEvent("c");
+        assertFalse(testListener.isInvoked());
+
+        sendEvent("d");
+        assertTrue(testListener.isInvoked());
+        assertSame(event, testListener.getLastNewData()[0].getUnderlying());    // receive 'a' as new data
+        assertNull(testListener.getLastOldData());  // receive no more old data
+    }
+
+    public void testChangeEngineDefaultIRStream()
+    {
+        Configuration config = SupportConfigFactory.getConfiguration();
+        config.getEngineDefaults().getStreamSelection().setDefaultStreamSelector(StreamSelector.RSTREAM_ISTREAM_BOTH);
+        epService = EPServiceProviderManager.getDefaultProvider(config);
+        epService.initialize();
+
+        String stmtText = "select * from " + SupportBean.class.getName() + ".win:length(3)";
+        EPStatement statement = epService.getEPAdministrator().createEQL(stmtText);
+        statement.addListener(testListener);
+
+        Object eventOld = sendEvent("a");
+        sendEvent("b");
+        sendEvent("c");
+        testListener.reset();
+
+        Object eventNew = sendEvent("d");
+        assertTrue(testListener.isInvoked());
+        assertSame(eventNew, testListener.getLastNewData()[0].getUnderlying());    // receive 'a' as new data
+        assertSame(eventOld, testListener.getLastOldData()[0].getUnderlying());    // receive 'a' as new data
     }
 
     public void testRStreamOnly_OM() throws Exception
     {
+        epService = EPServiceProviderManager.getDefaultProvider(SupportConfigFactory.getConfiguration());
+        epService.initialize();
+
         String stmtText = "select rstream * from " + SupportBean.class.getName() + ".win:length(3)";
         EPStatementObjectModel model = new EPStatementObjectModel();
         model.setSelectClause(SelectClause.createWildcard(StreamSelector.RSTREAM_ONLY));
@@ -52,6 +97,9 @@ public class TestIStreamRStreamKeywords extends TestCase
 
     public void testRStreamOnly_Compile() throws Exception
     {
+        epService = EPServiceProviderManager.getDefaultProvider(SupportConfigFactory.getConfiguration());
+        epService.initialize();
+
         String stmtText = "select rstream * from " + SupportBean.class.getName() + ".win:length(3)";
         EPStatementObjectModel model = epService.getEPAdministrator().compileEQL(stmtText);
         model = (EPStatementObjectModel) SerializableObjectCopier.copy(model);
@@ -74,6 +122,9 @@ public class TestIStreamRStreamKeywords extends TestCase
 
     public void testRStreamOnly()
     {
+        epService = EPServiceProviderManager.getDefaultProvider(SupportConfigFactory.getConfiguration());
+        epService.initialize();
+
         EPStatement statement = epService.getEPAdministrator().createEQL(
                 "select rstream * from " + SupportBean.class.getName() + ".win:length(3)");
         statement.addListener(testListener);
@@ -92,6 +143,9 @@ public class TestIStreamRStreamKeywords extends TestCase
 
     public void testRStreamInsertInto()
     {
+        epService = EPServiceProviderManager.getDefaultProvider(SupportConfigFactory.getConfiguration());
+        epService.initialize();
+
         EPStatement statement = epService.getEPAdministrator().createEQL(
                 "insert into NextStream " +
                 "select rstream s0.string as string from " + SupportBean.class.getName() + ".win:length(3) as s0");
@@ -119,6 +173,9 @@ public class TestIStreamRStreamKeywords extends TestCase
 
     public void testRStreamInsertIntoRStream()
     {
+        epService = EPServiceProviderManager.getDefaultProvider(SupportConfigFactory.getConfiguration());
+        epService.initialize();
+
         EPStatement statement = epService.getEPAdministrator().createEQL(
                 "insert rstream into NextStream " +
                 "select rstream s0.string as string from " + SupportBean.class.getName() + ".win:length(3) as s0");
@@ -145,6 +202,9 @@ public class TestIStreamRStreamKeywords extends TestCase
 
     public void testRStreamJoin()
     {
+        epService = EPServiceProviderManager.getDefaultProvider(SupportConfigFactory.getConfiguration());
+        epService.initialize();
+
         EPStatement statement = epService.getEPAdministrator().createEQL(
                 "select rstream s1.intPrimitive as aID, s2.intPrimitive as bID " +
                 "from " + SupportBean.class.getName() + "(string='a').win:length(2) as s1, "
@@ -168,6 +228,9 @@ public class TestIStreamRStreamKeywords extends TestCase
 
     public void testIStreamOnly()
     {
+        epService = EPServiceProviderManager.getDefaultProvider(SupportConfigFactory.getConfiguration());
+        epService.initialize();
+
         EPStatement statement = epService.getEPAdministrator().createEQL(
                 "select istream * from " + SupportBean.class.getName() + ".win:length(1)");
         statement.addListener(testListener);
@@ -183,6 +246,9 @@ public class TestIStreamRStreamKeywords extends TestCase
 
     public void testIStreamInsertIntoRStream()
     {
+        epService = EPServiceProviderManager.getDefaultProvider(SupportConfigFactory.getConfiguration());
+        epService.initialize();
+
         EPStatement statement = epService.getEPAdministrator().createEQL(
                 "insert rstream into NextStream " +
                 "select istream a.string as string from " + SupportBean.class.getName() + ".win:length(1) as a");
@@ -204,6 +270,9 @@ public class TestIStreamRStreamKeywords extends TestCase
 
     public void testIStreamJoin()
     {
+        epService = EPServiceProviderManager.getDefaultProvider(SupportConfigFactory.getConfiguration());
+        epService.initialize();
+
         EPStatement statement = epService.getEPAdministrator().createEQL(
                 "select istream s1.intPrimitive as aID, s2.intPrimitive as bID " +
                 "from " + SupportBean.class.getName() + "(string='a').win:length(2) as s1, "

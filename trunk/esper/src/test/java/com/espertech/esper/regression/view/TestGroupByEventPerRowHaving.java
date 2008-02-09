@@ -4,6 +4,7 @@ import com.espertech.esper.client.EPServiceProvider;
 import com.espertech.esper.client.EPStatement;
 import com.espertech.esper.client.EPServiceProviderManager;
 import com.espertech.esper.support.util.SupportUpdateListener;
+import com.espertech.esper.support.util.ArrayAssertionUtil;
 import com.espertech.esper.support.bean.SupportMarketDataBean;
 import com.espertech.esper.support.bean.SupportBeanString;
 import com.espertech.esper.support.client.SupportConfigFactory;
@@ -36,7 +37,7 @@ public class TestGroupByEventPerRowHaving extends TestCase
                           "from " + SupportMarketDataBean.class.getName() + ".win:length(3) " +
                           "where symbol='DELL' or symbol='IBM' or symbol='GE' " +
                           "group by symbol " +
-                          "having sum(price) >= 100";
+                          "having sum(price) >= 50";
 
         selectTestView = epService.getEPAdministrator().createEQL(viewExpr);
         selectTestView.addListener(testListener);
@@ -53,7 +54,7 @@ public class TestGroupByEventPerRowHaving extends TestCase
                           "where (symbol='DELL' or symbol='IBM' or symbol='GE') " +
                           "  and one.string = two.symbol " +
                           "group by symbol " +
-                          "having sum(price) >= 100";
+                          "having sum(price) >= 50";
 
         selectTestView = epService.getEPAdministrator().createEQL(viewExpr);
         selectTestView.addListener(testListener);
@@ -71,51 +72,20 @@ public class TestGroupByEventPerRowHaving extends TestCase
         assertEquals(Long.class, selectTestView.getEventType().getPropertyType("volume"));
         assertEquals(Double.class, selectTestView.getEventType().getPropertyType("mySum"));
 
-        sendEvent(SYMBOL_DELL, 10000, 51);
+        String[] fields = "symbol,volume,mySum".split(",");
+        sendEvent(SYMBOL_DELL, 10000, 49);
         assertFalse(testListener.isInvoked());
 
-        sendEvent(SYMBOL_DELL, 20000, 52);
-        assertNewEvent(SYMBOL_DELL, 20000, 103);
+        sendEvent(SYMBOL_DELL, 20000, 54);
+        ArrayAssertionUtil.assertProps(testListener.assertOneGetNewAndReset(), fields, new Object[] {SYMBOL_DELL, 20000L, 103d});
 
         sendEvent(SYMBOL_IBM, 1000, 10);
         assertFalse(testListener.isInvoked());
 
-        sendEvent(SYMBOL_IBM, 5000, 60);
-        assertOldEvent(SYMBOL_DELL, 10000, 103);
+        sendEvent(SYMBOL_IBM, 5000, 20);
+        ArrayAssertionUtil.assertProps(testListener.assertOneGetOldAndReset(), fields, new Object[] {SYMBOL_DELL, 10000L, 54d});
 
         sendEvent(SYMBOL_IBM, 6000, 5);
-        assertFalse(testListener.isInvoked());
-    }
-
-    private void assertNewEvent(String symbol, long volume, double sum)
-    {
-        EventBean[] oldData = testListener.getLastOldData();
-        EventBean[] newData = testListener.getLastNewData();
-
-        assertNull(oldData);
-        assertEquals(1, newData.length);
-
-        assertEquals(symbol, newData[0].get("symbol"));
-        assertEquals(volume, newData[0].get("volume"));
-        assertEquals(sum, newData[0].get("mySum"));
-
-        testListener.reset();
-        assertFalse(testListener.isInvoked());
-    }
-
-    private void assertOldEvent(String symbol, long volume, double sum)
-    {
-        EventBean[] oldData = testListener.getLastOldData();
-        EventBean[] newData = testListener.getLastNewData();
-
-        assertNull(newData);
-        assertEquals(1, oldData.length);
-
-        assertEquals(symbol, oldData[0].get("symbol"));
-        assertEquals(volume, oldData[0].get("volume"));
-        assertEquals(sum, oldData[0].get("mySum"));
-
-        testListener.reset();
         assertFalse(testListener.isInvoked());
     }
 

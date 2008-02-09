@@ -43,7 +43,7 @@ public class StatementSpecMapper
 
     private static StatementSpecRaw map(EPStatementObjectModel sodaStatement, StatementSpecMapContext mapContext)
     {
-        StatementSpecRaw raw = new StatementSpecRaw();
+        StatementSpecRaw raw = new StatementSpecRaw(SelectClauseStreamSelectorEnum.ISTREAM_ONLY);
         mapCreateWindow(sodaStatement.getCreateWindow(), raw);
         mapCreateVariable(sodaStatement.getCreateVariable(), raw, mapContext);
         mapOnTrigger(sodaStatement.getOnExpr(), raw, mapContext);

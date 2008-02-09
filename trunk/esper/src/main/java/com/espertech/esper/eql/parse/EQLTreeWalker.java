@@ -51,6 +51,7 @@ public class EQLTreeWalker extends EsperEPL2Ast
     private final EngineImportService engineImportService;
     private final VariableService variableService;
     private final long engineTime;
+    private final SelectClauseStreamSelectorEnum defaultStreamSelector;
 
     /**
      * Ctor.
@@ -59,14 +60,23 @@ public class EQLTreeWalker extends EsperEPL2Ast
      * @param input is the tree nodes to walk
      * @param engineTime is the current engine time
      */
-    public EQLTreeWalker(TreeNodeStream input, EngineImportService engineImportService, VariableService variableService, long engineTime)
+    public EQLTreeWalker(TreeNodeStream input,
+                         EngineImportService engineImportService,
+                         VariableService variableService,
+                         long engineTime,
+                         SelectClauseStreamSelectorEnum defaultStreamSelector)
     {
         super(input);
         this.engineImportService = engineImportService;
         this.variableService = variableService;
         this.engineTime = engineTime;
+        this.defaultStreamSelector = defaultStreamSelector;
+        if (defaultStreamSelector == null)
+        {
+            throw new IllegalArgumentException("Default stream selector is null");
+        }
 
-        statementSpec = new StatementSpecRaw();
+        statementSpec = new StatementSpecRaw(defaultStreamSelector);
         statementSpecStack = new Stack<StatementSpecRaw>();
         astExprNodeMapStack = new Stack<Map<Tree, ExprNode>>();
     }
@@ -83,7 +93,7 @@ public class EQLTreeWalker extends EsperEPL2Ast
         statementSpecStack.push(statementSpec);
         astExprNodeMapStack.push(astExprNodeMap);
 
-        statementSpec = new StatementSpecRaw();
+        statementSpec = new StatementSpecRaw(defaultStreamSelector);
         astExprNodeMap = new HashMap<Tree, ExprNode>();
     }
 

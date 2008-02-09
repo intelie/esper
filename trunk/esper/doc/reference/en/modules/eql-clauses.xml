@@ -146,14 +146,18 @@ select * from MyEvent  /* this also works */]]></programlisting>
 		</para>
 
 		<para>
-			The <literal>select</literal> clause also offers optional <literal>istream</literal> and <literal>rstream</literal> keywords to control how events are posted to <literal>UpdateListener</literal> instances listening to the statement.
+			The <literal>select</literal> clause also offers optional <literal>istream</literal>, <literal>irstream</literal> and <literal>rstream</literal> keywords to control whether input stream, remove stream or input and remove stream events are posted to <literal>UpdateListener</literal> instances and observers to a statement. By default, the engine provides only the insert stream to listener and observers. See <xref linkend="config-engine-stream-selection"/> on how to change the default.
 		</para>
 
 		<para>
 			The syntax for the <literal>select</literal> clause is summarized below.
 		</para>
 
-		<synopsis>select [rstream | istream] * | <emphasis>expression_list</emphasis> ... </synopsis>
+		<synopsis>select [istream | irstream | rstream] * | <emphasis>expression_list</emphasis> ... </synopsis>
+
+		<para>
+			The <literal>istream</literal> keyword is the default, and indicates that the engine only delivers insert stream events to listeners and observers. The <literal>irstream</literal> keyword indicates that the engine delivers both insert and remove stream. Finally, the <literal>rstream</literal> keyword tells the engine to deliver only the remove stream.
+		</para>
 
         <sect2 id="eql-select-all-props" >
            <title>Choosing all event properties: select *</title>
@@ -296,24 +300,36 @@ from pattern[every tick=StockTick where timer:within(10 sec)]]]></programlisting
 		</sect2>
 
         <sect2 id="eql-select-using-istream-rstream" >
-            <title>Selecting <literal>istream</literal> and <literal>rstream</literal> events</title>
+            <title>Selecting <literal>insert</literal> and <literal>remove</literal> stream events</title>
 
 			<para>
-				The optional <literal>istream</literal> and <literal>rstream</literal> keywords in the <literal>select</literal> clause define the event stream posted to listeners to the statement. 
+				The optional <literal>istream</literal>, <literal>irstream</literal> and <literal>rstream</literal> keywords in the <literal>select</literal> clause control the event streams posted to listeners and observers to a statement. 
 			</para>
 
 			<para>
-				If neither keyword is specified, the engine posts
+				If neither keyword is specified, and in the default engine configuration, the engine posts only 
 				insert stream events via the <literal>newEvents</literal> parameter to the <literal>update</literal> method of <literal>UpdateListener</literal> instances listening to 
-				the statement. The engine posts remove stream events to the <literal>oldEvents</literal> parameter of the <literal>update</literal> method.
+				the statement. The engine does not post remove stream events, by default.
+				</para>
+			
+			<para>
 				The insert stream consists of the events entering the respective window(s) or stream(s) or aggregations, while the remove stream consists of the events leaving the respective window(s) or the changed aggregation result.
 				See <xref linkend="processingmodel"/> for more information on insert and remove streams.
 				</para>
-			
+
+			<para>
+				The engine posts remove stream events to the <literal>oldEvents</literal> parameter of the <literal>update</literal> method only if either the <literal>irstream</literal> or the <literal>rstream</literal> keyword
+				occurs in the <literal>select</literal> clause. This behavior can be changed via engine-wide configuration as described in <xref linkend="config-engine-stream-selection"/>.
+			</para>
+
 			<para>
 				By specifying the <literal>istream</literal> keyword you can instruct the engine to only post insert stream events via the <literal>newEvents</literal> parameter to the <literal>update</literal> method on listeners. The engine will then not post any remove stream events, and the <literal>oldEvents</literal> parameter is always a null value.
 			</para>
 				
+			<para>
+				By specifying the <literal>irstream</literal> keyword you can instruct the engine to post both insert stream and remove stream events.
+			</para>
+
 			<para>
 				By specifying the <literal>rstream</literal> keyword you can instruct the engine to only post remove stream events via the <literal>newEvents</literal> parameter to the <literal>update</literal> method on listeners. The engine will then not post any insert stream events, and the <literal>oldEvents</literal> parameter is also always a null value.
 			</para>
@@ -977,7 +993,7 @@ select symbol, sum(price) from StockTickEvent.std:groupby(symbol).win:length(10)
 				<para>
 				The <literal>output</literal> clause is optional in Esper and is used to control or stabilize the rate at which events are output. For example, the following statement outputs, every 60 seconds, the total price for all orders in the 30-minute time window:		
 				</para>
-			    <programlisting>select sum(price) from OrderEvent.win:time(30 min) output every 60 seconds</programlisting>
+			    <programlisting>select sum(price) from OrderEvent.win:time(30 min) output snapshot every 60 seconds</programlisting>
 
 				<para>
 					Here is the syntax for output rate limiting: 
@@ -985,7 +1001,8 @@ select symbol, sum(price) from StockTickEvent.std:groupby(symbol).win:length(10)
 				<synopsis>output [all | first | last | snapshot] every <emphasis>output_rate</emphasis> [minutes | seconds | events]</synopsis>
 
 				<para>
-					The <literal>all</literal> keyword is the default and specifies that all events in a batch should be output. The batch size can be specified in terms of time or number of events.
+					The <literal>all</literal> keyword is the default and specifies that all events in a batch should be output, each incoming row in the batch producing an output row.
+					Note that for statements that group via the <literal>group by</literal> clause, the <literal>all</literal> keyword provides special behavior as below.
 				</para>
 
 				<para>
@@ -996,17 +1013,21 @@ select symbol, sum(price) from StockTickEvent.std:groupby(symbol).win:length(10)
 
 				<para>
 					The <literal>last</literal> keyword specifies to only output the last event at the end of the given time interval or after the given number of matching events
-					have been accumulated.
+					have been accumulated. Again, for statements that group via the <literal>group by</literal> clause the <literal>last</literal> keyword provides special behavior as below.
 				</para>
 
 				<para>
-					The <literal>snapshot</literal> keyword indicates that the engine output current computation results considering all events as per views specified and/or current aggregation results. While the other keywords control how a batch of events between output intervals is being considered, the <literal>snapshot</literal> keyword outputs all current state of a statement independent of the last batch. 
+					The <literal>snapshot</literal> keyword indicates that the engine output current computation results considering all events as per views specified and/or current aggregation results. While the other keywords control how a batch of events between output intervals is being considered, the <literal>snapshot</literal> keyword outputs all current state of a statement independent of the last batch. It's output is equivalent to the <literal>iterator</literal> method provided by a statement.
 				</para>
 
 				<para>
-					The <emphasis>output_rate</emphasis> is the frequency at which the engine outputs events. The value can be a number to denote a fixed output rate, or the name of a variable whose value is the output rate. By means of a variable the output rate can be controlled externally and changed dynamically at runtime. 
+					The <emphasis>output_rate</emphasis> is the frequency at which the engine outputs events. It can be specified in terms of time or number of events. The value can be a number to denote a fixed output rate, or the name of a variable whose value is the output rate. By means of a variable the output rate can be controlled externally and changed dynamically at runtime. 
 				</para>
 
+				<para>
+					Please consult the <xref linkend="appendix_outputspec"/> for detailed information on insert and remove stream output for the various output rate limiting keywords.
+				</para>
+				
 				<para>
 					The time interval can also be specified in terms of minutes; the following statement is identical to the first one.
 				</para>
@@ -1031,19 +1052,63 @@ select symbol, sum(price) from StockTickEvent.std:groupby(symbol).win:length(10)
 		</sect2>
 
         <sect2 id="eql-output-groupby" >
-				<title>Group By, Having and Output clause interaction</title>
+				<title>Aggregation, Group By, Having and Output clause interaction</title>
 			
+				<para>
+					Remove stream events can also useful in conjunction with aggregation and output rate limiting: When the engine posts remove stream events for fully-aggregated queries, it presents the aggregation state before the expiring event leaves the data window. Your application can thus easily obtain a delta between the new aggregation value and the prior aggregation value.
+				</para>
+				
+				<para>
+					The engine evaluates the having-clause at the granularity of the data posted by views. That is, if you utilize a time window and output every 10 events, the <literal>having</literal> clause applies to each individual event or events entering and leaving the time window (and not once per batch of 10 events).
+				</para>
+
 				<para>
 					The <literal>output</literal> clause interacts in two ways with the <literal>group by</literal> and <literal>having</literal> clauses. First, in the <literal>output every n events </literal>case, the number <literal>n</literal> refers to the number of events arriving into the <literal>group by clause</literal>. That is, if the <literal>group by</literal> clause outputs only 1 event per group, or if the arriving events don't satisfy the <literal>having</literal> clause, then the actual number of events output by the statement could be fewer than <literal>n</literal>.
 				</para>
+				
 				<para>
-Second, the <literal>last</literal> and <literal>all</literal> keywords have special meanings when used in a statement with aggregate functions and the <literal>group by</literal> clause. The <literal>last</literal> keyword specifies that only groups whose aggregate values have been updated with the most recent batch of events should be output. The <literal>all</literal> keyword (the default) specifies that the most recent data for all groups seen so far should be output, whether or not these groups' aggregate values have just been updated.
+					Second, the <literal>last</literal> and <literal>all</literal> keywords have special meanings when used in a statement with aggregate functions and the <literal>group by</literal> clause:
+				</para>
+				<itemizedlist spacing="compact">
+					<listitem>
+						<para>
+							When no keyword is specified, the engine produces an output row for each row in the batch.
+						</para>
+					</listitem>
+					<listitem>
+						<para>
+							The <literal>all</literal> keyword (the default) specifies that the most recent data for <emphasis>all</emphasis> groups seen so far should be output, whether or not these groups' aggregate values have just been updated
+						</para>
+					</listitem>
+					<listitem>
+						<para>
+							The <literal>last</literal> keyword specifies that only groups whose aggregate values have been updated with the most recent batch of events should be output, and only one row for each group.
+						</para>
+					</listitem>
+				</itemizedlist>
+
+				<para>
+					Please consult the <xref linkend="appendix_outputspec"/> for detailed information on insert and remove stream output for aggregation and group-by.
 				</para>
 
-			<para>
-				By adding an output rate limiting clause to a statement that contains a <emphasis>group by</emphasis> clause we can control output of groups to obtain one row for each group, generating an event per group at the given output frequency:
-			</para>
-			<programlisting>select symbol, sum(price) from StockTickEvent group by symbol output every 5 seconds</programlisting>
+				<para>
+					By adding an output rate limiting clause to a statement that contains a <emphasis>group by</emphasis> clause we can control output of groups to obtain one row for each group, generating an event per group at the given output frequency:
+				</para>
+				<programlisting>select symbol, sum(price) from StockTickEvent group by symbol output all every 5 seconds</programlisting>
+
+		</sect2>
+
+        <sect2 id="eql-output-runtime" >
+				<title>Runtime Considerations</title>
+			
+				<para>
+					Output rate limiting provides output events to your application in regular intervals. Between intervals, the engine uses a buffer to hold events until the output condition is reached. If your application
+					has high-volume streams, you may need to be mindful of the memory needs for output rates.
+				</para>
+				
+				<para>
+					The <literal>output</literal> clause with the <literal>snapshot</literal> keyword does not require a buffer, all other output keywords do consume memory until the output condition is reached.
+				</para>
 
 		</sect2>
 

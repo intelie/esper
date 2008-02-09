@@ -97,12 +97,6 @@ public class ResultSetProcessorAggregateGrouped implements ResultSetProcessor
             log.debug(".processJoinResults creating old output events");
         }
 
-        EventBean[] selectOldEvents = null;
-        if (isSelectRStream)
-        {
-            selectOldEvents = generateOutputEventsJoin(oldEvents, oldDataGroupByKeys, oldGenerators, false, isSynthesize);
-        }
-
         // update aggregates
         if (!newEvents.isEmpty())
         {
@@ -125,10 +119,10 @@ public class ResultSetProcessorAggregateGrouped implements ResultSetProcessor
             }
         }
 
-        // generate new events using select expressions
-        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
+        EventBean[] selectOldEvents = null;
+        if (isSelectRStream)
         {
-            log.debug(".processJoinResults creating new output events");
+            selectOldEvents = generateOutputEventsJoin(oldEvents, oldDataGroupByKeys, oldGenerators, false, isSynthesize);
         }
         EventBean[] selectNewEvents = generateOutputEventsJoin(newEvents, newDataGroupByKeys, newGenerators, true, isSynthesize);
 
@@ -149,12 +143,6 @@ public class ResultSetProcessorAggregateGrouped implements ResultSetProcessor
         if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
         {
             log.debug(".processViewResults creating old output events");
-        }
-
-        EventBean[] selectOldEvents = null;
-        if (isSelectRStream)
-        {
-            selectOldEvents = generateOutputEventsView(oldData, oldDataGroupByKeys, oldGenerators, false, isSynthesize);
         }
 
         // update aggregates
@@ -178,10 +166,10 @@ public class ResultSetProcessorAggregateGrouped implements ResultSetProcessor
             }
         }
 
-        // generate new events using select expressions
-        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
+        EventBean[] selectOldEvents = null;
+        if (isSelectRStream)
         {
-            log.debug(".processViewResults creating new output events");
+            selectOldEvents = generateOutputEventsView(oldData, oldDataGroupByKeys, oldGenerators, false, isSynthesize);
         }
         EventBean[] selectNewEvents = generateOutputEventsView(newData, newDataGroupByKeys, newGenerators, true, isSynthesize);
 
@@ -500,11 +488,6 @@ public class ResultSetProcessorAggregateGrouped implements ResultSetProcessor
                 MultiKeyUntyped[] newDataMultiKey = generateGroupKeys(newData, true);
                 MultiKeyUntyped[] oldDataMultiKey = generateGroupKeys(oldData, false);
 
-                if (isSelectRStream)
-                {
-                    generateOutputBatchedJoin(oldData, oldDataMultiKey, false, generateSynthetic, oldEvents, oldEventsSortKey);
-                }
-
                 if (newData != null)
                 {
                     // apply new data to aggregates
@@ -526,6 +509,10 @@ public class ResultSetProcessorAggregateGrouped implements ResultSetProcessor
                     }
                 }
 
+                if (isSelectRStream)
+                {
+                    generateOutputBatchedJoin(oldData, oldDataMultiKey, false, generateSynthetic, oldEvents, oldEventsSortKey);
+                }
                 generateOutputBatchedJoin(newData, newDataMultiKey, true, generateSynthetic, newEvents, newEventsSortKey);
             }
 
@@ -583,11 +570,6 @@ public class ResultSetProcessorAggregateGrouped implements ResultSetProcessor
                 MultiKeyUntyped[] newDataMultiKey = generateGroupKeys(newData, true);
                 MultiKeyUntyped[] oldDataMultiKey = generateGroupKeys(oldData, false);
 
-                if (isSelectRStream)
-                {
-                    generateOutputBatchedJoin(oldData, oldDataMultiKey, false, generateSynthetic, oldEvents, oldEventsSortKey);
-                }
-
                 if (newData != null)
                 {
                     // apply new data to aggregates
@@ -614,6 +596,10 @@ public class ResultSetProcessorAggregateGrouped implements ResultSetProcessor
                     }
                 }
 
+                if (isSelectRStream)
+                {
+                    generateOutputBatchedJoin(oldData, oldDataMultiKey, false, generateSynthetic, oldEvents, oldEventsSortKey);
+                }
                 generateOutputBatchedJoin(newData, newDataMultiKey, true, generateSynthetic, newEvents, newEventsSortKey);
             }
 
@@ -680,11 +666,6 @@ public class ResultSetProcessorAggregateGrouped implements ResultSetProcessor
                 MultiKeyUntyped[] newDataMultiKey = generateGroupKeys(newData, true);
                 MultiKeyUntyped[] oldDataMultiKey = generateGroupKeys(oldData, false);
 
-                if (isSelectRStream)
-                {
-                    generateOutputBatchedJoin(oldData, oldDataMultiKey, false, generateSynthetic, lastPerGroupOld, oldEventsSortKey);
-                }
-
                 if (newData != null)
                 {
                     // apply new data to aggregates
@@ -708,6 +689,10 @@ public class ResultSetProcessorAggregateGrouped implements ResultSetProcessor
                     }
                 }
 
+                if (isSelectRStream)
+                {
+                    generateOutputBatchedJoin(oldData, oldDataMultiKey, false, generateSynthetic, lastPerGroupOld, oldEventsSortKey);
+                }
                 generateOutputBatchedJoin(newData, newDataMultiKey, false, generateSynthetic, lastPerGroupNew, newEventsSortKey);
             }
 
@@ -769,11 +754,6 @@ public class ResultSetProcessorAggregateGrouped implements ResultSetProcessor
                 MultiKeyUntyped[] newDataMultiKey = generateGroupKeys(newData, true);
                 MultiKeyUntyped[] oldDataMultiKey = generateGroupKeys(oldData, false);
 
-                if (isSelectRStream)
-                {
-                    generateOutputBatchedView(oldData, oldDataMultiKey, false, generateSynthetic, oldEvents, oldEventsSortKey);
-                }
-
                 if (newData != null)
                 {
                     // apply new data to aggregates
@@ -797,6 +777,10 @@ public class ResultSetProcessorAggregateGrouped implements ResultSetProcessor
                     }
                 }
 
+                if (isSelectRStream)
+                {
+                    generateOutputBatchedView(oldData, oldDataMultiKey, false, generateSynthetic, oldEvents, oldEventsSortKey);
+                }
                 generateOutputBatchedView(newData, newDataMultiKey, true, generateSynthetic, newEvents, newEventsSortKey);
             }
 
@@ -854,11 +838,6 @@ public class ResultSetProcessorAggregateGrouped implements ResultSetProcessor
                 MultiKeyUntyped[] newDataMultiKey = generateGroupKeys(newData, true);
                 MultiKeyUntyped[] oldDataMultiKey = generateGroupKeys(oldData, false);
 
-                if (isSelectRStream)
-                {
-                    generateOutputBatchedView(oldData, oldDataMultiKey, false, generateSynthetic, oldEvents, oldEventsSortKey);
-                }
-
                 eventsPerStream = new EventBean[1];
                 if (newData != null)
                 {
@@ -888,6 +867,10 @@ public class ResultSetProcessorAggregateGrouped implements ResultSetProcessor
                     }
                 }
 
+                if (isSelectRStream)
+                {
+                    generateOutputBatchedView(oldData, oldDataMultiKey, false, generateSynthetic, oldEvents, oldEventsSortKey);
+                }
                 generateOutputBatchedView(newData, newDataMultiKey, true, generateSynthetic, newEvents, newEventsSortKey);
             }
 
@@ -954,11 +937,6 @@ public class ResultSetProcessorAggregateGrouped implements ResultSetProcessor
                 MultiKeyUntyped[] newDataMultiKey = generateGroupKeys(newData, true);
                 MultiKeyUntyped[] oldDataMultiKey = generateGroupKeys(oldData, false);
 
-                if (isSelectRStream)
-                {
-                    generateOutputBatchedView(oldData, oldDataMultiKey, false, generateSynthetic, lastPerGroupOld, oldEventsSortKey);
-                }
-
                 eventsPerStream = new EventBean[1];
                 if (newData != null)
                 {
@@ -985,6 +963,10 @@ public class ResultSetProcessorAggregateGrouped implements ResultSetProcessor
                     }
                 }
 
+                if (isSelectRStream)
+                {
+                    generateOutputBatchedView(oldData, oldDataMultiKey, false, generateSynthetic, lastPerGroupOld, oldEventsSortKey);
+                }
                 generateOutputBatchedView(newData, newDataMultiKey, false, generateSynthetic, lastPerGroupNew, newEventsSortKey);
             }
 

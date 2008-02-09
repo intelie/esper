@@ -220,7 +220,7 @@ public class TestHavingNoGroupBy extends TestCase
         assertNewEvents(SYMBOL_DELL, 6d, 8.8d);
 
         sendEvent(SYMBOL_DELL, 12);  // avg = (15 + 8 + 10 + 6 + 12) / 5 = 51/5=10.2
-        assertOldEvents(SYMBOL_DELL, 5d, 8.8d);
+        assertOldEvents(SYMBOL_DELL, 5d, 10.2d);
     }
 
     public void testHavingSum()

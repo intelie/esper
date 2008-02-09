@@ -1,23 +1,21 @@
 package com.espertech.esper.regression.support;
 
-import com.espertech.esper.client.EPServiceProvider;
 import com.espertech.esper.client.EPRuntime;
+import com.espertech.esper.client.EPServiceProvider;
 import com.espertech.esper.client.EPStatement;
 import com.espertech.esper.client.time.CurrentTimeEvent;
-import com.espertech.esper.support.util.SupportUpdateListener;
-import com.espertech.esper.support.util.ArrayAssertionUtil;
-import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.collection.UniformPair;
 import com.espertech.esper.event.EventBean;
-
-import java.util.TreeMap;
-import java.util.Map;
-import java.util.Arrays;
-import java.io.*;
-
+import com.espertech.esper.support.bean.SupportBean;
+import com.espertech.esper.support.util.ArrayAssertionUtil;
+import com.espertech.esper.support.util.SupportUpdateListener;
+import junit.framework.Assert;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import junit.framework.Assert;
+
+import java.util.Arrays;
+import java.util.Map;
+import java.util.TreeMap;
 
 public class ResultAssertExecution
 {
@@ -59,16 +57,16 @@ public class ResultAssertExecution
     private void execute(boolean isAssert, boolean isExpectNullRemoveStream)
     {
         // For use in join tests, send join-to events
-        engine.getEPRuntime().sendEvent(new SupportBean("S1", 0));
-        engine.getEPRuntime().sendEvent(new SupportBean("S2", 0));
-        engine.getEPRuntime().sendEvent(new SupportBean("S3", 0));
+        engine.getEPRuntime().sendEvent(new SupportBean("IBM", 0));
+        engine.getEPRuntime().sendEvent(new SupportBean("MSFT", 0));
+        engine.getEPRuntime().sendEvent(new SupportBean("YAH", 0));
 
         if (preformatlog.isDebugEnabled())
         {
             preformatlog.debug(String.format("Category: %s   Output rate limiting: %s", expected.getCategory(), expected.getTitle()));
             preformatlog.debug("");
             preformatlog.debug("Statement:");
-            preformatlog.debug(indentLines(stmt.getText()));
+            preformatlog.debug(stmt.getText());
             preformatlog.debug("");
             preformatlog.debug(String.format("%28s  %38s", "Input", "Output"));
             preformatlog.debug(String.format("%45s  %15s  %15s", "", "Insert Stream", "Remove Stream"));
@@ -128,13 +126,18 @@ public class ResultAssertExecution
             if (listener.isInvoked())
             {
                 UniformPair<String[]> received = renderReceived(fields);
-                for (String newRow : received.getFirst())
+                String[] newRows = received.getFirst();
+                String[] oldRows = received.getSecond();
+                int numMaxRows = (newRows.length > oldRows.length) ? newRows.length : oldRows.length;
+                for (int i = 0; i < numMaxRows; i++)
                 {
-                    preformatlog.debug(String.format("%48s %s", "", newRow));
+                    String newRow = (newRows.length > i) ? newRows[i] : "";
+                    String oldRow = (oldRows.length > i) ? oldRows[i] : "";
+                    preformatlog.debug(String.format("%48s %-18s %-20s", "", newRow, oldRow));
                 }
-                for (String oldRow : received.getSecond())
+                if (numMaxRows == 0)
                 {
-                    preformatlog.debug(String.format("%68s %s", "", oldRow));
+                    preformatlog.debug(String.format("%48s %-18s %-20s", "", "(empty result)", "(empty result)"));
                 }
             }
         }
@@ -184,7 +187,7 @@ public class ResultAssertExecution
                     Assert.assertNull("At time " + timeInSec + " expected no insert stream events but received some", listener.getLastNewData());
                 }
 
-                Assert.assertNull("At time " + timeInSec + " expected no remove stream events but received some", listener.getLastOldData());
+                Assert.assertNull("At time " + timeInSec + " expected no remove stream events but received some(check irstream/istream(default) test case)", listener.getLastOldData());
             }
         }
         listener.reset();
@@ -221,35 +224,5 @@ public class ResultAssertExecution
         CurrentTimeEvent event = new CurrentTimeEvent(timeInMSec);
         EPRuntime runtime = engine.getEPRuntime();
         runtime.sendEvent(event);
-    }
-
-    private String indentLines(String text)
-    {
-        StringWriter writer = new StringWriter();
-        PrintWriter printer = new PrintWriter(writer);
-
-        StringReader reader = new StringReader(text);
-        LineNumberReader lineReader = new LineNumberReader(reader);
-        boolean delimiter = false;
-        while (true)
-        {
-            String line;
-            try {
-                line = lineReader.readLine();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-            if (line == null)
-            {
-                return writer.getBuffer().toString();
-            }
-            if (delimiter)
-            {
-                printer.println();
-            }
-            printer.print("  ");
-            printer.print(line);
-            delimiter = true;
-        }
     }
 }

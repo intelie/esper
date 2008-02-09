@@ -115,17 +115,17 @@ public class TestAggregateRowPerEvent extends TestCase
         ArrayAssertionUtil.assertEqualsAnyOrder(selectTestView.iterator(), fields, new Object[][] {{1L, 20L}, {2L, 20L}, {3L, 20L}});
 
         sendEvent(-2);
-        assertEquals(20L, testListener.getLastOldData()[0].get("mySum"));
+        assertEquals(8L, testListener.getLastOldData()[0].get("mySum"));
         assertEquals(8L, testListener.getAndResetLastNewData()[0].get("mySum"));
         ArrayAssertionUtil.assertEqualsAnyOrder(selectTestView.iterator(), fields, new Object[][] {{4L, 8L}, {2L, 8L}, {3L, 8L}});
 
         sendEvent(100);
-        assertEquals(8L, testListener.getLastOldData()[0].get("mySum"));
+        assertEquals(93L, testListener.getLastOldData()[0].get("mySum"));
         assertEquals(93L, testListener.getAndResetLastNewData()[0].get("mySum"));
         ArrayAssertionUtil.assertEqualsAnyOrder(selectTestView.iterator(), fields, new Object[][] {{4L, 93L}, {5L, 93L}, {3L, 93L}});
 
         sendEvent(1000);
-        assertEquals(93L, testListener.getLastOldData()[0].get("mySum"));
+        assertEquals(1098L, testListener.getLastOldData()[0].get("mySum"));
         assertEquals(1098L, testListener.getAndResetLastNewData()[0].get("mySum"));
         ArrayAssertionUtil.assertEqualsAnyOrder(selectTestView.iterator(), fields, new Object[][] {{4L, 1098L}, {5L, 1098L}, {6L, 1098L}});
     }

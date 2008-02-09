@@ -69,13 +69,13 @@ public class TestGroupByEventPerRow extends TestCase
 
         sendEvent(SYMBOL_IBM, 500, 5);
         ArrayAssertionUtil.assertProps(listener.getLastNewData()[0], fields, new Object[] {500L, "IBM", 5.0, 3L});
-        ArrayAssertionUtil.assertProps(listener.getLastOldData()[0], fields, new Object[] {1000L, "DELL", 10.0, 2L});
+        ArrayAssertionUtil.assertProps(listener.getLastOldData()[0], fields, new Object[] {1000L, "DELL", 10.0, 1L});
         ArrayAssertionUtil.assertEqualsExactOrder(selectTestView.iterator(), fields, new Object[][] {{900L, "DELL", 11.0, 1L}, {1500L, "DELL", 10.0, 1L}, {500L, "IBM", 5.0, 3L}, {600L, "IBM", 5.0, 3L}, {500L, "IBM", 5.0, 3L}});
         listener.reset();
 
         sendEvent(SYMBOL_IBM, 600, 5);
         ArrayAssertionUtil.assertProps(listener.getLastNewData()[0], fields, new Object[] {600L, "IBM", 5.0, 4L});
-        ArrayAssertionUtil.assertProps(listener.getLastOldData()[0], fields, new Object[] {900L, "DELL", 11.0, 1L});
+        ArrayAssertionUtil.assertProps(listener.getLastOldData()[0], fields, new Object[] {900L, "DELL", 11.0, 0L});
         ArrayAssertionUtil.assertEqualsExactOrder(selectTestView.iterator(), fields, new Object[][] {{1500L, "DELL", 10.0, 1L}, {500L, "IBM", 5.0, 4L}, {600L, "IBM", 5.0, 4L}, {500L, "IBM", 5.0, 4L}, {600L, "IBM", 5.0, 4L}});
         listener.reset();
     }
@@ -180,12 +180,12 @@ public class TestGroupByEventPerRow extends TestCase
                 {"DELL", 10000L, 103d}, {"DELL", 20000L, 103d}, {"IBM", 30000L, 70d}});
 
         sendEvent(SYMBOL_IBM, 10000, 20);
-        assertEvents(SYMBOL_DELL, 10000, 103, SYMBOL_IBM, 10000, 90);
+        assertEvents(SYMBOL_DELL, 10000, 52, SYMBOL_IBM, 10000, 90);
         ArrayAssertionUtil.assertEqualsAnyOrder(selectTestView.iterator(), fields, new Object[][] {
                 {"DELL", 20000L, 52d}, {"IBM", 30000L, 90d}, {"IBM", 10000L, 90d}});
 
         sendEvent(SYMBOL_DELL, 40000, 45);
-        assertEvents(SYMBOL_DELL, 20000, 52, SYMBOL_DELL, 40000, 45);
+        assertEvents(SYMBOL_DELL, 20000, 45, SYMBOL_DELL, 40000, 45);
         ArrayAssertionUtil.assertEqualsAnyOrder(selectTestView.iterator(), fields, new Object[][] {
                 {"IBM", 10000L, 90d}, {"IBM", 30000L, 90d}, {"DELL", 40000L, 45d}});
     }

@@ -14,6 +14,7 @@ In release 2.0 we have made changes to the output produced by queries that utili
 
 In fully-aggregated queries that specify an output-clause, the default output (no keyword) for the release 2.0 engine is one row per event in the output batch, while the prior version output one row per group. The ALL and the LAST keyword provide output of one row per group. Fully-aggregated queries are queries in which all properties are under aggregation functions, except for grouped-by properties.
 
+Remove stream events for aggregated queries now publish the aggregation value after the event left the window.
 
 JIRA
 ====

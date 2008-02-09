@@ -1184,11 +1184,17 @@ config.getEngineDefaults().getLogging().setEnableExecutionDebug(true);]]></progr
 				<title>Default Statement Stream Selection</title>
 
 				<para>
-				   This configuration item is for 
+				   Statements can produce both insert stream (new data) and remove stream (old data) results. Remember that insert stream refers to arriving events and new aggregation values, while remove stream refers to events leaving data windows and prior aggregation values. By default, the engine delivers only the insert stream to listeners and observers of a statement.
+				</para>
+				   
+				<para>
+				   There are keywords in the <literal>select</literal> clause that instruct the engine to not generate insert stream and/or remove stream results if your application does not need either one of the streams. These keywords are the <literal>istream</literal>, <literal>rstream</literal> and the <literal>irstream</literal> keywords. 
 				</para>
 
 				<para>
-				   For statements that use variables and that execute (in response to a single timer or other event) longer then the time period, the engine returns the current variable version at the time the statement executes, thereby softening the guarantee of consistency of variable values within the long-running statement. Please see <xref linkend="variable_using"/> for more information.
+				   By default, the engine only generates insert stream results equivalent to using the optional <literal>istream</literal> keyword in the <literal>select</literal> clause.
+				   If you application requires insert and remove stream results for many statements, your application can add the <literal>irstream</literal> keyword to the <literal>select</literal> clause of each statement,
+				   or you can set a new default stream selector via this setting.
 				</para>
 
 				<para>
@@ -1196,12 +1202,18 @@ config.getEngineDefaults().getLogging().setEnableExecutionDebug(true);]]></progr
 				</para>
 					<programlisting><![CDATA[<engine-settings>
   <defaults>
-    <variables>
-      <msec-version-release value="15000"/>
-    </variables>
+    <stream-selection>
+      <stream-selector value="irstream" />
+    </stream-selection>
   </defaults>
 </engine-settings>]]></programlisting>
 
+				<para>
+					The equivalent code snippet using the configuration API is here:
+				</para>
+				<programlisting><![CDATA[Configuration config = new Configuration();
+config.getEngineDefaults().getStreamSelection()
+    .setDefaultStreamSelector(StreamSelector.RSTREAM_ISTREAM_BOTH);]]></programlisting>
 			</sect3>
 		</sect2>
     </sect1>
