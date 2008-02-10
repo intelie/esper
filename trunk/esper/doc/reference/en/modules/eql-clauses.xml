@@ -1007,7 +1007,7 @@ select symbol, sum(price) from StockTickEvent.std:groupby(symbol).win:length(10)
 
 				<para>
 					The <literal>first</literal> keyword specifies that only the first event in an output batch is to be output.
-					Using the <literal>first</literal> keyword instructs the engine to output the first matching event as soon as it arrives, and then ignore matching events for the time interval or number of events specified. 
+					Using the <literal>first</literal> keyword instructs the engine to output the first matching event as soon as it arrives, and then ignores matching events for the time interval or number of events specified. 
 					After the time interval elapsed, or the number of matching events has been reached, the next first matching event is output again and the following interval the engine again ignores matching events.
 				</para>
 
@@ -1082,7 +1082,7 @@ select symbol, sum(price) from StockTickEvent.std:groupby(symbol).win:length(10)
 					</listitem>
 					<listitem>
 						<para>
-							The <literal>last</literal> keyword specifies that only groups whose aggregate values have been updated with the most recent batch of events should be output, and only one row for each group.
+							The <literal>last</literal> keyword specifies that only groups whose aggregate values have been updated with the most recent batch of events should be output.
 						</para>
 					</listitem>
 				</itemizedlist>

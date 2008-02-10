@@ -3,15 +3,15 @@
     <title>Output Reference and Samples</title>
 
     <para>
-		This section specifies the output of a subset of EPL continuous queries, for two purposes: First, to document and standardize output for EPL queries in a testable and trackable fashion. Second, to help application developers understand streaming engine output in response to incoming events and in response to time passing.
+		This section specifies the output of a subset of EPL continuous queries, for two purposes: First, to help application developers understand streaming engine output in response to incoming events and in response to time passing. Second, to document and standardize output for EPL queries in a testable and trackable fashion. 
     </para>
 
     <para>
-		The section focuses on a subset of features, namely the time window, aggregation, grouping, having-clause and output rate limiting. The section does not currently provide examples for many of the other language features, thus there is no example for other data windows (the time window is used here), joins, sub-selects or named windows etc..
+		The section focuses on a subset of features, namely the time window, aggregation, grouping, and output rate limiting. The section does not currently provide examples for many of the other language features, thus there is no example for other data windows (the time window is used here), joins, sub-selects or named windows etc.
     </para>
 
     <para>
-		Rather then just describe output, this section provides detailed examples for each of the cases presented. The input for each case is always the same set of events, and the same timing. Each event has three properties: symbol, volume and price. The property types are string, long and double, respectively.
+		Rather then just describe syntax and output, this section provides detailed examples for each of the types of queries presented. The input for each type of query is always the same set of events, and the same timing. Each event has three properties: symbol, volume and price. The property types are string, long and double, respectively.
     </para>
 
 	<para>
@@ -20,25 +20,29 @@
 	</para>       
 
 	<para>
-		Your will notice that some queries utilize the <literal>order by</literal> clause for sorting output. The reason is that when multiple output rows are produced at once, they are easier to read and assert rows if the rows are sorted.
+		You will notice that some queries utilize the <literal>order by</literal> clause for sorting output. The reason is that when multiple output rows are produced at once, the output can be easier to read if it is sorted.
 	</para>       
 	
 	<para>
-	    With output rate limiting, the engine invokes your listener even if there are no results to indicate after the output condition has been reached. Such posts are indicated as <literal>(empty result)</literal> in the output result columns.
+	    With output rate limiting, the engine invokes your listener even if there are no results to indicate when the output condition has been reached. Such is indicated as <literal>(empty result)</literal> in the output result columns.
+	</para>
+
+	<para>
+	    The output columns show both insert and remove stream events. Insert stream events are delivered as an array of <literal>EventBean</literal> instances to listeners in the <literal>newData</literal> parameter, while remove stream events are delivered to the <literal>oldData</literal> parameter of listeners. Delivery to observers follows similar rules.
 	</para>
 
     <sect1 id="outputspec-intro" revision="1">
         <title>Introduction and Sample Data</title>
 	
 		<para>
-			For the purpose of illustration and documentation, the example data set demonstrates input and remove streams based on a time window of 5.5 second interval. The statement utilizing the time window 
+			For the purpose of illustration and documentation, the example data set demonstrates input and remove streams based on a time window of a 5.5 second interval. The statement utilizing the time window 
 			could look as follows:
 		</para>
 
 		<programlisting><![CDATA[select symbol, volume, price from MarketData.win:time(5.5 sec)]]></programlisting>
 
 		<para>
-			We have picked a time window to demonstrates the output for events entering and leaving a data window with an expiration policy. The time window provides a simple expiration policy based on time: if an event resides in the time window more then 5.5 seconds, the engine expires the event from the time window.
+			We have picked a time window to demonstrate the output for events entering and leaving a data window with an expiration policy. The time window provides a simple expiration policy based on time: if an event resides in the time window more then 5.5 seconds, the engine expires the event from the time window.
 		</para>
 
 		<para>
@@ -84,7 +88,7 @@
   7.0                          Event E3 and E4 leave the time window
   7.2                          ]]></programlisting>
 		  <para>
-			  The event data set assumes a time window of 5.5 seconds. At time 5.7 seconds the first arriving event (E1) leaves the time window.
+			  The event data set assumes a time window of 5.5 seconds. Thus at time 5.7 seconds the first arriving event (E1) leaves the time window.
 		  </para>
 
 		  <para>
@@ -378,8 +382,7 @@ output first every 1 seconds]]></programlisting>
 				The statement for this sample reads:
 			</para>       
 			<programlisting><![CDATA[select irstream symbol, volume, price from MarketData.win:time(5.5 sec)
-output snapshot every 1 seconds
-			]]></programlisting>
+output snapshot every 1 seconds]]></programlisting>
 			
 			<para>
 				The output is as follows:
@@ -1226,8 +1229,7 @@ output every 1 seconds]]></programlisting>
 			<para>
 				The output is as follows:
 			</para>       
-			<programlisting><![CDATA[
-			                       Input                                  Output
+			<programlisting><![CDATA[			                       Input                                  Output
                                                  Insert Stream    Remove Stream
 -----------------------------------------------  ----------------------------------
  Time Symbol  Volume   Price
