@@ -36,6 +36,7 @@ public interface JoinSetComposerFactory
                                                    Viewable[] streamViews,
                                                    SelectClauseStreamSelectorEnum selectStreamSelectorEnum,
                                                    boolean[] isUnidirectional,
-                                                   boolean[] hasChildViews)
+                                                   boolean[] hasChildViews,
+                                                   boolean[] isNamedWindow)
             throws ExprValidationException;
 }

@@ -421,6 +421,7 @@ public class EPStatementStartMethod
         ViewFactoryChain[] unmaterializedViewChain = new ViewFactoryChain[numStreams];
         boolean[] isUnidirectional = new boolean[numStreams];
         boolean[] hasChildViews = new boolean[numStreams];
+        boolean[] isNamedWindow = new boolean[numStreams];
         for (int i = 0; i < statementSpec.getStreamSpecs().size(); i++)
         {
             StreamSpecCompiled streamSpec = statementSpec.getStreamSpecs().get(i);
@@ -506,6 +507,7 @@ public class EPStatementStartMethod
                 NamedWindowConsumerView consumerView = processor.addConsumer(namedSpec.getFilterExpressions(), statementContext.getEpStatementHandle(), statementContext.getStatementStopService());
                 eventStreamParentViewable[i] = consumerView;
                 unmaterializedViewChain[i] = services.getViewService().createFactories(i, consumerView.getEventType(), namedSpec.getViewSpecs(), statementContext);
+                isNamedWindow[i] = true;
 
                 // Consumers to named windows cannot declare a data window view onto the named window to avoid duplicate remove streams
                 ViewResourceDelegate viewResourceDelegate = new ViewResourceDelegateImpl(unmaterializedViewChain, statementContext);
@@ -604,7 +606,7 @@ public class EPStatementStartMethod
         }
         else
         {
-            Pair<Viewable, JoinPreloadMethod> pair = handleJoin(streamNames, streamEventTypes, streamViews, resultSetProcessor, statementSpec.getSelectStreamSelectorEnum(), statementContext, stopCallbacks, isUnidirectional, hasChildViews);
+            Pair<Viewable, JoinPreloadMethod> pair = handleJoin(streamNames, streamEventTypes, streamViews, resultSetProcessor, statementSpec.getSelectStreamSelectorEnum(), statementContext, stopCallbacks, isUnidirectional, hasChildViews, isNamedWindow);
             finalView = pair.getFirst();
             joinPreloadMethod = pair.getSecond();
         }
@@ -655,15 +657,17 @@ public class EPStatementStartMethod
     private Pair<Viewable, JoinPreloadMethod> handleJoin(String[] streamNames,
                                                          EventType[] streamTypes,
                                                          Viewable[] streamViews,
-                                ResultSetProcessor resultSetProcessor,
+                                                         ResultSetProcessor resultSetProcessor,
                                                          SelectClauseStreamSelectorEnum selectStreamSelectorEnum,
                                                          StatementContext statementContext,
                                                          List<StopCallback> stopCallbacks,
-                                                         boolean[] isUnidirectional, boolean[] hasChildViews)
+                                                         boolean[] isUnidirectional,
+                                                         boolean[] hasChildViews,
+                                                         boolean[] isNamedWindow)
             throws ExprValidationException
     {
         // Handle joins
-        final JoinSetComposer composer = statementContext.getJoinSetComposerFactory().makeComposer(statementSpec.getOuterJoinDescList(), statementSpec.getFilterRootNode(), streamTypes, streamNames, streamViews, selectStreamSelectorEnum, isUnidirectional, hasChildViews);
+        final JoinSetComposer composer = statementContext.getJoinSetComposerFactory().makeComposer(statementSpec.getOuterJoinDescList(), statementSpec.getFilterRootNode(), streamTypes, streamNames, streamViews, selectStreamSelectorEnum, isUnidirectional, hasChildViews, isNamedWindow);
 
         stopCallbacks.add(new StopCallback(){
             public void stop()

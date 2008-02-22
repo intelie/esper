@@ -6,6 +6,7 @@ import junit.framework.TestCase;
 import com.espertech.esper.client.EPServiceProvider;
 import com.espertech.esper.client.EPServiceProviderManager;
 import com.espertech.esper.client.EPStatement;
+import com.espertech.esper.client.Configuration;
 import com.espertech.esper.support.util.SupportUpdateListener;
 import com.espertech.esper.support.util.DoubleValueAssertionUtil;
 import com.espertech.esper.support.bean.SupportMarketDataBean;
@@ -24,8 +25,9 @@ public class TestViewTimeWindowWeightedAvg extends TestCase
     public void setUp()
     {
         testListener = new SupportUpdateListener();
-        epService = EPServiceProviderManager.getDefaultProvider(SupportConfigFactory.getConfiguration());
-        epService.initialize();
+        Configuration config = SupportConfigFactory.getConfiguration();
+        config.getEngineDefaults().getThreading().setInternalTimerEnabled(true);
+        epService = EPServiceProviderManager.getDefaultProvider(config);
 
         // Set up a 1 second time window
         weightedAvgView = epService.getEPAdministrator().createEPL(

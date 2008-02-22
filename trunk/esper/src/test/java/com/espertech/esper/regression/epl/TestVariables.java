@@ -684,22 +684,6 @@ public class TestVariables extends TestCase
 
         tryInvalid(int.class, new Double(11.1), null);
         tryInvalid(String.class, true, null);
-
-        // Try invalid configuration
-        Configuration config = SupportConfigFactory.getConfiguration();
-        config.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
-        config.addVariable("p_1", String.class, 5);
-
-        try
-        {
-            epService = EPServiceProviderManager.getDefaultProvider(config);
-            epService.initialize();
-            fail();
-        }
-        catch (ConfigurationException ex)
-        {
-            // expected
-        }
     }
 
     private void tryInvalid(Class type, Object value, String message)

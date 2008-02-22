@@ -55,7 +55,8 @@ public class JoinSetComposerFactoryImpl implements JoinSetComposerFactory
                                                    Viewable[] streamViews,
                                                    SelectClauseStreamSelectorEnum selectStreamSelectorEnum,
                                                    boolean[] isUnidirectional,
-                                                   boolean[] hasChildViews)
+                                                   boolean[] hasChildViews,
+                                                   boolean[] isNamedWindow)
             throws ExprValidationException
     {
         // Determine if there is a historical

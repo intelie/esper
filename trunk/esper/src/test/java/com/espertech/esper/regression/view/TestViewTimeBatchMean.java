@@ -7,6 +7,7 @@ import java.util.Iterator;
 import com.espertech.esper.client.EPServiceProvider;
 import com.espertech.esper.client.EPServiceProviderManager;
 import com.espertech.esper.client.EPStatement;
+import com.espertech.esper.client.Configuration;
 import com.espertech.esper.support.util.SupportUpdateListener;
 import com.espertech.esper.support.util.DoubleValueAssertionUtil;
 import com.espertech.esper.support.bean.SupportMarketDataBean;
@@ -25,7 +26,9 @@ public class TestViewTimeBatchMean extends TestCase
     public void setUp()
     {
         testListener = new SupportUpdateListener();
-        epService = EPServiceProviderManager.getDefaultProvider(SupportConfigFactory.getConfiguration());
+        Configuration config = SupportConfigFactory.getConfiguration();
+        config.getEngineDefaults().getThreading().setInternalTimerEnabled(true);
+        epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();
 
         // Set up a 2 second time window
