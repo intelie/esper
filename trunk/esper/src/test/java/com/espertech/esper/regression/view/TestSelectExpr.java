@@ -10,6 +10,7 @@ import com.espertech.esper.client.time.TimerControlEvent;
 import com.espertech.esper.support.util.SupportUpdateListener;
 import com.espertech.esper.support.util.ArrayAssertionUtil;
 import com.espertech.esper.support.bean.SupportBean;
+import com.espertech.esper.support.bean.SupportBeanComplexProps;
 import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.event.EventBean;
 import com.espertech.esper.event.EventType;
@@ -30,6 +31,19 @@ public class TestSelectExpr extends TestCase
         epService.getEPRuntime().sendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
     }
     
+    public void testGraphSelect()
+    {
+        EPStatement insertStmt = epService.getEPAdministrator().createEPL("insert into MyStream select nested from " + SupportBeanComplexProps.class.getName());
+        EventType eventTypeInsert = insertStmt.getEventType();
+
+        String viewExpr = "select nested.nestedValue, nested.nestedNested.nestedNestedValue from MyStream";
+        selectTestView = epService.getEPAdministrator().createEPL(viewExpr);
+        selectTestView.addListener(testListener);
+
+        epService.getEPRuntime().sendEvent(SupportBeanComplexProps.makeDefaultBean());
+        EventBean event = testListener.assertOneGetNewAndReset();
+    }
+
     public void testGetEventType()
     {
         String viewExpr = "select string, boolBoxed as aBool, 3*intPrimitive, floatBoxed+floatPrimitive as result" +
