@@ -258,13 +258,9 @@ public class TestAggregationFunctionPlugIn extends TestCase
         tryInvalidConfigure("abc", "My Class");
 
         // configure twice
-        Configuration configuration = SupportConfigFactory.getConfiguration();
-        configuration.addPlugInAggregationFunction("abcdef", String.class.getName());
-        configuration.addPlugInAggregationFunction("abcdef", String.class.getName());
         try
         {
-            EPServiceProvider engine = EPServiceProviderManager.getDefaultProvider(configuration);
-            engine.initialize();
+            epService.getEPAdministrator().getConfiguration().addPlugInAggregationFunction("concatstring", MyConcatAggregationFunction.class.getName());
             fail();
         }
         catch (ConfigurationException ex)
@@ -277,10 +273,7 @@ public class TestAggregationFunctionPlugIn extends TestCase
     {
         try
         {
-            Configuration configuration = SupportConfigFactory.getConfiguration();
-            configuration.addPlugInAggregationFunction(funcName, className);
-            EPServiceProvider provider = EPServiceProviderManager.getDefaultProvider(configuration);
-            provider.initialize();
+            epService.getEPAdministrator().getConfiguration().addPlugInAggregationFunction(funcName, className);
             fail();
         }
         catch (ConfigurationException ex)
@@ -292,16 +285,6 @@ public class TestAggregationFunctionPlugIn extends TestCase
     public void testInvalid()
     {
         tryInvalid("select xxx(id) from A ", "Unknown method named 'xxx' could not be resolved [select xxx(id) from A ]");
-    }
-
-    private void sendEvent(String symbol)
-    {
-        epService.getEPRuntime().sendEvent(new SupportMarketDataBean(symbol, 0, null, null));
-    }
-
-    private void assertReceived(String newValue, String oldValue)
-    {
-        testListener.assertFieldEqualsAndReset("myvalue", new Object[] {newValue}, new Object[] {oldValue});
     }
 
     private void tryInvalid(String stmtText, String expectedMsg)
