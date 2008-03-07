@@ -179,7 +179,8 @@ public class ConfigurationOperationsImpl implements ConfigurationOperations
             Class clazz;
             try
             {
-                clazz = Class.forName(boxedClassName);
+                ClassLoader cl = Thread.currentThread().getContextClassLoader();
+                clazz = Class.forName(boxedClassName, true, cl);
             }
             catch (ClassNotFoundException ex)
             {

@@ -39,7 +39,8 @@ public class DatabaseDMConnFactory implements DatabaseConnectionFactory
         String driverClassName = driverConfig.getClassName();
         try
         {
-            Class.forName(driverClassName);
+            ClassLoader cl = Thread.currentThread().getContextClassLoader();
+            Class.forName(driverClassName, true, cl);
         }
         catch (ClassNotFoundException ex)
         {

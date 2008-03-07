@@ -125,7 +125,8 @@ public class PluggableObjectCollection
             Class clazz;
             try
             {
-                clazz = Class.forName(entry.getFactoryClassName());
+                ClassLoader cl = Thread.currentThread().getContextClassLoader();
+                clazz = Class.forName(entry.getFactoryClassName(), true, cl);
             }
             catch (ClassNotFoundException ex)
             {
@@ -171,7 +172,8 @@ public class PluggableObjectCollection
             Class clazz;
             try
             {
-                clazz = Class.forName(entry.getFactoryClassName());
+                ClassLoader cl = Thread.currentThread().getContextClassLoader();
+                clazz = Class.forName(entry.getFactoryClassName(), true, cl);
             }
             catch (ClassNotFoundException ex)
             {

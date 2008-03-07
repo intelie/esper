@@ -170,7 +170,8 @@ public class EventAdapterServiceImpl implements EventAdapterService
         Class clazz = null;
         try
         {
-            clazz = Class.forName(fullyQualClassName);
+            ClassLoader cl = Thread.currentThread().getContextClassLoader();
+            clazz = Class.forName(fullyQualClassName, true, cl);
         }
         catch (ClassNotFoundException ex)
         {
@@ -185,7 +186,8 @@ public class EventAdapterServiceImpl implements EventAdapterService
                 String generatedClassName = javaPackageName + "." + fullyQualClassName;
                 try
                 {
-                    Class resolvedClass = Class.forName(generatedClassName);
+                    ClassLoader cl = Thread.currentThread().getContextClassLoader();
+                    Class resolvedClass = Class.forName(generatedClassName, true, cl);
                     if (clazz != null)
                     {
                         throw new EventAdapterException("Failed to resolve alias '" + eventTypeAlias + "', the class was ambigously found both in " +

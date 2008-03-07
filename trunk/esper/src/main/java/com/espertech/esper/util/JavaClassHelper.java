@@ -694,7 +694,8 @@ public class JavaClassHelper
         {
             return long.class;
         }
-        return Class.forName(className);
+        ClassLoader cl = Thread.currentThread().getContextClassLoader();
+        return Class.forName(className, true, cl);
     }
 
     /**
@@ -736,7 +737,8 @@ public class JavaClassHelper
 
         try
         {
-            return Class.forName(boxedClassName);
+            ClassLoader cl = Thread.currentThread().getContextClassLoader();
+            return Class.forName(boxedClassName, true, cl);
         }
         catch (ClassNotFoundException ex)
         {
@@ -745,7 +747,8 @@ public class JavaClassHelper
         boxedClassName = JavaClassHelper.getBoxedClassName(className.toLowerCase().trim());
         try
         {
-            return Class.forName(boxedClassName);
+            ClassLoader cl = Thread.currentThread().getContextClassLoader();
+            return Class.forName(boxedClassName, true, cl);
         }
         catch (ClassNotFoundException ex)
         {

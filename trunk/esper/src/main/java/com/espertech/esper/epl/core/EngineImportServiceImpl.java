@@ -91,7 +91,8 @@ public class EngineImportServiceImpl implements EngineImportService
         Class clazz;
         try
         {
-            clazz = Class.forName(className);
+            ClassLoader cl = Thread.currentThread().getContextClassLoader();
+            clazz = Class.forName(className, true, cl);
         }
         catch (ClassNotFoundException ex)
         {
@@ -209,7 +210,8 @@ public class EngineImportServiceImpl implements EngineImportService
 		// Attempt to retrieve the class with the name as-is
 		try
 		{
-			return Class.forName(className);
+            ClassLoader cl = Thread.currentThread().getContextClassLoader();
+            return Class.forName(className, true, cl);
 		}
 		catch(ClassNotFoundException e)
         {
@@ -229,7 +231,8 @@ public class EngineImportServiceImpl implements EngineImportService
 			{
 				if(importName.endsWith(className))
 				{
-					return Class.forName(importName);
+                    ClassLoader cl = Thread.currentThread().getContextClassLoader();
+                    return Class.forName(importName, true, cl);
 				}
 			}
 			else
@@ -238,7 +241,8 @@ public class EngineImportServiceImpl implements EngineImportService
 				String prefixedClassName = getPackageName(importName) + '.' + className;
 				try
 				{
-					return Class.forName(prefixedClassName);
+                    ClassLoader cl = Thread.currentThread().getContextClassLoader();
+                    return Class.forName(prefixedClassName, true, cl);
 				}
 				catch(ClassNotFoundException e){
                     if (log.isDebugEnabled())

@@ -114,7 +114,8 @@ public class SQLTypeMapUtil
             }
             try
             {
-                return Class.forName(className);
+                ClassLoader cl = Thread.currentThread().getContextClassLoader();
+                return Class.forName(className, true, cl);
             }
             catch (ClassNotFoundException e)
             {

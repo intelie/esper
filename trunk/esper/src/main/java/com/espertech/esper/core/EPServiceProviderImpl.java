@@ -174,7 +174,8 @@ public class EPServiceProviderImpl implements EPServiceProviderSPI
             Class clazz;
             try
             {
-                clazz = Class.forName(epServicesContextFactoryClassName);
+                ClassLoader cl = Thread.currentThread().getContextClassLoader();
+                clazz = Class.forName(epServicesContextFactoryClassName, true, cl);
             }
             catch (ClassNotFoundException e)
             {
@@ -262,7 +263,8 @@ public class EPServiceProviderImpl implements EPServiceProviderSPI
             Class pluginLoaderClass;
             try
             {
-                pluginLoaderClass = Class.forName(className);
+                ClassLoader cl = Thread.currentThread().getContextClassLoader();
+                pluginLoaderClass = Class.forName(className, true, cl);
             }
             catch (ClassNotFoundException ex)
             {
