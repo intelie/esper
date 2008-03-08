@@ -13,6 +13,7 @@ import com.espertech.esper.client.time.TimerControlEvent;
 import com.espertech.esper.client.time.TimerEvent;
 import com.espertech.esper.collection.ArrayBackedCollection;
 import com.espertech.esper.collection.ThreadWorkQueue;
+import com.espertech.esper.epl.variable.VariableReader;
 import com.espertech.esper.event.EventBean;
 import com.espertech.esper.filter.FilterHandle;
 import com.espertech.esper.filter.FilterHandleCallback;
@@ -22,7 +23,6 @@ import com.espertech.esper.timer.TimerCallback;
 import com.espertech.esper.util.ExecutionPathDebugLog;
 import com.espertech.esper.util.ManagedLock;
 import com.espertech.esper.util.ThreadLogUtil;
-import com.espertech.esper.epl.variable.VariableReader;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -36,6 +36,7 @@ public class EPRuntimeImpl implements EPRuntime, TimerCallback, InternalEventRou
 {
     private EPServicesContext services;
     private boolean isLatchStatementInsertStream;
+    private boolean isUsingExternalClocking;
     private volatile UnmatchedListener unmatchedListener;
 
     private ThreadLocal<ArrayBackedCollection<FilterHandle>> matchesArrayThreadLocal = new ThreadLocal<ArrayBackedCollection<FilterHandle>>()
@@ -80,6 +81,7 @@ public class EPRuntimeImpl implements EPRuntime, TimerCallback, InternalEventRou
     {
         this.services = services;
         isLatchStatementInsertStream = this.services.getEngineSettingsService().getEngineSettings().getThreading().isInsertIntoDispatchPreserveOrder();
+        isUsingExternalClocking = !this.services.getEngineSettingsService().getEngineSettings().getThreading().isInternalTimerEnabled();
     }
 
     public void timerCallback()
@@ -248,11 +250,13 @@ public class EPRuntimeImpl implements EPRuntime, TimerCallback, InternalEventRou
                 // Start internal clock which supplies CurrentTimeEvent events every 100ms
                 // This may be done without delay thus the write lock indeed must be reentrant.
                 services.getTimerService().startInternalClock();
+                isUsingExternalClocking = false;
             }
             else
             {
                 // Stop internal clock, for unit testing and for external clocking
                 services.getTimerService().stopInternalClock(true);
+                isUsingExternalClocking = true;
             }
 
             return;
@@ -266,7 +270,9 @@ public class EPRuntimeImpl implements EPRuntime, TimerCallback, InternalEventRou
 
         CurrentTimeEvent current = (CurrentTimeEvent) event;
         long currentTime = current.getTimeInMillis();
-        if (currentTime == services.getSchedulingService().getTime()) {
+
+        if (isUsingExternalClocking && (currentTime == services.getSchedulingService().getTime()))
+        {
             if (log.isWarnEnabled())
             {
                 log.warn("Duplicate time event received for currentTime " + currentTime);
