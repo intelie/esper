@@ -13,6 +13,7 @@ import com.espertech.esper.event.EventAdapterService;
 import com.espertech.esper.filter.FilterService;
 import com.espertech.esper.schedule.SchedulingService;
 import com.espertech.esper.timer.TimerService;
+import com.espertech.esper.epl.named.NamedWindowService;
 
 import javax.naming.Context;
 
@@ -50,6 +51,8 @@ public interface EPServiceProviderSPI extends EPServiceProvider
      * @return timer service
      */
     public TimerService getTimerService();
+
+    public NamedWindowService getNamedWindowService(); 
 
     /**
      * Returns the current configuration.

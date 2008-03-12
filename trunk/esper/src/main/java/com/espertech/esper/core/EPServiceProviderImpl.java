@@ -15,6 +15,7 @@ import com.espertech.esper.filter.FilterService;
 import com.espertech.esper.util.ExecutionPathDebugLog;
 import com.espertech.esper.util.SerializableObjectCopier;
 import com.espertech.esper.epl.spec.SelectClauseStreamSelectorEnum;
+import com.espertech.esper.epl.named.NamedWindowService;
 import com.espertech.esper.timer.TimerService;
 
 import javax.naming.Context;
@@ -89,6 +90,11 @@ public class EPServiceProviderImpl implements EPServiceProviderSPI
 
     public ConfigurationInformation getConfigurationInformation() {
         return configSnapshot;
+    }
+
+    public NamedWindowService getNamedWindowService()
+    {
+        return engine.getServices().getNamedWindowService();
     }
 
     public ExtensionServicesContext getExtensionServicesContext()

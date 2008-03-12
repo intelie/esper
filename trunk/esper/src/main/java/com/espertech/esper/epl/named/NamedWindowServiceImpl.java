@@ -58,6 +58,12 @@ public class NamedWindowServiceImpl implements NamedWindowService
         dispatchesPerStmtTL.remove();
     }
 
+    public String[] getNamedWindows()
+    {
+        Set<String> names = processors.keySet();
+        return names.toArray(new String[names.size()]);
+    }
+
     public ManagedLock getNamedWindowLock(String windowName)
     {
         return windowStatementLocks.get(windowName);

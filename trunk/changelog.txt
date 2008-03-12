@@ -4,6 +4,12 @@ Esper Changelog
 Changes in version 2.0.0
 ------------------------
 
+- Duplicate timer warning output only when external timer events
+
+
+Changes in version 2.0.0
+------------------------
+
 Major API changes
   - All package names have changed from "net.esper" to "com.espertech.esper"
   - We have renamed EQL to EPL: All method names and other references to EQL have been renamed to EPL, i.e. createEQL to createEPL

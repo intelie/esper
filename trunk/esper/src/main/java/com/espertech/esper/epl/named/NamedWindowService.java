@@ -31,6 +31,8 @@ public interface NamedWindowService
      */
     public boolean isNamedWindow(String name);
 
+    public String[] getNamedWindows();
+
     /**
      * Create a new named window.
      * @param name window name
