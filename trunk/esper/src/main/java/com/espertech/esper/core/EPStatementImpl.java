@@ -9,6 +9,7 @@ import com.espertech.esper.collection.SingleEventIterator;
 import com.espertech.esper.dispatch.DispatchService;
 import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.event.EventBean;
+import com.espertech.esper.timer.TimeSourceService;
 import com.espertech.esper.view.Viewable;
 
 import java.util.Iterator;
@@ -62,7 +63,8 @@ public class EPStatementImpl implements EPStatementSPI
                               long msecBlockingTimeout,
                               EPStatementHandle epStatementHandle,
                               VariableService variableService,
-                              StatementResultService statementResultService)
+                              StatementResultService statementResultService,
+                              TimeSourceService timeSourceService)
     {
         this.isPattern = isPattern;
         this.statementId = statementId;
@@ -74,7 +76,7 @@ public class EPStatementImpl implements EPStatementSPI
         {
             if (isSpinBlockingDispatch)
             {
-                this.dispatchChildView = new UpdateDispatchViewBlockingSpin(statementResultService, dispatchService, msecBlockingTimeout);
+                this.dispatchChildView = new UpdateDispatchViewBlockingSpin(statementResultService, dispatchService, msecBlockingTimeout, timeSourceService);
             }
             else
             {

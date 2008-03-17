@@ -5,11 +5,11 @@ import com.espertech.esper.pattern.MatchedEventMap;
 import com.espertech.esper.pattern.PatternContext;
 import com.espertech.esper.pattern.MatchedEventMapImpl;
 import com.espertech.esper.schedule.SchedulingServiceImpl;
-import com.espertech.esper.support.event.SupportEventAdapterService;
 import com.espertech.esper.support.guard.SupportObserverEvaluator;
 import com.espertech.esper.support.schedule.SupportSchedulingServiceImpl;
 import com.espertech.esper.support.view.SupportStatementContextFactory;
 import com.espertech.esper.core.StatementContext;
+import com.espertech.esper.timer.TimeSourceServiceMillis;
 
 public class TestTimerIntervalObserver extends TestCase
 {
@@ -24,7 +24,7 @@ public class TestTimerIntervalObserver extends TestCase
         
         beginState = new MatchedEventMapImpl();
 
-        scheduleService = new SchedulingServiceImpl();
+        scheduleService = new SchedulingServiceImpl(new TimeSourceServiceMillis());
         StatementContext stmtContext = SupportStatementContextFactory.makeContext(scheduleService);
         context = new PatternContext(stmtContext, 1, null);
 

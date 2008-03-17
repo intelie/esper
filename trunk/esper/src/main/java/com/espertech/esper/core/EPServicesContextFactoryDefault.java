@@ -26,6 +26,7 @@ import com.espertech.esper.schedule.SchedulingService;
 import com.espertech.esper.schedule.SchedulingServiceProvider;
 import com.espertech.esper.timer.TimerService;
 import com.espertech.esper.timer.TimerServiceImpl;
+import com.espertech.esper.timer.TimeSourceService;
 import com.espertech.esper.util.JavaClassHelper;
 import com.espertech.esper.util.ManagedReadWriteLock;
 import com.espertech.esper.view.stream.StreamFactoryService;
@@ -49,7 +50,8 @@ public class EPServicesContextFactoryDefault implements EPServicesContextFactory
         // New read-write lock for concurrent event processing
         ManagedReadWriteLock eventProcessingRWLock = new ManagedReadWriteLock("EventProcLock", false);
 
-        SchedulingService schedulingService = SchedulingServiceProvider.newService();
+        TimeSourceService timeSourceService = makeTimeSource(configSnapshot);
+        SchedulingService schedulingService = SchedulingServiceProvider.newService(timeSourceService);
         EngineImportService engineImportService = makeEngineImportService(configSnapshot);
         EngineSettingsService engineSettingsService = new EngineSettingsService(configSnapshot.getEngineDefaults());
         DatabaseConfigService databaseConfigService = makeDatabaseRefService(configSnapshot, schedulingService);
@@ -87,13 +89,19 @@ public class EPServicesContextFactoryDefault implements EPServicesContextFactory
                 eventAdapterService, engineImportService, engineSettingsService, databaseConfigService, plugInViews,
                 statementLockFactory, eventProcessingRWLock, null, jndiContext, statementContextFactory,
                 plugInPatternObj, outputConditionFactory, timerService, filterService, streamFactoryService,
-                namedWindowService, variableService);
+                namedWindowService, variableService, timeSourceService);
 
         // Circular dependency
         StatementLifecycleSvc statementLifecycleSvc = new StatementLifecycleSvcImpl(epServiceProvider, services);
         services.setStatementLifecycleSvc(statementLifecycleSvc);
 
         return services;
+    }
+
+    protected static TimeSourceService makeTimeSource(ConfigurationInformation configSnapshot)
+    {
+        // TODO
+        return null;  //To change body of created methods use File | Settings | File Templates.
     }
 
     /**

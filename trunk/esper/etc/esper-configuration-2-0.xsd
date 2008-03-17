@@ -20,6 +20,19 @@
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
+	<xs:simpleType name="propertyResolutionStyleEnum">
+		<xs:restriction base="xs:token">
+			<xs:enumeration value="case_sensitive"/>
+			<xs:enumeration value="case_insensitive"/>
+			<xs:enumeration value="distinct_case_insensitive"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="timeSourceTypeEnum">
+		<xs:restriction base="xs:token">
+			<xs:enumeration value="milli"/>
+			<xs:enumeration value="nano"/>
+		</xs:restriction>
+	</xs:simpleType>
 	<xs:element name="event-type-auto-alias">
 		<xs:complexType>
 			<xs:attribute name="package-name" type="xs:string" use="required"/>
@@ -134,13 +147,6 @@
 		<xs:restriction base="xs:token">
 			<xs:enumeration value="enabled"/>
 			<xs:enumeration value="disabled"/>
-		</xs:restriction>
-	</xs:simpleType>
-	<xs:simpleType name="propertyResolutionStyleEnum">
-		<xs:restriction base="xs:token">
-			<xs:enumeration value="case_sensitive"/>
-			<xs:enumeration value="case_insensitive"/>
-			<xs:enumeration value="distinct_case_insensitive"/>
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:element name="database-reference">
@@ -288,6 +294,7 @@
 				<xs:element ref="logging" minOccurs="0"/>
 				<xs:element ref="variables" minOccurs="0"/>
 				<xs:element ref="stream-selection" minOccurs="0"/>
+				<xs:element ref="time-source" minOccurs="0"/>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
@@ -373,6 +380,15 @@
 			<xs:choice>
 				<xs:sequence>
 					<xs:element ref="stream-selector" minOccurs="0"/>
+				</xs:sequence>
+			</xs:choice>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="time-source">
+		<xs:complexType>
+			<xs:choice>
+				<xs:sequence>
+					<xs:element ref="time-source" minOccurs="0"/>
 				</xs:sequence>
 			</xs:choice>
 		</xs:complexType>

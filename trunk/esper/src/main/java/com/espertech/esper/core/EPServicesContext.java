@@ -22,6 +22,7 @@ import com.espertech.esper.event.EventAdapterService;
 import com.espertech.esper.filter.FilterService;
 import com.espertech.esper.schedule.SchedulingService;
 import com.espertech.esper.timer.TimerService;
+import com.espertech.esper.timer.TimeSourceService;
 import com.espertech.esper.util.ManagedReadWriteLock;
 import com.espertech.esper.view.ViewService;
 import com.espertech.esper.view.ViewServiceProvider;
@@ -55,6 +56,7 @@ public final class EPServicesContext
     private OutputConditionFactory outputConditionFactory;
     private NamedWindowService namedWindowService;
     private VariableService variableService;
+    private TimeSourceService timeSourceService;
 
     // Supplied after construction to avoid circular dependency
     private StatementLifecycleSvc statementLifecycleSvc;
@@ -100,7 +102,8 @@ public final class EPServicesContext
                              FilterService filterService,
                              StreamFactoryService streamFactoryService,
                              NamedWindowService namedWindowService,
-                             VariableService variableService)
+                             VariableService variableService,
+                             TimeSourceService timeSourceService)
     {
         this.engineURI = engineURI;
         this.schedulingService = schedulingService;
@@ -124,6 +127,7 @@ public final class EPServicesContext
         this.outputConditionFactory = outputConditionFactory;
         this.namedWindowService = namedWindowService;
         this.variableService = variableService;
+        this.timeSourceService = timeSourceService;
     }
 
     /**
@@ -427,5 +431,10 @@ public final class EPServicesContext
     public VariableService getVariableService()
     {
         return variableService;
+    }
+
+    public TimeSourceService getTimeSource()
+    {
+        return timeSourceService;
     }
 }

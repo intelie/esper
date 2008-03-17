@@ -13,6 +13,7 @@ import com.espertech.esper.view.ViewFactory;
 import com.espertech.esper.view.window.LengthWindowViewFactory;
 import com.espertech.esper.support.view.SupportStatementContextFactory;
 import com.espertech.esper.schedule.SchedulingServiceImpl;
+import com.espertech.esper.timer.TimeSourceServiceMillis;
 
 import java.util.List;
 import java.util.LinkedList;
@@ -312,7 +313,7 @@ public class SupportExprNodeFactory
         }
         ViewResourceDelegateImpl viewResources = new ViewResourceDelegateImpl(factoriesPerStream, SupportStatementContextFactory.makeContext());
 
-        VariableService variableService = new VariableServiceImpl(0, new SchedulingServiceImpl(), null);
+        VariableService variableService = new VariableServiceImpl(0, new SchedulingServiceImpl(new TimeSourceServiceMillis()), null);
         variableService.createNewVariable("intPrimitive", Integer.class, 10, null);
         variableService.createNewVariable("var1", String.class, "my_variable_value", null);
 

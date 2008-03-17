@@ -6,6 +6,7 @@ import com.espertech.esper.epl.join.table.EventTable;
 import com.espertech.esper.epl.join.table.UnindexedEventTable;
 import com.espertech.esper.schedule.SchedulingServiceImpl;
 import com.espertech.esper.support.schedule.SupportSchedulingServiceImpl;
+import com.espertech.esper.timer.TimeSourceServiceMillis;
 
 public class TestDataCacheExpiringImpl extends TestCase
 {
@@ -23,7 +24,7 @@ public class TestDataCacheExpiringImpl extends TestCase
 
     public void testPurgeInterval()
     {
-        SchedulingServiceImpl scheduler = new SchedulingServiceImpl();
+        SchedulingServiceImpl scheduler = new SchedulingServiceImpl(new TimeSourceServiceMillis());
         cache = new DataCacheExpiringImpl(10, 20, ConfigurationCacheReferenceType.HARD, scheduler, null, null);   // age 10 sec, purge 1000 seconds
 
         // test single entry in cache

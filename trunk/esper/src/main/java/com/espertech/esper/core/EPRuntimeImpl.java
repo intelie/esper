@@ -89,7 +89,7 @@ public class EPRuntimeImpl implements EPRuntime, TimerCallback, InternalEventRou
             log.debug(".timerCallback Evaluating scheduled callbacks");
         }
 
-        long msec = System.currentTimeMillis();
+        long msec = services.getTimeSource().getTimeMillis();
         CurrentTimeEvent currentTimeEvent = new CurrentTimeEvent(msec);
         sendEvent(currentTimeEvent);
     }

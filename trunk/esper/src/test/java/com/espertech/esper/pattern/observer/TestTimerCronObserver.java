@@ -11,6 +11,7 @@ import com.espertech.esper.support.guard.SupportObserverEvaluator;
 import com.espertech.esper.support.schedule.SupportSchedulingServiceImpl;
 import com.espertech.esper.support.view.SupportStatementContextFactory;
 import com.espertech.esper.core.StatementContext;
+import com.espertech.esper.timer.TimeSourceServiceMillis;
 
 public class TestTimerCronObserver extends TestCase
 {
@@ -23,7 +24,7 @@ public class TestTimerCronObserver extends TestCase
     {
         beginState = new MatchedEventMapImpl();
 
-        scheduleService = new SchedulingServiceImpl();
+        scheduleService = new SchedulingServiceImpl(new TimeSourceServiceMillis());
         StatementContext stmtContext = SupportStatementContextFactory.makeContext(scheduleService);
         PatternContext context = new PatternContext(stmtContext, 1, null);
 

@@ -5,6 +5,7 @@ import com.espertech.esper.client.ConfigurationDBRef;
 import com.espertech.esper.schedule.SchedulingService;
 import com.espertech.esper.schedule.SchedulingServiceImpl;
 import com.espertech.esper.support.epl.SupportDatabaseService;
+import com.espertech.esper.timer.TimeSourceServiceMillis;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -34,7 +35,7 @@ public class TestDatabaseServiceImpl extends TestCase
         config.setExpiryTimeCache(1, 3);
         configs.put("name3", config);
 
-        SchedulingService schedulingService = new SchedulingServiceImpl();
+        SchedulingService schedulingService = new SchedulingServiceImpl(new TimeSourceServiceMillis());
         databaseServiceImpl = new DatabaseConfigServiceImpl(configs, schedulingService, schedulingService.allocateBucket());
     }
 

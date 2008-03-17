@@ -5,6 +5,7 @@ import com.espertech.esper.dispatch.DispatchService;
 import com.espertech.esper.event.EventBean;
 import com.espertech.esper.util.ExecutionPathDebugLog;
 import com.espertech.esper.view.ViewSupport;
+import com.espertech.esper.timer.TimeSourceService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -16,6 +17,7 @@ public class UpdateDispatchViewBlockingSpin extends UpdateDispatchViewBase
 {
     private UpdateDispatchFutureSpin currentFutureSpin;
     private long msecTimeout;
+    private TimeSourceService timeSourceService;
 
     /**
      * Ctor.
@@ -23,11 +25,12 @@ public class UpdateDispatchViewBlockingSpin extends UpdateDispatchViewBase
      * @param msecTimeout - timeout for preserving dispatch order through blocking
      * @param statementResultService - handles result delivery
      */
-    public UpdateDispatchViewBlockingSpin(StatementResultService statementResultService, DispatchService dispatchService, long msecTimeout)
+    public UpdateDispatchViewBlockingSpin(StatementResultService statementResultService, DispatchService dispatchService, long msecTimeout, TimeSourceService timeSourceService)
     {
         super(statementResultService, dispatchService);
-        this.currentFutureSpin = new UpdateDispatchFutureSpin(); // use a completed future as a start
+        this.currentFutureSpin = new UpdateDispatchFutureSpin(timeSourceService); // use a completed future as a start
         this.msecTimeout = msecTimeout;
+        this.timeSourceService = timeSourceService;
     }
 
     public void update(EventBean[] newData, EventBean[] oldData) {
@@ -47,7 +50,7 @@ public class UpdateDispatchViewBlockingSpin extends UpdateDispatchViewBase
             UpdateDispatchFutureSpin nextFutureSpin;
             synchronized(this)
             {
-                nextFutureSpin = new UpdateDispatchFutureSpin(this, currentFutureSpin, msecTimeout);
+                nextFutureSpin = new UpdateDispatchFutureSpin(this, currentFutureSpin, msecTimeout, timeSourceService);
                 currentFutureSpin = nextFutureSpin;
             }
             dispatchService.addExternal(nextFutureSpin);

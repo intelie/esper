@@ -2,6 +2,7 @@ package com.espertech.esper.core;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import com.espertech.esper.timer.TimeSourceService;
 
 /**
  * A spin-locking implementation of a latch for use in guaranteeing delivery between
@@ -15,6 +16,7 @@ public class InsertIntoLatchSpin
     private InsertIntoLatchSpin earlier;
     private long msecTimeout;
     private Object payload;
+    private TimeSourceService timeSourceService;
 
     private volatile boolean isCompleted;
 
@@ -24,17 +26,18 @@ public class InsertIntoLatchSpin
      * @param msecTimeout the timeout after which delivery occurs
      * @param payload the payload is an event to deliver
      */
-    public InsertIntoLatchSpin(InsertIntoLatchSpin earlier, long msecTimeout, Object payload)
+    public InsertIntoLatchSpin(InsertIntoLatchSpin earlier, long msecTimeout, Object payload, TimeSourceService timeSourceService)
     {
         this.earlier = earlier;
         this.msecTimeout = msecTimeout;
         this.payload = payload;
+        this.timeSourceService = timeSourceService;
     }
 
     /**
      * Ctor - use for the first and unused latch to indicate completion.
      */
-    public InsertIntoLatchSpin()
+    public InsertIntoLatchSpin(TimeSourceService timeSourceService)
     {
         isCompleted = true;
         earlier = null;
@@ -58,13 +61,13 @@ public class InsertIntoLatchSpin
     {
         if (!earlier.isCompleted)
         {
-            long spinStartTime = System.currentTimeMillis();
+            long spinStartTime = timeSourceService.getTimeMillis();
 
             while(!earlier.isCompleted)
             {
                 Thread.yield();
 
-                long spinDelta = System.currentTimeMillis() - spinStartTime;
+                long spinDelta = timeSourceService.getTimeMillis() - spinStartTime;
                 if (spinDelta > msecTimeout)
                 {
                     log.info("Spin wait timeout exceeded in insert-into dispatch");

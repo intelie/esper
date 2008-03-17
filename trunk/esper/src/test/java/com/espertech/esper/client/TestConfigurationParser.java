@@ -42,10 +42,9 @@ public class TestConfigurationParser extends TestCase
         assertEquals(Configuration.PropertyResolutionStyle.CASE_SENSITIVE, config.getEngineDefaults().getEventMeta().getClassPropertyResolutionStyle());
 
         assertTrue(config.getEngineDefaults().getViewResources().isShareViews());
-
         assertFalse(config.getEngineDefaults().getLogging().isEnableExecutionDebug());
-
         assertEquals(15000, config.getEngineDefaults().getVariables().getMsecVersionRelease());
+        assertEquals(ConfigurationEngineDefaults.TimeSourceType.MILLI, config.getEngineDefaults().getTimeSource().getTimeSourceType());
 
         assertEquals(StreamSelector.ISTREAM_ONLY, config.getEngineDefaults().getStreamSelection().getDefaultStreamSelector());
     }

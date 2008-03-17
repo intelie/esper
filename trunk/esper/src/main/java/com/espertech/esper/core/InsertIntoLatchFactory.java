@@ -1,6 +1,7 @@
 package com.espertech.esper.core;
 
 import com.espertech.esper.client.ConfigurationEngineDefaults;
+import com.espertech.esper.timer.TimeSourceService;
 
 /**
  * Class to hold a current latch per statement that uses an insert-into stream (per statement and insert-into stream
@@ -10,6 +11,7 @@ public class InsertIntoLatchFactory
 {
     private final String name;
     private final boolean useSpin;
+    private final TimeSourceService timeSourceService;
 
     private InsertIntoLatchSpin currentLatchSpin;
     private InsertIntoLatchWait currentLatchWait;
@@ -21,17 +23,19 @@ public class InsertIntoLatchFactory
      * @param msecWait the number of milliseconds latches will await maximually
      * @param locking the blocking strategy to employ
      */
-    public InsertIntoLatchFactory(String name, long msecWait, ConfigurationEngineDefaults.Threading.Locking locking)
+    public InsertIntoLatchFactory(String name, long msecWait, ConfigurationEngineDefaults.Threading.Locking locking,
+                                  TimeSourceService timeSourceService)
     {
         this.name = name;
         this.msecWait = msecWait;
+        this.timeSourceService = timeSourceService;
 
         useSpin = (locking == ConfigurationEngineDefaults.Threading.Locking.SPIN);
 
         // construct a completed latch as an initial root latch
         if (useSpin)
         {
-            currentLatchSpin = new InsertIntoLatchSpin();
+            currentLatchSpin = new InsertIntoLatchSpin(timeSourceService);
         }
         else
         {
@@ -50,7 +54,7 @@ public class InsertIntoLatchFactory
     {
         if (useSpin)
         {
-            InsertIntoLatchSpin nextLatch = new InsertIntoLatchSpin(currentLatchSpin, msecWait, payload);
+            InsertIntoLatchSpin nextLatch = new InsertIntoLatchSpin(currentLatchSpin, msecWait, payload, timeSourceService);
             currentLatchSpin = nextLatch;
             return nextLatch;
         }

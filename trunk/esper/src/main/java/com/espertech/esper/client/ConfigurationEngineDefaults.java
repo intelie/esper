@@ -22,6 +22,7 @@ public class ConfigurationEngineDefaults implements Serializable
     private Logging logging;
     private Variables variables;
     private StreamSelection streamSelection;
+    private TimeSource timeSource;
 
     /**
      * Ctor.
@@ -34,6 +35,7 @@ public class ConfigurationEngineDefaults implements Serializable
         logging = new Logging();
         variables = new Variables();
         streamSelection = new StreamSelection();
+        timeSource = new TimeSource();
     }
 
     /**
@@ -88,6 +90,11 @@ public class ConfigurationEngineDefaults implements Serializable
     public StreamSelection getStreamSelection()
     {
         return streamSelection;
+    }
+
+    public TimeSource getTimeSource()
+    {
+        return timeSource;
     }
 
     /**
@@ -513,5 +520,31 @@ public class ConfigurationEngineDefaults implements Serializable
         {
             this.defaultStreamSelector = defaultStreamSelector;
         }
+    }
+
+    public class TimeSource
+    {
+        private TimeSourceType timeSourceType;
+
+        public TimeSource()
+        {
+            timeSourceType = TimeSourceType.MILLI;
+        }
+
+        public TimeSourceType getTimeSourceType()
+        {
+            return timeSourceType;
+        }
+
+        public void setTimeSourceType(TimeSourceType timeSourceType)
+        {
+            this.timeSourceType = timeSourceType;
+        }
+    }
+
+    public enum TimeSourceType
+    {
+        MILLI,
+        NANO;
     }
 }

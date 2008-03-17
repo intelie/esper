@@ -176,7 +176,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
             String latchFactoryName = "insert_stream_" + insertIntoStreamName + "_" + statementId;
             long msecTimeout = services.getEngineSettingsService().getEngineSettings().getThreading().getInsertIntoDispatchTimeout();
             ConfigurationEngineDefaults.Threading.Locking locking = services.getEngineSettingsService().getEngineSettings().getThreading().getInsertIntoDispatchLocking();
-            InsertIntoLatchFactory latchFactory = new InsertIntoLatchFactory(latchFactoryName, msecTimeout, locking);
+            InsertIntoLatchFactory latchFactory = new InsertIntoLatchFactory(latchFactoryName, msecTimeout, locking, services.getTimeSource());
             statementContext.getEpStatementHandle().setInsertIntoLatchFactory(latchFactory);
         }
 
@@ -195,7 +195,8 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
             long timeLastStateChange = services.getSchedulingService().getTime();
             EPStatementSPI statement = new EPStatementImpl(statementId, statementName, expression, isPattern,
                     services.getDispatchService(), this, timeLastStateChange, preserveDispatchOrder, isSpinLocks, blockingTimeout,
-                    statementContext.getEpStatementHandle(), statementContext.getVariableService(), statementContext.getStatementResultService());
+                    statementContext.getEpStatementHandle(), statementContext.getVariableService(), statementContext.getStatementResultService(),
+                    services.getTimeSource());
 
             boolean isInsertInto = statementSpec.getInsertIntoDesc() != null;
             statementContext.getStatementResultService().setContext(statement, epServiceProvider,

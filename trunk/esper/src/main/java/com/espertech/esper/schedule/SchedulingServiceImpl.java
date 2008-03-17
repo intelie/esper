@@ -7,12 +7,11 @@
  **************************************************************************************/
 package com.espertech.esper.schedule;
 
+import com.espertech.esper.timer.TimeSourceService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.util.*;
-
-import com.espertech.esper.core.EPRuntimeImpl;
 
 /**
  * Implements the schedule service by simply keeping a sorted set of long millisecond
@@ -29,6 +28,8 @@ public final class SchedulingServiceImpl implements SchedulingService
     // Map of handle and handle list for faster removal
     private final Map<ScheduleHandle, SortedMap<ScheduleSlot, ScheduleHandle>> handleSetMap;
 
+    private final TimeSourceService timeSourceService;
+
     // Current time - used for evaluation as well as for adding new handles
     private volatile long currentTime;
 
@@ -38,12 +39,13 @@ public final class SchedulingServiceImpl implements SchedulingService
     /**
      * Constructor.
      */
-    public SchedulingServiceImpl()
+    public SchedulingServiceImpl(TimeSourceService timeSourceService)
     {
+        this.timeSourceService = timeSourceService;
         this.timeHandleMap = new TreeMap<Long, SortedMap<ScheduleSlot, ScheduleHandle>>();
         this.handleSetMap = new Hashtable<ScheduleHandle, SortedMap<ScheduleSlot, ScheduleHandle>>();
         // initialize time to just before now as there is a check for duplicate external time events
-        this.currentTime = System.currentTimeMillis() - 1;
+        this.currentTime = timeSourceService.getTimeMillis() - 1;
     }
 
     public void destroy()

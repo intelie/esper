@@ -1,6 +1,7 @@
 package com.espertech.esper.core;
 
 import com.espertech.esper.dispatch.Dispatchable;
+import com.espertech.esper.timer.TimeSourceService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -18,6 +19,7 @@ public class UpdateDispatchFutureSpin implements Dispatchable
     private UpdateDispatchFutureSpin earlier;
     private volatile boolean isCompleted;
     private long msecTimeout;
+    private TimeSourceService timeSourceService;
 
     /**
      * Ctor.
@@ -25,19 +27,21 @@ public class UpdateDispatchFutureSpin implements Dispatchable
      * @param earlier is the older future
      * @param msecTimeout is the timeout period to wait for listeners to complete a prior dispatch
      */
-    public UpdateDispatchFutureSpin(UpdateDispatchViewBlockingSpin view, UpdateDispatchFutureSpin earlier, long msecTimeout)
+    public UpdateDispatchFutureSpin(UpdateDispatchViewBlockingSpin view, UpdateDispatchFutureSpin earlier, long msecTimeout, TimeSourceService timeSourceService)
     {
         this.view = view;
         this.earlier = earlier;
         this.msecTimeout = msecTimeout;
+        this.timeSourceService = timeSourceService;
     }
 
     /**
      * Ctor - use for the first future to indicate completion.
      */
-    public UpdateDispatchFutureSpin()
+    public UpdateDispatchFutureSpin(TimeSourceService timeSourceService)
     {
         isCompleted = true;
+        this.timeSourceService = timeSourceService;
     }
 
     /**
@@ -53,13 +57,13 @@ public class UpdateDispatchFutureSpin implements Dispatchable
     {
         if (!earlier.isCompleted)
         {
-            long spinStartTime = System.currentTimeMillis();
+            long spinStartTime = timeSourceService.getTimeMillis();
 
             while(!earlier.isCompleted)
             {
                 Thread.yield();
 
-                long spinDelta = System.currentTimeMillis() - spinStartTime;
+                long spinDelta = timeSourceService.getTimeMillis() - spinStartTime;
                 if (spinDelta > msecTimeout)
                 {
                     log.info("Spin wait timeout exceeded in listener dispatch");

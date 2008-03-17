@@ -7,7 +7,7 @@
  **************************************************************************************/
 package com.espertech.esper.schedule;
 
-import com.espertech.esper.util.ManagedReadWriteLock;
+import com.espertech.esper.timer.TimeSourceService;
 
 /**
  * Static factory for implementations of the SchedulingService interface.
@@ -18,8 +18,8 @@ public final class SchedulingServiceProvider
      * Creates an implementation of the SchedulingService interface.
      * @return implementation
      */
-    public static SchedulingService newService()
+    public static SchedulingService newService(TimeSourceService timeSourceService)
     {
-        return new SchedulingServiceImpl();
+        return new SchedulingServiceImpl(timeSourceService);
     }
 }
