@@ -4,6 +4,7 @@ import com.espertech.esper.event.EventBean;
 import com.espertech.esper.event.EventType;
 import com.espertech.esper.client.EPException;
 import com.espertech.esper.util.JavaClassHelper;
+import com.espertech.esper.util.ExecutionPathDebugLog;
 
 import javax.jms.*;
 
@@ -28,9 +29,12 @@ public class JMSDefaultMapMessageMarshaller implements JMSMessageMarshaller
             String[] properties = eventType.getPropertyNames();
             for (String property : properties)
             {
-                log.debug(
+                if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
+                {
+                    log.debug(
                         ".Marshal EventProperty property==" + property + ", value=" +
                                 eventBean.get(property));
+                }
                 Class clazz = eventType.getPropertyType(property);
                 if (JavaClassHelper.isNumeric(clazz))
                 {

@@ -11,6 +11,7 @@ import com.espertech.esper.client.EPException;
 import com.espertech.esper.client.EPServiceProvider;
 import com.espertech.esper.core.EPServiceProviderSPI;
 import com.espertech.esper.schedule.ScheduleBucket;
+import com.espertech.esper.util.ExecutionPathDebugLog;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -56,14 +57,20 @@ public class AdapterCoordinatorImpl extends AbstractCoordinatedAdapter implement
 	 */
 	public SendableEvent read() throws EPException
 	{
-		log.debug(".read");
-		pollEmptyAdapters();
+        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
+        {
+		    log.debug(".read");
+        }
+        pollEmptyAdapters();
 
-		log.debug(".read eventsToSend.isEmpty==" + eventsToSend.isEmpty());
-		log.debug(".read eventsFromAdapters.isEmpty==" + eventsFromAdapters.isEmpty());
-		log.debug(".read emptyAdapters.isEmpty==" + emptyAdapters.isEmpty());
+        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
+        {
+            log.debug(".read eventsToSend.isEmpty==" + eventsToSend.isEmpty());
+            log.debug(".read eventsFromAdapters.isEmpty==" + eventsFromAdapters.isEmpty());
+            log.debug(".read emptyAdapters.isEmpty==" + emptyAdapters.isEmpty());
+        }
 
-		if(eventsToSend.isEmpty() && eventsFromAdapters.isEmpty() && emptyAdapters.isEmpty())
+        if(eventsToSend.isEmpty() && eventsFromAdapters.isEmpty() && emptyAdapters.isEmpty())
 		{
 			stop();
 		}
@@ -121,8 +128,11 @@ public class AdapterCoordinatorImpl extends AbstractCoordinatedAdapter implement
 	 */
 	protected void replaceFirstEventToSend()
 	{
-		log.debug(".replaceFirstEventToSend");
-		SendableEvent event = eventsToSend.first();
+        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
+        {
+		    log.debug(".replaceFirstEventToSend");
+        }
+        SendableEvent event = eventsToSend.first();
 		eventsToSend.remove(event);
 		addNewEvent(eventsFromAdapters.get(event));
 		pollEmptyAdapters();
@@ -138,12 +148,18 @@ public class AdapterCoordinatorImpl extends AbstractCoordinatedAdapter implement
 	}
 	private void addNewEvent(CoordinatedAdapter adapter)
 	{
-		log.debug(".addNewEvent eventsFromAdapters==" + eventsFromAdapters);
-		SendableEvent event = adapter.read();
+        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
+        {
+		    log.debug(".addNewEvent eventsFromAdapters==" + eventsFromAdapters);
+        }
+        SendableEvent event = adapter.read();
 		if(event != null)
 		{
-			log.debug(".addNewEvent event==" + event);
-			eventsToSend.add(event);
+            if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
+            {
+			    log.debug(".addNewEvent event==" + event);
+            }
+            eventsToSend.add(event);
 			eventsFromAdapters.put(event, adapter);
 		}
 		else
@@ -161,8 +177,12 @@ public class AdapterCoordinatorImpl extends AbstractCoordinatedAdapter implement
 
 	private void pollEmptyAdapters()
 	{
-		log.debug(".pollEmptyAdapters emptyAdapters.size==" + emptyAdapters.size());
-		for(Iterator<CoordinatedAdapter> iterator = emptyAdapters.iterator(); iterator.hasNext(); )
+        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
+        {
+		    log.debug(".pollEmptyAdapters emptyAdapters.size==" + emptyAdapters.size());
+        }
+        
+        for(Iterator<CoordinatedAdapter> iterator = emptyAdapters.iterator(); iterator.hasNext(); )
 		{
 			CoordinatedAdapter adapter = iterator.next();
 			if(adapter.getState() == AdapterState.DESTROYED)

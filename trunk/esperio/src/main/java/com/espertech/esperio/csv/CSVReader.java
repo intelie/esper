@@ -8,6 +8,7 @@ import java.util.List;
 
 import com.espertech.esperio.AdapterInputSource;
 import com.espertech.esper.client.EPException;
+import com.espertech.esper.util.ExecutionPathDebugLog;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -82,8 +83,11 @@ public class CSVReader
 				throw new EOFException("In reading CSV file, reached end-of-file and not looping to the beginning");
 			}
 
-			log.debug(".getNextRecord record==" + Arrays.asList(result));
-			return result;
+            if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
+            {
+			    log.debug(".getNextRecord record==" + Arrays.asList(result));
+            }
+            return result;
 		}
 		catch (EOFException e)
 		{
@@ -121,8 +125,11 @@ public class CSVReader
 	{
 		try
 		{
-			log.debug(".reset");
-			source.reset();
+            if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
+            {
+			    log.debug(".reset");
+            }
+            source.reset();
 			atEOF = false;
 			if(isUsingTitleRow)
 			{
@@ -361,9 +368,12 @@ public class CSVReader
 			// Unquoted values cannot contain quotes
 			if(atChar('"', doConsume))
 			{
-				log.debug(".matchUnquotedValue matched unexpected double-quote while matching " + value);
-				log.debug(".matchUnquotedValue values==" + values);
-				throw unexpectedCharacterException('"');
+                if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
+                {
+				    log.debug(".matchUnquotedValue matched unexpected double-quote while matching " + value);
+				    log.debug(".matchUnquotedValue values==" + values);
+                }
+                throw unexpectedCharacterException('"');
 			}
 
 			char currentChar = (char)source.read();

@@ -5,6 +5,7 @@ import com.espertech.esperio.subscription.*;
 import com.espertech.esper.client.*;
 import com.espertech.esper.core.*;
 import com.espertech.esper.event.*;
+import com.espertech.esper.util.ExecutionPathDebugLog;
 import org.apache.commons.logging.*;
 
 import javax.jms.*;
@@ -114,14 +115,17 @@ public abstract class JMSOutputAdapter implements OutputAdapter, AdapterSPI
 
     public void start() throws EPException
     {
-        log.debug(".start");
+        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
+        {
+            log.debug(".start");
+        }
         if (spi.getEPRuntime() == null)
         {
             throw new EPException("Attempting to start an Adapter that hasn't had the epService provided");
         }
 
         startTime = System.currentTimeMillis();
-        if (log.isDebugEnabled())
+        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
         {
             log.debug(".start startTime==" + startTime);
         }
@@ -136,25 +140,37 @@ public abstract class JMSOutputAdapter implements OutputAdapter, AdapterSPI
 
     public void pause() throws EPException
     {
-        log.debug(".pause");
+        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
+        {
+            log.debug(".pause");
+        }
         stateManager.pause();
     }
 
     public void resume() throws EPException
     {
-        log.debug(".resume");
+        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
+        {
+            log.debug(".resume");
+        }
         stateManager.resume();
     }
 
     public void stop() throws EPException
     {
-        log.debug(".stop");
+        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
+        {
+            log.debug(".stop");
+        }
         stateManager.stop();
     }
 
     public void destroy() throws EPException
     {
-        log.debug(".destroy");
+        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
+        {
+            log.debug(".destroy");
+        }
         stateManager.destroy();
     }
 

@@ -3,6 +3,7 @@ package com.espertech.esperio.jms;
 import com.espertech.esperio.*;
 import com.espertech.esper.client.*;
 import com.espertech.esper.core.*;
+import com.espertech.esper.util.ExecutionPathDebugLog;
 import org.apache.commons.logging.*;
 
 /**
@@ -71,7 +72,10 @@ public abstract class JMSInputAdapter implements InputAdapter, AdapterSPI
 
     public void start() throws EPException
     {
-        log.debug(".start");
+        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
+        {
+            log.debug(".start");
+        }
         if (epServiceProviderSPI.getEPRuntime() == null)
         {
             throw new EPException(
@@ -88,25 +92,37 @@ public abstract class JMSInputAdapter implements InputAdapter, AdapterSPI
 
     public void pause() throws EPException
     {
-        log.debug(".pause");
+        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
+        {
+            log.debug(".pause");
+        }
         stateManager.pause();
     }
 
     public void resume() throws EPException
     {
-        log.debug(".resume");
+        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
+        {
+            log.debug(".resume");
+        }
         stateManager.resume();
     }
 
     public void stop() throws EPException
     {
-        log.debug(".stop");
+        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
+        {
+            log.debug(".stop");
+        }
         stateManager.stop();
     }
 
     public void destroy() throws EPException
     {
-        log.debug(".destroy");
+        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
+        {
+            log.debug(".destroy");
+        }
         stateManager.destroy();
     }
 

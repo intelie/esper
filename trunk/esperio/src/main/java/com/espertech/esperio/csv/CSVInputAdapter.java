@@ -8,6 +8,7 @@ import com.espertech.esper.event.EventAdapterService;
 import com.espertech.esper.event.EventType;
 import com.espertech.esperio.*;
 import com.espertech.esper.util.JavaClassHelper;
+import com.espertech.esper.util.ExecutionPathDebugLog;
 import net.sf.cglib.reflect.FastClass;
 import net.sf.cglib.reflect.FastConstructor;
 import org.apache.commons.logging.Log;
@@ -111,8 +112,11 @@ public class CSVInputAdapter extends AbstractCoordinatedAdapter implements Input
 		}
 		catch (EOFException e)
 		{
-			log.debug(".read reached end of CSV file");
-			atEOF = true;
+            if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
+            {
+			    log.debug(".read reached end of CSV file");
+            }
+            atEOF = true;
 			if(stateManager.getState() == AdapterState.STARTED)
 			{
 				stop();

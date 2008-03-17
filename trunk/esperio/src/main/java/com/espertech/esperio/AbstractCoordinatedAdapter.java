@@ -14,6 +14,7 @@ import com.espertech.esper.schedule.ScheduleHandleCallback;
 import com.espertech.esper.schedule.ScheduleSlot;
 import com.espertech.esper.schedule.SchedulingService;
 import com.espertech.esper.util.ManagedLockImpl;
+import com.espertech.esper.util.ExecutionPathDebugLog;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -77,14 +78,20 @@ public abstract class AbstractCoordinatedAdapter implements CoordinatedAdapter
 
 	public void start() throws EPException
 	{
-		log.debug(".start");
-		if(runtime == null)
+        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
+        {
+            log.debug(".start");
+        }
+        if(runtime == null)
 		{
 			throw new EPException("Attempting to start an Adapter that hasn't had the epService provided");
 		}
 		startTime = getCurrentTime();
-		log.debug(".start startTime==" + startTime);
-		stateManager.start();
+		if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
+        {
+            log.debug(".start startTime==" + startTime);
+        }
+        stateManager.start();
 		continueSendingEvents();
 	}
 
@@ -107,7 +114,10 @@ public abstract class AbstractCoordinatedAdapter implements CoordinatedAdapter
 
 	public void stop() throws EPException
 	{
-		log.debug(".stop");
+		if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
+        {
+            log.debug(".stop");
+        }
 		stateManager.stop();
 		eventsToSend.clear();
 		currentTime = 0;
@@ -179,8 +189,11 @@ public abstract class AbstractCoordinatedAdapter implements CoordinatedAdapter
 		if(stateManager.getState() == AdapterState.STARTED)
 		{
 			currentTime = getCurrentTime();
-			log.debug(".continueSendingEvents currentTime==" + currentTime);
-			fillEventsToSend();
+            if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
+            {
+                log.debug(".continueSendingEvents currentTime==" + currentTime);
+            }
+            fillEventsToSend();
 			sendSoonestEvents();
 			waitToSendEvents();
 		}
@@ -237,8 +250,11 @@ public abstract class AbstractCoordinatedAdapter implements CoordinatedAdapter
 	{
 		while(!eventsToSend.isEmpty() && eventsToSend.first().getSendTime() <= currentTime - startTime)
 		{
-			log.debug(".sendSoonestEvents currentTime==" + currentTime);
-			log.debug(".sendSoonestEvents sending event " + eventsToSend.first() + ", its sendTime==" + eventsToSend.first().getSendTime());
+            if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
+            {
+                log.debug(".sendSoonestEvents currentTime==" + currentTime);
+                log.debug(".sendSoonestEvents sending event " + eventsToSend.first() + ", its sendTime==" + eventsToSend.first().getSendTime());                
+            }
 			eventsToSend.first().send(runtime);
 			replaceFirstEventToSend();
 		}
@@ -252,8 +268,11 @@ public abstract class AbstractCoordinatedAdapter implements CoordinatedAdapter
 
 		if(eventsToSend.isEmpty())
 		{
-			log.debug(".scheduleNextCallback no events to send, scheduling callback in 100 ms");
-			nextScheduleSlot = new ScheduleSlot(0,0);
+            if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
+            {
+			    log.debug(".scheduleNextCallback no events to send, scheduling callback in 100 ms");
+            }
+            nextScheduleSlot = new ScheduleSlot(0,0);
 			schedulingService.add(100, scheduleCSVHandle, nextScheduleSlot);
 		}
 		else
@@ -263,8 +282,11 @@ public abstract class AbstractCoordinatedAdapter implements CoordinatedAdapter
             long afterMsec = eventsToSend.first().getSendTime() - baseMsec;
 
 			nextScheduleSlot = eventsToSend.first().getScheduleSlot();
-			log.debug(".scheduleNextCallback schedulingCallback in " + afterMsec + " milliseconds");
-			schedulingService.add(afterMsec, scheduleCSVHandle, nextScheduleSlot);
+            if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
+            {
+			    log.debug(".scheduleNextCallback schedulingCallback in " + afterMsec + " milliseconds");
+            }
+            schedulingService.add(afterMsec, scheduleCSVHandle, nextScheduleSlot);
 		}
 	}
 }
