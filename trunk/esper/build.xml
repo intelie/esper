@@ -1,0 +1,76 @@
+<project name="esper" default="info" basedir=".">
+
+	<!-- Name of project and version, used to create filenames -->
+	<property name="Name" value="Esper"/>
+	<property name="name" value="esper"/>
+	<property name="version" value="2.0.0"/>
+	<property name="patchlevel" value=""/>
+	<property name="fullversion" value="${version}${patchlevel}"/>
+	<property name="fullname" value="${name}-${fullversion}"/>
+
+	<property name="dist.dir" value=".."/>
+	<property name="lib.dir" value="lib"/>
+	<property name="src.dir" value="src/main/java"/>
+	<property name="generated.src" value="target/generated-sources/antlr"/>
+	<property name="doc.dir" value="doc"/>
+	<property name="doc.api.dir" value="${doc.dir}/api"/>
+	<property name="dist.api.dir" value="doc/javadoc/api"/>
+	<property name="javadoc_link" value="http://java.sun.com/j2se/1.5.0/docs/api"/>
+	<property name="checkstyle_home" value="../../../../../software/checkstyle-4.3"/>
+
+	<target name="info" description="The master build is done my Maven">
+		<echo message="Please use Maven 2 to build Esper and related components. Maven build instructions are available on the website." />
+	</target>
+
+	<path id="lib.class.path">
+		<fileset dir="${lib.dir}">
+			<include name="**/*.jar"/>
+		</fileset>
+	</path>
+
+	<target name="javadoc" description="Generate JavaDoc - Maven Plug-in not working yet">
+			<javadoc
+			classpathref="lib.class.path"
+			destdir="${dist.api.dir}"
+			use="true"
+			protected="true"
+			version="true"
+			windowtitle="${Name} API Documentation"
+			Overview="${doc.api.dir}/package.html"
+			stylesheetfile="${doc.api.dir}/jdstyle.css"
+			doctitle="${Name} API Documentation"
+			link="${javadoc_link}">
+			<footer>
+				<![CDATA[
+				<small><b>&copy; 2007 EsperTech Inc.<br/>All rights reserved.<br/>Visit us at <a href='http://www.espertech.com' target='_blank'>espertech.com</a></b></small>
+				<script src='http://www.google-analytics.com/urchin.js' type='text/javascript'></script><script type='text/javascript'>_uacct = 'UA-1261295-1';urchinTracker();</script>
+				]]>
+			</footer>
+			<packageset dir="${generated.src}" defaultexcludes="yes">
+				<include name="com/espertech/esper/**"/>
+			</packageset>
+			<packageset dir="${src.dir}" defaultexcludes="yes">
+				<include name="com/espertech/esper/**"/>
+			</packageset>
+
+			<group title="Core API"
+				packages="com.espertech.esper.client,com.espertech.esper.client.time,com.espertech.esper.client.soda,com.espertech.esper.event"/>
+						
+		</javadoc>
+		<copy file="${doc.api.dir}/package.html" todir="${dist.api.dir}"/>
+	</target>
+	
+	
+	<target name="checkstyle" description="Generates a report of code convention violations.">
+	  <taskdef resource="checkstyletask.properties" classpath="${checkstyle_home}/checkstyle-all-4.3.jar"/>
+	  <checkstyle config="${checkstyle_home}/sun_checks.xml"
+				  failureProperty="checkstyle.failure"
+				  failOnViolation="false">
+		<formatter type="xml" tofile="target/checkstyle_report.xml"/>
+		<fileset dir="src/main/java" includes="**/*.java"/>
+	  </checkstyle>
+
+	  <style in="target/checkstyle_report.xml" out="target/checkstyle_report.html" style="${checkstyle_home}/contrib/checkstyle-simple.xsl"/>
+	</target>
+	
+</project>
