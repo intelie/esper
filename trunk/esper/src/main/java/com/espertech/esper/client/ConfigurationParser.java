@@ -566,6 +566,10 @@ class ConfigurationParser {
             {
                 handleDefaultsStreamSelection(configuration, subElement);
             }
+            if (subElement.getNodeName().equals("time-source"))
+            {
+                handleDefaultsTimeSource(configuration, subElement);
+            }
         }
     }
 
@@ -701,9 +705,41 @@ class ConfigurationParser {
                 else
                 {
                     throw new ConfigurationException("Value attribute for stream-selector element invalid, " +
-                            "expected on of the following keywords: istream, irstream, rstream");
+                            "expected one of the following keywords: istream, irstream, rstream");
                 }
                 configuration.getEngineDefaults().getStreamSelection().setDefaultStreamSelector(defaultSelector);
+            }
+        }
+    }
+
+    private static void handleDefaultsTimeSource(Configuration configuration, Element parentElement)
+    {
+        DOMElementIterator nodeIterator = new DOMElementIterator(parentElement.getChildNodes());
+        while (nodeIterator.hasNext())
+        {
+            Element subElement = nodeIterator.next();
+            if (subElement.getNodeName().equals("time-source-type"))
+            {
+                String valueText = subElement.getAttributes().getNamedItem("value").getTextContent();
+                if (valueText == null)
+                {
+                    throw new ConfigurationException("No value attribute supplied for time-source element");
+                }
+                ConfigurationEngineDefaults.TimeSourceType timeSourceType;
+                if (valueText.toUpperCase().trim().equals("NANO"))
+                {
+                    timeSourceType = ConfigurationEngineDefaults.TimeSourceType.NANO;
+                }
+                else if (valueText.toUpperCase().trim().equals("MILLI"))
+                {
+                    timeSourceType = ConfigurationEngineDefaults.TimeSourceType.MILLI;
+                }
+                else
+                {
+                    throw new ConfigurationException("Value attribute for time-source element invalid, " +
+                            "expected one of the following keywords: nano, milli");
+                }
+                configuration.getEngineDefaults().getTimeSource().setTimeSourceType(timeSourceType);
             }
         }
     }

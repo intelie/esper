@@ -1227,5 +1227,39 @@ config.getEngineDefaults().getStreamSelection()
     .setDefaultStreamSelector(StreamSelector.RSTREAM_ISTREAM_BOTH);]]></programlisting>
 			</sect3>
 		</sect2>
+
+		<sect2 id="config-engine-time-source" revision="1">
+			<title>Engine Settings related to Time Source</title>
+			
+			<sect3 id="config-engine-timesource-choices" revision="1">
+				<title>Default Time Source</title>
+
+				<para>
+				   This setting only applies if internal timer events control engine time (default). If external timer events provide engine clocking, the setting does not apply.
+				</para>
+
+				<para>
+				   By default, the internal timer uses the call <literal>System.currentTimeMillis()</literal> to determine engine time in milliseconds. Via this setting the internal timer can be instructed to use <literal>System.nanoTime()</literal> instead. Please see <xref linkend="api-time-resolution"/> for more information.
+				</para>
+				   
+				<para>
+					A sample XML configuration for this setting is shown below, whereas the sample setting sets the time source to the nanosecond time provider:
+				</para>
+					<programlisting><![CDATA[<engine-settings>
+  <defaults>
+    <time-source>
+      <time-source-type value="nano" />
+    </time-source>
+  </defaults>
+</engine-settings>]]></programlisting>
+
+				<para>
+					The equivalent code snippet using the configuration API is here:
+				</para>
+				<programlisting><![CDATA[Configuration config = new Configuration();
+config.getEngineDefaults().getTimeSource().
+      setTimeSourceType(ConfigurationEngineDefaults.TimeSourceType.NANO);]]></programlisting>
+			</sect3>
+		</sect2>
     </sect1>
 </chapter>

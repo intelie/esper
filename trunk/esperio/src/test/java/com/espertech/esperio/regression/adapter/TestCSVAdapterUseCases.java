@@ -20,21 +20,31 @@ import java.io.StringReader;
 public class TestCSVAdapterUseCases extends TestCase
 {
     private static String NEW_LINE = System.getProperty("line.separator");
-    private static String CSV_FILENAME_ONELINE_TRADE = "regression/csvtest_tradedata.csv";
+    protected static String CSV_FILENAME_ONELINE_TRADE = "regression/csvtest_tradedata.csv";
     private static String CSV_FILENAME_ONELINE_TRADE_MULTIPLE = "regression/csvtest_tradedata_multiple.csv";
     private static String CSV_FILENAME_TIMESTAMPED_PRICES = "regression/csvtest_timestamp_prices.csv";
     private static String CSV_FILENAME_TIMESTAMPED_TRADES = "regression/csvtest_timestamp_trades.csv";
 
-    private EPServiceProvider epService;
+    protected EPServiceProvider epService;
+    private boolean useBean = false;
 
-    /**
+    public TestCSVAdapterUseCases() {
+		this(false);
+	}
+    
+
+    public TestCSVAdapterUseCases(boolean ub) {
+		useBean = ub;
+	}
+    
+	/**
      * Play a CSV file using an existing event type definition (no timestamps).
      *
      * Should not require a timestamp column, should block thread until played in.
      */
     public void testExistingTypeNoOptions()
     {
-        epService = EPServiceProviderManager.getProvider("testExistingTypeNoOptions", makeConfig("TypeA"));
+        epService = EPServiceProviderManager.getProvider("testExistingTypeNoOptions", makeConfig("TypeA", useBean));
         epService.initialize();
 
         EPStatement stmt = epService.getEPAdministrator().createEPL("select symbol, price, volume from TypeA.win:length(100)");
@@ -233,15 +243,22 @@ public class TestCSVAdapterUseCases extends TestCase
         listenerTrade.reset(); listenerPrice.reset();
     }
 
-    private Configuration makeConfig(String typeName)
+    private Configuration makeConfig(String typeName) {
+    	return makeConfig(typeName, false);
+    }
+    private Configuration makeConfig(String typeName, boolean useBean)
     {
-        Map<String, Class> eventProperties = new HashMap<String, Class>();
-        eventProperties.put("symbol", String.class);
-        eventProperties.put("price", double.class);
-        eventProperties.put("volume", Integer.class);
-
         Configuration configuration = new Configuration();
-        configuration.addEventTypeAlias(typeName, eventProperties);
+    	if (useBean) {
+            configuration.addEventTypeAlias(typeName, ExampleMarketDataBean.class);
+    	}
+    	else {
+            Map<String, Class> eventProperties = new HashMap<String, Class>();
+            eventProperties.put("symbol", String.class);
+            eventProperties.put("price", double.class);
+            eventProperties.put("volume", Integer.class);
+            configuration.addEventTypeAlias(typeName, eventProperties);
+    	}
 
         return configuration;
     }
@@ -260,5 +277,33 @@ public class TestCSVAdapterUseCases extends TestCase
 
         feed.start();
         assertEquals(1, listener.getNewDataList().size());
+    }
+    
+    /**
+     * Bean with same properties as map type used in this test 
+     */
+    public static class ExampleMarketDataBean {
+    	private String symbol; 
+    	private double price; 
+    	private Integer volume;
+    	
+		public String getSymbol() {
+			return symbol;
+		}
+		public void setSymbol(String symbol) {
+			this.symbol = symbol;
+		}
+		public double getPrice() {
+			return price;
+		}
+		public void setPrice(double price) {
+			this.price = price;
+		}
+		public Integer getVolume() {
+			return volume;
+		}
+		public void setVolume(Integer volume) {
+			this.volume = volume;
+		} 
     }
 }

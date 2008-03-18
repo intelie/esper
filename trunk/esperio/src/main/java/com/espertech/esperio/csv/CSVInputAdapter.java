@@ -6,6 +6,7 @@ import com.espertech.esper.client.EPServiceProvider;
 import com.espertech.esper.core.EPServiceProviderSPI;
 import com.espertech.esper.event.EventAdapterService;
 import com.espertech.esper.event.EventType;
+import com.espertech.esper.event.PropertyAccessException;
 import com.espertech.esperio.*;
 import com.espertech.esper.util.JavaClassHelper;
 import com.espertech.esper.util.ExecutionPathDebugLog;
@@ -13,10 +14,12 @@ import net.sf.cglib.reflect.FastClass;
 import net.sf.cglib.reflect.FastConstructor;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.BeanUtils;
 
 import java.io.EOFException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
+import java.beans.PropertyDescriptor;
 
 /**
  * An event Adapter that uses a CSV file for a source.
@@ -35,7 +38,8 @@ public class CSVInputAdapter extends AbstractCoordinatedAdapter implements Input
 	private long lastTimestamp = 0;
 	private long totalDelay;
 	boolean atEOF = false;
-	String[] firstRow;
+	private String[] firstRow;
+    private Class beanClass;
 
     /**
 	 * Ctor.
@@ -101,8 +105,15 @@ public class CSVInputAdapter extends AbstractCoordinatedAdapter implements Input
 		{
 			if(eventsToSend.isEmpty())
 			{
-				return new SendableMapEvent(newMapEvent(), eventTypeAlias, totalDelay, scheduleSlot);
-			}
+                if (beanClass != null)
+                {
+                     return new SendableBeanEvent(newMapEvent(), beanClass, eventTypeAlias, totalDelay, scheduleSlot);
+                }
+                else
+                {
+                    return new SendableMapEvent(newMapEvent(), eventTypeAlias, totalDelay, scheduleSlot);
+                }
+            }
 			else
 			{
 				SendableEvent event = eventsToSend.first();
@@ -278,7 +289,7 @@ public class CSVInputAdapter extends AbstractCoordinatedAdapter implements Input
 		}
 		if(!eventType.getUnderlyingType().equals(Map.class))
 		{
-			throw new EPException("Alias " + eventTypeAlias + " does not correspond to a map event");
+            beanClass = eventType.getUnderlyingType();
 		}
 		if(propertyTypesGiven != null && eventType.getPropertyNames().length != propertyTypesGiven.size())
 		{
@@ -286,7 +297,14 @@ public class CSVInputAdapter extends AbstractCoordinatedAdapter implements Input
 		}
 		for(String property : eventType.getPropertyNames())
 		{
-			Class type = eventType.getPropertyType(property);
+            Class type;
+            try {
+                type = eventType.getPropertyType(property);
+            }
+            catch (PropertyAccessException e) {
+                // thrown if trying to access an invalid property on an EventBean
+                throw new EPException(e);
+            }
 			if(propertyTypesGiven != null && propertyTypesGiven.get(property) == null)
 			{
 				throw new EPException("Event type " + eventTypeAlias + "has already been declared with different parameters");
@@ -295,6 +313,18 @@ public class CSVInputAdapter extends AbstractCoordinatedAdapter implements Input
 			{
 				throw new EPException("Event type " + eventTypeAlias + "has already been declared with a different type for property " + property);
 			}
+            // we can't set read-only properties for bean
+            if(!eventType.getUnderlyingType().equals(Map.class)) {
+            	PropertyDescriptor pd = BeanUtils.getPropertyDescriptor(beanClass, property);
+            	if (pd.getWriteMethod() == null) {
+            		if (propertyTypesGiven == null) {
+            			continue;
+            		}
+            		else {
+            			throw new EPException("Event type " + eventTypeAlias + "property " + property + " is read only");
+            		}
+            	}
+            }
 			propertyTypes.put(property, type);
 		}
 		return propertyTypes;

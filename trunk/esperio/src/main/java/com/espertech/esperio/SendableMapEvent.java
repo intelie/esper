@@ -10,12 +10,10 @@ import com.espertech.esper.schedule.ScheduleSlot;
  * An implementation of SendableEvent that wraps a Map event for
  * sending into the runtime.
  */
-public class SendableMapEvent implements SendableEvent
+public class SendableMapEvent extends AbstractSendableEvent
 {
 	private final Map<String, Object> mapToSend;
 	private final String eventTypeAlias;
-	private final long timestamp;
-	private final ScheduleSlot scheduleSlot;
 
 	/**
 	 * Ctor.
@@ -26,14 +24,9 @@ public class SendableMapEvent implements SendableEvent
 	 */
 	public SendableMapEvent(Map<String, Object> mapToSend, String eventTypeAlias, long timestamp, ScheduleSlot scheduleSlot)
 	{
-		if(scheduleSlot == null)
-		{
-			throw new NullPointerException("ScheduleSlot cannot be null");
-		}
+		super(timestamp, scheduleSlot);
 		this.mapToSend = new HashMap<String, Object>(mapToSend);
 		this.eventTypeAlias = eventTypeAlias;
-		this.timestamp = timestamp;
-		this.scheduleSlot = scheduleSlot;
 	}
 
 	/* (non-Javadoc)
@@ -42,22 +35,6 @@ public class SendableMapEvent implements SendableEvent
 	public void send(EPRuntime runtime)
 	{
 		runtime.sendEvent(mapToSend, eventTypeAlias);
-	}
-
-	/* (non-Javadoc)
-	 * @see com.espertech.esperio.SendableEvent#getScheduleSlot()
-	 */
-	public ScheduleSlot getScheduleSlot()
-	{
-		return scheduleSlot;
-	}
-
-	/* (non-Javadoc)
-	 * @see com.espertech.esperio.SendableEvent#getSendTime()
-	 */
-	public long getSendTime()
-	{
-		return timestamp;
 	}
 
 	public String toString()

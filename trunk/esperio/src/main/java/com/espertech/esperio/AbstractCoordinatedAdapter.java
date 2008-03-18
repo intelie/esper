@@ -186,7 +186,8 @@ public abstract class AbstractCoordinatedAdapter implements CoordinatedAdapter
 
 	private void continueSendingEvents()
 	{
-		if(stateManager.getState() == AdapterState.STARTED)
+		boolean keepLooping = true;
+		while(stateManager.getState() == AdapterState.STARTED && keepLooping)
 		{
 			currentTime = getCurrentTime();
             if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
@@ -195,15 +196,16 @@ public abstract class AbstractCoordinatedAdapter implements CoordinatedAdapter
             }
             fillEventsToSend();
 			sendSoonestEvents();
-			waitToSendEvents();
+			keepLooping = waitToSendEvents();
 		}
 	}
 
-	private void waitToSendEvents()
+	private boolean waitToSendEvents()
 	{
 		if(usingEngineThread)
 		{
 			scheduleNextCallback();
+			return false;
 		}
 		else
 		{
@@ -225,7 +227,7 @@ public abstract class AbstractCoordinatedAdapter implements CoordinatedAdapter
 			{
 				throw new EPException(ex);
 			}
-			continueSendingEvents();
+			return true;
 		}
 	}
 

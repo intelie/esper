@@ -24,9 +24,7 @@ import com.espertech.esper.filter.FilterServiceProvider;
 import com.espertech.esper.schedule.ScheduleBucket;
 import com.espertech.esper.schedule.SchedulingService;
 import com.espertech.esper.schedule.SchedulingServiceProvider;
-import com.espertech.esper.timer.TimerService;
-import com.espertech.esper.timer.TimerServiceImpl;
-import com.espertech.esper.timer.TimeSourceService;
+import com.espertech.esper.timer.*;
 import com.espertech.esper.util.JavaClassHelper;
 import com.espertech.esper.util.ManagedReadWriteLock;
 import com.espertech.esper.view.stream.StreamFactoryService;
@@ -100,8 +98,11 @@ public class EPServicesContextFactoryDefault implements EPServicesContextFactory
 
     protected static TimeSourceService makeTimeSource(ConfigurationInformation configSnapshot)
     {
-        // TODO
-        return null;  //To change body of created methods use File | Settings | File Templates.
+        if (configSnapshot.getEngineDefaults().getTimeSource().getTimeSourceType() == ConfigurationEngineDefaults.TimeSourceType.NANO)
+        {
+            return new TimeSourceServiceNanos();
+        }
+        return new TimeSourceServiceMillis();
     }
 
     /**

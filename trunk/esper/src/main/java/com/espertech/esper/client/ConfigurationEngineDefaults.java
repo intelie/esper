@@ -522,7 +522,7 @@ public class ConfigurationEngineDefaults implements Serializable
         }
     }
 
-    public class TimeSource
+    public class TimeSource implements Serializable
     {
         private TimeSourceType timeSourceType;
 

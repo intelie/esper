@@ -795,6 +795,7 @@ runtime.sendEvent(new CurrentTimeEvent(timeInMillis));
 			We recommend that when disabling the internal timer, applications send an external timer event setting the start time before creating statements,
 			such that statement start time is well-defined. Also, note that the engine outputs a warning if duplicate external time events are received.
 		</para>
+		
     </sect1>
 
     <sect1 id="api-time-resolution">
@@ -807,7 +808,16 @@ runtime.sendEvent(new CurrentTimeEvent(timeInMillis));
         </para>
         
         <para>
-			The internal timer thread uses the call <literal>System.currentTimeMillis()</literal> to obtain system time. Please see the JIRA issue ESPER-191 Support nano/microsecond resolution for more information on Java system time-call performance, accuracy and drift. The internal timer is based on <literal>java.util.concurrent.ScheduledThreadPoolExecutor</literal> rather then <literal>java.util.Timer</literal> as the former supports high accuracy VM time.
+			The internal timer thread, by default, uses the call <literal>System.currentTimeMillis()</literal> to obtain system time. Please see the JIRA issue ESPER-191 Support nano/microsecond resolution for more information on Java system time-call performance, accuracy and drift. 
+        </para>
+			
+		<para>
+			The internal timer thread can be configured to use nano-second time as returned by <literal>System.nanoTime()</literal>. If configured for nano-second time, the engine computes an offset of the nano-second ticks to wall clock time upon startup to present back an accurate millisecond wall clock time. 
+			Please see section <xref linkend="config-engine-time-source"/> to configure the internal timer thread to use <literal>System.nanoTime()</literal>.
+		</para>
+
+        <para>
+			The internal timer is based on <literal>java.util.concurrent.ScheduledThreadPoolExecutor</literal> (<literal>java.util.Timer</literal> does not support high accuracy VM time).
         </para>
 			
         <para>

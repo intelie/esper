@@ -223,6 +223,8 @@ public class TestConfigurationParser extends TestCase
         assertEquals(30000, config.getEngineDefaults().getVariables().getMsecVersionRelease());
         assertEquals(StreamSelector.RSTREAM_ISTREAM_BOTH, config.getEngineDefaults().getStreamSelection().getDefaultStreamSelector());
 
+        assertEquals(ConfigurationEngineDefaults.TimeSourceType.NANO, config.getEngineDefaults().getTimeSource().getTimeSourceType());
+
         // variables
         assertEquals(2, config.getVariables().size());
         ConfigurationVariable variable = config.getVariables().get("var1");

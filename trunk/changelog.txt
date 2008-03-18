@@ -1,6 +1,15 @@
 Esper Changelog
 ===================
 
+Changes in version 2.1.0
+------------------------
+
+- ESPER-191 Support nano_microsecond resolution : TimeSource configurable to be milli or nano
+- ESPER-197 EsperIO_CSV reported to be slow
+- ESPER-198 EsperIO CSV adapter to support sending of bean events
+- ESPER-208 EsperIO runs out of stack space when processing largeCSV file and not using engine thread
+
+
 Changes in version 2.0.0
 ------------------------
 
