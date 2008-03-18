@@ -169,6 +169,35 @@ IBM,55.5,1000]]></programlisting>
             <literal>select sum(volume) from PriceEvent.win:time(1 min)</literal> will be rejected as in the second file <literal>volume</literal> is defaulted
             to type String - unless otherwise programmatically configured.
         </para>
+
+		<sect2 id="csv-beans">
+			<title>Using JavaBean POJO Events</title>
+	
+			<para>
+				The previous section used an event type based on <literal>java.util.Map</literal>. The adapter can also populate the CSV data into JavaBean events directly, as long as your event class provides setter-methods that follow JavaBean conventions.
+			</para>
+
+			<para>
+				To use Java objects as events instead of Map-based event types, simply register the alias for the Java class and provide the same alias to the CSV adapter. 
+			</para>
+
+			<para>
+				The below code snipped assumes that a PriceEvent class exists that exposes setter-methods for the three properties. The setter-methods are, for example, <literal>setSymbol(String s)</literal>, <literal>setPrice(double p)</literal> and <literal>setVolume(long v)</literal>.
+			</para>
+
+			<para>
+				<programlisting><![CDATA[Configuration configuration = new Configuration();
+configuration.addEventTypeAlias("PriceEvent", PriceEvent.class);
+
+epService = EPServiceProviderManager.getDefaultProvider(configuration);
+
+EPStatement stmt = epService.getEPAdministrator().createEPL(
+   "select symbol, price, volume from PriceEvent.win:length(100)");
+
+(new CSVInputAdapter(epService, new AdapterInputSource(filename), "PriceEvent")).start();]]></programlisting>		
+			</para>
+		</sect2>
+	
     </sect1>
     
     <sect1 id="csv-step-2">
@@ -277,4 +306,5 @@ inputAdapter.stop();]]></programlisting>
     </sect1>
 
 </chapter>
+
 
