@@ -13,7 +13,11 @@ import com.espertech.esper.client.time.TimerControlEvent;
 import com.espertech.esper.client.time.TimerEvent;
 import com.espertech.esper.collection.ArrayBackedCollection;
 import com.espertech.esper.collection.ThreadWorkQueue;
+import com.espertech.esper.collection.Pair;
 import com.espertech.esper.epl.variable.VariableReader;
+import com.espertech.esper.epl.spec.SelectClauseStreamSelectorEnum;
+import com.espertech.esper.epl.spec.StatementSpecRaw;
+import com.espertech.esper.epl.spec.StatementSpecCompiled;
 import com.espertech.esper.event.EventBean;
 import com.espertech.esper.filter.FilterHandle;
 import com.espertech.esper.filter.FilterHandleCallback;
@@ -23,6 +27,8 @@ import com.espertech.esper.timer.TimerCallback;
 import com.espertech.esper.util.ExecutionPathDebugLog;
 import com.espertech.esper.util.ManagedLock;
 import com.espertech.esper.util.ThreadLogUtil;
+import com.espertech.esper.util.UuidGenerator;
+import com.espertech.esper.view.Viewable;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -791,6 +797,26 @@ public class EPRuntimeImpl implements EPRuntime, TimerCallback, InternalEventRou
             values.put(entry.getValue().getVariableName(), value);
         }
         return values;
+    }
+
+    public EPQueryResult executeQuery(String epl)
+    {
+        try
+        {
+            String stmtName = UuidGenerator.generate(epl);
+            String stmtId = UuidGenerator.generate(epl + " ");
+            StatementSpecRaw spec = EPAdministratorImpl.compileEPL(epl, stmtName, services, SelectClauseStreamSelectorEnum.ISTREAM_ONLY);
+            StatementContext statementContext =  services.getStatementContextFactory().makeContext(stmtId, stmtName, epl, false, services, null, null, null);
+            StatementSpecCompiled compiledSpec = StatementLifecycleSvcImpl.compile(spec, epl, statementContext);
+            EPStatementStartMethod startMethod = new EPStatementStartMethod(compiledSpec, services, statementContext);
+            Viewable result = startMethod.executeQuery();
+            return new EPQueryResultImpl(result);
+        }
+        catch (Throwable t)
+        {
+            // TODO
+            throw new EPException(t);
+        }
     }
 
     private static final Log log = LogFactory.getLog(EPRuntimeImpl.class);

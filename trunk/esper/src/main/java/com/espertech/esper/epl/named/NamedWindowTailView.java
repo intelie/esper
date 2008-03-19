@@ -147,6 +147,29 @@ public class NamedWindowTailView extends ViewSupport implements Iterable<EventBe
         }
     }
 
+    public List<EventBean> snapshot()
+    {
+        createWindowStmtHandle.getStatementLock().acquireLock(null);
+        try
+        {
+            Iterator<EventBean> it = parent.iterator();
+            if (!it.hasNext())
+            {
+                return Collections.EMPTY_LIST;
+            }
+            ArrayList<EventBean> list = new ArrayList<EventBean>();
+            while (it.hasNext())
+            {
+                list.add(it.next());
+            }
+            return list;
+        }
+        finally
+        {
+            createWindowStmtHandle.getStatementLock().releaseLock(null);
+        }
+    }
+
     /**
      * Destroy the view.
      */

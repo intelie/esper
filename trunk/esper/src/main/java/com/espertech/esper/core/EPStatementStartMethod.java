@@ -47,6 +47,8 @@ import java.util.*;
  */
 public class EPStatementStartMethod
 {
+    private static final Log log = LogFactory.getLog(EPStatementStartMethod.class);
+
     private final StatementSpecCompiled statementSpec;
     private final EPServicesContext services;
     private final StatementContext statementContext;
@@ -1212,5 +1214,50 @@ public class EPStatementStartMethod
         return visitor.getExprProperties();
     }
 
-    private static final Log log = LogFactory.getLog(EPStatementStartMethod.class);
+    public Viewable executeQuery() throws ExprValidationException
+    {
+        // Create streams
+        Viewable eventStreamParentViewable;
+        final StreamSpecCompiled streamSpec = statementSpec.getStreamSpecs().get(0);
+        NamedWindowConsumerStreamSpec namedSpec = (NamedWindowConsumerStreamSpec) streamSpec;
+        NamedWindowProcessor processor = services.getNamedWindowService().getProcessor(namedSpec.getWindowName());
+
+        List<EventBean> snapshot = processor.getTailView().snapshot();
+        if ((namedSpec.getFilterExpressions().size() != 0) || (statementSpec.getFilterRootNode() != null))
+        {
+
+        }
+
+        EventType namedWindowType = processor.getNamedWindowType();
+        String namedWindowAlias = namedSpec.getWindowName();
+        StreamTypeService typeService = new StreamTypeServiceImpl(new EventType[] {namedWindowType}, new String[] {namedWindowAlias});
+        ResultSetProcessor resultSetProcessor = ResultSetProcessorFactory.getProcessor(statementSpec, statementContext, typeService, null);
+        resultSetProcessor.processViewResult()
+
+        return new EPQueryResultViewable(.iterator(), processor.getNamedWindowType());
+        // apply filter, apply where clause, allow views but not data window
+        
+        /*
+        EventType streamEventType = eventStreamParentViewable.getEventType();
+
+        ResultSetProcessor resultSetProcessor;
+        // For on-delete and on-select triggers
+
+
+
+            // Construct a processor for results; for use in on-select to process selection results
+            // Use a wildcard select if the select-clause is empty, such as for on-delete.
+            // For on-select the select clause is not empty.
+            if (statementSpec.getSelectClauseSpec().getSelectExprList().size() == 0)
+            {
+                statementSpec.getSelectClauseSpec().add(new SelectClauseElementWildcard());
+            }
+
+
+
+        log.debug(".start Statement start completed");
+
+        return new Pair<Viewable, EPStatementStopMethod>(onExprView, stopMethod);
+        */
+    }
 }
