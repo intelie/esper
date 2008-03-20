@@ -827,7 +827,7 @@ public class ArrayAssertionUtil
 
         if (rows.size() == 0)
         {
-            Assert.assertNull(expectedValues);
+            Assert.assertNull("Expected rows in result but received none", expectedValues);
             return;
         }
 

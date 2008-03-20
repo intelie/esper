@@ -22,6 +22,7 @@ import java.util.LinkedList;
 public final class FilterSpecCompiled
 {
     private final EventType eventType;
+    private final String eventTypeAlias;
     private final List<FilterSpecParam> parameters;
 
     /**
@@ -31,9 +32,10 @@ public final class FilterSpecCompiled
      * @param parameters is a list of filter parameters
      * @throws IllegalArgumentException if validation invalid
      */
-    public FilterSpecCompiled(EventType eventType, List<FilterSpecParam> parameters)
+    public FilterSpecCompiled(EventType eventType, String eventTypeAlias, List<FilterSpecParam> parameters)
     {
         this.eventType = eventType;
+        this.eventTypeAlias = eventTypeAlias;
         this.parameters = parameters;
     }
 
@@ -53,6 +55,11 @@ public final class FilterSpecCompiled
     public final List<FilterSpecParam> getParameters()
     {
         return parameters;
+    }
+
+    public String getEventTypeAlias()
+    {
+        return eventTypeAlias;
     }
 
     /**

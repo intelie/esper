@@ -67,7 +67,8 @@ public class FilterStreamSpecRaw extends StreamSpecBase implements StreamSpecRaw
                                       PatternObjectResolutionService patternObjectResolutionService,
                                       TimeProvider timeProvider,
                                       NamedWindowService namedWindowService,
-                                      VariableService variableService)
+                                      VariableService variableService,
+                                      String engineURI)
             throws ExprValidationException
     {
         // Determine the event type
@@ -77,7 +78,7 @@ public class FilterStreamSpecRaw extends StreamSpecBase implements StreamSpecRaw
         if (namedWindowService.isNamedWindow(eventName))
         {
             EventType namedWindowType = namedWindowService.getProcessor(eventName).getTailView().getEventType();
-            StreamTypeService streamTypeService = new StreamTypeServiceImpl(new EventType[] {namedWindowType}, new String[] {"s0"});
+            StreamTypeService streamTypeService = new StreamTypeServiceImpl(new EventType[] {namedWindowType}, new String[] {"s0"}, engineURI, new String[] {eventName});
 
             List<ExprNode> validatedNodes = FilterSpecCompiler.validateDisallowSubquery(rawFilterSpec.getFilterExpressions(),
                 streamTypeService, methodResolutionService, timeProvider, variableService);
@@ -89,9 +90,9 @@ public class FilterStreamSpecRaw extends StreamSpecBase implements StreamSpecRaw
 
         // Validate all nodes, make sure each returns a boolean and types are good;
         // Also decompose all AND super nodes into individual expressions
-        StreamTypeService streamTypeService = new StreamTypeServiceImpl(new EventType[] {eventType}, new String[] {"s0"});
+        StreamTypeService streamTypeService = new StreamTypeServiceImpl(new EventType[] {eventType}, new String[] {"s0"}, engineURI, new String[] {eventName});
 
-        FilterSpecCompiled spec = FilterSpecCompiler.makeFilterSpec(eventType, rawFilterSpec.getFilterExpressions(), null,
+        FilterSpecCompiled spec = FilterSpecCompiler.makeFilterSpec(eventType, eventName, rawFilterSpec.getFilterExpressions(), null,
                 streamTypeService, methodResolutionService, timeProvider, variableService);
 
         return new FilterStreamSpecCompiled(spec, this.getViewSpecs(), this.getOptionalStreamName(), this.isUnidirectional());

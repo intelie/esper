@@ -801,10 +801,11 @@ public class EPRuntimeImpl implements EPRuntime, TimerCallback, InternalEventRou
 
     public EPQueryResult executeQuery(String epl)
     {
+        String stmtName = UuidGenerator.generate(epl);
+        String stmtId = UuidGenerator.generate(epl + " ");
+
         try
         {
-            String stmtName = UuidGenerator.generate(epl);
-            String stmtId = UuidGenerator.generate(epl + " ");
             StatementSpecRaw spec = EPAdministratorImpl.compileEPL(epl, stmtName, services, SelectClauseStreamSelectorEnum.ISTREAM_ONLY);
             StatementContext statementContext =  services.getStatementContextFactory().makeContext(stmtId, stmtName, epl, false, services, null, null, null);
             StatementSpecCompiled compiledSpec = StatementLifecycleSvcImpl.compile(spec, epl, statementContext);
@@ -812,10 +813,15 @@ public class EPRuntimeImpl implements EPRuntime, TimerCallback, InternalEventRou
             Viewable result = startMethod.executeQuery();
             return new EPQueryResultImpl(result);
         }
+        catch (EPStatementException ex)
+        {
+            throw ex;
+        }
         catch (Throwable t)
         {
-            // TODO
-            throw new EPException(t);
+            String message = "Error executing statement: " + t.getMessage();
+            log.debug(message, t);
+            throw new EPStatementException(message, epl);
         }
     }
 

@@ -9,6 +9,7 @@ import com.espertech.esper.event.xml.SchemaXMLEventType;
 import com.espertech.esper.event.xml.SimpleXMLEventType;
 import com.espertech.esper.event.xml.XMLEventBean;
 import com.espertech.esper.util.UuidGenerator;
+import com.espertech.esper.collection.Pair;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.w3c.dom.Document;
@@ -465,7 +466,7 @@ public class EventAdapterServiceImpl implements EventAdapterService
         return createAnonymousMapType(types);
     }
 
-    public final EventType createAnonymousCompositeType(Map<String, EventType> taggedEventTypes)
+    public final EventType createAnonymousCompositeType(Map<String, Pair<EventType, String>> taggedEventTypes)
     {
         String alias = UuidGenerator.generate(taggedEventTypes);
         return new CompositeEventType(alias, taggedEventTypes);

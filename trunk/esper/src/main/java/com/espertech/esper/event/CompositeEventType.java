@@ -1,5 +1,7 @@
 package com.espertech.esper.event;
 
+import com.espertech.esper.collection.Pair;
+
 import java.util.Iterator;
 import java.util.Map;
 
@@ -15,7 +17,7 @@ public class CompositeEventType implements EventType, TaggedCompositeEventType
     /**
      * Map of tag name and event type.
      */
-    protected final Map<String, EventType> taggedEventTypes;
+    protected final Map<String, Pair<EventType, String>> taggedEventTypes;
     
     private String alias;
 
@@ -24,7 +26,7 @@ public class CompositeEventType implements EventType, TaggedCompositeEventType
      * @param alias is the event type alias
      * @param taggedEventTypes is a map of name tags and event type per tag 
      */
-    public CompositeEventType(String alias, Map<String, EventType> taggedEventTypes)
+    public CompositeEventType(String alias, Map<String, Pair<EventType, String>> taggedEventTypes)
     {
         this.taggedEventTypes = taggedEventTypes;
         this.alias = alias;
@@ -41,10 +43,10 @@ public class CompositeEventType implements EventType, TaggedCompositeEventType
 
     public Class getPropertyType(String propertyName)
     {
-        EventType result = taggedEventTypes.get(propertyName);
+        Pair<EventType, String> result = taggedEventTypes.get(propertyName);
         if (result != null)
         {
-            return result.getUnderlyingType();
+            return result.getFirst().getUnderlyingType();
         }
 
         // see if this is a nested property
@@ -64,7 +66,7 @@ public class CompositeEventType implements EventType, TaggedCompositeEventType
         }
 
         // ask the nested class to resolve the property
-        return result.getPropertyType(propertyNested);
+        return result.getFirst().getPropertyType(propertyNested);
     }
 
     public Class getUnderlyingType()
@@ -78,7 +80,7 @@ public class CompositeEventType implements EventType, TaggedCompositeEventType
         int index = propertyName.indexOf('.');
         if (index == -1)
         {
-            EventType result = taggedEventTypes.get(propertyName);
+            Pair<EventType, String> result = taggedEventTypes.get(propertyName);
             if (result == null)
             {
                 return null;
@@ -119,13 +121,13 @@ public class CompositeEventType implements EventType, TaggedCompositeEventType
         final String propertyMap = propertyName.substring(0, index);
         String propertyNested = propertyName.substring(index + 1, propertyName.length());
 
-        EventType result = taggedEventTypes.get(propertyMap);
+        Pair<EventType, String> result = taggedEventTypes.get(propertyMap);
         if (result == null)
         {
             return null;
         }
 
-        final EventPropertyGetter getterNested = result.getGetter(propertyNested);
+        final EventPropertyGetter getterNested = result.getFirst().getGetter(propertyNested);
         if (getterNested == null)
         {
             return null;
@@ -195,16 +197,17 @@ public class CompositeEventType implements EventType, TaggedCompositeEventType
             return false;
         }
 
-        for (Map.Entry<String, EventType> entry : taggedEventTypes.entrySet())
+        for (Map.Entry<String, Pair<EventType, String>> entry : taggedEventTypes.entrySet())
         {
-            EventType composed = entry.getValue();
-            EventType otherComposed = other.taggedEventTypes.get(entry.getKey());
+            EventType composed = entry.getValue().getFirst();
+            Pair<EventType, String> otherComposed = other.taggedEventTypes.get(entry.getKey());
 
             if (otherComposed == null)
             {
                 return false;
             }
-            if (!(composed.equals(otherComposed)))
+            EventType otherComposedType = otherComposed.getFirst();
+            if (!(composed.equals(otherComposedType)))
             {
                 return false;
             }
@@ -218,7 +221,7 @@ public class CompositeEventType implements EventType, TaggedCompositeEventType
         return alias.hashCode();
     }
 
-    public Map<String, EventType> getTaggedEventTypes()
+    public Map<String, Pair<EventType, String>> getTaggedEventTypes()
     {
         return taggedEventTypes;
     }

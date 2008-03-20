@@ -25,6 +25,7 @@ import com.espertech.esper.pattern.guard.GuardFactory;
 import com.espertech.esper.pattern.guard.GuardParameterException;
 import com.espertech.esper.util.UuidGenerator;
 import com.espertech.esper.schedule.TimeProvider;
+import com.espertech.esper.collection.Pair;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -63,7 +64,8 @@ public class PatternStreamSpecRaw extends StreamSpecBase implements StreamSpecRa
                                       PatternObjectResolutionService patternObjectResolutionService,
                                       TimeProvider timeProvider,
                                       NamedWindowService namedWindowService,
-                                      VariableService variableService)
+                                      VariableService variableService,
+                                      String engineURI)
             throws ExprValidationException
     {
         // Determine all the filter nodes used in the pattern
@@ -99,23 +101,26 @@ public class PatternStreamSpecRaw extends StreamSpecBase implements StreamSpecRa
         }
 
         // Resolve all event types; some filters are tagged and we keep the order in which they are specified
-        LinkedHashMap<String, EventType> taggedEventTypes = new LinkedHashMap<String, EventType>();
+        LinkedHashMap<String, Pair<EventType, String>> taggedEventTypes = new LinkedHashMap<String, Pair<EventType, String>>();
         for (EvalFilterNode filterNode : evalNodeAnalysisResult.getFilterNodes())
         {
             String eventName = filterNode.getRawFilterSpec().getEventTypeAlias();
             EventType eventType = FilterStreamSpecRaw.resolveType(eventName, eventAdapterService);
             String optionalTag = filterNode.getEventAsName();
+            String aliasUsed = filterNode.getFilterSpec().getEventTypeAlias();
 
             // If a tag was supplied for the type, the tags must stay with this type, i.e. a=BeanA -> b=BeanA -> a=BeanB is a no
             if (optionalTag != null)
             {
-                EventType existingType = taggedEventTypes.get(optionalTag);
+                Pair<EventType, String> pair = taggedEventTypes.get(optionalTag);
+                EventType existingType = pair.getFirst();
                 if ((existingType != null) && (existingType != eventType))
                 {
                     throw new IllegalArgumentException("Tag '" + optionalTag + "' for event '" + eventName +
                             "' has already been declared for events of type " + existingType.getUnderlyingType().getName());
                 }
-                taggedEventTypes.put(optionalTag, eventType);
+                pair = new Pair<EventType, String>(eventType, aliasUsed);
+                taggedEventTypes.put(optionalTag, pair);
             }
 
             // For this filter, filter types are all known tags at this time,
@@ -128,13 +133,14 @@ public class PatternStreamSpecRaw extends StreamSpecBase implements StreamSpecRa
             {
                 selfStreamName = "s_" + UuidGenerator.generate(filterNode);
             }
-            LinkedHashMap<String, EventType> filterTypes = new LinkedHashMap<String, EventType>();
-            filterTypes.put(selfStreamName, eventType);
+            LinkedHashMap<String, Pair<EventType, String>> filterTypes = new LinkedHashMap<String, Pair<EventType, String>>();
+            Pair<EventType, String> typePair = new Pair<EventType, String>(eventType, aliasUsed);
+            filterTypes.put(selfStreamName, typePair);
             filterTypes.putAll(taggedEventTypes);
-            StreamTypeService streamTypeService = new StreamTypeServiceImpl(filterTypes, true, false);
+            StreamTypeService streamTypeService = new StreamTypeServiceImpl(filterTypes, engineURI, true, false);
 
             List<ExprNode> exprNodes = filterNode.getRawFilterSpec().getFilterExpressions();
-            FilterSpecCompiled spec = FilterSpecCompiler.makeFilterSpec(eventType, exprNodes, taggedEventTypes, streamTypeService, methodResolutionService, timeProvider, variableService);
+            FilterSpecCompiled spec = FilterSpecCompiler.makeFilterSpec(eventType, eventName, exprNodes, taggedEventTypes, streamTypeService, methodResolutionService, timeProvider, variableService);
             filterNode.setFilterSpec(spec);
         }
 

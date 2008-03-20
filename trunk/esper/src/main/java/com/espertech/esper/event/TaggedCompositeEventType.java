@@ -1,5 +1,7 @@
 package com.espertech.esper.event;
 
+import com.espertech.esper.collection.Pair;
+
 import java.util.Map;
 
 /**
@@ -14,5 +16,5 @@ public interface TaggedCompositeEventType
      * Returns the event types for each composing event.
      * @return map of tag name and event type
      */
-    public Map<String, EventType> getTaggedEventTypes();
+    public Map<String, Pair<EventType, String>> getTaggedEventTypes();
 }

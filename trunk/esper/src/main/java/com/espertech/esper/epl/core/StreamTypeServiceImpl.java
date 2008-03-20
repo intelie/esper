@@ -8,6 +8,7 @@
 package com.espertech.esper.epl.core;
 
 import com.espertech.esper.event.EventType;
+import com.espertech.esper.collection.Pair;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -19,6 +20,8 @@ public class StreamTypeServiceImpl implements StreamTypeService
 {
     private final EventType[] eventTypes;
     private final String[] streamNames;
+    private final String engineURI;
+    private final String[] eventTypeAlias;
     private boolean isStreamZeroUnambigous;
     private boolean requireStreamNames;
 
@@ -27,10 +30,12 @@ public class StreamTypeServiceImpl implements StreamTypeService
      * @param eventTypes - array of event types, one for each stream
      * @param streamNames - array of stream names, one for each stream
      */
-    public StreamTypeServiceImpl (EventType[] eventTypes, String[] streamNames)
+    public StreamTypeServiceImpl (EventType[] eventTypes, String[] streamNames, String engineURI, String[] eventTypeAlias)
     {
         this.eventTypes = eventTypes;
         this.streamNames = streamNames;
+        this.engineURI = engineURI;
+        this.eventTypeAlias = eventTypeAlias;
 
         if (eventTypes.length != streamNames.length)
         {
@@ -45,17 +50,20 @@ public class StreamTypeServiceImpl implements StreamTypeService
      * thrown or the stream zero should be assumed
      * @param requireStreamNames is true to indicate that stream names are required for any non-zero streams (for subqueries)
      */
-    public StreamTypeServiceImpl (LinkedHashMap<String, EventType> namesAndTypes, boolean isStreamZeroUnambigous, boolean requireStreamNames)
+    public StreamTypeServiceImpl (LinkedHashMap<String, Pair<EventType, String>> namesAndTypes, String engineURI, boolean isStreamZeroUnambigous, boolean requireStreamNames)
     {
         this.isStreamZeroUnambigous = isStreamZeroUnambigous;
         this.requireStreamNames = requireStreamNames;
+        this.engineURI = engineURI;
         eventTypes = new EventType[namesAndTypes.size()] ;
         streamNames = new String[namesAndTypes.size()] ;
+        eventTypeAlias = new String[namesAndTypes.size()] ;
         int count = 0;
-        for (Map.Entry<String, EventType> entry : namesAndTypes.entrySet())
+        for (Map.Entry<String, Pair<EventType, String>> entry : namesAndTypes.entrySet())
         {
             streamNames[count] = entry.getKey();
-            eventTypes[count] = entry.getValue();
+            eventTypes[count] = entry.getValue().getFirst();
+            eventTypeAlias[count] = entry.getValue().getSecond();
             count++;
         }
     }

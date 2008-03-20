@@ -37,7 +37,8 @@ public interface StreamSpecRaw extends StreamSpec
                                       PatternObjectResolutionService patternObjectResolutionService,
                                       TimeProvider timeProvider,
                                       NamedWindowService namedWindowService,
-                                      VariableService variableService)
+                                      VariableService variableService,
+                                      String engineURI)
         throws ExprValidationException;
 
 }

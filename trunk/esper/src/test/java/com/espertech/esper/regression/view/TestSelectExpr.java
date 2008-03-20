@@ -6,6 +6,7 @@ import junit.framework.TestCase;
 import com.espertech.esper.client.EPServiceProvider;
 import com.espertech.esper.client.EPStatement;
 import com.espertech.esper.client.EPServiceProviderManager;
+import com.espertech.esper.client.Configuration;
 import com.espertech.esper.client.time.TimerControlEvent;
 import com.espertech.esper.support.util.SupportUpdateListener;
 import com.espertech.esper.support.util.ArrayAssertionUtil;
@@ -26,9 +27,11 @@ public class TestSelectExpr extends TestCase
     public void setUp()
     {
         testListener = new SupportUpdateListener();
-        epService = EPServiceProviderManager.getDefaultProvider(SupportConfigFactory.getConfiguration());
+        Configuration config = SupportConfigFactory.getConfiguration();
+        config.addEventTypeAlias("SupportBean", SupportBean.class);
+        config.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
+        epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();
-        epService.getEPRuntime().sendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
     }
     
     public void testGraphSelect()
@@ -82,6 +85,17 @@ public class TestSelectExpr extends TestCase
         assertEquals(30f, received.get("result"));
     }
 
+    public void testPrefixEngineName()
+    {
+        String epl = "select default.SupportBean.string as val from SupportBean";
+        selectTestView = epService.getEPAdministrator().createEPL(epl);
+        selectTestView.addListener(testListener);
+
+        sendEvent("E1");
+        EventBean received = testListener.getAndResetLastNewData()[0];
+        assertEquals("E1", received.get("val"));
+    }
+
     private void sendEvent(String s, boolean b, int i, float f1, float f2)
     {
         SupportBean bean = new SupportBean();
@@ -90,6 +104,12 @@ public class TestSelectExpr extends TestCase
         bean.setIntPrimitive(i);
         bean.setFloatPrimitive(f1);
         bean.setFloatBoxed(f2);
+        epService.getEPRuntime().sendEvent(bean);
+    }
+
+    private void sendEvent(String s)
+    {
+        SupportBean bean = new SupportBean(s, -1);
         epService.getEPRuntime().sendEvent(bean);
     }
 

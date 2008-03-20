@@ -13,6 +13,7 @@ import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.event.EventBean;
 import com.espertech.esper.event.EventType;
 import com.espertech.esper.pattern.MatchedEventMap;
+import com.espertech.esper.collection.Pair;
 
 import java.util.LinkedHashMap;
 
@@ -22,7 +23,7 @@ import java.util.LinkedHashMap;
 public final class FilterSpecParamExprNode extends FilterSpecParam
 {
     private final ExprNode exprNode;
-    private final LinkedHashMap<String, EventType> taggedEventTypes;
+    private final LinkedHashMap<String, Pair<EventType, String>> taggedEventTypes;
     private final VariableService variableService;
     private final boolean hasVariable;
 
@@ -38,7 +39,7 @@ public final class FilterSpecParamExprNode extends FilterSpecParam
     public FilterSpecParamExprNode(String propertyName,
                              FilterOperator filterOperator,
                              ExprNode exprNode,
-                             LinkedHashMap<String, EventType> taggedEventTypes,
+                             LinkedHashMap<String, Pair<EventType, String>> taggedEventTypes,
                              VariableService variableService)
         throws IllegalArgumentException
     {
@@ -69,7 +70,7 @@ public final class FilterSpecParamExprNode extends FilterSpecParam
      * Returns the map of tag/stream names to event types that the filter expressions map use (for patterns)
      * @return map
      */
-    public LinkedHashMap<String, EventType> getTaggedEventTypes()
+    public LinkedHashMap<String, Pair<EventType, String>> getTaggedEventTypes()
     {
         return taggedEventTypes;
     }

@@ -6,6 +6,7 @@ import org.w3c.dom.Node;
 import com.espertech.esper.client.ConfigurationEventTypeXMLDOM;
 import com.espertech.esper.client.ConfigurationEventTypeLegacy;
 import com.espertech.esper.client.Configuration;
+import com.espertech.esper.collection.Pair;
 
 /**
  * Interface for a service to resolve event names to event type.
@@ -167,7 +168,7 @@ public interface EventAdapterService
      * @param taggedEventTypes is a map of name keys and event type values
      * @return event type representing a composite event
      */
-    public EventType createAnonymousCompositeType(Map<String, EventType> taggedEventTypes);
+    public EventType createAnonymousCompositeType(Map<String, Pair<EventType, String>> taggedEventTypes);
 
     /**
      * Creates a wrapper for a composite event type. The wrapper wraps an event that

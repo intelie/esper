@@ -3,6 +3,8 @@ package com.espertech.esper.core;
 import com.espertech.esper.client.EPStatementException;
 import com.espertech.esper.collection.Pair;
 import com.espertech.esper.collection.UniformPair;
+import com.espertech.esper.collection.ArrayEventIterator;
+import com.espertech.esper.collection.MultiKey;
 import com.espertech.esper.epl.core.*;
 import com.espertech.esper.epl.db.DatabasePollingViewableFactory;
 import com.espertech.esper.epl.expression.*;
@@ -107,9 +109,11 @@ public class EPStatementStartMethod
         // Create streams
         Viewable eventStreamParentViewable;
         final StreamSpecCompiled streamSpec = statementSpec.getStreamSpecs().get(0);
+        String triggerEventTypeAlias = null;
         if (streamSpec instanceof FilterStreamSpecCompiled)
         {
             FilterStreamSpecCompiled filterStreamSpec = (FilterStreamSpecCompiled) streamSpec;
+            triggerEventTypeAlias = filterStreamSpec.getFilterSpec().getEventTypeAlias();
 
             // Since only for non-joins we get the existing stream's lock and try to reuse it's views
             Pair<EventStream, ManagedLock> streamLockPair = services.getStreamService().createStream(filterStreamSpec.getFilterSpec(),
@@ -149,6 +153,7 @@ public class EPStatementStartMethod
             NamedWindowConsumerStreamSpec namedSpec = (NamedWindowConsumerStreamSpec) streamSpec;
             NamedWindowProcessor processor = services.getNamedWindowService().getProcessor(namedSpec.getWindowName());
             eventStreamParentViewable = processor.addConsumer(namedSpec.getFilterExpressions(), statementContext.getEpStatementHandle(), statementContext.getStatementStopService());
+            triggerEventTypeAlias = namedSpec.getWindowName();
         }
         else
         {
@@ -196,8 +201,9 @@ public class EPStatementStartMethod
             {
                 streamAlias = "stream_1";
             }
+            String namedWindowTypeAlias = onTriggerDesc.getWindowName();
 
-            StreamTypeService typeService = new StreamTypeServiceImpl(new EventType[] {namedWindowType, streamEventType}, new String[] {namedWindowAlias, streamAlias});
+            StreamTypeService typeService = new StreamTypeServiceImpl(new EventType[] {namedWindowType, streamEventType}, new String[] {namedWindowAlias, streamAlias}, services.getEngineURI(), new String[] {namedWindowTypeAlias, triggerEventTypeAlias});
 
             // validate join expression
             ExprNode validatedJoin = validateJoinNamedWindow(statementSpec.getFilterRootNode(),
@@ -221,7 +227,7 @@ public class EPStatementStartMethod
         else
         {
             OnTriggerSetDesc desc = (OnTriggerSetDesc) statementSpec.getOnTriggerDesc();
-            StreamTypeService typeService = new StreamTypeServiceImpl(new EventType[] {streamEventType}, new String[] {streamSpec.getOptionalStreamName()});
+            StreamTypeService typeService = new StreamTypeServiceImpl(new EventType[] {streamEventType}, new String[] {streamSpec.getOptionalStreamName()}, services.getEngineURI(), new String[] {triggerEventTypeAlias});
 
             for (OnTriggerSetAssignment assignment : desc.getAssignments())
             {
@@ -240,9 +246,9 @@ public class EPStatementStartMethod
             StatementSpecCompiled defaultSelectAllSpec = new StatementSpecCompiled();
             defaultSelectAllSpec.getSelectClauseSpec().add(new SelectClauseElementWildcard());
 
+            StreamTypeService streamTypeService = new StreamTypeServiceImpl(new EventType[] {onExprView.getEventType()}, new String[] {"trigger_stream"}, services.getEngineURI(), new String[] {triggerEventTypeAlias});
             ResultSetProcessor outputResultSetProcessor = ResultSetProcessorFactory.getProcessor(
-                    defaultSelectAllSpec, statementContext,
-                    new StreamTypeServiceImpl(new EventType[] {onExprView.getEventType()}, new String[] {"trigger_stream"}), null);
+                    defaultSelectAllSpec, statementContext, streamTypeService, null);
 
             // Attach output view
             OutputProcessView outputView = OutputProcessViewFactory.makeView(outputResultSetProcessor, defaultSelectAllSpec, statementContext, services.getInternalEventRouter());
@@ -318,9 +324,10 @@ public class EPStatementStartMethod
         statementSpec.getSelectClauseSpec().getSelectExprList().clear();
         statementSpec.getSelectClauseSpec().add(new SelectClauseElementWildcard());
         statementSpec.setSelectStreamDirEnum(SelectClauseStreamSelectorEnum.RSTREAM_ISTREAM_BOTH);
+
+        StreamTypeService typeService = new StreamTypeServiceImpl(new EventType[] {windowType}, new String[] {windowName}, services.getEngineURI(), new String[] {windowName});
         ResultSetProcessor resultSetProcessor = ResultSetProcessorFactory.getProcessor(
-                statementSpec, statementContext,
-                new StreamTypeServiceImpl(new EventType[] {windowType}, new String[] {windowName}), null);
+                statementSpec, statementContext, typeService, null);
 
         // Attach output view
         OutputProcessView outputView = OutputProcessViewFactory.makeView(resultSetProcessor, statementSpec, statementContext, services.getInternalEventRouter());
@@ -354,7 +361,7 @@ public class EPStatementStartMethod
         if (createDesc.getAssignment() != null)
         {
             // Evaluate assignment expression
-            StreamTypeService typeService = new StreamTypeServiceImpl(new EventType[0], new String[0]);
+            StreamTypeService typeService = new StreamTypeServiceImpl(new EventType[0], new String[0], services.getEngineURI(), new String[0]);
             ExprNode validated = createDesc.getAssignment().getValidatedSubtree(typeService, statementContext.getMethodResolutionService(), null, statementContext.getSchedulingService(), statementContext.getVariableService());
             value = validated.evaluate(null, true);
         }
@@ -390,9 +397,9 @@ public class EPStatementStartMethod
         statementSpec.getSelectClauseSpec().getSelectExprList().clear();
         statementSpec.getSelectClauseSpec().add(new SelectClauseElementWildcard());
         statementSpec.setSelectStreamDirEnum(SelectClauseStreamSelectorEnum.RSTREAM_ISTREAM_BOTH);
+        StreamTypeService typeService = new StreamTypeServiceImpl(new EventType[] {createView.getEventType()}, new String[] {"create_variable"}, services.getEngineURI(), new String[] {"create_variable"});
         ResultSetProcessor resultSetProcessor = ResultSetProcessorFactory.getProcessor(
-                statementSpec, statementContext,
-                new StreamTypeServiceImpl(new EventType[] {createView .getEventType()}, new String[] {"create_variable"}), null);
+                statementSpec, statementContext, typeService, null);
 
         // Attach output view
         OutputProcessView outputView = OutputProcessViewFactory.makeView(resultSetProcessor, statementSpec, statementContext, services.getInternalEventRouter());
@@ -1216,48 +1223,130 @@ public class EPStatementStartMethod
 
     public Viewable executeQuery() throws ExprValidationException
     {
-        // Create streams
-        Viewable eventStreamParentViewable;
-        final StreamSpecCompiled streamSpec = statementSpec.getStreamSpecs().get(0);
-        NamedWindowConsumerStreamSpec namedSpec = (NamedWindowConsumerStreamSpec) streamSpec;
-        NamedWindowProcessor processor = services.getNamedWindowService().getProcessor(namedSpec.getWindowName());
+        validateExecuteQuery();
 
-        List<EventBean> snapshot = processor.getTailView().snapshot();
-        if ((namedSpec.getFilterExpressions().size() != 0) || (statementSpec.getFilterRootNode() != null))
+        int numStreams = statementSpec.getStreamSpecs().size();
+        EventType[] typesPerStream = new EventType[numStreams];
+        String[] namesPerStream = new String[numStreams];
+        boolean[] isNamedWindow = new boolean[numStreams];
+        Arrays.fill(isNamedWindow, true);
+        NamedWindowProcessor[] processors = new NamedWindowProcessor[numStreams];
+
+        for (int i = 0; i < numStreams; i++)
         {
+            final StreamSpecCompiled streamSpec = statementSpec.getStreamSpecs().get(i);
+            NamedWindowConsumerStreamSpec namedSpec = (NamedWindowConsumerStreamSpec) streamSpec;
 
+            String streamName = namedSpec.getWindowName();
+            if (namedSpec.getOptionalStreamName() != null)
+            {
+                streamName = namedSpec.getOptionalStreamName();
+            }
+            namesPerStream[i] = streamName;
+
+            processors[i] = services.getNamedWindowService().getProcessor(namedSpec.getWindowName());
+            typesPerStream[i] = processors[i].getTailView().getEventType();
         }
 
-        EventType namedWindowType = processor.getNamedWindowType();
-        String namedWindowAlias = namedSpec.getWindowName();
-        StreamTypeService typeService = new StreamTypeServiceImpl(new EventType[] {namedWindowType}, new String[] {namedWindowAlias});
-        ResultSetProcessor resultSetProcessor = ResultSetProcessorFactory.getProcessor(statementSpec, statementContext, typeService, null);
-        resultSetProcessor.processViewResult()
+        StreamTypeService typeService = new StreamTypeServiceImpl(typesPerStream, namesPerStream);
+        validateNodes(typeService, statementContext.getMethodResolutionService(), null);
 
-        return new EPQueryResultViewable(.iterator(), processor.getNamedWindowType());
-        // apply filter, apply where clause, allow views but not data window
-        
-        /*
-        EventType streamEventType = eventStreamParentViewable.getEventType();
+        List<EventBean>[] snapshots = new List[numStreams];
+        for (int i = 0; i < numStreams; i++)
+        {
+            final StreamSpecCompiled streamSpec = statementSpec.getStreamSpecs().get(i);
+            NamedWindowConsumerStreamSpec namedSpec = (NamedWindowConsumerStreamSpec) streamSpec;
+            snapshots[i] = processors[i].getTailView().snapshot();
 
-        ResultSetProcessor resultSetProcessor;
-        // For on-delete and on-select triggers
-
-
-
-            // Construct a processor for results; for use in on-select to process selection results
-            // Use a wildcard select if the select-clause is empty, such as for on-delete.
-            // For on-select the select clause is not empty.
-            if (statementSpec.getSelectClauseSpec().getSelectExprList().size() == 0)
+            if (namedSpec.getFilterExpressions().size() != 0)
             {
-                statementSpec.getSelectClauseSpec().add(new SelectClauseElementWildcard());
+                snapshots[i] = getFiltered(snapshots[i], namedSpec.getFilterExpressions());
+            }
+        }
+
+        ResultSetProcessor resultSetProcessor = ResultSetProcessorFactory.getProcessor(statementSpec, statementContext, typeService, null);
+        UniformPair<EventBean[]> results;
+        if (numStreams == 1)
+        {
+            if (statementSpec.getFilterRootNode() != null)
+            {
+                snapshots[0] = getFiltered(snapshots[0], Arrays.asList(statementSpec.getFilterRootNode()));
+            }
+            EventBean[] rows = snapshots[0].toArray(new EventBean[snapshots[0].size()]);
+            results = resultSetProcessor.processViewResult(rows, null, true);
+        }
+        else
+        {
+            EventBean[][] oldDataPerStream = new EventBean[numStreams][];
+            EventBean[][] newDataPerStream = new EventBean[numStreams][];
+            Viewable[] viewablePerStream = new Viewable[numStreams];
+            for (int i = 0; i < numStreams; i++)
+            {
+                newDataPerStream[i] = snapshots[i].toArray(new EventBean[snapshots[i].size()]);
+                viewablePerStream[i] = processors[i].getTailView();
+            }
+            JoinSetComposer joinComposer = statementContext.getJoinSetComposerFactory().makeComposer(statementSpec.getOuterJoinDescList(), statementSpec.getFilterRootNode(), typesPerStream, namesPerStream, viewablePerStream, SelectClauseStreamSelectorEnum.ISTREAM_ONLY, new boolean[numStreams], new boolean[numStreams], isNamedWindow);
+            UniformPair<Set<MultiKey<EventBean>>> result = joinComposer.join(newDataPerStream, oldDataPerStream);
+            results = resultSetProcessor.processJoinResult(result.getFirst(), null, true);
+        }
+
+        return new EPQueryResultViewable(new ArrayEventIterator(results.getFirst()), resultSetProcessor.getResultEventType());
+    }
+
+    private void validateExecuteQuery() throws ExprValidationException
+    {
+        if (statementSpec.getSubSelectExpressions().size() > 0)
+        {
+            throw new ExprValidationException("Subqueries are not a supported feature of on-demand queries");
+        }
+        for (int i = 0; i < statementSpec.getStreamSpecs().size(); i++)
+        {
+            if (!(statementSpec.getStreamSpecs().get(i) instanceof NamedWindowConsumerStreamSpec))
+            {
+                throw new ExprValidationException("On-demand queries require named windows and do not allow event streams or patterns");                
+            }
+            if (statementSpec.getStreamSpecs().get(i).getViewSpecs().size() != 0)
+            {
+                throw new ExprValidationException("Views are not a supported feature of on-demand queries");
+            }
+        }
+        if (statementSpec.getOutputLimitSpec() != null)
+        {
+            throw new ExprValidationException("Output rate limiting is not a supported feature of on-demand queries");
+        }
+        if (statementSpec.getInsertIntoDesc() != null)
+        {
+            throw new ExprValidationException("Insert-into is not a supported feature of on-demand queries");
+        }
+    }
+
+    private List<EventBean> getFiltered(List<EventBean> snapshot, List<ExprNode> filterExpressions)
+    {
+        EventBean[] eventsPerStream = new EventBean[1];
+        List<EventBean> filteredSnapshot = new ArrayList<EventBean>();
+        for (EventBean row : snapshot)
+        {
+            boolean pass = true;
+            eventsPerStream[0] = row;
+            for (ExprNode filter : filterExpressions)
+            {
+                Boolean result = (Boolean) filter.evaluate(eventsPerStream, true);
+                if (result != null)
+                {
+                    if (!result.booleanValue())
+                    {
+                        pass = false;
+                        break;
+                    }
+                }
             }
 
+            if (pass)
+            {
+                filteredSnapshot.add(row);
+            }
+        }
 
-
-        log.debug(".start Statement start completed");
-
-        return new Pair<Viewable, EPStatementStopMethod>(onExprView, stopMethod);
-        */
+        return filteredSnapshot;
     }
 }

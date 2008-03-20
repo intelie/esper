@@ -7,13 +7,13 @@
  **************************************************************************************/
 package com.espertech.esper.epl.spec;
 
-import com.espertech.esper.pattern.EvalNode;
+import com.espertech.esper.collection.Pair;
 import com.espertech.esper.event.EventType;
-import com.espertech.esper.epl.spec.ViewSpec;
+import com.espertech.esper.pattern.EvalNode;
 
-import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Specification for building an event stream out of a pattern statement and views staggered onto the
@@ -26,7 +26,7 @@ import java.util.List;
 public class PatternStreamSpecCompiled extends StreamSpecBase implements StreamSpecCompiled
 {
     private final EvalNode evalNode;
-    private final Map<String, EventType> taggedEventTypes;       // Stores types for filters with tags
+    private final Map<String, Pair<EventType, String>> taggedEventTypes;       // Stores types for filters with tags
 
     /**
      * Ctor.
@@ -36,12 +36,12 @@ public class PatternStreamSpecCompiled extends StreamSpecBase implements StreamS
      * @param optionalStreamName - stream name, or null if none supplied
      * @param isUnidirectional - true to indicate a unidirectional stream in a join, applicable for joins
      */
-    public PatternStreamSpecCompiled(EvalNode evalNode, Map<String, EventType> taggedEventTypes, List<ViewSpec> viewSpecs, String optionalStreamName, boolean isUnidirectional)
+    public PatternStreamSpecCompiled(EvalNode evalNode, Map<String, Pair<EventType, String>> taggedEventTypes, List<ViewSpec> viewSpecs, String optionalStreamName, boolean isUnidirectional)
     {
         super(optionalStreamName, viewSpecs, isUnidirectional);
         this.evalNode = evalNode;
 
-        Map<String, EventType> copy = new HashMap<String, EventType>();
+        Map<String, Pair<EventType, String>> copy = new HashMap<String, Pair<EventType, String>>();
         copy.putAll(taggedEventTypes);
         this.taggedEventTypes = copy;
     }
@@ -59,7 +59,7 @@ public class PatternStreamSpecCompiled extends StreamSpecBase implements StreamS
      * Returns event types tagged in the pattern expression.
      * @return map of tag and event type tagged in pattern expression
      */
-    public Map<String, EventType> getTaggedEventTypes()
+    public Map<String, Pair<EventType, String>> getTaggedEventTypes()
     {
         return taggedEventTypes;
     }

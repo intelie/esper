@@ -106,7 +106,7 @@ public class ParseHelper
         }
         catch (RuntimeException e)
         {
-            log.info("Error parsing statement [" + expression + "]", e);
+            log.debug("Error parsing statement [" + expression + "]", e);
             if (e.getCause() instanceof RecognitionException)
             {
                 throw EPStatementSyntaxException.convert((RecognitionException)e.getCause(), expression, parser);
@@ -118,7 +118,7 @@ public class ParseHelper
         }
         catch (RecognitionException ex)
         {
-            log.info("Error parsing statement [" + expression + "]", ex);
+            log.debug("Error parsing statement [" + expression + "]", ex);
             throw EPStatementSyntaxException.convert(ex, expression, parser);
         }
 
