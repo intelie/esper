@@ -107,19 +107,22 @@ public class PatternStreamSpecRaw extends StreamSpecBase implements StreamSpecRa
             String eventName = filterNode.getRawFilterSpec().getEventTypeAlias();
             EventType eventType = FilterStreamSpecRaw.resolveType(eventName, eventAdapterService);
             String optionalTag = filterNode.getEventAsName();
-            String aliasUsed = filterNode.getFilterSpec().getEventTypeAlias();
 
             // If a tag was supplied for the type, the tags must stay with this type, i.e. a=BeanA -> b=BeanA -> a=BeanB is a no
             if (optionalTag != null)
             {
                 Pair<EventType, String> pair = taggedEventTypes.get(optionalTag);
-                EventType existingType = pair.getFirst();
+                EventType existingType = null;
+                if (pair != null)
+                {
+                    existingType = pair.getFirst();
+                }                
                 if ((existingType != null) && (existingType != eventType))
                 {
                     throw new IllegalArgumentException("Tag '" + optionalTag + "' for event '" + eventName +
                             "' has already been declared for events of type " + existingType.getUnderlyingType().getName());
                 }
-                pair = new Pair<EventType, String>(eventType, aliasUsed);
+                pair = new Pair<EventType, String>(eventType, eventName);
                 taggedEventTypes.put(optionalTag, pair);
             }
 
@@ -134,7 +137,7 @@ public class PatternStreamSpecRaw extends StreamSpecBase implements StreamSpecRa
                 selfStreamName = "s_" + UuidGenerator.generate(filterNode);
             }
             LinkedHashMap<String, Pair<EventType, String>> filterTypes = new LinkedHashMap<String, Pair<EventType, String>>();
-            Pair<EventType, String> typePair = new Pair<EventType, String>(eventType, aliasUsed);
+            Pair<EventType, String> typePair = new Pair<EventType, String>(eventType, eventName);
             filterTypes.put(selfStreamName, typePair);
             filterTypes.putAll(taggedEventTypes);
             StreamTypeService streamTypeService = new StreamTypeServiceImpl(filterTypes, engineURI, true, false);

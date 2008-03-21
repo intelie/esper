@@ -9,6 +9,7 @@ import com.espertech.esper.epl.spec.InsertIntoDesc;
 import com.espertech.esper.epl.spec.SelectClauseStreamCompiledSpec;
 import com.espertech.esper.event.*;
 import com.espertech.esper.util.ExecutionPathDebugLog;
+import com.espertech.esper.collection.Pair;
 
 import java.util.*;
 
@@ -91,7 +92,11 @@ public class SelectExprEvalProcessorStreams implements SelectExprProcessor
                 if (unaliasedStreams.get(0).isTaggedEvent())
                 {
                     TaggedCompositeEventType comp = (TaggedCompositeEventType) typeService.getEventTypes()[underlyingStreamNumber];
-                    underlyingEventType = comp.getTaggedEventTypes().get(unaliasedStreams.get(0).getStreamAliasName());
+                    Pair<EventType, String> pair = comp.getTaggedEventTypes().get(unaliasedStreams.get(0).getStreamAliasName());
+                    if (pair != null)
+                    {
+                        underlyingEventType = pair.getFirst();
+                    }
                     underlyingIsTaggedEvent = true;
                 }
                 else

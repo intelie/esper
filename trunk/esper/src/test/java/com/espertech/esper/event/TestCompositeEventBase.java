@@ -3,6 +3,7 @@ package com.espertech.esper.event;
 import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.bean.SupportBeanComplexProps;
 import com.espertech.esper.support.event.SupportEventAdapterService;
+import com.espertech.esper.collection.Pair;
 
 import java.util.Map;
 import java.util.HashMap;
@@ -18,9 +19,9 @@ public abstract class TestCompositeEventBase extends TestCase
 
     public void setUp()
     {
-        Map<String, EventType> taggedEventTypes = new HashMap<String, EventType>();
-        taggedEventTypes.put("a", SupportEventAdapterService.getService().addBeanType("A", SupportBean.class));
-        taggedEventTypes.put("b", SupportEventAdapterService.getService().addBeanType("B", SupportBeanComplexProps.class));
+        Map<String, Pair<EventType, String>> taggedEventTypes = new HashMap<String, Pair<EventType, String>>();
+        taggedEventTypes.put("a", new Pair<EventType, String>(SupportEventAdapterService.getService().addBeanType("A", SupportBean.class), "AType"));
+        taggedEventTypes.put("b", new Pair<EventType, String>(SupportEventAdapterService.getService().addBeanType("B", SupportBeanComplexProps.class), "BType"));
         eventType = new CompositeEventType("alias", taggedEventTypes);
 
         event = new SupportBean();

@@ -6,6 +6,7 @@ import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.bean.SupportBean_A;
 import com.espertech.esper.support.bean.SupportMarketDataBean;
 import com.espertech.esper.support.event.SupportEventTypeFactory;
+import com.espertech.esper.collection.Pair;
 
 import java.util.LinkedHashMap;
 
@@ -24,19 +25,20 @@ public class TestStreamTypeServiceImpl extends TestCase
             SupportEventTypeFactory.createBeanType(SupportBean_A.class),
             SupportEventTypeFactory.createBeanType(SupportMarketDataBean.class)
             };
+        String[] eventTypeAlias = new String[] {"SupportBean", "SupportBean", "SupportBean_A", "SupportMarketDataBean"};
         String[] streamNames = new String[] {"s1", null, "s3", "s4"};
-        serviceRegular = new StreamTypeServiceImpl(eventTypes, streamNames);
+        serviceRegular = new StreamTypeServiceImpl(eventTypes, streamNames, "default", eventTypeAlias);
 
         // Prepare with stream-zero being unambigous
-        LinkedHashMap<String, EventType> streamTypes = new LinkedHashMap<String, EventType>();
+        LinkedHashMap<String, Pair<EventType, String>> streamTypes = new LinkedHashMap<String, Pair<EventType, String>>();
         for (int i = 0; i < streamNames.length; i++)
         {
-            streamTypes.put(streamNames[i], eventTypes[i]);
+            streamTypes.put(streamNames[i], new Pair<EventType, String>(eventTypes[i], eventTypeAlias[i]));
         }
-        serviceStreamZeroUnambigous = new StreamTypeServiceImpl(streamTypes, true, false);
+        serviceStreamZeroUnambigous = new StreamTypeServiceImpl(streamTypes, "default", true, false);
 
         // Prepare requiring stream names for non-zero streams
-        serviceRequireStreamName = new StreamTypeServiceImpl(streamTypes, true, true);
+        serviceRequireStreamName = new StreamTypeServiceImpl(streamTypes, "default", true, true);
     }
 
     public void testResolveByStreamAndPropNameInOne() throws Exception
@@ -161,5 +163,13 @@ public class TestStreamTypeServiceImpl extends TestCase
         {
             // Expected
         }
+
+        // resolve by event type alias (table name)
+        desc = service.resolveByStreamAndPropName("SupportMarketDataBean.volume");
+        assertEquals(3, (int) desc.getStreamNum());
+
+        // resolve by engine URI plus event type alias
+        desc = service.resolveByStreamAndPropName("default.SupportMarketDataBean.volume");
+        assertEquals(3, (int) desc.getStreamNum());
     }
 }

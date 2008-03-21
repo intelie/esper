@@ -153,7 +153,7 @@ public class TestNamedWindowDelete extends TestCase
 
         // create consumer
         String[] fields = new String[] {"a", "b"};
-        String stmtTextSelect = "select irstream a, b from MyWindow as s1";
+        String stmtTextSelect = "select irstream MyWindow.a as a, b from MyWindow as s1";
         EPStatement stmtSelect = epService.getEPAdministrator().createEPL(stmtTextSelect);
         stmtSelect.addListener(listenerSelect);
 
@@ -256,7 +256,7 @@ public class TestNamedWindowDelete extends TestCase
         stmtTextDelete = "on " + SupportBean.class.getName() + "(string='DP') as s0 delete from MyWindow as win where win.intPrimitive = s0.doublePrimitive";
         deleteStatements.add(epService.getEPAdministrator().createEPL(stmtTextDelete));
 
-        stmtTextDelete = "on " + SupportBean.class.getName() + "(string='IB') as s0 delete from MyWindow as win where win.intPrimitive = s0.intBoxed";
+        stmtTextDelete = "on " + SupportBean.class.getName() + "(string='IB') as s0 delete from MyWindow where MyWindow.intPrimitive = s0.intBoxed";
         deleteStatements.add(epService.getEPAdministrator().createEPL(stmtTextDelete));
 
         stmtTextDelete = "on " + SupportBean.class.getName() + "(string='IPDP') as s0 delete from MyWindow as win where win.intPrimitive = s0.intPrimitive and win.doublePrimitive = s0.doublePrimitive";

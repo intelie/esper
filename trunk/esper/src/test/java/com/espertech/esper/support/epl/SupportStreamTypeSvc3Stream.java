@@ -14,7 +14,7 @@ public class SupportStreamTypeSvc3Stream implements StreamTypeService
 
     public SupportStreamTypeSvc3Stream()
     {
-        impl = new StreamTypeServiceImpl(getEventTypes(), getStreamNames());
+        impl = new StreamTypeServiceImpl(getEventTypes(), getStreamNames(), "default", getEventTypeAliases());
     }
 
     public PropertyResolutionDescriptor resolveByPropertyName(String propertyName) throws DuplicatePropertyException, PropertyNotFoundException
@@ -45,6 +45,11 @@ public class SupportStreamTypeSvc3Stream implements StreamTypeService
             SupportEventTypeFactory.createBeanType(SupportBeanComplexProps.class)
         };
         return eventTypes;
+    }
+
+    public String[] getEventTypeAliases()
+    {
+        return new String[] {"SupportBean", "SupportBean", "SupportBeanComplexProps"};
     }
 
     public static EventBean[] getSampleEvents()

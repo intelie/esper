@@ -85,7 +85,7 @@ public abstract class BaseSubscription implements Subscription, FilterHandleCall
         }
         EPServiceProviderSPI spi = (EPServiceProviderSPI) epService;
         EventType eventType = spi.getEventAdapterService().getExistsTypeByAlias(eventTypeAlias);
-        FilterValueSet fvs = new FilterSpecCompiled(eventType, new LinkedList<FilterSpecParam>()).getValueSet(null);
+        FilterValueSet fvs = new FilterSpecCompiled(eventType, null, new LinkedList<FilterSpecParam>()).getValueSet(null);
 
         String name = "subscription:" + subscriptionName;
         EPStatementHandle statementHandle = new EPStatementHandle(name, new ManagedLockImpl(name), name, false);

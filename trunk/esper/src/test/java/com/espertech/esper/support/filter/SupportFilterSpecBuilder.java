@@ -10,7 +10,7 @@ public class SupportFilterSpecBuilder
 {
     public static FilterSpecCompiled build(EventType eventType, Object[] objects)
     {
-        return new FilterSpecCompiled(eventType, buildList(objects));
+        return new FilterSpecCompiled(eventType, "SomeAliasNameForType", buildList(objects));
     }
 
     public static List<FilterSpecParam> buildList(Object[] objects)
@@ -41,4 +41,5 @@ public class SupportFilterSpecBuilder
         return filterParams;
     }
 }
+
 

@@ -104,7 +104,7 @@ public class StreamTypeServiceImpl implements StreamTypeService
         {
             throw new IllegalArgumentException("Null property name");
         }
-        return findByStreamName(propertyName, streamName);
+        return findByStreamAndEngineName(propertyName, streamName);
     }
 
     public PropertyResolutionDescriptor resolveByStreamAndPropName(String streamAndPropertyName) throws DuplicatePropertyException, PropertyNotFoundException
@@ -133,11 +133,24 @@ public class StreamTypeServiceImpl implements StreamTypeService
             try
             {
                 // try to resolve a stream and property name
-                desc = findByStreamName(propertyName, streamName);
+                desc = findByStreamAndEngineName(propertyName, streamName);
             }
             catch (StreamNotFoundException e)
             {
-                throw ex;       // throws PropertyNotFoundException
+                // Consider the engine URI as a further prefix
+                Pair<String, String> propertyNoEnginePair = getIsEngineQualified(propertyName, streamName);
+                if (propertyNoEnginePair == null)
+                {
+                    throw ex;
+                }
+                try
+                {
+                    return findByStreamNameOnly(propertyNoEnginePair.getFirst(), propertyNoEnginePair.getSecond());
+                }
+                catch (StreamNotFoundException e1)
+                {
+                    throw ex;
+                }
             }
             return desc;
         }
@@ -183,12 +196,64 @@ public class StreamTypeServiceImpl implements StreamTypeService
         return new PropertyResolutionDescriptor(streamNames[foundIndex], eventTypes[foundIndex], propertyName, foundIndex, streamType.getPropertyType(propertyName));
     }
 
-    private PropertyResolutionDescriptor findByStreamName(String propertyName, String streamName)
+    private PropertyResolutionDescriptor findByStreamAndEngineName(String propertyName, String streamName)
+        throws PropertyNotFoundException, StreamNotFoundException
+    {
+        PropertyResolutionDescriptor desc;
+        try
+        {
+            desc = findByStreamNameOnly(propertyName, streamName);
+        }
+        catch (PropertyNotFoundException ex)
+        {
+            Pair<String, String> propertyNoEnginePair = getIsEngineQualified(propertyName, streamName);
+            if (propertyNoEnginePair == null)
+            {
+                throw ex;
+            }
+            return findByStreamNameOnly(propertyNoEnginePair.getFirst(), propertyNoEnginePair.getSecond());
+        }
+        catch (StreamNotFoundException ex)
+        {
+            Pair<String, String> propertyNoEnginePair = getIsEngineQualified(propertyName, streamName);
+            if (propertyNoEnginePair == null)
+            {
+                throw ex;
+            }
+            return findByStreamNameOnly(propertyNoEnginePair.getFirst(), propertyNoEnginePair.getSecond());
+        }
+        return desc;
+    }
+
+    private Pair<String, String> getIsEngineQualified(String propertyName, String streamName) {
+
+        // If still not found, test for the stream name to contain the engine URI
+        if (!streamName.equals(engineURI))
+        {
+            return null;
+        }
+
+        int index = propertyName.indexOf('.');
+        if (index == -1)
+        {
+            return null;
+        }
+
+        String streamNameNoEngine = propertyName.substring(0, index);
+        String propertyNameNoEngine = propertyName.substring(index + 1, propertyName.length());
+        return new Pair<String, String>(propertyNameNoEngine, streamNameNoEngine);
+    }
+
+    private PropertyResolutionDescriptor findByStreamNameOnly(String propertyName, String streamName)
         throws PropertyNotFoundException, StreamNotFoundException
     {
         int index = 0;
         EventType streamType = null;
 
+        // Stream name resultion examples:
+        // A)  select A1.price from Event.price as A2  => mismatch stream alias, cannot resolve
+        // B)  select Event1.price from Event2.price   => mismatch event type alias, cannot resolve
+        // C)  select default.Event2.price from Event2.price   => possible prefix of engine name
         for (int i = 0; i < eventTypes.length; i++)
         {
             if ((streamNames[i] != null) && (streamNames[i].equals(streamName)))
@@ -196,10 +261,17 @@ public class StreamTypeServiceImpl implements StreamTypeService
                 streamType = eventTypes[i];
                 break;
             }
+
+            // If the stream name is the event type alias, that is also acceptable
+            if ((eventTypeAlias[i] != null) && (eventTypeAlias[i].equals(streamName)))
+            {
+                streamType = eventTypes[i];
+                break;
+            }
+
             index++;
         }
 
-        // Stream name not found
         if (streamType == null)
         {
             throw new StreamNotFoundException("Stream named " + streamName + " is not defined");
