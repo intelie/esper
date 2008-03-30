@@ -2,40 +2,43 @@ package com.espertech.esper.core;
 
 import com.espertech.esper.client.EPQueryResult;
 import com.espertech.esper.client.SafeIterator;
+import com.espertech.esper.collection.ArrayEventIterator;
 import com.espertech.esper.event.EventBean;
 import com.espertech.esper.event.EventType;
-import com.espertech.esper.view.Viewable;
 
 import java.util.Iterator;
 
-public class EPQueryResultImpl implements EPQueryResult
+public class EPQueryResultImpl implements EPQueryResultSPI
 {
-    private Viewable viewable;
+    private EPPreparedQueryResult queryResult;
 
-    public EPQueryResultImpl(Viewable viewable)
+    public EPQueryResultImpl(EPPreparedQueryResult queryResult)
     {
-        this.viewable = viewable;
+        this.queryResult = queryResult;
     }
 
     public int getRowCount()
     {
-        // TODO
-        return 0;  //To change body of implemented methods use File | Settings | File Templates.
+        return queryResult.getResult().length;
     }
 
     public Iterator<EventBean> iterator()
     {
-        return viewable.iterator();
+        return new ArrayEventIterator(queryResult.getResult());
     }
 
     public SafeIterator<EventBean> safeIterator()
     {
-        // TODO
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return null;  // TODO
+    }
+
+    public EventBean[] getArray()
+    {
+        return queryResult.getResult();
     }
 
     public EventType getEventType()
     {
-        return viewable.getEventType();
+        return queryResult.getEventType();
     }
 }

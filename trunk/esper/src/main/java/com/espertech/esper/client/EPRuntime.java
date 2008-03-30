@@ -168,4 +168,5 @@ public interface EPRuntime
     public void setVariableValue(Map<String, Object> variableValues) throws VariableValueException, VariableNotFoundException;
 
     public EPQueryResult executeQuery(String epl);
+    public EPPreparedQuery prepareQuery(String epl);
 }

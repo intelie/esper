@@ -32,16 +32,20 @@ public class TestNamedWindowExecuteQuery extends TestCase
     public void testExecuteSimple() throws Exception
     {
         String query = "select * from MyWindow";
+        EPPreparedQuery prepared = epService.getEPRuntime().prepareQuery(query);
         EPQueryResult result = epService.getEPRuntime().executeQuery(query);
         ArrayAssertionUtil.assertEqualsExactOrder(result.iterator(), fields, null);
+        ArrayAssertionUtil.assertEqualsExactOrder(prepared.execute().iterator(), fields, null);
 
         epService.getEPRuntime().sendEvent(new SupportBean("E1", 1));
         result = epService.getEPRuntime().executeQuery(query);
         ArrayAssertionUtil.assertEqualsExactOrder(result.iterator(), fields, new Object[][] {{"E1", 1}});
+        ArrayAssertionUtil.assertEqualsExactOrder(prepared.execute().iterator(), fields, new Object[][] {{"E1", 1}});
 
         epService.getEPRuntime().sendEvent(new SupportBean("E2", 2));
         result = epService.getEPRuntime().executeQuery(query);
         ArrayAssertionUtil.assertEqualsExactOrder(result.iterator(), fields, new Object[][] {{"E1", 1}, {"E2", 2}});
+        ArrayAssertionUtil.assertEqualsExactOrder(prepared.execute().iterator(), fields, new Object[][] {{"E1", 1}, {"E2", 2}});
     }
 
     public void testExecuteFilter() throws Exception
@@ -189,5 +193,8 @@ public class TestNamedWindowExecuteQuery extends TestCase
     {
         EPQueryResult result = epService.getEPRuntime().executeQuery(query);
         ArrayAssertionUtil.assertEqualsExactOrder(result.iterator(), fields, new Object[][] {{"E3", 5}});
+
+        EPPreparedQuery prepared = epService.getEPRuntime().prepareQuery(query);
+        ArrayAssertionUtil.assertEqualsExactOrder(prepared.execute().iterator(), fields, new Object[][] {{"E3", 5}});
     }
 }

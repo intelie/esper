@@ -5,6 +5,8 @@ Changes in version 2.0.0
 ------------------------
 
 - Duplicate timer warning output only when external timer events
+- FAF queries, prepared and unprepared
+- properties to allow prefix by engine URI and event type alias
 
 
 Changes in version 2.0.0

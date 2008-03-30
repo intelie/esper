@@ -12,6 +12,7 @@ import com.espertech.esper.core.EPServiceProviderImpl;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Factory for instances of {@link EPServiceProvider}.
@@ -79,5 +80,11 @@ public final class EPServiceProviderManager
         runtimes.put(uri, runtime);
 
         return runtime;
+    }
+
+    public static String[] getProviderURIs()
+    {
+        Set<String> uriSet = runtimes.keySet();
+        return uriSet.toArray(new String[uriSet.size()]);
     }
 }

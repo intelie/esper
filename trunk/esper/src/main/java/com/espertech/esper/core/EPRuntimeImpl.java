@@ -13,7 +13,6 @@ import com.espertech.esper.client.time.TimerControlEvent;
 import com.espertech.esper.client.time.TimerEvent;
 import com.espertech.esper.collection.ArrayBackedCollection;
 import com.espertech.esper.collection.ThreadWorkQueue;
-import com.espertech.esper.collection.Pair;
 import com.espertech.esper.epl.variable.VariableReader;
 import com.espertech.esper.epl.spec.SelectClauseStreamSelectorEnum;
 import com.espertech.esper.epl.spec.StatementSpecRaw;
@@ -801,6 +800,46 @@ public class EPRuntimeImpl implements EPRuntime, TimerCallback, InternalEventRou
 
     public EPQueryResult executeQuery(String epl)
     {
+        try
+        {
+            EPPreparedExecuteMethod executeMethod = getExecuteMethod(epl);
+            EPPreparedQueryResult result = executeMethod.execute();
+            return new EPQueryResultImpl(result);
+        }
+        catch (EPStatementException ex)
+        {
+            throw ex;
+        }
+        catch (Throwable t)
+        {
+            String message = "Error executing statement: " + t.getMessage();
+            log.debug(message, t);
+            throw new EPStatementException(message, epl);
+        }
+    }
+
+
+    public EPPreparedQuery prepareQuery(String epl)
+    {
+        try
+        {
+            EPPreparedExecuteMethod startMethod = getExecuteMethod(epl);
+            return new EPPreparedQueryImpl(startMethod, epl);
+        }
+        catch (EPStatementException ex)
+        {
+            throw ex;
+        }
+        catch (Throwable t)
+        {
+            String message = "Error executing statement: " + t.getMessage();
+            log.debug(message, t);
+            throw new EPStatementException(message, epl);
+        }
+    }
+
+    private EPPreparedExecuteMethod getExecuteMethod(String epl)
+    {
         String stmtName = UuidGenerator.generate(epl);
         String stmtId = UuidGenerator.generate(epl + " ");
 
@@ -809,9 +848,7 @@ public class EPRuntimeImpl implements EPRuntime, TimerCallback, InternalEventRou
             StatementSpecRaw spec = EPAdministratorImpl.compileEPL(epl, stmtName, services, SelectClauseStreamSelectorEnum.ISTREAM_ONLY);
             StatementContext statementContext =  services.getStatementContextFactory().makeContext(stmtId, stmtName, epl, false, services, null, null, null);
             StatementSpecCompiled compiledSpec = StatementLifecycleSvcImpl.compile(spec, epl, statementContext);
-            EPStatementStartMethod startMethod = new EPStatementStartMethod(compiledSpec, services, statementContext);
-            Viewable result = startMethod.executeQuery();
-            return new EPQueryResultImpl(result);
+            return new EPPreparedExecuteMethod(compiledSpec, services, statementContext);
         }
         catch (EPStatementException ex)
         {

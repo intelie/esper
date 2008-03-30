@@ -3,8 +3,8 @@ package com.espertech.esper.core;
 import com.espertech.esper.client.EPStatementException;
 import com.espertech.esper.collection.Pair;
 import com.espertech.esper.collection.UniformPair;
-import com.espertech.esper.collection.ArrayEventIterator;
-import com.espertech.esper.collection.MultiKey;
+import com.espertech.esper.epl.agg.AggregationService;
+import com.espertech.esper.epl.agg.AggregationServiceFactory;
 import com.espertech.esper.epl.core.*;
 import com.espertech.esper.epl.db.DatabasePollingViewableFactory;
 import com.espertech.esper.epl.expression.*;
@@ -18,16 +18,16 @@ import com.espertech.esper.epl.join.table.UnindexedEventTable;
 import com.espertech.esper.epl.lookup.*;
 import com.espertech.esper.epl.named.*;
 import com.espertech.esper.epl.spec.*;
+import com.espertech.esper.epl.subquery.SubqueryStopCallback;
+import com.espertech.esper.epl.subquery.SubselectAggregatorView;
+import com.espertech.esper.epl.subquery.SubselectBufferObserver;
 import com.espertech.esper.epl.variable.CreateVariableView;
 import com.espertech.esper.epl.variable.OnSetVariableView;
 import com.espertech.esper.epl.variable.VariableDeclarationException;
 import com.espertech.esper.epl.variable.VariableExistsException;
-import com.espertech.esper.epl.view.*;
-import com.espertech.esper.epl.agg.AggregationService;
-import com.espertech.esper.epl.agg.AggregationServiceFactory;
-import com.espertech.esper.epl.subquery.SubselectAggregatorView;
-import com.espertech.esper.epl.subquery.SubqueryStopCallback;
-import com.espertech.esper.epl.subquery.SubselectBufferObserver;
+import com.espertech.esper.epl.view.FilterExprView;
+import com.espertech.esper.epl.view.OutputProcessView;
+import com.espertech.esper.epl.view.OutputProcessViewFactory;
 import com.espertech.esper.event.EventBean;
 import com.espertech.esper.event.EventType;
 import com.espertech.esper.pattern.EvalRootNode;
@@ -600,7 +600,7 @@ public class EPStatementStartMethod
                 statementSpec, statementContext, typeService, viewResourceDelegate);
 
         // Validate where-clause filter tree and outer join clause
-        validateNodes(typeService, statementContext.getMethodResolutionService(), viewResourceDelegate);
+        validateNodes(statementSpec, statementContext, typeService, viewResourceDelegate);
 
         // Materialize views
         Viewable[] streamViews = new Viewable[streamEventTypes.length];
@@ -737,8 +737,13 @@ public class EPStatementStartMethod
         return streamNames;
     }
 
-    private void validateNodes(StreamTypeService typeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate)
+    protected static void validateNodes(StatementSpecCompiled statementSpec,
+                                        StatementContext statementContext,
+                                        StreamTypeService typeService,
+                                        ViewResourceDelegate viewResourceDelegate)
     {
+        MethodResolutionService methodResolutionService = statementContext.getMethodResolutionService();
+
         if (statementSpec.getFilterRootNode() != null)
         {
             ExprNode optionalFilterNode = statementSpec.getFilterRootNode();
@@ -768,8 +773,8 @@ public class EPStatementStartMethod
         {
             OuterJoinDesc outerJoinDesc = statementSpec.getOuterJoinDescList().get(outerJoinCount);
 
-            UniformPair<Integer> streamIdPair = validateOuterJoinPropertyPair(outerJoinDesc.getLeftNode(), outerJoinDesc.getRightNode(), outerJoinCount,
-                    typeService, methodResolutionService, viewResourceDelegate);
+            UniformPair<Integer> streamIdPair = validateOuterJoinPropertyPair(statementContext, outerJoinDesc.getLeftNode(), outerJoinDesc.getRightNode(), outerJoinCount,
+                    typeService, viewResourceDelegate);
 
             if (outerJoinDesc.getAdditionalLeftNodes() != null)
             {
@@ -778,8 +783,8 @@ public class EPStatementStartMethod
                 streamSet.add(streamIdPair.getSecond());
                 for (int i = 0; i < outerJoinDesc.getAdditionalLeftNodes().length; i++)
                 {
-                    UniformPair<Integer> streamIdPairAdd = validateOuterJoinPropertyPair(outerJoinDesc.getAdditionalLeftNodes()[i], outerJoinDesc.getAdditionalRightNodes()[i], outerJoinCount,
-                            typeService, methodResolutionService, viewResourceDelegate);
+                    UniformPair<Integer> streamIdPairAdd = validateOuterJoinPropertyPair(statementContext, outerJoinDesc.getAdditionalLeftNodes()[i], outerJoinDesc.getAdditionalRightNodes()[i], outerJoinCount,
+                            typeService, viewResourceDelegate);
 
                     // make sure all additional properties point to the same two streams
                     if ((!streamSet.contains(streamIdPairAdd.getFirst()) || (!streamSet.contains(streamIdPairAdd.getSecond()))))
@@ -794,8 +799,13 @@ public class EPStatementStartMethod
         }
     }
 
-    private UniformPair<Integer> validateOuterJoinPropertyPair(ExprIdentNode leftNode, ExprIdentNode rightNode, int outerJoinCount,
-           StreamTypeService typeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate)
+    private static UniformPair<Integer> validateOuterJoinPropertyPair(
+            StatementContext statementContext,
+            ExprIdentNode leftNode,
+            ExprIdentNode rightNode,
+            int outerJoinCount,
+            StreamTypeService typeService,
+            ViewResourceDelegate viewResourceDelegate)
     {
         // Validate the outer join clause using an artificial equals-node on top.
         // Thus types are checked via equals.
@@ -805,7 +815,7 @@ public class EPStatementStartMethod
         equalsNode.addChildNode(rightNode);
         try
         {
-            equalsNode = equalsNode.getValidatedSubtree(typeService, methodResolutionService, viewResourceDelegate, statementContext.getSchedulingService(), statementContext.getVariableService());
+            equalsNode = equalsNode.getValidatedSubtree(typeService, statementContext.getMethodResolutionService(), viewResourceDelegate, statementContext.getSchedulingService(), statementContext.getVariableService());
         }
         catch (ExprValidationException ex)
         {
@@ -1236,134 +1246,5 @@ public class EPStatementStartMethod
         ExprNodeIdentifierVisitor visitor = new ExprNodeIdentifierVisitor(visitAggregateNodes);
         exprNode.accept(visitor);
         return visitor.getExprProperties();
-    }
-
-    public Viewable executeQuery() throws ExprValidationException
-    {
-        validateExecuteQuery();
-
-        int numStreams = statementSpec.getStreamSpecs().size();
-        EventType[] typesPerStream = new EventType[numStreams];
-        String[] namesPerStream = new String[numStreams];
-        boolean[] isNamedWindow = new boolean[numStreams];
-        Arrays.fill(isNamedWindow, true);
-        NamedWindowProcessor[] processors = new NamedWindowProcessor[numStreams];
-
-        for (int i = 0; i < numStreams; i++)
-        {
-            final StreamSpecCompiled streamSpec = statementSpec.getStreamSpecs().get(i);
-            NamedWindowConsumerStreamSpec namedSpec = (NamedWindowConsumerStreamSpec) streamSpec;
-
-            String streamName = namedSpec.getWindowName();
-            if (namedSpec.getOptionalStreamName() != null)
-            {
-                streamName = namedSpec.getOptionalStreamName();
-            }
-            namesPerStream[i] = streamName;
-
-            processors[i] = services.getNamedWindowService().getProcessor(namedSpec.getWindowName());
-            typesPerStream[i] = processors[i].getTailView().getEventType();
-        }
-
-        StreamTypeService typeService = new StreamTypeServiceImpl(typesPerStream, namesPerStream, services.getEngineURI(), namesPerStream);
-        validateNodes(typeService, statementContext.getMethodResolutionService(), null);
-
-        List<EventBean>[] snapshots = new List[numStreams];
-        for (int i = 0; i < numStreams; i++)
-        {
-            final StreamSpecCompiled streamSpec = statementSpec.getStreamSpecs().get(i);
-            NamedWindowConsumerStreamSpec namedSpec = (NamedWindowConsumerStreamSpec) streamSpec;
-            snapshots[i] = processors[i].getTailView().snapshot();
-
-            if (namedSpec.getFilterExpressions().size() != 0)
-            {
-                snapshots[i] = getFiltered(snapshots[i], namedSpec.getFilterExpressions());
-            }
-        }
-
-        ResultSetProcessor resultSetProcessor = ResultSetProcessorFactory.getProcessor(statementSpec, statementContext, typeService, null);
-        UniformPair<EventBean[]> results;
-        if (numStreams == 1)
-        {
-            if (statementSpec.getFilterRootNode() != null)
-            {
-                snapshots[0] = getFiltered(snapshots[0], Arrays.asList(statementSpec.getFilterRootNode()));
-            }
-            EventBean[] rows = snapshots[0].toArray(new EventBean[snapshots[0].size()]);
-            results = resultSetProcessor.processViewResult(rows, null, true);
-        }
-        else
-        {
-            EventBean[][] oldDataPerStream = new EventBean[numStreams][];
-            EventBean[][] newDataPerStream = new EventBean[numStreams][];
-            Viewable[] viewablePerStream = new Viewable[numStreams];
-            for (int i = 0; i < numStreams; i++)
-            {
-                newDataPerStream[i] = snapshots[i].toArray(new EventBean[snapshots[i].size()]);
-                viewablePerStream[i] = processors[i].getTailView();
-            }
-            JoinSetComposer joinComposer = statementContext.getJoinSetComposerFactory().makeComposer(statementSpec.getOuterJoinDescList(), statementSpec.getFilterRootNode(), typesPerStream, namesPerStream, viewablePerStream, SelectClauseStreamSelectorEnum.ISTREAM_ONLY, new boolean[numStreams], new boolean[numStreams], isNamedWindow);
-            UniformPair<Set<MultiKey<EventBean>>> result = joinComposer.join(newDataPerStream, oldDataPerStream);
-            results = resultSetProcessor.processJoinResult(result.getFirst(), null, true);
-        }
-
-        return new EPQueryResultViewable(new ArrayEventIterator(results.getFirst()), resultSetProcessor.getResultEventType());
-    }
-
-    private void validateExecuteQuery() throws ExprValidationException
-    {
-        if (statementSpec.getSubSelectExpressions().size() > 0)
-        {
-            throw new ExprValidationException("Subqueries are not a supported feature of on-demand queries");
-        }
-        for (int i = 0; i < statementSpec.getStreamSpecs().size(); i++)
-        {
-            if (!(statementSpec.getStreamSpecs().get(i) instanceof NamedWindowConsumerStreamSpec))
-            {
-                throw new ExprValidationException("On-demand queries require named windows and do not allow event streams or patterns");                
-            }
-            if (statementSpec.getStreamSpecs().get(i).getViewSpecs().size() != 0)
-            {
-                throw new ExprValidationException("Views are not a supported feature of on-demand queries");
-            }
-        }
-        if (statementSpec.getOutputLimitSpec() != null)
-        {
-            throw new ExprValidationException("Output rate limiting is not a supported feature of on-demand queries");
-        }
-        if (statementSpec.getInsertIntoDesc() != null)
-        {
-            throw new ExprValidationException("Insert-into is not a supported feature of on-demand queries");
-        }
-    }
-
-    private List<EventBean> getFiltered(List<EventBean> snapshot, List<ExprNode> filterExpressions)
-    {
-        EventBean[] eventsPerStream = new EventBean[1];
-        List<EventBean> filteredSnapshot = new ArrayList<EventBean>();
-        for (EventBean row : snapshot)
-        {
-            boolean pass = true;
-            eventsPerStream[0] = row;
-            for (ExprNode filter : filterExpressions)
-            {
-                Boolean result = (Boolean) filter.evaluate(eventsPerStream, true);
-                if (result != null)
-                {
-                    if (!result.booleanValue())
-                    {
-                        pass = false;
-                        break;
-                    }
-                }
-            }
-
-            if (pass)
-            {
-                filteredSnapshot.add(row);
-            }
-        }
-
-        return filteredSnapshot;
     }
 }
