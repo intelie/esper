@@ -1,8 +1,8 @@
 package com.espertech.esper.core;
 
-import com.espertech.esper.client.EPQueryResult;
+import com.espertech.esper.core.EPQueryResult;
 import com.espertech.esper.client.EPStatementException;
-import com.espertech.esper.client.EPPreparedQuery;
+import com.espertech.esper.core.EPPreparedQuery;
 import com.espertech.esper.event.EventType;
 
 public class EPPreparedQueryImpl implements EPPreparedQuery

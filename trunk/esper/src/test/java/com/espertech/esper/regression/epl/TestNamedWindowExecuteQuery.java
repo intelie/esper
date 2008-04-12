@@ -6,6 +6,9 @@ import com.espertech.esper.support.bean.SupportBean_A;
 import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.support.util.ArrayAssertionUtil;
 import com.espertech.esper.epl.parse.EPStatementSyntaxException;
+import com.espertech.esper.core.EPPreparedQuery;
+import com.espertech.esper.core.EPQueryResult;
+import com.espertech.esper.core.EPRuntimeSPI;
 import junit.framework.TestCase;
 
 public class TestNamedWindowExecuteQuery extends TestCase
@@ -32,18 +35,18 @@ public class TestNamedWindowExecuteQuery extends TestCase
     public void testExecuteSimple() throws Exception
     {
         String query = "select * from MyWindow";
-        EPPreparedQuery prepared = epService.getEPRuntime().prepareQuery(query);
-        EPQueryResult result = epService.getEPRuntime().executeQuery(query);
+        EPPreparedQuery prepared = ((EPRuntimeSPI) epService.getEPRuntime()).prepareQuery(query);
+        EPQueryResult result = ((EPRuntimeSPI) epService.getEPRuntime()).executeQuery(query);
         ArrayAssertionUtil.assertEqualsExactOrder(result.iterator(), fields, null);
         ArrayAssertionUtil.assertEqualsExactOrder(prepared.execute().iterator(), fields, null);
 
         epService.getEPRuntime().sendEvent(new SupportBean("E1", 1));
-        result = epService.getEPRuntime().executeQuery(query);
+        result = ((EPRuntimeSPI) epService.getEPRuntime()).executeQuery(query);
         ArrayAssertionUtil.assertEqualsExactOrder(result.iterator(), fields, new Object[][] {{"E1", 1}});
         ArrayAssertionUtil.assertEqualsExactOrder(prepared.execute().iterator(), fields, new Object[][] {{"E1", 1}});
 
         epService.getEPRuntime().sendEvent(new SupportBean("E2", 2));
-        result = epService.getEPRuntime().executeQuery(query);
+        result = ((EPRuntimeSPI) epService.getEPRuntime()).executeQuery(query);
         ArrayAssertionUtil.assertEqualsExactOrder(result.iterator(), fields, new Object[][] {{"E1", 1}, {"E2", 2}});
         ArrayAssertionUtil.assertEqualsExactOrder(prepared.execute().iterator(), fields, new Object[][] {{"E1", 1}, {"E2", 2}});
     }
@@ -72,11 +75,11 @@ public class TestNamedWindowExecuteQuery extends TestCase
         String fields[] = new String[] {"total"};
 
         String query = "select sum(intPrimitive) as total from MyWindow";
-        EPQueryResult result = epService.getEPRuntime().executeQuery(query);
+        EPQueryResult result = ((EPRuntimeSPI) epService.getEPRuntime()).executeQuery(query);
         ArrayAssertionUtil.assertEqualsExactOrder(result.iterator(), fields, new Object[][] {{16}});
 
         epService.getEPRuntime().sendEvent(new SupportBean("E4", -2));
-        result = epService.getEPRuntime().executeQuery(query);
+        result = ((EPRuntimeSPI) epService.getEPRuntime()).executeQuery(query);
         ArrayAssertionUtil.assertEqualsExactOrder(result.iterator(), fields, new Object[][] {{14}});
     }
 
@@ -88,11 +91,11 @@ public class TestNamedWindowExecuteQuery extends TestCase
         String fields[] = new String[] {"string", "total"};
 
         String query = "select string, sum(intPrimitive) as total from MyWindow";
-        EPQueryResult result = epService.getEPRuntime().executeQuery(query);
+        EPQueryResult result = ((EPRuntimeSPI) epService.getEPRuntime()).executeQuery(query);
         ArrayAssertionUtil.assertEqualsExactOrder(result.iterator(), fields, new Object[][] {{"E1", 16}, {"E2", 16}, {"E3", 16}});
 
         epService.getEPRuntime().sendEvent(new SupportBean("E4", -2));
-        result = epService.getEPRuntime().executeQuery(query);
+        result = ((EPRuntimeSPI) epService.getEPRuntime()).executeQuery(query);
         ArrayAssertionUtil.assertEqualsExactOrder(result.iterator(), fields, new Object[][] {{"E1", 14}, {"E2", 14}, {"E3", 14}, {"E4", 14}});
     }
 
@@ -104,12 +107,12 @@ public class TestNamedWindowExecuteQuery extends TestCase
         String fields[] = new String[] {"string", "total"};
 
         String query = "select string, sum(intPrimitive) as total from MyWindow group by string order by string asc";
-        EPQueryResult result = epService.getEPRuntime().executeQuery(query);
+        EPQueryResult result = ((EPRuntimeSPI) epService.getEPRuntime()).executeQuery(query);
         ArrayAssertionUtil.assertEqualsExactOrder(result.iterator(), fields, new Object[][] {{"E1", 6}, {"E2", 11}});
 
         epService.getEPRuntime().sendEvent(new SupportBean("E2", -2));
         epService.getEPRuntime().sendEvent(new SupportBean("E3", 3));
-        result = epService.getEPRuntime().executeQuery(query);
+        result = ((EPRuntimeSPI) epService.getEPRuntime()).executeQuery(query);
         ArrayAssertionUtil.assertEqualsExactOrder(result.iterator(), fields, new Object[][] {{"E1", 6}, {"E2", 9}, {"E3", 3}});
     }
 
@@ -128,14 +131,14 @@ public class TestNamedWindowExecuteQuery extends TestCase
 
         String query = "select string, intPrimitive, id from MyWindow nw1, " +
                             "MySecondWindow nw2 where nw1.string = nw2.id";
-        EPQueryResult result = epService.getEPRuntime().executeQuery(query);
+        EPQueryResult result = ((EPRuntimeSPI) epService.getEPRuntime()).executeQuery(query);
         ArrayAssertionUtil.assertEqualsExactOrder(result.iterator(), fields, new Object[][] {{"E2", 11, "E2"}});
 
         epService.getEPRuntime().sendEvent(new SupportBean("E3", 1));
         epService.getEPRuntime().sendEvent(new SupportBean("E3", 2));
         epService.getEPRuntime().sendEvent(new SupportBean_A("E3"));
 
-        result = epService.getEPRuntime().executeQuery(query);
+        result = ((EPRuntimeSPI) epService.getEPRuntime()).executeQuery(query);
         ArrayAssertionUtil.assertEqualsExactOrder(result.iterator(), fields, new Object[][] {{"E2", 11, "E2"}, {"E3", 1, "E3"}, {"E3", 2, "E3"}});
     }
 
@@ -167,7 +170,7 @@ public class TestNamedWindowExecuteQuery extends TestCase
     {
         try
         {
-            epService.getEPRuntime().executeQuery(epl);
+            ((EPRuntimeSPI) epService.getEPRuntime()).executeQuery(epl);
             fail();
         }
         catch(EPStatementException ex)
@@ -180,7 +183,7 @@ public class TestNamedWindowExecuteQuery extends TestCase
     {
         try
         {
-            epService.getEPRuntime().executeQuery(epl);
+            ((EPRuntimeSPI) epService.getEPRuntime()).executeQuery(epl);
             fail();
         }
         catch(EPStatementSyntaxException ex)
@@ -191,10 +194,10 @@ public class TestNamedWindowExecuteQuery extends TestCase
 
     private void runAssertionFilter(String query)
     {
-        EPQueryResult result = epService.getEPRuntime().executeQuery(query);
+        EPQueryResult result = ((EPRuntimeSPI) epService.getEPRuntime()).executeQuery(query);
         ArrayAssertionUtil.assertEqualsExactOrder(result.iterator(), fields, new Object[][] {{"E3", 5}});
 
-        EPPreparedQuery prepared = epService.getEPRuntime().prepareQuery(query);
+        EPPreparedQuery prepared = ((EPRuntimeSPI) epService.getEPRuntime()).prepareQuery(query);
         ArrayAssertionUtil.assertEqualsExactOrder(prepared.execute().iterator(), fields, new Object[][] {{"E3", 5}});
     }
 }

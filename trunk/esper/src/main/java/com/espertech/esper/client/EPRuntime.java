@@ -7,6 +7,9 @@
  **************************************************************************************/
 package com.espertech.esper.client;
 
+import com.espertech.esper.core.EPQueryResult;
+import com.espertech.esper.core.EPPreparedQuery;
+
 import java.util.Map;
 import java.util.Set;
 
@@ -166,7 +169,4 @@ public interface EPRuntime
      * @throws VariableNotFoundException if any of the variable names has not been declared
      */
     public void setVariableValue(Map<String, Object> variableValues) throws VariableValueException, VariableNotFoundException;
-
-    public EPQueryResult executeQuery(String epl);
-    public EPPreparedQuery prepareQuery(String epl);
 }

@@ -1,4 +1,4 @@
-package com.espertech.esper.client;
+package com.espertech.esper.core;
 
 import com.espertech.esper.event.EventType;
 

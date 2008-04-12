@@ -27,7 +27,6 @@ import com.espertech.esper.util.ExecutionPathDebugLog;
 import com.espertech.esper.util.ManagedLock;
 import com.espertech.esper.util.ThreadLogUtil;
 import com.espertech.esper.util.UuidGenerator;
-import com.espertech.esper.view.Viewable;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -37,7 +36,7 @@ import java.util.*;
  * Implements runtime interface. Also accepts timer callbacks for synchronizing time events with regular events
  * sent in.
  */
-public class EPRuntimeImpl implements EPRuntime, TimerCallback, InternalEventRouter
+public class EPRuntimeImpl implements EPRuntimeSPI, TimerCallback, InternalEventRouter
 {
     private EPServicesContext services;
     private boolean isLatchStatementInsertStream;

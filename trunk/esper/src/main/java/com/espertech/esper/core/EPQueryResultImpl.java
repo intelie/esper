@@ -1,6 +1,5 @@
 package com.espertech.esper.core;
 
-import com.espertech.esper.client.EPQueryResult;
 import com.espertech.esper.client.SafeIterator;
 import com.espertech.esper.collection.ArrayEventIterator;
 import com.espertech.esper.event.EventBean;
@@ -8,7 +7,7 @@ import com.espertech.esper.event.EventType;
 
 import java.util.Iterator;
 
-public class EPQueryResultImpl implements EPQueryResultSPI
+public class EPQueryResultImpl implements EPQueryResult
 {
     private EPPreparedQueryResult queryResult;
 
