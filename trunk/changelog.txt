@@ -8,6 +8,8 @@ Changes in version 2.1.0
 - ESPER-197 EsperIO_CSV reported to be slow
 - ESPER-198 EsperIO CSV adapter to support sending of bean events
 - ESPER-208 EsperIO runs out of stack space when processing largeCSV file and not using engine thread
+- ESPER-220 TimeBatchView.computeWaitMSec can give incorrect results for low "interval"
+- ESPER-226 Allow esperio to use external timer
 
 
 Changes in version 2.0.0
