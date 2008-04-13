@@ -25,7 +25,7 @@ public class AdapterCoordinatorImpl extends AbstractCoordinatedAdapter implement
 
     private final Map<SendableEvent, CoordinatedAdapter> eventsFromAdapters = new HashMap<SendableEvent, CoordinatedAdapter>();
 	private final Set<CoordinatedAdapter> emptyAdapters = new HashSet<CoordinatedAdapter>();
-	private final boolean usingEngineThread;
+	private final boolean usingEngineThread, usingExternalTimer;
 	private final ScheduleBucket scheduleBucket;
 	private final EPServiceProvider epService;
 
@@ -37,7 +37,18 @@ public class AdapterCoordinatorImpl extends AbstractCoordinatedAdapter implement
 	 */
 	public AdapterCoordinatorImpl(EPServiceProvider epService, boolean usingEngineThread)
 	{
-		super(epService, usingEngineThread);
+		this(epService, usingEngineThread, false);
+	}
+	/**
+	 * Ctor.
+	 * @param epService - the EPServiceProvider for the engine services and runtime
+	 * @param usingEngineThread - true if the coordinator should set time by the scheduling service in the engine,
+	 *                            false if it should set time externally through the calling thread
+     * @param usingExternalTimer - true to use esper's external timer mechanism instead of internal timing
+	 */
+	public AdapterCoordinatorImpl(EPServiceProvider epService, boolean usingEngineThread, boolean usingExternalTimer)
+	{
+		super(epService, usingEngineThread, usingExternalTimer);
 		if(epService == null)
 		{
 			throw new NullPointerException("epService cannot be null");
@@ -49,6 +60,7 @@ public class AdapterCoordinatorImpl extends AbstractCoordinatedAdapter implement
 		this.epService = epService;
 		this.scheduleBucket = ((EPServiceProviderSPI)epService).getSchedulingService().allocateBucket();
 		this.usingEngineThread = usingEngineThread;
+		this.usingExternalTimer = usingExternalTimer;
 	}
 
 
@@ -109,6 +121,7 @@ public class AdapterCoordinatorImpl extends AbstractCoordinatedAdapter implement
 		adapter.disallowStateTransitions();
 		adapter.setEPService(epService);
 		adapter.setUsingEngineThread(usingEngineThread);
+		adapter.setUsingExternalTimer(usingExternalTimer);
 		adapter.setScheduleSlot(scheduleBucket.allocateSlot());
 		addNewEvent(adapter);
 	}

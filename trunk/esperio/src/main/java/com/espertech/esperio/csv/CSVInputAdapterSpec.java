@@ -9,7 +9,7 @@ import com.espertech.esperio.AdapterInputSource;
  */
 public class CSVInputAdapterSpec
 {
-	private boolean usingEngineThread;
+	private boolean usingEngineThread, usingExternalTimer;
 	private String timestampColumn;
 	private String eventTypeAlias;
 	private AdapterInputSource adapterInputSource;
@@ -80,6 +80,23 @@ public class CSVInputAdapterSpec
 	public boolean isUsingEngineThread()
 	{
 		return usingEngineThread;
+	}
+
+    /**
+     * Set to true to use esper's external timer mechanism instead of internal timing
+     * @param usingExternalTimer true for external timer
+     */
+    public void setUsingExternalTimer(boolean usingExternalTimer)
+	{
+		this.usingExternalTimer = usingExternalTimer;
+	}
+
+    /**
+     * @return true for using external timer
+     */
+	public boolean isUsingExternalTimer()
+	{
+		return usingExternalTimer;
 	}
 
 	/**

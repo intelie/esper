@@ -48,7 +48,7 @@ public class CSVInputAdapter extends AbstractCoordinatedAdapter implements Input
 	 */
 	public CSVInputAdapter(EPServiceProvider epService, CSVInputAdapterSpec spec)
 	{
-		super(epService, spec.isUsingEngineThread());
+		super(epService, spec.isUsingEngineThread(), spec.isUsingExternalTimer());
 
 		adapterSpec = spec;
 		eventTypeAlias = adapterSpec.getEventTypeAlias();

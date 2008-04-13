@@ -174,7 +174,7 @@ IBM,55.5,1000]]></programlisting>
 			<title>Using JavaBean POJO Events</title>
 	
 			<para>
-				The previous section used an event type based on <literal>java.util.Map</literal>. The adapter can also populate the CSV data into JavaBean events directly, as long as your event class provides setter-methods that follow JavaBean conventions.
+				The previous section used an event type based on <literal>java.util.Map</literal>. The adapter can also populate the CSV data into JavaBean events directly, as long as your event class provides setter-methods that follow JavaBean conventions. Note that esperio will ignore read-only properties i.e. if you have a read-only property priceByVolume it will not expect a corresponding column in the input file.
 			</para>
 
 			<para>
@@ -235,6 +235,11 @@ EPStatement stmt = epService.getEPAdministrator().createEPL(
 			</listitem>
 			<listitem>
 				<para>
+					External timer - Instructs the adapter to use the esper's external timer rather than the internal timer. See "Sending timer events" below
+				</para>
+			</listitem>
+			<listitem>
+				<para>
 					Timestamp column name - Defines the name of the timestamp column in the CSV input source; The timestamp column must carry long-typed timestamp values relative to the current time; Use zero for the current time
 				</para>
 			</listitem>
@@ -250,6 +255,34 @@ spec.setLooping(true);
   
 InputAdapter inputAdapter = new CSVInputAdapter(epService, spec);
 inputAdapter.start();	// method blocks unless engine thread option is set]]></programlisting>
+    
+		<sect2 id="csv-timer">
+			<title>Sending timer events</title>
+	
+			<para>
+			The adapter can be instructed to use either esper's internal timer, or to drive timing itself
+			by sending external timer events. If the internal timer is used, esperio will send all events in "real time". For example, if an input file contains the following data:
+			</para>
+
+			<para>
+				<programlisting><![CDATA[symbol,price,volume,timestamp
+IBM,55.5,1000,2
+GOOG,9.5,1000,3
+MSFT,8.5,1000,3
+JAVA,7.5,1000,1004]]></programlisting>
+    		</para>
+
+			<para>
+			then esperio will sleep for 1001 milliseconds between sending the MSFT and JAVA events to the engine.
+			</para>
+
+			<para>
+			If external timing is enabled then esperio will run through the input file at full speed 
+			without pausing. The algorithm used sends a time event after all events for a particular time
+			have been received. For the above example file a time event for 2 will be sent after IBM, for 3 after MSFT and 1004 after JAVA. 
+			For many of use cases this gives a performance improvement.
+			</para>
+    	</sect2>
     </sect1>
     
     <sect1 id="csv-step-3">
@@ -306,5 +339,6 @@ inputAdapter.stop();]]></programlisting>
     </sect1>
 
 </chapter>
+
 
 

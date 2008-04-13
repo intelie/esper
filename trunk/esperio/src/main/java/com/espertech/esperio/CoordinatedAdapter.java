@@ -23,6 +23,12 @@ public interface CoordinatedAdapter extends InputAdapter
 	public void setUsingEngineThread(boolean usingEngineThread);
 
 	/**
+	 * Set the usingExternalTimer value
+	 * @param usingExternalTimer - the value to set
+	 */
+	public void setUsingExternalTimer(boolean usingExternalTimer);
+
+	/**
 	 * Disallow subsequent state changes and throw an IllegalStateTransitionException
 	 * if they are attempted.
 	 */

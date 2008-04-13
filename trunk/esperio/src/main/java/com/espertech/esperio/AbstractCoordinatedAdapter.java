@@ -6,6 +6,7 @@ import java.util.TreeSet;
 import com.espertech.esper.client.EPException;
 import com.espertech.esper.client.EPRuntime;
 import com.espertech.esper.client.EPServiceProvider;
+import com.espertech.esper.client.time.CurrentTimeEvent;
 import com.espertech.esper.core.EPServiceProviderSPI;
 import com.espertech.esper.core.EPStatementHandleCallback;
 import com.espertech.esper.core.EPStatementHandle;
@@ -44,20 +45,22 @@ public abstract class AbstractCoordinatedAdapter implements CoordinatedAdapter
 
 	private EPRuntime runtime;
 	private SchedulingService schedulingService;
-	private boolean usingEngineThread;
+	private boolean usingEngineThread, usingExternalTimer;
 	private long currentTime = 0;
+	private long lastEventTime = 0;
 	private long startTime;
-
 
 	/**
 	 * Ctor.
 	 * @param epService - the EPServiceProvider for the engine runtime and services
 	 * @param usingEngineThread - true if the Adapter should set time by the scheduling service in the engine,
 	 *                            false if it should set time externally through the calling thread
+	 * @param usingExternalTimer - true to use esper's external timer mechanism instead of internal timing
 	 */
-	public AbstractCoordinatedAdapter(EPServiceProvider epService, boolean usingEngineThread)
+	public AbstractCoordinatedAdapter(EPServiceProvider epService, boolean usingEngineThread, boolean usingExternalTimer)
 	{
 		this.usingEngineThread = usingEngineThread;
+		this.usingExternalTimer = usingExternalTimer;
 
 		if(epService == null)
 		{
@@ -140,6 +143,16 @@ public abstract class AbstractCoordinatedAdapter implements CoordinatedAdapter
 		this.usingEngineThread = usingEngineThread;
 	}
 
+
+    /**
+     * Set to true to use esper's external timer mechanism instead of internal timing
+     * @param usingExternalTimer true for external timer
+     */
+    public void setUsingExternalTimer(boolean usingExternalTimer)
+	{
+		this.usingExternalTimer = usingExternalTimer;
+	}
+
 	/* (non-Javadoc)
 	 * @see com.espertech.esperio.CoordinatedAdapter#setScheduleSlot(com.espertech.esper.schedule.ScheduleSlot)
 	 */
@@ -202,7 +215,11 @@ public abstract class AbstractCoordinatedAdapter implements CoordinatedAdapter
 
 	private boolean waitToSendEvents()
 	{
-		if(usingEngineThread)
+		if(usingExternalTimer)
+		{
+			return false;
+		}
+		else if(usingEngineThread)
 		{
 			scheduleNextCallback();
 			return false;
@@ -250,16 +267,42 @@ public abstract class AbstractCoordinatedAdapter implements CoordinatedAdapter
 
 	private void sendSoonestEvents()
 	{
-		while(!eventsToSend.isEmpty() && eventsToSend.first().getSendTime() <= currentTime - startTime)
+		if (usingExternalTimer)
 		{
-            if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
-            {
-                log.debug(".sendSoonestEvents currentTime==" + currentTime);
-                log.debug(".sendSoonestEvents sending event " + eventsToSend.first() + ", its sendTime==" + eventsToSend.first().getSendTime());                
-            }
-			eventsToSend.first().send(runtime);
-			replaceFirstEventToSend();
+			// send all events in order and when time clicks over send time event for previous time
+			while (!eventsToSend.isEmpty())
+			{
+				long currentEventTime = eventsToSend.first().getSendTime();
+				// check whether time has increased. Cannot go backwards due to checks elsewhere
+				if (currentEventTime > lastEventTime)
+				{
+					this.runtime.sendEvent(new CurrentTimeEvent(lastEventTime));
+					lastEventTime = currentEventTime;
+				}
+				sendFirstEvent();
+			}
+			// send final time tick
+			this.runtime.sendEvent(new CurrentTimeEvent(lastEventTime));
 		}
+		else
+		{
+			// watch time and send events to catch up
+			while(!eventsToSend.isEmpty() && eventsToSend.first().getSendTime() <= currentTime - startTime)
+			{
+	            sendFirstEvent();
+			}
+		}
+	}
+
+	private void sendFirstEvent()
+	{
+		if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
+		{
+		    log.debug(".sendFirstEvent currentTime==" + currentTime);
+		    log.debug(".sendFirstEvent sending event " + eventsToSend.first() + ", its sendTime==" + eventsToSend.first().getSendTime());                
+		}
+		eventsToSend.first().send(runtime);
+		replaceFirstEventToSend();
 	}
 
 	private void scheduleNextCallback()

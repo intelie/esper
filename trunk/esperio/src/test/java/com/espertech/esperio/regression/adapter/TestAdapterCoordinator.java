@@ -234,6 +234,28 @@ public class TestAdapterCoordinator extends TestCase
 		assertEvent(5, 5, 5.5, "timestampOne.five");
 	}
 
+	public void testExternalTimer()
+	{
+		coordinator = new AdapterCoordinatorImpl(epService, false, true);
+		coordinator.coordinate(new CSVInputAdapter(epService, noTimestampsNotLooping));
+		coordinator.coordinate(new CSVInputAdapter(epService, timestampsNotLooping));
+
+		long startTime = System.currentTimeMillis();
+		coordinator.start();
+		long endTime = System.currentTimeMillis();
+
+		// Check that we haven't been kept waiting
+		assertTrue(endTime - startTime < 50);
+
+		assertEquals(6, listener.getNewDataList().size());
+		assertEvent(0, 1, 1.1, "noTimestampOne.one");
+		assertEvent(1, 1, 1.1, "timestampOne.one");
+		assertEvent(2, 2, 2.2, "noTimestampOne.two");
+		assertEvent(3, 3, 3.3, "noTimestampOne.three");
+		assertEvent(4, 3, 3.3, "timestampOne.three");
+		assertEvent(5, 5, 5.5, "timestampOne.five");
+	}
+
 	private void assertEvent(int howManyBack, Integer myInt, Double myDouble, String myString)
 	{
 		assertTrue(listener.isInvoked());
