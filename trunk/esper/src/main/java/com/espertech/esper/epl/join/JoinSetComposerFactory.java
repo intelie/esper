@@ -25,6 +25,7 @@ public interface JoinSetComposerFactory
      * @param selectStreamSelectorEnum - indicator for rstream or istream-only, for optimization
      * @param isUnidirectional is an array of indicators for each stream set to true for a unidirectional stream in a join
      * @param hasChildViews indicates if child views are declared for a stream
+     * @param isNamedWindow indicates whether the join is against named windows
      * @return composer implementation
      * @throws ExprValidationException is thrown to indicate that
      * validation of view use in joins failed.

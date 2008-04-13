@@ -29,6 +29,7 @@ public interface StreamSpecRaw extends StreamSpec
      * @param timeProvider - provides engine current time
      * @param namedWindowService is the service managing named windows
      * @param variableService provides variable values
+     * @param engineURI the engine URI
      * @return compiled stream
      * @throws ExprValidationException to indicate validation errors
      */

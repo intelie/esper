@@ -2,6 +2,7 @@ package com.espertech.esper.epl.named;
 
 import com.espertech.esper.collection.ArrayEventIterator;
 import com.espertech.esper.collection.NullIterator;
+import com.espertech.esper.collection.ArrayDequeJDK6Backport;
 import com.espertech.esper.core.EPStatementHandle;
 import com.espertech.esper.core.StatementResultService;
 import com.espertech.esper.epl.expression.ExprNode;
@@ -147,7 +148,11 @@ public class NamedWindowTailView extends ViewSupport implements Iterable<EventBe
         }
     }
 
-    public List<EventBean> snapshot()
+    /**
+     * Returns a snapshot of window contents, thread-safely
+     * @return window contents
+     */
+    public Collection<EventBean> snapshot()
     {
         createWindowStmtHandle.getStatementLock().acquireLock(null);
         try
@@ -157,7 +162,7 @@ public class NamedWindowTailView extends ViewSupport implements Iterable<EventBe
             {
                 return Collections.EMPTY_LIST;
             }
-            ArrayList<EventBean> list = new ArrayList<EventBean>();
+            ArrayDequeJDK6Backport<EventBean> list = new ArrayDequeJDK6Backport<EventBean>();
             while (it.hasNext())
             {
                 list.add(it.next());

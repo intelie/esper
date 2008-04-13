@@ -7,28 +7,25 @@ import com.espertech.esper.event.EventType;
 
 import java.util.Iterator;
 
+/**
+ * Query result.
+ */
 public class EPQueryResultImpl implements EPQueryResult
 {
     private EPPreparedQueryResult queryResult;
 
+    /**
+     * Ctor.
+     * @param queryResult is the prepared query
+     */
     public EPQueryResultImpl(EPPreparedQueryResult queryResult)
     {
         this.queryResult = queryResult;
     }
 
-    public int getRowCount()
-    {
-        return queryResult.getResult().length;
-    }
-
     public Iterator<EventBean> iterator()
     {
         return new ArrayEventIterator(queryResult.getResult());
-    }
-
-    public SafeIterator<EventBean> safeIterator()
-    {
-        return null;  // TODO
     }
 
     public EventBean[] getArray()

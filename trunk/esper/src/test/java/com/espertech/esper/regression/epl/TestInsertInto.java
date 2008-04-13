@@ -154,7 +154,7 @@ public class TestInsertInto extends TestCase
     public void testVariantTwoWildcard() throws InterruptedException
     {
         String stmtText = "insert into event1 select * from " + SupportBean.class.getName() + ".win:length(100)";
-        String otherText = "select * from event1.win:length(10)";
+        String otherText = "select * from default.event1.win:length(10)";
 
         // Attach listener to feed
         EPStatement stmtOne = epService.getEPAdministrator().createEPL(stmtText);

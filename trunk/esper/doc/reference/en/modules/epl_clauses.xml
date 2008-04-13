@@ -126,7 +126,6 @@ select * from MyEvent  // this is a slash-slash comment
  * not required.
  */		
 select * from MyEvent  /* this also works */]]></programlisting>
-		</sect2>
 
 			<para>
 				Comments styles can also be mixed:
@@ -134,6 +133,8 @@ select * from MyEvent  /* this also works */]]></programlisting>
 			<programlisting><![CDATA[select field1, // first comment
   /* second comment*/  field2
   from MyEvent]]></programlisting>
+		</sect2>
+
     </sect1>
 
     <sect1 id="epl-select-list">
@@ -347,6 +348,37 @@ from pattern[every tick=StockTick where timer:within(10 sec)]]]></programlisting
 			<para>
 				The <literal>istream</literal> and <literal>rstream</literal> keywords in the <literal>select</literal> clause are matched by same-name keywords available in the <literal>insert into</literal> clause. While the keywords in the <literal>select</literal> clause control the event stream posted to listeners to the statement, the same keywords in the <literal>insert into</literal> clause specify the event stream that the engine makes available to other statements.
 			</para>
+		</sect2>
+
+		<sect2 id="epl-syntax-prefix-propsandstream">
+			<title>Qualifying property names and stream names</title>
+			
+			<para>
+				Property or column names can optionally be qualified by a stream name and the provider URI. The syntax is:
+			</para>
+			<synopsis>[[<emphasis>provider_URI</emphasis>.]<emphasis>stream_name</emphasis>.]<emphasis>property_name</emphasis></synopsis>
+
+			<para>
+				The <emphasis>provider_URI</emphasis> is the URI supplied to the <literal>EPServiceProviderManager</literal> class, or the string <literal>default</literal> for the default provider.
+			</para>
+		
+			<para>
+				This example assumes the provider is the default provider:
+			</para>
+			<programlisting>select MyEvent.myProperty from MyEvent
+// ... equivalent to ...
+select default.MyEvent.myProperty from MyEvent</programlisting>
+
+			<para>
+				Stream names can also be qualified by the provider URI. The syntax is:
+			</para>
+			<synopsis>[<emphasis>provider_URI</emphasis>.]<emphasis>stream_name</emphasis></synopsis>
+
+			<para>
+				The next example assumes a provider URI by name of <literal>Processor</literal>:
+			</para>
+			<programlisting>select Processor.MyEvent.myProperty from Processor.MyEvent</programlisting>
+
 		</sect2>
 
     </sect1>

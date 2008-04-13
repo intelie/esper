@@ -31,6 +31,10 @@ public interface NamedWindowService
      */
     public boolean isNamedWindow(String name);
 
+    /**
+     * Returns the names of all named windows known.
+     * @return named window names
+     */
     public String[] getNamedWindows();
 
     /**

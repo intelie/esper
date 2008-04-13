@@ -817,7 +817,7 @@ public class ArrayDequeJDK6Backport<E> extends AbstractCollection<E>
      * @serialData The current size (<tt>int</tt>) of the deque,
      * followed by all of its elements (each an object reference) in
      * first-to-last order.
-     * @throws IOException
+     * @throws IOException if an exception occured writing the object
      */
     private void writeObject(ObjectOutputStream s) throws IOException {
         s.defaultWriteObject();
@@ -834,8 +834,8 @@ public class ArrayDequeJDK6Backport<E> extends AbstractCollection<E>
     /**
      * Deserialize this deque.
      * @param s stream
-     * @throws IOException
-     * @throws ClassNotFoundException
+     * @throws IOException if an exception occured reading the object
+     * @throws ClassNotFoundException if the clas cannot be found
      */
     private void readObject(ObjectInputStream s)
             throws IOException, ClassNotFoundException {

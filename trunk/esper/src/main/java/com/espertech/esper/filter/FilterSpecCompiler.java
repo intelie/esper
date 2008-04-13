@@ -41,6 +41,7 @@ public final class FilterSpecCompiler
      * Factory method for compiling filter expressions into a filter specification
      * for use with filter service.
      * @param eventType is the filtered-out event type
+     * @param eventTypeAlias is the alias name of the event type
      * @param filterExpessions is a list of filter expressions
      * @param taggedEventTypes is a map of stream names (tags) and event types available
      * @param streamTypeService is used to set rules for resolving properties

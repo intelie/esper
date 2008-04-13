@@ -42,31 +42,31 @@ public final class EPServiceProviderManager
     }
 
     /**
-     * Returns an EPServiceProvider for a given registration URI.
-     * @param uri - the registration URI
-     * @return EPServiceProvider for the given registration URI.
+     * Returns an EPServiceProvider for a given provider URI.
+     * @param providerURI - the provider URI
+     * @return EPServiceProvider for the given provider URI.
      */
-    public static EPServiceProvider getProvider(String uri)
+    public static EPServiceProvider getProvider(String providerURI)
     {
-        return getProvider(uri, new Configuration());
+        return getProvider(providerURI, new Configuration());
     }
 
     /**
-     * Returns an EPServiceProvider for a given registration URI.
-     * @param uri - the registration URI
+     * Returns an EPServiceProvider for a given provider URI.
+     * @param providerURI - the provider URI
      * @param configuration is the configuration for the service
-     * @return EPServiceProvider for the given registration URI.
+     * @return EPServiceProvider for the given provider URI.
      * @throws ConfigurationException to indicate a configuration problem
      */
-    public static EPServiceProvider getProvider(String uri, Configuration configuration) throws ConfigurationException
+    public static EPServiceProvider getProvider(String providerURI, Configuration configuration) throws ConfigurationException
     {
-        if (runtimes.containsKey(uri))
+        if (runtimes.containsKey(providerURI))
         {
-            EPServiceProviderImpl provider = runtimes.get(uri);
+            EPServiceProviderImpl provider = runtimes.get(providerURI);
             if (provider.isDestroyed())
             {
-                provider = new EPServiceProviderImpl(configuration, uri);
-                runtimes.put(uri, provider);
+                provider = new EPServiceProviderImpl(configuration, providerURI);
+                runtimes.put(providerURI, provider);
             }
             else
             {
@@ -76,12 +76,20 @@ public final class EPServiceProviderManager
         }
 
         // New runtime
-        EPServiceProviderImpl runtime = new EPServiceProviderImpl(configuration, uri);
-        runtimes.put(uri, runtime);
+        EPServiceProviderImpl runtime = new EPServiceProviderImpl(configuration, providerURI);
+        runtimes.put(providerURI, runtime);
 
         return runtime;
     }
 
+    /**
+     * Returns a list of known provider URIs.
+     * <p>
+     * Returns a null-value for the default provider, or if no URI has been supplied when obtaining a service instance.
+     * <p>
+     * Returns URIs for all engine instances including destroyed instances.
+     * @return array of URI strings
+     */
     public static String[] getProviderURIs()
     {
         Set<String> uriSet = runtimes.keySet();

@@ -20,10 +20,7 @@ import com.espertech.esper.view.Viewable;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Starts and provides the stop method for EPL statements.
@@ -43,6 +40,7 @@ public class EPPreparedExecuteMethod
      * may have been used in the statement, i.e. if defines the select clauses, insert into, outer joins etc.
      * @param services is the service instances for dependency injection
      * @param statementContext is statement-level information and statement services
+     * @throws ExprValidationException if the preparation failed
      */
     public EPPreparedExecuteMethod(StatementSpecCompiled statementSpec,
                                 EPServicesContext services,
@@ -96,16 +94,24 @@ public class EPPreparedExecuteMethod
         }
     }
 
+    /**
+     * Returns the event type of the prepared statement.
+     * @return event type
+     */
     public EventType getEventType()
     {
         return resultSetProcessor.getResultEventType();
     }
 
+    /**
+     * Executes the prepared query.
+     * @return query results
+     */
     public EPPreparedQueryResult execute()
     {
         int numStreams = processors.length;
 
-        List<EventBean>[] snapshots = new List[numStreams];
+        Collection<EventBean>[] snapshots = new Collection[numStreams];
         for (int i = 0; i < numStreams; i++)
         {
             final StreamSpecCompiled streamSpec = statementSpec.getStreamSpecs().get(i);
@@ -172,7 +178,7 @@ public class EPPreparedExecuteMethod
         }
     }
 
-    private List<EventBean> getFiltered(List<EventBean> snapshot, List<ExprNode> filterExpressions)
+    private List<EventBean> getFiltered(Collection<EventBean> snapshot, List<ExprNode> filterExpressions)
     {
         EventBean[] eventsPerStream = new EventBean[1];
         List<EventBean> filteredSnapshot = new ArrayList<EventBean>();

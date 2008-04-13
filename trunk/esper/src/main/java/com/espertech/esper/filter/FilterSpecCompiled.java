@@ -30,6 +30,7 @@ public final class FilterSpecCompiled
      * property names or mismatcing filter operators are found.
      * @param eventType is the event type
      * @param parameters is a list of filter parameters
+     * @param eventTypeAlias is the alias name of the event type
      * @throws IllegalArgumentException if validation invalid
      */
     public FilterSpecCompiled(EventType eventType, String eventTypeAlias, List<FilterSpecParam> parameters)
@@ -57,6 +58,10 @@ public final class FilterSpecCompiled
         return parameters;
     }
 
+    /**
+     * Returns the event type alias name.
+     * @return event type alias
+     */
     public String getEventTypeAlias()
     {
         return eventTypeAlias;

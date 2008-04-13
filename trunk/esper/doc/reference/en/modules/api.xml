@@ -33,9 +33,9 @@
 
         <para>
 			An instance of the Esper engine is obtained via static methods on the <literal>EPServiceProviderManager</literal> class.
-			The <literal>getDefaultProvider</literal> method and the <literal>getProvider(String URI)</literal> methods return an instance of the Esper engine.
-			The latter can be used to obtain multiple instances of the engine for different URI values. The <literal>EPServiceProviderManager</literal>
-			determines if the URI matches all prior URI values and returns the same engine instance for the same URI value. If the URI has not been seen before, it creates a new engine instance.
+			The <literal>getDefaultProvider</literal> method and the <literal>getProvider(String providerURI)</literal> methods return an instance of the Esper engine.
+			The latter can be used to obtain multiple instances of the engine for different provider URI values. The <literal>EPServiceProviderManager</literal>
+			determines if the provider URI matches all prior provider URI values and returns the same engine instance for the same provider URI value. If the provider URI has not been seen before, it creates a new engine instance.
         </para>
 
         <para>
@@ -44,7 +44,7 @@
 		<programlisting><![CDATA[EPServiceProvider epService = EPServiceProviderManager.getDefaultProvider();]]></programlisting>
 
         <para>
-			This code snippet gets an Esper engine for URI <literal>RFIDProcessor1</literal>. Subsequent calls to get an engine with the same URI return the same instance.
+			This code snippet gets an Esper engine for the provider URI <literal>RFIDProcessor1</literal>. Subsequent calls to get an engine with the same provider URI return the same instance.
         </para>
 		<programlisting><![CDATA[EPServiceProvider epService = EPServiceProviderManager.getProvider("RFIDProcessor1");]]></programlisting>
       

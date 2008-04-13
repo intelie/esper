@@ -9,6 +9,7 @@ package com.espertech.esper.epl.core;
 
 import com.espertech.esper.event.EventType;
 import com.espertech.esper.collection.Pair;
+import com.espertech.esper.core.EPServiceProviderSPI;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -20,7 +21,7 @@ public class StreamTypeServiceImpl implements StreamTypeService
 {
     private final EventType[] eventTypes;
     private final String[] streamNames;
-    private final String engineURI;
+    private final String engineURIQualifier;
     private final String[] eventTypeAlias;
     private boolean isStreamZeroUnambigous;
     private boolean requireStreamNames;
@@ -29,13 +30,23 @@ public class StreamTypeServiceImpl implements StreamTypeService
      * Ctor.
      * @param eventTypes - array of event types, one for each stream
      * @param streamNames - array of stream names, one for each stream
+     * @param engineURI - engine URI
+     * @param eventTypeAlias - alias name of the event type
      */
     public StreamTypeServiceImpl (EventType[] eventTypes, String[] streamNames, String engineURI, String[] eventTypeAlias)
     {
         this.eventTypes = eventTypes;
         this.streamNames = streamNames;
-        this.engineURI = engineURI;
         this.eventTypeAlias = eventTypeAlias;
+
+        if (engineURI == null)
+        {
+            engineURIQualifier = EPServiceProviderSPI.DEFAULT_ENGINE_URI__QUALIFIER;
+        }
+        else
+        {
+            engineURIQualifier = engineURI;
+        }
 
         if (eventTypes.length != streamNames.length)
         {
@@ -48,13 +59,14 @@ public class StreamTypeServiceImpl implements StreamTypeService
      * @param namesAndTypes is the ordered list of stream names and event types available (stream zero to N)
      * @param isStreamZeroUnambigous indicates whether when a property is found in stream zero and another stream an exception should be
      * thrown or the stream zero should be assumed
+     * @param engineURI uri of the engine
      * @param requireStreamNames is true to indicate that stream names are required for any non-zero streams (for subqueries)
      */
     public StreamTypeServiceImpl (LinkedHashMap<String, Pair<EventType, String>> namesAndTypes, String engineURI, boolean isStreamZeroUnambigous, boolean requireStreamNames)
     {
         this.isStreamZeroUnambigous = isStreamZeroUnambigous;
         this.requireStreamNames = requireStreamNames;
-        this.engineURI = engineURI;
+        this.engineURIQualifier = engineURI;
         eventTypes = new EventType[namesAndTypes.size()] ;
         streamNames = new String[namesAndTypes.size()] ;
         eventTypeAlias = new String[namesAndTypes.size()] ;
@@ -228,7 +240,7 @@ public class StreamTypeServiceImpl implements StreamTypeService
     private Pair<String, String> getIsEngineQualified(String propertyName, String streamName) {
 
         // If still not found, test for the stream name to contain the engine URI
-        if (!streamName.equals(engineURI))
+        if (!streamName.equals(engineURIQualifier))
         {
             return null;
         }

@@ -697,6 +697,14 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
         }
     }
 
+    /**
+     * Compiles a statement returning the compile (verified, non-serializable) form of a statement.
+     * @param spec is the statement specification
+     * @param eplStatement the statement to compile
+     * @param statementContext the statement services
+     * @return compiled statement
+     * @throws EPStatementException if the statement cannot be compiled
+     */
     protected static StatementSpecCompiled compile(StatementSpecRaw spec, String eplStatement, StatementContext statementContext) throws EPStatementException
     {
         List<StreamSpecCompiled> compiledStreams;

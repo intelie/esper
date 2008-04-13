@@ -135,7 +135,7 @@ public class TestNamedWindowTypes extends TestCase
         epService.getEPAdministrator().createEPL(stmtTextInsertOne);
 
         // create consumer
-        String stmtTextSelectOne = "select id from MyWindow";
+        String stmtTextSelectOne = "select id from default.MyWindow";
         EPStatement stmtSelectOne = epService.getEPAdministrator().createEPL(stmtTextSelectOne);
         stmtSelectOne.addListener(listenerStmtOne);
 

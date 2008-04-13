@@ -22,6 +22,7 @@ import com.espertech.esper.filter.FilterSpecCompiler;
 import com.espertech.esper.pattern.PatternObjectResolutionService;
 import com.espertech.esper.schedule.TimeProvider;
 import com.espertech.esper.util.MetaDefItem;
+import com.espertech.esper.core.EPServiceProviderSPI;
 
 import java.util.List;
 
@@ -86,7 +87,7 @@ public class FilterStreamSpecRaw extends StreamSpecBase implements StreamSpecRaw
             return new NamedWindowConsumerStreamSpec(eventName, this.getOptionalStreamName(), this.getViewSpecs(), validatedNodes, this.isUnidirectional());
         }
         
-        EventType eventType = resolveType(eventName, eventAdapterService);
+        EventType eventType = resolveType(engineURI, eventName, eventAdapterService);
 
         // Validate all nodes, make sure each returns a boolean and types are good;
         // Also decompose all AND super nodes into individual expressions
@@ -102,13 +103,39 @@ public class FilterStreamSpecRaw extends StreamSpecBase implements StreamSpecRaw
      * Resolves a given event alias to an event type.
      * @param eventName is the alias to resolve
      * @param eventAdapterService for resolving event types
+     * @param engineURI the provider URI
      * @return event type
      * @throws ExprValidationException if the info cannot be resolved
      */
-    protected static EventType resolveType(String eventName, EventAdapterService eventAdapterService)
+    protected static EventType resolveType(String engineURI, String eventName, EventAdapterService eventAdapterService)
             throws ExprValidationException
     {
         EventType eventType = eventAdapterService.getExistsTypeByAlias(eventName);
+
+        String engineURIQualifier = engineURI;
+        if (engineURI == null)
+        {
+            engineURIQualifier = EPServiceProviderSPI.DEFAULT_ENGINE_URI__QUALIFIER;
+        }
+
+        // The event name can be prefixed by the engine URI, i.e. "select * from default.MyEvent"
+        if (eventType == null)
+        {
+            if (eventName.startsWith(engineURIQualifier))
+            {
+                int indexDot = eventName.indexOf(".");
+                if (indexDot > 0)
+                {
+                    String eventNameURI = eventName.substring(0, indexDot);
+                    String eventNameRemainder = eventName.substring(indexDot + 1);
+
+                    if (engineURIQualifier.equals(eventNameURI))
+                    {
+                        eventType = eventAdapterService.getExistsTypeByAlias(eventNameRemainder);
+                    }
+                }
+            }
+        }
 
         // The type is not known yet, attempt to add as a JavaBean type with the same alias
         if (eventType == null)

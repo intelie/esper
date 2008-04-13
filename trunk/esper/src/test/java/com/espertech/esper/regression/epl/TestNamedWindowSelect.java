@@ -47,7 +47,7 @@ public class TestNamedWindowSelect extends TestCase
         stmtSelect.addListener(listenerSelect);
 
         // create consuming statement
-        String stmtTextConsumer = "select * from MyStream";
+        String stmtTextConsumer = "select * from default.MyStream";
         EPStatement stmtConsumer = epService.getEPAdministrator().createEPL(stmtTextConsumer);
         stmtConsumer.addListener(listenerConsumer);
 

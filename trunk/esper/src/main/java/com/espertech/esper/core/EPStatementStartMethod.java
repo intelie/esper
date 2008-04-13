@@ -737,6 +737,13 @@ public class EPStatementStartMethod
         return streamNames;
     }
 
+    /**
+     * Validate filter and join expression nodes.
+     * @param statementSpec the compiled statement
+     * @param statementContext the statement services
+     * @param typeService the event types for streams
+     * @param viewResourceDelegate the delegate to verify expressions that use view resources
+     */
     protected static void validateNodes(StatementSpecCompiled statementSpec,
                                         StatementContext statementContext,
                                         StreamTypeService typeService,

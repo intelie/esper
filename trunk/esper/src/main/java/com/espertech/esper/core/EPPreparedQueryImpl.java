@@ -5,11 +5,19 @@ import com.espertech.esper.client.EPStatementException;
 import com.espertech.esper.core.EPPreparedQuery;
 import com.espertech.esper.event.EventType;
 
+/**
+ * Provides prepared query functionality.
+ */
 public class EPPreparedQueryImpl implements EPPreparedQuery
 {
     private final EPPreparedExecuteMethod executeMethod;
     private final String epl;
 
+    /**
+     * Ctor.
+     * @param executeMethod used at execution time to obtain query results
+     * @param epl is the EPL to execute
+     */
     public EPPreparedQueryImpl(EPPreparedExecuteMethod executeMethod, String epl)
     {
         this.executeMethod = executeMethod;

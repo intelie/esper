@@ -105,7 +105,7 @@ public class PatternStreamSpecRaw extends StreamSpecBase implements StreamSpecRa
         for (EvalFilterNode filterNode : evalNodeAnalysisResult.getFilterNodes())
         {
             String eventName = filterNode.getRawFilterSpec().getEventTypeAlias();
-            EventType eventType = FilterStreamSpecRaw.resolveType(eventName, eventAdapterService);
+            EventType eventType = FilterStreamSpecRaw.resolveType(engineURI, eventName, eventAdapterService);
             String optionalTag = filterNode.getEventAsName();
 
             // If a tag was supplied for the type, the tags must stay with this type, i.e. a=BeanA -> b=BeanA -> a=BeanB is a no
