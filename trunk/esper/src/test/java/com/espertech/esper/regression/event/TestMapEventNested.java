@@ -16,6 +16,35 @@ import java.util.Map;
 
 public class TestMapEventNested extends TestCase
 {
+    public void testEscapedDot()
+    {
+        // TODO - fixme
+        Map<String, Object> definition = makeMap(new Object[][] {
+                {"a.b", int.class},
+                {"a.b.c", int.class},
+                {"nes.", int.class},
+                {"nes.nes2", makeMap(new Object[][] {{"x.y", int.class}}) }
+        });
+        EPServiceProvider epService = getEngineInitialized("dotmap", definition);
+
+        String statementText = "select a\\.b, a\\.b\\.c, nes\\., nes\\.nes2.x\\.y as a from MyStream";
+        EPStatement statement = epService.getEPAdministrator().createEPL(statementText);
+        SupportUpdateListener listener = new SupportUpdateListener();
+        statement.addListener(listener);
+
+        Map<String, Object> data = makeMap(new Object[][] {
+                {"a.b", 10},
+                {"a.b.c", 20},
+                {"nes.", 30},
+                {"nes.nes2", makeMap(new Object[][] {{"x.y", 40}}) }
+        });
+        epService.getEPRuntime().sendEvent(data, "dotmap");
+
+        String[] fields = "a.b,a.b.c,nes.,nes1.nes2.x.y".split(",");
+        EventBean received = listener.assertOneGetNewAndReset();
+        ArrayAssertionUtil.assertProps(received, fields, new Object[] {10, 20, 30, 40});
+    }
+
     public void testNestedMapRuntime()
     {
         EPServiceProvider epService = getEngineInitialized(null, null);

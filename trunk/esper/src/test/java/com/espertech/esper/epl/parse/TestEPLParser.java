@@ -13,7 +13,7 @@ public class TestEPLParser extends TestCase
     public void testDisplayAST() throws Exception
     {
         String className = SupportBean.class.getName();
-        String expression = "select b.c.d /* some comment */ from E";
+        String expression = "select a\\.b from A";
 
         log.debug(".testDisplayAST parsing: " + expression);
         Tree ast = parse(expression);
@@ -582,6 +582,9 @@ public class TestEPLParser extends TestCase
         assertIsValid("select * from A.win:x(myprop.nested, a.c('s'), 'ss', *, null)");
         assertIsValid("select * from pattern[every X where a:b(myprop.nested, a.c('s'), 'ss', *, null)]");
         assertIsValid("select * from pattern[every X:b(myprop.nested, a.c('s'), 'ss', *, null)]");
+
+        // properties escaped
+        assertIsValid("select a\\.b, a\\.b\\.c.d.e\\.f from A");
     }
 
     public void testBitWiseCases() throws Exception
