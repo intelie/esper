@@ -1015,16 +1015,32 @@ eventProperty
 	;
 	
 eventPropertyAtomic
-	:	i=IDENT -> ^(EVENT_PROP_SIMPLE $i)
-	|	i=IDENT LBRACK ni=NUM_INT RBRACK (q=QUESTION)?
-			-> {$q == null}? ^(EVENT_PROP_INDEXED $i $ni)
-			-> ^(EVENT_PROP_DYNAMIC_INDEXED $i $ni)
-	|	i=IDENT LPAREN (s=STRING_LITERAL | s=QUOTED_STRING_LITERAL) RPAREN (q=QUESTION)?
-			-> {$q == null}? ^(EVENT_PROP_MAPPED $i $s)
-			-> ^(EVENT_PROP_DYNAMIC_MAPPED $i $s)
-	|	i=IDENT QUESTION -> ^(EVENT_PROP_DYNAMIC_SIMPLE $i)
+	:	eventPropertyIdent (
+			lb=LBRACK ni=NUM_INT RBRACK (q=QUESTION)?
+			|
+			lp=LPAREN (s=STRING_LITERAL | s=QUOTED_STRING_LITERAL) RPAREN (q=QUESTION)?
+			|
+			q1=QUESTION 
+			)?
+		
+		-> {lb!= null && $q == null}? ^(EVENT_PROP_INDEXED eventPropertyIdent $ni)
+		-> {lb!= null && $q != null}? ^(EVENT_PROP_DYNAMIC_INDEXED eventPropertyIdent $ni)
+		-> {lp!= null && $q == null}? ^(EVENT_PROP_MAPPED eventPropertyIdent $s)
+		-> {lp!= null && $q != null}? ^(EVENT_PROP_DYNAMIC_MAPPED eventPropertyIdent $s)
+		-> {q1 != null}? 	      ^(EVENT_PROP_DYNAMIC_SIMPLE eventPropertyIdent)
+		-> ^(EVENT_PROP_SIMPLE eventPropertyIdent)
+		;
+		
+eventPropertyIdent
+  @init { String identifier = ""; } 
+	:	i1=IDENT { identifier = $i1.getText(); }
+		(
+		  ESCAPECHAR DOT i2=IDENT? { identifier += ".";
+		  			     if ($i2 != null) identifier += $i2.getText(); }
+		)*
+	    	-> ^(IDENT[identifier])
 	;
-
+		
 time_period 	
 	:	
 	(	

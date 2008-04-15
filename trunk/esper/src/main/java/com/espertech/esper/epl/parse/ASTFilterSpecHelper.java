@@ -28,40 +28,41 @@ public class ASTFilterSpecHelper
         StringBuilder buffer = new StringBuilder();
         String delimiter = "";
 
-        for (int i = startIndex; i < parentNode.getChildCount(); i++)
+        int childIndex = startIndex;
+        while (childIndex < parentNode.getChildCount())
         {
-        	Tree child = parentNode.getChild(i);
+        	Tree child = parentNode.getChild(childIndex);
             buffer.append(delimiter);
 
             switch (child.getType()) {
                 case EsperEPL2GrammarParser.EVENT_PROP_SIMPLE:
-                    buffer.append(child.getChild(0).getText());
+                    buffer.append(escapeDot(child.getChild(0).getText()));
                     break;
                 case EsperEPL2GrammarParser.EVENT_PROP_MAPPED:
-                    buffer.append(child.getChild(0).getText());
+                    buffer.append(escapeDot(child.getChild(0).getText()));
                     buffer.append('(');
                     buffer.append(child.getChild(1).getText());
                     buffer.append(')');
                     break;
                 case EsperEPL2GrammarParser.EVENT_PROP_INDEXED:
-                    buffer.append(child.getChild(0).getText());
+                    buffer.append(escapeDot(child.getChild(0).getText()));
                     buffer.append('[');
                     buffer.append(child.getChild(1).getText());
                     buffer.append(']');
                     break;
                 case EsperEPL2GrammarParser.EVENT_PROP_DYNAMIC_SIMPLE:
-                    buffer.append(child.getChild(0).getText());
+                    buffer.append(escapeDot(child.getChild(0).getText()));
                     buffer.append('?');
                     break;
                 case EsperEPL2GrammarParser.EVENT_PROP_DYNAMIC_MAPPED:
-                    buffer.append(child.getChild(0).getText());
+                    buffer.append(escapeDot(child.getChild(0).getText()));
                     buffer.append('(');
                     buffer.append(child.getChild(1).getText());
                     buffer.append(')');
                     buffer.append('?');
                     break;
                 case EsperEPL2GrammarParser.EVENT_PROP_DYNAMIC_INDEXED:
-                    buffer.append(child.getChild(0).getText());
+                    buffer.append(escapeDot(child.getChild(0).getText()));
                     buffer.append('[');
                     buffer.append(child.getChild(1).getText());
                     buffer.append(']');
@@ -72,9 +73,48 @@ public class ASTFilterSpecHelper
             }
 
             delimiter = ".";
+            childIndex++;
         }
 
         return buffer.toString();
+    }
+
+    /**
+     * Escape all unescape dot characters in the text (identifier only) passed in.
+     * @param identifierToEscape text to escape
+     */
+    protected static String escapeDot(String identifierToEscape)
+    {
+        int indexof = identifierToEscape.indexOf(".");
+        if (indexof == -1)
+        {
+            return identifierToEscape;
+        }
+
+        StringBuilder builder = new StringBuilder();
+        for (int i = 0; i < identifierToEscape.length(); i++)
+        {
+            char c = identifierToEscape.charAt(i);
+            if (c != '.')
+            {
+                builder.append(c);
+                continue;
+            }
+
+            if (i > 0)
+            {
+                if (identifierToEscape.charAt(i - 1) == '\\')
+                {
+                    builder.append('.');
+                    continue;
+                }
+            }
+
+            builder.append('\\');
+            builder.append('.');
+        }
+
+        return builder.toString();
     }
 
     private static Log log = LogFactory.getLog(ASTFilterSpecHelper.class);

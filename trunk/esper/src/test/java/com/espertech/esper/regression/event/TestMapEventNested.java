@@ -25,9 +25,10 @@ public class TestMapEventNested extends TestCase
                 {"nes.", int.class},
                 {"nes.nes2", makeMap(new Object[][] {{"x.y", int.class}}) }
         });
-        EPServiceProvider epService = getEngineInitialized("dotmap", definition);
+        EPServiceProvider epService = getEngineInitialized("DotMap", definition);
 
-        String statementText = "select a\\.b, a\\.b\\.c, nes\\., nes\\.nes2.x\\.y as a from MyStream";
+        String statementText = "select nes\\.nes2.x\\.y from DotMap";
+        //String statementText = "select a\\.b, a\\.b\\.c, nes\\., nes\\.nes2.x\\.y from DotMap";
         EPStatement statement = epService.getEPAdministrator().createEPL(statementText);
         SupportUpdateListener listener = new SupportUpdateListener();
         statement.addListener(listener);
@@ -38,7 +39,7 @@ public class TestMapEventNested extends TestCase
                 {"nes.", 30},
                 {"nes.nes2", makeMap(new Object[][] {{"x.y", 40}}) }
         });
-        epService.getEPRuntime().sendEvent(data, "dotmap");
+        epService.getEPRuntime().sendEvent(data, "DotMap");
 
         String[] fields = "a.b,a.b.c,nes.,nes1.nes2.x.y".split(",");
         EventBean received = listener.assertOneGetNewAndReset();

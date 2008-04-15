@@ -25,5 +25,41 @@ public class TestASTFilterSpecHelper extends TestCase
         assertEquals(PROPERTY, propertyName);
     }
 
+    public void testGetPropertyNameEscaped() throws Exception
+    {
+        final String PROPERTY = "a('aa')\\.b[1]\\.c";
+        Tree propertyNameExprNode = SupportParserHelper.parseEventProperty(PROPERTY);
+        ASTUtil.dumpAST(propertyNameExprNode);
+        String propertyName = ASTFilterSpecHelper.getPropertyName(propertyNameExprNode, 0);
+        assertEquals(PROPERTY, propertyName);
+    }
+
+    public void testEscapeDot() throws Exception
+    {
+        String [][] inout = new String[][] {
+                {"a", "a"},
+                {"", ""},
+                {" ", " "},
+                {".", "\\."},
+                {".", "\\."},
+                {"a.", "a\\."},
+                {".a", "\\.a"},
+                {"a.b", "a\\.b"},
+                {"a..b", "a\\.\\.b"},
+                {"a\\.b", "a\\.b"},
+                {"a\\..b", "a\\.\\.b"},
+                {"a.\\..b", "a\\.\\.\\.b"},
+                {"a.b.c", "a\\.b\\.c"}
+        };
+
+        for (int i = 0; i < inout.length; i++)
+        {
+            String in = inout[i][0];
+            String expected = inout[i][1];
+            assertEquals("for input " + in, expected, ASTFilterSpecHelper.escapeDot(in));
+        }
+    }
+
+
     private static final Log log = LogFactory.getLog(TestASTFilterSpecHelper.class);
 }

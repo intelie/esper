@@ -1,9 +1,9 @@
 package com.espertech.esper.epl.parse;
 
-import junit.framework.TestCase;
 import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.epl.parse.SupportEPLTreeWalkerFactory;
 import com.espertech.esper.support.epl.parse.SupportParserHelper;
+import junit.framework.TestCase;
 import org.antlr.runtime.tree.Tree;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -13,6 +13,7 @@ public class TestEPLParser extends TestCase
     public void testDisplayAST() throws Exception
     {
         String className = SupportBean.class.getName();
+        //String expression = "select a\\.b\\.c[43]\\.dd('a') from A";
         String expression = "select a\\.b from A";
 
         log.debug(".testDisplayAST parsing: " + expression);
@@ -584,7 +585,8 @@ public class TestEPLParser extends TestCase
         assertIsValid("select * from pattern[every X:b(myprop.nested, a.c('s'), 'ss', *, null)]");
 
         // properties escaped
-        assertIsValid("select a\\.b, a\\.b\\.c.d.e\\.f from A");
+        // TODO
+        // assertIsValid("select a\\.b, a\\.b\\.c.d.e\\.f, \\.\\.\\.aa\\.\\.\\.b\\.\\. from A");
     }
 
     public void testBitWiseCases() throws Exception
