@@ -1,6 +1,7 @@
 package com.espertech.esper.event;
 
 import com.espertech.esper.collection.Pair;
+import com.espertech.esper.epl.parse.ASTFilterSpecHelper;
 
 import java.util.Iterator;
 import java.util.Map;
@@ -50,7 +51,7 @@ public class CompositeEventType implements EventType, TaggedCompositeEventType
         }
 
         // see if this is a nested property
-        int index = propertyName.indexOf('.');
+        int index = ASTFilterSpecHelper.unescapedIndexOfDot(propertyName);
         if (index == -1)
         {
             return null;
@@ -77,7 +78,7 @@ public class CompositeEventType implements EventType, TaggedCompositeEventType
     public EventPropertyGetter getGetter(String propertyName)
     {
         // see if this is a nested property
-        int index = propertyName.indexOf('.');
+        int index = ASTFilterSpecHelper.unescapedIndexOfDot(propertyName);
         if (index == -1)
         {
             Pair<EventType, String> result = taggedEventTypes.get(propertyName);

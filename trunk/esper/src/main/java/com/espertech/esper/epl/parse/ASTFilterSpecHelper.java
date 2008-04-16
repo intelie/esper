@@ -8,8 +8,6 @@
 package com.espertech.esper.epl.parse;
 
 import com.espertech.esper.epl.generated.EsperEPL2GrammarParser;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.antlr.runtime.tree.Tree;
 
 /**
@@ -117,5 +115,80 @@ public class ASTFilterSpecHelper
         return builder.toString();
     }
 
-    private static Log log = LogFactory.getLog(ASTFilterSpecHelper.class);
+    /**
+     * Find the index of an unescaped dot (.) character, or return -1 if none found.
+     * @param identifier text to find an un-escaped dot character
+     */
+    public static int unescapedIndexOfDot(String identifier)
+    {
+        int indexof = identifier.indexOf(".");
+        if (indexof == -1)
+        {
+            return -1;
+        }
+
+        for (int i = 0; i < identifier.length(); i++)
+        {
+            char c = identifier.charAt(i);
+            if (c != '.')
+            {
+                continue;
+            }
+
+            if (i > 0)
+            {
+                if (identifier.charAt(i - 1) == '\\')
+                {
+                    continue;
+                }
+            }
+
+            return i;
+        }
+
+        return -1;
+    }
+
+    /**
+     * Un-Escape all escaped dot characters in the text (identifier only) passed in.
+     * @param identifierToUnescape text to un-escape
+     */
+    public static String unescapeDot(String identifierToUnescape)
+    {
+        int indexof = identifierToUnescape.indexOf(".");
+        if (indexof == -1)
+        {
+            return identifierToUnescape;
+        }
+        indexof = identifierToUnescape.indexOf("\\");
+        if (indexof == -1)
+        {
+            return identifierToUnescape;
+        }
+
+        StringBuilder builder = new StringBuilder();
+        int index = -1;
+        int max = identifierToUnescape.length() - 1;
+        do
+        {
+            index++;
+            char c = identifierToUnescape.charAt(index);
+            if (c != '\\') {
+                builder.append(c);
+                continue;
+            }
+            if (index < identifierToUnescape.length() - 1)
+            {
+                if (identifierToUnescape.charAt(index + 1) == '.')
+                {
+                    builder.append('.');
+                    index++;
+                    continue;
+                }
+            }
+        }
+        while (index < max);
+
+        return builder.toString();
+    }
 }

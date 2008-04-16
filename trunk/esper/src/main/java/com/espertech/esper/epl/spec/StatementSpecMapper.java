@@ -9,6 +9,7 @@ import com.espertech.esper.epl.core.EngineImportService;
 import com.espertech.esper.epl.core.EngineImportUndefinedException;
 import com.espertech.esper.epl.expression.*;
 import com.espertech.esper.epl.variable.VariableService;
+import com.espertech.esper.epl.parse.ASTFilterSpecHelper;
 import com.espertech.esper.pattern.*;
 import com.espertech.esper.type.MathArithTypeEnum;
 import com.espertech.esper.type.MinMaxTypeEnum;
@@ -570,7 +571,7 @@ public class StatementSpecMapper
         else if (expr instanceof PropertyValueExpression)
         {
             PropertyValueExpression prop = (PropertyValueExpression) expr;
-            int indexDot = prop.getPropertyName().indexOf('.');
+            int indexDot = ASTFilterSpecHelper.unescapedIndexOfDot(prop.getPropertyName());
             if (indexDot != -1)
             {
                 String stream = prop.getPropertyName().substring(0, indexDot);

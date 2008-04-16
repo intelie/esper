@@ -10,6 +10,7 @@ package com.espertech.esper.epl.core;
 import com.espertech.esper.event.EventType;
 import com.espertech.esper.collection.Pair;
 import com.espertech.esper.core.EPServiceProviderSPI;
+import com.espertech.esper.epl.parse.ASTFilterSpecHelper;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -135,7 +136,7 @@ public class StreamTypeServiceImpl implements StreamTypeService
         catch (PropertyNotFoundException ex)
         {
             // Attempt to resolve by extracting a stream name
-            int index = streamAndPropertyName.indexOf('.');
+            int index = ASTFilterSpecHelper.unescapedIndexOfDot(streamAndPropertyName);
             if (index == -1)
             {
                 throw ex;
@@ -245,7 +246,7 @@ public class StreamTypeServiceImpl implements StreamTypeService
             return null;
         }
 
-        int index = propertyName.indexOf('.');
+        int index = ASTFilterSpecHelper.unescapedIndexOfDot(propertyName);
         if (index == -1)
         {
             return null;

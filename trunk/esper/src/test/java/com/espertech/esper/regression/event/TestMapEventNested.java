@@ -18,7 +18,6 @@ public class TestMapEventNested extends TestCase
 {
     public void testEscapedDot()
     {
-        // TODO - fixme
         Map<String, Object> definition = makeMap(new Object[][] {
                 {"a.b", int.class},
                 {"a.b.c", int.class},
@@ -27,8 +26,7 @@ public class TestMapEventNested extends TestCase
         });
         EPServiceProvider epService = getEngineInitialized("DotMap", definition);
 
-        String statementText = "select nes\\.nes2.x\\.y from DotMap";
-        //String statementText = "select a\\.b, a\\.b\\.c, nes\\., nes\\.nes2.x\\.y from DotMap";
+        String statementText = "select a\\.b, a\\.b\\.c, nes\\., nes\\.nes2.x\\.y from DotMap";
         EPStatement statement = epService.getEPAdministrator().createEPL(statementText);
         SupportUpdateListener listener = new SupportUpdateListener();
         statement.addListener(listener);
@@ -41,7 +39,7 @@ public class TestMapEventNested extends TestCase
         });
         epService.getEPRuntime().sendEvent(data, "DotMap");
 
-        String[] fields = "a.b,a.b.c,nes.,nes1.nes2.x.y".split(",");
+        String[] fields = "a.b,a.b.c,nes.,nes.nes2.x.y".split(",");
         EventBean received = listener.assertOneGetNewAndReset();
         ArrayAssertionUtil.assertProps(received, fields, new Object[] {10, 20, 30, 40});
     }

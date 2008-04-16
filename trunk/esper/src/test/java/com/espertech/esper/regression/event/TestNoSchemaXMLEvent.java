@@ -32,7 +32,7 @@ public class TestNoSchemaXMLEvent extends TestCase
         "  <element4><element41>VAL4-1</element41></element4>\n" +
         "</myevent>";
 
-    public void setUp()
+    public void testSimpleXML() throws Exception
     {
         Configuration configuration = SupportConfigFactory.getConfiguration();
         configuration.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
@@ -44,6 +44,10 @@ public class TestNoSchemaXMLEvent extends TestCase
         xmlDOMEventTypeDesc.addXPathProperty("xpathAttrNum", "/myevent/element3/@attrNum", XPathConstants.NUMBER);
         xmlDOMEventTypeDesc.addXPathProperty("xpathAttrBool", "/myevent/element3/@attrBool", XPathConstants.BOOLEAN);
         configuration.addEventTypeAlias("TestXMLNoSchemaType", xmlDOMEventTypeDesc);
+
+        xmlDOMEventTypeDesc = new ConfigurationEventTypeXMLDOM();
+        xmlDOMEventTypeDesc.setRootElementName("my.event2");
+        configuration.addEventTypeAlias("TestXMLWithDots", xmlDOMEventTypeDesc);
 
         epService = EPServiceProviderManager.getProvider("TestNoSchemaXML", configuration);
         epService.initialize();
@@ -62,10 +66,7 @@ public class TestNoSchemaXMLEvent extends TestCase
 
         EPStatement joinView = epService.getEPAdministrator().createEPL(stmt);
         joinView.addListener(updateListener);
-    }
 
-    public void testSimpleXML() throws Exception
-    {
         // Generate document with the specified in element1 to confirm we have independent events
         sendEvent("EventA");
         assertData("EventA");
@@ -104,6 +105,26 @@ public class TestNoSchemaXMLEvent extends TestCase
         event = updateListener.assertOneGetNewAndReset();
         assertEquals("text", event.get("type"));
         assertEquals("text", event.get("element1"));
+    }
+
+    public void testDotEscapeSyntax() throws Exception
+    {
+        Configuration configuration = SupportConfigFactory.getConfiguration();
+        ConfigurationEventTypeXMLDOM xmlDOMEventTypeDesc = new ConfigurationEventTypeXMLDOM();
+        xmlDOMEventTypeDesc.setRootElementName("myroot");
+        configuration.addEventTypeAlias("AEvent", xmlDOMEventTypeDesc);
+
+        epService = EPServiceProviderManager.getDefaultProvider(configuration);
+        epService.initialize();
+        updateListener = new SupportUpdateListener();
+
+        String stmt = "select a\\.b.c\\.d as val from AEvent";
+        EPStatement joinView = epService.getEPAdministrator().createEPL(stmt);
+        joinView.addListener(updateListener);
+
+        sendXMLEvent("<myroot><a.b><c.d>value</c.d></a.b></myroot>");
+        EventBean event = updateListener.assertOneGetNewAndReset();
+        assertEquals("value", event.get("val"));
     }
 
     public void testEventXML() throws Exception
@@ -293,4 +314,5 @@ public class TestNoSchemaXMLEvent extends TestCase
 
     private static final Log log = LogFactory.getLog(TestNoSchemaXMLEvent.class);
 }
+
 

@@ -13,6 +13,7 @@ import com.espertech.esper.event.EventPropertyGetter;
 import com.espertech.esper.collection.Pair;
 import com.espertech.esper.epl.core.*;
 import com.espertech.esper.epl.variable.VariableService;
+import com.espertech.esper.epl.parse.ASTFilterSpecHelper;
 import com.espertech.esper.schedule.TimeProvider;
 
 /**
@@ -270,9 +271,9 @@ public class ExprIdentNode extends ExprNode
         StringBuilder buffer = new StringBuilder();
         if (streamOrPropertyName != null)
         {
-            buffer.append(streamOrPropertyName).append('.');
+            buffer.append(ASTFilterSpecHelper.unescapeDot(streamOrPropertyName)).append('.');
         }
-        buffer.append(unresolvedPropertyName);
+        buffer.append(ASTFilterSpecHelper.unescapeDot(unresolvedPropertyName));
 
         return buffer.toString();
     }
