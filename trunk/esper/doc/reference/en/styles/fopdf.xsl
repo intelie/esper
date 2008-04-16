@@ -94,7 +94,6 @@
         <xsl:attribute name="font-family">
             <xsl:value-of select="$body.font.family"/>
         </xsl:attribute>
-        <xsl:attribute name="margin-right">-5em</xsl:attribute>
     </xsl:attribute-set>
 
     <!--###################################################
