@@ -585,8 +585,7 @@ public class TestEPLParser extends TestCase
         assertIsValid("select * from pattern[every X:b(myprop.nested, a.c('s'), 'ss', *, null)]");
 
         // properties escaped
-        // TODO
-        // assertIsValid("select a\\.b, a\\.b\\.c.d.e\\.f, \\.\\.\\.aa\\.\\.\\.b\\.\\. from A");
+        assertIsValid("select a\\.b, a\\.b\\.c.d.e\\.f, zz\\.\\.\\.aa\\.\\.\\.b\\.\\. from A");
     }
 
     public void testBitWiseCases() throws Exception

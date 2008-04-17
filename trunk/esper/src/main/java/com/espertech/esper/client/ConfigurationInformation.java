@@ -7,7 +7,10 @@
  **************************************************************************************/
 package com.espertech.esper.client;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
 
 /**
  * Provides configurations for an engine instance.
@@ -119,5 +122,9 @@ public interface ConfigurationInformation
      * and if successful, uses that class as the event type.
      * @return set of Java package names to look for events types when encountering a new event type alias
      */
-    public Set<String> getEventTypeAutoAliasPackages();    
+    public Set<String> getEventTypeAutoAliasPackages();
+
+    public Map<String, ConfigurationPlugInEventRepresentation> getPlugInEventRepresentation();
+    public Map<String, ConfigurationPlugInEventType> getPlugInEventTypes();
 }
+

@@ -131,6 +131,16 @@ public class Configuration implements ConfigurationOperations, ConfigurationInfo
 	protected Map<String, ConfigurationMethodRef> methodInvocationReferences;
 
     /**
+     * Map of plug-in event representation name and configuration
+     */
+	protected Map<String, ConfigurationPlugInEventRepresentation> plugInEventRepresentation;
+
+    /**
+     * Map of plug-in event types.
+     */
+	protected Map<String, ConfigurationPlugInEventType> plugInEventTypes;
+
+    /**
      * Constructs an empty configuration. The auto import values
      * are set by default to java.lang, java.math, java.text and
      * java.util.
@@ -440,6 +450,32 @@ public class Configuration implements ConfigurationOperations, ConfigurationInfo
         variables.put(variableName, configVar);
     }
 
+    public void addPlugInEventRepresentation(String eventRepresentationURI, String factoryClassName, Serializable initializer)
+    {
+        ConfigurationPlugInEventRepresentation config = new ConfigurationPlugInEventRepresentation();
+        config.setFactoryClassName(factoryClassName);
+        config.setFactoryConfiguration(initializer);
+        this.plugInEventRepresentation.put(eventRepresentationURI, config);
+    }
+
+    public void addPlugInEventType(String eventTypeAlias, String eventRepresentationURI, Serializable initializer)
+    {
+        ConfigurationPlugInEventType config = new ConfigurationPlugInEventType();
+        config.setEventRepresentationURI(eventRepresentationURI);
+        config.setInitializer(initializer);
+        plugInEventTypes.put(eventTypeAlias, config);
+    }
+
+    public Map<String, ConfigurationPlugInEventRepresentation> getPlugInEventRepresentation()
+    {
+        return plugInEventRepresentation;
+    }
+
+    public Map<String, ConfigurationPlugInEventType> getPlugInEventTypes()
+    {
+        return plugInEventTypes;
+    }
+
     public Set<String> getEventTypeAutoAliasPackages()
     {
         return eventTypeAutoAliasPackages;
@@ -640,6 +676,8 @@ public class Configuration implements ConfigurationOperations, ConfigurationInfo
         eventTypeAutoAliasPackages = new LinkedHashSet<String>();
         variables = new HashMap<String, ConfigurationVariable>();
         methodInvocationReferences = new HashMap<String, ConfigurationMethodRef>();
+        plugInEventRepresentation = new HashMap<String, ConfigurationPlugInEventRepresentation>();
+        plugInEventTypes = new HashMap<String, ConfigurationPlugInEventType>();
     }
 
     /**

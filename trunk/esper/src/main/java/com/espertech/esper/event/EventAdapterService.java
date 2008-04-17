@@ -1,12 +1,15 @@
 package com.espertech.esper.event;
 
 import java.util.Map;
+import java.net.URI;
 
 import org.w3c.dom.Node;
 import com.espertech.esper.client.ConfigurationEventTypeXMLDOM;
 import com.espertech.esper.client.ConfigurationEventTypeLegacy;
 import com.espertech.esper.client.Configuration;
+import com.espertech.esper.client.ConfigurationPlugInEventType;
 import com.espertech.esper.collection.Pair;
+import com.espertech.esper.plugin.PlugInEventRepresentation;
 
 /**
  * Interface for a service to resolve event names to event type.
@@ -219,5 +222,9 @@ public interface EventAdapterService
      * Returns a subset of the functionality of the service specific to creating POJO bean event types.
      * @return bean event type factory
      */
-    public BeanEventTypeFactory getBeanEventTypeFactory(); 
+    public BeanEventTypeFactory getBeanEventTypeFactory();
+
+    public void addEventRepresentation(URI eventRepURI, PlugInEventRepresentation pluginEventRep);
+
+    public void addPlugInEventType(String alias, ConfigurationPlugInEventType config);
 }

@@ -1,21 +1,20 @@
 package com.espertech.esper.event;
 
-import com.espertech.esper.client.Configuration;
-import com.espertech.esper.client.ConfigurationEventTypeLegacy;
-import com.espertech.esper.client.ConfigurationEventTypeXMLDOM;
+import com.espertech.esper.client.*;
+import com.espertech.esper.collection.Pair;
 import com.espertech.esper.event.xml.BaseXMLEventType;
-import com.espertech.esper.client.EPException;
 import com.espertech.esper.event.xml.SchemaXMLEventType;
 import com.espertech.esper.event.xml.SimpleXMLEventType;
 import com.espertech.esper.event.xml.XMLEventBean;
+import com.espertech.esper.plugin.PlugInEventRepresentation;
 import com.espertech.esper.util.UuidGenerator;
-import com.espertech.esper.collection.Pair;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.w3c.dom.Document;
-import org.w3c.dom.Node;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
+import java.net.URI;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -43,6 +42,7 @@ public class EventAdapterServiceImpl implements EventAdapterService
     private BeanEventAdapter beanEventAdapter;
     private Map<String, EventType> xmldomRootElementNames;
     private LinkedHashSet<String> javaPackageNames;
+    private final Map<URI, PlugInEventRepresentation> plugInRepresentations;
 
     /**
      * Ctor.
@@ -56,6 +56,26 @@ public class EventAdapterServiceImpl implements EventAdapterService
         // Share the mapping of class to type with the type creation for thread safety
         typesPerJavaBean = new ConcurrentHashMap<Class, BeanEventType>();
         beanEventAdapter = new BeanEventAdapter(typesPerJavaBean);
+        plugInRepresentations = new HashMap<URI, PlugInEventRepresentation>();
+    }
+
+    public void addEventRepresentation(URI eventRepURI, PlugInEventRepresentation pluginEventRep) throws EventAdapterException
+    {
+        if (plugInRepresentations.containsKey(eventRepURI))
+        {
+            throw new EventAdapterException("Plug-in event representation URI by name " + eventRepURI + " already exists");
+        }
+        plugInRepresentations.put(eventRepURI, pluginEventRep);
+    }
+
+    public void addPlugInEventType(String alias, ConfigurationPlugInEventType config) throws EventAdapterException
+    {
+        if (aliasToTypeMap.containsKey(alias))
+        {
+            throw new EventAdapterException("Event type named '" + alias +
+                    "' has already been declared");
+        }
+        // loop through all URI that are partial matches ... config.getEventRepresentationURI();
     }
 
     public BeanEventTypeFactory getBeanEventTypeFactory() {
