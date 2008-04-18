@@ -34,10 +34,10 @@ public class TestURIUtil extends TestCase
 
         // setup input
         Map<URI, Object> input = new HashMap<URI, Object>();
-        for (int i = 0; i < uris.length; i++)
+        for (Object[] uri1 : uris)
         {
-            URI uri = new URI((String)uris[i][0]);
-            input.put(uri, uris[i][1]);
+            URI uri = new URI((String) uri1[0]);
+            input.put(uri, uri1[1]);
         }
 
         URI uri;
@@ -45,79 +45,80 @@ public class TestURIUtil extends TestCase
         String[] expected;
 
         uri = new URI("type://x/a/b?qqq");
-        result = URIUtil.sortRelevance(uri, input);
+        result = URIUtil.filterSort(uri, input);
         expected = new String[] {"type://x/a/b?query#fragment&param", "type://x/a?query#fragment&param", "type://x?query#fragment&param"};
         runAssertion(uri, input, result, expected);
 
         // unspecific child
         uri = new URI("type://a/b2");
-        result = URIUtil.sortRelevance(uri, input);
+        result = URIUtil.filterSort(uri, input);
         expected = new String[] {"type://a/b2", "type://a"};
         runAssertion(uri, input, result, expected);
 
         // very specific child
         uri = new URI("type://a/b2/c2/d/e");
-        result = URIUtil.sortRelevance(uri, input);
+        result = URIUtil.filterSort(uri, input);
         expected = new String[] {"type://a/b2/c2","type://a/b2","type://a"};
+        runAssertion(uri, input, result, expected);
 
         // less specific child
         uri = new URI("type://a/b1/c2");
-        result = URIUtil.sortRelevance(uri, input);
+        result = URIUtil.filterSort(uri, input);
         expected = new String[] {"type://a/b1/c2", "type://a"};
         runAssertion(uri, input, result, expected);
 
         // unspecific child
         uri = new URI("type://a/b4");
-        result = URIUtil.sortRelevance(uri, input);
+        result = URIUtil.filterSort(uri, input);
         expected = new String[] {"type://a"};
         runAssertion(uri, input, result, expected);
 
         uri = new URI("type://b/b1");
-        result = URIUtil.sortRelevance(uri, input);
+        result = URIUtil.filterSort(uri, input);
         expected = new String[] {};
         runAssertion(uri, input, result, expected);
 
         uri = new URI("type://a/b1/c2/d1/e1/f1");
-        result = URIUtil.sortRelevance(uri, input);
+        result = URIUtil.filterSort(uri, input);
         expected = new String[] {"type://a/b1/c2/d1","type://a/b1/c2","type://a"};
         runAssertion(uri, input, result, expected);
 
         uri = new URI("other:mailto:test");
-        result = URIUtil.sortRelevance(uri, input);
+        result = URIUtil.filterSort(uri, input);
         expected = new String[] {"other:mailto:test"};
         runAssertion(uri, input, result, expected);
 
         uri = new URI("type://x/a?qqq");
-        result = URIUtil.sortRelevance(uri, input);
+        result = URIUtil.filterSort(uri, input);
         expected = new String[] {"type://x/a?query#fragment&param", "type://x?query#fragment&param"};
         runAssertion(uri, input, result, expected);
 
         uri = new URI("other://x/a?qqq");
-        result = URIUtil.sortRelevance(uri, input);
+        result = URIUtil.filterSort(uri, input);
         expected = new String[] {};
         runAssertion(uri, input, result, expected);
 
         // this is seen as relative, must be a full hit (no path checking)
         uri = new URI("/a/b");
-        result = URIUtil.sortRelevance(uri, input);
+        result = URIUtil.filterSort(uri, input);
         expected = new String[] {};
         runAssertion(uri, input, result, expected);
 
         // this is seen as relative
         uri = new URI("/a/b/c");
-        result = URIUtil.sortRelevance(uri, input);
+        result = URIUtil.filterSort(uri, input);
         expected = new String[] {"/a/b/c"};
         runAssertion(uri, input, result, expected);
 
         // this is seen as relative
         uri = new URI("//a/b");
-        result = URIUtil.sortRelevance(uri, input);
+        result = URIUtil.filterSort(uri, input);
         expected = new String[] {};
         runAssertion(uri, input, result, expected);
 
         // this is seen as relative
         uri = new URI("//a/b/c");
-        result = URIUtil.sortRelevance(uri, input);
+        result = URIUtil.filterSort(uri, input);
         expected = new String[] {"//a/b/c"};
         runAssertion(uri, input, result, expected);
     }

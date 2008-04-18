@@ -221,6 +221,11 @@ public class EPRuntimeImpl implements EPRuntimeSPI, TimerCallback, InternalEvent
             eventBean = services.getEventAdapterService().adapterForBean(event);
         }
 
+        processWrappedEvent(eventBean);
+    }
+
+    public void processWrappedEvent(EventBean eventBean)
+    {
         // Acquire main processing lock which locks out statement management
         services.getEventProcessingRWLock().acquireReadLock();
         try
@@ -859,6 +864,11 @@ public class EPRuntimeImpl implements EPRuntimeSPI, TimerCallback, InternalEvent
             log.debug(message, t);
             throw new EPStatementException(message, epl);
         }
+    }
+
+    public EventSender getEventSender(String eventTypeAlias)
+    {
+        return services.getEventAdapterService().getEventSender(this, eventTypeAlias);
     }
 
     private static final Log log = LogFactory.getLog(EPRuntimeImpl.class);

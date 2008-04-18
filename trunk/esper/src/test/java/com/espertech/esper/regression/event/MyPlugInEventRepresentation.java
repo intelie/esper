@@ -3,15 +3,16 @@ package com.espertech.esper.regression.event;
 import com.espertech.esper.event.EventType;
 import com.espertech.esper.plugin.PlugInEventRepresentation;
 import com.espertech.esper.plugin.PlugInEventRepresentationContext;
-import com.espertech.esper.plugin.PlugInEventTypeContext;
+import com.espertech.esper.plugin.PlugInEventTypeHandlerContext;
+import com.espertech.esper.plugin.PlugInEventTypeHandler;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+import java.io.Serializable;
 
 public class MyPlugInEventRepresentation implements PlugInEventRepresentation
 {
@@ -31,36 +32,20 @@ public class MyPlugInEventRepresentation implements PlugInEventRepresentation
         baseURI = context.getEventRepresentationURI();
     }
 
-    public boolean acceptsType(String pluginEventTypeURI)
+    public boolean acceptsType(URI pluginEventTypeURI, Serializable initializer)
     {
-        URI typeURI;
-        try
-        {
-            typeURI = new URI(pluginEventTypeURI);
-        }
-        catch (URISyntaxException e)
-        {
-            log.error("Error parsing URI " + pluginEventTypeURI, e);
-            return false;
-        }
-
-        // Simply check schema and authority
-        if (typeURI.getScheme().equals(baseURI.getScheme()))
-        {
-            return false;
-        }
-        if (typeURI.getAuthority().equals(baseURI.getAuthority()))
-        {
-            return false;
-        }
         return true;
     }
 
-    public EventType getType(PlugInEventTypeContext eventTypeContext)
+    public PlugInEventTypeHandler getHandler(PlugInEventTypeHandlerContext eventTypeContext)
     {
         String typeProperyies = (String) eventTypeContext.getTypeInitializer();
         String[] propertyList = typeProperyies.split(",");
+
+        // the set of properties know are the set of this alias as well as the set for the base
         Set<String> typeProps = new HashSet<String>(Arrays.asList(propertyList));
-        return new MyPlugInPropertiesEventType(typeProps);
+        typeProps.addAll(baseProps);
+
+        return new MyPlugInPropertiesEventTypeHandler(typeProps);        
     }
 }

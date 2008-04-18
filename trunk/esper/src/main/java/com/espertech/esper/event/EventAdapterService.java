@@ -4,12 +4,10 @@ import java.util.Map;
 import java.net.URI;
 
 import org.w3c.dom.Node;
-import com.espertech.esper.client.ConfigurationEventTypeXMLDOM;
-import com.espertech.esper.client.ConfigurationEventTypeLegacy;
-import com.espertech.esper.client.Configuration;
-import com.espertech.esper.client.ConfigurationPlugInEventType;
+import com.espertech.esper.client.*;
 import com.espertech.esper.collection.Pair;
 import com.espertech.esper.plugin.PlugInEventRepresentation;
+import com.espertech.esper.core.EPRuntimeSPI;
 
 /**
  * Interface for a service to resolve event names to event type.
@@ -227,4 +225,6 @@ public interface EventAdapterService
     public void addEventRepresentation(URI eventRepURI, PlugInEventRepresentation pluginEventRep);
 
     public void addPlugInEventType(String alias, ConfigurationPlugInEventType config);
+
+    public EventSender getEventSender(EPRuntimeSPI runtimeSPI, String eventTypeAlias);
 }

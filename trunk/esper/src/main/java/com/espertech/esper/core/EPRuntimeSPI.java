@@ -1,6 +1,7 @@
 package com.espertech.esper.core;
 
 import com.espertech.esper.client.EPRuntime;
+import com.espertech.esper.event.EventBean;
 
 /**
  * SPI interface of the runtime exposes fire-and-forget, non-continuous query functionality.
@@ -20,4 +21,7 @@ public interface EPRuntimeSPI extends EPRuntime
      * @return proxy to execute upon, that also provides the event type of the returned results
      */
     public EPPreparedQuery prepareQuery(String epl);
+
+
+    public void processWrappedEvent(EventBean eventBean);
 }

@@ -7,7 +7,7 @@ import java.util.Collection;
 
 public class URIUtil
 {
-    public static Collection<Map.Entry<URI, Object>> sortRelevance(URI child, Map<URI, Object> uris)
+    public static Collection<Map.Entry<URI, Object>> filterSort(URI child, Map<URI, Object> uris)
     {
         boolean childPathIsOpaque = child.isOpaque();
         boolean childPathIsRelative = !child.isAbsolute();

@@ -169,4 +169,6 @@ public interface EPRuntime
      * @throws VariableNotFoundException if any of the variable names has not been declared
      */
     public void setVariableValue(Map<String, Object> variableValues) throws VariableValueException, VariableNotFoundException;
+
+    public EventSender getEventSender(String eventTypeAlias) throws EventTypeException;
 }

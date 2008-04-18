@@ -7,7 +7,11 @@ import com.espertech.esper.event.xml.SchemaXMLEventType;
 import com.espertech.esper.event.xml.SimpleXMLEventType;
 import com.espertech.esper.event.xml.XMLEventBean;
 import com.espertech.esper.plugin.PlugInEventRepresentation;
+import com.espertech.esper.plugin.PlugInEventTypeHandlerContext;
+import com.espertech.esper.plugin.PlugInEventTypeHandler;
 import com.espertech.esper.util.UuidGenerator;
+import com.espertech.esper.util.URIUtil;
+import com.espertech.esper.core.EPRuntimeSPI;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.w3c.dom.Document;
@@ -15,9 +19,11 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Collection;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -39,6 +45,7 @@ public class EventAdapterServiceImpl implements EventAdapterService
 
     private final ConcurrentHashMap<Class, BeanEventType> typesPerJavaBean;
     private final Map<String, EventType> aliasToTypeMap;
+    private final Map<String, PlugInEventTypeHandler> aliasToHandlerMap;
     private BeanEventAdapter beanEventAdapter;
     private Map<String, EventType> xmldomRootElementNames;
     private LinkedHashSet<String> javaPackageNames;
@@ -52,6 +59,7 @@ public class EventAdapterServiceImpl implements EventAdapterService
         aliasToTypeMap = new HashMap<String, EventType>();
         xmldomRootElementNames = new HashMap<String, EventType>();
         javaPackageNames = new LinkedHashSet<String>();
+        aliasToHandlerMap = new HashMap<String, PlugInEventTypeHandler>();
 
         // Share the mapping of class to type with the type creation for thread safety
         typesPerJavaBean = new ConcurrentHashMap<Class, BeanEventType>();
@@ -75,7 +83,82 @@ public class EventAdapterServiceImpl implements EventAdapterService
             throw new EventAdapterException("Event type named '" + alias +
                     "' has already been declared");
         }
-        // loop through all URI that are partial matches ... config.getEventRepresentationURI();
+
+        URI uri;
+        try
+        {
+            // TODO: should that be event type URI
+            uri = new URI(config.getEventRepresentationURI());
+        }
+        catch (URISyntaxException e)
+        {
+            throw new EventAdapterException("Error parsing URI '" + config.getEventRepresentationURI() + "'");
+        }
+
+        // Determine a list of event representations that may handle this type
+        Map<URI, Object> checkList = new HashMap<URI, Object>(plugInRepresentations);
+        Collection<Map.Entry<URI, Object>> factories = URIUtil.filterSort(uri, checkList);
+        if (factories.isEmpty())
+        {
+            throw new EventAdapterException("Event type named '" + alias + "' could not be creates as none of the " +
+                    " known plug-in event representations handle its URI '" + config.getEventRepresentationURI() + "'");
+        }
+
+        // Ask each in turn to accept the type (the process of resolving the type)
+        PlugInEventRepresentation handlingFactory = null;
+        URI handlingFactoryURI = null;
+        for (Map.Entry<URI, Object> entry : factories)
+        {
+            PlugInEventRepresentation factory = (PlugInEventRepresentation) entry.getValue();
+            if (factory.acceptsType(uri, config.getInitializer()));
+            {
+                handlingFactory = factory;
+                handlingFactoryURI = entry.getKey();
+            }
+        }
+
+        if (handlingFactory == null)
+        {
+            throw new EventAdapterException("Event type named '" + alias + "' could not be created as none of the " +
+                    " known plug-in event representations accepts its URI '" + config.getEventRepresentationURI()
+                    + "' or initializer");            
+        }
+
+        PlugInEventTypeHandlerContext context = new PlugInEventTypeHandlerContext(handlingFactoryURI, uri, config.getInitializer());
+        PlugInEventTypeHandler handler = handlingFactory.getHandler(context);
+
+        aliasToTypeMap.put(alias, handler.getType());
+        aliasToHandlerMap.put(alias, handler);
+    }
+
+    public EventSender getEventSender(EPRuntimeSPI runtimeSPI, String eventTypeAlias) throws EventTypeException
+    {
+        EventType eventType = aliasToTypeMap.get(eventTypeAlias);
+        if (eventType == null)
+        {
+            throw new EventTypeException("Event type named '" + eventTypeAlias + "' could not be found");
+        }
+        
+        if (eventType instanceof BeanEventType)
+        {
+            return new BeanEventSender(runtimeSPI, (BeanEventType) eventType);
+        }
+        if (eventType instanceof MapEventType)
+        {
+            // TODO
+            return new BeanEventSender(runtimeSPI, (BeanEventType) eventType);
+        }
+        if (eventType instanceof BaseXMLEventType)
+        {
+            // TODO
+            return new BeanEventSender(runtimeSPI, (BeanEventType) eventType);
+        }
+        PlugInEventTypeHandler handlers = aliasToHandlerMap.get(eventTypeAlias);
+        if (handlers != null)
+        {
+            return handlers.getSender();
+        }
+        throw new EventAdapterException("An EventSender for event type named '" + eventTypeAlias + "' could not be created");
     }
 
     public BeanEventTypeFactory getBeanEventTypeFactory() {

@@ -20,6 +20,10 @@ public class MyPlugInPropertiesEventType implements EventType
 
     public Class getPropertyType(String property)
     {
+        if (!isProperty(property))
+        {
+            return null;
+        }
         return String.class;
     }
 
