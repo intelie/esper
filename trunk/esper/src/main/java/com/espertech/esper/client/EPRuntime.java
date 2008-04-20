@@ -12,6 +12,7 @@ import com.espertech.esper.core.EPPreparedQuery;
 
 import java.util.Map;
 import java.util.Set;
+import java.net.URI;
 
 /**
  * Interface to event stream processing runtime services.
@@ -171,4 +172,5 @@ public interface EPRuntime
     public void setVariableValue(Map<String, Object> variableValues) throws VariableValueException, VariableNotFoundException;
 
     public EventSender getEventSender(String eventTypeAlias) throws EventTypeException;
+    public EventSender getEventSender(URI[] uris) throws EventTypeException;
 }

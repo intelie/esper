@@ -11,6 +11,7 @@ import com.espertech.esper.pattern.PatternObjectResolutionService;
 import com.espertech.esper.schedule.TimeProvider;
 
 import java.util.List;
+import java.net.URI;
 
 /**
  * Specification object for historical data poll via database SQL statement.
@@ -76,7 +77,7 @@ public class MethodStreamSpec extends StreamSpecBase implements StreamSpecRaw, S
         return expressions;
     }
 
-    public StreamSpecCompiled compile(EventAdapterService eventAdapterService, MethodResolutionService methodResolutionService, PatternObjectResolutionService patternObjectResolutionService, TimeProvider timeProvider, NamedWindowService namedWindowService, VariableService variableService, String engineURI) throws ExprValidationException
+    public StreamSpecCompiled compile(EventAdapterService eventAdapterService, MethodResolutionService methodResolutionService, PatternObjectResolutionService patternObjectResolutionService, TimeProvider timeProvider, NamedWindowService namedWindowService, VariableService variableService, String engineURI, URI[] plugInTypeResolutionURIs) throws ExprValidationException
     {
         if (!ident.equals("method"))
         {

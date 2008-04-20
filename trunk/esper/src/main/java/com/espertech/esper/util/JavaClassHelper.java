@@ -873,6 +873,27 @@ public class JavaClassHelper
         return recursiveSuperclassImplementsInterface(clazz, interfaceClass);
     }
 
+    /**
+     * Method to check if a given class, and its superclasses and interfaces (deep), implement a given interface or extend a given class.
+     * @param extendorOrImplementor is the class to inspects its extends and implements clauses
+     * @param extendedOrImplemented is the potential interface, or superclass, to check
+     * @return true if such interface is implemented by any of the clazz or its superclasses or
+     * extends by any interface and superclasses (deep check)
+     */
+    public static boolean isSubclassOrImplementsInterface(Class extendorOrImplementor, Class extendedOrImplemented)
+    {
+        if (extendorOrImplementor.equals(extendedOrImplemented))
+        {
+            return true;
+        }
+        if (extendedOrImplemented.isInterface())
+        {
+            return recursiveIsImplementsInterface(extendorOrImplementor, extendedOrImplemented) ||
+                   recursiveSuperclassImplementsInterface(extendorOrImplementor, extendedOrImplemented);
+        }
+        return recursiveIsSuperClass(extendorOrImplementor, extendedOrImplemented);
+    }
+
     private static boolean recursiveIsSuperClass(Class clazz, Class superClass)
     {
         if (clazz == null)

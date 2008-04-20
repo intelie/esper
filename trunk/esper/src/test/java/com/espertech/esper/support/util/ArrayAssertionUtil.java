@@ -528,6 +528,30 @@ public class ArrayAssertionUtil
         }
     }
 
+    public static void assertAllProps(EventBean received, Object[] propertiesSortedByName)
+    {
+        if (propertiesSortedByName == null)
+        {
+            if (received == null)
+            {
+                return;
+            }
+        }
+
+        String[] propertyNames = received.getEventType().getPropertyNames();
+        String[] propertyNamesSorted = new String[propertyNames.length];
+        System.arraycopy(propertyNames, 0, propertyNamesSorted, 0, propertyNames.length);
+        Arrays.sort(propertyNamesSorted);
+
+        for (int j = 0; j < propertiesSortedByName.length; j++)
+        {
+            String name = propertyNamesSorted[j].trim();
+            Object value = propertiesSortedByName[j];
+            Object eventProp = received.get(name);
+            Assert.assertEquals("Error asserting property named '" + name + "'",value,eventProp);
+        }
+    }
+
     public static void assertProps(Map pojo, String[] propertyNames, Object... propertiesThisRow)
     {
         if (propertiesThisRow == null)

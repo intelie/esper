@@ -9,6 +9,7 @@ package com.espertech.esper.client;
 
 import java.io.*;
 import java.net.URL;
+import java.net.URI;
 import java.util.*;
 
 import org.apache.commons.logging.Log;
@@ -133,12 +134,14 @@ public class Configuration implements ConfigurationOperations, ConfigurationInfo
     /**
      * Map of plug-in event representation name and configuration
      */
-	protected Map<String, ConfigurationPlugInEventRepresentation> plugInEventRepresentation;
+	protected Map<URI, ConfigurationPlugInEventRepresentation> plugInEventRepresentation;
 
     /**
      * Map of plug-in event types.
      */
 	protected Map<String, ConfigurationPlugInEventType> plugInEventTypes;
+
+    protected URI[] plugInEventTypeAliasResolutionURIs;
 
     /**
      * Constructs an empty configuration. The auto import values
@@ -227,6 +230,17 @@ public class Configuration implements ConfigurationOperations, ConfigurationInfo
     public void addNestableEventTypeAlias(String eventTypeAlias, Map<String, Object> typeMap)
     {
     	nestableMapAliases.put(eventTypeAlias, typeMap);
+    }
+
+    /**
+     * This is the same as {@link #addNestableEventTypeAlias}.
+     * @param eventTypeAlias is the alias for the event type
+     * @param typeMap maps the name of each property in the Map event to the type
+     * (fully qualified classname) of its value in Map event instances.
+     */
+    public void addEventTypeAliasNestable(String eventTypeAlias, Map<String, Object> typeMap)
+    {
+    	addNestableEventTypeAlias(eventTypeAlias, typeMap);
     }
 
     /**
@@ -450,23 +464,33 @@ public class Configuration implements ConfigurationOperations, ConfigurationInfo
         variables.put(variableName, configVar);
     }
 
-    public void addPlugInEventRepresentation(String eventRepresentationURI, String factoryClassName, Serializable initializer)
+    public void addPlugInEventRepresentation(URI eventRepresentationURI, String eventRepresentationClassName, Serializable initializer)
     {
         ConfigurationPlugInEventRepresentation config = new ConfigurationPlugInEventRepresentation();
-        config.setFactoryClassName(factoryClassName);
-        config.setFactoryConfiguration(initializer);
+        config.setEventRepresentationClassName(eventRepresentationClassName);
+        config.setConfiguration(initializer);
         this.plugInEventRepresentation.put(eventRepresentationURI, config);
     }
 
-    public void addPlugInEventType(String eventTypeAlias, String eventRepresentationURI, Serializable initializer)
+    public void addPlugInEventType(String eventTypeAlias, URI[] resolutionURIs, Serializable initializer)
     {
         ConfigurationPlugInEventType config = new ConfigurationPlugInEventType();
-        config.setEventRepresentationURI(eventRepresentationURI);
+        config.setEventTypeURI(resolutionURIs);
         config.setInitializer(initializer);
         plugInEventTypes.put(eventTypeAlias, config);
     }
 
-    public Map<String, ConfigurationPlugInEventRepresentation> getPlugInEventRepresentation()
+    public void setPlugInEventTypeAliasResolutionURIs(URI[] urisToResolveAlias)
+    {
+        plugInEventTypeAliasResolutionURIs = urisToResolveAlias;
+    }
+
+    public URI[] getPlugInEventTypeAliasResolutionURIs()
+    {
+        return plugInEventTypeAliasResolutionURIs;
+    }
+
+    public Map<URI, ConfigurationPlugInEventRepresentation> getPlugInEventRepresentation()
     {
         return plugInEventRepresentation;
     }
@@ -676,7 +700,7 @@ public class Configuration implements ConfigurationOperations, ConfigurationInfo
         eventTypeAutoAliasPackages = new LinkedHashSet<String>();
         variables = new HashMap<String, ConfigurationVariable>();
         methodInvocationReferences = new HashMap<String, ConfigurationMethodRef>();
-        plugInEventRepresentation = new HashMap<String, ConfigurationPlugInEventRepresentation>();
+        plugInEventRepresentation = new HashMap<URI, ConfigurationPlugInEventRepresentation>();
         plugInEventTypes = new HashMap<String, ConfigurationPlugInEventType>();
     }
 

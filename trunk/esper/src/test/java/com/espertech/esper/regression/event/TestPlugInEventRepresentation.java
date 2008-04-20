@@ -1,93 +1,213 @@
 package com.espertech.esper.regression.event;
 
-import com.espertech.esper.client.Configuration;
-import com.espertech.esper.client.EPServiceProvider;
-import com.espertech.esper.client.EPServiceProviderManager;
-import com.espertech.esper.client.EPStatement;
-import com.espertech.esper.client.EventSender;
+import com.espertech.esper.client.*;
 import com.espertech.esper.support.client.SupportConfigFactory;
-import com.espertech.esper.support.util.SupportUpdateListener;
 import com.espertech.esper.support.util.ArrayAssertionUtil;
-import com.espertech.esper.event.EventBean;
+import com.espertech.esper.support.util.SupportUpdateListener;
 import junit.framework.TestCase;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Properties;
 
 public class TestPlugInEventRepresentation extends TestCase
 {
     private static Log log = LogFactory.getLog(TestPlugInEventRepresentation.class);
     private EPServiceProvider epService;
-    private SupportUpdateListener updateListener;
+    private SupportUpdateListener[] listeners;
 
-    // TODO: add to configuration operations for real-time adding of dynamic types
-    // TODO: add support for event types to have a URI in the EPL
+    public void setUp()
+    {
+        listeners = new SupportUpdateListener[5];
+        for (int i = 0; i < listeners.length; i++)
+        {
+            listeners[i] = new SupportUpdateListener();
+        }
+    }
+
     // TODO: test EventSender for all other types, including wrappers and composite
-
-    /**
-     * TODO: use case 1: alias known in advance: no dynamic type resolution, fixed type EventSender predefines event type
-     *   register representation with URI
-     *   register event type alias and URI
-     *   get EventSender(String alias) to send in events
-     */
-
-    /**
-     * TODO: use case 2: alias known in advance: no dynamic type resolution, dynamic type EventSender decides event type
-     *   register representation with URI
-     *   register event type aliases and URI
-     *   get EventSender(URI uri) to send in events
-     */
-
-    /**
-     * TODO: use case 3: alias not known in advance: dynamic type resolution, fixed type EventSender predefines event type
-     *   register representation with URI
-     *   Compile statement with an event type alias or URI, each of the representations are asked to accept
-     *   get EventSender(String alias) to send in events
-     */
-
-    /**
-     * TODO: use case 4: alias not known in advance: dynamic type resolution, dynamic type EventSender decides event type
-     *   register representation with URI
-     *   Compile statement with an event type alias or URI, each of the representations are asked to accept
-     *   get EventSender(URI uri) to send in events
-     */
-
-    // TODO: Entry point: (1) register alias (2) use alias in statement (3) Send via EventSender
-    // TODO: Entry point: (1) use alias in statement (2) ask representations for type (3) send via EventSender
-    // TODO: Entry point: (1) use URI in statement (2) ask representations for type (3) send via EventSender
-
-    // TODO: sendEvent(Object) should also allow plug-in test
-
-    // TODO: should there be a method getEventSender(String uri)
+    // TODO test EventSender to the quotes types
+    // TODO: do XML configuration
+    // TODO: test invalid cases
 
     // TODO: document
     // Called from: 
     //   (A) new statement being compiled (alias to be resolved)
     //   (B) new alias being added through configuration
     
-    public void testCustomEventRep() throws Exception
+    /*
+     * Use case 1: static event type resolution, no event object reflection (static event type assignment)
+     * Use case 2: static event type resolution, dynamic event object reflection and event type assignment
+     *   a) Register all representations with URI via configuration
+     *   b) Register event type alias and specify the list of URI to use for resolving:
+     *     // at engine initialization time it obtain instances of an EventType for each alias
+     *   c) Create statement using the registered event type alias
+     *   d) Get EventSender to send in that specific type of event
+     */
+    public void testPreConfigStaticTypeResolution() throws Exception
     {
-        Configuration configuration = SupportConfigFactory.getConfiguration();
-        configuration.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
-        configuration.addPlugInEventRepresentation("type://regressionRepresentation", MyPlugInEventRepresentation.class.getName(), "b1,b2");
-        configuration.addPlugInEventType("MyRegressionType", "type://regressionRepresentation", "t1_1,t1_2");
+        Configuration configuration = getConfiguration();
+        configuration.addPlugInEventType("TestTypeOne", new URI[] {new URI("type://properties/test1/testtype")}, "t1");
+        configuration.addPlugInEventType("TestTypeTwo", new URI[] {new URI("type://properties/test2")}, "t2");
+        configuration.addPlugInEventType("TestTypeThree", new URI[] {new URI("type://properties/test3")}, "t3");
+        configuration.addPlugInEventType("TestTypeFour", new URI[] {new URI("type://properties/test2/x"), new URI("type://properties/test3")}, "t4");
 
         epService = EPServiceProviderManager.getDefaultProvider(configuration);
         epService.initialize();
-        updateListener = new SupportUpdateListener();
 
-        String epl = "select b1, b2, t1_1, t1_2 from MyRegressionType";
-        EPStatement stmt = epService.getEPAdministrator().createEPL(epl);
-        stmt.addListener(updateListener);
-
-        EventSender sender = epService.getEPRuntime().getEventSender("MyRegressionType");
-        sender.sendEvent(makeProperties(new String[][] {{"b1", "x"}, {"b2", "y"}, {"t1_1", null}, {"t1_2", "x2"}}));
-        EventBean received = updateListener.assertOneGetNewAndReset();
-        ArrayAssertionUtil.assertProps(received, new String[] {"b1", "b2", "t1_1", "t1_2", "x2"},
-                new Object[][] {{"b1", "x"}, {"b2", "y"}, {"t1_1", null}, {"t1_2", "x2"}});
+        runAssertionCaseStatic(epService);
     }
 
+    public void testRuntimeConfigStaticTypeResolution() throws Exception
+    {
+        Configuration configuration = getConfiguration();
+        epService = EPServiceProviderManager.getDefaultProvider(configuration);
+        epService.initialize();
+
+        ConfigurationOperations runtimeConfig = epService.getEPAdministrator().getConfiguration();
+        runtimeConfig.addPlugInEventType("TestTypeOne", new URI[] {new URI("type://properties/test1/testtype")}, "t1");
+        runtimeConfig.addPlugInEventType("TestTypeTwo", new URI[] {new URI("type://properties/test2")}, "t2");
+        runtimeConfig.addPlugInEventType("TestTypeThree", new URI[] {new URI("type://properties/test3")}, "t3");
+        runtimeConfig.addPlugInEventType("TestTypeFour", new URI[] {new URI("type://properties/test2/x"), new URI("type://properties/test3")}, "t4");
+
+        runAssertionCaseStatic(epService);
+    }
+
+    /*
+     * Use case 3: dynamic event type resolution
+     *   a) Register all representations with URI via configuration
+     *   b) Via configuration, set a list of URIs to use for resolving new event type aliases
+     *   c) Compile statement with an event type alias that is not defined yet, each of the representations are asked to accept, in URI hierarchy order
+     *     admin.createEPL("select a, b, c from MyEventType");
+     *    // engine asks each event representation to create an EventType, takes the first valid one
+     *   d) Get EventSender to send in that specific type of event, or a URI-list dynamic reflection sender
+     */
+    public void testRuntimeConfigDynamicTypeResolution() throws Exception
+    {
+        Configuration configuration = getConfiguration();
+        epService = EPServiceProviderManager.getDefaultProvider(configuration);
+        epService.initialize();
+
+        URI[] uriList = new URI[] {new URI("type://properties/test2/myresolver")};
+        epService.getEPAdministrator().getConfiguration().setPlugInEventTypeAliasResolutionURIs(uriList);
+
+        runAssertionCaseDynamic(epService);
+    }
+
+    public void testStaticConfigDynamicTypeResolution() throws Exception
+    {
+        URI[] uriList = new URI[] {new URI("type://properties/test2/myresolver")};
+        Configuration configuration = getConfiguration();
+        configuration.setPlugInEventTypeAliasResolutionURIs(uriList);
+        epService = EPServiceProviderManager.getDefaultProvider(configuration);
+        epService.initialize();
+
+        runAssertionCaseDynamic(epService);
+    }
+
+    private void runAssertionCaseDynamic(EPServiceProvider epService) throws Exception
+    {
+        // type resolved for each by the first event representation picking both up, i.e. the one with "r2" since that is the most specific URI
+        EPStatement stmt = epService.getEPAdministrator().createEPL("select * from TestTypeOne");
+        stmt.addListener(listeners[0]);
+        stmt = epService.getEPAdministrator().createEPL("select * from TestTypeTwo");
+        stmt.addListener(listeners[1]);
+
+        // static senders
+        EventSender sender = epService.getEPRuntime().getEventSender("TestTypeOne");
+        sender.sendEvent(makeProperties(new String[][] {{"r2", "A"}}));
+        ArrayAssertionUtil.assertAllProps(listeners[0].assertOneGetNewAndReset(), new Object[] {"A"});
+        assertFalse(listeners[0].isInvoked());
+
+        sender = epService.getEPRuntime().getEventSender("TestTypeTwo");
+        sender.sendEvent(makeProperties(new String[][] {{"r2", "B"}}));
+        ArrayAssertionUtil.assertAllProps(listeners[1].assertOneGetNewAndReset(), new Object[] {"B"});
+    }
+
+    private Configuration getConfiguration() throws URISyntaxException
+    {
+        Configuration configuration = SupportConfigFactory.getConfiguration();
+        configuration.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
+        configuration.addPlugInEventRepresentation(new URI("type://properties"), MyPlugInEventRepresentation.class.getName(), "r3");
+        configuration.addPlugInEventRepresentation(new URI("type://properties/test1"), MyPlugInEventRepresentation.class.getName(), "r1");
+        configuration.addPlugInEventRepresentation(new URI("type://properties/test2"), MyPlugInEventRepresentation.class.getName(), "r2");
+        return configuration;
+    }
+
+    private void runAssertionCaseStatic(EPServiceProvider epService) throws URISyntaxException
+    {
+        EPStatement stmt = epService.getEPAdministrator().createEPL("select * from TestTypeOne");
+        stmt.addListener(listeners[0]);
+        stmt = epService.getEPAdministrator().createEPL("select * from TestTypeTwo");
+        stmt.addListener(listeners[1]);
+        stmt = epService.getEPAdministrator().createEPL("select * from TestTypeThree");
+        stmt.addListener(listeners[2]);
+        stmt = epService.getEPAdministrator().createEPL("select * from TestTypeFour");
+        stmt.addListener(listeners[3]);
+
+        // static senders
+        EventSender sender = epService.getEPRuntime().getEventSender("TestTypeOne");
+        sender.sendEvent(makeProperties(new String[][] {{"r1", "A"}, {"t1", "B"}}));
+        ArrayAssertionUtil.assertAllProps(listeners[0].assertOneGetNewAndReset(), new Object[] {"A", "B"});
+        assertFalse(listeners[3].isInvoked() || listeners[1].isInvoked() || listeners[2].isInvoked());
+
+        sender = epService.getEPRuntime().getEventSender("TestTypeTwo");
+        sender.sendEvent(makeProperties(new String[][] {{"r2", "C"}, {"t2", "D"}}));
+        ArrayAssertionUtil.assertAllProps(listeners[1].assertOneGetNewAndReset(), new Object[] {"C", "D"});
+        assertFalse(listeners[3].isInvoked() || listeners[0].isInvoked() || listeners[2].isInvoked());
+
+        sender = epService.getEPRuntime().getEventSender("TestTypeThree");
+        sender.sendEvent(makeProperties(new String[][] {{"r3", "E"}, {"t3", "F"}}));
+        ArrayAssertionUtil.assertAllProps(listeners[2].assertOneGetNewAndReset(), new Object[] {"E", "F"});
+        assertFalse(listeners[3].isInvoked() || listeners[1].isInvoked() || listeners[0].isInvoked());
+
+        sender = epService.getEPRuntime().getEventSender("TestTypeFour");
+        sender.sendEvent(makeProperties(new String[][] {{"r2", "G"}, {"t4", "H"}}));
+        ArrayAssertionUtil.assertAllProps(listeners[3].assertOneGetNewAndReset(), new Object[] {"G", "H"});
+        assertFalse(listeners[0].isInvoked() || listeners[1].isInvoked() || listeners[2].isInvoked());
+
+        // dynamic sender - decides on event type thus a particular update listener should see the event
+        URI[] uriList = new URI[] {new URI("type://properties/test1"), new URI("type://properties/test2")};
+        EventSender dynamicSender = epService.getEPRuntime().getEventSender(uriList);
+        dynamicSender.sendEvent(makeProperties(new String[][] {{"r3", "I"}, {"t3", "J"}}));
+        ArrayAssertionUtil.assertAllProps(listeners[2].assertOneGetNewAndReset(), new Object[] {"I", "J"});
+        dynamicSender.sendEvent(makeProperties(new String[][] {{"r1", "K"}, {"t1", "L"}}));
+        ArrayAssertionUtil.assertAllProps(listeners[0].assertOneGetNewAndReset(), new Object[] {"K", "L"});
+        dynamicSender.sendEvent(makeProperties(new String[][] {{"r2", "M"}, {"t2", "N"}}));
+        ArrayAssertionUtil.assertAllProps(listeners[1].assertOneGetNewAndReset(), new Object[] {"M", "N"});
+        dynamicSender.sendEvent(makeProperties(new String[][] {{"r2", "O"}, {"t4", "P"}}));
+        ArrayAssertionUtil.assertAllProps(listeners[3].assertOneGetNewAndReset(), new Object[] {"O", "P"});
+        dynamicSender.sendEvent(makeProperties(new String[][] {{"r2", "O"}, {"t3", "P"}}));
+        assertNoneReceived();
+
+        uriList = new URI[] {new URI("type://properties/test2")};
+        dynamicSender = epService.getEPRuntime().getEventSender(uriList);
+        dynamicSender.sendEvent(makeProperties(new String[][] {{"r1", "I"}, {"t1", "J"}}));
+        assertNoneReceived();
+        dynamicSender.sendEvent(makeProperties(new String[][] {{"r2", "Q"}, {"t2", "R"}}));
+        ArrayAssertionUtil.assertAllProps(listeners[1].assertOneGetNewAndReset(), new Object[] {"Q", "R"});
+    }
+
+    private void assertNoneReceived()
+    {
+        for (int i = 0; i < listeners.length; i++)
+        {
+            assertFalse(listeners[i].isInvoked());            
+        }
+    }
+
+    /**
+     * The idea of a hierarchy is:
+     *   - Allow configuration/definition via URI path, fragment and parameter passing (i.e. /provider/mytype?a=b#c)
+     *   - Allow child-overrides-parent relationship as the most specific (deep path) child is asked first
+     *
+     * or should it be "type://trade/json"
+     * or maybe "type:/trade/derivative/option"
+     */
+
+    
     private Properties makeProperties(String[][] values)
     {
         Properties event = new Properties();

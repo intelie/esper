@@ -42,7 +42,8 @@ public class SupportStatementContextFactory
                 new OutputConditionFactoryDefault(),
                 null,
                 null,
-                new StatementResultServiceImpl(null) // statement result svc
+                new StatementResultServiceImpl(null), // statement result svc
+                null // resolution URIs
                 );
     }
 }

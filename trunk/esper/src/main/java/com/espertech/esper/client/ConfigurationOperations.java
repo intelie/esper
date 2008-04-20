@@ -9,6 +9,8 @@ package com.espertech.esper.client;
 
 import java.util.Map;
 import java.util.Properties;
+import java.net.URI;
+import java.io.Serializable;
 
 /**
  * Provides configuration operations for configuration-time and runtime parameters.
@@ -162,4 +164,8 @@ public interface ConfigurationOperations
      * is already in use
      */
     public void addVariable(String variableName, Class type, Object initializationValue) throws ConfigurationException;
+
+
+    public void addPlugInEventType(String eventTypeAlias, URI[] resolutionURIs, Serializable initializer);
+    public void setPlugInEventTypeAliasResolutionURIs(URI[] urisToResolveAlias);    
 }

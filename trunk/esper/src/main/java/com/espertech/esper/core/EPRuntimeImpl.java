@@ -31,12 +31,13 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.util.*;
+import java.net.URI;
 
 /**
  * Implements runtime interface. Also accepts timer callbacks for synchronizing time events with regular events
  * sent in.
  */
-public class EPRuntimeImpl implements EPRuntimeSPI, TimerCallback, InternalEventRouter
+public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerCallback, InternalEventRouter
 {
     private EPServicesContext services;
     private boolean isLatchStatementInsertStream;
@@ -868,7 +869,12 @@ public class EPRuntimeImpl implements EPRuntimeSPI, TimerCallback, InternalEvent
 
     public EventSender getEventSender(String eventTypeAlias)
     {
-        return services.getEventAdapterService().getEventSender(this, eventTypeAlias);
+        return services.getEventAdapterService().getStaticTypeEventSender(this, eventTypeAlias);
+    }
+
+    public EventSender getEventSender(URI uri[]) throws EventTypeException
+    {
+        return services.getEventAdapterService().getDynamicTypeEventSender(this, uri);
     }
 
     private static final Log log = LogFactory.getLog(EPRuntimeImpl.class);

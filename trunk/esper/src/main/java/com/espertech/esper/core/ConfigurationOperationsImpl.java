@@ -15,6 +15,7 @@ import com.espertech.esper.event.EventAdapterService;
 import com.espertech.esper.util.JavaClassHelper;
 import com.espertech.esper.epl.core.EngineImportService;
 import com.espertech.esper.epl.core.EngineImportException;
+import com.espertech.esper.epl.core.EngineSettingsService;
 import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.epl.variable.VariableExistsException;
 import com.espertech.esper.epl.variable.VariableTypeException;
@@ -22,6 +23,8 @@ import com.espertech.esper.epl.variable.VariableTypeException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.net.URI;
+import java.io.Serializable;
 
 /**
  * Provides runtime engine configuration operations.
@@ -31,6 +34,7 @@ public class ConfigurationOperationsImpl implements ConfigurationOperations
     private final EventAdapterService eventAdapterService;
     private final EngineImportService engineImportService;
     private final VariableService variableService;
+    private final EngineSettingsService engineSettingsService;
 
     /**
      * Ctor.
@@ -40,11 +44,13 @@ public class ConfigurationOperationsImpl implements ConfigurationOperations
      */
     public ConfigurationOperationsImpl(EventAdapterService eventAdapterService,
                                        EngineImportService engineImportService,
-                                       VariableService variableService)
+                                       VariableService variableService,
+                                       EngineSettingsService engineSettingsService)
     {
         this.eventAdapterService = eventAdapterService;
         this.engineImportService = engineImportService;
         this.variableService = variableService;
+        this.engineSettingsService = engineSettingsService;
     }
 
     public void addEventTypeAutoAlias(String javaPackageName)
@@ -206,5 +212,23 @@ public class ConfigurationOperationsImpl implements ConfigurationOperations
         {
             throw new ConfigurationException("Error creating variable: " + e.getMessage(), e);
         }
+    }
+
+
+    public void addPlugInEventType(String eventTypeAlias, URI[] resolutionURIs, Serializable initializer)
+    {
+        try
+        {
+            eventAdapterService.addPlugInEventType(eventTypeAlias, resolutionURIs, initializer);
+        }
+        catch (EventAdapterException e)
+        {
+            throw new ConfigurationException("Error adding plug-in event type: " + e.getMessage(), e);
+        }
+    }
+
+    public void setPlugInEventTypeAliasResolutionURIs(URI[] urisToResolveAlias)
+    {
+        engineSettingsService.setPlugInEventTypeResolutionURIs(urisToResolveAlias);
     }
 }

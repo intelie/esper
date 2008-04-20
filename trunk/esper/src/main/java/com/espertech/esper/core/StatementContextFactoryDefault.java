@@ -18,6 +18,7 @@ import com.espertech.esper.view.ViewResolutionServiceImpl;
 import com.espertech.esper.client.EPStatementException;
 
 import java.util.Map;
+import java.net.URI;
 
 /**
  * Default implementation for making a statement-specific context class.
@@ -114,6 +115,7 @@ public class StatementContextFactoryDefault implements StatementContextFactory
                 engineServices.getOutputConditionFactory(),
                 engineServices.getNamedWindowService(),
                 engineServices.getVariableService(),
-                new StatementResultServiceImpl(engineServices.getStatementLifecycleSvc()));
+                new StatementResultServiceImpl(engineServices.getStatementLifecycleSvc()),
+                engineServices.getEngineSettingsService().getPlugInEventTypeResolutionURIs());
     }
 }

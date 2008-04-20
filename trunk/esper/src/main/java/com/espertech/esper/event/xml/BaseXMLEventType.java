@@ -49,7 +49,7 @@ public abstract class BaseXMLEventType extends BaseConfigurableEventType {
      * Returns the name of the root element.
      * @return root element name
      */
-    protected String getRootElementName()
+    public String getRootElementName()
     {
         return rootElementName;
     }

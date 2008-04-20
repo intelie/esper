@@ -714,7 +714,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
             compiledStreams = new ArrayList<StreamSpecCompiled>();
             for (StreamSpecRaw rawSpec : spec.getStreamSpecs())
             {
-                StreamSpecCompiled compiled = rawSpec.compile(statementContext.getEventAdapterService(), statementContext.getMethodResolutionService(), statementContext.getPatternResolutionService(), statementContext.getSchedulingService(), statementContext.getNamedWindowService(), statementContext.getVariableService(), statementContext.getEngineURI());
+                StreamSpecCompiled compiled = rawSpec.compile(statementContext.getEventAdapterService(), statementContext.getMethodResolutionService(), statementContext.getPatternResolutionService(), statementContext.getSchedulingService(), statementContext.getNamedWindowService(), statementContext.getVariableService(), statementContext.getEngineURI(), statementContext.getPlugInTypeResolutionURIs());
                 compiledStreams.add(compiled);
             }
         }

@@ -16,6 +16,7 @@ import com.espertech.esper.schedule.TimeProvider;
 import com.espertech.esper.util.MetaDefItem;
 
 import java.util.List;
+import java.net.URI;
 
 /**
  * Specification object for historical data poll via database SQL statement.
@@ -76,7 +77,8 @@ public class DBStatementStreamSpec extends StreamSpecBase implements StreamSpecR
                                       TimeProvider timeProvider,
                                       NamedWindowService namedWindowService,
                                       VariableService variableService,
-                                      String engineURI)
+                                      String engineURI,
+                                      URI[] plugInTypeResolutionURIs)
     {
         return this;
     }

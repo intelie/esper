@@ -29,6 +29,7 @@ import com.espertech.esper.collection.Pair;
 
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.net.URI;
 
 /**
  * Pattern specification in unvalidated, unoptimized form.
@@ -65,7 +66,8 @@ public class PatternStreamSpecRaw extends StreamSpecBase implements StreamSpecRa
                                       TimeProvider timeProvider,
                                       NamedWindowService namedWindowService,
                                       VariableService variableService,
-                                      String engineURI)
+                                      String engineURI,
+                                      URI[] plugInTypeResolutionURIs)
             throws ExprValidationException
     {
         // Determine all the filter nodes used in the pattern
@@ -105,7 +107,7 @@ public class PatternStreamSpecRaw extends StreamSpecBase implements StreamSpecRa
         for (EvalFilterNode filterNode : evalNodeAnalysisResult.getFilterNodes())
         {
             String eventName = filterNode.getRawFilterSpec().getEventTypeAlias();
-            EventType eventType = FilterStreamSpecRaw.resolveType(engineURI, eventName, eventAdapterService);
+            EventType eventType = FilterStreamSpecRaw.resolveType(engineURI, eventName, eventAdapterService, plugInTypeResolutionURIs);
             String optionalTag = filterNode.getEventAsName();
 
             // If a tag was supplied for the type, the tags must stay with this type, i.e. a=BeanA -> b=BeanA -> a=BeanB is a no

@@ -5,29 +5,29 @@ import java.net.URI;
 
 public class PlugInEventTypeHandlerContext
 {
-    private final URI pluginEventTypeURI;
-    private final URI eventTypeURI;
+    private final URI eventTypeResolutionURI;
     private final Serializable typeInitializer;
+    private final String eventTypeAlias;
 
-    public PlugInEventTypeHandlerContext(URI pluginEventTypeURI, URI eventTypeURI, Serializable typeInitializer)
+    public PlugInEventTypeHandlerContext(URI eventTypeURI, Serializable typeInitializer, String eventTypeAlias)
     {
-        this.pluginEventTypeURI = pluginEventTypeURI;
-        this.eventTypeURI = eventTypeURI;
+        this.eventTypeResolutionURI = eventTypeURI;
         this.typeInitializer = typeInitializer;
+        this.eventTypeAlias = eventTypeAlias;
     }
 
-    public URI getPluginEventTypeURI()
+    public URI getEventTypeResolutionURI()
     {
-        return pluginEventTypeURI;
-    }
-
-    public URI getEventTypeURI()
-    {
-        return eventTypeURI;
+        return eventTypeResolutionURI;
     }
 
     public Serializable getTypeInitializer()
     {
         return typeInitializer;
+    }
+
+    public String getEventTypeAlias()
+    {
+        return eventTypeAlias;
     }
 }

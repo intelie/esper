@@ -641,6 +641,34 @@ public class TestJavaClassHelper extends TestCase
         }
     }
 
+    public void testImplementsOrExtends()
+    {
+        Object[][] tests = new Object[][] {
+                {HashMap.class, Map.class, true},
+                {AbstractMap.class, Map.class, true},
+                {TreeMap.class, Map.class, true},
+                {String.class, Map.class, false},
+                {SupportBean_S0.class, SupportMarkerInterface.class, false},
+                {SupportBean_E.class, SupportMarkerInterface.class, true},
+                {SupportBean_F.class, SupportMarkerInterface.class, true},
+                {SupportBeanBase.class, SupportMarkerInterface.class, true},
+                {SupportOverrideOneB.class, SupportMarkerInterface.class, true},
+                {SupportOverrideBase.class, SupportOverrideBase.class, true},
+                {SupportBean_F.class, SupportOverrideBase.class, false},
+                {SupportOverrideOne.class, SupportOverrideBase.class, true},
+                {SupportOverrideOneA.class, SupportOverrideBase.class, true},
+                {SupportOverrideOneB.class, SupportOverrideBase.class, true},
+                {SupportOverrideOneB.class, Serializable.class, true},
+                {SupportOverrideOneB.class, String.class, false},
+                };
+
+        for (int i = 0; i < tests.length; i++)
+        {
+            assertEquals("test failed for " + tests[i][0] + " and " + tests[i][1], tests[i][2],
+                    JavaClassHelper.isSubclassOrImplementsInterface((Class)tests[i][0], (Class)tests[i][1]));
+        }
+    }
+
     private void tryInvalidGetCommonCoercionType(Class[] types)
     {
         try

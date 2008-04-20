@@ -35,7 +35,6 @@ import com.espertech.esper.view.stream.StreamFactoryServiceProvider;
 
 import java.io.Serializable;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -56,7 +55,7 @@ public class EPServicesContextFactoryDefault implements EPServicesContextFactory
 
         SchedulingService schedulingService = SchedulingServiceProvider.newService();
         EngineImportService engineImportService = makeEngineImportService(configSnapshot);
-        EngineSettingsService engineSettingsService = new EngineSettingsService(configSnapshot.getEngineDefaults());
+        EngineSettingsService engineSettingsService = new EngineSettingsService(configSnapshot.getEngineDefaults(), configSnapshot.getPlugInEventTypeAliasResolutionURIs());
         DatabaseConfigService databaseConfigService = makeDatabaseRefService(configSnapshot, schedulingService);
 
         PluggableObjectCollection plugInViews = new PluggableObjectCollection();
@@ -216,10 +215,10 @@ public class EPServicesContextFactoryDefault implements EPServicesContextFactory
         }
 
         // Add plug-in event representations
-        Map<String, ConfigurationPlugInEventRepresentation> plugInReps = configSnapshot.getPlugInEventRepresentation();
-        for (Map.Entry<String, ConfigurationPlugInEventRepresentation> entry : plugInReps.entrySet())
+        Map<URI, ConfigurationPlugInEventRepresentation> plugInReps = configSnapshot.getPlugInEventRepresentation();
+        for (Map.Entry<URI, ConfigurationPlugInEventRepresentation> entry : plugInReps.entrySet())
         {
-            String className = entry.getValue().getFactoryClassName();
+            String className = entry.getValue().getEventRepresentationClassName();
             Class eventRepClass;
             try
             {
@@ -250,19 +249,9 @@ public class EPServicesContextFactoryDefault implements EPServicesContextFactory
                 throw new ConfigurationException("Plug-in event representation class '" + className + "' does not implement the required interface " + PlugInEventRepresentation.class.getName());
             }
 
-            // TODO: should the config class itself have the URI or leave as String
-            URI eventRepURI;
-            try
-            {
-                eventRepURI = new URI(entry.getKey());
-            }
-            catch (URISyntaxException ex)
-            {
-                throw new ConfigurationException("Plug-in event representation URI '" + entry.getKey() + "' has invalid syntax : " + ex.getMessage(), ex);
-            }
-
+            URI eventRepURI = entry.getKey();
             PlugInEventRepresentation pluginEventRep = (PlugInEventRepresentation) pluginEventRepObj;
-            Serializable initializer = entry.getValue().getFactoryConfiguration();
+            Serializable initializer = entry.getValue().getConfiguration();
             PlugInEventRepresentationContext context = new PlugInEventRepresentationContext(eventAdapterService, eventRepURI, initializer);
 
             try
@@ -282,7 +271,7 @@ public class EPServicesContextFactoryDefault implements EPServicesContextFactory
         {
             String alias = entry.getKey();
             ConfigurationPlugInEventType config = entry.getValue();
-            eventAdapterService.addPlugInEventType(alias, config);
+            eventAdapterService.addPlugInEventType(alias, config.getEventTypeURI(), config.getInitializer());
         }
     }
 

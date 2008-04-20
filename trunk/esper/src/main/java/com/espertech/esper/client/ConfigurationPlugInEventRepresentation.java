@@ -4,30 +4,30 @@ import java.io.Serializable;
 
 public class ConfigurationPlugInEventRepresentation implements Serializable
 {
-    private String factoryClassName;
-    private Serializable factoryConfiguration;
+    private String eventRepresentationClassName;
+    private Serializable configuration;
 
     public ConfigurationPlugInEventRepresentation()
     {
     }
 
-    public String getFactoryClassName()
+    public String getEventRepresentationClassName()
     {
-        return factoryClassName;
+        return eventRepresentationClassName;
     }
 
-    public void setFactoryClassName(String factoryClassName)
+    public void setEventRepresentationClassName(String factoryClassName)
     {
-        this.factoryClassName = factoryClassName;
+        this.eventRepresentationClassName = factoryClassName;
     }
 
-    public Serializable getFactoryConfiguration()
+    public Serializable getConfiguration()
     {
-        return factoryConfiguration;
+        return configuration;
     }
 
-    public void setFactoryConfiguration(Serializable factoryConfiguration)
+    public void setConfiguration(Serializable configuration)
     {
-        this.factoryConfiguration = factoryConfiguration;
+        this.configuration = configuration;
     }
 }

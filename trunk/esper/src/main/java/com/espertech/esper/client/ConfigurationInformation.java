@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.net.URI;
 
 /**
  * Provides configurations for an engine instance.
@@ -124,7 +125,8 @@ public interface ConfigurationInformation
      */
     public Set<String> getEventTypeAutoAliasPackages();
 
-    public Map<String, ConfigurationPlugInEventRepresentation> getPlugInEventRepresentation();
+    public Map<URI, ConfigurationPlugInEventRepresentation> getPlugInEventRepresentation();
     public Map<String, ConfigurationPlugInEventType> getPlugInEventTypes();
+    public URI[] getPlugInEventTypeAliasResolutionURIs();
 }
 

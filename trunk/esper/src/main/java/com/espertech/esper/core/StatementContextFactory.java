@@ -4,6 +4,7 @@ import com.espertech.esper.epl.spec.OnTriggerDesc;
 import com.espertech.esper.epl.spec.CreateWindowDesc;
 
 import java.util.Map;
+import java.net.URI;
 
 /**
  * Interface for a factory class that makes statement context specific to a statement.

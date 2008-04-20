@@ -1,19 +1,20 @@
 package com.espertech.esper.client;
 
 import java.io.Serializable;
+import java.net.URI;
 
 public class ConfigurationPlugInEventType implements Serializable
 {
-    private String eventRepresentationURI;
+    private URI[] eventTypeURI;
     private Serializable initializer;
 
     public ConfigurationPlugInEventType()
     {
     }
 
-    public void setEventRepresentationURI(String eventRepresentationURI)
+    public void setEventTypeURI(URI[] eventTypeURI)
     {
-        this.eventRepresentationURI = eventRepresentationURI;
+        this.eventTypeURI = eventTypeURI;
     }
 
     public void setInitializer(Serializable initializer)
@@ -21,9 +22,9 @@ public class ConfigurationPlugInEventType implements Serializable
         this.initializer = initializer;
     }
 
-    public String getEventRepresentationURI()
+    public URI[] getEventTypeURI()
     {
-        return eventRepresentationURI;
+        return eventTypeURI;
     }
 
     public Serializable getInitializer()

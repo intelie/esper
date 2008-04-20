@@ -25,12 +25,17 @@ import com.espertech.esper.util.MetaDefItem;
 import com.espertech.esper.core.EPServiceProviderSPI;
 
 import java.util.List;
+import java.net.URI;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * Unvalided filter-based stream specification.
  */
 public class FilterStreamSpecRaw extends StreamSpecBase implements StreamSpecRaw, MetaDefItem
 {
+    private static Log log = LogFactory.getLog(FilterStreamSpecRaw.class);
     private FilterSpecRaw rawFilterSpec;
 
 
@@ -69,7 +74,8 @@ public class FilterStreamSpecRaw extends StreamSpecBase implements StreamSpecRaw
                                       TimeProvider timeProvider,
                                       NamedWindowService namedWindowService,
                                       VariableService variableService,
-                                      String engineURI)
+                                      String engineURI,
+                                      URI[] optionalPlugInTypeResolutionURIS)
             throws ExprValidationException
     {
         // Determine the event type
@@ -87,7 +93,7 @@ public class FilterStreamSpecRaw extends StreamSpecBase implements StreamSpecRaw
             return new NamedWindowConsumerStreamSpec(eventName, this.getOptionalStreamName(), this.getViewSpecs(), validatedNodes, this.isUnidirectional());
         }
         
-        EventType eventType = resolveType(engineURI, eventName, eventAdapterService);
+        EventType eventType = resolveType(engineURI, eventName, eventAdapterService, optionalPlugInTypeResolutionURIS);
 
         // Validate all nodes, make sure each returns a boolean and types are good;
         // Also decompose all AND super nodes into individual expressions
@@ -107,10 +113,16 @@ public class FilterStreamSpecRaw extends StreamSpecBase implements StreamSpecRaw
      * @return event type
      * @throws ExprValidationException if the info cannot be resolved
      */
-    protected static EventType resolveType(String engineURI, String eventName, EventAdapterService eventAdapterService)
+    protected static EventType resolveType(String engineURI, String eventName, EventAdapterService eventAdapterService, URI[] optionalResolutionURIs)
             throws ExprValidationException
     {
         EventType eventType = eventAdapterService.getExistsTypeByAlias(eventName);
+
+        // may already be known
+        if (eventType != null)
+        {
+            return eventType;
+        }
 
         String engineURIQualifier = engineURI;
         if (engineURI == null)
@@ -119,37 +131,54 @@ public class FilterStreamSpecRaw extends StreamSpecBase implements StreamSpecRaw
         }
 
         // The event name can be prefixed by the engine URI, i.e. "select * from default.MyEvent"
-        if (eventType == null)
+        if (eventName.startsWith(engineURIQualifier))
         {
-            if (eventName.startsWith(engineURIQualifier))
+            int indexDot = eventName.indexOf(".");
+            if (indexDot > 0)
             {
-                int indexDot = eventName.indexOf(".");
-                if (indexDot > 0)
-                {
-                    String eventNameURI = eventName.substring(0, indexDot);
-                    String eventNameRemainder = eventName.substring(indexDot + 1);
+                String eventNameURI = eventName.substring(0, indexDot);
+                String eventNameRemainder = eventName.substring(indexDot + 1);
 
-                    if (engineURIQualifier.equals(eventNameURI))
-                    {
-                        eventType = eventAdapterService.getExistsTypeByAlias(eventNameRemainder);
-                    }
+                if (engineURIQualifier.equals(eventNameURI))
+                {
+                    eventType = eventAdapterService.getExistsTypeByAlias(eventNameRemainder);
                 }
             }
         }
 
-        // The type is not known yet, attempt to add as a JavaBean type with the same alias
-        if (eventType == null)
+        // may now be known
+        if (eventType != null)
         {
-            try
-            {
-                eventType = eventAdapterService.addBeanType(eventName, eventName, true);
-            }
-            catch (EventAdapterException ex)
-            {
-                throw new ExprValidationException("Failed to resolve event type: " + ex.getMessage());
-            }
+            return eventType;
         }
 
+        // The type is not known yet, attempt to add as a JavaBean type with the same alias
+        String message = null;
+        try
+        {
+            eventType = eventAdapterService.addBeanType(eventName, eventName, true);
+        }
+        catch (EventAdapterException ex)
+        {
+            log.info(".resolveType Event type alias '" + eventName + "' not resolved as POJO event");
+            message = "Failed to resolve event type: " + ex.getMessage();
+        }
+
+        // Attempt to use plug-in event types
+        try
+        {
+            eventType = eventAdapterService.addPlugInEventType(eventName, optionalResolutionURIs, null);
+        }
+        catch (EventAdapterException ex)
+        {
+            log.info(".resolveType Event type alias '" + eventName + "' not resolved by plug-in event representations");
+            // remains unresolved
+        }
+
+        if (eventType == null)
+        {
+            throw new ExprValidationException(message);
+        }
         return eventType;
     }
 }

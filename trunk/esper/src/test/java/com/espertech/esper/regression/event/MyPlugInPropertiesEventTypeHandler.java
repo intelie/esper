@@ -4,25 +4,27 @@ import com.espertech.esper.plugin.PlugInEventTypeHandler;
 import com.espertech.esper.plugin.PlugInEventTypeHandlerContext;
 import com.espertech.esper.event.EventType;
 import com.espertech.esper.client.EventSender;
+import com.espertech.esper.core.EPRuntimeSPI;
+import com.espertech.esper.core.EPRuntimeEventSender;
 
 import java.util.Set;
 
 public class MyPlugInPropertiesEventTypeHandler implements PlugInEventTypeHandler
 {
-    private final EventType eventType;
+    private final MyPlugInPropertiesEventType eventType;
 
-    public MyPlugInPropertiesEventTypeHandler(Set<String> typeProps)
+    public MyPlugInPropertiesEventTypeHandler(MyPlugInPropertiesEventType eventType)
     {
-        eventType = new MyPlugInPropertiesEventType(typeProps);
+        this.eventType = eventType;
     }
-    
+
+    public EventSender getSender(EPRuntimeEventSender runtimeEventSender)
+    {
+        return new MyPlugInPropertiesEventSender(eventType, runtimeEventSender);
+    }
+
     public EventType getType()
     {
         return eventType;
-    }
-
-    public EventSender getSender()
-    {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 }

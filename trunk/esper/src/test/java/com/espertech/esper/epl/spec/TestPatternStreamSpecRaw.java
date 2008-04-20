@@ -202,7 +202,7 @@ public class TestPatternStreamSpecRaw extends TestCase
 
     private PatternStreamSpecCompiled compile(PatternStreamSpecRaw raw) throws Exception
     {
-        PatternStreamSpecCompiled compiled = (PatternStreamSpecCompiled) raw.compile(SupportEventAdapterService.getService(), new MethodResolutionServiceImpl(new EngineImportServiceImpl()), null, null, new NamedWindowServiceImpl(null, null), null, "default");
+        PatternStreamSpecCompiled compiled = (PatternStreamSpecCompiled) raw.compile(SupportEventAdapterService.getService(), new MethodResolutionServiceImpl(new EngineImportServiceImpl()), null, null, new NamedWindowServiceImpl(null, null), null, "default", null);
         return compiled;
     }
 

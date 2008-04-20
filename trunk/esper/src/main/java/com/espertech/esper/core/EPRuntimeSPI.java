@@ -21,7 +21,4 @@ public interface EPRuntimeSPI extends EPRuntime
      * @return proxy to execute upon, that also provides the event type of the returned results
      */
     public EPPreparedQuery prepareQuery(String epl);
-
-
-    public void processWrappedEvent(EventBean eventBean);
 }

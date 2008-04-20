@@ -14,6 +14,8 @@ import com.espertech.esper.schedule.SchedulingService;
 import com.espertech.esper.view.StatementStopService;
 import com.espertech.esper.view.ViewResolutionService;
 
+import java.net.URI;
+
 /**
  * Contains handles to the implementation of the the scheduling service for use in view evaluation.
  */
@@ -40,6 +42,7 @@ public final class StatementContext
     private final NamedWindowService namedWindowService;
     private final VariableService variableService;
     private final StatementResultService statementResultService;
+    private final URI[] plugInTypeResolutionURIs;
 
     /**
      * Constructor.
@@ -85,7 +88,8 @@ public final class StatementContext
                               OutputConditionFactory outputConditionFactory,
                               NamedWindowService namedWindowService,
                               VariableService variableService,
-                              StatementResultService statementResultService)
+                              StatementResultService statementResultService,
+                              URI[] plugInTypeResolutionURIs)
     {
         this.engineURI = engineURI;
         this.engineInstanceId = engineInstanceId;
@@ -108,6 +112,7 @@ public final class StatementContext
         this.namedWindowService = namedWindowService;
         this.variableService = variableService;
         this.statementResultService = statementResultService;
+        this.plugInTypeResolutionURIs = plugInTypeResolutionURIs;
     }
 
     /**
@@ -297,6 +302,11 @@ public final class StatementContext
     public StatementResultService getStatementResultService()
     {
         return statementResultService;
+    }
+
+    public URI[] getPlugInTypeResolutionURIs()
+    {
+        return plugInTypeResolutionURIs;
     }
 
     public String toString()
