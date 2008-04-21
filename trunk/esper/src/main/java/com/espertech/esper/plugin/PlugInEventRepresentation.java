@@ -14,20 +14,20 @@ package com.espertech.esper.plugin;
  * Further, a plug-in event representation can provide network lookup and general abstraction of event typing and
  * event sourcing.
  * <p>
- * An implementation of this interface must be regsitered via configuration. Upon engine construction,
+ * Before use, an implementation of this interface must be registered via configuration. Upon engine initialization,
  * the engine invokes the {@link #init} method passing configuration information.
  * <p>
  * When a plug-in event type alias is registered via configuration (runtime or configuration time), the
- * engine first asks the implementation of this interface whether the type is accepted via {@link #acceptsType}.
+ * engine first asks the implementation whether the type is accepted via {@link #acceptsType}.
  * If accepted, the engine follows with a call to {@link #getTypeHandler} for creating and handling the type.
  * <p>
- * The implementation of this interface can participate in dynamic resolution of new (unseen)
- * event type aliases by configuring the URI of the event representation, or a child URI (parameters possible) via
+ * An implementation can participate in dynamic resolution of new (unseen)
+ * event type aliases if the application configures the URI of the event representation, or a child URI (parameters possible) via
  * {@link com.espertech.esper.client.ConfigurationOperations#setPlugInEventTypeAliasResolutionURIs(java.net.URI[])}.
  * <p>
  * Last, see {@link com.espertech.esper.client.EPRuntime#getEventSender(java.net.URI[])}. An event sender
  * allows dynamic reflection on an incoming event object. At the time such an event
- * sender is obtained and a matching URI specified, the {@link #acceptsEventBeanResolution) method
+ * sender is obtained and a matching URI specified, the {@link #acceptsEventBeanResolution} method
  * indicates that the event representation can or cannot inspect events, and the {@link PlugInEventBeanFactory}
  * returned is used by the event sender to wrap event objects for processing. 
  */

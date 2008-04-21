@@ -615,6 +615,39 @@ runtime.sendEvent(new MarketDataBean('IBM', 75.0));
 			need to send events into an engine instance.
         </para>
 
+	    <sect2 id="api-runtime-eventsender">		
+			<title>Event Sender</title>
+			
+			<para>
+				The <literal>EventSender</literal> interface processes event objects that are of a known type. This facility can reduce the overhead of event object reflection and type lookup as an event sender
+				is always associated to a single concrete event type.
+			</para>
+			
+			<para>
+				Use the method <literal>getEventSender(String eventTypeAlias) </literal> to obtain an event sender for processing events of the named type:
+			</para>
+			<programlisting><![CDATA[EventSender sender = epService.getEPRuntime().getEventSender("MyEvent");
+sender.sendEvent(myEvent);]]></programlisting>
+			
+			<para>
+				For events backed by a Java class (JavaBean events), the event sender ensures that the event object equals the underlying class, or implements or extends the underlying class
+				for the given event type alias.
+			</para>
+			
+			<para>
+				For events backed by a <literal>java.util.Map</literal> (Map events), the event sender does not perform any checking other then checking that the event object implements Map.
+			</para>
+			
+			<para>
+				For events backed by a org.w3c.Node (XML DOM events), the event sender checks that the root element name equals the root element name for the event type alias.
+			</para>
+
+			<para>
+				A second method to obtain an event sender is the method <literal>getEventSender(URI[])</literal>, which takes an array of URIs. This method is for use with plug-in event representations.
+				The event sender returned by this method processes event objects that are of one of the types of one or more plug-in event representations. Please consult <xref linkend="custom-event-representation"/> for more information.
+			</para>
+		</sect2>
+
 	    <sect2 id="api-runtime-unmatched">		
 			<title>Receiving Unmatched Events</title>
 

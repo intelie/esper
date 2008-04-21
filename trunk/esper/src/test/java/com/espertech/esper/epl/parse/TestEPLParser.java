@@ -586,6 +586,7 @@ public class TestEPLParser extends TestCase
 
         // properties escaped
         assertIsValid("select a\\.b, a\\.b\\.c.d.e\\.f, zz\\.\\.\\.aa\\.\\.\\.b\\.\\. from A");
+        // TODO assertIsValid("select count from A");
     }
 
     public void testBitWiseCases() throws Exception

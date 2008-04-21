@@ -637,7 +637,7 @@ from SensorEvent.win:time(30 sec)]]></programlisting>
 	   
 		<indexterm><primary>event</primary><secondary>additional representations</secondary></indexterm>
 		<para>
-		    As part of the extension and plug features there exists an event representation API. These classes allow an application to create new event types and event instances based on information available elsewhere. Please see <xref linkend="custom-event-representation"/> for details.
+		    Part of the extension and plug-in features of Esper is an event representation API. This set of classes allow an application to create new event types and event instances based on information available elsewhere, statically or dynamically at runtime when EPL statements are created. Please see <xref linkend="custom-event-representation"/> for details.
 		</para>
 		    
 		<para>
@@ -646,7 +646,7 @@ such event metadata and event data into one of the built-in event representation
 		</para>
 
 		<para>
-			Further use of a plug-in event representation is to provide a faster or short-cut access path to event data. For example, the access to XML event data through a Streaming API for XML (StAX) is known to be very efficient. A plug-in event representation can also provide network lookup and dynamic resolution of event type and event sourcing.
+			Further use of a plug-in event representation is to provide a faster or short-cut access path to event data. For example, access to event data stored in an XML format through the Streaming API for XML (StAX) is known to be very efficient. A plug-in event representation can also provide network lookup and dynamic resolution of event type and dynamic sourcing of event instances.
 		</para>
 		
 		<para>
@@ -655,20 +655,21 @@ such event metadata and event data into one of the built-in event representation
 		<itemizedlist spacing="compact">
 			<listitem>
 				<para>
-					Apache Axiom provides access to XML event data on top of the fast Streaming API for XML (StAX). 
+					Apache Axiom: Streaming API for XML (StAX) implementation
 				</para>
 			</listitem>
 		</itemizedlist>
 		
 		<para>
-			Please see the EsperIO documentation for more detail on how to use the additional event representations listed above.
+			Please see the EsperIO documentation for details on the above.
 		</para>
 		
 		<para>
-			The chapter on <xref linkend="custom-event-representation"/> explains in detail how to create your own custom event representation.
+			The chapter on <xref linkend="custom-event-representation"/> explains how to create your own custom event representation.
 		</para>
 	</sect1>
 
 </chapter>
+
 
 

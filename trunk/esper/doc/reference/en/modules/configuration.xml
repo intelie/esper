@@ -623,6 +623,63 @@ configuration.addEventTypeAlias("GetQuote", desc);]]></programlisting>
 
 		</sect2>
 					
+		<sect2 id="config-plugineventrep" revision="1">
+			<title>Events represented by Plug-in Event Representations</title>
+			
+			<para>
+				As part of the extension API plug-in event representations allows an application to create new event types and event instances based on information available elsewhere. Please see <xref linkend="custom-event-representation"/> for details.
+			</para>
+				
+			<para>
+				The configuration examples shown next use the configuration API to select settings. All options are also configurable via XML, please refer to the sample configuration XML in file <literal>esper.sample.cfg.xml</literal>.
+			</para>
+
+			<sect3 id="config-plugineventrep-enable" revision="1">
+				<title>Enabling an Custom Event Representation</title>
+				
+				<para>
+					Use the method <literal>addPlugInEventRepresentation</literal> to enable a custom event representation, like this:
+				</para>
+				
+				<programlisting><![CDATA[URI rootURI = new URI("type://mycompany/myproject/myname");
+config.addPlugInEventRepresentation(rootURI, 
+  MyEventRepresentation.class.getName(), null);]]></programlisting>
+
+				<para>
+					If your event representation takes initialization parameters, these are passed in as the last parameter. Initialization parameters can also be stored in the configuration XML, in which case
+					they are passed as an XML string to the plug-in class.
+				</para>
+
+			</sect3>
+			
+			<sect3 id="config-plugineventrep-types" revision="1">
+				<title>Adding Plug-in Event Types</title>
+				
+				<para>
+					To register event types that your plug-in event representation creates in advance of creating an EPL statement (either at runtime or at configuration time), use the method <literal>addPlugInEventType</literal>:
+				</para>
+				
+				<programlisting><![CDATA[URI childURI = new URI("type://mycompany/myproject/myname/MyEvent");
+configuration.addPlugInEventType("MyEvent", new URI[] {childURI}, null);]]></programlisting>
+
+				<para>
+					Your plug-in event type may take initialization parameters, these are passed in as the last parameter. Initialization parameters can also be stored in the configuration XML.
+				</para>
+			</sect3>
+
+			<sect3 id="config-plugineventrep-resolution" revision="1">
+				<title>Setting Resolution URIs</title>
+				
+				<para>
+					The engine can invoke your plug-in event representation when an EPL statement is created with an event type alias that the engine has not seen before. Plug-in event representations can resolve such alias to an actual event type. In order to do this, you need to supply a list of resolution URIs. Use the method <literal>setPlugInEventTypeAliasResolutionURIs</literal>, at runtime or at configuration time:
+				</para>				
+				<programlisting><![CDATA[URI childURI = new URI("type://mycompany/myproject/myname");
+configuration.setPlugInEventTypeAliasResolutionURIs(new URI[] {childURI});]]></programlisting>
+
+			</sect3>
+
+		</sect2>
+
 		<sect2 id="config-class--package-imports" revision="1">
 			<title>Class and package imports</title>
 			

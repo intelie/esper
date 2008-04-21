@@ -30,9 +30,6 @@ public class TestPlugInEventRepresentation extends TestCase
         }
     }
 
-    // TODO: documentation
-    // TODO: double-dip Quote event with two aliases
-
     /*
      * Use case 1: static event type resolution, no event object reflection (static event type assignment)
      * Use case 2: static event type resolution, dynamic event object reflection and event type assignment
