@@ -11,6 +11,11 @@ import com.espertech.esper.event.EventBean;
 import com.espertech.esper.event.PropertyAccessException;
 import com.espertech.esper.event.TypedEventPropertyGetter;
 
+/**
+ * Implementation of a property getter for the Axiom XML data model.
+ * <p>
+ * See {@link AxiomEventRepresentation} for more details.
+ */
 public class AxiomXPathPropertyGetter implements TypedEventPropertyGetter
 {
     private final AXIOMXPath expression;
@@ -21,6 +26,7 @@ public class AxiomXPathPropertyGetter implements TypedEventPropertyGetter
      * Ctor.
      * @param propertyName    is the name of the event property for which this getter gets values
      * @param resultType      is the resulting type
+     * @param xPath           the Axiom xpath expression 
      */
     public AxiomXPathPropertyGetter(String propertyName, AXIOMXPath xPath, QName resultType)
     {
@@ -87,7 +93,6 @@ public class AxiomXPathPropertyGetter implements TypedEventPropertyGetter
 
     public boolean isExistsProperty(EventBean eventBean)
     {
-        return true; // Property exists as the property is not dynamic
-        // (unchecked)
+        return true; // Property always exists as the property is not dynamic
     }
 }

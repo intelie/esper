@@ -4,6 +4,7 @@ import junit.framework.TestCase;
 
 import javax.xml.xpath.XPathConstants;
 import java.net.URL;
+import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
@@ -50,7 +51,7 @@ public class TestConfigurationParser extends TestCase
         assertEquals(StreamSelector.ISTREAM_ONLY, config.getEngineDefaults().getStreamSelection().getDefaultStreamSelector());
     }
 
-    protected static void assertFileConfig(Configuration config)
+    protected static void assertFileConfig(Configuration config) throws Exception
     {
         // assert alias for class
         assertEquals(2, config.getEventTypeAutoAliasPackages().size());
@@ -244,5 +245,31 @@ public class TestConfigurationParser extends TestCase
         ref = config.getMethodInvocationReferences().get("def");
         lruCache = (ConfigurationLRUCache) ref.getDataCacheDesc();
         assertEquals(20, lruCache.getSize());
+
+        // plug-in event representations
+        assertEquals(2, config.getPlugInEventRepresentation().size());
+        ConfigurationPlugInEventRepresentation rep = config.getPlugInEventRepresentation().get(new URI("type://format/rep/name"));
+        assertEquals("com.mycompany.MyPlugInEventRepresentation", rep.getEventRepresentationClassName());
+        assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\"?><anyxml>test string event rep init</anyxml>", rep.getInitializer());
+        rep = config.getPlugInEventRepresentation().get(new URI("type://format/rep/name2"));
+        assertEquals("com.mycompany.MyPlugInEventRepresentation2", rep.getEventRepresentationClassName());
+        assertEquals(null, rep.getInitializer());
+
+        // plug-in event types
+        assertEquals(2, config.getPlugInEventTypes().size());
+        ConfigurationPlugInEventType type = config.getPlugInEventTypes().get("MyEvent");
+        assertEquals(2, type.getEventRepresentationResolutionURIs().length);
+        assertEquals("type://format/rep", type.getEventRepresentationResolutionURIs()[0].toString());
+        assertEquals("type://format/rep2", type.getEventRepresentationResolutionURIs()[1].toString());
+        assertEquals("<?xml version=\"1.0\" encoding=\"UTF-8\"?><anyxml>test string event type init</anyxml>", type.getInitializer());
+        type = config.getPlugInEventTypes().get("MyEvent2");
+        assertEquals(1, type.getEventRepresentationResolutionURIs().length);
+        assertEquals("type://format/rep2", type.getEventRepresentationResolutionURIs()[0].toString());
+        assertEquals(null, type.getInitializer());
+
+        // plug-in event representation resolution URIs when using a new alias in a statement
+        assertEquals(2, config.getPlugInEventTypeAliasResolutionURIs().length);
+        assertEquals("type://format/rep", config.getPlugInEventTypeAliasResolutionURIs()[0].toString());
+        assertEquals("type://format/rep2", config.getPlugInEventTypeAliasResolutionURIs()[1].toString());
     }
 }

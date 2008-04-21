@@ -3,22 +3,36 @@ package com.espertech.esperio.representation.axiom;
 import com.espertech.esper.client.EPException;
 import com.espertech.esper.event.EventBean;
 import com.espertech.esper.event.EventType;
+import com.espertech.esper.plugin.PlugInEventBeanFactory;
 import org.apache.axiom.om.OMDocument;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMNode;
 
 import java.util.Map;
+import java.net.URI;
 
-public class AxionEventBeanFactory
+/**
+ * A event bean factory implementation that understands Apache Axiom OMNode events
+ * and that can look up the root element name to determine the right event type.
+ * <p>
+ * See {@link AxiomEventRepresentation} for more details.
+ */
+public class AxionEventBeanFactory implements PlugInEventBeanFactory
 {
-    private final Map<String, EventType> types;
+    private final Map<String, AxiomXMLEventType> types;
 
-    public AxionEventBeanFactory(Map<String, EventType> types)
+    /**
+     * Ctor.
+     * @param types the currently known event type aliases and their types
+     */
+    public AxionEventBeanFactory(Map<String, AxiomXMLEventType> types)
     {
         this.types = types;
     }
 
-    public EventBean adapterForAXIOM(OMNode node) {
+    public EventBean create(Object node, URI resolutionURI)
+    {
+        // Check event type - only handle the Axiom types of OMDocument and OMElement 
         OMElement namedNode;
         if (node instanceof OMDocument)
         {
@@ -30,16 +44,17 @@ public class AxionEventBeanFactory
         }
         else
         {
-            throw new EPException("Unexpected AXIOM node of type '" + node.getClass() + "' encountered, please supply a Document or Element node");
+            return null;    // not the right event type, return null and let others handle it, or ignore
         }
 
+        // Look up the root element name and map to a known event type
         String rootElementName = namedNode.getLocalName();
         EventType eventType = types.get(rootElementName);
         if (eventType == null)
         {
-            return null;
+            return null;    // not a root element name, let others handle it
         }
 
         return new AxiomEventBean(namedNode, eventType);
-	}
+    }
 }

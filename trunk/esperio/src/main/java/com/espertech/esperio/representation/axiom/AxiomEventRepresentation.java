@@ -7,9 +7,15 @@ import com.espertech.esper.event.EventType;
 import java.util.Map;
 import java.util.HashMap;
 
+/**
+ * Plug-in event representation for Apache AXIOM.
+ * <p>
+ * Allows direct querying of org.apache.axiom.OMDocument and org.apache.axiom.om.OMNode objects via
+ * properties that are translated into XPath.
+ */
 public class AxiomEventRepresentation implements PlugInEventRepresentation
 {
-    private Map<EventType, ConfigurationEventTypeXMLDOM> types = new HashMap<EventType, ConfigurationEventTypeXMLDOM>();
+    private Map<String, AxiomXMLEventType> types = new HashMap<String, AxiomXMLEventType>();
 
     public void init(PlugInEventRepresentationContext eventRepresentationContext)
     {
@@ -17,28 +23,24 @@ public class AxiomEventRepresentation implements PlugInEventRepresentation
 
     public boolean acceptsType(PlugInEventTypeHandlerContext acceptTypeContext)
     {
-        if (!(acceptTypeContext.getTypeInitializer() instanceof ConfigurationEventTypeXMLDOM))
-        {
-            return false;
-        }
-        return true;  // accept all types as long as there is a configuration
+        return acceptTypeContext.getTypeInitializer() instanceof ConfigurationEventTypeXMLDOM;
     }
 
     public PlugInEventTypeHandler getTypeHandler(PlugInEventTypeHandlerContext eventTypeContext)
     {
         ConfigurationEventTypeXMLDOM config = (ConfigurationEventTypeXMLDOM) eventTypeContext.getTypeInitializer();
         AxiomXMLEventType eventType = new AxiomXMLEventType(config);
-        types.put(eventType, config);
+        types.put(config.getRootElementName(), eventType);  // keep a handle on the types created to allow dynamic event reflection via bean factory
         return new AxiomEventTypeHandler(eventType);
     }
 
     public boolean acceptsEventBeanResolution(PlugInEventBeanReflectorContext context)
     {
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
+        return true;
     }
 
     public PlugInEventBeanFactory getEventBeanFactory(PlugInEventBeanReflectorContext uri)
     {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return new AxionEventBeanFactory(types);
     }
 }

@@ -4,6 +4,7 @@
 	<!ENTITY adapter_overview SYSTEM "modules/adapter_overview.xml">
 	<!ENTITY adapter_csv SYSTEM "modules/adapter_csv.xml">
 	<!ENTITY adapter_jms_spring SYSTEM "modules/adapter_jms_spring.xml">
+	<!ENTITY apapter_event_representations SYSTEM "modules/apapter_event_representations.xml">	
 ]>
 <book lang="en">
 	<bookinfo>
@@ -37,4 +38,6 @@
     &adapter_csv;
 
     &adapter_jms_spring;
+    
+    &apapter_event_representations;
 </book>

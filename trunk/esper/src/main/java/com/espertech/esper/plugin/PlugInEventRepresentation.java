@@ -1,27 +1,78 @@
 package com.espertech.esper.plugin;
 
+/**
+ * Plug-in event representation that can dynamically create event types and event instances based on
+ * information available elsewhere.
+ * <p>
+ * A plug-in event representation can be useful when your application has existing Java classes that carry
+ * event metadata and event property values and your application does not want to (or cannot) extract or transform
+ * such event metadata and event data into one of the built-in event representations (POJO Java objects, Map or XML DOM).
+ * <p>
+ * Further use of a plug-in event representation is to provide a faster or short-cut access path to event data.
+ * For example, the access to XML event data through a StAX Streaming API for XML (StAX) is known to be very efficient.
+ * <p>
+ * Further, a plug-in event representation can provide network lookup and general abstraction of event typing and
+ * event sourcing.
+ * <p>
+ * An implementation of this interface must be regsitered via configuration. Upon engine construction,
+ * the engine invokes the {@link #init} method passing configuration information.
+ * <p>
+ * When a plug-in event type alias is registered via configuration (runtime or configuration time), the
+ * engine first asks the implementation of this interface whether the type is accepted via {@link #acceptsType}.
+ * If accepted, the engine follows with a call to {@link #getTypeHandler} for creating and handling the type.
+ * <p>
+ * The implementation of this interface can participate in dynamic resolution of new (unseen)
+ * event type aliases by configuring the URI of the event representation, or a child URI (parameters possible) via
+ * {@link com.espertech.esper.client.ConfigurationOperations#setPlugInEventTypeAliasResolutionURIs(java.net.URI[])}.
+ * <p>
+ * Last, see {@link com.espertech.esper.client.EPRuntime#getEventSender(java.net.URI[])}. An event sender
+ * allows dynamic reflection on an incoming event object. At the time such an event
+ * sender is obtained and a matching URI specified, the {@link #acceptsEventBeanResolution) method
+ * indicates that the event representation can or cannot inspect events, and the {@link PlugInEventBeanFactory}
+ * returned is used by the event sender to wrap event objects for processing. 
+ */
 public interface PlugInEventRepresentation
 {
+    /**
+     * Initializes the event representation.
+     * @param eventRepresentationContext URI and optional configuration information
+     */
     public void init(PlugInEventRepresentationContext eventRepresentationContext);
 
     /**
-     * Called when
-     *   (1) a new event type is registered and the representationChildURI matches the representation URI
-     *   (2) a new statement is created with an alias not yet associated with an event type
-     * 
-     * @return
+     * Returns true to indicate that the event representation can handle the requested event type.
+     * <p>
+     * Called when a new plug-in event type and alias is registered and the its resolution URI matches
+     * or is a child URI of the event representation URI.
+     * <p>
+     * Also called when a new EPL statement is created with an unseen event type alias
+     * and the URIs for resolution have been configured.
+     * @param acceptTypeContext provides the URI specified for resolving the type, and configuration info.
+     * @return true to accept the type, false such that another event representation may handle the type request
      */
     public boolean acceptsType(PlugInEventTypeHandlerContext acceptTypeContext);
 
     /**
-     * A handler handles a specific event type.
-     * @param eventTypeContext
-     * @return
+     * Returns the event type handler that provides the event type and, upon request, event sender, for this type.
+     * @param eventTypeContext provides the URI specified for resolving the type, and configuration info.
+     * @return provides event type and event sender
      */
     public PlugInEventTypeHandler getTypeHandler(PlugInEventTypeHandlerContext eventTypeContext);
 
+    /**
+     * For use with {@link com.espertech.esper.client.EPRuntime#getEventSender(java.net.URI[])},
+     * returns true if the event representation intends to provide event wrappers for event objects passed in.
+     * @param acceptBeanContext provides the URI specified for resolving the event object reflection
+     * @return true to accept the requested URI, false such that another event representation may handle the request
+     */
+    public boolean acceptsEventBeanResolution(PlugInEventBeanReflectorContext acceptBeanContext);
 
-    public boolean acceptsEventBeanResolution(PlugInEventBeanReflectorContext context);
-
-    public PlugInEventBeanFactory getEventBeanFactory(PlugInEventBeanReflectorContext uri);
+    /**
+     * For use with {@link com.espertech.esper.client.EPRuntime#getEventSender(java.net.URI[])},
+     * returns the factory that can inspect event objects and provide an event {@link com.espertech.esper.event.EventBean}
+     * wrapper.
+     * @param eventBeanContext provides the URI specified for resolving the event object reflection
+     * @return true to accept the requested URI, false such that another event representation may handle the request
+     */
+    public PlugInEventBeanFactory getEventBeanFactory(PlugInEventBeanReflectorContext eventBeanContext);
 }

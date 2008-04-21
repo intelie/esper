@@ -165,7 +165,28 @@ public interface ConfigurationOperations
      */
     public void addVariable(String variableName, Class type, Object initializationValue) throws ConfigurationException;
 
-
+    /**
+     * Adds an alias for an event type that one of the plug-in event representations resolves to an event type.
+     * <p>
+     * The order of the URIs matters as event representations are asked in turn, to accept the event type.
+     * <p>
+     * URIs can be child URIs of plug-in event representations and can add additional parameters or fragments
+     * for use by the event representation.
+     * @param eventTypeAlias is the alias name of the event type
+     * @param resolutionURIs is URIs that are matched to registered event representations
+     * @param initializer is an optional value for parameterizing or configuring the event type
+     */
     public void addPlugInEventType(String eventTypeAlias, URI[] resolutionURIs, Serializable initializer);
-    public void setPlugInEventTypeAliasResolutionURIs(URI[] urisToResolveAlias);    
+
+    /**
+     * Sets the URIs that point to plug-in event representations that are given a chance to dynamically resolve an event
+     * type alias to an event type, when a new (unseen) event type alias occurs in a new EPL statement.
+     * <p>
+     * The order of the URIs matters as event representations are asked in turn, to accept the alias.
+     * <p>
+     * URIs can be child URIs of plug-in event representations and can add additional parameters or fragments
+     * for use by the event representation.
+     * @param urisToResolveAlias URIs for resolving the alias
+     */
+    public void setPlugInEventTypeAliasResolutionURIs(URI[] urisToResolveAlias);
 }

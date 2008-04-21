@@ -19,10 +19,14 @@ import java.util.Map;
 import java.util.Set;
 
 /**
+ * Apache Axiom event type provides event metadata for Axiom OMDocument events.
+ * <p>
  * Optimistic try to resolve the property string into an appropiate xPath, and
  * use it as getter. Mapped and Indexed properties supported. Because no type
  * information is given, all property are resolved to String. No namespace
  * support. Cannot access to xml attributes, only elements content.
+ * <p>
+ * See {@link AxiomEventRepresentation} for more details.
  */
 public class AxiomXMLEventType implements EventType
 {
@@ -33,6 +37,7 @@ public class AxiomXMLEventType implements EventType
 
     /**
      * Ctor.
+     * @param configurationEventTypeXMLDOM is the configuration for XML access 
      */
     public AxiomXMLEventType(ConfigurationEventTypeXMLDOM configurationEventTypeXMLDOM)
     {
@@ -122,6 +127,10 @@ public class AxiomXMLEventType implements EventType
         return null;
     }
 
+    /**
+     * Returns the configuration for the alias.
+     * @return configuration details underlying the type
+     */
     public ConfigurationEventTypeXMLDOM getConfig()
     {
         return config;

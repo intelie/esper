@@ -67,6 +67,7 @@ public final class StatementContext
      * @param namedWindowService is holding information about the named windows active in the system
      * @param variableService provides access to variable values
      * @param statementResultService handles awareness of listeners/subscriptions for a statement customizing output produced
+     * @param plugInTypeResolutionURIs is URIs for resolving the event name against plug-inn event representations, if any
      */
     public StatementContext(String engineURI,
                             String engineInstanceId,
@@ -304,6 +305,10 @@ public final class StatementContext
         return statementResultService;
     }
 
+    /**
+     * Returns the URIs for resolving the event name against plug-inn event representations, if any
+     * @return URIs
+     */
     public URI[] getPlugInTypeResolutionURIs()
     {
         return plugInTypeResolutionURIs;

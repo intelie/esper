@@ -6,11 +6,22 @@ import com.espertech.esper.core.EPRuntimeEventSender;
 import org.apache.axiom.om.OMDocument;
 import org.apache.axiom.om.OMElement;
 
+/**
+ * A event sender implementation that understands Apache Axiom OMNode events
+ * and checks that the root element name matches the expected event type's root element name.
+ * <p>
+ * See {@link AxiomEventRepresentation} for more details.
+ */
 public class AxionEventSender implements EventSender
 {
     private final AxiomXMLEventType eventType;
     private final EPRuntimeEventSender runtimeEventSender;
 
+    /**
+     * Ctor.
+     * @param eventType the axiom event metadata
+     * @param runtimeEventSender the sender to send events into
+     */
     public AxionEventSender(AxiomXMLEventType eventType, EPRuntimeEventSender runtimeEventSender)
     {
         this.eventType = eventType;

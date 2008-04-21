@@ -1,21 +1,30 @@
 package com.espertech.esper.event;
 
-import com.espertech.esper.client.EventSender;
 import com.espertech.esper.client.EPException;
-import com.espertech.esper.core.EPRuntimeSPI;
+import com.espertech.esper.client.EventSender;
 import com.espertech.esper.core.EPRuntimeEventSender;
-import com.espertech.esper.collection.ArrayDequeJDK6Backport;
 import com.espertech.esper.util.JavaClassHelper;
 
-import java.util.Set;
 import java.util.HashSet;
+import java.util.Set;
 
+/**
+ * Event sender for POJO Java object events.
+ * <p>
+ * Allows sending only event objects of the underlying type matching the event type, or
+ * implementing the interface or extending the type. Any other event object generates an error.
+ */
 public class EventSenderBean implements EventSender
 {
     private final EPRuntimeEventSender runtime;
     private final BeanEventType beanEventType;
     private final Set<Class> compatibleClasses;
 
+    /**
+     * Ctor.
+     * @param runtime for processing events
+     * @param beanEventType the event type
+     */
     public EventSenderBean(EPRuntimeEventSender runtime, BeanEventType beanEventType)
     {
         this.runtime = runtime;

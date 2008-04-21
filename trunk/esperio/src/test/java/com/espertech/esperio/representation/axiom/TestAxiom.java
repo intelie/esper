@@ -103,11 +103,14 @@ public class TestAxiom extends TestCase
         assertEquals("text", event.get("element1"));
 
         // Use a URI sender list
+        String xml = "<a><b><c>hype</c></b></a>";
         EventSender sender = epService.getEPRuntime().getEventSender(new URI[] {new URI(AXIOM_URI)});
-        sendXMLEvent(epService, "AEvent", "<a><b><c>hype</c></b></a>");
+        InputStream s = new ByteArrayInputStream(xml.getBytes());
+        OMElement documentElement = new StAXOMBuilder(s).getDocumentElement();
+        sender.sendEvent(documentElement);
         event = updateListener.assertOneGetNewAndReset();
         assertEquals("hype", event.get("type"));
-        assertEquals("hype", event.get("element1"));
+        assertEquals("hype", event.get("element1"));        
     }
 
     public void testDotEscapeSyntax() throws Exception

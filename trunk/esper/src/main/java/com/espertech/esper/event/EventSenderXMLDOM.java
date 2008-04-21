@@ -9,11 +9,22 @@ import org.w3c.dom.Node;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+/**
+ * Event sender for XML DOM-backed events.
+ * <p>
+ * Allows sending only event objects of type Node or Document, does check the root name of the XML document
+ * which must match the event type root name as configured. Any other event object generates an error.
+ */
 public class EventSenderXMLDOM implements EventSender
 {
     private final EPRuntimeEventSender runtimeEventSender;
     private final BaseXMLEventType baseXMLEventType;
 
+    /**
+     * Ctor.
+     * @param runtimeEventSender for processing events
+     * @param baseXMLEventType the event type
+     */
     public EventSenderXMLDOM(EPRuntimeEventSender runtimeEventSender, BaseXMLEventType baseXMLEventType)
     {
         this.runtimeEventSender = runtimeEventSender;

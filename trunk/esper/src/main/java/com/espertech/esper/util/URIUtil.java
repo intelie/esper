@@ -5,8 +5,18 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.Collection;
 
+/**
+ * Utility for inspecting and comparing URI.
+ */
 public class URIUtil
 {
+    /**
+     * Given a child URI and a map of factory URIs, inspect the child URI against the factory URIs
+     * and return a collection of entries for which the child URI falls within or is equals to the factory URI.
+     * @param child is the child URI to match against factory URIs
+     * @param uris is a map of factory URI and an object
+     * @return matching factory URIs, if any
+     */
     public static Collection<Map.Entry<URI, Object>> filterSort(URI child, Map<URI, Object> uris)
     {
         boolean childPathIsOpaque = child.isOpaque();

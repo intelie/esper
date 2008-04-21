@@ -141,6 +141,10 @@ public class Configuration implements ConfigurationOperations, ConfigurationInfo
      */
 	protected Map<String, ConfigurationPlugInEventType> plugInEventTypes;
 
+    /**
+     * URIs that point to plug-in event representations that are given a chance to dynamically resolve an event type alias to an
+     * event type, as it occurs in a new EPL statement.
+     */
     protected URI[] plugInEventTypeAliasResolutionURIs;
 
     /**
@@ -464,18 +468,26 @@ public class Configuration implements ConfigurationOperations, ConfigurationInfo
         variables.put(variableName, configVar);
     }
 
-    public void addPlugInEventRepresentation(URI eventRepresentationURI, String eventRepresentationClassName, Serializable initializer)
+    /**
+     * Adds an event representation responsible for creating event types (event metadata) and event bean instances (events) for
+     * a certain kind of object representation that holds the event property values.
+     * @param eventRepresentationRootURI uniquely identifies the event representation and acts as a parent
+     * for child URIs used in resolving
+     * @param eventRepresentationClassName is the name of the class implementing {@link com.espertech.esper.plugin.PlugInEventRepresentation}.
+     * @param initializer is optional configuration or initialization information, or null if none required 
+     */
+    public void addPlugInEventRepresentation(URI eventRepresentationRootURI, String eventRepresentationClassName, Serializable initializer)
     {
         ConfigurationPlugInEventRepresentation config = new ConfigurationPlugInEventRepresentation();
         config.setEventRepresentationClassName(eventRepresentationClassName);
-        config.setConfiguration(initializer);
-        this.plugInEventRepresentation.put(eventRepresentationURI, config);
+        config.setInitializer(initializer);
+        this.plugInEventRepresentation.put(eventRepresentationRootURI, config);
     }
 
     public void addPlugInEventType(String eventTypeAlias, URI[] resolutionURIs, Serializable initializer)
     {
         ConfigurationPlugInEventType config = new ConfigurationPlugInEventType();
-        config.setEventTypeURI(resolutionURIs);
+        config.setEventRepresentationResolutionURIs(resolutionURIs);
         config.setInitializer(initializer);
         plugInEventTypes.put(eventTypeAlias, config);
     }

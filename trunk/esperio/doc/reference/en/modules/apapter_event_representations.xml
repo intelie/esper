@@ -1,0 +1,56 @@
+<chapter id="apapter_event_representations">
+    <title>Additional Event Representations</title>
+    
+    <sect1 id="eventrep-axiom">
+        <title>Apache Axiom Events</title>
+
+		<para>
+			The plug-in event representation based on Apache Axiom can process XML documents by means of the Streaming API for XML (StAX), which is based the concept of "pull parsing" and can provide performance improvements
+			extracting data from XML documents.
+		</para>
+    
+		<para>
+			The instructions below have been tested with Apache Axiom Apache AXIOM 1.2.5 and it's dependent jar files. Please visit <literal>http://ws.apache.org/commons/axiom/</literal> for more information.
+		</para>
+			
+		<para>
+			There are 3 steps to follow:
+		</para>
+
+		<orderedlist spacing="compact">
+			<listitem>
+				<para>
+					Enable Apache Axiom by adding the even representation to the engine configuration.
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					Register your application event type aliases.
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					Send events represented as <literal>org.apache.axiom.om.OMDocument</literal> or <literal>OMElement</literal>
+				</para>
+			</listitem>
+		</orderedlist>
+		
+		<para>
+			To enable Apache Axiom event processing, use the code snippet shows next, or configure via confiugration XML:
+		</para>
+
+		<programlisting><![CDATA[Configuration config = new Configuration();
+config.addPlugInEventRepresentation(new URI("types://xml/apacheaxiom/OMNode"),
+			AxiomEventRepresentation.class.getName(), null);]]></programlisting>
+
+		<para>
+			Your application may optionally register the event types in advance:
+		</para>
+
+		<programlisting><![CDATA[]]></programlisting>
+		
+
+    </sect1>
+    
+</chapter>
+

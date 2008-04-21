@@ -251,7 +251,7 @@ public class EPServicesContextFactoryDefault implements EPServicesContextFactory
 
             URI eventRepURI = entry.getKey();
             PlugInEventRepresentation pluginEventRep = (PlugInEventRepresentation) pluginEventRepObj;
-            Serializable initializer = entry.getValue().getConfiguration();
+            Serializable initializer = entry.getValue().getInitializer();
             PlugInEventRepresentationContext context = new PlugInEventRepresentationContext(eventAdapterService, eventRepURI, initializer);
 
             try
@@ -271,7 +271,7 @@ public class EPServicesContextFactoryDefault implements EPServicesContextFactory
         {
             String alias = entry.getKey();
             ConfigurationPlugInEventType config = entry.getValue();
-            eventAdapterService.addPlugInEventType(alias, config.getEventTypeURI(), config.getInitializer());
+            eventAdapterService.addPlugInEventType(alias, config.getEventRepresentationResolutionURIs(), config.getInitializer());
         }
     }
 

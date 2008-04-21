@@ -800,4 +800,134 @@
 		</sect2>
 	</sect1>
 
+    <sect1 id="custom-event-representation" revision="1">
+        <title>Custom Event Representation</title>
+        
+		<indexterm><primary>plug-in event representation</primary></indexterm>
+		<indexterm><primary>event representation</primary><secondary>custom</secondary></indexterm>
+		    
+		<para>
+			Creating a plug-in event representation can be useful under any of these conditions:
+		</para>
+			
+		<itemizedlist spacing="compact">
+			<listitem>
+				<para>
+					Your application has existing Java classes that carry event metadata and event property values and your application does not want to (or cannot) extract or transform such event metadata and event data into one of the built-in event representations (POJO Java objects, Map or XML DOM).
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					Your application want to provide a faster or short-cut access path to event data, for example to access XML event data through a Streaming API for XML (StAX), or use Java classes that do not have JavaBean-style getter methods.
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					. You want to provide network lookup and dynamic resolution of event type and events.
+				</para>
+			</listitem>
+		</itemizedlist>	
+		
+		<para>
+			Note that the classes to plug-in a custom event representation are held stable between minor releases, but are subject to change between major releases. 
+		</para>
+			
+		<para>
+			Currently, EsperIO provides the following additional event representations. The source code is available for these and they are therefore excellent examples for how to implement a plug-in event representation.
+			Please see the EsperIO documentation for more detail on the below.
+		</para>
+		<itemizedlist spacing="compact">
+			<listitem>
+				<para>
+					Apache Axiom provides access to XML event data on top of the fast Streaming API for XML (StAX). 
+				</para>
+			</listitem>
+		</itemizedlist>	
+		
+		<sect2 id="custom-eventrep-overview" revision="1">
+			<title>How It Works</title>
+			
+			<para>
+				Your application provides a plug-in event representation as an implementation of the <literal>com.espertech.esper.plugin.PlugInEventRepresentation</literal> interface. It registers the implementation class in the
+				<literal>Configuration</literal> and at the same time provides a unique URI. This URI is called the root event representation URI. An example value for a root URI is <literal>type://xml/apacheaxiom/OMNode</literal>. 
+			</para>
+			
+			<para>
+				One can register multiple plug-in event representations. Each representation has a root URI. The root URI serves to divide the overall space of different event representations and plays a role in resolving event types.
+			</para>
+
+			<para>
+				There are two situations in which an event representation is asked for an event type:
+			</para>
+			<orderedlist>
+				<listitem>
+					<para>
+						When an application registers a new event type alias using the method <literal>addPlugInEventType</literal> on <literal>ConfigurationOperations</literal>, either at runtime or at configuration time.
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						When an EPL statement is created with an new event type alias and the URIs for resolving such aliases are defined via <literal>setPlugInEventTypeAliasResolutionURIs</literal> on <literal>ConfigurationOperations</literal>.
+					</para>
+				</listitem>
+			</orderedlist>
+				
+			<para>
+				The implementation of the <literal>PlugInEventRepresentation</literal> interface must provide implementations for two key interfaces: <literal>com.espertech.esper.event.EventType</literal> and <literal>EventBean</literal> and several other interfaces.
+			</para>
+
+			<para>
+				The <literal>EventType</literal> methods provide event metadata including property names and property types. They also provide instances of <literal>EventPropertyGetter</literal> for retrieving event property values. One EventType instance 
+				represents a distinct type of event.
+			</para>
+			
+			<para>
+				The <literal>EventBean</literal> implementation is the event itself and encapsulates the underlying event object.
+			</para>						
+		</sect2>
+
+		<sect2 id="custom-eventrep-steps" revision="1">
+			<title>Steps</title>
+			<para>
+				The following steps are required to develop and use a custom event representation: 
+			</para>
+				
+			<orderedlist spacing="compact">
+				<listitem>
+					<para>
+						Implement the <literal>EventType</literal>, <literal>EventPropertyGetter</literal> and <literal>EventBean</literal> interfaces.
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						Implements the <literal>PlugInEventRepresentation</literal> interface and register the class via configuration.
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						Register plug-in event types, and/or set the alias resolution URIs, via configuration.
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						Obtain an <literal>EventSender</literal> from <literal>EPRuntime</literal> via the <literal>getEventSender(URI[])</literal> method and use that to send in your event objects.
+					</para>
+				</listitem>
+			</orderedlist>
+	
+			<para>
+				EsperIO provides provides XML document processing using the Apache Axiom document object <literal>OMNode</literal>. The sample code
+				show next are based on the Axiom event representation.
+			</para>
+		</sect2>				
+
+      <!--
+		<sect2 id="custom-eventrep-eventtype" revision="1">
+			<title>Implement <literal>EventType</literal> and <literal>EventBean</literal> interfaces</title>
+			<para>
+				
+			</para>
+		</sect2>				
+    -->
+	</sect1>
 </chapter>

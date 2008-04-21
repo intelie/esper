@@ -80,6 +80,7 @@ public class ASTFilterSpecHelper
     /**
      * Escape all unescape dot characters in the text (identifier only) passed in.
      * @param identifierToEscape text to escape
+     * @return text where dots are escaped
      */
     protected static String escapeDot(String identifierToEscape)
     {
@@ -118,6 +119,7 @@ public class ASTFilterSpecHelper
     /**
      * Find the index of an unescaped dot (.) character, or return -1 if none found.
      * @param identifier text to find an un-escaped dot character
+     * @return index of first unescaped dot
      */
     public static int unescapedIndexOfDot(String identifier)
     {
@@ -152,6 +154,7 @@ public class ASTFilterSpecHelper
     /**
      * Un-Escape all escaped dot characters in the text (identifier only) passed in.
      * @param identifierToUnescape text to un-escape
+     * @return string
      */
     public static String unescapeDot(String identifierToUnescape)
     {

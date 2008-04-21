@@ -11,12 +11,21 @@ import org.apache.commons.logging.LogFactory;
 import java.net.URI;
 import java.util.List;
 
+/**
+ * Descriptor for URI-based event sender for plug-in event representations.
+ */
 public class EventSenderURIDesc
 {
     private final PlugInEventBeanFactory beanFactory;
     private final URI resolutionURI;
     private final URI representationURI;
 
+    /**
+     * Ctor.
+     * @param beanFactory factory for events
+     * @param resolutionURI URI use for resolution
+     * @param representationURI URI of event representation
+     */
     public EventSenderURIDesc(PlugInEventBeanFactory beanFactory, URI resolutionURI, URI representationURI)
     {
         this.beanFactory = beanFactory;
@@ -24,16 +33,28 @@ public class EventSenderURIDesc
         this.representationURI = representationURI;
     }
 
+    /**
+     * URI used for resolution.
+     * @return resolution URI
+     */
     public URI getResolutionURI()
     {
         return resolutionURI;
     }
 
+    /**
+     * URI of event representation.
+     * @return URI
+     */
     public URI getRepresentationURI()
     {
         return representationURI;
     }
 
+    /**
+     * Event wrapper for event objects.
+     * @return factory for events
+     */
     public PlugInEventBeanFactory getBeanFactory()
     {
         return beanFactory;

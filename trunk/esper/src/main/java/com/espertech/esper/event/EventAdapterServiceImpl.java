@@ -128,13 +128,12 @@ public class EventAdapterServiceImpl implements EventAdapterService
 
         PlugInEventTypeHandlerContext context = new PlugInEventTypeHandlerContext(handledEventTypeURI, initializer, alias);
         PlugInEventTypeHandler handler = handlingFactory.getTypeHandler(context);
-        EventType eventType = handler.getType();
-
         if (handler == null)
         {
             throw new EventAdapterException("Event type named '" + alias + "' could not be created as no handler was returned");
         }
 
+        EventType eventType = handler.getType();
         aliasToTypeMap.put(alias, eventType);
         aliasToHandlerMap.put(alias, handler);
 
@@ -168,10 +167,10 @@ public class EventAdapterServiceImpl implements EventAdapterService
         {
             return handlers.getSender(runtimeEventSender);
         }
-        throw new EventAdapterException("An event sender for event type named '" + eventTypeAlias + "' could not be created as the type is internal");
+        throw new EventTypeException("An event sender for event type named '" + eventTypeAlias + "' could not be created as the type is internal");
     }
 
-    public EventSender getDynamicTypeEventSender(EPRuntimeImpl epRuntime, URI[] uri)
+    public EventSender getDynamicTypeEventSender(EPRuntimeEventSender epRuntime, URI[] uri) throws EventTypeException
     {
         List<EventSenderURIDesc> handlingFactories = new ArrayList<EventSenderURIDesc>();
         for (URI resolutionURI : uri)
@@ -196,6 +195,7 @@ public class EventAdapterServiceImpl implements EventAdapterService
                     if (beanFactory == null)
                     {
                         log.warn("Plug-in event representation returned a null bean factory, ignoring entry");
+                        continue;
                     }
                     EventSenderURIDesc desc = new EventSenderURIDesc(beanFactory, resolutionURI, entry.getKey());
                     handlingFactories.add(desc);
@@ -205,8 +205,8 @@ public class EventAdapterServiceImpl implements EventAdapterService
 
         if (handlingFactories.isEmpty())
         {
-            throw new EventAdapterException("Event sender for resolution URIs '" + Arrays.toString(uri)
-                    + "' did not return at least one bean factory");
+            throw new EventTypeException("Event sender for resolution URIs '" + Arrays.toString(uri)
+                    + "' did not return at least one event representation's event factory");
         }
 
         return new EventSenderImpl(handlingFactories, epRuntime);

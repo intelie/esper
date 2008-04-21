@@ -632,6 +632,43 @@ from SensorEvent.win:time(30 sec)]]></programlisting>
 
 	</sect1>
    
+	<sect1 id="eventrep-plug-in">
+	   <title>Additional Event Representations</title>
+	   
+		<indexterm><primary>event</primary><secondary>additional representations</secondary></indexterm>
+		<para>
+		    As part of the extension and plug features there exists an event representation API. These classes allow an application to create new event types and event instances based on information available elsewhere. Please see <xref linkend="custom-event-representation"/> for details.
+		</para>
+		    
+		<para>
+			Creating a plug-in event representation can be useful when your application has existing Java classes that carry event metadata and event property values and your application does not want to (or cannot) extract or transform
+such event metadata and event data into one of the built-in event representations (POJO Java objects, Map or XML DOM).
+		</para>
+
+		<para>
+			Further use of a plug-in event representation is to provide a faster or short-cut access path to event data. For example, the access to XML event data through a Streaming API for XML (StAX) is known to be very efficient. A plug-in event representation can also provide network lookup and dynamic resolution of event type and event sourcing.
+		</para>
+		
+		<para>
+			Currently, EsperIO provides the following additional event representations:
+		</para>
+		<itemizedlist spacing="compact">
+			<listitem>
+				<para>
+					Apache Axiom provides access to XML event data on top of the fast Streaming API for XML (StAX). 
+				</para>
+			</listitem>
+		</itemizedlist>
+		
+		<para>
+			Please see the EsperIO documentation for more detail on how to use the additional event representations listed above.
+		</para>
+		
+		<para>
+			The chapter on <xref linkend="custom-event-representation"/> explains in detail how to create your own custom event representation.
+		</para>
+	</sect1>
+
 </chapter>
 
 

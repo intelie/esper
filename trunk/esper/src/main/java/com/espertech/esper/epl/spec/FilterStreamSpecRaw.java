@@ -110,6 +110,7 @@ public class FilterStreamSpecRaw extends StreamSpecBase implements StreamSpecRaw
      * @param eventName is the alias to resolve
      * @param eventAdapterService for resolving event types
      * @param engineURI the provider URI
+     * @param optionalResolutionURIs is URIs for resolving the event name against plug-inn event representations, if any
      * @return event type
      * @throws ExprValidationException if the info cannot be resolved
      */

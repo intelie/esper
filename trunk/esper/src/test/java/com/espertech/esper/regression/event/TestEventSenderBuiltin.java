@@ -9,8 +9,6 @@ import com.espertech.esper.support.bean.SupportMarkerInterface;
 import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.support.util.SupportUpdateListener;
 import junit.framework.TestCase;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 
@@ -22,13 +20,14 @@ import java.util.Map;
 
 public class TestEventSenderBuiltin extends TestCase
 {
-    private static Log log = LogFactory.getLog(TestEventSenderBuiltin.class);
     private EPServiceProvider epService;
     private SupportUpdateListener listener;
+    private SupportUpdateListener listenerTwo;
 
     public void setUp()
     {
         listener = new SupportUpdateListener();
+        listenerTwo = new SupportUpdateListener();
     }
 
     public void testSenderPOJO() throws Exception
@@ -36,6 +35,7 @@ public class TestEventSenderBuiltin extends TestCase
         Configuration configuration = SupportConfigFactory.getConfiguration();
         configuration.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
         configuration.addEventTypeAlias("SupportBean", SupportBean.class);
+        configuration.addEventTypeAlias("SupportBeanTwo", SupportBean.class);
         configuration.addEventTypeAlias("Marker", SupportMarkerInterface.class);
 
         epService = EPServiceProviderManager.getDefaultProvider(configuration);
@@ -45,11 +45,15 @@ public class TestEventSenderBuiltin extends TestCase
         EPStatement stmt = epService.getEPAdministrator().createEPL("select * from SupportBean");
         stmt.addListener(listener);
 
+        EPStatement stmtTwo = epService.getEPAdministrator().createEPL("select * from SupportBeanTwo");
+        stmt.addListener(listenerTwo);
+
         // send right event
         EventSender sender = epService.getEPRuntime().getEventSender("SupportBean");
         Object supportBean = new SupportBean();
         sender.sendEvent(supportBean);
         assertSame(supportBean, listener.assertOneGetNewAndReset().getUnderlying());
+        assertSame(supportBean, listenerTwo.assertOneGetNewAndReset().getUnderlying());
 
         // send wrong event
         try
@@ -162,15 +166,25 @@ public class TestEventSenderBuiltin extends TestCase
         epService = EPServiceProviderManager.getDefaultProvider(configuration);
         epService.initialize();
 
+        try
+        {
+            epService.getEPRuntime().getEventSender("ABC");
+            fail();
+        }
+        catch (EventTypeException ex)
+        {
+            assertEquals("Event type named 'ABC' could not be found", ex.getMessage());
+        }
+
         EPStatement stmt = epService.getEPAdministrator().createEPL("insert into ABC select *, string as value from SupportBean");
         stmt.addListener(listener);
 
         try
         {
             epService.getEPRuntime().getEventSender("ABC");
-            fail();
+            fail("Event type named 'ABC' could not be found");
         }
-        catch (EPException ex)
+        catch (EventTypeException ex)
         {
             assertEquals("An event sender for event type named 'ABC' could not be created as the type is internal", ex.getMessage());
         }        

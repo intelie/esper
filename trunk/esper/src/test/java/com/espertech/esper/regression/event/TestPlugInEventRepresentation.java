@@ -4,6 +4,9 @@ import com.espertech.esper.client.*;
 import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.support.util.ArrayAssertionUtil;
 import com.espertech.esper.support.util.SupportUpdateListener;
+import com.espertech.esper.plugin.PlugInEventRepresentationContext;
+import com.espertech.esper.plugin.PlugInEventTypeHandlerContext;
+import com.espertech.esper.plugin.PlugInEventBeanReflectorContext;
 import junit.framework.TestCase;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -27,16 +30,9 @@ public class TestPlugInEventRepresentation extends TestCase
         }
     }
 
-    // TODO: test EventSender for all other types, including wrappers and composite
-    // TODO test EventSender to the quotes types
-    // TODO: do XML configuration
-    // TODO: test invalid cases
+    // TODO: documentation
+    // TODO: double-dip Quote event with two aliases
 
-    // TODO: document
-    // Called from: 
-    //   (A) new statement being compiled (alias to be resolved)
-    //   (B) new alias being added through configuration
-    
     /*
      * Use case 1: static event type resolution, no event object reflection (static event type assignment)
      * Use case 2: static event type resolution, dynamic event object reflection and event type assignment
@@ -105,6 +101,53 @@ public class TestPlugInEventRepresentation extends TestCase
         epService.initialize();
 
         runAssertionCaseDynamic(epService);
+    }
+
+    public void testInvalid() throws Exception
+    {
+        Configuration configuration = getConfiguration();
+        epService = EPServiceProviderManager.getDefaultProvider(configuration);
+        epService.initialize();
+
+        try
+        {
+            epService.getEPRuntime().getEventSender(new URI[0]);
+            fail();
+        }
+        catch (EventTypeException ex)
+        {
+            assertEquals("Event sender for resolution URIs '[]' did not return at least one event representation's event factory", ex.getMessage());
+        }
+    }
+
+    public void testContextContents() throws Exception
+    {
+        Configuration configuration = getConfiguration();
+        configuration.addPlugInEventRepresentation(new URI("type://test/support"), SupportEventRepresentation.class.getName(), "abc");
+        epService = EPServiceProviderManager.getDefaultProvider(configuration);
+        epService.initialize();
+
+        PlugInEventRepresentationContext initContext = SupportEventRepresentation.getInitContext();
+        assertEquals(new URI("type://test/support"), initContext.getEventRepresentationRootURI());
+        assertEquals("abc", initContext.getRepresentationInitializer());
+        assertNotNull(initContext.getEventAdapterService());
+
+        ConfigurationOperations runtimeConfig = epService.getEPAdministrator().getConfiguration();
+        runtimeConfig.addPlugInEventType("TestTypeOne", new URI[] {new URI("type://test/support?a=b&c=d")}, "t1");
+
+        PlugInEventTypeHandlerContext context = SupportEventRepresentation.getAcceptTypeContext();
+        assertEquals(new URI("type://test/support?a=b&c=d"), context.getEventTypeResolutionURI());
+        assertEquals("t1", context.getTypeInitializer());
+        assertEquals("TestTypeOne", context.getEventTypeAlias());
+
+        context = SupportEventRepresentation.getEventTypeContext();
+        assertEquals(new URI("type://test/support?a=b&c=d"), context.getEventTypeResolutionURI());
+        assertEquals("t1", context.getTypeInitializer());
+        assertEquals("TestTypeOne", context.getEventTypeAlias());
+
+        epService.getEPRuntime().getEventSender(new URI[] {new URI("type://test/support?a=b")});
+        PlugInEventBeanReflectorContext contextBean = SupportEventRepresentation.getEventBeanContext();
+        assertEquals("type://test/support?a=b", contextBean.getResolutionURI().toString());
     }
 
     private void runAssertionCaseDynamic(EPServiceProvider epService) throws Exception
@@ -198,16 +241,6 @@ public class TestPlugInEventRepresentation extends TestCase
         }
     }
 
-    /**
-     * The idea of a hierarchy is:
-     *   - Allow configuration/definition via URI path, fragment and parameter passing (i.e. /provider/mytype?a=b#c)
-     *   - Allow child-overrides-parent relationship as the most specific (deep path) child is asked first
-     *
-     * or should it be "type://trade/json"
-     * or maybe "type:/trade/derivative/option"
-     */
-
-    
     private Properties makeProperties(String[][] values)
     {
         Properties event = new Properties();

@@ -225,11 +225,36 @@ public interface EventAdapterService
      */
     public BeanEventTypeFactory getBeanEventTypeFactory();
 
+    /**
+     * Add a plug-in event representation.
+     * @param eventRepURI URI is the unique identifier for the event representation
+     * @param pluginEventRep is the instance
+     */
     public void addEventRepresentation(URI eventRepURI, PlugInEventRepresentation pluginEventRep);
 
-    public EventType addPlugInEventType(String alias, URI[] eventTypeURI, Serializable initializer);
+    /**
+     * Adds a plug-in event type.
+     * @param alias is the name of the event type
+     * @param resolutionURIs is the URIs of plug-in event representations, or child URIs of such
+     * @param initializer is configs for the type
+     * @return type
+     */
+    public EventType addPlugInEventType(String alias, URI[] resolutionURIs, Serializable initializer);
 
+    /**
+     * Returns an event sender for a specific type, only generating events of that type.
+     * @param runtimeEventSender the runtime handle for sending the wrapped type
+     * @param eventTypeAlias is the name of the event type to return the sender for
+     * @return event sender that is static, single-type
+     */
     public EventSender getStaticTypeEventSender(EPRuntimeEventSender runtimeEventSender, String eventTypeAlias);
 
-    EventSender getDynamicTypeEventSender(EPRuntimeImpl epRuntime, URI[] uri);
+    /**
+     * Returns an event sender that dynamically decides what the event type for a given object is.
+     * @param runtimeEventSender the runtime handle for sending the wrapped type
+     * @param uri is for plug-in event representations to provide implementations, if accepted, to make a wrapped event
+     * @return event sender that is dynamic, multi-type based on multiple event bean factories provided by
+     * plug-in event representations
+     */
+    public EventSender getDynamicTypeEventSender(EPRuntimeEventSender runtimeEventSender, URI[] uri);
 }
