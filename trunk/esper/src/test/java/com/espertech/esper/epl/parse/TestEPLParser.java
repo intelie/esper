@@ -14,7 +14,7 @@ public class TestEPLParser extends TestCase
     {
         String className = SupportBean.class.getName();
         //String expression = "select a\\.b\\.c[43]\\.dd('a') from A";
-        String expression = "select a\\.b from A";
+        String expression = "select count from A";
 
         log.debug(".testDisplayAST parsing: " + expression);
         Tree ast = parse(expression);
@@ -131,7 +131,7 @@ public class TestEPLParser extends TestCase
         assertIsInvalid("select * from x where like");
         assertIsInvalid("select * from x where like escape");
         assertIsInvalid("select * from x where like a escape");
-        assertIsInvalid("select * from x where escape");
+        assertIsInvalid("select * from x where order");
         assertIsInvalid("select * from x where field rlike 'aa' escape '!'");
         assertIsInvalid("select * from x where field regexp 'aa' escape '!'");
         assertIsInvalid("select * from x where regexp 'aa'");
@@ -586,7 +586,7 @@ public class TestEPLParser extends TestCase
 
         // properties escaped
         assertIsValid("select a\\.b, a\\.b\\.c.d.e\\.f, zz\\.\\.\\.aa\\.\\.\\.b\\.\\. from A");
-        // TODO assertIsValid("select count from A");
+        assertIsValid("select count from A");
     }
 
     public void testBitWiseCases() throws Exception

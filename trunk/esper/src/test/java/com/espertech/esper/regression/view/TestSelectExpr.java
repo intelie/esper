@@ -12,6 +12,7 @@ import com.espertech.esper.support.util.SupportUpdateListener;
 import com.espertech.esper.support.util.ArrayAssertionUtil;
 import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.bean.SupportBeanComplexProps;
+import com.espertech.esper.support.bean.SupportBeanKeywords;
 import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.event.EventBean;
 import com.espertech.esper.event.EventType;
@@ -45,6 +46,22 @@ public class TestSelectExpr extends TestCase
 
         epService.getEPRuntime().sendEvent(SupportBeanComplexProps.makeDefaultBean());
         EventBean event = testListener.assertOneGetNewAndReset();
+    }
+
+    public void testKeywordsAllowed()
+    {
+        String fields = "count,escape,every,sum,avg,max,min,coalesce,median,stddev,avedev,events,seconds,minutes,first,last,unidirectional,pattern,sql,metadatasql,prev,prior,weekday,lastweekday,cast,snapshot,variable,window";
+        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("Keywords", SupportBeanKeywords.class);
+        EPStatement stmt = epService.getEPAdministrator().createEPL("select " + fields + " from Keywords");
+        stmt.addListener(testListener);
+        epService.getEPRuntime().sendEvent(new SupportBeanKeywords());
+
+        EventBean event = testListener.assertOneGetNewAndReset();
+        String[] fieldsArr = fields.split(",");
+        for (int i = 0; i < fieldsArr.length; i++)
+        {
+            assertEquals(1, event.get(fieldsArr[i]));
+        }
     }
 
     public void testGetEventType()

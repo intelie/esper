@@ -135,6 +135,19 @@ select * from MyEvent  /* this also works */]]></programlisting>
   from MyEvent]]></programlisting>
 		</sect2>
 
+		<sect2 id="epl-syntax-keywords">
+			<title>Reserved Keywords</title>
+			<indexterm><primary>keywords</primary></indexterm>
+
+			<para>
+				Certain words such as <literal>select</literal>, <literal>delete</literal> or <literal>set</literal> are reserved and may not be used as identifiers. Please consult <xref linkend="appendix_keywords"/> for the list of reserved keywords and permitted keywords.
+			</para>
+
+			<para>
+				Names of built-in functions and certain auxiliary keywords are permitted as event property names. For example, <literal>count</literal> is acceptable as an event property name in expressions. 
+			</para>
+		</sect2>
+
     </sect1>
 
     <sect1 id="epl-select-list">

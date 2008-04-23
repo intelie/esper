@@ -19,8 +19,8 @@ public class TestInvalidSyntaxMsg extends TestCase
 
     public void testInvalidSyntax()
     {
-        tryCompile("select foo, seconds from " + SupportBeanReservedKeyword.class.getName(),
-                   "Incorrect syntax near 'seconds' (a reserved keyword) at line 1 column 12, please check the select clause [select foo, seconds from com.espertech.esper.support.bean.SupportBeanReservedKeyword]");
+        tryCompile("select foo, create from " + SupportBeanReservedKeyword.class.getName(),
+                   "Incorrect syntax near 'create' (a reserved keyword) at line 1 column 12, please check the select clause [select foo, create from com.espertech.esper.support.bean.SupportBeanReservedKeyword]");
 
         tryCompile("select * from pattern [",
                    "Unexpected end of input near '[' at line 1 column 22, please check the pattern expression within the from clause [select * from pattern []");

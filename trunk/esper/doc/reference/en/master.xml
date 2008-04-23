@@ -16,6 +16,7 @@
 	<!ENTITY extension SYSTEM "modules/extension.xml">
     <!ENTITY performance SYSTEM "modules/performance.xml">
     <!ENTITY appendix_outputspec SYSTEM "modules/appendix_outputspec.xml">
+    <!ENTITY appendix_keywords SYSTEM "modules/appendix_keywords.xml">
 ]>
 <book lang="en">
 	<bookinfo>
@@ -129,5 +130,6 @@
     
     &appendix_outputspec;
 
+    &appendix_keywords;
     <index/>
 </book>

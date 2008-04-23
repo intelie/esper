@@ -182,6 +182,7 @@ tokens
    	BOOL_TYPE;
    	NULL_TYPE;
    	NUM_DOUBLE;
+   	KEYWORD_ALLOWED_IDENT;
    	
    	EPL_EXPR;
 }
@@ -1033,12 +1034,46 @@ eventPropertyAtomic
 		
 eventPropertyIdent
   @init { String identifier = ""; } 
-	:	i1=IDENT { identifier = $i1.getText(); }
+	:	ipi=keywordAllowedIdent { identifier = ipi.getTree().toString(); }
 		(
-		  ESCAPECHAR DOT i2=IDENT? { identifier += ".";
-		  			     if ($i2 != null) identifier += $i2.getText(); }
+		  ESCAPECHAR DOT ipi2=keywordAllowedIdent? { identifier += "."; if (ipi2 != null) identifier += ipi2.getTree().toString(); }
 		)*
 	    	-> ^(IDENT[identifier])
+	;
+	
+keywordAllowedIdent
+  @init { String identifier = ""; } 
+	:	i1=IDENT { identifier = $i1.getText(); }
+		|COUNT { identifier = "count"; }
+		|ESCAPE { identifier = "escape"; }
+    		|EVERY_EXPR { identifier = "every"; }
+		|SUM { identifier = "sum"; }
+		|AVG { identifier = "avg"; }
+		|MAX { identifier = "max"; }
+		|MIN { identifier = "min"; }
+		|COALESCE { identifier = "coalesce"; }
+		|MEDIAN { identifier = "median"; }
+		|STDDEV { identifier = "stddev"; }
+		|AVEDEV { identifier = "avedev"; }
+		|EVENTS { identifier = "events"; }
+		|SECONDS { identifier = "seconds"; }
+		|MINUTES { identifier = "minutes"; }
+		|FIRST { identifier = "first"; }
+		|LAST { identifier = "last"; }
+		|UNIDIRECTIONAL { identifier = "unidirectional"; }
+		|PATTERN { identifier = "pattern"; }
+		|SQL { identifier = "sql"; }
+		|METADATASQL { identifier = "metadatasql"; }
+		|PREVIOUS { identifier = "prev"; }
+		|PRIOR { identifier = "prior"; }
+		|WEEKDAY { identifier = "weekday"; }
+		|LW { identifier = "lastweekday"; }
+		|INSTANCEOF { identifier = "instanceof"; }
+		|CAST { identifier = "cast"; }
+		|SNAPSHOT { identifier = "snapshot"; }
+		|VARIABLE { identifier = "variable"; }		
+		|WINDOW { identifier = "window"; }
+	-> ^(KEYWORD_ALLOWED_IDENT[identifier])
 	;
 		
 time_period 	

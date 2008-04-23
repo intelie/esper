@@ -35,7 +35,6 @@ public class TestEventSenderBuiltin extends TestCase
         Configuration configuration = SupportConfigFactory.getConfiguration();
         configuration.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
         configuration.addEventTypeAlias("SupportBean", SupportBean.class);
-        configuration.addEventTypeAlias("SupportBeanTwo", SupportBean.class);
         configuration.addEventTypeAlias("Marker", SupportMarkerInterface.class);
 
         epService = EPServiceProviderManager.getDefaultProvider(configuration);
@@ -45,15 +44,11 @@ public class TestEventSenderBuiltin extends TestCase
         EPStatement stmt = epService.getEPAdministrator().createEPL("select * from SupportBean");
         stmt.addListener(listener);
 
-        EPStatement stmtTwo = epService.getEPAdministrator().createEPL("select * from SupportBeanTwo");
-        stmt.addListener(listenerTwo);
-
         // send right event
         EventSender sender = epService.getEPRuntime().getEventSender("SupportBean");
         Object supportBean = new SupportBean();
         sender.sendEvent(supportBean);
         assertSame(supportBean, listener.assertOneGetNewAndReset().getUnderlying());
-        assertSame(supportBean, listenerTwo.assertOneGetNewAndReset().getUnderlying());
 
         // send wrong event
         try

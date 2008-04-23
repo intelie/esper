@@ -172,7 +172,7 @@ public class FilterStreamSpecRaw extends StreamSpecBase implements StreamSpecRaw
         }
         catch (EventAdapterException ex)
         {
-            log.info(".resolveType Event type alias '" + eventName + "' not resolved by plug-in event representations");
+            log.debug(".resolveType Event type alias '" + eventName + "' not resolved by plug-in event representations");
             // remains unresolved
         }
 
