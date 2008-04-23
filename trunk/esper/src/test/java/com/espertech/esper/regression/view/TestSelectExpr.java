@@ -37,15 +37,14 @@ public class TestSelectExpr extends TestCase
     
     public void testGraphSelect()
     {
-        EPStatement insertStmt = epService.getEPAdministrator().createEPL("insert into MyStream select nested from " + SupportBeanComplexProps.class.getName());
-        EventType eventTypeInsert = insertStmt.getEventType();
+        epService.getEPAdministrator().createEPL("insert into MyStream select nested from " + SupportBeanComplexProps.class.getName());
 
         String viewExpr = "select nested.nestedValue, nested.nestedNested.nestedNestedValue from MyStream";
         selectTestView = epService.getEPAdministrator().createEPL(viewExpr);
         selectTestView.addListener(testListener);
 
         epService.getEPRuntime().sendEvent(SupportBeanComplexProps.makeDefaultBean());
-        EventBean event = testListener.assertOneGetNewAndReset();
+        assertNotNull(testListener.assertOneGetNewAndReset());
     }
 
     public void testKeywordsAllowed()
@@ -62,6 +61,16 @@ public class TestSelectExpr extends TestCase
         {
             assertEquals(1, event.get(fieldsArr[i]));
         }
+        stmt.destroy();
+
+        stmt = epService.getEPAdministrator().createEPL("select escape as stddev, count(*) as count, last from Keywords");
+        stmt.addListener(testListener);
+        epService.getEPRuntime().sendEvent(new SupportBeanKeywords());
+
+        event = testListener.assertOneGetNewAndReset();
+        assertEquals(1, event.get("stddev"));
+        assertEquals(1L, event.get("count"));
+        assertEquals(1, event.get("last"));
     }
 
     public void testGetEventType()

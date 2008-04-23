@@ -399,6 +399,10 @@ RfidEvent(zone=1 and category=10)]]></programlisting>
 				Without the <literal>every</literal> operator the pattern subexpression stops when the pattern subexpression evaluates to true or false.
             </para>
 				
+            <para>				
+				As a side note, please be aware that a single invocation to the <literal>UpdateListener</literal> interface may deliver multiple events in one invocation, since the interface accepts an array of values.
+            </para>
+
             <para>
 				Thus the <literal>every</literal> operator works like a factory for the pattern subexpression contained within. When the pattern subexpression within it 
 				fires and thus quits checking for events, the <literal>every</literal> causes the start of a new pattern subexpression listening for more occurances of the same

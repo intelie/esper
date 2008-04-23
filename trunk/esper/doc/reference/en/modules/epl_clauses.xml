@@ -144,7 +144,23 @@ select * from MyEvent  /* this also works */]]></programlisting>
 			</para>
 
 			<para>
-				Names of built-in functions and certain auxiliary keywords are permitted as event property names. For example, <literal>count</literal> is acceptable as an event property name in expressions. 
+				Names of built-in functions and certain auxiliary keywords are permitted as event property names and in the rename syntax of the <literal>select</literal> clause. For example, <literal>count</literal> is acceptable. 
+			</para>
+			
+			<para>
+				Consider the example below, which assumes that <literal>'last'</literal> is an event property of MyEvent:
+			</para>
+			<programlisting><![CDATA[// valid
+select last, count(*) as count from MyEvent]]></programlisting>
+		
+			<para>
+				This example shows an incorrect use of a reserved keyword:
+			</para>
+			<programlisting><![CDATA[// invalid
+select insert from MyEvent]]></programlisting>
+
+			<para>
+				EPL does not offer an escape syntax for reserved keywords.
 			</para>
 		</sect2>
 

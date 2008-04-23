@@ -182,7 +182,6 @@ tokens
    	BOOL_TYPE;
    	NULL_TYPE;
    	NUM_DOUBLE;
-   	KEYWORD_ALLOWED_IDENT;
    	
    	EPL_EXPR;
 }
@@ -569,10 +568,13 @@ selectionList
 	;
 
 selectionListElement
+  @init { String identifier = null; } 
 	:   	s=STAR -> WILDCARD_SELECT[$s]
 	|	(streamSelector) => streamSelector
-	|	expression (AS i=IDENT)?
-		-> ^(SELECTION_ELEMENT_EXPR expression $i?)
+	|	expression (AS i=keywordAllowedIdent { identifier = i.getTree().toString(); } )?
+		-> {identifier != null}? ^(SELECTION_ELEMENT_EXPR expression IDENT[identifier])
+		-> {identifier == null}? ^(SELECTION_ELEMENT_EXPR expression)
+		-> ^(SELECTION_ELEMENT_EXPR expression)
 	;
 	
 streamSelector
@@ -1073,7 +1075,7 @@ keywordAllowedIdent
 		|SNAPSHOT { identifier = "snapshot"; }
 		|VARIABLE { identifier = "variable"; }		
 		|WINDOW { identifier = "window"; }
-	-> ^(KEYWORD_ALLOWED_IDENT[identifier])
+	-> ^(IDENT[identifier])
 	;
 		
 time_period 	
