@@ -7,20 +7,138 @@ import com.espertech.esper.client.EPStatement;
 import com.espertech.esper.client.soda.*;
 import com.espertech.esper.event.EventBean;
 import com.espertech.esper.support.bean.SupportBean;
+import com.espertech.esper.support.bean.SupportBeanComplexProps;
+import com.espertech.esper.support.bean.SupportBeanArrayCollMap;
 import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.support.util.SupportUpdateListener;
+import com.espertech.esper.support.util.ArrayAssertionUtil;
 import com.espertech.esper.util.SerializableObjectCopier;
 
 public class TestInBetweenLikeExpr extends TestCase
 {
     private EPServiceProvider epService;
     private SupportUpdateListener testListener;
+    private SupportUpdateListener testListenerTwo;
 
     public void setUp()
     {
         testListener = new SupportUpdateListener();
+        testListenerTwo = new SupportUpdateListener();
         epService = EPServiceProviderManager.getDefaultProvider(SupportConfigFactory.getConfiguration());
         epService.initialize();
+    }
+
+    public void testInCollection()
+    {
+        String stmtText = "select 10 in (arrayProperty) as result from " + SupportBeanComplexProps.class.getName();
+        EPStatement stmt = epService.getEPAdministrator().createEPL(stmtText);
+        stmt.addListener(testListener);
+        assertEquals(Boolean.class, stmt.getEventType().getPropertyType("result"));
+
+        stmtText = "select 5 in (arrayProperty) as result from " + SupportBeanComplexProps.class.getName();
+        EPStatement selectTestCaseTwo = epService.getEPAdministrator().createEPL(stmtText);
+        selectTestCaseTwo.addListener(testListenerTwo);
+
+        epService.getEPRuntime().sendEvent(SupportBeanComplexProps.makeDefaultBean());
+        assertEquals(true, testListener.assertOneGetNewAndReset().get("result"));
+        assertEquals(false, testListenerTwo.assertOneGetNewAndReset().get("result"));
+
+        stmt.stop();
+        selectTestCaseTwo.stop();
+
+        // Arrays
+        stmtText = "select 1 in (intArr, longArr) as resOne, 1 not in (intArr, longArr) as resTwo from " + SupportBeanArrayCollMap.class.getName();
+        stmt = epService.getEPAdministrator().createEPL(stmtText);
+        stmt.addListener(testListener);
+
+        String fields[] = "resOne, resTwo".split(",");
+        epService.getEPRuntime().sendEvent(new SupportBeanArrayCollMap(new int[] {10, 20, 30}));
+        ArrayAssertionUtil.assertProps(testListener.assertOneGetNewAndReset(), fields, new Object[] {false, true});
+        epService.getEPRuntime().sendEvent(new SupportBeanArrayCollMap(new int[] {10, 1, 30}));
+        ArrayAssertionUtil.assertProps(testListener.assertOneGetNewAndReset(), fields, new Object[] {true, false});
+        epService.getEPRuntime().sendEvent(new SupportBeanArrayCollMap(new int[] { 30}, new Long[] {20L, 1L}));
+        ArrayAssertionUtil.assertProps(testListener.assertOneGetNewAndReset(), fields, new Object[] {true, false});
+        epService.getEPRuntime().sendEvent(new SupportBeanArrayCollMap(new int[] {}, new Long[] {null, 1L}));
+        ArrayAssertionUtil.assertProps(testListener.assertOneGetNewAndReset(), fields, new Object[] {true, false});
+        epService.getEPRuntime().sendEvent(new SupportBeanArrayCollMap(null, new Long[] {1L, 100L}));
+        ArrayAssertionUtil.assertProps(testListener.assertOneGetNewAndReset(), fields, new Object[] {true, false});
+        epService.getEPRuntime().sendEvent(new SupportBeanArrayCollMap(null, new Long[] {0L, 100L}));
+        ArrayAssertionUtil.assertProps(testListener.assertOneGetNewAndReset(), fields, new Object[] {false, true});
+        stmt.destroy();
+
+        // Collection
+        stmtText = "select 1 in (intCol, longCol) as resOne, 1 not in (longCol, intCol) as resTwo from " + SupportBeanArrayCollMap.class.getName();
+        stmt = epService.getEPAdministrator().createEPL(stmtText);
+        stmt.addListener(testListener);
+
+        epService.getEPRuntime().sendEvent(new SupportBeanArrayCollMap(true, new int[] {10, 20, 30}, null));
+        ArrayAssertionUtil.assertProps(testListener.assertOneGetNewAndReset(), fields, new Object[] {false, true});
+        epService.getEPRuntime().sendEvent(new SupportBeanArrayCollMap(true, new int[] {10, 20, 1}, null));
+        ArrayAssertionUtil.assertProps(testListener.assertOneGetNewAndReset(), fields, new Object[] {true, false});
+        epService.getEPRuntime().sendEvent(new SupportBeanArrayCollMap(true, new int[] { 30}, new Long[] {20L, 1L}));
+        ArrayAssertionUtil.assertProps(testListener.assertOneGetNewAndReset(), fields, new Object[] {false, true});
+        epService.getEPRuntime().sendEvent(new SupportBeanArrayCollMap(true, new int[] {}, new Long[] {null, 1L}));
+        ArrayAssertionUtil.assertProps(testListener.assertOneGetNewAndReset(), fields, new Object[] {false, true});
+        epService.getEPRuntime().sendEvent(new SupportBeanArrayCollMap(true, null, new Long[] {1L, 100L}));
+        ArrayAssertionUtil.assertProps(testListener.assertOneGetNewAndReset(), fields, new Object[] {false, true});
+        stmt.destroy();
+
+        // Maps
+        stmtText = "select 1 in (longMap, intMap) as resOne, 1 not in (longMap, intMap) as resTwo from " + SupportBeanArrayCollMap.class.getName();
+        stmt = epService.getEPAdministrator().createEPL(stmtText);
+        stmt.addListener(testListener);
+
+        epService.getEPRuntime().sendEvent(new SupportBeanArrayCollMap(false, new int[] {10, 20, 30}, null));
+        ArrayAssertionUtil.assertProps(testListener.assertOneGetNewAndReset(), fields, new Object[] {false, true});
+        epService.getEPRuntime().sendEvent(new SupportBeanArrayCollMap(false, new int[] {10, 20, 1}, null));
+        ArrayAssertionUtil.assertProps(testListener.assertOneGetNewAndReset(), fields, new Object[] {true, false});
+        epService.getEPRuntime().sendEvent(new SupportBeanArrayCollMap(false, new int[] { 30}, new Long[] {20L, 1L}));
+        ArrayAssertionUtil.assertProps(testListener.assertOneGetNewAndReset(), fields, new Object[] {false, true});
+        epService.getEPRuntime().sendEvent(new SupportBeanArrayCollMap(false, new int[] {}, new Long[] {null, 1L}));
+        ArrayAssertionUtil.assertProps(testListener.assertOneGetNewAndReset(), fields, new Object[] {false, true});
+        epService.getEPRuntime().sendEvent(new SupportBeanArrayCollMap(false, null, new Long[] {1L, 100L}));
+        ArrayAssertionUtil.assertProps(testListener.assertOneGetNewAndReset(), fields, new Object[] {false, true});
+        stmt.destroy();
+
+        // Mixed
+        stmtText = "select 1 in (longBoxed, intArr, longMap, intCol) as resOne, 1 not in (longBoxed, intArr, longMap, intCol) as resTwo from " + SupportBeanArrayCollMap.class.getName();
+        stmt = epService.getEPAdministrator().createEPL(stmtText);
+        stmt.addListener(testListener);
+
+        epService.getEPRuntime().sendEvent(new SupportBeanArrayCollMap(1L, new int[0], new Long[0], new int[0]));
+        ArrayAssertionUtil.assertProps(testListener.assertOneGetNewAndReset(), fields, new Object[] {true, false});
+        epService.getEPRuntime().sendEvent(new SupportBeanArrayCollMap(2L, null, new Long[0], new int[0]));
+        ArrayAssertionUtil.assertProps(testListener.assertOneGetNewAndReset(), fields, new Object[] {false, true});
+        epService.getEPRuntime().sendEvent(new SupportBeanArrayCollMap(null, null, null, new int[] {3,4,5,6,7,7,7,8,8,8,1}));
+        ArrayAssertionUtil.assertProps(testListener.assertOneGetNewAndReset(), fields, new Object[] {true, false});
+        epService.getEPRuntime().sendEvent(new SupportBeanArrayCollMap(-1L, null, new Long[] {1L}, new int[] {3,4,5,6,7,7,7,8,8}));
+        ArrayAssertionUtil.assertProps(testListener.assertOneGetNewAndReset(), fields, new Object[] {false, true});
+        epService.getEPRuntime().sendEvent(new SupportBeanArrayCollMap(-1L, new int[] {1}, null, new int[] {}));
+        ArrayAssertionUtil.assertProps(testListener.assertOneGetNewAndReset(), fields, new Object[] {true, false});
+        stmt.destroy();
+
+        // Object array
+        stmtText = "select 1 in (objectArr) as resOne, 2 in (objectArr) as resTwo from " + SupportBeanArrayCollMap.class.getName();
+        stmt = epService.getEPAdministrator().createEPL(stmtText);
+        stmt.addListener(testListener);
+
+        epService.getEPRuntime().sendEvent(new SupportBeanArrayCollMap(new Object[] {}));
+        ArrayAssertionUtil.assertProps(testListener.assertOneGetNewAndReset(), fields, new Object[] {false, false});
+        epService.getEPRuntime().sendEvent(new SupportBeanArrayCollMap(new Object[] {1, 2}));
+        ArrayAssertionUtil.assertProps(testListener.assertOneGetNewAndReset(), fields, new Object[] {true, true});
+        epService.getEPRuntime().sendEvent(new SupportBeanArrayCollMap(new Object[] {1d, 2L}));
+        ArrayAssertionUtil.assertProps(testListener.assertOneGetNewAndReset(), fields, new Object[] {false, false});
+        epService.getEPRuntime().sendEvent(new SupportBeanArrayCollMap(new Object[] {null, 2}));
+        ArrayAssertionUtil.assertProps(testListener.assertOneGetNewAndReset(), fields, new Object[] {false, true});
+        stmt.destroy();
+
+        // Object array
+        stmtText = "select 1 in ({1,2,3}) as resOne, 2 in ({0, 1}) as resTwo from " + SupportBeanArrayCollMap.class.getName();
+        stmt = epService.getEPAdministrator().createEPL(stmtText);
+        stmt.addListener(testListener);
+
+        epService.getEPRuntime().sendEvent(new SupportBeanArrayCollMap(new Object[] {}));
+        ArrayAssertionUtil.assertProps(testListener.assertOneGetNewAndReset(), fields, new Object[] {true, false});
     }
 
     public void testInStringExprOM() throws Exception

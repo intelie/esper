@@ -221,7 +221,7 @@
 			</para>
 				
 			<para>
-				The result of an <literal>in</literal> expression is of type <literal>Boolean</literal>. If the value of <emphasis>test_expression</emphasis> is equal to any expression from the comma-separated list, the result value is <literal>true</literal>. Otherwise, the result value is <literal>false</literal>. All expressions must be of the same type as or a compatible type to <emphasis>test_expression</emphasis>.
+				The result of an <literal>in</literal> expression is of type <literal>Boolean</literal>. If the value of <emphasis>test_expression</emphasis> is equal to any expression from the comma-separated list, the result value is <literal>true</literal>. Otherwise, the result value is <literal>false</literal>. 
 			</para>
 
 			<para>
@@ -232,6 +232,32 @@
 				The statement is equivalent to:
 			</para>
 			<programlisting><![CDATA[select * from RFIDEvent where command = 'OBSERVATION' or command = 'SIGNAL']]></programlisting>
+
+			<para>
+				<emphasis>Expression</emphasis> may also return an array, a <literal>java.util.Collection</literal> or a <literal>java.util.Map</literal>. Thus event properties that are lists, sets or maps may provide values to compare against <emphasis>test_expression</emphasis>.
+			</para>
+
+			<para>
+				All expressions must be of the same type or a compatible type to <emphasis>test_expression</emphasis>. The <literal>in</literal> keyword may coerce number values to compatible types. If <emphasis>expression</emphasis> returns an array, then the component type of the array must be compatible, unless the component type of the array is <literal>Object</literal>.
+			</para>
+
+			<para>
+				If <emphasis>expression</emphasis> returns an array of component type <literal>Object</literal>, the operation compares each element of the array, applying <literal>equals</literal> semantics.
+			</para>
+			<para>
+				If <emphasis>expression</emphasis> returns a <literal>Collection</literal>, the operation determines if the collection contains the value returned by <emphasis>test_expression</emphasis>,  applying <literal>contains</literal> semantics. 
+			</para>
+			<para>
+				If <emphasis>expression</emphasis> returns a <literal>Map</literal>, the operation determines if the map contains the key value returned by <emphasis>test_expression</emphasis>, applying <literal>containsKey</literal> semantics.
+			</para>
+
+			<para>
+				 Constants, arrays, <literal>Collection</literal> and <literal>Map</literal> expressions or event properties can be used combined.
+			</para>
+			<para>
+				 For example, and assuming a property named 'mySpecialCmdList'  exists that contains a list of command strings:
+			</para>
+			<programlisting><![CDATA[select * from RFIDEvent where command in ( 'OBSERVATION', 'SIGNAL', mySpecialCmdList)]]></programlisting>
 		</sect1>		
 
 		<sect1 id="epl-operator-ref-keyword-between">

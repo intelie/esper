@@ -16,9 +16,8 @@ import com.espertech.esper.util.JavaClassHelper;
 import com.espertech.esper.util.CoercionException;
 import com.espertech.esper.schedule.TimeProvider;
 
-import java.util.List;
-import java.util.LinkedList;
-import java.util.Iterator;
+import java.util.*;
+import java.lang.reflect.Array;
 
 /**
  * Represents the in-clause (set check) function in an expression tree.
@@ -29,6 +28,9 @@ public class ExprInNode extends ExprNode
 
     private Class coercionType;
     private boolean mustCoerce;
+    private boolean hasCollection;
+    private boolean[] isMap;
+    private boolean[] isCollection;
 
     /**
      * Ctor.
@@ -58,12 +60,42 @@ public class ExprInNode extends ExprNode
         List<Class> comparedTypes = new LinkedList<Class>();
         for (int i = 0; i < this.getChildNodes().size(); i++)
         {
-            comparedTypes.add(this.getChildNodes().get(i).getType());
+            Class propType = this.getChildNodes().get(i).getType();
+            if ((propType != null) && (propType.isArray()))
+            {
+                hasCollection = true;
+                if (propType.getComponentType() != Object.class)
+                {
+                    comparedTypes.add(propType.getComponentType());
+                }
+            }
+            else if ((propType != null) && (JavaClassHelper.isImplementsInterface(propType, Collection.class)))
+            {
+                hasCollection = true;
+                if (isCollection == null)
+                {
+                    isCollection = new boolean[this.getChildNodes().size()];
+                }
+                isCollection[i] = true;
+            }
+            else if ((propType != null) && (JavaClassHelper.isImplementsInterface(propType, Map.class)))
+            {
+                hasCollection = true;
+                if (isMap == null)
+                {
+                    isMap = new boolean[this.getChildNodes().size()];
+                }
+                isMap[i] = true;
+            }
+            else
+            {
+                comparedTypes.add(propType);
+            }
         }
 
         // Determine common denominator type
         try {
-            coercionType = JavaClassHelper.getCommonCoercionType(comparedTypes.toArray(new Class[0]));
+            coercionType = JavaClassHelper.getCommonCoercionType(comparedTypes.toArray(new Class[comparedTypes.size()]));
 
             // Determine if we need to coerce numbers when one type doesn't match any other type
             if (JavaClassHelper.isNumeric(coercionType))
@@ -71,9 +103,10 @@ public class ExprInNode extends ExprNode
                 mustCoerce = false;
                 for (Class comparedType : comparedTypes)
                 {
-                    if (comparedType != coercionType)
+                    if (JavaClassHelper.getBoxedType(comparedType) != JavaClassHelper.getBoxedType(coercionType))
                     {
                         mustCoerce = true;
+                        break;
                     }
                 }
             }
@@ -105,17 +138,36 @@ public class ExprInNode extends ExprNode
         Object inPropResult = it.next().evaluate(eventsPerStream, isNewData);
 
         boolean matched = false;
-        do
+        if (!hasCollection)
         {
-            ExprNode inSetValueExpr = it.next();
-            Object subExprResult = inSetValueExpr.evaluate(eventsPerStream, isNewData);
+            // handle value-by-value compare
+            do
+            {
+                ExprNode inSetValueExpr = it.next();
+                Object subExprResult = inSetValueExpr.evaluate(eventsPerStream, isNewData);
 
-            if (compare(inPropResult, subExprResult)) {
-                matched = true;
-                break;
+                if (compare(inPropResult, subExprResult)) {
+                    matched = true;
+                    break;
+                }
             }
+            while (it.hasNext());
         }
-        while (it.hasNext());
+        else
+        {
+            int index = 1;  // right-side nodes start at 1
+            do
+            {
+                ExprNode inSetValueExpr = it.next();
+                Object subExprResult = inSetValueExpr.evaluate(eventsPerStream, isNewData);
+                if (compareCollectionable(inPropResult, subExprResult, index)) {
+                    matched = true;
+                    break;
+                }
+                index++;
+            }
+            while (it.hasNext());
+        }
 
         if (isNotIn)
         {
@@ -190,5 +242,62 @@ public class ExprInNode extends ExprNode
             Number right = JavaClassHelper.coerceBoxed((Number) rightResult, coercionType);
             return left.equals(right);
         }
+    }
+
+    private boolean compareCollectionable(Object leftResult, Object rightResult, int index)
+    {
+        if (leftResult == null)
+        {
+            return (rightResult == null);
+        }
+        if (rightResult == null)
+        {
+            return false;
+        }
+
+        if (rightResult.getClass().isArray())
+        {
+            if (mustCoerce)
+            {
+                leftResult = JavaClassHelper.coerceBoxed((Number) leftResult, coercionType);
+            }
+            for (int i = 0; i < Array.getLength(rightResult); i++)
+            {
+                Object value = Array.get(rightResult, i);
+                if ((value != null) && (leftResult.equals(value)))
+                {
+                    return true;
+                }
+                if (mustCoerce && (value != null) && (value instanceof Number))
+                {
+                    Number right = JavaClassHelper.coerceBoxed((Number) value, coercionType);
+                    if (leftResult.equals(right))
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+        else if (isMap != null && isMap[index])
+        {
+            Map map = (Map) rightResult;
+            return map.containsKey(leftResult);
+        }
+        else if (isCollection != null && isCollection[index])
+        {
+            Collection coll = (Collection) rightResult;
+            return coll.contains(leftResult);
+        }
+        else
+        {
+            if (mustCoerce)
+            {
+                leftResult = JavaClassHelper.coerceBoxed((Number) leftResult, coercionType);
+                rightResult = JavaClassHelper.coerceBoxed((Number) rightResult, coercionType);
+            }
+            return leftResult.equals(rightResult);
+        }
+
     }
 }
