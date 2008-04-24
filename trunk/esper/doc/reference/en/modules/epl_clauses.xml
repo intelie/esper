@@ -1067,6 +1067,11 @@ select symbol, sum(price) from StockTickEvent.std:groupby(symbol).win:length(10)
 				<synopsis>output [all | first | last | snapshot] every <emphasis>output_rate</emphasis> [minutes | seconds | events]</synopsis>
 
 				<para>
+					An alternate syntax specifies the time period as outlined in <xref linkend="epl-syntax-time-periods"/> :
+				</para>
+				<synopsis>output [all | first | last | snapshot] every <emphasis>time_period</emphasis></synopsis>
+
+				<para>
 					The <literal>all</literal> keyword is the default and specifies that all events in a batch should be output, each incoming row in the batch producing an output row.
 					Note that for statements that group via the <literal>group by</literal> clause, the <literal>all</literal> keyword provides special behavior as below.
 				</para>

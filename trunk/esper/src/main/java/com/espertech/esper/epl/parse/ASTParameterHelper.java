@@ -66,7 +66,7 @@ public class ASTParameterHelper
         }
     }
 
-    private static TimePeriodParameter makeTimePeriod(Tree node, long engineTime)
+    protected static TimePeriodParameter makeTimePeriod(Tree node, long engineTime)
     {
         double result = 0;
         for (int i = 0; i < node.getChildCount(); i++)

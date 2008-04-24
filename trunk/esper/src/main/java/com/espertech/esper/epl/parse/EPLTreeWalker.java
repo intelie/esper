@@ -240,6 +240,7 @@ public class EPLTreeWalker extends EsperEPL2Ast
             case EVENT_LIMIT_EXPR:
             case SEC_LIMIT_EXPR:
             case MIN_LIMIT_EXPR:
+            case TIMEPERIOD_LIMIT_EXPR:
             	leaveOutputLimit(node);
             	break;
             case INSERTINTO_EXPR:

@@ -132,6 +132,7 @@ tokens
    	EVENT_LIMIT_EXPR;
 	SEC_LIMIT_EXPR;
 	MIN_LIMIT_EXPR;
+	TIMEPERIOD_LIMIT_EXPR;
 	INSERTINTO_EXPR;
 	INSERTINTO_EXPRCOL;
 	CONCAT;	
@@ -644,10 +645,15 @@ havingClause
 outputLimit
 @init  { paraphrases.push("output rate clause"); }
 @after { paraphrases.pop(); }
-	:   (k=ALL|k=FIRST|k=LAST|k=SNAPSHOT)? EVERY_EXPR (number | i=IDENT) (e=EVENTS|sec=SECONDS|min=MINUTES)
+	:   (k=ALL|k=FIRST|k=LAST|k=SNAPSHOT)? EVERY_EXPR 
+		( 
+		  (time_period) => time_period
+		| (number | i=IDENT) (e=EVENTS|sec=SECONDS|min=MINUTES)
+		)
 	    -> {$e != null}? ^(EVENT_LIMIT_EXPR $k? number? $i?)
 	    -> {$sec != null}? ^(SEC_LIMIT_EXPR $k? number? $i?)
-	    -> ^(MIN_LIMIT_EXPR $k? number? $i?)		
+	    -> {$min != null}? ^(MIN_LIMIT_EXPR $k? number? $i?)
+	    -> ^(TIMEPERIOD_LIMIT_EXPR $k? time_period)		
 	;	
 
 whenClause

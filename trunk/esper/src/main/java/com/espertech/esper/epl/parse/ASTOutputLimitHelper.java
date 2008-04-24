@@ -11,6 +11,7 @@ import com.espertech.esper.epl.spec.OutputLimitSpec;
 import com.espertech.esper.epl.spec.OutputLimitLimitType;
 import com.espertech.esper.epl.spec.OutputLimitRateType;
 import com.espertech.esper.epl.generated.EsperEPL2GrammarParser;
+import com.espertech.esper.type.TimePeriodParameter;
 import org.antlr.runtime.tree.Tree;
 
 /**
@@ -29,6 +30,7 @@ public class ASTOutputLimitHelper
         int count = 0;
         Tree child = node.getChild(count);
 
+        // parse type
         OutputLimitLimitType displayLimit = OutputLimitLimitType.DEFAULT;
         if (child.getType() == EsperEPL2GrammarParser.FIRST)
         {
@@ -51,11 +53,17 @@ public class ASTOutputLimitHelper
             child = node.getChild(++count);
         }
 
+        // next is a variable, or time period, or number
         String variableName = null;
         double rate = -1;
         if (child.getType() == EsperEPL2GrammarParser.IDENT)
         {
             variableName = child.getText();
+        }
+        else if (child.getType() == EsperEPL2GrammarParser.TIME_PERIOD)
+        {
+            TimePeriodParameter param = ASTParameterHelper.makeTimePeriod(child, 0L);
+            rate = param.getNumSeconds();
         }
         else
         {
@@ -67,9 +75,11 @@ public class ASTOutputLimitHelper
             case EsperEPL2GrammarParser.EVENT_LIMIT_EXPR:
                 return new OutputLimitSpec(rate, variableName, OutputLimitRateType.EVENTS, displayLimit);
             case EsperEPL2GrammarParser.SEC_LIMIT_EXPR:
+            case EsperEPL2GrammarParser.TIMEPERIOD_LIMIT_EXPR:
                 return new OutputLimitSpec(rate, variableName, OutputLimitRateType.TIME_SEC, displayLimit);
             case EsperEPL2GrammarParser.MIN_LIMIT_EXPR:
                 return new OutputLimitSpec(rate, variableName, OutputLimitRateType.TIME_MIN, displayLimit);
+            // TODO
             default:
                 throw new IllegalArgumentException("Node type " + node.getType() + " not a recognized output limit type");
 		 }

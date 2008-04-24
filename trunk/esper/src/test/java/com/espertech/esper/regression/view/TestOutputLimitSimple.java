@@ -4,6 +4,7 @@ import junit.framework.TestCase;
 import com.espertech.esper.client.*;
 import com.espertech.esper.client.time.TimerControlEvent;
 import com.espertech.esper.client.time.CurrentTimeEvent;
+import com.espertech.esper.client.time.TimerEvent;
 import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.bean.SupportBeanString;
 import com.espertech.esper.support.bean.SupportBean_A;
@@ -189,6 +190,24 @@ public class TestOutputLimitSimple extends TestCase
                             "from MarketData.win:time(5.5 sec) " +
                             "output snapshot every 1 seconds";
         runAssertion18(stmtText, "first");
+    }
+
+    public void testOutputEveryTimePeriod()
+    {
+        epService.getEPRuntime().sendEvent(new CurrentTimeEvent(2000));
+
+        String stmtText = "select symbol from MarketData.win:keepall() output snapshot every 1 day 2 hours 3 minutes 4 seconds 5 milliseconds";
+        EPStatement stmt = epService.getEPAdministrator().createEPL(stmtText);
+        stmt.addListener(listener);
+        sendMDEvent("E1", 0);
+
+        long deltaSec = 26 * 60 * 60 + 3 * 60 + 4;
+        long deltaMSec = deltaSec * 1000 + 5 + 2000;
+        epService.getEPRuntime().sendEvent(new CurrentTimeEvent(deltaMSec - 1));
+        assertFalse(listener.isInvoked());
+
+        epService.getEPRuntime().sendEvent(new CurrentTimeEvent(deltaMSec));
+        assertEquals("E1", listener.assertOneGetNewAndReset().get("symbol"));
     }
 
     private void runAssertion34(String stmtText, String outputLimit)
