@@ -75,6 +75,7 @@ public class TestConfigurationParser extends TestCase
         assertEquals("MyNoSchemaEvent", noSchemaDesc.getRootElementName());
         assertEquals("/myevent/element1", noSchemaDesc.getXPathProperties().get("element1").getXpath());
         assertEquals(XPathConstants.NUMBER, noSchemaDesc.getXPathProperties().get("element1").getType());
+        assertEquals(null, noSchemaDesc.getXPathProperties().get("element1").getOptionalCastToType());
 
         // assert XML DOM - with schema
         ConfigurationEventTypeXMLDOM schemaDesc = config.getEventTypesXMLDOM().get("MySchemaXMLEventAlias");
@@ -82,8 +83,9 @@ public class TestConfigurationParser extends TestCase
         assertEquals("MySchemaXMLEvent.xsd", schemaDesc.getSchemaResource());
         assertEquals("samples:schemas:simpleSchema", schemaDesc.getRootElementNamespace());
         assertEquals("default-name-space", schemaDesc.getDefaultNamespace());
-        assertEquals("/myevent/element1", schemaDesc.getXPathProperties().get("element1").getXpath());
-        assertEquals(XPathConstants.NUMBER, schemaDesc.getXPathProperties().get("element1").getType());
+        assertEquals("/myevent/element2", schemaDesc.getXPathProperties().get("element2").getXpath());
+        assertEquals(XPathConstants.STRING, schemaDesc.getXPathProperties().get("element2").getType());
+        assertEquals(Long.class, schemaDesc.getXPathProperties().get("element2").getOptionalCastToType());
         assertEquals(1, schemaDesc.getNamespacePrefixes().size());
         assertEquals("samples:schemas:simpleSchema", schemaDesc.getNamespacePrefixes().get("ss"));
         assertFalse(schemaDesc.isResolvePropertiesAbsolute());

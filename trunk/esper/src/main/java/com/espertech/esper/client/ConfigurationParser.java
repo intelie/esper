@@ -258,6 +258,7 @@ class ConfigurationParser {
             {
                 String propertyName = propertyElement.getAttributes().getNamedItem("property-name").getTextContent();
                 String xPath = propertyElement.getAttributes().getNamedItem("xpath").getTextContent();
+
                 String propertyType = propertyElement.getAttributes().getNamedItem("type").getTextContent();
                 QName xpathConstantType;
                 if (propertyType.toUpperCase().equals("NUMBER"))
@@ -277,7 +278,14 @@ class ConfigurationParser {
                     throw new IllegalArgumentException("Invalid xpath property type for property '" +
                         propertyName + "' and type '" + propertyType + '\'');
                 }
-                xmlDOMEventTypeDesc.addXPathProperty(propertyName, xPath, xpathConstantType);
+
+                String castToClass = null;
+                if (propertyElement.getAttributes().getNamedItem("cast") != null)
+                {
+                    castToClass = propertyElement.getAttributes().getNamedItem("cast").getTextContent();
+                }
+
+                xmlDOMEventTypeDesc.addXPathProperty(propertyName, xPath, xpathConstantType, castToClass);
             }
         }
     }

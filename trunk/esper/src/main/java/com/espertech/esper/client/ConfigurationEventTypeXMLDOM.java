@@ -8,8 +8,11 @@
 package com.espertech.esper.client;
 
 import com.espertech.esper.util.MetaDefItem;
+import com.espertech.esper.util.JavaClassHelper;
+import com.espertech.esper.event.EventAdapterException;
 
 import javax.xml.namespace.QName;
+import javax.xml.xpath.XPathConstants;
 import java.util.Map;
 import java.util.HashMap;
 import java.io.Serializable;
@@ -158,6 +161,32 @@ public class ConfigurationEventTypeXMLDOM implements MetaDefItem, Serializable
     }
 
     /**
+     * Adds an event property for which the engine uses the supplied XPath expression against
+     * a DOM document node to resolve a property value.
+     * @param name of the event property
+     * @param xpath is an arbitrary xpath expression
+     */
+    public void addXPathProperty(String name, String xpath, QName type, String castToType)
+    {
+        Class castToTypeClass = null;
+
+        if (castToType != null)
+        {
+            try
+            {
+                castToTypeClass = JavaClassHelper.getClassForSimpleName(castToType);
+            }
+            catch (EventAdapterException ex)
+            {
+                throw new ConfigurationException("Invalid cast-to type for xpath expression named '" + name + "': " + ex.getMessage());
+            }
+        }
+
+        XPathPropertyDesc desc = new XPathPropertyDesc(name, xpath, type, castToTypeClass);
+        xPathProperties.put(name, desc);
+    }
+
+    /**
      * Returns the namespace prefixes in a map of prefix as key and namespace name as value.
      * @return namespace prefixes
      */
@@ -209,6 +238,7 @@ public class ConfigurationEventTypeXMLDOM implements MetaDefItem, Serializable
         private String name;
         private String xpath;
         private QName type;
+        private Class optionalCastToType;
 
         /**
          * Ctor.
@@ -221,6 +251,20 @@ public class ConfigurationEventTypeXMLDOM implements MetaDefItem, Serializable
             this.name = name;
             this.xpath = xpath;
             this.type = type;
+        }
+
+        /**
+         * Ctor.
+         * @param name is the event property name
+         * @param xpath is an arbitrary XPath expression
+         * @param type is a javax.xml.xpath.XPathConstants constant
+         */
+        public XPathPropertyDesc(String name, String xpath, QName type, Class optionalCastToType)
+        {
+            this.name = name;
+            this.xpath = xpath;
+            this.type = type;
+            this.optionalCastToType = optionalCastToType;
         }
 
         /**
@@ -248,6 +292,11 @@ public class ConfigurationEventTypeXMLDOM implements MetaDefItem, Serializable
         public QName getType()
         {
             return type;
+        }
+
+        public Class getOptionalCastToType()
+        {
+            return optionalCastToType;
         }
     }
 

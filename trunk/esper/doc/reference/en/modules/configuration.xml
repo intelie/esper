@@ -367,61 +367,8 @@ config.addEventTypeAlias("MyLegacyEvent", MyLegacyEventClass.class.getName(), le
 			</para>
 
 			<para>
-				The valid list of values for the type definition via the <literal>class</literal> attribute is:
+				The valid types for the <literal>class</literal> attribute are listed in <xref linkend="configuration-type-names"/>. In addition, any fully-qualified Java class name that can be resolved via <literal>Class.forName</literal> is allowed.
 			</para>
-
-			<itemizedlist spacing="compact">
-				<listitem>
-					<para>
-						<literal>string</literal> or <literal>java.lang.String</literal>
-					</para>
-				</listitem>
-				<listitem>
-					<para>
-						<literal>char</literal> or <literal>java.lang.Character</literal>
-					</para>
-				</listitem>
-				<listitem>
-					<para>
-						<literal>byte</literal> or <literal>java.lang.Byte</literal>
-					</para>
-				</listitem>
-				<listitem>
-					<para>
-						<literal>short</literal> or <literal>java.lang.Short</literal>
-					</para>
-				</listitem>
-				<listitem>
-					<para>
-						<literal>int</literal> or <literal>java.lang.Integer</literal>
-					</para>
-				</listitem>
-				<listitem>
-					<para>
-						<literal>long</literal> or <literal>java.lang.Long</literal>
-					</para>
-				</listitem>
-				<listitem>
-					<para>
-						<literal>float</literal> or <literal>java.lang.Float</literal>
-					</para>
-				</listitem>
-				<listitem>
-					<para>
-						<literal>double</literal> or <literal>java.lang.Double</literal>
-					</para>
-				</listitem>
-				<listitem>
-					<para>
-						<literal>boolean</literal> or <literal>java.lang.Boolean</literal>
-					</para>
-				</listitem>
-				<listitem>
-					<para>
-						Any fully-qualified Java class name that can be resolved by the engine via <literal>Class.forName</literal>
-					</para>
-				</listitem>
-			</itemizedlist>
 
 			<para>
 				 You can also use the configuration API to configure <literal>Map</literal> event types, as the short code snippet below demonstrates:
@@ -580,6 +527,23 @@ configuration.addEventTypeAlias("MyXMLNodeEvent", desc);]]></programlisting>
 					</listitem>
 				</itemizedlist>
 				
+				<para>
+					 In case you need your XPath expression to return a type other then the types listed above, an optional cast-to type can be specified. If specified, the operation firsts obtains the result of the XPath expression as the defined type (number, string, boolean) and then casts or parses the returned type to the specified cast-to-type. At runtime, a warning message is logged if the XPath expression returns a result object that cannot be casted or parsed.
+				</para>
+
+				<para>
+					 The next line shows how to return a long-type property for an XPath expression that returns a string:
+				</para>
+				<programlisting><![CDATA[desc.addXPathProperty("name", "/element/sub", XPathConstants.STRING, "long");]]></programlisting>
+	
+				<para>
+					 The equivalent configuration XML is:
+				</para>
+				<programlisting><![CDATA[<xpath-property property-name="name"  xpath="/element/sub" type="string" cast="long"/>]]></programlisting>
+
+				<para>
+				  See <xref linkend="configuration-type-names"/> for a list of cast-to type names.
+				</para>
 		  </sect3>
 		  
 			<sect3 id="config-xml-dom-absolute" revision="1">
@@ -775,6 +739,10 @@ config.addImport("com.mycompany.mypackage.MyLib");   // class import]]></program
 
 		<programlisting><![CDATA[<variable name="var_threshold" type="long" initialization-value="100"/>
 <variable name="var_key" type="string"/>]]></programlisting>
+
+			<para>
+				Please find the list of valid values for the <literal>type</literal> attribute in <xref linkend="configuration-type-names"/>.
+			</para>
 
 		</sect2>
 
@@ -1283,5 +1251,70 @@ config.getEngineDefaults().getStreamSelection()
     .setDefaultStreamSelector(StreamSelector.RSTREAM_ISTREAM_BOTH);]]></programlisting>
 			</sect3>
 		</sect2>
+    </sect1>
+    
+	<sect1 id="configuration-type-names" revision="1">
+        <title>Type Names</title>
+        
+        <para>
+			Certain configuration values accept type names. Type names can occur in the configuration of variable types, Map-event property types as well as XPath cast types, for example. Types names are not case-sensitive.
+		</para>
+        
+        <para>
+			The table below outlines all possible type names:
+		</para>
+
+		<table frame="topbot">
+			<title>Variable Type Names</title>
+			<tgroup cols="2">
+				<colspec colwidth="1.5*"/>
+				<colspec colwidth="2*"/>
+				<thead>
+					<row>
+						<entry>Type Name</entry>
+						<entry>Type</entry>
+					</row>
+				</thead>
+				<tbody>
+					<row>
+						<entry><literal>string</literal>, <literal>varchar</literal>, <literal>varchar2</literal> or <literal>java.lang.String</literal></entry>
+						<entry>A string value</entry>
+					</row>
+					<row>
+						<entry><literal>int</literal>, <literal>integer</literal> or <literal>java.lang.Integer</literal></entry>
+						<entry>An integer value</entry>
+					</row>
+					<row>
+						<entry><literal>long</literal> or <literal>java.lang.Long</literal></entry>
+						<entry>A long value</entry>
+					</row>
+					<row>
+						<entry><literal>bool</literal>, <literal>boolean</literal> or <literal>java.lang.Boolean</literal></entry>
+						<entry>A boolean value</entry>
+					</row>
+					<row>
+						<entry><literal>double</literal> or <literal>java.lang.Double</literal></entry>
+						<entry>A double value</entry>
+					</row>
+					<row>
+						<entry><literal>float</literal> or <literal>java.lang.Float</literal></entry>
+						<entry>A float value</entry>
+					</row>
+					<row>
+						<entry><literal>short</literal> or <literal>java.lang.Short</literal></entry>
+						<entry>A short value</entry>
+					</row>
+					<row>
+						<entry><literal>char</literal>, <literal>character</literal> or <literal>java.lang.Character</literal></entry>
+						<entry>A character value</entry>
+					</row>
+					<row>
+						<entry><literal>byte</literal> or <literal>java.lang.Byte</literal></entry>
+						<entry>A byte value</entry>
+					</row>
+				</tbody>
+			</tgroup>
+		</table>
+		    
     </sect1>
 </chapter>

@@ -127,7 +127,7 @@ public class SchemaXMLPropertyParser
         path.setNamespaceContext(ctx);
         XPathExpression expr = path.compile(xPath);
 
-        return new XPathPropertyGetter(propertyName, expr, pair.getSecond());
+        return new XPathPropertyGetter(propertyName, expr, pair.getSecond(), null);
     }
 
     private static Pair<String, QName> makeProperty(XSComplexTypeDefinition parent, Tree child, XPathNamespaceContext ctx)

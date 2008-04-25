@@ -92,7 +92,7 @@ public class SimpleXMLEventType extends BaseXMLEventType {
             throw new EPException("Error constructing XPath expression from property name '" + property + '\'', e);
         }
 
-        getter = new XPathPropertyGetter(property, xPathExpression, XPathConstants.STRING);
+        getter = new XPathPropertyGetter(property, xPathExpression, XPathConstants.STRING, null);
         propertyGetterCache.put(property, getter);
         return getter;
     }
