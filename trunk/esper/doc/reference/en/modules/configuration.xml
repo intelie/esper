@@ -585,6 +585,24 @@ configuration.addEventTypeAlias("GetQuote", desc);]]></programlisting>
 			
 		  </sect3>
 
+			<sect3 id="config-xml-dom-xpathresolver" revision="1">
+				<title>XPath Variable and Function Resolver</title>
+				
+				<para>
+					If your XPath expressions require variables or functions, your application may provide the class name of an <literal>XPathVariableResolver</literal> and <literal>XPathFunctionResolver</literal>. At type initialization time 
+					the engine instantiates the resolver instances and provides these to the XPathFactory.
+				</para>
+
+				<para>
+					This example shows the API to set this configuration.
+				</para>
+
+				<programlisting><![CDATA[ConfigurationEventTypeXMLDOM desc = new ConfigurationEventTypeXMLDOM();
+desc.setXPathFunctionResolver(MyXPathFunctionResolver.class.getName());
+desc.setXPathVariableResolver(MyXPathVariableResolver.class.getName());]]></programlisting>
+						
+		  </sect3>
+
 		</sect2>
 					
 		<sect2 id="config-plugineventrep" revision="1">

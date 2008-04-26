@@ -66,6 +66,12 @@ public class ASTParameterHelper
         }
     }
 
+    /**
+     * Returns a time period from an AST node and taking engine time (year etc) into account.
+     * @param node is the AST root node of the time period
+     * @param engineTime current time
+     * @return time period
+     */
     protected static TimePeriodParameter makeTimePeriod(Tree node, long engineTime)
     {
         double result = 0;

@@ -34,12 +34,13 @@ public class XPathPropertyGetter implements TypedEventPropertyGetter {
      * @param propertyName is the name of the event property for which this getter gets values
      * @param xPathExpression is a compile XPath expression
      * @param resultType is the resulting type
+     * @param optionalCastToType if non-null then the return value of the xpath expression is cast to this value
      */
     public XPathPropertyGetter(String propertyName, XPathExpression xPathExpression, QName resultType, Class optionalCastToType) {
 		this.expression = xPathExpression;
 		this.property = propertyName;
 		this.resultType = resultType;
-        if (optionalCastToType == null)
+        if (optionalCastToType != null)
         {
             simpleTypeParser = JavaClassHelper.getParser(optionalCastToType);
         }

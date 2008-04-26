@@ -6,6 +6,8 @@ import com.espertech.esper.client.time.TimerControlEvent;
 import com.espertech.esper.event.EventBean;
 import com.espertech.esper.support.util.SupportUpdateListener;
 import com.espertech.esper.support.client.SupportConfigFactory;
+import com.espertech.esper.support.xml.SupportXPathFunctionResolver;
+import com.espertech.esper.support.xml.SupportXPathVariableResolver;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.w3c.dom.Document;
@@ -28,7 +30,7 @@ public class TestNoSchemaXMLEvent extends TestCase
         "    <element21 id=\"e21_1\">VAL21-1</element21>\n" +
         "    <element21 id=\"e21_2\">VAL21-2</element21>\n" +
         "  </element2>\n" +
-        "  <element3 attrString=\"VAL3\" attrNum=\"5.6\" attrBool=\"true\"/>\n" +
+        "  <element3 attrString=\"VAL3\" attrNum=\"5\" attrBool=\"true\"/>\n" +
         "  <element4><element41>VAL4-1</element41></element4>\n" +
         "</myevent>";
 
@@ -43,6 +45,11 @@ public class TestNoSchemaXMLEvent extends TestCase
         xmlDOMEventTypeDesc.addXPathProperty("xpathAttrString", "/myevent/element3/@attrString", XPathConstants.STRING);
         xmlDOMEventTypeDesc.addXPathProperty("xpathAttrNum", "/myevent/element3/@attrNum", XPathConstants.NUMBER);
         xmlDOMEventTypeDesc.addXPathProperty("xpathAttrBool", "/myevent/element3/@attrBool", XPathConstants.BOOLEAN);
+        xmlDOMEventTypeDesc.addXPathProperty("stringCastLong", "/myevent/element3/@attrNum", XPathConstants.STRING, "long");
+        xmlDOMEventTypeDesc.addXPathProperty("stringCastDouble", "/myevent/element3/@attrNum", XPathConstants.STRING, "double");
+        xmlDOMEventTypeDesc.addXPathProperty("numCastInt", "/myevent/element3/@attrNum", XPathConstants.NUMBER, "int");
+        xmlDOMEventTypeDesc.setXPathFunctionResolver(SupportXPathFunctionResolver.class.getName());
+        xmlDOMEventTypeDesc.setXPathVariableResolver(SupportXPathVariableResolver.class.getName());
         configuration.addEventTypeAlias("TestXMLNoSchemaType", xmlDOMEventTypeDesc);
 
         xmlDOMEventTypeDesc = new ConfigurationEventTypeXMLDOM();
@@ -61,8 +68,11 @@ public class TestNoSchemaXMLEvent extends TestCase
                        "element2.element21[2] as indexedElement," +
                        "xpathElement1, xpathCountE21, xpathAttrString, xpathAttrNum, xpathAttrBool, " +
                        "invalidelement," +
-                       "element3.myattribute as invalidattr " +
-                      "from TestXMLNoSchemaType.win:length(100)";
+                       "element3.myattribute as invalidattr, " +
+                       "stringCastLong," +
+                       "stringCastDouble," +
+                       "numCastInt " +
+                       "from TestXMLNoSchemaType.win:length(100)";
 
         EPStatement joinView = epService.getEPAdministrator().createEPL(stmt);
         joinView.addListener(updateListener);
@@ -280,8 +290,12 @@ public class TestNoSchemaXMLEvent extends TestCase
         assertEquals(element1, event.get("xpathElement1"));
         assertEquals(2.0, event.get("xpathCountE21"));
         assertEquals("VAL3", event.get("xpathAttrString"));
-        assertEquals(5.6, event.get("xpathAttrNum"));
+        assertEquals(5d, event.get("xpathAttrNum"));
         assertEquals(true, event.get("xpathAttrBool"));
+
+        assertEquals(5L, event.get("stringCastLong"));
+        assertEquals(5d, event.get("stringCastDouble"));
+        assertEquals(5, event.get("numCastInt"));
 
         assertEquals("", event.get("invalidelement"));        // properties not found come back as empty string without schema
         assertEquals("", event.get("invalidattr"));     // attributes not supported when no schema supplied, use XPath
@@ -314,5 +328,6 @@ public class TestNoSchemaXMLEvent extends TestCase
 
     private static final Log log = LogFactory.getLog(TestNoSchemaXMLEvent.class);
 }
+
 
 

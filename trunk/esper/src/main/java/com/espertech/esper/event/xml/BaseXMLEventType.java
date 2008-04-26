@@ -7,6 +7,9 @@ import org.w3c.dom.Node;
 import com.espertech.esper.event.*;
 import com.espertech.esper.client.ConfigurationEventTypeXMLDOM;
 import com.espertech.esper.client.EPException;
+import com.espertech.esper.client.ConfigurationException;
+import com.espertech.esper.util.JavaClassHelper;
+import com.espertech.esper.util.ClassInstantiationException;
 
 import java.util.*;
 
@@ -43,6 +46,32 @@ public abstract class BaseXMLEventType extends BaseConfigurableEventType {
         this.rootElementName = configurationEventTypeXMLDOM.getRootElementName();
         this.configurationEventTypeXMLDOM = configurationEventTypeXMLDOM;
         xPathFactory = XPathFactory.newInstance();
+
+        if (configurationEventTypeXMLDOM.getXPathFunctionResolver() != null)
+        {
+            try
+            {
+                XPathFunctionResolver fresolver = (XPathFunctionResolver) JavaClassHelper.instantiate(XPathFunctionResolver.class, configurationEventTypeXMLDOM.getXPathFunctionResolver());
+                xPathFactory.setXPathFunctionResolver(fresolver);
+            }
+            catch (ClassInstantiationException ex)
+            {
+                throw new ConfigurationException("Error configuring XPath function resolver for XML type '" + configurationEventTypeXMLDOM.getRootElementName() + "' : " + ex.getMessage(), ex);
+            }
+        }
+
+        if (configurationEventTypeXMLDOM.getXPathVariableResolver() != null)
+        {
+            try
+            {
+                XPathVariableResolver vresolver = (XPathVariableResolver) JavaClassHelper.instantiate(XPathVariableResolver.class, configurationEventTypeXMLDOM.getXPathVariableResolver());
+                xPathFactory.setXPathVariableResolver(vresolver);
+            }
+            catch (ClassInstantiationException ex)
+            {
+                throw new ConfigurationException("Error configuring XPath variable resolver for XML type '" + configurationEventTypeXMLDOM.getRootElementName() + "' : " + ex.getMessage(), ex);
+            }
+        }
     }
 
     /**

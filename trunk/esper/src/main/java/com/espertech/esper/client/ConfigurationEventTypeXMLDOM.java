@@ -12,7 +12,6 @@ import com.espertech.esper.util.JavaClassHelper;
 import com.espertech.esper.event.EventAdapterException;
 
 import javax.xml.namespace.QName;
-import javax.xml.xpath.XPathConstants;
 import java.util.Map;
 import java.util.HashMap;
 import java.io.Serializable;
@@ -54,6 +53,9 @@ public class ConfigurationEventTypeXMLDOM implements MetaDefItem, Serializable
     private Map<String, String> namespacePrefixes;
 
     private boolean resolvePropertiesAbsolute;
+
+    private String xPathFunctionResolver;
+    private String xPathVariableResolver;
 
     /**
      * Ctor.
@@ -165,6 +167,9 @@ public class ConfigurationEventTypeXMLDOM implements MetaDefItem, Serializable
      * a DOM document node to resolve a property value.
      * @param name of the event property
      * @param xpath is an arbitrary xpath expression
+     * @param type is a constant obtained from javax.xml.xpath.XPathConstants. Typical values are
+     * XPathConstants.NUMBER, STRING and BOOLEAN.
+     * @param castToType is the type name of the type that the return value of the xpath expression is casted to
      */
     public void addXPathProperty(String name, String xpath, QName type, String castToType)
     {
@@ -231,6 +236,46 @@ public class ConfigurationEventTypeXMLDOM implements MetaDefItem, Serializable
     }
 
     /**
+     * Returns the class name of the XPath function resolver to be assigned to the XPath factory instance
+     * upon type initialization.
+     * @return class name of xpath function resolver, or null if none set
+     */
+    public String getXPathFunctionResolver()
+    {
+        return xPathFunctionResolver;
+    }
+
+    /**
+     * Sets the class name of the XPath function resolver to be assigned to the XPath factory instance
+     * upon type initialization.
+     * @param xPathFunctionResolver class name of xpath function resolver, or null if none set
+     */
+    public void setXPathFunctionResolver(String xPathFunctionResolver)
+    {
+        this.xPathFunctionResolver = xPathFunctionResolver;
+    }
+
+    /**
+     * Returns the class name of the XPath variable resolver to be assigned to the XPath factory instance
+     * upon type initialization.
+     * @return class name of xpath function resolver, or null if none set
+     */
+    public String getXPathVariableResolver()
+    {
+        return xPathVariableResolver;
+    }
+
+    /**
+     * Sets the class name of the XPath variable resolver to be assigned to the XPath factory instance
+     * upon type initialization.
+     * @param xPathVariableResolver class name of xpath function resolver, or null if none set
+     */
+    public void setXPathVariableResolver(String xPathVariableResolver)
+    {
+        this.xPathVariableResolver = xPathVariableResolver;
+    }
+
+    /**
      * Descriptor class for event properties that are resolved via XPath-expression.
      */
     public static class XPathPropertyDesc implements Serializable
@@ -258,6 +303,7 @@ public class ConfigurationEventTypeXMLDOM implements MetaDefItem, Serializable
          * @param name is the event property name
          * @param xpath is an arbitrary XPath expression
          * @param type is a javax.xml.xpath.XPathConstants constant
+         * @param optionalCastToType if non-null then the return value of the xpath expression is cast to this value
          */
         public XPathPropertyDesc(String name, String xpath, QName type, Class optionalCastToType)
         {
@@ -294,6 +340,10 @@ public class ConfigurationEventTypeXMLDOM implements MetaDefItem, Serializable
             return type;
         }
 
+        /**
+         * Returns the class that the return value of the xpath expression is cast to, or null if no casting.
+         * @return class to cast result of xpath expression to
+         */
         public Class getOptionalCastToType()
         {
             return optionalCastToType;

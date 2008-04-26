@@ -57,6 +57,8 @@
 			<xs:attribute name="default-namespace" type="xs:string" use="optional"/>
 			<xs:attribute name="schema-resource" type="xs:string" use="optional"/>
 			<xs:attribute name="resolve-properties-absolute" type="xs:string" use="optional"/>
+			<xs:attribute name="xpath-function-resolver" type="xs:string" use="optional"/>
+			<xs:attribute name="xpath-variable-resolver" type="xs:string" use="optional"/>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="namespace-prefix">

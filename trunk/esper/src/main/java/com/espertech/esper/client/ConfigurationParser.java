@@ -232,12 +232,16 @@ class ConfigurationParser {
         String schemaResource = getOptionalAttribute(xmldomElement, "schema-resource");
         String defaultNamespace = getOptionalAttribute(xmldomElement, "default-namespace");
         String resolvePropertiesAbsoluteStr = getOptionalAttribute(xmldomElement, "resolve-properties-absolute");
+        String xpathFunctionResolverClass = getOptionalAttribute(xmldomElement, "xpath-function-resolver");
+        String xpathVariableResolverClass = getOptionalAttribute(xmldomElement, "xpath-variable-resolver");
 
         ConfigurationEventTypeXMLDOM xmlDOMEventTypeDesc = new ConfigurationEventTypeXMLDOM();
         xmlDOMEventTypeDesc.setRootElementName(rootElementName);
         xmlDOMEventTypeDesc.setSchemaResource(schemaResource);
         xmlDOMEventTypeDesc.setRootElementNamespace(rootElementNamespace);
         xmlDOMEventTypeDesc.setDefaultNamespace(defaultNamespace);
+        xmlDOMEventTypeDesc.setXPathFunctionResolver(xpathFunctionResolverClass);
+        xmlDOMEventTypeDesc.setXPathVariableResolver(xpathVariableResolverClass);
         if (resolvePropertiesAbsoluteStr != null)
         {
             xmlDOMEventTypeDesc.setResolvePropertiesAbsolute(Boolean.parseBoolean(resolvePropertiesAbsoluteStr));

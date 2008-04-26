@@ -9,7 +9,11 @@ package com.espertech.esper.util;
 
 import com.espertech.esper.event.EventAdapterException;
 import com.espertech.esper.type.*;
+import com.espertech.esper.client.ConfigurationException;
+import com.espertech.esper.client.EPException;
+import com.espertech.esper.plugin.PluginLoader;
 
+import javax.naming.NamingException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -1044,5 +1048,52 @@ public class JavaClassHelper
             }
         }
         return false;
+    }
+
+    /**
+     * Looks up the given class and checks that it implements or extends the required interface,
+     * and instantiates an object.
+     * @param implementedOrExtendedClass is the class that the looked-up class should extend or implement
+     * @param className of the class to load, check type and instantiate
+     * @return instance of given class, via newInstance
+     * @throws ClassInstantiationException if the type does not match or the class cannot be loaded or an object instantiated
+     */
+    public static Object instantiate(Class implementedOrExtendedClass, String className) throws ClassInstantiationException
+    {
+        Class clazz;
+        try
+        {
+            ClassLoader cl = Thread.currentThread().getContextClassLoader();
+            clazz = Class.forName(className, true, cl);
+        }
+        catch (ClassNotFoundException ex)
+        {
+            throw new ClassInstantiationException("Unable to load class '" + className + "', class not found", ex);
+        }
+
+        if (!JavaClassHelper.isSubclassOrImplementsInterface(clazz, implementedOrExtendedClass))
+        {
+            if (implementedOrExtendedClass.isInterface())
+            {
+                throw new ClassInstantiationException("Class '" + className + "' does not implement interface '" + implementedOrExtendedClass.getName() + "'");
+            }
+            throw new ClassInstantiationException("Class '" + className + "' does not extend '" + implementedOrExtendedClass.getName() + "'");
+        }
+
+        Object obj;
+        try
+        {
+            obj = clazz.newInstance();
+        }
+        catch (InstantiationException ex)
+        {
+            throw new ClassInstantiationException("Unable to instantiate from class '" + className + "' via default constructor", ex);
+        }
+        catch (IllegalAccessException ex)
+        {
+            throw new ClassInstantiationException("Illegal access when instantiating class '" + className + "' via default constructor", ex);
+        }
+
+        return obj;
     }
 }

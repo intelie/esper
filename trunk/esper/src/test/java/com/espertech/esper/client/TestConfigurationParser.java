@@ -76,6 +76,8 @@ public class TestConfigurationParser extends TestCase
         assertEquals("/myevent/element1", noSchemaDesc.getXPathProperties().get("element1").getXpath());
         assertEquals(XPathConstants.NUMBER, noSchemaDesc.getXPathProperties().get("element1").getType());
         assertEquals(null, noSchemaDesc.getXPathProperties().get("element1").getOptionalCastToType());
+        assertNull(noSchemaDesc.getXPathFunctionResolver());
+        assertNull(noSchemaDesc.getXPathVariableResolver());
 
         // assert XML DOM - with schema
         ConfigurationEventTypeXMLDOM schemaDesc = config.getEventTypesXMLDOM().get("MySchemaXMLEventAlias");
@@ -89,6 +91,8 @@ public class TestConfigurationParser extends TestCase
         assertEquals(1, schemaDesc.getNamespacePrefixes().size());
         assertEquals("samples:schemas:simpleSchema", schemaDesc.getNamespacePrefixes().get("ss"));
         assertFalse(schemaDesc.isResolvePropertiesAbsolute());
+        assertEquals("com.mycompany.OptionalFunctionResolver", schemaDesc.getXPathFunctionResolver());
+        assertEquals("com.mycompany.OptionalVariableResolver", schemaDesc.getXPathVariableResolver());
 
         // assert mapped events
         assertEquals(1, config.getEventTypesMapEvents().size());

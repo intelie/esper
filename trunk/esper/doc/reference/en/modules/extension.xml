@@ -940,6 +940,259 @@
 			<para>			    
 				The <literal>EventSender</literal> returned by the <literal>getEventSender(URI[])</literal> method follows the same scheme. The event sender instance asks each matching event representation for each URI to resolve the event object in the order of most specific to least specific root URI, and the first event representation to return an instance of <literal>EventBean</literal> ends the resolution process for event objects.
 			</para>
-		</sect2>				
+		</sect2>			
+		
+		<sect2 id="custom-eventrep-example" revision="1">
+				<title>Example</title>
+				<para>
+					This section implements a minimal sample plug-in event representation. For the sake of keeping the example easy to understand, the event representation is rather straightforward: an event is a <literal>java.util.Properties</literal> object that consists of key-values pairs of type string.
+				</para>
+				
+				<para>
+					The code shown next does not document method footprints. Please consult the JavaDoc API documentation for method details.
+				</para>
+
+			<sect3 id="custom-eventrep-example-eventtype" revision="1">
+				<title>Sample Event Type</title>
+				<para>
+					First, the sample shows how to implement the <literal>EventType</literal> interface. The event type provides information about property names and types, as well as supertypes of the event type.
+				</para>
+
+				<para>
+					Our <literal>EventType</literal> takes a set of valid property names:
+				</para>
+				<programlisting><![CDATA[public class MyPlugInPropertiesEventType implements EventType {
+  private final Set<String> properties;
+
+  public MyPlugInPropertiesEventType(Set<String> properties) {
+    this.properties = properties;
+  }
+
+  public Class getPropertyType(String property) {
+    if (!isProperty(property)) {
+      return null;
+    }
+    return String.class;
+  }
+
+  public Class getUnderlyingType() {
+    return Properties.class;
+  }
+  
+  //... further methods below
+}]]></programlisting>
+
+				<para>
+					An <literal>EventType</literal> is responsible for providing implementations of <literal>EventPropertyGetter</literal> to query actual events. The getter simply
+					queries the <literal>Properties </literal> object underlying each event:
+				</para>
+				<programlisting><![CDATA[  public EventPropertyGetter getGetter(String property) {
+    final String propertyName = property;
+    
+    return new EventPropertyGetter() {
+      public Object get(EventBean eventBean) throws PropertyAccessException {
+        MyPlugInPropertiesEventBean propBean = (MyPlugInPropertiesEventBean) eventBean;
+        return propBean.getProperties().getProperty(propertyName);
+      }
+      
+      public boolean isExistsProperty(EventBean eventBean) {
+        MyPlugInPropertiesEventBean propBean = (MyPlugInPropertiesEventBean) eventBean;
+        return propBean.getProperties().getProperty(propertyName) != null;
+      }
+    };
+  }]]></programlisting>
+
+				<para>
+				  Our sample <literal>EventType</literal> does not have supertypes. Supertypes represent an extends-relationship between event types, and subtypes are expected to exhibit the same event property names and types as each of their supertypes combined:
+				</para>
+				<programlisting><![CDATA[  public EventType[] getSuperTypes() {
+    return null;
+  }
+
+  public Iterator<EventType> getDeepSuperTypes() {
+    return null;
+  }]]></programlisting>
+		  </sect3>
+
+			<sect3 id="custom-eventrep-example-eventbean" revision="1">
+				<title>Sample Event Bean</title>
+				<para>
+					Each <literal>EventBean</literal> instance represents an event. The interface is straightforward to implement. In this example an event is backed by a <literal>Properties</literal> object:
+				</para>
+
+				<programlisting><![CDATA[public class MyPlugInPropertiesEventBean implements EventBean {
+  private final MyPlugInPropertiesEventType eventType;
+  private final Properties properties;
+
+  public MyPlugInPropertiesEventBean(MyPlugInPropertiesEventType eventType, 
+        Properties properties) {
+    this.eventType = eventType;
+    this.properties = properties;
+  }
+
+  public EventType getEventType() {
+    return eventType;
+  }
+
+  public Object get(String property) throws PropertyAccessException {
+    EventPropertyGetter getter = eventType.getGetter(property);
+    return getter.get(this);
+  }
+
+  public Object getUnderlying() {
+    return properties;
+  }
+
+  protected Properties getProperties() {
+    return properties;
+  }    
+}]]></programlisting>
+		  </sect3>
+
+			<sect3 id="custom-eventrep-example-eventrep" revision="1">
+				<title>Sample Event Representation</title>
+				<para>
+					A <literal>PlugInEventRepresentation</literal> serves to create <literal>EventType</literal> and <literal>EventBean</literal> instances through its related interfaces.
+				</para>
+
+				<para>
+					The sample event representation creates <literal>MyPlugInPropertiesEventType</literal> and <literal>MyPlugInPropertiesEventBean</literal> instances. 
+					The <literal>PlugInEventTypeHandler</literal> returns the <literal>EventType</literal> instance and an <literal>EventSender</literal> instance.
+				</para>
+
+				<para>
+					Our sample event representation accepts all requests for event types by returning boolean true on the <literal>acceptType</literal> method.  When asked for the <literal>PlugInEventTypeHandler</literal>, it constructs a new <literal>EventType</literal>. The list of property names for the new type is passed as an initialization value provided through the configuration API or XML, as a comma-separated list of property names:
+				</para>
+
+				<programlisting><![CDATA[public class MyPlugInEventRepresentation implements PlugInEventRepresentation {
+
+  private List<MyPlugInPropertiesEventType> types;
+
+  public void init(PlugInEventRepresentationContext context) {
+    types = new ArrayList<MyPlugInPropertiesEventType>();
+  }
+
+  public boolean acceptsType(PlugInEventTypeHandlerContext context) {
+    return true;
+  }
+
+  public PlugInEventTypeHandler getTypeHandler(PlugInEventTypeHandlerContext eventTypeContext) {
+    String proplist = (String) eventTypeContext.getTypeInitializer();
+    String[] propertyList = proplist.split(",");
+
+    Set<String> typeProps = new HashSet<String>(Arrays.asList(propertyList));
+
+    MyPlugInPropertiesEventType eventType = new MyPlugInPropertiesEventType(typeProps);
+    types.add(eventType);
+
+    return new MyPlugInPropertiesEventTypeHandler(eventType);
+  }
+  // ... more methods below
+}]]></programlisting>
+
+				<para>
+					The <literal>PlugInEventTypeHandler</literal> simply returns the <literal>EventType</literal> as well as an implementation of <literal>EventSender</literal> for processing same-type events:
+				</para>
+
+				<programlisting><![CDATA[public class MyPlugInPropertiesEventTypeHandler implements PlugInEventTypeHandler {
+  private final MyPlugInPropertiesEventType eventType;
+
+  public MyPlugInPropertiesEventTypeHandler(MyPlugInPropertiesEventType eventType) {
+    this.eventType = eventType;
+  }
+
+  public EventSender getSender(EPRuntimeEventSender runtimeEventSender) {
+    return new MyPlugInPropertiesEventSender(eventType, runtimeEventSender);
+  }
+
+  public EventType getType() {
+    return eventType;
+  }
+}]]></programlisting>
+
+				<para>
+					The <literal>EventSender</literal> returned by <literal>PlugInEventTypeHandler</literal> is expected process events of the same type or any subtype:
+				</para>
+
+				<programlisting><![CDATA[public class MyPlugInPropertiesEventSender implements EventSender {
+  private final MyPlugInPropertiesEventType type;
+  private final EPRuntimeEventSender runtimeSender;
+
+  public MyPlugInPropertiesEventSender(MyPlugInPropertiesEventType type, 
+        EPRuntimeEventSender runtimeSender) {
+    this.type = type;
+    this.runtimeSender = runtimeSender;
+  }
+
+  public void sendEvent(Object event) {
+    if (!(event instanceof Properties)) {
+       throw new EPException("Sender expects a properties event");
+    }
+    EventBean eventBean = new MyPlugInPropertiesEventBean(type, (Properties) event);
+    runtimeSender.processWrappedEvent(eventBean);
+  }
+}]]></programlisting>
+		  </sect3>
+
+			<sect3 id="custom-eventrep-example-eventbeanfac" revision="1">
+				<title>Sample Event Bean Factory</title>
+				<para>
+					The plug-in event representation may optionally provide an implementation of <literal>PlugInEventBeanFactory</literal>. A <literal>PlugInEventBeanFactory</literal> may inspect event objects and assign an event type dynamically based on resolution URIs and event properties.
+				</para>
+				
+				<para>
+					Our sample event representation accepts all URIs and returns a <literal>MyPlugInPropertiesBeanFactory</literal>:
+				</para>
+				<programlisting><![CDATA[public class MyPlugInEventRepresentation implements PlugInEventRepresentation {
+
+  // ... methods as seen earlier
+  public boolean acceptsEventBeanResolution(
+        PlugInEventBeanReflectorContext eventBeanContext) {
+    return true;
+  }
+
+  public PlugInEventBeanFactory getEventBeanFactory(
+        PlugInEventBeanReflectorContext eventBeanContext) {
+    return new MyPlugInPropertiesBeanFactory(types);
+   }
+}]]></programlisting>
+
+			<para>
+			  Last, the sample <literal>MyPlugInPropertiesBeanFactory</literal> implements the <literal>PlugInEventBeanFactory</literal> interface. It inspects incoming events and determines
+			  an event type based on whether all properties for that event type are present:
+			</para>
+			
+				<programlisting><![CDATA[public class MyPlugInPropertiesBeanFactory implements PlugInEventBeanFactory {
+  private final List<MyPlugInPropertiesEventType> knownTypes;
+
+  public MyPlugInPropertiesBeanFactory(List<MyPlugInPropertiesEventType> types) {
+    knownTypes = types;
+  }
+
+  public EventBean create(Object event, URI resolutionURI) {
+    Properties properties = (Properties) event;
+
+    // use the known types to determine the type of the object
+    for (MyPlugInPropertiesEventType type : knownTypes) {
+      // if there is one property the event does not contain, then its not the right type
+      boolean hasAllProperties = true;
+      for (String prop : type.getPropertyNames()) {
+        if (!properties.containsKey(prop)) {
+          hasAllProperties = false;
+          break;
+        }
+      }
+
+      if (hasAllProperties) {
+        return new MyPlugInPropertiesEventBean(type, properties);
+      }
+    }
+    return null; // none match, unknown event
+  }
+}]]></programlisting>
+
+			</sect3>
+		</sect2>			
+		
 	</sect1>
 </chapter>
