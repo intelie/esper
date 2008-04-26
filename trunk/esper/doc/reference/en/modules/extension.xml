@@ -940,6 +940,10 @@
 			<para>			    
 				The <literal>EventSender</literal> returned by the <literal>getEventSender(URI[])</literal> method follows the same scheme. The event sender instance asks each matching event representation for each URI to resolve the event object in the order of most specific to least specific root URI, and the first event representation to return an instance of <literal>EventBean</literal> ends the resolution process for event objects.
 			</para>
+
+			<para>
+				The <literal>type://</literal> part of the URI is an optional convention for the scheme part of an URI that your application may follow. URIs can also be simple names and can include parameters, as the Java software JavaDoc documents for class <literal>java.net.URI</literal>.
+			</para>
 		</sect2>			
 		
 		<sect2 id="custom-eventrep-example" revision="1">

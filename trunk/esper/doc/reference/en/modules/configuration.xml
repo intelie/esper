@@ -625,7 +625,11 @@ desc.setXPathVariableResolver(MyXPathVariableResolver.class.getName());]]></prog
 				
 				<programlisting><![CDATA[URI rootURI = new URI("type://mycompany/myproject/myname");
 config.addPlugInEventRepresentation(rootURI, 
-  MyEventRepresentation.class.getName(), null);]]></programlisting>
+    MyEventRepresentation.class.getName(), null);]]></programlisting>
+
+				<para>
+					The <literal>type://</literal> part of the URI is an optional convention for the scheme part of an URI. 
+				</para>
 
 				<para>
 					If your event representation takes initialization parameters, these are passed in as the last parameter. Initialization parameters can also be stored in the configuration XML, in which case

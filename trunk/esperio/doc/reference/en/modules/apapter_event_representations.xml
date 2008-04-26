@@ -47,9 +47,10 @@ config.addPlugInEventRepresentation(new URI("type://xml/apacheaxiom/OMNode"),
 			Your application may register Axiom event types in advance. Here is sample code for adding event types based on Axiom:
 		</para>
 		<programlisting><![CDATA[ConfigurationEventTypeAxiom desc = new ConfigurationEventTypeAxiom();
-desc.setRootElementName("getQuote");
-URI[] resolveURIs = new URI[] {new URI("type://xml/apacheaxiom/OMNode/StockQuote")};
-configuration.addPlugInEventType("StockQuote", resolveURIs, desc);]]></programlisting>
+desc.setRootElementName("measurement");
+desc.addXPathProperty("measurement", "/sensor/measurement", XPathConstants.NUMBER);
+URI[] resolveURIs = new URI[] {new URI("type://xml/apacheaxiom/OMNode/SensorEvent")};
+configuration.addPlugInEventType("SensorEvent", resolveURIs, desc);]]></programlisting>
 		
 		<para>
 			The operation above is available at configuration time and also at runtime via <literal>ConfigurationOperations</literal>. After registering an event type alias as above, your application can create EPL statements.
@@ -58,8 +59,13 @@ configuration.addPlugInEventType("StockQuote", resolveURIs, desc);]]></programli
 		<para>
 			To send Axiom <literal>OMDocument</literal>  or <literal>OMElement</literal> events into the engine, your application code must obtain an <literal>EventSender</literal> to process Axiom <literal>OMElement</literal> events:
 		</para>
-		<programlisting><![CDATA[URI[] resolveURIs = new URI[] {new URI("type://xml/apacheaxiom/OMNode/StockQuote")};
+		<programlisting><![CDATA[URI[] resolveURIs = new URI[] {new URI("type://xml/apacheaxiom/OMNode/SensorEvent")};
 EventSender sender = epService.getEPRuntime().getEventSender(resolveURIs);
+
+String xml = "<measurement><temperature>98.6</temperature></measurement>";
+InputStream s = new ByteArrayInputStream(xml.getBytes());
+OMElement omElement = new StAXOMBuilder(s).getDocumentElement();
+
 sender.sendEvent(omElement);]]></programlisting>
     </sect1>
     

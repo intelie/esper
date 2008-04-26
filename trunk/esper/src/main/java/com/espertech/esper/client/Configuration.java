@@ -484,6 +484,19 @@ public class Configuration implements ConfigurationOperations, ConfigurationInfo
         this.plugInEventRepresentation.put(eventRepresentationRootURI, config);
     }
 
+    /**
+     * Adds an event representation responsible for creating event types (event metadata) and event bean instances (events) for
+     * a certain kind of object representation that holds the event property values.
+     * @param eventRepresentationRootURI uniquely identifies the event representation and acts as a parent
+     * for child URIs used in resolving
+     * @param eventRepresentationClass is the class implementing {@link com.espertech.esper.plugin.PlugInEventRepresentation}.
+     * @param initializer is optional configuration or initialization information, or null if none required
+     */
+    public void addPlugInEventRepresentation(URI eventRepresentationRootURI, Class eventRepresentationClass, Serializable initializer)
+    {
+        addPlugInEventRepresentation(eventRepresentationRootURI, eventRepresentationClass.getName(), initializer);
+    }
+
     public void addPlugInEventType(String eventTypeAlias, URI[] resolutionURIs, Serializable initializer)
     {
         ConfigurationPlugInEventType config = new ConfigurationPlugInEventType();
