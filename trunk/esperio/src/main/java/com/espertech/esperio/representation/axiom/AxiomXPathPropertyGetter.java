@@ -1,15 +1,18 @@
 package com.espertech.esperio.representation.axiom;
 
-import javax.xml.namespace.QName;
-import javax.xml.xpath.XPathConstants;
-
-import org.apache.axiom.om.OMNode;
-import org.apache.axiom.om.xpath.AXIOMXPath;
-import org.jaxen.JaxenException;
-
 import com.espertech.esper.event.EventBean;
 import com.espertech.esper.event.PropertyAccessException;
 import com.espertech.esper.event.TypedEventPropertyGetter;
+import com.espertech.esper.util.JavaClassHelper;
+import com.espertech.esper.util.SimpleTypeParser;
+import org.apache.axiom.om.OMNode;
+import org.apache.axiom.om.xpath.AXIOMXPath;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.jaxen.JaxenException;
+
+import javax.xml.namespace.QName;
+import javax.xml.xpath.XPathConstants;
 
 /**
  * Implementation of a property getter for the Axiom XML data model.
@@ -18,9 +21,12 @@ import com.espertech.esper.event.TypedEventPropertyGetter;
  */
 public class AxiomXPathPropertyGetter implements TypedEventPropertyGetter
 {
+    private static final Log log = LogFactory.getLog(AxiomXPathPropertyGetter.class);
     private final AXIOMXPath expression;
     private final String property;
     private final QName resultType;
+    private final SimpleTypeParser simpleTypeParser;
+    private final Class optionalCastToType;
 
     /**
      * Ctor.
@@ -28,11 +34,20 @@ public class AxiomXPathPropertyGetter implements TypedEventPropertyGetter
      * @param resultType      is the resulting type
      * @param xPath           the Axiom xpath expression 
      */
-    public AxiomXPathPropertyGetter(String propertyName, AXIOMXPath xPath, QName resultType)
+    public AxiomXPathPropertyGetter(String propertyName, AXIOMXPath xPath, QName resultType, Class optionalCastToType)
     {
         this.expression = xPath;
         this.property = propertyName;
         this.resultType = resultType;
+        if (optionalCastToType != null)
+        {
+            simpleTypeParser = JavaClassHelper.getParser(optionalCastToType);
+        }
+        else
+        {
+            simpleTypeParser = null;
+        }
+        this.optionalCastToType = optionalCastToType;
     }
 
     public Object get(EventBean eventBean) throws PropertyAccessException
@@ -52,19 +67,40 @@ public class AxiomXPathPropertyGetter implements TypedEventPropertyGetter
         }
         try
         {
-            if (resultType.equals(XPathConstants.BOOLEAN))
+            // if there is no parser, return xpath expression type
+            if (optionalCastToType == null)
             {
-                return expression.booleanValueOf(und);
+                if (resultType.equals(XPathConstants.BOOLEAN))
+                {
+                    return expression.booleanValueOf(und);
+                }
+                else if (resultType.equals(XPathConstants.NUMBER))
+                {
+                    Number n = expression.numberValueOf(und);
+                    return n.doubleValue();
+                }
+                else
+                {
+                    String result = expression.stringValueOf(und);
+                    return result;
+                }
             }
-            else if (resultType.equals(XPathConstants.NUMBER))
+
+            // obtain result as string and parse
+            String result = expression.stringValueOf(und);
+            if (result == null)
             {
-                Number n = expression.numberValueOf(und);
-                return n.doubleValue();
+                return null;
             }
-            else
+
+            try
             {
-                String result = expression.stringValueOf(und);
-                return result;
+                return simpleTypeParser.parse(result.toString());
+            }
+            catch (RuntimeException ex)
+            {
+                log.warn("Error parsing XPath property named '" + property + "' expression result '" + result + " as type " + optionalCastToType.getName());
+                return null;
             }
         }
         catch (JaxenException e)

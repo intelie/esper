@@ -13,6 +13,7 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 
 public class TestAxiom extends TestCase
 {
@@ -36,14 +37,14 @@ public class TestAxiom extends TestCase
         Configuration configuration = getConfiguration();
         configuration.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
 
-        ConfigurationEventTypeXMLDOM xmlDOMEventTypeDesc = new ConfigurationEventTypeXMLDOM();
-        xmlDOMEventTypeDesc.setRootElementName("myevent");
-        xmlDOMEventTypeDesc.addXPathProperty("xpathElement1", "/myevent/element1", XPathConstants.STRING);
-        xmlDOMEventTypeDesc.addXPathProperty("xpathCountE21", "count(/myevent/element2/element21)", XPathConstants.NUMBER);
-        xmlDOMEventTypeDesc.addXPathProperty("xpathAttrString", "/myevent/element3/@attrString", XPathConstants.STRING);
-        xmlDOMEventTypeDesc.addXPathProperty("xpathAttrNum", "/myevent/element3/@attrNum", XPathConstants.NUMBER);
-        xmlDOMEventTypeDesc.addXPathProperty("xpathAttrBool", "/myevent/element3/@attrBool", XPathConstants.BOOLEAN);
-        configuration.addPlugInEventType("TestXMLNoSchemaType", new URI[] {new URI(AXIOM_URI)}, xmlDOMEventTypeDesc);
+        ConfigurationEventTypeAxiom axiomType = new ConfigurationEventTypeAxiom();
+        axiomType.setRootElementName("myevent");
+        axiomType.addXPathProperty("xpathElement1", "/myevent/element1", XPathConstants.STRING);
+        axiomType.addXPathProperty("xpathCountE21", "count(/myevent/element2/element21)", XPathConstants.NUMBER);
+        axiomType.addXPathProperty("xpathAttrString", "/myevent/element3/@attrString", XPathConstants.STRING);
+        axiomType.addXPathProperty("xpathAttrNum", "/myevent/element3/@attrNum", XPathConstants.NUMBER);
+        axiomType.addXPathProperty("xpathAttrBool", "/myevent/element3/@attrBool", XPathConstants.BOOLEAN);
+        configuration.addPlugInEventType("TestXMLNoSchemaType", new URI[] {new URI(AXIOM_URI)}, axiomType);
 
         EPServiceProvider epService = EPServiceProviderManager.getProvider("TestNoSchemaXML", configuration);
         epService.initialize();
@@ -71,13 +72,39 @@ public class TestAxiom extends TestCase
         assertData("EventB");
     }
 
+    public void testConfigurationXML() throws Exception
+    {
+        String sampleXML = "esper-axiom-sample-configuration.xml";
+        URL url = this.getClass().getClassLoader().getResource(sampleXML);
+        if (url == null)
+        {
+            throw new RuntimeException("Cannot find XML configuration: " + sampleXML);
+        }
+
+        Configuration config = new Configuration();
+        config.configure(url);
+
+        EPServiceProvider epService = EPServiceProviderManager.getDefaultProvider(config);
+        epService.initialize();
+        updateListener = new SupportUpdateListener();
+
+        String stmt = "select temp, sensorId from SensorEvent";
+        EPStatement joinView = epService.getEPAdministrator().createEPL(stmt);
+        joinView.addListener(updateListener);
+
+        sendXMLEvent(epService, "SensorEvent", "<measurement><temperature>98.6</temperature><sensorid>8374744</sensorid></measurement>");
+        EventBean event = updateListener.assertOneGetNewAndReset();
+        assertEquals(98.6, event.get("temp"));
+        assertEquals(8374744L, event.get("sensorId"));
+    }
+
     public void testNestedXML() throws Exception
     {
         Configuration configuration = getConfiguration();
-        ConfigurationEventTypeXMLDOM xmlDOMEventTypeDesc = new ConfigurationEventTypeXMLDOM();
-        xmlDOMEventTypeDesc.setRootElementName("a");
-        xmlDOMEventTypeDesc.addXPathProperty("element1", "/a/b/c", XPathConstants.STRING);
-        configuration.addPlugInEventType("AEvent", new URI[] {new URI(AXIOM_URI)}, xmlDOMEventTypeDesc);
+        ConfigurationEventTypeAxiom axiomType = new ConfigurationEventTypeAxiom();
+        axiomType.setRootElementName("a");
+        axiomType.addXPathProperty("element1", "/a/b/c", XPathConstants.STRING);
+        configuration.addPlugInEventType("AEvent", new URI[] {new URI(AXIOM_URI)}, axiomType);
 
         EPServiceProvider epService = EPServiceProviderManager.getDefaultProvider(configuration);
         epService.initialize();
@@ -116,9 +143,9 @@ public class TestAxiom extends TestCase
     public void testDotEscapeSyntax() throws Exception
     {
         Configuration configuration = getConfiguration();
-        ConfigurationEventTypeXMLDOM xmlDOMEventTypeDesc = new ConfigurationEventTypeXMLDOM();
-        xmlDOMEventTypeDesc.setRootElementName("myroot");
-        configuration.addPlugInEventType("AEvent", new URI[] {new URI(AXIOM_URI)}, xmlDOMEventTypeDesc);
+        ConfigurationEventTypeAxiom axiomType = new ConfigurationEventTypeAxiom();
+        axiomType.setRootElementName("myroot");
+        configuration.addPlugInEventType("AEvent", new URI[] {new URI(AXIOM_URI)}, axiomType);
 
         EPServiceProvider epService = EPServiceProviderManager.getDefaultProvider(configuration);
         epService.initialize();
@@ -136,7 +163,7 @@ public class TestAxiom extends TestCase
     public void testEventXML() throws Exception
     {
         Configuration configuration = getConfiguration();
-        ConfigurationEventTypeXMLDOM desc = new ConfigurationEventTypeXMLDOM();
+        ConfigurationEventTypeAxiom desc = new ConfigurationEventTypeAxiom();
         desc.addXPathProperty("event.type", "/event/@type", XPathConstants.STRING);
         desc.addXPathProperty("event.uid", "/event/@uid", XPathConstants.STRING);
         desc.setRootElementName("event");
@@ -160,7 +187,7 @@ public class TestAxiom extends TestCase
     {
         // test for Esper-129
         Configuration configuration = getConfiguration();
-        ConfigurationEventTypeXMLDOM desc = new ConfigurationEventTypeXMLDOM();
+        ConfigurationEventTypeAxiom desc = new ConfigurationEventTypeAxiom();
         desc.addXPathProperty("event.type", "//event/@type", XPathConstants.STRING);
         desc.addXPathProperty("event.uid", "//event/@uid", XPathConstants.STRING);
         desc.setRootElementName("batch-event");
@@ -188,7 +215,7 @@ public class TestAxiom extends TestCase
     public void testNamespaceXPathRelative() throws Exception
     {
         Configuration configuration = getConfiguration();
-        ConfigurationEventTypeXMLDOM desc = new ConfigurationEventTypeXMLDOM();
+        ConfigurationEventTypeAxiom desc = new ConfigurationEventTypeAxiom();
         desc.setRootElementName("getQuote");
         desc.setDefaultNamespace("http://services.samples/xsd");
         desc.setRootElementNamespace("http://services.samples/xsd");
@@ -215,7 +242,7 @@ public class TestAxiom extends TestCase
     public void testNamespaceXPathAbsolute() throws Exception
     {
         Configuration configuration = getConfiguration();
-        ConfigurationEventTypeXMLDOM desc = new ConfigurationEventTypeXMLDOM();
+        ConfigurationEventTypeAxiom desc = new ConfigurationEventTypeAxiom();
         desc.addXPathProperty("symbol_a", "//m0:symbol", XPathConstants.STRING);
         desc.addXPathProperty("symbol_c", "/m0:getQuote/m0:request/m0:symbol", XPathConstants.STRING);
         desc.setRootElementName("getQuote");

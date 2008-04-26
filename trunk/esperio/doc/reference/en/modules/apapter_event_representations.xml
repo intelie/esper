@@ -40,15 +40,15 @@
 		</para>
 
 		<programlisting><![CDATA[Configuration config = new Configuration();
-config.addPlugInEventRepresentation(new URI("types://xml/apacheaxiom/OMNode"),
+config.addPlugInEventRepresentation(new URI("type://xml/apacheaxiom/OMNode"),
     AxiomEventRepresentation.class.getName(), null);]]></programlisting>
 
 		<para>
 			Your application may register Axiom event types in advance. Here is sample code for adding event types based on Axiom:
 		</para>
-		<programlisting><![CDATA[ConfigurationEventTypeXMLDOM desc = new ConfigurationEventTypeXMLDOM();
+		<programlisting><![CDATA[ConfigurationEventTypeAxiom desc = new ConfigurationEventTypeAxiom();
 desc.setRootElementName("getQuote");
-URI[] resolveURIs = new URI[] {new URI("types://xml/apacheaxiom/OMNode/StockQuote")};
+URI[] resolveURIs = new URI[] {new URI("type://xml/apacheaxiom/OMNode/StockQuote")};
 configuration.addPlugInEventType("StockQuote", resolveURIs, desc);]]></programlisting>
 		
 		<para>
@@ -58,11 +58,18 @@ configuration.addPlugInEventType("StockQuote", resolveURIs, desc);]]></programli
 		<para>
 			To send Axiom <literal>OMDocument</literal>  or <literal>OMElement</literal> events into the engine, your application code must obtain an <literal>EventSender</literal> to process Axiom <literal>OMElement</literal> events:
 		</para>
-		<programlisting><![CDATA[URI[] resolveURIs = new URI[] {new URI("types://xml/apacheaxiom/OMNode/StockQuote")};
+		<programlisting><![CDATA[URI[] resolveURIs = new URI[] {new URI("type://xml/apacheaxiom/OMNode/StockQuote")};
 EventSender sender = epService.getEPRuntime().getEventSender(resolveURIs);
 sender.sendEvent(omElement);]]></programlisting>
     </sect1>
     
+		<para>
+			Configuring an Axiom event type via XML is easy. An Esper configuration XML can be found in the file <literal>esper-axiom-sample-configuration.xml</literal> in the <literal>etc</literal>  folder of the EsperIO distribution.
+		</para>
+
+		<para>
+			The configuration XML for the <literal>ConfigurationEventTypeAxiom</literal> class adheres to the schema <literal>esperio-axiom-configuration-2-0.xsd</literal> also in the <literal>etc</literal> folder of the EsperIO distribution.
+		</para>
 </chapter>
 
 

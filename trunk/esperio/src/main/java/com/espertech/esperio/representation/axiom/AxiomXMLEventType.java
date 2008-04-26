@@ -1,6 +1,5 @@
 package com.espertech.esperio.representation.axiom;
 
-import com.espertech.esper.client.ConfigurationEventTypeXMLDOM;
 import com.espertech.esper.client.EPException;
 import com.espertech.esper.event.EventPropertyGetter;
 import com.espertech.esper.event.EventType;
@@ -31,36 +30,36 @@ import java.util.Set;
 public class AxiomXMLEventType implements EventType
 {
     private String defaultNamespacePrefix;
-    private ConfigurationEventTypeXMLDOM config;
+    private ConfigurationEventTypeAxiom config;
     private AxiomXPathNamespaceContext namespaceContext;
     private Map<String, TypedEventPropertyGetter> propertyGetterCache;
 
     /**
      * Ctor.
-     * @param configurationEventTypeXMLDOM is the configuration for XML access 
+     * @param configurationEventTypeAxiom is the configuration for XML access
      */
-    public AxiomXMLEventType(ConfigurationEventTypeXMLDOM configurationEventTypeXMLDOM)
+    public AxiomXMLEventType(ConfigurationEventTypeAxiom configurationEventTypeAxiom)
     {
-        this.config = configurationEventTypeXMLDOM;
+        this.config = configurationEventTypeAxiom;
         this.propertyGetterCache = new HashMap<String, TypedEventPropertyGetter>();
 
         // Set up a namespace context for XPath expressions
         namespaceContext = new AxiomXPathNamespaceContext();
-        for (Map.Entry<String, String> entry : configurationEventTypeXMLDOM.getNamespacePrefixes().entrySet())
+        for (Map.Entry<String, String> entry : configurationEventTypeAxiom.getNamespacePrefixes().entrySet())
         {
             namespaceContext.addPrefix(entry.getKey(), entry.getValue());
         }
 
         // add namespaces
-        if (configurationEventTypeXMLDOM.getDefaultNamespace() != null)
+        if (configurationEventTypeAxiom.getDefaultNamespace() != null)
         {
-            String defaultNamespace = configurationEventTypeXMLDOM.getDefaultNamespace();
+            String defaultNamespace = configurationEventTypeAxiom.getDefaultNamespace();
             namespaceContext.setDefaultNamespace(defaultNamespace);
 
             // determine a default namespace prefix to use to construct XPath
             // expressions from pure property names
             defaultNamespacePrefix = null;
-            for (Map.Entry<String, String> entry : configurationEventTypeXMLDOM.getNamespacePrefixes().entrySet())
+            for (Map.Entry<String, String> entry : configurationEventTypeAxiom.getNamespacePrefixes().entrySet())
             {
                 if (entry.getValue().equals(defaultNamespace))
                 {
@@ -73,9 +72,9 @@ public class AxiomXMLEventType implements EventType
         // determine XPath properties that are predefined
         String xpathExpression = null;
         try {
-            for (ConfigurationEventTypeXMLDOM.XPathPropertyDesc property : config.getXPathProperties().values())
+            for (ConfigurationEventTypeAxiom.XPathPropertyDesc property : config.getXPathProperties().values())
             {
-                TypedEventPropertyGetter getter = resolvePropertyGetter(property.getName(), property.getXpath(), property.getType());
+                TypedEventPropertyGetter getter = resolvePropertyGetter(property.getName(), property.getXpath(), property.getType(), property.getOptionalCastToType());
                 propertyGetterCache.put(property.getName(), getter);
             }
         }
@@ -131,7 +130,7 @@ public class AxiomXMLEventType implements EventType
      * Returns the configuration for the alias.
      * @return configuration details underlying the type
      */
-    public ConfigurationEventTypeXMLDOM getConfig()
+    public ConfigurationEventTypeAxiom getConfig()
     {
         return config;
     }
@@ -140,10 +139,10 @@ public class AxiomXMLEventType implements EventType
     {
         // not defined, come up with an XPath
         String xPathExpr = SimpleXMLPropertyParser.parse(property, config.getRootElementName(), defaultNamespacePrefix, config.isResolvePropertiesAbsolute());
-        return resolvePropertyGetter(property, xPathExpr, XPathConstants.STRING);
+        return resolvePropertyGetter(property, xPathExpr, XPathConstants.STRING, null);
     }
 
-    private TypedEventPropertyGetter resolvePropertyGetter(String propertyName, String xPathExpr, QName type) throws XPathExpressionException
+    private TypedEventPropertyGetter resolvePropertyGetter(String propertyName, String xPathExpr, QName type, Class optionalCastToType) throws XPathExpressionException
     {
         AXIOMXPath axXPath;
         try
@@ -155,7 +154,7 @@ public class AxiomXMLEventType implements EventType
             throw new EPException("Error constructing XPath expression from property name '" + propertyName + '\'', e);
         }
 
-        axXPath.setNamespaceContext((org.jaxen.NamespaceContext) namespaceContext);
-        return new AxiomXPathPropertyGetter(propertyName, axXPath, type);
+        axXPath.setNamespaceContext(namespaceContext);
+        return new AxiomXPathPropertyGetter(propertyName, axXPath, type, optionalCastToType);
     }
 }

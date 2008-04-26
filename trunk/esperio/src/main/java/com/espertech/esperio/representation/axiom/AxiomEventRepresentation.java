@@ -1,8 +1,6 @@
 package com.espertech.esperio.representation.axiom;
 
 import com.espertech.esper.plugin.*;
-import com.espertech.esper.client.ConfigurationEventTypeXMLDOM;
-import com.espertech.esper.event.EventType;
 
 import java.util.Map;
 import java.util.HashMap;
@@ -23,12 +21,30 @@ public class AxiomEventRepresentation implements PlugInEventRepresentation
 
     public boolean acceptsType(PlugInEventTypeHandlerContext acceptTypeContext)
     {
-        return acceptTypeContext.getTypeInitializer() instanceof ConfigurationEventTypeXMLDOM;
+        Object initValue = acceptTypeContext.getTypeInitializer();
+        if (initValue instanceof String)
+        {
+            String xml = (String) initValue;
+            return xml.contains("xml-axiom");
+        }
+        return initValue instanceof ConfigurationEventTypeAxiom;
     }
 
     public PlugInEventTypeHandler getTypeHandler(PlugInEventTypeHandlerContext eventTypeContext)
     {
-        ConfigurationEventTypeXMLDOM config = (ConfigurationEventTypeXMLDOM) eventTypeContext.getTypeInitializer();
+        ConfigurationEventTypeAxiom config;
+
+        Object initValue = eventTypeContext.getTypeInitializer();
+        if (initValue instanceof String)
+        {
+            String xml = (String) initValue;
+            config = AxiomConfigurationParserXML.parse(xml);
+        }
+        else
+        {
+            config = (ConfigurationEventTypeAxiom) eventTypeContext.getTypeInitializer();
+        }
+
         AxiomXMLEventType eventType = new AxiomXMLEventType(config);
         types.put(config.getRootElementName(), eventType);  // keep a handle on the types created to allow dynamic event reflection via bean factory
         return new AxiomEventTypeHandler(eventType);

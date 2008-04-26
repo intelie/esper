@@ -122,7 +122,7 @@ public class EventAdapterServiceImpl implements EventAdapterService
         if (handlingFactory == null)
         {
             throw new EventAdapterException("Event type named '" + alias + "' could not be created as none of the " +
-                    " known plug-in event representations accepts any of the resolution URIs '" + Arrays.toString(resolutionURIs)
+                    "registered plug-in event representations accepts any of the resolution URIs '" + Arrays.toString(resolutionURIs)
                     + "' and initializer");
         }
 
