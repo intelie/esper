@@ -308,6 +308,24 @@ where stock.symbol = news.symbol]]></programlisting>
 			<para>
 				The output events of the above example have two properties 'stocktick' and 'news' that are the StockTick and News events.
 			</para>
+
+			<para>
+				The stream name itself, as further described in <xref linkend="epl-from-clause-stream-name"/>, may be used within expressions or alone. 
+			</para>
+			
+			<para>
+				This example passes events to a user-defined function named <literal>compute</literal> and also shows <literal>insert-into</literal> to populate an event stream of combined events:
+			</para>
+			<programlisting><![CDATA[insert into TickNewStream select tick, news, MyLib.compute(news, tick) as result
+from StockTick.win:time(10) as tick, News.win:time(10) as news
+where tick.symbol = news.symbol
+
+// second statement that uses the TickNewStream stream
+select tick.price, news.text, result from TickNewStream]]></programlisting>
+
+			<para>
+				In summary, the <emphasis>stream_name.*</emphasis> streamname wildcard syntax can be used to select a stream as the underlying event or as a property, but cannot appear within an expression. While the <emphasis>stream_name</emphasis> syntax (without wildcard) always selects a property (and not as an underlying event), and can occur anywhere within an expression.
+			</para>
 		</sect2>
 
         <sect2 id="epl-select-pattern" >

@@ -8,10 +8,7 @@
 package com.espertech.esper.epl.core;
 
 import com.espertech.esper.collection.Pair;
-import com.espertech.esper.epl.expression.ExprEvaluator;
-import com.espertech.esper.epl.expression.ExprIdentNode;
-import com.espertech.esper.epl.expression.ExprNode;
-import com.espertech.esper.epl.expression.ExprValidationException;
+import com.espertech.esper.epl.expression.*;
 import com.espertech.esper.epl.spec.InsertIntoDesc;
 import com.espertech.esper.epl.spec.SelectClauseExprCompiledSpec;
 import com.espertech.esper.event.*;
@@ -178,6 +175,33 @@ public class SelectExprEvalProcessor implements SelectExprProcessor
 
             expressionNodes[i] = evaluator;
             expressionReturnTypes[i] = pair.getFirst();
+        }
+
+        // Find if there is any stream expression (ExprStreamNode) :
+        // This is a special case for stream selection: select a, b from A as a, B as b
+        // We'd like to maintain 'A' and 'B' EventType in the Map type, and 'a' and 'b' EventBeans in the event bean
+        for (int i = 0; i < selectionList.size(); i++)
+        {
+            if (!(expressionNodes[i] instanceof ExprStreamUnderlyingNode))
+            {
+                continue;
+            }
+
+            ExprStreamUnderlyingNode undNode = (ExprStreamUnderlyingNode) expressionNodes[i];
+            final int streamNum = undNode.getStreamId();
+            EventType eventTypeStream = typeService.getEventTypes()[streamNum];
+
+            // A match was found, we replace the expression
+            ExprEvaluator evaluator = new ExprEvaluator() {
+
+                public Object evaluate(EventBean[] eventsPerStream, boolean isNewData)
+                {
+                    return eventsPerStream[streamNum];
+                }
+            };
+
+            expressionNodes[i] = evaluator;
+            expressionReturnTypes[i] = eventTypeStream;
         }
 
         // Build event type

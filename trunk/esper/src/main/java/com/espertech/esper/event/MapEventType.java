@@ -125,7 +125,7 @@ public class MapEventType implements EventType
                 // Add Map itself as a property
                 simplePropertyTypes.put(name, Map.class);
                 propertyNameList.add(name);
-                EventPropertyGetter getter = new MapEventBeanPropertyGetter(name);
+                EventPropertyGetter getter = new MapEventPropertyGetter(name);
                 propertyGetters.put(name, getter);
                 continue;
             }
