@@ -9,6 +9,8 @@ public class SelectClauseStreamCompiledSpec implements SelectClauseElementCompil
     private final String optionalAliasName;
     private int streamNumber = -1;
     private boolean isTaggedEvent = false;
+    private boolean isProperty = false;
+    private Class propertyType;
 
     /**
      * Ctor.
@@ -80,5 +82,21 @@ public class SelectClauseStreamCompiledSpec implements SelectClauseElementCompil
      */
     public void setTaggedEvent(boolean taggedEvent) {
         isTaggedEvent = taggedEvent;
+    }
+
+    public void setProperty(boolean property, Class propertyType)
+    {
+        this.isProperty = property;
+        this.propertyType = propertyType;
+    }
+
+    public boolean isProperty()
+    {
+        return isProperty;
+    }
+
+    public Class getPropertyType()
+    {
+        return propertyType;
     }
 }

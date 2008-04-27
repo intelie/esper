@@ -15,6 +15,7 @@ import com.espertech.esper.event.EventBean;
 import com.espertech.esper.event.EventType;
 import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.bean.SupportMarketDataBean;
+import com.espertech.esper.support.bean.SupportBeanComplexProps;
 import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.support.util.ArrayAssertionUtil;
 import com.espertech.esper.support.util.SupportUpdateListener;
@@ -33,6 +34,40 @@ public class TestSelectExprStreamSelector extends TestCase
         epService = EPServiceProviderManager.getDefaultProvider(SupportConfigFactory.getConfiguration());
         epService.initialize();
         epService.getEPRuntime().sendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
+    }
+
+    public void testInvalidSelectWildcardProperty()
+    {
+        try
+        {
+            String stmtOneText = "select nested.* as a from " + SupportBeanComplexProps.class.getName() + " as s0";
+            epService.getEPAdministrator().createEPL(stmtOneText);
+            fail();
+        }
+        catch (Exception ex)
+        {
+            assertEquals("Error starting view: The property wildcard syntax must be used without alias [select nested.* as a from com.espertech.esper.support.bean.SupportBeanComplexProps as s0]", ex.getMessage());
+        }
+    }
+
+    public void testInsertTransposeNestedProperty()
+    {
+    	String stmtOneText = "insert into StreamA select nested.* from " + SupportBeanComplexProps.class.getName() + " as s0";
+    	SupportUpdateListener listenerOne = new SupportUpdateListener();
+    	EPStatement stmtOne = epService.getEPAdministrator().createEPL(stmtOneText);
+        stmtOne.addListener(listenerOne);
+        assertEquals(SupportBeanComplexProps.SupportBeanSpecialGetterNested.class, stmtOne.getEventType().getUnderlyingType());
+
+        String stmtTwoText = "select nestedValue from StreamA";
+        SupportUpdateListener listenerTwo = new SupportUpdateListener();
+        EPStatement stmtTwo = epService.getEPAdministrator().createEPL(stmtTwoText);
+        stmtTwo.addListener(listenerTwo);
+        assertEquals(String.class, stmtTwo.getEventType().getPropertyType("nestedValue"));
+
+        epService.getEPRuntime().sendEvent(SupportBeanComplexProps.makeDefaultBean());
+
+        assertEquals("nestedValue", listenerOne.assertOneGetNewAndReset().get("nestedValue"));
+        assertEquals("nestedValue", listenerTwo.assertOneGetNewAndReset().get("nestedValue"));
     }
 
     public void testInsertFromPattern()

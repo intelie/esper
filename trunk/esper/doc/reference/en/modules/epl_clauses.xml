@@ -1366,6 +1366,31 @@ select A.customerId as custId, A.timestamp - B.timestamp as latency
 select linkUp.ip as ip 
 from pattern [every linkDown=LinkDownEvent -> linkUp=LinkUpEvent(ip=linkDown.ip)]</programlisting>
 
+		<sect4 id="insert-into-property-transpose">
+			<title>Transposing a Property To a Stream</title>			
+			<para>
+				Sometimes your events may carry properties that are themselves event objects. Therefore EPL offers a special syntax to insert the value of a property itself as an event into a stream:
+			</para>
+			<synopsis>insert into <emphasis>stream_name</emphasis> select <emphasis>property_name</emphasis>.* from ...</synopsis>
+
+			<para>
+				This feature is only supported for JavaBean events and is not supported for <literal>Map</literal> or <literal>XML</literal> events. Nested property names are also not supported.
+			</para>
+
+			<para>
+				In this example, the class <literal>Summary</literal> with properties <literal>bid</literal> and <literal>ask</literal> that are of type <literal>Quote</literal> is:
+			</para>
+			<programlisting><![CDATA[public class Summary {
+  private Quote bid;
+  private Quote ask;
+  ...]]></programlisting>			
+  
+			<para>
+				The statement to populate a stream of <literal>Quote</literal> events is thus:
+			</para>
+			<programlisting><![CDATA[insert into MyBidStream select bid.* from Summary]]></programlisting>			
+		</sect4>
+
 		<sect4 id="insert-into-merging-columns">
 			<title>Merging Streams By Event Type</title>			
 			<para>
