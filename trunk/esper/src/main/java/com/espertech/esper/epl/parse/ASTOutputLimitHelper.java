@@ -79,7 +79,6 @@ public class ASTOutputLimitHelper
                 return new OutputLimitSpec(rate, variableName, OutputLimitRateType.TIME_SEC, displayLimit);
             case EsperEPL2GrammarParser.MIN_LIMIT_EXPR:
                 return new OutputLimitSpec(rate, variableName, OutputLimitRateType.TIME_MIN, displayLimit);
-            // TODO
             default:
                 throw new IllegalArgumentException("Node type " + node.getType() + " not a recognized output limit type");
 		 }

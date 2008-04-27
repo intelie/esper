@@ -109,6 +109,7 @@ public class MapEventType implements EventType
                 propertyGetters.put(name, getter);
                 continue;
             }
+            
             // A null-type is also allowed
             if (entry.getValue() == null)
             {
@@ -118,15 +119,27 @@ public class MapEventType implements EventType
                 propertyGetters.put(name, getter);
                 continue;
             }
-            if (!(entry.getValue() instanceof Map))
+
+            if (entry.getValue() instanceof Map)
+            {
+                // Add Map itself as a property
+                simplePropertyTypes.put(name, Map.class);
+                propertyNameList.add(name);
+                EventPropertyGetter getter = new MapEventBeanPropertyGetter(name);
+                propertyGetters.put(name, getter);
+                continue;
+            }
+
+            if (!(entry.getValue() instanceof EventType))
             {
                 generateExceptionNestedProp(name, entry.getValue());
             }
 
-            // Add Map itself as a property
-            simplePropertyTypes.put(name, Map.class);
+            // Add EventType itself as a property
+            EventType eventType = (EventType) entry.getValue();
+            simplePropertyTypes.put(name, eventType.getUnderlyingType());
             propertyNameList.add(name);
-            EventPropertyGetter getter = new MapEventPropertyGetter(name);
+            EventPropertyGetter getter = new MapEventBeanPropertyGetter(name);
             propertyGetters.put(name, getter);
         }
 
@@ -193,6 +206,11 @@ public class MapEventType implements EventType
             Class simpleClass = (Class) nestedType;
             EventType nestedEventType = eventAdapterService.addBeanType(simpleClass.getName(), simpleClass);
             return nestedEventType.getPropertyType(propertyNested);
+        }
+        else if (nestedType instanceof EventType)
+        {
+            EventType innerType = (EventType) nestedType;
+            return innerType.getPropertyType(propertyNested);
         }
         else
         {
@@ -282,6 +300,21 @@ public class MapEventType implements EventType
 
             // construct getter for nested property
             getter = new MapPOJOEntryPropertyGetter(propertyMap, nestedGetter, eventAdapterService);
+
+            return getter;
+        }
+        else if (nestedType instanceof EventType)
+        {
+            // ask the nested class to resolve the property
+            EventType innerType = (EventType) nestedType;
+            final EventPropertyGetter nestedGetter = innerType.getGetter(propertyNested);
+            if (nestedGetter == null)
+            {
+                return null;
+            }
+
+            // construct getter for nested property
+            getter = new MapEventBeanEntryPropertyGetter(propertyMap, nestedGetter);
 
             return getter;
         }
@@ -525,6 +558,6 @@ public class MapEventType implements EventType
     {
         String clazzName = (value == null) ? "null" : value.getClass().getSimpleName();
         throw new EPException("Nestable map type configuration encountered an unexpected property type of '"
-            + clazzName + "' for property '" + name + "', expected java.lang.Class or java.util.Map definition");
+            + clazzName + "' for property '" + name + "', expected java.lang.Class or java.util.Map");
     }
 }

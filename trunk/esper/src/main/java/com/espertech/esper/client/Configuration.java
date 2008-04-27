@@ -236,12 +236,6 @@ public class Configuration implements ConfigurationOperations, ConfigurationInfo
     	nestableMapAliases.put(eventTypeAlias, typeMap);
     }
 
-    /**
-     * This is the same as {@link #addNestableEventTypeAlias}.
-     * @param eventTypeAlias is the alias for the event type
-     * @param typeMap maps the name of each property in the Map event to the type
-     * (fully qualified classname) of its value in Map event instances.
-     */
     public void addEventTypeAliasNestable(String eventTypeAlias, Map<String, Object> typeMap)
     {
     	addNestableEventTypeAlias(eventTypeAlias, typeMap);

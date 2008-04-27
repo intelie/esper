@@ -332,6 +332,16 @@ from pattern[every tick=StockTick where timer:within(10 sec)]]]></programlisting
 				You may also select the matching event itself using the <literal>tick.*</literal> syntax. The engine outputs the StockTick event itself to listeners:
 			</para>
 			<programlisting><![CDATA[select tick.* from pattern[every tick=StockTick where timer:within(10 sec)]]]></programlisting>
+
+			<para>
+				A tag name as specified in a pattern is a valid expression itself. This example uses the <literal>insert into</literal> clause to make available the events matched by a pattern to further statements:
+			</para>
+			<programlisting><![CDATA[// make a new stream of ticks and news available
+insert into StockTickAndNews 
+select tick, news from pattern [every tick=StockTick -> news=News(symbol=tick.symbol)]
+      
+// second statement to select from the stream of ticks and news
+select tick.symbol, tick.price, news.text from StockTickAndNews]]></programlisting>
 		</sect2>
 
         <sect2 id="epl-select-using-istream-rstream" >

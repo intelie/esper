@@ -28,6 +28,21 @@ public class TestStreamExpr extends TestCase
         epService.initialize();
     }
 
+    public void testStreamFunction()
+    {
+        String textOne = "select * from " + SupportMarketDataBean.class.getName() + " as s0 where " +
+                SupportStaticMethodLib.class.getName() + ".volumeGreaterZero(s0)";
+
+        EPStatement stmtOne = epService.getEPAdministrator().createEPL(textOne);
+        SupportUpdateListener listenerOne = new SupportUpdateListener();
+        stmtOne.addListener(listenerOne);
+
+        epService.getEPRuntime().sendEvent(new SupportMarketDataBean("ACME", 0, 0L, null));
+        assertFalse(listenerOne.isInvoked());
+        epService.getEPRuntime().sendEvent(new SupportMarketDataBean("ACME", 0, 100L, null));
+        assertTrue(listenerOne.isInvoked());
+    }
+
     public void testInstanceMethodOuterJoin()
     {
         String textOne = "select symbol, s1.getString() as string from " +

@@ -72,7 +72,7 @@ public class SelectExprEvalProcessorStreams implements SelectExprProcessor
         // Verify insert into clause
         if (insertIntoDesc != null)
         {
-            verifyInsertInto(insertIntoDesc, selectionList, aliasedStreams, isUsingWildcard, typeService);
+            verifyInsertInto(insertIntoDesc, selectionList, aliasedStreams);
         }
 
         // Error if there are more then one un-aliased streams (i.e. select s0.*, s1.* from S0 as s0, S1 as s1)
@@ -313,9 +313,7 @@ public class SelectExprEvalProcessorStreams implements SelectExprProcessor
 
     private static void verifyInsertInto(InsertIntoDesc insertIntoDesc,
                                          List<SelectClauseExprCompiledSpec> selectionList,
-                                         List<SelectClauseStreamCompiledSpec> aliasedStreams,
-                                         boolean isUsingWildcard,
-                                         StreamTypeService typeService)
+                                         List<SelectClauseStreamCompiledSpec> aliasedStreams)
         throws ExprValidationException
     {
         // Verify all column names are unique
@@ -327,12 +325,6 @@ public class SelectExprEvalProcessorStreams implements SelectExprProcessor
                 throw new ExprValidationException("Property name '" + element + "' appears more then once in insert-into clause");
             }
             names.add(element);
-        }
-
-        int numStreamColumnsJoin = 0;
-        if (isUsingWildcard && typeService.getEventTypes().length > 1)
-        {
-            numStreamColumnsJoin = typeService.getEventTypes().length;
         }
 
         // Verify number of columns matches the select clause

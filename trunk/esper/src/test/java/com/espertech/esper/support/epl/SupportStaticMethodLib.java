@@ -212,4 +212,9 @@ public class SupportStaticMethodLib
             this.id = id;
         }
     }
+
+    public static boolean volumeGreaterZero(SupportMarketDataBean bean)
+    {
+        return bean.getVolume() > 0;
+    }
 }

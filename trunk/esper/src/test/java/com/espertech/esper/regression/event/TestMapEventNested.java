@@ -242,7 +242,7 @@ public class TestMapEventNested extends TestCase
         tryInvalid(epService, invalid, "Invalid map type configuration: property name is not a String-type value");
 
         invalid = makeMap(new Object[][] {{"abc", new SupportBean()} });
-        tryInvalid(epService, invalid, "Nestable map type configuration encountered an unexpected property type of 'SupportBean' for property 'abc', expected java.lang.Class or java.util.Map definition");
+        tryInvalid(epService, invalid, "Nestable map type configuration encountered an unexpected property type of 'SupportBean' for property 'abc', expected java.lang.Class or java.util.Map");
     }
 
     private void tryInvalid(EPServiceProvider epService, Map<String, Object> config, String message)

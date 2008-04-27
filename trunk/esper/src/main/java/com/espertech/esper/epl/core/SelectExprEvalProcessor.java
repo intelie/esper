@@ -7,6 +7,9 @@
  **************************************************************************************/
 package com.espertech.esper.epl.core;
 
+import com.espertech.esper.collection.Pair;
+import com.espertech.esper.epl.expression.ExprEvaluator;
+import com.espertech.esper.epl.expression.ExprIdentNode;
 import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.epl.expression.ExprValidationException;
 import com.espertech.esper.epl.spec.InsertIntoDesc;
@@ -26,7 +29,7 @@ public class SelectExprEvalProcessor implements SelectExprProcessor
 {
 	private static final Log log = LogFactory.getLog(SelectExprEvalProcessor.class);
 
-    private ExprNode[] expressionNodes;
+    private ExprEvaluator[] expressionNodes;
     private String[] columnNames;
     private EventType resultEventType;
     private final EventAdapterService eventAdapterService;
@@ -96,20 +99,24 @@ public class SelectExprEvalProcessor implements SelectExprProcessor
         	}
         }
 
-        init(selectionList, insertIntoDesc, underlyingType, eventAdapterService);
+        init(selectionList, insertIntoDesc, underlyingType, eventAdapterService, typeService);
     }
 
     private void init(List<SelectClauseExprCompiledSpec> selectionList,
                       InsertIntoDesc insertIntoDesc,
                       EventType eventType,
-                      EventAdapterService eventAdapterService)
+                      EventAdapterService eventAdapterService,
+                      StreamTypeService typeService)
         throws ExprValidationException
     {
         // Get expression nodes
-        expressionNodes = new ExprNode[selectionList.size()];
+        expressionNodes = new ExprEvaluator[selectionList.size()];
+        Object[] expressionReturnTypes = new Object[selectionList.size()];
         for (int i = 0; i < selectionList.size(); i++)
         {
-            expressionNodes[i] = selectionList.get(i).getSelectExpression();
+            ExprNode expr = selectionList.get(i).getSelectExpression();
+            expressionNodes[i] = expr;
+            expressionReturnTypes[i] = expr.getType();
         }
 
         // Get column names
@@ -126,11 +133,58 @@ public class SelectExprEvalProcessor implements SelectExprProcessor
             }
         }
 
+        // Find if there is any tagged event types:
+        // This is a special case for patterns: select a, b from pattern [a=A -> b=B]
+        // We'd like to maintain 'A' and 'B' EventType in the Map type, and 'a' and 'b' EventBeans in the event bean
+        for (int i = 0; i < selectionList.size(); i++)
+        {
+            if (!(expressionNodes[i] instanceof ExprIdentNode))
+            {
+                continue;
+            }
+
+            ExprIdentNode identNode = (ExprIdentNode) expressionNodes[i];
+            String propertyName = identNode.getResolvedPropertyName();
+            final int streamNum = identNode.getStreamId();
+
+            EventType eventTypeStream = typeService.getEventTypes()[streamNum];
+            if (!(eventTypeStream instanceof TaggedCompositeEventType))
+            {
+                continue;
+            }
+
+            TaggedCompositeEventType comp = (TaggedCompositeEventType) eventTypeStream;
+            Pair<EventType, String> pair = comp.getTaggedEventTypes().get(propertyName);
+            if (pair == null)
+            {
+                continue;
+            }
+
+            // A match was found, we replace the expression
+            final String tagName = propertyName;
+            ExprEvaluator evaluator = new ExprEvaluator() {
+
+                public Object evaluate(EventBean[] eventsPerStream, boolean isNewData)
+                {
+                    EventBean streamEvent = eventsPerStream[streamNum];
+                    if (streamEvent == null)
+                    {
+                        return null;
+                    }
+                    TaggedCompositeEventBean taggedComposite = (TaggedCompositeEventBean) streamEvent;
+                    return taggedComposite.getEventBean(tagName);
+                }
+            };
+
+            expressionNodes[i] = evaluator;
+            expressionReturnTypes[i] = pair.getFirst();
+        }
+
         // Build event type
         Map<String, Object> selPropertyTypes = new HashMap<String, Object>();
         for (int i = 0; i < expressionNodes.length; i++)
         {
-            Class expressionReturnType = expressionNodes[i].getType();
+            Object expressionReturnType = expressionReturnTypes[i];
             selPropertyTypes.put(columnNames[i], expressionReturnType);
         }
 
@@ -152,7 +206,7 @@ public class SelectExprEvalProcessor implements SelectExprProcessor
                         if (existingType != null)
                         {
                             // check if the existing type and new type are compatible
-                            Class columnOneType = expressionNodes[0].getType();
+                            Object columnOneType = expressionReturnTypes[0];
                             if (existingType instanceof WrapperEventType)
                             {
                                 WrapperEventType wrapperType = (WrapperEventType) existingType;
