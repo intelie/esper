@@ -312,6 +312,15 @@ config.getEngineDefaults().getThreading().setInsertIntoDispatchPreserveOrder(fal
 		</sect2>
 		
 		<sect2 id="perf-tips-12">
+			<title>Use a Subscriber Object to Receive Events</title>
+
+			<para>
+				The subscriber object is a technique for receive result data that has performance advantages over the <literal>UpdateListener</literal> interface. Please refer to <xref linkend="api-admin-subscriber"/>.
+			</para>
+
+		</sect2>
+
+		<sect2 id="perf-tips-13">
 
 			<title>Performance, JVM, OS and hardware</title>
 
