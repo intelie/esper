@@ -23,7 +23,7 @@ public class TestResultSetProcessorSimple extends TestCase
 
     public void setUp() throws Exception
     {
-        selectExprProcessor = new SelectExprEvalProcessor(SupportSelectExprFactory.makeNoAggregateSelectList(), null, false, new SupportStreamTypeSvc1Stream(), SupportEventAdapterService.getService());
+        selectExprProcessor = new SelectExprEvalProcessor(SupportSelectExprFactory.makeNoAggregateSelectList(), null, false, new SupportStreamTypeSvc1Stream(), SupportEventAdapterService.getService(), null);
         orderByProcessor = null;
 
 		outputProcessorAll = new ResultSetProcessorSimple(selectExprProcessor, orderByProcessor, null, true);

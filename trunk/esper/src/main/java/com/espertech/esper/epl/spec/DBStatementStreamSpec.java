@@ -11,6 +11,7 @@ import com.espertech.esper.epl.core.MethodResolutionService;
 import com.espertech.esper.epl.named.NamedWindowService;
 import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.event.EventAdapterService;
+import com.espertech.esper.event.rev.RevisionService;
 import com.espertech.esper.pattern.PatternObjectResolutionService;
 import com.espertech.esper.schedule.TimeProvider;
 import com.espertech.esper.util.MetaDefItem;
@@ -76,6 +77,7 @@ public class DBStatementStreamSpec extends StreamSpecBase implements StreamSpecR
                                       PatternObjectResolutionService patternObjectResolutionService,
                                       TimeProvider timeProvider,
                                       NamedWindowService namedWindowService,
+                                      RevisionService revisionService,
                                       VariableService variableService,
                                       String engineURI,
                                       URI[] plugInTypeResolutionURIs)

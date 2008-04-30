@@ -19,6 +19,7 @@ import com.espertech.esper.epl.spec.PluggableObjectCollection;
 import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.epl.view.OutputConditionFactory;
 import com.espertech.esper.event.EventAdapterService;
+import com.espertech.esper.event.rev.RevisionService;
 import com.espertech.esper.filter.FilterService;
 import com.espertech.esper.schedule.SchedulingService;
 import com.espertech.esper.timer.TimerService;
@@ -55,6 +56,7 @@ public final class EPServicesContext
     private OutputConditionFactory outputConditionFactory;
     private NamedWindowService namedWindowService;
     private VariableService variableService;
+    private RevisionService revisionService;
 
     // Supplied after construction to avoid circular dependency
     private StatementLifecycleSvc statementLifecycleSvc;
@@ -100,7 +102,8 @@ public final class EPServicesContext
                              FilterService filterService,
                              StreamFactoryService streamFactoryService,
                              NamedWindowService namedWindowService,
-                             VariableService variableService)
+                             VariableService variableService,
+                             RevisionService revisionService)
     {
         this.engineURI = engineURI;
         this.schedulingService = schedulingService;
@@ -124,6 +127,7 @@ public final class EPServicesContext
         this.outputConditionFactory = outputConditionFactory;
         this.namedWindowService = namedWindowService;
         this.variableService = variableService;
+        this.revisionService = revisionService;
     }
 
     /**
@@ -364,6 +368,7 @@ public final class EPServicesContext
         this.statementContextFactory = null;
         this.plugInPatternObjects = null;
         this.namedWindowService = null;
+        this.revisionService = null;
     }
 
     /**
@@ -427,5 +432,10 @@ public final class EPServicesContext
     public VariableService getVariableService()
     {
         return variableService;
+    }
+
+    public RevisionService getRevisionService()
+    {
+        return revisionService;
     }
 }

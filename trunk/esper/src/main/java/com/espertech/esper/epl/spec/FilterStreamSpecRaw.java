@@ -17,6 +17,7 @@ import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.event.EventAdapterException;
 import com.espertech.esper.event.EventAdapterService;
 import com.espertech.esper.event.EventType;
+import com.espertech.esper.event.rev.RevisionService;
 import com.espertech.esper.filter.FilterSpecCompiled;
 import com.espertech.esper.filter.FilterSpecCompiler;
 import com.espertech.esper.pattern.PatternObjectResolutionService;
@@ -73,6 +74,7 @@ public class FilterStreamSpecRaw extends StreamSpecBase implements StreamSpecRaw
                                       PatternObjectResolutionService patternObjectResolutionService,
                                       TimeProvider timeProvider,
                                       NamedWindowService namedWindowService,
+                                      RevisionService revisionService,
                                       VariableService variableService,
                                       String engineURI,
                                       URI[] optionalPlugInTypeResolutionURIS)
@@ -92,8 +94,18 @@ public class FilterStreamSpecRaw extends StreamSpecBase implements StreamSpecRaw
             
             return new NamedWindowConsumerStreamSpec(eventName, this.getOptionalStreamName(), this.getViewSpecs(), validatedNodes, this.isUnidirectional());
         }
-        
-        EventType eventType = resolveType(engineURI, eventName, eventAdapterService, optionalPlugInTypeResolutionURIS);
+
+        EventType eventType = null;
+
+        if (revisionService.isRevisionTypeAlias(eventName))
+        {
+            eventType = revisionService.getRevisionUnderlyingType(eventName);
+        }
+
+        if (eventType == null)
+        {
+            eventType = resolveType(engineURI, eventName, eventAdapterService, optionalPlugInTypeResolutionURIS);
+        }
 
         // Validate all nodes, make sure each returns a boolean and types are good;
         // Also decompose all AND super nodes into individual expressions

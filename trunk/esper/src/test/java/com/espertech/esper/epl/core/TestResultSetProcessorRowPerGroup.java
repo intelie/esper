@@ -23,7 +23,7 @@ public class TestResultSetProcessorRowPerGroup extends TestCase
     public void setUp() throws Exception
     {
         SelectExprProcessor selectProcessor = new SelectExprEvalProcessor(SupportSelectExprFactory.makeSelectListFromIdent("string", "s0"),
-        		null, false, new SupportStreamTypeSvc1Stream(), SupportEventAdapterService.getService());
+        		null, false, new SupportStreamTypeSvc1Stream(), SupportEventAdapterService.getService(), null);
         supportAggregationService = new SupportAggregationService();
 
         List<ExprNode> groupKeyNodes = new LinkedList<ExprNode>();

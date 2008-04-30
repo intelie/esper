@@ -6,6 +6,7 @@ import com.espertech.esper.epl.named.NamedWindowService;
 import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.epl.view.OutputConditionFactory;
 import com.espertech.esper.event.EventAdapterService;
+import com.espertech.esper.event.rev.RevisionService;
 import com.espertech.esper.filter.FilterService;
 import com.espertech.esper.pattern.PatternContextFactory;
 import com.espertech.esper.pattern.PatternObjectResolutionService;
@@ -43,6 +44,7 @@ public final class StatementContext
     private final VariableService variableService;
     private final StatementResultService statementResultService;
     private final URI[] plugInTypeResolutionURIs;
+    private final RevisionService revisionService;
 
     /**
      * Constructor.
@@ -90,7 +92,8 @@ public final class StatementContext
                               NamedWindowService namedWindowService,
                               VariableService variableService,
                               StatementResultService statementResultService,
-                              URI[] plugInTypeResolutionURIs)
+                              URI[] plugInTypeResolutionURIs,
+                              RevisionService revisionService)
     {
         this.engineURI = engineURI;
         this.engineInstanceId = engineInstanceId;
@@ -114,6 +117,7 @@ public final class StatementContext
         this.variableService = variableService;
         this.statementResultService = statementResultService;
         this.plugInTypeResolutionURIs = plugInTypeResolutionURIs;
+        this.revisionService = revisionService;
     }
 
     /**
@@ -312,6 +316,11 @@ public final class StatementContext
     public URI[] getPlugInTypeResolutionURIs()
     {
         return plugInTypeResolutionURIs;
+    }
+
+    public RevisionService getRevisionService()
+    {
+        return revisionService;
     }
 
     public String toString()

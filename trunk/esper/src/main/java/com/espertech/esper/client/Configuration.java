@@ -147,6 +147,8 @@ public class Configuration implements ConfigurationOperations, ConfigurationInfo
      */
     protected URI[] plugInEventTypeAliasResolutionURIs;
 
+    protected Map<String, ConfigurationRevisionEvent> revisionEventTypes;
+
     /**
      * Constructs an empty configuration. The auto import values
      * are set by default to java.lang, java.math, java.text and
@@ -270,6 +272,11 @@ public class Configuration implements ConfigurationOperations, ConfigurationInfo
         eventTypesXMLDOM.put(eventTypeAlias, xmlDOMEventTypeDesc);
     }
 
+    public void addRevisionEvent(String revisionEventTypeAlias, ConfigurationRevisionEvent revisionEventTypeConfig)
+    {
+        revisionEventTypes.put(revisionEventTypeAlias, revisionEventTypeConfig);
+    }
+
     /**
      * Add a database reference with a given database name.
      * @param name is the database name
@@ -385,6 +392,11 @@ public class Configuration implements ConfigurationOperations, ConfigurationInfo
     public Map<String, ConfigurationMethodRef> getMethodInvocationReferences()
     {
         return methodInvocationReferences;
+    }
+
+    public Map<String, ConfigurationRevisionEvent> getRevisionEventTypes()
+    {
+        return revisionEventTypes;
     }
 
     /**
@@ -721,6 +733,7 @@ public class Configuration implements ConfigurationOperations, ConfigurationInfo
         methodInvocationReferences = new HashMap<String, ConfigurationMethodRef>();
         plugInEventRepresentation = new HashMap<URI, ConfigurationPlugInEventRepresentation>();
         plugInEventTypes = new HashMap<String, ConfigurationPlugInEventType>();
+        revisionEventTypes = new HashMap<String, ConfigurationRevisionEvent>();
     }
 
     /**

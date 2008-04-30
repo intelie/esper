@@ -714,7 +714,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
             compiledStreams = new ArrayList<StreamSpecCompiled>();
             for (StreamSpecRaw rawSpec : spec.getStreamSpecs())
             {
-                StreamSpecCompiled compiled = rawSpec.compile(statementContext.getEventAdapterService(), statementContext.getMethodResolutionService(), statementContext.getPatternResolutionService(), statementContext.getSchedulingService(), statementContext.getNamedWindowService(), statementContext.getVariableService(), statementContext.getEngineURI(), statementContext.getPlugInTypeResolutionURIs());
+                StreamSpecCompiled compiled = rawSpec.compile(statementContext.getEventAdapterService(), statementContext.getMethodResolutionService(), statementContext.getPatternResolutionService(), statementContext.getSchedulingService(), statementContext.getNamedWindowService(), statementContext.getRevisionService(), statementContext.getVariableService(), statementContext.getEngineURI(), statementContext.getPlugInTypeResolutionURIs());
                 compiledStreams.add(compiled);
             }
         }
@@ -846,7 +846,11 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
         // Create Map or Wrapper event type from the select clause of the window.
         // If no columns selected, simply create a wrapper type
         boolean isWildcard = spec.getSelectClauseSpec().isUsingWildcard();
-        if (isWildcard)
+        if (statementContext.getRevisionService().isRevisionTypeAlias(selectFromTypeAlias))
+        {
+            targetType = statementContext.getRevisionService().createRevisionType(typeName, selectFromTypeAlias);
+        }
+        else if (isWildcard)
         {
             targetType = statementContext.getEventAdapterService().addWrapperType(typeName, selectFromType, properties);
         }

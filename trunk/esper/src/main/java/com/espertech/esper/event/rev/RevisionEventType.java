@@ -1,9 +1,7 @@
-package com.espertech.esper.regression.rev;
+package com.espertech.esper.event.rev;
 
-import com.espertech.esper.event.EventType;
 import com.espertech.esper.event.EventPropertyGetter;
-import com.espertech.esper.event.EventBean;
-import com.espertech.esper.event.PropertyAccessException;
+import com.espertech.esper.event.EventType;
 
 import java.util.Iterator;
 import java.util.Map;

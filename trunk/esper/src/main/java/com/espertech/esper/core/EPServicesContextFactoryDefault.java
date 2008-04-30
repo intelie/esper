@@ -19,6 +19,8 @@ import com.espertech.esper.epl.view.OutputConditionFactoryDefault;
 import com.espertech.esper.event.EventAdapterException;
 import com.espertech.esper.event.EventAdapterService;
 import com.espertech.esper.event.EventAdapterServiceImpl;
+import com.espertech.esper.event.rev.RevisionServiceImpl;
+import com.espertech.esper.event.rev.RevisionService;
 import com.espertech.esper.filter.FilterService;
 import com.espertech.esper.filter.FilterServiceProvider;
 import com.espertech.esper.plugin.PlugInEventRepresentation;
@@ -86,12 +88,15 @@ public class EPServicesContextFactoryDefault implements EPServicesContextFactory
         FilterService filterService = FilterServiceProvider.newService();
         NamedWindowService namedWindowService = new NamedWindowServiceImpl(statementLockFactory, variableService);
 
+        RevisionService revisionService = new RevisionServiceImpl();
+        revisionService.init(configSnapshot.getRevisionEventTypes(), eventAdapterService);
+
         // New services context
         EPServicesContext services = new EPServicesContext(epServiceProvider.getURI(), schedulingService,
                 eventAdapterService, engineImportService, engineSettingsService, databaseConfigService, plugInViews,
                 statementLockFactory, eventProcessingRWLock, null, jndiContext, statementContextFactory,
                 plugInPatternObj, outputConditionFactory, timerService, filterService, streamFactoryService,
-                namedWindowService, variableService);
+                namedWindowService, variableService, revisionService);
 
         // Circular dependency
         StatementLifecycleSvc statementLifecycleSvc = new StatementLifecycleSvcImpl(epServiceProvider, services);

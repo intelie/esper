@@ -12,6 +12,7 @@ import com.espertech.esper.epl.expression.*;
 import com.espertech.esper.epl.spec.InsertIntoDesc;
 import com.espertech.esper.epl.spec.SelectClauseExprCompiledSpec;
 import com.espertech.esper.event.*;
+import com.espertech.esper.event.rev.RevisionService;
 import com.espertech.esper.util.ExecutionPathDebugLog;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -48,7 +49,8 @@ public class SelectExprEvalProcessor implements SelectExprProcessor
                                    InsertIntoDesc insertIntoDesc,
                                    boolean isUsingWildcard,
                                    StreamTypeService typeService,
-                                   EventAdapterService eventAdapterService) throws ExprValidationException
+                                   EventAdapterService eventAdapterService,
+                                   RevisionService revisionService) throws ExprValidationException
     {
         this.eventAdapterService = eventAdapterService;
         this.isUsingWildcard = isUsingWildcard;
@@ -96,14 +98,15 @@ public class SelectExprEvalProcessor implements SelectExprProcessor
         	}
         }
 
-        init(selectionList, insertIntoDesc, underlyingType, eventAdapterService, typeService);
+        init(selectionList, insertIntoDesc, underlyingType, eventAdapterService, typeService, revisionService);
     }
 
     private void init(List<SelectClauseExprCompiledSpec> selectionList,
                       InsertIntoDesc insertIntoDesc,
                       EventType eventType,
                       EventAdapterService eventAdapterService,
-                      StreamTypeService typeService)
+                      StreamTypeService typeService,
+                      RevisionService revisionService)
         throws ExprValidationException
     {
         // Get expression nodes
@@ -217,7 +220,12 @@ public class SelectExprEvalProcessor implements SelectExprProcessor
         {
             try
             {
-                if (isUsingWildcard)
+                EventType revisionType = revisionService.getNamedWindowRevisionType(insertIntoDesc.getEventTypeAlias());
+                if (revisionType != null)
+                {
+                    resultEventType = revisionType;
+                }
+                else if (isUsingWildcard)
                 {
                     resultEventType = eventAdapterService.addWrapperType(insertIntoDesc.getEventTypeAlias(), eventType, selPropertyTypes);
                 }

@@ -6,6 +6,7 @@ public class SupportDeltaTwo
     private final String p0;
     private final String p2;
     private final String p3;
+    private final String someOtherProp;
 
     public SupportDeltaTwo(String k0, String p0, String p2, String p3)
     {
@@ -13,6 +14,7 @@ public class SupportDeltaTwo
         this.p0 = p0;
         this.p2 = p2;
         this.p3 = p3;
+        someOtherProp = "abc";
     }
 
     public String getK0()
@@ -33,5 +35,9 @@ public class SupportDeltaTwo
     public String getP3()
     {
         return p3;
+    }
+
+    public String getSomeOtherProp() {
+        return someOtherProp;
     }
 }

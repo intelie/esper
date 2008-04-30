@@ -11,6 +11,7 @@ import com.espertech.esper.core.StatementResultService;
 import com.espertech.esper.epl.expression.ExprValidationException;
 import com.espertech.esper.epl.spec.*;
 import com.espertech.esper.event.EventAdapterService;
+import com.espertech.esper.event.rev.RevisionService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -42,10 +43,11 @@ public class SelectExprProcessorFactory
                                                    InsertIntoDesc insertIntoDesc,
                                                    StreamTypeService typeService, 
                                                    EventAdapterService eventAdapterService,
-                                                   StatementResultService statementResultService)
+                                                   StatementResultService statementResultService,
+                                                   RevisionService revisionService)
         throws ExprValidationException
     {
-        SelectExprProcessor synthetic = getProcessorInternal(selectionList, isUsingWildcard, insertIntoDesc, typeService, eventAdapterService);
+        SelectExprProcessor synthetic = getProcessorInternal(selectionList, isUsingWildcard, insertIntoDesc, typeService, eventAdapterService, revisionService);
         BindProcessor bindProcessor = new BindProcessor(selectionList, typeService.getEventTypes(), typeService.getStreamNames());
         statementResultService.setSelectClause(bindProcessor.getExpressionTypes(), bindProcessor.getColumnNamesAssigned());
         
@@ -57,7 +59,8 @@ public class SelectExprProcessorFactory
                                                    boolean isUsingWildcard,
                                                    InsertIntoDesc insertIntoDesc,
                                                    StreamTypeService typeService,
-                                                   EventAdapterService eventAdapterService)
+                                                   EventAdapterService eventAdapterService,
+                                                   RevisionService revisionService)
         throws ExprValidationException
     {
         // Wildcard not allowed when insert into specifies column order
@@ -94,7 +97,7 @@ public class SelectExprProcessorFactory
         if (streamWildcards.size() == 0)
         {
             // This one only deals with wildcards and expressions in the selection
-            return new SelectExprEvalProcessor(expressionList, insertIntoDesc, isUsingWildcard, typeService, eventAdapterService);
+            return new SelectExprEvalProcessor(expressionList, insertIntoDesc, isUsingWildcard, typeService, eventAdapterService, revisionService);
         }
         else
         {

@@ -1,4 +1,4 @@
-package com.espertech.esper.regression.rev;
+package com.espertech.esper.event.rev;
 
 import com.espertech.esper.event.EventBean;
 import com.espertech.esper.event.EventPropertyGetter;

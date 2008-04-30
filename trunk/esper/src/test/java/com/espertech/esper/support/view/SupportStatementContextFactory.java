@@ -43,7 +43,8 @@ public class SupportStatementContextFactory
                 null,
                 null,
                 new StatementResultServiceImpl(null), // statement result svc
-                null // resolution URIs
+                null, // resolution URIs
+                null // revison svc
                 );
     }
 }

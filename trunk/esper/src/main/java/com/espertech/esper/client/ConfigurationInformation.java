@@ -149,5 +149,7 @@ public interface ConfigurationInformation
      * @return URIs for resolving an event type alias
      */
     public URI[] getPlugInEventTypeAliasResolutionURIs();
+
+    public Map<String, ConfigurationRevisionEvent> getRevisionEventTypes();
 }
 
