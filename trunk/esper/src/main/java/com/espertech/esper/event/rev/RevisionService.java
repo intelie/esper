@@ -12,5 +12,6 @@ public interface RevisionService
     public EventType getRevisionUnderlyingType(String alias);
     public boolean isRevisionTypeAlias(String alias);
     public RevisionEventType createRevisionType(String namedWindowName, String alias);        
-    public RevisionEventType getNamedWindowRevisionType(String namedWindowName);        
+    public RevisionEventType getNamedWindowRevisionType(String namedWindowName);
+    public RevisionProcessor getRevisionProcessor(String alias);
 }

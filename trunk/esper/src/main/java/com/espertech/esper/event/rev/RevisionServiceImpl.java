@@ -28,6 +28,11 @@ public class RevisionServiceImpl implements RevisionService
         }
     }
 
+    public RevisionProcessor getRevisionProcessor(String alias)
+    {
+        return processorsByNamedWindow.get(alias);
+    }
+
     public RevisionEventType getNamedWindowRevisionType(String namedWindowName)
     {
         return processorsByNamedWindow.get(namedWindowName).getEventType();

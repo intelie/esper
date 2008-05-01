@@ -13,6 +13,7 @@ import com.espertech.esper.epl.spec.InsertIntoDesc;
 import com.espertech.esper.epl.spec.SelectClauseExprCompiledSpec;
 import com.espertech.esper.event.*;
 import com.espertech.esper.event.rev.RevisionService;
+import com.espertech.esper.event.rev.RevisionProcessor;
 import com.espertech.esper.util.ExecutionPathDebugLog;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -35,6 +36,8 @@ public class SelectExprEvalProcessor implements SelectExprProcessor
     private boolean singleStreamWrapper;
     private boolean singleColumnCoercion;
     private SelectExprJoinWildcardProcessor joinWildcardProcessor;
+    private boolean isRevisionEvent;
+    private RevisionProcessor revisionProcessor;
 
     /**
      * Ctor.
@@ -224,6 +227,8 @@ public class SelectExprEvalProcessor implements SelectExprProcessor
                 if (revisionType != null)
                 {
                     resultEventType = revisionType;
+                    isRevisionEvent = true;
+                    revisionProcessor = revisionService.getRevisionProcessor(insertIntoDesc.getEventTypeAlias());
                 }
                 else if (isUsingWildcard)
                 {
@@ -318,9 +323,16 @@ public class SelectExprEvalProcessor implements SelectExprProcessor
                 event = eventsPerStream[0];
             }
 
-            // Using a wrapper bean since we cannot use the same event type else same-type filters match.
-            // Wrapping it even when not adding properties is very inexpensive.
-            return eventAdapterService.createWrapper(event, props, resultEventType);
+            if (isRevisionEvent)
+            {
+                return revisionProcessor.getRevision(event);
+            }
+            else
+            {
+                // Using a wrapper bean since we cannot use the same event type else same-type filters match.
+                // Wrapping it even when not adding properties is very inexpensive.
+                return eventAdapterService.createWrapper(event, props, resultEventType);
+            }
         }
         else
         {

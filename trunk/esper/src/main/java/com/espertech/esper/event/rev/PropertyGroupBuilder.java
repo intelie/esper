@@ -1,7 +1,6 @@
 package com.espertech.esper.event.rev;
 
 import com.espertech.esper.collection.MultiKey;
-import com.espertech.esper.collection.Pair;
 import com.espertech.esper.event.EventPropertyGetter;
 import com.espertech.esper.event.EventType;
 import org.apache.commons.logging.Log;
@@ -13,15 +12,16 @@ public class PropertyGroupBuilder
 {
     private static final Log log = LogFactory.getLog(PropertyGroupBuilder.class);
 
-    public static Map<EventType, Pair<EventPropertyGetter[], PropertyGroupDesc>> getPerType(PropertyGroupDesc[] groups, String[] allProperties)
+    public static Map<EventType, RevisionEventTypeDesc> getPerType(PropertyGroupDesc[] groups, String[] allProperties, String[] keyProperties)
     {
-        Map<EventType, Pair<EventPropertyGetter[], PropertyGroupDesc>> perType = new HashMap<EventType, Pair<EventPropertyGetter[], PropertyGroupDesc>>();
+        Map<EventType, RevisionEventTypeDesc> perType = new HashMap<EventType, RevisionEventTypeDesc>();
         for (PropertyGroupDesc group : groups)
         {
             for (EventType type : group.getTypes().keySet())
             {
-                EventPropertyGetter[] getters = getGetters(type, allProperties);
-                Pair<EventPropertyGetter[], PropertyGroupDesc> pair = new Pair<EventPropertyGetter[], PropertyGroupDesc>(getters, group);
+                EventPropertyGetter[] allGetters = getGetters(type, allProperties);
+                EventPropertyGetter[] keyGetters = getGetters(type, keyProperties);
+                RevisionEventTypeDesc pair = new RevisionEventTypeDesc(keyGetters, allGetters, group);
                 perType.put(type, pair);
             }
         }
@@ -125,12 +125,12 @@ public class PropertyGroupBuilder
         return result;
     }
 
-    private static EventPropertyGetter[] getGetters(EventType eventType, String[] allPropertyNames)
+    protected static EventPropertyGetter[] getGetters(EventType eventType, String[] propertyNames)
     {
-        EventPropertyGetter[] getters = new EventPropertyGetter[allPropertyNames.length];
+        EventPropertyGetter[] getters = new EventPropertyGetter[propertyNames.length];
         for (int i = 0; i < getters.length; i++)
         {
-            getters[i] = eventType.getGetter(allPropertyNames[i]);
+            getters[i] = eventType.getGetter(propertyNames[i]);
         }
         return getters;
     }

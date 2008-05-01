@@ -1,21 +1,29 @@
 package com.espertech.esper.event.rev;
 
+import com.espertech.esper.collection.MultiKeyUntyped;
 import com.espertech.esper.event.EventBean;
+import com.espertech.esper.event.EventPropertyGetter;
 import com.espertech.esper.event.EventType;
 import com.espertech.esper.event.PropertyAccessException;
-import com.espertech.esper.event.EventPropertyGetter;
 
 public class RevisionEventBean implements EventBean
 {
     private final RevisionEventType eventType;
+    private final MultiKeyUntyped key;
     private final EventBean fullEvent;
-    private RevisionBeanHolder[] holders;
+    private final RevisionBeanHolder[] holders;
 
-    public RevisionEventBean(RevisionEventType eventType, EventBean fullEvent, RevisionBeanHolder[] revisionsPerAuthoritySet)
+    public RevisionEventBean(RevisionEventType eventType, MultiKeyUntyped key, EventBean fullEvent, RevisionBeanHolder[] revisionsPerAuthoritySet)
     {
         this.eventType = eventType;
+        this.key = key;
         this.fullEvent = fullEvent;
         this.holders = revisionsPerAuthoritySet;
+    }
+
+    public MultiKeyUntyped getKey()
+    {
+        return key;
     }
 
     public EventType getEventType()
@@ -41,20 +49,24 @@ public class RevisionEventBean implements EventBean
     public Object getValue(RevisionGetterParameters params)
     {
         RevisionBeanHolder holderMostRecent = null;
-        for (int numSet : params.getPropertyGroups())
+        
+        if (holders != null)
         {
-            RevisionBeanHolder holder = holders[numSet];
-            if (holder != null)
+            for (int numSet : params.getPropertyGroups())
             {
-                if (holderMostRecent == null)
+                RevisionBeanHolder holder = holders[numSet];
+                if (holder != null)
                 {
-                    holderMostRecent = holder;
-                }
-                else
-                {
-                    if (holder.getVersion() > holderMostRecent.getVersion())
+                    if (holderMostRecent == null)
                     {
                         holderMostRecent = holder;
+                    }
+                    else
+                    {
+                        if (holder.getVersion() > holderMostRecent.getVersion())
+                        {
+                            holderMostRecent = holder;
+                        }
                     }
                 }
             }
