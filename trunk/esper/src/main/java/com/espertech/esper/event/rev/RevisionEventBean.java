@@ -8,17 +8,46 @@ import com.espertech.esper.event.PropertyAccessException;
 
 public class RevisionEventBean implements EventBean
 {
-    private final RevisionEventType eventType;
-    private final MultiKeyUntyped key;
-    private final EventBean fullEvent;
-    private final RevisionBeanHolder[] holders;
+    private final RevisionEventType revisionEventType;
+    private final EventBean underlyingFullOrDelta;
+
+    private MultiKeyUntyped key;
+    private EventBean fullEvent;
+    private RevisionBeanHolder[] holders;
+
+    public RevisionEventBean(RevisionEventType eventType, EventBean underlying)
+    {
+        this.revisionEventType = eventType;
+        this.underlyingFullOrDelta = underlying;
+    }
 
     public RevisionEventBean(RevisionEventType eventType, MultiKeyUntyped key, EventBean fullEvent, RevisionBeanHolder[] revisionsPerAuthoritySet)
     {
-        this.eventType = eventType;
+        this.revisionEventType = eventType;
         this.key = key;
         this.fullEvent = fullEvent;
         this.holders = revisionsPerAuthoritySet;
+        this.underlyingFullOrDelta = null;
+    }
+
+    public void setKey(MultiKeyUntyped key)
+    {
+        this.key = key;
+    }
+
+    public void setFullEvent(EventBean fullEvent)
+    {
+        this.fullEvent = fullEvent;
+    }
+
+    public void setHolders(RevisionBeanHolder[] holders)
+    {
+        this.holders = holders;
+    }
+
+    public EventBean getUnderlyingFullOrDelta()
+    {
+        return underlyingFullOrDelta;
     }
 
     public MultiKeyUntyped getKey()
@@ -26,14 +55,19 @@ public class RevisionEventBean implements EventBean
         return key;
     }
 
+    public RevisionEventType getRevisionEventType()
+    {
+        return revisionEventType;
+    }
+
     public EventType getEventType()
     {
-        return eventType;
+        return revisionEventType;
     }
 
     public Object get(String property) throws PropertyAccessException
     {
-        EventPropertyGetter getter = eventType.getGetter(property);
+        EventPropertyGetter getter = revisionEventType.getGetter(property);
         if (getter == null)
         {
             return null;

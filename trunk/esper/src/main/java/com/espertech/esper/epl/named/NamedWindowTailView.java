@@ -1,13 +1,14 @@
 package com.espertech.esper.epl.named;
 
+import com.espertech.esper.collection.ArrayDequeJDK6Backport;
 import com.espertech.esper.collection.ArrayEventIterator;
 import com.espertech.esper.collection.NullIterator;
-import com.espertech.esper.collection.ArrayDequeJDK6Backport;
 import com.espertech.esper.core.EPStatementHandle;
 import com.espertech.esper.core.StatementResultService;
 import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.event.EventBean;
 import com.espertech.esper.event.EventType;
+import com.espertech.esper.event.rev.RevisionProcessor;
 import com.espertech.esper.view.StatementStopService;
 import com.espertech.esper.view.ViewSupport;
 
@@ -26,6 +27,7 @@ public class NamedWindowTailView extends ViewSupport implements Iterable<EventBe
     private transient Map<EPStatementHandle, List<NamedWindowConsumerView>> consumers;
     private final EPStatementHandle createWindowStmtHandle;
     private final StatementResultService statementResultService;
+    private final RevisionProcessor revisionProcessor;
 
     /**
      * Ctor.
@@ -35,7 +37,7 @@ public class NamedWindowTailView extends ViewSupport implements Iterable<EventBe
      * @param createWindowStmtHandle statement handle for the statement that created the named window, for safe iteration
      * @param statementResultService for coordinating on whether insert and remove stream events should be posted
      */
-    public NamedWindowTailView(EventType eventType, NamedWindowService namedWindowService, NamedWindowRootView namedWindowRootView, EPStatementHandle createWindowStmtHandle, StatementResultService statementResultService)
+    public NamedWindowTailView(EventType eventType, NamedWindowService namedWindowService, NamedWindowRootView namedWindowRootView, EPStatementHandle createWindowStmtHandle, StatementResultService statementResultService, RevisionProcessor revisionProcessor)
     {
         this.eventType = eventType;
         this.namedWindowService = namedWindowService;
@@ -43,14 +45,18 @@ public class NamedWindowTailView extends ViewSupport implements Iterable<EventBe
         this.namedWindowRootView = namedWindowRootView;
         this.createWindowStmtHandle = createWindowStmtHandle;
         this.statementResultService = statementResultService;
+        this.revisionProcessor = revisionProcessor;
     }
 
     public void update(EventBean[] newData, EventBean[] oldData)
     {
         // Only old data needs to be removed
-        if (oldData != null)
+        if (revisionProcessor != null)
         {
-            namedWindowRootView.removeOldData(oldData);
+            if (oldData != null)
+            {
+                namedWindowRootView.removeOldData(oldData);
+            }
         }
 
         // Post to child views, only if there are listeners or subscribers

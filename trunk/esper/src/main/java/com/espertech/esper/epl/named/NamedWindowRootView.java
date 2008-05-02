@@ -15,6 +15,7 @@ import com.espertech.esper.epl.core.ResultSetProcessor;
 import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.event.EventBean;
 import com.espertech.esper.event.EventType;
+import com.espertech.esper.event.rev.RevisionProcessor;
 import com.espertech.esper.util.ExecutionPathDebugLog;
 import com.espertech.esper.util.JavaClassHelper;
 import com.espertech.esper.view.StatementStopService;
@@ -44,14 +45,16 @@ public class NamedWindowRootView extends ViewSupport
     private final NamedWindowIndexRepository indexRepository;
     private Iterable<EventBean> dataWindowContents;
     private final Map<LookupStrategy, PropertyIndexedEventTable> tablePerStrategy;
+    private final RevisionProcessor revisionProcessor;
 
     /**
      * Ctor.
      */
-    public NamedWindowRootView()
+    public NamedWindowRootView(RevisionProcessor revisionProcessor)
     {
         this.indexRepository = new NamedWindowIndexRepository();
         this.tablePerStrategy = new HashMap<LookupStrategy, PropertyIndexedEventTable>();
+        this.revisionProcessor = revisionProcessor;
     }
 
     /**
@@ -86,15 +89,22 @@ public class NamedWindowRootView extends ViewSupport
                     "  oldData.length==" + ((oldData == null) ? 0 : oldData.length));
         }
 
-        // Update indexes for fast deletion, if there are any
-        for (EventTable table : indexRepository.getTables())
+        if (revisionProcessor != null)
         {
-            table.add(newData);
-            table.remove(oldData);
+            revisionProcessor.onUpdate(newData, oldData, this, indexRepository);
         }
+        else
+        {
+            // Update indexes for fast deletion, if there are any
+            for (EventTable table : indexRepository.getTables())
+            {
+                table.add(newData);
+                table.remove(oldData);
+            }
 
-        // Update child views
-        updateChildren(newData, oldData);
+            // Update child views
+            updateChildren(newData, oldData);
+        }
     }
 
     /**

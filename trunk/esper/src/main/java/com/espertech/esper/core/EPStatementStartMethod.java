@@ -30,6 +30,7 @@ import com.espertech.esper.epl.view.OutputProcessView;
 import com.espertech.esper.epl.view.OutputProcessViewFactory;
 import com.espertech.esper.event.EventBean;
 import com.espertech.esper.event.EventType;
+import com.espertech.esper.event.rev.RevisionProcessor;
 import com.espertech.esper.pattern.EvalRootNode;
 import com.espertech.esper.pattern.PatternContext;
 import com.espertech.esper.pattern.PatternMatchCallback;
@@ -267,7 +268,9 @@ public class EPStatementStartMethod
         final FilterStreamSpecCompiled filterStreamSpec = (FilterStreamSpecCompiled) statementSpec.getStreamSpecs().get(0);
         String windowName = statementSpec.getCreateWindowDesc().getWindowName();
         EventType windowType = filterStreamSpec.getFilterSpec().getEventType();
-        services.getNamedWindowService().addProcessor(windowName, windowType, statementContext.getEpStatementHandle(), statementContext.getStatementResultService());
+
+        RevisionProcessor revisionProcessor = statementContext.getRevisionService().getRevisionProcessor(windowName);
+        services.getNamedWindowService().addProcessor(windowName, windowType, statementContext.getEpStatementHandle(), statementContext.getStatementResultService(), revisionProcessor);
 
         // Create streams and views
         Viewable eventStreamParentViewable;
