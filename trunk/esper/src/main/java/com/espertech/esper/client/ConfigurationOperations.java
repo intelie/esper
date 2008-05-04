@@ -204,4 +204,6 @@ public interface ConfigurationOperations
      * @param urisToResolveAlias URIs for resolving the alias
      */
     public void setPlugInEventTypeAliasResolutionURIs(URI[] urisToResolveAlias);
+
+    public void addRevisionEventType(String revisionEventTypeAlias, ConfigurationRevisionEvent revisionEventTypeConfig);    
 }

@@ -3,6 +3,7 @@ package com.espertech.esper.view.window;
 import com.espertech.esper.core.StatementContext;
 import com.espertech.esper.event.EventBean;
 import com.espertech.esper.event.EventType;
+import com.espertech.esper.event.rev.RevisionProcessor;
 import com.espertech.esper.view.CloneableView;
 import com.espertech.esper.view.View;
 import com.espertech.esper.view.ViewSupport;
@@ -65,6 +66,16 @@ public final class KeepAllView extends ViewSupport implements DataWindowView, Cl
 
     public final void update(EventBean[] newData, EventBean[] oldData)
     {
+        // TODO
+        if (newData != null)
+        {
+            RevisionProcessor.log("keepall new data", newData[0]);
+        }
+        if (oldData != null)
+        {
+            RevisionProcessor.log("keepall old data", oldData[0]);
+        }
+
         if (newData != null)
         {
             for (EventBean aNewData : newData)

@@ -14,6 +14,7 @@ public class RevisionEventBean implements EventBean
     private MultiKeyUntyped key;
     private EventBean fullEvent;
     private RevisionBeanHolder[] holders;
+    private boolean isLatest;
 
     public RevisionEventBean(RevisionEventType eventType, EventBean underlying)
     {
@@ -28,6 +29,16 @@ public class RevisionEventBean implements EventBean
         this.fullEvent = fullEvent;
         this.holders = revisionsPerAuthoritySet;
         this.underlyingFullOrDelta = null;
+    }
+
+    public boolean isLatest()
+    {
+        return isLatest;
+    }
+
+    public void setLatest(boolean latest)
+    {
+        isLatest = latest;
     }
 
     public void setKey(MultiKeyUntyped key)
@@ -80,7 +91,12 @@ public class RevisionEventBean implements EventBean
         return null;  // TODO
     }
 
-    public Object getValue(RevisionGetterParameters params)
+    public Object getVersionFreeValue(int index)
+    {
+        return key.getKeys()[index];
+    }
+
+    public Object getVersionedValue(RevisionGetterParameters params)
     {
         RevisionBeanHolder holderMostRecent = null;
         

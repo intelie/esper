@@ -28,6 +28,12 @@ public class RevisionServiceImpl implements RevisionService
         }
     }
 
+    public void add(String alias, ConfigurationRevisionEvent config, EventAdapterService eventAdapterService)
+            throws ConfigurationException
+    {
+        initializeSpecifications(alias, config, eventAdapterService);
+    }    
+
     public RevisionProcessor getRevisionProcessor(String alias)
     {
         return processorsByNamedWindow.get(alias);
@@ -66,23 +72,23 @@ public class RevisionServiceImpl implements RevisionService
     private void initializeSpecifications(String revisionEventTypeAlias, ConfigurationRevisionEvent config, EventAdapterService eventAdapterService)
             throws ConfigurationException
     {
-        if (config.getAliasFullEvent() == null)
+        if (config.getAliasFullEventType() == null)
         {
             throw new ConfigurationException("Required full event type alias is not set in the configuration for revision event type '" + revisionEventTypeAlias + "'");
         }
 
         // get full types
-        EventType fullEventType = eventAdapterService.getExistsTypeByAlias(config.getAliasFullEvent());
+        EventType fullEventType = eventAdapterService.getExistsTypeByAlias(config.getAliasFullEventType());
         if (fullEventType == null)
         {
-            throw new ConfigurationException("Could not locate event type for alias '" + config.getAliasFullEvent() + "' in the configuration for revision event type '" + revisionEventTypeAlias + "'");
+            throw new ConfigurationException("Could not locate event type for alias '" + config.getAliasFullEventType() + "' in the configuration for revision event type '" + revisionEventTypeAlias + "'");
         }
 
         // get alias types
-        EventType[] deltaTypes = new EventType[config.getAliasRevisionEvents().size()];
-        String[] deltaAliases = new String[config.getAliasRevisionEvents().size()];
+        EventType[] deltaTypes = new EventType[config.getAliasDeltaEventTypes().size()];
+        String[] deltaAliases = new String[config.getAliasDeltaEventTypes().size()];
         int count = 0;
-        for (String deltaAlias : config.getAliasRevisionEvents())
+        for (String deltaAlias : config.getAliasDeltaEventTypes())
         {
             EventType deltaEventType = eventAdapterService.getExistsTypeByAlias(deltaAlias);
             if (deltaEventType == null)
@@ -101,14 +107,16 @@ public class RevisionServiceImpl implements RevisionService
         }
 
         // make sure the key properties exist the full type and all delta types
-        checkKeysExist(fullEventType, config.getAliasFullEvent(), config.getKeyPropertyNames(), revisionEventTypeAlias);
+        checkKeysExist(fullEventType, config.getAliasFullEventType(), config.getKeyPropertyNames(), revisionEventTypeAlias);
         for (int i = 0; i < deltaTypes.length; i++)
         {
             checkKeysExist(deltaTypes[i], deltaAliases[i], config.getKeyPropertyNames(), revisionEventTypeAlias);
         }
 
+        String keyPropertyNames[] = PropertyGroupBuilder.copyAndSort(config.getKeyPropertyNames());
+
         // build the property groups
-        RevisionSpec processor = new RevisionSpec(fullEventType, deltaTypes, deltaAliases, config.getKeyPropertyNames());
+        RevisionSpec processor = new RevisionSpec(fullEventType, deltaTypes, deltaAliases, keyPropertyNames);
         specificationsByRevisionAlias.put(revisionEventTypeAlias, processor);
     }
 

@@ -36,7 +36,6 @@ public class NamedWindowProcessor
 
         rootView = new NamedWindowRootView(revisionProcessor);
         tailView = new NamedWindowTailView(eventType, namedWindowService, rootView, createWindowStmtHandle, statementResultService, revisionProcessor);
-        revisionProcessor.setOutputView(tailView);
         rootView.setDataWindowContents(tailView);   // for iteration used for delete without index
     }
 

@@ -134,4 +134,20 @@ public class PropertyGroupBuilder
         }
         return getters;
     }
+
+    protected static String[] uniqueExclusiveSort(String[] values, String[] removeValues)
+    {
+        Set<String> unique = new HashSet<String>();
+        for (String value : values)
+        {
+            unique.add(value);
+        }
+        for (String removeValue : removeValues)
+        {
+            unique.remove(removeValue);
+        }
+        String[] uniqueArr = unique.toArray(new String[unique.size()]);
+        Arrays.sort(uniqueArr);
+        return uniqueArr;
+    }
 }

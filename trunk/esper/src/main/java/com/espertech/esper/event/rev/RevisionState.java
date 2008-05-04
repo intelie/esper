@@ -5,13 +5,13 @@ import com.espertech.esper.event.EventBean;
 public class RevisionState
 {
     private long revisionNumber;
-    private EventBean fullEvent;
+    private EventBean fullEventUnderlying;
     private RevisionBeanHolder[] holders;
     private RevisionEventBean lastEvent;
 
-    public RevisionState(EventBean fullEvent, RevisionBeanHolder[] holders, RevisionEventBean lastEvent)
+    public RevisionState(EventBean fullEventUnderlying, RevisionBeanHolder[] holders, RevisionEventBean lastEvent)
     {
-        this.fullEvent = fullEvent;
+        this.fullEventUnderlying = fullEventUnderlying;
         this.holders = holders;
         this.lastEvent = lastEvent;
     }
@@ -26,14 +26,14 @@ public class RevisionState
         return ++revisionNumber;
     }
 
-    public EventBean getFullEvent()
+    public EventBean getFullEventUnderlying()
     {
-        return fullEvent;
+        return fullEventUnderlying;
     }
 
-    public void setFullEvent(EventBean fullEvent)
+    public void setFullEventUnderlying(EventBean fullEventUnderlying)
     {
-        this.fullEvent = fullEvent;
+        this.fullEventUnderlying = fullEventUnderlying;
     }
 
     public RevisionBeanHolder[] getHolders()

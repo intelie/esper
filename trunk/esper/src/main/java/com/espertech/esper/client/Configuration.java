@@ -272,7 +272,7 @@ public class Configuration implements ConfigurationOperations, ConfigurationInfo
         eventTypesXMLDOM.put(eventTypeAlias, xmlDOMEventTypeDesc);
     }
 
-    public void addRevisionEvent(String revisionEventTypeAlias, ConfigurationRevisionEvent revisionEventTypeConfig)
+    public void addRevisionEventType(String revisionEventTypeAlias, ConfigurationRevisionEvent revisionEventTypeConfig)
     {
         revisionEventTypes.put(revisionEventTypeAlias, revisionEventTypeConfig);
     }

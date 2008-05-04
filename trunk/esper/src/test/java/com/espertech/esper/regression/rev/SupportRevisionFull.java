@@ -21,6 +21,17 @@ public class SupportRevisionFull
         this.p5 = p5;
     }
 
+    public SupportRevisionFull(String k0, String p1, String p5)
+    {
+        this.k0 = k0;
+        this.p0 = null;
+        this.p1 = p1;
+        this.p2 = null;
+        this.p3 = null;
+        this.p4 = null;
+        this.p5 = p5;
+    }
+
     public String getK0()
     {
         return k0;

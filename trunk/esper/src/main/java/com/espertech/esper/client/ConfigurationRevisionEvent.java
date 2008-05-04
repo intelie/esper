@@ -6,35 +6,35 @@ import java.io.Serializable;
 
 public class ConfigurationRevisionEvent implements Serializable
 {
-    private String aliasFullEvent;
-    private Set<String> aliasRevisionEvents;
+    private String aliasFullEventType;
+    private Set<String> aliasDeltaEventTypes;
     private PropertyRevision propertyRevision;
     private String[] keyPropertyNames;
 
     public ConfigurationRevisionEvent()
     {
-        aliasRevisionEvents = new HashSet<String>();
+        aliasDeltaEventTypes = new HashSet<String>();
         propertyRevision = PropertyRevision.DECLARED;
     }
 
-    public String getAliasFullEvent()
+    public String getAliasFullEventType()
     {
-        return aliasFullEvent;
+        return aliasFullEventType;
     }
 
-    public void setAliasFullEvent(String aliasFullEvent)
+    public void setAliasFullEventType(String aliasFullEventType)
     {
-        this.aliasFullEvent = aliasFullEvent;
+        this.aliasFullEventType = aliasFullEventType;
     }
 
-    public Set<String> getAliasRevisionEvents()
+    public Set<String> getAliasDeltaEventTypes()
     {
-        return aliasRevisionEvents;
+        return aliasDeltaEventTypes;
     }
 
-    public void addAliasRevisionEvent(String aliasRevisionEvent)
+    public void addAliasDeltaEvent(String aliasRevisionEvent)
     {
-        aliasRevisionEvents.add(aliasRevisionEvent);
+        aliasDeltaEventTypes.add(aliasRevisionEvent);
     }
 
     public PropertyRevision getPropertyRevision()

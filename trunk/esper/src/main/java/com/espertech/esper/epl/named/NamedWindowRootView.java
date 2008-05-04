@@ -70,12 +70,18 @@ public class NamedWindowRootView extends ViewSupport
      * Called by tail view to indicate that the data window view exired events that must be removed from index tables.
      * @param oldData removed stream of the data window
      */
-    //
     public void removeOldData(EventBean[] oldData)
     {
-        for (EventTable table : indexRepository.getTables())
+        if (revisionProcessor != null)
         {
-            table.remove(oldData);
+            revisionProcessor.removeOldData(oldData, indexRepository);
+        }
+        else
+        {
+            for (EventTable table : indexRepository.getTables())
+            {
+                table.remove(oldData);
+            }
         }
     }
 

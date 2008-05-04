@@ -4,6 +4,9 @@ import com.espertech.esper.client.*;
 import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.support.util.SupportUpdateListener;
 import com.espertech.esper.support.util.ArrayAssertionUtil;
+import com.espertech.esper.support.bean.SupportBean;
+import com.espertech.esper.support.bean.SupportBean_A;
+import com.espertech.esper.support.bean.SupportBeanComplexProps;
 import com.espertech.esper.event.EventBean;
 import junit.framework.TestCase;
 
@@ -11,36 +14,41 @@ import java.util.Random;
 import java.util.Map;
 import java.util.HashMap;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 public class TestNamedWinRevision extends TestCase
 {
+    private static final Log log = LogFactory.getLog(TestNamedWinRevision.class);
     private EPServiceProvider epService;
     private EPStatement stmtCreateWin;
     private SupportUpdateListener listenerOne;
     private SupportUpdateListener listenerTwo;
     private SupportUpdateListener listenerThree;
-    private SupportUpdateListener listenerFour;
+    private final String[] fields = "k0,p0,p1,p2,p3,p4,p5".split(",");
 
-    // TODO: test invalid configuration
+    // TODO: test XML configuration
     // TODO: test subclasses
-    // TODO: test no full type send
     // TODO: test stop and start
-    // TODO: test send different event types
     // TODO: multithreaded
     // TODO: runtime configuration options
     // TODO: remaining TODOs
-    // TODO: test multiple group keys
-    // TODO: test on-delete
     // TODO: test invalid insert-into
-    // TODO: test data windows: time, batch, unique, sorted-props, grouped
     // TODO: test policies for resolving last version
-    // TODO: test invalid event type inserted
-    // TODO: test send delta first then full
+    // TODO: test invalid event type inserted or no such named window (RevQuote vs RevMap)
+    // TODO: is it possible to set no key properties and treats each event as no update; test not used for named window
+       
+    // TODO: document
+    // Javadoc
+    // order of arrival is last update
+    //
     
     public void setUp()
     {
         Configuration config = SupportConfigFactory.getConfiguration();
         config.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
 
+        config.addEventTypeAlias("SupportBean", SupportBean.class);
         config.addEventTypeAlias("FullEvent", SupportRevisionFull.class);
         config.addEventTypeAlias("D1", SupportDeltaOne.class);
         config.addEventTypeAlias("D2", SupportDeltaTwo.class);
@@ -50,20 +58,19 @@ public class TestNamedWinRevision extends TestCase
 
         ConfigurationRevisionEvent configRev = new ConfigurationRevisionEvent();
         configRev.setKeyPropertyNames(new String[] {"k0"});
-        configRev.setAliasFullEvent("FullEvent");
-        configRev.addAliasRevisionEvent("D1");
-        configRev.addAliasRevisionEvent("D2");
-        configRev.addAliasRevisionEvent("D3");
-        configRev.addAliasRevisionEvent("D4");
-        configRev.addAliasRevisionEvent("D5");
-        config.addRevisionEvent("RevisableQuote", configRev);
+        configRev.setAliasFullEventType("FullEvent");
+        configRev.addAliasDeltaEvent("D1");
+        configRev.addAliasDeltaEvent("D2");
+        configRev.addAliasDeltaEvent("D3");
+        configRev.addAliasDeltaEvent("D4");
+        configRev.addAliasDeltaEvent("D5");
+        config.addRevisionEventType("RevisableQuote", configRev);
 
         epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();
         listenerOne = new SupportUpdateListener();
         listenerTwo = new SupportUpdateListener();
         listenerThree = new SupportUpdateListener();
-        listenerFour = new SupportUpdateListener();
 
         stmtCreateWin = epService.getEPAdministrator().createEPL("create window RevQuote.win:keepall() as select * from RevisableQuote");
         epService.getEPAdministrator().createEPL("insert into RevQuote select * from FullEvent");
@@ -80,34 +87,150 @@ public class TestNamedWinRevision extends TestCase
         consumerOne.addListener(listenerOne);
         EPStatement consumerTwo = epService.getEPAdministrator().createEPL("select k0, count(*) as count, sum(Long.parseLong(p0)) as sum from RevQuote group by k0");
         consumerTwo.addListener(listenerTwo);
-
-        String[] fields = "k0,p0,p1,p2,p3,p4,p5".split(",");
+        EPStatement consumerThree = epService.getEPAdministrator().createEPL("select * from RevQuote output every 2 events");
+        consumerThree.addListener(listenerThree);
         String[] agg = "k0,count,sum".split(",");
 
         epService.getEPRuntime().sendEvent(new SupportRevisionFull("k00", "01", "p10", "20", "p30", "40", "50"));
         ArrayAssertionUtil.assertProps(listenerOne.assertOneGetNewAndReset(), fields, new Object[] {"k00", "01", "p10", "20", "p30", "40", "50"});
         ArrayAssertionUtil.assertProps(stmtCreateWin.iterator().next(), fields, new Object[] {"k00", "01", "p10", "20", "p30", "40", "50"});
         ArrayAssertionUtil.assertProps(listenerTwo.assertOneGetNewAndReset(), agg, new Object[] {"k00", 1L, 1L});
+        assertFalse(listenerThree.isInvoked());
 
         epService.getEPRuntime().sendEvent(new SupportDeltaThree("k00", "03", "41"));
         ArrayAssertionUtil.assertProps(listenerOne.assertOneGetNewAndReset(), fields, new Object[] {"k00", "03", "p10", "20", "p30", "41", "50"});
         ArrayAssertionUtil.assertProps(stmtCreateWin.iterator().next(), fields, new Object[] {"k00", "03", "p10", "20", "p30", "41", "50"});
         ArrayAssertionUtil.assertProps(listenerTwo.assertOneGetNewAndReset(), agg, new Object[] {"k00", 1L, 3L});
+        ArrayAssertionUtil.assertProps(listenerThree.getLastNewData()[0], fields, new Object[] {"k00", "01", "p10", "20", "p30", "40", "50"});
+        ArrayAssertionUtil.assertProps(listenerThree.getLastNewData()[1], fields, new Object[] {"k00", "03", "p10", "20", "p30", "41", "50"});
+        listenerThree.reset();
 
         epService.getEPRuntime().sendEvent(new SupportDeltaOne("k00", "p11", "51"));
         ArrayAssertionUtil.assertProps(listenerOne.assertOneGetNewAndReset(), fields, new Object[] {"k00", "03", "p11", "20", "p30", "41", "51"});
+        ArrayAssertionUtil.assertProps(stmtCreateWin.iterator().next(), fields, new Object[] {"k00", "03", "p11", "20", "p30", "41", "51"});
+        ArrayAssertionUtil.assertProps(listenerTwo.assertOneGetNewAndReset(), agg, new Object[] {"k00", 1L, 3L});
+        assertFalse(listenerThree.isInvoked());
 
         epService.getEPRuntime().sendEvent(new SupportDeltaTwo("k00", "04", "21", "p31"));
         ArrayAssertionUtil.assertProps(listenerOne.assertOneGetNewAndReset(), fields, new Object[] {"k00", "04", "p11", "21", "p31", "41", "51"});
+        ArrayAssertionUtil.assertProps(stmtCreateWin.iterator().next(), fields, new Object[] {"k00", "04", "p11", "21", "p31", "41", "51"});
+        ArrayAssertionUtil.assertProps(listenerTwo.assertOneGetNewAndReset(), agg, new Object[] {"k00", 1L, 4L});
+        ArrayAssertionUtil.assertProps(listenerThree.getLastNewData()[0], fields, new Object[] {"k00", "03", "p11", "20", "p30", "41", "51"});
+        ArrayAssertionUtil.assertProps(listenerThree.getLastNewData()[1], fields, new Object[] {"k00", "04", "p11", "21", "p31", "41", "51"});
+        listenerThree.reset();
 
         epService.getEPRuntime().sendEvent(new SupportDeltaFour("k00", "05", "22", "52"));
         ArrayAssertionUtil.assertProps(listenerOne.assertOneGetNewAndReset(), fields, new Object[] {"k00", "05", "p11", "22", "p31", "41", "52"});
+        ArrayAssertionUtil.assertProps(stmtCreateWin.iterator().next(), fields, new Object[] {"k00", "05", "p11", "22", "p31", "41", "52"});
+        ArrayAssertionUtil.assertProps(listenerTwo.assertOneGetNewAndReset(), agg, new Object[] {"k00", 1L, 5L});
+        assertFalse(listenerThree.isInvoked());
 
         epService.getEPRuntime().sendEvent(new SupportDeltaFive("k00", "p12", "53"));
         ArrayAssertionUtil.assertProps(listenerOne.assertOneGetNewAndReset(), fields, new Object[] {"k00", "05", "p12", "22", "p31", "41", "53"});
+        ArrayAssertionUtil.assertProps(stmtCreateWin.iterator().next(), fields, new Object[] {"k00", "05", "p12", "22", "p31", "41", "53"});
+        ArrayAssertionUtil.assertProps(listenerTwo.assertOneGetNewAndReset(), agg, new Object[] {"k00", 1L, 5L});
+        ArrayAssertionUtil.assertProps(listenerThree.getLastNewData()[0], fields, new Object[] {"k00", "05", "p11", "22", "p31", "41", "52"});
+        ArrayAssertionUtil.assertProps(listenerThree.getLastNewData()[1], fields, new Object[] {"k00", "05", "p12", "22", "p31", "41", "53"});
+        listenerThree.reset();
 
         epService.getEPRuntime().sendEvent(new SupportRevisionFull("k00", "06", "p13", "23", "p32", "42", "54"));
         ArrayAssertionUtil.assertProps(listenerOne.assertOneGetNewAndReset(), fields, new Object[] {"k00", "06", "p13", "23", "p32", "42", "54"});
+        ArrayAssertionUtil.assertProps(stmtCreateWin.iterator().next(), fields, new Object[] {"k00", "06", "p13", "23", "p32", "42", "54"});
+        ArrayAssertionUtil.assertProps(listenerTwo.assertOneGetNewAndReset(), agg, new Object[] {"k00", 1L, 6L});
+        assertFalse(listenerThree.isInvoked());
+
+        epService.getEPRuntime().sendEvent(new SupportDeltaOne("k00", "p14", "55"));
+        ArrayAssertionUtil.assertProps(listenerOne.assertOneGetNewAndReset(), fields, new Object[] {"k00", "06", "p14", "23", "p32", "42", "55"});
+        ArrayAssertionUtil.assertProps(stmtCreateWin.iterator().next(), fields, new Object[] {"k00", "06", "p14", "23", "p32", "42", "55"});
+        ArrayAssertionUtil.assertProps(listenerTwo.assertOneGetNewAndReset(), agg, new Object[] {"k00", 1L, 6L});
+        ArrayAssertionUtil.assertProps(listenerThree.getLastNewData()[0], fields, new Object[] {"k00", "06", "p13", "23", "p32", "42", "54"});
+        ArrayAssertionUtil.assertProps(listenerThree.getLastNewData()[1], fields, new Object[] {"k00", "06", "p14", "23", "p32", "42", "55"});
+        listenerThree.reset();
+    }
+
+    public void testOnDelete()
+    {
+        EPStatement consumerOne = epService.getEPAdministrator().createEPL("select irstream * from RevQuote");
+        consumerOne.addListener(listenerOne);
+
+        epService.getEPAdministrator().createEPL("on SupportBean(intPrimitive=2) as sb delete from RevQuote where string = p2");
+
+        log("a00");
+        epService.getEPRuntime().sendEvent(new SupportRevisionFull("a", "a00", "a10", "a20", "a30", "a40", "a50"));
+        ArrayAssertionUtil.assertProps(listenerOne.assertOneGetNewAndReset(), fields, new Object[] {"a", "a00", "a10", "a20", "a30", "a40", "a50"});
+
+        epService.getEPRuntime().sendEvent(new SupportDeltaThree("x", "03", "41"));
+        assertFalse(listenerOne.isInvoked());
+
+        epService.getEPAdministrator().createEPL("on SupportBean(intPrimitive=3) as sb delete from RevQuote where string = p3");
+
+        log("b00");
+        epService.getEPRuntime().sendEvent(new SupportRevisionFull("b", "b00", "b10", "b20", "b30", "b40", "b50"));
+        ArrayAssertionUtil.assertProps(listenerOne.assertOneGetNewAndReset(), fields, new Object[] {"b", "b00", "b10", "b20", "b30", "b40", "b50"});
+
+        log("a01");
+        epService.getEPRuntime().sendEvent(new SupportDeltaThree("a", "a01", "a41"));
+        ArrayAssertionUtil.assertProps(listenerOne.getLastNewData()[0], fields, new Object[] {"a", "a01", "a10", "a20", "a30", "a41", "a50"});
+        ArrayAssertionUtil.assertProps(listenerOne.getLastOldData()[0], fields, new Object[] {"a", "a00", "a10", "a20", "a30", "a40", "a50"});
+        listenerOne.reset();
+
+        log("c00");
+        epService.getEPRuntime().sendEvent(new SupportRevisionFull("c", "c00", "c10", "c20", "c30", "c40", "c50"));
+        ArrayAssertionUtil.assertProps(listenerOne.assertOneGetNewAndReset(), fields, new Object[] {"c", "c00", "c10", "c20", "c30", "c40", "c50"});
+
+        epService.getEPAdministrator().createEPL("on SupportBean(intPrimitive=0) as sb delete from RevQuote where string = p0");
+
+        log("c11");
+        epService.getEPRuntime().sendEvent(new SupportDeltaFive("c", "c11", "c51"));
+        ArrayAssertionUtil.assertProps(listenerOne.getLastNewData()[0], fields, new Object[] {"c", "c00", "c11", "c20", "c30", "c40", "c51"});
+        ArrayAssertionUtil.assertProps(listenerOne.getLastOldData()[0], fields, new Object[] {"c", "c00", "c10", "c20", "c30", "c40", "c50"});
+        listenerOne.reset();
+
+        epService.getEPAdministrator().createEPL("on SupportBean(intPrimitive=1) as sb delete from RevQuote where string = p1");
+
+        log("d00");
+        epService.getEPRuntime().sendEvent(new SupportRevisionFull("d", "d00", "d10", "d20", "d30", "d40", "d50"));
+        ArrayAssertionUtil.assertProps(listenerOne.assertOneGetNewAndReset(), fields, new Object[] {"d", "d00", "d10", "d20", "d30", "d40", "d50"});
+
+        log("d01");
+        epService.getEPRuntime().sendEvent(new SupportDeltaFour("d", "d01", "d21", "d51"));
+        ArrayAssertionUtil.assertProps(listenerOne.getLastNewData()[0], fields, new Object[] {"d", "d01", "d10", "d21", "d30", "d40", "d51"});
+        ArrayAssertionUtil.assertProps(listenerOne.getLastOldData()[0], fields, new Object[] {"d", "d00", "d10", "d20", "d30", "d40", "d50"});
+        listenerOne.reset();
+
+        ArrayAssertionUtil.assertEqualsExactOrder(stmtCreateWin.iterator(), fields,
+                new Object[][] {{"b", "b00", "b10", "b20", "b30", "b40", "b50"}, {"a", "a01", "a10", "a20", "a30", "a41", "a50"}, 
+                                {"c", "c00", "c11", "c20", "c30", "c40", "c51"}, {"d", "d01", "d10", "d21", "d30", "d40", "d51"}});
+
+        epService.getEPAdministrator().createEPL("on SupportBean(intPrimitive=4) as sb delete from RevQuote where string = p4");
+
+        epService.getEPRuntime().sendEvent(new SupportBean("abc", 1));
+        assertFalse(listenerOne.isInvoked());
+
+        log("delete b");
+        epService.getEPRuntime().sendEvent(new SupportBean("b40", 4));  // delete b
+        ArrayAssertionUtil.assertProps(listenerOne.assertOneGetOldAndReset(), fields, new Object[] {"b", "b00", "b10", "b20", "b30", "b40", "b50"});
+        ArrayAssertionUtil.assertEqualsExactOrder(stmtCreateWin.iterator(), fields,
+                new Object[][] {{"a", "a01", "a10", "a20", "a30", "a41", "a50"}, {"c", "c00", "c11", "c20", "c30", "c40", "c51"}, {"d", "d01", "d10", "d21", "d30", "d40", "d51"}});
+
+        log("delete d");
+        epService.getEPRuntime().sendEvent(new SupportBean("d21", 2)); // delete d
+        ArrayAssertionUtil.assertProps(listenerOne.assertOneGetOldAndReset(), fields, new Object[] {"d", "d01", "d10", "d21", "d30", "d40", "d51"});
+        ArrayAssertionUtil.assertEqualsExactOrder(stmtCreateWin.iterator(), fields,
+                new Object[][] {{"a", "a01", "a10", "a20", "a30", "a41", "a50"}, {"c", "c00", "c11", "c20", "c30", "c40", "c51"}});
+
+        log("delete a");
+        epService.getEPRuntime().sendEvent(new SupportBean("a30", 3)); // delete a
+        ArrayAssertionUtil.assertProps(listenerOne.assertOneGetOldAndReset(), fields, new Object[] {"a", "a01", "a10", "a20", "a30", "a41", "a50"});
+        ArrayAssertionUtil.assertEqualsExactOrder(stmtCreateWin.iterator(), fields, new Object[][] {{"c", "c00", "c11", "c20", "c30", "c40", "c51"}});
+
+        log("delete c");
+        epService.getEPRuntime().sendEvent(new SupportBean("c11", 1)); // delete c
+        ArrayAssertionUtil.assertProps(listenerOne.assertOneGetOldAndReset(), fields, new Object[] {"c", "c00", "c11", "c20", "c30", "c40", "c51"});
+        ArrayAssertionUtil.assertEqualsExactOrder(stmtCreateWin.iterator(), fields, null);
+
+        epService.getEPRuntime().sendEvent(new SupportBean("c11", 1));
+        assertFalse(listenerOne.isInvoked());
     }
 
     public void testRevisionGen()
@@ -135,7 +258,7 @@ public class TestNamedWinRevision extends TestCase
         {
             if (i % 20000 == 0)
             {
-                System.out.println(".testRevisionGen Loop " + i);
+                log.debug(".testRevisionGen Loop " + i);
             }
             int typeNum = random.nextInt(6);
             String key = groups[random.nextInt(groups.length)];
@@ -177,6 +300,50 @@ public class TestNamedWinRevision extends TestCase
         }
     }
 
+    public void testInvalidConfig()
+    {
+        ConfigurationRevisionEvent config = new ConfigurationRevisionEvent();
+        tryInvalidConfig("abc", config, "Required full event type alias is not set in the configuration for revision event type 'abc'");
+
+        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("MyEvent", SupportBean_A.class);
+        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("MyComplex", SupportBeanComplexProps.class);
+
+        config.setAliasFullEventType("XYZ");
+        tryInvalidConfig("abc", config, "Could not locate event type for alias 'XYZ' in the configuration for revision event type 'abc'");
+
+        config.setAliasFullEventType("MyEvent");
+        tryInvalidConfig("abc", config, "Required key properties are not set in the configuration for revision event type 'abc'");
+
+        config.setKeyPropertyNames(new String[0]);
+        tryInvalidConfig("abc", config, "Required key properties are not set in the configuration for revision event type 'abc'");
+
+        config.setKeyPropertyNames(new String[] {"xyz"});
+        tryInvalidConfig("abc", config, "Key property 'xyz' as defined in the configuration for revision event type 'abc' does not exists in event type 'MyEvent'");
+
+        config.setKeyPropertyNames(new String[] {"id"});
+        config.addAliasDeltaEvent("MyComplex");
+        tryInvalidConfig("abc", config, "Key property 'id' as defined in the configuration for revision event type 'abc' does not exists in event type 'MyComplex'");
+
+        config.addAliasDeltaEvent("XYZ");
+        tryInvalidConfig("abc", config, "Could not locate event type for alias 'XYZ' in the configuration for revision event type 'abc'");
+
+        config.getAliasDeltaEventTypes().clear();        
+        epService.getEPAdministrator().getConfiguration().addRevisionEventType("abc", config);
+    }
+
+    private void tryInvalidConfig(String alias, ConfigurationRevisionEvent config, String message)
+    {
+        try
+        {
+            epService.getEPAdministrator().getConfiguration().addRevisionEventType(alias, config);
+            fail();
+        }
+        catch (ConfigurationException ex)
+        {
+            assertEquals(message, ex.getMessage());
+        }
+    }
+
     private void assertEvent(Map<String, Map<String, String>> last, EventBean eventBean, int count)
     {
         String error = "Error asseting count " + count;
@@ -210,5 +377,11 @@ public class TestNamedWinRevision extends TestCase
     private String next(int num)
     {
         return Integer.toString(num);
+    }
+
+    private void log(String text)
+    {
+        // TODO
+        System.out.println(text);
     }
 }

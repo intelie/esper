@@ -12,8 +12,6 @@ import org.apache.commons.logging.LogFactory;
 
 import java.util.*;
 
-import com.espertech.esper.core.EPRuntimeImpl;
-
 /**
  * Implements the schedule service by simply keeping a sorted set of long millisecond
  * values and a set of handles for each.

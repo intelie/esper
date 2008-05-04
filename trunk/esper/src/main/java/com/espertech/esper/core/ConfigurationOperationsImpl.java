@@ -10,8 +10,10 @@ package com.espertech.esper.core;
 import com.espertech.esper.client.ConfigurationEventTypeXMLDOM;
 import com.espertech.esper.client.ConfigurationException;
 import com.espertech.esper.client.ConfigurationOperations;
+import com.espertech.esper.client.ConfigurationRevisionEvent;
 import com.espertech.esper.event.EventAdapterException;
 import com.espertech.esper.event.EventAdapterService;
+import com.espertech.esper.event.rev.RevisionService;
 import com.espertech.esper.util.JavaClassHelper;
 import com.espertech.esper.epl.core.EngineImportService;
 import com.espertech.esper.epl.core.EngineImportException;
@@ -35,6 +37,7 @@ public class ConfigurationOperationsImpl implements ConfigurationOperations
     private final EngineImportService engineImportService;
     private final VariableService variableService;
     private final EngineSettingsService engineSettingsService;
+    private final RevisionService revisionService; 
 
     /**
      * Ctor.
@@ -46,12 +49,14 @@ public class ConfigurationOperationsImpl implements ConfigurationOperations
     public ConfigurationOperationsImpl(EventAdapterService eventAdapterService,
                                        EngineImportService engineImportService,
                                        VariableService variableService,
-                                       EngineSettingsService engineSettingsService)
+                                       EngineSettingsService engineSettingsService,
+                                       RevisionService revisionService)
     {
         this.eventAdapterService = eventAdapterService;
         this.engineImportService = engineImportService;
         this.variableService = variableService;
         this.engineSettingsService = engineSettingsService;
+        this.revisionService = revisionService;
     }
 
     public void addEventTypeAutoAlias(String javaPackageName)
@@ -243,5 +248,10 @@ public class ConfigurationOperationsImpl implements ConfigurationOperations
     public void setPlugInEventTypeAliasResolutionURIs(URI[] urisToResolveAlias)
     {
         engineSettingsService.setPlugInEventTypeResolutionURIs(urisToResolveAlias);
+    }
+
+    public void addRevisionEventType(String revisionEventTypeAlias, ConfigurationRevisionEvent revisionEventTypeConfig)
+    {
+        revisionService.add(revisionEventTypeAlias, revisionEventTypeConfig, eventAdapterService);
     }
 }

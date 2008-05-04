@@ -21,6 +21,7 @@ public class TestRevision extends TestCase
     private EventBean beans[];
     private String[] fields = "p0,p1,p2,p3,p4,p5".split(",");
 
+    /*
     public void setUp()
     {
         fullEventType = eventSource.addBeanType("FullEvent", SupportRevisionFull.class);
@@ -54,7 +55,7 @@ public class TestRevision extends TestCase
             EventPropertyGetter fullGetter = fullEventType.getGetter(property);
             int propertyNumber = count;
             int[] propGroupsProperty = propsPerGroup.get(property);
-            final RevisionGetterParameters params = new RevisionGetterParameters(propertyNumber, fullGetter, propGroupsProperty);
+            final RevisionGetterParameters params = new RevisionGetterParameters(property, propertyNumber, fullGetter, propGroupsProperty);
 
             EventPropertyGetter revisionGetter = new EventPropertyGetter() {
                 public Object get(EventBean eventBean) throws PropertyAccessException
@@ -130,4 +131,5 @@ public class TestRevision extends TestCase
         Arrays.sort(result);
         return result;
     }
+    */
 }

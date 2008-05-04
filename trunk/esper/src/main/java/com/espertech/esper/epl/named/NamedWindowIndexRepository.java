@@ -6,6 +6,7 @@ import com.espertech.esper.epl.join.table.PropertyIndexedEventTable;
 import com.espertech.esper.epl.lookup.JoinedPropDesc;
 import com.espertech.esper.event.EventBean;
 import com.espertech.esper.event.EventType;
+import com.espertech.esper.event.rev.RevisionProcessor;
 import com.espertech.esper.collection.Pair;
 import com.espertech.esper.collection.MultiKey;
 
@@ -73,6 +74,9 @@ public class NamedWindowIndexRepository
         for (EventBean prefilledEvent : prefilledEvents)
         {
             events[0] = prefilledEvent;
+
+            // TODO
+            RevisionProcessor.log("adding from on-delete init", events[0]);
             table.add(events);
         }
 

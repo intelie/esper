@@ -9,6 +9,8 @@ import java.util.Map;
 public interface RevisionService
 {
     public void init(Map<String, ConfigurationRevisionEvent> config, EventAdapterService eventAdapterService);
+    public void add(String alias, ConfigurationRevisionEvent config, EventAdapterService eventAdapterService);
+    
     public EventType getRevisionUnderlyingType(String alias);
     public boolean isRevisionTypeAlias(String alias);
     public RevisionEventType createRevisionType(String namedWindowName, String alias);        

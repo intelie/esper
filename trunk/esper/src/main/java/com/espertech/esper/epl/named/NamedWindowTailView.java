@@ -9,6 +9,8 @@ import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.event.EventBean;
 import com.espertech.esper.event.EventType;
 import com.espertech.esper.event.rev.RevisionProcessor;
+import com.espertech.esper.event.rev.RevisionEventBean;
+import com.espertech.esper.event.rev.RevisionState;
 import com.espertech.esper.view.StatementStopService;
 import com.espertech.esper.view.ViewSupport;
 
@@ -50,13 +52,10 @@ public class NamedWindowTailView extends ViewSupport implements Iterable<EventBe
 
     public void update(EventBean[] newData, EventBean[] oldData)
     {
-        // Only old data needs to be removed
-        if (revisionProcessor != null)
+        // Only old data (remove stream) needs to be removed from indexes (kept by root view), if any
+        if (oldData != null)
         {
-            if (oldData != null)
-            {
-                namedWindowRootView.removeOldData(oldData);
-            }
+            namedWindowRootView.removeOldData(oldData);
         }
 
         // Post to child views, only if there are listeners or subscribers
@@ -133,6 +132,12 @@ public class NamedWindowTailView extends ViewSupport implements Iterable<EventBe
 
     public Iterator<EventBean> iterator()
     {
+        if (revisionProcessor != null)
+        {
+            Collection<EventBean> coll = revisionProcessor.getSnapshot(createWindowStmtHandle, parent);
+            return coll.iterator();
+        }
+        
         createWindowStmtHandle.getStatementLock().acquireLock(null);
         try
         {
@@ -160,6 +165,12 @@ public class NamedWindowTailView extends ViewSupport implements Iterable<EventBe
      */
     public Collection<EventBean> snapshot()
     {
+        if (revisionProcessor != null)
+        {
+            Collection<EventBean> coll = revisionProcessor.getSnapshot(createWindowStmtHandle, parent);
+            return coll;
+        }
+
         createWindowStmtHandle.getStatementLock().acquireLock(null);
         try
         {
