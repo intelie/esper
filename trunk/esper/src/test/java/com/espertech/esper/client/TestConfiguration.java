@@ -42,6 +42,7 @@ public class TestConfiguration extends TestCase
     {
         config.addEventTypeAlias("AEventType", "BClassName");
 
+        assertTrue(config.isEventTypeAliasExists("AEventType"));
         assertEquals(1, config.getEventTypeAliases().size());
         assertEquals("BClassName", config.getEventTypeAliases().get("AEventType"));
         assertDefaultConfig();

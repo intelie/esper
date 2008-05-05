@@ -56,6 +56,14 @@ public interface ConfigurationOperations
     public void addImport(String importName) throws ConfigurationException;
 
     /**
+     * Checks if an eventTypeAlias has already been registered for that alias name.
+     * @since 2.1
+     * @param eventTypeAlias the alias name
+     * @return true if already registered
+     */
+    public boolean isEventTypeAliasExists(String eventTypeAlias);
+
+    /**
      * Add an alias for an event type represented by JavaBean object events.
      * <p>
      * Allows a second alias to be added for the same type.

@@ -88,6 +88,10 @@ public class ConfigurationOperationsImpl implements ConfigurationOperations
         }
     }
 
+    public boolean isEventTypeAliasExists(String eventTypeAlias) {
+        return eventAdapterService.getExistsTypeByAlias(eventTypeAlias) != null;
+    }
+
     public void addEventTypeAlias(String eventTypeAlias, String javaEventClassName)
     {
         try

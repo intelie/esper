@@ -268,6 +268,7 @@ public class TestConfigurationOperations extends TestCase
 
         // First statement with new name
         configOps.addEventTypeAlias("AddedName", SupportBean.class);
+        assertTrue(configOps.isEventTypeAliasExists("AddedName"));
         EPStatement stmt = epService.getEPAdministrator().createEPL("select * from AddedName");
         stmt.addListener(testListener);
 

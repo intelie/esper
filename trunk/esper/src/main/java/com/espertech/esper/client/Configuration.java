@@ -182,6 +182,20 @@ public class Configuration implements ConfigurationOperations, ConfigurationInfo
     }
 
     /**
+     * Checks if an eventTypeAlias has already been registered for that alias name.
+     * @since 2.1
+     * @param eventTypeAlias the alias name
+     * @return true if already registered
+     */
+    public boolean isEventTypeAliasExists(String eventTypeAlias) {
+        return eventClasses.containsKey(eventTypeAlias)
+                || mapAliases.containsKey(eventTypeAlias)
+                || nestableMapAliases.containsKey(eventTypeAlias)
+                || eventTypesXMLDOM.containsKey(eventTypeAlias);
+        //note: no need to check legacy as they get added as class event type
+    }
+
+    /**
      * Add an alias for an event type represented by Java-bean plain-old Java object events.
      * @param eventTypeAlias is the alias for the event type
      * @param eventClassName fully-qualified class name of the event type
