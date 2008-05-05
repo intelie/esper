@@ -4,8 +4,8 @@ import java.io.Serializable;
 
 public class SupportPriceEvent implements Serializable
 {
-    int price;
-    String sym;
+    private int price;
+    private String sym;
 
     public SupportPriceEvent(int price, String sym) {
         this.price = price;

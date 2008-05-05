@@ -74,9 +74,6 @@ public class NamedWindowIndexRepository
         for (EventBean prefilledEvent : prefilledEvents)
         {
             events[0] = prefilledEvent;
-
-            // TODO
-            RevisionProcessor.log("adding from on-delete init", events[0]);
             table.add(events);
         }
 

@@ -31,9 +31,7 @@ import javax.xml.transform.TransformerException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
-import java.util.Properties;
-import java.util.List;
-import java.util.ArrayList;
+import java.util.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -165,6 +163,10 @@ class ConfigurationParser {
             else if (nodeName.equals("plugin-event-type-alias-resolution"))
             {
                 handlePlugInEventTypeAliasResolution(configuration, element);
+            }
+            else if (nodeName.equals("revision-event-type"))
+            {
+                handleRevisionEventType(configuration, element);
             }
         }
     }
@@ -669,6 +671,55 @@ class ConfigurationParser {
         }
 
         configuration.setPlugInEventTypeAliasResolutionURIs(uris.toArray(new URI[uris.size()]));
+    }
+
+    private static void handleRevisionEventType(Configuration configuration, Element element)
+    {
+        ConfigurationRevisionEventType revEventType = new ConfigurationRevisionEventType();
+        String revTypeAlias = element.getAttributes().getNamedItem("alias").getTextContent();
+
+        if (element.getAttributes().getNamedItem("property-revision") != null)
+        {
+            String propertyRevision = element.getAttributes().getNamedItem("property-revision").getTextContent();
+            ConfigurationRevisionEventType.PropertyRevision propertyRevisionEnum;
+            try
+            {
+                propertyRevisionEnum = ConfigurationRevisionEventType.PropertyRevision.valueOf(propertyRevision.trim().toUpperCase());
+                revEventType.setPropertyRevision(propertyRevisionEnum);
+            }
+            catch (RuntimeException ex)
+            {
+                throw new ConfigurationException("Invalid enumeration value for property-revision attribute '" + propertyRevision + "'");
+            }
+        }
+
+        DOMElementIterator nodeIterator = new DOMElementIterator(element.getChildNodes());
+        Set<String> keyProperties = new HashSet<String>();
+
+        while (nodeIterator.hasNext())
+        {
+            Element subElement = nodeIterator.next();
+            if (subElement.getNodeName().equals("full-event"))
+            {
+                String alias = subElement.getAttributes().getNamedItem("alias").getTextContent();
+                revEventType.setAliasFullEventType(alias);
+            }
+            if (subElement.getNodeName().equals("delta-event"))
+            {
+                String alias = subElement.getAttributes().getNamedItem("alias").getTextContent();
+                revEventType.addAliasDeltaEvent(alias);
+            }
+            if (subElement.getNodeName().equals("key-property"))
+            {
+                String name = subElement.getAttributes().getNamedItem("name").getTextContent();
+                keyProperties.add(name);
+            }
+        }
+
+        String[] keyProps = keyProperties.toArray(new String[keyProperties.size()]);
+        revEventType.setKeyPropertyNames(keyProps);
+        
+        configuration.addRevisionEventType(revTypeAlias, revEventType);
     }
 
     private static void handleEngineSettings(Configuration configuration, Element element)

@@ -518,6 +518,7 @@ public class ArrayAssertionUtil
                 return;
             }
         }
+        Assert.assertEquals(propertyNames.length, propertiesThisRow.length);
 
         for (int j = 0; j < propertiesThisRow.length; j++)
         {

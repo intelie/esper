@@ -9,8 +9,6 @@ import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.event.EventBean;
 import com.espertech.esper.event.EventType;
 import com.espertech.esper.event.rev.RevisionProcessor;
-import com.espertech.esper.event.rev.RevisionEventBean;
-import com.espertech.esper.event.rev.RevisionState;
 import com.espertech.esper.view.StatementStopService;
 import com.espertech.esper.view.ViewSupport;
 

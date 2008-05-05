@@ -202,7 +202,7 @@ public class NamedWindowServiceImpl implements NamedWindowService
             Object perStmtObj = entry.getValue();
 
             // dispatch of a single result to the statement
-            if (entry instanceof NamedWindowConsumerDispatchUnit)
+            if (perStmtObj instanceof NamedWindowConsumerDispatchUnit)
             {
                 NamedWindowConsumerDispatchUnit unit = (NamedWindowConsumerDispatchUnit) perStmtObj;
                 EventBean[] newData = unit.getDeltaData().getNewData();

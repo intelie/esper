@@ -5,6 +5,7 @@
 			<xs:sequence>
 				<xs:element ref="esper:event-type-auto-alias" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:element ref="esper:event-type" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="esper:revision-event-type" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:element ref="esper:auto-import" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:element ref="esper:method-reference" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:element ref="esper:database-reference" minOccurs="0" maxOccurs="unbounded"/>
@@ -145,6 +146,41 @@
 		<xs:restriction base="xs:token">
 			<xs:enumeration value="enabled"/>
 			<xs:enumeration value="disabled"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:element name="revision-event-type">
+		<xs:complexType>
+			<xs:choice>
+				<xs:sequence>
+					<xs:element ref="esper:full-event" minOccurs="1" maxOccurs="1"/>
+					<xs:element ref="esper:delta-event" minOccurs="1" maxOccurs="unbounded"/>
+					<xs:element ref="esper:key-property" minOccurs="1" maxOccurs="unbounded"/>
+				</xs:sequence>
+			</xs:choice>
+			<xs:attribute name="alias" type="xs:string" use="required"/>
+			<xs:attribute name="property-revision" type="esper:property-revision" use="optional"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="full-event">
+		<xs:complexType>
+			<xs:attribute name="alias" type="xs:string" use="required"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="delta-event">
+		<xs:complexType>
+			<xs:attribute name="alias" type="xs:string" use="required"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="key-property">
+		<xs:complexType>
+			<xs:attribute name="name" type="xs:string" use="required"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:simpleType name="property-revision">
+		<xs:restriction base="xs:token">
+			<xs:enumeration value="declared"/>
+			<xs:enumeration value="exists_non_null"/>
+			<xs:enumeration value="exists"/>
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:element name="database-reference">

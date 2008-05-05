@@ -6,27 +6,27 @@ import com.espertech.esper.event.EventPropertyGetter;
 import com.espertech.esper.event.EventType;
 import com.espertech.esper.event.PropertyAccessException;
 
-public class RevisionEventBean implements EventBean
+public class RevisionEventBeanDeclared implements EventBean
 {
     private final RevisionEventType revisionEventType;
     private final EventBean underlyingFullOrDelta;
 
     private MultiKeyUntyped key;
-    private EventBean fullEvent;
+    private EventBean lastFullEvent;
     private RevisionBeanHolder[] holders;
     private boolean isLatest;
 
-    public RevisionEventBean(RevisionEventType eventType, EventBean underlying)
+    public RevisionEventBeanDeclared(RevisionEventType eventType, EventBean underlying)
     {
         this.revisionEventType = eventType;
         this.underlyingFullOrDelta = underlying;
     }
 
-    public RevisionEventBean(RevisionEventType eventType, MultiKeyUntyped key, EventBean fullEvent, RevisionBeanHolder[] revisionsPerAuthoritySet)
+    public RevisionEventBeanDeclared(RevisionEventType eventType, MultiKeyUntyped key, EventBean fullEvent, RevisionBeanHolder[] revisionsPerAuthoritySet)
     {
         this.revisionEventType = eventType;
         this.key = key;
-        this.fullEvent = fullEvent;
+        this.lastFullEvent = fullEvent;
         this.holders = revisionsPerAuthoritySet;
         this.underlyingFullOrDelta = null;
     }
@@ -46,14 +46,19 @@ public class RevisionEventBean implements EventBean
         this.key = key;
     }
 
-    public void setFullEvent(EventBean fullEvent)
+    public void setLastFullEvent(EventBean lastFullEvent)
     {
-        this.fullEvent = fullEvent;
+        this.lastFullEvent = lastFullEvent;
     }
 
     public void setHolders(RevisionBeanHolder[] holders)
     {
         this.holders = holders;
+    }
+
+    public EventBean getLastFullEvent()
+    {
+        return lastFullEvent;
     }
 
     public EventBean getUnderlyingFullOrDelta()
@@ -88,12 +93,7 @@ public class RevisionEventBean implements EventBean
 
     public Object getUnderlying()
     {
-        return null;  // TODO
-    }
-
-    public Object getVersionFreeValue(int index)
-    {
-        return key.getKeys()[index];
+        return RevisionEventBeanDeclared.class;
     }
 
     public Object getVersionedValue(RevisionGetterParameters params)
@@ -125,7 +125,7 @@ public class RevisionEventBean implements EventBean
         // none found, use last full event
         if (holderMostRecent == null)
         {
-            return params.getFullGetter().get(fullEvent);
+            return params.getFullGetter().get(lastFullEvent);
         }
 
         return holderMostRecent.getValueForProperty(params.getPropertyNumber());

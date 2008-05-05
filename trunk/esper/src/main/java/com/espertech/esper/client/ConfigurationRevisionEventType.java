@@ -4,14 +4,14 @@ import java.util.Set;
 import java.util.HashSet;
 import java.io.Serializable;
 
-public class ConfigurationRevisionEvent implements Serializable
+public class ConfigurationRevisionEventType implements Serializable
 {
     private String aliasFullEventType;
     private Set<String> aliasDeltaEventTypes;
     private PropertyRevision propertyRevision;
     private String[] keyPropertyNames;
 
-    public ConfigurationRevisionEvent()
+    public ConfigurationRevisionEventType()
     {
         aliasDeltaEventTypes = new HashSet<String>();
         propertyRevision = PropertyRevision.DECLARED;

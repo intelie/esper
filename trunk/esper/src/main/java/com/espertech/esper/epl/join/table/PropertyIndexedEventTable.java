@@ -135,9 +135,6 @@ public class PropertyIndexedEventTable implements EventTable
         }
 
         events.add(event);
-
-        // TODO
-        System.out.println("propertyIndex after add size=" + propertyIndex.size());
     }
 
     private void remove(EventBean event)
@@ -152,8 +149,6 @@ public class PropertyIndexedEventTable implements EventTable
                 log.debug(".remove Event could not be located in index, event " + event);
             }
 
-            // TODO
-            System.out.println("propertyIndex NOT FOUND size=" + propertyIndex.size());
             return;
         }
 
@@ -173,9 +168,6 @@ public class PropertyIndexedEventTable implements EventTable
         {
             propertyIndex.remove(key);
         }
-
-        // TODO
-        System.out.println("propertyIndex after remove size=" + propertyIndex.size());
     }
 
     public boolean isEmpty()

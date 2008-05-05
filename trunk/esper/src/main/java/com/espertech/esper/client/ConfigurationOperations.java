@@ -205,5 +205,5 @@ public interface ConfigurationOperations
      */
     public void setPlugInEventTypeAliasResolutionURIs(URI[] urisToResolveAlias);
 
-    public void addRevisionEventType(String revisionEventTypeAlias, ConfigurationRevisionEvent revisionEventTypeConfig);    
+    public void addRevisionEventType(String revisionEventTypeAlias, ConfigurationRevisionEventType revisionEventTypeConfig);
 }

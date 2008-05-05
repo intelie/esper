@@ -5,21 +5,23 @@ import com.espertech.esper.event.EventType;
 
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 
 public class RevisionEventType implements EventType
 {
-    private EventType fullEventType;
+    private String[] propertyNames;
     private Map<String, RevisionPropertyTypeDesc> propertyDesc;
 
-    public RevisionEventType(EventType fullEventType, Map<String, RevisionPropertyTypeDesc> propertyDesc)
+    public RevisionEventType(Map<String, RevisionPropertyTypeDesc> propertyDesc)
     {
-        this.fullEventType = fullEventType;
         this.propertyDesc = propertyDesc;
+        Set<String> keys = propertyDesc.keySet();
+        propertyNames = keys.toArray(new String[keys.size()]);
     }
 
     public EventPropertyGetter getGetter(String property)
     {
-        final RevisionPropertyTypeDesc desc = propertyDesc.get(property);
+        RevisionPropertyTypeDesc desc = propertyDesc.get(property);
         if (desc == null)
         {
             return null;
@@ -29,7 +31,12 @@ public class RevisionEventType implements EventType
 
     public Class getPropertyType(String property)
     {
-        return fullEventType.getPropertyType(property);
+        RevisionPropertyTypeDesc desc = propertyDesc.get(property);
+        if (desc == null)
+        {
+            return null;
+        }
+        return desc.getPropertyType();
     }
 
     public Class getUnderlyingType()
@@ -39,21 +46,21 @@ public class RevisionEventType implements EventType
 
     public String[] getPropertyNames()
     {
-        return fullEventType.getPropertyNames();
+        return propertyNames;
     }
 
     public boolean isProperty(String property)
     {
-        return fullEventType.isProperty(property);
+        return propertyDesc.containsKey(property);
     }
 
     public EventType[] getSuperTypes()
     {
-        return fullEventType.getSuperTypes();
+        return null;
     }
 
     public Iterator<EventType> getDeepSuperTypes()
     {
-        return fullEventType.getDeepSuperTypes();
+        return null;
     }
 }

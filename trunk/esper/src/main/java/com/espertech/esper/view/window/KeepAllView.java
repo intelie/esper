@@ -66,16 +66,6 @@ public final class KeepAllView extends ViewSupport implements DataWindowView, Cl
 
     public final void update(EventBean[] newData, EventBean[] oldData)
     {
-        // TODO
-        if (newData != null)
-        {
-            RevisionProcessor.log("keepall new data", newData[0]);
-        }
-        if (oldData != null)
-        {
-            RevisionProcessor.log("keepall old data", oldData[0]);
-        }
-
         if (newData != null)
         {
             for (EventBean aNewData : newData)

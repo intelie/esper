@@ -4,9 +4,7 @@ import com.espertech.esper.client.*;
 import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.support.util.SupportUpdateListener;
 import com.espertech.esper.support.util.ArrayAssertionUtil;
-import com.espertech.esper.support.bean.SupportBean;
-import com.espertech.esper.support.bean.SupportBean_A;
-import com.espertech.esper.support.bean.SupportBeanComplexProps;
+import com.espertech.esper.support.bean.*;
 import com.espertech.esper.event.EventBean;
 import junit.framework.TestCase;
 
@@ -17,9 +15,9 @@ import java.util.HashMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-public class TestNamedWinRevision extends TestCase
+public class TestNamedWinRevisionDeclared extends TestCase
 {
-    private static final Log log = LogFactory.getLog(TestNamedWinRevision.class);
+    private static final Log log = LogFactory.getLog(TestNamedWinRevisionDeclared.class);
     private EPServiceProvider epService;
     private EPStatement stmtCreateWin;
     private SupportUpdateListener listenerOne;
@@ -27,15 +25,7 @@ public class TestNamedWinRevision extends TestCase
     private SupportUpdateListener listenerThree;
     private final String[] fields = "k0,p0,p1,p2,p3,p4,p5".split(",");
 
-    // TODO: test XML configuration
-    // TODO: test subclasses
-    // TODO: test stop and start
-    // TODO: multithreaded
-    // TODO: runtime configuration options
-    // TODO: remaining TODOs
-    // TODO: test invalid insert-into
     // TODO: test policies for resolving last version
-    // TODO: test invalid event type inserted or no such named window (RevQuote vs RevMap)
     // TODO: is it possible to set no key properties and treats each event as no update; test not used for named window
        
     // TODO: document
@@ -56,7 +46,7 @@ public class TestNamedWinRevision extends TestCase
         config.addEventTypeAlias("D4", SupportDeltaFour.class);
         config.addEventTypeAlias("D5", SupportDeltaFive.class);
 
-        ConfigurationRevisionEvent configRev = new ConfigurationRevisionEvent();
+        ConfigurationRevisionEventType configRev = new ConfigurationRevisionEventType();
         configRev.setKeyPropertyNames(new String[] {"k0"});
         configRev.setAliasFullEventType("FullEvent");
         configRev.addAliasDeltaEvent("D1");
@@ -302,11 +292,12 @@ public class TestNamedWinRevision extends TestCase
 
     public void testInvalidConfig()
     {
-        ConfigurationRevisionEvent config = new ConfigurationRevisionEvent();
+        ConfigurationRevisionEventType config = new ConfigurationRevisionEventType();
         tryInvalidConfig("abc", config, "Required full event type alias is not set in the configuration for revision event type 'abc'");
 
-        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("MyEvent", SupportBean_A.class);
+        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("MyEvent", SupportBean.class);
         epService.getEPAdministrator().getConfiguration().addEventTypeAlias("MyComplex", SupportBeanComplexProps.class);
+        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("MyTypeChange", SupportBeanTypeChange.class);
 
         config.setAliasFullEventType("XYZ");
         tryInvalidConfig("abc", config, "Could not locate event type for alias 'XYZ' in the configuration for revision event type 'abc'");
@@ -320,18 +311,46 @@ public class TestNamedWinRevision extends TestCase
         config.setKeyPropertyNames(new String[] {"xyz"});
         tryInvalidConfig("abc", config, "Key property 'xyz' as defined in the configuration for revision event type 'abc' does not exists in event type 'MyEvent'");
 
-        config.setKeyPropertyNames(new String[] {"id"});
+        config.setKeyPropertyNames(new String[] {"intPrimitive"});
         config.addAliasDeltaEvent("MyComplex");
-        tryInvalidConfig("abc", config, "Key property 'id' as defined in the configuration for revision event type 'abc' does not exists in event type 'MyComplex'");
+        tryInvalidConfig("abc", config, "Key property 'intPrimitive' as defined in the configuration for revision event type 'abc' does not exists in event type 'MyComplex'");
 
         config.addAliasDeltaEvent("XYZ");
         tryInvalidConfig("abc", config, "Could not locate event type for alias 'XYZ' in the configuration for revision event type 'abc'");
 
-        config.getAliasDeltaEventTypes().clear();        
+        config.getAliasDeltaEventTypes().clear();
+        config.setKeyPropertyNames(new String[] {"intBoxed"});
+        config.addAliasDeltaEvent("MyTypeChange");  // invalid intPrimitive property type
+        tryInvalidConfig("abc", config, "Key property named 'intPrimitive' does not have the same type for full and delta types of revision event type 'abc'");
+
+        config.getAliasDeltaEventTypes().clear();
         epService.getEPAdministrator().getConfiguration().addRevisionEventType("abc", config);
     }
 
-    private void tryInvalidConfig(String alias, ConfigurationRevisionEvent config, String message)
+    public void testInvalidInsertInto()
+    {
+        try
+        {
+            epService.getEPAdministrator().createEPL("insert into RevQuote select * from " + SupportBean.class.getName());
+            fail();
+        }
+        catch (EPStatementException ex)
+        {
+            assertEquals("Error starting view: Selected event type is not a valid full or delta event type of revision event type 'RevisableQuote' [insert into RevQuote select * from com.espertech.esper.support.bean.SupportBean]", ex.getMessage());
+        }
+
+        try
+        {
+            epService.getEPAdministrator().createEPL("insert into RevQuote select intPrimitive as k0 from " + SupportBean.class.getName());
+            fail();
+        }
+        catch (EPStatementException ex)
+        {
+            assertEquals("Error starting view: Selected event type is not a valid full or delta event type of revision event type 'RevisableQuote' [insert into RevQuote select intPrimitive as k0 from com.espertech.esper.support.bean.SupportBean]", ex.getMessage());
+        }
+    }
+
+    private void tryInvalidConfig(String alias, ConfigurationRevisionEventType config, String message)
     {
         try
         {

@@ -147,7 +147,7 @@ public class Configuration implements ConfigurationOperations, ConfigurationInfo
      */
     protected URI[] plugInEventTypeAliasResolutionURIs;
 
-    protected Map<String, ConfigurationRevisionEvent> revisionEventTypes;
+    protected Map<String, ConfigurationRevisionEventType> revisionEventTypes;
 
     /**
      * Constructs an empty configuration. The auto import values
@@ -272,7 +272,7 @@ public class Configuration implements ConfigurationOperations, ConfigurationInfo
         eventTypesXMLDOM.put(eventTypeAlias, xmlDOMEventTypeDesc);
     }
 
-    public void addRevisionEventType(String revisionEventTypeAlias, ConfigurationRevisionEvent revisionEventTypeConfig)
+    public void addRevisionEventType(String revisionEventTypeAlias, ConfigurationRevisionEventType revisionEventTypeConfig)
     {
         revisionEventTypes.put(revisionEventTypeAlias, revisionEventTypeConfig);
     }
@@ -394,7 +394,7 @@ public class Configuration implements ConfigurationOperations, ConfigurationInfo
         return methodInvocationReferences;
     }
 
-    public Map<String, ConfigurationRevisionEvent> getRevisionEventTypes()
+    public Map<String, ConfigurationRevisionEventType> getRevisionEventTypes()
     {
         return revisionEventTypes;
     }
@@ -733,7 +733,7 @@ public class Configuration implements ConfigurationOperations, ConfigurationInfo
         methodInvocationReferences = new HashMap<String, ConfigurationMethodRef>();
         plugInEventRepresentation = new HashMap<URI, ConfigurationPlugInEventRepresentation>();
         plugInEventTypes = new HashMap<String, ConfigurationPlugInEventType>();
-        revisionEventTypes = new HashMap<String, ConfigurationRevisionEvent>();
+        revisionEventTypes = new HashMap<String, ConfigurationRevisionEventType>();
     }
 
     /**

@@ -2,16 +2,16 @@ package com.espertech.esper.event.rev;
 
 import com.espertech.esper.event.EventPropertyGetter;
 
-public class RevisionEventTypeDesc
+public class RevisionTypeDescDeclared
 {
     private final EventPropertyGetter[] keyPropertyGetters;
-    private final EventPropertyGetter[] allPropertyGetters;
+    private final EventPropertyGetter[] changesetPropertyGetters;
     private final PropertyGroupDesc group;
 
-    public RevisionEventTypeDesc(EventPropertyGetter[] keyPropertyGetters, EventPropertyGetter[] allPropertyGetters, PropertyGroupDesc group)
+    public RevisionTypeDescDeclared(EventPropertyGetter[] keyPropertyGetters, EventPropertyGetter[] changesetPropertyGetters, PropertyGroupDesc group)
     {
         this.keyPropertyGetters = keyPropertyGetters;
-        this.allPropertyGetters = allPropertyGetters;
+        this.changesetPropertyGetters = changesetPropertyGetters;
         this.group = group;
     }
 
@@ -20,9 +20,9 @@ public class RevisionEventTypeDesc
         return keyPropertyGetters;
     }
 
-    public EventPropertyGetter[] getAllPropertyGetters()
+    public EventPropertyGetter[] getChangesetPropertyGetters()
     {
-        return allPropertyGetters;
+        return changesetPropertyGetters;
     }
 
     public PropertyGroupDesc getGroup()

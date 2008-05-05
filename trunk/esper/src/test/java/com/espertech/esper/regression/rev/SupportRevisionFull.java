@@ -1,6 +1,6 @@
 package com.espertech.esper.regression.rev;
 
-public class SupportRevisionFull
+public class SupportRevisionFull implements ISupportRevisionFull
 {
     private final String k0;
     private final String p0;

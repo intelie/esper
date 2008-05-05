@@ -150,6 +150,6 @@ public interface ConfigurationInformation
      */
     public URI[] getPlugInEventTypeAliasResolutionURIs();
 
-    public Map<String, ConfigurationRevisionEvent> getRevisionEventTypes();
+    public Map<String, ConfigurationRevisionEventType> getRevisionEventTypes();
 }
 

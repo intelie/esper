@@ -1,6 +1,6 @@
 package com.espertech.esper.regression.rev;
 
-public class SupportDeltaFive
+public class SupportDeltaFive implements ISupportDeltaFive
 {
     private final String k0;
     private final String p1;

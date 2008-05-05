@@ -2,14 +2,14 @@ package com.espertech.esper.event.rev;
 
 import com.espertech.esper.event.EventBean;
 
-public class RevisionState
+public class RevisionStateDeclared
 {
     private long revisionNumber;
     private EventBean fullEventUnderlying;
     private RevisionBeanHolder[] holders;
-    private RevisionEventBean lastEvent;
+    private RevisionEventBeanDeclared lastEvent;
 
-    public RevisionState(EventBean fullEventUnderlying, RevisionBeanHolder[] holders, RevisionEventBean lastEvent)
+    public RevisionStateDeclared(EventBean fullEventUnderlying, RevisionBeanHolder[] holders, RevisionEventBeanDeclared lastEvent)
     {
         this.fullEventUnderlying = fullEventUnderlying;
         this.holders = holders;
@@ -46,12 +46,12 @@ public class RevisionState
         this.holders = holders;
     }
 
-    public RevisionEventBean getLastEvent()
+    public RevisionEventBeanDeclared getLastEvent()
     {
         return lastEvent;
     }
 
-    public void setLastEvent(RevisionEventBean lastEvent)
+    public void setLastEvent(RevisionEventBeanDeclared lastEvent)
     {
         this.lastEvent = lastEvent;
     }

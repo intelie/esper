@@ -223,7 +223,7 @@ public class SelectExprEvalProcessor implements SelectExprProcessor
         {
             try
             {
-                EventType revisionType = revisionService.getNamedWindowRevisionType(insertIntoDesc.getEventTypeAlias());
+                EventType revisionType = revisionService.getIsNamedWindowRevisionType(insertIntoDesc.getEventTypeAlias(), eventType);
                 if (revisionType != null)
                 {
                     resultEventType = revisionType;

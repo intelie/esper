@@ -848,7 +848,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
         boolean isWildcard = spec.getSelectClauseSpec().isUsingWildcard();
         if (statementContext.getRevisionService().isRevisionTypeAlias(selectFromTypeAlias))
         {
-            targetType = statementContext.getRevisionService().createRevisionType(typeName, selectFromTypeAlias);
+            targetType = statementContext.getRevisionService().createRevisionType(typeName, selectFromTypeAlias, statementContext.getStatementStopService(), statementContext.getEventAdapterService());
         }
         else if (isWildcard)
         {

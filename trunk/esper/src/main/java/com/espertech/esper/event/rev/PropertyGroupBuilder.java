@@ -12,16 +12,16 @@ public class PropertyGroupBuilder
 {
     private static final Log log = LogFactory.getLog(PropertyGroupBuilder.class);
 
-    public static Map<EventType, RevisionEventTypeDesc> getPerType(PropertyGroupDesc[] groups, String[] allProperties, String[] keyProperties)
+    public static Map<EventType, RevisionTypeDescDeclared> getPerType(PropertyGroupDesc[] groups, String[] changesetProperties, String[] keyProperties)
     {
-        Map<EventType, RevisionEventTypeDesc> perType = new HashMap<EventType, RevisionEventTypeDesc>();
+        Map<EventType, RevisionTypeDescDeclared> perType = new HashMap<EventType, RevisionTypeDescDeclared>();
         for (PropertyGroupDesc group : groups)
         {
             for (EventType type : group.getTypes().keySet())
             {
-                EventPropertyGetter[] allGetters = getGetters(type, allProperties);
+                EventPropertyGetter[] changesetGetters = getGetters(type, changesetProperties);
                 EventPropertyGetter[] keyGetters = getGetters(type, keyProperties);
-                RevisionEventTypeDesc pair = new RevisionEventTypeDesc(keyGetters, allGetters, group);
+                RevisionTypeDescDeclared pair = new RevisionTypeDescDeclared(keyGetters, changesetGetters, group);
                 perType.put(type, pair);
             }
         }

@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.List;
 
 import com.espertech.esper.client.soda.StreamSelector;
+import com.espertech.esper.support.util.ArrayAssertionUtil;
 
 public class TestConfigurationParser extends TestCase
 {
@@ -277,5 +278,14 @@ public class TestConfigurationParser extends TestCase
         assertEquals(2, config.getPlugInEventTypeAliasResolutionURIs().length);
         assertEquals("type://format/rep", config.getPlugInEventTypeAliasResolutionURIs()[0].toString());
         assertEquals("type://format/rep2", config.getPlugInEventTypeAliasResolutionURIs()[1].toString());
+
+        // revision types
+        assertEquals(1, config.getRevisionEventTypes().size());
+        ConfigurationRevisionEventType configRev = config.getRevisionEventTypes().get("MyRevisionEvent");
+        assertEquals("MyFullEventAlias", configRev.getAliasFullEventType());
+        assertTrue(configRev.getAliasDeltaEventTypes().contains("MyDeltaEventAliasOne"));
+        assertTrue(configRev.getAliasDeltaEventTypes().contains("MyDeltaEventAliasTwo"));
+        ArrayAssertionUtil.assertEqualsAnyOrder(new String[] {"id", "id2"}, configRev.getKeyPropertyNames());
+        assertEquals(ConfigurationRevisionEventType.PropertyRevision.EXISTS_NON_NULL, configRev.getPropertyRevision());
     }
 }
