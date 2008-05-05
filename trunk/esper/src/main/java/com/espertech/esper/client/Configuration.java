@@ -570,9 +570,9 @@ public class Configuration implements ConfigurationOperations, ConfigurationInfo
     {
         if (log.isDebugEnabled())
         {
-            log.debug( "configuring from resource: " + resource );
+            log.debug( "Configuring from resource: " + resource );
         }
-        InputStream stream = getConfigurationInputStream( resource );
+        InputStream stream = getConfigurationInputStream(resource );
         ConfigurationParser.doConfigure(this, stream, resource );
         return this;
     }
@@ -589,10 +589,6 @@ public class Configuration implements ConfigurationOperations, ConfigurationInfo
      */
     protected static InputStream getConfigurationInputStream(String resource) throws EPException
     {
-        if (log.isDebugEnabled())
-        {
-            log.debug( "Configuration resource: " + resource );
-        }
         return getResourceAsStream(resource);
     }
 
