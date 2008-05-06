@@ -2,13 +2,13 @@ package com.espertech.esper.event.rev;
 
 import com.espertech.esper.event.EventPropertyGetter;
 
-public class RevisionTypeDescOverlayed
+public class RevisionTypeDescMerge
 {
     private final EventPropertyGetter[] keyPropertyGetters;
     private final EventPropertyGetter[] changesetPropertyGetters;
     private final int[] changesetPropertyIndex;
 
-    public RevisionTypeDescOverlayed(EventPropertyGetter[] keyPropertyGetters, EventPropertyGetter[] changesetPropertyGetters, int[] changesetPropertyIndex)
+    public RevisionTypeDescMerge(EventPropertyGetter[] keyPropertyGetters, EventPropertyGetter[] changesetPropertyGetters, int[] changesetPropertyIndex)
     {
         this.keyPropertyGetters = keyPropertyGetters;
         this.changesetPropertyGetters = changesetPropertyGetters;

@@ -7,10 +7,7 @@ import com.espertech.esper.event.EventAdapterService;
 import com.espertech.esper.event.EventType;
 import com.espertech.esper.view.StatementStopService;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class RevisionServiceImpl implements RevisionService
 {
@@ -42,13 +39,13 @@ public class RevisionServiceImpl implements RevisionService
     {
         RevisionSpec spec = specificationsByRevisionAlias.get(alias);
         RevisionProcessor processor;
-        if (spec.getPropertyRevision() == ConfigurationRevisionEventType.PropertyRevision.DECLARED)
+        if (spec.getPropertyRevision() == ConfigurationRevisionEventType.PropertyRevision.OVERLAY_DECLARED)
         {
             processor = new RevisionProcessorDeclared(alias, spec, statementStopService);
         }
         else
         {
-            processor = new RevisionProcessorExists(alias, spec, statementStopService);
+            processor = new RevisionProcessorMerge(alias, spec, statementStopService);
         }
 
         processorsByNamedWindow.put(namedWindowName, processor);
@@ -146,48 +143,102 @@ public class RevisionServiceImpl implements RevisionService
             }
         }
 
-        // determine non-key properties: those overridden by any delta, and those simply only present on the full event type
-        String nonkeyPropertyNames[] = PropertyGroupBuilder.uniqueExclusiveSort(fullEventType.getPropertyNames(), keyPropertyNames);
-        Set<String> fullEventOnlyProperties = new HashSet<String>();
-        Set<String> changesetPropertyNames = new HashSet<String>();
-        for (String nonKey : nonkeyPropertyNames)
+        RevisionSpec specification = null;
+        // In the "declared" type the change set properties consist of only :
+        //   (full event type properties) minus (key properties) minus (properties only on full event type)
+        if (config.getPropertyRevision() == ConfigurationRevisionEventType.PropertyRevision.OVERLAY_DECLARED)
         {
-            boolean overriddenProperty = false;
-            for (EventType type : deltaTypes)
+            // determine non-key properties: those overridden by any delta, and those simply only present on the full event type
+            String nonkeyPropertyNames[] = PropertyGroupBuilder.uniqueExclusiveSort(fullEventType.getPropertyNames(), keyPropertyNames);
+            Set<String> fullEventOnlyProperties = new HashSet<String>();
+            Set<String> changesetPropertyNames = new HashSet<String>();
+            for (String nonKey : nonkeyPropertyNames)
             {
-                if (type.isProperty(nonKey))
+                boolean overriddenProperty = false;
+                for (EventType type : deltaTypes)
                 {
-                    changesetPropertyNames.add(nonKey);
-                    overriddenProperty = true;
-                    break;
+                    if (type.isProperty(nonKey))
+                    {
+                        changesetPropertyNames.add(nonKey);
+                        overriddenProperty = true;
+                        break;
+                    }
+                }
+                if (!overriddenProperty)
+                {
+                    fullEventOnlyProperties.add(nonKey);
                 }
             }
-            if (!overriddenProperty)
-            {
-                fullEventOnlyProperties.add(nonKey);
-            }
-        }
 
-        String changesetProperties[] = changesetPropertyNames.toArray(new String[changesetPropertyNames.size()]);
-        String fullEventOnlyPropertyNames[] = fullEventOnlyProperties.toArray(new String[fullEventOnlyProperties.size()]);
+            String changesetProperties[] = changesetPropertyNames.toArray(new String[changesetPropertyNames.size()]);
+            String fullEventOnlyPropertyNames[] = fullEventOnlyProperties.toArray(new String[fullEventOnlyProperties.size()]);
 
-        // verify that all changeset properties match event type
-        for (String changesetProperty : changesetProperties)
-        {
-            Class typeProperty = fullEventType.getPropertyType(changesetProperty);
-            for (EventType dtype : deltaTypes)
+            // verify that all changeset properties match event type
+            for (String changesetProperty : changesetProperties)
             {
-                Class dtypeProperty = dtype.getPropertyType(changesetProperty);
-                if ((dtypeProperty != null) && (typeProperty != dtypeProperty))
+                Class typeProperty = fullEventType.getPropertyType(changesetProperty);
+                for (EventType dtype : deltaTypes)
                 {
-                    throw new ConfigurationException("Key property named '" + changesetProperty + "' does not have the same type for full and delta types of revision event type '" + revisionEventTypeAlias + "'");
+                    Class dtypeProperty = dtype.getPropertyType(changesetProperty);
+                    if ((dtypeProperty != null) && (typeProperty != dtypeProperty))
+                    {
+                        throw new ConfigurationException("Property named '" + changesetProperty + "' does not have the same type for full and delta types of revision event type '" + revisionEventTypeAlias + "'");
+                    }
                 }
             }
-        }
 
-        // build the property groups
-        RevisionSpec processor = new RevisionSpec(config.getPropertyRevision(), fullEventType, deltaTypes, deltaAliases, keyPropertyNames, changesetProperties, fullEventOnlyPropertyNames);
-        specificationsByRevisionAlias.put(revisionEventTypeAlias, processor);
+            specification = new RevisionSpec(config.getPropertyRevision(), fullEventType, deltaTypes, deltaAliases, keyPropertyNames, changesetProperties, fullEventOnlyPropertyNames, false, null);
+        }
+        else
+        {
+            // In the "exists" type the change set properties consist of all properties: full event properties plus delta types properties
+            Set<String> allProperties = new HashSet<String>();
+            allProperties.addAll(Arrays.asList(fullEventType.getPropertyNames()));
+            for (EventType deltaType : deltaTypes)
+            {
+                allProperties.addAll(Arrays.asList(deltaType.getPropertyNames()));
+            }
+
+            String[] allPropertiesArr = allProperties.toArray(new String[allProperties.size()]);
+            String[] changesetProperties = PropertyGroupBuilder.uniqueExclusiveSort(allPropertiesArr, keyPropertyNames);
+
+            // All properties must have the same type, if a property exists for any given type
+            boolean hasContributedByDelta = false;
+            boolean[] contributedByDelta = new boolean[changesetProperties.length];
+            count = 0;
+            for (String property : changesetProperties)
+            {
+                Class fullPropertyType = fullEventType.getPropertyType(property);
+                Class typeTemp = null;
+                if (fullPropertyType != null)
+                {
+                    typeTemp = fullPropertyType;
+                }
+                else
+                {
+                    hasContributedByDelta = true;
+                    contributedByDelta[count] = true;
+                }
+                for (EventType dtype : deltaTypes)
+                {
+                    Class dtypeProperty = dtype.getPropertyType(property);
+                    if (dtypeProperty != null)
+                    {
+                        if ((typeTemp != null) && (dtypeProperty != typeTemp))
+                        {
+                            throw new ConfigurationException("Property named '" + property + "' does not have the same type for full and delta types of revision event type '" + revisionEventTypeAlias + "'");
+                        }
+
+                    }
+                    typeTemp = dtypeProperty;
+                }
+                count++;
+            }
+
+            // Compile changeset
+            specification = new RevisionSpec(config.getPropertyRevision(), fullEventType, deltaTypes, deltaAliases, keyPropertyNames, changesetProperties, new String[0], hasContributedByDelta, contributedByDelta);
+        }
+        specificationsByRevisionAlias.put(revisionEventTypeAlias, specification);
     }
 
     private void checkKeysExist(EventType fullEventType, String alias, String[] keyProperties, String revisionEventTypeAlias)

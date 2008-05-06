@@ -286,6 +286,7 @@ public class TestConfigurationParser extends TestCase
         assertTrue(configRev.getAliasDeltaEventTypes().contains("MyDeltaEventAliasOne"));
         assertTrue(configRev.getAliasDeltaEventTypes().contains("MyDeltaEventAliasTwo"));
         ArrayAssertionUtil.assertEqualsAnyOrder(new String[] {"id", "id2"}, configRev.getKeyPropertyNames());
-        assertEquals(ConfigurationRevisionEventType.PropertyRevision.EXISTS_NON_NULL, configRev.getPropertyRevision());
+        assertEquals(ConfigurationRevisionEventType.PropertyRevision.MERGE_NON_NULL, configRev.getPropertyRevision());
+        // TODO: new revision config
     }
 }

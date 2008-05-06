@@ -3,13 +3,13 @@ package com.espertech.esper.event.rev;
 import com.espertech.esper.event.EventBean;
 import com.espertech.esper.util.NullableObject;
 
-public class RevisionStateOverlay
+public class RevisionStateMerge
 {
     private EventBean fullEventUnderlying;
     private NullableObject<Object>[] overlays;
-    private RevisionEventBeanOverlay lastEvent;
+    private RevisionEventBeanMerge lastEvent;
 
-    public RevisionStateOverlay(EventBean fullEventUnderlying, NullableObject<Object>[] overlays, RevisionEventBeanOverlay lastEvent)
+    public RevisionStateMerge(EventBean fullEventUnderlying, NullableObject<Object>[] overlays, RevisionEventBeanMerge lastEvent)
     {
         this.fullEventUnderlying = fullEventUnderlying;
         this.overlays = overlays;
@@ -36,12 +36,12 @@ public class RevisionStateOverlay
         return overlays;
     }
 
-    public RevisionEventBeanOverlay getLastEvent()
+    public RevisionEventBeanMerge getLastEvent()
     {
         return lastEvent;
     }
 
-    public void setLastEvent(RevisionEventBeanOverlay lastEvent)
+    public void setLastEvent(RevisionEventBeanMerge lastEvent)
     {
         this.lastEvent = lastEvent;
     }

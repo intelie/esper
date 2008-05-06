@@ -321,7 +321,7 @@ public class TestNamedWinRevisionDeclared extends TestCase
         config.getAliasDeltaEventTypes().clear();
         config.setKeyPropertyNames(new String[] {"intBoxed"});
         config.addAliasDeltaEvent("MyTypeChange");  // invalid intPrimitive property type
-        tryInvalidConfig("abc", config, "Key property named 'intPrimitive' does not have the same type for full and delta types of revision event type 'abc'");
+        tryInvalidConfig("abc", config, "Property named 'intPrimitive' does not have the same type for full and delta types of revision event type 'abc'");
 
         config.getAliasDeltaEventTypes().clear();
         epService.getEPAdministrator().getConfiguration().addRevisionEventType("abc", config);
@@ -400,7 +400,6 @@ public class TestNamedWinRevisionDeclared extends TestCase
 
     private void log(String text)
     {
-        // TODO
-        System.out.println(text);
+        log.debug(".log " + text);
     }
 }

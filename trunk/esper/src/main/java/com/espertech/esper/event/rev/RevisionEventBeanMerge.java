@@ -7,7 +7,7 @@ import com.espertech.esper.event.EventType;
 import com.espertech.esper.event.PropertyAccessException;
 import com.espertech.esper.util.NullableObject;
 
-public class RevisionEventBeanOverlay implements EventBean
+public class RevisionEventBeanMerge implements EventBean
 {
     private final RevisionEventType revisionEventType;
     private final EventBean underlyingFullOrDelta;
@@ -17,7 +17,7 @@ public class RevisionEventBeanOverlay implements EventBean
     private MultiKeyUntyped key;
     private boolean latest;
 
-    public RevisionEventBeanOverlay(RevisionEventType revisionEventType, EventBean underlyingFull)
+    public RevisionEventBeanMerge(RevisionEventType revisionEventType, EventBean underlyingFull)
     {
         this.revisionEventType = revisionEventType;
         this.underlyingFullOrDelta = underlyingFull;
@@ -80,7 +80,7 @@ public class RevisionEventBeanOverlay implements EventBean
 
     public Object getUnderlying()
     {
-        return RevisionEventBeanOverlay.class;
+        return RevisionEventBeanMerge.class;
     }
 
     public EventBean getUnderlyingFullOrDelta()
@@ -111,6 +111,11 @@ public class RevisionEventBeanOverlay implements EventBean
             }
         }
 
-        return params.getFullGetter().get(lastFullEvent);
+        EventPropertyGetter getter = params.getFullGetter();
+        if (getter == null)
+        {
+            return null;  // The property was added by a delta event and only exists on a delta
+        }
+        return getter.get(lastFullEvent);
     }
 }

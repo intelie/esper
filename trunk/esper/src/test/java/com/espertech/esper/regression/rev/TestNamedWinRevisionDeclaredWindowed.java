@@ -99,7 +99,7 @@ public class TestNamedWinRevisionDeclaredWindowed extends TestCase
         epService.getEPAdministrator().createEPL("insert into RevMap select * from D1");
         epService.getEPAdministrator().createEPL("insert into RevMap select * from D5");
 
-        EPStatement consumerOne = epService.getEPAdministrator().createEPL("select irstream * from RevMap");
+        EPStatement consumerOne = epService.getEPAdministrator().createEPL("select irstream * from RevMap order by k0");
         consumerOne.addListener(listenerOne);
 
         epService.getEPRuntime().sendEvent(makeMap(new Object[][] { {"p5", "p5_1"}, {"p1", "p1_1"}, {"k0", "E1"}, {"m0", "M0"}}), "MyMap");
@@ -127,8 +127,8 @@ public class TestNamedWinRevisionDeclaredWindowed extends TestCase
 
         epService.getEPRuntime().sendEvent(new SupportDeltaOne("E6", "p1_1", "p5_2"));
         ArrayAssertionUtil.assertProps(listenerOne.getLastNewData()[0], fields, new Object[] {"E6", "p1_1", "p5_2", "M2"});
-        ArrayAssertionUtil.assertProps(listenerOne.getLastOldData()[0], fields, new Object[] {"E5", "p1_1", "p5_2", "M2"});
-        ArrayAssertionUtil.assertProps(listenerOne.getLastOldData()[1], fields, new Object[] {"E3", "p1_2", "p5_1", "M1"});
+        ArrayAssertionUtil.assertProps(listenerOne.getLastOldData()[1], fields, new Object[] {"E5", "p1_1", "p5_2", "M2"});
+        ArrayAssertionUtil.assertProps(listenerOne.getLastOldData()[0], fields, new Object[] {"E3", "p1_2", "p5_1", "M1"});
     }
 
     public void testTimeWindow()

@@ -12,8 +12,10 @@ public class RevisionSpec
     private final String[] keyPropertyNames;
     private final String[] changesetPropertyNames;
     private final String[] fullEventOnlyPropertyNames;
+    private final boolean deltaTypesAddProperties;
+    private final boolean[] changesetPropertyDeltaContributed;
 
-    public RevisionSpec(ConfigurationRevisionEventType.PropertyRevision propertyRevision, EventType fullEventType, EventType[] deltaTypes, String[] deltaAliases, String[] keyPropertyNames, String[] changesetPropertyNames, String[] fullEventOnlyPropertyNames)
+    public RevisionSpec(ConfigurationRevisionEventType.PropertyRevision propertyRevision, EventType fullEventType, EventType[] deltaTypes, String[] deltaAliases, String[] keyPropertyNames, String[] changesetPropertyNames, String[] fullEventOnlyPropertyNames, boolean deltaTypesAddProperties, boolean[] changesetPropertyDeltaContributed)
     {
         this.propertyRevision = propertyRevision;
         this.fullEventType = fullEventType;
@@ -22,6 +24,13 @@ public class RevisionSpec
         this.keyPropertyNames = keyPropertyNames;
         this.changesetPropertyNames = changesetPropertyNames;
         this.fullEventOnlyPropertyNames = fullEventOnlyPropertyNames;
+        this.deltaTypesAddProperties = deltaTypesAddProperties;
+        this.changesetPropertyDeltaContributed = changesetPropertyDeltaContributed;
+    }
+
+    public boolean[] getChangesetPropertyDeltaContributed()
+    {
+        return changesetPropertyDeltaContributed;
     }
 
     public ConfigurationRevisionEventType.PropertyRevision getPropertyRevision()
@@ -57,5 +66,10 @@ public class RevisionSpec
     public String[] getFullEventOnlyPropertyNames()
     {
         return fullEventOnlyPropertyNames;
+    }
+
+    public boolean isDeltaTypesAddProperties()
+    {
+        return deltaTypesAddProperties;
     }
 }
