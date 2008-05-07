@@ -1,11 +1,12 @@
-package com.espertech.esper.regression.rev;
+package com.espertech.esper.event.rev;
 
 import com.espertech.esper.event.EventAdapterService;
 import com.espertech.esper.event.EventType;
-import com.espertech.esper.event.rev.PropertyGroupBuilder;
+import com.espertech.esper.event.rev.PropertyUtility;
 import com.espertech.esper.event.rev.PropertyGroupDesc;
 import com.espertech.esper.support.event.SupportEventAdapterService;
 import com.espertech.esper.support.util.ArrayAssertionUtil;
+import com.espertech.esper.support.bean.*;
 import junit.framework.TestCase;
 
 import java.util.HashMap;
@@ -41,7 +42,7 @@ public class TestPropertyGroupBuilder extends TestCase
 
     public void testAnalyze()
     {
-        PropertyGroupDesc[] groups = PropertyGroupBuilder.analyzeGroups(fields, types, new String[]{"D1","D2","D3","D4","D5"});
+        PropertyGroupDesc[] groups = PropertyUtility.analyzeGroups(fields, types, new String[]{"D1","D2","D3","D4","D5"});
         assertEquals(4, groups.length);
 
         assertEquals(0, groups[0].getGroupNum());
@@ -68,8 +69,8 @@ public class TestPropertyGroupBuilder extends TestCase
 
     public void testGetGroups()
     {
-        PropertyGroupDesc[] groups = PropertyGroupBuilder.analyzeGroups(fields, types, new String[]{"D1","D2","D3","D4","D5"});
-        Map<String, int[]> groupsPerProp = PropertyGroupBuilder.getGroupsPerProperty(groups);
+        PropertyGroupDesc[] groups = PropertyUtility.analyzeGroups(fields, types, new String[]{"D1","D2","D3","D4","D5"});
+        Map<String, int[]> groupsPerProp = PropertyUtility.getGroupsPerProperty(groups);
 
         assertEquals(groupsPerProp.size(), expectedPropertyGroups.size());
         for (Map.Entry<String, int[]> entry : expectedPropertyGroups.entrySet())

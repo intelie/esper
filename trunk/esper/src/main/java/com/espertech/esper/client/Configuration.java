@@ -147,6 +147,9 @@ public class Configuration implements ConfigurationOperations, ConfigurationInfo
      */
     protected URI[] plugInEventTypeAliasResolutionURIs;
 
+    /**
+     * All revision event types which allow updates to past events.
+     */
     protected Map<String, ConfigurationRevisionEventType> revisionEventTypes;
 
     /**

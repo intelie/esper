@@ -18,21 +18,28 @@ import com.espertech.esper.core.EPStatementHandle;
 
 import java.util.*;
 
-public class RevisionProcessorDeclared implements RevisionProcessor
+/**
+ * Provides overlay strategy for property group-based versioning. 
+ */
+public class RevisionProcessorDeclared extends RevisionProcessorBase implements RevisionProcessor
 {
     private static final Log log = LogFactory.getLog(RevisionProcessorDeclared.class);
 
-    private final String revisionEventTypeAlias;
-    private final RevisionEventType revisionEventType;
     private final PropertyGroupDesc groups[];
-    private final Map<EventType, RevisionTypeDescDeclared> groupPerDeltaType;
-    private final EventType fullEventType;
+    private final EventType baseEventType;
     private final EventPropertyGetter[] fullKeyGetters;
-
     private Map<MultiKeyUntyped, RevisionStateDeclared> statePerKey;
 
+    /**
+     * Ctor.
+     * @param revisionEventTypeAlias alias
+     * @param spec specification
+     * @param statementStopService for stop handling
+     */
     public RevisionProcessorDeclared(String revisionEventTypeAlias, RevisionSpec spec, StatementStopService statementStopService)
     {
+        super(spec, revisionEventTypeAlias);
+        
         // on statement stop, remove versions
         statementStopService.addSubscriber(new StatementStopCallback() {
             public void statementStopped()
@@ -41,21 +48,20 @@ public class RevisionProcessorDeclared implements RevisionProcessor
             }
         });
 
-        this.revisionEventTypeAlias = revisionEventTypeAlias;
         this.statePerKey = new HashMap<MultiKeyUntyped, RevisionStateDeclared>();
-        this.fullEventType = spec.getFullEventType();
-        this.fullKeyGetters = PropertyGroupBuilder.getGetters(fullEventType, spec.getKeyPropertyNames());
+        this.baseEventType = spec.getBaseEventType();
+        this.fullKeyGetters = PropertyUtility.getGetters(baseEventType, spec.getKeyPropertyNames());
 
         // sort non-key properties, removing keys
-        groups = PropertyGroupBuilder.analyzeGroups(spec.getChangesetPropertyNames(), spec.getDeltaTypes(), spec.getDeltaAliases());
+        groups = PropertyUtility.analyzeGroups(spec.getChangesetPropertyNames(), spec.getDeltaTypes(), spec.getDeltaAliases());
 
-        Map<String, int[]> propsPerGroup = PropertyGroupBuilder.getGroupsPerProperty(groups);
+        Map<String, int[]> propsPerGroup = PropertyUtility.getGroupsPerProperty(groups);
         Map<String, RevisionPropertyTypeDesc> propertyDesc = new HashMap<String, RevisionPropertyTypeDesc>();
         int count = 0;
 
         for (String property : spec.getChangesetPropertyNames())
         {
-            EventPropertyGetter fullGetter = spec.getFullEventType().getGetter(property);
+            EventPropertyGetter fullGetter = spec.getBaseEventType().getGetter(property);
             int propertyNumber = count;
             int[] propGroupsProperty = propsPerGroup.get(property);
             final RevisionGetterParameters params = new RevisionGetterParameters(property, propertyNumber, fullGetter, propGroupsProperty);
@@ -74,22 +80,22 @@ public class RevisionProcessorDeclared implements RevisionProcessor
                     }
                 };
 
-            Class type = spec.getFullEventType().getPropertyType(property);
+            Class type = spec.getBaseEventType().getPropertyType(property);
             RevisionPropertyTypeDesc propertyTypeDesc = new RevisionPropertyTypeDesc(revisionGetter, params, type);
             propertyDesc.put(property, propertyTypeDesc);
             count++;
         }
 
-        for (String property : spec.getFullEventOnlyPropertyNames())
+        for (String property : spec.getBaseEventOnlyPropertyNames())
         {
-            final EventPropertyGetter fullGetter = spec.getFullEventType().getGetter(property);
+            final EventPropertyGetter fullGetter = spec.getBaseEventType().getGetter(property);
 
             // if there are no groups (full event property only), then simply use the full event getter
             EventPropertyGetter revisionGetter =  new EventPropertyGetter() {
                 public Object get(EventBean eventBean) throws PropertyAccessException
                 {
                     RevisionEventBeanDeclared riv = (RevisionEventBeanDeclared) eventBean;
-                    return fullGetter.get(riv.getLastFullEvent());
+                    return fullGetter.get(riv.getLastBaseEvent());
                 }
 
                 public boolean isExistsProperty(EventBean eventBean)
@@ -98,7 +104,7 @@ public class RevisionProcessorDeclared implements RevisionProcessor
                 }
             };
 
-            Class type = spec.getFullEventType().getPropertyType(property);
+            Class type = spec.getBaseEventType().getPropertyType(property);
             RevisionPropertyTypeDesc propertyTypeDesc = new RevisionPropertyTypeDesc(revisionGetter, null, type);
             propertyDesc.put(property, propertyTypeDesc);
             count++;
@@ -122,59 +128,14 @@ public class RevisionProcessorDeclared implements RevisionProcessor
                 }
             };
 
-            Class type = spec.getFullEventType().getPropertyType(property);
+            Class type = spec.getBaseEventType().getPropertyType(property);
             RevisionPropertyTypeDesc propertyTypeDesc = new RevisionPropertyTypeDesc(revisionGetter, null, type);
             propertyDesc.put(property, propertyTypeDesc);
             count++;
         }
 
-        groupPerDeltaType = PropertyGroupBuilder.getPerType(groups, spec.getChangesetPropertyNames(), spec.getKeyPropertyNames());
+        typeDescriptors = PropertyUtility.getPerType(groups, spec.getChangesetPropertyNames(), spec.getKeyPropertyNames());
         revisionEventType = new RevisionEventType(propertyDesc);
-    }
-
-    public RevisionEventType getEventType()
-    {
-        return revisionEventType;
-    }
-
-    public boolean validateRevisionableEventType(EventType eventType)
-    {
-        if (eventType == fullEventType)
-        {
-            return true;
-        }
-        if (groupPerDeltaType.containsKey(eventType))
-        {
-            return true;
-        }
-
-        if (eventType == null)
-        {
-            return false;
-        }
-
-        // Check all the supertypes to see if one of the matches the full or delta types
-        Iterator<EventType> deepSupers = eventType.getDeepSuperTypes();
-        if (deepSupers == null)
-        {
-            return false;
-        }
-
-        EventType type;
-        for (;deepSupers.hasNext();)
-        {
-            type = deepSupers.next();
-            if (type == fullEventType)
-            {
-                return true;
-            }
-            if (groupPerDeltaType.containsKey(type))
-            {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     public EventBean getRevision(EventBean event)
@@ -211,16 +172,16 @@ public class RevisionProcessorDeclared implements RevisionProcessor
 
         // obtain key values
         MultiKeyUntyped key = null;
-        RevisionTypeDescDeclared typesDesc = null;
-        boolean isFullEventType = false;
-        if (underyingEventType == fullEventType)
+        RevisionTypeDesc typesDesc = null;
+        boolean isBaseEventType = false;
+        if (underyingEventType == baseEventType)
         {
-            key = getKeys(underlyingEvent, fullKeyGetters);
-            isFullEventType = true;
+            key = PropertyUtility.getKeys(underlyingEvent, fullKeyGetters);
+            isBaseEventType = true;
         }
         else
         {
-            typesDesc = groupPerDeltaType.get(underyingEventType);
+            typesDesc = typeDescriptors.get(underyingEventType);
 
             // if this type cannot be found, check all supertypes, if any
             if (typesDesc == null)
@@ -232,17 +193,17 @@ public class RevisionProcessorDeclared implements RevisionProcessor
                     for (;superTypes.hasNext();)
                     {
                         superType = superTypes.next();
-                        if (superType == fullEventType)
+                        if (superType == baseEventType)
                         {
-                            key = getKeys(underlyingEvent, fullKeyGetters);
-                            isFullEventType = true;
+                            key = PropertyUtility.getKeys(underlyingEvent, fullKeyGetters);
+                            isBaseEventType = true;
                             break;
                         }
-                        typesDesc = groupPerDeltaType.get(superType);
+                        typesDesc = typeDescriptors.get(superType);
                         if (typesDesc != null)
                         {
-                            groupPerDeltaType.put(underyingEventType, typesDesc);
-                            key = getKeys(underlyingEvent, typesDesc.getKeyPropertyGetters());
+                            typeDescriptors.put(underyingEventType, typesDesc);
+                            key = PropertyUtility.getKeys(underlyingEvent, typesDesc.getKeyPropertyGetters());
                             break;
                         }
                     }
@@ -250,7 +211,7 @@ public class RevisionProcessorDeclared implements RevisionProcessor
             }
             else
             {
-                key = getKeys(underlyingEvent, typesDesc.getKeyPropertyGetters());
+                key = PropertyUtility.getKeys(underlyingEvent, typesDesc.getKeyPropertyGetters());
             }
 
             if (key == null)
@@ -264,7 +225,7 @@ public class RevisionProcessorDeclared implements RevisionProcessor
         RevisionStateDeclared revisionState = statePerKey.get(key);
 
         // Delta event and no full
-        if ((!isFullEventType) && (revisionState == null))
+        if ((!isBaseEventType) && (revisionState == null))
         {
             return; // Ignore the event, its a delta and we don't currently have a full event for it
         }
@@ -276,7 +237,7 @@ public class RevisionProcessorDeclared implements RevisionProcessor
             statePerKey.put(key, revisionState);
 
             // prepare revison event
-            revisionEvent.setLastFullEvent(underlyingEvent);
+            revisionEvent.setLastBaseEvent(underlyingEvent);
             revisionEvent.setKey(key);
             revisionEvent.setHolders(null);
             revisionEvent.setLatest(true);
@@ -297,10 +258,10 @@ public class RevisionProcessorDeclared implements RevisionProcessor
         long versionNumber = revisionState.incRevisionNumber();
 
         // Previously-seen full event
-        if (isFullEventType)
+        if (isBaseEventType)
         {
             revisionState.setHolders(null);
-            revisionState.setFullEventUnderlying(underlyingEvent);
+            revisionState.setBaseEventUnderlying(underlyingEvent);
         }
         // Delta event to existing full event
         else
@@ -322,7 +283,7 @@ public class RevisionProcessorDeclared implements RevisionProcessor
         }
 
         // prepare revision event
-        revisionEvent.setLastFullEvent(revisionState.getFullEventUnderlying());
+        revisionEvent.setLastBaseEvent(revisionState.getBaseEventUnderlying());
         revisionEvent.setHolders(revisionState.getHolders());
         revisionEvent.setKey(key);
         revisionEvent.setLatest(true);
@@ -346,27 +307,6 @@ public class RevisionProcessorDeclared implements RevisionProcessor
         revisionState.setLastEvent(revisionEvent);
 
         namedWindowRootView.updateChildren(newDataPost, oldDataPost);
-    }
-
-    private MultiKeyUntyped getKeys(EventBean event, EventPropertyGetter[] keyPropertyGetters)
-    {
-        Object[] keys = new Object[keyPropertyGetters.length];
-        for (int i = 0; i < keys.length; i++)
-        {
-            keys[i] = keyPropertyGetters[i].get(event);
-        }
-        return new MultiKeyUntyped(keys);
-    }
-
-    private RevisionBeanHolder[] arrayCopy(RevisionBeanHolder[] array)
-    {
-        if (array == null)
-        {
-            return null;
-        }
-        RevisionBeanHolder[] result = new RevisionBeanHolder[array.length];
-        System.arraycopy(array, 0, result, 0, array.length);
-        return result;
     }
 
     public Collection<EventBean> getSnapshot(EPStatementHandle createWindowStmtHandle, Viewable parent)
@@ -415,8 +355,14 @@ public class RevisionProcessorDeclared implements RevisionProcessor
         }
     }
 
-    public String getRevisionEventTypeAlias()
+    private RevisionBeanHolder[] arrayCopy(RevisionBeanHolder[] array)
     {
-        return revisionEventTypeAlias;
+        if (array == null)
+        {
+            return null;
+        }
+        RevisionBeanHolder[] result = new RevisionBeanHolder[array.length];
+        System.arraycopy(array, 0, result, 0, array.length);
+        return result;
     }
 }

@@ -282,11 +282,11 @@ public class TestConfigurationParser extends TestCase
         // revision types
         assertEquals(1, config.getRevisionEventTypes().size());
         ConfigurationRevisionEventType configRev = config.getRevisionEventTypes().get("MyRevisionEvent");
-        assertEquals("MyFullEventAlias", configRev.getAliasFullEventType());
+        assertEquals(1, configRev.getAliasBaseEventTypes().size());
+        assertTrue(configRev.getAliasBaseEventTypes().contains("MyBaseEventAlias"));
         assertTrue(configRev.getAliasDeltaEventTypes().contains("MyDeltaEventAliasOne"));
         assertTrue(configRev.getAliasDeltaEventTypes().contains("MyDeltaEventAliasTwo"));
         ArrayAssertionUtil.assertEqualsAnyOrder(new String[] {"id", "id2"}, configRev.getKeyPropertyNames());
         assertEquals(ConfigurationRevisionEventType.PropertyRevision.MERGE_NON_NULL, configRev.getPropertyRevision());
-        // TODO: new revision config
     }
 }

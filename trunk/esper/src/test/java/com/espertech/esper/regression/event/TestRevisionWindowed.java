@@ -1,8 +1,8 @@
-package com.espertech.esper.regression.rev;
+package com.espertech.esper.regression.event;
 
 import com.espertech.esper.client.*;
 import com.espertech.esper.client.time.CurrentTimeEvent;
-import com.espertech.esper.support.bean.SupportBean;
+import com.espertech.esper.support.bean.*;
 import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.support.util.ArrayAssertionUtil;
 import com.espertech.esper.support.util.SupportUpdateListener;
@@ -13,9 +13,9 @@ import org.apache.commons.logging.LogFactory;
 import java.util.HashMap;
 import java.util.Map;
 
-public class TestNamedWinRevisionWindowed extends TestCase
+public class TestRevisionWindowed extends TestCase
 {
-    private static final Log log = LogFactory.getLog(TestNamedWinRevisionWindowed.class);
+    private static final Log log = LogFactory.getLog(TestRevisionWindowed.class);
     private EPServiceProvider epService;
     private EPStatement stmtCreateWin;
     private SupportUpdateListener listenerOne;
@@ -34,9 +34,9 @@ public class TestNamedWinRevisionWindowed extends TestCase
 
         ConfigurationRevisionEventType configRev = new ConfigurationRevisionEventType();
         configRev.setKeyPropertyNames(new String[] {"k0"});
-        configRev.setAliasFullEventType("FullEvent");
-        configRev.addAliasDeltaEvent("D1");
-        configRev.addAliasDeltaEvent("D5");
+        configRev.addAliasBaseEventType("FullEvent");
+        configRev.addAliasDeltaEventType("D1");
+        configRev.addAliasDeltaEventType("D5");
         config.addRevisionEventType("RevisableQuote", configRev);
 
         // second revision event type
@@ -44,9 +44,9 @@ public class TestNamedWinRevisionWindowed extends TestCase
                 new Object[][] { {"p5", String.class}, {"p1", String.class}, {"k0", String.class}, {"m0", String.class} }));
         configRev = new ConfigurationRevisionEventType();
         configRev.setKeyPropertyNames(new String[] {"p5", "p1"});
-        configRev.setAliasFullEventType("MyMap");
-        configRev.addAliasDeltaEvent("D1");
-        configRev.addAliasDeltaEvent("D5");
+        configRev.addAliasBaseEventType("MyMap");
+        configRev.addAliasDeltaEventType("D1");
+        configRev.addAliasDeltaEventType("D5");
         config.addRevisionEventType("RevisableMap", configRev);
 
         epService = EPServiceProviderManager.getDefaultProvider(config);
@@ -60,9 +60,9 @@ public class TestNamedWinRevisionWindowed extends TestCase
         epService.getEPAdministrator().getConfiguration().addEventTypeAlias("ISupportDeltaFive", ISupportDeltaFive.class);
 
         ConfigurationRevisionEventType config = new ConfigurationRevisionEventType();
-        config.setAliasFullEventType("ISupportRevisionFull");
+        config.addAliasBaseEventType("ISupportRevisionFull");
         config.setKeyPropertyNames(new String[] {"k0"});
-        config.addAliasDeltaEvent("ISupportDeltaFive");
+        config.addAliasDeltaEventType("ISupportDeltaFive");
         epService.getEPAdministrator().getConfiguration().addRevisionEventType("MyInterface", config);
 
         stmtCreateWin = epService.getEPAdministrator().createEPL("create window MyInterfaceWindow.win:keepall() as select * from MyInterface");

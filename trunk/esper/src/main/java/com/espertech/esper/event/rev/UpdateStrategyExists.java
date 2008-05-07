@@ -4,17 +4,24 @@ import com.espertech.esper.event.EventBean;
 import com.espertech.esper.event.EventPropertyGetter;
 import com.espertech.esper.util.NullableObject;
 
+/**
+ * Strategy for merging update properties using only existing property's values. 
+ */
 public class UpdateStrategyExists extends UpdateStrategyBase
 {
+    /**
+     * Ctor.
+     * @param spec the specification
+     */
     public UpdateStrategyExists(RevisionSpec spec)
     {
         super(spec);
     }
 
-    public void handleUpdate(boolean isFullEventType,
+    public void handleUpdate(boolean isBaseEventType,
                               RevisionStateMerge revisionState,
                               RevisionEventBeanMerge revisionEvent,
-                              RevisionTypeDescMerge typesDesc)
+                              RevisionTypeDesc typesDesc)
     {
         EventBean underlyingEvent = revisionEvent.getUnderlyingFullOrDelta();
 

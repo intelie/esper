@@ -1,4 +1,4 @@
-package com.espertech.esper.regression.rev;
+package com.espertech.esper.regression.event;
 
 import com.espertech.esper.client.*;
 import com.espertech.esper.support.client.SupportConfigFactory;
@@ -11,9 +11,9 @@ import org.apache.commons.logging.LogFactory;
 import java.util.HashMap;
 import java.util.Map;
 
-public class TestNamedWinRevisionMerge extends TestCase
+public class TestRevisionMerge extends TestCase
 {
-    private static final Log log = LogFactory.getLog(TestNamedWinRevisionMerge.class);
+    private static final Log log = LogFactory.getLog(TestRevisionMerge.class);
     private EPServiceProvider epService;
     private SupportUpdateListener listenerOne;
 
@@ -36,8 +36,8 @@ public class TestNamedWinRevisionMerge extends TestCase
         epService.getEPAdministrator().getConfiguration().addEventTypeAliasNestable("DeltaType", deltaType);
 
         ConfigurationRevisionEventType revEvent = new ConfigurationRevisionEventType();
-        revEvent.setAliasFullEventType("FullType");
-        revEvent.addAliasDeltaEvent("DeltaType");
+        revEvent.addAliasBaseEventType("FullType");
+        revEvent.addAliasDeltaEventType("DeltaType");
         revEvent.setPropertyRevision(ConfigurationRevisionEventType.PropertyRevision.MERGE_DECLARED);
         revEvent.setKeyPropertyNames(new String[] {"p1"});
         epService.getEPAdministrator().getConfiguration().addRevisionEventType("MyExistsRevision", revEvent);
@@ -109,8 +109,8 @@ public class TestNamedWinRevisionMerge extends TestCase
         epService.getEPAdministrator().getConfiguration().addEventTypeAliasNestable("DeltaType", deltaType);
 
         ConfigurationRevisionEventType revEvent = new ConfigurationRevisionEventType();
-        revEvent.setAliasFullEventType("FullType");
-        revEvent.addAliasDeltaEvent("DeltaType");
+        revEvent.addAliasBaseEventType("FullType");
+        revEvent.addAliasDeltaEventType("DeltaType");
         revEvent.setPropertyRevision(ConfigurationRevisionEventType.PropertyRevision.MERGE_NON_NULL);
         revEvent.setKeyPropertyNames(new String[] {"p1"});
         epService.getEPAdministrator().getConfiguration().addRevisionEventType("MyExistsRevision", revEvent);
@@ -182,8 +182,8 @@ public class TestNamedWinRevisionMerge extends TestCase
         epService.getEPAdministrator().getConfiguration().addEventTypeAliasNestable("DeltaType", deltaType);
 
         ConfigurationRevisionEventType revEvent = new ConfigurationRevisionEventType();
-        revEvent.setAliasFullEventType("FullType");
-        revEvent.addAliasDeltaEvent("DeltaType");
+        revEvent.addAliasBaseEventType("FullType");
+        revEvent.addAliasDeltaEventType("DeltaType");
         revEvent.setPropertyRevision(ConfigurationRevisionEventType.PropertyRevision.MERGE_EXISTS);
         revEvent.setKeyPropertyNames(new String[] {"p1"});
         epService.getEPAdministrator().getConfiguration().addRevisionEventType("MyExistsRevision", revEvent);
@@ -256,8 +256,8 @@ public class TestNamedWinRevisionMerge extends TestCase
         epService.getEPAdministrator().getConfiguration().addEventTypeAliasNestable("DeltaType", deltaType);
 
         ConfigurationRevisionEventType revEvent = new ConfigurationRevisionEventType();
-        revEvent.setAliasFullEventType("FullType");
-        revEvent.addAliasDeltaEvent("DeltaType");
+        revEvent.addAliasBaseEventType("FullType");
+        revEvent.addAliasDeltaEventType("DeltaType");
         revEvent.setPropertyRevision(ConfigurationRevisionEventType.PropertyRevision.MERGE_DECLARED);
         revEvent.setKeyPropertyNames(new String[] {"p4", "p3"});
         epService.getEPAdministrator().getConfiguration().addRevisionEventType("MyExistsRevision", revEvent);

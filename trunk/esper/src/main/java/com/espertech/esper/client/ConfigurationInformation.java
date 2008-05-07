@@ -150,6 +150,12 @@ public interface ConfigurationInformation
      */
     public URI[] getPlugInEventTypeAliasResolutionURIs();
 
+    /**
+     * Returns a map of revision event type alias and revision event type configuration. Revision event types handle updates (new versions)
+     * for past events.
+     * @return map of alias and revision event type config
+     */
     public Map<String, ConfigurationRevisionEventType> getRevisionEventTypes();
 }
+
 

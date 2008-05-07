@@ -19,20 +19,27 @@ import org.apache.commons.logging.LogFactory;
 
 import java.util.*;
 
-public class RevisionProcessorMerge implements RevisionProcessor
+/**
+ * Provides a set of merge-strategies for merging individual properties (rather then overlaying groups).
+ */
+public class RevisionProcessorMerge extends RevisionProcessorBase implements RevisionProcessor
 {
     private static final Log log = LogFactory.getLog(RevisionProcessorMerge.class);
 
-    private final RevisionSpec spec;
-    private final String revisionEventTypeAlias;
-    private final RevisionEventType revisionEventType;
-    private final Map<EventType, RevisionTypeDescMerge> infoPerDeltaType;
-    private final RevisionTypeDescMerge infoFullType;
+    private final RevisionTypeDesc infoFullType;
     private final Map<MultiKeyUntyped, RevisionStateMerge> statePerKey;
     private final UpdateStrategy updateStrategy;
 
+    /**
+     * Ctor.
+     * @param revisionEventTypeAlias alias
+     * @param spec specification
+     * @param statementStopService for stop handling
+     */
     public RevisionProcessorMerge(String revisionEventTypeAlias, RevisionSpec spec, StatementStopService statementStopService)
     {
+        super(spec, revisionEventTypeAlias);
+
         // on statement stop, remove versions
         statementStopService.addSubscriber(new StatementStopCallback() {
             public void statementStopped()
@@ -41,9 +48,7 @@ public class RevisionProcessorMerge implements RevisionProcessor
             }
         });
 
-        this.revisionEventTypeAlias = revisionEventTypeAlias;
         this.statePerKey = new HashMap<MultiKeyUntyped, RevisionStateMerge>();
-        this.spec = spec;
 
         // For all changeset properties, add type descriptors (property number, getter etc)
         Map<String, RevisionPropertyTypeDesc> propertyDesc = new HashMap<String, RevisionPropertyTypeDesc>();
@@ -51,7 +56,7 @@ public class RevisionProcessorMerge implements RevisionProcessor
 
         for (String property : spec.getChangesetPropertyNames())
         {
-            EventPropertyGetter fullGetter = spec.getFullEventType().getGetter(property);
+            EventPropertyGetter fullGetter = spec.getBaseEventType().getGetter(property);
             int propertyNumber = count;
             final RevisionGetterParameters params = new RevisionGetterParameters(property, propertyNumber, fullGetter, null);
 
@@ -69,7 +74,7 @@ public class RevisionProcessorMerge implements RevisionProcessor
                     }
                 };
 
-            Class type = spec.getFullEventType().getPropertyType(property);
+            Class type = spec.getBaseEventType().getPropertyType(property);
             if (type == null)
             {
                 for (EventType deltaType : spec.getDeltaTypes())
@@ -105,7 +110,7 @@ public class RevisionProcessorMerge implements RevisionProcessor
                 }
             };
 
-            Class type = spec.getFullEventType().getPropertyType(property);
+            Class type = spec.getBaseEventType().getPropertyType(property);
             if (type == null)
             {
                 for (EventType deltaType : spec.getDeltaTypes())
@@ -124,13 +129,12 @@ public class RevisionProcessorMerge implements RevisionProcessor
         }
 
         // compile for each event type a list of getters and indexes within the overlay
-        infoPerDeltaType = new HashMap<EventType, RevisionTypeDescMerge>();
         for (EventType deltaType : spec.getDeltaTypes())
         {
-            RevisionTypeDescMerge typeDesc = makeTypeDesc(deltaType, spec.getPropertyRevision());
-            infoPerDeltaType.put(deltaType, typeDesc);
+            RevisionTypeDesc typeDesc = makeTypeDesc(deltaType, spec.getPropertyRevision());
+            typeDescriptors.put(deltaType, typeDesc);
         }
-        infoFullType = makeTypeDesc(spec.getFullEventType(), spec.getPropertyRevision());
+        infoFullType = makeTypeDesc(spec.getBaseEventType(), spec.getPropertyRevision());
 
         // how to handle updates to a full event
         if (spec.getPropertyRevision() == ConfigurationRevisionEventType.PropertyRevision.MERGE_DECLARED)
@@ -151,51 +155,6 @@ public class RevisionProcessorMerge implements RevisionProcessor
         }
 
         revisionEventType = new RevisionEventType(propertyDesc);
-    }
-
-    public RevisionEventType getEventType()
-    {
-        return revisionEventType;
-    }
-
-    public boolean validateRevisionableEventType(EventType eventType)
-    {
-        if (eventType == spec.getFullEventType())
-        {
-            return true;
-        }
-        if (infoPerDeltaType.containsKey(eventType))
-        {
-            return true;
-        }
-
-        if (eventType == null)
-        {
-            return false;
-        }
-
-        // Check all the supertypes to see if one of the matches the full or delta types
-        Iterator<EventType> deepSupers = eventType.getDeepSuperTypes();
-        if (deepSupers == null)
-        {
-            return false;
-        }
-
-        EventType type;
-        for (;deepSupers.hasNext();)
-        {
-            type = deepSupers.next();
-            if (type == spec.getFullEventType())
-            {
-                return true;
-            }
-            if (infoPerDeltaType.containsKey(type))
-            {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     public EventBean getRevision(EventBean event)
@@ -232,17 +191,17 @@ public class RevisionProcessorMerge implements RevisionProcessor
 
         // obtain key values
         MultiKeyUntyped key = null;
-        RevisionTypeDescMerge typesDesc = null;
-        boolean isFullEventType = false;
-        if (underyingEventType == spec.getFullEventType())
+        RevisionTypeDesc typesDesc = null;
+        boolean isBaseEventType = false;
+        if (underyingEventType == revisionSpec.getBaseEventType())
         {
             typesDesc = infoFullType;
-            key = getKeys(underlyingEvent, infoFullType.getKeyPropertyGetters());
-            isFullEventType = true;
+            key = PropertyUtility.getKeys(underlyingEvent, infoFullType.getKeyPropertyGetters());
+            isBaseEventType = true;
         }
         else
         {
-            typesDesc = infoPerDeltaType.get(underyingEventType);
+            typesDesc = typeDescriptors.get(underyingEventType);
 
             // if this type cannot be found, check all supertypes, if any
             if (typesDesc == null)
@@ -254,18 +213,18 @@ public class RevisionProcessorMerge implements RevisionProcessor
                     for (;superTypes.hasNext();)
                     {
                         superType = superTypes.next();
-                        if (superType == spec.getFullEventType())
+                        if (superType == revisionSpec.getBaseEventType())
                         {
                             typesDesc = infoFullType;
-                            key = getKeys(underlyingEvent, infoFullType.getKeyPropertyGetters());
-                            isFullEventType = true;
+                            key = PropertyUtility.getKeys(underlyingEvent, infoFullType.getKeyPropertyGetters());
+                            isBaseEventType = true;
                             break;
                         }
-                        typesDesc = infoPerDeltaType.get(superType);
+                        typesDesc = typeDescriptors.get(superType);
                         if (typesDesc != null)
                         {
-                            infoPerDeltaType.put(underyingEventType, typesDesc);
-                            key = getKeys(underlyingEvent, typesDesc.getKeyPropertyGetters());
+                            typeDescriptors.put(underyingEventType, typesDesc);
+                            key = PropertyUtility.getKeys(underlyingEvent, typesDesc.getKeyPropertyGetters());
                             break;
                         }
                     }
@@ -273,7 +232,7 @@ public class RevisionProcessorMerge implements RevisionProcessor
             }
             else
             {
-                key = getKeys(underlyingEvent, typesDesc.getKeyPropertyGetters());
+                key = PropertyUtility.getKeys(underlyingEvent, typesDesc.getKeyPropertyGetters());
             }
 
             if (key == null)
@@ -287,7 +246,7 @@ public class RevisionProcessorMerge implements RevisionProcessor
         RevisionStateMerge revisionState = statePerKey.get(key);
 
         // Delta event and no full
-        if ((!isFullEventType) && (revisionState == null))
+        if ((!isBaseEventType) && (revisionState == null))
         {
             return; // Ignore the event, its a delta and we don't currently have a full event for it
         }
@@ -299,7 +258,7 @@ public class RevisionProcessorMerge implements RevisionProcessor
             statePerKey.put(key, revisionState);
 
             // prepare revison event
-            revisionEvent.setLastFullEvent(underlyingEvent);
+            revisionEvent.setLastBaseEvent(underlyingEvent);
             revisionEvent.setKey(key);
             revisionEvent.setOverlay(null);
             revisionEvent.setLatest(true);
@@ -317,10 +276,10 @@ public class RevisionProcessorMerge implements RevisionProcessor
         }
 
         // handle update, changing revision state and event as required
-        updateStrategy.handleUpdate(isFullEventType, revisionState, revisionEvent, typesDesc);
+        updateStrategy.handleUpdate(isBaseEventType, revisionState, revisionEvent, typesDesc);
 
         // prepare revision event
-        revisionEvent.setLastFullEvent(revisionState.getFullEventUnderlying());
+        revisionEvent.setLastBaseEvent(revisionState.getBaseEventUnderlying());
         revisionEvent.setOverlay(revisionState.getOverlays());
         revisionEvent.setKey(key);
         revisionEvent.setLatest(true);
@@ -344,16 +303,6 @@ public class RevisionProcessorMerge implements RevisionProcessor
         revisionState.setLastEvent(revisionEvent);
 
         namedWindowRootView.updateChildren(newDataPost, oldDataPost);
-    }
-
-    private MultiKeyUntyped getKeys(EventBean event, EventPropertyGetter[] keyPropertyGetters)
-    {
-        Object[] keys = new Object[keyPropertyGetters.length];
-        for (int i = 0; i < keys.length; i++)
-        {
-            keys[i] = keyPropertyGetters[i].get(event);
-        }
-        return new MultiKeyUntyped(keys);
     }
 
     public Collection<EventBean> getSnapshot(EPStatementHandle createWindowStmtHandle, Viewable parent)
@@ -402,27 +351,22 @@ public class RevisionProcessorMerge implements RevisionProcessor
         }
     }
 
-    public String getRevisionEventTypeAlias()
+    private RevisionTypeDesc makeTypeDesc(EventType eventType, ConfigurationRevisionEventType.PropertyRevision propertyRevision)
     {
-        return revisionEventTypeAlias;
-    }
+        EventPropertyGetter[] keyPropertyGetters = PropertyUtility.getGetters(eventType, revisionSpec.getKeyPropertyNames());
 
-    private RevisionTypeDescMerge makeTypeDesc(EventType eventType, ConfigurationRevisionEventType.PropertyRevision propertyRevision)
-    {
-        EventPropertyGetter[] keyPropertyGetters = PropertyGroupBuilder.getGetters(eventType, spec.getKeyPropertyNames());
-
-        int len = spec.getChangesetPropertyNames().length;
+        int len = revisionSpec.getChangesetPropertyNames().length;
         List<EventPropertyGetter> listOfGetters = new ArrayList<EventPropertyGetter>();
         List<Integer> listOfIndexes = new ArrayList<Integer>();
 
         for (int i = 0; i < len; i++)
         {
-            String propertyName = spec.getChangesetPropertyNames()[i];
+            String propertyName = revisionSpec.getChangesetPropertyNames()[i];
             EventPropertyGetter getter = null;
 
             if (propertyRevision != ConfigurationRevisionEventType.PropertyRevision.MERGE_EXISTS)
             {
-                getter = eventType.getGetter(spec.getChangesetPropertyNames()[i]);
+                getter = eventType.getGetter(revisionSpec.getChangesetPropertyNames()[i]);
             }
             else
             {
@@ -432,7 +376,7 @@ public class RevisionProcessorMerge implements RevisionProcessor
                     if (propertyNamesDeclared.equals(propertyName))
                     {
                         // use dynamic properties
-                        getter = eventType.getGetter(spec.getChangesetPropertyNames()[i] + "?");
+                        getter = eventType.getGetter(revisionSpec.getChangesetPropertyNames()[i] + "?");
                         break;
                     }
                 }
@@ -452,6 +396,6 @@ public class RevisionProcessorMerge implements RevisionProcessor
             changesetPropertyIndex[i] = listOfIndexes.get(i);
         }
 
-        return new RevisionTypeDescMerge(keyPropertyGetters, changesetPropertyGetters, changesetPropertyIndex);
+        return new RevisionTypeDesc(keyPropertyGetters, changesetPropertyGetters, changesetPropertyIndex);
     }    
 }

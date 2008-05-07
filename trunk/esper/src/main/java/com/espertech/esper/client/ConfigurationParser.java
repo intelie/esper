@@ -699,15 +699,15 @@ class ConfigurationParser {
         while (nodeIterator.hasNext())
         {
             Element subElement = nodeIterator.next();
-            if (subElement.getNodeName().equals("full-event"))
+            if (subElement.getNodeName().equals("base-event-type"))
             {
                 String alias = subElement.getAttributes().getNamedItem("alias").getTextContent();
-                revEventType.setAliasFullEventType(alias);
+                revEventType.addAliasBaseEventType(alias);
             }
-            if (subElement.getNodeName().equals("delta-event"))
+            if (subElement.getNodeName().equals("delta-event-type"))
             {
                 String alias = subElement.getAttributes().getNamedItem("alias").getTextContent();
-                revEventType.addAliasDeltaEvent(alias);
+                revEventType.addAliasDeltaEventType(alias);
             }
             if (subElement.getNodeName().equals("key-property"))
             {

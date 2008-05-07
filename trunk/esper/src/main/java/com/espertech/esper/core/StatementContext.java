@@ -70,6 +70,7 @@ public final class StatementContext
      * @param variableService provides access to variable values
      * @param statementResultService handles awareness of listeners/subscriptions for a statement customizing output produced
      * @param plugInTypeResolutionURIs is URIs for resolving the event name against plug-inn event representations, if any
+     * @param revisionService - service that handles update events
      */
     public StatementContext(String engineURI,
                             String engineInstanceId,
@@ -318,6 +319,10 @@ public final class StatementContext
         return plugInTypeResolutionURIs;
     }
 
+    /**
+     * Returns the update event service.
+     * @return revision service
+     */
     public RevisionService getRevisionService()
     {
         return revisionService;

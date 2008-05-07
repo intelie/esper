@@ -35,6 +35,7 @@ public class SelectExprProcessorFactory
      * @param typeService - serves stream type information
      * @param eventAdapterService - for generating wrapper instances for events
      * @param statementResultService handles listeners/subscriptions awareness to reduce output result generation
+     * @param revisionService - service that handles update events
      * @return select-clause expression processor
      * @throws com.espertech.esper.epl.expression.ExprValidationException to indicate the select expression cannot be validated
      */

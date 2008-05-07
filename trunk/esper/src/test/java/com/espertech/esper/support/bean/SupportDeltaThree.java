@@ -1,4 +1,4 @@
-package com.espertech.esper.regression.rev;
+package com.espertech.esper.support.bean;
 
 public class SupportDeltaThree
 {

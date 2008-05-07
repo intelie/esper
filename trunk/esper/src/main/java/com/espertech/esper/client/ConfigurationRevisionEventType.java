@@ -4,59 +4,111 @@ import java.util.Set;
 import java.util.HashSet;
 import java.io.Serializable;
 
+/**
+ * Configuration information for revision event types.
+ * <p>
+ * The configuration information consists of the names of the base event type and the delta event types,
+ * as well as the names of properties that supply key values, and a strategy.
+ * <p>
+ * Events of the base event type arrive before delta events; Delta events arriving before the base event
+ * for the same key value are not processed, as delta events as well as base events represent new versions.
+ */
 public class ConfigurationRevisionEventType implements Serializable
 {
-    private String aliasFullEventType;
+    private Set<String> aliasBaseEventTypes;
     private Set<String> aliasDeltaEventTypes;
     private PropertyRevision propertyRevision;
     private String[] keyPropertyNames;
 
+    /**
+     * Ctor.
+     */
     public ConfigurationRevisionEventType()
     {
+        aliasBaseEventTypes = new HashSet<String>();
         aliasDeltaEventTypes = new HashSet<String>();
         propertyRevision = PropertyRevision.OVERLAY_DECLARED;
     }
 
-    public String getAliasFullEventType()
+    /**
+     * Add a base event type by it's alias name.
+     * @param aliasBaseEventType the name of the base event type to add
+     */
+    public void addAliasBaseEventType(String aliasBaseEventType)
     {
-        return aliasFullEventType;
+        aliasBaseEventTypes.add(aliasBaseEventType);
     }
 
-    public void setAliasFullEventType(String aliasFullEventType)
+    /**
+     * Returns the set of event type aliases that are base event types.
+     * @return aliases of base event types
+     */
+    public Set<String> getAliasBaseEventTypes()
     {
-        this.aliasFullEventType = aliasFullEventType;
+        return aliasBaseEventTypes;
     }
 
+    /**
+     * Returns the set of names of delta event types.
+     * @return names of delta event types
+     */
     public Set<String> getAliasDeltaEventTypes()
     {
         return aliasDeltaEventTypes;
     }
 
-    public void addAliasDeltaEvent(String aliasRevisionEvent)
+    /**
+     * Add a delta event type by it's alias name.
+     * @param aliasDeltaEventType the name of the delta event type to add
+     */
+    public void addAliasDeltaEventType(String aliasDeltaEventType)
     {
-        aliasDeltaEventTypes.add(aliasRevisionEvent);
+        aliasDeltaEventTypes.add(aliasDeltaEventType);
     }
 
+    /**
+     * Returns the enumeration value defining the strategy to use for overlay or merging
+     * multiple versions of an event (instances of base and delta events).
+     * @return strategy enumerator
+     */
     public PropertyRevision getPropertyRevision()
     {
         return propertyRevision;
     }
 
+    /**
+     * Sets the enumeration value defining the strategy to use for overlay or merging
+     * multiple versions of an event (instances of base and delta events).
+     * @param propertyRevision strategy enumerator
+     */
     public void setPropertyRevision(PropertyRevision propertyRevision)
     {
         this.propertyRevision = propertyRevision;
     }
 
+    /**
+     * Returns the key property names, which are the names of the properties that supply key values for relating
+     * base and delta events.
+     * @return array of names of key properties
+     */
     public String[] getKeyPropertyNames()
     {
         return keyPropertyNames;
     }
 
+    /**
+     * Sets the key property names, which are the names of the properties that supply key values for relating
+     * base and delta events.
+     * @param keyPropertyNames array of names of key properties
+     */
     public void setKeyPropertyNames(String[] keyPropertyNames)
     {
         this.keyPropertyNames = keyPropertyNames;
     }
 
+    /**
+     * Enumeration for specifying a strategy to use to merge or overlay properties.
+     */
     public enum PropertyRevision
     {
         /**

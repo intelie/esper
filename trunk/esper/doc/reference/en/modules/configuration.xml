@@ -1368,8 +1368,8 @@ config.getEngineDefaults().getStreamSelection()
 				The XML configuration for this setting is shown below:
 			</para>
 				<programlisting><![CDATA[<revision-event-type alias="UserProfileRevisions" property-revision="exists_non_null">
-  <full-event alias="ProfileCreation"/>
-  <delta-event alias="ProfileUpdate"/>
+  <full-event-type alias="ProfileCreation"/>
+  <delta-event-type alias="ProfileUpdate"/>
   <key-property name="userid"/>
 </revision-event-type>]]></programlisting>
 

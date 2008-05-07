@@ -7,60 +7,100 @@ import com.espertech.esper.event.EventType;
 import com.espertech.esper.event.PropertyAccessException;
 import com.espertech.esper.util.NullableObject;
 
+/**
+ * Merge-event for event revisions.
+ */
 public class RevisionEventBeanMerge implements EventBean
 {
     private final RevisionEventType revisionEventType;
     private final EventBean underlyingFullOrDelta;
 
     private NullableObject<Object>[] overlay;
-    private EventBean lastFullEvent;
+    private EventBean lastBaseEvent;
     private MultiKeyUntyped key;
     private boolean latest;
 
+    /**
+     * Ctor.
+     * @param revisionEventType type
+     * @param underlyingFull event wrapped
+     */
     public RevisionEventBeanMerge(RevisionEventType revisionEventType, EventBean underlyingFull)
     {
         this.revisionEventType = revisionEventType;
         this.underlyingFullOrDelta = underlyingFull;
     }
 
+    /**
+     * Sets merged values.
+     * @param overlay merged values
+     */
     public void setOverlay(NullableObject<Object>[] overlay)
     {
         this.overlay = overlay;
     }
 
+    /**
+     * Returns flag indicated latest or not.
+     * @return latest flag
+     */
     public boolean isLatest()
     {
         return latest;
     }
 
+    /**
+     * Sets flag indicating latest or not.
+     * @param latest flag
+     */
     public void setLatest(boolean latest)
     {
         this.latest = latest;
     }
 
+    /**
+     * Returns the key.
+     * @return key
+     */
     public MultiKeyUntyped getKey()
     {
         return key;
     }
 
+    /**
+     * Sets the key.
+     * @param key to set
+     */
     public void setKey(MultiKeyUntyped key)
     {
         this.key = key;
     }
 
+    /**
+     * Returns overlay values.
+     * @return overlay
+     */
     public Object[] getOverlay()
     {
         return overlay;
     }
 
-    public EventBean getLastFullEvent()
+    /**
+     * Returns last base event.
+     * @return base event
+     */
+    public EventBean getLastBaseEvent()
     {
-        return lastFullEvent;
+        return lastBaseEvent;
     }
 
-    public void setLastFullEvent(EventBean lastFullEvent)
+    /**
+     * Sets last base event.
+     * @param lastBaseEvent to set
+     */
+    public void setLastBaseEvent(EventBean lastBaseEvent)
     {
-        this.lastFullEvent = lastFullEvent;
+        this.lastBaseEvent = lastBaseEvent;
     }
 
     public EventType getEventType()
@@ -83,21 +123,40 @@ public class RevisionEventBeanMerge implements EventBean
         return RevisionEventBeanMerge.class;
     }
 
+    /**
+     * Returns wrapped event
+     * @return event
+     */
     public EventBean getUnderlyingFullOrDelta()
     {
         return underlyingFullOrDelta;
     }
 
+    /**
+     * Returns a value from the key.
+     * @param index within key
+     * @return value
+     */
     public Object getKeyValue(int index)
     {
         return key.getKeys()[index];
     }
 
-    public Object getFullEventValue(RevisionGetterParameters params)
+    /**
+     * Returns base event value.
+     * @param params supplies getter
+     * @return value
+     */
+    public Object getBaseEventValue(RevisionGetterParameters params)
     {
-        return params.getFullGetter().get(lastFullEvent);
+        return params.getBaseGetter().get(lastBaseEvent);
     }
 
+    /**
+     * Returns a versioned value.
+     * @param params getter and indexes
+     * @return value
+     */
     public Object getVersionedValue(RevisionGetterParameters params)
     {
         int propertyNumber = params.getPropertyNumber();
@@ -111,11 +170,11 @@ public class RevisionEventBeanMerge implements EventBean
             }
         }
 
-        EventPropertyGetter getter = params.getFullGetter();
+        EventPropertyGetter getter = params.getBaseGetter();
         if (getter == null)
         {
             return null;  // The property was added by a delta event and only exists on a delta
         }
-        return getter.get(lastFullEvent);
+        return getter.get(lastBaseEvent);
     }
 }

@@ -1,4 +1,4 @@
-package com.espertech.esper.regression.rev;
+package com.espertech.esper.regression.event;
 
 import com.espertech.esper.client.*;
 import com.espertech.esper.support.client.SupportConfigFactory;
@@ -15,9 +15,9 @@ import java.util.HashMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-public class TestNamedWinRevisionDeclared extends TestCase
+public class TestRevisionDeclared extends TestCase
 {
-    private static final Log log = LogFactory.getLog(TestNamedWinRevisionDeclared.class);
+    private static final Log log = LogFactory.getLog(TestRevisionDeclared.class);
     private EPServiceProvider epService;
     private EPStatement stmtCreateWin;
     private SupportUpdateListener listenerOne;
@@ -25,14 +25,10 @@ public class TestNamedWinRevisionDeclared extends TestCase
     private SupportUpdateListener listenerThree;
     private final String[] fields = "k0,p0,p1,p2,p3,p4,p5".split(",");
 
-    // TODO: test nested properties
-    // TODO: is it possible to set no key properties and treats each event as no update; test not used for named window
-       
+    // TODO: test nested properties       
     // TODO: document
     // Javadoc
-    // order of arrival is last update
-    //
-    
+
     public void setUp()
     {
         Configuration config = SupportConfigFactory.getConfiguration();
@@ -48,12 +44,12 @@ public class TestNamedWinRevisionDeclared extends TestCase
 
         ConfigurationRevisionEventType configRev = new ConfigurationRevisionEventType();
         configRev.setKeyPropertyNames(new String[] {"k0"});
-        configRev.setAliasFullEventType("FullEvent");
-        configRev.addAliasDeltaEvent("D1");
-        configRev.addAliasDeltaEvent("D2");
-        configRev.addAliasDeltaEvent("D3");
-        configRev.addAliasDeltaEvent("D4");
-        configRev.addAliasDeltaEvent("D5");
+        configRev.addAliasBaseEventType("FullEvent");
+        configRev.addAliasDeltaEventType("D1");
+        configRev.addAliasDeltaEventType("D2");
+        configRev.addAliasDeltaEventType("D3");
+        configRev.addAliasDeltaEventType("D4");
+        configRev.addAliasDeltaEventType("D5");
         config.addRevisionEventType("RevisableQuote", configRev);
 
         epService = EPServiceProviderManager.getDefaultProvider(config);
@@ -293,18 +289,25 @@ public class TestNamedWinRevisionDeclared extends TestCase
     public void testInvalidConfig()
     {
         ConfigurationRevisionEventType config = new ConfigurationRevisionEventType();
-        tryInvalidConfig("abc", config, "Required full event type alias is not set in the configuration for revision event type 'abc'");
+        tryInvalidConfig("abc", config, "Required base event type alias is not set in the configuration for revision event type 'abc'");
 
         epService.getEPAdministrator().getConfiguration().addEventTypeAlias("MyEvent", SupportBean.class);
         epService.getEPAdministrator().getConfiguration().addEventTypeAlias("MyComplex", SupportBeanComplexProps.class);
         epService.getEPAdministrator().getConfiguration().addEventTypeAlias("MyTypeChange", SupportBeanTypeChange.class);
 
-        config.setAliasFullEventType("XYZ");
+        config.addAliasBaseEventType("XYZ");
         tryInvalidConfig("abc", config, "Could not locate event type for alias 'XYZ' in the configuration for revision event type 'abc'");
 
-        config.setAliasFullEventType("MyEvent");
+        config.getAliasBaseEventTypes().clear();
+        config.addAliasBaseEventType("MyEvent");
         tryInvalidConfig("abc", config, "Required key properties are not set in the configuration for revision event type 'abc'");
 
+        config.addAliasBaseEventType("AEvent");
+        config.addAliasBaseEventType("AEvent");
+        tryInvalidConfig("abc", config, "Only one base event type alias may be added to revision event type 'abc', multiple base types are not yet supported");
+
+        config.getAliasBaseEventTypes().clear();
+        config.addAliasBaseEventType("MyEvent");
         config.setKeyPropertyNames(new String[0]);
         tryInvalidConfig("abc", config, "Required key properties are not set in the configuration for revision event type 'abc'");
 
@@ -312,16 +315,16 @@ public class TestNamedWinRevisionDeclared extends TestCase
         tryInvalidConfig("abc", config, "Key property 'xyz' as defined in the configuration for revision event type 'abc' does not exists in event type 'MyEvent'");
 
         config.setKeyPropertyNames(new String[] {"intPrimitive"});
-        config.addAliasDeltaEvent("MyComplex");
+        config.addAliasDeltaEventType("MyComplex");
         tryInvalidConfig("abc", config, "Key property 'intPrimitive' as defined in the configuration for revision event type 'abc' does not exists in event type 'MyComplex'");
 
-        config.addAliasDeltaEvent("XYZ");
+        config.addAliasDeltaEventType("XYZ");
         tryInvalidConfig("abc", config, "Could not locate event type for alias 'XYZ' in the configuration for revision event type 'abc'");
 
         config.getAliasDeltaEventTypes().clear();
         config.setKeyPropertyNames(new String[] {"intBoxed"});
-        config.addAliasDeltaEvent("MyTypeChange");  // invalid intPrimitive property type
-        tryInvalidConfig("abc", config, "Property named 'intPrimitive' does not have the same type for full and delta types of revision event type 'abc'");
+        config.addAliasDeltaEventType("MyTypeChange");  // invalid intPrimitive property type
+        tryInvalidConfig("abc", config, "Property named 'intPrimitive' does not have the same type for base and delta types of revision event type 'abc'");
 
         config.getAliasDeltaEventTypes().clear();
         epService.getEPAdministrator().getConfiguration().addRevisionEventType("abc", config);
@@ -336,7 +339,7 @@ public class TestNamedWinRevisionDeclared extends TestCase
         }
         catch (EPStatementException ex)
         {
-            assertEquals("Error starting view: Selected event type is not a valid full or delta event type of revision event type 'RevisableQuote' [insert into RevQuote select * from com.espertech.esper.support.bean.SupportBean]", ex.getMessage());
+            assertEquals("Error starting view: Selected event type is not a valid base or delta event type of revision event type 'RevisableQuote' [insert into RevQuote select * from com.espertech.esper.support.bean.SupportBean]", ex.getMessage());
         }
 
         try
@@ -346,7 +349,7 @@ public class TestNamedWinRevisionDeclared extends TestCase
         }
         catch (EPStatementException ex)
         {
-            assertEquals("Error starting view: Selected event type is not a valid full or delta event type of revision event type 'RevisableQuote' [insert into RevQuote select intPrimitive as k0 from com.espertech.esper.support.bean.SupportBean]", ex.getMessage());
+            assertEquals("Error starting view: Selected event type is not a valid base or delta event type of revision event type 'RevisableQuote' [insert into RevQuote select intPrimitive as k0 from com.espertech.esper.support.bean.SupportBean]", ex.getMessage());
         }
     }
 

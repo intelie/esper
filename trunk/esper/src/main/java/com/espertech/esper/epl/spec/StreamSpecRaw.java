@@ -34,6 +34,7 @@ public interface StreamSpecRaw extends StreamSpec
      * @param variableService provides variable values
      * @param engineURI the engine URI
      * @param optionalPlugInTypeResolutionURIS is URIs for resolving the event name against plug-inn event representations, if any  
+     * @param revisionService service that handles update events
      * @return compiled stream
      * @throws ExprValidationException to indicate validation errors
      */

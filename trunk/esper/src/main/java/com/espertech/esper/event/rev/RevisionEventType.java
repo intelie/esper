@@ -7,11 +7,18 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * Event type of revision events.
+ */
 public class RevisionEventType implements EventType
 {
     private String[] propertyNames;
     private Map<String, RevisionPropertyTypeDesc> propertyDesc;
 
+    /**
+     * Ctor.
+     * @param propertyDesc describes each properties type
+     */
     public RevisionEventType(Map<String, RevisionPropertyTypeDesc> propertyDesc)
     {
         this.propertyDesc = propertyDesc;

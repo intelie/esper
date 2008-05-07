@@ -1,9 +1,19 @@
 package com.espertech.esper.event.rev;
 
+/**
+ * Strategy for merging updates or additional properties.
+ */
 public interface UpdateStrategy
 {
-    public void handleUpdate(boolean isFullEventType,
+    /**
+     * Merge properties.
+     * @param isBaseEventType true if the event is a base event type
+     * @param revisionState the current state, to be updated.
+     * @param revisionEvent the new event to merge
+     * @param typesDesc descriptor for event type of the new event to merge
+     */
+    public void handleUpdate(boolean isBaseEventType,
                               RevisionStateMerge revisionState,
                               RevisionEventBeanMerge revisionEvent,
-                              RevisionTypeDescMerge typesDesc);
+                              RevisionTypeDesc typesDesc);
 }

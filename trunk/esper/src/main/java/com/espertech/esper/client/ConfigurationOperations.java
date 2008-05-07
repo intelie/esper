@@ -213,5 +213,11 @@ public interface ConfigurationOperations
      */
     public void setPlugInEventTypeAliasResolutionURIs(URI[] urisToResolveAlias);
 
+    /**
+     * Adds an revision event type. The alias name of the event type may be used with named windows
+     * to indicate that updates or new versions of events are processed.
+     * @param revisionEventTypeAlias the alias name of the revision event type
+     * @param revisionEventTypeConfig the configuration 
+     */
     public void addRevisionEventType(String revisionEventTypeAlias, ConfigurationRevisionEventType revisionEventTypeConfig);
 }

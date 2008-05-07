@@ -4,22 +4,29 @@ import com.espertech.esper.event.EventBean;
 import com.espertech.esper.event.EventPropertyGetter;
 import com.espertech.esper.util.NullableObject;
 
+/**
+ * Strategy for merging update properties using all declared property's values. 
+ */
 public class UpdateStrategyDeclared extends UpdateStrategyBase
 {
+    /**
+     * Ctor.
+     * @param spec the specification
+     */
     public UpdateStrategyDeclared(RevisionSpec spec)
     {
         super(spec);
     }
 
-    public void handleUpdate(boolean isFullEventType,
+    public void handleUpdate(boolean isBaseEventType,
                               RevisionStateMerge revisionState,
                               RevisionEventBeanMerge revisionEvent,
-                              RevisionTypeDescMerge typesDesc)
+                              RevisionTypeDesc typesDesc)
     {
         EventBean underlyingEvent = revisionEvent.getUnderlyingFullOrDelta();
 
         // Previously-seen full event
-        if (isFullEventType)
+        if (isBaseEventType)
         {
             // If delta types don't add properties, simply set the overlay to null
             NullableObject<Object>[] changeSetValues;
@@ -52,7 +59,7 @@ public class UpdateStrategyDeclared extends UpdateStrategyBase
                 }
             }
             revisionState.setOverlays(changeSetValues);
-            revisionState.setFullEventUnderlying(underlyingEvent);
+            revisionState.setBaseEventUnderlying(underlyingEvent);
         }
         // Delta event to existing full event merge
         else

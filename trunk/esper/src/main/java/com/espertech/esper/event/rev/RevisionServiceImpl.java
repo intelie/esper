@@ -9,11 +9,19 @@ import com.espertech.esper.view.StatementStopService;
 
 import java.util.*;
 
+/**
+ * Service for handling revision event types.
+ * <p>
+ * Each named window instance gets a dedicated revision processor. 
+ */
 public class RevisionServiceImpl implements RevisionService
 {
     private final Map<String, RevisionSpec> specificationsByRevisionAlias;
     private final Map<String, RevisionProcessor> processorsByNamedWindow;
 
+    /**
+     * Ctor.
+     */
     public RevisionServiceImpl()
     {
         this.specificationsByRevisionAlias = new HashMap<String, RevisionSpec>();
@@ -67,7 +75,7 @@ public class RevisionServiceImpl implements RevisionService
         boolean isRevisionableType = revisionProcessor.validateRevisionableEventType(eventType);
         if (!isRevisionableType)
         {
-            throw new EventAdapterException("Selected event type is not a valid full or delta event type of revision event type '"
+            throw new EventAdapterException("Selected event type is not a valid base or delta event type of revision event type '"
                     + revisionProcessor.getRevisionEventTypeAlias() + "'");
         }
         return revisionProcessor.getEventType();
@@ -76,7 +84,7 @@ public class RevisionServiceImpl implements RevisionService
     public EventType getRevisionUnderlyingType(String alias)
     {
         RevisionSpec spec = specificationsByRevisionAlias.get(alias);
-        return spec.getFullEventType();
+        return spec.getBaseEventType();
     }
     
     public boolean isRevisionTypeAlias(String revisionTypeAlias)
@@ -87,16 +95,22 @@ public class RevisionServiceImpl implements RevisionService
     private void initializeSpecifications(String revisionEventTypeAlias, ConfigurationRevisionEventType config, EventAdapterService eventAdapterService)
             throws ConfigurationException
     {
-        if (config.getAliasFullEventType() == null)
+        if ((config.getAliasBaseEventTypes() == null) || (config.getAliasBaseEventTypes().size() == 0))
         {
-            throw new ConfigurationException("Required full event type alias is not set in the configuration for revision event type '" + revisionEventTypeAlias + "'");
+            throw new ConfigurationException("Required base event type alias is not set in the configuration for revision event type '" + revisionEventTypeAlias + "'");
         }
 
-        // get full types
-        EventType fullEventType = eventAdapterService.getExistsTypeByAlias(config.getAliasFullEventType());
-        if (fullEventType == null)
+        if (config.getAliasBaseEventTypes().size() > 1)
         {
-            throw new ConfigurationException("Could not locate event type for alias '" + config.getAliasFullEventType() + "' in the configuration for revision event type '" + revisionEventTypeAlias + "'");
+            throw new ConfigurationException("Only one base event type alias may be added to revision event type '" + revisionEventTypeAlias + "', multiple base types are not yet supported");
+        }
+
+        // get base types
+        String baseEventTypeAlias = config.getAliasBaseEventTypes().iterator().next();
+        EventType baseEventType = eventAdapterService.getExistsTypeByAlias(baseEventTypeAlias);
+        if (baseEventType == null)
+        {
+            throw new ConfigurationException("Could not locate event type for alias '" + baseEventTypeAlias + "' in the configuration for revision event type '" + revisionEventTypeAlias + "'");
         }
 
         // get alias types
@@ -121,36 +135,36 @@ public class RevisionServiceImpl implements RevisionService
             throw new ConfigurationException("Required key properties are not set in the configuration for revision event type '" + revisionEventTypeAlias + "'");            
         }
 
-        // make sure the key properties exist the full type and all delta types
-        checkKeysExist(fullEventType, config.getAliasFullEventType(), config.getKeyPropertyNames(), revisionEventTypeAlias);
+        // make sure the key properties exist the base type and all delta types
+        checkKeysExist(baseEventType, baseEventTypeAlias, config.getKeyPropertyNames(), revisionEventTypeAlias);
         for (int i = 0; i < deltaTypes.length; i++)
         {
             checkKeysExist(deltaTypes[i], deltaAliases[i], config.getKeyPropertyNames(), revisionEventTypeAlias);
         }
 
-        // key property names shared between full and delta must have the same type
-        String keyPropertyNames[] = PropertyGroupBuilder.copyAndSort(config.getKeyPropertyNames());
+        // key property names shared between base and delta must have the same type
+        String keyPropertyNames[] = PropertyUtility.copyAndSort(config.getKeyPropertyNames());
         for (String key : keyPropertyNames)
         {
-            Class typeProperty = fullEventType.getPropertyType(key);
+            Class typeProperty = baseEventType.getPropertyType(key);
             for (EventType dtype : deltaTypes)
             {
                 Class dtypeProperty = dtype.getPropertyType(key);
                 if ((dtypeProperty != null) && (typeProperty != dtypeProperty))
                 {
-                    throw new ConfigurationException("Key property named '" + key + "' does not have the same type for full and delta types of revision event type '" + revisionEventTypeAlias + "'");
+                    throw new ConfigurationException("Key property named '" + key + "' does not have the same type for base and delta types of revision event type '" + revisionEventTypeAlias + "'");
                 }
             }
         }
 
         RevisionSpec specification = null;
         // In the "declared" type the change set properties consist of only :
-        //   (full event type properties) minus (key properties) minus (properties only on full event type)
+        //   (base event type properties) minus (key properties) minus (properties only on base event type)
         if (config.getPropertyRevision() == ConfigurationRevisionEventType.PropertyRevision.OVERLAY_DECLARED)
         {
-            // determine non-key properties: those overridden by any delta, and those simply only present on the full event type
-            String nonkeyPropertyNames[] = PropertyGroupBuilder.uniqueExclusiveSort(fullEventType.getPropertyNames(), keyPropertyNames);
-            Set<String> fullEventOnlyProperties = new HashSet<String>();
+            // determine non-key properties: those overridden by any delta, and those simply only present on the base event type
+            String nonkeyPropertyNames[] = PropertyUtility.uniqueExclusiveSort(baseEventType.getPropertyNames(), keyPropertyNames);
+            Set<String> baseEventOnlyProperties = new HashSet<String>();
             Set<String> changesetPropertyNames = new HashSet<String>();
             for (String nonKey : nonkeyPropertyNames)
             {
@@ -166,41 +180,41 @@ public class RevisionServiceImpl implements RevisionService
                 }
                 if (!overriddenProperty)
                 {
-                    fullEventOnlyProperties.add(nonKey);
+                    baseEventOnlyProperties.add(nonKey);
                 }
             }
 
             String changesetProperties[] = changesetPropertyNames.toArray(new String[changesetPropertyNames.size()]);
-            String fullEventOnlyPropertyNames[] = fullEventOnlyProperties.toArray(new String[fullEventOnlyProperties.size()]);
+            String baseEventOnlyPropertyNames[] = baseEventOnlyProperties.toArray(new String[baseEventOnlyProperties.size()]);
 
             // verify that all changeset properties match event type
             for (String changesetProperty : changesetProperties)
             {
-                Class typeProperty = fullEventType.getPropertyType(changesetProperty);
+                Class typeProperty = baseEventType.getPropertyType(changesetProperty);
                 for (EventType dtype : deltaTypes)
                 {
                     Class dtypeProperty = dtype.getPropertyType(changesetProperty);
                     if ((dtypeProperty != null) && (typeProperty != dtypeProperty))
                     {
-                        throw new ConfigurationException("Property named '" + changesetProperty + "' does not have the same type for full and delta types of revision event type '" + revisionEventTypeAlias + "'");
+                        throw new ConfigurationException("Property named '" + changesetProperty + "' does not have the same type for base and delta types of revision event type '" + revisionEventTypeAlias + "'");
                     }
                 }
             }
 
-            specification = new RevisionSpec(config.getPropertyRevision(), fullEventType, deltaTypes, deltaAliases, keyPropertyNames, changesetProperties, fullEventOnlyPropertyNames, false, null);
+            specification = new RevisionSpec(config.getPropertyRevision(), baseEventType, deltaTypes, deltaAliases, keyPropertyNames, changesetProperties, baseEventOnlyPropertyNames, false, null);
         }
         else
         {
-            // In the "exists" type the change set properties consist of all properties: full event properties plus delta types properties
+            // In the "exists" type the change set properties consist of all properties: base event properties plus delta types properties
             Set<String> allProperties = new HashSet<String>();
-            allProperties.addAll(Arrays.asList(fullEventType.getPropertyNames()));
+            allProperties.addAll(Arrays.asList(baseEventType.getPropertyNames()));
             for (EventType deltaType : deltaTypes)
             {
                 allProperties.addAll(Arrays.asList(deltaType.getPropertyNames()));
             }
 
             String[] allPropertiesArr = allProperties.toArray(new String[allProperties.size()]);
-            String[] changesetProperties = PropertyGroupBuilder.uniqueExclusiveSort(allPropertiesArr, keyPropertyNames);
+            String[] changesetProperties = PropertyUtility.uniqueExclusiveSort(allPropertiesArr, keyPropertyNames);
 
             // All properties must have the same type, if a property exists for any given type
             boolean hasContributedByDelta = false;
@@ -208,11 +222,11 @@ public class RevisionServiceImpl implements RevisionService
             count = 0;
             for (String property : changesetProperties)
             {
-                Class fullPropertyType = fullEventType.getPropertyType(property);
+                Class basePropertyType = baseEventType.getPropertyType(property);
                 Class typeTemp = null;
-                if (fullPropertyType != null)
+                if (basePropertyType != null)
                 {
-                    typeTemp = fullPropertyType;
+                    typeTemp = basePropertyType;
                 }
                 else
                 {
@@ -226,7 +240,7 @@ public class RevisionServiceImpl implements RevisionService
                     {
                         if ((typeTemp != null) && (dtypeProperty != typeTemp))
                         {
-                            throw new ConfigurationException("Property named '" + property + "' does not have the same type for full and delta types of revision event type '" + revisionEventTypeAlias + "'");
+                            throw new ConfigurationException("Property named '" + property + "' does not have the same type for base and delta types of revision event type '" + revisionEventTypeAlias + "'");
                         }
 
                     }
@@ -236,14 +250,14 @@ public class RevisionServiceImpl implements RevisionService
             }
 
             // Compile changeset
-            specification = new RevisionSpec(config.getPropertyRevision(), fullEventType, deltaTypes, deltaAliases, keyPropertyNames, changesetProperties, new String[0], hasContributedByDelta, contributedByDelta);
+            specification = new RevisionSpec(config.getPropertyRevision(), baseEventType, deltaTypes, deltaAliases, keyPropertyNames, changesetProperties, new String[0], hasContributedByDelta, contributedByDelta);
         }
         specificationsByRevisionAlias.put(revisionEventTypeAlias, specification);
     }
 
-    private void checkKeysExist(EventType fullEventType, String alias, String[] keyProperties, String revisionEventTypeAlias)
+    private void checkKeysExist(EventType baseEventType, String alias, String[] keyProperties, String revisionEventTypeAlias)
     {
-        String propertyNames[] = fullEventType.getPropertyNames();
+        String propertyNames[] = baseEventType.getPropertyNames();
         for (String keyProperty : keyProperties)
         {
             boolean exists = false;

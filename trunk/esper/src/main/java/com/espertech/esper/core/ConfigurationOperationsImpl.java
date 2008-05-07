@@ -45,6 +45,7 @@ public class ConfigurationOperationsImpl implements ConfigurationOperations
      * @param engineImportService for imported aggregation functions and static functions
      * @param variableService - provides access to variable values
      * @param engineSettingsService - some engine settings are writable
+     * @param revisionService - update event handling
      */
     public ConfigurationOperationsImpl(EventAdapterService eventAdapterService,
                                        EngineImportService engineImportService,

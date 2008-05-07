@@ -46,6 +46,7 @@ public class SelectExprEvalProcessor implements SelectExprProcessor
      * @param isUsingWildcard - true if the wildcard (*) appears in the select clause
      * @param typeService -service for information about streams
      * @param eventAdapterService - service for generating events and handling event types
+     * @param revisionService - service that handles update events
      * @throws com.espertech.esper.epl.expression.ExprValidationException thrown if any of the expressions don't validate
      */
     public SelectExprEvalProcessor(List<SelectClauseExprCompiledSpec> selectionList,

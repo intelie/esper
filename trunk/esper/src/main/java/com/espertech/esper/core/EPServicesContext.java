@@ -83,6 +83,7 @@ public final class EPServicesContext
      * @param streamFactoryService is hooking up filters to streams
      * @param namedWindowService is holding information about the named windows active in the system
      * @param variableService provides access to variable values
+     * @param revisionService handles update events
      */
     public EPServicesContext(String engineURI,
                              SchedulingService schedulingService,
@@ -434,6 +435,10 @@ public final class EPServicesContext
         return variableService;
     }
 
+    /**
+     * Returns the service for handling updates to events.
+     * @return revision service
+     */
     public RevisionService getRevisionService()
     {
         return revisionService;

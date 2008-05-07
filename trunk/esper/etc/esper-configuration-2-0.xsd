@@ -152,8 +152,8 @@
 		<xs:complexType>
 			<xs:choice>
 				<xs:sequence>
-					<xs:element ref="esper:full-event" minOccurs="1" maxOccurs="1"/>
-					<xs:element ref="esper:delta-event" minOccurs="1" maxOccurs="unbounded"/>
+					<xs:element ref="esper:base-event-type" minOccurs="1" maxOccurs="unbounded"/>
+					<xs:element ref="esper:delta-event-type" minOccurs="1" maxOccurs="unbounded"/>
 					<xs:element ref="esper:key-property" minOccurs="1" maxOccurs="unbounded"/>
 				</xs:sequence>
 			</xs:choice>
@@ -161,12 +161,12 @@
 			<xs:attribute name="property-revision" type="esper:property-revision" use="optional"/>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name="full-event">
+	<xs:element name="base-event-type">
 		<xs:complexType>
 			<xs:attribute name="alias" type="xs:string" use="required"/>
 		</xs:complexType>
 	</xs:element>
-	<xs:element name="delta-event">
+	<xs:element name="delta-event-type">
 		<xs:complexType>
 			<xs:attribute name="alias" type="xs:string" use="required"/>
 		</xs:complexType>
@@ -178,9 +178,10 @@
 	</xs:element>
 	<xs:simpleType name="property-revision">
 		<xs:restriction base="xs:token">
-			<xs:enumeration value="declared"/>
-			<xs:enumeration value="exists_non_null"/>
-			<xs:enumeration value="exists"/>
+			<xs:enumeration value="overlay_declared"/>
+			<xs:enumeration value="merge_declared"/>
+			<xs:enumeration value="merge_non_null"/>
+			<xs:enumeration value="merge_exists"/>
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:element name="database-reference">

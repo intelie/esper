@@ -29,6 +29,7 @@ public class NamedWindowProcessor
      * @param eventType the type of event held by the named window
      * @param createWindowStmtHandle the statement handle of the statement that created the named window
      * @param statementResultService for coordinating on whether insert and remove stream events should be posted
+     * @param revisionProcessor for revision processing
      */
     public NamedWindowProcessor(NamedWindowService namedWindowService, String windowName, EventType eventType, EPStatementHandle createWindowStmtHandle, StatementResultService statementResultService, RevisionProcessor revisionProcessor)
     {

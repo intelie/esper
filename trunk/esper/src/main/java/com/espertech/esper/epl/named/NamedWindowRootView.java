@@ -49,6 +49,7 @@ public class NamedWindowRootView extends ViewSupport
 
     /**
      * Ctor.
+     * @param revisionProcessor handle update events if supplied, or null if not handling revisions
      */
     public NamedWindowRootView(RevisionProcessor revisionProcessor)
     {
