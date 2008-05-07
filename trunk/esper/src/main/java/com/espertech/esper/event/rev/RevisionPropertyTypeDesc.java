@@ -9,7 +9,7 @@ public class RevisionPropertyTypeDesc
 {
     private final EventPropertyGetter revisionGetter;
     private final RevisionGetterParameters revisionGetterParams;
-    private final Class propertyType;
+    private final Object propertyType;  // Can be the {Class|Map|EventType}
 
     /**
      * Ctor.
@@ -46,7 +46,7 @@ public class RevisionPropertyTypeDesc
      * Returns property type.
      * @return type
      */
-    public Class getPropertyType()
+    public Object getPropertyType()
     {
         return propertyType;
     }
