@@ -25,7 +25,7 @@ public class TestNamedWinRevisionDeclared extends TestCase
     private SupportUpdateListener listenerThree;
     private final String[] fields = "k0,p0,p1,p2,p3,p4,p5".split(",");
 
-    // TODO: test policies for resolving last version
+    // TODO: test nested properties
     // TODO: is it possible to set no key properties and treats each event as no update; test not used for named window
        
     // TODO: document

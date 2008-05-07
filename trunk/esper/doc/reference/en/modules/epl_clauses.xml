@@ -2596,6 +2596,100 @@ select win.* from OrdersNamedWindow as win]]></programlisting>
 			<programlisting><![CDATA[select symbol, sum(volume) from MyOrderStream(userId='user1') group by symbol]]></programlisting>
 		</sect2>
 
+		<sect2 id="named_update" revision="1">
+			<title>Updating and Versioning Events in Named Windows</title>
+			
+			<indexterm><primary>update</primary></indexterm>
+			<indexterm><primary>named window</primary><secondary>updating events</secondary></indexterm>
+
+			<para>
+				As outlined in <xref linkend="eventrep-update"/>, revision event types make it possible to process updates and new versions of events held by a named window.
+			</para>
+
+			<para>
+			    A revision event type is simply one or more existing event types that are related by event properties that provide same key values. The purpose of key values is to 
+			    indicate that arriving events are related: An event amends, updates or adds properties to an earlier event that shares the same key values.
+			</para>
+
+			<para>
+			    Revision event types can be useful in these situations:
+			</para>
+			<orderedlist spacing="compact">
+				<listitem>
+					<para>
+						Some of your events carry only partial information that is related to a prior event.
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						Events arrive that add additional properties or change existing properties of prior events.
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						Events may carry properties that have null values or properties that do no exist (for example events backed by Map or XML), and for such properties we need to look back at the earlier value.
+					</para>
+				</listitem>
+			</orderedlist>
+
+			<para>
+			    To better illustrate, consider a revision event type that represents events for creation and updates to user profiles. In the example, user profile creation events carry the user id and a full profile,
+			    while user profile update events indicate only the user id and the individual properties changed. The user id property shall serve as a key value relating profile creation events and update events. 
+			</para>
+
+			<para>
+			    A revision event type must be configured to instruct the engine which event types participate and what their key properties are. Configuration is described in <xref linkend="config-revisionevent"/> and is not shown here.
+			</para>
+			
+			<para>				
+				Assume that an alias <literal>UserProfileRevisions</literal> has been configured to hold profile events (creation and update) related by user id. This statement creates a time window to hold the last 1 hour of profile events per user id:
+			</para>
+			<programlisting><![CDATA[create window UserProfileWindow.win:time(1 hour) select * from UserProfileRevisions
+insert into UserProfileWindow select * from UserProfileCreation
+insert into UserProfileWindow select * from UserProfileUpdate]]></programlisting>
+
+			<para>
+			    When an event arrives that is part of the revision event types, then the insert and remove stream carry the current and prior merged set of event properties. Therefore, in the example, as creation events arrive that are followed by one or more update events for the same user id, the engine posts the current version of the profile and the prior version of the profile to consumers as insert (new data) and remove stream (old data), upon arrival of any creation or update event.
+			</para>
+
+			<para>				
+			    The expiry policy as specified by the data window parameter applies to each distinct key value (or multiple distinct key values for composite keys) and re-evaluates when new versions arrive. In the example, user profile events expire from the time window when no update has been received to a profile for 1 hour.
+			</para>
+
+			<para>				
+			    Several strategies are available for merging or overlaying events as the configuration chapter describes in greater detail. In the example, you may configure a strategy for overlaying or merging events that removes null values or that removes properties that do not exist on the underlying event type.
+			</para>
+
+			<para>				
+			    Any underlying event representation may participate in a revision event type, and event representations can be combined. For example, profile creation events could be a JavaBean event, while profile update events could be represented as a Map of key-value pairs.
+			</para>
+
+			<para>				
+			    Events types that take part in a revision event type may add properties to the revision event type. For example, one could add a new event type for security information to the revision event type and such security-related properties become availble on the resulting type.
+			</para>
+
+			<para>				
+			    The configuration terms event types that only provide partial data <emphasis>delta</emphasis> type, and event types that provide all data <emphasis>base</emphasis> event type. 
+			    In the example, the base event type is a profile creation event, and the delta event type is profile update events. If multiple profile creation events arrive for the same user id, such events are treated the same as profile updates
+			</para>
+
+			<para>				
+			    If multiple events of the base event type for the same key value arrive, then such events are handled as delta event, that is such event contribute a new version. Therefore, in the example, each profile creation event for the same user id results in an insert stream event carrying the current profile version, and a remove stream event carrying the profile version before.
+			</para>
+
+			<para>
+				The following restrictions apply to revision event types:
+			</para>        
+			<itemizedlist spacing="compact">
+				<listitem>
+					<para>
+						Dynamic properties are not supported on the revision event type.
+					</para>
+				</listitem>
+			</itemizedlist>
+
+		</sect2>
+
 	</sect1>
 	
 	<sect1 id="variables_overview" revision="1">

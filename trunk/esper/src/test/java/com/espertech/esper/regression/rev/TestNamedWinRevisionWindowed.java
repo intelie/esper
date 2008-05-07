@@ -13,9 +13,9 @@ import org.apache.commons.logging.LogFactory;
 import java.util.HashMap;
 import java.util.Map;
 
-public class TestNamedWinRevisionDeclaredWindowed extends TestCase
+public class TestNamedWinRevisionWindowed extends TestCase
 {
-    private static final Log log = LogFactory.getLog(TestNamedWinRevisionDeclaredWindowed.class);
+    private static final Log log = LogFactory.getLog(TestNamedWinRevisionWindowed.class);
     private EPServiceProvider epService;
     private EPStatement stmtCreateWin;
     private SupportUpdateListener listenerOne;

@@ -11,9 +11,9 @@ import org.apache.commons.logging.LogFactory;
 import java.util.HashMap;
 import java.util.Map;
 
-public class TestNamedWinRevisionExists extends TestCase
+public class TestNamedWinRevisionMerge extends TestCase
 {
-    private static final Log log = LogFactory.getLog(TestNamedWinRevisionExists.class);
+    private static final Log log = LogFactory.getLog(TestNamedWinRevisionMerge.class);
     private EPServiceProvider epService;
     private SupportUpdateListener listenerOne;
 
@@ -243,6 +243,43 @@ public class TestNamedWinRevisionExists extends TestCase
         epService.getEPRuntime().sendEvent(makeMap("p1,p3,pd", "10,null,pd5"), "DeltaType");
         ArrayAssertionUtil.assertProps(listenerOne.getLastOldData()[0], fields, new Object[] {"10", null, "36", "f4", "pd4"});
         ArrayAssertionUtil.assertProps(listenerOne.getLastNewData()[0], fields, new Object[] {"10", null, null, "f4", "pd5"});
+        listenerOne.reset();
+    }
+
+    public void testNestedProperties()
+    {
+        Map<String, Object> nestedType = makeMap(new Object[][] {{"n1", String.class}});
+        Map<String, Object> fullType = makeMap(new Object[][] {{"p1", String.class}, {"p2", nestedType}, {"p3", int.class}, {"p4", boolean.class}});
+        epService.getEPAdministrator().getConfiguration().addEventTypeAliasNestable("FullType", fullType);
+
+        Map<String, Object> deltaType = makeMap(new Object[][] {{"p1", String.class}, {"p2", nestedType}, {"p3", int.class}, {"p4", boolean.class}});
+        epService.getEPAdministrator().getConfiguration().addEventTypeAliasNestable("DeltaType", deltaType);
+
+        ConfigurationRevisionEventType revEvent = new ConfigurationRevisionEventType();
+        revEvent.setAliasFullEventType("FullType");
+        revEvent.addAliasDeltaEvent("DeltaType");
+        revEvent.setPropertyRevision(ConfigurationRevisionEventType.PropertyRevision.MERGE_DECLARED);
+        revEvent.setKeyPropertyNames(new String[] {"p4", "p3"});
+        epService.getEPAdministrator().getConfiguration().addRevisionEventType("MyExistsRevision", revEvent);
+
+        epService.getEPAdministrator().createEPL("create window MyWin.win:time(10 sec) as select * from MyExistsRevision");
+        epService.getEPAdministrator().createEPL("insert into MyWin select * from FullType");
+        epService.getEPAdministrator().createEPL("insert into MyWin select * from DeltaType");
+
+        String[] fields = "p1,nested,p3,p4".split(",");
+        EPStatement consumerOne = epService.getEPAdministrator().createEPL("select irstream p1, p2.n1 as nested, p3, p4 from MyWin");
+        consumerOne.addListener(listenerOne);
+        ArrayAssertionUtil.assertEqualsAnyOrder(consumerOne.getEventType().getPropertyNames(), fields);
+
+        Map<String, Object> nestedValue = makeMap(new Object[][] {{"n1", "nestedValue"}});
+        Map<String, Object> fullValue = makeMap(new Object[][] {{"p1", "10"}, {"p2", nestedValue}, {"p3", 10}, {"p4", 99L}});
+
+        epService.getEPRuntime().sendEvent(fullValue);
+        ArrayAssertionUtil.assertProps(listenerOne.assertOneGetNewAndReset(), fields, new Object[] {"10", "nestedValue", 10, 99L});
+
+        epService.getEPRuntime().sendEvent(makeMap("p1,p2","10,21"), "DeltaType");
+        ArrayAssertionUtil.assertProps(listenerOne.getLastOldData()[0], fields, new Object[] {"10", "20", "30", "f0", null});
+        ArrayAssertionUtil.assertProps(listenerOne.getLastNewData()[0], fields, new Object[] {"10", "21", null, "f0", null});
         listenerOne.reset();
     }
 
