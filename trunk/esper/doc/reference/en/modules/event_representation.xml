@@ -680,7 +680,7 @@ such event metadata and event data into one of the built-in event representation
         </para>
 
         <para>
-			Also, the length of time an event is of interest to the event processing engine (retention time) depends on your EPL statements, and especially the data window, pattern and output rate 
+			The length of time an event is of interest to the event processing engine (retention time) depends on your EPL statements, and especially the data window, pattern and output rate 
 			limiting clauses of your statements.
         </para>
 
@@ -704,6 +704,7 @@ such event metadata and event data into one of the built-in event representation
 	</sect1>
 
 </chapter>
+
 
 
 

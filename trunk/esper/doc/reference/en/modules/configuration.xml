@@ -1278,7 +1278,7 @@ config.getEngineDefaults().getStreamSelection()
 			<title>Revision Event Type</title>
 			
 			<para>
-			   Revision event types reflect an update or versioning relationship between events of same or different event types. Please refer to <xref linkend="eventrep-update"/>.
+			   Revision event types reflect an update or versioning relationship between events of same or different event types. Please refer to <xref linkend="eventrep-update"/> and <xref linkend="named_update"/>.
 			</para>
 
 			<para>
@@ -1287,22 +1287,22 @@ config.getEngineDefaults().getStreamSelection()
 			<itemizedlist spacing="compact">
 				<listitem>
 					<para>
-						An alias of an event type termed <emphasis>base</emphasis> event type. Events of that type must arrive before any delta events (see below) arrive.
+						An alias of an event type whose events are <emphasis>base</emphasis> events.
 					</para>
 				</listitem>
 				<listitem>
 					<para>
-						Zero, one or more aliases of event types termed <emphasis>delta</emphasis> event types, that provide updates to property values or additional property values.
+						Zero, one or more aliases of event types whose events are <emphasis>delta</emphasis> events.
 					</para>
 				</listitem>
 				<listitem>
 					<para>
-						One or more property names that supply the key values that tie delta events to their respective base events.
+						One or more property names that supply the key values that tie base and delta events to existing revision events.
 					</para>
 				</listitem>
 				<listitem>
 					<para>
-						Optionally, you can change the strategy for overlaying or merging properties. The default strategy is named <emphasis>Overlay Declared</emphasis>. The strategy indicats whether properties can be added, and whether null values and non-existing properties should be considered.
+						Optionally, a strategy for overlaying or merging properties. The default strategy is <emphasis>Overlay Declared</emphasis> as described below.
 					</para>
 				</listitem>
 			</itemizedlist>
@@ -1310,27 +1310,32 @@ config.getEngineDefaults().getStreamSelection()
 			<para>
 				The XML configuration for this setting is shown below:
 			</para>
-				<programlisting><![CDATA[<revision-event-type alias="UserProfileRevisions" property-revision="exists_non_null">
-  <full-event-type alias="ProfileCreation"/>
+				<programlisting><![CDATA[<revision-event-type alias="UserProfileRevisions">
+  <base-event-type alias="ProfileCreation"/>
   <delta-event-type alias="ProfileUpdate"/>
   <key-property name="userid"/>
 </revision-event-type>]]></programlisting>
 
 			<para>
-				If configuring via runtime of initialization-time API, this code snippet explains how:
+				If configuring via runtime or initialization-time API, this code snippet explains how:
 			</para>
-				<programlisting><![CDATA[ConfigurationRevisionEventType configRev = new ConfigurationRevisionEventType();
+			<programlisting><![CDATA[Configuration config = new Configuration();
+ConfigurationRevisionEventType configRev = new ConfigurationRevisionEventType();
 configRev.setAliasBaseEventType("ProfileCreation");
 configRev.addAliasDeltaEventType("ProfileUpdate");
 configRev.setKeyPropertyNames(new String[] {"userid"});
 config.addRevisionEventType("UserProfileRevisions", configRev);]]></programlisting>
 
 			<para>
+				As the configuration provides alias names of base and delta event types, such aliases must be configured for JavaBean, Map or XML events as the previous sections outline.
+			</para>
+
+			<para>
 				The next table outlines the available strategies:
 			</para>
 
 			<table frame="topbot">
-				<title>Revision Strategy</title>
+				<title>Property Revision Strategies</title>
 				<tgroup cols="2">
 					<colspec colwidth="0.5*"/>
 					<colspec colwidth="2*"/>
@@ -1344,37 +1349,37 @@ config.addRevisionEventType("UserProfileRevisions", configRev);]]></programlisti
 						<row>
 							<entry>Overlay Declared (default)</entry>
 							<entry>
-								<para>A fast strategy for revising events that groups properties provided by delta events (or additional base events for the same key) and overlays contributed properties onto the full event.</para>
+								<para>A fast strategy for revising events that groups properties provided by base and delta events and overlays contributed properties to compute a revision.</para>
 								<para>For use when there is a limited number of combinations of properties that change on an event, and such combinations are known in advance.</para>
-							    <para>The properties available on the output revision events are all properties of the base event type. Delta event types do not add any additional properties not present on the base event type.</para>
-								<para>Null values or (dynamic) properties that do not exist on a delta event result in a null value for the same property on the output revision event.</para>
+							    <para>The properties available on the output revision events are all properties of the base event type. Delta event types do not add any additional properties that are not present on the base event type.</para>
+								<para>Any null values or non-existing property on a delta (or base) event results in a null values for the same property on the output revision event.</para>
 							</entry>
 						</row>
 						<row>
 							<entry>Merge Declared</entry>
 							<entry> 
-							    <para>A strategy for revising events by merging properties provided by delta events  (or additional base events for the same key) onto a base event, considering null values and non-existing (dynamic) properties as well.</para>
-							    <para>For use when there is a limited number of combinations of properties that change on an event, and such combinations are not known in advance.</para>
+							    <para>A strategy for revising events by merging properties provided by base and delta events, considering null values and non-existing (dynamic) properties as well.</para>
+							    <para>For use when there is a limited number of combinations of properties that change on an event, and such combinations are known in advance.</para>
 							    <para>The properties available on the output revision events are all properties of the base event type plus all additional properties that any of the delta event types provide.</para>
-							    <para>Null values or (dynamic) properties that do not exist on a delta (or base) event result in a null value for the same property on the output revision event.</para>
+								<para>Any null values or non-existing property on a delta (or base) event results in a null values for the same property on the output revision event.</para>
 							</entry>
 						</row>
 						<row>
 							<entry>Merge Non-null</entry>
 							<entry>
-							    <para>A strategy for revising events by merging properties provided by delta events (or additional base events for the same key) onto a base event, considering only non-null values.</para>
+							    <para>A strategy for revising events by merging properties provided by base and delta events, considering only non-null values.</para>
 								<para>For use when there is an unlimited number of combinations of properties that change on an event, or combinations are not known in advance.</para>
 							    <para>The properties available on the output revision events are all properties of the base event type plus all additional properties that any of the delta event types provide.</para>
-								<para>Null values returned by delta event properties provide no value to output revision events, i.e. null values are not merged.</para>
+								<para>Null values returned by delta (or base) event properties provide no value to output revision events, i.e. null values are not merged.</para>
 							</entry>
 						</row>
 						<row>
 							<entry>Merge Exists</entry>
 							<entry>
-								 <para>A strategy for revising events by merging properties provided by delta events (or additional base events for the same key) onto a base event, considering only values supplied by event properties that exist.</para>
+								 <para>A strategy for revising events by merging properties provided by base and delta events, considering only values supplied by event properties that exist.</para>
 								 <para>For use when there is an unlimited number of combinations of properties that change on an event, or combinations are not known in advance.</para>
 							    <para>The properties available on the output revision events are all properties of the base event type plus all additional properties that any of the delta event types provide.</para>
-								 <para>All properties are treated as dynamic properties, and if an event property does not exist on a delta event (or base event) the property provides no value to output revision events, i.e. non-existing property values are not merged.</para>
+								 <para>All properties are treated as dynamic properties: If an event property does not exist on a delta event (or base) event the property provides no value to output revision events, i.e. non-existing property values are not merged.</para>
 							</entry>							
 						</row>
 					</tbody>

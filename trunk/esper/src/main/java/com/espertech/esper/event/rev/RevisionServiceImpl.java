@@ -2,7 +2,7 @@ package com.espertech.esper.event.rev;
 
 import com.espertech.esper.client.ConfigurationException;
 import com.espertech.esper.client.ConfigurationRevisionEventType;
-import com.espertech.esper.client.ConfigurationVariantEventType;
+import com.espertech.esper.client.ConfigurationVariantStream;
 import com.espertech.esper.event.EventAdapterException;
 import com.espertech.esper.event.EventAdapterService;
 import com.espertech.esper.event.EventType;
@@ -42,10 +42,10 @@ public class RevisionServiceImpl implements RevisionService
         }
     }
 
-    public void addVariantEventType(String variantEventTypeAlias, ConfigurationVariantEventType variantEventTypeConfig, EventAdapterService eventAdapterService) throws ConfigurationException
+    public void addVariantEventType(String variantEventTypeAlias, ConfigurationVariantStream variantStreamConfig, EventAdapterService eventAdapterService) throws ConfigurationException
     {
         Set<EventType> types = new LinkedHashSet<EventType>();
-        for (String alias : variantEventTypeConfig.getEventTypeAliases())
+        for (String alias : variantStreamConfig.getVariantTypeAliases())
         {
             EventType type = eventAdapterService.getExistsTypeByAlias(alias);
             if (type == null)

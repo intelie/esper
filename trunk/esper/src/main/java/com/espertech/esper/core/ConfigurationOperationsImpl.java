@@ -257,8 +257,8 @@ public class ConfigurationOperationsImpl implements ConfigurationOperations
         revisionService.addRevisionEventType(revisionEventTypeAlias, revisionEventTypeConfig, eventAdapterService);
     }
 
-    public void addVariantEventType(String variantEventTypeAlias, ConfigurationVariantEventType variantEventTypeConfig)
+    public void addVariantStream(String variantEventTypeAlias, ConfigurationVariantStream variantStreamConfig)
     {
-        revisionService.addVariantEventType(variantEventTypeAlias, variantEventTypeConfig, eventAdapterService);
+        revisionService.addVariantEventType(variantEventTypeAlias, variantStreamConfig, eventAdapterService);
     }
 }

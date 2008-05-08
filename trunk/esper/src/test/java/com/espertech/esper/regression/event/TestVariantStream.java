@@ -5,23 +5,29 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import com.espertech.esper.client.*;
 import com.espertech.esper.support.util.SupportUpdateListener;
-import com.espertech.esper.support.util.ArrayAssertionUtil;
 import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.bean.SupportBean_A;
 
-import java.util.Map;
-import java.util.HashMap;
-
-public class TestVariantEventType extends TestCase
+public class TestVariantStream extends TestCase
 {
-    private static final Log log = LogFactory.getLog(TestVariantEventType.class);
+    private static final Log log = LogFactory.getLog(TestVariantStream.class);
     private EPServiceProvider epService;
     private SupportUpdateListener listenerOne;
 
     // TODO
+    // test type policies:
+    //   any type
+    //   only the configured types
+    //
+    // test property policies:
+    //   only common properties same type, else not found
+    //   only common properties any type (type becomes Object)
+    //   at least one type must know property
+    //   all properties exists, all properties are object types, there is no type checking
+    
+    // test property
     // test common numeric type coercion
-    // test different policies
     // test invalid config
     // test dynamic, index, nested properties
     // test mixin of different types
@@ -44,10 +50,10 @@ public class TestVariantEventType extends TestCase
         epService.getEPAdministrator().getConfiguration().addEventTypeAlias("SupportBean", SupportBean.class);
         epService.getEPAdministrator().getConfiguration().addEventTypeAlias("SupportBean_A", SupportBean_A.class);
 
-        ConfigurationVariantEventType variant = new ConfigurationVariantEventType();
+        ConfigurationVariantStream variant = new ConfigurationVariantStream();
         variant.addEventTypeAlias("SupportBean");
         variant.addEventTypeAlias("SupportBean_A");
-        epService.getEPAdministrator().getConfiguration().addVariantEventType("MyVariantType", variant);
+        epService.getEPAdministrator().getConfiguration().addVariantStream("MyVariantType", variant);
 
         EPStatement stmt = epService.getEPAdministrator().createEPL("select * from MyVariantType");
         stmt.addListener(listenerOne);

@@ -112,59 +112,46 @@ public class ConfigurationRevisionEventType implements Serializable
     public enum PropertyRevision
     {
         /**
-         * A strategy for revising events by overlaying groups of properties provided by delta events
-         * onto the full event.
+         * A fast strategy for revising events that groups properties provided by base and delta events and overlays contributed properties to compute a revision.
          * <p>
-         * For use when there is a small number of combinations of properties that change on an event,
-         * and such combinations are known in advance.
+         * For use when there is a limited number of combinations of properties that change on an event, and such combinations are known in advance.
          * <p>
-         * The event type specified as "full" event type provides all properties. "Delta" event types
-         * do not add properties to the resulting type.
+         * The properties available on the output revision events are all properties of the base event type. Delta event types do not add any additional properties that are not present on the base event type.
          * <p>
-         * Null values or (dynamic) properties that do not exist on delta events provide null values to resulting revision events.
+         * Any null values or non-existing property on a delta (or base) event results in a null values for the same property on the output revision event.
          */
         OVERLAY_DECLARED,
 
         /**
-         * A strategy for revising events by merging properties provided by delta events
-         * onto a reflection of a full event, considering null values and non-existing (dynamic) properties as well.
+         * A strategy for revising events by merging properties provided by base and delta events, considering null values and non-existing (dynamic) properties as well.
          * <p>
-         * For use when there is a larger number of combinations of properties that change on an event,
-         * or combinations are not known in advance.
+         * For use when there is a limited number of combinations of properties that change on an event, and such combinations are known in advance.
          * <p>
-         * The properties of the revised event are all properties of the "full" event type plus
-         * any additional property that any of the "Delta" event types adds.
+         * The properties available on the output revision events are all properties of the base event type plus all additional properties that any of the delta event types provide.
          * <p>
-         * Null values or (dynamic) properties that do not exist on delta events provide null values to resulting revision events.
+         * Any null values or non-existing property on a delta (or base) event results in a null values for the same property on the output revision event.
          */
         MERGE_DECLARED,
 
         /**
-         * A strategy for revising events by merging properties provided by delta events
-         * onto a reflection of a full event, considering only non-null values.
+         * A strategy for revising events by merging properties provided by base and delta events, considering only non-null values.
          * <p>
-         * For use when there is a larger number of combinations of properties that change on an event,
-         * or combinations are not known in advance.
+         * For use when there is an unlimited number of combinations of properties that change on an event, or combinations are not known in advance.
          * <p>
-         * The properties of the revised event are all properties of the "full" event type plus
-         * any additional property that any of the "Delta" event types adds.
+         * The properties available on the output revision events are all properties of the base event type plus all additional properties that any of the delta event types provide.
          * <p>
-         * Null values returned by delta event properties provide no value to resulting revision events (is not merged).
+         * Null values returned by delta (or base) event properties provide no value to output revision events, i.e. null values are not merged.
          */
         MERGE_NON_NULL,
 
         /**
-         * A strategy for revising events by merging properties provided by delta events
-         * onto a reflection of a full event, considering only values supplied by event properties that exist.
+         * A strategy for revising events by merging properties provided by base and delta events, considering only values supplied by event properties that exist.
          * <p>
-         * For use when there is a larger number of combinations of properties that change on an event,
-         * or combinations are not known in advance.
+         * For use when there is an unlimited number of combinations of properties that change on an event, or combinations are not known in advance.
          * <p>
-         * The properties of the revised event are all properties of the "full" event type plus
-         * any additional property that any of the "Delta" event types adds.
+         * The properties available on the output revision events are all properties of the base event type plus all additional properties that any of the delta event types provide.
          * <p>
-         * All properties are treated as dynamic properties, and if an event property
-         * does not exist on a delta event the property it provides no value to resulting revision events (is not merged).
+         * All properties are treated as dynamic properties: If an event property does not exist on a delta event (or base) event the property provides no value to output revision events, i.e. non-existing property values are not merged.
          */
         MERGE_EXISTS
     }

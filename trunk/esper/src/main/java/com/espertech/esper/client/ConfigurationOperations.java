@@ -221,5 +221,5 @@ public interface ConfigurationOperations
      */
     public void addRevisionEventType(String revisionEventTypeAlias, ConfigurationRevisionEventType revisionEventTypeConfig);
 
-    public void addVariantEventType(String variantEventTypeAlias, ConfigurationVariantEventType variantEventTypeConfig);
+    public void addVariantStream(String variantStreamName, ConfigurationVariantStream variantStreamConfig);
 }

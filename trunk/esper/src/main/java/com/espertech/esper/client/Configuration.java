@@ -558,7 +558,7 @@ public class Configuration implements ConfigurationOperations, ConfigurationInfo
         return engineDefaults;
     }
 
-    public void addVariantEventType(String variantEventTypeAlias, ConfigurationVariantEventType variantEventTypeConfig)
+    public void addVariantStream(String variantEventTypeAlias, ConfigurationVariantStream variantStreamConfig)
     {
         // TODO
     }

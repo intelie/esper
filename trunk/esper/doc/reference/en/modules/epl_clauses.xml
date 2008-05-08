@@ -2641,39 +2641,39 @@ select win.* from OrdersNamedWindow as win]]></programlisting>
 			</para>
 			
 			<para>				
-				Assume that an alias <literal>UserProfileRevisions</literal> has been configured to hold profile events (creation and update) related by user id. This statement creates a time window to hold the last 1 hour of current profile events per user id:
+				Assume that an alias <literal>UserProfileRevisions</literal> has been configured to hold profile events, i.e. creation and update events related by user id. This statement creates a named window to hold the last 1 hour of current profiles per user id:
 			</para>
 			<programlisting><![CDATA[create window UserProfileWindow.win:time(1 hour) select * from UserProfileRevisions
 insert into UserProfileWindow select * from UserProfileCreation
 insert into UserProfileWindow select * from UserProfileUpdate]]></programlisting>
 
 			<para>				
-			    The term <emphasis>base</emphasis> event is used for events that are be subject to update. Events that actually update, amend or add additional properties to existing events are termed <emphasis>delta</emphasis> events. 
+			    In revision event types, the term <emphasis>base</emphasis> event is used to describe events that are subject to update. Events that update, amend or add additional properties to base events are termed <emphasis>delta</emphasis> events. 
 			    In the example, base events are profile creation events and delta events are profile update events. 
 			</para>
 
 			<para>				
-			    Base events are expected to arrive before delta events. In the case where a delta event arrives before the base event for the same key value the engine ignores the delta event.
-			</para>
-
-			<para>				
-			    Base events are also implicitly delta events. That is, if a multiple base events for the same key property arrive then each base event provides a new version. In the example, if multiple profile creation events arrive for the same user id then the current profile is the last base event.
+			    Base events are expected to arrive before delta events. In the case where a delta event arrives and is not related by key value to a base event or a revision of the base event currently held by the named window the engine ignores the delta event. Thus, considering the example, profile update events for a user id that does not have an existing profile in the named window are not applied.
 			</para>
 
 			<para>
-			    When an base or delta event arrives, then the insert and remove stream of the named window are current and prior version of the event. Therefore, coming back to the example, as creation events (base event) arrive that are followed by one or more update events (delta events) for the same user id, the engine posts the current version of the profile and the prior version of the profile to consumers as insert (new data) and remove stream (old data).
+			    When a base or delta event arrives, the insert and remove stream output by the named window are the current and the prior version of the event. Let's come back to the example. As creation events arrive that are followed by update events or more creation events for the same user id, the engine posts the current version of the profile as insert stream (new data) and the prior version of the profile as remove stream (old data).
 			</para>
 
 			<para>				
-			    The expiry policy as specified by the data window parameter applies to each distinct key value, or multiple distinct key values for composite keys. An expiry policy re-evaluates when new versions arrive. In the example, user profile events expire from the time window when no creation or update event for a given user id has been received for 1 hour.
+			    Base events are also implicitly delta events. That is, if multiple base events of the same key property values arrive, then each base event provides a new version. In the example, if multiple profile creation events arrive for the same user id then new versions of the current profile for that user id are output by the engine for each base event, as it does for delta events.
 			</para>
 
 			<para>				
-			    Several strategies are available for merging or overlaying events as the configuration chapter describes in greater detail. In the example, you may configure a strategy for overlaying or merging events that removes null values or that removes properties that do not exist on the underlying event type.
+			    The expiry policy as specified by view definitions applies to each distinct key value, or multiple distinct key values for composite keys. An expiry policy re-evaluates when new versions arrive. In the example, user profile events expire from the time window when no creation or update event for a given user id has been received for 1 hour.
 			</para>
 
 			<para>				
-			    Any of the Map, XML and JavaBean event representations may participate in a revision event type. For example, profile creation events could be a JavaBean event, while profile update events could be represented as a Map of key-value pairs.
+			    Several strategies are available for merging or overlaying events as the configuration chapter describes in greater detail.
+			</para>
+
+			<para>				
+			    Any of the Map, XML and JavaBean event representations as well as plug-in event representations may participate in a revision event type. For example, profile creation events could be JavaBean events, while profile update events could be <literal>java.util.Map</literal> events.
 			</para>
 
 			<para>				
@@ -2686,12 +2686,12 @@ insert into UserProfileWindow select * from UserProfileUpdate]]></programlisting
 			<itemizedlist spacing="compact">
 				<listitem>
 					<para>
-						Dynamic, indexed and mapped properties are not supported for revision event types.
+						Nested properties are only supported for the JavaBean event representation. Nested properties are not individually versioned, they are instead versioned by the containing property.
 					</para>
 				</listitem>
 				<listitem>
 					<para>
-						Nested properties are only supported for the JavaBean event representation. Nested properties are not individually versioned, they are instead versioned by the containing property.
+						Dynamic, indexed and mapped properties are only supported for nested properties and not as properties of the revision event type itself.
 					</para>
 				</listitem>
 			</itemizedlist>
