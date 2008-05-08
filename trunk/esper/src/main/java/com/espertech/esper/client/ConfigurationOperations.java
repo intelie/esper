@@ -220,4 +220,6 @@ public interface ConfigurationOperations
      * @param revisionEventTypeConfig the configuration 
      */
     public void addRevisionEventType(String revisionEventTypeAlias, ConfigurationRevisionEventType revisionEventTypeConfig);
+
+    public void addVariantEventType(String variantEventTypeAlias, ConfigurationVariantEventType variantEventTypeConfig);
 }

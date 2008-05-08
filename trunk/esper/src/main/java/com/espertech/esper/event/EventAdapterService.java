@@ -17,6 +17,8 @@ import com.espertech.esper.core.EPRuntimeImpl;
  */
 public interface EventAdapterService
 {
+    public void addTypeByAlias(String alias, EventType eventType) throws EventAdapterException;
+
     /**
      * Return the event type for a given event name, or null if none is registered for that name.
      * @param eventTypeAlias is the event type alias name to return type for

@@ -7,10 +7,7 @@
  **************************************************************************************/
 package com.espertech.esper.core;
 
-import com.espertech.esper.client.ConfigurationEventTypeXMLDOM;
-import com.espertech.esper.client.ConfigurationException;
-import com.espertech.esper.client.ConfigurationOperations;
-import com.espertech.esper.client.ConfigurationRevisionEventType;
+import com.espertech.esper.client.*;
 import com.espertech.esper.event.EventAdapterException;
 import com.espertech.esper.event.EventAdapterService;
 import com.espertech.esper.event.rev.RevisionService;
@@ -257,6 +254,11 @@ public class ConfigurationOperationsImpl implements ConfigurationOperations
 
     public void addRevisionEventType(String revisionEventTypeAlias, ConfigurationRevisionEventType revisionEventTypeConfig)
     {
-        revisionService.add(revisionEventTypeAlias, revisionEventTypeConfig, eventAdapterService);
+        revisionService.addRevisionEventType(revisionEventTypeAlias, revisionEventTypeConfig, eventAdapterService);
+    }
+
+    public void addVariantEventType(String variantEventTypeAlias, ConfigurationVariantEventType variantEventTypeConfig)
+    {
+        revisionService.addVariantEventType(variantEventTypeAlias, variantEventTypeConfig, eventAdapterService);
     }
 }

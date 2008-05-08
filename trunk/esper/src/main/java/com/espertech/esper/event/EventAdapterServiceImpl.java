@@ -3,7 +3,6 @@ package com.espertech.esper.event;
 import com.espertech.esper.client.*;
 import com.espertech.esper.collection.Pair;
 import com.espertech.esper.core.EPRuntimeEventSender;
-import com.espertech.esper.core.EPRuntimeImpl;
 import com.espertech.esper.event.xml.BaseXMLEventType;
 import com.espertech.esper.event.xml.SchemaXMLEventType;
 import com.espertech.esper.event.xml.SimpleXMLEventType;
@@ -17,10 +16,10 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
+import java.io.Serializable;
 import java.net.URI;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.io.Serializable;
 
 /**
  * Implementation for resolving event name to event type.
@@ -61,6 +60,15 @@ public class EventAdapterServiceImpl implements EventAdapterService
         typesPerJavaBean = new ConcurrentHashMap<Class, BeanEventType>();
         beanEventAdapter = new BeanEventAdapter(typesPerJavaBean);
         plugInRepresentations = new HashMap<URI, PlugInEventRepresentation>();
+    }
+
+    public synchronized void addTypeByAlias(String alias, EventType eventType) throws EventAdapterException
+    {
+        if (aliasToTypeMap.containsKey(alias))
+        {
+            throw new EventAdapterException("Alias by name '" + alias + "' already exists");
+        }
+        aliasToTypeMap.put(alias, eventType);
     }
 
     public void addEventRepresentation(URI eventRepURI, PlugInEventRepresentation pluginEventRep) throws EventAdapterException

@@ -1,13 +1,11 @@
 package com.espertech.esper.event.rev;
 
+import com.espertech.esper.epl.parse.ASTFilterSpecHelper;
+import com.espertech.esper.event.EventAdapterService;
 import com.espertech.esper.event.EventPropertyGetter;
 import com.espertech.esper.event.EventType;
-import com.espertech.esper.event.EventAdapterService;
-import com.espertech.esper.event.MapPOJOEntryPropertyGetter;
-import com.espertech.esper.event.property.Property;
-import com.espertech.esper.event.property.PropertyParser;
-import com.espertech.esper.event.property.MapPropertyGetter;
-import com.espertech.esper.epl.parse.ASTFilterSpecHelper;
+import com.espertech.esper.event.BeanEventType;
+import com.espertech.esper.event.property.*;
 
 import java.util.Iterator;
 import java.util.Map;
@@ -52,7 +50,36 @@ public class RevisionEventType implements EventType
         int index = ASTFilterSpecHelper.unescapedIndexOfDot(propertyName);
         if (index == -1)
         {
-            return null; // not a nested property
+            Property prop = PropertyParser.parse(propertyName, eventAdapterService.getBeanEventTypeFactory(), false);
+            if (prop instanceof SimpleProperty)
+            {
+                // there is no such property since it wasn't found earlier
+                return null;
+            }
+            String atomic = null;
+            if (prop instanceof IndexedProperty)
+            {
+                IndexedProperty indexedprop = (IndexedProperty) prop;
+                atomic = indexedprop.getPropertyNameAtomic();
+            }
+            if (prop instanceof MappedProperty)
+            {
+                MappedProperty indexedprop = (MappedProperty) prop;
+                atomic = indexedprop.getPropertyNameAtomic();
+            }
+            desc = propertyDesc.get(atomic);
+            if (desc == null)
+            {
+                return null;
+            }
+            if (!(desc.getPropertyType() instanceof Class))
+            {
+                return null;
+            }
+            Class nestedClass = (Class) desc.getPropertyType();
+            BeanEventType complexProperty = (BeanEventType) eventAdapterService.addBeanType(nestedClass.getName(), nestedClass);
+            EventPropertyGetter getter = prop.getGetter(complexProperty);
+            return getter;
         }
 
         // Map event types allow 2 types of properties inside:
@@ -69,18 +96,8 @@ public class RevisionEventType implements EventType
             return null;  // prefix not a known property
         }
 
-        if (desc.getPropertyType() instanceof Map)
-        {
-            Property prop = PropertyParser.parse(propertyNested, eventAdapterService.getBeanEventTypeFactory(), false);
-            Map nestedTypes = (Map) desc.getPropertyType();
-            EventPropertyGetter getterNestedMap = prop.getGetterMap(nestedTypes);
-            if (getterNestedMap == null)
-            {
-                return null;
-            }
-            return new MapPropertyGetter(propertyMap, getterNestedMap);
-        }
-        else if (desc.getPropertyType() instanceof Class)
+        // only nested classes supported for revision event types since deep property information not currently exposed by EventType
+        if (desc.getPropertyType() instanceof Class)
         {
             // ask the nested class to resolve the property
             Class simpleClass = (Class) desc.getPropertyType();
@@ -92,7 +109,7 @@ public class RevisionEventType implements EventType
             }
 
             // construct getter for nested property
-            return new MapPOJOEntryPropertyGetter(propertyMap, nestedGetter, eventAdapterService);
+            return new RevisionNestedPropertyGetter(desc.getRevisionGetter(), nestedGetter, eventAdapterService);
         }
         else
         {
@@ -105,10 +122,6 @@ public class RevisionEventType implements EventType
         RevisionPropertyTypeDesc desc = propertyDesc.get(propertyName);
         if (desc != null)
         {
-            if (desc.getPropertyType() instanceof Map)
-            {
-                return Map.class;
-            }
             if (desc.getPropertyType() instanceof Class)
             {
                 return (Class) desc.getPropertyType();
@@ -126,7 +139,7 @@ public class RevisionEventType implements EventType
         int index = ASTFilterSpecHelper.unescapedIndexOfDot(propertyName);
         if (index == -1)
         {
-            return null; // not a nested property
+            return null;
         }
 
         // Map event types allow 2 types of properties inside:
@@ -143,12 +156,6 @@ public class RevisionEventType implements EventType
             return null;  // prefix not a known property
         }
 
-        if (desc.getPropertyType() instanceof Map)
-        {
-            Property prop = PropertyParser.parse(propertyNested, eventAdapterService.getBeanEventTypeFactory(), false);
-            Map nestedTypes = (Map) desc.getPropertyType();
-            return prop.getPropertyTypeMap(nestedTypes);
-        }
         else if (desc.getPropertyType() instanceof Class)
         {
             Class simpleClass = (Class) desc.getPropertyType();

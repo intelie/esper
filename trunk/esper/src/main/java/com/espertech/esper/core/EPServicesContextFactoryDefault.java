@@ -88,7 +88,7 @@ public class EPServicesContextFactoryDefault implements EPServicesContextFactory
         FilterService filterService = FilterServiceProvider.newService();
         NamedWindowService namedWindowService = new NamedWindowServiceImpl(statementLockFactory, variableService);
 
-        RevisionService revisionService = new RevisionServiceImpl();
+        RevisionService revisionService = new RevisionServiceImpl(eventAdapterService);
         revisionService.init(configSnapshot.getRevisionEventTypes(), eventAdapterService);
 
         // New services context

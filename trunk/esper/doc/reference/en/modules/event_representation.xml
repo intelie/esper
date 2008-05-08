@@ -699,7 +699,7 @@ such event metadata and event data into one of the built-in event representation
 		</para>
 
 		<para>
-			Note that patterns do not reflect changes to past events. The temporal nature of patterns is not aware of changes to events observed in the past.
+			Note that patterns do not reflect changes to past events. For the temporal nature of patterns, any changes to events that were observed in the past do not reflect upon current pattern state.
 		</para>
 	</sect1>
 

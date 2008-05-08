@@ -6,10 +6,7 @@ import com.espertech.esper.core.EPStatementHandle;
 import com.espertech.esper.epl.join.table.EventTable;
 import com.espertech.esper.epl.named.NamedWindowIndexRepository;
 import com.espertech.esper.epl.named.NamedWindowRootView;
-import com.espertech.esper.event.EventBean;
-import com.espertech.esper.event.EventPropertyGetter;
-import com.espertech.esper.event.EventType;
-import com.espertech.esper.event.PropertyAccessException;
+import com.espertech.esper.event.*;
 import com.espertech.esper.view.StatementStopCallback;
 import com.espertech.esper.view.StatementStopService;
 import com.espertech.esper.view.Viewable;
@@ -36,9 +33,9 @@ public class RevisionProcessorMerge extends RevisionProcessorBase implements Rev
      * @param spec specification
      * @param statementStopService for stop handling
      */
-    public RevisionProcessorMerge(String revisionEventTypeAlias, RevisionSpec spec, StatementStopService statementStopService)
+    public RevisionProcessorMerge(String revisionEventTypeAlias, RevisionSpec spec, StatementStopService statementStopService, EventAdapterService eventAdapterService)
     {
-        super(spec, revisionEventTypeAlias);
+        super(spec, revisionEventTypeAlias, eventAdapterService);
 
         // on statement stop, remove versions
         statementStopService.addSubscriber(new StatementStopCallback() {
@@ -154,7 +151,7 @@ public class RevisionProcessorMerge extends RevisionProcessorBase implements Rev
             throw new IllegalArgumentException("Unknown revision type '" + spec.getPropertyRevision() + "'");
         }
 
-        revisionEventType = new RevisionEventType(propertyDesc);
+        revisionEventType = new RevisionEventType(propertyDesc, eventAdapterService);
     }
 
     public EventBean getRevision(EventBean event)

@@ -17,6 +17,23 @@ public class PropertyUtility
 {
     private static final Log log = LogFactory.getLog(PropertyUtility.class);
 
+    public static void removePropNamePostfixes(String[] propertyNames)
+    {
+        for (int i = 0; i < propertyNames.length; i++)
+        {
+            String property = propertyNames[i];
+            if (property.endsWith("[]"))
+            {
+                property = property.replace("[]", "");
+            }
+            if (property.endsWith("()"))
+            {
+                property = property.replace("()", "");
+            }
+            propertyNames[i] = property;
+        }
+    }
+    
     /**
      * Returns a multi-key for an event and key property getters
      * @param event to get keys for

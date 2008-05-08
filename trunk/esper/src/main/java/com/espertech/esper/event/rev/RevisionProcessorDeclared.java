@@ -2,10 +2,7 @@ package com.espertech.esper.event.rev;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import com.espertech.esper.event.EventType;
-import com.espertech.esper.event.EventPropertyGetter;
-import com.espertech.esper.event.EventBean;
-import com.espertech.esper.event.PropertyAccessException;
+import com.espertech.esper.event.*;
 import com.espertech.esper.collection.MultiKeyUntyped;
 import com.espertech.esper.collection.ArrayDequeJDK6Backport;
 import com.espertech.esper.view.StatementStopService;
@@ -36,9 +33,9 @@ public class RevisionProcessorDeclared extends RevisionProcessorBase implements 
      * @param spec specification
      * @param statementStopService for stop handling
      */
-    public RevisionProcessorDeclared(String revisionEventTypeAlias, RevisionSpec spec, StatementStopService statementStopService)
+    public RevisionProcessorDeclared(String revisionEventTypeAlias, RevisionSpec spec, StatementStopService statementStopService, EventAdapterService eventAdapterService)
     {
-        super(spec, revisionEventTypeAlias);
+        super(spec, revisionEventTypeAlias, eventAdapterService);
         
         // on statement stop, remove versions
         statementStopService.addSubscriber(new StatementStopCallback() {
@@ -135,7 +132,7 @@ public class RevisionProcessorDeclared extends RevisionProcessorBase implements 
         }
 
         typeDescriptors = PropertyUtility.getPerType(groups, spec.getChangesetPropertyNames(), spec.getKeyPropertyNames());
-        revisionEventType = new RevisionEventType(propertyDesc);
+        revisionEventType = new RevisionEventType(propertyDesc, eventAdapterService);
     }
 
     public EventBean getRevision(EventBean event)

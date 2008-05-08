@@ -1,11 +1,15 @@
 package com.espertech.esper.event.rev;
 
 import com.espertech.esper.client.ConfigurationRevisionEventType;
+import com.espertech.esper.client.ConfigurationVariantEventType;
+import com.espertech.esper.client.ConfigurationException;
 import com.espertech.esper.event.EventAdapterService;
 import com.espertech.esper.event.EventType;
 import com.espertech.esper.view.StatementStopService;
 
 import java.util.Map;
+import java.util.Set;
+import java.util.HashSet;
 
 /**
  * Service associating named windows and revision event types.
@@ -25,7 +29,7 @@ public interface RevisionService
      * @param config the revision event type configuration
      * @param eventAdapterService for obtaining event type information for each alias
      */
-    public void add(String alias, ConfigurationRevisionEventType config, EventAdapterService eventAdapterService);
+    public void addRevisionEventType(String alias, ConfigurationRevisionEventType config, EventAdapterService eventAdapterService);
 
     /**
      * Upon named window creation, and during resolution of type specified as part of a named window create statement,
@@ -66,4 +70,7 @@ public interface RevisionService
      * @return processor
      */
     public RevisionProcessor getRevisionProcessor(String alias);
+
+    public void addVariantEventType(String variantEventTypeAlias, ConfigurationVariantEventType variantEventTypeConfig, EventAdapterService eventAdapterService)
+            throws ConfigurationException;
 }

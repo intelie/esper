@@ -2,6 +2,7 @@ package com.espertech.esper.event.rev;
 
 import com.espertech.esper.client.ConfigurationException;
 import com.espertech.esper.client.ConfigurationRevisionEventType;
+import com.espertech.esper.client.ConfigurationVariantEventType;
 import com.espertech.esper.event.EventAdapterException;
 import com.espertech.esper.event.EventAdapterService;
 import com.espertech.esper.event.EventType;
@@ -16,16 +17,20 @@ import java.util.*;
  */
 public class RevisionServiceImpl implements RevisionService
 {
+    private final EventAdapterService eventAdapterService;
     private final Map<String, RevisionSpec> specificationsByRevisionAlias;
     private final Map<String, RevisionProcessor> processorsByNamedWindow;
+    private final Map<String, RevisionProcessor> variantProcessors;
 
     /**
      * Ctor.
      */
-    public RevisionServiceImpl()
+    public RevisionServiceImpl(EventAdapterService eventAdapterService)
     {
+        this.eventAdapterService = eventAdapterService;
         this.specificationsByRevisionAlias = new HashMap<String, RevisionSpec>();
         this.processorsByNamedWindow = new HashMap<String, RevisionProcessor>();
+        variantProcessors = new HashMap<String, RevisionProcessor>();
     }
 
     public void init(Map<String, ConfigurationRevisionEventType> config, EventAdapterService eventAdapterService)
@@ -37,7 +42,26 @@ public class RevisionServiceImpl implements RevisionService
         }
     }
 
-    public void add(String alias, ConfigurationRevisionEventType config, EventAdapterService eventAdapterService)
+    public void addVariantEventType(String variantEventTypeAlias, ConfigurationVariantEventType variantEventTypeConfig, EventAdapterService eventAdapterService) throws ConfigurationException
+    {
+        Set<EventType> types = new LinkedHashSet<EventType>();
+        for (String alias : variantEventTypeConfig.getEventTypeAliases())
+        {
+            EventType type = eventAdapterService.getExistsTypeByAlias(alias);
+            if (type == null)
+            {
+                throw new ConfigurationException("Event type by name '" + alias + "' could not be found for use in variant event type configuration by name '" + variantEventTypeAlias + "'");
+            }
+            types.add(type);
+        }
+
+        EventType[] eventTypes = types.toArray(new EventType[types.size()]);
+        VariantRevisionProcessor processor = new VariantRevisionProcessor(variantEventTypeAlias, eventTypes);
+        eventAdapterService.addTypeByAlias(variantEventTypeAlias, processor.getEventType());
+        variantProcessors.put(variantEventTypeAlias, processor);
+    }
+
+    public void addRevisionEventType(String alias, ConfigurationRevisionEventType config, EventAdapterService eventAdapterService)
             throws ConfigurationException
     {
         initializeSpecifications(alias, config, eventAdapterService);
@@ -49,11 +73,11 @@ public class RevisionServiceImpl implements RevisionService
         RevisionProcessor processor;
         if (spec.getPropertyRevision() == ConfigurationRevisionEventType.PropertyRevision.OVERLAY_DECLARED)
         {
-            processor = new RevisionProcessorDeclared(alias, spec, statementStopService);
+            processor = new RevisionProcessorDeclared(alias, spec, statementStopService, eventAdapterService);
         }
         else
         {
-            processor = new RevisionProcessorMerge(alias, spec, statementStopService);
+            processor = new RevisionProcessorMerge(alias, spec, statementStopService, eventAdapterService);
         }
 
         processorsByNamedWindow.put(namedWindowName, processor);
@@ -62,7 +86,12 @@ public class RevisionServiceImpl implements RevisionService
 
     public RevisionProcessor getRevisionProcessor(String alias)
     {
-        return processorsByNamedWindow.get(alias);
+        RevisionProcessor proc = processorsByNamedWindow.get(alias);
+        if (proc != null)
+        {
+            return proc;
+        }
+        return variantProcessors.get(alias);
     }
 
     public EventType getIsNamedWindowRevisionType(String namedWindowName, EventType eventType)
@@ -70,6 +99,11 @@ public class RevisionServiceImpl implements RevisionService
         RevisionProcessor revisionProcessor = processorsByNamedWindow.get(namedWindowName);
         if (revisionProcessor == null)
         {
+            // TODO refine
+            if (variantProcessors.containsKey(namedWindowName))
+            {
+                return variantProcessors.get(namedWindowName).getEventType();
+            }
             return null;
         }
         boolean isRevisionableType = revisionProcessor.validateRevisionableEventType(eventType);
@@ -186,6 +220,8 @@ public class RevisionServiceImpl implements RevisionService
 
             String changesetProperties[] = changesetPropertyNames.toArray(new String[changesetPropertyNames.size()]);
             String baseEventOnlyPropertyNames[] = baseEventOnlyProperties.toArray(new String[baseEventOnlyProperties.size()]);
+            PropertyUtility.removePropNamePostfixes(changesetProperties);
+            PropertyUtility.removePropNamePostfixes(baseEventOnlyPropertyNames);
 
             // verify that all changeset properties match event type
             for (String changesetProperty : changesetProperties)
@@ -215,6 +251,8 @@ public class RevisionServiceImpl implements RevisionService
 
             String[] allPropertiesArr = allProperties.toArray(new String[allProperties.size()]);
             String[] changesetProperties = PropertyUtility.uniqueExclusiveSort(allPropertiesArr, keyPropertyNames);
+            PropertyUtility.removePropNamePostfixes(allPropertiesArr);
+            PropertyUtility.removePropNamePostfixes(changesetProperties);
 
             // All properties must have the same type, if a property exists for any given type
             boolean hasContributedByDelta = false;
@@ -222,6 +260,15 @@ public class RevisionServiceImpl implements RevisionService
             count = 0;
             for (String property : changesetProperties)
             {
+                if (property.endsWith("[]"))
+                {
+                    property = property.replace("[]", "");
+                }
+                if (property.endsWith("()"))
+                {
+                    property = property.replace("()", "");
+                }
+
                 Class basePropertyType = baseEventType.getPropertyType(property);
                 Class typeTemp = null;
                 if (basePropertyType != null)

@@ -4,6 +4,7 @@ import com.espertech.esper.client.*;
 import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.support.util.ArrayAssertionUtil;
 import com.espertech.esper.support.util.SupportUpdateListener;
+import com.espertech.esper.support.bean.SupportBeanComplexProps;
 import junit.framework.TestCase;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -246,40 +247,33 @@ public class TestRevisionMerge extends TestCase
         listenerOne.reset();
     }
 
-    public void testNestedProperties()
+    public void testNestedPropertiesNoDelta()
     {
-        Map<String, Object> nestedType = makeMap(new Object[][] {{"n1", String.class}});
-        Map<String, Object> fullType = makeMap(new Object[][] {{"p1", String.class}, {"p2", nestedType}, {"p3", int.class}, {"p4", boolean.class}});
-        epService.getEPAdministrator().getConfiguration().addEventTypeAliasNestable("FullType", fullType);
-
-        Map<String, Object> deltaType = makeMap(new Object[][] {{"p1", String.class}, {"p2", nestedType}, {"p3", int.class}, {"p4", boolean.class}});
-        epService.getEPAdministrator().getConfiguration().addEventTypeAliasNestable("DeltaType", deltaType);
+        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("Nested", SupportBeanComplexProps.class);
 
         ConfigurationRevisionEventType revEvent = new ConfigurationRevisionEventType();
-        revEvent.addAliasBaseEventType("FullType");
-        revEvent.addAliasDeltaEventType("DeltaType");
+        revEvent.addAliasBaseEventType("Nested");
         revEvent.setPropertyRevision(ConfigurationRevisionEventType.PropertyRevision.MERGE_DECLARED);
-        revEvent.setKeyPropertyNames(new String[] {"p4", "p3"});
-        epService.getEPAdministrator().getConfiguration().addRevisionEventType("MyExistsRevision", revEvent);
+        revEvent.setKeyPropertyNames(new String[] {"simpleProperty"});
+        epService.getEPAdministrator().getConfiguration().addRevisionEventType("NestedRevision", revEvent);
 
-        epService.getEPAdministrator().createEPL("create window MyWin.win:time(10 sec) as select * from MyExistsRevision");
-        epService.getEPAdministrator().createEPL("insert into MyWin select * from FullType");
-        epService.getEPAdministrator().createEPL("insert into MyWin select * from DeltaType");
+        epService.getEPAdministrator().createEPL("create window MyWin.win:time(10 sec) as select * from NestedRevision");
+        epService.getEPAdministrator().createEPL("insert into MyWin select * from Nested");
 
-        String[] fields = "p1,nested,p3,p4".split(",");
-        EPStatement consumerOne = epService.getEPAdministrator().createEPL("select irstream p1, p2.n1 as nested, p3, p4 from MyWin");
+        String[] fields = "key,f1".split(",");
+        String stmtText = "select irstream simpleProperty as key, nested.nestedValue as f1 from MyWin";
+        EPStatement consumerOne = epService.getEPAdministrator().createEPL(stmtText);
         consumerOne.addListener(listenerOne);
         ArrayAssertionUtil.assertEqualsAnyOrder(consumerOne.getEventType().getPropertyNames(), fields);
 
-        Map<String, Object> nestedValue = makeMap(new Object[][] {{"n1", "nestedValue"}});
-        Map<String, Object> fullValue = makeMap(new Object[][] {{"p1", "10"}, {"p2", nestedValue}, {"p3", 10}, {"p4", 99L}});
+        epService.getEPRuntime().sendEvent(SupportBeanComplexProps.makeDefaultBean());
+        ArrayAssertionUtil.assertProps(listenerOne.assertOneGetNewAndReset(), fields, new Object[] {"simple", "nestedValue"});
 
-        epService.getEPRuntime().sendEvent(fullValue);
-        ArrayAssertionUtil.assertProps(listenerOne.assertOneGetNewAndReset(), fields, new Object[] {"10", "nestedValue", 10, 99L});
-
-        epService.getEPRuntime().sendEvent(makeMap("p1,p2","10,21"), "DeltaType");
-        ArrayAssertionUtil.assertProps(listenerOne.getLastOldData()[0], fields, new Object[] {"10", "20", "30", "f0", null});
-        ArrayAssertionUtil.assertProps(listenerOne.getLastNewData()[0], fields, new Object[] {"10", "21", null, "f0", null});
+        SupportBeanComplexProps bean = SupportBeanComplexProps.makeDefaultBean();
+        bean.setNestedNestedValue("val2");
+        epService.getEPRuntime().sendEvent(bean);
+        ArrayAssertionUtil.assertProps(listenerOne.getLastOldData()[0], fields, new Object[] {"simple", "nestedValue"});
+        ArrayAssertionUtil.assertProps(listenerOne.getLastNewData()[0], fields, new Object[] {"simple", "val2"});
         listenerOne.reset();
     }
 

@@ -558,6 +558,11 @@ public class Configuration implements ConfigurationOperations, ConfigurationInfo
         return engineDefaults;
     }
 
+    public void addVariantEventType(String variantEventTypeAlias, ConfigurationVariantEventType variantEventTypeConfig)
+    {
+        // TODO
+    }
+
     /**
 	 * Use the configuration specified in an application
 	 * resource named <tt>esper.cfg.xml</tt>.

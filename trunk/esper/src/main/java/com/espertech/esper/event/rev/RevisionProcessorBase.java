@@ -6,10 +6,7 @@ import com.espertech.esper.core.EPStatementHandle;
 import com.espertech.esper.epl.join.table.EventTable;
 import com.espertech.esper.epl.named.NamedWindowIndexRepository;
 import com.espertech.esper.epl.named.NamedWindowRootView;
-import com.espertech.esper.event.EventBean;
-import com.espertech.esper.event.EventPropertyGetter;
-import com.espertech.esper.event.EventType;
-import com.espertech.esper.event.PropertyAccessException;
+import com.espertech.esper.event.*;
 import com.espertech.esper.view.StatementStopCallback;
 import com.espertech.esper.view.StatementStopService;
 import com.espertech.esper.view.Viewable;
@@ -40,6 +37,11 @@ public abstract class RevisionProcessorBase implements RevisionProcessor
     protected RevisionEventType revisionEventType;
 
     /**
+     * For interogating nested properties.
+     */
+    protected EventAdapterService eventAdapterService;
+
+    /**
      * Map of participating type to descriptor.
      */
     protected Map<EventType, RevisionTypeDesc> typeDescriptors;
@@ -49,10 +51,11 @@ public abstract class RevisionProcessorBase implements RevisionProcessor
      * @param revisionSpec specification
      * @param revisionEventTypeAlias alias of event type
      */
-    protected RevisionProcessorBase(RevisionSpec revisionSpec, String revisionEventTypeAlias)
+    protected RevisionProcessorBase(RevisionSpec revisionSpec, String revisionEventTypeAlias, EventAdapterService eventAdapterService)
     {
         this.revisionSpec = revisionSpec;
         this.revisionEventTypeAlias = revisionEventTypeAlias;
+        this.eventAdapterService = eventAdapterService;
         this.typeDescriptors = new HashMap<EventType, RevisionTypeDesc>();
     }
 
