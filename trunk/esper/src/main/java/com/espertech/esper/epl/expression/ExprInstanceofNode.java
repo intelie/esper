@@ -90,7 +90,7 @@ public class ExprInstanceofNode extends ExprNode
 
         // get the types superclasses and interfaces, and their superclasses and interfaces
         Set<Class> classesToCheck = new HashSet<Class>();
-        getSuper(type, classesToCheck);
+        JavaClassHelper.getSuper(type, classesToCheck);
         classesToCheck.add(type);
 
         // check type against each class
@@ -138,40 +138,6 @@ public class ExprInstanceofNode extends ExprNode
             return true;
         }
         return false;
-    }
-
-    private static void getSuperInterfaces(Class clazz, Set<Class> result)
-    {
-        Class interfaces[] = clazz.getInterfaces();
-
-        for (int i = 0; i < interfaces.length; i++)
-        {
-            result.add(interfaces[i]);
-            getSuperInterfaces(interfaces[i], result);
-        }
-    }
-
-    private static void getSuperClasses(Class clazz, Set<Class> result)
-    {
-        Class superClass = clazz.getSuperclass();
-        if (superClass == null)
-        {
-            return;
-        }
-
-        result.add(superClass);
-        getSuper(superClass, result);
-    }
-
-    /**
-     * Populates all interface and superclasses for the given class, recursivly.
-     * @param clazz to reflect upon
-     * @param result set of classes to populate
-     */
-    protected static void getSuper(Class clazz, Set<Class> result)
-    {
-        getSuperInterfaces(clazz, result);
-        getSuperClasses(clazz, result);
     }
 
     /**

@@ -1,23 +1,19 @@
 package com.espertech.esper.event.rev;
 
-import com.espertech.esper.event.EventType;
-import com.espertech.esper.event.EventPropertyGetter;
 import com.espertech.esper.event.EventBean;
+import com.espertech.esper.event.EventPropertyGetter;
+import com.espertech.esper.event.EventType;
 import com.espertech.esper.event.PropertyAccessException;
-
-import java.util.Map;
-import java.util.HashMap;
-import java.util.Iterator;
 
 public class VariantEventBean implements EventBean
 {
     private final VariantEventType variantEventType;
-    private final EventBean underlying;
+    private final EventBean underlyingEventBean;
 
     public VariantEventBean(VariantEventType variantEventType, EventBean underlying)
     {
         this.variantEventType = variantEventType;
-        this.underlying = underlying;
+        this.underlyingEventBean = underlying;
     }
 
     public EventType getEventType()
@@ -37,7 +33,12 @@ public class VariantEventBean implements EventBean
 
     public Object getUnderlying()
     {
-        return underlying.getUnderlying();
+        return underlyingEventBean.getUnderlying();
+    }
+
+    public EventBean getUnderlyingEventBean()
+    {
+        return underlyingEventBean;
     }
 
     public VariantEventType getVariantEventType()

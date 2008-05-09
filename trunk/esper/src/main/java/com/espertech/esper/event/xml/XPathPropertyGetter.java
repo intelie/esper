@@ -11,6 +11,7 @@ import com.espertech.esper.event.PropertyAccessException;
 import com.espertech.esper.event.TypedEventPropertyGetter;
 import com.espertech.esper.util.SimpleTypeParser;
 import com.espertech.esper.util.JavaClassHelper;
+import com.espertech.esper.util.SimpleTypeParserFactory;
 
 import org.w3c.dom.Node;
 import org.apache.commons.logging.Log;
@@ -42,7 +43,7 @@ public class XPathPropertyGetter implements TypedEventPropertyGetter {
 		this.resultType = resultType;
         if (optionalCastToType != null)
         {
-            simpleTypeParser = JavaClassHelper.getParser(optionalCastToType);
+            simpleTypeParser = SimpleTypeParserFactory.getParser(optionalCastToType);
         }
         else
         {

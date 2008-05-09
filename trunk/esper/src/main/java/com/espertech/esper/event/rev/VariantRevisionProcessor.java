@@ -20,7 +20,7 @@ public class VariantRevisionProcessor implements RevisionProcessor
     {
         this.variantEventTypeAlias = variantEventTypeAlias;
         this.variants = eventTypes;
-        variantEventType = new VariantEventType(eventTypes, new VariantPropertyResolutionStrategyImpl());
+        variantEventType = new VariantEventType(eventTypes, new VariantPropertyResolutionStrategyImpl(eventTypes));
     }
 
     public EventType getEventType()

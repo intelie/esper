@@ -7,12 +7,8 @@ import java.util.ArrayList;
 public class ConfigurationVariantStream implements Serializable
 {
     private List<String> variantTypeAliases;
-    private boolean isAcceptsAnyType;
-
-
-    // test property policies:
-    //   at least one type must know property
-    //   all properties exists, all properties are object types, there is no type checking
+    private TypeVariance typeVariance;
+    private PropertyVariance propertyVariance;
 
     /**
      * Ctor.
@@ -20,6 +16,28 @@ public class ConfigurationVariantStream implements Serializable
     public ConfigurationVariantStream()
     {
         variantTypeAliases = new ArrayList<String>();
+        typeVariance = TypeVariance.CONFIGURED_TYPES;
+        propertyVariance = PropertyVariance.REQUIRE_TYPE_MATCH; 
+    }
+
+    public TypeVariance getTypeVariance()
+    {
+        return typeVariance;
+    }
+
+    public void setTypeVariance(TypeVariance typeVariance)
+    {
+        this.typeVariance = typeVariance;
+    }
+
+    public PropertyVariance getPropertyVariance()
+    {
+        return propertyVariance;
+    }
+
+    public void setPropertyVariance(PropertyVariance propertyVariance)
+    {
+        this.propertyVariance = propertyVariance;
     }
 
     public List<String> getVariantTypeAliases()
@@ -34,7 +52,10 @@ public class ConfigurationVariantStream implements Serializable
 
     public enum TypeVariance
     {
+        // allow only the types configured
         CONFIGURED_TYPES,
+
+        // allow any types inserted into stream
         ANY_TYPES
     }
 

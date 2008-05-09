@@ -539,7 +539,7 @@ public class TestJavaClassHelper extends TestCase
 
         for (int i = 0; i < tests.length; i++)
         {
-            SimpleTypeParser parser = JavaClassHelper.getParser((Class)tests[i][0]);
+            SimpleTypeParser parser = SimpleTypeParserFactory.getParser((Class)tests[i][0]);
             assertEquals("error in row:" + i, tests[i][2], parser.parse((String)tests[i][1]));
         }
     }

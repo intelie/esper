@@ -6,31 +6,48 @@ import com.espertech.esper.event.EventType;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 
 public class VariantEventType implements EventType
 {
     private final EventType[] variants;
     private final VariantPropertyResolutionStrategy propertyResStrategy;
-    private final Map<String, VariantPropertyDesc> propertyCache;
+    private final Map<String, VariantPropertyDesc> propertyDesc;
+    private final String[] propertyNames;
 
     public VariantEventType(EventType[] variants, VariantPropertyResolutionStrategy propertyResStrategy)
     {
         this.variants = variants;
         this.propertyResStrategy = propertyResStrategy;
-        propertyCache = new HashMap<String, VariantPropertyDesc>();
+        propertyDesc = new HashMap<String, VariantPropertyDesc>();
+
+        // for each of the properties in each type, attempt to load the property to build a property list
+        for (EventType type : variants)
+        {
+            String[] properties = type.getPropertyNames();
+            for (String property : properties)
+            {
+                if (!propertyDesc.containsKey(property))
+                {
+                    findProperty(property);
+                }
+            }
+        }
+        Set<String> keySet = propertyDesc.keySet();
+        propertyNames = keySet.toArray(new String[keySet.size()]);
     }
 
     public Class getPropertyType(String property)
     {
-        VariantPropertyDesc entry = propertyCache.get(property);
+        VariantPropertyDesc entry = propertyDesc.get(property);
         if (entry != null)
         {
-            return entry.getClass();
+            return entry.getPropertyType();
         }
         entry = findProperty(property);
         if (entry != null)
         {
-            return entry.getClass();
+            return entry.getPropertyType();
         }
         return null;
     }
@@ -42,7 +59,7 @@ public class VariantEventType implements EventType
 
     public EventPropertyGetter getGetter(String property)
     {
-        VariantPropertyDesc entry = propertyCache.get(property);
+        VariantPropertyDesc entry = propertyDesc.get(property);
         if (entry != null)
         {
             return entry.getGetter();
@@ -57,12 +74,12 @@ public class VariantEventType implements EventType
 
     public String[] getPropertyNames()
     {
-        return new String[0];  //To change body of implemented methods use File | Settings | File Templates.
+        return propertyNames;
     }
 
     public boolean isProperty(String property)
     {
-        VariantPropertyDesc entry = propertyCache.get(property);
+        VariantPropertyDesc entry = propertyDesc.get(property);
         if (entry != null)
         {
             return entry.isProperty();
@@ -87,6 +104,11 @@ public class VariantEventType implements EventType
 
     private VariantPropertyDesc findProperty(String propertyName)
     {
-        return propertyResStrategy.resolveProperty(propertyName, variants);
+        VariantPropertyDesc desc = propertyResStrategy.resolveProperty(propertyName, variants);
+        if (desc != null)
+        {
+            propertyDesc.put(propertyName, desc);
+        }
+        return desc;
     }
 }

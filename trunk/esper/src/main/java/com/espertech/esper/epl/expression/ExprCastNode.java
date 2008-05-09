@@ -1,17 +1,15 @@
 package com.espertech.esper.epl.expression;
 
-import com.espertech.esper.epl.core.StreamTypeService;
 import com.espertech.esper.epl.core.MethodResolutionService;
+import com.espertech.esper.epl.core.StreamTypeService;
 import com.espertech.esper.epl.core.ViewResourceDelegate;
 import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.event.EventBean;
-import com.espertech.esper.util.JavaClassHelper;
-import com.espertech.esper.collection.Pair;
 import com.espertech.esper.schedule.TimeProvider;
-
-import java.util.Set;
-import java.util.HashSet;
-import java.util.concurrent.CopyOnWriteArraySet;
+import com.espertech.esper.util.SimpleTypeCaster;
+import com.espertech.esper.util.SimpleTypeCasterFactory;
+import com.espertech.esper.util.JavaClassHelper;
+import com.espertech.esper.util.SimpleTypeCasterAnyType;
 
 /**
  * Represents the CAST(expression, type) function is an expression tree.
@@ -20,7 +18,7 @@ public class ExprCastNode extends ExprNode
 {
     private final String classIdentifier;
     private Class targetType;
-    private Caster caster;
+    private SimpleTypeCaster caster;
     private boolean isNumeric;
 
     /**
@@ -53,40 +51,8 @@ public class ExprCastNode extends ExprNode
         if (targetType != null)
         {
             targetType = JavaClassHelper.getBoxedType(targetType);
-            if (targetType == Integer.class)
-            {
-                caster = new IntCaster();
-                isNumeric = true;
-            }
-            else if (targetType == Long.class)
-            {
-                caster = new LongCaster();
-                isNumeric = true;
-            }
-            else if (targetType == Double.class)
-            {
-                caster = new DoubleCaster();
-                isNumeric = true;
-            }
-            else if (targetType == Float.class)
-            {
-                caster = new FloatCaster();
-                isNumeric = true;
-            }
-            else if (targetType == Short.class)
-            {
-                caster = new ShortCaster();
-                isNumeric = true;
-            }
-            else if (targetType == Byte.class)
-            {
-                caster = new ByteCaster();
-                isNumeric = true;
-            }
-            else
-            {
-                caster = new TypeCaster(targetType);
-            }
+            caster = SimpleTypeCasterFactory.getCaster(targetType);
+            isNumeric = caster.isNumericCast();
         }
         else
         {
@@ -98,7 +64,7 @@ public class ExprCastNode extends ExprNode
             {
                 throw new ExprValidationException("Class as listed in cast function by name '" + classIdentifier + "' cannot be loaded", e);
             }
-            caster = new TypeCaster(targetType);
+            caster = new SimpleTypeCasterAnyType(targetType);
         }
     }
 
@@ -163,155 +129,5 @@ public class ExprCastNode extends ExprNode
         }
 
         return false;
-    }
-
-    /**
-     * Interface for casting.
-     */
-    public interface Caster
-    {
-        /**
-         * Casts an object to another type.
-         * <p>
-         * Performs a compatibility check and returns null if not compatible.
-         * @param object to cast
-         * @return casted or transformed object, possibly the same, or null if the cast cannot be made
-         */
-        public Object cast(Object object);
-    }
-
-    /**
-     * Cast implementation for numeric values.
-     */
-    public class DoubleCaster implements Caster
-    {
-        public Object cast(Object object)
-        {
-            return ((Number) object).doubleValue();
-        }
-    }
-
-    /**
-     * Cast implementation for numeric values.
-     */
-    public class FloatCaster implements Caster
-    {
-        public Object cast(Object object)
-        {
-            return ((Number) object).floatValue();
-        }
-    }
-
-    /**
-     * Cast implementation for numeric values.
-     */
-    public class LongCaster implements Caster
-    {
-        public Object cast(Object object)
-        {
-            return ((Number) object).longValue();
-        }
-    }
-
-    /**
-     * Cast implementation for numeric values.
-     */
-    public class IntCaster implements Caster
-    {
-        public Object cast(Object object)
-        {
-            return ((Number) object).intValue();
-        }
-    }
-
-    /**
-     * Cast implementation for numeric values.
-     */
-    public class ShortCaster implements Caster
-    {
-        public Object cast(Object object)
-        {
-            return ((Number) object).shortValue();
-        }
-    }
-
-    /**
-     * Cast implementation for numeric values.
-     */
-    public class ByteCaster implements Caster
-    {
-        public Object cast(Object object)
-        {
-            return ((Number) object).byteValue();
-        }
-    }
-
-    /**
-     * Cast implementation for non-numeric values.
-     */
-    public class TypeCaster implements Caster
-    {
-        private Class typeToCastTo;
-        private CopyOnWriteArraySet<Pair<Class, Boolean>> pairs = new CopyOnWriteArraySet<Pair<Class, Boolean>>();
-
-        /**
-         * Ctor.
-         * @param typeToCastTo is the target type
-         */
-        public TypeCaster(Class typeToCastTo)
-        {
-            this.typeToCastTo = typeToCastTo;
-        }
-
-        public Object cast(Object object)
-        {
-            if (object.getClass() == typeToCastTo)
-            {
-                return object;
-            }
-
-            // check cache to see if this is cast-able
-            for (Pair<Class, Boolean> pair : pairs)
-            {
-                if (pair.getFirst() == typeToCastTo)
-                {
-                    if (!pair.getSecond())
-                    {
-                        return null;
-                    }
-                    return object;
-                }
-            }
-
-            // Not found in cache, add to cache;
-            synchronized(this)
-            {
-                // search cache once more
-                for (Pair<Class, Boolean> pair : pairs)
-                {
-                    if (pair.getFirst() == typeToCastTo)
-                    {
-                        if (!pair.getSecond())
-                        {
-                            return null;
-                        }
-                        return object;
-                    }
-                }
-
-                // Determine if any of the super-types and interfaces that the object implements or extends
-                // is the same as any of the target types
-                Set<Class> classesToCheck = new HashSet<Class>();
-                ExprInstanceofNode.getSuper(object.getClass(), classesToCheck);
-
-                if (classesToCheck.contains(typeToCastTo))
-                {
-                    pairs.add(new Pair<Class, Boolean>(object.getClass(), true));
-                    return object;
-                }
-                pairs.add(new Pair<Class, Boolean>(object.getClass(), false));
-                return null;                
-            }
-        }
     }
 }
