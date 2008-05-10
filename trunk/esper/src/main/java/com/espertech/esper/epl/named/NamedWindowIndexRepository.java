@@ -6,7 +6,6 @@ import com.espertech.esper.epl.join.table.PropertyIndexedEventTable;
 import com.espertech.esper.epl.lookup.JoinedPropDesc;
 import com.espertech.esper.event.EventBean;
 import com.espertech.esper.event.EventType;
-import com.espertech.esper.event.rev.RevisionProcessor;
 import com.espertech.esper.collection.Pair;
 import com.espertech.esper.collection.MultiKey;
 

@@ -746,21 +746,6 @@ class ConfigurationParser {
             }
         }
 
-        if (element.getAttributes().getNamedItem("property-variance") != null)
-        {
-            String propertyVar = element.getAttributes().getNamedItem("property-variance").getTextContent();
-            ConfigurationVariantStream.PropertyVariance propertyVarianceEnum;
-            try
-            {
-                propertyVarianceEnum = ConfigurationVariantStream.PropertyVariance.valueOf(propertyVar.trim().toUpperCase());
-                variantStream.setPropertyVariance(propertyVarianceEnum);
-            }
-            catch (RuntimeException ex)
-            {
-                throw new ConfigurationException("Invalid enumeration value for property-variance attribute '" + propertyVar + "'");
-            }
-        }
-
         DOMElementIterator nodeIterator = new DOMElementIterator(element.getChildNodes());
         while (nodeIterator.hasNext())
         {

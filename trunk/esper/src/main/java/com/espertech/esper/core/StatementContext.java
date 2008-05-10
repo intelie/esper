@@ -6,7 +6,7 @@ import com.espertech.esper.epl.named.NamedWindowService;
 import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.epl.view.OutputConditionFactory;
 import com.espertech.esper.event.EventAdapterService;
-import com.espertech.esper.event.rev.RevisionService;
+import com.espertech.esper.event.vaevent.ValueAddEventService;
 import com.espertech.esper.filter.FilterService;
 import com.espertech.esper.pattern.PatternContextFactory;
 import com.espertech.esper.pattern.PatternObjectResolutionService;
@@ -44,7 +44,7 @@ public final class StatementContext
     private final VariableService variableService;
     private final StatementResultService statementResultService;
     private final URI[] plugInTypeResolutionURIs;
-    private final RevisionService revisionService;
+    private final ValueAddEventService valueAddEventService;
 
     /**
      * Constructor.
@@ -70,7 +70,7 @@ public final class StatementContext
      * @param variableService provides access to variable values
      * @param statementResultService handles awareness of listeners/subscriptions for a statement customizing output produced
      * @param plugInTypeResolutionURIs is URIs for resolving the event name against plug-inn event representations, if any
-     * @param revisionService - service that handles update events
+     * @param valueAddEventService - service that handles update events
      */
     public StatementContext(String engineURI,
                             String engineInstanceId,
@@ -94,7 +94,7 @@ public final class StatementContext
                               VariableService variableService,
                               StatementResultService statementResultService,
                               URI[] plugInTypeResolutionURIs,
-                              RevisionService revisionService)
+                              ValueAddEventService valueAddEventService)
     {
         this.engineURI = engineURI;
         this.engineInstanceId = engineInstanceId;
@@ -118,7 +118,7 @@ public final class StatementContext
         this.variableService = variableService;
         this.statementResultService = statementResultService;
         this.plugInTypeResolutionURIs = plugInTypeResolutionURIs;
-        this.revisionService = revisionService;
+        this.valueAddEventService = valueAddEventService;
     }
 
     /**
@@ -323,9 +323,9 @@ public final class StatementContext
      * Returns the update event service.
      * @return revision service
      */
-    public RevisionService getRevisionService()
+    public ValueAddEventService getValueAddEventService()
     {
-        return revisionService;
+        return valueAddEventService;
     }
 
     public String toString()

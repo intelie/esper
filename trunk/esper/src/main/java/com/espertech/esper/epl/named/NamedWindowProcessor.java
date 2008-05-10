@@ -5,7 +5,7 @@ import com.espertech.esper.epl.core.ResultSetProcessor;
 import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.view.StatementStopService;
 import com.espertech.esper.event.EventType;
-import com.espertech.esper.event.rev.RevisionProcessor;
+import com.espertech.esper.event.vaevent.ValueAddEventProcessor;
 import com.espertech.esper.core.EPStatementHandle;
 import com.espertech.esper.core.InternalEventRouter;
 import com.espertech.esper.core.StatementResultService;
@@ -31,7 +31,7 @@ public class NamedWindowProcessor
      * @param statementResultService for coordinating on whether insert and remove stream events should be posted
      * @param revisionProcessor for revision processing
      */
-    public NamedWindowProcessor(NamedWindowService namedWindowService, String windowName, EventType eventType, EPStatementHandle createWindowStmtHandle, StatementResultService statementResultService, RevisionProcessor revisionProcessor)
+    public NamedWindowProcessor(NamedWindowService namedWindowService, String windowName, EventType eventType, EPStatementHandle createWindowStmtHandle, StatementResultService statementResultService, ValueAddEventProcessor revisionProcessor)
     {
         this.eventType = eventType;
 

@@ -14,5 +14,9 @@ public interface SimpleTypeCaster
      */
     public Object cast(Object object);
 
+    /**
+     * Returns true to indicate that the cast target type is numeric.
+     * @return true for numeric cast
+     */
     public boolean isNumericCast();
 }

@@ -1,7 +1,7 @@
 package com.espertech.esper.epl.named;
 
 import com.espertech.esper.event.EventType;
-import com.espertech.esper.event.rev.RevisionProcessor;
+import com.espertech.esper.event.vaevent.ValueAddEventProcessor;
 import com.espertech.esper.core.EPStatementHandle;
 import com.espertech.esper.core.StatementResultService;
 import com.espertech.esper.view.ViewProcessingException;
@@ -48,7 +48,7 @@ public interface NamedWindowService
      * @return processor for the named window
      * @throws ViewProcessingException if the named window already exists
      */
-    public NamedWindowProcessor addProcessor(String name, EventType eventType, EPStatementHandle createWindowStmtHandle, StatementResultService statementResultService, RevisionProcessor revisionProcessor) throws ViewProcessingException;
+    public NamedWindowProcessor addProcessor(String name, EventType eventType, EPStatementHandle createWindowStmtHandle, StatementResultService statementResultService, ValueAddEventProcessor revisionProcessor) throws ViewProcessingException;
 
     /**
      * Returns the processing instance for a given named window.

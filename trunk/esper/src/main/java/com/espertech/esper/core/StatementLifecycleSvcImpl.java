@@ -714,7 +714,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
             compiledStreams = new ArrayList<StreamSpecCompiled>();
             for (StreamSpecRaw rawSpec : spec.getStreamSpecs())
             {
-                StreamSpecCompiled compiled = rawSpec.compile(statementContext.getEventAdapterService(), statementContext.getMethodResolutionService(), statementContext.getPatternResolutionService(), statementContext.getSchedulingService(), statementContext.getNamedWindowService(), statementContext.getRevisionService(), statementContext.getVariableService(), statementContext.getEngineURI(), statementContext.getPlugInTypeResolutionURIs());
+                StreamSpecCompiled compiled = rawSpec.compile(statementContext.getEventAdapterService(), statementContext.getMethodResolutionService(), statementContext.getPatternResolutionService(), statementContext.getSchedulingService(), statementContext.getNamedWindowService(), statementContext.getValueAddEventService(), statementContext.getVariableService(), statementContext.getEngineURI(), statementContext.getPlugInTypeResolutionURIs());
                 compiledStreams.add(compiled);
             }
         }
@@ -846,9 +846,9 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
         // Create Map or Wrapper event type from the select clause of the window.
         // If no columns selected, simply create a wrapper type
         boolean isWildcard = spec.getSelectClauseSpec().isUsingWildcard();
-        if (statementContext.getRevisionService().isRevisionTypeAlias(selectFromTypeAlias))
+        if (statementContext.getValueAddEventService().isRevisionTypeAlias(selectFromTypeAlias))
         {
-            targetType = statementContext.getRevisionService().createRevisionType(typeName, selectFromTypeAlias, statementContext.getStatementStopService(), statementContext.getEventAdapterService());
+            targetType = statementContext.getValueAddEventService().createRevisionType(typeName, selectFromTypeAlias, statementContext.getStatementStopService(), statementContext.getEventAdapterService());
         }
         else if (isWildcard)
         {

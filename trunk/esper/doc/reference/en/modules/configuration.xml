@@ -1387,6 +1387,44 @@ config.addRevisionEventType("UserProfileRevisions", configRev);]]></programlisti
 			</table>
 
 		</sect2>
+
+		<sect2 id="config-variantstream" revision="1">
+			<title>Variant Stream</title>
+			
+			<para>
+			   A <emphasis>variant stream</emphasis> is a predefined stream into which events of multiple disparate event types can be inserted, and which can be selected from in patterns and the <literal>from</literal> clause.
+			</para>
+
+			<para>
+				The name of the variant stream and, optionally, the type of events that the stream may accept, are part of the stream definition. By default, the variant stream accepts only the predefined event types. The engine validates your <literal>insert into</literal> clause which inserts into the variant stream against the predefined types.
+			</para>
+			
+			<para>
+				A variant stream can be set to accept any type of event, in which case all properties of the variant stream are effectively dynamic properties. Set the <literal>type variance</literal> flag to <literal>ANY</literal> to indicate the variant stream accepts any type  of event.
+			</para>
+
+			<para>
+				The following XML configuration defines a variant stream by name <literal>OrderStream</literal> that carries only <literal>PartsOrder</literal> and <literal>ServiceOrder</literal> events:
+			</para>
+			<programlisting><![CDATA[<variant-stream alias="OrderStream">
+  <variant-event-type alias="PartsOrder"/>
+  <variant-event-type alias="ServiceOrder"/>
+</variant-stream>]]></programlisting>
+
+			<para>
+				This code snippet sets up a variant stream by name <literal>OutgoingEvent</literal>:
+			</para>
+			<programlisting><![CDATA[Configuration config = new Configuration();
+ConfigurationVariantStream variant = new ConfigurationVariantStream();
+variant.setTypeVariance(ConfigurationVariantStream.TypeVariance.ANY);
+config.addVariantStream("OutgoingEvent", variant);]]></programlisting>
+
+			<para>
+				If specifying variant event type aliases, make sure such alias names have been configured for JavaBean, Map or XML events.
+			</para>
+
+		</sect2>
+
     </sect1>
     
 	<sect1 id="configuration-type-names" revision="1">

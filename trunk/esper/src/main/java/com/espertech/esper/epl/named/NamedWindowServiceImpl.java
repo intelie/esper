@@ -5,7 +5,7 @@ import com.espertech.esper.core.StatementLockFactory;
 import com.espertech.esper.core.StatementResultService;
 import com.espertech.esper.event.EventBean;
 import com.espertech.esper.event.EventType;
-import com.espertech.esper.event.rev.RevisionProcessor;
+import com.espertech.esper.event.vaevent.ValueAddEventProcessor;
 import com.espertech.esper.util.ManagedLock;
 import com.espertech.esper.view.ViewProcessingException;
 import com.espertech.esper.epl.variable.VariableService;
@@ -90,7 +90,7 @@ public class NamedWindowServiceImpl implements NamedWindowService
         return processor;
     }
 
-    public NamedWindowProcessor addProcessor(String name, EventType eventType, EPStatementHandle createWindowStmtHandle, StatementResultService statementResultService, RevisionProcessor revisionProcessor) throws ViewProcessingException
+    public NamedWindowProcessor addProcessor(String name, EventType eventType, EPStatementHandle createWindowStmtHandle, StatementResultService statementResultService, ValueAddEventProcessor revisionProcessor) throws ViewProcessingException
     {
         if (processors.containsKey(name))
         {

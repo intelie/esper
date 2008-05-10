@@ -1366,7 +1366,7 @@ select A.customerId as custId, A.timestamp - B.timestamp as latency
 select linkUp.ip as ip 
 from pattern [every linkDown=LinkDownEvent -> linkUp=LinkUpEvent(ip=linkDown.ip)]</programlisting>
 
-		<sect4 id="insert-into-property-transpose">
+		<sect2 id="insert-into-property-transpose">
 			<title>Transposing a Property To a Stream</title>			
 			<para>
 				Sometimes your events may carry properties that are themselves event objects. Therefore EPL offers a special syntax to insert the value of a property itself as an event into a stream:
@@ -1389,9 +1389,9 @@ from pattern [every linkDown=LinkDownEvent -> linkUp=LinkUpEvent(ip=linkDown.ip)
 				The statement to populate a stream of <literal>Quote</literal> events is thus:
 			</para>
 			<programlisting><![CDATA[insert into MyBidStream select bid.* from Summary]]></programlisting>			
-		</sect4>
+		</sect2>
 
-		<sect4 id="insert-into-merging-columns">
+		<sect2 id="insert-into-merging-columns">
 			<title>Merging Streams By Event Type</title>			
 			<para>
 				The <literal>insert into</literal> clause allows to merge multiple event streams into a event single stream. 
@@ -1426,7 +1426,59 @@ from pattern [every linkDown=LinkDownEvent -> linkUp=LinkUpEvent(ip=linkDown.ip)
 			<para>
 			    Esper specifically recognizes a conversion function: A conversion function must be the only selected column, and it must return either a Java object or <literal>java.util.Map</literal>.
 			</para>
-		</sect4>
+		</sect2>
+
+		<sect2 id="insert-into-merging-types">
+			<title>Merging Disparate Types of Events: Variant Streams</title>			
+			<indexterm><primary>variant stream</primary></indexterm>
+			<para>
+				A <emphasis>variant stream</emphasis> is a predefined stream into which events of multiple disparate event types can be inserted. 
+			</para>
+
+			<para>
+				A variant stream name may appear anywhere in a pattern or <literal>from</literal> clause. In a pattern, a filter against a variant stream matches any events of any of the event types inserted into the variant stream. 
+				In a <literal>from</literal> clause including for named windows, views declared onto a variant stream may hold events of any of the event types inserted into the variant stream.
+			</para>
+
+			<para>
+				A variant stream is thus useful in problems that require different types of event to be treated the same.
+			</para>
+
+			<para>
+				Variant streams are predefined via runtime or initialization-time configuration as described in <xref linkend="config-variantstream"/>. Your application may predefine variant streams to carry events of a limited set of event types, or you may choose the variant stream to carry any and all types of events. This choice affects what event properties are available for consuming statements or patterns of the variant stream.
+			</para>
+				
+			<para>
+				Assume that an application predefined a variant stream named <literal>OrderStream</literal> to carry only <literal>ServiceOrder</literal> and <literal>ProductOrder</literal> events. An <literal>insert into</literal> clause inserts events into
+				the variant stream:
+			</para>
+			<programlisting>insert into OrderStream select * from ServiceOrder
+insert into OrderStream select * from ProductOrder</programlisting>			
+
+			<para>
+				Here is a sample statement that consumes the variant stream and outputs a total price per customer id for the last 30 seconds of <literal>ServiceOrder</literal> and <literal>ProductOrder</literal> events:
+			</para>
+			<programlisting>select customerId, sum(price) from OrderStream.win:time(30 sec) group by customerId</programlisting>			
+
+			<para>
+				If your application predefines the variant stream to hold specific type of events, as the sample above did, then all event properties that are common to all specified types are visible on the variant stream, including nested, indexed and mapped properties. For access to properties that are only available on one of the types, the dynamic property syntax must be used. In the example above, the <literal>customerId</literal> and <literal>price</literal> were properties common to both <literal>ServiceOrder</literal> and <literal>ProductOrder</literal> events.
+			</para>		
+
+			<para>
+				For example, here is a consuming statement that selects a <literal>service duraction</literal> property that only <literal>ServiceOrder</literal> events have, and that must therefore be casted to double and null values removed in order to aggregate:
+			</para>
+			<programlisting>select customerId, sum(coalesce(cast(serviceDuraction?, double), 0)) 
+from OrderStream.win:time(30 sec) group by customerId</programlisting>			
+
+			<para>
+				If your application predefines a variant stream to hold any type of events (the <literal>any</literal> type variance), then all event properties of the variant stream are effectively dynamic properties. 
+			</para>		
+
+			<para>
+				For example, an application may define an <literal>OutgoingEvents</literal> variant stream to hold any type of event. The next statement is a sample consumer of the <literal>OutgoingEvents</literal> variant stream that looks for the <literal>destination</literal> property and fires for each event in which the property exists with a value of <literal>'email'</literal>:
+			</para>		
+			<programlisting>select * from OutgoingEvents(destination = 'email')</programlisting>			
+		</sect2>
 	</sect1>
 
     <sect1 id="epl-join">
@@ -2677,7 +2729,7 @@ insert into UserProfileWindow select * from UserProfileUpdate]]></programlisting
 			</para>
 
 			<para>				
-			    Delta events may also add properties to the revision event type. For example, one could add a new event type with security information to the revision event type and such security-related properties become availble on the resulting revision event type.
+			    Delta events may also add properties to the revision event type. For example, one could add a new event type with security information to the revision event type and such security-related properties become available on the resulting revision event type.
 			</para>
 
 			<para>
@@ -2686,7 +2738,7 @@ insert into UserProfileWindow select * from UserProfileUpdate]]></programlisting
 			<itemizedlist spacing="compact">
 				<listitem>
 					<para>
-						Nested properties are only supported for the JavaBean event representation. Nested properties are not individually versioned, they are instead versioned by the containing property.
+						Nested properties are only supported for the JavaBean event representation. Nested properties are not individually versioned; they are instead versioned by the containing property.
 					</para>
 				</listitem>
 				<listitem>

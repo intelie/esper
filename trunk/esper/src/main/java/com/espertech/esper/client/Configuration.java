@@ -152,6 +152,9 @@ public class Configuration implements ConfigurationOperations, ConfigurationInfo
      */
     protected Map<String, ConfigurationRevisionEventType> revisionEventTypes;
 
+    /**
+     * Variant streams allow events of disparate types to be treated the same.
+     */
     protected Map<String, ConfigurationVariantStream> variantStreams;
 
     /**

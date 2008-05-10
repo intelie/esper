@@ -25,10 +25,6 @@ public class TestRevisionDeclared extends TestCase
     private SupportUpdateListener listenerThree;
     private final String[] fields = "k0,p0,p1,p2,p3,p4,p5".split(",");
 
-    // TODO: test nested properties       
-    // TODO: document
-    // Javadoc
-
     public void setUp()
     {
         Configuration config = SupportConfigFactory.getConfiguration();

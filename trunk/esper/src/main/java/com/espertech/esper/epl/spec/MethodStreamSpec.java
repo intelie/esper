@@ -2,7 +2,7 @@ package com.espertech.esper.epl.spec;
 
 import com.espertech.esper.util.MetaDefItem;
 import com.espertech.esper.event.EventAdapterService;
-import com.espertech.esper.event.rev.RevisionService;
+import com.espertech.esper.event.vaevent.ValueAddEventService;
 import com.espertech.esper.epl.core.MethodResolutionService;
 import com.espertech.esper.epl.named.NamedWindowService;
 import com.espertech.esper.epl.variable.VariableService;
@@ -78,7 +78,7 @@ public class MethodStreamSpec extends StreamSpecBase implements StreamSpecRaw, S
         return expressions;
     }
 
-    public StreamSpecCompiled compile(EventAdapterService eventAdapterService, MethodResolutionService methodResolutionService, PatternObjectResolutionService patternObjectResolutionService, TimeProvider timeProvider, NamedWindowService namedWindowService, RevisionService revisionService, VariableService variableService, String engineURI, URI[] plugInTypeResolutionURIs) throws ExprValidationException
+    public StreamSpecCompiled compile(EventAdapterService eventAdapterService, MethodResolutionService methodResolutionService, PatternObjectResolutionService patternObjectResolutionService, TimeProvider timeProvider, NamedWindowService namedWindowService, ValueAddEventService valueAddEventService, VariableService variableService, String engineURI, URI[] plugInTypeResolutionURIs) throws ExprValidationException
     {
         if (!ident.equals("method"))
         {

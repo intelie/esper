@@ -296,6 +296,5 @@ public class TestConfigurationParser extends TestCase
         assertTrue(configVStream.getVariantTypeAliases().contains("MyEvenTypetAliasOne"));
         assertTrue(configVStream.getVariantTypeAliases().contains("MyEvenTypetAliasTwo"));
         assertEquals(ConfigurationVariantStream.TypeVariance.ANY, configVStream.getTypeVariance());
-        assertEquals(ConfigurationVariantStream.PropertyVariance.PARTIAL_NAME_MATCH, configVStream.getPropertyVariance());
     }
 }

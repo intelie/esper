@@ -156,6 +156,12 @@ public interface ConfigurationInformation
      * @return map of alias and revision event type config
      */
     public Map<String, ConfigurationRevisionEventType> getRevisionEventTypes();
+
+    /**
+     * Returns a map of variant stream alias and variant configuration information. Variant streams allows handling
+     * events of all sorts of different event types the same way.
+     * @return map of alias and variant stream config
+     */
     public Map<String, ConfigurationVariantStream> getVariantStreams();
 }
 

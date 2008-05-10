@@ -17,6 +17,12 @@ import com.espertech.esper.core.EPRuntimeImpl;
  */
 public interface EventAdapterService
 {
+    /**
+     * Adds an event type to the registery available for use, and originating outside as a non-adapter.
+     * @param alias to add an event type under
+     * @param eventType the type to add
+     * @throws EventAdapterException if the alias is already in used by another type
+     */
     public void addTypeByAlias(String alias, EventType eventType) throws EventAdapterException;
 
     /**

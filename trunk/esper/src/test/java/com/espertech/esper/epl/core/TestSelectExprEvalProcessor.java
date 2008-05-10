@@ -11,6 +11,7 @@ import com.espertech.esper.support.epl.SupportSelectExprFactory;
 import com.espertech.esper.support.epl.SupportStreamTypeSvc1Stream;
 import com.espertech.esper.support.event.SupportEventBeanFactory;
 import com.espertech.esper.support.event.SupportEventAdapterService;
+import com.espertech.esper.support.event.SupportValueAddEventService;
 import com.espertech.esper.support.util.ArrayAssertionUtil;
 import com.espertech.esper.epl.spec.InsertIntoDesc;
 import com.espertech.esper.epl.spec.SelectClauseExprCompiledSpec;
@@ -24,14 +25,15 @@ public class TestSelectExprEvalProcessor extends TestCase
     {
         List<SelectClauseExprCompiledSpec> selectList = SupportSelectExprFactory.makeNoAggregateSelectList();
         EventAdapterService eventAdapterService = SupportEventAdapterService.getService();
+        SupportValueAddEventService vaeService = new SupportValueAddEventService();
 
-        methodOne = new SelectExprEvalProcessor(selectList, null, false, new SupportStreamTypeSvc1Stream(), eventAdapterService, null);
+        methodOne = new SelectExprEvalProcessor(selectList, null, false, new SupportStreamTypeSvc1Stream(), eventAdapterService, vaeService);
 
         InsertIntoDesc insertIntoDesc = new InsertIntoDesc(true, "Hello");
         insertIntoDesc.add("a");
         insertIntoDesc.add("b");
 
-        methodTwo = new SelectExprEvalProcessor(selectList, insertIntoDesc, false, new SupportStreamTypeSvc1Stream(), eventAdapterService, null);
+        methodTwo = new SelectExprEvalProcessor(selectList, insertIntoDesc, false, new SupportStreamTypeSvc1Stream(), eventAdapterService, vaeService);
     }
 
     public void testGetResultEventType()

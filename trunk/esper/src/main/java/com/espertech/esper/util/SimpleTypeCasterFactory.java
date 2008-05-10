@@ -1,7 +1,16 @@
 package com.espertech.esper.util;
 
+/**
+ * Factory for casters, which take an object and safely cast to a given type, performing coercion or dropping
+ * precision if required.
+ */
 public class SimpleTypeCasterFactory
 {
+    /**
+     * Returns a caster that casts to a target type.
+     * @param targetType to cast to
+     * @return caster for casting objects to the required type
+     */
     public static SimpleTypeCaster getCaster(Class targetType)
     {
         targetType = JavaClassHelper.getBoxedType(targetType);

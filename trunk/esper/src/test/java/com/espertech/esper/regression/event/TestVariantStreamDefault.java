@@ -17,7 +17,7 @@ import java.util.Map;
 
 public class TestVariantStreamDefault extends TestCase
 {
-    private static final Log log = LogFactory.getLog(TestVariantStreamPolicy.class);
+    private static final Log log = LogFactory.getLog(TestVariantStreamAny.class);
     private EPServiceProvider epService;
     private SupportUpdateListener listenerOne;
 

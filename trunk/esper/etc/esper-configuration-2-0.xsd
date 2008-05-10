@@ -6,6 +6,7 @@
 				<xs:element ref="esper:event-type-auto-alias" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:element ref="esper:event-type" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:element ref="esper:revision-event-type" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element ref="esper:variant-stream" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:element ref="esper:auto-import" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:element ref="esper:method-reference" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:element ref="esper:database-reference" minOccurs="0" maxOccurs="unbounded"/>
@@ -547,4 +548,26 @@
         </xs:sequence>
       </xs:complexType>
     </xs:element>
+	<xs:element name="variant-stream">
+		<xs:complexType>
+			<xs:choice>
+				<xs:sequence>
+					<xs:element ref="esper:variant-event-type" minOccurs="0" maxOccurs="unbounded"/>
+				</xs:sequence>
+			</xs:choice>
+			<xs:attribute name="alias" type="xs:string" use="required"/>
+			<xs:attribute name="type-variance" type="esper:type-variance" use="optional"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:simpleType name="type-variance">
+		<xs:restriction base="xs:token">
+			<xs:enumeration value="predefined"/>
+			<xs:enumeration value="any"/>
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:element name="variant-event-type">
+		<xs:complexType>
+			<xs:attribute name="alias" type="xs:string" use="required"/>
+		</xs:complexType>
+	</xs:element>
 </xs:schema>

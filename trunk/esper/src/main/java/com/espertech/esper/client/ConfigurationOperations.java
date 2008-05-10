@@ -221,5 +221,10 @@ public interface ConfigurationOperations
      */
     public void addRevisionEventType(String revisionEventTypeAlias, ConfigurationRevisionEventType revisionEventTypeConfig);
 
+    /**
+     * Adds a new variant stream. Variant streams allow events of disparate types to be treated the same.
+     * @param variantStreamName is the name of the variant stream
+     * @param variantStreamConfig the configuration such as variant type aliases and any-type setting
+     */
     public void addVariantStream(String variantStreamName, ConfigurationVariantStream variantStreamConfig);
 }

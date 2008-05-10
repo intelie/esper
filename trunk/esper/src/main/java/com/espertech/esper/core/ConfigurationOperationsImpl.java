@@ -10,7 +10,7 @@ package com.espertech.esper.core;
 import com.espertech.esper.client.*;
 import com.espertech.esper.event.EventAdapterException;
 import com.espertech.esper.event.EventAdapterService;
-import com.espertech.esper.event.rev.RevisionService;
+import com.espertech.esper.event.vaevent.ValueAddEventService;
 import com.espertech.esper.util.JavaClassHelper;
 import com.espertech.esper.epl.core.EngineImportService;
 import com.espertech.esper.epl.core.EngineImportException;
@@ -34,7 +34,7 @@ public class ConfigurationOperationsImpl implements ConfigurationOperations
     private final EngineImportService engineImportService;
     private final VariableService variableService;
     private final EngineSettingsService engineSettingsService;
-    private final RevisionService revisionService; 
+    private final ValueAddEventService valueAddEventService;
 
     /**
      * Ctor.
@@ -42,19 +42,19 @@ public class ConfigurationOperationsImpl implements ConfigurationOperations
      * @param engineImportService for imported aggregation functions and static functions
      * @param variableService - provides access to variable values
      * @param engineSettingsService - some engine settings are writable
-     * @param revisionService - update event handling
+     * @param valueAddEventService - update event handling
      */
     public ConfigurationOperationsImpl(EventAdapterService eventAdapterService,
                                        EngineImportService engineImportService,
                                        VariableService variableService,
                                        EngineSettingsService engineSettingsService,
-                                       RevisionService revisionService)
+                                       ValueAddEventService valueAddEventService)
     {
         this.eventAdapterService = eventAdapterService;
         this.engineImportService = engineImportService;
         this.variableService = variableService;
         this.engineSettingsService = engineSettingsService;
-        this.revisionService = revisionService;
+        this.valueAddEventService = valueAddEventService;
     }
 
     public void addEventTypeAutoAlias(String javaPackageName)
@@ -254,11 +254,11 @@ public class ConfigurationOperationsImpl implements ConfigurationOperations
 
     public void addRevisionEventType(String revisionEventTypeAlias, ConfigurationRevisionEventType revisionEventTypeConfig)
     {
-        revisionService.addRevisionEventType(revisionEventTypeAlias, revisionEventTypeConfig, eventAdapterService);
+        valueAddEventService.addRevisionEventType(revisionEventTypeAlias, revisionEventTypeConfig, eventAdapterService);
     }
 
     public void addVariantStream(String variantEventTypeAlias, ConfigurationVariantStream variantStreamConfig)
     {
-        revisionService.addVariantEventType(variantEventTypeAlias, variantStreamConfig, eventAdapterService);
+        valueAddEventService.addVariantStream(variantEventTypeAlias, variantStreamConfig, eventAdapterService);
     }
 }

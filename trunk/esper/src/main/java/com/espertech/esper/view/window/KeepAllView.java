@@ -3,7 +3,6 @@ package com.espertech.esper.view.window;
 import com.espertech.esper.core.StatementContext;
 import com.espertech.esper.event.EventBean;
 import com.espertech.esper.event.EventType;
-import com.espertech.esper.event.rev.RevisionProcessor;
 import com.espertech.esper.view.CloneableView;
 import com.espertech.esper.view.View;
 import com.espertech.esper.view.ViewSupport;

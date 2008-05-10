@@ -19,7 +19,7 @@ import com.espertech.esper.epl.spec.PluggableObjectCollection;
 import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.epl.view.OutputConditionFactory;
 import com.espertech.esper.event.EventAdapterService;
-import com.espertech.esper.event.rev.RevisionService;
+import com.espertech.esper.event.vaevent.ValueAddEventService;
 import com.espertech.esper.filter.FilterService;
 import com.espertech.esper.schedule.SchedulingService;
 import com.espertech.esper.timer.TimerService;
@@ -56,7 +56,7 @@ public final class EPServicesContext
     private OutputConditionFactory outputConditionFactory;
     private NamedWindowService namedWindowService;
     private VariableService variableService;
-    private RevisionService revisionService;
+    private ValueAddEventService valueAddEventService;
 
     // Supplied after construction to avoid circular dependency
     private StatementLifecycleSvc statementLifecycleSvc;
@@ -83,7 +83,7 @@ public final class EPServicesContext
      * @param streamFactoryService is hooking up filters to streams
      * @param namedWindowService is holding information about the named windows active in the system
      * @param variableService provides access to variable values
-     * @param revisionService handles update events
+     * @param valueAddEventService handles update events
      */
     public EPServicesContext(String engineURI,
                              SchedulingService schedulingService,
@@ -104,7 +104,7 @@ public final class EPServicesContext
                              StreamFactoryService streamFactoryService,
                              NamedWindowService namedWindowService,
                              VariableService variableService,
-                             RevisionService revisionService)
+                             ValueAddEventService valueAddEventService)
     {
         this.engineURI = engineURI;
         this.schedulingService = schedulingService;
@@ -128,7 +128,7 @@ public final class EPServicesContext
         this.outputConditionFactory = outputConditionFactory;
         this.namedWindowService = namedWindowService;
         this.variableService = variableService;
-        this.revisionService = revisionService;
+        this.valueAddEventService = valueAddEventService;
     }
 
     /**
@@ -369,7 +369,7 @@ public final class EPServicesContext
         this.statementContextFactory = null;
         this.plugInPatternObjects = null;
         this.namedWindowService = null;
-        this.revisionService = null;
+        this.valueAddEventService = null;
     }
 
     /**
@@ -439,8 +439,8 @@ public final class EPServicesContext
      * Returns the service for handling updates to events.
      * @return revision service
      */
-    public RevisionService getRevisionService()
+    public ValueAddEventService getValueAddEventService()
     {
-        return revisionService;
+        return valueAddEventService;
     }
 }

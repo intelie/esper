@@ -2,6 +2,9 @@ package com.espertech.esper.util;
 
 import com.espertech.esper.type.*;
 
+/**
+ * A factory for creating an instance of a parser that parses a String and returns a target type. 
+ */
 public class SimpleTypeParserFactory
 {
     /**

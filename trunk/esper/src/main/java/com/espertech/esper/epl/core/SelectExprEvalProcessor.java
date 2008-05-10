@@ -12,8 +12,8 @@ import com.espertech.esper.epl.expression.*;
 import com.espertech.esper.epl.spec.InsertIntoDesc;
 import com.espertech.esper.epl.spec.SelectClauseExprCompiledSpec;
 import com.espertech.esper.event.*;
-import com.espertech.esper.event.rev.RevisionService;
-import com.espertech.esper.event.rev.RevisionProcessor;
+import com.espertech.esper.event.vaevent.ValueAddEventProcessor;
+import com.espertech.esper.event.vaevent.ValueAddEventService;
 import com.espertech.esper.util.ExecutionPathDebugLog;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -31,13 +31,14 @@ public class SelectExprEvalProcessor implements SelectExprProcessor
     private ExprEvaluator[] expressionNodes;
     private String[] columnNames;
     private EventType resultEventType;
+    private EventType vaeInnerEventType;
     private final EventAdapterService eventAdapterService;
     private final boolean isUsingWildcard;
     private boolean singleStreamWrapper;
     private boolean singleColumnCoercion;
     private SelectExprJoinWildcardProcessor joinWildcardProcessor;
     private boolean isRevisionEvent;
-    private RevisionProcessor revisionProcessor;
+    private ValueAddEventProcessor vaeProcessor;
 
     /**
      * Ctor.
@@ -54,7 +55,7 @@ public class SelectExprEvalProcessor implements SelectExprProcessor
                                    boolean isUsingWildcard,
                                    StreamTypeService typeService,
                                    EventAdapterService eventAdapterService,
-                                   RevisionService revisionService) throws ExprValidationException
+                                   ValueAddEventService revisionService) throws ExprValidationException
     {
         this.eventAdapterService = eventAdapterService;
         this.isUsingWildcard = isUsingWildcard;
@@ -110,7 +111,7 @@ public class SelectExprEvalProcessor implements SelectExprProcessor
                       EventType eventType,
                       EventAdapterService eventAdapterService,
                       StreamTypeService typeService,
-                      RevisionService revisionService)
+                      ValueAddEventService valueAddEventService)
         throws ExprValidationException
     {
         // Get expression nodes
@@ -224,16 +225,19 @@ public class SelectExprEvalProcessor implements SelectExprProcessor
         {
             try
             {
-                EventType revisionType = revisionService.getIsNamedWindowRevisionType(insertIntoDesc.getEventTypeAlias(), eventType);
-                if (revisionType != null)
+                vaeProcessor = valueAddEventService.getValueAddProcessor(insertIntoDesc.getEventTypeAlias());
+                if (isUsingWildcard)
                 {
-                    resultEventType = revisionType;
-                    isRevisionEvent = true;
-                    revisionProcessor = revisionService.getRevisionProcessor(insertIntoDesc.getEventTypeAlias());
-                }
-                else if (isUsingWildcard)
-                {
-                    resultEventType = eventAdapterService.addWrapperType(insertIntoDesc.getEventTypeAlias(), eventType, selPropertyTypes);
+                    if (vaeProcessor != null)
+                    {
+                        resultEventType = vaeProcessor.getValueAddEventType();
+                        isRevisionEvent = true;
+                        vaeProcessor.validateEventType(eventType);
+                    }
+                    else
+                    {
+                        resultEventType = eventAdapterService.addWrapperType(insertIntoDesc.getEventTypeAlias(), eventType, selPropertyTypes);                        
+                    }
                 }
                 else
                 {
@@ -259,7 +263,21 @@ public class SelectExprEvalProcessor implements SelectExprProcessor
                     }
                     if (resultEventType == null)
                     {
-                        resultEventType = eventAdapterService.addNestableMapType(insertIntoDesc.getEventTypeAlias(), selPropertyTypes);
+                        if (vaeProcessor != null)
+                        {
+                            resultEventType = eventAdapterService.createAnonymousMapType(selPropertyTypes);
+                        }
+                        else
+                        {
+                            resultEventType = eventAdapterService.addNestableMapType(insertIntoDesc.getEventTypeAlias(), selPropertyTypes);
+                        }
+                    }
+                    if (vaeProcessor != null)
+                    {
+                        vaeProcessor.validateEventType(resultEventType);
+                        vaeInnerEventType = resultEventType;
+                        resultEventType = vaeProcessor.getValueAddEventType();
+                        isRevisionEvent = true;
                     }
                 }
             }
@@ -326,7 +344,7 @@ public class SelectExprEvalProcessor implements SelectExprProcessor
 
             if (isRevisionEvent)
             {
-                return revisionProcessor.getRevision(event);
+                return vaeProcessor.getValueAddEventBean(event);
             }
             else
             {
@@ -350,24 +368,25 @@ public class SelectExprEvalProcessor implements SelectExprProcessor
                     wrappedEvent = eventAdapterService.adapterForBean(result);
                 }
                 props.clear();
-
-                // TODO
-                EventBean event = eventAdapterService.createWrapper(wrappedEvent, props, resultEventType);
-                if (isRevisionEvent)
+                if (!isRevisionEvent)
                 {
-                    return revisionProcessor.getRevision(event);
+                    return eventAdapterService.createWrapper(wrappedEvent, props, resultEventType);
                 }
-                return event;
+                else
+                {
+                    return vaeProcessor.getValueAddEventBean(eventAdapterService.createWrapper(wrappedEvent, props, vaeInnerEventType));
+                }
             }
             else
             {
-                // TODO
-                EventBean event = eventAdapterService.createMapFromValues(props, resultEventType);
-                if (isRevisionEvent)
+                if (!isRevisionEvent)
                 {
-                    return revisionProcessor.getRevision(event);
+                    return eventAdapterService.createMapFromValues(props, resultEventType);
                 }
-                return event;
+                else
+                {
+                    return vaeProcessor.getValueAddEventBean(eventAdapterService.createMapFromValues(props, vaeInnerEventType));
+                }
             }
         }
     }

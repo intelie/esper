@@ -270,7 +270,7 @@ public class TestRevisionMerge extends TestCase
         ArrayAssertionUtil.assertProps(listenerOne.assertOneGetNewAndReset(), fields, new Object[] {"simple", "nestedValue"});
 
         SupportBeanComplexProps bean = SupportBeanComplexProps.makeDefaultBean();
-        bean.setNestedNestedValue("val2");
+        bean.getNested().setNestedValue("val2");
         epService.getEPRuntime().sendEvent(bean);
         ArrayAssertionUtil.assertProps(listenerOne.getLastOldData()[0], fields, new Object[] {"simple", "nestedValue"});
         ArrayAssertionUtil.assertProps(listenerOne.getLastNewData()[0], fields, new Object[] {"simple", "val2"});

@@ -8,7 +8,7 @@ import com.espertech.esper.core.StatementResultService;
 import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.event.EventBean;
 import com.espertech.esper.event.EventType;
-import com.espertech.esper.event.rev.RevisionProcessor;
+import com.espertech.esper.event.vaevent.ValueAddEventProcessor;
 import com.espertech.esper.view.StatementStopService;
 import com.espertech.esper.view.ViewSupport;
 
@@ -27,7 +27,7 @@ public class NamedWindowTailView extends ViewSupport implements Iterable<EventBe
     private transient Map<EPStatementHandle, List<NamedWindowConsumerView>> consumers;
     private final EPStatementHandle createWindowStmtHandle;
     private final StatementResultService statementResultService;
-    private final RevisionProcessor revisionProcessor;
+    private final ValueAddEventProcessor revisionProcessor;
 
     /**
      * Ctor.
@@ -38,7 +38,7 @@ public class NamedWindowTailView extends ViewSupport implements Iterable<EventBe
      * @param statementResultService for coordinating on whether insert and remove stream events should be posted
      * @param revisionProcessor handles update events
      */
-    public NamedWindowTailView(EventType eventType, NamedWindowService namedWindowService, NamedWindowRootView namedWindowRootView, EPStatementHandle createWindowStmtHandle, StatementResultService statementResultService, RevisionProcessor revisionProcessor)
+    public NamedWindowTailView(EventType eventType, NamedWindowService namedWindowService, NamedWindowRootView namedWindowRootView, EPStatementHandle createWindowStmtHandle, StatementResultService statementResultService, ValueAddEventProcessor revisionProcessor)
     {
         this.eventType = eventType;
         this.namedWindowService = namedWindowService;

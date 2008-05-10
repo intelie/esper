@@ -87,11 +87,6 @@ public class SupportBeanComplexProps implements Serializable, SupportMarkerInter
         indexedProps[index] = value;
     }
 
-    public void setNestedNestedValue(String value)
-    {
-        nested.nestedValue = value;
-    }
-
     public static class SupportBeanSpecialGetterNested implements Serializable
 	{
 		private String nestedValue;
