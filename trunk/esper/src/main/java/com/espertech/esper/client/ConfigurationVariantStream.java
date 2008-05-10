@@ -16,8 +16,8 @@ public class ConfigurationVariantStream implements Serializable
     public ConfigurationVariantStream()
     {
         variantTypeAliases = new ArrayList<String>();
-        typeVariance = TypeVariance.CONFIGURED_TYPES;
-        propertyVariance = PropertyVariance.REQUIRE_TYPE_MATCH; 
+        typeVariance = TypeVariance.CONFIGURED;
+        propertyVariance = PropertyVariance.TYPE_MATCH;
     }
 
     public TypeVariance getTypeVariance()
@@ -53,19 +53,19 @@ public class ConfigurationVariantStream implements Serializable
     public enum TypeVariance
     {
         // allow only the types configured
-        CONFIGURED_TYPES,
+        CONFIGURED,
 
         // allow any types inserted into stream
-        ANY_TYPES
+        ANY
     }
 
     public enum PropertyVariance
     {
         // The stream only provides those properties for which each variant type provides the same property type
-        REQUIRE_TYPE_MATCH,
+        TYPE_MATCH,
 
         // The stream only provides those properties for which each variant type has a property but the type does not need to match
-        REQUIRE_NAME_MATCH,
+        NAME_MATCH,
 
         // The stream provides all properties for which at least one variant type has a property
         PARTIAL_NAME_MATCH,

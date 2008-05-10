@@ -11,13 +11,13 @@ import java.util.Set;
 public class VariantEventType implements EventType
 {
     private final EventType[] variants;
-    private final VariantPropertyResolutionStrategy propertyResStrategy;
+    private final VariantPropResolutionStrategy propertyResStrategy;
     private final Map<String, VariantPropertyDesc> propertyDesc;
     private final String[] propertyNames;
 
-    public VariantEventType(EventType[] variants, VariantPropertyResolutionStrategy propertyResStrategy)
+    public VariantEventType(VariantSpec variantSpec, VariantPropResolutionStrategy propertyResStrategy)
     {
-        this.variants = variants;
+        this.variants = variantSpec.getEventTypes();
         this.propertyResStrategy = propertyResStrategy;
         propertyDesc = new HashMap<String, VariantPropertyDesc>();
 
@@ -25,6 +25,8 @@ public class VariantEventType implements EventType
         for (EventType type : variants)
         {
             String[] properties = type.getPropertyNames();
+            properties = PropertyUtility.copyAndSort(properties);
+            PropertyUtility.removePropNamePostfixes(properties);
             for (String property : properties)
             {
                 if (!propertyDesc.containsKey(property))

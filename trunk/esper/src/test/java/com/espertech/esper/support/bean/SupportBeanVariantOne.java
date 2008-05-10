@@ -1,13 +1,27 @@
 package com.espertech.esper.support.bean;
 
 import java.io.Serializable;
-import java.util.ArrayList;
+import java.util.*;
 
 public class SupportBeanVariantOne implements Serializable
 {
     private ISupportB p0;
     private ISupportAImplSuperG p1;
     private ArrayList p2;
+    private List p3;
+    private Collection p4;
+    private List p5;
+    private int[] indexed;
+    private Map<String, String> mapped;
+    private SupportBeanVariantOneInner inner;
+
+    public SupportBeanVariantOne()
+    {
+        indexed = new int[] {1, 2, 3};
+        mapped = new HashMap<String, String>();
+        mapped.put("a", "val1");
+        inner = new SupportBeanVariantOneInner("i1");
+    }
 
     public ISupportB getP0()
     {
@@ -22,5 +36,60 @@ public class SupportBeanVariantOne implements Serializable
     public ArrayList getP2()
     {
         return p2;
+    }
+
+    public List getP3()
+    {
+        return p3;
+    }
+
+    public Collection getP4()
+    {
+        return p4;
+    }
+
+    public List getP5()
+    {
+        return p5;
+    }
+
+    public int[] getIndexed()
+    {
+        return indexed;
+    }
+
+    public int getIndexArr(int index)
+    {
+        return indexed[index];
+    }
+
+    public Map getMapped()
+    {
+        return mapped;
+    }
+
+    public String getMappedKey(String key)
+    {
+        return mapped.get(key);
+    }
+
+    public SupportBeanVariantOneInner getInner()
+    {
+        return inner;
+    }
+
+    public static class SupportBeanVariantOneInner
+    {
+        private String val;
+
+        public SupportBeanVariantOneInner(String val)
+        {
+            this.val = val;
+        }
+
+        public String getVal()
+        {
+            return val;
+        }
     }
 }

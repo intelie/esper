@@ -288,5 +288,14 @@ public class TestConfigurationParser extends TestCase
         assertTrue(configRev.getAliasDeltaEventTypes().contains("MyDeltaEventAliasTwo"));
         ArrayAssertionUtil.assertEqualsAnyOrder(new String[] {"id", "id2"}, configRev.getKeyPropertyNames());
         assertEquals(ConfigurationRevisionEventType.PropertyRevision.MERGE_NON_NULL, configRev.getPropertyRevision());
+
+        // variance types
+        assertEquals(1, config.getVariantStreams().size());
+        ConfigurationVariantStream configVStream = config.getVariantStreams().get("MyVariantStream");
+        assertEquals(2, configVStream.getVariantTypeAliases().size());
+        assertTrue(configVStream.getVariantTypeAliases().contains("MyEvenTypetAliasOne"));
+        assertTrue(configVStream.getVariantTypeAliases().contains("MyEvenTypetAliasTwo"));
+        assertEquals(ConfigurationVariantStream.TypeVariance.ANY, configVStream.getTypeVariance());
+        assertEquals(ConfigurationVariantStream.PropertyVariance.PARTIAL_NAME_MATCH, configVStream.getPropertyVariance());
     }
 }

@@ -2,18 +2,22 @@ package com.espertech.esper.event;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.List;
+import java.util.ArrayList;
 
 public class VariantPropertyGetterCache
 {
-    private final EventType[] knownTypes;
     private final Map<EventType, VariantPropertyGetterRow> allGetters;
 
+    private volatile EventType[] knownTypes;
     private volatile VariantPropertyGetterRow lastUsedGetters;
+    private List<String> properties;
 
     public VariantPropertyGetterCache(EventType[] knownTypes)
     {
         this.knownTypes = knownTypes;
         allGetters = new HashMap<EventType, VariantPropertyGetterRow>();
+        properties = new ArrayList<String>();
     }
 
     public void addGetters(int assignedPropertyNumber, String propertyName)
@@ -30,6 +34,7 @@ public class VariantPropertyGetterCache
             }
             row.addGetter(assignedPropertyNumber, getter);
         }
+        properties.add(propertyName);
     }
 
     public EventPropertyGetter getGetter(int assignedPropertyNumber, EventType eventType)
@@ -41,9 +46,36 @@ public class VariantPropertyGetterCache
         }
 
         VariantPropertyGetterRow row = allGetters.get(eventType);
+
+        // newly seen type (Using ANY type variance or as a subtype of an existing variance type)
+        if (row == null)
+        {
+            row = addType(eventType);
+        }
+
         EventPropertyGetter getter = row.getGetterPerProp()[assignedPropertyNumber];
         lastUsedGetters = row;
         return getter;
+    }
+
+    // add to event types
+    // add to allGetters, building a getter row for each
+    private synchronized VariantPropertyGetterRow addType(EventType eventType)
+    {
+        EventType[] newKnownTypes = (EventType[]) resizeArray(knownTypes, knownTypes.length + 1);
+        newKnownTypes[newKnownTypes.length - 1] = eventType;
+
+        // create getters
+        EventPropertyGetter[] getters = new EventPropertyGetter[properties.size()];
+        for (int i = 0; i < properties.size(); i++)
+        {
+            getters[i] = eventType.getGetter(properties.get(i));
+        }
+
+        VariantPropertyGetterRow row = new VariantPropertyGetterRow(eventType, getters);
+        allGetters.put(eventType, row);
+        knownTypes = newKnownTypes;
+        return row;
     }
 
     private static Object resizeArray(Object oldArray, int newSize)

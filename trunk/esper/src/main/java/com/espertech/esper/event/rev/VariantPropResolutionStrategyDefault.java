@@ -1,18 +1,21 @@
 package com.espertech.esper.event.rev;
 
 import com.espertech.esper.event.*;
+import com.espertech.esper.util.JavaClassHelper;
 import com.espertech.esper.util.SimpleTypeCaster;
 import com.espertech.esper.util.SimpleTypeCasterFactory;
-import com.espertech.esper.util.JavaClassHelper;
 
-public class VariantPropertyResolutionStrategyImpl implements VariantPropertyResolutionStrategy
+import java.util.LinkedHashSet;
+import java.util.Set;
+
+public class VariantPropResolutionStrategyDefault implements VariantPropResolutionStrategy
 {
     private int currentPropertyNumber;
     private VariantPropertyGetterCache propertyGetterCache;
 
-    public VariantPropertyResolutionStrategyImpl(EventType[] knownTypes)
+    public VariantPropResolutionStrategyDefault(VariantSpec variantSpec)
     {
-        propertyGetterCache = new VariantPropertyGetterCache(knownTypes);
+        propertyGetterCache = new VariantPropertyGetterCache(variantSpec.getEventTypes());
     }
 
     public VariantPropertyDesc resolveProperty(String propertyName, EventType[] variants)
@@ -41,6 +44,7 @@ public class VariantPropertyResolutionStrategyImpl implements VariantPropertyRes
                 continue;
             }
 
+            // coercion
             if (JavaClassHelper.isNumeric(type))
             {
                 if (JavaClassHelper.canCoerce(type, commonType))
@@ -52,6 +56,58 @@ public class VariantPropertyResolutionStrategyImpl implements VariantPropertyRes
                 {
                     mustCoerce = true;
                     commonType = type;
+                }
+            }
+            else if (commonType == Object.class)
+            {
+                continue;
+            }
+            // common interface or base class
+            else if (!JavaClassHelper.isJavaBuiltinDataType(type))
+            {
+                Set<Class> supersForType = new LinkedHashSet<Class>();
+                JavaClassHelper.getSuper(type, supersForType);
+                supersForType.remove(Object.class);
+
+                if (supersForType.contains(commonType))
+                {
+                    continue;   // type implements or extends common type
+                }
+                if (JavaClassHelper.isSubclassOrImplementsInterface(commonType, type))
+                {
+                    commonType = type;  // common type implements type
+                    continue;
+                }
+
+                // find common interface or type both implement
+                Set<Class> supersForCommonType = new LinkedHashSet<Class>();
+                JavaClassHelper.getSuper(commonType, supersForCommonType);
+                supersForCommonType.remove(Object.class);
+
+                // Take common classes first, ignoring interfaces
+                boolean found = false;
+                for (Class superClassType : supersForType)
+                {
+                    if (!superClassType.isInterface() && (supersForCommonType.contains(superClassType)))
+                    {
+                        commonType = superClassType;
+                        found = true;
+                        break;
+                    }
+                }
+                if (found)
+                {
+                    continue;
+                }
+                // Take common interfaces
+                for (Class superClassType : supersForType)
+                {
+                    if (superClassType.isInterface() && (supersForCommonType.contains(superClassType)))
+                    {
+                        commonType = superClassType;
+                        found = true;
+                        break;
+                    }
                 }
             }
 

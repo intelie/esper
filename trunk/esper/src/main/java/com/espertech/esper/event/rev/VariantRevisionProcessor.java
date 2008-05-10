@@ -6,21 +6,30 @@ import com.espertech.esper.epl.named.NamedWindowRootView;
 import com.espertech.esper.epl.named.NamedWindowIndexRepository;
 import com.espertech.esper.core.EPStatementHandle;
 import com.espertech.esper.view.Viewable;
+import com.espertech.esper.client.ConfigurationVariantStream;
 
 import java.util.Collection;
 import java.util.Iterator;
 
 public class VariantRevisionProcessor implements RevisionProcessor
 {
-    private final String variantEventTypeAlias;
-    private final EventType[] variants;
+    private final VariantSpec variantSpec;
     private final VariantEventType variantEventType;
 
-    public VariantRevisionProcessor(String variantEventTypeAlias, EventType[] eventTypes)
+    public VariantRevisionProcessor(VariantSpec variantSpec)
     {
-        this.variantEventTypeAlias = variantEventTypeAlias;
-        this.variants = eventTypes;
-        variantEventType = new VariantEventType(eventTypes, new VariantPropertyResolutionStrategyImpl(eventTypes));
+        this.variantSpec = variantSpec;
+
+        VariantPropResolutionStrategy strategy;
+        if (variantSpec.getTypeVariance() == ConfigurationVariantStream.TypeVariance.ANY)
+        {
+            strategy = new VariantPropResolutionStrategyAny(variantSpec);
+        }
+        else
+        {
+            strategy = new VariantPropResolutionStrategyDefault(variantSpec);
+        }
+        variantEventType = new VariantEventType(variantSpec, strategy);
     }
 
     public EventType getEventType()
@@ -30,30 +39,42 @@ public class VariantRevisionProcessor implements RevisionProcessor
 
     public String getRevisionEventTypeAlias()
     {
-        return variantEventTypeAlias;
+        return variantSpec.getVariantEventTypeAlias();
     }
 
     public boolean validateRevisionableEventType(EventType eventType)
     {
-        for (EventType variant : variants)
+        if (variantSpec.getTypeVariance() == ConfigurationVariantStream.TypeVariance.ANY)
+        {
+            return true;
+        }
+
+        if (eventType == null)
+        {
+            return false;
+        }
+        
+        for (EventType variant : variantSpec.getEventTypes())
         {
             if (variant == eventType)
             {
-                // Check all the supertypes to see if one of the matches the full or delta types
-                Iterator<EventType> deepSupers = eventType.getDeepSuperTypes();
-                if (deepSupers == null)
-                {
-                    return false;
-                }
+                return true;
+            }
 
-                EventType type;
-                for (;deepSupers.hasNext();)
+            // Check all the supertypes to see if one of the matches the full or delta types
+            Iterator<EventType> deepSupers = eventType.getDeepSuperTypes();
+            if (deepSupers == null)
+            {
+                return false;
+            }
+
+            EventType type;
+            for (;deepSupers.hasNext();)
+            {
+                type = deepSupers.next();
+                if (type == eventType)
                 {
-                    type = deepSupers.next();
-                    if (type == eventType)
-                    {
-                        return true;
-                    }
+                    return true;
                 }
             }
         }

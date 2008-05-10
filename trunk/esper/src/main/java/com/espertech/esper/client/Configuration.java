@@ -152,6 +152,8 @@ public class Configuration implements ConfigurationOperations, ConfigurationInfo
      */
     protected Map<String, ConfigurationRevisionEventType> revisionEventTypes;
 
+    protected Map<String, ConfigurationVariantStream> variantStreams;
+
     /**
      * Constructs an empty configuration. The auto import values
      * are set by default to java.lang, java.math, java.text and
@@ -560,7 +562,12 @@ public class Configuration implements ConfigurationOperations, ConfigurationInfo
 
     public void addVariantStream(String variantEventTypeAlias, ConfigurationVariantStream variantStreamConfig)
     {
-        // TODO
+        variantStreams.put(variantEventTypeAlias, variantStreamConfig);
+    }
+
+    public Map<String, ConfigurationVariantStream> getVariantStreams()
+    {
+        return variantStreams;
     }
 
     /**
@@ -752,6 +759,7 @@ public class Configuration implements ConfigurationOperations, ConfigurationInfo
         plugInEventRepresentation = new HashMap<URI, ConfigurationPlugInEventRepresentation>();
         plugInEventTypes = new HashMap<String, ConfigurationPlugInEventType>();
         revisionEventTypes = new HashMap<String, ConfigurationRevisionEventType>();
+        variantStreams = new HashMap<String, ConfigurationVariantStream>();
     }
 
     /**

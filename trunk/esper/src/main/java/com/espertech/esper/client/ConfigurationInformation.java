@@ -156,6 +156,8 @@ public interface ConfigurationInformation
      * @return map of alias and revision event type config
      */
     public Map<String, ConfigurationRevisionEventType> getRevisionEventTypes();
+    public Map<String, ConfigurationVariantStream> getVariantStreams();
 }
+
 
 

@@ -44,19 +44,29 @@ public class RevisionServiceImpl implements RevisionService
 
     public void addVariantEventType(String variantEventTypeAlias, ConfigurationVariantStream variantStreamConfig, EventAdapterService eventAdapterService) throws ConfigurationException
     {
+        if (variantStreamConfig.getTypeVariance() == ConfigurationVariantStream.TypeVariance.CONFIGURED)
+        {
+            if (variantStreamConfig.getVariantTypeAliases().isEmpty())
+            {
+                throw new ConfigurationException("Invalid variant stream configuration, no event type alias has been added and default type variance requires at least one type, for name '" + variantEventTypeAlias + "'");
+            }
+        }
+
         Set<EventType> types = new LinkedHashSet<EventType>();
         for (String alias : variantStreamConfig.getVariantTypeAliases())
         {
             EventType type = eventAdapterService.getExistsTypeByAlias(alias);
             if (type == null)
             {
-                throw new ConfigurationException("Event type by name '" + alias + "' could not be found for use in variant event type configuration by name '" + variantEventTypeAlias + "'");
+                throw new ConfigurationException("Event type by name '" + alias + "' could not be found for use in variant stream configuration by name '" + variantEventTypeAlias + "'");
             }
             types.add(type);
         }
 
         EventType[] eventTypes = types.toArray(new EventType[types.size()]);
-        VariantRevisionProcessor processor = new VariantRevisionProcessor(variantEventTypeAlias, eventTypes);
+        VariantSpec variantSpec = new VariantSpec(variantEventTypeAlias, eventTypes, variantStreamConfig.getTypeVariance(), variantStreamConfig.getPropertyVariance());
+        VariantRevisionProcessor processor = new VariantRevisionProcessor(variantSpec);
+
         eventAdapterService.addTypeByAlias(variantEventTypeAlias, processor.getEventType());
         variantProcessors.put(variantEventTypeAlias, processor);
     }
@@ -102,6 +112,14 @@ public class RevisionServiceImpl implements RevisionService
             // TODO refine
             if (variantProcessors.containsKey(namedWindowName))
             {
+                revisionProcessor = variantProcessors.get(namedWindowName);
+                boolean isRevisionableType = revisionProcessor.validateRevisionableEventType(eventType);
+                if (!isRevisionableType)
+                {
+                    throw new EventAdapterException("Selected event type is not a valid event type of the variant stream '"
+                            + revisionProcessor.getRevisionEventTypeAlias() + "'");
+                }
+
                 return variantProcessors.get(namedWindowName).getEventType();
             }
             return null;

@@ -350,11 +350,24 @@ public class SelectExprEvalProcessor implements SelectExprProcessor
                     wrappedEvent = eventAdapterService.adapterForBean(result);
                 }
                 props.clear();
-                return eventAdapterService.createWrapper(wrappedEvent, props, resultEventType);
+
+                // TODO
+                EventBean event = eventAdapterService.createWrapper(wrappedEvent, props, resultEventType);
+                if (isRevisionEvent)
+                {
+                    return revisionProcessor.getRevision(event);
+                }
+                return event;
             }
             else
             {
-                return eventAdapterService.createMapFromValues(props, resultEventType);
+                // TODO
+                EventBean event = eventAdapterService.createMapFromValues(props, resultEventType);
+                if (isRevisionEvent)
+                {
+                    return revisionProcessor.getRevision(event);
+                }
+                return event;
             }
         }
     }

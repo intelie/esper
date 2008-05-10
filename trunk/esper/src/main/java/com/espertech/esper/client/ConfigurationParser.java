@@ -168,6 +168,10 @@ class ConfigurationParser {
             {
                 handleRevisionEventType(configuration, element);
             }
+            else if (nodeName.equals("variant-stream"))
+            {
+                handleVariantStream(configuration, element);
+            }
         }
     }
 
@@ -720,6 +724,55 @@ class ConfigurationParser {
         revEventType.setKeyPropertyNames(keyProps);
         
         configuration.addRevisionEventType(revTypeAlias, revEventType);
+    }
+
+    private static void handleVariantStream(Configuration configuration, Element element)
+    {
+        ConfigurationVariantStream variantStream = new ConfigurationVariantStream();
+        String varianceAlias = element.getAttributes().getNamedItem("alias").getTextContent();
+
+        if (element.getAttributes().getNamedItem("type-variance") != null)
+        {
+            String typeVar = element.getAttributes().getNamedItem("type-variance").getTextContent();
+            ConfigurationVariantStream.TypeVariance typeVarianceEnum;
+            try
+            {
+                typeVarianceEnum = ConfigurationVariantStream.TypeVariance.valueOf(typeVar.trim().toUpperCase());
+                variantStream.setTypeVariance(typeVarianceEnum);
+            }
+            catch (RuntimeException ex)
+            {
+                throw new ConfigurationException("Invalid enumeration value for type-variance attribute '" + typeVar + "'");
+            }
+        }
+
+        if (element.getAttributes().getNamedItem("property-variance") != null)
+        {
+            String propertyVar = element.getAttributes().getNamedItem("property-variance").getTextContent();
+            ConfigurationVariantStream.PropertyVariance propertyVarianceEnum;
+            try
+            {
+                propertyVarianceEnum = ConfigurationVariantStream.PropertyVariance.valueOf(propertyVar.trim().toUpperCase());
+                variantStream.setPropertyVariance(propertyVarianceEnum);
+            }
+            catch (RuntimeException ex)
+            {
+                throw new ConfigurationException("Invalid enumeration value for property-variance attribute '" + propertyVar + "'");
+            }
+        }
+
+        DOMElementIterator nodeIterator = new DOMElementIterator(element.getChildNodes());
+        while (nodeIterator.hasNext())
+        {
+            Element subElement = nodeIterator.next();
+            if (subElement.getNodeName().equals("variant-event-type"))
+            {
+                String alias = subElement.getAttributes().getNamedItem("alias").getTextContent();
+                variantStream.addEventTypeAlias(alias);
+            }
+        }
+
+        configuration.addVariantStream(varianceAlias, variantStream);
     }
 
     private static void handleEngineSettings(Configuration configuration, Element element)
