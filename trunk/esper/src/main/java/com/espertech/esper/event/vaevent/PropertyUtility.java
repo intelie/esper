@@ -201,7 +201,7 @@ public class PropertyUtility
      * @param propertyNames names to get
      * @return getters
      */
-    protected static EventPropertyGetter[] getGetters(EventType eventType, String[] propertyNames)
+    public static EventPropertyGetter[] getGetters(EventType eventType, String[] propertyNames)
     {
         EventPropertyGetter[] getters = new EventPropertyGetter[propertyNames.length];
         for (int i = 0; i < getters.length; i++)

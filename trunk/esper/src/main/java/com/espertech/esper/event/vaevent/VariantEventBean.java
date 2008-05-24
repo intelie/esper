@@ -9,7 +9,7 @@ import com.espertech.esper.event.PropertyAccessException;
  * An event bean that represents multiple potentially disparate underlying events and presents a unified face
  * across each such types or even any type.
  */
-public class VariantEventBean implements EventBean
+public class VariantEventBean implements EventBean, VariantEvent
 {
     private final VariantEventType variantEventType;
     private final EventBean underlyingEventBean;

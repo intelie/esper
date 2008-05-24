@@ -16,9 +16,9 @@ import java.util.*;
  */
 public class ValueAddEventServiceImpl implements ValueAddEventService
 {
-    private final Map<String, RevisionSpec> specificationsByRevisionAlias;
-    private final Map<String, ValueAddEventProcessor> processorsByNamedWindow;
-    private final Map<String, ValueAddEventProcessor> variantProcessors;
+    protected final Map<String, RevisionSpec> specificationsByRevisionAlias;
+    protected final Map<String, ValueAddEventProcessor> processorsByNamedWindow;
+    protected final Map<String, ValueAddEventProcessor> variantProcessors;
 
     /**
      * Ctor.
@@ -44,6 +44,84 @@ public class ValueAddEventServiceImpl implements ValueAddEventService
     }
 
     public void addRevisionEventType(String revisionEventTypeAlias, ConfigurationRevisionEventType config, EventAdapterService eventAdapterService)
+            throws ConfigurationException
+    {
+        RevisionSpec specification = validateRevision(revisionEventTypeAlias, config, eventAdapterService);
+        specificationsByRevisionAlias.put(revisionEventTypeAlias, specification);
+    }
+
+    public void addVariantStream(String variantStreamname, ConfigurationVariantStream variantStreamConfig, EventAdapterService eventAdapterService) throws ConfigurationException
+    {
+        VariantSpec variantSpec = validateVariantStream(variantStreamname, variantStreamConfig, eventAdapterService);
+        VAEVariantProcessor processor = new VAEVariantProcessor(variantSpec);
+        eventAdapterService.addTypeByAlias(variantStreamname, processor.getValueAddEventType());
+        variantProcessors.put(variantStreamname, processor);
+    }
+
+    public static VariantSpec validateVariantStream(String variantStreamname, ConfigurationVariantStream variantStreamConfig, EventAdapterService eventAdapterService)
+    {
+        if (variantStreamConfig.getTypeVariance() == ConfigurationVariantStream.TypeVariance.PREDEFINED)
+        {
+            if (variantStreamConfig.getVariantTypeAliases().isEmpty())
+            {
+                throw new ConfigurationException("Invalid variant stream configuration, no event type alias has been added and default type variance requires at least one type, for name '" + variantStreamname + "'");
+            }
+        }
+
+        Set<EventType> types = new LinkedHashSet<EventType>();
+        for (String alias : variantStreamConfig.getVariantTypeAliases())
+        {
+            EventType type = eventAdapterService.getExistsTypeByAlias(alias);
+            if (type == null)
+            {
+                throw new ConfigurationException("Event type by name '" + alias + "' could not be found for use in variant stream configuration by name '" + variantStreamname + "'");
+            }
+            types.add(type);
+        }
+
+        EventType[] eventTypes = types.toArray(new EventType[types.size()]);
+        return new VariantSpec(variantStreamname, eventTypes, variantStreamConfig.getTypeVariance());
+    }
+
+    public EventType createRevisionType(String namedWindowName, String alias, StatementStopService statementStopService, EventAdapterService eventAdapterService)
+    {
+        RevisionSpec spec = specificationsByRevisionAlias.get(alias);
+        ValueAddEventProcessor processor;
+        if (spec.getPropertyRevision() == ConfigurationRevisionEventType.PropertyRevision.OVERLAY_DECLARED)
+        {
+            processor = new VAERevisionProcessorDeclared(alias, spec, statementStopService, eventAdapterService);
+        }
+        else
+        {
+            processor = new VAERevisionProcessorMerge(alias, spec, statementStopService, eventAdapterService);
+        }
+
+        processorsByNamedWindow.put(namedWindowName, processor);
+        return processor.getValueAddEventType();
+    }
+
+    public ValueAddEventProcessor getValueAddProcessor(String alias)
+    {
+        ValueAddEventProcessor proc = processorsByNamedWindow.get(alias);
+        if (proc != null)
+        {
+            return proc;
+        }
+        return variantProcessors.get(alias);
+    }
+
+    public EventType getValueAddUnderlyingType(String alias)
+    {
+        RevisionSpec spec = specificationsByRevisionAlias.get(alias);
+        return spec.getBaseEventType();
+    }
+    
+    public boolean isRevisionTypeAlias(String revisionTypeAlias)
+    {
+        return specificationsByRevisionAlias.containsKey(revisionTypeAlias);
+    }
+
+    protected static RevisionSpec validateRevision(String revisionEventTypeAlias, ConfigurationRevisionEventType config, EventAdapterService eventAdapterService)
             throws ConfigurationException
     {
         if ((config.getAliasBaseEventTypes() == null) || (config.getAliasBaseEventTypes().size() == 0))
@@ -108,7 +186,6 @@ public class ValueAddEventServiceImpl implements ValueAddEventService
             }
         }
 
-        RevisionSpec specification = null;
         // In the "declared" type the change set properties consist of only :
         //   (base event type properties) minus (key properties) minus (properties only on base event type)
         if (config.getPropertyRevision() == ConfigurationRevisionEventType.PropertyRevision.OVERLAY_DECLARED)
@@ -154,7 +231,7 @@ public class ValueAddEventServiceImpl implements ValueAddEventService
                 }
             }
 
-            specification = new RevisionSpec(config.getPropertyRevision(), baseEventType, deltaTypes, deltaAliases, keyPropertyNames, changesetProperties, baseEventOnlyPropertyNames, false, null);
+            return new RevisionSpec(config.getPropertyRevision(), baseEventType, deltaTypes, deltaAliases, keyPropertyNames, changesetProperties, baseEventOnlyPropertyNames, false, null);
         }
         else
         {
@@ -214,79 +291,11 @@ public class ValueAddEventServiceImpl implements ValueAddEventService
             }
 
             // Compile changeset
-            specification = new RevisionSpec(config.getPropertyRevision(), baseEventType, deltaTypes, deltaAliases, keyPropertyNames, changesetProperties, new String[0], hasContributedByDelta, contributedByDelta);
+            return new RevisionSpec(config.getPropertyRevision(), baseEventType, deltaTypes, deltaAliases, keyPropertyNames, changesetProperties, new String[0], hasContributedByDelta, contributedByDelta);
         }
-        specificationsByRevisionAlias.put(revisionEventTypeAlias, specification);
-    }
+    }    
 
-    public void addVariantStream(String variantStreamname, ConfigurationVariantStream variantStreamConfig, EventAdapterService eventAdapterService) throws ConfigurationException
-    {
-        if (variantStreamConfig.getTypeVariance() == ConfigurationVariantStream.TypeVariance.PREDEFINED)
-        {
-            if (variantStreamConfig.getVariantTypeAliases().isEmpty())
-            {
-                throw new ConfigurationException("Invalid variant stream configuration, no event type alias has been added and default type variance requires at least one type, for name '" + variantStreamname + "'");
-            }
-        }
-
-        Set<EventType> types = new LinkedHashSet<EventType>();
-        for (String alias : variantStreamConfig.getVariantTypeAliases())
-        {
-            EventType type = eventAdapterService.getExistsTypeByAlias(alias);
-            if (type == null)
-            {
-                throw new ConfigurationException("Event type by name '" + alias + "' could not be found for use in variant stream configuration by name '" + variantStreamname + "'");
-            }
-            types.add(type);
-        }
-
-        EventType[] eventTypes = types.toArray(new EventType[types.size()]);
-        VariantSpec variantSpec = new VariantSpec(variantStreamname, eventTypes, variantStreamConfig.getTypeVariance());
-        VAEVariantProcessor processor = new VAEVariantProcessor(variantSpec);
-
-        eventAdapterService.addTypeByAlias(variantStreamname, processor.getValueAddEventType());
-        variantProcessors.put(variantStreamname, processor);
-    }
-
-    public EventType createRevisionType(String namedWindowName, String alias, StatementStopService statementStopService, EventAdapterService eventAdapterService)
-    {
-        RevisionSpec spec = specificationsByRevisionAlias.get(alias);
-        ValueAddEventProcessor processor;
-        if (spec.getPropertyRevision() == ConfigurationRevisionEventType.PropertyRevision.OVERLAY_DECLARED)
-        {
-            processor = new VAERevisionProcessorDeclared(alias, spec, statementStopService, eventAdapterService);
-        }
-        else
-        {
-            processor = new VAERevisionProcessorMerge(alias, spec, statementStopService, eventAdapterService);
-        }
-
-        processorsByNamedWindow.put(namedWindowName, processor);
-        return processor.getValueAddEventType();
-    }
-
-    public ValueAddEventProcessor getValueAddProcessor(String alias)
-    {
-        ValueAddEventProcessor proc = processorsByNamedWindow.get(alias);
-        if (proc != null)
-        {
-            return proc;
-        }
-        return variantProcessors.get(alias);
-    }
-
-    public EventType getValueAddUnderlyingType(String alias)
-    {
-        RevisionSpec spec = specificationsByRevisionAlias.get(alias);
-        return spec.getBaseEventType();
-    }
-    
-    public boolean isRevisionTypeAlias(String revisionTypeAlias)
-    {
-        return specificationsByRevisionAlias.containsKey(revisionTypeAlias);
-    }
-
-    private void checkKeysExist(EventType baseEventType, String alias, String[] keyProperties, String revisionEventTypeAlias)
+    private static void checkKeysExist(EventType baseEventType, String alias, String[] keyProperties, String revisionEventTypeAlias)
     {
         String propertyNames[] = baseEventType.getPropertyNames();
         for (String keyProperty : keyProperties)

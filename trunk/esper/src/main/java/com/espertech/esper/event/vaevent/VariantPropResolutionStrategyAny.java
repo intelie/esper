@@ -30,7 +30,7 @@ public class VariantPropResolutionStrategyAny implements VariantPropResolutionSt
         {
             public Object get(EventBean eventBean) throws PropertyAccessException
             {
-                VariantEventBean variant = (VariantEventBean) eventBean;
+                VariantEvent variant = (VariantEvent) eventBean;
                 EventPropertyGetter getter = propertyGetterCache.getGetter(assignedPropertyNumber, variant.getUnderlyingEventBean().getEventType());
                 if (getter == null)
                 {
@@ -41,7 +41,7 @@ public class VariantPropResolutionStrategyAny implements VariantPropResolutionSt
 
             public boolean isExistsProperty(EventBean eventBean)
             {
-                VariantEventBean variant = (VariantEventBean) eventBean;
+                VariantEvent variant = (VariantEvent) eventBean;
                 EventPropertyGetter getter = propertyGetterCache.getGetter(assignedPropertyNumber, variant.getUnderlyingEventBean().getEventType());
                 if (getter == null)
                 {

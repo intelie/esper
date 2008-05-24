@@ -52,85 +52,7 @@ public class VAERevisionProcessorDeclared extends VAERevisionProcessorBase imple
 
         // sort non-key properties, removing keys
         groups = PropertyUtility.analyzeGroups(spec.getChangesetPropertyNames(), spec.getDeltaTypes(), spec.getDeltaAliases());
-
-        Map<String, int[]> propsPerGroup = PropertyUtility.getGroupsPerProperty(groups);
-        Map<String, RevisionPropertyTypeDesc> propertyDesc = new HashMap<String, RevisionPropertyTypeDesc>();
-        int count = 0;
-
-        for (String property : spec.getChangesetPropertyNames())
-        {
-            EventPropertyGetter fullGetter = spec.getBaseEventType().getGetter(property);
-            int propertyNumber = count;
-            int[] propGroupsProperty = propsPerGroup.get(property);
-            final RevisionGetterParameters params = new RevisionGetterParameters(property, propertyNumber, fullGetter, propGroupsProperty);
-
-            // if there are no groups (full event property only), then simply use the full event getter
-            EventPropertyGetter revisionGetter = new EventPropertyGetter() {
-                    public Object get(EventBean eventBean) throws PropertyAccessException
-                    {
-                        RevisionEventBeanDeclared riv = (RevisionEventBeanDeclared) eventBean;
-                        return riv.getVersionedValue(params);
-                    }
-
-                    public boolean isExistsProperty(EventBean eventBean)
-                    {
-                        return true;
-                    }
-                };
-
-            Class type = spec.getBaseEventType().getPropertyType(property);
-            RevisionPropertyTypeDesc propertyTypeDesc = new RevisionPropertyTypeDesc(revisionGetter, params, type);
-            propertyDesc.put(property, propertyTypeDesc);
-            count++;
-        }
-
-        for (String property : spec.getBaseEventOnlyPropertyNames())
-        {
-            final EventPropertyGetter fullGetter = spec.getBaseEventType().getGetter(property);
-
-            // if there are no groups (full event property only), then simply use the full event getter
-            EventPropertyGetter revisionGetter =  new EventPropertyGetter() {
-                public Object get(EventBean eventBean) throws PropertyAccessException
-                {
-                    RevisionEventBeanDeclared riv = (RevisionEventBeanDeclared) eventBean;
-                    return fullGetter.get(riv.getLastBaseEvent());
-                }
-
-                public boolean isExistsProperty(EventBean eventBean)
-                {
-                    return true;
-                }
-            };
-
-            Class type = spec.getBaseEventType().getPropertyType(property);
-            RevisionPropertyTypeDesc propertyTypeDesc = new RevisionPropertyTypeDesc(revisionGetter, null, type);
-            propertyDesc.put(property, propertyTypeDesc);
-            count++;
-        }
-
-        count = 0;
-        for (String property : spec.getKeyPropertyNames())
-        {
-            final int keyPropertyNumber = count;
-
-            EventPropertyGetter revisionGetter = new EventPropertyGetter() {
-                public Object get(EventBean eventBean) throws PropertyAccessException
-                {
-                    RevisionEventBeanDeclared riv = (RevisionEventBeanDeclared) eventBean;
-                    return riv.getKey().getKeys()[keyPropertyNumber];
-                }
-
-                public boolean isExistsProperty(EventBean eventBean)
-                {
-                    return true;
-                }
-            };
-
-            Class type = spec.getBaseEventType().getPropertyType(property);
-            RevisionPropertyTypeDesc propertyTypeDesc = new RevisionPropertyTypeDesc(revisionGetter, null, type);
-            propertyDesc.put(property, propertyTypeDesc);
-            count++;
-        }
+        Map<String, RevisionPropertyTypeDesc> propertyDesc = createPropertyDescriptors(spec, groups);
 
         typeDescriptors = PropertyUtility.getPerType(groups, spec.getChangesetPropertyNames(), spec.getKeyPropertyNames());
         revisionEventType = new RevisionEventType(propertyDesc, eventAdapterService);
@@ -362,5 +284,90 @@ public class VAERevisionProcessorDeclared extends VAERevisionProcessorBase imple
         RevisionBeanHolder[] result = new RevisionBeanHolder[array.length];
         System.arraycopy(array, 0, result, 0, array.length);
         return result;
+    }
+
+    public static Map<String, RevisionPropertyTypeDesc> createPropertyDescriptors(RevisionSpec spec, PropertyGroupDesc groups[])
+    {
+        Map<String, int[]> propsPerGroup = PropertyUtility.getGroupsPerProperty(groups);
+
+        Map<String, RevisionPropertyTypeDesc> propertyDesc = new HashMap<String, RevisionPropertyTypeDesc>();
+        int count = 0;
+
+        for (String property : spec.getChangesetPropertyNames())
+        {
+            EventPropertyGetter fullGetter = spec.getBaseEventType().getGetter(property);
+            int propertyNumber = count;
+            int[] propGroupsProperty = propsPerGroup.get(property);
+            final RevisionGetterParameters params = new RevisionGetterParameters(property, propertyNumber, fullGetter, propGroupsProperty);
+
+            // if there are no groups (full event property only), then simply use the full event getter
+            EventPropertyGetter revisionGetter = new EventPropertyGetter() {
+                    public Object get(EventBean eventBean) throws PropertyAccessException
+                    {
+                        RevisionEventBeanDeclared riv = (RevisionEventBeanDeclared) eventBean;
+                        return riv.getVersionedValue(params);
+                    }
+
+                    public boolean isExistsProperty(EventBean eventBean)
+                    {
+                        return true;
+                    }
+                };
+
+            Class type = spec.getBaseEventType().getPropertyType(property);
+            RevisionPropertyTypeDesc propertyTypeDesc = new RevisionPropertyTypeDesc(revisionGetter, params, type);
+            propertyDesc.put(property, propertyTypeDesc);
+            count++;
+        }
+
+        for (String property : spec.getBaseEventOnlyPropertyNames())
+        {
+            final EventPropertyGetter fullGetter = spec.getBaseEventType().getGetter(property);
+
+            // if there are no groups (full event property only), then simply use the full event getter
+            EventPropertyGetter revisionGetter =  new EventPropertyGetter() {
+                public Object get(EventBean eventBean) throws PropertyAccessException
+                {
+                    RevisionEventBeanDeclared riv = (RevisionEventBeanDeclared) eventBean;
+                    return fullGetter.get(riv.getLastBaseEvent());
+                }
+
+                public boolean isExistsProperty(EventBean eventBean)
+                {
+                    return true;
+                }
+            };
+
+            Class type = spec.getBaseEventType().getPropertyType(property);
+            RevisionPropertyTypeDesc propertyTypeDesc = new RevisionPropertyTypeDesc(revisionGetter, null, type);
+            propertyDesc.put(property, propertyTypeDesc);
+            count++;
+        }
+
+        count = 0;
+        for (String property : spec.getKeyPropertyNames())
+        {
+            final int keyPropertyNumber = count;
+
+            EventPropertyGetter revisionGetter = new EventPropertyGetter() {
+                public Object get(EventBean eventBean) throws PropertyAccessException
+                {
+                    RevisionEventBeanDeclared riv = (RevisionEventBeanDeclared) eventBean;
+                    return riv.getKey().getKeys()[keyPropertyNumber];
+                }
+
+                public boolean isExistsProperty(EventBean eventBean)
+                {
+                    return true;
+                }
+            };
+
+            Class type = spec.getBaseEventType().getPropertyType(property);
+            RevisionPropertyTypeDesc propertyTypeDesc = new RevisionPropertyTypeDesc(revisionGetter, null, type);
+            propertyDesc.put(property, propertyTypeDesc);
+            count++;
+        }
+
+        return propertyDesc;
     }
 }
