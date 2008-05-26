@@ -545,6 +545,13 @@ public class MapEventType implements EventType
                     return false;
                 }
             }
+            else if ((setTwoType instanceof EventType) && (setOneType instanceof EventType))
+            {
+                if (!setOneType.equals(setTwoType))
+                {
+                    return false;
+                }
+            }
             else
             {
                 return false;
