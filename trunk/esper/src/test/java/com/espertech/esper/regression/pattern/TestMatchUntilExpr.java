@@ -8,20 +8,22 @@ import com.espertech.esper.regression.support.*;
 import com.espertech.esper.support.bean.*;
 import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.support.util.SupportUpdateListener;
+import com.espertech.esper.support.util.ArrayAssertionUtil;
+import com.espertech.esper.event.EventBean;
 import junit.framework.TestCase;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 public class TestMatchUntilExpr extends TestCase implements SupportBeanConstants
 {
-    // TODO: test no until-clause for unbounded cases
-    // TODO: test with until-clause
     // TODO: test "match [2] a=A until b=B -> C(a[0].id = c1, a[1].id = c2)
     // todo: test invalid use of array tag without array
     // todo: test nested match-until
     // todo: test exist() on composite events
     // todo: test statement object model
     // todo: test 2..1
+    // todo: test A->match (b=a.id)
+    // todo: test match 2 (a=A or b=B) ->
 
     // todo: invalid cases: match[0], match [-1..-2], [..0]
 
@@ -43,7 +45,6 @@ public class TestMatchUntilExpr extends TestCase implements SupportBeanConstants
         CaseList testCaseList = new CaseList();
         EventExpressionCase testCase = null;
 
-        /*
         testCase = new EventExpressionCase("match a=A until D");
         testCase.add("D1", "a[0]", events.getEvent("A1"), "a[1]", events.getEvent("A2"));
         testCaseList.addTest(testCase);
@@ -223,7 +224,6 @@ public class TestMatchUntilExpr extends TestCase implements SupportBeanConstants
         testCase.add("B2", "d[0]", null, "b", events.getEvent("B2"));
         testCase.add("B3", "d[0]", events.getEvent("D1"), "d[1]", events.getEvent("D2"), "d[2]", null, "b", events.getEvent("B3"));
         testCaseList.addTest(testCase);
-        */
 
         testCase = new EventExpressionCase("match a=A until (every (timer:interval(6 sec) and not A))");
         testCase.add("G1", "a[0]", events.getEvent("A1"), "a[1]", events.getEvent("A2"));
@@ -237,44 +237,89 @@ public class TestMatchUntilExpr extends TestCase implements SupportBeanConstants
         util.runTest();
     }
 
-    /*
-    testData.put("A1", new SupportBean_A("A1"));
-    testData.put("B1", new SupportBean_B("B1"));
-    testData.put("C1", new SupportBean_C("C1"));
-    testData.put("B2", new SupportBean_B("B2"));
-    testData.put("A2", new SupportBean_A("A2"));
-    testData.put("D1", new SupportBean_D("D1"));
-    testData.put("E1", new SupportBean_E("E1"));
-    testData.put("F1", new SupportBean_F("F1"));
-    testData.put("D2", new SupportBean_D("D2"));
-    testData.put("B3", new SupportBean_B("B3"));
-    testData.put("G1", new SupportBean_G("G1"));
-    testData.put("D3", new SupportBean_D("D3"));
-    */
-
-    public void testMultiEventMatch()
-    {
-        EPServiceProvider epService = EPServiceProviderManager.getDefaultProvider(config);
-        epService.initialize();
-
-        String stmt ="select * from pattern [match a=A until b=B -> SupportBean(a[0].id = id, a[1].id = id)]";
-        //String stmt ="select * from pattern [match a=A until b=B -> SupportBean(a.a0.id = id, a.a1.id = id)]";
-        //String stmt ="select * from pattern [match a=A until b=B -> SupportBean(a.a[0].id = id, a.a[1].id = id)]";
-        SupportUpdateListener listener = new SupportUpdateListener();
-        EPStatement statement = epService.getEPAdministrator().createEPL(stmt);
-        statement.addListener(listener);
-    }
-
     public void testSelectArray()
     {
         EPServiceProvider epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();
 
-        String stmt ="select a[0].id from pattern [match a=A until b=B]";
+        String stmt ="select a, b, a[0] as a0, a[0].id as a0Id, a[1] as a1, a[1].id as a1Id, a[2] as a2, a[2].id as a2Id from pattern [match a=A until b=B]";
         SupportUpdateListener listener = new SupportUpdateListener();
         EPStatement statement = epService.getEPAdministrator().createEPL(stmt);
         statement.addListener(listener);
+
+        Object eventA1 = new SupportBean_A("A1");
+        epService.getEPRuntime().sendEvent(eventA1);
+
+        Object eventA2 = new SupportBean_A("A2");
+        epService.getEPRuntime().sendEvent(eventA2);
+        assertFalse(listener.isInvoked());
+
+        Object eventB1 = new SupportBean_B("B1");
+        epService.getEPRuntime().sendEvent(eventB1);
+
+        EventBean event = listener.assertOneGetNewAndReset();
+        ArrayAssertionUtil.assertEqualsExactOrder(new Object[] {eventA1, eventA2}, (Object[]) event.get("a"));
+        assertSame(eventA1, event.get("a0"));
+        assertSame(eventA2, event.get("a1"));
+        assertNull(event.get("a2"));
+        assertEquals("A1", event.get("a0Id"));
+        assertEquals("A2", event.get("a1Id"));
+        assertNull(null, event.get("a2Id"));
+        assertSame(eventB1, event.get("b"));
+
+        // try wildcard
+        stmt ="select * from pattern [match a=A until b=B]";
+        statement = epService.getEPAdministrator().createEPL(stmt);
+        statement.addListener(listener);
+
+        epService.getEPRuntime().sendEvent(eventA1);
+        epService.getEPRuntime().sendEvent(eventA2);
+        assertFalse(listener.isInvoked());
+        epService.getEPRuntime().sendEvent(eventB1);
+
+        event = listener.assertOneGetNewAndReset();
+        ArrayAssertionUtil.assertEqualsExactOrder(new Object[] {eventA1, eventA2}, (Object[]) event.get("a"));
+        assertSame(eventA1, event.get("a[0]"));
+        assertSame(eventA2, event.get("a[1]"));
+        assertNull(event.get("a[2]"));
+        assertEquals("A1", event.get("a[0].id"));
+        assertEquals("A2", event.get("a[1].id"));
+        assertNull(null, event.get("a[2].id"));
+        assertSame(eventB1, event.get("b"));
     }
+
+    public void testUseFilter()
+    {
+        EPServiceProvider epService = EPServiceProviderManager.getDefaultProvider(config);
+        epService.initialize();
+
+        String stmt ="select * from pattern [match a=A until b=B -> c=C(id = ('C' || a[0].id || a[1].id || b.id))]";
+        SupportUpdateListener listener = new SupportUpdateListener();
+        EPStatement statement = epService.getEPAdministrator().createEPL(stmt);
+        statement.addListener(listener);
+
+        Object eventA1 = new SupportBean_A("A1");
+        epService.getEPRuntime().sendEvent(eventA1);
+
+        Object eventA2 = new SupportBean_A("A2");
+        epService.getEPRuntime().sendEvent(eventA2);
+
+        Object eventB1 = new SupportBean_B("B1");
+        epService.getEPRuntime().sendEvent(eventB1);
+        
+        epService.getEPRuntime().sendEvent(new SupportBean_C("C1"));
+        assertFalse(listener.isInvoked());
+
+        Object eventC1 = new SupportBean_C("CA1A2B1");
+        epService.getEPRuntime().sendEvent(eventC1);
+        EventBean event = listener.assertOneGetNewAndReset();
+        assertSame(eventA1, event.get("a[0]"));
+        assertSame(eventA2, event.get("a[1]"));
+        assertNull(event.get("a[2]"));
+        assertSame(eventB1, event.get("b"));
+        assertSame(eventC1, event.get("c"));
+    }
+
 
     private static Log log = LogFactory.getLog(TestMatchUntilExpr.class);
 }

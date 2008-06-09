@@ -12,6 +12,7 @@ import com.espertech.esper.epl.core.MethodResolutionService;
 import com.espertech.esper.epl.core.StreamTypeService;
 import com.espertech.esper.epl.expression.*;
 import com.espertech.esper.epl.variable.VariableService;
+import com.espertech.esper.event.EventAdapterService;
 import com.espertech.esper.event.EventType;
 import com.espertech.esper.schedule.TimeProvider;
 import com.espertech.esper.type.RelationalOpEnum;
@@ -55,10 +56,12 @@ public final class FilterSpecCompiler
                                                     String eventTypeAlias,
                                                     List<ExprNode> filterExpessions,
                                                     LinkedHashMap<String, Pair<EventType, String>> taggedEventTypes,
+                                                    LinkedHashMap<String, Pair<EventType, String>> arrayEventTypes,
                                                     StreamTypeService streamTypeService,
                                                     MethodResolutionService methodResolutionService,
                                                     TimeProvider timeProvider,
-                                                    VariableService variableService)
+                                                    VariableService variableService,
+                                                    EventAdapterService eventAdapterService)
             throws ExprValidationException
     {
         // Validate all nodes, make sure each returns a boolean and types are good;
@@ -66,7 +69,7 @@ public final class FilterSpecCompiler
         List<ExprNode> constituents = FilterSpecCompiler.validateAndDecompose(filterExpessions, streamTypeService, methodResolutionService, timeProvider, variableService);
 
         // From the constituents make a filter specification
-        FilterSpecCompiled spec = makeFilterSpec(eventType, eventTypeAlias, constituents, taggedEventTypes, variableService);
+        FilterSpecCompiled spec = makeFilterSpec(eventType, eventTypeAlias, constituents, taggedEventTypes, arrayEventTypes, variableService, eventAdapterService);
         if (log.isDebugEnabled())
         {
             log.debug(".makeFilterSpec spec=" + spec);
@@ -209,7 +212,9 @@ public final class FilterSpecCompiler
                                                      String eventTypeAlias,
                                                      List<ExprNode> constituents,
                                                      LinkedHashMap<String, Pair<EventType, String>> taggedEventTypes,
-                                                     VariableService variableService)
+                                                     LinkedHashMap<String, Pair<EventType, String>> arrayEventTypes,
+                                                     VariableService variableService,
+                                                     EventAdapterService eventAdapterService)
             throws ExprValidationException
     {
         FilterParamExprMap filterParamExprMap = new FilterParamExprMap();
@@ -252,7 +257,7 @@ public final class FilterSpecCompiler
         // if there are boolean expressions, add
         if (exprNode != null)
         {
-            FilterSpecParamExprNode param = new FilterSpecParamExprNode(PROPERTY_NAME_BOOLEAN_EXPRESSION, FilterOperator.BOOLEAN_EXPRESSION, exprNode, taggedEventTypes, variableService);
+            FilterSpecParamExprNode param = new FilterSpecParamExprNode(PROPERTY_NAME_BOOLEAN_EXPRESSION, FilterOperator.BOOLEAN_EXPRESSION, exprNode, taggedEventTypes, arrayEventTypes, variableService, eventAdapterService);
             filterParams.add(param);
         }
 

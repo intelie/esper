@@ -111,8 +111,9 @@ public class FilterStreamSpecRaw extends StreamSpecBase implements StreamSpecRaw
         // Also decompose all AND super nodes into individual expressions
         StreamTypeService streamTypeService = new StreamTypeServiceImpl(new EventType[] {eventType}, new String[] {"s0"}, engineURI, new String[] {eventName});
 
-        FilterSpecCompiled spec = FilterSpecCompiler.makeFilterSpec(eventType, eventName, rawFilterSpec.getFilterExpressions(), null,
-                streamTypeService, methodResolutionService, timeProvider, variableService);
+        FilterSpecCompiled spec = FilterSpecCompiler.makeFilterSpec(eventType, eventName, rawFilterSpec.getFilterExpressions(),
+                null, null,  // no tags
+                streamTypeService, methodResolutionService, timeProvider, variableService, eventAdapterService);
 
         return new FilterStreamSpecCompiled(spec, this.getViewSpecs(), this.getOptionalStreamName(), this.isUnidirectional());
     }

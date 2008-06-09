@@ -12,10 +12,12 @@ import com.espertech.esper.epl.expression.ExprNodeVariableVisitor;
 import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.event.EventBean;
 import com.espertech.esper.event.EventType;
+import com.espertech.esper.event.EventAdapterService;
 import com.espertech.esper.pattern.MatchedEventMap;
 import com.espertech.esper.collection.Pair;
 
 import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * This class represents an arbitrary expression node returning a boolean value as a filter parameter in an {@link FilterSpecCompiled} filter specification.
@@ -24,6 +26,8 @@ public final class FilterSpecParamExprNode extends FilterSpecParam
 {
     private final ExprNode exprNode;
     private final LinkedHashMap<String, Pair<EventType, String>> taggedEventTypes;
+    private final LinkedHashMap<String, Pair<EventType, String>> arrayEventTypes;
+    private final EventAdapterService eventAdapterService;
     private final VariableService variableService;
     private final boolean hasVariable;
 
@@ -40,7 +44,9 @@ public final class FilterSpecParamExprNode extends FilterSpecParam
                              FilterOperator filterOperator,
                              ExprNode exprNode,
                              LinkedHashMap<String, Pair<EventType, String>> taggedEventTypes,
-                             VariableService variableService)
+                             LinkedHashMap<String, Pair<EventType, String>> arrayEventTypes,
+                             VariableService variableService,
+                             EventAdapterService eventAdapterService)
         throws IllegalArgumentException
     {
         super(propertyName, filterOperator);
@@ -50,7 +56,9 @@ public final class FilterSpecParamExprNode extends FilterSpecParam
         }
         this.exprNode = exprNode;
         this.taggedEventTypes = taggedEventTypes;
+        this.arrayEventTypes = arrayEventTypes;
         this.variableService = variableService;
+        this.eventAdapterService = eventAdapterService;
 
         ExprNodeVariableVisitor visitor = new ExprNodeVariableVisitor();
         exprNode.accept(visitor);
@@ -79,14 +87,31 @@ public final class FilterSpecParamExprNode extends FilterSpecParam
     {
         EventBean[] events = null;
 
-        if (taggedEventTypes != null)
+        if ((taggedEventTypes != null) || (arrayEventTypes != null))
         {
-            events = new EventBean[taggedEventTypes.size() + 1];
+            int size = 0;
+            size += (taggedEventTypes != null) ? taggedEventTypes.size() : 0;
+            size += (arrayEventTypes != null) ? arrayEventTypes.size() : 0;
+            events = new EventBean[size + 1];
+
             int count = 1;
-            for (String tag : taggedEventTypes.keySet())
+            if (taggedEventTypes != null)
             {
-                events[count] = matchedEvents.getMatchingEvent(tag);
-                count++;
+                for (String tag : taggedEventTypes.keySet())
+                {
+                    events[count] = matchedEvents.getMatchingEvent(tag);
+                    count++;
+                }
+            }
+
+            if (arrayEventTypes != null)
+            {
+                for (Map.Entry<String, Pair<EventType, String>> entry : arrayEventTypes.entrySet())
+                {
+                    EventType compositeEventType = entry.getValue().getFirst();
+                    events[count] = eventAdapterService.adapterForCompositeEvent(compositeEventType, matchedEvents.getMatchingEvents());
+                    count++;
+                }
             }
         }
 
