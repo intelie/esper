@@ -39,6 +39,16 @@ public interface PatternStateFactory
     public EvalStateNode makeFollowedByState(Evaluator parentNode, EvalFollowedByNode evalFollowedByNode, MatchedEventMap beginState, Object stateObjectId);
 
     /**
+     * Makes a match-until state node.
+     * @param parentNode is the parent evaluator
+     * @param evalMatchUntilNode is the factory node
+     * @param beginState is the begin state
+     * @param stateObjectId is the state node's object id
+     * @return state node
+     */
+    public EvalStateNode makeMatchUntilState(Evaluator parentNode, EvalMatchUntilNode evalMatchUntilNode, MatchedEventMap beginState, Object stateObjectId);
+
+    /**
      * Makes a followed-by state node.
      * @param parentNode is the parent evaluator
      * @param evalFilterNode is the factory node

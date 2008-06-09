@@ -79,6 +79,15 @@ public class EventExpressionCase
         desc.put(tagFour, beanFour);
     }
 
+    public void add(String expectedOnEventId, Object[][] tagsAndBeans)
+    {
+        EventDescriptor desc = addDesc(expectedOnEventId);
+        for (int i = 0; i < tagsAndBeans.length; i++)
+        {
+            desc.put((String)tagsAndBeans[i][0], tagsAndBeans[i][1]);
+        }
+    }
+
     private EventDescriptor addDesc(String expectedOnEventId)
     {
         LinkedList<EventDescriptor> resultList = expectedResults.get(expectedOnEventId);

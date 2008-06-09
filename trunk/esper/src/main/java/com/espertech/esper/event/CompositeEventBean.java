@@ -8,7 +8,7 @@ import java.util.Map;
  */
 public class CompositeEventBean implements EventBean, TaggedCompositeEventBean
 {
-    private final Map<String, EventBean> wrappedEvents;
+    private final Map<String, Object> wrappedEvents;
     private final EventType eventType;
 
     /**
@@ -17,7 +17,7 @@ public class CompositeEventBean implements EventBean, TaggedCompositeEventBean
      * and values the wrapped event
      * @param eventType is the event type instance for the wrapper
      */
-    public CompositeEventBean(Map<String, EventBean> wrappedEvents, EventType eventType)
+    public CompositeEventBean(Map<String, Object> wrappedEvents, EventType eventType)
     {
         this.wrappedEvents = wrappedEvents;
         this.eventType = eventType;
@@ -45,6 +45,6 @@ public class CompositeEventBean implements EventBean, TaggedCompositeEventBean
 
     public EventBean getEventBean(String property)
     {
-        return wrappedEvents.get(property);
+        return (EventBean) wrappedEvents.get(property);
     }
 }

@@ -13,7 +13,8 @@ import java.util.HashMap;
  */
 public final class MatchedEventMapImpl implements MatchedEventMap
 {
-    private Map<String, EventBean> events = new HashMap<String, EventBean>();
+    // Keyed by tag name; Values can be {EventBean, EventBean[]} as metadata is aware 
+    private Map<String, Object> events = new HashMap<String, Object>();
 
     /**
      * Constructor creates an empty collection of events.
@@ -26,7 +27,7 @@ public final class MatchedEventMapImpl implements MatchedEventMap
      * Ctor.
      * @param events is the name-value pairs of tag and event
      */
-    public MatchedEventMapImpl(Map<String, EventBean> events)
+    public MatchedEventMapImpl(Map<String, Object> events)
     {
         this.events = events;
     }
@@ -34,9 +35,9 @@ public final class MatchedEventMapImpl implements MatchedEventMap
     /**
      * Add an event to the collection identified by the given tag.
      * @param tag is an identifier to retrieve the event from
-     * @param event is the event object to be added
+     * @param event is the event object or array of event object to be added
      */
-    public void add(final String tag, final EventBean event)
+    public void add(final String tag, final Object event)
     {
         events.put(tag, event);
     }
@@ -46,7 +47,7 @@ public final class MatchedEventMapImpl implements MatchedEventMap
      * instance.
      * @return Hashtable containing event instances
      */
-    public Map<String, EventBean> getMatchingEvents()
+    public Map<String, Object> getMatchingEvents()
     {
         return events;
     }
@@ -58,7 +59,7 @@ public final class MatchedEventMapImpl implements MatchedEventMap
      */
     public EventBean getMatchingEvent(final String tag)
     {
-        return events.get(tag);
+        return (EventBean) events.get(tag);
     }
 
     public boolean equals(final Object otherObject)
@@ -86,7 +87,7 @@ public final class MatchedEventMapImpl implements MatchedEventMap
         }
 
         // Compare entry by entry
-        for (Map.Entry<String, EventBean> entry : events.entrySet())
+        for (Map.Entry<String, Object> entry : events.entrySet())
         {
             final String tag = entry.getKey();
             final Object event = entry.getValue();
@@ -105,7 +106,7 @@ public final class MatchedEventMapImpl implements MatchedEventMap
         final StringBuilder buffer = new StringBuilder();
         int count = 0;
 
-        for (Map.Entry<String, EventBean> entry : events.entrySet())
+        for (Map.Entry<String, Object> entry : events.entrySet())
         {
             buffer.append(" (");
             buffer.append(count++);
@@ -130,7 +131,7 @@ public final class MatchedEventMapImpl implements MatchedEventMap
      */
     public MatchedEventMapImpl shallowCopy()
     {
-        Map<String, EventBean> copy = new HashMap<String, EventBean>();
+        Map<String, Object> copy = new HashMap<String, Object>();
         copy.putAll(events);
         return new MatchedEventMapImpl(copy);
     }

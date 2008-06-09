@@ -11,6 +11,7 @@ public class EvalNodeAnalysisResult
     private List<EvalFilterNode> filterNodes = new ArrayList<EvalFilterNode>();
     private List<EvalGuardNode> guardNodes = new ArrayList<EvalGuardNode>();
     private List<EvalObserverNode> observerNodes = new ArrayList<EvalObserverNode>();
+    private List<EvalMatchUntilNode> matchUntilNodes = new ArrayList<EvalMatchUntilNode>();
 
     /**
      * Adds a filter node.
@@ -38,6 +39,15 @@ public class EvalNodeAnalysisResult
     }
 
     /**
+     * Adds an match-until node.
+     * @param untilNode node to add
+     */
+    public void add(EvalMatchUntilNode untilNode)
+    {
+        matchUntilNodes.add(untilNode);
+    }
+
+    /**
      * Returns filter nodes.
      * @return filter nodes
      */
@@ -62,5 +72,10 @@ public class EvalNodeAnalysisResult
     public List<EvalObserverNode> getObserverNodes()
     {
         return observerNodes;
+    }
+
+    public List<EvalMatchUntilNode> getMatchUntilNodes()
+    {
+        return matchUntilNodes;
     }
 }

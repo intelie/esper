@@ -1182,6 +1182,11 @@ public class StatementSpecMapper
         {
             return new EvalNotNode();
         }
+        else if (eval instanceof PatternMatchUntilExpr)
+        {
+            PatternMatchUntilExpr until = (PatternMatchUntilExpr) eval;
+            return new EvalMatchUntilNode(new EvalMatchUntilSpec(until.getLow(), until.getHigh()));
+        }
         throw new IllegalArgumentException("Could not map pattern expression node of type " + eval.getClass().getSimpleName());
     }
 
@@ -1224,6 +1229,11 @@ public class StatementSpecMapper
             EvalGuardNode guardNode = (EvalGuardNode) eval;
             return new PatternGuardExpr(guardNode.getPatternGuardSpec().getObjectNamespace(),
                     guardNode.getPatternGuardSpec().getObjectName(), guardNode.getPatternGuardSpec().getObjectParameters());
+        }
+        else if (eval instanceof EvalMatchUntilNode)
+        {
+            EvalMatchUntilNode matchUntilNode = (EvalMatchUntilNode) eval;
+            return new PatternMatchUntilExpr(matchUntilNode.getSpec().getLowerBounds(), matchUntilNode.getSpec().getUpperBounds());
         }
         throw new IllegalArgumentException("Could not map pattern expression node of type " + eval.getClass().getSimpleName());
     }

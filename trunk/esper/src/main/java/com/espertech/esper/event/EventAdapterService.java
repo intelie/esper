@@ -1,16 +1,17 @@
 package com.espertech.esper.event;
 
-import java.util.Map;
-import java.net.URI;
-import java.io.Serializable;
-
-import org.w3c.dom.Node;
-import com.espertech.esper.client.*;
+import com.espertech.esper.client.Configuration;
+import com.espertech.esper.client.ConfigurationEventTypeLegacy;
+import com.espertech.esper.client.ConfigurationEventTypeXMLDOM;
+import com.espertech.esper.client.EventSender;
 import com.espertech.esper.collection.Pair;
-import com.espertech.esper.plugin.PlugInEventRepresentation;
-import com.espertech.esper.core.EPRuntimeSPI;
 import com.espertech.esper.core.EPRuntimeEventSender;
-import com.espertech.esper.core.EPRuntimeImpl;
+import com.espertech.esper.plugin.PlugInEventRepresentation;
+import org.w3c.dom.Node;
+
+import java.io.Serializable;
+import java.net.URI;
+import java.util.Map;
 
 /**
  * Interface for a service to resolve event names to event type.
@@ -180,7 +181,8 @@ public interface EventAdapterService
      * @param taggedEventTypes is a map of name keys and event type values
      * @return event type representing a composite event
      */
-    public EventType createAnonymousCompositeType(Map<String, Pair<EventType, String>> taggedEventTypes);
+    public EventType createAnonymousCompositeType(Map<String, Pair<EventType, String>> taggedEventTypes,
+                                                  Map<String, Pair<EventType, String>> arrayEventTypes);
 
     /**
      * Creates a wrapper for a composite event type. The wrapper wraps an event that
@@ -189,7 +191,7 @@ public interface EventAdapterService
      * @param taggedEvents is the name-event map
      * @return wrapper for composite event
      */
-    public EventBean adapterForCompositeEvent(EventType eventType, Map<String, EventBean> taggedEvents);
+    public EventBean adapterForCompositeEvent(EventType eventType, Map<String, Object> taggedEvents);
 
     /**
      * Create a new anonymous event type with the given underlying event type, 

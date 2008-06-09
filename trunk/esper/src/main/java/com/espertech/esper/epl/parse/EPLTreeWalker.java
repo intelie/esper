@@ -273,6 +273,9 @@ public class EPLTreeWalker extends EsperEPL2Ast
             case OBSERVER_EXPR:
                 leaveObserver(node);
                 break;
+            case MATCH: // TODO: grammar MATCH and UNTIL allow for property names, new keywords in doc
+                leaveMatch(node);
+                break;
             case IN_SET:
             case NOT_IN_SET:
                 leaveInSet(node);
@@ -1618,6 +1621,52 @@ public class EPLTreeWalker extends EsperEPL2Ast
         PatternObserverSpec observerSpec = new PatternObserverSpec(objectNamespace, objectName, objectParams);
         EvalObserverNode observerNode = new EvalObserverNode(observerSpec);
         astPatternNodeMap.put(node, observerNode);
+    }
+
+    private void leaveMatch(Tree node) throws ASTWalkException
+    {
+        log.debug(".leaveMatch");
+        
+        int type = node.getChild(0).getType();
+        EvalMatchUntilSpec spec;
+        if (type == MATCH_UNTIL_RANGE_HALFOPEN)
+        {
+            Double low = DoubleValue.parseString(node.getChild(0).getChild(0).getText());
+            spec = new EvalMatchUntilSpec(low.intValue(), null);
+        }
+        else if (type == MATCH_UNTIL_RANGE_HALFCLOSED)
+        {
+            String high = node.getChild(0).getChild(0).getText();
+            if (high.charAt(0) == '.')
+            {
+                high = high.substring(1);
+            }
+            Double highVal = DoubleValue.parseString(high);
+            spec = new EvalMatchUntilSpec(null, highVal.intValue());
+        }
+        else if (type == MATCH_UNTIL_RANGE_BOUNDED)
+        {
+            Double low = DoubleValue.parseString(node.getChild(0).getChild(0).getText());
+            spec = new EvalMatchUntilSpec(low.intValue(), low.intValue());
+        }
+        else if (type == MATCH_UNTIL_RANGE_CLOSED)
+        {
+            Double low = DoubleValue.parseString(node.getChild(0).getChild(0).getText());
+            String high = node.getChild(0).getChild(1).getText();
+            if (high.charAt(0) == '.')
+            {
+                high = high.substring(1);
+            }
+            Double highVal = DoubleValue.parseString(high);
+            spec = new EvalMatchUntilSpec(low.intValue(), highVal.intValue());
+        }
+        else
+        {
+            spec = new EvalMatchUntilSpec(null, null);
+        }
+
+        EvalMatchUntilNode fbNode = new EvalMatchUntilNode(spec);
+        astPatternNodeMap.put(node, fbNode);
     }
 
     private void leaveSelectClause(Tree node)

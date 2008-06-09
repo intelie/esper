@@ -124,6 +124,10 @@ public abstract class EvalNode implements MetaDefItem
         {
             evalNodeAnalysisResult.add((EvalObserverNode) currentNode);
         }
+        if (currentNode instanceof EvalMatchUntilNode)
+        {
+            evalNodeAnalysisResult.add((EvalMatchUntilNode) currentNode);
+        }
         for (EvalNode node : currentNode.getChildNodes())
         {
             recursiveAnalyzeChildNodes(evalNodeAnalysisResult, node);

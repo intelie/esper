@@ -215,4 +215,9 @@ public class SupportBean implements Serializable
     {
         this.enumValue = enumValue;
     }
+
+    public SupportBean getThis()
+    {
+        return this;
+    }
 }

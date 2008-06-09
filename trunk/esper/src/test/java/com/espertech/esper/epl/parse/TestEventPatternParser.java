@@ -12,7 +12,7 @@ public class TestEventPatternParser extends TestCase
 {
     public void testDisplayAST() throws Exception
     {
-        String expression = "B(a('aa').b.c[1].d.e(\"ee\")=2)";
+        String expression = "A->match [..10] (B or C) until C->D";
 
         log.debug(".testDisplayAST parsing: " + expression);
         Tree ast = parse(expression);
@@ -361,6 +361,32 @@ public class TestEventPatternParser extends TestCase
         assertIsValid("A where timer:within(1 days 1 milliseconds)");
         assertIsValid("A where timer:within(100 days 0.00001 millisecond)");
         assertIsValid("A where timer:within(100 hours 3 minutes 1.00001 millisecond)");
+
+        // match until
+        assertIsValid("match A until B");
+        assertIsValid("every match A until B");
+        assertIsValid("every (match A until B)");
+        assertIsValid("every (match (A where timer:within(10 sec)) until (B where timer:within(10 sec)))");
+        assertIsValid("match (A or B) until (B or C)");
+        assertIsValid("match (A -> B) until (B -> C)");
+        assertIsValid("match (A and B) until (B and C)");
+        assertIsValid("(match a=A until b=B) or (match d=D until e=E)");
+        assertIsValid("match a=A until b=B or match d=D until e=E");
+        assertIsValid("(match (a=A or X=x) until (b=B)) -> (match (d=D) until (e=E and e=E))");
+        assertIsValid("every (match A until B)");
+        assertIsValid("A -> match B until C -> D");
+        assertIsValid("match B until C -> match B until C -> match B until C");
+        assertIsValid("match (match B until B1) until (match D until C) -> E");
+        assertIsValid("match [1] A until B");
+        assertIsValid("match [1..] A until B");
+        assertIsValid("match [1 ..] A until B");
+        assertIsValid("match [..2] A until B");
+        assertIsValid("match [.. 2] A until B");
+        assertIsValid("match [0 .. 10] A until B");
+        assertIsValid("match [0..10] A until B");
+        assertIsValid("match [0:10] A until B");
+        assertIsValid("match [0 : 10] A until B");
+        assertIsValid("match [5] A");   // no until
     }
 
     public void testParserNodeGeneration() throws Exception

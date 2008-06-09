@@ -278,7 +278,27 @@ public class EventBeanUtility
         String[] properties = event.getEventType().getPropertyNames();
         for (int i = 0; i < properties.length; i++)
         {
-            writer.println( "#" + i + "  " + properties[i] + " = " + event.get(properties[i]));
+            String propName = properties[i];
+            if (propName.contains("[]"))
+            {
+                propName = propName.replace("[]", "");
+            }
+
+            Object property = event.get(propName);
+            String printProperty;
+            if (property == null)
+            {
+                printProperty = "null";
+            }
+            else if (property.getClass().isArray())
+            {
+                printProperty = "Array :" + Arrays.toString((Object[]) property);
+            }
+            else
+            {
+                printProperty = property.toString();
+            }
+            writer.println( "#" + i + "  " + propName + " = " + printProperty);
         }
     }
 

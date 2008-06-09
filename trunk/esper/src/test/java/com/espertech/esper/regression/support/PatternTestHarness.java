@@ -8,7 +8,7 @@ import com.espertech.esper.client.time.TimerControlEvent;
 import com.espertech.esper.client.time.TimerEvent;
 import com.espertech.esper.event.EventBean;
 import com.espertech.esper.event.EventBeanUtility;
-import com.espertech.esper.support.bean.SupportBeanConstants;
+import com.espertech.esper.support.bean.*;
 import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.support.util.SupportUpdateListener;
 import org.apache.commons.logging.Log;
@@ -56,6 +56,13 @@ public class PatternTestHarness implements SupportBeanConstants
     private void runTest(PatternTestStyle testStyle) throws Exception
     {
         Configuration config = SupportConfigFactory.getConfiguration();
+        config.addEventTypeAlias("A", SupportBean_A.class);
+        config.addEventTypeAlias("B", SupportBean_B.class);
+        config.addEventTypeAlias("C", SupportBean_C.class);
+        config.addEventTypeAlias("D", SupportBean_D.class);
+        config.addEventTypeAlias("E", SupportBean_E.class);
+        config.addEventTypeAlias("F", SupportBean_F.class);
+        config.addEventTypeAlias("G", SupportBean_G.class);
         config.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
         EPServiceProvider serviceProvider = EPServiceProviderManager.getDefaultProvider(config);
         serviceProvider.initialize();
@@ -321,7 +328,9 @@ public class PatternTestHarness implements SupportBeanConstants
     {
         for (Map.Entry<String, Object> entry : eventDesc.getEventProperties().entrySet())
         {
-            if (!(eventBean.get(entry.getKey()) == (entry.getValue())))
+            Object left = eventBean.get(entry.getKey());
+            Object right = entry.getValue();
+            if (left != right)
             {
                 return false;
             }

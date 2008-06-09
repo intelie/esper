@@ -141,48 +141,51 @@ public class SelectExprEvalProcessor implements SelectExprProcessor
         // Find if there is any tagged event types:
         // This is a special case for patterns: select a, b from pattern [a=A -> b=B]
         // We'd like to maintain 'A' and 'B' EventType in the Map type, and 'a' and 'b' EventBeans in the event bean
-        for (int i = 0; i < selectionList.size(); i++)
+        if (insertIntoDesc == null) // TODO - right?
         {
-            if (!(expressionNodes[i] instanceof ExprIdentNode))
+            for (int i = 0; i < selectionList.size(); i++)
             {
-                continue;
-            }
-
-            ExprIdentNode identNode = (ExprIdentNode) expressionNodes[i];
-            String propertyName = identNode.getResolvedPropertyName();
-            final int streamNum = identNode.getStreamId();
-
-            EventType eventTypeStream = typeService.getEventTypes()[streamNum];
-            if (!(eventTypeStream instanceof TaggedCompositeEventType))
-            {
-                continue;
-            }
-
-            TaggedCompositeEventType comp = (TaggedCompositeEventType) eventTypeStream;
-            Pair<EventType, String> pair = comp.getTaggedEventTypes().get(propertyName);
-            if (pair == null)
-            {
-                continue;
-            }
-
-            // A match was found, we replace the expression
-            final String tagName = propertyName;
-            ExprEvaluator evaluator = new ExprEvaluator() {
-
-                public Object evaluate(EventBean[] eventsPerStream, boolean isNewData)
+                if (!(expressionNodes[i] instanceof ExprIdentNode))
                 {
-                    EventBean streamEvent = eventsPerStream[streamNum];
-                    if (streamEvent == null)
-                    {
-                        return null;
-                    }
-                    TaggedCompositeEventBean taggedComposite = (TaggedCompositeEventBean) streamEvent;
-                    return taggedComposite.getEventBean(tagName);
+                    continue;
                 }
-            };
 
-            expressionNodes[i] = evaluator;
-            expressionReturnTypes[i] = pair.getFirst();
+                ExprIdentNode identNode = (ExprIdentNode) expressionNodes[i];
+                String propertyName = identNode.getResolvedPropertyName();
+                final int streamNum = identNode.getStreamId();
+
+                EventType eventTypeStream = typeService.getEventTypes()[streamNum];
+                if (!(eventTypeStream instanceof TaggedCompositeEventType))
+                {
+                    continue;
+                }
+
+                TaggedCompositeEventType comp = (TaggedCompositeEventType) eventTypeStream;
+                Pair<EventType, String> pair = comp.getTaggedEventTypes().get(propertyName);
+                if (pair == null)
+                {
+                    continue;
+                }
+
+                // A match was found, we replace the expression
+                final String tagName = propertyName;
+                ExprEvaluator evaluator = new ExprEvaluator() {
+
+                    public Object evaluate(EventBean[] eventsPerStream, boolean isNewData)
+                    {
+                        EventBean streamEvent = eventsPerStream[streamNum];
+                        if (streamEvent == null)
+                        {
+                            return null;
+                        }
+                        TaggedCompositeEventBean taggedComposite = (TaggedCompositeEventBean) streamEvent;
+                        return taggedComposite.getEventBean(tagName);
+                    }
+                };
+
+                expressionNodes[i] = evaluator;
+                expressionReturnTypes[i] = pair.getFirst();
+            }
         }
 
         // Find if there is any stream expression (ExprStreamNode) :

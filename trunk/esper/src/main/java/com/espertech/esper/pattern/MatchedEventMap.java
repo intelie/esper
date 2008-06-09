@@ -22,9 +22,9 @@ public interface MatchedEventMap
     /**
      * Add an event to the collection identified by the given tag.
      * @param tag is an identifier to retrieve the event from
-     * @param event is the event object to be added
+     * @param event is the event object or array of event object to be added
      */
-    public void add(final String tag, final EventBean event);
+    public void add(final String tag, final Object event);
 
     /**
      * Returns a map containing the events where the key is the event tag string and the value is the event

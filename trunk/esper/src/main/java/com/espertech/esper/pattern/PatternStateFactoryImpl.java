@@ -52,6 +52,11 @@ public class PatternStateFactoryImpl implements PatternStateFactory
         return new EvalFollowedByStateNode(parentNode, evalFollowedByNode, beginState, context);
     }
 
+    public EvalStateNode makeMatchUntilState(Evaluator parentNode, EvalMatchUntilNode evalMatchUntilNode, MatchedEventMap beginState, Object stateNodeId)
+    {
+        return new EvalMatchUntilStateNode(parentNode, evalMatchUntilNode, beginState, context);
+    }
+
     public EvalStateNode makeFilterStateNode(Evaluator parentNode, EvalFilterNode evalFilterNode, MatchedEventMap beginState, Object stateNodeId)
     {
         return new EvalFilterStateNode(parentNode, evalFilterNode, beginState, context);

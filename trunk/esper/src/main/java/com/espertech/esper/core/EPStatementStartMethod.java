@@ -130,7 +130,7 @@ public class EPStatementStartMethod
         else if (streamSpec instanceof PatternStreamSpecCompiled)
         {
             PatternStreamSpecCompiled patternStreamSpec = (PatternStreamSpecCompiled) streamSpec;
-            final EventType eventType = services.getEventAdapterService().createAnonymousCompositeType(patternStreamSpec.getTaggedEventTypes());
+            final EventType eventType = services.getEventAdapterService().createAnonymousCompositeType(patternStreamSpec.getTaggedEventTypes(), patternStreamSpec.getArrayEventTypes());
             final EventStream sourceEventStream = new ZeroDepthStream(eventType);
             eventStreamParentViewable = sourceEventStream;
 
@@ -138,7 +138,7 @@ public class EPStatementStartMethod
             rootNode.addChildNode(patternStreamSpec.getEvalNode());
 
             PatternMatchCallback callback = new PatternMatchCallback() {
-                public void matchFound(Map<String, EventBean> matchEvent)
+                public void matchFound(Map<String, Object> matchEvent)
                 {
                     EventBean compositeEvent = statementContext.getEventAdapterService().adapterForCompositeEvent(eventType, matchEvent);
                     sourceEventStream.insert(compositeEvent);
@@ -464,7 +464,7 @@ public class EPStatementStartMethod
             else if (streamSpec instanceof PatternStreamSpecCompiled)
             {
                 PatternStreamSpecCompiled patternStreamSpec = (PatternStreamSpecCompiled) streamSpec;
-                final EventType eventType = services.getEventAdapterService().createAnonymousCompositeType(patternStreamSpec.getTaggedEventTypes());
+                final EventType eventType = services.getEventAdapterService().createAnonymousCompositeType(patternStreamSpec.getTaggedEventTypes(), patternStreamSpec.getArrayEventTypes());
                 final EventStream sourceEventStream = new ZeroDepthStream(eventType);
                 eventStreamParentViewable[i] = sourceEventStream;
                 unmaterializedViewChain[i] = services.getViewService().createFactories(i, sourceEventStream.getEventType(), streamSpec.getViewSpecs(), statementContext);
@@ -473,7 +473,7 @@ public class EPStatementStartMethod
                 rootNode.addChildNode(patternStreamSpec.getEvalNode());
 
                 PatternMatchCallback callback = new PatternMatchCallback() {
-                    public void matchFound(Map<String, EventBean> matchEvent)
+                    public void matchFound(Map<String, Object> matchEvent)
                     {
                         EventBean compositeEvent = statementContext.getEventAdapterService().adapterForCompositeEvent(eventType, matchEvent);
                         sourceEventStream.insert(compositeEvent);

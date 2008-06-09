@@ -288,6 +288,19 @@ public class Patterns
     }
 
     /**
+     * Match-until-pattern expression matches a certain number of occurances until a second expression becomes true.
+     * @param low - low number of matches, or null if no lower boundary
+     * @param high - high number of matches, or null if no high boundary
+     * @param match - the pattern expression that is sought to match repeatedly
+     * @param until - the pattern expression that ends matching (optional, can be null)
+     * @return pattern expression
+     */
+    public static PatternMatchUntilExpr matchUntil(Integer low, Integer high, PatternExpr match, PatternExpr until)
+    {
+        return new PatternMatchUntilExpr(low, high, match, until);
+    }
+
+    /**
      * Timer-at observer
      * @param minutes a single integer value supplying the minute to fire the timer, or null for any (wildcard) minute
      * @param hours a single integer value supplying the hour to fire the timer, or null for any (wildcard) hour

@@ -30,6 +30,8 @@ import com.espertech.esper.collection.Pair;
 
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Set;
+import java.util.HashSet;
 import java.net.URI;
 
 /**
@@ -104,8 +106,34 @@ public class PatternStreamSpecRaw extends StreamSpecBase implements StreamSpecRa
             throw new ExprValidationException("Failed to resolve pattern object: " + e.getMessage(), e); 
         }
 
+        // Determine tags that are arrays of events, all under the "match" clause
+        Set<String> matchUntilArrayTags = new HashSet<String>();
+        for (EvalMatchUntilNode matchUntilNode : evalNodeAnalysisResult.getMatchUntilNodes())
+        {
+            Set<String> arrayTags = null;
+            EvalNodeAnalysisResult matchUntilAnalysisResult = EvalNode.recursiveAnalyzeChildNodes(matchUntilNode.getChildNodes().get(0));
+            for (EvalFilterNode filterNode : matchUntilAnalysisResult.getFilterNodes())
+            {
+                String optionalTag = filterNode.getEventAsName();
+                if (optionalTag != null)
+                {
+                    if (arrayTags == null)
+                    {
+                        arrayTags = new HashSet<String>();
+                    }
+                    arrayTags.add(optionalTag);
+                }
+            }
+            if (arrayTags != null)
+            {
+                matchUntilArrayTags.addAll(arrayTags);
+            }
+            matchUntilNode.setTagsArrayedSet(arrayTags);
+        }
+
         // Resolve all event types; some filters are tagged and we keep the order in which they are specified
         LinkedHashMap<String, Pair<EventType, String>> taggedEventTypes = new LinkedHashMap<String, Pair<EventType, String>>();
+        LinkedHashMap<String, Pair<EventType, String>> arrayEventTypes = new LinkedHashMap<String, Pair<EventType, String>>();
         for (EvalFilterNode filterNode : evalNodeAnalysisResult.getFilterNodes())
         {
             String eventName = filterNode.getRawFilterSpec().getEventTypeAlias();
@@ -127,7 +155,15 @@ public class PatternStreamSpecRaw extends StreamSpecBase implements StreamSpecRa
                             "' has already been declared for events of type " + existingType.getUnderlyingType().getName());
                 }
                 pair = new Pair<EventType, String>(eventType, eventName);
-                taggedEventTypes.put(optionalTag, pair);
+
+                if (matchUntilArrayTags.contains(optionalTag))
+                {
+                    arrayEventTypes.put(optionalTag, pair);                    
+                }
+                else
+                {
+                    taggedEventTypes.put(optionalTag, pair);
+                }
             }
 
             // For this filter, filter types are all known tags at this time,
@@ -151,6 +187,6 @@ public class PatternStreamSpecRaw extends StreamSpecBase implements StreamSpecRa
             filterNode.setFilterSpec(spec);
         }
 
-        return new PatternStreamSpecCompiled(evalNode, taggedEventTypes, this.getViewSpecs(), this.getOptionalStreamName(), this.isUnidirectional());
+        return new PatternStreamSpecCompiled(evalNode, taggedEventTypes, arrayEventTypes, this.getViewSpecs(), this.getOptionalStreamName(), this.isUnidirectional());
     }
 }

@@ -40,6 +40,10 @@ public class EPServiceProviderImpl implements EPServiceProviderSPI
      */
     public EPServiceProviderImpl(Configuration configuration, String engineURI) throws ConfigurationException
     {
+        if (configuration == null)
+        {
+            throw new NullPointerException("Unexpected null value received for configuration");
+        }
         this.engineURI = engineURI;
         configSnapshot = takeSnapshot(configuration);
         initialize();

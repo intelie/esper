@@ -351,12 +351,29 @@ patternOp
 atomicExpr
 	:	eventFilterExpr
 	|   	^( ac=OBSERVER_EXPR IDENT IDENT parameter* { leaveNode($ac); } )
+	|	matchUntilExpr
 	;
 
 eventFilterExpr
 	:	^( f=EVENT_FILTER_EXPR IDENT? CLASS_IDENT (valueExpr)* { leaveNode($f); } )
 	;
 	
+matchUntilExpr
+	:	^( m=MATCH matchUntilRange? exprChoice exprChoice? { leaveNode($m); } )
+	;
+
+matchUntilRange
+	:	^(MATCH_UNTIL_RANGE_CLOSED matchUntilRangeParam matchUntilRangeParam)
+	| 	^(MATCH_UNTIL_RANGE_BOUNDED matchUntilRangeParam)
+	| 	^(MATCH_UNTIL_RANGE_HALFCLOSED matchUntilRangeParam)
+	|	^(MATCH_UNTIL_RANGE_HALFOPEN matchUntilRangeParam)
+	;
+
+matchUntilRangeParam
+	:	NUM_DOUBLE
+	|	NUM_INT
+	;
+
 filterParam
 	:	^(EVENT_FILTER_PARAM valueExpr (valueExpr)*)
 	;

@@ -26,7 +26,8 @@ import java.util.Map;
 public class PatternStreamSpecCompiled extends StreamSpecBase implements StreamSpecCompiled
 {
     private final EvalNode evalNode;
-    private final Map<String, Pair<EventType, String>> taggedEventTypes;       // Stores types for filters with tags
+    private final Map<String, Pair<EventType, String>> taggedEventTypes;       // Stores types for filters with tags, single event
+    private final Map<String, Pair<EventType, String>> arrayEventTypes;       // Stores types for filters with tags, array event
 
     /**
      * Ctor.
@@ -36,7 +37,7 @@ public class PatternStreamSpecCompiled extends StreamSpecBase implements StreamS
      * @param optionalStreamName - stream name, or null if none supplied
      * @param isUnidirectional - true to indicate a unidirectional stream in a join, applicable for joins
      */
-    public PatternStreamSpecCompiled(EvalNode evalNode, Map<String, Pair<EventType, String>> taggedEventTypes, List<ViewSpec> viewSpecs, String optionalStreamName, boolean isUnidirectional)
+    public PatternStreamSpecCompiled(EvalNode evalNode, Map<String, Pair<EventType, String>> taggedEventTypes, Map<String, Pair<EventType, String>> arrayEventTypes, List<ViewSpec> viewSpecs, String optionalStreamName, boolean isUnidirectional)
     {
         super(optionalStreamName, viewSpecs, isUnidirectional);
         this.evalNode = evalNode;
@@ -44,6 +45,10 @@ public class PatternStreamSpecCompiled extends StreamSpecBase implements StreamS
         Map<String, Pair<EventType, String>> copy = new HashMap<String, Pair<EventType, String>>();
         copy.putAll(taggedEventTypes);
         this.taggedEventTypes = copy;
+
+        copy = new HashMap<String, Pair<EventType, String>>();
+        copy.putAll(arrayEventTypes);
+        this.arrayEventTypes = copy;
     }
 
     /**
@@ -62,5 +67,10 @@ public class PatternStreamSpecCompiled extends StreamSpecBase implements StreamS
     public Map<String, Pair<EventType, String>> getTaggedEventTypes()
     {
         return taggedEventTypes;
+    }
+
+    public Map<String, Pair<EventType, String>> getArrayEventTypes()
+    {
+        return arrayEventTypes;
     }
 }

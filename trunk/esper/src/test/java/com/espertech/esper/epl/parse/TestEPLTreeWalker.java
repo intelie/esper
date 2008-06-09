@@ -254,6 +254,62 @@ public class TestEPLTreeWalker extends TestCase
         assertTrue(raw.isExistsSubstitutionParameters());
     }
 
+    public void testWalkPatternMatchUntil() throws Exception
+    {
+        EPLTreeWalker walker = parseAndWalkPattern("match A until (B or C)");
+        StatementSpecRaw raw = walker.getStatementSpec();
+        PatternStreamSpecRaw a = (PatternStreamSpecRaw) raw.getStreamSpecs().get(0);
+        EvalMatchUntilNode matchNode = (EvalMatchUntilNode) a.getEvalNode();
+        assertEquals(2, matchNode.getChildNodes().size());
+        assertTrue(matchNode.getChildNodes().get(0) instanceof EvalFilterNode);
+        assertTrue(matchNode.getChildNodes().get(1) instanceof EvalOrNode);
+
+        EvalMatchUntilSpec spec = getMatchUntilSpec("match A until (B or C)");
+        assertNull(spec.getLowerBounds());
+        assertNull(spec.getUpperBounds());
+
+        spec = getMatchUntilSpec("match [1..10] A until (B or C)");
+        assertEquals(1, (int) spec.getLowerBounds());
+        assertEquals(10, (int) spec.getUpperBounds());
+
+        spec = getMatchUntilSpec("match [1 .. 10] A until (B or C)");
+        assertEquals(1, (int) spec.getLowerBounds());
+        assertEquals(10, (int) spec.getUpperBounds());
+
+        spec = getMatchUntilSpec("match [1:10] A until (B or C)");
+        assertEquals(1, (int) spec.getLowerBounds());
+        assertEquals(10, (int) spec.getUpperBounds());
+
+        spec = getMatchUntilSpec("match [1..] A until (B or C)");
+        assertEquals(1, (int) spec.getLowerBounds());
+        assertEquals(null, spec.getUpperBounds());
+
+        spec = getMatchUntilSpec("match [1 ..] A until (B or C)");
+        assertEquals(1, (int) spec.getLowerBounds());
+        assertEquals(null, spec.getUpperBounds());
+
+        spec = getMatchUntilSpec("match [..2] A until (B or C)");
+        assertEquals(null, spec.getLowerBounds());
+        assertEquals(2, (int) spec.getUpperBounds());
+
+        spec = getMatchUntilSpec("match [.. 2] A until (B or C)");
+        assertEquals(null, spec.getLowerBounds());
+        assertEquals(2, (int) spec.getUpperBounds());
+
+        spec = getMatchUntilSpec("match [2] A until (B or C)");
+        assertEquals(2, (int) spec.getLowerBounds());
+        assertEquals(2, (int) spec.getUpperBounds());
+    }
+
+    private EvalMatchUntilSpec getMatchUntilSpec(String text) throws Exception
+    {
+        EPLTreeWalker walker = parseAndWalkPattern(text);
+        StatementSpecRaw raw = walker.getStatementSpec();
+        PatternStreamSpecRaw a = (PatternStreamSpecRaw) raw.getStreamSpecs().get(0);
+        EvalMatchUntilNode matchNode = (EvalMatchUntilNode) a.getEvalNode();
+        return matchNode.getSpec();
+    }
+
     public void testWalkSimpleWhere() throws Exception
     {
         String expression = EXPRESSION + "where win1.f1=win2.f2";

@@ -20,5 +20,5 @@ public interface PatternMatchCallback
      * Indicate matching events.
      * @param matchEvent contains a map of event tags and event objects
      */
-    public void matchFound(Map<String, EventBean> matchEvent);
+    public void matchFound(Map<String, Object> matchEvent);
 }

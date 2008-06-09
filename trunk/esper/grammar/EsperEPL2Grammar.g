@@ -82,6 +82,8 @@ tokens
 	SNAPSHOT='snapshot';
 	SET='set';
 	VARIABLE='variable';
+	MATCH='match';
+	UNTIL='until';
 	
    	NUMERIC_PARAM_RANGE;
    	NUMERIC_PARAM_LIST;
@@ -174,6 +176,10 @@ tokens
 	ON_SET_EXPR;
 	CREATE_VARIABLE_EXPR;
 	METHOD_JOIN_EXPR;
+	MATCH_UNTIL_RANGE_HALFOPEN;
+	MATCH_UNTIL_RANGE_HALFCLOSED;
+	MATCH_UNTIL_RANGE_CLOSED;
+	MATCH_UNTIL_RANGE_BOUNDED;
 	
    	INT_TYPE;
    	LONG_TYPE;
@@ -905,9 +911,9 @@ qualifyExpression
 	;
 	
 guardPostFix
-	:	(atomicExpression | l=LPAREN patternExpression RPAREN) (w=WHERE guardExpression)?
+	:	(atomicExpression | matchUntilExpression | l=LPAREN patternExpression RPAREN) (w=WHERE guardExpression)?
 		-> {$w != null}? ^(GUARD_EXPR atomicExpression? patternExpression? guardExpression) 
-		-> atomicExpression? patternExpression?
+		-> atomicExpression? matchUntilExpression? patternExpression?
 	;
 
 atomicExpression
@@ -923,6 +929,41 @@ guardExpression
 	:	IDENT COLON! IDENT LPAREN! (parameterSet)? RPAREN!
 	;
 
+matchUntilExpression
+	: 	MATCH 
+		matchUntilRange? 
+		(a=atomicExpression | LPAREN b=patternExpression RPAREN) 
+		(UNTIL (c=atomicExpression | LPAREN d=patternExpression RPAREN))?
+	  	-> ^(MATCH matchUntilRange? $a? $b? $c? $d?)
+	;
+	
+// syntax is [a..b]  or [..b]  or  [a..] or [a:b]   wherein a and b may be recognized as double
+matchUntilRange
+	:	LBRACK (
+			l=NUM_INT (  (d1=DOT DOT r=NUM_INT?) 
+			           | (c1=COLON r=NUM_INT)
+				  )? 
+		   |	db=NUM_DOUBLE (
+		                        d1=DOT r=NUM_INT? 
+		                        |
+		                        db2=NUM_DOUBLE
+		                      )? 
+		   |	DOT DOT r=NUM_INT
+		   |	DOT db3=NUM_DOUBLE
+		   )
+		RBRACK
+		-> {$l != null && d1 != null && r != null}? ^(MATCH_UNTIL_RANGE_CLOSED $l $r) 
+		-> {$l != null && d1 != null}? ^(MATCH_UNTIL_RANGE_HALFOPEN $l) 
+		-> {$l != null && c1 != null}? ^(MATCH_UNTIL_RANGE_CLOSED $l $r) 
+		-> {$l != null}? ^(MATCH_UNTIL_RANGE_BOUNDED $l) 
+		-> {$db != null && d1 != null && r != null}? ^(MATCH_UNTIL_RANGE_CLOSED $db $r) 
+		-> {$db != null && d1 != null}? ^(MATCH_UNTIL_RANGE_HALFOPEN $db) 
+		-> {$db != null && db2 != null}? ^(MATCH_UNTIL_RANGE_CLOSED $db $db2) 
+		-> {$db3 != null}? ^(MATCH_UNTIL_RANGE_HALFCLOSED $db3)
+		-> {$r != null}? ^(MATCH_UNTIL_RANGE_HALFCLOSED $r) 
+		-> ^(MATCH_UNTIL_RANGE_HALFCLOSED $db) 
+	;
+	
 //----------------------------------------------------------------------------
 // Parameter Set is used by guards, observers and views
 //----------------------------------------------------------------------------
