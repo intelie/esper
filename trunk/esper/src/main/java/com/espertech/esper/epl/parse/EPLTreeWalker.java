@@ -273,7 +273,7 @@ public class EPLTreeWalker extends EsperEPL2Ast
             case OBSERVER_EXPR:
                 leaveObserver(node);
                 break;
-            case MATCH: // TODO: grammar MATCH and UNTIL allow for property names, new keywords in doc
+            case MATCH_UNTIL_EXPR: // TODO: grammar MATCH and UNTIL allow for property names, new keywords in doc
                 leaveMatch(node);
                 break;
             case IN_SET:
@@ -1626,7 +1626,8 @@ public class EPLTreeWalker extends EsperEPL2Ast
     private void leaveMatch(Tree node) throws ASTWalkException
     {
         log.debug(".leaveMatch");
-        
+
+        boolean hasRange = true;
         int type = node.getChild(0).getType();
         EvalMatchUntilSpec spec;
         if (type == MATCH_UNTIL_RANGE_HALFOPEN)
@@ -1647,6 +1648,10 @@ public class EPLTreeWalker extends EsperEPL2Ast
         else if (type == MATCH_UNTIL_RANGE_BOUNDED)
         {
             Double low = DoubleValue.parseString(node.getChild(0).getChild(0).getText());
+            if ((low == 0))
+            {
+                throw new ASTWalkException("Incorrect range specification, a bounds of zero is not allowed");
+            }
             spec = new EvalMatchUntilSpec(low.intValue(), low.intValue());
         }
         else if (type == MATCH_UNTIL_RANGE_CLOSED)
@@ -1658,11 +1663,27 @@ public class EPLTreeWalker extends EsperEPL2Ast
                 high = high.substring(1);
             }
             Double highVal = DoubleValue.parseString(high);
+
+            if (highVal < low)
+            {
+                throw new ASTWalkException("Incorrect range specification, lower bounds value '" + low.intValue() +
+                        "' is higher then higher bounds '" + highVal.intValue() + "'");
+            }
+            if ((highVal == 0) && (low == 0))
+            {
+                throw new ASTWalkException("Incorrect range specification, lower bounds and higher bounds values are zero");
+            }
             spec = new EvalMatchUntilSpec(low.intValue(), highVal.intValue());
         }
         else
         {
             spec = new EvalMatchUntilSpec(null, null);
+            hasRange = false;
+        }
+
+        if ((node.getChildCount() == 2) && (hasRange) && (!spec.isTightlyBound()))
+        {
+            throw new ASTWalkException("Variable bounds repeat operator requires an until-expression");            
         }
 
         EvalMatchUntilNode fbNode = new EvalMatchUntilNode(spec);

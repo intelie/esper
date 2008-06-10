@@ -65,8 +65,6 @@ public class PatternMatchUntilExpr extends PatternExprBase
 
     public void toEPL(StringWriter writer)
     {
-        writer.write("match ");
-
         if ((low != null) || (high != null))
         {
             writer.write("[");

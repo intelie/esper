@@ -32,11 +32,9 @@ public class EvalMatchUntilSpec
 
         if ((lowerBounds != null) && (upperBounds != null))
         {
-            if (lowerBounds < upperBounds)
+            if (lowerBounds > upperBounds)
             {
-                int lower = upperBounds;
-                upperBounds = lowerBounds;
-                lowerBounds = lower;
+                throw new IllegalArgumentException("Lower bounds in match-until cannot be greater then the upper bounds");
             }
 
             if (lowerBounds == upperBounds)

@@ -178,6 +178,10 @@ public class PatternStreamSpecRaw extends StreamSpecBase implements StreamSpecRa
             filterTypes.put(selfStreamName, typePair);
             filterTypes.putAll(taggedEventTypes);
 
+            // for the filter, specify all tags used
+            LinkedHashMap<String, Pair<EventType, String>> filterTaggedEventTypes = new LinkedHashMap<String, Pair<EventType, String>>(taggedEventTypes);
+            filterTaggedEventTypes.remove(optionalTag);
+
             // handle array tags (match-until clause)
             LinkedHashMap<String, Pair<EventType, String>> arrayCompositeEventTypes = null;
             if (arrayEventTypes != null)
@@ -186,14 +190,19 @@ public class PatternStreamSpecRaw extends StreamSpecBase implements StreamSpecRa
                 EventType arrayTagCompositeEventType = eventAdapterService.createAnonymousCompositeType(new HashMap(), arrayEventTypes);
                 for (Map.Entry<String, Pair<EventType, String>> entry : arrayEventTypes.entrySet())
                 {
-                    filterTypes.put(entry.getKey(), new Pair<EventType, String>(arrayTagCompositeEventType, entry.getKey()));
-                    arrayCompositeEventTypes.put(entry.getKey(), new Pair<EventType, String>(arrayTagCompositeEventType, entry.getKey()));
+                    String tag = entry.getKey();
+                    if (!filterTypes.containsKey(tag))
+                    {
+                        Pair<EventType, String> pair = new Pair<EventType, String>(arrayTagCompositeEventType, tag);
+                        filterTypes.put(tag, pair);
+                        arrayCompositeEventTypes.put(tag, pair);
+                    }
                 }
             }
 
             StreamTypeService streamTypeService = new StreamTypeServiceImpl(filterTypes, engineURI, true, false);
             List<ExprNode> exprNodes = filterNode.getRawFilterSpec().getFilterExpressions();
-            FilterSpecCompiled spec = FilterSpecCompiler.makeFilterSpec(eventType, eventName, exprNodes, taggedEventTypes, arrayCompositeEventTypes, streamTypeService, methodResolutionService, timeProvider, variableService, eventAdapterService);
+            FilterSpecCompiled spec = FilterSpecCompiler.makeFilterSpec(eventType, eventName, exprNodes, filterTaggedEventTypes, arrayCompositeEventTypes, streamTypeService, methodResolutionService, timeProvider, variableService, eventAdapterService);
             filterNode.setFilterSpec(spec);
         }
 

@@ -11,18 +11,65 @@
          </para>
 
         <para>
-			Pattern expressions can consist of filter expressions combined with pattern operators. Expressions can contain further nested
-			pattern expressions by including the nested expression(s) in <literal>()</literal> round brackets.
+			Pattern expressions consist of pattern atoms and pattern operators:
          </para>
-         
+
+		<orderedlist>
+			<listitem>
+				<para>
+					Pattern <emphasis>atoms</emphasis> are the basic building blocks of patterns. Atoms are filter expressions, observers for time-based events and plug-in custom observers that observe external events not under the control of the engine.
+                </para>
+			</listitem>
+			<listitem>
+				<para>
+					Pattern <emphasis>operators</emphasis> control expression lifecycle and combine atoms logically or temporally.  
+                </para>
+			</listitem>
+		</orderedlist>
+			
+		<para>
+			The below table outlines in greater detail the different atoms available:
+		</para>
+			
+	   <table frame="topbot">
+			<title>Pattern Atoms</title>
+			<tgroup cols="2">
+				<colspec colwidth="1*"/>
+				<colspec colwidth="1.5*"/>
+				<thead>
+					<row>
+						<entry>Pattern Atom</entry>
+						<entry>Example</entry>
+					</row>
+				</thead>
+				<tbody>
+					<row>
+						<entry>Filter expressions specify an event to look for.</entry>
+						<entry><programlisting><![CDATA[StockTick(symbol='ABC', price > 100)]]></programlisting></entry>
+					</row>
+					<row>
+						<entry>Time-based event observers specify time intervals or time schedules.</entry>
+						<entry><programlisting><![CDATA[timer:interval(10 seconds)]]></programlisting>
+									<programlisting><![CDATA[timer:at(*, 16, *, *, *)]]></programlisting>
+						</entry>
+					</row>
+					<row>
+						<entry>Custom plug-in observers can add pattern language syntax for observing application-specific events.</entry>
+						<entry><programlisting><![CDATA[myapplication:myobserver("afile")]]></programlisting>
+						</entry>
+					</row>
+				</tbody>
+			</tgroup>
+		</table> 
+			
         <para>
-			There are 5 types of operators:
+			There are 4 types of operators:
          </para>
 
 		<orderedlist spacing="compact">
 			<listitem>
 				<para>
-					Operators that control pattern subexpression repetition: <literal>every</literal>
+					Operators that control pattern subexpression repetition: <literal>every</literal>, <literal>[num]</literal> and <literal>until</literal>
 				</para>
 			</listitem>
 			<listitem>
@@ -37,15 +84,15 @@
 			</listitem>
 			<listitem>
 				<para>
-					Guards are where-conditions that control the lifecycle of subexpressions. Examples are <literal>timer:within</literal>.
-				</para>
-			</listitem>
-			<listitem>
-				<para>
-					Observers observe time events as well as other events. Examples are <literal>timer:interval</literal> and <literal>timer:at</literal>.
+					Guards are where-conditions that control the lifecycle of subexpressions. Examples are <literal>timer:within</literal>. Custom plug-in guards may also be used.
 				</para>
 			</listitem>
 		</orderedlist>
+
+        <para>
+			Pattern expressions can be nested arbitrarily deep by including the nested expression(s) in <literal>()</literal> round brackets.
+         </para>
+
     </sect1>
 
     <sect1 id="pattern-how-to-use">
@@ -100,6 +147,24 @@ EPStatement myTrigger = admin.createEPL("select * from pattern [" +
 ]]></programlisting>
 		</sect2>
 		
+        <sect2 id="pattern-in-eql">
+           <title>Patterns in EPL</title>
+           
+			<para>
+				A pattern may appear anywhere in the <literal>from</literal> clause of an EPL statement including joins and subqueries. Patterns may therefore be used in combination with the <literal>where</literal> clause, <literal>group by</literal> clause, <literal>having</literal> clause as well as output rate limiting and <literal>insert into</literal>. In addition, a data window view can be declared onto a pattern.
+			</para>
+
+			<para>
+				This example statement demonstrates the idea by selecting a total price per customer over pairs of events (ServiceOrder followed by a ProductOrder event for the same customer id within 1 minute), occuring in the last 2 hours, in which the sum of price is greater then 100, and using a <literal>where</literal> clause to filter on name:
+			</para>
+			<programlisting><![CDATA[select a.custId, sum(a.price + b.price)
+from pattern [every a=ServiceOrder -> 
+    b=ProductOrder(custId = a.custId) where timer:within(1 min)].win:time(2 hour) 
+where a.name in ('Repair', b.name)
+group by a.custId
+having sum(a.price + b.price) > 100]]></programlisting>
+		</sect2>
+
         <sect2 id="patterns-howto-subscribe" >
            <title>Subscribing to Pattern Events</title>
            
@@ -149,17 +214,23 @@ EPStatement myTrigger = admin.createEPL("select * from pattern [" +
 				The <literal>hasNext()</literal> method can be used to determine if the pattern had fired.				 				
 			</para>
 
-			<programlisting><![CDATA[if (myPattern.iterator().hasNext())
-{
+			<programlisting><![CDATA[if (myPattern.iterator().hasNext()) {
 	ServiceMeasurement event = (ServiceMeasurement) view.iterator().next().get("alert");
     ... // some more code here to process the event
 }
-else
-{
+else {
     ... // no matching events at this time
 }]]></programlisting>
 
-		</sect2>                
+			<para>
+				Further, if a data window is defined onto a pattern, the iterator returns the pattern matches according to the data window expiry policy.
+			</para>
+
+			<para>
+				This pattern specifies a length window of 10 elements that retains the last 10 matches of A and B events, for use via iterator or for use in a join or subquery:
+			</para>
+			<programlisting><![CDATA[select * from pattern [every (A or B).win:length(10)]]></programlisting>
+		</sect2>
     </sect1>
 
     <sect1 id="pattern-op-precedence">
@@ -195,24 +266,32 @@ timer:interval(5 min) and not MyEvent]]></programlisting></entry>
 					</row>
 					<row>
 						<entry>2</entry>
-						<entry>Guard postfix</entry>
+						<entry>guard postfix</entry>
 						<entry><literal>where timer:within</literal> (or plug-in pattern guard)</entry>
 						<entry><programlisting><![CDATA[MyEvent where timer:within(1 sec)]]></programlisting></entry>
 					</row>
 					<row>
 						<entry>3</entry>
+						<entry>repeat</entry>
+						<entry><literal>[num]</literal>, <literal>until</literal></entry>
+						<entry><programlisting><![CDATA[[5] MyEvent]]></programlisting>
+									<programlisting><![CDATA[[1..3] MyEvent until MyOtherEvent]]></programlisting>
+						</entry>
+					</row>
+					<row>
+						<entry>4</entry>
 						<entry>and</entry>
 						<entry><literal>and</literal></entry>
 						<entry><programlisting><![CDATA[every (MyEvent and MyOtherEvent)]]></programlisting></entry>
 					</row>
 					<row>
-						<entry>4</entry>
+						<entry>5</entry>
 						<entry>or</entry>
 						<entry><literal>or</literal></entry>
 						<entry><programlisting><![CDATA[every (MyEvent or MyOtherEvent)]]></programlisting></entry>
 					</row>
 					<row>
-						<entry>5</entry>
+						<entry>6</entry>
 						<entry>followed-by</entry>
 						<entry><literal>-&gt;</literal></entry>
 						<entry><programlisting><![CDATA[every (MyEvent -> MyOtherEvent)]]></programlisting></entry>
@@ -251,22 +330,32 @@ timer:interval(5 min) and not MyEvent]]></programlisting></entry>
 					<row>
 						<entry>every A or B</entry>
 						<entry>(every A) or B</entry>
-						<entry>The <literal>every</literal> operator has higher precedence then the <literal>or</literal> operator</entry>
+						<entry>The <literal>every</literal> operator has higher precedence then the <literal>or</literal> operator.</entry>
 					</row>
 					<row>
 						<entry>every A -> B or C</entry>
 						<entry>(every A) -> (B or C)</entry>
-						<entry>The <literal>or</literal> operator has higher precedence then the <literal>followed-by</literal> operator</entry>
+						<entry>The <literal>or</literal> operator has higher precedence then the <literal>followed-by</literal> operator.</entry>
 					</row>
 					<row>
 						<entry>A and B or C</entry>
 						<entry>(A and B) or C</entry>
-						<entry>The <literal>and</literal> operator has higher precedence then the <literal>or</literal> operator</entry>
+						<entry>The <literal>and</literal> operator has higher precedence then the <literal>or</literal> operator.</entry>
 					</row>
 					<row>
 						<entry>every A where timer:within(5)</entry>
 						<entry>every (A where timer:within(5))</entry>
-						<entry>The <literal>every</literal> operator has higher precedence then the <literal>timer:within</literal> guard postfix</entry>
+						<entry>The <literal>every</literal> operator has higher precedence then the <literal>timer:within</literal> guard postfix.</entry>
+					</row>
+					<row>
+						<entry>A -> B until C -> D</entry>
+						<entry>A -> (B until C) -> D</entry>
+						<entry>The <literal>until</literal> operator has higher precedence then the <literal>followed-by</literal> operator.</entry>
+					</row>
+					<row>
+						<entry>[5] A or B </entry>
+						<entry>([5] A) or B</entry>
+						<entry>The <literal>[num]</literal> repeat operator has higher precedence then the <literal>or</literal> operator.</entry>
 					</row>
 				</tbody>
 			</tgroup>
@@ -391,7 +480,6 @@ RfidEvent(zone=1 and category=10)]]></programlisting>
 		<para>
 			The pattern above is satisfied as soon as only one event with zone in the interval [2, 9] is received.
 		 </para>
-
 	</sect1>
 
     <sect1 id="pattern-operators">
@@ -713,6 +801,170 @@ RfidEvent(zone=1 and category=10)]]></programlisting>
 			
         </sect2>
 
+        <sect2 id="pattern-repeat" >
+           <title>Repeat</title>
+           
+		   <para>
+			   The bounded repeat fires when the expression within evaluates to true a given number of times. The synopsis is as follows:
+		   </para>
+		   <synopsis>[<emphasis>match_count</emphasis>] <emphasis>repeat_pattern_expr</emphasis></synopsis>
+
+		   <para>
+			   The <emphasis>match_count</emphasis> number specifies how often the <emphasis>repeat_pattern_expr</emphasis> pattern expression must evaluate to true before the expression evaluates to true.
+		   </para>
+
+		   <para>
+			   For example, this pattern fires when the last of five A events arrives:
+		   </para>
+			<programlisting><![CDATA[[5] A]]></programlisting>
+
+		   <para>
+			   Parenthesis must be used for nested expressions. This pattern fires when the last of a total of five A or B events arrives:
+		   </para>
+			<programlisting><![CDATA[[5] (A or B)]]></programlisting>
+
+		   <para>
+			   Without parenthesis the pattern semantics change, according to the operator precendence listed earlier. This pattern fires when the last of a total of five A events arrives or a single B events, whichever happens first::
+		   </para>
+			<programlisting><![CDATA[[5] A or B]]></programlisting>
+
+		   <para>
+			   Tags may name events within the repeated pattern expression. The next pattern looks for two repetitions in which A follows B. The output event provides array properties of the same name:
+		   </para>
+			<programlisting><![CDATA[[2] (a=A -> b=B)]]></programlisting>
+			
+		   <para>
+			   Using tags with repeat is further described in <xref linkend="pattern-repeat-tags"/>.
+		   </para>			
+		</sect2>
+			
+		<sect2 id="pattern-repeat-until" >
+		   <title>Repeat-Until</title>
+		   <para>
+			   If it is not known in advance how many instances to match, the repeat-until provides control over when to stop matching.
+		   </para>
+
+		   <para>
+			   The repeat-until takes an optional range, a pattern expression to repeat, the <literal>until</literal> keyword and a second pattern expression to end the repetition. The synopsis is as follows:
+		   </para>
+		   <synopsis>[<emphasis>range</emphasis>] <emphasis>repeated_pattern_expr</emphasis> <literal>until</literal> <emphasis>end_pattern_expr</emphasis></synopsis>.
+
+			<para>
+				Without a range, the engine matches the <emphasis>repeated_pattern_expr</emphasis> pattern expression until the <emphasis>end_pattern_expr</emphasis> evaluates to true, at which time the expression turns true.
+			</para>
+				
+			<para>
+				A range may be given that indicates the minimum and maximum number of times that the engine matches the <emphasis>repeated_pattern_expr</emphasis> pattern expression.
+			</para>
+
+			<sect3 id="pattern-repeat-until-rangeclosed" >
+			   <title>Repeat-Until without Range</title>
+			   <para>
+				   In a closed range both low and high endpoint are given. The synopsis is:
+			   </para>
+			   <synopsis><literal>[</literal><emphasis>low_endpoint</emphasis><literal>..</literal><emphasis>high_endpoint</emphasis><literal>]</literal> <emphasis>repeated_pattern_expr</emphasis> <literal>until</literal> <emphasis>end_pattern_expr</emphasis></synopsis>
+
+			   <para>
+				   The closed-range repeat-until expression turns true when the <emphasis>repeated_pattern_expr</emphasis> pattern expression turns true at least <emphasis>low_endpoint</emphasis> number of times, and when thereafter the <emphasis>end_pattern_expr</emphasis> pattern expression turns true.
+			   </para>
+
+			<para>
+				If a the syntax contains a range with a low endpoint, then <emphasis>repeated_pattern_expr</emphasis> pattern expression
+				, The fires when an expression evaluates to true a given minimum number of times and thereafter a second expression evaluates to true. 
+			</para>
+
+			<para>
+				The fires when an expression evaluates to true a given minimum number of times and thereafter a second expression evaluates to true. 
+			</para>
+			   
+		   <para>
+			   The optional <emphasis>range</emphasis> provided within brackets specifies the minimum number of times that the repeating expression must evaluate to true, and the maximum number of times the repeating expression is expected to evaluate to true. 
+		   </para>
+		   
+			   <para>
+				   If the <emphasis>repeated_pattern_expr</emphasis> pattern expression does not turns true at least <emphasis>low_endpoint</emphasis> number of times, the whole expression is permanently false.
+			   </para>
+
+			   <para>
+				   If the <emphasis>repeated_pattern_expr</emphasis> pattern expression turns true <emphasis>high_endpoint</emphasis> number of times, then the <emphasis>repeated_pattern_expr</emphasis> pattern expression is not restarted.
+			   </para>
+			   
+			   <para>
+				   For example, this pattern fires when at least 2 A events arrive before a single B event arrives::
+			   </para>
+				<programlisting><![CDATA[[2..5] a=A until b=B]]></programlisting>
+
+			   <para>
+				   In the above pattern, if less then 2 A events arrive before a B event, the expression becomes permanently false and the pattern does not fire.
+			   </para>
+
+			   <para>
+				   The pattern above returns up to 5 A events under the tag 'a', and will always return at least 2 A events. The pattern also return the B event under tag 'b'.
+			   </para>
+
+			   <para>
+				   In a second example, here the pattern triggers when at least 10 A or B events arrive within 60 seconds after pattern start, indicating up to 20 matches back in the resulting composite event:
+			   </para>
+				<programlisting><![CDATA[[10..20] (a=A or b=B) until timer:interval(60)]]></programlisting>
+			</sect3>		   
+
+			<sect3 id="pattern-repeat-until-rangeclosed" >
+			   <title>Repeat-Until with a Range</title>
+			   <para>
+				   In a closed range both low and high endpoint are given. The synopsis is:
+			   </para>
+			   <synopsis><literal>[</literal><emphasis>low_endpoint</emphasis><literal>..</literal><emphasis>high_endpoint</emphasis><literal>]</literal> <emphasis>repeated_pattern_expr</emphasis> <literal>until</literal> <emphasis>end_pattern_expr</emphasis></synopsis>
+
+			   <para>
+				   The closed-range repeat-until expression turns true when the <emphasis>repeated_pattern_expr</emphasis> pattern expression turns true at least <emphasis>low_endpoint</emphasis> number of times, and when thereafter the <emphasis>end_pattern_expr</emphasis> pattern expression turns true.
+			   </para>
+
+			<para>
+				If a the syntax contains a range with a low endpoint, then <emphasis>repeated_pattern_expr</emphasis> pattern expression
+				, The fires when an expression evaluates to true a given minimum number of times and thereafter a second expression evaluates to true. 
+			</para>
+
+			<para>
+				The fires when an expression evaluates to true a given minimum number of times and thereafter a second expression evaluates to true. 
+			</para>
+			   
+		   <para>
+			   The optional <emphasis>range</emphasis> provided within brackets specifies the minimum number of times that the repeating expression must evaluate to true, and the maximum number of times the repeating expression is expected to evaluate to true. 
+		   </para>
+		   
+			   <para>
+				   If the <emphasis>repeated_pattern_expr</emphasis> pattern expression does not turns true at least <emphasis>low_endpoint</emphasis> number of times, the whole expression is permanently false.
+			   </para>
+
+			   <para>
+				   If the <emphasis>repeated_pattern_expr</emphasis> pattern expression turns true <emphasis>high_endpoint</emphasis> number of times, then the <emphasis>repeated_pattern_expr</emphasis> pattern expression is not restarted.
+			   </para>
+			   
+			   <para>
+				   For example, this pattern fires when at least 2 A events arrive before a single B event arrives::
+			   </para>
+				<programlisting><![CDATA[[2..5] a=A until b=B]]></programlisting>
+
+			   <para>
+				   In the above pattern, if less then 2 A events arrive before a B event, the expression becomes permanently false and the pattern does not fire.
+			   </para>
+
+			   <para>
+				   The pattern above returns up to 5 A events under the tag 'a', and will always return at least 2 A events. The pattern also return the B event under tag 'b'.
+			   </para>
+
+			   <para>
+				   In a second example, here the pattern triggers when at least 10 A or B events arrive within 60 seconds after pattern start, indicating up to 20 matches back in the resulting composite event:
+			   </para>
+				<programlisting><![CDATA[[10..20] (a=A or b=B) until timer:interval(60)]]></programlisting>
+			</sect3>		   
+
+			<sect3 id="pattern-repeat-tags" >
+			   <title>Repeat Using Tags</title>
+			</sect3>		   
+			  
+        </sect2>
+
         <sect2 id="pattern-logical-and" >
            <title>And</title>
     
@@ -832,240 +1084,256 @@ a=A -> (B(id = a.id) and C(id = a.id))]]></programlisting>
 
         </sect2>
                     
-    </sect1>
-
-    <sect1 id="pattern-guards">
-        <title>Pattern Guards</title>        
-
-		<indexterm><primary>pattern guard</primary></indexterm>
-		<para>
-			Guards are where-conditions that control the lifecycle of subexpressions. Custom guard functions can also be used. The section <xref linkend="extension"/> outlines guard plug-in development in greater detail.
-		</para>
-
-        <para>
-			Take as an example the following pattern expression:  
-        </para>
-		<programlisting><![CDATA[MyEvent where timer.within(10 sec)]]></programlisting>
-
-        <para>
-			In this pattern the <literal>timer:within</literal> guard controls the subexpression that is looking for MyEvent events. The guard terminates the subexpression looking for MyEvent events after 10 seconds after start of the pattern. Thus the pattern alerts only once when the first MyEvent event arrives within 10 seconds after start of the pattern.
-        </para>
-
-        <para>
-			The <literal>every</literal> keyword requires additional discussion since it also controls subexpression lifecycle. Let's add the <literal>every</literal> keyword to the example pattern:
-        </para>
-		<programlisting><![CDATA[every MyEvent where timer.within(10 sec)]]></programlisting>
-
-        <para>
-			The difference to the pattern without <literal>every</literal> is that each MyEvent event that arrives now starts a new subexpression, including a new guard, looking for a further MyEvent event. The result is that, when a MyEvent arrives within 10 seconds after pattern start, the pattern execution will look for the next MyEvent event to arrive within 10 seconds after the previous one.
-        </para>
-
-        <para>
-			By placing parentheses around the <literal>every</literal> keyword and its subexpression, we can have the <literal>every</literal> under the control of the guard:
-        </para>
-		<programlisting><![CDATA[(every MyEvent) where timer.within(10 sec)]]></programlisting>
-
-        <para>
-			In the pattern above, the guard terminates the subexpression looking for all MyEvent events after 10 seconds after start of the pattern. This pattern alerts for all MyEvent events arriving within 10 seconds after pattern start, and then stops.
-        </para>
-
-        <para>
-			Guards do not change the truth value of the subexpression of which the guard controls the lifecycle, and therefore do not cause a restart of the subexpression when used with the <literal>every</literal> operator. For example, the next pattern stops returning matches after 10 seconds unless a match occured within 10 seconds after pattern start:
-        </para>
-		<programlisting><![CDATA[every ( (A and B) where timer.within(10 sec) )]]></programlisting>
-
-        <sect2 id="pattern-timer-within" >
-           <title>timer:within</title>
-           
-			<indexterm><primary><literal>timer-within</literal> pattern guard</primary></indexterm>
-			<indexterm><primary>pattern guard</primary><secondary>timer-within</secondary></indexterm>
-            <para>
-				The <literal>timer:within</literal> guard acts like a stopwatch. 
-				If the associated pattern expression does not turn true within the specified time period it is stopped and permanently false.
-				The <literal>timer:within</literal> guard takes a time period (see <xref linkend="epl-syntax-time-periods"/>) or a number of seconds as a parameter.
-            </para>
-            
-            <para>
-				This pattern fires if an A event arrives within 5 seconds after statement creation.
-            </para>
-			<programlisting><![CDATA[A where timer:within (5 seconds)]]></programlisting>
-
-            <para>
-				This pattern fires for all A events that arrive within 5 seconds. After 5 seconds, this pattern stops matching even if more A events arrive.
-            </para>
-			<programlisting><![CDATA[(every A) where timer:within (5 seconds)]]></programlisting>
-            
-            <para>
-				This pattern is similar to the first pattern but here every time A arrives within 5 seconds, the pattern begins looking for A for another 5 seconds. As long
-				as A events arrive within 5 seconds after the last A, the pattern does not stop matching.
-            </para>
-			<programlisting><![CDATA[every (A where timer:within (5 sec))]]></programlisting>
-
-            <para>
-				This pattern matches for any one A or B event in the next 5 seconds.
-            </para>
-			<programlisting><![CDATA[( A or B ) where timer:within (5 sec)]]></programlisting>
-
-            <para>
-				This pattern matches for any 2 errors that happen 10 seconds within each other.
-            </para>
-			<programlisting><![CDATA[every (StatusEvent(status='ERROR') -> StatusEvent(status='ERROR') where timer:within (10 sec))]]></programlisting>
+		<sect2 id="pattern-guards">
+			<title>Pattern Guards</title>        
+	
+			<indexterm><primary>pattern guard</primary></indexterm>
+			<para>
+				Guards are where-conditions that control the lifecycle of subexpressions. Custom guard functions can also be used. The section <xref linkend="extension"/> outlines guard plug-in development in greater detail.
+			</para>
+	
+			<para>
+				The pattern guard where-condition has no relationship to the EPL <literal>where</literal> clause that filters sets of events.
+			</para>
 
 			<para>
-				The following guards are equivalent:
+				Take as an example the following pattern expression:
 			</para>
-			<programlisting><![CDATA[]]>timer:within(2 minutes 5 seconds)
+			<programlisting><![CDATA[MyEvent where timer.within(10 sec)]]></programlisting>
+	
+			<para>
+				In this pattern the <literal>timer:within</literal> guard controls the subexpression that is looking for MyEvent events. The guard terminates the subexpression looking for MyEvent events after 10 seconds after start of the pattern. Thus the pattern alerts only once when the first MyEvent event arrives within 10 seconds after start of the pattern.
+			</para>
+	
+			<para>
+				The <literal>every</literal> keyword requires additional discussion since it also controls subexpression lifecycle. Let's add the <literal>every</literal> keyword to the example pattern:
+			</para>
+			<programlisting><![CDATA[every MyEvent where timer.within(10 sec)]]></programlisting>
+	
+			<para>
+				The difference to the pattern without <literal>every</literal> is that each MyEvent event that arrives now starts a new subexpression, including a new guard, looking for a further MyEvent event. The result is that, when a MyEvent arrives within 10 seconds after pattern start, the pattern execution will look for the next MyEvent event to arrive within 10 seconds after the previous one.
+			</para>
+	
+			<para>
+				By placing parentheses around the <literal>every</literal> keyword and its subexpression, we can have the <literal>every</literal> under the control of the guard:
+			</para>
+			<programlisting><![CDATA[(every MyEvent) where timer.within(10 sec)]]></programlisting>
+
+			<para>
+				In the pattern above, the guard terminates the subexpression looking for all MyEvent events after 10 seconds after start of the pattern. This pattern alerts for all MyEvent events arriving within 10 seconds after pattern start, and then stops.
+			</para>
+	
+			<para>
+				Guards do not change the truth value of the subexpression of which the guard controls the lifecycle, and therefore do not cause a restart of the subexpression when used with the <literal>every</literal> operator. For example, the next pattern stops returning matches after 10 seconds unless a match occured within 10 seconds after pattern start:
+			</para>
+			<programlisting><![CDATA[every ( (A and B) where timer.within(10 sec) )]]></programlisting>
+
+			<sect3 id="pattern-timer-within" >
+			   <title>timer:within</title>
+			   
+				<indexterm><primary><literal>timer-within</literal> pattern guard</primary></indexterm>
+				<indexterm><primary>pattern guard</primary><secondary>timer-within</secondary></indexterm>
+				<para>
+					The <literal>timer:within</literal> guard acts like a stopwatch. 
+					If the associated pattern expression does not turn true within the specified time period it is stopped and permanently false.
+					The <literal>timer:within</literal> guard takes a time period (see <xref linkend="epl-syntax-time-periods"/>) or a number of seconds as a parameter.
+				</para>
+				
+				<para>
+					This pattern fires if an A event arrives within 5 seconds after statement creation.
+				</para>
+				<programlisting><![CDATA[A where timer:within (5 seconds)]]></programlisting>
+	
+				<para>
+					This pattern fires for all A events that arrive within 5 seconds. After 5 seconds, this pattern stops matching even if more A events arrive.
+				</para>
+				<programlisting><![CDATA[(every A) where timer:within (5 seconds)]]></programlisting>
+				
+				<para>
+					This pattern is similar to the first pattern but here every time A arrives within 5 seconds, the pattern begins looking for A for another 5 seconds. As long
+					as A events arrive within 5 seconds after the last A, the pattern does not stop matching.
+				</para>
+				<programlisting><![CDATA[every (A where timer:within (5 sec))]]></programlisting>
+	
+				<para>
+					This pattern matches for any one A or B event in the next 5 seconds.
+				</para>
+				<programlisting><![CDATA[( A or B ) where timer:within (5 sec)]]></programlisting>
+	
+				<para>
+					This pattern matches for any 2 errors that happen 10 seconds within each other.
+				</para>
+				<programlisting><![CDATA[every (StatusEvent(status='ERROR') -> StatusEvent(status='ERROR') where timer:within (10 sec))]]></programlisting>
+	
+				<para>
+					The following guards are equivalent:
+				</para>
+				<programlisting><![CDATA[]]>timer:within(2 minutes 5 seconds)
 timer:within(125 sec)
 timer:within(125)</programlisting>
 
-        </sect2>
-   </sect1>
+			</sect3>
+	   </sect2>	
+    </sect1>
    
-    <sect1 id="pattern-observers">
-        <title>Pattern Observers</title>
+    <sect1 id="pattern-atoms">
+        <title>Pattern Atoms</title>
 
-		<indexterm><primary>pattern observer</primary></indexterm>
-		<para>
-			Observers observe time-based events for which the thread-of-control originates by the engine timer thread. Custom observers can also be developed that observe timer events or other engine-external events. The section <xref linkend="extension"/> outlines observer plug-in development in greater detail.
-		</para>
+		<indexterm><primary>pattern atom</primary></indexterm>
 		
-        <sect2 id="pattern-timer-interval" >
-           <title>timer:interval</title>
-               
-			<indexterm><primary><literal>timer-interval</literal> pattern observer</primary></indexterm>
-			<indexterm><primary>pattern observer</primary><secondary>timer-interval</secondary></indexterm>
-            <para>
-				The <literal>timer:interval</literal> observer waits for the defined time before the truth value of the observer turns true.
-				The observer takes a time period (see <xref linkend="epl-syntax-time-periods"/>) or a number of seconds as a parameter.
-            </para>
+        <sect2 id="pattern-atom-filter" >
+			<title>Filter Atoms</title>
 
-            <para>
-				After event A arrived wait 10 seconds then indicate that the pattern matches.
-            </para>
-			<programlisting><![CDATA[A -> timer:interval(10 seconds) ]]></programlisting>
+			<para>
+				Filter atoms have been described in section <xref linkend="pattern-filter"/>.
+			</para>
+		</sect2>
 
-            <para>
-				The pattern below fires every 20 seconds.
-            </para>
-			<programlisting><![CDATA[every timer:interval(20 sec)]]></programlisting>
+        <sect2 id="pattern-atom-time" >
+			<title>Time-based Observer Atoms</title>
 
-            <para>
-				The next example pattern fires for every event A that is not followed by an event B within 60 seconds after event A arrived. B must have the same "id" property
-				value as A.
-            </para>
-			<programlisting><![CDATA[every a=A -> (timer:interval(60 sec) and not B(id=a.id)) ]]></programlisting>
-        </sect2>
+			<para>
+				Observers observe time-based events for which the thread-of-control originates by the engine timer or external timer event. Custom observers can also be developed that observe timer events or other engine-external application events such as a file-exists check. The section <xref linkend="extension"/> outlines observer plug-in development in greater detail.
+			</para>
 
-        <sect2 id="pattern-timer-at" >
-           <title>timer:at</title>
+			<sect3 id="pattern-timer-interval" >
+			   <title>timer:interval</title>
+				   
+				<indexterm><primary><literal>timer-interval</literal> pattern observer</primary></indexterm>
+				<indexterm><primary>pattern observer</primary><secondary>timer-interval</secondary></indexterm>
+				<para>
+					The <literal>timer:interval</literal> observer waits for the defined time before the truth value of the observer turns true.
+					The observer takes a time period (see <xref linkend="epl-syntax-time-periods"/>) or a number of seconds as a parameter.
+				</para>
+	
+				<para>
+					After event A arrived wait 10 seconds then indicate that the pattern matches.
+				</para>
+				<programlisting><![CDATA[A -> timer:interval(10 seconds) ]]></programlisting>
+	
+				<para>
+					The pattern below fires every 20 seconds.
+				</para>
+				<programlisting><![CDATA[every timer:interval(20 sec)]]></programlisting>
+	
+				<para>
+					The next example pattern fires for every event A that is not followed by an event B within 60 seconds after event A arrived. B must have the same "id" property
+					value as A.
+				</para>
+				<programlisting><![CDATA[every a=A -> (timer:interval(60 sec) and not B(id=a.id)) ]]></programlisting>
+			</sect3>
 
-			<indexterm><primary><literal>timer-at</literal> pattern observer</primary></indexterm>
-			<indexterm><primary>pattern observer</primary><secondary>timer-at</secondary></indexterm>
-            <para>
-				The <literal>timer:at</literal> observer is similar in function to the Unix “crontab” command. At a specified time the 
-				expression turns true. The <literal>at</literal> operator can also be made to pattern match at regular intervals by using an <literal>every</literal> operator 
-				in front of the <literal>timer:at</literal> operator. 
-            </para>
+			<sect3 id="pattern-timer-at" >
+			   <title>timer:at</title>
+	
+				<indexterm><primary><literal>timer-at</literal> pattern observer</primary></indexterm>
+				<indexterm><primary>pattern observer</primary><secondary>timer-at</secondary></indexterm>
+				<para>
+					The <literal>timer:at</literal> observer is similar in function to the Unix “crontab” command. At a specified time the 
+					expression turns true. The <literal>at</literal> operator can also be made to pattern match at regular intervals by using an <literal>every</literal> operator 
+					in front of the <literal>timer:at</literal> operator. 
+				</para>
+					
+				<para>
+					The syntax is: <literal>timer:at (minutes, hours, days of month, months, days of week [, seconds]).</literal>
+				</para>
+					
+				<para>
+					The value for seconds is optional. Each element allows wildcard <literal>*</literal> values. Ranges can be specified 
+					by means of lower bounds then a colon ‘:’ then the upper bound. The division operator <literal>*/x</literal> can be used to 
+					specify that every x<subscript>th</subscript> value is valid. Combinations of these operators can be used by placing these into square brackets([]).
+				</para>
 				
-            <para>
-				The syntax is: <literal>timer:at (minutes, hours, days of month, months, days of week [, seconds]).</literal>
-            </para>
-				
-            <para>
-				The value for seconds is optional. Each element allows wildcard <literal>*</literal> values. Ranges can be specified 
-				by means of lower bounds then a colon ‘:’ then the upper bound. The division operator <literal>*/x</literal> can be used to 
-				specify that every x<subscript>th</subscript> value is valid. Combinations of these operators can be used by placing these into square brackets([]).
-            </para>
-            
-            <para>
-				This expression pattern matches every 5 minutes past the hour.
-            </para>
-			<programlisting><![CDATA[every timer:at(5, *, *, *, *)]]></programlisting>
-
-            <para>
-				The below <literal>timer:at</literal> pattern matches every 15 minutes from 8am to 5pm on even numbered days of the month as well as on the 
-				first day of the month.
-            </para>
-			<programlisting><![CDATA[timer:at (*/15, 8:17, [*/2, 1], *, *)]]></programlisting>
-           
-            <para>
-				The below table outlines the fields, valid values and keywords available for each field:
-            </para>
-
-		   <table frame="topbot">
-				<title>Properties offered by sample statement aggregating price</title>
-				<tgroup cols="4">
-					<colspec colwidth="0.7*"/>
-					<colspec colwidth="0.7*"/>
-					<colspec colwidth="0.7*"/>
-					<colspec colwidth="1.3*"/>
-					<thead>
-						<row>
-							<entry>Field Name</entry>
-							<entry>Mandatory?</entry>
-							<entry>Allowed Values</entry>
-							<entry>Additional Keywords</entry>
-						</row>
-					</thead>
-					<tbody>
-						<row>
-							<entry>Minutes</entry>
-							<entry>yes</entry>
-							<entry>0 - 59</entry>
-							<entry></entry>
-						</row>
-						<row>
-							<entry>Hours</entry>
-							<entry>yes</entry>
-							<entry>0 - 23</entry>
-							<entry></entry>
-						</row>
-						<row>
-							<entry>Days Of Month</entry>
-							<entry>yes</entry>
-							<entry>1 - 31</entry>
-							<entry>last, weekday, lastweekday</entry>
-						</row>
-						<row>
-							<entry>Months</entry>
-							<entry>yes</entry>
-							<entry>1 - 12</entry>
-							<entry></entry>
-						</row>
-						<row>
-							<entry>Days Of Week</entry>
-							<entry>yes</entry>
-							<entry>0 (Sunday) - 6 (Saturday)</entry>
-							<entry>last</entry>
-						</row>
-						<row>
-							<entry>Seconds</entry>
-							<entry>no</entry>
-							<entry>0 - 59</entry>
-							<entry></entry>
-						</row>
-					</tbody>
-				</tgroup>
-			</table> 
-
-            <para>
-				The keyword <literal>last</literal> used in the days-of-month field means the last day of the month (current month). To specify the last day of another month, a value for the month field has to be provided. For example: <literal>timer:at(*, *, last,2,*)</literal> is the last day of February. 
-            </para>
-				
-            <para>
-				The <literal>last</literal> keyword in the day-of-week field by itself simply means Saturday. If used in the day-of-week field after another value, it means "the last xxx day of the month" - for example "5 last" means "the last friday of the month". 
-				So the last Friday of the current month will be: <literal>timer:at(*, *, *, *, 5 last)</literal>. And the last Friday of June: <literal>timer:at(*, *, *, 6, 5 last)</literal>.
-            </para>
-
-            <para>
-				The keyword <literal>weekday</literal> is used to specify the weekday (Monday-Friday) nearest the given day. Variant could include month like in: <literal>timer:at(*, *, 30 weekday, 9, *)</literal> which is Friday September 28th (no jump over month).
-            </para>
-
-            <para>
-				The keyword <literal>lastweekday</literal> is a combination of two parameters, the <literal>last</literal> and the <literal>weekday</literal> keywords. A typical example could be: <literal>timer:at(*, *, *, lastweekday, 9, *)</literal> which will define Friday September 28th (example year is 2007).
-            </para>
-
-        </sect2>
+				<para>
+					This expression pattern matches every 5 minutes past the hour.
+				</para>
+				<programlisting><![CDATA[every timer:at(5, *, *, *, *)]]></programlisting>
+	
+				<para>
+					The below <literal>timer:at</literal> pattern matches every 15 minutes from 8am to 5pm on even numbered days of the month as well as on the 
+					first day of the month.
+				</para>
+				<programlisting><![CDATA[timer:at (*/15, 8:17, [*/2, 1], *, *)]]></programlisting>
+			   
+				<para>
+					The below table outlines the fields, valid values and keywords available for each field:
+				</para>
+	
+			   <table frame="topbot">
+					<title>Properties offered by sample statement aggregating price</title>
+					<tgroup cols="4">
+						<colspec colwidth="0.7*"/>
+						<colspec colwidth="0.7*"/>
+						<colspec colwidth="0.7*"/>
+						<colspec colwidth="1.3*"/>
+						<thead>
+							<row>
+								<entry>Field Name</entry>
+								<entry>Mandatory?</entry>
+								<entry>Allowed Values</entry>
+								<entry>Additional Keywords</entry>
+							</row>
+						</thead>
+						<tbody>
+							<row>
+								<entry>Minutes</entry>
+								<entry>yes</entry>
+								<entry>0 - 59</entry>
+								<entry></entry>
+							</row>
+							<row>
+								<entry>Hours</entry>
+								<entry>yes</entry>
+								<entry>0 - 23</entry>
+								<entry></entry>
+							</row>
+							<row>
+								<entry>Days Of Month</entry>
+								<entry>yes</entry>
+								<entry>1 - 31</entry>
+								<entry>last, weekday, lastweekday</entry>
+							</row>
+							<row>
+								<entry>Months</entry>
+								<entry>yes</entry>
+								<entry>1 - 12</entry>
+								<entry></entry>
+							</row>
+							<row>
+								<entry>Days Of Week</entry>
+								<entry>yes</entry>
+								<entry>0 (Sunday) - 6 (Saturday)</entry>
+								<entry>last</entry>
+							</row>
+							<row>
+								<entry>Seconds</entry>
+								<entry>no</entry>
+								<entry>0 - 59</entry>
+								<entry></entry>
+							</row>
+						</tbody>
+					</tgroup>
+				</table> 
+	
+				<para>
+					The keyword <literal>last</literal> used in the days-of-month field means the last day of the month (current month). To specify the last day of another month, a value for the month field has to be provided. For example: <literal>timer:at(*, *, last,2,*)</literal> is the last day of February. 
+				</para>
+					
+				<para>
+					The <literal>last</literal> keyword in the day-of-week field by itself simply means Saturday. If used in the day-of-week field after another value, it means "the last xxx day of the month" - for example "5 last" means "the last friday of the month". 
+					So the last Friday of the current month will be: <literal>timer:at(*, *, *, *, 5 last)</literal>. And the last Friday of June: <literal>timer:at(*, *, *, 6, 5 last)</literal>.
+				</para>
+	
+				<para>
+					The keyword <literal>weekday</literal> is used to specify the weekday (Monday-Friday) nearest the given day. Variant could include month like in: <literal>timer:at(*, *, 30 weekday, 9, *)</literal> which is Friday September 28th (no jump over month).
+				</para>
+	
+				<para>
+					The keyword <literal>lastweekday</literal> is a combination of two parameters, the <literal>last</literal> and the <literal>weekday</literal> keywords. A typical example could be: <literal>timer:at(*, *, *, lastweekday, 9, *)</literal> which will define Friday September 28th (example year is 2007).
+				</para>
+	
+			</sect3>
+		</sect2>
    </sect1>
    
 </chapter>

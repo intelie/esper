@@ -82,7 +82,6 @@ tokens
 	SNAPSHOT='snapshot';
 	SET='set';
 	VARIABLE='variable';
-	MATCH='match';
 	UNTIL='until';
 	
    	NUMERIC_PARAM_RANGE;
@@ -176,6 +175,7 @@ tokens
 	ON_SET_EXPR;
 	CREATE_VARIABLE_EXPR;
 	METHOD_JOIN_EXPR;
+	MATCH_UNTIL_EXPR;
 	MATCH_UNTIL_RANGE_HALFOPEN;
 	MATCH_UNTIL_RANGE_HALFCLOSED;
 	MATCH_UNTIL_RANGE_CLOSED;
@@ -900,8 +900,16 @@ orExpression
 	;
 
 andExpression
-	:	qualifyExpression (a=AND_EXPR qualifyExpression)*
-		-> {$a != null}? ^(AND_EXPR qualifyExpression+)
+	:	matchUntilExpression (a=AND_EXPR matchUntilExpression)*
+		-> {$a != null}? ^(AND_EXPR matchUntilExpression+)
+		-> matchUntilExpression
+	;
+
+matchUntilExpression
+	:	(r=matchUntilRange)? qualifyExpression (a=UNTIL qualifyExpression)?
+		-> {r != null && a != null}? ^(MATCH_UNTIL_EXPR matchUntilRange qualifyExpression+)
+		-> {r != null && a == null}? ^(MATCH_UNTIL_EXPR matchUntilRange qualifyExpression)
+		-> {$a != null}? ^(MATCH_UNTIL_EXPR qualifyExpression+)
 		-> qualifyExpression
 	;
 
@@ -911,9 +919,9 @@ qualifyExpression
 	;
 	
 guardPostFix
-	:	(atomicExpression | matchUntilExpression | l=LPAREN patternExpression RPAREN) (w=WHERE guardExpression)?
+	:	(atomicExpression | l=LPAREN patternExpression RPAREN) (w=WHERE guardExpression)?
 		-> {$w != null}? ^(GUARD_EXPR atomicExpression? patternExpression? guardExpression) 
-		-> atomicExpression? matchUntilExpression? patternExpression?
+		-> atomicExpression? patternExpression?
 	;
 
 atomicExpression
@@ -927,14 +935,6 @@ observerExpression
 
 guardExpression
 	:	IDENT COLON! IDENT LPAREN! (parameterSet)? RPAREN!
-	;
-
-matchUntilExpression
-	: 	MATCH 
-		matchUntilRange? 
-		(a=atomicExpression | LPAREN b=patternExpression RPAREN) 
-		(UNTIL (c=atomicExpression | LPAREN d=patternExpression RPAREN))?
-	  	-> ^(MATCH matchUntilRange? $a? $b? $c? $d?)
 	;
 	
 // syntax is [a..b]  or [..b]  or  [a..] or [a:b]   wherein a and b may be recognized as double

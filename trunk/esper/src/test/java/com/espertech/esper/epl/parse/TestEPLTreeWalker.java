@@ -256,7 +256,7 @@ public class TestEPLTreeWalker extends TestCase
 
     public void testWalkPatternMatchUntil() throws Exception
     {
-        EPLTreeWalker walker = parseAndWalkPattern("match A until (B or C)");
+        EPLTreeWalker walker = parseAndWalkPattern("A until (B or C)");
         StatementSpecRaw raw = walker.getStatementSpec();
         PatternStreamSpecRaw a = (PatternStreamSpecRaw) raw.getStreamSpecs().get(0);
         EvalMatchUntilNode matchNode = (EvalMatchUntilNode) a.getEvalNode();
@@ -264,39 +264,39 @@ public class TestEPLTreeWalker extends TestCase
         assertTrue(matchNode.getChildNodes().get(0) instanceof EvalFilterNode);
         assertTrue(matchNode.getChildNodes().get(1) instanceof EvalOrNode);
 
-        EvalMatchUntilSpec spec = getMatchUntilSpec("match A until (B or C)");
+        EvalMatchUntilSpec spec = getMatchUntilSpec("A until (B or C)");
         assertNull(spec.getLowerBounds());
         assertNull(spec.getUpperBounds());
 
-        spec = getMatchUntilSpec("match [1..10] A until (B or C)");
+        spec = getMatchUntilSpec("[1..10] A until (B or C)");
         assertEquals(1, (int) spec.getLowerBounds());
         assertEquals(10, (int) spec.getUpperBounds());
 
-        spec = getMatchUntilSpec("match [1 .. 10] A until (B or C)");
+        spec = getMatchUntilSpec("[1 .. 10] A until (B or C)");
         assertEquals(1, (int) spec.getLowerBounds());
         assertEquals(10, (int) spec.getUpperBounds());
 
-        spec = getMatchUntilSpec("match [1:10] A until (B or C)");
+        spec = getMatchUntilSpec("[1:10] A until (B or C)");
         assertEquals(1, (int) spec.getLowerBounds());
         assertEquals(10, (int) spec.getUpperBounds());
 
-        spec = getMatchUntilSpec("match [1..] A until (B or C)");
+        spec = getMatchUntilSpec("[1..] A until (B or C)");
         assertEquals(1, (int) spec.getLowerBounds());
         assertEquals(null, spec.getUpperBounds());
 
-        spec = getMatchUntilSpec("match [1 ..] A until (B or C)");
+        spec = getMatchUntilSpec("[1 ..] A until (B or C)");
         assertEquals(1, (int) spec.getLowerBounds());
         assertEquals(null, spec.getUpperBounds());
 
-        spec = getMatchUntilSpec("match [..2] A until (B or C)");
+        spec = getMatchUntilSpec("[..2] A until (B or C)");
         assertEquals(null, spec.getLowerBounds());
         assertEquals(2, (int) spec.getUpperBounds());
 
-        spec = getMatchUntilSpec("match [.. 2] A until (B or C)");
+        spec = getMatchUntilSpec("[.. 2] A until (B or C)");
         assertEquals(null, spec.getLowerBounds());
         assertEquals(2, (int) spec.getUpperBounds());
 
-        spec = getMatchUntilSpec("match [2] A until (B or C)");
+        spec = getMatchUntilSpec("[2] A until (B or C)");
         assertEquals(2, (int) spec.getLowerBounds());
         assertEquals(2, (int) spec.getUpperBounds());
     }
