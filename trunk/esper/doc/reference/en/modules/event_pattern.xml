@@ -28,14 +28,14 @@
 		</orderedlist>
 			
 		<para>
-			The below table outlines in greater detail the different atoms available:
+			The below table outlines the different pattern atoms available:
 		</para>
 			
 	   <table frame="topbot">
 			<title>Pattern Atoms</title>
 			<tgroup cols="2">
-				<colspec colwidth="1*"/>
-				<colspec colwidth="1.5*"/>
+				<colspec colwidth="1.1*"/>
+				<colspec colwidth="1.4*"/>
 				<thead>
 					<row>
 						<entry>Pattern Atom</entry>
@@ -55,7 +55,7 @@
 					</row>
 					<row>
 						<entry>Custom plug-in observers can add pattern language syntax for observing application-specific events.</entry>
-						<entry><programlisting><![CDATA[myapplication:myobserver("afile")]]></programlisting>
+						<entry><programlisting><![CDATA[myapplication:myobserver("http://someResource")]]></programlisting>
 						</entry>
 					</row>
 				</tbody>
@@ -63,7 +63,7 @@
 		</table> 
 			
         <para>
-			There are 4 types of operators:
+			There are 4 types of pattern operators:
          </para>
 
 		<orderedlist spacing="compact">
@@ -90,7 +90,7 @@
 		</orderedlist>
 
         <para>
-			Pattern expressions can be nested arbitrarily deep by including the nested expression(s) in <literal>()</literal> round brackets.
+			Pattern expressions can be nested arbitrarily deep by including the nested expression(s) in <literal>()</literal> round parenthesis.
          </para>
 
     </sect1>
@@ -178,17 +178,14 @@ having sum(a.price + b.price) > 100]]></programlisting>
 				We add the anonymous listener implementation to the <literal>myPattern</literal> statement created earlier. 
 				The listener code simply extracts the underlying event class.
 			</para>
-			<programlisting><![CDATA[myPattern.addListener(new UpdateListener()
-{
-  public void update(EventBean[] newEvents, EventBean[] oldEvents)
-  {
+			<programlisting><![CDATA[myPattern.addListener(new UpdateListener() {
+  public void update(EventBean[] newEvents, EventBean[] oldEvents) {
     ServiceMeasurement spike = (ServiceMeasurement) newEvents[0].get("spike");
     ServiceMeasurement error = (ServiceMeasurement) newEvents[0].get("error");
     ... // either spike or error can be null, depending on which occurred
     ... // add more logic here
   }
-});
-]]></programlisting>
+});]]></programlisting>
 
 			<para>            
 				Listeners receive an array of <literal>EventBean</literal> instances in the <literal>newEvents</literal> parameter.
@@ -236,7 +233,7 @@ else {
     <sect1 id="pattern-op-precedence">
         <title>Operator Precedence</title>
 
-		<indexterm><primary>pattern</primary><secondary>operator precendences</secondary></indexterm>
+		<indexterm><primary>pattern</primary><secondary>operator precedences</secondary></indexterm>
 		<para>
 			The operators at the top of this table take precedence over operators lower on the table. 
 		</para>
@@ -805,12 +802,16 @@ RfidEvent(zone=1 and category=10)]]></programlisting>
            <title>Repeat</title>
            
 		   <para>
-			   The bounded repeat fires when the expression within evaluates to true a given number of times. The synopsis is as follows:
+			   The repeat operator fires when a pattern subexpression evaluates to true a given number of times. The synopsis is as follows:
 		   </para>
-		   <synopsis>[<emphasis>match_count</emphasis>] <emphasis>repeat_pattern_expr</emphasis></synopsis>
+		   <synopsis>[<emphasis>match_count</emphasis>] <emphasis>repeating_subexpr</emphasis></synopsis>
 
 		   <para>
-			   The <emphasis>match_count</emphasis> number specifies how often the <emphasis>repeat_pattern_expr</emphasis> pattern expression must evaluate to true before the expression evaluates to true.
+			   The repeat operator is very similar to the <literal>every</literal> operator in that it restarts the <emphasis>repeating_subexpr</emphasis> pattern subexpression up to a given number of times.
+		   </para>
+
+		   <para>
+			   <emphasis>match_count</emphasis> is a positive number that specifies how often the <emphasis>repeating_subexpr</emphasis> pattern subexpression must evaluate to true before the repeat expression itself evaluates to true.
 		   </para>
 
 		   <para>
@@ -819,148 +820,213 @@ RfidEvent(zone=1 and category=10)]]></programlisting>
 			<programlisting><![CDATA[[5] A]]></programlisting>
 
 		   <para>
-			   Parenthesis must be used for nested expressions. This pattern fires when the last of a total of five A or B events arrives:
+			   Parenthesis must be used for nested pattern subexpressions. This pattern fires when the last of a total of any five A or B events arrives:
 		   </para>
 			<programlisting><![CDATA[[5] (A or B)]]></programlisting>
 
 		   <para>
-			   Without parenthesis the pattern semantics change, according to the operator precendence listed earlier. This pattern fires when the last of a total of five A events arrives or a single B events, whichever happens first::
+			   Without parenthesis the pattern semantics change, according to the operator precedence described earlier. This pattern fires when the last of a total of five A events arrives or a single B event arrives, whichever happens first:
 		   </para>
 			<programlisting><![CDATA[[5] A or B]]></programlisting>
 
 		   <para>
-			   Tags may name events within the repeated pattern expression. The next pattern looks for two repetitions in which A follows B. The output event provides array properties of the same name:
+			   Tags can be used to name events in filter expression of pattern subexpressions. The next pattern looks for an A event followed by a B event, and a second A event followed by a second B event. The output event provides indexed and array properties of the same name:
 		   </para>
 			<programlisting><![CDATA[[2] (a=A -> b=B)]]></programlisting>
 			
 		   <para>
 			   Using tags with repeat is further described in <xref linkend="pattern-repeat-tags"/>.
 		   </para>			
+
+		   <para>
+			   Consider the following pattern that demonstrates the behavior when a pattern subexpression becomes permanently false:
+		   </para>
+			<programlisting><![CDATA[[2] (A and not C)]]></programlisting>
+
+		   <para>
+			   In the case where a C event arrives before 2 A events arrive, the pattern above becomes permanently false.
+		   </para>
+		   
+		   <para>
+			   Lets add an <literal>every</literal> operator to restart the pattern and thus keep matching for all pairs of A events that arrive without a C event in between each pair:
+		   </para>
+			<programlisting><![CDATA[every [2] (A and not C)]]></programlisting>
 		</sect2>
 			
-		<sect2 id="pattern-repeat-until" >
+		<sect2 id="pattern-repeatuntil" >
 		   <title>Repeat-Until</title>
 		   <para>
-			   If it is not known in advance how many instances to match, the repeat-until provides control over when to stop matching.
+			   The repeat <literal>until</literal> operator provides additional control over repeated matching.
 		   </para>
 
 		   <para>
-			   The repeat-until takes an optional range, a pattern expression to repeat, the <literal>until</literal> keyword and a second pattern expression to end the repetition. The synopsis is as follows:
+			   The repeat until operator takes an optional range, a pattern subexpression to repeat, the <literal>until</literal> keyword and a second pattern subexpression that ends the repetition. The synopsis is as follows:
 		   </para>
-		   <synopsis>[<emphasis>range</emphasis>] <emphasis>repeated_pattern_expr</emphasis> <literal>until</literal> <emphasis>end_pattern_expr</emphasis></synopsis>.
+		   <synopsis>[<emphasis>range</emphasis>] <emphasis>repeated_pattern_expr</emphasis> until <emphasis>end_pattern_expr</emphasis></synopsis>
 
 			<para>
-				Without a range, the engine matches the <emphasis>repeated_pattern_expr</emphasis> pattern expression until the <emphasis>end_pattern_expr</emphasis> evaluates to true, at which time the expression turns true.
+				Without a <emphasis>range</emphasis>, the engine matches the <emphasis>repeated_pattern_expr</emphasis> pattern subexpression until the <emphasis>end_pattern_expr</emphasis> evaluates to true, at which time the expression turns true.
 			</para>
 				
 			<para>
-				A range may be given that indicates the minimum and maximum number of times that the engine matches the <emphasis>repeated_pattern_expr</emphasis> pattern expression.
-			</para>
-
-			<sect3 id="pattern-repeat-until-rangeclosed" >
-			   <title>Repeat-Until without Range</title>
-			   <para>
-				   In a closed range both low and high endpoint are given. The synopsis is:
-			   </para>
-			   <synopsis><literal>[</literal><emphasis>low_endpoint</emphasis><literal>..</literal><emphasis>high_endpoint</emphasis><literal>]</literal> <emphasis>repeated_pattern_expr</emphasis> <literal>until</literal> <emphasis>end_pattern_expr</emphasis></synopsis>
-
-			   <para>
-				   The closed-range repeat-until expression turns true when the <emphasis>repeated_pattern_expr</emphasis> pattern expression turns true at least <emphasis>low_endpoint</emphasis> number of times, and when thereafter the <emphasis>end_pattern_expr</emphasis> pattern expression turns true.
-			   </para>
-
-			<para>
-				If a the syntax contains a range with a low endpoint, then <emphasis>repeated_pattern_expr</emphasis> pattern expression
-				, The fires when an expression evaluates to true a given minimum number of times and thereafter a second expression evaluates to true. 
+				An optional <emphasis>range</emphasis> can be used to indicate the minimum number of times that the <emphasis>repeated_pattern_expr</emphasis> pattern subexpression must become true.
 			</para>
 
 			<para>
-				The fires when an expression evaluates to true a given minimum number of times and thereafter a second expression evaluates to true. 
+				The optional <emphasis>range</emphasis> can also specify a maximum number of times that <emphasis>repeated_pattern_expr</emphasis> pattern subexpression evaluates to true and retains tagged events. When this number is reached, the engine stops the <emphasis>repeated_pattern_expr</emphasis> pattern subexpression.
 			</para>
+
+			<sect3 id="pattern-repeatuntil-norange" >
+			   <title>Unbound Repeat</title>
 			   
-		   <para>
-			   The optional <emphasis>range</emphasis> provided within brackets specifies the minimum number of times that the repeating expression must evaluate to true, and the maximum number of times the repeating expression is expected to evaluate to true. 
-		   </para>
-		   
+			<para>
+				In the unbound repeat, without a <emphasis>range</emphasis>, the engine matches the <emphasis>repeated_pattern_expr</emphasis> pattern subexpression until the <emphasis>end_pattern_expr</emphasis> evaluates to true, at which time the expression turns true. The synopsis is:
+			</para>
+			   <synopsis><emphasis>repeated_pattern_expr</emphasis> until <emphasis>end_pattern_expr</emphasis></synopsis>
+
 			   <para>
-				   If the <emphasis>repeated_pattern_expr</emphasis> pattern expression does not turns true at least <emphasis>low_endpoint</emphasis> number of times, the whole expression is permanently false.
+				   This is a pattern that keeps looking for A events until a B event arrives:
+			   </para>
+			   <programlisting>A until B</programlisting>
+
+			   <para>
+				   Nested pattern subexpressions must be placed in parenthesis since the <literal>until</literal> operator has precedence over most operators. This example collects all A or B events for 10 seconds and places events received in indexed properties 'a' and 'b':
+			   </para>
+			   <programlisting>(a=A or b=B) until timer:interval(10 sec)</programlisting>
+
+			</sect3>
+
+			<sect3 id="pattern-repeatuntil-range" >
+			   <title>Bound Repeat Overview</title>
+			   <para>
+				   The synopsis for the optional <emphasis>range</emphasis> qualifier is:
+			   </para>
+			   <synopsis>[ [<emphasis>low_endpoint</emphasis>] .. [<emphasis>high_endpoint</emphasis>] ]</synopsis>
+
+			   <para>
+				   <emphasis>low_endpoint</emphasis> is an optional number that appears on the left of two dots (..), after which follows an optional <emphasis>high_endpoint</emphasis> number.
 			   </para>
 
 			   <para>
-				   If the <emphasis>repeated_pattern_expr</emphasis> pattern expression turns true <emphasis>high_endpoint</emphasis> number of times, then the <emphasis>repeated_pattern_expr</emphasis> pattern expression is not restarted.
+				   A range thus consists of a <emphasis>low_endpoint</emphasis> and a <emphasis>high_endpoint</emphasis> in square brackets and separated by dot (.) characters. Both endpoint values are optional but either one or both must be supplied. The <emphasis>low_endpoint</emphasis> can be omitted to denote a range that starts at zero. The <emphasis>high_endpoint</emphasis> can be omitted to denote an open-ended range.
 			   </para>
+
+			   <para>
+				   Some examples for valid ranges might be:
+			   </para>
+				<programlisting><![CDATA[[3..10]
+[..3]    // range starts at zero
+[2..]    // open-ended range]]></programlisting>
+
+			   <para>
+				   The <emphasis>low_endpoint</emphasis>, if specified, defines the minimum number of times that the <emphasis>repeated_pattern_expr</emphasis> pattern subexpression must become true in order for the expression to become true.
+			   </para>
+
+			   <para>
+				   The <emphasis>high_endpoint</emphasis>, if specified, is the maximum number of times that the <emphasis>repeated_pattern_expr</emphasis> pattern subexpression becomes true. If the number is reached, the engine stops the <emphasis>repeated_pattern_expr</emphasis> pattern subexpression.
+			   </para>
+
+			   <para>
+				   In all cases, only at the time that the <emphasis>end_pattern_expr</emphasis> pattern subexpression evaluates to true does the expression become true. If <emphasis>end_pattern_expr</emphasis> pattern subexpression evaluates to false, then the expression evaluates to false.
+			   </para>
+
+			</sect3>
+
+			<sect3 id="pattern-repeatuntil-range-openended" >
+			   <title>Bound Repeat - Open Ended Range</title>
 			   
 			   <para>
-				   For example, this pattern fires when at least 2 A events arrive before a single B event arrives::
-			   </para>
-				<programlisting><![CDATA[[2..5] a=A until b=B]]></programlisting>
-
-			   <para>
-				   In the above pattern, if less then 2 A events arrive before a B event, the expression becomes permanently false and the pattern does not fire.
+				   An open-ended range specifies only a low endpoint and not a high endpoint.
 			   </para>
 
 			   <para>
-				   The pattern above returns up to 5 A events under the tag 'a', and will always return at least 2 A events. The pattern also return the B event under tag 'b'.
+				   Consider the following pattern which requires at least three A events to match:
 			   </para>
-
+				<programlisting><![CDATA[[3..] A until B]]></programlisting>
+	
 			   <para>
-				   In a second example, here the pattern triggers when at least 10 A or B events arrive within 60 seconds after pattern start, indicating up to 20 matches back in the resulting composite event:
+				   In the pattern above, if a B event arrives before 3 A events occurred, the expression ends and evaluates to false. 
 			   </para>
-				<programlisting><![CDATA[[10..20] (a=A or b=B) until timer:interval(60)]]></programlisting>
 			</sect3>		   
 
-			<sect3 id="pattern-repeat-until-rangeclosed" >
-			   <title>Repeat-Until with a Range</title>
-			   <para>
-				   In a closed range both low and high endpoint are given. The synopsis is:
-			   </para>
-			   <synopsis><literal>[</literal><emphasis>low_endpoint</emphasis><literal>..</literal><emphasis>high_endpoint</emphasis><literal>]</literal> <emphasis>repeated_pattern_expr</emphasis> <literal>until</literal> <emphasis>end_pattern_expr</emphasis></synopsis>
-
-			   <para>
-				   The closed-range repeat-until expression turns true when the <emphasis>repeated_pattern_expr</emphasis> pattern expression turns true at least <emphasis>low_endpoint</emphasis> number of times, and when thereafter the <emphasis>end_pattern_expr</emphasis> pattern expression turns true.
-			   </para>
-
-			<para>
-				If a the syntax contains a range with a low endpoint, then <emphasis>repeated_pattern_expr</emphasis> pattern expression
-				, The fires when an expression evaluates to true a given minimum number of times and thereafter a second expression evaluates to true. 
-			</para>
-
-			<para>
-				The fires when an expression evaluates to true a given minimum number of times and thereafter a second expression evaluates to true. 
-			</para>
-			   
-		   <para>
-			   The optional <emphasis>range</emphasis> provided within brackets specifies the minimum number of times that the repeating expression must evaluate to true, and the maximum number of times the repeating expression is expected to evaluate to true. 
-		   </para>
-		   
-			   <para>
-				   If the <emphasis>repeated_pattern_expr</emphasis> pattern expression does not turns true at least <emphasis>low_endpoint</emphasis> number of times, the whole expression is permanently false.
-			   </para>
-
-			   <para>
-				   If the <emphasis>repeated_pattern_expr</emphasis> pattern expression turns true <emphasis>high_endpoint</emphasis> number of times, then the <emphasis>repeated_pattern_expr</emphasis> pattern expression is not restarted.
-			   </para>
+			<sect3 id="pattern-repeatuntil-range-nolow" >
+			   <title>Bound Repeat - High Endpoint Range</title>
 			   
 			   <para>
-				   For example, this pattern fires when at least 2 A events arrive before a single B event arrives::
-			   </para>
-				<programlisting><![CDATA[[2..5] a=A until b=B]]></programlisting>
-
-			   <para>
-				   In the above pattern, if less then 2 A events arrive before a B event, the expression becomes permanently false and the pattern does not fire.
+				   A high-endpoint range specifies only a high endpoint and not a low endpoint.
 			   </para>
 
 			   <para>
-				   The pattern above returns up to 5 A events under the tag 'a', and will always return at least 2 A events. The pattern also return the B event under tag 'b'.
+				   In this sample pattern the engine will be looking for a maximum of 3 A events. The expression turns true as soon as a single B event arrives regardless of the number of A events received:
+			   </para>
+				<programlisting><![CDATA[[..3] A until B]]></programlisting>
+
+			   <para>
+				   The next pattern matches when a C or D event arrives, regardless of the number of A or B events that occurred:
+			   </para>
+				<programlisting><![CDATA[[..3] (a=A or b=B) until (c=C or d=D)]]></programlisting>
+	
+			   <para>
+				   In the pattern above, if more then 3 A or B events arrive, the pattern stops looking for additional A or B events. The 'a' and 'b' tags retain only the first 3 (combined) matches among A and B events. The output event contains these tagged events as indexed properties.
+			   </para>
+			</sect3>		   
+
+			<sect3 id="pattern-repeatuntil-range-bounded" >
+			   <title>Bound Repeat - Bounded Range</title>
+			   
+			   <para>
+				   A bounded range specifies a low endpoint and a high endpoint.
 			   </para>
 
 			   <para>
-				   In a second example, here the pattern triggers when at least 10 A or B events arrive within 60 seconds after pattern start, indicating up to 20 matches back in the resulting composite event:
+				   The next pattern matches after at least one A event arrives upon the arrival of a single B event:
 			   </para>
-				<programlisting><![CDATA[[10..20] (a=A or b=B) until timer:interval(60)]]></programlisting>
+				<programlisting><![CDATA[[1..3] a=A until B]]></programlisting>
+	
+			   <para>
+				   If a B event arrives before the first A event, then the pattern does not match. Only the first 3 A events are returned by the pattern.
+			   </para>
 			</sect3>		   
 
 			<sect3 id="pattern-repeat-tags" >
-			   <title>Repeat Using Tags</title>
+			   <title>Tags and the Repeat Operator</title>
+
+			   <para>
+				   The tags assigned to events in filter subexpressions within a repeat operator are available for use in filter expressions and also in any EPL clause.
+			   </para>
+
+			   <para>
+					This sample pattern matches 2 A events followed by a B event. Note the filter on B events: only a B event that has a value for the "beta" property that equals any of the "id" property values of the two A events is considered:
+			   </para>
+				<programlisting><![CDATA[[2] A -> B(beta in (a[0].id, a[1].id))]]></programlisting>
+
+			   <para>
+					The next EPL statement returns pairs of A events:
+			   </para>
+				<programlisting><![CDATA[select a, a[0], a[0].id, a[1], a[1].id
+from pattern [ every [2] a=A ] ]]></programlisting>
+
+			   <para>
+					The <literal>select</literal> clause of the statement above showcases different ways of accessing tagged events:
+			   </para>
+			   
+				<itemizedlist>
+					<listitem>
+						<para>
+							The tag itself can be used to select an array of underlying events. For example, the 'a' expression above returns an array of underlying events of event type A.
+						</para>
+					</listitem>
+					<listitem>
+						<para>
+							The tag as an indexed property returns the underlying event at that index. For instance, the 'a[0]' expression returns the first underlying event A, or null if no such event A was matched by the repeat operator.
+						</para>
+					</listitem>
+					<listitem>
+						<para>
+							The tag as a nested, indexed property returns a property of the underlying event at that index. For example, the 'a[1].id' expression returns the 'id' property value of the second A event, or null if no such second event A was matched by the repeat operator.
+						</para>
+					</listitem>
+				</itemizedlist>
 			</sect3>		   
 			  
         </sect2>
@@ -1037,7 +1103,7 @@ a=A -> (B(id = a.id) and C(id = a.id))]]></programlisting>
             </para>
             
             <para>
-				The <literal>not</literal> operator is generally used in conjuntion with the <literal>and</literal> operator or subexpressions as the below examples show.
+				The <literal>not</literal> operator is generally used in conjunction with the <literal>and</literal> operator or subexpressions as the below examples show.
             </para>
 
            <para>
@@ -1124,7 +1190,7 @@ a=A -> (B(id = a.id) and C(id = a.id))]]></programlisting>
 			</para>
 	
 			<para>
-				Guards do not change the truth value of the subexpression of which the guard controls the lifecycle, and therefore do not cause a restart of the subexpression when used with the <literal>every</literal> operator. For example, the next pattern stops returning matches after 10 seconds unless a match occured within 10 seconds after pattern start:
+				Guards do not change the truth value of the subexpression of which the guard controls the lifecycle, and therefore do not cause a restart of the subexpression when used with the <literal>every</literal> operator. For example, the next pattern stops returning matches after 10 seconds unless a match occurred within 10 seconds after pattern start:
 			</para>
 			<programlisting><![CDATA[every ( (A and B) where timer.within(10 sec) )]]></programlisting>
 
