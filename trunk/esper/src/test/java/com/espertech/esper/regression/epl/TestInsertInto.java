@@ -169,14 +169,14 @@ public class TestInsertInto extends TestCase
         assertEquals(1, listenerOne.getLastNewData().length);
         assertEquals(10, listenerOne.getLastNewData()[0].get("intPrimitive"));
         assertEquals(11, listenerOne.getLastNewData()[0].get("intBoxed"));
-        assertEquals(18, listenerOne.getLastNewData()[0].getEventType().getPropertyNames().length);
+        assertEquals(19, listenerOne.getLastNewData()[0].getEventType().getPropertyNames().length);
         assertSame(event, listenerOne.getLastNewData()[0].getUnderlying());
 
         assertTrue(listenerTwo.getAndClearIsInvoked());
         assertEquals(1, listenerTwo.getLastNewData().length);
         assertEquals(10, listenerTwo.getLastNewData()[0].get("intPrimitive"));
         assertEquals(11, listenerTwo.getLastNewData()[0].get("intBoxed"));
-        assertEquals(18, listenerTwo.getLastNewData()[0].getEventType().getPropertyNames().length);
+        assertEquals(19, listenerTwo.getLastNewData()[0].getEventType().getPropertyNames().length);
         assertSame(event, listenerTwo.getLastNewData()[0].getUnderlying());
     }
 
