@@ -90,14 +90,24 @@ public final class EvalMatchUntilStateNode extends EvalStateNode implements Eval
             String[] tags = evalMatchUntilNode.getTagsArrayed();
             for (int i = 0; i < tags.length; i++)
             {
-                EventBean event = matchEvent.getMatchingEvent(tags[i]);
+                Object event = matchEvent.getMatchingEventAsObject(tags[i]);
                 if (event != null)
                 {
                     if (matchedEventArrays[i] == null)
                     {
                         matchedEventArrays[i] = new ArrayList<EventBean>();
                     }
-                    matchedEventArrays[i].add(event);
+                    if (event instanceof EventBean) {
+                        matchedEventArrays[i].add((EventBean) event);
+                    }
+                    else {
+                        EventBean[] arrayEvents = (EventBean[]) event;
+                        for (int index = 0; index < arrayEvents.length; index++)
+                        {
+                            matchedEventArrays[i].add(arrayEvents[index]);
+                        }
+                    }
+
                 }
             }
         }

@@ -145,10 +145,19 @@ public class PatternStreamSpecRaw extends StreamSpecBase implements StreamSpecRa
                 if (pair != null)
                 {
                     existingType = pair.getFirst();
-                }                
+                }
+                if (existingType == null)
+                {
+                    pair = arrayEventTypes.get(optionalTag);
+                    if (pair != null)
+                    {
+                        throw new ExprValidationException("Tag '" + optionalTag + "' for event '" + eventName +
+                                "' used in the repeat-until operator cannot also appear in other filter expressions");
+                    }
+                }
                 if ((existingType != null) && (existingType != eventType))
                 {
-                    throw new IllegalArgumentException("Tag '" + optionalTag + "' for event '" + eventName +
+                    throw new ExprValidationException("Tag '" + optionalTag + "' for event '" + eventName +
                             "' has already been declared for events of type " + existingType.getUnderlyingType().getName());
                 }
                 pair = new Pair<EventType, String>(eventType, eventName);

@@ -40,6 +40,8 @@ public interface MatchedEventMap
      */
     public EventBean getMatchingEvent(final String tag);
 
+    public Object getMatchingEventAsObject(final String tag);
+
     /**
      * Make a shallow copy of this collection.
      * @return shallow copy

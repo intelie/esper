@@ -13,18 +13,6 @@ import org.apache.commons.logging.LogFactory;
 
 public class TestMatchUntilExpr extends TestCase implements SupportBeanConstants
 {
-    // todo: test invalid use of array tag without array
-    // todo: test nested match-until
-    // todo: test exist() on composite events
-    // todo: test statement object model
-    // todo: test A->match (b=a.id)
-    // todo: test match 2 (a=A or b=B) ->
-    // todo: test match "[5] a=A(id=a[0].id)"
-    // todo: allow "[*] A until B"
-    // todo: allow "[+] A until B"
-
-    // todo: invalid cases: match[0], match [-1..-2], [..0]
-
     private Configuration config;
     
     public void setUp()
@@ -166,11 +154,11 @@ public class TestMatchUntilExpr extends TestCase implements SupportBeanConstants
         testCaseList.addTest(testCase);
 
         // same event triggering both clauses, until always wins, match does not count
-        testCase = new EventExpressionCase("[2..] b=B until b=B(id='B2')");
+        testCase = new EventExpressionCase("[2..] b=B until e=B(id='B2')");
         testCaseList.addTest(testCase);
 
         // same event triggering both clauses, until always wins, match does not count
-        testCase = new EventExpressionCase("[1..] b=B until b=B(id='B1')");
+        testCase = new EventExpressionCase("[1..] b=B until e=B(id='B1')");
         testCaseList.addTest(testCase);
 
         testCase = new EventExpressionCase("[1..2] b=B until a=A(id='A2')");
@@ -242,6 +230,30 @@ public class TestMatchUntilExpr extends TestCase implements SupportBeanConstants
 
         testCase = new EventExpressionCase("A until (every (timer:interval(7 sec) and not A))");
         testCase.add("D3");
+        testCaseList.addTest(testCase);
+
+        testCase = new EventExpressionCase("[2] (a=A or b=B)");
+        testCase.add("B1", "a[0]", events.getEvent("A1"), "b[0]", events.getEvent("B1"), "b[1]", null);
+        testCaseList.addTest(testCase);
+
+        testCase = new EventExpressionCase("[3] (a=A or b=B)");
+        testCase.add("B2", "a[0]", events.getEvent("A1"), "b[0]", events.getEvent("B1"), "b[1]", events.getEvent("B2"));
+        testCaseList.addTest(testCase);
+
+        testCase = new EventExpressionCase("[4] (a=A or b=B)");
+        testCase.add("A2", "a[0]", events.getEvent("A1"), "a[1]", events.getEvent("A2"), "b[0]", events.getEvent("B1"), "b[1]", events.getEvent("B2"));
+        testCaseList.addTest(testCase);
+
+        testCase = new EventExpressionCase("(a=A until b=B) until c=C");
+        testCase.add("C1", "a[0]", events.getEvent("A1"), "b[0]", events.getEvent("B1"), "c", events.getEvent("C1"));
+        testCaseList.addTest(testCase);
+
+        testCase = new EventExpressionCase("(a=A until b=B) until g=G");
+        testCase.add("G1", new Object[][] { {"a[0]", events.getEvent("A1")}, {"b[0]", events.getEvent("B1")},
+                                            {"a[1]", events.getEvent("A2")}, {"b[1]", events.getEvent("B2")},
+                                            {"b[2]", events.getEvent("B3")},
+                                            {"g", events.getEvent("G1")}
+            });
         testCaseList.addTest(testCase);
 
         PatternTestHarness util = new PatternTestHarness(events, testCaseList);
@@ -341,6 +353,11 @@ public class TestMatchUntilExpr extends TestCase implements SupportBeanConstants
         tryInvalid(epService, "[4..6] A", "Variable bounds repeat operator requires an until-expression [[4..6] A]");
         tryInvalid(epService, "[0..0] A", "Incorrect range specification, lower bounds and higher bounds values are zero [[0..0] A]");
         tryInvalid(epService, "[0] A", "Incorrect range specification, a bounds of zero is not allowed [[0] A]");
+        tryInvalid(epService, "[..0] A until B", "Incorrect range specification, a high endpoint of zero is not allowed [[..0] A until B]");
+        tryInvalid(epService, "[1] a=A(a[0].id='a')", "Property named 'a[0].id' is not valid in any stream [[1] a=A(a[0].id='a')]");
+        tryInvalid(epService, "a=A -> B(a[0].id='a')", "Property named 'a[0].id' is not valid in any stream [a=A -> B(a[0].id='a')]");
+        tryInvalid(epService, "(a=A until c=B) -> c=C", "Tag 'c' for event 'C' has already been declared for events of type com.espertech.esper.support.bean.SupportBean_B [(a=A until c=B) -> c=C]");
+        tryInvalid(epService, "((a=A until b=B) until a=A)", "Tag 'a' for event 'A' used in the repeat-until operator cannot also appear in other filter expressions [((a=A until b=B) until a=A)]");
     }
 
     private void tryInvalid(EPServiceProvider epService, String pattern, String message)

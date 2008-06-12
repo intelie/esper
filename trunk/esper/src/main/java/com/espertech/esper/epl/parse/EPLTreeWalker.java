@@ -273,7 +273,7 @@ public class EPLTreeWalker extends EsperEPL2Ast
             case OBSERVER_EXPR:
                 leaveObserver(node);
                 break;
-            case MATCH_UNTIL_EXPR: // TODO: grammar MATCH and UNTIL allow for property names, new keywords in doc
+            case MATCH_UNTIL_EXPR:
                 leaveMatch(node);
                 break;
             case IN_SET:
@@ -1643,12 +1643,16 @@ public class EPLTreeWalker extends EsperEPL2Ast
                 high = high.substring(1);
             }
             Double highVal = DoubleValue.parseString(high);
+            if (highVal.intValue() == 0)
+            {
+                throw new ASTWalkException("Incorrect range specification, a high endpoint of zero is not allowed");
+            }
             spec = new EvalMatchUntilSpec(null, highVal.intValue());
         }
         else if (type == MATCH_UNTIL_RANGE_BOUNDED)
         {
             Double low = DoubleValue.parseString(node.getChild(0).getChild(0).getText());
-            if ((low == 0))
+            if (low == 0)
             {
                 throw new ASTWalkException("Incorrect range specification, a bounds of zero is not allowed");
             }

@@ -356,6 +356,7 @@ tokens
 	parserTokenParaphases.put(SNAPSHOT, "'snapshot'");
 	parserTokenParaphases.put(SET, "'set'");
 	parserTokenParaphases.put(VARIABLE, "'variable'");
+	parserTokenParaphases.put(UNTIL, "'until'");
     }
     return parserTokenParaphases;
   }
@@ -1110,6 +1111,7 @@ keywordAllowedIdent
 		|FIRST { identifier = "first"; }
 		|LAST { identifier = "last"; }
 		|UNIDIRECTIONAL { identifier = "unidirectional"; }
+		|UNTIL { identifier = "until"; }
 		|PATTERN { identifier = "pattern"; }
 		|SQL { identifier = "sql"; }
 		|METADATASQL { identifier = "metadatasql"; }

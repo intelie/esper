@@ -1,6 +1,17 @@
 Esper Changelog
 ===================
 
+Changes in version 2.2.0
+------------------------
+
+Major API changes
+    
+New Features
+  - Support for repeat and repeat-until in pattern matching
+
+Minor changes	    		
+
+
 Changes in version 2.1.0
 ------------------------
 

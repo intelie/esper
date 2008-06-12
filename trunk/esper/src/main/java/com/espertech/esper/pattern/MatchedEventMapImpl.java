@@ -62,6 +62,11 @@ public final class MatchedEventMapImpl implements MatchedEventMap
         return (EventBean) events.get(tag);
     }
 
+    public Object getMatchingEventAsObject(final String tag)
+    {
+        return events.get(tag);
+    }
+
     public boolean equals(final Object otherObject)
     {
         if (otherObject == this)

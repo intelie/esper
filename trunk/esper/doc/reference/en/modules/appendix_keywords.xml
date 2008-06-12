@@ -106,6 +106,7 @@ select insert from MyEvent]]></programlisting>
 				<row><entry>sum</entry><entry>yes</entry></row>
 				<row><entry>then</entry><entry>-</entry></row>
 				<row><entry>unidirectional</entry><entry>yes</entry></row>
+				<row><entry>until</entry><entry>yes</entry></row>
 				<row><entry>variable</entry><entry>yes</entry></row>
 				<row><entry>weekday</entry><entry>yes</entry></row>
 				<row><entry>when</entry><entry>-</entry></row>
