@@ -18,6 +18,7 @@ import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.epl.generated.EsperEPL2Ast;
 import com.espertech.esper.pattern.*;
 import com.espertech.esper.type.*;
+import com.espertech.esper.util.JavaClassHelper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.antlr.runtime.tree.Tree;
@@ -397,7 +398,21 @@ public class EPLTreeWalker extends EsperEPL2Ast
         }
         if (eventName == null)
         {
-            throw new ASTWalkException("Event type AST not found");
+            eventName = "java.lang.Object";
+        }
+
+        // handle table-create clause, i.e. (col1 type, col2 type)
+        if ((node.getChildCount() > 2) && node.getChild(2).getType() == CREATE_WINDOW_COL_TYPE_LIST)
+        {
+            Tree parent = node.getChild(2);
+            for (int i = 0; i < parent.getChildCount(); i++)
+            {
+                String name = parent.getChild(i).getChild(0).getText();
+                String type = parent.getChild(i).getChild(1).getText();
+                Class clazz = JavaClassHelper.getClassForSimpleName(type);
+                SelectClauseExprRawSpec selectElement = new SelectClauseExprRawSpec(new ExprConstantNode(clazz), name);
+                statementSpec.getSelectClauseSpec().add(selectElement);
+            }
         }
 
         CreateWindowDesc desc = new CreateWindowDesc(windowName, viewSpecs);

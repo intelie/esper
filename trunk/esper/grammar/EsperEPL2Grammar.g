@@ -180,6 +180,8 @@ tokens
 	MATCH_UNTIL_RANGE_HALFCLOSED;
 	MATCH_UNTIL_RANGE_CLOSED;
 	MATCH_UNTIL_RANGE_BOUNDED;
+	CREATE_WINDOW_COL_TYPE_LIST;
+	CREATE_WINDOW_COL_TYPE;
 	
    	INT_TYPE;
    	LONG_TYPE;
@@ -491,13 +493,33 @@ onExprFrom
 	;
 
 createWindowExpr
-	:	CREATE WINDOW i=IDENT (DOT viewExpression (DOT viewExpression)*)? AS (SELECT createSelectionList FROM)? classIdentifier
-		-> ^(CREATE_WINDOW_EXPR $i viewExpression* createSelectionList? classIdentifier)
+	:	CREATE WINDOW i=IDENT (DOT viewExpression (DOT viewExpression)*)? AS? 
+		  (
+		  	createWindowExprModelAfter		  
+		  |   	LPAREN createWindowColumnList RPAREN
+		  )			
+		-> ^(CREATE_WINDOW_EXPR $i viewExpression* createWindowExprModelAfter? createWindowColumnList?)
+	;
+
+createWindowExprModelAfter
+	:	(SELECT! createSelectionList FROM!)? classIdentifier
 	;
 		
 createVariableExpr
 	:	CREATE VARIABLE t=IDENT n=IDENT (EQUALS expression)?
 		-> ^(CREATE_VARIABLE_EXPR $t $n expression?)
+	;
+
+createWindowColumnList 	
+@init  { paraphrases.push("create window column list"); }
+@after { paraphrases.pop(); }
+	:	createWindowColumnListElement (COMMA createWindowColumnListElement)*
+		-> ^(CREATE_WINDOW_COL_TYPE_LIST createWindowColumnListElement+)
+	;
+	
+createWindowColumnListElement
+	:   	name=IDENT type=IDENT
+		-> ^(CREATE_WINDOW_COL_TYPE $name $type)
 	;
 
 createSelectionList 	
@@ -512,6 +534,8 @@ createSelectionListElement
 		-> WILDCARD_SELECT[$s]
 	|	eventProperty (AS i=IDENT)?
 		-> ^(SELECTION_ELEMENT_EXPR eventProperty $i?)
+	|	constant AS i=IDENT
+		-> ^(SELECTION_ELEMENT_EXPR constant $i?)
 	;
 
 insertIntoExpr

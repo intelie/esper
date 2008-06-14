@@ -7,11 +7,11 @@
  **************************************************************************************/
 package com.espertech.esper.epl.expression;
 
-import com.espertech.esper.event.EventBean;
 import com.espertech.esper.epl.core.MethodResolutionService;
 import com.espertech.esper.epl.core.StreamTypeService;
 import com.espertech.esper.epl.core.ViewResourceDelegate;
 import com.espertech.esper.epl.variable.VariableService;
+import com.espertech.esper.event.EventBean;
 import com.espertech.esper.schedule.TimeProvider;
 
 /**
@@ -20,6 +20,7 @@ import com.espertech.esper.schedule.TimeProvider;
 public class ExprConstantNode extends ExprNode
 {
     private Object value;
+    private final Class clazz;
 
     /**
      * Ctor.
@@ -28,6 +29,20 @@ public class ExprConstantNode extends ExprNode
     public ExprConstantNode(Object value)
     {
         this.value = value;
+        if (value == null)
+        {
+            clazz = null;
+        }
+        else
+        {
+            clazz = value.getClass();
+        }        
+    }
+
+    public ExprConstantNode(Class clazz)
+    {
+        this.clazz = clazz;
+        this.value = null;
     }
 
     public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService) throws ExprValidationException
@@ -59,11 +74,7 @@ public class ExprConstantNode extends ExprNode
 
     public Class getType() throws ExprValidationException
     {
-        if (value == null)
-        {
-            return null;
-        }
-        return value.getClass();
+        return clazz;
     }
 
     public Object evaluate(EventBean[] eventsPerStream, boolean isNewData)

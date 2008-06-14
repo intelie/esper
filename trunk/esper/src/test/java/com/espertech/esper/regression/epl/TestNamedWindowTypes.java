@@ -123,10 +123,61 @@ public class TestNamedWindowTypes extends TestCase
         ArrayAssertionUtil.assertProps(listenerStmtOne.assertOneGetNewAndReset(), fields, new Object[] {"M1", 101L, 100L});
     }
 
-    public void testWildcardNoFields()
+    public void testConstantsAs()
     {
         // create window
-        String stmtTextCreate = "create window MyWindow.win:keepall() as select * from " + SupportBean_A.class.getName();
+        String stmtTextCreate = "create window MyWindow.win:keepall() as select '' as string, 0L as longPrimitive, 0L as longBoxed from MyMap";
+        EPStatement stmtCreate = epService.getEPAdministrator().createEPL(stmtTextCreate);
+        stmtCreate.addListener(listenerWindow);
+
+        // create insert into
+        String stmtTextInsertOne = "insert into MyWindow select string, longPrimitive, longBoxed from " + SupportBean.class.getName();
+        epService.getEPAdministrator().createEPL(stmtTextInsertOne);
+
+        String stmtTextInsertTwo = "insert into MyWindow select symbol as string, volume as longPrimitive, volume as longBoxed from " + SupportMarketDataBean.class.getName();
+        epService.getEPAdministrator().createEPL(stmtTextInsertTwo);
+
+        // create consumer
+        String stmtTextSelectOne = "select string, longPrimitive, longBoxed from MyWindow";
+        EPStatement stmtSelectOne = epService.getEPAdministrator().createEPL(stmtTextSelectOne);
+        stmtSelectOne.addListener(listenerStmtOne);
+
+        sendSupportBean("E1", 1L, 10L);
+        String[] fields = new String[] {"string", "longPrimitive", "longBoxed"};
+        ArrayAssertionUtil.assertProps(listenerWindow.assertOneGetNewAndReset(), fields, new Object[] {"E1", 1L, 10L});
+        ArrayAssertionUtil.assertProps(listenerStmtOne.assertOneGetNewAndReset(), fields, new Object[] {"E1", 1L, 10L});
+
+        sendMarketBean("S1", 99L);
+        ArrayAssertionUtil.assertProps(listenerWindow.assertOneGetNewAndReset(), fields, new Object[] {"S1", 99L, 99L});
+        ArrayAssertionUtil.assertProps(listenerStmtOne.assertOneGetNewAndReset(), fields, new Object[] {"S1", 99L, 99L});
+    }
+
+    public void testCreateTableSyntax()
+    {
+        // create window
+        String stmtTextCreate = "create window MyWindow.win:keepall() (stringValOne varchar, stringValTwo string, intVal int, longVal long)";
+        EPStatement stmtCreate = epService.getEPAdministrator().createEPL(stmtTextCreate);
+        stmtCreate.addListener(listenerWindow);
+
+        // create insert into
+        String stmtTextInsertOne = "insert into MyWindow select string as stringValOne, string as stringValTwo, cast(longPrimitive, int) as intVal, longBoxed as longVal from " + SupportBean.class.getName();
+        epService.getEPAdministrator().createEPL(stmtTextInsertOne);
+
+        // create consumer
+        String stmtTextSelectOne = "select stringValOne, stringValTwo, intVal, longVal from MyWindow";
+        EPStatement stmtSelectOne = epService.getEPAdministrator().createEPL(stmtTextSelectOne);
+        stmtSelectOne.addListener(listenerStmtOne);
+
+        sendSupportBean("E1", 1L, 10L);
+        String[] fields = "stringValOne,stringValTwo,intVal,longVal".split(",");
+        ArrayAssertionUtil.assertProps(listenerWindow.assertOneGetNewAndReset(), fields, new Object[] {"E1", "E1", 1, 10L});
+        ArrayAssertionUtil.assertProps(listenerStmtOne.assertOneGetNewAndReset(), fields, new Object[] {"E1","E1", 1, 10L});
+    }
+
+    public void testWildcardNoFieldsNoAs()
+    {
+        // create window
+        String stmtTextCreate = "create window MyWindow.win:keepall() select * from " + SupportBean_A.class.getName();
         EPStatement stmtCreate = epService.getEPAdministrator().createEPL(stmtTextCreate);
         stmtCreate.addListener(listenerWindow);
 

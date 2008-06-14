@@ -25,8 +25,8 @@ public class ASTConstantHelper
     {
         switch(node.getType())
         {
-            case EsperEPL2GrammarParser.NUM_INT:       return parseIntLong(node.getText());
-            case EsperEPL2GrammarParser.INT_TYPE:      return parseIntLong(node.getText());
+            case EsperEPL2GrammarParser.NUM_INT:       return parseIntLongByte(node.getText());
+            case EsperEPL2GrammarParser.INT_TYPE:      return parseIntLongByte(node.getText());
             case EsperEPL2GrammarParser.LONG_TYPE:     return LongValue.parseString(node.getText());
             case EsperEPL2GrammarParser.BOOL_TYPE:     return BoolValue.parseString(node.getText());
             case EsperEPL2GrammarParser.FLOAT_TYPE:    return FloatValue.parseString(node.getText());
@@ -38,22 +38,29 @@ public class ASTConstantHelper
         }
     }
 
-    private static Object parseIntLong(String arg)
+    private static Object parseIntLongByte(String arg)
     {
         // try to parse as an int first, else try to parse as a long
         try
         {
             return IntValue.parseString(arg);
         }
-        catch (NumberFormatException ex)
+        catch (NumberFormatException e1)
         {
             try
             {
                 return LongValue.parseString(arg);
             }
-            catch (Exception e)
+            catch (Exception e2)
             {
-                throw ex;
+                try
+                {
+                    return Byte.decode(arg);
+                }
+                catch (Exception e3)
+                {
+                    throw e1;
+                }
             }
         }
 

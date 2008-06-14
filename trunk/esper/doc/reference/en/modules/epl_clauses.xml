@@ -164,6 +164,98 @@ select insert from MyEvent]]></programlisting>
 			</para>
 		</sect2>
 
+		<sect2 id="epl-syntax-constants">
+			<title>Data Type of Constants</title>
+			<indexterm><primary>constants</primary></indexterm>
+			<indexterm><primary>literals</primary></indexterm>
+
+			<para>
+				An EPL constant is a number or a character string that indicates a fixed value. Constants can be used as expressions in many EPL statements, including variable assignment and case-when statements. They can also be used as parameter values for many built-in objects and clauses. Constants are also called literals.				
+			</para>
+			
+			<para>
+				EPL supports the standard SQL constant notation as well as Java data type literals.
+			</para>
+
+			<para>
+				The following are types of EPL constants:
+			</para>
+
+			<table frame="topbot">
+				<title>Types of EPL constants</title>
+				<tgroup cols="3">
+					<colspec colwidth="0.20*"/>
+					<colspec colwidth="1*"/>
+					<colspec colwidth="0.75*"/>
+					<thead>
+						<row>
+							<entry>Type</entry>
+							<entry>Description</entry>
+							<entry>Examples</entry>
+						</row>
+					</thead>
+					<tbody>
+						<row>
+							<entry>string</entry>
+							<entry>A single character to an unlimited number of characters. Valid delimiters are the single quote (') or double quote (").</entry>
+							<entry><programlisting><![CDATA[select 'volume' as field1,
+   "sleep" as field2, 
+  "\u0041" as unicodeA]]></programlisting></entry>
+						</row>
+						<row>
+							<entry>boolean</entry>
+							<entry>A boolean value.</entry>
+							<entry><programlisting><![CDATA[select true as field1, 
+  false as field2]]></programlisting></entry>
+						</row>
+						<row>
+							<entry>integer</entry>
+							<entry>An integer value (4 byte).</entry>
+							<entry><programlisting><![CDATA[select 1 as field1, 
+  -1 as field2, 
+  1e2 as field3]]></programlisting></entry>
+						</row>
+						<row>
+							<entry>long</entry>
+							<entry>A long value (8 byte). Use the "L" or "l" (lowercase L) suffix.</entry>
+							<entry><programlisting><![CDATA[select 1L as field1, 
+  1l as field2]]></programlisting></entry>
+						</row>
+						<row>
+							<entry>double</entry>
+							<entry>A double-precision 64-bit IEEE 754 floating point.</entry>
+							<entry><programlisting><![CDATA[select 1.67 as field1, 
+  167e-2 as field2, 
+  1.67d as field3]]></programlisting></entry>
+						</row>
+						<row>
+							<entry>float</entry>
+							<entry>A single-precision 32-bit IEEE 754 floating point. Use the "f" suffix.</entry>
+							<entry><programlisting><![CDATA[select 1.2f as field1, 
+  1.2F as field2]]></programlisting></entry>
+						</row>
+						<row>
+							<entry>byte</entry>
+							<entry>A 8-bit signed two's complement integer.</entry>
+							<entry><programlisting><![CDATA[select 0x10 as field1]]></programlisting></entry>
+						</row>
+					</tbody>
+				</tgroup>				
+			</table>
+			
+			<para>
+				EPL does not have a single-byte character data type for its literals. Single character literals are treated as string.
+			</para>
+			
+			<para>
+				EPL supports casting via the <literal>cast</literal> function. EPL performs automatic coercion in cases where coercion is allowed without loss of precision.
+			</para>
+
+			<para>
+				Internal byte representation and boundary values of constants follow the Java standard.
+			</para>
+		</sect2>
+
     </sect1>
 
     <sect1 id="epl-select-list">
@@ -2255,42 +2347,8 @@ where asset.assetid = desc.assetid]]></programlisting>
 			</para>
 
 			<para>
-				The syntax for creating a named window is as follows: 
+				There are two syntax for creating a named window: The first syntax allows to model a named window after an existing event type. The second syntax is similar to the SQL create-table syntax and provides a list of column names and column types. 
 			</para>
-			<synopsis>create window <emphasis>window_name</emphasis>.<emphasis>view_specifications</emphasis> as [select <emphasis>list_of_properties</emphasis> from] <emphasis>event_type</emphasis></synopsis>
-				
-			<para>
-				The <emphasis>window_name</emphasis> you assign to the named window can be any identifier. The name should not already be in use as an event type or stream name.
-			</para>
-				
-			<para>
-				The <emphasis>view_specifications</emphasis> are one or more data window views that define the expiry policy for removing events from the data window. Named windows must explicitly declare a data window view. This is required to ensure that the policy for retaining events in the data window is well defined. To keep all events, use the keep-all view: It indicates that the named window should keep all events and only remove events from the named window that are deleted via the <literal>on delete</literal> clause. The view specification can only list data window views, derived-value views are not allowed since these don't represent an expiry policy. 					
-			</para>
-				
-			<para>				
-				The <literal>select</literal> clause and <emphasis>list_of_properties</emphasis> are optional. If present, they specify the column names and, implicitly by definition of the event type, the column types of events held by the named window. Expressions other then column names are not allowed in the <literal>select</literal> list of properties. Wildcards (*) and wildcards with additional properties can also be used.
-			</para>
-
-			<para>				
-				Finally, the <emphasis>event_type</emphasis> is required and provides the name of the event type of events held in the data window, unless column names and types have been explicitly selected via <literal>select</literal>.
-			</para>
-
-			<para>
-				The next statement creates a named window 'AllOrdersNamedWindow' for which the expiry policy is simply to keep all events. Assume that the event type 'OrderMapEventType' has been configured. The named window is to hold events of type 'OrderMapEventType':
-			</para>
-			<programlisting><![CDATA[create window AllOrdersNamedWindow.win:keepall() as OrderMapEventType]]></programlisting>
-
-			<para>
-				The below sample statement demonstrates the <literal>select</literal> syntax. It defines a named window in which each row has the three properties 'symbol', 'volume' and 'price'. This named window actively removes events from the window that are older then 30 seconds.
-			</para>
-			<programlisting><![CDATA[create window OrdersTimeWindow.win:time(30 sec) as 
-  select symbol, volume, price from OrderEvent]]></programlisting>
-
-			<para>
-				In an alternate form, the <literal>as</literal> keyword can be used to rename columns:
-			</para>
-			<programlisting><![CDATA[create window OrdersTimeWindow.win:time(30 sec) as 
-  select symbol as sym, volume as vol, price from OrderEvent]]></programlisting>
 
 			<para>
 				A new named window starts up empty. It must be explicitly inserted into by one or more statements, as discussed below. 
@@ -2303,6 +2361,75 @@ where asset.assetid = desc.assetid]]></programlisting>
 			<para>
 				The <literal>create window</literal> statement posts to listeners any events that are inserted into the named window as new data. The statement posts all deleted events or events that expire out of the data window to listeners as the remove stream (old data). The named window contents can also be iterated on via the pull API to obtain the current contents of a named window.
 			</para>
+
+			<sect3 id="named_create_modelafter" revision="1">
+				<title>Creation by Modelling after an Existing Type</title>
+
+				<para>
+					The benefit of modelling a named window after an existing event type is that event properties can be nested, indexed, mapped or other types that your event objects may provide as properties, including the type of the underlying event itself.
+				</para>
+
+				<para>
+					The syntax for creating a named window by modelling the named window after an existing event type, is as follows: 
+				</para>
+				<synopsis>create window <emphasis>window_name</emphasis>.<emphasis>view_specifications</emphasis> [as] [select <emphasis>list_of_properties</emphasis> from] <emphasis>event_type</emphasis></synopsis>
+						
+				<para>
+					The <emphasis>window_name</emphasis> you assign to the named window can be any identifier. The name should not already be in use as an event type or stream name.
+				</para>
+					
+				<para>
+					The <emphasis>view_specifications</emphasis> are one or more data window views that define the expiry policy for removing events from the data window. Named windows must explicitly declare a data window view. This is required to ensure that the policy for retaining events in the data window is well defined. To keep all events, use the keep-all view: It indicates that the named window should keep all events and only remove events from the named window that are deleted via the <literal>on delete</literal> clause. The view specification can only list data window views, derived-value views are not allowed since these don't represent an expiry policy. 					
+				</para>
+					
+				<para>				
+					The <literal>select</literal> clause and <emphasis>list_of_properties</emphasis> are optional. If present, they specify the column names and, implicitly by definition of the event type, the column types of events held by the named window. Expressions other then column names are not allowed in the <literal>select</literal> list of properties. Wildcards (*) and wildcards with additional properties can also be used.
+				</para>
+	
+				<para>				
+					Finally, the <emphasis>event_type</emphasis> is required if using the model-after syntax. It provides the name of the event type of events held in the data window, unless column names and types have been explicitly selected via <literal>select</literal>.
+				</para>
+	
+				<para>
+					The next statement creates a named window 'AllOrdersNamedWindow' for which the expiry policy is simply to keep all events. Assume that the event type 'OrderMapEventType' has been configured. The named window is to hold events of type 'OrderMapEventType':
+				</para>
+				<programlisting><![CDATA[create window AllOrdersNamedWindow.win:keepall() as OrderMapEventType]]></programlisting>
+	
+				<para>
+					The below sample statement demonstrates the <literal>select</literal> syntax. It defines a named window in which each row has the three properties 'symbol', 'volume' and 'price'. This named window actively removes events from the window that are older then 30 seconds.
+				</para>
+				<programlisting><![CDATA[create window OrdersTimeWindow.win:time(30 sec) as 
+  select symbol, volume, price from OrderEvent]]></programlisting>
+
+				<para>
+					In an alternate form, the <literal>as</literal> keyword can be used to rename columns, and constants may occur in the select clause as well:
+				</para>
+				<programlisting><![CDATA[create window OrdersTimeWindow.win:time(30 sec) as 
+  select symbol as sym, volume as vol, price, 1 as alertId from OrderEvent]]></programlisting>
+	
+			</sect3>
+			
+			<sect3 id="named_create_explicit" revision="1">
+				<title>Creation By Defining Columns Names and Types</title>
+
+				<para>
+					The second syntax for creating a named window is by supplying column names and types: 
+				</para>
+				<synopsis>create window <emphasis>window_name</emphasis>.<emphasis>view_specifications</emphasis> [as] (<emphasis>column_name</emphasis> <emphasis>column_type</emphasis> 
+  [,<emphasis>column_name</emphasis> <emphasis>column_type</emphasis> [,...])</synopsis>
+
+				<para>				
+					The <emphasis>column_name</emphasis> is an identifier providing the event property name. The <emphasis>column_type</emphasis> is also required for each column. Valid column types are listed in <xref linkend="variable_create"/>
+					and are the same as for variable types.
+				</para>
+		
+				<para>
+					The next statement creates a named window:
+				</para>
+				<programlisting><![CDATA[create window SecurityEvent.win:time(30 sec) 
+    (ipAddress string, userId String, numAttempts int)]]></programlisting>	
+			</sect3>
+
 		</sect2>
 
 		<sect2 id="named_delete" revision="1">

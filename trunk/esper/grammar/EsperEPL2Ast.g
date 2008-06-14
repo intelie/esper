@@ -90,20 +90,37 @@ onExprFrom
 	;
 
 createWindowExpr
-	:	^(i=CREATE_WINDOW_EXPR IDENT (viewListExpr)? (createSelectionList)? CLASS_IDENT { leaveNode($i); } )
+	:	^(i=CREATE_WINDOW_EXPR IDENT (viewListExpr)? 
+			(
+				(createSelectionList? CLASS_IDENT) 
+			       | 
+			        (createColTypeList)
+			)
+		{ leaveNode($i); })
 	;
 	
-createVariableExpr
-	:	^(i=CREATE_VARIABLE_EXPR IDENT IDENT (valueExpr)? { leaveNode($i); } )
-	;
-
 createSelectionList
 	:	^(s=CREATE_WINDOW_SELECT_EXPR createSelectionListElement (createSelectionListElement)* { leaveNode($s); } )
 	;
 	
+createColTypeList
+	:	^(CREATE_WINDOW_COL_TYPE_LIST createColTypeListElement (createColTypeListElement)*)
+	;
+
+createColTypeListElement
+	:	^(CREATE_WINDOW_COL_TYPE IDENT IDENT)
+	;
+
 createSelectionListElement
 	:	w=WILDCARD_SELECT { leaveNode($w); }
-	|	^(s=SELECTION_ELEMENT_EXPR eventPropertyExpr (IDENT)? { leaveNode($s); } )
+	|	^(s=SELECTION_ELEMENT_EXPR (
+	              (eventPropertyExpr (IDENT)?) 
+	            | (constant[true] IDENT)
+	              ) { leaveNode($s); } )
+	;
+
+createVariableExpr
+	:	^(i=CREATE_VARIABLE_EXPR IDENT IDENT (valueExpr)? { leaveNode($i); } )
 	;
 
 selectExpr
