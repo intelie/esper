@@ -225,7 +225,8 @@ public class EPLTreeWalker extends EsperEPL2Ast
             case LEFT_OUTERJOIN_EXPR:
             case RIGHT_OUTERJOIN_EXPR:
             case FULL_OUTERJOIN_EXPR:
-                leaveOuterJoin(node);
+            case INNERJOIN_EXPR:
+                leaveOuterInnerJoin(node);
                 break;
             case GROUP_BY_EXPR:
                 leaveGroupBy(node);
@@ -1291,9 +1292,9 @@ public class EPLTreeWalker extends EsperEPL2Ast
         }
     }
 
-    private void leaveOuterJoin(Tree node)
+    private void leaveOuterInnerJoin(Tree node)
     {
-        log.debug(".leaveOuterJoin");
+        log.debug(".leaveOuterInnerJoin");
 
         OuterJoinType joinType;
         switch (node.getType())
@@ -1306,6 +1307,9 @@ public class EPLTreeWalker extends EsperEPL2Ast
                 break;
             case FULL_OUTERJOIN_EXPR:
                 joinType = OuterJoinType.FULL;
+                break;
+            case INNERJOIN_EXPR:
+                joinType = OuterJoinType.INNER;
                 break;
             default:
                 throw new IllegalArgumentException("Node type " + node.getType() + " not a recognized outer join node type");

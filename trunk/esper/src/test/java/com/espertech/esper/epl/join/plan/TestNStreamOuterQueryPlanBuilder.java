@@ -4,6 +4,7 @@ import com.espertech.esper.epl.spec.OuterJoinDesc;
 import com.espertech.esper.support.epl.SupportOuterJoinDescFactory;
 import com.espertech.esper.support.util.ArrayAssertionUtil;
 import com.espertech.esper.type.OuterJoinType;
+import com.espertech.esper.collection.InterchangeablePair;
 
 import java.util.*;
 
@@ -69,7 +70,9 @@ public class TestNStreamOuterQueryPlanBuilder extends TestCase
         queryGraph.add(2, "", 1, "");
         queryGraph.add(1, "", 0, "");
 
-        NStreamOuterQueryPlanBuilder.recursiveBuild(streamNum, queryGraph, outerInnerGraph, completedStreams,
+        Set<InterchangeablePair<Integer, Integer>> innerJoins = new HashSet<InterchangeablePair<Integer, Integer>>();
+
+        NStreamOuterQueryPlanBuilder.recursiveBuild(streamNum, queryGraph, outerInnerGraph, innerJoins, completedStreams,
                 substreamsPerStream, requiredPerStream);
 
         assertEquals(6, substreamsPerStream.size());

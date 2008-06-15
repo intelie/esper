@@ -25,7 +25,12 @@ public enum OuterJoinType
     /**
      * Full outer join.
      */
-    FULL ("full");
+    FULL ("full"),
+
+    /**
+     * Inner join.
+     */
+    INNER ("inner");
 
     private String text;
 

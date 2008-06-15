@@ -168,6 +168,7 @@ outerJoinIdent
 	:	^(tl=LEFT_OUTERJOIN_EXPR eventPropertyExpr eventPropertyExpr (eventPropertyExpr eventPropertyExpr)* { leaveNode($tl); } )
 	|	^(tr=RIGHT_OUTERJOIN_EXPR eventPropertyExpr eventPropertyExpr (eventPropertyExpr eventPropertyExpr)* { leaveNode($tr); } )
 	|	^(tf=FULL_OUTERJOIN_EXPR eventPropertyExpr eventPropertyExpr (eventPropertyExpr eventPropertyExpr)* { leaveNode($tf); } )
+	|	^(i=INNERJOIN_EXPR eventPropertyExpr eventPropertyExpr (eventPropertyExpr eventPropertyExpr)* { leaveNode($i); } )
 	;
 
 streamExpression

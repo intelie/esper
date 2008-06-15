@@ -7,6 +7,7 @@
  **************************************************************************************/
 package com.espertech.esper.epl.join.plan;
 
+import com.espertech.esper.collection.InterchangeablePair;
 import com.espertech.esper.epl.join.assemble.AssemblyStrategyTreeBuilder;
 import com.espertech.esper.epl.join.assemble.BaseAssemblyNode;
 import com.espertech.esper.epl.spec.OuterJoinDesc;
@@ -59,10 +60,13 @@ public class NStreamOuterQueryPlanBuilder
            log.debug(".build directional graph=" + outerInnerGraph.print());
         }
 
+        // Build a map of inner joins
+        Set<InterchangeablePair<Integer, Integer>> innerJoins = graphInnerJoins(numStreams, outerJoinDescList);
+
         // For each stream determine the query plan
         for (int streamNo = 0; streamNo < numStreams; streamNo++)
         {
-            QueryPlanNode queryPlanNode = build(numStreams, streamNo, streamNames, queryGraph, outerInnerGraph, indexSpecs, typesPerStream);
+            QueryPlanNode queryPlanNode = build(numStreams, streamNo, streamNames, queryGraph, outerInnerGraph, innerJoins, indexSpecs, typesPerStream);
 
             if (log.isDebugEnabled())
             {
@@ -87,6 +91,7 @@ public class NStreamOuterQueryPlanBuilder
                                        String[] streamNames,
                                        QueryGraph queryGraph,
                                        OuterInnerDirectionalGraph outerInnerGraph,
+                                       Set<InterchangeablePair<Integer, Integer>> innerJoins,
                                        QueryPlanIndex[] indexSpecs,
                                        EventType[] typesPerStream)
     {
@@ -98,7 +103,7 @@ public class NStreamOuterQueryPlanBuilder
         // Recursive populating the required (outer) and optional (inner) relationships
         // of this stream and the substream
         Set<Integer> completedStreams = new HashSet<Integer>();
-        recursiveBuild(streamNo, queryGraph, outerInnerGraph, completedStreams, substreamsPerStream, requiredPerStream);
+        recursiveBuild(streamNo, queryGraph, outerInnerGraph, innerJoins, completedStreams, substreamsPerStream, requiredPerStream);
 
         // verify the substreamsPerStream, all streams must exists and be linked
         verifyJoinedPerStream(streamNo, substreamsPerStream);
@@ -168,6 +173,7 @@ public class NStreamOuterQueryPlanBuilder
     protected static void recursiveBuild(int streamNum,
                                                 QueryGraph queryGraph,
                                                 OuterInnerDirectionalGraph outerInnerGraph,
+                                                Set<InterchangeablePair<Integer, Integer>> innerJoins,
                                                 Set<Integer> completedStreams,
                                                 LinkedHashMap<Integer, int[]> substreamsPerStream,
                                                 boolean[] requiredPerStream
@@ -184,7 +190,27 @@ public class NStreamOuterQueryPlanBuilder
 
         // Which streams are inner streams to this stream (optional), which ones are outer to the stream (required)
         Set<Integer> requiredStreams = getOuterStreams(streamNum, navigableStreams, outerInnerGraph);
-        Set<Integer> optionalStreams = getInnerStreams(streamNum, navigableStreams, outerInnerGraph);
+
+        // Add inner joins, if any, unless already completed for this stream
+        for (InterchangeablePair<Integer, Integer> pair : innerJoins)
+        {
+            if (pair.getFirst() == streamNum)
+            {
+                if (!completedStreams.contains(pair.getSecond()))
+                {
+                    requiredStreams.add(pair.getSecond());
+                }
+            }
+            if (pair.getSecond() == streamNum)
+            {
+                if (!completedStreams.contains(pair.getFirst()))
+                {
+                    requiredStreams.add(pair.getFirst());
+                }
+            }
+        }
+        
+        Set<Integer> optionalStreams = getInnerStreams(streamNum, navigableStreams, outerInnerGraph, innerJoins, completedStreams);
 
         // Remove from the required streams the optional streams which places 'full' joined streams
         // into the optional stream category
@@ -219,28 +245,108 @@ public class NStreamOuterQueryPlanBuilder
         // next we look at all the required streams and add their dependent streams
         for (int stream : requiredStreams)
         {
-            recursiveBuild(stream, queryGraph, outerInnerGraph,
+            recursiveBuild(stream, queryGraph, outerInnerGraph, innerJoins,
                            completedStreams, substreamsPerStream, requiredPerStream);
         }
         // look at all the optional streams and add their dependent streams
         for (int stream : optionalStreams)
         {
-            recursiveBuild(stream, queryGraph, outerInnerGraph,
+            recursiveBuild(stream, queryGraph, outerInnerGraph, innerJoins,
                            completedStreams, substreamsPerStream, requiredPerStream);
         }
     }
 
-    private static Set<Integer> getInnerStreams(int fromStream, Set<Integer> toStreams, OuterInnerDirectionalGraph outerInnerGraph)
+    private static Set<Integer> getInnerStreams(int fromStream, Set<Integer> toStreams, OuterInnerDirectionalGraph outerInnerGraph,
+                                                Set<InterchangeablePair<Integer, Integer>> innerJoins,
+                                                Set<Integer> completedStreams)
     {
         Set<Integer> innerStreams = new HashSet<Integer>();
         for (int toStream : toStreams)
         {
             if (outerInnerGraph.isInner(fromStream, toStream))
             {
-                innerStreams.add(toStream);
+                // if the to-stream, recursively, has an inner join itself, it becomes a required stream and not optional
+                boolean hasInnerJoin = false;
+                if (!innerJoins.isEmpty())
+                {
+                    HashSet<Integer> doNotUseStreams = new HashSet<Integer>(completedStreams);
+                    completedStreams.add(fromStream);
+                    hasInnerJoin = recursiveHasInnerJoin(toStream, outerInnerGraph, innerJoins, doNotUseStreams);
+                }
+
+                if (!hasInnerJoin)
+                {
+                    innerStreams.add(toStream);
+                }
             }
         }
         return innerStreams;
+    }
+
+    private static boolean recursiveHasInnerJoin(int toStream, OuterInnerDirectionalGraph outerInnerGraph, Set<InterchangeablePair<Integer, Integer>> innerJoins, Set<Integer> completedStreams)
+    {
+        // Check if the to-stream is in any of the inner joins
+        boolean hasInnerJoin = false;
+        for (InterchangeablePair<Integer, Integer> pair : innerJoins)
+        {
+            if (pair.getFirst() == toStream)
+            {
+                hasInnerJoin = true;
+            }
+            if (pair.getSecond() == toStream)
+            {
+                hasInnerJoin = true;
+            }
+        }
+
+        if (hasInnerJoin)
+        {
+            return true;
+        }
+
+        Set<Integer> innerToToStream = outerInnerGraph.getInner(toStream);
+        if (innerToToStream != null)
+        {
+            for (int nextStream : innerToToStream)
+            {
+                if (completedStreams.contains(nextStream))
+                {
+                    continue;
+                }
+
+                HashSet<Integer> notConsider = new HashSet<Integer>(completedStreams);
+                notConsider.add(toStream);
+                boolean result = recursiveHasInnerJoin(nextStream, outerInnerGraph, innerJoins, notConsider);
+
+                if (result)
+                {
+                    return true;
+                }
+            }
+        }
+
+        Set<Integer> outerToToStream = outerInnerGraph.getOuter(toStream);
+        if (outerToToStream != null)
+        {
+            for (int nextStream : outerToToStream)
+            {
+                if (completedStreams.contains(nextStream))
+                {
+                    continue;
+                }
+
+                HashSet<Integer> notConsider = new HashSet<Integer>(completedStreams);
+                notConsider.add(toStream);
+                boolean result = recursiveHasInnerJoin(nextStream, outerInnerGraph, innerJoins, notConsider);
+
+                if (result)
+                {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     // which streams are to this table an outer stream
@@ -311,9 +417,46 @@ public class NStreamOuterQueryPlanBuilder
             {
                 graph.add(higherStream, lowerStream);
             }
+            else if (desc.getOuterJoinType() == OuterJoinType.INNER)
+            {
+                // no navigability for inner joins
+            }
             else
             {
                 throw new IllegalArgumentException("Outer join descriptors join type not handled, type=" + desc.getOuterJoinType());
+            }
+        }
+
+        return graph;
+    }
+
+    private static Set<InterchangeablePair<Integer, Integer>> graphInnerJoins(int numStreams, List<OuterJoinDesc> outerJoinDescList)
+    {
+        if ((outerJoinDescList.size() + 1) != numStreams)
+        {
+            throw new IllegalArgumentException("Number of outer join descriptors and number of streams not matching up");
+        }
+
+        Set<InterchangeablePair<Integer, Integer>> graph = new HashSet<InterchangeablePair<Integer, Integer>>();
+
+        for (int i = 0; i < outerJoinDescList.size(); i++)
+        {
+            OuterJoinDesc desc = outerJoinDescList.get(i);
+            int streamMax = i + 1;       // the outer join must references streams less then streamMax
+
+            // Check outer join
+            int streamOne = desc.getLeftNode().getStreamId();
+            int streamTwo = desc.getRightNode().getStreamId();
+
+            if ((streamOne > streamMax) || (streamTwo > streamMax) ||
+                (streamOne == streamTwo))
+            {
+                throw new IllegalArgumentException("Outer join descriptors reference future streams, or same streams");
+            }
+
+            if (desc.getOuterJoinType() == OuterJoinType.INNER)
+            {
+                graph.add(new InterchangeablePair<Integer, Integer>(streamOne, streamTwo));
             }
         }
 

@@ -303,7 +303,7 @@ public class TestEPLParser extends TestCase
         tryJoin("right");
         tryJoin("full");
         assertIsValid("select * from A left outer join B on a = b and c=d");
-
+        assertIsValid("select * from A left outer join B on a = b and c=d inner join C on d=c");
 
         // complex property access
         assertIsValid("select array[1], map('a'), map(\"b\"), nested.nested " +

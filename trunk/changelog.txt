@@ -9,6 +9,8 @@ Major API changes
 New Features
   - Support for repeat and repeat-until in pattern matching
   - named windows allow constants and table-like definition syntax
+  - plug-in aggregation functions accept multiple parameters
+  - allow inner join and outer join mixed
   
 Minor changes	    		
 

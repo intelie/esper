@@ -41,6 +41,7 @@ tokens
 	END='end';
 	FROM='from';
 	OUTER='outer';
+	INNER='inner';
 	JOIN='join';
 	LEFT='left';
 	RIGHT='right';
@@ -117,6 +118,7 @@ tokens
    	SELECTION_STREAM;
    	STREAM_EXPR;
    	OUTERJOIN_EXPR;
+   	INNERJOIN_EXPR;
    	LEFT_OUTERJOIN_EXPR;
    	RIGHT_OUTERJOIN_EXPR;
    	FULL_OUTERJOIN_EXPR;
@@ -567,7 +569,11 @@ outerJoinList
 outerJoin
 @init  { paraphrases.push("outer join"); }
 @after { paraphrases.pop(); }
-	:	(tl=LEFT|tr=RIGHT|tf=FULL) OUTER JOIN streamExpression outerJoinIdent
+	:	(
+	            ((tl=LEFT|tr=RIGHT|tf=FULL) OUTER)? 
+	          | (i=INNER)
+	        ) JOIN streamExpression outerJoinIdent
+		-> {$i != null}? streamExpression ^(INNERJOIN_EXPR outerJoinIdent)
 		-> {$tl != null}? streamExpression ^(LEFT_OUTERJOIN_EXPR outerJoinIdent)
 		-> {$tr != null}? streamExpression ^(RIGHT_OUTERJOIN_EXPR outerJoinIdent)
 		-> streamExpression ^(FULL_OUTERJOIN_EXPR outerJoinIdent)

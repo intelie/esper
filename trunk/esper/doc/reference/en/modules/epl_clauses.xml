@@ -1622,23 +1622,25 @@ from OrderStream.win:time(30 sec) group by customerId</programlisting>
     </sect1>
 
     <sect1 id="epl-outerjoin">
-        <title>Outer Joins</title>
+        <title>Outer and Inner Joins</title>
 
 		<indexterm><primary>outer join</primary></indexterm>
+		<indexterm><primary>inner join</primary></indexterm>
 		<indexterm><primary>EPL</primary><secondary>outer join</secondary></indexterm>
+		<indexterm><primary>EPL</primary><secondary>inner join</secondary></indexterm>
 
 		<para>
-			Esper supports left outer joins, right outer joins and full outer joins between an unlimited number of event streams. Outer joins can also join reference and historical data as explained in <xref linkend="histdata_overview"/>, as well as join data returned by a method invocation as outlined in <xref linkend="joining_method"/>.
+			Esper supports left outer joins, right outer joins, full outer joins and inner joins in any combination between an unlimited number of event streams. Outer and inner joins can also join reference and historical data as explained in <xref linkend="histdata_overview"/>, as well as join data returned by a method invocation as outlined in <xref linkend="joining_method"/>.
 		</para>
 
 		<para>
-			The keywords <literal>left, right</literal> and <literal>full</literal> control the type of the join between two streams. The <literal>on</literal> clause specifies one or more properties that join each stream. The synopsis is as follows:
+			The keywords <literal>left, right, full</literal> and <literal>inner</literal> control the type of the join between two streams. The <literal>on</literal> clause specifies one or more properties that join each stream. The synopsis is as follows:
 		</para>
 
 <synopsis>...from <emphasis>stream_def</emphasis> [as name] 
-  left|right|full outer join <emphasis>stream_def</emphasis> 
+  ((left|right|full outer) | inner) join <emphasis>stream_def</emphasis> 
   on <emphasis>property</emphasis> = <emphasis>property</emphasis> [and <emphasis>property</emphasis> = <emphasis>property</emphasis> ...]
-  [left|right|full outer join <emphasis>stream_def</emphasis> on ...]...
+  [ ((left|right|full outer) | inner) join <emphasis>stream_def</emphasis> on ...]...
 </synopsis>
 
 		<para>
@@ -1664,11 +1666,20 @@ from OrderStream.win:time(30 sec) group by customerId</programlisting>
 		</para>
 		
 		<para>
-			The last type of outer join is a full outer join. In a full outer join, each point in time that an event arrives to one of the event streams, one or more output events are produced. In the example below, when either an RfidEvent or an OrderList event arrive, one or more output event is produced. The next example shows a full outer join that joins on multiple properties:
+			The next type of outer join is a full outer join. In a full outer join, each point in time that an event arrives to one of the event streams, one or more output events are produced. In the example below, when either an RfidEvent or an OrderList event arrive, one or more output event is produced. The next example shows a full outer join that joins on multiple properties:
 		</para>
 
 <programlisting><![CDATA[select * from RfidEvent.win:time(30 sec) as rfid
        full outer join
+       OrderList.win:length(10000) as orderlist
+       on rfid.itemId = orderList.itemId and rfid.assetId = orderList.assetId]]></programlisting>
+
+		<para>
+			The last type of join is an inner join. In an inner join, the engine produces an output event for each event of the stream on the left-hand side that matches at least one event on the right hand side considering the join properties. For example, in the inner join shown below we will get output for each event in the RfidEvent stream that matches one or more events in the OrderList data window:
+		</para>
+
+<programlisting><![CDATA[select * from RfidEvent.win:time(30 sec) as rfid
+       inner join
        OrderList.win:length(10000) as orderlist
        on rfid.itemId = orderList.itemId and rfid.assetId = orderList.assetId]]></programlisting>
 
@@ -1684,7 +1695,7 @@ from OrderStream.win:time(30 sec) group by customerId</programlisting>
     </sect1>
 
     <sect1 id="epl-unidirectional">
-        <title>Unidirectional Joins and Outer Joins</title>
+        <title>Unidirectional Joins</title>
 
 		<indexterm><primary>unidirectional joins</primary></indexterm>
 		<indexterm><primary>EPL</primary><secondary>join, unidirectional</secondary></indexterm>
