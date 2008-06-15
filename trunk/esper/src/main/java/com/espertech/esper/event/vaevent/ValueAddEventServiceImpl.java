@@ -16,8 +16,19 @@ import java.util.*;
  */
 public class ValueAddEventServiceImpl implements ValueAddEventService
 {
+    /**
+     * Map of revision event name and revision compiled specification.
+     */
     protected final Map<String, RevisionSpec> specificationsByRevisionAlias;
+
+    /**
+     * Map of named window name and processor.
+     */
     protected final Map<String, ValueAddEventProcessor> processorsByNamedWindow;
+
+    /**
+     * Map of revision event stream and variant stream processor.
+     */
     protected final Map<String, ValueAddEventProcessor> variantProcessors;
 
     /**
@@ -58,6 +69,13 @@ public class ValueAddEventServiceImpl implements ValueAddEventService
         variantProcessors.put(variantStreamname, processor);
     }
 
+    /**
+     * Validate the variant stream definition.
+     * @param variantStreamname the stream name
+     * @param variantStreamConfig the configuration information
+     * @param eventAdapterService the event adapters
+     * @return specification for variant streams
+     */
     public static VariantSpec validateVariantStream(String variantStreamname, ConfigurationVariantStream variantStreamConfig, EventAdapterService eventAdapterService)
     {
         if (variantStreamConfig.getTypeVariance() == ConfigurationVariantStream.TypeVariance.PREDEFINED)
@@ -121,6 +139,14 @@ public class ValueAddEventServiceImpl implements ValueAddEventService
         return specificationsByRevisionAlias.containsKey(revisionTypeAlias);
     }
 
+    /**
+     * Valiate the revision configuration.
+     * @param revisionEventTypeAlias name of revision types
+     * @param config configures revision type
+     * @param eventAdapterService event adapters
+     * @return revision specification
+     * @throws ConfigurationException if the configs are invalid
+     */
     protected static RevisionSpec validateRevision(String revisionEventTypeAlias, ConfigurationRevisionEventType config, EventAdapterService eventAdapterService)
             throws ConfigurationException
     {

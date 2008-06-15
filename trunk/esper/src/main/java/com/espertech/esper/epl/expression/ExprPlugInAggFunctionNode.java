@@ -27,23 +27,36 @@ public class ExprPlugInAggFunctionNode extends ExprAggregateNode
 
     public AggregationMethod validateAggregationChild(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService) throws ExprValidationException
     {
-        Class childType = null;
         if (this.getChildNodes().size() > 1)
         {
-            throw new ExprValidationException("Plug-in aggregation function '" + aggregationSupport.getFunctionName() + "' requires a single parameter");
-        }
-        if (this.getChildNodes().size() == 1)
-        {
-            childType = this.getChildNodes().get(0).getType();
-        }
+            Class[] parameterTypes = new Class[this.getChildNodes().size()];
+            Object[] constant = new Object[this.getChildNodes().size()];
+            boolean[] isConstant = new boolean[this.getChildNodes().size()];
 
-        try
-        {
-            aggregationSupport.validate(childType);
+            int count = 0;
+            for (ExprNode child : this.getChildNodes())
+            {
+                if (child.isConstantResult())
+                {
+                    isConstant[count] = true;
+                    constant[count] = child.evaluate(null, true);
+                }
+                parameterTypes[count] = child.getType();
+                count++;
+            }
+            aggregationSupport.validateMultiParameter(parameterTypes, isConstant, constant);
         }
-        catch (RuntimeException ex)
+        else if (this.getChildNodes().size() == 1)
         {
-            throw new ExprValidationException("Plug-in aggregation function '" + aggregationSupport.getFunctionName() + "' failed validation: " + ex.getMessage());
+            Class childType = this.getChildNodes().get(0).getType();
+            try
+            {
+                aggregationSupport.validate(childType);
+            }
+            catch (RuntimeException ex)
+            {
+                throw new ExprValidationException("Plug-in aggregation function '" + aggregationSupport.getFunctionName() + "' failed validation: " + ex.getMessage());
+            }
         }
 
         return aggregationSupport;

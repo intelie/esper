@@ -45,10 +45,12 @@ public final class FilterSpecCompiler
      * @param eventTypeAlias is the alias name of the event type
      * @param filterExpessions is a list of filter expressions
      * @param taggedEventTypes is a map of stream names (tags) and event types available
+     * @param arrayEventTypes is a map of name tags and event type per tag for repeat-expressions that generate an array of events
      * @param streamTypeService is used to set rules for resolving properties
      * @param methodResolutionService resolved imports for static methods and such
      * @param timeProvider - provides engine current time
      * @param variableService - provides access to variables
+     * @param eventAdapterService - for event type and bean generation
      * @return compiled filter specification
      * @throws ExprValidationException if the expression or type validations failed
      */

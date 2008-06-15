@@ -286,6 +286,12 @@ public class VAERevisionProcessorDeclared extends VAERevisionProcessorBase imple
         return result;
     }
 
+    /**
+     * Creates property descriptors for revision.
+     * @param spec specifies revision
+     * @param groups the groups that group properties
+     * @return map of property and descriptor
+     */
     public static Map<String, RevisionPropertyTypeDesc> createPropertyDescriptors(RevisionSpec spec, PropertyGroupDesc groups[])
     {
         Map<String, int[]> propsPerGroup = PropertyUtility.getGroupsPerProperty(groups);

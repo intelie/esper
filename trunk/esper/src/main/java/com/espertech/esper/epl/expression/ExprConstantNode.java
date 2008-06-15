@@ -39,6 +39,10 @@ public class ExprConstantNode extends ExprNode
         }        
     }
 
+    /**
+     * Ctor - for use when the constant should return a given type and the actual value is always null.
+     * @param clazz the type of the constant null.
+     */
     public ExprConstantNode(Class clazz)
     {
         this.clazz = clazz;

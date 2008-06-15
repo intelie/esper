@@ -21,6 +21,21 @@ public abstract class AggregationSupport implements AggregationMethod
     public abstract void validate(Class childNodeType);
 
     /**
+     * Override this method to validate multiple parameters to a plug-in aggregation function.
+     * <p>
+     * Any parameters to the aggregation function that are constant-value expressions are indicated as a boolean true
+     * and the value of the constant-value expression.
+     * @param parameterType parameter type
+     * @param isConstantValue true to indicate the parameter is a constant or a result of an expression that is constant
+     * @param constantValue the value of the constant-value expression, or null if not a constant-value expression
+     */
+    public void validateMultiParameter(Class[] parameterType, boolean[] isConstantValue, Object[] constantValue)
+    {
+        // no implementation, this method may be overridden by the implementation if the method accepts multiple parameters
+        // and wishes to validate or keep a reference to constants
+    }
+
+    /**
      * Ctor.
      */
     public AggregationSupport()

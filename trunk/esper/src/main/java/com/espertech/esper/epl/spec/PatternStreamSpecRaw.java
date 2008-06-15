@@ -105,7 +105,7 @@ public class PatternStreamSpecRaw extends StreamSpecBase implements StreamSpecRa
 
         // Determine tags that are arrays of events, all under the "match" clause
         Set<String> matchUntilArrayTags = new HashSet<String>();
-        for (EvalMatchUntilNode matchUntilNode : evalNodeAnalysisResult.getMatchUntilNodes())
+        for (EvalMatchUntilNode matchUntilNode : evalNodeAnalysisResult.getRepeatNodes())
         {
             Set<String> arrayTags = null;
             EvalNodeAnalysisResult matchUntilAnalysisResult = EvalNode.recursiveAnalyzeChildNodes(matchUntilNode.getChildNodes().get(0));

@@ -179,6 +179,7 @@ public interface EventAdapterService
      * Creates an unnamed composite event type with event properties that are name-value pairs
      * with values being other event types. Pattern statement generate events of such type.
      * @param taggedEventTypes is a map of name keys and event type values
+     * @param arrayEventTypes is a map of name tags and event type per tag for repeat-expressions that generate an array of events
      * @return event type representing a composite event
      */
     public EventType createAnonymousCompositeType(Map<String, Pair<EventType, String>> taggedEventTypes,

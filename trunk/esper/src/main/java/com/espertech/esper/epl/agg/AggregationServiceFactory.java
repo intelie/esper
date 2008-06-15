@@ -65,12 +65,11 @@ public class AggregationServiceFactory
         {
             if (aggregateNode.getChildNodes().size() > 1)
             {
-                throw new IllegalStateException("Aggregate node is expected to have at most a single child node");
+                evaluators[index] = getMultiNodeEvaluator(aggregateNode.getChildNodes());
             }
-
-            // Use the evaluation node under the aggregation node to obtain the aggregation value
-            if (!aggregateNode.getChildNodes().isEmpty())
+            else if (!aggregateNode.getChildNodes().isEmpty())
             {
+                // Use the evaluation node under the aggregation node to obtain the aggregation value
                 evaluators[index] = aggregateNode.getChildNodes().get(0);
             }
             // For aggregation that doesn't evaluate any particular sub-expression, return null on evaluation
@@ -122,6 +121,39 @@ public class AggregationServiceFactory
         }
 
         return service;
+    }
+
+    private static ExprEvaluator getMultiNodeEvaluator(LinkedList<ExprNode> childNodes)
+    {
+        final int size = childNodes.size();
+        final LinkedList<ExprNode> exprNodes = childNodes;
+        final boolean[] isConstant = new boolean[size];
+        final Object[] prototype = new Object[size];
+
+        // determine constant nodes
+        int count = 0;
+        for (ExprNode node : exprNodes)
+        {
+            if (node.isConstantResult())
+            {
+                isConstant[count] = true;
+                prototype[count] = node.evaluate(null, true);
+            }
+            count++;
+        }
+
+        return new ExprEvaluator() {
+            public Object evaluate(EventBean[] eventsPerStream, boolean isNewData)
+            {
+                int count = 0;
+                for (ExprNode node : exprNodes)
+                {
+                    prototype[count] = node.evaluate(eventsPerStream, isNewData);
+                    count++;
+                }
+                return prototype;
+            }
+        };        
     }
 
     private static void addEquivalent(ExprAggregateNode aggNodeToAdd, Map<ExprAggregateNode, List<ExprAggregateNode>> equivalencyList)

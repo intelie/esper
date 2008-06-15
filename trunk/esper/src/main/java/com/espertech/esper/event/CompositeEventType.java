@@ -38,6 +38,7 @@ public class CompositeEventType implements EventType, TaggedCompositeEventType
      * Ctor.
      * @param alias is the event type alias
      * @param taggedEventTypes is a map of name tags and event type per tag 
+     * @param arrayEventTypes is a map of name tags and event type per tag for repeat-expressions that generate an array of events
      */
     public CompositeEventType(String alias,
                               Map<String, Pair<EventType, String>> taggedEventTypes,

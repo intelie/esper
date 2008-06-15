@@ -14,21 +14,37 @@ public final class EvalMatchUntilNode extends EvalNode
     private final EvalMatchUntilSpec spec;
     private String[] tagsArrayed;
 
+    /**
+     * Ctor.
+     * @param spec specifies an optional range
+     */
     public EvalMatchUntilNode(EvalMatchUntilSpec spec)
     {
         this.spec = spec;
     }
 
+    /**
+     * Returns the range specification, which is never null however may contain null low and high endpoints.
+     * @return range spec
+     */
     public EvalMatchUntilSpec getSpec()
     {
         return spec;
     }
 
+    /**
+     * Returns an array of tags for events, which is all tags used within the repeat-operator.
+     * @return array of tags
+     */
     public String[] getTagsArrayed()
     {
         return tagsArrayed;
     }
 
+    /**
+     * Sets the tags used within the repeat operator.
+     * @param tagsArrayedSet tags used within the repeat operator
+     */
     public void setTagsArrayedSet(Set<String> tagsArrayedSet)
     {
         if (tagsArrayedSet != null)

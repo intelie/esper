@@ -1,15 +1,16 @@
 package com.espertech.esper.regression.client;
 
-import junit.framework.TestCase;
 import com.espertech.esper.client.*;
 import com.espertech.esper.client.soda.*;
 import com.espertech.esper.support.bean.SupportBean;
-import com.espertech.esper.support.bean.SupportMarketDataBean;
-import com.espertech.esper.support.epl.SupportPluginAggregationMethodTwo;
-import com.espertech.esper.support.epl.SupportPluginAggregationMethodOne;
-import com.espertech.esper.support.util.SupportUpdateListener;
 import com.espertech.esper.support.client.SupportConfigFactory;
+import com.espertech.esper.support.epl.SupportPluginAggregationMethodOne;
+import com.espertech.esper.support.epl.SupportPluginAggregationMethodThree;
+import com.espertech.esper.support.epl.SupportPluginAggregationMethodTwo;
+import com.espertech.esper.support.util.ArrayAssertionUtil;
+import com.espertech.esper.support.util.SupportUpdateListener;
 import com.espertech.esper.util.SerializableObjectCopier;
+import junit.framework.TestCase;
 
 public class TestAggregationFunctionPlugIn extends TestCase
 {
@@ -161,6 +162,32 @@ public class TestAggregationFunctionPlugIn extends TestCase
         listener.assertFieldEqualsAndReset("val", new Object[] {-1}, new Object[] {0});
     }
 
+    public void testMultipleParams()
+    {
+        epService.getEPAdministrator().getConfiguration().addPlugInAggregationFunction("countboundary", SupportPluginAggregationMethodThree.class.getName());
+
+        String text = "select irstream countboundary(1,10,intPrimitive) as val from " + SupportBean.class.getName();
+        EPStatement statement = epService.getEPAdministrator().createEPL(text);
+        SupportUpdateListener listener = new SupportUpdateListener();
+        statement.addListener(listener);
+
+        ArrayAssertionUtil.assertEqualsExactOrder(SupportPluginAggregationMethodThree.getChildNodeType(), new Class[] {Integer.class, Integer.class, int.class});
+        ArrayAssertionUtil.assertEqualsExactOrder(SupportPluginAggregationMethodThree.getConstantValue(), new Object[] {1, 10, null});
+        ArrayAssertionUtil.assertEqualsExactOrder(SupportPluginAggregationMethodThree.getIsConstantValue(), new boolean[] {true, true, false});
+
+        epService.getEPRuntime().sendEvent(new SupportBean("E1", 5));
+        listener.assertFieldEqualsAndReset("val", new Object[] {1}, new Object[] {0});
+
+        epService.getEPRuntime().sendEvent(new SupportBean("E1", 0));
+        listener.assertFieldEqualsAndReset("val", new Object[] {1}, new Object[] {1});
+
+        epService.getEPRuntime().sendEvent(new SupportBean("E1", 11));
+        listener.assertFieldEqualsAndReset("val", new Object[] {1}, new Object[] {1});
+        
+        epService.getEPRuntime().sendEvent(new SupportBean("E1", 1));
+        listener.assertFieldEqualsAndReset("val", new Object[] {2}, new Object[] {1});
+    }
+
     public void testNoSubnodesRuntimeAdd()
     {
         epService.getEPAdministrator().getConfiguration().addPlugInAggregationFunction("countback", SupportPluginAggregationMethodOne.class.getName());
@@ -219,7 +246,7 @@ public class TestAggregationFunctionPlugIn extends TestCase
         }
         catch (EPStatementException ex)
         {
-            assertEquals("Error starting view: Plug-in aggregation function 'concat' requires a single parameter [select * from com.espertech.esper.support.bean.SupportBean group by concat(1, 1)]", ex.getMessage());
+            assertEquals("Error starting view: Group-by expressions must refer to property names [select * from com.espertech.esper.support.bean.SupportBean group by concat(1, 1)]", ex.getMessage());
         }
     }
 

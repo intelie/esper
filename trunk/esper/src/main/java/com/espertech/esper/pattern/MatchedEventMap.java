@@ -40,6 +40,11 @@ public interface MatchedEventMap
      */
     public EventBean getMatchingEvent(final String tag);
 
+    /**
+     * Returns the object for the matching event, be it the event bean array or the event bean.
+     * @param tag is the tag to return the object for
+     * @return event bean or event bean array
+     */
     public Object getMatchingEventAsObject(final String tag);
 
     /**

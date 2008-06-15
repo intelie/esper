@@ -17,7 +17,14 @@ import java.util.Iterator;
  */
 public class VAEVariantProcessor implements ValueAddEventProcessor
 {
+    /**
+     * Specification for the variant stream.
+     */
     protected final VariantSpec variantSpec;
+
+    /**
+     * The event type representing the variant stream.
+     */
     protected VariantEventType variantEventType;
 
     /**

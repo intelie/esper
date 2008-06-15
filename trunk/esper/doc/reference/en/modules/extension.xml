@@ -322,7 +322,7 @@
         </para>
 
         <para>
-			Custom aggregation functions can also be passed multiple parameters using the array operator <literal>{}</literal>.
+			Custom aggregation functions can also be passed multiple parameters, as further discribed in <xref linkend="custom-aggregation-multiparam"/>. In the example below the aggregation function accepts a single parameter.
         </para>
 
         <para>
@@ -462,6 +462,54 @@
 				The new aggregation function is now ready to use in a statement:
 			</para>		
 			<programlisting><![CDATA[select concat(symbol) from StockTick.win:length(3)]]></programlisting>
+
+		</sect2>
+
+		<sect2 id="custom-aggregation-multiparam" revision="1">
+			<title>Accepting Multiple Parameters</title>
+			
+			<para>
+				Your plug-in aggregation function may accept multiple parameters, simply by casting the Object parameter of the <literal>enter</literal> and <literal>leave</literal> method to <literal>Object[]</literal>.
+			</para>
+		
+			<para>
+				For instance, assume an aggregation function <literal>rangeCount</literal> that counts all values that fall into a range of values. The EPL that calls this function and provides a lower and upper bounds of 1 and 10 is:
+			</para>
+			<programlisting><![CDATA[select rangeCount(1, 10, myValue) from MyEvent]]></programlisting>
+
+			<para>
+				The <literal>enter</literal> method of the plug-in aggregation function may look as follows:
+			</para>
+			<programlisting><![CDATA[public void enter(Object value)  {
+  Object[] params = (Object[]) value;
+  int lower = (Integer) params[0];
+  int upper = (Integer) params[1];
+  int val = (Integer) params[2];
+  if ((val >= lower) && (val <= upper)) {
+    count++;
+  }
+}]]></programlisting>
+
+			<para>
+				Your plug-in aggregation function may want to validate parameter types or may want to know which parameters are constant-value expressions. Constant-value expressions are evaluated only once by the engine and could
+				therefore be cached by your aggregation function for performance reasons.
+			</para>
+
+			<para>
+				To validate parameter types, or cache constant-value expressions results, override the <literal>validateMultiParameter</literal> method in your implementation of <literal>AggregationSupport</literal>. The engine provides the parameter type of each parameter. It also provides a flag indicating that the parameter is the result of a constant-value expression and provides the constant itself (if constant).
+			</para>
+
+			<para>
+				This sample implementation of <literal>validateMultiParameter</literal> simply checks that boundary values are of type Integer:
+			</para>
+			<programlisting><![CDATA[public void validateMultiParameter(Class[] parameterType, 
+  boolean[] isConstantValue, 
+  Object[] constantValue) {
+  super.validateMultiParameter(childNodeType, isConstantValue, constantValue);
+  if ((childNodeType[0] != Integer.class) || (childNodeType[1] != Integer.class)) {
+    throw new IllegalArgumentException("Expected integer bounds");        
+  }
+}]]></programlisting>
 
 		</sect2>
 	</sect1>
