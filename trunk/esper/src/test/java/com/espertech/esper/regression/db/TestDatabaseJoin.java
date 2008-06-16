@@ -7,6 +7,7 @@ import com.espertech.esper.client.time.CurrentTimeEvent;
 import com.espertech.esper.support.bean.SupportBean_S0;
 import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.bean.SupportBeanComplexProps;
+import com.espertech.esper.support.bean.SupportBean_A;
 import com.espertech.esper.support.util.SupportUpdateListener;
 import com.espertech.esper.support.epl.SupportDatabaseService;
 import com.espertech.esper.support.client.SupportConfigFactory;
@@ -50,6 +51,43 @@ public class TestDatabaseJoin extends TestCase
                 SupportBean.class.getName() + ".win:time_batch(10 sec) as s1";
         EPStatement stmt = epService.getEPAdministrator().createEPL(stmtText);
         runtestTimeBatch(stmt);
+    }
+
+    public void testVariables()
+    {
+        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("SupportBean", SupportBean.class);
+        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("A", SupportBean_A.class);
+        epService.getEPAdministrator().createEPL("create variable int queryvar");
+        epService.getEPAdministrator().createEPL("on SupportBean set queryvar=intPrimitive");
+
+        String stmtText = "select myint from " +
+                " sql:MyDB ['select myint from mytesttable where ${queryvar} = mytesttable.mybigint'] as s0, " +
+                "A.win:keepall() as s1";
+        
+        EPStatement stmt = epService.getEPAdministrator().createEPL(stmtText);
+        listener = new SupportUpdateListener();
+        stmt.addListener(listener);
+
+        sendSupportBeanEvent(5);
+        epService.getEPRuntime().sendEvent(new SupportBean_A("A1"));
+
+        EventBean received = listener.assertOneGetNewAndReset();
+        assertEquals(50, received.get("myint"));
+        stmt.destroy();
+
+        stmtText = "select myint from " +
+                "A.win:keepall() as s1, " +
+                "sql:MyDB ['select myint from mytesttable where ${queryvar} = mytesttable.mybigint'] as s0";
+
+        stmt = epService.getEPAdministrator().createEPL(stmtText);
+        listener = new SupportUpdateListener();
+        stmt.addListener(listener);
+
+        sendSupportBeanEvent(6);
+        epService.getEPRuntime().sendEvent(new SupportBean_A("A1"));
+
+        received = listener.assertOneGetNewAndReset();
+        assertEquals(60, received.get("myint"));
     }
 
     public void testTimeBatchOM() throws Exception

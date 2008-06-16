@@ -157,7 +157,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
         EPStatementStartMethod startMethod;
 
         StatementContext statementContext =  services.getStatementContextFactory().makeContext(statementId, statementName, expression, statementSpec.isHasVariables(), services, optAdditionalContext, statementSpec.getOnTriggerDesc(), statementSpec.getCreateWindowDesc());
-        StatementSpecCompiled compiledSpec = null;
+        StatementSpecCompiled compiledSpec;
         try
         {
             compiledSpec = compile(statementSpec, expression, statementContext);

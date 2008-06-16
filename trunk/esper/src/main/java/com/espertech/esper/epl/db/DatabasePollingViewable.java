@@ -5,6 +5,7 @@ import com.espertech.esper.view.HistoricalEventViewable;
 import com.espertech.esper.event.EventType;
 import com.espertech.esper.event.EventPropertyGetter;
 import com.espertech.esper.event.EventBean;
+import com.espertech.esper.event.PropertyAccessException;
 import com.espertech.esper.epl.core.StreamTypeService;
 import com.espertech.esper.epl.core.PropertyResolutionDescriptor;
 import com.espertech.esper.epl.core.StreamTypesException;
@@ -13,6 +14,7 @@ import com.espertech.esper.epl.expression.ExprValidationException;
 import com.espertech.esper.epl.join.table.EventTable;
 import com.espertech.esper.epl.join.PollResultIndexingStrategy;
 import com.espertech.esper.epl.variable.VariableService;
+import com.espertech.esper.epl.variable.VariableReader;
 import com.espertech.esper.client.EPException;
 import com.espertech.esper.schedule.TimeProvider;
 
@@ -79,18 +81,37 @@ public class DatabasePollingViewable implements HistoricalEventViewable
             }
             catch (StreamTypesException ex)
             {
-                throw new ExprValidationException("Property '" + inputParam + "' failed to resolve, reason: " + ex.getMessage());
+                if (variableService.getReader(inputParam) == null)
+                {
+                    throw new ExprValidationException("Property '" + inputParam + "' failed to resolve, reason: " + ex.getMessage());
+                }
             }
 
-            // hold on to getter and stream number for each stream
-            int streamId = desc.getStreamNum();
-            if (streamId == myStreamNumber)
+            // Parameter is a property
+            if (desc != null)
             {
-                throw new ExprValidationException("Invalid property '" + inputParam + "' resolves to the historical data itself");
+                // hold on to getter and stream number for each stream
+                int streamId = desc.getStreamNum();
+                if (streamId == myStreamNumber)
+                {
+                    throw new ExprValidationException("Invalid property '" + inputParam + "' resolves to the historical data itself");
+                }
+                String propName = desc.getPropertyName();
+                getters[count] = streamTypeService.getEventTypes()[streamId].getGetter(propName);
+                getterStreamNumbers[count] = streamId;
             }
-            String propName = desc.getPropertyName();
-            getters[count] = streamTypeService.getEventTypes()[streamId].getGetter(propName);
-            getterStreamNumbers[count] = streamId;
+            else
+            // Parameter is a variable
+            {
+                final VariableReader reader = variableService.getReader(inputParam);
+                getters[count] = new EventPropertyGetter() {
+                    public Object get(EventBean eventBean) throws PropertyAccessException
+                    {
+                        return reader.getValue();
+                    }
+                    public boolean isExistsProperty(EventBean eventBean) {return true;}
+                };
+            }
 
             count++;
         }

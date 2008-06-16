@@ -11,6 +11,7 @@ New Features
   - named windows allow constants and table-like definition syntax
   - plug-in aggregation functions accept multiple parameters
   - allow inner join and outer join mixed
+  - allow variables used in SQL join
   
 Minor changes	    		
 

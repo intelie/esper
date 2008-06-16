@@ -19,6 +19,8 @@ import com.espertech.esper.epl.generated.EsperEPL2Ast;
 import com.espertech.esper.pattern.*;
 import com.espertech.esper.type.*;
 import com.espertech.esper.util.JavaClassHelper;
+import com.espertech.esper.util.PlaceholderParser;
+import com.espertech.esper.util.PlaceholderParseException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.antlr.runtime.tree.Tree;
@@ -897,6 +899,24 @@ public class EPLTreeWalker extends EsperEPL2Ast
             Tree dbrootNode = node.getChild(0);
             String dbName = dbrootNode.getChild(0).getText();
             String sqlWithParams = StringValue.parseString(dbrootNode.getChild(1).getText().trim());
+
+            // determine if there is variables used
+            List<PlaceholderParser.Fragment> sqlFragments;
+            try
+            {
+                sqlFragments = PlaceholderParser.parsePlaceholder(sqlWithParams);
+                for (PlaceholderParser.Fragment fragment : sqlFragments)
+                {
+                    if (variableService.getReader(fragment.getValue()) != null)
+                    {
+                        statementSpec.setHasVariables(true);
+                    }
+                }
+            }
+            catch (PlaceholderParseException ex)
+            {
+                // no exception handling, we are simply interested in variables
+            }
 
             String sampleSQL = null;
             if (dbrootNode.getChildCount() > 2)
