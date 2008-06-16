@@ -915,7 +915,8 @@ public class EPLTreeWalker extends EsperEPL2Ast
             }
             catch (PlaceholderParseException ex)
             {
-                // no exception handling, we are simply interested in variables
+                log.warn("Failed to parse SQL text for parameter and variable use '" + sqlWithParams + "' :" + ex.getMessage());
+                // Let the view construction handle the validation
             }
 
             String sampleSQL = null;
