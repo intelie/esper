@@ -9,6 +9,7 @@ import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.bean.SupportBeanComplexProps;
 import com.espertech.esper.support.bean.SupportBean_A;
 import com.espertech.esper.support.util.SupportUpdateListener;
+import com.espertech.esper.support.util.ArrayAssertionUtil;
 import com.espertech.esper.support.epl.SupportDatabaseService;
 import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.event.EventBean;
@@ -16,6 +17,7 @@ import com.espertech.esper.event.EventType;
 import com.espertech.esper.util.SerializableObjectCopier;
 
 import java.util.Properties;
+import java.util.Iterator;
 import java.sql.*;
 import java.math.BigDecimal;
 
@@ -142,6 +144,11 @@ public class TestDatabaseJoin extends TestCase
         assertEquals(100, received[0].get("myint"));
         assertEquals(50, received[1].get("myint"));
         assertEquals(20, received[2].get("myint"));
+
+        sendSupportBeanEvent(9);
+        sendSupportBeanEvent(8);
+        Iterator<EventBean> events = statement.iterator();
+        ArrayAssertionUtil.assertEqualsAnyOrder(events, "myint".split(","), new Object[][] {{90}, {80}});
     }
 
     public void testInvalidSQL()
