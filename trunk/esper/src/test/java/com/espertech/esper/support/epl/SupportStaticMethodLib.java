@@ -30,6 +30,37 @@ public class SupportStaticMethodLib
         return values;
     }
 
+    public static Map[] fetchBetween(Integer lower, Integer upper)
+    {
+        if (lower == null || upper == null)
+        {
+            return new Map[0];
+        }
+
+        if (upper < lower)
+        {
+            return new Map[0];
+        }
+        
+        int delta = upper - lower + 1;
+        Map[] result = new Map[delta];
+        int count = 0;
+        for (int i = lower; i <= upper; i++)
+        {
+            Map<String, Integer> values = new HashMap<String, Integer>();
+            values.put("value", i);
+            result[count++] = values;
+        }
+        return result;
+    }
+
+    public static Map fetchBetweenMetadata()
+    {
+        Map<String, Class> values = new HashMap<String, Class>();
+        values.put("value", Integer.class);
+        return values;
+    }
+
     public static Map[] fetchMapArray(String string, int id)
     {
         if (id < 0)

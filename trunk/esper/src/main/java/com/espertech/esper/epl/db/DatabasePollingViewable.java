@@ -12,11 +12,13 @@ import com.espertech.esper.epl.core.StreamTypesException;
 import com.espertech.esper.epl.core.MethodResolutionService;
 import com.espertech.esper.epl.expression.ExprValidationException;
 import com.espertech.esper.epl.join.table.EventTable;
+import com.espertech.esper.epl.join.table.UnindexedEventTableList;
 import com.espertech.esper.epl.join.PollResultIndexingStrategy;
 import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.epl.variable.VariableReader;
 import com.espertech.esper.client.EPException;
 import com.espertech.esper.schedule.TimeProvider;
+import com.espertech.esper.collection.IterablesArrayIterator;
 
 import java.util.*;
 
@@ -35,6 +37,19 @@ public class DatabasePollingViewable implements HistoricalEventViewable
     private EventPropertyGetter[] getters;
     private int[] getterStreamNumbers;
 
+    private static final EventBean[][] NULL_ROWS;
+    static {
+        NULL_ROWS = new EventBean[1][];
+        NULL_ROWS[0] = new EventBean[1];
+    }
+    private static final PollResultIndexingStrategy iteratorIndexingStrategy = new PollResultIndexingStrategy()
+    {
+        public EventTable index(List<EventBean> pollResult, boolean isActiveCache)
+        {
+            return new UnindexedEventTableList(pollResult);
+        }
+    };
+                    
     /**
      * Ctor.
      * @param myStreamNumber is the stream number of the view
@@ -174,12 +189,13 @@ public class DatabasePollingViewable implements HistoricalEventViewable
 
     public View addView(View view)
     {
+        view.setParent(this);
         return view;
     }
 
     public List<View> getViews()
     {
-        return new LinkedList<View>();
+        return Collections.emptyList();
     }
 
     public boolean removeView(View view)
@@ -199,6 +215,7 @@ public class DatabasePollingViewable implements HistoricalEventViewable
 
     public Iterator<EventBean> iterator()
     {
-        throw new UnsupportedOperationException("Iterator not supported");
+        EventTable[] result = poll(NULL_ROWS, iteratorIndexingStrategy);
+        return new IterablesArrayIterator(result);
     }
 }

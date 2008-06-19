@@ -23,6 +23,35 @@ public class TestFromClauseMethod extends TestCase
         listener = new SupportUpdateListener();
     }
 
+    public void testNoJoinIterateVariables()
+    {
+        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("SupportBean", SupportBean.class);
+        epService.getEPAdministrator().createEPL("create variable int lower");
+        epService.getEPAdministrator().createEPL("create variable int upper");
+        epService.getEPAdministrator().createEPL("on SupportBean set lower=intPrimitive,upper=intBoxed");
+
+        // Test int and singlerow
+        String className = SupportStaticMethodLib.class.getName();
+        String stmtText = "select value from method:" + className + ".fetchBetween(lower, upper)";
+        EPStatement stmt = epService.getEPAdministrator().createEPL(stmtText);
+        listener = new SupportUpdateListener();
+        stmt.addListener(listener);
+
+        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), new String[] {"value"}, null);
+
+        sendSupportBeanEvent(5, 10);
+        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), new String[] {"value"}, new Object[][] {{5}, {6}, {7}, {8}, {9}, {10}});
+
+        sendSupportBeanEvent(10, 5);
+        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), new String[] {"value"}, null);
+
+        sendSupportBeanEvent(4, 4);
+        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), new String[] {"value"}, new Object[][] {{4}});
+
+        stmt.destroy();
+        assertFalse(listener.isInvoked());
+    }
+    
     public void testMapReturnTypeMultipleRow()
     {
         String joinStatement = "select string, intPrimitive, mapstring, mapint from " +
@@ -307,6 +336,14 @@ public class TestFromClauseMethod extends TestCase
         SupportBean bean = new SupportBean();
         bean.setString(string);
         bean.setIntPrimitive(intPrimitive);
+        epService.getEPRuntime().sendEvent(bean);
+    }
+
+    private void sendSupportBeanEvent(int intPrimitive, int intBoxed)
+    {
+        SupportBean bean = new SupportBean();
+        bean.setIntPrimitive(intPrimitive);
+        bean.setIntBoxed(intBoxed);
         epService.getEPRuntime().sendEvent(bean);
     }
 }

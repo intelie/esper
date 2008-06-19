@@ -15,7 +15,7 @@ import java.util.Iterator;
  * Table of events allowing add and remove. Lookup in table is coordinated
  * through the underlying implementation.
  */
-public interface EventTable
+public interface EventTable extends Iterable<EventBean>
 {
     /**
      * Add events to table.

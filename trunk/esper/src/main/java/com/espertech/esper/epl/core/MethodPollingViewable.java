@@ -7,6 +7,7 @@ import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.epl.expression.ExprValidationException;
 import com.espertech.esper.epl.join.PollResultIndexingStrategy;
 import com.espertech.esper.epl.join.table.EventTable;
+import com.espertech.esper.epl.join.table.UnindexedEventTableList;
 import com.espertech.esper.epl.spec.MethodStreamSpec;
 import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.event.EventBean;
@@ -14,11 +15,9 @@ import com.espertech.esper.event.EventType;
 import com.espertech.esper.schedule.TimeProvider;
 import com.espertech.esper.view.HistoricalEventViewable;
 import com.espertech.esper.view.View;
+import com.espertech.esper.collection.IterablesArrayIterator;
 
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 /**
  * Polling-data provider that calls a static method on a class and passed parameters, and wraps the
@@ -34,6 +33,19 @@ public class MethodPollingViewable implements HistoricalEventViewable
     private final EventType eventType;
 
     private ExprNode[] validatedExprNodes;
+
+    private static final EventBean[][] NULL_ROWS;
+    static {
+        NULL_ROWS = new EventBean[1][];
+        NULL_ROWS[0] = new EventBean[1];
+    }
+    private static final PollResultIndexingStrategy iteratorIndexingStrategy = new PollResultIndexingStrategy()
+    {
+        public EventTable index(List<EventBean> pollResult, boolean isActiveCache)
+        {
+            return new UnindexedEventTableList(pollResult);
+        }
+    };
 
     /**
      * Ctor.
@@ -153,12 +165,13 @@ public class MethodPollingViewable implements HistoricalEventViewable
 
     public View addView(View view)
     {
+        view.setParent(this);
         return view;
     }
 
     public List<View> getViews()
     {
-        return new LinkedList<View>();
+        return Collections.emptyList();
     }
 
     public boolean removeView(View view)
@@ -178,6 +191,7 @@ public class MethodPollingViewable implements HistoricalEventViewable
 
     public Iterator<EventBean> iterator()
     {
-        throw new UnsupportedOperationException("Iterator not supported");
+        EventTable[] result = poll(NULL_ROWS, iteratorIndexingStrategy);
+        return new IterablesArrayIterator(result);
     }
 }
