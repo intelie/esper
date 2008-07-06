@@ -83,12 +83,7 @@ public class JoinSetComposerFactoryImpl implements JoinSetComposerFactory
         // Handle a join with a database or other historical data source
         if (hasHistorical)
         {
-            Pair<EventTable[][], QueryStrategy[]> indexAndStrategies =
-                    makeComposerHistorical(outerJoinDescList, optionalFilterNode, streamTypes, streamViews);
-            indexes = indexAndStrategies.getFirst();
-            queryStrategies = indexAndStrategies.getSecond();
-
-            return new JoinSetComposerImpl(indexes, queryStrategies, selectStreamSelectorEnum);
+            return makeComposerHistorical(outerJoinDescList, optionalFilterNode, streamTypes, streamViews);
         }
 
         // Determine if any stream has a unidirectional keyword
@@ -153,22 +148,16 @@ public class JoinSetComposerFactoryImpl implements JoinSetComposerFactory
         }
     }
 
-    private Pair<EventTable[][], QueryStrategy[]> makeComposerHistorical(List<OuterJoinDesc> outerJoinDescList,
+    private JoinSetComposer makeComposerHistorical(List<OuterJoinDesc> outerJoinDescList,
                                                                          ExprNode optionalFilterNode,
                                                                          EventType[] streamTypes,
                                                                          Viewable[] streamViews)
             throws ExprValidationException
     {
-        EventTable[][] indexes;
         QueryStrategy[] queryStrategies;
 
         // No tables for any streams
-        indexes = new EventTable[streamTypes.length][];
         queryStrategies = new QueryStrategy[streamTypes.length];
-        for (int streamNo = 0; streamNo < streamTypes.length; streamNo++)
-        {
-            indexes[streamNo] = new EventTable[0];
-        }
 
         int polledView = 0;
         int streamView = 1;
@@ -229,7 +218,7 @@ public class JoinSetComposerFactoryImpl implements JoinSetComposerFactory
         queryStrategies[streamView] = new HistoricalDataQueryStrategy(streamView, polledView, viewable, isOuterJoin, outerJoinEqualsNode,
                 indexStrategies.getFirst(), indexStrategies.getSecond());
 
-        return new Pair<EventTable[][], QueryStrategy[]>(indexes, queryStrategies);
+        return new JoinSetComposerHistoricalImpl(queryStrategies, streamViews, polledView, streamView);
     }
 
     private Pair<HistoricalIndexLookupStrategy, PollResultIndexingStrategy> determineIndexing(ExprNode filterForIndexing,

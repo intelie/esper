@@ -25,7 +25,6 @@ public class JoinSetComposerImpl implements JoinSetComposer
 {
     private final EventTable[][] repositories;
     private final QueryStrategy[] queryStrategies;
-    private final SelectClauseStreamSelectorEnum selectStreamSelectorEnum;
 
     // Set semantic eliminates duplicates in result set, use Linked set to preserve order
     private Set<MultiKey<EventBean>> oldResults = new LinkedHashSet<MultiKey<EventBean>>();
@@ -41,7 +40,6 @@ public class JoinSetComposerImpl implements JoinSetComposer
     {
         this.repositories = repositories;
         this.queryStrategies = queryStrategies;
-        this.selectStreamSelectorEnum = selectStreamSelectorEnum;
     }
 
     public void init(EventBean[][] eventsPerStream)

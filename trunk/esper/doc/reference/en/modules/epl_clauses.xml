@@ -1887,7 +1887,7 @@ where price > (select max(price) from MarketData(symbol='GOOG').std:lastevent())
     </sect1>
 
 	<sect1 id="histdata_overview" revision="1">
-		<title>Joining Relational Data via SQL</title>
+		<title>Accessing Relational Data via SQL</title>
 		
 		<indexterm><primary>SQL</primary></indexterm>
 		<indexterm><primary>join</primary><secondary>relational data via SQL</secondary></indexterm>
@@ -1899,7 +1899,7 @@ where price > (select max(price) from MarketData(symbol='GOOG').std:lastevent())
 		</para>
 			
 		<para>
-			Esper can join and outer join all types of event streams to stored data. In order for such data sources to become accessible to Esper, some configuration is required. The <xref linkend="config-database-ref"/> explains the required configuration for database access in greater detail, and includes information on configuring a query result cache.
+			Esper can access via join and outer join as well as via iterator (poll) API all types of event streams to stored data. In order for such data sources to become accessible to Esper, some configuration is required. The <xref linkend="config-database-ref"/> explains the required configuration for database access in greater detail, and includes information on configuring a query result cache.
 		</para>
 		
 		<para>
@@ -2055,18 +2055,44 @@ where price > (select max(price) from MarketData(symbol='GOOG').std:lastevent())
 			</para>
 		</sect2>
 
-		<sect2 id="histdata_polling" revision="1">
+		<sect2 id="histdata_polling_pattern" revision="1">
 			<title>Using Patterns to Request (Poll) Data</title>
 			
 			<para>
-				Pattern statements and SQL queries can also be applied together in useful ways. One such use is to poll or request data from a database at regular intervals. The next statement is an example that shows a pattern that fires every 5 seconds to query the NewOrder table for new orders:
+				Pattern statements and SQL queries can also be applied together in useful ways. One such use is to poll or request data from a database at regular intervals or following the schedule of the crontab-like <literal>timer:at</literal>.
 			</para>
 						
+			<para>
+				The next statement is an example that shows a pattern that fires every 5 seconds to query the NewOrder table for new orders:
+			</para>
+
 			<programlisting><![CDATA[insert into NewOrders
 select orderId, orderAmount from
   pattern [every timer:interval(5 sec)],
   sql:MyCustomerDB ['select orderId, orderAmount from NewOrders']]]></programlisting>
 			
+		</sect2>
+
+		<sect2 id="histdata_polling" revision="1">
+			<title>Polling SQL Queries via Iterator</title>
+			
+			<para>
+				Usually your SQL query will take part in a join and thus be triggered by an event or pattern occurrence. Instead, your application may need to poll a SQL query and thus use Esper query execution and caching facilities and obtain event data and metadata.
+			</para>
+						
+			<para>
+				Your EPL statement can specify an SQL statement without a join. Such a stand-alone SQL statement does not post new events, and may only be queried via the <literal>iterator</literal> poll API. Your EPL and SQL statement may still use variables.
+			</para>
+
+			<para>
+				The next statement assumes that a <literal>price_var</literal> variable has been declared. It selects from the relational database table named <literal>NewOrder</literal> all rows in which the <literal>price</literal> column is greater 
+				then the current value of the <literal>price_var</literal> EPL variable:
+			</para>
+			<programlisting><![CDATA[select * from sql:MyCustomerDB ['select * from NewOrder where ${price_var} > price']]]></programlisting>
+
+			<para>
+				Use the <literal>iterator</literal> and <literal>safeIterator</literal> methods on <literal>EPStatement</literal> to obtain results. The statement does not post events to listeners, it is strictly passive in that sense.
+			</para>
 		</sect2>
 
 		<sect2 id="histdata_implementation" revision="1">
@@ -2121,7 +2147,7 @@ select orderId, orderAmount from
 	</sect1>
 	
 	<sect1 id="joining_method" revision="1">
-		<title>Joining Non-Relational Data via Method Invocation</title>
+		<title>Accessing Non-Relational Data via Method Invocation</title>
 		
 		<indexterm><primary>join</primary><secondary>non-relational data via method invocation</secondary></indexterm>
 		<indexterm><primary>EPL</primary><secondary>joining non-relational data via method invocation</secondary></indexterm>
@@ -2184,7 +2210,28 @@ where asset.assetid = desc.assetid]]></programlisting>
 				If the time taken by method invocations is critical to your application, you may configure local caches as <xref linkend="config-method-invocations"/> describes.
 			</para>
 		</sect2>
-				
+
+		<sect2 id="joining_method_polling" revision="1">
+			<title>Polling Method Invocation Results via Iterator</title>
+			
+			<para>
+				Usually your method invocation will take part in a join and thus be triggered by an event or pattern occurrence. Instead, your application may need to poll a method invocation and thus use Esper query execution and caching facilities and obtain event data and metadata.
+			</para>
+						
+			<para>
+				Your EPL statement can specify a method invocation in the <literal>from</literal> clause without a join. Such a stand-alone method invocation does not post new events, and may only be queried via the <literal>iterator</literal> poll API. Your EPL statement may still use variables.
+			</para>
+
+			<para>
+				The next statement assumes that a <literal>category_var</literal> variable has been declared. It polls the <literal>getAssetDescriptions</literal> method passing the current value of the <literal>category_var</literal> EPL variable:
+			</para>
+			<programlisting><![CDATA[select * from method:MyLookupLib.getAssetDescriptions(category_var)]]]></programlisting>
+
+			<para>
+				Use the <literal>iterator</literal> and <literal>safeIterator</literal> methods on <literal>EPStatement</literal> to obtain results. The statement does not post events to listeners, it is strictly passive in that sense.
+			</para>
+		</sect2>
+
 		<sect2 id="joining_method_exposing" revision="1">
 			<title>Providing the Method</title>
 			

@@ -1,25 +1,24 @@
 package com.espertech.esper.regression.db;
 
-import junit.framework.TestCase;
 import com.espertech.esper.client.*;
 import com.espertech.esper.client.soda.*;
 import com.espertech.esper.client.time.CurrentTimeEvent;
-import com.espertech.esper.support.bean.SupportBean_S0;
+import com.espertech.esper.event.EventBean;
+import com.espertech.esper.event.EventType;
 import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.bean.SupportBeanComplexProps;
 import com.espertech.esper.support.bean.SupportBean_A;
-import com.espertech.esper.support.util.SupportUpdateListener;
-import com.espertech.esper.support.util.ArrayAssertionUtil;
-import com.espertech.esper.support.epl.SupportDatabaseService;
+import com.espertech.esper.support.bean.SupportBean_S0;
 import com.espertech.esper.support.client.SupportConfigFactory;
-import com.espertech.esper.event.EventBean;
-import com.espertech.esper.event.EventType;
+import com.espertech.esper.support.epl.SupportDatabaseService;
+import com.espertech.esper.support.util.ArrayAssertionUtil;
+import com.espertech.esper.support.util.SupportUpdateListener;
 import com.espertech.esper.util.SerializableObjectCopier;
+import junit.framework.TestCase;
 
-import java.util.Properties;
-import java.util.Iterator;
-import java.sql.*;
 import java.math.BigDecimal;
+import java.sql.*;
+import java.util.Properties;
 
 public class TestDatabaseJoin extends TestCase
 {
@@ -54,6 +53,30 @@ public class TestDatabaseJoin extends TestCase
         EPStatement stmt = epService.getEPAdministrator().createEPL(stmtText);
         runtestTimeBatch(stmt);
     }
+
+    /**
+     * TODO
+     * 1stream-Star-2 table
+     * 1stream-Forward-2 table
+     * Reverse order
+     * 1stream-Star-3 table
+     * 1stream-Forward-3 table
+     * 2stream-Star-2 table
+     * 2stream-Forward-2 table
+     * Reverse order
+     * 2stream-Star-3 table
+     * 2stream-Forward-3 table
+     *
+    public void test2HistoricalStar()
+    {
+        String stmtText = "select intPrimitive, myint, myvarchar from " +
+                SupportBean.class.getName() + ".win:time_batch(10 sec) as s0, ";
+                " sql:MyDB ['select myint from mytesttable where ${intPrimitive} = mytesttable.mybigint'] as s1," +
+                " sql:MyDB ['select myint from mytesttable where ${intPrimitive} = mytesttable.mybigint'] as s2 " +
+        EPStatement stmt = epService.getEPAdministrator().createEPL(stmtText);
+        runtestTimeBatch(stmt);
+    }
+     */
 
     public void testVariables()
     {
@@ -129,14 +152,21 @@ public class TestDatabaseJoin extends TestCase
 
     private void runtestTimeBatch(EPStatement statement)
     {
+        String[] fields = new String[] {"myint"};
         listener = new SupportUpdateListener();
         statement.addListener(listener);
 
         epService.getEPRuntime().sendEvent(new CurrentTimeEvent(0));
+        ArrayAssertionUtil.assertEqualsExactOrder(statement.iterator(), fields, null);
 
         sendSupportBeanEvent(10);
+        ArrayAssertionUtil.assertEqualsExactOrder(statement.iterator(), fields, new Object[][] {{100}});
+
         sendSupportBeanEvent(5);
+        ArrayAssertionUtil.assertEqualsExactOrder(statement.iterator(), fields, new Object[][] {{100}, {50}});
+
         sendSupportBeanEvent(2);
+        ArrayAssertionUtil.assertEqualsExactOrder(statement.iterator(), fields, new Object[][] {{100}, {50}, {20}});
 
         epService.getEPRuntime().sendEvent(new CurrentTimeEvent(10000));
         EventBean[] received = listener.getLastNewData();
@@ -145,10 +175,13 @@ public class TestDatabaseJoin extends TestCase
         assertEquals(50, received[1].get("myint"));
         assertEquals(20, received[2].get("myint"));
 
+        ArrayAssertionUtil.assertEqualsExactOrder(statement.iterator(), fields, null);
+
         sendSupportBeanEvent(9);
+        ArrayAssertionUtil.assertEqualsExactOrder(statement.iterator(), fields, new Object[][] {{90}});
+
         sendSupportBeanEvent(8);
-        Iterator<EventBean> events = statement.iterator();
-        ArrayAssertionUtil.assertEqualsAnyOrder(events, "myint".split(","), new Object[][] {{90}, {80}});
+        ArrayAssertionUtil.assertEqualsExactOrder(statement.iterator(), fields, new Object[][] {{90}, {80}});
     }
 
     public void testInvalidSQL()

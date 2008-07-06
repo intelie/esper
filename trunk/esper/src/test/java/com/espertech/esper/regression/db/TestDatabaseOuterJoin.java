@@ -3,6 +3,7 @@ package com.espertech.esper.regression.db;
 import junit.framework.TestCase;
 import com.espertech.esper.client.*;
 import com.espertech.esper.support.util.SupportUpdateListener;
+import com.espertech.esper.support.util.ArrayAssertionUtil;
 import com.espertech.esper.support.epl.SupportDatabaseService;
 import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.client.SupportConfigFactory;
@@ -82,6 +83,7 @@ public class TestDatabaseOuterJoin extends TestCase
 
     public void testOuterJoinOnFilter()
     {
+        String[] fields = "MyInt,myint".split(",");
         String stmtText = "select s0.intPrimitive as MyInt, " + TestDatabaseOuterJoin.ALL_FIELDS + " from " +
                 " sql:MyDB ['select " + TestDatabaseOuterJoin.ALL_FIELDS + " from mytesttable where ${s0.intPrimitive} = mytesttable.mybigint'] as s1 right outer join " +
                 SupportBean.class.getName() + " as s0 on string = myvarchar";
@@ -89,21 +91,25 @@ public class TestDatabaseOuterJoin extends TestCase
         EPStatement statement = epService.getEPAdministrator().createEPL(stmtText);
         listener = new SupportUpdateListener();
         statement.addListener(listener);
+        ArrayAssertionUtil.assertEqualsAnyOrder(statement.iterator(), fields, null);
 
         // No result as the SQL query returns 1 row and therefore the on-clause filters it out
         sendEvent(1, "xxx");
         assertFalse(listener.isInvoked());
+        ArrayAssertionUtil.assertEqualsAnyOrder(statement.iterator(), fields, null);
 
         // Result as the SQL query returns 0 rows
         sendEvent(-1, "xxx");
         EventBean received = listener.assertOneGetNewAndReset();
         assertEquals(-1, received.get("MyInt"));
         assertReceived(received, null, null, null, null, null, null, null, null, null);
+        ArrayAssertionUtil.assertEqualsExactOrder(statement.iterator(), fields, new Object[][] {{-1, null}});
 
         sendEvent(2, "B");
         received = listener.assertOneGetNewAndReset();
         assertEquals(2, received.get("MyInt"));
         assertReceived(received, 2l, 20, "B", "Y", false, new BigDecimal(100), new BigDecimal(200), 2.2d, 2.3d);
+        ArrayAssertionUtil.assertEqualsExactOrder(statement.iterator(), fields, new Object[][] {{2, 20}});
     }
 
     public void tryOuterJoinNoResult(String statementText)

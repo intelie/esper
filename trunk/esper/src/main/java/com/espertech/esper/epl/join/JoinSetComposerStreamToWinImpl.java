@@ -10,7 +10,7 @@ import java.util.Set;
 
 /**
  * Implements the function to determine a join result for a unidirectional stream-to-window joins,
- * in which a single stream's events are every only evaluated using a query strategy.
+ * in which a single stream's events are ever only evaluated using a query strategy.
  */
 public class JoinSetComposerStreamToWinImpl implements JoinSetComposer
 {

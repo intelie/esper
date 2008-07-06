@@ -54,30 +54,38 @@ public class TestFromClauseMethod extends TestCase
     
     public void testMapReturnTypeMultipleRow()
     {
+        String[] fields = "string,intPrimitive,mapstring,mapint".split(",");
         String joinStatement = "select string, intPrimitive, mapstring, mapint from " +
                 SupportBean.class.getName() + ".win:keepall() as s1, " +
                 "method:com.espertech.esper.support.epl.SupportStaticMethodLib.fetchMapArray(string, intPrimitive)";
 
         EPStatement stmt = epService.getEPAdministrator().createEPL(joinStatement);
         stmt.addListener(listener);
-        String[] fields = new String[] {"string", "intPrimitive", "mapstring", "mapint"};
+        ArrayAssertionUtil.assertEqualsExactOrder(stmt.iterator(), fields, null);
 
         sendBeanEvent("E1", 0);
         assertFalse(listener.isInvoked());
+        ArrayAssertionUtil.assertEqualsExactOrder(stmt.iterator(), fields, null);
 
         sendBeanEvent("E2", -1);
         assertFalse(listener.isInvoked());
+        ArrayAssertionUtil.assertEqualsExactOrder(stmt.iterator(), fields, null);
 
         sendBeanEvent("E3", 1);
         ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E3", 1, "|E3_0|", 100});
+        ArrayAssertionUtil.assertEqualsExactOrder(stmt.iterator(), fields, new Object[][] {{"E3", 1, "|E3_0|", 100}});
 
         sendBeanEvent("E4", 2);
         ArrayAssertionUtil.assertPropsPerRow(listener.getLastNewData(), fields,
                 new Object[][] {{"E4", 2, "|E4_0|", 100}, {"E4", 2, "|E4_1|", 101}});
+        ArrayAssertionUtil.assertEqualsExactOrder(stmt.iterator(), fields, new Object[][] {{"E3", 1, "|E3_0|", 100}, {"E4", 2, "|E4_0|", 100}, {"E4", 2, "|E4_1|", 101}});
 
         sendBeanEvent("E5", 3);
         ArrayAssertionUtil.assertPropsPerRow(listener.getLastNewData(), fields,
                 new Object[][] {{"E5", 3, "|E5_0|", 100}, {"E5", 3, "|E5_1|", 101}, {"E5", 3, "|E5_2|", 102}});
+        ArrayAssertionUtil.assertEqualsExactOrder(stmt.iterator(), fields, new Object[][] {{"E3", 1, "|E3_0|", 100}, 
+                {"E4", 2, "|E4_0|", 100}, {"E4", 2, "|E4_1|", 101},
+                {"E5", 3, "|E5_0|", 100}, {"E5", 3, "|E5_1|", 101}, {"E5", 3, "|E5_2|", 102}});
 
         stmt.destroy();
     }
