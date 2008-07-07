@@ -60,10 +60,13 @@ public class JoinSetComposerImpl implements JoinSetComposer
     {
         for (int i = 0; i < repositories.length; i++)
         {
-            for (EventTable table : repositories[i])
+            if (repositories[i] != null)
             {
-                table.clear();
-            }            
+                for (EventTable table : repositories[i])
+                {
+                    table.clear();
+                }
+            }
         }
     }
 
@@ -144,6 +147,11 @@ public class JoinSetComposerImpl implements JoinSetComposer
         // for each stream, perform query strategy
         for (int stream = 0; stream < queryStrategies.length; stream++)
         {
+            if (repositories[stream] == null)
+            {
+                continue;
+            }
+            
             Iterator<EventBean> streamEvents = repositories[stream][0].iterator();
             for (;streamEvents.hasNext();)
             {

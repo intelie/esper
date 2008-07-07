@@ -14,6 +14,7 @@ import com.espertech.esper.epl.join.table.EventTable;
 import com.espertech.esper.epl.join.assemble.BaseAssemblyNode;
 import com.espertech.esper.event.EventType;
 import com.espertech.esper.util.IndentWriter;
+import com.espertech.esper.view.Viewable;
 
 import java.util.List;
 import java.util.Arrays;
@@ -55,7 +56,7 @@ public class LookupInstructionQueryPlanNode extends QueryPlanNode
         this.assemblyInstructions = assemblyInstructions;
     }
 
-    public ExecNode makeExec(EventTable[][] indexesPerStream, EventType[] streamTypes)
+    public ExecNode makeExec(EventTable[][] indexesPerStream, EventType[] streamTypes, Viewable[] streamViews)
     {
         LookupInstructionExec execs[] = new LookupInstructionExec[lookupInstructions.size()];
 

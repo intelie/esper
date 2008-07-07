@@ -5,6 +5,7 @@ import com.espertech.esper.epl.join.plan.QueryPlanNode;
 import com.espertech.esper.epl.join.table.EventTable;
 import com.espertech.esper.event.EventType;
 import com.espertech.esper.util.IndentWriter;
+import com.espertech.esper.view.Viewable;
 
 public class SupportQueryPlanNode extends QueryPlanNode
 {
@@ -15,7 +16,7 @@ public class SupportQueryPlanNode extends QueryPlanNode
         this.id = id;
     }
 
-    public ExecNode makeExec(EventTable[][] indexPerStream, EventType[] streamTypes)
+    public ExecNode makeExec(EventTable[][] indexPerStream, EventType[] streamTypes, Viewable[] streamViews)
     {
         return new SupportQueryExecNode(id);
     }

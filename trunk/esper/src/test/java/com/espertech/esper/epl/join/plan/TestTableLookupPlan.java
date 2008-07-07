@@ -6,6 +6,7 @@ import com.espertech.esper.epl.join.exec.FullTableScanLookupStrategy;
 import com.espertech.esper.epl.join.exec.TableLookupExecNode;
 import com.espertech.esper.epl.join.table.EventTable;
 import com.espertech.esper.epl.join.table.UnindexedEventTable;
+import com.espertech.esper.view.Viewable;
 
 public class TestTableLookupPlan extends TestCase
 {
@@ -16,7 +17,7 @@ public class TestTableLookupPlan extends TestCase
         indexesPerStream[1][0] = new UnindexedEventTable(0);
 
         TableLookupNode spec = new TableLookupNode(new FullTableScanLookupPlan(0, 1, 0));
-        ExecNode execNode = spec.makeExec(indexesPerStream, null);
+        ExecNode execNode = spec.makeExec(indexesPerStream, null, new Viewable[2]);
         TableLookupExecNode exec = (TableLookupExecNode) execNode;
 
         assertSame(indexesPerStream[1][0], ((FullTableScanLookupStrategy) exec.getLookupStrategy()).getEventIndex());

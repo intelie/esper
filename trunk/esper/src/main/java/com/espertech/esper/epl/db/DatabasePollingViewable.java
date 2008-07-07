@@ -218,4 +218,14 @@ public class DatabasePollingViewable implements HistoricalEventViewable
         EventTable[] result = poll(NULL_ROWS, iteratorIndexingStrategy);
         return new IterablesArrayIterator(result);
     }
+
+    public SortedSet<Integer> getRequiredStreams()
+    {
+        SortedSet<Integer> streams = new TreeSet<Integer>();
+        for (int stream : getterStreamNumbers)
+        {
+            streams.add(stream);
+        }
+        return streams;
+    }
 }

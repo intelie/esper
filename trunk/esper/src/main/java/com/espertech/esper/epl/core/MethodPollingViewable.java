@@ -5,6 +5,7 @@ import com.espertech.esper.epl.db.DataCache;
 import com.espertech.esper.epl.db.PollExecStrategy;
 import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.epl.expression.ExprValidationException;
+import com.espertech.esper.epl.expression.ExprNodeIdentifierVisitor;
 import com.espertech.esper.epl.join.PollResultIndexingStrategy;
 import com.espertech.esper.epl.join.table.EventTable;
 import com.espertech.esper.epl.join.table.UnindexedEventTableList;
@@ -16,6 +17,7 @@ import com.espertech.esper.schedule.TimeProvider;
 import com.espertech.esper.view.HistoricalEventViewable;
 import com.espertech.esper.view.View;
 import com.espertech.esper.collection.IterablesArrayIterator;
+import com.espertech.esper.collection.Pair;
 
 import java.util.*;
 
@@ -32,6 +34,7 @@ public class MethodPollingViewable implements HistoricalEventViewable
     private final DataCache dataCache;
     private final EventType eventType;
 
+    private SortedSet<Integer> requiredStreams;
     private ExprNode[] validatedExprNodes;
 
     private static final EventBean[][] NULL_ROWS;
@@ -85,6 +88,8 @@ public class MethodPollingViewable implements HistoricalEventViewable
         Class[] paramTypes = new Class[inputParameters.size()];
         int count = 0;
         validatedExprNodes = new ExprNode[inputParameters.size()];
+        requiredStreams = new TreeSet<Integer>();
+        ExprNodeIdentifierVisitor visitor = new ExprNodeIdentifierVisitor(true);
 
         for (ExprNode exprNode : inputParameters)
         {
@@ -92,6 +97,13 @@ public class MethodPollingViewable implements HistoricalEventViewable
             validatedExprNodes[count] = validated;
             paramTypes[count] = validated.getType();
             count++;
+
+            validated.accept(visitor);
+        }
+
+        for (Pair<Integer, String> identifier : visitor.getExprProperties())
+        {
+            requiredStreams.add(identifier.getFirst());
         }
 
         // Try to resolve the method, also checking parameter types
@@ -193,5 +205,10 @@ public class MethodPollingViewable implements HistoricalEventViewable
     {
         EventTable[] result = poll(NULL_ROWS, iteratorIndexingStrategy);
         return new IterablesArrayIterator(result);
+    }
+
+    public SortedSet<Integer> getRequiredStreams()
+    {
+        return requiredStreams;
     }
 }

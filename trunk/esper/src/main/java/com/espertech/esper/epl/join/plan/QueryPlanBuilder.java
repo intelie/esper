@@ -32,7 +32,10 @@ public class QueryPlanBuilder
     public static QueryPlan getPlan(EventType[] typesPerStream,
                                     List<OuterJoinDesc> outerJoinDescList,
                                     ExprNode optionalFilterNode,
-                                    String[] streamNames)
+                                    String[] streamNames,
+                                    boolean hasHistorical,
+                                    boolean[] isHistorical,
+                                    DependencyGraph dependencyGraph)
     {
         String methodName = ".getPlan ";
 
@@ -98,7 +101,8 @@ public class QueryPlanBuilder
 
         if (outerJoinDescList.isEmpty())
         {
-            QueryPlan queryPlan = NStreamQueryPlanBuilder.build(queryGraph, typesPerStream);
+            QueryPlan queryPlan = NStreamQueryPlanBuilder.build(queryGraph, typesPerStream, hasHistorical,
+                                     isHistorical, dependencyGraph);
 
             if (log.isDebugEnabled())
             {

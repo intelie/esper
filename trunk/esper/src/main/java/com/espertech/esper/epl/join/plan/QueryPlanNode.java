@@ -13,6 +13,7 @@ import com.espertech.esper.epl.join.exec.ExecNode;
 import com.espertech.esper.epl.join.table.EventTable;
 import com.espertech.esper.event.EventType;
 import com.espertech.esper.util.IndentWriter;
+import com.espertech.esper.view.Viewable;
 
 /**
  * Specification node for a query execution plan to be extended by specific execution specification nodes.
@@ -23,9 +24,10 @@ public abstract class QueryPlanNode
      * Make execution node from this specification.
      * @param indexesPerStream - tables build for each stream
      * @param streamTypes - event type of each stream
+     * @param streamViews
      * @return execution node matching spec
      */
-    public abstract ExecNode makeExec(EventTable[][] indexesPerStream, EventType[] streamTypes);
+    public abstract ExecNode makeExec(EventTable[][] indexesPerStream, EventType[] streamTypes, Viewable[] streamViews);
 
     /**
      * Print a long readable format of the query node to the supplied PrintWriter.
@@ -35,16 +37,16 @@ public abstract class QueryPlanNode
 
     /**
      * Print in readable format the execution plan spec.
-     * @param execNodeSpecs - plans to print
+     * @param planNodeSpecs - plans to print
      * @return readable text with plans
      */
     @SuppressWarnings({"StringConcatenationInsideStringBufferAppend", "StringContatenationInLoop"})
-    public static String print(QueryPlanNode[] execNodeSpecs)
+    public static String print(QueryPlanNode[] planNodeSpecs)
     {
         StringBuilder buffer = new StringBuilder();
         buffer.append("QueryPlanNode[]\n");
 
-        for (int i = 0; i < execNodeSpecs.length; i++)
+        for (int i = 0; i < planNodeSpecs.length; i++)
         {
             buffer.append("  node spec " + i + " :\n");
 
@@ -52,7 +54,14 @@ public abstract class QueryPlanNode
             PrintWriter printer = new PrintWriter(buf);
             IndentWriter indentWriter = new IndentWriter(printer, 4, 2);
 
-            execNodeSpecs[i].print(indentWriter);
+            if (planNodeSpecs[i] != null)
+            {
+                planNodeSpecs[i].print(indentWriter);
+            }
+            else
+            {
+                indentWriter.println("no plan (historical)");
+            }
 
             buffer.append(buf.toString());
         }

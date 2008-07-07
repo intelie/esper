@@ -1,15 +1,19 @@
 package com.espertech.esper.view;
 
+import com.espertech.esper.epl.join.PollResultIndexingStrategy;
+import com.espertech.esper.epl.join.table.EventTable;
 import com.espertech.esper.event.EventBean;
 import com.espertech.esper.util.StopCallback;
-import com.espertech.esper.epl.join.table.EventTable;
-import com.espertech.esper.epl.join.PollResultIndexingStrategy;
+
+import java.util.SortedSet;
 
 /**
  * Interface for views that poll data based on information from other streams.
  */
 public interface HistoricalEventViewable extends Viewable, ValidatedView, StopCallback
 {
+    public SortedSet<Integer> getRequiredStreams();
+        
     /**
      * Poll for stored historical or reference data using events per stream and
      * returing for each event-per-stream row a separate list with events

@@ -8,6 +8,8 @@
 package com.espertech.esper.epl.join.plan;
 
 import java.util.Arrays;
+import java.util.SortedSet;
+import java.util.Map;
 
 import com.espertech.esper.collection.NumberSetPermutationEnumeration;
 import com.espertech.esper.event.EventType;
@@ -103,7 +105,10 @@ public class NStreamQueryPlanBuilder
      * @param typesPerStream - event types for each stream
      * @return query plan
      */
-    protected static QueryPlan build(QueryGraph queryGraph, EventType[] typesPerStream)
+    protected static QueryPlan build(QueryGraph queryGraph, EventType[] typesPerStream,
+                                     boolean hasHistorical,
+                                     boolean[] isHistorical,
+                                     DependencyGraph dependencyGraph)
     {
         if (log.isDebugEnabled())
         {
@@ -117,17 +122,35 @@ public class NStreamQueryPlanBuilder
             log.debug(".build Index build completed, indexes=" + QueryPlanIndex.print(indexSpecs));
         }
 
+        // any historical streams don't get indexes, the lookup strategy accounts for cached indexes
+        if (hasHistorical)
+        {
+            for (int i = 0; i < isHistorical.length; i++)
+            {
+                if (isHistorical[i])
+                {
+                    indexSpecs[i] = null;
+                }
+            }
+        }
+
         QueryPlanNode[] planNodeSpecs = new QueryPlanNode[numStreams];
         for (int streamNo = 0; streamNo < numStreams; streamNo++)
         {
-            BestChainResult bestChainResult = computeBestPath(streamNo, queryGraph);
+            // no plan for historical streams
+            if (isHistorical[streamNo])
+            {
+                continue;
+            }
+
+            BestChainResult bestChainResult = computeBestPath(streamNo, queryGraph, dependencyGraph);
             int[] bestChain = bestChainResult.getChain();
             if (log.isDebugEnabled())
             {
                 log.debug(".build For stream " + streamNo + " bestChain=" + Arrays.toString(bestChain));
             }
 
-            planNodeSpecs[streamNo] = createStreamPlan(streamNo, bestChain, queryGraph, indexSpecs, typesPerStream);
+            planNodeSpecs[streamNo] = createStreamPlan(streamNo, bestChain, queryGraph, indexSpecs, typesPerStream, isHistorical);
             if (log.isDebugEnabled())
             {
                 log.debug(".build spec=" + planNodeSpecs[streamNo]);
@@ -145,10 +168,12 @@ public class NStreamQueryPlanBuilder
      * @param queryGraph - the repository for key properties to indexes
      * @param indexSpecsPerStream - specifications of indexes
      * @param typesPerStream - event types for each stream
+     * @param isHistorical 
      * @return NestedIterationNode with lookups attached underneath
      */
     protected static QueryPlanNode createStreamPlan(int lookupStream, int[] bestChain, QueryGraph queryGraph,
-                                                        QueryPlanIndex[] indexSpecsPerStream, EventType[] typesPerStream)
+                                                    QueryPlanIndex[] indexSpecsPerStream, EventType[] typesPerStream,
+                                                    boolean[] isHistorical)
     {
         NestedIterationNode nestedIterNode = new NestedIterationNode(bestChain);
         int currentLookupStream = lookupStream;
@@ -158,9 +183,17 @@ public class NStreamQueryPlanBuilder
         {
             int indexedStream = bestChain[i];
 
-            TableLookupPlan tableLookupPlan = createLookupPlan(queryGraph, currentLookupStream, indexedStream, indexSpecsPerStream[indexedStream], typesPerStream);
-            TableLookupNode tableLookupNode = new TableLookupNode(tableLookupPlan);
-            nestedIterNode.addChildNode(tableLookupNode);
+            QueryPlanNode node;
+            if (isHistorical[indexedStream])
+            {
+                node = new HistoricalDataPlanNode(indexedStream, typesPerStream.length);
+            }
+            else
+            {
+                TableLookupPlan tableLookupPlan = createLookupPlan(queryGraph, currentLookupStream, indexedStream, indexSpecsPerStream[indexedStream], typesPerStream);
+                node = new TableLookupNode(tableLookupPlan);
+            }
+            nestedIterNode.addChildNode(node);
 
             currentLookupStream = bestChain[i];
         }
@@ -249,7 +282,7 @@ public class NStreamQueryPlanBuilder
      * @param queryGraph - navigability between streams
      * @return chain and chain depth
      */
-    protected static BestChainResult computeBestPath(int lookupStream, QueryGraph queryGraph)
+    protected static BestChainResult computeBestPath(int lookupStream, QueryGraph queryGraph, DependencyGraph dependencyGraph)
     {
         int[] defNestingorder = buildDefaultNestingOrder(queryGraph.getNumStreams(), lookupStream);
         NumberSetPermutationEnumeration permutations = new NumberSetPermutationEnumeration(defNestingorder);
@@ -259,6 +292,17 @@ public class NStreamQueryPlanBuilder
         while(permutations.hasMoreElements())
         {
             int[] permutation = permutations.nextElement();
+
+            // Only if the permutation satisfies all dependencies is the permutation considered
+            if (dependencyGraph != null)
+            {
+                boolean pass = isDependencySatisfied(lookupStream, permutation, dependencyGraph);
+                if (!pass)
+                {
+                    continue;
+                }                    
+            }
+
             int permutationDepth = computeNavigableDepth(lookupStream, permutation, queryGraph);
 
             if (permutationDepth > bestDepth)
@@ -275,6 +319,58 @@ public class NStreamQueryPlanBuilder
         }
 
         return new BestChainResult(bestDepth, bestPermutation);
+    }
+
+    /**
+     * Determine if the proposed permutation of lookups passes dependencies
+     * @param lookupStream stream to initiate
+     * @param permutation permutation of lookups
+     * @param dependencyGraph dependencies
+     * @return pass or fail indication
+     */
+    protected static boolean isDependencySatisfied(int lookupStream, int[] permutation, DependencyGraph dependencyGraph)
+    {
+        for (Map.Entry<Integer, SortedSet<Integer>> entry : dependencyGraph.getDependencies().entrySet())
+        {
+            int target = entry.getKey();
+            int positionTarget = positionOf(target, lookupStream, permutation);
+            if (positionTarget == -1)
+            {
+                throw new IllegalArgumentException("Target dependency not found in permutation for target " + target + " and permutation " + Arrays.toString(permutation) + " and lookup stream " + lookupStream);
+            }
+
+            // check the position of each dependency, it must be higher
+            for (int dependency : entry.getValue())
+            {
+                int positonDep = positionOf(dependency, lookupStream, permutation);
+                if (positonDep == -1)
+                {
+                    throw new IllegalArgumentException("Dependency not found in permutation for dependency " + dependency + " and permutation " + Arrays.toString(permutation)  + " and lookup stream " + lookupStream);
+                }
+
+                if (positonDep > positionTarget)
+                {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    private static int positionOf(int stream, int lookupStream, int[] permutation)
+    {
+        if (stream == lookupStream)
+        {
+            return 0;
+        }
+        for (int i = 0; i < permutation.length; i++)
+        {
+            if (permutation[i] == stream)
+            {
+                return i + 1;
+            }
+        }
+        return -1;
     }
 
     /**

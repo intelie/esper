@@ -59,29 +59,30 @@ public class JoinSetComposerFactoryImpl implements JoinSetComposerFactory
                                                    boolean[] isNamedWindow)
             throws ExprValidationException
     {
-        // Determine if there is a historical
-        boolean hasHistorical = false;
+        // Determine if there is a historical stream, and what dependencies exist
+        DependencyGraph historicalDependencyGraph = new DependencyGraph(streamTypes.length);
+        boolean[] isHistorical = null;
         for (int i = 0; i < streamViews.length; i++)
         {
             if (streamViews[i] instanceof HistoricalEventViewable)
             {
-                if (hasHistorical)
+                HistoricalEventViewable historicalViewable = (HistoricalEventViewable) streamViews[i];
+                if (isHistorical == null)
                 {
-                    throw new ExprValidationException("Joins between historical data streams are not supported");
+                    isHistorical = new boolean[streamViews.length];
+                    historicalDependencyGraph = new DependencyGraph(streamTypes.length);
                 }
-                hasHistorical = true;
-                if (streamTypes.length > 2)
-                {
-                    throw new ExprValidationException("Joins between historical data require a only one event stream in the join");
-                }
+                isHistorical[i] = true;
+                historicalDependencyGraph.addDependency(i, historicalViewable.getRequiredStreams());
             }
         }
+        boolean hasHistorical = isHistorical != null;
 
         EventTable[][] indexes;
         QueryStrategy[] queryStrategies;
 
-        // Handle a join with a database or other historical data source
-        if (hasHistorical)
+        // Handle a join with a database or other historical data source for 2 streams
+        if ((hasHistorical) && (streamViews.length == 2))
         {
             return makeComposerHistorical(outerJoinDescList, optionalFilterNode, streamTypes, streamViews);
         }
@@ -104,13 +105,19 @@ public class JoinSetComposerFactoryImpl implements JoinSetComposerFactory
             throw new ExprValidationException("The unidirectional keyword requires that no views are declared onto the stream");
         }
 
-        QueryPlan queryPlan = QueryPlanBuilder.getPlan(streamTypes, outerJoinDescList, optionalFilterNode, streamNames);
+        QueryPlan queryPlan = QueryPlanBuilder.getPlan(streamTypes, outerJoinDescList, optionalFilterNode, streamNames,
+                hasHistorical, isHistorical, historicalDependencyGraph);
 
         // Build indexes
         QueryPlanIndex[] indexSpecs = queryPlan.getIndexSpecs();
         indexes = new EventTable[indexSpecs.length][];
         for (int streamNo = 0; streamNo < indexSpecs.length; streamNo++)
         {
+            if (indexSpecs[streamNo] == null)
+            {
+                continue;
+            }
+            
             String[][] indexProps = indexSpecs[streamNo].getIndexProps();
             Class[][] coercionTypes = indexSpecs[streamNo].getCoercionTypesPerIndex();
             indexes[streamNo] = new EventTable[indexProps.length];
@@ -126,7 +133,13 @@ public class JoinSetComposerFactoryImpl implements JoinSetComposerFactory
         for (int i = 0; i < queryExecSpecs.length; i++)
         {
             QueryPlanNode planNode = queryExecSpecs[i];
-            ExecNode executionNode = planNode.makeExec(indexes, streamTypes);
+            if (planNode == null)
+            {
+                log.debug(".makeComposer No execution node for stream " + i + " '" + streamNames[i] + "'");
+                continue;
+            }
+
+            ExecNode executionNode = planNode.makeExec(indexes, streamTypes, streamViews);
 
             if (log.isDebugEnabled())
             {
@@ -149,9 +162,9 @@ public class JoinSetComposerFactoryImpl implements JoinSetComposerFactory
     }
 
     private JoinSetComposer makeComposerHistorical(List<OuterJoinDesc> outerJoinDescList,
-                                                                         ExprNode optionalFilterNode,
-                                                                         EventType[] streamTypes,
-                                                                         Viewable[] streamViews)
+                                                   ExprNode optionalFilterNode,
+                                                   EventType[] streamTypes,
+                                                   Viewable[] streamViews)
             throws ExprValidationException
     {
         QueryStrategy[] queryStrategies;

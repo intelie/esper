@@ -66,17 +66,42 @@ public class TestDatabaseJoin extends TestCase
      * Reverse order
      * 2stream-Star-3 table
      * 2stream-Forward-3 table
+     * Then; inner, full/left/right join
+     * Test joins between historical streams
+     * Test same-stream dependency: H1(h1.00)
      *
+     * (1) Look at properties used within the method/SQL join and determine what streams these properties come from
+     *
+     * (A) join: S0, H1(s0.p00), S1 where s0.p00 = h1.h10 and h1.h11 = s1.p10
+     *      -> S0 arrives, lookup H1 (use cache, use index is cache), lookup S1
+     *      -> S1 arrives, lookup S0 (use full table scan), lookup H1 (use cache+index)
+     */
     public void test2HistoricalStar()
     {
+        String[] fields = "intPrimitive,myint,myvarchar".split(",");
         String stmtText = "select intPrimitive, myint, myvarchar from " +
-                SupportBean.class.getName() + ".win:time_batch(10 sec) as s0, ";
+                SupportBean.class.getName() + ".win:keepall() as s0, " +
                 " sql:MyDB ['select myint from mytesttable where ${intPrimitive} = mytesttable.mybigint'] as s1," +
-                " sql:MyDB ['select myint from mytesttable where ${intPrimitive} = mytesttable.mybigint'] as s2 " +
+                " sql:MyDB ['select myvarchar from mytesttable where ${intPrimitive} = mytesttable.mybigint'] as s2 ";
         EPStatement stmt = epService.getEPAdministrator().createEPL(stmtText);
-        runtestTimeBatch(stmt);
+        listener = new SupportUpdateListener();
+        stmt.addListener(listener);
+        ArrayAssertionUtil.assertEqualsExactOrder(stmt.iterator(), fields, null);
+
+        sendSupportBeanEvent(6);
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {6, 60, "F"});
+        ArrayAssertionUtil.assertEqualsExactOrder(stmt.iterator(), fields, new Object[][] {{6, 60, "F"}});
+
+        sendSupportBeanEvent(9);
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {9, 90, "I"});
+        ArrayAssertionUtil.assertEqualsExactOrder(stmt.iterator(), fields, new Object[][] {{6, 60, "F"}, {9, 90, "I"}});
+
+        sendSupportBeanEvent(20);
+        assertFalse(listener.isInvoked());
+        ArrayAssertionUtil.assertEqualsExactOrder(stmt.iterator(), fields, new Object[][] {{6, 60, "F"}, {9, 90, "I"}});
+
+        stmt.destroy();
     }
-     */
 
     public void testVariables()
     {

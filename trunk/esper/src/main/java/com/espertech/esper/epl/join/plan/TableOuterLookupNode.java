@@ -13,6 +13,7 @@ import com.espertech.esper.epl.join.exec.TableLookupStrategy;
 import com.espertech.esper.epl.join.exec.TableOuterLookupExecNode;
 import com.espertech.esper.epl.join.table.EventTable;
 import com.espertech.esper.util.IndentWriter;
+import com.espertech.esper.view.Viewable;
 
 /**
  * Specifies exection of a table lookup with outer join using the a specified lookup plan.
@@ -45,7 +46,7 @@ public class TableOuterLookupNode extends QueryPlanNode
                " tableLookupPlan=" + tableLookupPlan);
     }
 
-    public ExecNode makeExec(EventTable[][] indexesPerStream, EventType[] streamTypes)
+    public ExecNode makeExec(EventTable[][] indexesPerStream, EventType[] streamTypes, Viewable[] streamViews)
     {
         TableLookupStrategy lookupStrategy = tableLookupPlan.makeStrategy(indexesPerStream, streamTypes);
 

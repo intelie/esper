@@ -13,6 +13,8 @@ public class TestNStreamQueryPlanBuilder extends TestCase
 {
     private EventType[] typesPerStream;
     private QueryGraph queryGraph;
+    private boolean[] isHistorical;
+    private DependencyGraph dependencyGraph;
 
     public void setUp()
     {
@@ -30,11 +32,14 @@ public class TestNStreamQueryPlanBuilder extends TestCase
         queryGraph.add(4, "p40", 3, "p30");
         queryGraph.add(4, "p41", 3, "p31");
         queryGraph.add(4, "p42", 2, "p21");
+
+        dependencyGraph = new DependencyGraph(5);
+        isHistorical = new boolean[5];
     }
 
     public void testBuild()
     {
-        QueryPlan plan = NStreamQueryPlanBuilder.build(queryGraph, typesPerStream);
+        QueryPlan plan = NStreamQueryPlanBuilder.build(queryGraph, typesPerStream, false, isHistorical, dependencyGraph);
 
         log.debug(".testBuild plan=" + plan);
     }
@@ -47,7 +52,7 @@ public class TestNStreamQueryPlanBuilder extends TestCase
             log.debug(".testCreateStreamPlan index " + i + " = " + indexes[i]);
         }
 
-        QueryPlanNode plan = NStreamQueryPlanBuilder.createStreamPlan(0, new int[] {2, 4, 3, 1}, queryGraph,indexes, typesPerStream);
+        QueryPlanNode plan = NStreamQueryPlanBuilder.createStreamPlan(0, new int[] {2, 4, 3, 1}, queryGraph,indexes, typesPerStream, isHistorical);
 
         log.debug(".testCreateStreamPlan plan=" + plan);
 
@@ -71,17 +76,17 @@ public class TestNStreamQueryPlanBuilder extends TestCase
 
     public void testComputeBestPath()
     {
-        NStreamQueryPlanBuilder.BestChainResult bestChain = NStreamQueryPlanBuilder.computeBestPath(0, queryGraph);
+        NStreamQueryPlanBuilder.BestChainResult bestChain = NStreamQueryPlanBuilder.computeBestPath(0, queryGraph, dependencyGraph);
         assertEquals(3, bestChain.getDepth());
         assertTrue(Arrays.equals(bestChain.getChain(), new int[] {2, 4, 3, 1}));
 
-        bestChain = NStreamQueryPlanBuilder.computeBestPath(3, queryGraph);
+        bestChain = NStreamQueryPlanBuilder.computeBestPath(3, queryGraph, dependencyGraph);
         assertEquals(4, bestChain.getDepth());
         assertTrue(Arrays.equals(bestChain.getChain(), new int[] {4, 2, 0, 1}));
 
         // try a stream that is not connected in any way
         queryGraph = new QueryGraph(6);
-        bestChain = NStreamQueryPlanBuilder.computeBestPath(5, queryGraph);
+        bestChain = NStreamQueryPlanBuilder.computeBestPath(5, queryGraph, dependencyGraph);
         log.debug(".testComputeBestPath bestChain=" + bestChain);
         assertEquals(0, bestChain.getDepth());
         assertTrue(Arrays.equals(bestChain.getChain(), new int[] {0, 1, 2, 3, 4}));
@@ -118,6 +123,30 @@ public class TestNStreamQueryPlanBuilder extends TestCase
 
         result = NStreamQueryPlanBuilder.buildDefaultNestingOrder(4, 3);
         assertTrue(Arrays.equals(result, new int[] {0, 1, 2}));
+    }
+
+    public void testIsDependencySatisfied()
+    {
+        DependencyGraph graph = new DependencyGraph(3);
+        graph.addDependency(1, 0);
+        graph.addDependency(2, 0);
+
+        assertTrue(NStreamQueryPlanBuilder.isDependencySatisfied(0, new int[] {1, 2}, graph));
+        assertFalse(NStreamQueryPlanBuilder.isDependencySatisfied(1, new int[] {0, 2}, graph));
+        assertFalse(NStreamQueryPlanBuilder.isDependencySatisfied(2, new int[] {0, 1}, graph));
+
+        graph = new DependencyGraph(5);
+        graph.addDependency(4, 1);
+        graph.addDependency(4, 2);
+        graph.addDependency(2, 0);
+
+        assertTrue(NStreamQueryPlanBuilder.isDependencySatisfied(0, new int[] {1, 2, 3, 4}, graph));
+        assertTrue(NStreamQueryPlanBuilder.isDependencySatisfied(1, new int[] {0, 2, 3, 4}, graph));
+        assertFalse(NStreamQueryPlanBuilder.isDependencySatisfied(1, new int[] {2, 0, 3, 4}, graph));
+        assertFalse(NStreamQueryPlanBuilder.isDependencySatisfied(1, new int[] {4, 0, 3, 2}, graph));
+        assertFalse(NStreamQueryPlanBuilder.isDependencySatisfied(3, new int[] {4, 0, 1, 2}, graph));
+        assertFalse(NStreamQueryPlanBuilder.isDependencySatisfied(2, new int[] {3, 1, 4, 0}, graph));
+        assertTrue(NStreamQueryPlanBuilder.isDependencySatisfied(3, new int[] {1, 0, 2, 4}, graph));
     }
 
     private static Log log = LogFactory.getLog(TestNStreamQueryPlanBuilder.class);

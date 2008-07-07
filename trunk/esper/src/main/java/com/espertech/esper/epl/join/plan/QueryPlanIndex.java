@@ -177,7 +177,7 @@ public class QueryPlanIndex
 
         for (int i = 0; i < indexSpecs.length; i++)
         {
-            buffer.append("  index spec " + i + " : " + indexSpecs[i].toString() + '\n');
+            buffer.append("  index spec " + i + " : " + indexSpecs[i] + '\n');
         }
 
         return buffer.toString();
