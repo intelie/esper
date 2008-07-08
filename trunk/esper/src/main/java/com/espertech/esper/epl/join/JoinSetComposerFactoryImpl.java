@@ -29,6 +29,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.util.List;
+import java.util.SortedSet;
 
 /**
  * Factory for building a {@link JoinSetComposer} from analyzing filter nodes, for
@@ -73,6 +74,12 @@ public class JoinSetComposerFactoryImpl implements JoinSetComposerFactory
                     historicalDependencyGraph = new DependencyGraph(streamTypes.length);
                 }
                 isHistorical[i] = true;
+
+                SortedSet<Integer> requiredStreams = historicalViewable.getRequiredStreams();
+                if (requiredStreams.contains(i))
+                {
+                    throw new ExprValidationException("Parameters for historical stream " + i + " indicate that the stream is subordinate to itself");
+                }
                 historicalDependencyGraph.addDependency(i, historicalViewable.getRequiredStreams());
             }
         }
@@ -179,12 +186,12 @@ public class JoinSetComposerFactoryImpl implements JoinSetComposerFactory
         // No tables for any streams
         queryStrategies = new QueryStrategy[streamTypes.length];
 
-        int polledView = 0;
-        int streamView = 1;
+        int polledViewNum = 0;
+        int streamViewNum = 1;
         if (streamViews[1] instanceof HistoricalEventViewable)
         {
-            streamView = 0;
-            polledView = 1;
+            streamViewNum = 0;
+            polledViewNum = 1;
         }
 
         // if all-historical join, check dependency
@@ -193,15 +200,28 @@ public class JoinSetComposerFactoryImpl implements JoinSetComposerFactory
             DependencyGraph graph = new DependencyGraph(2);
             graph.addDependency(0, ((HistoricalEventViewable) streamViews[0]).getRequiredStreams());
             graph.addDependency(1, ((HistoricalEventViewable) streamViews[1]).getRequiredStreams());
-            if ((graph.getDependencies().get(0) == null) && ((graph.getDependencies().get(1) != null)))
+            if (graph.getFirstCircularDependency() != null)
             {
-                streamView = 1;
-                polledView = 0;
+                throw new ExprValidationException("Circular dependency detected between historical streams");
+            }
+
+            // if both streams are independent
+            if (graph.getRootNodes().size() == 2)
+            {
+                // TODO
             }
             else
             {
-                streamView = 0;
-                polledView = 1;
+                if ((graph.getDependencies().get(0).size() == 0))
+                {
+                    streamViewNum = 0;
+                    polledViewNum = 1;
+                }
+                else
+                {
+                    streamViewNum = 1;
+                    polledViewNum = 0;
+                }                
             }
         }
 
@@ -216,12 +236,12 @@ public class JoinSetComposerFactoryImpl implements JoinSetComposerFactory
                 isOuterJoin = true;
             }
             else if ((outerJoinDesc.getOuterJoinType().equals(OuterJoinType.LEFT)) &&
-                    (streamView == 0))
+                    (streamViewNum == 0))
             {
                     isOuterJoin = true;
             }
             else if ((outerJoinDesc.getOuterJoinType().equals(OuterJoinType.RIGHT)) &&
-                    (streamView == 1))
+                    (streamViewNum == 1))
             {
                     isOuterJoin = true;
             }
@@ -250,13 +270,13 @@ public class JoinSetComposerFactoryImpl implements JoinSetComposerFactory
         }
 
         Pair<HistoricalIndexLookupStrategy, PollResultIndexingStrategy> indexStrategies =
-                determineIndexing(filterForIndexing, streamTypes[polledView], streamTypes[streamView], polledView, streamView);
+                determineIndexing(filterForIndexing, streamTypes[polledViewNum], streamTypes[streamViewNum], polledViewNum, streamViewNum);
 
-        HistoricalEventViewable viewable = (HistoricalEventViewable) streamViews[polledView];
-        queryStrategies[streamView] = new HistoricalDataQueryStrategy(streamView, polledView, viewable, isOuterJoin, outerJoinEqualsNode,
+        HistoricalEventViewable viewable = (HistoricalEventViewable) streamViews[polledViewNum];
+        queryStrategies[streamViewNum] = new HistoricalDataQueryStrategy(streamViewNum, polledViewNum, viewable, isOuterJoin, outerJoinEqualsNode,
                 indexStrategies.getFirst(), indexStrategies.getSecond());
 
-        return new JoinSetComposerHistoricalImpl(queryStrategies, streamViews, polledView, streamView);
+        return new JoinSetComposerHistoricalImpl(queryStrategies, streamViews, streamViewNum);
     }
 
     private Pair<HistoricalIndexLookupStrategy, PollResultIndexingStrategy> determineIndexing(ExprNode filterForIndexing,

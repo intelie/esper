@@ -613,6 +613,7 @@ public class ArrayAssertionUtil
             {
                 return;
             }
+            Assert.fail("Expected no results but received " + received.length + " events");
         }
         Assert.assertEquals(propertiesListPerRow.length, received.length);
 

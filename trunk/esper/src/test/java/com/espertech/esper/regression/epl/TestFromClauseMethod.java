@@ -23,7 +23,33 @@ public class TestFromClauseMethod extends TestCase
         listener = new SupportUpdateListener();
     }
 
-    public void testJoinHistoricalOnly()
+    public void test2JoinHistoricalSubordinateOuter()
+    {
+        String className = SupportStaticMethodLib.class.getName();
+        String stmtText;
+
+        // fetchBetween must execute first, fetchIdDelimited is dependent on the result of fetchBetween
+        stmtText = "select s0.value as valueOne, s1.value as valueTwo from method:" + className + ".fetchResult12(0) as s0 " +
+                   "left outer join " +
+                   "method:" + className + ".fetchResult23(s0.value) as s1 on s0.value = s1.value";
+        assertJoinHistoricalSubordinateOuter(stmtText);
+
+        stmtText = "select s0.value as valueOne, s1.value as valueTwo from " +
+                    "method:" + className + ".fetchResult23(s1.value) as s1 " +
+                    "right outer join " +
+                    "method:" + className + ".fetchResult12(0) as s0 on s0.value = s1.value";
+        assertJoinHistoricalSubordinateOuter(stmtText);
+    }
+
+    private void assertJoinHistoricalSubordinateOuter(String expression)
+    {
+        String[] fields = "valueOne,valueTwo".split(",");
+        EPStatement stmt = epService.getEPAdministrator().createEPL(expression);
+        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, new Object[][] {{1, null}, {2, 2}});
+        stmt.destroy();
+    }
+
+    public void test2JoinHistoricalOnlyDependent()
     {
         epService.getEPAdministrator().getConfiguration().addEventTypeAlias("SupportBean", SupportBean.class);
         epService.getEPAdministrator().createEPL("create variable int lower");
@@ -33,23 +59,68 @@ public class TestFromClauseMethod extends TestCase
         String className = SupportStaticMethodLib.class.getName();
         String stmtText;
 
+        // fetchBetween must execute first, fetchIdDelimited is dependent on the result of fetchBetween
         stmtText = "select value,result from method:" + className + ".fetchBetween(lower, upper), " +
                                         "method:" + className + ".fetchIdDelimited(value)";
-        assertJoinHistoricalOnly(stmtText);
+        assertJoinHistoricalOnlyDependent(stmtText);
 
         stmtText = "select value,result from " +
                                         "method:" + className + ".fetchIdDelimited(value), " +
                                         "method:" + className + ".fetchBetween(lower, upper)";
-        assertJoinHistoricalOnly(stmtText);
+        assertJoinHistoricalOnlyDependent(stmtText);
     }
 
-    private void assertJoinHistoricalOnly(String expression)
+    public void test2JoinHistoricalOnlyIndependent()
+    {
+        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("SupportBean", SupportBean.class);
+        epService.getEPAdministrator().createEPL("create variable int lower");
+        epService.getEPAdministrator().createEPL("create variable int upper");
+        epService.getEPAdministrator().createEPL("on SupportBean set lower=intPrimitive,upper=intBoxed");
+
+        String className = SupportStaticMethodLib.class.getName();
+        String stmtText;
+
+        // fetchBetween must execute first, fetchIdDelimited is dependent on the result of fetchBetween
+        stmtText = "select s0.value as valueOne, s1.value as valueTwo from method:" + className + ".fetchBetween(lower, upper) as s0, " +
+                                        "method:" + className + ".fetchBetweenString(lower, upper) as s1";
+        assertJoinHistoricalOnlyIndependent(stmtText);
+
+        stmtText = "select s0.value as valueOne, s1.value as valueTwo from " +
+                                        "method:" + className + ".fetchBetweenString(lower, upper) as s1, " +
+                                        "method:" + className + ".fetchBetween(lower, upper) as s0 ";
+        assertJoinHistoricalOnlyIndependent(stmtText);
+    }
+
+    private void assertJoinHistoricalOnlyIndependent(String expression)
     {
         EPStatement stmt = epService.getEPAdministrator().createEPL(expression);
         listener = new SupportUpdateListener();
         stmt.addListener(listener);
 
-        String[] fields = "value,result".split(",");
+        String[] fields = "valueOne,valueTwo".split(",");
+        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, null);
+
+        sendSupportBeanEvent(5, 5);
+        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, new Object[][] {{5, "5"}});
+
+        sendSupportBeanEvent(1, 2);
+        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, new Object[][] {{1, "1"}, {1, "2"}, {2, "1"}, {2, "2"}});
+
+        sendSupportBeanEvent(0, -1);
+        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, null);
+
+        stmt.destroy();
+        sendSupportBeanEvent(0, -1);
+        assertFalse(listener.isInvoked());
+    }
+
+    private void assertJoinHistoricalOnlyDependent(String expression)
+    {
+        EPStatement stmt = epService.getEPAdministrator().createEPL(expression);
+        listener = new SupportUpdateListener();
+        stmt.addListener(listener);
+
+        String[] fields = "valueOne,valueTwo".split(",");
         ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, null);
 
         sendSupportBeanEvent(5, 5);
@@ -58,7 +129,14 @@ public class TestFromClauseMethod extends TestCase
         sendSupportBeanEvent(1, 2);
         ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, new Object[][] {{1, "|1|"}, {2, "|2|"}});
 
+        sendSupportBeanEvent(0, -1);
+        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, null);
+
+        sendSupportBeanEvent(4, 6);
+        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, new Object[][] {{4, "|4|"}, {5, "|5|"}, {6, "|6|"}});
+
         stmt.destroy();
+        sendSupportBeanEvent(0, -1);
         assertFalse(listener.isInvoked());
     }
 
@@ -324,6 +402,9 @@ public class TestFromClauseMethod extends TestCase
 
     public void testInvalid()
     {
+        tryInvalid("select * from method:com.espertech.esper.support.epl.SupportStaticMethodLib.fetchBetween(s0.value, s0.value) as s0",
+                   "");
+
         tryInvalid("select * from SupportBean, method:.abc where 1=2",
                    "Incorrect syntax near '.' expecting an identifier but found a dot '.' at line 1 column 34, please check the method invocation join within the from clause [select * from SupportBean, method:.abc where 1=2]");
 
@@ -356,6 +437,12 @@ public class TestFromClauseMethod extends TestCase
 
         tryInvalid("select * from SupportBean, xyz:com.espertech.esper.support.epl.SupportStaticMethodLib.fetchArrayNoArg() where 1=2",
                    "Expecting keyword 'method', found 'xyz' [select * from SupportBean, xyz:com.espertech.esper.support.epl.SupportStaticMethodLib.fetchArrayNoArg() where 1=2]");
+
+        tryInvalid("select * from method:com.espertech.esper.support.epl.SupportStaticMethodLib.fetchBetween(s1.value, s1.value) as s0, method:com.espertech.esper.support.epl.SupportStaticMethodLib.fetchBetween(s0.value, s0.value) as s1",
+                   "Error starting view: Circular dependency detected between historical streams [select * from method:com.espertech.esper.support.epl.SupportStaticMethodLib.fetchBetween(s1.value, s1.value) as s0, method:com.espertech.esper.support.epl.SupportStaticMethodLib.fetchBetween(s0.value, s0.value) as s1]");
+
+        tryInvalid("select * from method:com.espertech.esper.support.epl.SupportStaticMethodLib.fetchBetween(s0.value, s0.value) as s0, method:com.espertech.esper.support.epl.SupportStaticMethodLib.fetchBetween(s0.value, s0.value) as s1",
+                   "Error starting view: Parameters for historical stream 0 indicate that the stream is subordinate to itself [select * from method:com.espertech.esper.support.epl.SupportStaticMethodLib.fetchBetween(s0.value, s0.value) as s0, method:com.espertech.esper.support.epl.SupportStaticMethodLib.fetchBetween(s0.value, s0.value) as s1]");
     }
 
     private void tryInvalid(String stmt, String message)

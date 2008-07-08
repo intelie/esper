@@ -22,6 +22,57 @@ public class SupportStaticMethodLib
         return values;
     }
 
+    public static Map fetchSingleValueMetadata()
+    {
+        Map<String, Class> values = new HashMap<String, Class>();
+        values.put("result", Integer.class);
+        return values;
+    }
+
+    public static Map[] fetchResult12(Integer value)
+    {
+        if (value == null)
+        {
+            return new Map[0];
+        }
+
+        Map[] result = new Map[2];
+        result[0] = new HashMap<String, Integer>();
+        result[0].put("value", 1);
+        result[1] = new HashMap<String, Integer>();
+        result[1].put("value", 2);
+        return result;
+    }
+
+    public static Map fetchResult12Metadata()
+    {
+        Map<String, Class> values = new HashMap<String, Class>();
+        values.put("value", Integer.class);
+        return values;
+    }
+
+    public static Map[] fetchResult23(Integer value)
+    {
+        if (value == null)
+        {
+            return new Map[0];
+        }
+
+        Map[] result = new Map[2];
+        result[0] = new HashMap<String, Integer>();
+        result[0].put("value", 2);
+        result[1] = new HashMap<String, Integer>();
+        result[1].put("value", 3);
+        return result;
+    }
+
+    public static Map fetchResult23Metadata()
+    {
+        Map<String, Class> values = new HashMap<String, Class>();
+        values.put("value", Integer.class);
+        return values;
+    }
+
     public static Map[] fetchBetween(Integer lower, Integer upper)
     {
         if (lower == null || upper == null)
@@ -46,10 +97,41 @@ public class SupportStaticMethodLib
         return result;
     }
 
+    public static Map[] fetchBetweenString(Integer lower, Integer upper)
+    {
+        if (lower == null || upper == null)
+        {
+            return new Map[0];
+        }
+
+        if (upper < lower)
+        {
+            return new Map[0];
+        }
+
+        int delta = upper - lower + 1;
+        Map[] result = new Map[delta];
+        int count = 0;
+        for (int i = lower; i <= upper; i++)
+        {
+            Map<String, String> values = new HashMap<String, String>();
+            values.put("value", Integer.toString(i));
+            result[count++] = values;
+        }
+        return result;
+    }
+
     public static Map fetchBetweenMetadata()
     {
         Map<String, Class> values = new HashMap<String, Class>();
         values.put("value", Integer.class);
+        return values;
+    }
+
+    public static Map fetchBetweenStringMetadata()
+    {
+        Map<String, Class> values = new HashMap<String, Class>();
+        values.put("value", String.class);
         return values;
     }
 

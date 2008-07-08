@@ -23,7 +23,6 @@ public class JoinSetComposerHistoricalImpl implements JoinSetComposer
     private Set<MultiKey<EventBean>> newResults = new LinkedHashSet<MultiKey<EventBean>>();
     private EventTable[][] tables = new EventTable[0][];
     private Viewable[] streamViews;
-    private int polledStreamNum;
     private int driverStreamNum;
     private EventBean[] lookupEvents = new EventBean[1];
 
@@ -32,11 +31,10 @@ public class JoinSetComposerHistoricalImpl implements JoinSetComposer
      * Ctor.
      * @param queryStrategies - for each stream a strategy to execute the join
      */
-    public JoinSetComposerHistoricalImpl(QueryStrategy[] queryStrategies, Viewable[] streamViews, int polledStreamNum, int driverStreamNum)
+    public JoinSetComposerHistoricalImpl(QueryStrategy[] queryStrategies, Viewable[] streamViews, int driverStreamNum)
     {
         this.queryStrategies = queryStrategies;
         this.streamViews = streamViews;
-        this.polledStreamNum = polledStreamNum;
         this.driverStreamNum = driverStreamNum;
     }
 

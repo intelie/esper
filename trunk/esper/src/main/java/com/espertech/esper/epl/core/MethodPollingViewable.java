@@ -83,7 +83,8 @@ public class MethodPollingViewable implements HistoricalEventViewable
     public void validate(StreamTypeService streamTypeService,
                          MethodResolutionService methodResolutionService,
                          TimeProvider timeProvider,
-                         VariableService variableService) throws ExprValidationException
+                         VariableService variableService,
+                         int streamNumber) throws ExprValidationException
     {
         Class[] paramTypes = new Class[inputParameters.size()];
         int count = 0;

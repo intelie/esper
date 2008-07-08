@@ -103,6 +103,7 @@ public class HistoricalDataQueryStrategy implements QueryStrategy
             }
             else
             {
+                boolean foundMatch = false;
                 if (subsetIter != null)
                 {
                     // Add each row to the join result or, for outer joins, run through the outer join filter
@@ -119,6 +120,7 @@ public class HistoricalDataQueryStrategy implements QueryStrategy
                             if ((compareResult != null) && (compareResult))
                             {
                                 joinSet.add(new MultiKey<EventBean>(resultRow));
+                                foundMatch = true;
                             }
                         }
                         else
@@ -126,6 +128,13 @@ public class HistoricalDataQueryStrategy implements QueryStrategy
                             joinSet.add(new MultiKey<EventBean>(resultRow));
                         }
                     }
+                }
+
+                if ((isOuterJoin) && (!foundMatch))
+                {
+                    EventBean[] resultRow = new EventBean[2];
+                    resultRow[myStreamNumber] = lookupEvents[count];
+                    joinSet.add(new MultiKey<EventBean>(resultRow));
                 }
             }
             count++;
