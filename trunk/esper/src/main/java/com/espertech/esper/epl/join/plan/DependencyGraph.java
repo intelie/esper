@@ -63,25 +63,96 @@ public class DependencyGraph
         dependencies.put(target, requiredStreams);
     }
 
-    public void addDependency(int from, int to)
+    public void addDependency(int target, int from)
     {
-        if (from == to)
+        if (target == from)
         {
-            throw new IllegalArgumentException("Dependency between same streams is not allowed for stream " + from);
+            throw new IllegalArgumentException("Dependency between same streams is not allowed for stream " + target);
         }
 
-        SortedSet<Integer> toSet = dependencies.get(from);
+        SortedSet<Integer> toSet = dependencies.get(target);
         if (toSet == null)
         {
             toSet = new TreeSet<Integer>();
-            dependencies.put(from, toSet);
+            dependencies.put(target, toSet);
         }
 
-        toSet.add(to);
+        toSet.add(from);
     }
 
     public Map<Integer, SortedSet<Integer>> getDependencies()
     {
         return dependencies;
+    }
+
+    /**
+     * Returns a set of stream numbers that are not a dependency of any stream.
+     * @return
+     */
+    public Set<Integer> getRootNodes()
+    {
+        Set<Integer> rootNodes = new HashSet<Integer>();
+
+        for (int i = 0; i < numStreams; i++)
+        {
+            boolean found = false;
+            for (Map.Entry<Integer, SortedSet<Integer>> entry : dependencies.entrySet())
+            {
+                if (entry.getValue().contains(i))
+                {
+                    found = true;
+                    break;
+                }
+            }
+
+            if (!found)
+            {
+                rootNodes.add(i);
+            }
+        }
+
+        return rootNodes;
+    }
+
+    public Stack<Integer> getFirstCircularDependency()
+    {
+        for (int i = 0; i < numStreams; i++)
+        {
+            Stack<Integer> deepDependencies = new Stack<Integer>();
+            deepDependencies.push(i);
+            
+            boolean isCircular = recursiveDeepDepends(deepDependencies, i);
+            if (isCircular)
+            {
+                return deepDependencies;
+            }
+        }
+        return null;
+    }
+
+    private boolean recursiveDeepDepends(Stack<Integer> deepDependencies, int currentStream)
+    {
+        Set<Integer> required = dependencies.get(currentStream);
+        if (required == null)
+        {
+            return false;
+        }
+
+        for (Integer stream : required)
+        {
+            if (deepDependencies.contains(stream))
+            {
+                return true;
+            }
+            deepDependencies.push(stream);
+            boolean isDeep = recursiveDeepDepends(deepDependencies, stream);
+            if (isDeep)
+            {
+                return true;
+            }
+            deepDependencies.pop();
+        }
+
+        return false;
     }
 }

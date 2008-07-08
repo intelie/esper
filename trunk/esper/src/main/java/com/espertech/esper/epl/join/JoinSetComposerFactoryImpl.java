@@ -84,7 +84,7 @@ public class JoinSetComposerFactoryImpl implements JoinSetComposerFactory
         // Handle a join with a database or other historical data source for 2 streams
         if ((hasHistorical) && (streamViews.length == 2))
         {
-            return makeComposerHistorical(outerJoinDescList, optionalFilterNode, streamTypes, streamViews);
+            return makeComposerHistorical2Stream(outerJoinDescList, optionalFilterNode, streamTypes, streamViews);
         }
 
         // Determine if any stream has a unidirectional keyword
@@ -153,7 +153,14 @@ public class JoinSetComposerFactoryImpl implements JoinSetComposerFactory
         // If all streams have views, normal business is a query plan for each stream
         if (unidirectionalStreamNumber == -1)
         {
-            return new JoinSetComposerImpl(indexes, queryStrategies, selectStreamSelectorEnum);
+            if (hasHistorical)
+            {
+                return new JoinSetComposerHistoricalNStreamImpl(indexes, queryStrategies, streamViews);
+            }
+            else
+            {
+                return new JoinSetComposerImpl(indexes, queryStrategies);
+            }
         }
         else
         {
@@ -161,7 +168,7 @@ public class JoinSetComposerFactoryImpl implements JoinSetComposerFactory
         }
     }
 
-    private JoinSetComposer makeComposerHistorical(List<OuterJoinDesc> outerJoinDescList,
+    private JoinSetComposer makeComposerHistorical2Stream(List<OuterJoinDesc> outerJoinDescList,
                                                    ExprNode optionalFilterNode,
                                                    EventType[] streamTypes,
                                                    Viewable[] streamViews)
@@ -178,6 +185,24 @@ public class JoinSetComposerFactoryImpl implements JoinSetComposerFactory
         {
             streamView = 0;
             polledView = 1;
+        }
+
+        // if all-historical join, check dependency
+        if ((streamViews[0] instanceof HistoricalEventViewable) && (streamViews[1] instanceof HistoricalEventViewable))
+        {
+            DependencyGraph graph = new DependencyGraph(2);
+            graph.addDependency(0, ((HistoricalEventViewable) streamViews[0]).getRequiredStreams());
+            graph.addDependency(1, ((HistoricalEventViewable) streamViews[1]).getRequiredStreams());
+            if ((graph.getDependencies().get(0) == null) && ((graph.getDependencies().get(1) != null)))
+            {
+                streamView = 1;
+                polledView = 0;
+            }
+            else
+            {
+                streamView = 0;
+                polledView = 1;
+            }
         }
 
         // Build an outer join expression node

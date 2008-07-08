@@ -23,6 +23,45 @@ public class TestFromClauseMethod extends TestCase
         listener = new SupportUpdateListener();
     }
 
+    public void testJoinHistoricalOnly()
+    {
+        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("SupportBean", SupportBean.class);
+        epService.getEPAdministrator().createEPL("create variable int lower");
+        epService.getEPAdministrator().createEPL("create variable int upper");
+        epService.getEPAdministrator().createEPL("on SupportBean set lower=intPrimitive,upper=intBoxed");
+
+        String className = SupportStaticMethodLib.class.getName();
+        String stmtText;
+
+        stmtText = "select value,result from method:" + className + ".fetchBetween(lower, upper), " +
+                                        "method:" + className + ".fetchIdDelimited(value)";
+        assertJoinHistoricalOnly(stmtText);
+
+        stmtText = "select value,result from " +
+                                        "method:" + className + ".fetchIdDelimited(value), " +
+                                        "method:" + className + ".fetchBetween(lower, upper)";
+        assertJoinHistoricalOnly(stmtText);
+    }
+
+    private void assertJoinHistoricalOnly(String expression)
+    {
+        EPStatement stmt = epService.getEPAdministrator().createEPL(expression);
+        listener = new SupportUpdateListener();
+        stmt.addListener(listener);
+
+        String[] fields = "value,result".split(",");
+        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, null);
+
+        sendSupportBeanEvent(5, 5);
+        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, new Object[][] {{5, "|5|"}});
+
+        sendSupportBeanEvent(1, 2);
+        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, new Object[][] {{1, "|1|"}, {2, "|2|"}});
+
+        stmt.destroy();
+        assertFalse(listener.isInvoked());
+    }
+
     public void testNoJoinIterateVariables()
     {
         epService.getEPAdministrator().getConfiguration().addEventTypeAlias("SupportBean", SupportBean.class);

@@ -211,4 +211,9 @@ public class MethodPollingViewable implements HistoricalEventViewable
     {
         return requiredStreams;
     }
+
+    public boolean hasRequiredStreams()
+    {
+        return !requiredStreams.isEmpty();
+    }
 }

@@ -14,14 +14,6 @@ public class SupportStaticMethodLib
         return beanOne.getSymbol().equals(beanTwo.getString());
     }
 
-    public static Map fetchMapMetadata()
-    {
-        Map<String, Class> values = new HashMap<String, Class>();
-        values.put("mapstring", String.class);
-        values.put("mapint", Integer.class);
-        return values;
-    }
-
     public static Map fetchMapArrayMetadata()
     {
         Map<String, Class> values = new HashMap<String, Class>();
@@ -86,6 +78,14 @@ public class SupportStaticMethodLib
         return rows;
     }
 
+    public static Map fetchMapMetadata()
+    {
+        Map<String, Class> values = new HashMap<String, Class>();
+        values.put("mapstring", String.class);
+        values.put("mapint", Integer.class);
+        return values;
+    }
+
     public static Map fetchMap(String string, int id)
     {
         if (id < 0)
@@ -101,6 +101,20 @@ public class SupportStaticMethodLib
         
         values.put("mapstring", "|" + string + "|");
         values.put("mapint", id + 1);
+        return values;
+    }
+
+    public static Map fetchIdDelimitedMetadata()
+    {
+        Map<String, Class> values = new HashMap<String, Class>();
+        values.put("result", String.class);
+        return values;
+    }
+
+    public static Map fetchIdDelimited(Integer value)
+    {
+        Map<String, Object> values = new HashMap<String, Object>();
+        values.put("result", "|" + value + "|");
         return values;
     }
 

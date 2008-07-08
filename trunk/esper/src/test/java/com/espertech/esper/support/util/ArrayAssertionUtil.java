@@ -170,6 +170,31 @@ public class ArrayAssertionUtil
     }
 
     /**
+     * Compare the integer values in the two int arrays assuming the exact same order.
+     * @param data is the data to assertEqualsExactOrder against
+     * @param expectedValues is the expected values
+     */
+    public static void assertEqualsExactOrder(int[] expectedValues, Integer[] data)
+    {
+        if ((expectedValues == null) && (data == null))
+        {
+            return;
+        }
+        if ( ((expectedValues == null) && (data != null)) ||
+             ((expectedValues != null) && (data == null)) )
+        {
+            TestCase.assertTrue(false);
+        }
+
+        TestCase.assertEquals(expectedValues.length, data.length);
+
+        for (int i = 0; i < expectedValues.length; i++)
+        {
+            TestCase.assertEquals(expectedValues[i], (int) data[i]);
+        }
+    }
+
+    /**
      * Compare the short values in the two short arrays assuming the exact same order.
      * @param data is the data to assertEqualsExactOrder against
      * @param expectedValues is the expected values

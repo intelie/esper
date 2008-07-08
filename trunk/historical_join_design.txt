@@ -1,0 +1,77 @@
+What we have:
+- add additional tests 2-stream joins
+- create query strategy for historical streams for which no parameters are required, implement JoinSetComposer change
+- continue N-stream join testing
+- test index use and performance
+
+Design
+======
+2-Stream joins
+  Stream-historical
+    No parameters
+      select * from S0, method:H0()
+	  - method call of H0 should occur only once, since no parameters are specified
+	  - use S0 view iterator and for the first event, call H0, and duplicate for each event
+    With parameters
+      select * from S0, method:H0(s0.p00)
+	  - method call of H0 should occur for each row
+	  - use S0 view iterator
+   
+  Historical-only
+    No parameters
+      select * from method:H0(), method:H1()
+          - method call for H0, execute the query strategy
+    With parameters
+      select * from method:H0(), method:H1(p00)
+          - method call for H0, execute the query strategy
+
+2-Stream outer joins
+  Stream-historical
+    No parameters
+    With parameters   
+  Historical-only
+    No parameters
+    With parameters   
+
+N-stream joins
+  Stream-historical    
+    No parameters
+    With parameters   
+  Historical-only      
+    No parameters
+    With parameters   
+
+2-Stream outer joins
+  Stream-historical    
+    No parameters
+    With parameters   
+  Historical-only
+    No parameters
+    With parameters   
+
+N-stream outer joins
+  Stream-historical    
+    No parameters
+    With parameters   
+  Historical-only
+    No parameters
+    With parameters   
+
+=> for N-stream (outer) joins, compute query stratgy for historical streams even through no events arrive, for use in iteration
+
+(A) Joins with only historical streams
+Iterator: 
+  For the first historical view that is not dependent on any other stream, then 
+    execute historical
+    use each event to perform the associated query strategy
+
+(B) Joins with historical and one or more real-time streams
+Iterator:
+  For each non-historical stream
+    iterate over the view's events 
+    use each event to perform the associated query strategy
+    query strategy should only call the method once if none of the parameters depend on already-joined streams
+
+=> If the historical stream does not have a dependency, then it has a query strategy
+=> If the non-historical stream does not have a repository, the use the view iterator
+=> If the non-historical stream does have a repository, use the repository

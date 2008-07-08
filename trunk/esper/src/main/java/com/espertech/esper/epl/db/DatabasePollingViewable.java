@@ -228,4 +228,9 @@ public class DatabasePollingViewable implements HistoricalEventViewable
         }
         return streams;
     }
+
+    public boolean hasRequiredStreams()
+    {
+        return getterStreamNumbers.length != 0;
+    }
 }

@@ -11,19 +11,22 @@ import com.espertech.esper.collection.MultiKey;
 import com.espertech.esper.collection.UniformPair;
 import com.espertech.esper.epl.join.table.EventTable;
 import com.espertech.esper.event.EventBean;
+import com.espertech.esper.view.HistoricalEventViewable;
+import com.espertech.esper.view.Viewable;
 
-import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.Iterator;
 
 /**
  * Implements the function to determine a join result set using tables/indexes and query strategy
  * instances for each stream.
  */
-public class JoinSetComposerImpl implements JoinSetComposer
+public class JoinSetComposerHistoricalNStreamImpl implements JoinSetComposer
 {
     private final EventTable[][] repositories;
     private final QueryStrategy[] queryStrategies;
+    private final Viewable[] streamViews;
 
     // Set semantic eliminates duplicates in result set, use Linked set to preserve order
     private Set<MultiKey<EventBean>> oldResults = new LinkedHashSet<MultiKey<EventBean>>();
@@ -34,10 +37,11 @@ public class JoinSetComposerImpl implements JoinSetComposer
      * @param repositories - for each stream an array of (indexed/unindexed) tables for lookup.
      * @param queryStrategies - for each stream a strategy to execute the join
      */
-    public JoinSetComposerImpl(EventTable[][] repositories, QueryStrategy[] queryStrategies)
+    public JoinSetComposerHistoricalNStreamImpl(EventTable[][] repositories, QueryStrategy[] queryStrategies, Viewable[] streamViews)
     {
         this.repositories = repositories;
         this.queryStrategies = queryStrategies;
+        this.streamViews = streamViews;
     }
 
     public void init(EventBean[][] eventsPerStream)
@@ -87,9 +91,12 @@ public class JoinSetComposerImpl implements JoinSetComposer
         {
             if (newDataPerStream[i] != null)
             {
-                for (int j = 0; j < repositories[i].length; j++)
+                if (repositories[i] != null)
                 {
-                    repositories[i][j].add((newDataPerStream[i]));
+                    for (int j = 0; j < repositories[i].length; j++)
+                    {
+                        repositories[i][j].add((newDataPerStream[i]));
+                    }
                 }
             }
         }
@@ -100,9 +107,12 @@ public class JoinSetComposerImpl implements JoinSetComposer
         {
             if (oldDataPerStream[i] != null)
             {
-                for (int j = 0; j < repositories[i].length; j++)
+                if (repositories[i] != null)
                 {
-                    repositories[i][j].remove(oldDataPerStream[i]);
+                    for (int j = 0; j < repositories[i].length; j++)
+                    {
+                        repositories[i][j].remove(oldDataPerStream[i]);
+                    }
                 }
             }
         }
@@ -145,16 +155,37 @@ public class JoinSetComposerImpl implements JoinSetComposer
         // for each stream, perform query strategy
         for (int stream = 0; stream < queryStrategies.length; stream++)
         {
-            if (repositories[stream] == null)
+            if (streamViews[stream] instanceof HistoricalEventViewable)
             {
-                continue;
+                HistoricalEventViewable historicalViewable = (HistoricalEventViewable) streamViews[stream];
+                if (historicalViewable.hasRequiredStreams())
+                {
+                    continue;
+                }
+
+                // TODO
+                historicalViewable.poll(null, null);
             }
-            
-            Iterator<EventBean> streamEvents = repositories[stream][0].iterator();
-            for (;streamEvents.hasNext();)
+            else
             {
-                lookupEvents[0] = streamEvents.next();
-                queryStrategies[stream].lookup(lookupEvents, result);
+                if (repositories[stream] != null)
+                {
+                    Iterator<EventBean> streamEvents = repositories[stream][0].iterator();
+                    for (;streamEvents.hasNext();)
+                    {
+                        lookupEvents[0] = streamEvents.next();
+                        queryStrategies[stream].lookup(lookupEvents, result);
+                    }
+                }
+                else
+                {
+                    Iterator<EventBean> streamEvents = streamViews[stream].iterator();
+                    for (;streamEvents.hasNext();)
+                    {
+                        lookupEvents[0] = streamEvents.next();
+                        queryStrategies[stream].lookup(lookupEvents, result);
+                    }
+                }
             }
         }
 

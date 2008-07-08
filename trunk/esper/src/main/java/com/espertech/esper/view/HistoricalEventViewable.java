@@ -12,6 +12,7 @@ import java.util.SortedSet;
  */
 public interface HistoricalEventViewable extends Viewable, ValidatedView, StopCallback
 {
+    public boolean hasRequiredStreams();
     public SortedSet<Integer> getRequiredStreams();
         
     /**
