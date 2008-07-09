@@ -49,7 +49,13 @@ public class DatabasePollingViewable implements HistoricalEventViewable
             return new UnindexedEventTableList(pollResult);
         }
     };
-                    
+
+    // TODO
+    public ThreadLocal<DataCache> getDataCacheThreadLocal()
+    {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
     /**
      * Ctor.
      * @param myStreamNumber is the stream number of the view

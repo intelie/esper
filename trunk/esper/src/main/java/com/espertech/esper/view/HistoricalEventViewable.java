@@ -2,6 +2,7 @@ package com.espertech.esper.view;
 
 import com.espertech.esper.epl.join.PollResultIndexingStrategy;
 import com.espertech.esper.epl.join.table.EventTable;
+import com.espertech.esper.epl.db.DataCache;
 import com.espertech.esper.event.EventBean;
 import com.espertech.esper.util.StopCallback;
 
@@ -14,6 +15,9 @@ public interface HistoricalEventViewable extends Viewable, ValidatedView, StopCa
 {
     public boolean hasRequiredStreams();
     public SortedSet<Integer> getRequiredStreams();
+
+    // During iteration, hold rows stable.
+    public ThreadLocal<DataCache> getDataCacheThreadLocal();
         
     /**
      * Poll for stored historical or reference data using events per stream and

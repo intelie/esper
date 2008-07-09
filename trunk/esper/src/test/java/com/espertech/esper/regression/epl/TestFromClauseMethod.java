@@ -35,10 +35,61 @@ public class TestFromClauseMethod extends TestCase
         assertJoinHistoricalSubordinateOuter(stmtText);
 
         stmtText = "select s0.value as valueOne, s1.value as valueTwo from " +
-                    "method:" + className + ".fetchResult23(s1.value) as s1 " +
+                    "method:" + className + ".fetchResult23(s0.value) as s1 " +
                     "right outer join " +
                     "method:" + className + ".fetchResult12(0) as s0 on s0.value = s1.value";
         assertJoinHistoricalSubordinateOuter(stmtText);
+
+        stmtText = "select s0.value as valueOne, s1.value as valueTwo from " +
+                    "method:" + className + ".fetchResult23(s0.value) as s1 " +
+                    "full outer join " +
+                    "method:" + className + ".fetchResult12(0) as s0 on s0.value = s1.value";
+        assertJoinHistoricalSubordinateOuter(stmtText);
+
+        stmtText = "select s0.value as valueOne, s1.value as valueTwo from " +
+                    "method:" + className + ".fetchResult12(0) as s0 " +
+                    "full outer join " +
+                    "method:" + className + ".fetchResult23(s0.value) as s1 on s0.value = s1.value";
+        assertJoinHistoricalSubordinateOuter(stmtText);
+    }
+
+    public void test2JoinHistoricalIndependentOuter()
+    {
+        String[] fields = "valueOne,valueTwo".split(",");
+        String className = SupportStaticMethodLib.class.getName();
+        String stmtText;
+
+        // fetchBetween must execute first, fetchIdDelimited is dependent on the result of fetchBetween
+        stmtText = "select s0.value as valueOne, s1.value as valueTwo from method:" + className + ".fetchResult12(0) as s0 " +
+                   "left outer join " +
+                   "method:" + className + ".fetchResult23(0) as s1 on s0.value = s1.value";
+        EPStatement stmt = epService.getEPAdministrator().createEPL(stmtText);
+        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, new Object[][] {{1, null}, {2, 2}});
+        stmt.destroy();
+
+        stmtText = "select s0.value as valueOne, s1.value as valueTwo from " +
+                    "method:" + className + ".fetchResult23(0) as s1 " +
+                    "right outer join " +
+                    "method:" + className + ".fetchResult12(0) as s0 on s0.value = s1.value";
+        stmt = epService.getEPAdministrator().createEPL(stmtText);
+        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, new Object[][] {{null, 3}, {2, 2}});
+        stmt.destroy();
+
+        stmtText = "select s0.value as valueOne, s1.value as valueTwo from " +
+                    "method:" + className + ".fetchResult23(0) as s1 " +
+                    "full outer join " +
+                    "method:" + className + ".fetchResult12(0) as s0 on s0.value = s1.value";
+        stmt = epService.getEPAdministrator().createEPL(stmtText);
+        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, new Object[][] {{1, null}, {2, 2}, {null, 3}});
+        stmt.destroy();
+
+        stmtText = "select s0.value as valueOne, s1.value as valueTwo from " +
+                    "method:" + className + ".fetchResult12(0) as s0 " +
+                    "full outer join " +
+                    "method:" + className + ".fetchResult23(0) as s1 on s0.value = s1.value";
+        stmt = epService.getEPAdministrator().createEPL(stmtText);
+        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, new Object[][] {{1, null}, {2, 2}, {null, 3}});
+        stmt.destroy();
     }
 
     private void assertJoinHistoricalSubordinateOuter(String expression)
@@ -120,7 +171,7 @@ public class TestFromClauseMethod extends TestCase
         listener = new SupportUpdateListener();
         stmt.addListener(listener);
 
-        String[] fields = "valueOne,valueTwo".split(",");
+        String[] fields = "value,result".split(",");
         ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, null);
 
         sendSupportBeanEvent(5, 5);
@@ -402,9 +453,6 @@ public class TestFromClauseMethod extends TestCase
 
     public void testInvalid()
     {
-        tryInvalid("select * from method:com.espertech.esper.support.epl.SupportStaticMethodLib.fetchBetween(s0.value, s0.value) as s0",
-                   "");
-
         tryInvalid("select * from SupportBean, method:.abc where 1=2",
                    "Incorrect syntax near '.' expecting an identifier but found a dot '.' at line 1 column 34, please check the method invocation join within the from clause [select * from SupportBean, method:.abc where 1=2]");
 
@@ -442,7 +490,10 @@ public class TestFromClauseMethod extends TestCase
                    "Error starting view: Circular dependency detected between historical streams [select * from method:com.espertech.esper.support.epl.SupportStaticMethodLib.fetchBetween(s1.value, s1.value) as s0, method:com.espertech.esper.support.epl.SupportStaticMethodLib.fetchBetween(s0.value, s0.value) as s1]");
 
         tryInvalid("select * from method:com.espertech.esper.support.epl.SupportStaticMethodLib.fetchBetween(s0.value, s0.value) as s0, method:com.espertech.esper.support.epl.SupportStaticMethodLib.fetchBetween(s0.value, s0.value) as s1",
-                   "Error starting view: Parameters for historical stream 0 indicate that the stream is subordinate to itself [select * from method:com.espertech.esper.support.epl.SupportStaticMethodLib.fetchBetween(s0.value, s0.value) as s0, method:com.espertech.esper.support.epl.SupportStaticMethodLib.fetchBetween(s0.value, s0.value) as s1]");
+                   "Error starting view: Parameters for historical stream 0 indicate that the stream is subordinate to itself as stream parameters originate in the same stream [select * from method:com.espertech.esper.support.epl.SupportStaticMethodLib.fetchBetween(s0.value, s0.value) as s0, method:com.espertech.esper.support.epl.SupportStaticMethodLib.fetchBetween(s0.value, s0.value) as s1]");
+
+        tryInvalid("select * from method:com.espertech.esper.support.epl.SupportStaticMethodLib.fetchBetween(s0.value, s0.value) as s0",
+                   "Error starting view: Parameters for historical stream 0 indicate that the stream is subordinate to itself as stream parameters originate in the same stream [select * from method:com.espertech.esper.support.epl.SupportStaticMethodLib.fetchBetween(s0.value, s0.value) as s0]");
     }
 
     private void tryInvalid(String stmt, String message)

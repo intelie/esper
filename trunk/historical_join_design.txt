@@ -10,25 +10,29 @@ Design
   Stream-historical
     No parameters
       select * from S0, method:H0()
-	  - method call of H0 should occur only once, since no parameters are specified
 	  - use S0 view iterator and for the first event, call H0, and duplicate for each event
+      DONE
     With parameters
       select * from S0, method:H0(s0.p00)
-	  - method call of H0 should occur for each row
 	  - use S0 view iterator
+      DONE
    
   Historical-only
     No parameters
       select * from method:H0(), method:H1()
           - method call for H0, execute the query strategy
+      DONE
     With parameters
       select * from method:H0(), method:H1(p00)
           - method call for H0, execute the query strategy
+      DONE
 
 2-Stream outer joins
   Stream-historical
     No parameters
+      DONE
     With parameters   
+      DONE
   Historical-only
     No parameters
     With parameters   

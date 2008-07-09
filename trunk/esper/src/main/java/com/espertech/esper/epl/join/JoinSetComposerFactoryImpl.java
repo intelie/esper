@@ -74,12 +74,6 @@ public class JoinSetComposerFactoryImpl implements JoinSetComposerFactory
                     historicalDependencyGraph = new DependencyGraph(streamTypes.length);
                 }
                 isHistorical[i] = true;
-
-                SortedSet<Integer> requiredStreams = historicalViewable.getRequiredStreams();
-                if (requiredStreams.contains(i))
-                {
-                    throw new ExprValidationException("Parameters for historical stream " + i + " indicate that the stream is subordinate to itself");
-                }
                 historicalDependencyGraph.addDependency(i, historicalViewable.getRequiredStreams());
             }
         }
@@ -195,6 +189,7 @@ public class JoinSetComposerFactoryImpl implements JoinSetComposerFactory
         }
 
         // if all-historical join, check dependency
+        boolean isAllHistoricalNoSubordinate = false;
         if ((streamViews[0] instanceof HistoricalEventViewable) && (streamViews[1] instanceof HistoricalEventViewable))
         {
             DependencyGraph graph = new DependencyGraph(2);
@@ -208,7 +203,7 @@ public class JoinSetComposerFactoryImpl implements JoinSetComposerFactory
             // if both streams are independent
             if (graph.getRootNodes().size() == 2)
             {
-                // TODO
+                isAllHistoricalNoSubordinate = true; // No parameters used by either historical
             }
             else
             {
@@ -276,7 +271,35 @@ public class JoinSetComposerFactoryImpl implements JoinSetComposerFactory
         queryStrategies[streamViewNum] = new HistoricalDataQueryStrategy(streamViewNum, polledViewNum, viewable, isOuterJoin, outerJoinEqualsNode,
                 indexStrategies.getFirst(), indexStrategies.getSecond());
 
-        return new JoinSetComposerHistoricalImpl(queryStrategies, streamViews, streamViewNum);
+        // for strictly historical joins, create a query strategy for the non-subordinate historical view
+        if (isAllHistoricalNoSubordinate)
+        {
+            isOuterJoin = false;
+            if (!outerJoinDescList.isEmpty())
+            {
+                OuterJoinDesc outerJoinDesc = outerJoinDescList.get(0);
+                if (outerJoinDesc.getOuterJoinType().equals(OuterJoinType.FULL))
+                {
+                    isOuterJoin = true;
+                }
+                else if ((outerJoinDesc.getOuterJoinType().equals(OuterJoinType.LEFT)) &&
+                        (polledViewNum == 0))
+                {
+                        isOuterJoin = true;
+                }
+                else if ((outerJoinDesc.getOuterJoinType().equals(OuterJoinType.RIGHT)) &&
+                        (polledViewNum == 1))
+                {
+                        isOuterJoin = true;
+                }
+            }
+
+            viewable = (HistoricalEventViewable) streamViews[streamViewNum];
+            queryStrategies[polledViewNum] = new HistoricalDataQueryStrategy(polledViewNum, streamViewNum, viewable, isOuterJoin, outerJoinEqualsNode,
+                    new HistoricalIndexLookupStrategyNoIndex(), new PollResultIndexingStrategyNoIndex());
+        }
+
+        return new JoinSetComposerHistoricalImpl(queryStrategies, streamViews);
     }
 
     private Pair<HistoricalIndexLookupStrategy, PollResultIndexingStrategy> determineIndexing(ExprNode filterForIndexing,

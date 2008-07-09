@@ -585,8 +585,9 @@ public class EPStatementStartMethod
 
         // Validate views that require validation, specifically streams that don't have
         // sub-views such as DB SQL joins
-        for (Viewable viewable : eventStreamParentViewable)
+        for (int stream = 0; stream < eventStreamParentViewable.length; stream++)
         {
+            Viewable viewable = eventStreamParentViewable[stream];
             if (viewable instanceof ValidatedView)
             {
                 ValidatedView validatedView = (ValidatedView) viewable;
@@ -594,6 +595,14 @@ public class EPStatementStartMethod
                         statementContext.getMethodResolutionService(),
                         statementContext.getSchedulingService(),
                         statementContext.getVariableService());
+            }
+            if (viewable instanceof HistoricalEventViewable)
+            {
+                HistoricalEventViewable historicalView = (HistoricalEventViewable) viewable;
+                if (historicalView.getRequiredStreams().contains(stream))
+                {
+                    throw new ExprValidationException("Parameters for historical stream " + stream + " indicate that the stream is subordinate to itself as stream parameters originate in the same stream");
+                }
             }
         }
 
