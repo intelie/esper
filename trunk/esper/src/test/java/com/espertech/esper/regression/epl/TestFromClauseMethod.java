@@ -72,7 +72,7 @@ public class TestFromClauseMethod extends TestCase
                     "right outer join " +
                     "method:" + className + ".fetchResult12(0) as s0 on s0.value = s1.value";
         stmt = epService.getEPAdministrator().createEPL(stmtText);
-        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, new Object[][] {{null, 3}, {2, 2}});
+        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, new Object[][] {{1, null}, {2, 2}});
         stmt.destroy();
 
         stmtText = "select s0.value as valueOne, s1.value as valueTwo from " +

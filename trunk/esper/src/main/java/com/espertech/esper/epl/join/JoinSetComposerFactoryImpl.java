@@ -29,7 +29,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.util.List;
-import java.util.SortedSet;
 
 /**
  * Factory for building a {@link JoinSetComposer} from analyzing filter nodes, for
@@ -156,7 +155,7 @@ public class JoinSetComposerFactoryImpl implements JoinSetComposerFactory
         {
             if (hasHistorical)
             {
-                return new JoinSetComposerHistoricalNStreamImpl(indexes, queryStrategies, streamViews);
+                return new JoinSetComposerHistoricalImpl(indexes, queryStrategies, streamViews);
             }
             else
             {
@@ -299,7 +298,7 @@ public class JoinSetComposerFactoryImpl implements JoinSetComposerFactory
                     new HistoricalIndexLookupStrategyNoIndex(), new PollResultIndexingStrategyNoIndex());
         }
 
-        return new JoinSetComposerHistoricalImpl(queryStrategies, streamViews);
+        return new JoinSetComposerHistoricalImpl(null, queryStrategies, streamViews);
     }
 
     private Pair<HistoricalIndexLookupStrategy, PollResultIndexingStrategy> determineIndexing(ExprNode filterForIndexing,

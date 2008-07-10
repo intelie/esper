@@ -54,28 +54,6 @@ public class TestDatabaseJoin extends TestCase
         runtestTimeBatch(stmt);
     }
 
-    /**
-     * TODO
-     * 1stream-Star-2 table
-     * 1stream-Forward-2 table
-     * Reverse order
-     * 1stream-Star-3 table
-     * 1stream-Forward-3 table
-     * 2stream-Star-2 table
-     * 2stream-Forward-2 table
-     * Reverse order
-     * 2stream-Star-3 table
-     * 2stream-Forward-3 table
-     * Then; inner, full/left/right join
-     * Test joins between historical streams
-     * Test same-stream dependency: H1(h1.00)
-     *
-     * (1) Look at properties used within the method/SQL join and determine what streams these properties come from
-     *
-     * (A) join: S0, H1(s0.p00), S1 where s0.p00 = h1.h10 and h1.h11 = s1.p10
-     *      -> S0 arrives, lookup H1 (use cache, use index is cache), lookup S1
-     *      -> S1 arrives, lookup S0 (use full table scan), lookup H1 (use cache+index)
-     */
     public void test2HistoricalStar()
     {
         String[] fields = "intPrimitive,myint,myvarchar".split(",");
@@ -240,24 +218,7 @@ public class TestDatabaseJoin extends TestCase
         }
         catch (EPStatementException ex)
         {
-            assertEquals("Error starting view: Joins between historical data streams are not supported [select s0.myvarchar as s0Name, s1.mychar as s1Name from sql:MyDB ['select myvarchar from mytesttable where ${mychar} = mytesttable.mybigint'] as s0, sql:MyDB ['select mychar from mytesttable where ${myvarchar} = mytesttable.mybigint']  as s1]", ex.getMessage());
-        }
-    }
-
-    public void testInvalid3Streams()
-    {
-        String sql = "sql:MyDB ['select myvarchar from mytesttable where ${intPrimitive} = mytesttable.mybigint']";
-        String stmtText = "select s0.myvarchar as s0Name from " +
-                sql + " as s0, " + SupportBean.class.getName() + " as s1," + SupportBean_S0.class.getName() + " as s2";
-
-        try
-        {
-            epService.getEPAdministrator().createEPL(stmtText);
-            fail();
-        }
-        catch (EPStatementException ex)
-        {
-            assertEquals("Error starting view: Joins between historical data require a only one event stream in the join [select s0.myvarchar as s0Name from sql:MyDB ['select myvarchar from mytesttable where ${intPrimitive} = mytesttable.mybigint'] as s0, com.espertech.esper.support.bean.SupportBean as s1,com.espertech.esper.support.bean.SupportBean_S0 as s2]", ex.getMessage());
+            assertEquals("Error starting view: Circular dependency detected between historical streams [select s0.myvarchar as s0Name, s1.mychar as s1Name from sql:MyDB ['select myvarchar from mytesttable where ${mychar} = mytesttable.mybigint'] as s0, sql:MyDB ['select mychar from mytesttable where ${myvarchar} = mytesttable.mybigint']  as s1]", ex.getMessage());
         }
     }
 

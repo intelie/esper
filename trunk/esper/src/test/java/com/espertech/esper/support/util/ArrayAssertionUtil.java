@@ -954,5 +954,35 @@ public class ArrayAssertionUtil
         }
     }
 
+    public static Object[][] addArray(Object[][] first, Object[][] ...more)
+    {
+        int len = first.length;
+        for (int i = 0; i < more.length; i++)
+        {
+            Object[][] next = more[i];
+            len += next.length;
+        }
+
+        Object[][] result = new Object[len][];
+        int count = 0;
+        for (int i = 0; i < first.length; i++)
+        {
+            result[count] = first[i];
+            count++;
+        }
+
+        for (int i = 0; i < more.length; i++)
+        {
+            Object[][] next = more[i];
+            for (int j = 0; j < next.length; j++)
+            {
+                result[count] = next[j];
+                count++;
+            }
+        }
+
+        return result;
+    }
+
     private static final Log log = LogFactory.getLog(ArrayAssertionUtil.class);
 }

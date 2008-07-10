@@ -48,6 +48,13 @@ public class SupportUpdateListener implements UpdateListener
         return lastNewData;
     }
 
+    public EventBean[] getLastNewDataAndReset()
+    {
+        EventBean[] hold = lastNewData;
+        reset();
+        return hold;
+    }
+
     public EventBean[] getAndResetLastNewData()
     {
         EventBean[] lastNew = lastNewData;

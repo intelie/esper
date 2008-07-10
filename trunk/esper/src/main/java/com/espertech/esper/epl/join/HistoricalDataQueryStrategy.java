@@ -114,7 +114,7 @@ public class HistoricalDataQueryStrategy implements QueryStrategy
                         resultRow[historicalStreamNumber] = subsetIter.next();
 
                         // In an outer join compare the on-fields
-                        if (isOuterJoin)
+                        if (outerJoinCompareNode != null)
                         {
                             Boolean compareResult = (Boolean) outerJoinCompareNode.evaluate(resultRow, true);
                             if ((compareResult != null) && (compareResult))
