@@ -119,7 +119,7 @@ public class LookupInstructionExec
             // For that event, lookup in all required streams
             while (streamCount < requiredSubStreams.length)
             {
-                Set<EventBean> lookupResult = lookupStrategies[streamCount].lookup(lookupEvent);
+                Set<EventBean> lookupResult = lookupStrategies[streamCount].lookup(lookupEvent, cursor);
 
                 // There is no result, break if this is a required stream
                 if (lookupResult == null)
@@ -148,7 +148,7 @@ public class LookupInstructionExec
             // For that event, lookup in all optional streams
             for (int i = 0; i < optionalSubStreams.length; i++)
             {
-                Set<EventBean> lookupResult = lookupStrategies[streamCount].lookup(lookupEvent);
+                Set<EventBean> lookupResult = lookupStrategies[streamCount].lookup(lookupEvent, cursor);
 
                 if (lookupResult != null)
                 {

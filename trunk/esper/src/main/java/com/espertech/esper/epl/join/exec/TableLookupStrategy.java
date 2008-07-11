@@ -8,6 +8,7 @@
 package com.espertech.esper.epl.join.exec;
 
 import com.espertech.esper.event.EventBean;
+import com.espertech.esper.epl.join.rep.Cursor;
 
 import java.util.Set;
 
@@ -23,5 +24,5 @@ public interface TableLookupStrategy
      * @param event to look up
      * @return set of matching events, or null if none matching
      */
-    public Set<EventBean> lookup(EventBean event);
+    public Set<EventBean> lookup(EventBean event, Cursor cursor);
 }

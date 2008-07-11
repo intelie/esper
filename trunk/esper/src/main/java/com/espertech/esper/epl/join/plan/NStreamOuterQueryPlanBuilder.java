@@ -36,7 +36,10 @@ public class NStreamOuterQueryPlanBuilder
     protected static QueryPlan build(QueryGraph queryGraph,
                                      List<OuterJoinDesc> outerJoinDescList,
                                      String[] streamNames,
-                                     EventType[] typesPerStream)
+                                     EventType[] typesPerStream,
+                                     boolean hasHistorical,
+                                     boolean[] isHistorical,
+                                     DependencyGraph dependencyGraph)
     {
         if (log.isDebugEnabled())
         {
@@ -53,6 +56,18 @@ public class NStreamOuterQueryPlanBuilder
             log.debug(".build Index build completed, indexes=" + QueryPlanIndex.print(indexSpecs));
         }
 
+        // any historical streams don't get indexes, the lookup strategy accounts for cached indexes
+        if (hasHistorical)
+        {
+            for (int i = 0; i < isHistorical.length; i++)
+            {
+                if (isHistorical[i])
+                {
+                    indexSpecs[i] = null;
+                }
+            }
+        }
+
         // Build graph of the outer and inner joins
         OuterInnerDirectionalGraph outerInnerGraph = graphOuterJoins(numStreams, outerJoinDescList);
         if (log.isDebugEnabled())
@@ -66,7 +81,13 @@ public class NStreamOuterQueryPlanBuilder
         // For each stream determine the query plan
         for (int streamNo = 0; streamNo < numStreams; streamNo++)
         {
-            QueryPlanNode queryPlanNode = build(numStreams, streamNo, streamNames, queryGraph, outerInnerGraph, innerJoins, indexSpecs, typesPerStream);
+            // no plan for historical streams that are dependent upon other streams
+            if ((isHistorical[streamNo]) && (dependencyGraph.hasDependency(streamNo)))
+            {
+                continue;
+            }
+
+            QueryPlanNode queryPlanNode = buildPlanNode(numStreams, streamNo, streamNames, queryGraph, outerInnerGraph, outerJoinDescList, innerJoins, indexSpecs, typesPerStream, isHistorical);
 
             if (log.isDebugEnabled())
             {
@@ -86,14 +107,16 @@ public class NStreamOuterQueryPlanBuilder
         return queryPlan;
     }
 
-    private static QueryPlanNode build(int numStreams,
+    private static QueryPlanNode buildPlanNode(int numStreams,
                                        int streamNo,
                                        String[] streamNames,
                                        QueryGraph queryGraph,
                                        OuterInnerDirectionalGraph outerInnerGraph,
+                                       List<OuterJoinDesc> outerJoinDescList,
                                        Set<InterchangeablePair<Integer, Integer>> innerJoins,
                                        QueryPlanIndex[] indexSpecs,
-                                       EventType[] typesPerStream)
+                                       EventType[] typesPerStream,
+                                       boolean[] ishistorical)
     {
         // For each stream build an array of substreams, considering required streams (inner joins) first
         // The order is relevant therefore preserving order via a LinkedHashMap.
@@ -110,7 +133,7 @@ public class NStreamOuterQueryPlanBuilder
 
         // build list of instructions for lookup
         List<LookupInstructionPlan> lookupInstructions = buildLookupInstructions(substreamsPerStream, requiredPerStream,
-                streamNames, queryGraph, indexSpecs, typesPerStream);
+                streamNames, queryGraph, indexSpecs, typesPerStream, outerJoinDescList, ishistorical);
 
         // build strategy tree for putting the result back together
         BaseAssemblyNode assemblyTopNode = AssemblyStrategyTreeBuilder.build(streamNo, substreamsPerStream, requiredPerStream);
@@ -126,7 +149,9 @@ public class NStreamOuterQueryPlanBuilder
             String[] streamNames,
             QueryGraph queryGraph,
             QueryPlanIndex[] indexSpecs,
-            EventType[] typesPerStream)
+            EventType[] typesPerStream,
+            List<OuterJoinDesc> outerJoinDescList,
+            boolean[] isHistorical)
     {
         List<LookupInstructionPlan> result = new LinkedList<LookupInstructionPlan>();
 
@@ -141,16 +166,34 @@ public class NStreamOuterQueryPlanBuilder
             }
 
             TableLookupPlan plans[] = new TableLookupPlan[substreams.length];
+            HistoricalDataPlanNode historicalPlans[] = new HistoricalDataPlanNode[substreams.length];
 
             for (int i = 0; i < substreams.length; i++)
             {
                 int toStream = substreams[i];
-                TableLookupPlan tableLookupPlan = NStreamQueryPlanBuilder.createLookupPlan(queryGraph, fromStream, toStream, indexSpecs[toStream], typesPerStream);
-                plans[i] = tableLookupPlan;
+
+                OuterJoinDesc outerJoinDesc;
+                if (toStream == 0)
+                {
+                    outerJoinDesc = outerJoinDescList.get(0);
+                }
+                else
+                {
+                    outerJoinDesc = outerJoinDescList.get(toStream - 1);
+                }
+
+                if (isHistorical[toStream])
+                {
+                    historicalPlans[i] = new HistoricalDataPlanNode(toStream, typesPerStream.length, queryGraph, outerJoinDesc.makeExprNode());
+                }
+                else
+                {
+                    plans[i] = NStreamQueryPlanBuilder.createLookupPlan(queryGraph, fromStream, toStream, indexSpecs[toStream], typesPerStream);;
+                }
             }
 
             String fromStreamName = streamNames[fromStream];
-            LookupInstructionPlan instruction = new LookupInstructionPlan(fromStream, fromStreamName, substreams, plans, requiredPerStream);
+            LookupInstructionPlan instruction = new LookupInstructionPlan(fromStream, fromStreamName, substreams, plans, historicalPlans, requiredPerStream);
             result.add(instruction);
         }
 

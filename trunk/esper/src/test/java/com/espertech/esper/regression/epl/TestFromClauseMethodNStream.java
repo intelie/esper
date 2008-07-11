@@ -33,12 +33,6 @@ public class TestFromClauseMethodNStream extends TestCase
     /**
      * TODO, listener+iterator+reversedorder
      * Then; inner, full/left/right join
-     * Test joins between historical only, no streams
-     * Test subordinate or not subordinate
-     *
-     * (A) join: S0, H1(s0.p00), S1 where s0.p00 = h1.h10 and h1.h11 = s1.p10
-     *      -> S0 arrives, lookup H1 (use cache, use index is cache), lookup S1
-     *      -> S1 arrives, lookup S0 (use full table scan), lookup H1 (use cache+index)
      */    
     public void test1Stream2HistStarSubordinateCartesianLast()
     {
@@ -46,8 +40,8 @@ public class TestFromClauseMethodNStream extends TestCase
 
         expression = "select s0.id as id, h0.val as valh0, h1.val as valh1 " +
                    "from SupportBeanInt.std:lastevent() as s0, " +
-                   "method:SupportJoinMethods.fetchVal('H0', 10, p00) as h0, " +
-                   "method:SupportJoinMethods.fetchVal('H1', 20, p01) as h1 ";
+                   "method:SupportJoinMethods.fetchVal('H0', p00) as h0, " +
+                   "method:SupportJoinMethods.fetchVal('H1', p01) as h1 ";
 
         EPStatement stmt = epService.getEPAdministrator().createEPL(expression);
         listener = new SupportUpdateListener();
@@ -85,14 +79,14 @@ public class TestFromClauseMethodNStream extends TestCase
 
         expression = "select s0.id as id, h0.val as valh0, h1.val as valh1 " +
                    "from SupportBeanInt.win:keepall() as s0, " +
-                   "method:SupportJoinMethods.fetchVal('H0', 0, p00) as h0, " +
-                   "method:SupportJoinMethods.fetchVal('H1', 0, p01) as h1 " +
+                   "method:SupportJoinMethods.fetchVal('H0', p00) as h0, " +
+                   "method:SupportJoinMethods.fetchVal('H1', p01) as h1 " +
                    "where h0.index = h1.index and h0.index = p02";
         runAssertionOne(expression);
 
         expression = "select s0.id as id, h0.val as valh0, h1.val as valh1   from " +
-                    "method:SupportJoinMethods.fetchVal('H1', 0, p01) as h1, " +
-                    "method:SupportJoinMethods.fetchVal('H0', 0, p00) as h0, " +
+                    "method:SupportJoinMethods.fetchVal('H1', p01) as h1, " +
+                    "method:SupportJoinMethods.fetchVal('H0', p00) as h0, " +
                    "SupportBeanInt.win:keepall() as s0 " +
                    "where h0.index = h1.index and h0.index = p02";
         runAssertionOne(expression);
@@ -128,14 +122,14 @@ public class TestFromClauseMethodNStream extends TestCase
 
         expression = "select s0.id as id, h0.val as valh0, h1.val as valh1 " +
                    "from SupportBeanInt.win:keepall() as s0, " +
-                   "method:SupportJoinMethods.fetchVal('H0', 0, p00) as h0, " +
-                   "method:SupportJoinMethods.fetchVal(h0.val, 10, p01) as h1";
+                   "method:SupportJoinMethods.fetchVal('H0', p00) as h0, " +
+                   "method:SupportJoinMethods.fetchVal(h0.val, p01) as h1";
         runAssertionTwo(expression);
 
         expression = "select s0.id as id, h0.val as valh0, h1.val as valh1 from " +
-                   "method:SupportJoinMethods.fetchVal(h0.val, 10, p01) as h1, " +
+                   "method:SupportJoinMethods.fetchVal(h0.val, p01) as h1, " +
                    "SupportBeanInt.win:keepall() as s0, " +
-                   "method:SupportJoinMethods.fetchVal('H0', 0, p00) as h0 ";
+                   "method:SupportJoinMethods.fetchVal('H0', p00) as h0 ";
         runAssertionTwo(expression);
     }
     
@@ -172,15 +166,15 @@ public class TestFromClauseMethodNStream extends TestCase
 
         expression = "select s0.id as id, h0.val as valh0, h1.val as valh1, h2.val as valh2 " +
                    "from SupportBeanInt.std:lastevent() as s0, " +
-                   "method:SupportJoinMethods.fetchVal('H0', 10, p00) as h0, " +
-                   "method:SupportJoinMethods.fetchVal('H1', 20, p01) as h1, " +
-                   "method:SupportJoinMethods.fetchVal('H2', 30, p02) as h2 ";
+                   "method:SupportJoinMethods.fetchVal('H0', p00) as h0, " +
+                   "method:SupportJoinMethods.fetchVal('H1', p01) as h1, " +
+                   "method:SupportJoinMethods.fetchVal('H2', p02) as h2 ";
         runAssertionThree(expression);
 
         expression = "select s0.id as id, h0.val as valh0, h1.val as valh1, h2.val as valh2 from " +
-                   "method:SupportJoinMethods.fetchVal('H2', 30, p02) as h2, " +
-                   "method:SupportJoinMethods.fetchVal('H1', 20, p01) as h1, " +
-                   "method:SupportJoinMethods.fetchVal('H0', 10, p00) as h0, " +
+                   "method:SupportJoinMethods.fetchVal('H2', p02) as h2, " +
+                   "method:SupportJoinMethods.fetchVal('H1', p01) as h1, " +
+                   "method:SupportJoinMethods.fetchVal('H0', p00) as h0, " +
                    "SupportBeanInt.std:lastevent() as s0 ";
         runAssertionThree(expression);
     }
@@ -210,17 +204,17 @@ public class TestFromClauseMethodNStream extends TestCase
 
         expression = "select s0.id as id, h0.val as valh0, h1.val as valh1, h2.val as valh2 " +
                    "from SupportBeanInt.win:keepall() as s0, " +
-                   "method:SupportJoinMethods.fetchVal('H0', 0, p00) as h0, " +
-                   "method:SupportJoinMethods.fetchVal('H1', 0, p01) as h1, " +
-                   "method:SupportJoinMethods.fetchVal(h0.val||'H2', 0, p02) as h2 " +
+                   "method:SupportJoinMethods.fetchVal('H0', p00) as h0, " +
+                   "method:SupportJoinMethods.fetchVal('H1', p01) as h1, " +
+                   "method:SupportJoinMethods.fetchVal(h0.val||'H2', p02) as h2 " +
                    " where h0.index = h1.index and h1.index = h2.index and h2.index = p03";
         runAssertionFour(expression);
 
         expression = "select s0.id as id, h0.val as valh0, h1.val as valh1, h2.val as valh2 from " +
-                    "method:SupportJoinMethods.fetchVal(h0.val||'H2', 0, p02) as h2, " +
-                    "method:SupportJoinMethods.fetchVal('H0', 0, p00) as h0, " +
+                    "method:SupportJoinMethods.fetchVal(h0.val||'H2', p02) as h2, " +
+                    "method:SupportJoinMethods.fetchVal('H0', p00) as h0, " +
                     "SupportBeanInt.win:keepall() as s0, " +
-                    "method:SupportJoinMethods.fetchVal('H1', 0, p01) as h1 " +
+                    "method:SupportJoinMethods.fetchVal('H1', p01) as h1 " +
                     " where h0.index = h1.index and h1.index = h2.index and h2.index = p03";
         runAssertionFour(expression);
     }
@@ -249,9 +243,9 @@ public class TestFromClauseMethodNStream extends TestCase
 
         expression = "select s0.id as id, h0.val as valh0, h1.val as valh1, h2.val as valh2 " +
                    "from SupportBeanInt.win:keepall() as s0, " +
-                   "method:SupportJoinMethods.fetchVal('H0', 0, p00) as h0, " +
-                   "method:SupportJoinMethods.fetchVal(h0.val||'H1', 0, p01) as h1, " +
-                   "method:SupportJoinMethods.fetchVal(h1.val||'H2', 0, p02) as h2 " +
+                   "method:SupportJoinMethods.fetchVal('H0', p00) as h0, " +
+                   "method:SupportJoinMethods.fetchVal(h0.val||'H1', p01) as h1, " +
+                   "method:SupportJoinMethods.fetchVal(h1.val||'H2', p02) as h2 " +
                    " where h0.index = h1.index and h1.index = h2.index and h2.index = p03";
 
         EPStatement stmt = epService.getEPAdministrator().createEPL(expression);
@@ -279,8 +273,8 @@ public class TestFromClauseMethodNStream extends TestCase
         expression = "select s0.id as ids0, s1.id as ids1, h0.val as valh0, h1.val as valh1 " +
                    "from SupportBeanInt(id like 'S0%').win:keepall() as s0, " +
                    "SupportBeanInt(id like 'S1%').std:lastevent() as s1, " +
-                   "method:SupportJoinMethods.fetchVal(s0.id||'H1', 0, s0.p00) as h0, " +
-                   "method:SupportJoinMethods.fetchVal(s1.id||'H2', 0, s1.p00) as h1 " +
+                   "method:SupportJoinMethods.fetchVal(s0.id||'H1', s0.p00) as h0, " +
+                   "method:SupportJoinMethods.fetchVal(s1.id||'H2', s1.p00) as h1 " +
                    "order by s0.id asc";
 
         EPStatement stmt = epService.getEPAdministrator().createEPL(expression);
@@ -316,7 +310,8 @@ public class TestFromClauseMethodNStream extends TestCase
                    "from SupportBeanInt(id like 'S0%').win:keepall() as s0, " +
                    "SupportBeanInt(id like 'S1%').std:lastevent() as s1, " +
                    "SupportBeanInt(id like 'S2%').std:lastevent() as s2, " +
-                   "method:SupportJoinMethods.fetchVal(s1.id||s2.id||'H1', 0, s0.p00) as h0";
+                   "method:SupportJoinMethods.fetchVal(s1.id||s2.id||'H1', s0.p00) as h0 " +
+                   "order by s0.id";
 
         EPStatement stmt = epService.getEPAdministrator().createEPL(expression);
         listener = new SupportUpdateListener();
@@ -347,25 +342,132 @@ public class TestFromClauseMethodNStream extends TestCase
     public void test3HistPureNoSubordinate()
     {
         epService.getEPAdministrator().createEPL("on SupportBeanInt set var1=p00, var2=p01, var3=p02, var4=p03");
-        
+
         String expression;
         expression = "select h0.val as valh0, h1.val as valh1, h2.val as valh2 from " +
-                    "method:SupportJoinMethods.fetchVal('H0', 10, var1) as h0," +
-                    "method:SupportJoinMethods.fetchVal('H1', 20, var2) as h1," +
-                    "method:SupportJoinMethods.fetchVal('H2', 30, var3) as h2";
+                    "method:SupportJoinMethods.fetchVal('H0', var1) as h0," +
+                    "method:SupportJoinMethods.fetchVal('H1', var2) as h1," +
+                    "method:SupportJoinMethods.fetchVal('H2', var3) as h2";
+        runAssertionFive(expression);
 
+        expression = "select h0.val as valh0, h1.val as valh1, h2.val as valh2 from " +
+                    "method:SupportJoinMethods.fetchVal('H2', var3) as h2," +
+                    "method:SupportJoinMethods.fetchVal('H1', var2) as h1," +
+                    "method:SupportJoinMethods.fetchVal('H0', var1) as h0";
+        runAssertionFive(expression);
+    }
+
+    private void runAssertionFive(String expression)
+    {        
         EPStatement stmt = epService.getEPAdministrator().createEPL(expression);
         listener = new SupportUpdateListener();
         stmt.addListener(listener);
+        String[] fields = "valh0,valh1,valh2".split(",");
 
-        String[] fields = "valh0, valh1, valh2".split(",");
         sendBeanInt("S00", 1, 1, 1);
         ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, new Object[][] {{"H01", "H11", "H21"}});
+
+        sendBeanInt("S01", 0, 1, 1);
+        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, null);
+
+        sendBeanInt("S02", 1, 1, 0);
+        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, null);
+
+        sendBeanInt("S03", 1, 1, 2);
+        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, new Object[][] {{"H01", "H11", "H21"}, {"H01", "H11", "H22"}});
+
+        sendBeanInt("S04", 2, 2, 1);
+        Object[][] result = new Object[][] {{"H01", "H11", "H21"}, {"H02", "H11", "H21"}, {"H01", "H12", "H21"}, {"H02", "H12", "H21"}};
+        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, result);
+    }
+
+    public void test3Hist1Subordinate()
+    {
+        epService.getEPAdministrator().createEPL("on SupportBeanInt set var1=p00, var2=p01, var3=p02, var4=p03");
+
+        String expression;
+        expression = "select h0.val as valh0, h1.val as valh1, h2.val as valh2 from " +
+                    "method:SupportJoinMethods.fetchVal('H0', var1) as h0," +
+                    "method:SupportJoinMethods.fetchVal('H1', var2) as h1," +
+                    "method:SupportJoinMethods.fetchVal(h0.val||'-H2', var3) as h2";
+        runAssertionSix(expression);
+
+        expression = "select h0.val as valh0, h1.val as valh1, h2.val as valh2 from " +
+                    "method:SupportJoinMethods.fetchVal(h0.val||'-H2', var3) as h2," +
+                    "method:SupportJoinMethods.fetchVal('H1', var2) as h1," +
+                    "method:SupportJoinMethods.fetchVal('H0', var1) as h0";
+        runAssertionSix(expression);
+    }
+
+    private void runAssertionSix(String expression)
+    {
+        EPStatement stmt = epService.getEPAdministrator().createEPL(expression);
+        listener = new SupportUpdateListener();
+        stmt.addListener(listener);
+        String[] fields = "valh0,valh1,valh2".split(",");
+
+        sendBeanInt("S00", 1, 1, 1);
+        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, new Object[][] {{"H01", "H11", "H01-H21"}});
+
+        sendBeanInt("S01", 0, 1, 1);
+        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, null);
+
+        sendBeanInt("S02", 1, 1, 0);
+        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, null);
+
+        sendBeanInt("S03", 1, 1, 2);
+        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, new Object[][] {{"H01", "H11", "H01-H21"}, {"H01", "H11", "H01-H22"}});
+
+        sendBeanInt("S04", 2, 2, 1);
+        Object[][] result = new Object[][] {{"H01", "H11", "H01-H21"}, {"H02", "H11", "H02-H21"}, {"H01", "H12", "H01-H21"}, {"H02", "H12", "H02-H21"}};
+        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, result);
+    }
+
+    public void test3Hist2SubordinateChain()
+    {
+        epService.getEPAdministrator().createEPL("on SupportBeanInt set var1=p00, var2=p01, var3=p02, var4=p03");
+
+        String expression;
+        expression = "select h0.val as valh0, h1.val as valh1, h2.val as valh2 from " +
+                    "method:SupportJoinMethods.fetchVal('H0', var1) as h0," +
+                    "method:SupportJoinMethods.fetchVal(h0.val||'-H1', var2) as h1," +
+                    "method:SupportJoinMethods.fetchVal(h1.val||'-H2', var3) as h2";
+        runAssertionSeven(expression);
+
+        expression = "select h0.val as valh0, h1.val as valh1, h2.val as valh2 from " +
+                    "method:SupportJoinMethods.fetchVal(h1.val||'-H2', var3) as h2," +
+                    "method:SupportJoinMethods.fetchVal(h0.val||'-H1', var2) as h1," +
+                    "method:SupportJoinMethods.fetchVal('H0', var1) as h0";
+        runAssertionSeven(expression);
+    }
+
+    private void runAssertionSeven(String expression)
+    {
+        EPStatement stmt = epService.getEPAdministrator().createEPL(expression);
+        listener = new SupportUpdateListener();
+        stmt.addListener(listener);
+        String[] fields = "valh0,valh1,valh2".split(",");
+
+        sendBeanInt("S00", 1, 1, 1);
+        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, new Object[][] {{"H01", "H01-H11", "H01-H11-H21"}});
+
+        sendBeanInt("S01", 0, 1, 1);
+        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, null);
+
+        sendBeanInt("S02", 1, 1, 0);
+        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, null);
+
+        sendBeanInt("S03", 1, 1, 2);
+        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, new Object[][] {{"H01", "H01-H11", "H01-H11-H21"}, {"H01", "H01-H11", "H01-H11-H22"}});
+
+        sendBeanInt("S04", 2, 2, 1);
+        Object[][] result = new Object[][] {{"H01", "H01-H11", "H01-H11-H21"}, {"H02", "H02-H11", "H02-H11-H21"}, {"H01", "H01-H12", "H01-H12-H21"}, {"H02", "H02-H12", "H02-H12-H21"}};
+        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, result);
     }
 
     private void sendBeanInt(String id, int p00, int p01, int p02, int p03)
     {
-        epService.getEPRuntime().sendEvent(new SupportBeanInt(id, p00, p01, p02, p03));
+        epService.getEPRuntime().sendEvent(new SupportBeanInt(id, p00, p01, p02, p03, -1, -1));
     }
 
     private void sendBeanInt(String id, int p00, int p01, int p02)

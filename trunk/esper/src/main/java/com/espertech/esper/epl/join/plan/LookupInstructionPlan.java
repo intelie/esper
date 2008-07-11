@@ -12,6 +12,7 @@ import com.espertech.esper.epl.join.exec.LookupInstructionExec;
 import com.espertech.esper.epl.join.table.EventTable;
 import com.espertech.esper.event.EventType;
 import com.espertech.esper.util.IndentWriter;
+import com.espertech.esper.view.Viewable;
 
 import java.util.Arrays;
 
@@ -26,6 +27,7 @@ public class LookupInstructionPlan
     private final int[] toStreams;
     private final TableLookupPlan[] lookupPlans;
     private final boolean[] requiredPerStream;
+    private final HistoricalDataPlanNode[] historicalPlans;
 
     /**
      * Ctor.
@@ -35,7 +37,7 @@ public class LookupInstructionPlan
      * @param lookupPlans - the plan to use for each stream to look up in
      * @param requiredPerStream - indicates which of the lookup streams are required to build a result and which are not
      */
-    public LookupInstructionPlan(int fromStream, String fromStreamName, int[] toStreams, TableLookupPlan[] lookupPlans, boolean[] requiredPerStream)
+    public LookupInstructionPlan(int fromStream, String fromStreamName, int[] toStreams, TableLookupPlan[] lookupPlans, HistoricalDataPlanNode[] historicalPlans, boolean[] requiredPerStream)
     {
         if (toStreams.length != lookupPlans.length)
         {
@@ -54,6 +56,7 @@ public class LookupInstructionPlan
         this.fromStreamName = fromStreamName;
         this.toStreams = toStreams;
         this.lookupPlans = lookupPlans;
+        this.historicalPlans = historicalPlans;
         this.requiredPerStream = requiredPerStream;
     }
 
@@ -63,12 +66,19 @@ public class LookupInstructionPlan
      * @param streamTypes is the types of each stream
      * @return executable instruction
      */
-    public LookupInstructionExec makeExec(EventTable[][] indexesPerStream, EventType[] streamTypes)
+    public LookupInstructionExec makeExec(EventTable[][] indexesPerStream, EventType[] streamTypes, Viewable[] streamViews)
     {
         TableLookupStrategy strategies[] = new TableLookupStrategy[lookupPlans.length];
         for (int i = 0; i < lookupPlans.length; i++)
         {
-            strategies[i] = lookupPlans[i].makeStrategy(indexesPerStream, streamTypes);
+            if (lookupPlans[i] != null)
+            {
+                strategies[i] = lookupPlans[i].makeStrategy(indexesPerStream, streamTypes);
+            }
+            else
+            {
+                strategies[i] = historicalPlans[i].makeOuterJoinStategy(streamViews, streamTypes, i);
+            }
         }
         return new LookupInstructionExec(fromStream, fromStreamName, toStreams, strategies, requiredPerStream);
     }

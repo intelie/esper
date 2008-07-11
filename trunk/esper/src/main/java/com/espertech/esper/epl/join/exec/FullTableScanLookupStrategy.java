@@ -9,6 +9,7 @@ package com.espertech.esper.epl.join.exec;
 
 import com.espertech.esper.event.EventBean;
 import com.espertech.esper.epl.join.table.UnindexedEventTable;
+import com.espertech.esper.epl.join.rep.Cursor;
 
 import java.util.Set;
 
@@ -28,7 +29,7 @@ public class FullTableScanLookupStrategy implements TableLookupStrategy
         this.eventIndex = eventIndex;
     }
 
-    public Set<EventBean> lookup(EventBean event)
+    public Set<EventBean> lookup(EventBean event, Cursor cursor)
     {
         Set<EventBean> result = eventIndex.getEventSet();
         if (result.isEmpty())

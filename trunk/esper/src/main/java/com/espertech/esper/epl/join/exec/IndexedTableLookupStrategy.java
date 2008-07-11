@@ -12,6 +12,7 @@ import com.espertech.esper.event.EventType;
 import com.espertech.esper.event.EventPropertyGetter;
 import com.espertech.esper.event.EventBeanUtility;
 import com.espertech.esper.epl.join.table.PropertyIndexedEventTable;
+import com.espertech.esper.epl.join.rep.Cursor;
 
 import java.util.Set;
 import java.util.Arrays;
@@ -77,7 +78,7 @@ public class IndexedTableLookupStrategy implements TableLookupStrategy
         return index;
     }
 
-    public Set<EventBean> lookup(EventBean event)
+    public Set<EventBean> lookup(EventBean event, Cursor cursor)
     {
         Object[] keys = getKeys(event);
         return index.lookup(keys);

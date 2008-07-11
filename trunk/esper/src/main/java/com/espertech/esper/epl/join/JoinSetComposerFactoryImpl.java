@@ -301,7 +301,7 @@ public class JoinSetComposerFactoryImpl implements JoinSetComposerFactory
         return new JoinSetComposerHistoricalImpl(null, queryStrategies, streamViews);
     }
 
-    private Pair<HistoricalIndexLookupStrategy, PollResultIndexingStrategy> determineIndexing(ExprNode filterForIndexing,
+    private static Pair<HistoricalIndexLookupStrategy, PollResultIndexingStrategy> determineIndexing(ExprNode filterForIndexing,
                                                                                               EventType polledViewType,
                                                                                               EventType streamViewType,
                                                                                               int polledViewStreamNum,
@@ -318,6 +318,15 @@ public class JoinSetComposerFactoryImpl implements JoinSetComposerFactory
         QueryGraph queryGraph = new QueryGraph(2);
         FilterExprAnalyzer.analyze(filterForIndexing, queryGraph);
 
+        return determineIndexing(queryGraph, polledViewType, streamViewType, polledViewStreamNum, streamViewStreamNum);
+    }
+
+    public static Pair<HistoricalIndexLookupStrategy, PollResultIndexingStrategy> determineIndexing(QueryGraph queryGraph,
+                                                                                                  EventType polledViewType,
+                                                                                                  EventType streamViewType,
+                                                                                                  int polledViewStreamNum,
+                                                                                                  int streamViewStreamNum)
+        {
         // index and key property names
         String[] keyPropertiesJoin = queryGraph.getKeyProperties(streamViewStreamNum, polledViewStreamNum);
         String[] indexPropertiesJoin = queryGraph.getIndexProperties(streamViewStreamNum, polledViewStreamNum);

@@ -137,8 +137,8 @@ public class NStreamQueryPlanBuilder
         QueryPlanNode[] planNodeSpecs = new QueryPlanNode[numStreams];
         for (int streamNo = 0; streamNo < numStreams; streamNo++)
         {
-            // no plan for historical streams
-            if (isHistorical[streamNo])
+            // no plan for historical streams that are dependent upon other streams
+            if ((isHistorical[streamNo]) && (dependencyGraph.hasDependency(streamNo)))
             {
                 continue;
             }
@@ -186,7 +186,7 @@ public class NStreamQueryPlanBuilder
             QueryPlanNode node;
             if (isHistorical[indexedStream])
             {
-                node = new HistoricalDataPlanNode(indexedStream, typesPerStream.length);
+                node = new HistoricalDataPlanNode(indexedStream, typesPerStream.length, queryGraph, null);
             }
             else
             {

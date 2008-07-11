@@ -9,6 +9,7 @@ package com.espertech.esper.epl.join.exec;
 
 import com.espertech.esper.event.EventBean;
 import com.espertech.esper.util.IndentWriter;
+import com.espertech.esper.epl.join.rep.Cursor;
 
 import java.util.Set;
 import java.util.List;
@@ -46,7 +47,7 @@ public class TableOuterLookupExecNode extends ExecNode
     public void process(EventBean lookupEvent, EventBean[] prefillPath, List<EventBean[]> result)
     {
         // Lookup events
-        Set<EventBean> joinedEvents = lookupStrategy.lookup(lookupEvent);
+        Set<EventBean> joinedEvents = lookupStrategy.lookup(lookupEvent, null);
 
         // If no events are found, since this is an outer join, create a result row leaving the
         // joined event as null.

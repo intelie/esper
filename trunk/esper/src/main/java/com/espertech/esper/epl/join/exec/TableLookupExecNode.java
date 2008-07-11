@@ -44,7 +44,7 @@ public class TableLookupExecNode extends ExecNode
     public void process(EventBean lookupEvent, EventBean[] prefillPath, List<EventBean[]> result)
     {
         // Lookup events
-        Set<EventBean> joinedEvents = lookupStrategy.lookup(lookupEvent);
+        Set<EventBean> joinedEvents = lookupStrategy.lookup(lookupEvent, null);
 
         if (joinedEvents == null)
         {

@@ -80,6 +80,11 @@ public class DependencyGraph
         toSet.add(from);
     }
 
+    public boolean hasDependency(int stream)
+    {
+        return !dependencies.get(stream).isEmpty();
+    }
+
     public Map<Integer, SortedSet<Integer>> getDependencies()
     {
         return dependencies;

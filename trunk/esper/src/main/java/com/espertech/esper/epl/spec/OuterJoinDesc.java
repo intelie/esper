@@ -8,7 +8,7 @@
 package com.espertech.esper.epl.spec;
 
 import com.espertech.esper.type.OuterJoinType;
-import com.espertech.esper.epl.expression.ExprIdentNode;
+import com.espertech.esper.epl.expression.*;
 import com.espertech.esper.util.MetaDefItem;
 
 /**
@@ -82,5 +82,38 @@ public class OuterJoinDesc implements MetaDefItem
     public ExprIdentNode[] getAdditionalRightNodes()
     {
         return addRightNode;
+    }
+
+    public ExprNode makeExprNode()
+    {
+        ExprNode representativeNode = new ExprEqualsNode(false);
+        representativeNode.addChildNode(leftNode);
+        representativeNode.addChildNode(rightNode);
+
+        if (addLeftNode != null)
+        {
+            ExprAndNode andNode = new ExprAndNode();
+            andNode.addChildNode(representativeNode);
+            representativeNode = andNode;
+
+            for (int i = 0; i < addLeftNode.length; i++)
+            {
+                ExprEqualsNode eqNode = new ExprEqualsNode(false);
+                eqNode.addChildNode(addLeftNode[i]);
+                eqNode.addChildNode(addRightNode[i]);
+                andNode.addChildNode(eqNode);
+            }
+        }
+
+        try
+        {
+            representativeNode.validate(null, null, null, null, null);
+        }
+        catch (ExprValidationException e)
+        {
+            throw new IllegalStateException("Failed to make representative node for outer join criteria");
+        }
+        
+        return representativeNode;
     }
 }

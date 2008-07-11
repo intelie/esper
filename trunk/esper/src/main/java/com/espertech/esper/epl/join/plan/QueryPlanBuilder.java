@@ -101,8 +101,8 @@ public class QueryPlanBuilder
 
         if (outerJoinDescList.isEmpty())
         {
-            QueryPlan queryPlan = NStreamQueryPlanBuilder.build(queryGraph, typesPerStream, hasHistorical,
-                                     isHistorical, dependencyGraph);
+            QueryPlan queryPlan = NStreamQueryPlanBuilder.build(queryGraph, typesPerStream,
+                                    hasHistorical, isHistorical, dependencyGraph);
 
             if (log.isDebugEnabled())
             {
@@ -112,7 +112,8 @@ public class QueryPlanBuilder
             return queryPlan;
         }
 
-        return NStreamOuterQueryPlanBuilder.build(queryGraph, outerJoinDescList, streamNames, typesPerStream);
+        return NStreamOuterQueryPlanBuilder.build(queryGraph, outerJoinDescList, streamNames, typesPerStream,
+                                    hasHistorical, isHistorical, dependencyGraph);
     }
 
     private static final Log log = LogFactory.getLog(QueryPlanBuilder.class);

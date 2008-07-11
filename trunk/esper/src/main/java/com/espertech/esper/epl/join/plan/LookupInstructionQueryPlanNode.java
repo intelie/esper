@@ -63,7 +63,7 @@ public class LookupInstructionQueryPlanNode extends QueryPlanNode
         int count = 0;
         for (LookupInstructionPlan instruction : lookupInstructions)
         {
-            LookupInstructionExec exec = instruction.makeExec(indexesPerStream, streamTypes);
+            LookupInstructionExec exec = instruction.makeExec(indexesPerStream, streamTypes, streamViews);
             execs[count] = exec;
             count++;
         }
