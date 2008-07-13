@@ -7,7 +7,7 @@ import java.io.PrintWriter;
 /**
  * Model of dependency of lookup, in which one stream supplies values for lookup in another stream.
  */
-public class DependencyGraph
+public class HistoricalDependencyGraph
 {
     private final int numStreams;
     private final Map<Integer, SortedSet<Integer>> dependencies;
@@ -16,7 +16,7 @@ public class DependencyGraph
      * Ctor.
      * @param numStreams - number of streams
      */
-    public DependencyGraph(int numStreams)
+    public HistoricalDependencyGraph(int numStreams)
     {
         this.numStreams = numStreams;
         dependencies = new HashMap<Integer, SortedSet<Integer>>();
@@ -82,7 +82,12 @@ public class DependencyGraph
 
     public boolean hasDependency(int stream)
     {
-        return !dependencies.get(stream).isEmpty();
+        SortedSet<Integer> dep = dependencies.get(stream);
+        if (dep != null)
+        {
+            return !dep.isEmpty();
+        }
+        return false;        
     }
 
     public Map<Integer, SortedSet<Integer>> getDependencies()

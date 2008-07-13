@@ -23,6 +23,29 @@ public class TestFromClauseMethod extends TestCase
         listener = new SupportUpdateListener();
     }
 
+    public void test2JoinHistoricalSubordinateOuterMultiField()
+    {
+        String className = SupportStaticMethodLib.class.getName();
+        String stmtText;
+
+        // fetchBetween must execute first, fetchIdDelimited is dependent on the result of fetchBetween
+        stmtText = "select intPrimitive,intBoxed,col1,col2 from SupportBean.win:keepall() " +
+                   "left outer join " +
+                   "method:" + className + ".fetchResult100() " +
+                   "on intPrimitive = col1 and intBoxed = col2";
+
+        String[] fields = "intPrimitive,intBoxed,col1,col2".split(",");
+        EPStatement stmt = epService.getEPAdministrator().createEPL(stmtText);
+        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, null);
+        stmt.addListener(listener);
+
+        sendSupportBeanEvent(2, 4);
+        ArrayAssertionUtil.assertPropsPerRow(listener.getLastNewDataAndReset(), fields, new Object[][] {{2,4,2,4}});
+        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, new Object[][] {{2,4,2,4}});
+
+        stmt.destroy();
+    }
+
     public void test2JoinHistoricalSubordinateOuter()
     {
         String className = SupportStaticMethodLib.class.getName();

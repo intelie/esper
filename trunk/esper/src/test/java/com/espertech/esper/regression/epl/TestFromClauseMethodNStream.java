@@ -30,10 +30,6 @@ public class TestFromClauseMethodNStream extends TestCase
         listener = new SupportUpdateListener();
     }
 
-    /**
-     * TODO, listener+iterator+reversedorder
-     * Then; inner, full/left/right join
-     */    
     public void test1Stream2HistStarSubordinateCartesianLast()
     {
         String expression;

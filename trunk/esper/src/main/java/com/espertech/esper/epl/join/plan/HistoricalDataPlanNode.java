@@ -22,13 +22,17 @@ import java.util.List;
 public class HistoricalDataPlanNode extends QueryPlanNode
 {
     private final int streamNum;
+    private final int rootStreamNum;
+    private final int lookupStreamNum;
     private final int numStreams;
     private final QueryGraph queryGraph;
     private final ExprNode outerJoinExprNode;
 
-    public HistoricalDataPlanNode(int streamNum, int numStreams, QueryGraph queryGraph, ExprNode exprNode)
+    public HistoricalDataPlanNode(int streamNum, int rootStreamNum, int lookupStreamNum, int numStreams, QueryGraph queryGraph, ExprNode exprNode)
     {
         this.streamNum = streamNum;
+        this.rootStreamNum = rootStreamNum;
+        this.lookupStreamNum = lookupStreamNum;
         this.numStreams = numStreams;
         this.queryGraph = queryGraph;
         this.outerJoinExprNode = exprNode;
@@ -36,18 +40,18 @@ public class HistoricalDataPlanNode extends QueryPlanNode
 
     public ExecNode makeExec(EventTable[][] indexesPerStream, EventType[] streamTypes, Viewable[] streamViews)
     {
-        // TODO - index building
+        int streamViewStreamNum = lookupStreamNum;
+        EventType streamViewType = streamTypes[lookupStreamNum];
+
+        int polledViewStreamNum = streamNum;
+        EventType polledViewType = streamTypes[streamNum];
+
+        Pair<HistoricalIndexLookupStrategy, PollResultIndexingStrategy> pair = JoinSetComposerFactoryImpl.determineIndexing(
+                queryGraph, polledViewType, streamViewType, polledViewStreamNum, streamViewStreamNum);
+
         HistoricalEventViewable viewable = (HistoricalEventViewable) streamViews[streamNum];
-        HistoricalIndexLookupStrategyNoIndex noindex = new HistoricalIndexLookupStrategyNoIndex();
-        PollResultIndexingStrategy iteratorIndexingStrategy = new PollResultIndexingStrategy()
-        {
-            public EventTable index(List<EventBean> pollResult, boolean isActiveCache)
-            {
-                return new UnindexedEventTableList(pollResult);
-            }
-        };
-        
-        return new HistoricalDataExecNode(viewable, iteratorIndexingStrategy, noindex, numStreams, streamNum);
+
+        return new HistoricalDataExecNode(viewable, pair.getSecond(), pair.getFirst(), numStreams, streamNum);
     }
 
     public HistoricalTableLookupStrategy makeOuterJoinStategy(Viewable[] streamViews, EventType[] streamTypes, int pollingStreamNum)
@@ -63,7 +67,7 @@ public class HistoricalDataPlanNode extends QueryPlanNode
 
         HistoricalEventViewable viewable = (HistoricalEventViewable) streamViews[streamNum];
 
-        return new HistoricalTableLookupStrategy(viewable, pair.getSecond(), pair.getFirst(), numStreams, streamNum, outerJoinExprNode);
+        return new HistoricalTableLookupStrategy(viewable, pair.getSecond(), pair.getFirst(), numStreams, streamNum, rootStreamNum, outerJoinExprNode);
     }
 
     protected void print(IndentWriter writer)

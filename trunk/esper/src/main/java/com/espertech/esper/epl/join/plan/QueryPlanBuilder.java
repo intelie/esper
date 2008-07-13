@@ -8,6 +8,7 @@
 package com.espertech.esper.epl.join.plan;
 
 import com.espertech.esper.epl.expression.ExprNode;
+import com.espertech.esper.epl.expression.ExprValidationException;
 import com.espertech.esper.epl.spec.OuterJoinDesc;
 import com.espertech.esper.type.OuterJoinType;
 import com.espertech.esper.event.EventType;
@@ -35,7 +36,8 @@ public class QueryPlanBuilder
                                     String[] streamNames,
                                     boolean hasHistorical,
                                     boolean[] isHistorical,
-                                    DependencyGraph dependencyGraph)
+                                    HistoricalDependencyGraph dependencyGraph)
+            throws ExprValidationException
     {
         String methodName = ".getPlan ";
 

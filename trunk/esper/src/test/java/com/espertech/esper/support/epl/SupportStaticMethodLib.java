@@ -70,6 +70,32 @@ public class SupportStaticMethodLib
     {
         Map<String, Class> values = new HashMap<String, Class>();
         values.put("value", Integer.class);
+        values.put("valueTwo", Integer.class);
+        return values;
+    }
+
+    public static Map[] fetchResult100()
+    {
+        Map[] result = new Map[100];
+        int count = 0;
+        for (int i = 0; i < 10; i++)
+        {
+            for (int j = 0; j < 10; j++)
+            {
+                result[count] = new HashMap<String, Integer>();
+                result[count].put("col1", i);
+                result[count].put("col2", j);
+                count++;
+            }
+        }
+        return result;
+    }
+
+    public static Map fetchResult100Metadata()
+    {
+        Map<String, Class> values = new HashMap<String, Class>();
+        values.put("col1", Integer.class);
+        values.put("col2", Integer.class);
         return values;
     }
 

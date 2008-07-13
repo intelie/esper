@@ -80,6 +80,7 @@ public class RepositoryImpl implements Repository
                 nodes = new LinkedList<Node>();
                 nodesPerStream[resultStream] = nodes;
             }
+            leafNode.setParentEvent(rootEvent);
 
             nodes.add(leafNode);
             return;

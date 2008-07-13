@@ -1011,6 +1011,15 @@ public class JavaClassHelper
         getSuperClasses(clazz, result);
     }
 
+    public static boolean isSimpleNameFullyQualfied(String className, String fullyQualifiedClassname)
+    {
+        if ((fullyQualifiedClassname.endsWith("." + className)) || (fullyQualifiedClassname.equals(className)))
+        {
+            return true;
+        }
+        return false;
+    }
+
     private static void getSuperInterfaces(Class clazz, Set<Class> result)
     {
         Class interfaces[] = clazz.getInterfaces();

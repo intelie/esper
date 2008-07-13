@@ -715,6 +715,16 @@ public class TestJavaClassHelper extends TestCase
         }
     }
 
+    public void testIsSimpleNameFullyQualfied()
+    {
+        assertTrue(JavaClassHelper.isSimpleNameFullyQualfied("ABC","ABC"));
+        assertTrue(JavaClassHelper.isSimpleNameFullyQualfied("ABC","com.abc.ABC"));
+        assertTrue(JavaClassHelper.isSimpleNameFullyQualfied("ABC","abc.ABC"));
+        assertFalse(JavaClassHelper.isSimpleNameFullyQualfied("DABC","abc.ABC"));
+        assertFalse(JavaClassHelper.isSimpleNameFullyQualfied("AB","abc.ABC"));
+        assertFalse(JavaClassHelper.isSimpleNameFullyQualfied("AB","ABC"));
+    }
+
     private void tryInvalidGetCommonCoercionType(Class[] types)
     {
         try

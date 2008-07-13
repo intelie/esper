@@ -9,8 +9,8 @@ package com.espertech.esper.epl.join.exec;
 
 import com.espertech.esper.event.EventBean;
 import com.espertech.esper.epl.join.rep.Cursor;
+import com.espertech.esper.epl.join.rep.Node;
 import com.espertech.esper.epl.join.PollResultIndexingStrategy;
-import com.espertech.esper.epl.join.HistoricalIndexLookupStrategyNoIndex;
 import com.espertech.esper.epl.join.HistoricalIndexLookupStrategy;
 import com.espertech.esper.epl.join.table.EventTable;
 import com.espertech.esper.epl.expression.ExprNode;
@@ -20,7 +20,6 @@ import java.util.Set;
 import java.util.HashSet;
 import java.util.Iterator;
 
-// TODO
 public class HistoricalTableLookupStrategy implements TableLookupStrategy
 {
     private final HistoricalEventViewable viewable;
@@ -28,29 +27,31 @@ public class HistoricalTableLookupStrategy implements TableLookupStrategy
     private final HistoricalIndexLookupStrategy lookupStrategy;
     private final int numStreams;
     private final int streamNum;
+    private final int rootStreamNum;
     private final ExprNode outerJoinExprNode;
-    private final EventBean[] eventsPerStream;
+    private final EventBean[][] lookupEventsPerStream;
 
-    public HistoricalTableLookupStrategy(HistoricalEventViewable viewable, PollResultIndexingStrategy indexingStrategy, HistoricalIndexLookupStrategy lookupStrategy, int numStreams, int streamNum, ExprNode outerJoinExprNode)
+    public HistoricalTableLookupStrategy(HistoricalEventViewable viewable, PollResultIndexingStrategy indexingStrategy, HistoricalIndexLookupStrategy lookupStrategy, int numStreams, int streamNum, int rootStreamNum, ExprNode outerJoinExprNode)
     {
         this.viewable = viewable;
         this.indexingStrategy = indexingStrategy;
         this.lookupStrategy = lookupStrategy;
         this.numStreams = numStreams;
         this.streamNum = streamNum;
+        this.rootStreamNum = rootStreamNum;
         this.outerJoinExprNode = outerJoinExprNode;
-        this.eventsPerStream = new EventBean[numStreams];
+        lookupEventsPerStream = new EventBean[1][numStreams];
     }
 
     public Set<EventBean> lookup(EventBean event, Cursor cursor)
     {
-        EventBean[][] lookupEventsPerStream = new EventBean[1][numStreams];
         int currStream = cursor.getStream();
 
-        // TODO - multiple and indirect dependencies of historical stream
+        // fill the current stream and the deep cursor events
         lookupEventsPerStream[0][currStream] = event;
-        eventsPerStream[currStream] = event;
+        recursiveFill(lookupEventsPerStream[0], cursor.getNode());
 
+        // poll
         EventTable[] indexPerLookupRow = viewable.poll(lookupEventsPerStream, indexingStrategy);
 
         Set<EventBean> result = null;
@@ -67,8 +68,8 @@ public class HistoricalTableLookupStrategy implements TableLookupStrategy
                 {
                     EventBean candidate = subsetIter.next();
 
-                    eventsPerStream[streamNum] = candidate;
-                    Boolean pass = (Boolean) outerJoinExprNode.evaluate(eventsPerStream, true);
+                    lookupEventsPerStream[0][streamNum] = candidate;
+                    Boolean pass = (Boolean) outerJoinExprNode.evaluate(lookupEventsPerStream[0], true);
                     if ((pass != null) && (pass))
                     {
                         if (result == null)
@@ -82,5 +83,23 @@ public class HistoricalTableLookupStrategy implements TableLookupStrategy
         }
 
         return result;
+    }
+
+    private void recursiveFill(EventBean[] lookupEventsPerStream, Node node)
+    {
+        if (node == null)
+        {
+            return;
+        }
+
+        Node parent = node.getParent();
+        if (parent == null)
+        {
+            lookupEventsPerStream[rootStreamNum] = node.getParentEvent();
+            return;
+        }
+
+        lookupEventsPerStream[parent.getStream()] = parent.getParentEvent();
+        recursiveFill(lookupEventsPerStream, parent);
     }
 }

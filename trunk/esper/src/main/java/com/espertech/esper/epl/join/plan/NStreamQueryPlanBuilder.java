@@ -108,7 +108,7 @@ public class NStreamQueryPlanBuilder
     protected static QueryPlan build(QueryGraph queryGraph, EventType[] typesPerStream,
                                      boolean hasHistorical,
                                      boolean[] isHistorical,
-                                     DependencyGraph dependencyGraph)
+                                     HistoricalDependencyGraph dependencyGraph)
     {
         if (log.isDebugEnabled())
         {
@@ -186,7 +186,7 @@ public class NStreamQueryPlanBuilder
             QueryPlanNode node;
             if (isHistorical[indexedStream])
             {
-                node = new HistoricalDataPlanNode(indexedStream, typesPerStream.length, queryGraph, null);
+                node = new HistoricalDataPlanNode(indexedStream, lookupStream, currentLookupStream, typesPerStream.length, queryGraph, null);
             }
             else
             {
@@ -282,7 +282,7 @@ public class NStreamQueryPlanBuilder
      * @param queryGraph - navigability between streams
      * @return chain and chain depth
      */
-    protected static BestChainResult computeBestPath(int lookupStream, QueryGraph queryGraph, DependencyGraph dependencyGraph)
+    protected static BestChainResult computeBestPath(int lookupStream, QueryGraph queryGraph, HistoricalDependencyGraph dependencyGraph)
     {
         int[] defNestingorder = buildDefaultNestingOrder(queryGraph.getNumStreams(), lookupStream);
         NumberSetPermutationEnumeration permutations = new NumberSetPermutationEnumeration(defNestingorder);
@@ -328,7 +328,7 @@ public class NStreamQueryPlanBuilder
      * @param dependencyGraph dependencies
      * @return pass or fail indication
      */
-    protected static boolean isDependencySatisfied(int lookupStream, int[] permutation, DependencyGraph dependencyGraph)
+    protected static boolean isDependencySatisfied(int lookupStream, int[] permutation, HistoricalDependencyGraph dependencyGraph)
     {
         for (Map.Entry<Integer, SortedSet<Integer>> entry : dependencyGraph.getDependencies().entrySet())
         {

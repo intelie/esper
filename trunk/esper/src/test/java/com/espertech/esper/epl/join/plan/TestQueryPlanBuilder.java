@@ -17,7 +17,7 @@ public class TestQueryPlanBuilder extends TestCase
 {
     private EventType[] typesPerStream;
     private boolean[] isHistorical;
-    private DependencyGraph dependencyGraph;
+    private HistoricalDependencyGraph dependencyGraph;
 
     public void setUp()
     {
@@ -25,7 +25,7 @@ public class TestQueryPlanBuilder extends TestCase
                 SupportEventAdapterService.getService().addBeanType(SupportBean_S0.class.getName(), SupportBean_S0.class),
                 SupportEventAdapterService.getService().addBeanType(SupportBean_S1.class.getName(), SupportBean_S1.class)
         };
-        dependencyGraph = new DependencyGraph(2);
+        dependencyGraph = new HistoricalDependencyGraph(2);
         isHistorical = new boolean[2];
     }
 

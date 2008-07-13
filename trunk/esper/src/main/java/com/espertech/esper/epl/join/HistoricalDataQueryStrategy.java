@@ -8,13 +8,13 @@
 package com.espertech.esper.epl.join;
 
 import com.espertech.esper.collection.MultiKey;
-import com.espertech.esper.epl.expression.ExprEqualsNode;
+import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.epl.join.table.EventTable;
 import com.espertech.esper.event.EventBean;
 import com.espertech.esper.view.HistoricalEventViewable;
 
-import java.util.Set;
 import java.util.Iterator;
+import java.util.Set;
 
 /**
  * Query strategy for use with {@link HistoricalEventViewable}
@@ -27,7 +27,7 @@ public class HistoricalDataQueryStrategy implements QueryStrategy
     private final HistoricalEventViewable historicalEventViewable;
     private final EventBean[][] lookupRows1Event;
     private final boolean isOuterJoin;
-    private final ExprEqualsNode outerJoinCompareNode;
+    private final ExprNode outerJoinCompareNode;
     private final HistoricalIndexLookupStrategy indexLookupStrategy;
     private final PollResultIndexingStrategy pollResultIndexingStrategy;
 
@@ -47,7 +47,7 @@ public class HistoricalDataQueryStrategy implements QueryStrategy
                                        int historicalStreamNumber,
                                        HistoricalEventViewable historicalEventViewable,
                                        boolean isOuterJoin,
-                                       ExprEqualsNode outerJoinCompareNode,
+                                       ExprNode outerJoinCompareNode,
                                        HistoricalIndexLookupStrategy indexLookupStrategy,
                                        PollResultIndexingStrategy pollResultIndexingStrategy)
     {

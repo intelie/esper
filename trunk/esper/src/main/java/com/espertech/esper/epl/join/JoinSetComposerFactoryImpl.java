@@ -60,7 +60,7 @@ public class JoinSetComposerFactoryImpl implements JoinSetComposerFactory
             throws ExprValidationException
     {
         // Determine if there is a historical stream, and what dependencies exist
-        DependencyGraph historicalDependencyGraph = new DependencyGraph(streamTypes.length);
+        HistoricalDependencyGraph historicalDependencyGraph = new HistoricalDependencyGraph(streamTypes.length);
         boolean[] isHistorical = null;
         for (int i = 0; i < streamViews.length; i++)
         {
@@ -70,7 +70,7 @@ public class JoinSetComposerFactoryImpl implements JoinSetComposerFactory
                 if (isHistorical == null)
                 {
                     isHistorical = new boolean[streamViews.length];
-                    historicalDependencyGraph = new DependencyGraph(streamTypes.length);
+                    historicalDependencyGraph = new HistoricalDependencyGraph(streamTypes.length);
                 }
                 isHistorical[i] = true;
                 historicalDependencyGraph.addDependency(i, historicalViewable.getRequiredStreams());
@@ -191,7 +191,7 @@ public class JoinSetComposerFactoryImpl implements JoinSetComposerFactory
         boolean isAllHistoricalNoSubordinate = false;
         if ((streamViews[0] instanceof HistoricalEventViewable) && (streamViews[1] instanceof HistoricalEventViewable))
         {
-            DependencyGraph graph = new DependencyGraph(2);
+            HistoricalDependencyGraph graph = new HistoricalDependencyGraph(2);
             graph.addDependency(0, ((HistoricalEventViewable) streamViews[0]).getRequiredStreams());
             graph.addDependency(1, ((HistoricalEventViewable) streamViews[1]).getRequiredStreams());
             if (graph.getFirstCircularDependency() != null)
@@ -221,7 +221,7 @@ public class JoinSetComposerFactoryImpl implements JoinSetComposerFactory
 
         // Build an outer join expression node
         boolean isOuterJoin = false;
-        ExprEqualsNode outerJoinEqualsNode = null;
+        ExprNode outerJoinEqualsNode = null;
         if (!outerJoinDescList.isEmpty())
         {
             OuterJoinDesc outerJoinDesc = outerJoinDescList.get(0);
@@ -240,10 +240,7 @@ public class JoinSetComposerFactoryImpl implements JoinSetComposerFactory
                     isOuterJoin = true;
             }
 
-            outerJoinEqualsNode = new ExprEqualsNode(false);
-            outerJoinEqualsNode.addChildNode(outerJoinDesc.getLeftNode());
-            outerJoinEqualsNode.addChildNode(outerJoinDesc.getRightNode());
-            outerJoinEqualsNode.validate(null, null, null, null, null);
+            outerJoinEqualsNode  = outerJoinDesc.makeExprNode();
         }
 
         // Determine filter for indexing purposes

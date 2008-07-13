@@ -46,7 +46,7 @@ public class TestNStreamOuterQueryPlanBuilder extends TestCase
         }
     }
 
-    public void testRecursiveBuild()
+    public void testRecursiveBuild() throws Exception
     {
         int streamNum = 2;
         QueryGraph queryGraph = new QueryGraph(6);
@@ -71,9 +71,10 @@ public class TestNStreamOuterQueryPlanBuilder extends TestCase
         queryGraph.add(1, "", 0, "");
 
         Set<InterchangeablePair<Integer, Integer>> innerJoins = new HashSet<InterchangeablePair<Integer, Integer>>();
+        Stack<Integer> streamStack = new Stack<Integer>();
 
-        NStreamOuterQueryPlanBuilder.recursiveBuild(streamNum, queryGraph, outerInnerGraph, innerJoins, completedStreams,
-                substreamsPerStream, requiredPerStream);
+        NStreamOuterQueryPlanBuilder.recursiveBuild(streamNum, streamStack, queryGraph, outerInnerGraph, innerJoins, completedStreams,
+                substreamsPerStream, requiredPerStream, new HistoricalDependencyGraph(6));
 
         assertEquals(6, substreamsPerStream.size());
         ArrayAssertionUtil.assertEqualsExactOrder(new int[] {3, 1}, substreamsPerStream.get(2));

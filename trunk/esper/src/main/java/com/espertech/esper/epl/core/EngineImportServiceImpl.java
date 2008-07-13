@@ -2,6 +2,7 @@ package com.espertech.esper.epl.core;
 
 import com.espertech.esper.epl.agg.AggregationSupport;
 import com.espertech.esper.util.MethodResolver;
+import com.espertech.esper.util.JavaClassHelper;
 import com.espertech.esper.client.ConfigurationMethodRef;
 
 import java.lang.reflect.Method;
@@ -146,7 +147,7 @@ public class EngineImportServiceImpl implements EngineImportService
     public Method resolveMethod(String classNameAlias, String methodName)
 			throws EngineImportException
     {
-        Class clazz;
+        Class clazz = null;
         try
         {
             clazz = resolveClassInternal(classNameAlias);
@@ -253,7 +254,27 @@ public class EngineImportServiceImpl implements EngineImportService
 			}
 		}
 
-		// No import worked, the class isn't resolved
+        // try to resolve from method references
+        for (String name : methodInvocationRef.keySet())
+        {
+            if (JavaClassHelper.isSimpleNameFullyQualfied(className, name))
+            {
+                try
+                {
+                    ClassLoader cl = Thread.currentThread().getContextClassLoader();
+                    return Class.forName(name, true, cl);
+                }
+                catch (ClassNotFoundException e1)
+                {
+                    if (log.isDebugEnabled())
+                    {
+                        log.debug("Class not found for resolving from method invocation ref:" + name);
+                    }                    
+                }
+            }
+        }
+
+        // No import worked, the class isn't resolved
 		throw new ClassNotFoundException("Unknown class " + className);
 	}
 
