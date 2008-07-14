@@ -69,6 +69,7 @@ select insert from MyEvent]]></programlisting>
 				<row><entry>group</entry><entry>-</entry></row>
 				<row><entry>having</entry><entry>-</entry></row>
 				<row><entry>in</entry><entry>-</entry></row>
+				<row><entry>inner</entry><entry>-</entry></row>
 				<row><entry>insert</entry><entry>-</entry></row>
 				<row><entry>instanceof</entry><entry>yes</entry></row>
 				<row><entry>into</entry><entry>-</entry></row>

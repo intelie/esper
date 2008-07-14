@@ -82,7 +82,7 @@ public class TestIterablesArrayIterator extends TestCase
 
     public void testRemove()
     {
-        Iterable<EventBean>[] iterables = new Iterable[0];
+        Iterable<EventBean>[] iterables = new Iterable[1];
         iterables[0] = EventFactoryHelper.makeList(events, new String[] { "a", "b", "c" } );
         IterablesArrayIterator iterator = new IterablesArrayIterator(iterables);
 

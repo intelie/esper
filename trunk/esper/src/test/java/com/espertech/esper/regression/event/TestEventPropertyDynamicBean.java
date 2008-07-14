@@ -24,7 +24,7 @@ public class TestEventPropertyDynamicBean extends TestCase
 
     public void testGetValue() throws Exception
     {
-        String stmtText = "select inner.id? as myid from " + SupportBeanDynRoot.class.getName();
+        String stmtText = "select item.id? as myid from " + SupportBeanDynRoot.class.getName();
         EPStatement stmt = epService.getEPAdministrator().createEPL(stmtText);
         stmt.addListener(listener);
 
@@ -52,12 +52,12 @@ public class TestEventPropertyDynamicBean extends TestCase
 
     public void testGetValueNested() throws Exception
     {
-        String stmtText = "select inner.nested?.nestedValue as n1, " +
-                          " inner.nested?.nestedValue? as n2, " +
-                          " inner.nested?.nestedNested.nestedNestedValue as n3, " +
-                          " inner.nested?.nestedNested?.nestedNestedValue as n4, " +
-                          " inner.nested?.nestedNested.nestedNestedValue? as n5, " +
-                          " inner.nested?.nestedNested?.nestedNestedValue? as n6 " +
+        String stmtText = "select item.nested?.nestedValue as n1, " +
+                          " item.nested?.nestedValue? as n2, " +
+                          " item.nested?.nestedNested.nestedNestedValue as n3, " +
+                          " item.nested?.nestedNested?.nestedNestedValue as n4, " +
+                          " item.nested?.nestedNested.nestedNestedValue? as n5, " +
+                          " item.nested?.nestedNested?.nestedNestedValue? as n6 " +
                           " from " + SupportBeanDynRoot.class.getName();
         EPStatement stmt = epService.getEPAdministrator().createEPL(stmtText);
         stmt.addListener(listener);
@@ -137,12 +137,12 @@ public class TestEventPropertyDynamicBean extends TestCase
 
     public void testGetValueTopComplex() throws Exception
     {
-        String stmtText = "select inner?.indexed[0] as indexed1, " +
-                          "inner?.indexed[1]? as indexed2, " +
-                          "inner?.arrayProperty[1]? as array, " +
-                          "inner?.mapped('keyOne') as mapped1, " +
-                          "inner?.mapped('keyTwo')? as mapped2,  " +
-                          "inner?.mapProperty('xOne')? as map " +
+        String stmtText = "select item?.indexed[0] as indexed1, " +
+                          "item?.indexed[1]? as indexed2, " +
+                          "item?.arrayProperty[1]? as array, " +
+                          "item?.mapped('keyOne') as mapped1, " +
+                          "item?.mapped('keyTwo')? as mapped2,  " +
+                          "item?.mapProperty('xOne')? as map " +
                           "from " + SupportBeanDynRoot.class.getName();
         EPStatement stmt = epService.getEPAdministrator().createEPL(stmtText);
         stmt.addListener(listener);

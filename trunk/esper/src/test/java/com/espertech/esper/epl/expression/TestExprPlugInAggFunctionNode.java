@@ -20,22 +20,6 @@ public class TestExprPlugInAggFunctionNode extends TestCase
         assertEquals(int.class, plugInNode.getType());
     }
 
-    public void testValidate() throws Exception
-    {
-        // fails with too many sub-expressions
-        plugInNode.addChildNode(new SupportExprNode(Boolean.class));
-        plugInNode.addChildNode(new SupportExprNode(Boolean.class));
-        try
-        {
-            plugInNode.validate(null, null, null, null, null);
-            fail();
-        }
-        catch (ExprValidationException ex)
-        {
-            // Expected
-        }
-    }
-
     public void testEqualsNode() throws Exception
     {
         ExprPlugInAggFunctionNode otherOne = new ExprPlugInAggFunctionNode(false, new SupportPluginAggregationMethodOne(), "matrix");

@@ -64,11 +64,11 @@ public class TestCastExpr extends TestCase
 
     public void testCastDoubleAndNull_OM() throws Exception
     {
-        String stmtText = "select cast(inner?, double) as t0 " +
+        String stmtText = "select cast(item?, double) as t0 " +
                           "from " + SupportMarkerInterface.class.getName();
 
         EPStatementObjectModel model = new EPStatementObjectModel();
-        model.setSelectClause(SelectClause.create().add(Expressions.cast("inner?", "double"), "t0"));
+        model.setSelectClause(SelectClause.create().add(Expressions.cast("item?", "double"), "t0"));
         model.setFromClause(FromClause.create(FilterStream.create(SupportMarkerInterface.class.getName())));
         model = (EPStatementObjectModel) SerializableObjectCopier.copy(model);
         assertEquals(stmtText, model.toEPL());
@@ -99,7 +99,7 @@ public class TestCastExpr extends TestCase
 
     public void testCastStringAndNull_Compile() throws Exception
     {
-        String stmtText = "select cast(inner?, java.lang.String) as t0 " +
+        String stmtText = "select cast(item?, java.lang.String) as t0 " +
                           "from " + SupportMarkerInterface.class.getName();
 
         EPStatementObjectModel model = epService.getEPAdministrator().compileEPL(stmtText);
@@ -131,14 +131,14 @@ public class TestCastExpr extends TestCase
 
     public void testCastInterface()
     {
-        String caseExpr = "select cast(inner?, " + SupportMarkerInterface.class.getName() + ") as t0, " +
-                          " cast(inner?, " + ISupportA.class.getName() + ") as t1, " +
-                          " cast(inner?, " + ISupportBaseAB.class.getName() + ") as t2, " +
-                          " cast(inner?, " + ISupportBaseABImpl.class.getName() + ") as t3, " +
-                          " cast(inner?, " + ISupportC.class.getName() + ") as t4, " +
-                          " cast(inner?, " + ISupportD.class.getName() + ") as t5, " +
-                          " cast(inner?, " + ISupportAImplSuperG.class.getName() + ") as t6, " +
-                          " cast(inner?, " + ISupportAImplSuperGImplPlus.class.getName() + ") as t7 " +
+        String caseExpr = "select cast(item?, " + SupportMarkerInterface.class.getName() + ") as t0, " +
+                          " cast(item?, " + ISupportA.class.getName() + ") as t1, " +
+                          " cast(item?, " + ISupportBaseAB.class.getName() + ") as t2, " +
+                          " cast(item?, " + ISupportBaseABImpl.class.getName() + ") as t3, " +
+                          " cast(item?, " + ISupportC.class.getName() + ") as t4, " +
+                          " cast(item?, " + ISupportD.class.getName() + ") as t5, " +
+                          " cast(item?, " + ISupportAImplSuperG.class.getName() + ") as t6, " +
+                          " cast(item?, " + ISupportAImplSuperGImplPlus.class.getName() + ") as t7 " +
                           " from " + SupportMarkerInterface.class.getName();
 
         EPStatement selectTestCase = epService.getEPAdministrator().createEPL(caseExpr);

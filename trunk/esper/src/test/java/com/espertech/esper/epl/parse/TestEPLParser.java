@@ -184,7 +184,6 @@ public class TestEPLParser extends TestCase
         assertIsInvalid("create window AAA as select from MyType");
         assertIsInvalid("create window AAA as , *, b from MyType");
         assertIsInvalid("create window as select a from MyType");
-        assertIsInvalid("create window AAA.win:length(10) select a from MyType");
         assertIsInvalid("create window AAA as select from MyType");
         assertIsInvalid("create window AAA.win:length(10)");
         assertIsInvalid("create window AAA");
@@ -548,6 +547,7 @@ public class TestEPLParser extends TestCase
         assertIsValid("create window AAA as select * from MyType");
         assertIsValid("create window AAA as select a, *, b from MyType");
         assertIsValid("create window AAA as select a from MyType");
+        assertIsValid("create window AAA.win:length(10) select a from MyType");
         assertIsValid("create window AAA select a from MyType");
         assertIsValid("create window AAA.win:length(10) as select a from MyType");
         assertIsValid("create window AAA.win:length(10) as select a,b from MyType");

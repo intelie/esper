@@ -98,7 +98,14 @@ public class LookupInstructionPlan
         writer.incrIndent();
         for (int i = 0; i < lookupPlans.length; i++)
         {
-            writer.println("plan " + i + " :" + lookupPlans[i].toString());
+            if (lookupPlans[i] != null)
+            {
+                writer.println("plan " + i + " :" + lookupPlans[i].toString());
+            }
+            else
+            {
+                writer.println("plan " + i + " : no lookup plan");
+            }
         }
         writer.decrIndent();
     }

@@ -28,26 +28,26 @@ public class TestEventPropertyDynamicMap extends TestCase
     public void testMapWithinMap()
     {
         Properties properties = new Properties();
-        properties.put("inner", Map.class.getName());
+        properties.put("innermap", Map.class.getName());
         epService.getEPAdministrator().getConfiguration().addEventTypeAlias("MyLevel2", properties);
 
         String statementText = "select " +
-                               "inner.int? as t0, " +
-                               "inner.innerTwo?.nested as t1, " +
-                               "inner.innerTwo?.innerThree.nestedTwo as t2, " +
+                               "innermap.int? as t0, " +
+                               "innermap.innerTwo?.nested as t1, " +
+                               "innermap.innerTwo?.innerThree.nestedTwo as t2, " +
                                "dynamicOne? as t3, " +
                                "dynamicTwo? as t4, " +
                                "indexed[1]? as t5, " +
                                "mapped('keyOne')? as t6, " +
-                               "inner.indexedTwo[0]? as t7, " +
-                               "inner.mappedTwo('keyTwo')? as t8 " +
+                               "innermap.indexedTwo[0]? as t7, " +
+                               "innermap.mappedTwo('keyTwo')? as t8 " +
                     "from MyLevel2.win:length(5)";
         EPStatement statement = epService.getEPAdministrator().createEPL(statementText);
         statement.addListener(listener);
 
         HashMap map = new HashMap<String, Object>();
         map.put("dynamicTwo", 20l);
-        map.put("inner", makeMap(
+        map.put("innermap", makeMap(
                 "int", 10,
                 "indexedTwo", new int[] {-10},
                 "mappedTwo", makeMap("keyTwo", "def"),
@@ -59,7 +59,7 @@ public class TestEventPropertyDynamicMap extends TestCase
         assertResults(listener.assertOneGetNewAndReset(), new Object[] {10, 30d, 99, null, 20l, -2.0f, "abc", -10, "def"});
 
         map = new HashMap<String, Object>();
-        map.put("inner", makeMap(
+        map.put("innermap", makeMap(
                 "indexedTwo", new int[] {},
                 "mappedTwo", makeMap("yyy", "xxx"),
                 "innerTwo", null));
@@ -72,7 +72,7 @@ public class TestEventPropertyDynamicMap extends TestCase
         assertResults(listener.assertOneGetNewAndReset(), new Object[] {null, null, null, null, null, null, null, null, null});
 
         map = new HashMap<String, Object>();
-        map.put("inner", "xxx");
+        map.put("innermap", "xxx");
         map.put("indexed", null);
         map.put("mapped", "xxx");
         epService.getEPRuntime().sendEvent(map, "MyLevel2");
@@ -82,26 +82,26 @@ public class TestEventPropertyDynamicMap extends TestCase
     public void testMapWithinMapExists()
     {
         Properties properties = new Properties();
-        properties.put("inner", Map.class.getName());
+        properties.put("innermap", Map.class.getName());
         epService.getEPAdministrator().getConfiguration().addEventTypeAlias("MyLevel2", properties);
 
         String statementText = "select " +
-                               "exists(inner.int?) as t0, " +
-                               "exists(inner.innerTwo?.nested) as t1, " +
-                               "exists(inner.innerTwo?.innerThree.nestedTwo) as t2, " +
+                               "exists(innermap.int?) as t0, " +
+                               "exists(innermap.innerTwo?.nested) as t1, " +
+                               "exists(innermap.innerTwo?.innerThree.nestedTwo) as t2, " +
                                "exists(dynamicOne?) as t3, " +
                                "exists(dynamicTwo?) as t4, " +
                                "exists(indexed[1]?) as t5, " +
                                "exists(mapped('keyOne')?) as t6, " +
-                               "exists(inner.indexedTwo[0]?) as t7, " +
-                               "exists(inner.mappedTwo('keyTwo')?) as t8 " +
+                               "exists(innermap.indexedTwo[0]?) as t7, " +
+                               "exists(innermap.mappedTwo('keyTwo')?) as t8 " +
                     "from MyLevel2.win:length(5)";
         EPStatement statement = epService.getEPAdministrator().createEPL(statementText);
         statement.addListener(listener);
 
         HashMap map = new HashMap<String, Object>();
         map.put("dynamicTwo", 20l);
-        map.put("inner", makeMap(
+        map.put("innermap", makeMap(
                 "int", 10,
                 "indexedTwo", new int[] {-10},
                 "mappedTwo", makeMap("keyTwo", "def"),
@@ -113,7 +113,7 @@ public class TestEventPropertyDynamicMap extends TestCase
         assertResults(listener.assertOneGetNewAndReset(), new Object[] {true, true,true,false,true,true,true,true,true});
 
         map = new HashMap<String, Object>();
-        map.put("inner", makeMap(
+        map.put("innermap", makeMap(
                 "indexedTwo", new int[] {},
                 "mappedTwo", makeMap("yyy", "xxx"),
                 "innerTwo", null));
@@ -126,7 +126,7 @@ public class TestEventPropertyDynamicMap extends TestCase
         assertResults(listener.assertOneGetNewAndReset(), new Object[] {false, false,false,false,false,false,false,false,false});
 
         map = new HashMap<String, Object>();
-        map.put("inner", "xxx");
+        map.put("innermap", "xxx");
         map.put("indexed", null);
         map.put("mapped", "xxx");
         epService.getEPRuntime().sendEvent(map, "MyLevel2");
@@ -136,10 +136,10 @@ public class TestEventPropertyDynamicMap extends TestCase
     public void testMapWithinMap2LevelsInvalid()
     {
         Properties properties = new Properties();
-        properties.put("inner", Map.class.getName());
+        properties.put("innermap", Map.class.getName());
         epService.getEPAdministrator().getConfiguration().addEventTypeAlias("MyLevel2", properties);
 
-        String statementText = "select inner.int as t0 from MyLevel2.win:length(5)";
+        String statementText = "select innermap.int as t0 from MyLevel2.win:length(5)";
         try
         {
             epService.getEPAdministrator().createEPL(statementText);
@@ -150,7 +150,7 @@ public class TestEventPropertyDynamicMap extends TestCase
             // expected
         }
 
-        statementText = "select inner.int.inner2? as t0 from MyLevel2.win:length(5)";
+        statementText = "select innermap.int.inner2? as t0 from MyLevel2.win:length(5)";
         try
         {
             epService.getEPAdministrator().createEPL(statementText);
@@ -161,7 +161,7 @@ public class TestEventPropertyDynamicMap extends TestCase
             // expected
         }
 
-        statementText = "select inner.int.inner2? as t0 from MyLevel2.win:length(5)";
+        statementText = "select innermap.int.inner2? as t0 from MyLevel2.win:length(5)";
         try
         {
             epService.getEPAdministrator().createEPL(statementText);

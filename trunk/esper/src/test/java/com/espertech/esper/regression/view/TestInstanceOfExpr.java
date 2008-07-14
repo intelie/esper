@@ -110,14 +110,14 @@ public class TestInstanceOfExpr extends TestCase
 
     public void testDynamicPropertyJavaTypes()
     {
-        String stmtText = "select instanceof(inner?, string) as t0, " +
-                          " instanceof(inner?, int) as t1, " +
-                          " instanceof(inner?, java.lang.Float) as t2, " +
-                          " instanceof(inner?, java.lang.Float, char, byte) as t3, " +
-                          " instanceof(inner?, java.lang.Integer) as t4, " +
-                          " instanceof(inner?, long) as t5, " +
-                          " instanceof(inner?, long, long, java.lang.Number) as t6, " +
-                          " instanceof(inner?, long, float) as t7 " +
+        String stmtText = "select instanceof(item?, string) as t0, " +
+                          " instanceof(item?, int) as t1, " +
+                          " instanceof(item?, java.lang.Float) as t2, " +
+                          " instanceof(item?, java.lang.Float, char, byte) as t3, " +
+                          " instanceof(item?, java.lang.Integer) as t4, " +
+                          " instanceof(item?, long) as t5, " +
+                          " instanceof(item?, long, long, java.lang.Number) as t6, " +
+                          " instanceof(item?, long, float) as t7 " +
                           " from " + SupportMarkerInterface.class.getName();
 
         EPStatement selectTestCase = epService.getEPAdministrator().createEPL(stmtText);
@@ -141,14 +141,14 @@ public class TestInstanceOfExpr extends TestCase
 
     public void testDynamicSuperTypeAndInterface()
     {
-        String stmtText = "select instanceof(inner?, " + SupportMarkerInterface.class.getName() + ") as t0, " +
-                          " instanceof(inner?, " + ISupportA.class.getName() + ") as t1, " +
-                          " instanceof(inner?, " + ISupportBaseAB.class.getName() + ") as t2, " +
-                          " instanceof(inner?, " + ISupportBaseABImpl.class.getName() + ") as t3, " +
-                          " instanceof(inner?, " + ISupportA.class.getName() + ", " + ISupportB.class.getName() + ") as t4, " +
-                          " instanceof(inner?, " + ISupportBaseAB.class.getName() + ", " + ISupportB.class.getName() + ") as t5, " +
-                          " instanceof(inner?, " + ISupportAImplSuperG.class.getName() + ", " + ISupportB.class.getName() + ") as t6, " +
-                          " instanceof(inner?, " + ISupportAImplSuperGImplPlus.class.getName() + ", " + SupportBeanBase.class.getName() + ") as t7 " +
+        String stmtText = "select instanceof(item?, " + SupportMarkerInterface.class.getName() + ") as t0, " +
+                          " instanceof(item?, " + ISupportA.class.getName() + ") as t1, " +
+                          " instanceof(item?, " + ISupportBaseAB.class.getName() + ") as t2, " +
+                          " instanceof(item?, " + ISupportBaseABImpl.class.getName() + ") as t3, " +
+                          " instanceof(item?, " + ISupportA.class.getName() + ", " + ISupportB.class.getName() + ") as t4, " +
+                          " instanceof(item?, " + ISupportBaseAB.class.getName() + ", " + ISupportB.class.getName() + ") as t5, " +
+                          " instanceof(item?, " + ISupportAImplSuperG.class.getName() + ", " + ISupportB.class.getName() + ") as t6, " +
+                          " instanceof(item?, " + ISupportAImplSuperGImplPlus.class.getName() + ", " + SupportBeanBase.class.getName() + ") as t7 " +
 
                           " from " + SupportMarkerInterface.class.getName();
 

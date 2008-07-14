@@ -73,10 +73,10 @@ public class TestInsertIntoTransposeStream extends TestCase
     {
         epService.getEPAdministrator().getConfiguration().addEventTypeAlias("Complex", SupportBeanComplexProps.class);
 
-        String stmtTextOne = "insert into MyStream select nested as inner from Complex";
+        String stmtTextOne = "insert into MyStream select nested as inneritem from Complex";
         epService.getEPAdministrator().createEPL(stmtTextOne);
 
-        String stmtTextTwo = "select inner.nestedValue as result from MyStream";
+        String stmtTextTwo = "select inneritem.nestedValue as result from MyStream";
         EPStatement stmt = epService.getEPAdministrator().createEPL(stmtTextTwo);
         stmt.addListener(listener);
 
@@ -91,17 +91,17 @@ public class TestInsertIntoTransposeStream extends TestCase
         });
         epService.getEPAdministrator().getConfiguration().addEventTypeAliasNestable("Complex", metadata);
 
-        String stmtTextOne = "insert into MyStream select nested as inner from Complex";
+        String stmtTextOne = "insert into MyStream select nested as inneritem from Complex";
         epService.getEPAdministrator().createEPL(stmtTextOne);
 
         try
         {
-            String stmtTextTwo = "select inner.nestedValue as result from MyStream";
+            String stmtTextTwo = "select inneritem.nestedValue as result from MyStream";
             epService.getEPAdministrator().createEPL(stmtTextTwo);
         }
         catch (Exception ex)
         {
-            assertEquals("Error starting view: Failed to resolve property 'inner.nestedValue' to a stream or nested property in a stream [select inner.nestedValue as result from MyStream]", ex.getMessage());
+            assertEquals("Error starting view: Failed to resolve property 'inneritem.nestedValue' to a stream or nested property in a stream [select inneritem.nestedValue as result from MyStream]", ex.getMessage());
         }
     }
 

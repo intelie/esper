@@ -121,7 +121,7 @@ public class TestVariantStreamDefault extends TestCase
         stmt.addListener(listenerOne);
         EventType eventType = stmt.getEventType();
 
-        String[] expected = "p0,p1,p2,p3,p4,p5,indexed,mapped,inner".split(",");
+        String[] expected = "p0,p1,p2,p3,p4,p5,indexed,mapped,inneritem".split(",");
         String[] propertyNames = eventType.getPropertyNames();
         ArrayAssertionUtil.assertEqualsAnyOrder(expected, propertyNames);
         assertEquals(ISupportBaseAB.class, eventType.getPropertyType("p0"));
@@ -132,10 +132,10 @@ public class TestVariantStreamDefault extends TestCase
         assertEquals(Collection.class, eventType.getPropertyType("p5"));
         assertEquals(int[].class, eventType.getPropertyType("indexed"));
         assertEquals(Map.class, eventType.getPropertyType("mapped"));
-        assertEquals(SupportBeanVariantOne.SupportBeanVariantOneInner.class, eventType.getPropertyType("inner"));
+        assertEquals(SupportBeanVariantOne.SupportBeanVariantOneInner.class, eventType.getPropertyType("inneritem"));
 
         stmt.destroy();
-        stmt = epService.getEPAdministrator().createEPL("select p0,p1,p2,p3,p4,p5,indexed[0] as p6,indexArr[1] as p7,mappedKey('a') as p8,inner as p9,inner.val as p10 from MyVariantStream");
+        stmt = epService.getEPAdministrator().createEPL("select p0,p1,p2,p3,p4,p5,indexed[0] as p6,indexArr[1] as p7,mappedKey('a') as p8,inneritem as p9,inneritem.val as p10 from MyVariantStream");
         stmt.addListener(listenerOne);
         eventType = stmt.getEventType();
         assertEquals(Integer.class, eventType.getPropertyType("p6"));
@@ -146,11 +146,11 @@ public class TestVariantStreamDefault extends TestCase
 
         SupportBeanVariantOne ev1 = new SupportBeanVariantOne();
         epService.getEPRuntime().sendEvent(ev1);
-        ArrayAssertionUtil.assertProps(listenerOne.assertOneGetNewAndReset(), "p6,p7,p8,p9,p10".split(","), new Object[] {1, 2, "val1", ev1.getInner(), ev1.getInner().getVal()});
+        ArrayAssertionUtil.assertProps(listenerOne.assertOneGetNewAndReset(), "p6,p7,p8,p9,p10".split(","), new Object[] {1, 2, "val1", ev1.getInneritem(), ev1.getInneritem().getVal()});
 
         SupportBeanVariantTwo ev2 = new SupportBeanVariantTwo();
         epService.getEPRuntime().sendEvent(ev2);
-        ArrayAssertionUtil.assertProps(listenerOne.assertOneGetNewAndReset(), "p6,p7,p8,p9,p10".split(","), new Object[] {10, 20, "val2", ev2.getInner(), ev2.getInner().getVal()});
+        ArrayAssertionUtil.assertProps(listenerOne.assertOneGetNewAndReset(), "p6,p7,p8,p9,p10".split(","), new Object[] {10, 20, "val2", ev2.getInneritem(), ev2.getInneritem().getVal()});
     }
 
     private void assertEventTypeDefault(EventType eventType)

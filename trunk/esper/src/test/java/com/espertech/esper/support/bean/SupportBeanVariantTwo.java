@@ -13,14 +13,14 @@ public class SupportBeanVariantTwo implements Serializable
     private Collection p5;
     private int[] indexed;
     private Map<String, String> mapped;
-    private SupportBeanVariantOne.SupportBeanVariantOneInner inner;
+    private SupportBeanVariantOne.SupportBeanVariantOneInner inneritem;
 
     public SupportBeanVariantTwo()
     {
         indexed = new int[] {10, 20, 30};
         mapped = new HashMap<String, String>();
         mapped.put("a", "val2");
-        inner = new SupportBeanVariantOne.SupportBeanVariantOneInner("i2");
+        inneritem = new SupportBeanVariantOne.SupportBeanVariantOneInner("i2");
     }
 
     public ISupportBaseAB getP0()
@@ -73,8 +73,8 @@ public class SupportBeanVariantTwo implements Serializable
         return mapped.get(key);
     }
 
-    public SupportBeanVariantOne.SupportBeanVariantOneInner getInner()
+    public SupportBeanVariantOne.SupportBeanVariantOneInner getInneritem()
     {
-        return inner;
+        return inneritem;
     }
 }

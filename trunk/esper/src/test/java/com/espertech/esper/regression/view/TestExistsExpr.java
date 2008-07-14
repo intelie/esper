@@ -50,17 +50,17 @@ public class TestExistsExpr extends TestCase
 
     public void testExistsInner()
     {
-        String stmtText = "select exists(inner?.id) as t0, " +
-                          " exists(inner?.id?) as t1, " +
-                          " exists(inner?.inner.intBoxed) as t2, " +
-                          " exists(inner?.indexed[0]?) as t3, " +
-                          " exists(inner?.mapped('keyOne')?) as t4, " +
-                          " exists(inner?.nested?) as t5, " +
-                          " exists(inner?.nested.nestedValue?) as t6, " +
-                          " exists(inner?.nested.nestedNested?) as t7, " +
-                          " exists(inner?.nested.nestedNested.nestedNestedValue?) as t8, " +
-                          " exists(inner?.nested.nestedNested.nestedNestedValue.dummy?) as t9, " +
-                          " exists(inner?.nested.nestedNested.dummy?) as t10 " +
+        String stmtText = "select exists(item?.id) as t0, " +
+                          " exists(item?.id?) as t1, " +
+                          " exists(item?.item.intBoxed) as t2, " +
+                          " exists(item?.indexed[0]?) as t3, " +
+                          " exists(item?.mapped('keyOne')?) as t4, " +
+                          " exists(item?.nested?) as t5, " +
+                          " exists(item?.nested.nestedValue?) as t6, " +
+                          " exists(item?.nested.nestedNested?) as t7, " +
+                          " exists(item?.nested.nestedNested.nestedNestedValue?) as t8, " +
+                          " exists(item?.nested.nestedNested.nestedNestedValue.dummy?) as t9, " +
+                          " exists(item?.nested.nestedNested.dummy?) as t10 " +
                           " from " + SupportMarkerInterface.class.getName();
 
         EPStatement selectTestCase = epService.getEPAdministrator().createEPL(stmtText);
@@ -98,11 +98,11 @@ public class TestExistsExpr extends TestCase
 
     public void testCastDoubleAndNull_OM() throws Exception
     {
-        String stmtText = "select exists(inner?.intBoxed) as t0 " +
+        String stmtText = "select exists(item?.intBoxed) as t0 " +
                           "from " + SupportMarkerInterface.class.getName();
 
         EPStatementObjectModel model = new EPStatementObjectModel();
-        model.setSelectClause(SelectClause.create().add(Expressions.existsProperty("inner?.intBoxed"), "t0"));
+        model.setSelectClause(SelectClause.create().add(Expressions.existsProperty("item?.intBoxed"), "t0"));
         model.setFromClause(FromClause.create(FilterStream.create(SupportMarkerInterface.class.getName())));
         model = (EPStatementObjectModel) SerializableObjectCopier.copy(model);
         assertEquals(stmtText, model.toEPL());
@@ -124,7 +124,7 @@ public class TestExistsExpr extends TestCase
 
     public void testCastStringAndNull_Compile() throws Exception
     {
-        String stmtText = "select exists(inner?.intBoxed) as t0 " +
+        String stmtText = "select exists(item?.intBoxed) as t0 " +
                           "from " + SupportMarkerInterface.class.getName();
 
         EPStatementObjectModel model = epService.getEPAdministrator().compileEPL(stmtText);

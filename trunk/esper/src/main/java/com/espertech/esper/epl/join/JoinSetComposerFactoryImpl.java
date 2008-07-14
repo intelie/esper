@@ -9,7 +9,6 @@ package com.espertech.esper.epl.join;
 
 import com.espertech.esper.collection.Pair;
 import com.espertech.esper.epl.expression.ExprAndNode;
-import com.espertech.esper.epl.expression.ExprEqualsNode;
 import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.epl.expression.ExprValidationException;
 import com.espertech.esper.epl.join.exec.ExecNode;
@@ -61,22 +60,18 @@ public class JoinSetComposerFactoryImpl implements JoinSetComposerFactory
     {
         // Determine if there is a historical stream, and what dependencies exist
         HistoricalDependencyGraph historicalDependencyGraph = new HistoricalDependencyGraph(streamTypes.length);
-        boolean[] isHistorical = null;
+        boolean[] isHistorical = new boolean[streamViews.length];
+        boolean hasHistorical = false;
         for (int i = 0; i < streamViews.length; i++)
         {
             if (streamViews[i] instanceof HistoricalEventViewable)
             {
                 HistoricalEventViewable historicalViewable = (HistoricalEventViewable) streamViews[i];
-                if (isHistorical == null)
-                {
-                    isHistorical = new boolean[streamViews.length];
-                    historicalDependencyGraph = new HistoricalDependencyGraph(streamTypes.length);
-                }
                 isHistorical[i] = true;
+                hasHistorical = true;
                 historicalDependencyGraph.addDependency(i, historicalViewable.getRequiredStreams());
             }
         }
-        boolean hasHistorical = isHistorical != null;
 
         EventTable[][] indexes;
         QueryStrategy[] queryStrategies;

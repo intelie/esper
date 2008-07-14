@@ -2,15 +2,15 @@ package com.espertech.esper.support.bean;
 
 public class SupportBeanDynRoot implements SupportMarkerInterface
 {
-    private Object inner;
+    private Object item;
 
     public SupportBeanDynRoot(Object inner)
     {
-        this.inner = inner;
+        this.item = inner;
     }
 
-    public Object getInner()
+    public Object getItem()
     {
-        return inner;
+        return item;
     }
 }
