@@ -10,6 +10,7 @@ package com.espertech.esper.epl.join.plan;
 import com.espertech.esper.epl.join.exec.TableLookupStrategy;
 import com.espertech.esper.epl.join.exec.LookupInstructionExec;
 import com.espertech.esper.epl.join.table.EventTable;
+import com.espertech.esper.epl.join.table.HistoricalStreamIndexList;
 import com.espertech.esper.event.EventType;
 import com.espertech.esper.util.IndentWriter;
 import com.espertech.esper.view.Viewable;
@@ -36,6 +37,7 @@ public class LookupInstructionPlan
      * @param toStreams - the set of streams to look up in
      * @param lookupPlans - the plan to use for each stream to look up in
      * @param requiredPerStream - indicates which of the lookup streams are required to build a result and which are not
+     * @param historicalPlans - plans for use with historical streams
      */
     public LookupInstructionPlan(int fromStream, String fromStreamName, int[] toStreams, TableLookupPlan[] lookupPlans, HistoricalDataPlanNode[] historicalPlans, boolean[] requiredPerStream)
     {
@@ -64,9 +66,11 @@ public class LookupInstructionPlan
      * Constructs the executable from the plan.
      * @param indexesPerStream is the index objects for use in lookups
      * @param streamTypes is the types of each stream
+     * @param streamViews the viewable representing each stream
+     * @param historicalStreamIndexLists index management for historical streams
      * @return executable instruction
      */
-    public LookupInstructionExec makeExec(EventTable[][] indexesPerStream, EventType[] streamTypes, Viewable[] streamViews)
+    public LookupInstructionExec makeExec(EventTable[][] indexesPerStream, EventType[] streamTypes, Viewable[] streamViews, HistoricalStreamIndexList[] historicalStreamIndexLists)
     {
         TableLookupStrategy strategies[] = new TableLookupStrategy[lookupPlans.length];
         for (int i = 0; i < lookupPlans.length; i++)
@@ -77,7 +81,7 @@ public class LookupInstructionPlan
             }
             else
             {
-                strategies[i] = historicalPlans[i].makeOuterJoinStategy(streamViews, streamTypes, i);
+                strategies[i] = historicalPlans[i].makeOuterJoinStategy(streamViews, i, historicalStreamIndexLists);
             }
         }
         return new LookupInstructionExec(fromStream, fromStreamName, toStreams, strategies, requiredPerStream);

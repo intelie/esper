@@ -35,16 +35,18 @@ public class TestQueryPlanBuilder extends TestCase
         OuterJoinDesc joinDesc = SupportOuterJoinDescFactory.makeDesc("intPrimitive", "s0", "intBoxed", "s1", OuterJoinType.LEFT);
         descList.add(joinDesc);
 
-        QueryPlan plan = QueryPlanBuilder.getPlan(typesPerStream, new LinkedList<OuterJoinDesc>(), null, null, false, isHistorical, dependencyGraph);
+        QueryGraph queryGraph = new QueryGraph(2);
+        QueryPlan plan = QueryPlanBuilder.getPlan(typesPerStream, new LinkedList<OuterJoinDesc>(), queryGraph, null, false, isHistorical, dependencyGraph, null);
         assertPlan(plan);
 
-        plan = QueryPlanBuilder.getPlan(typesPerStream, descList, null, null, false, isHistorical, dependencyGraph);
+        plan = QueryPlanBuilder.getPlan(typesPerStream, descList, queryGraph, null, false, isHistorical, dependencyGraph, null);
         assertPlan(plan);
 
-        plan = QueryPlanBuilder.getPlan(typesPerStream, descList, SupportExprNodeFactory.makeEqualsNode(), null, false, isHistorical, dependencyGraph);
+        FilterExprAnalyzer.analyze(SupportExprNodeFactory.makeEqualsNode(), queryGraph);
+        plan = QueryPlanBuilder.getPlan(typesPerStream, descList, queryGraph, null, false, isHistorical, dependencyGraph, null);
         assertPlan(plan);
 
-        plan = QueryPlanBuilder.getPlan(typesPerStream, new LinkedList<OuterJoinDesc>(), SupportExprNodeFactory.makeEqualsNode(), null, false, isHistorical, dependencyGraph);
+        plan = QueryPlanBuilder.getPlan(typesPerStream, new LinkedList<OuterJoinDesc>(), queryGraph, null, false, isHistorical, dependencyGraph, null);
         assertPlan(plan);
     }
 

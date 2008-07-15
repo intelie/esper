@@ -29,7 +29,9 @@ public class JoinSetComposerHistoricalImpl implements JoinSetComposer
 
     /**
      * Ctor.
-     * @param queryStrategies - for each stream a strategy to execute the join
+     * @param repositories indexes for non-historical streams
+     * @param queryStrategies for each stream a strategy to execute the join
+     * @param streamViews the viewable representing each stream
      */
     public JoinSetComposerHistoricalImpl(EventTable[][] repositories, QueryStrategy[] queryStrategies, Viewable[] streamViews)
     {

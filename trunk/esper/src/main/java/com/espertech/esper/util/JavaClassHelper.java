@@ -1011,9 +1011,17 @@ public class JavaClassHelper
         getSuperClasses(clazz, result);
     }
 
-    public static boolean isSimpleNameFullyQualfied(String className, String fullyQualifiedClassname)
+    /**
+     * Returns true if the simple class name is the class name of the fully qualified classname.
+     * <p>This method does not verify validity of class and package names, it uses simple string compare
+     * inspecting the trailing part of the fully qualified class name.
+     * @param simpleClassName simple class name
+     * @param fullyQualifiedClassname fully qualified class name contains package name and simple class name
+     * @return true if simple class name of the fully qualified class name, false if not
+     */
+    public static boolean isSimpleNameFullyQualfied(String simpleClassName, String fullyQualifiedClassname)
     {
-        if ((fullyQualifiedClassname.endsWith("." + className)) || (fullyQualifiedClassname.equals(className)))
+        if ((fullyQualifiedClassname.endsWith("." + simpleClassName)) || (fullyQualifiedClassname.equals(simpleClassName)))
         {
             return true;
         }

@@ -17,7 +17,7 @@ public class TestTableLookupPlan extends TestCase
         indexesPerStream[1][0] = new UnindexedEventTable(0);
 
         TableLookupNode spec = new TableLookupNode(new FullTableScanLookupPlan(0, 1, 0));
-        ExecNode execNode = spec.makeExec(indexesPerStream, null, new Viewable[2]);
+        ExecNode execNode = spec.makeExec(indexesPerStream, null, new Viewable[2], null);
         TableLookupExecNode exec = (TableLookupExecNode) execNode;
 
         assertSame(indexesPerStream[1][0], ((FullTableScanLookupStrategy) exec.getLookupStrategy()).getEventIndex());

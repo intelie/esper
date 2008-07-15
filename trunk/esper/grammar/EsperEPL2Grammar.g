@@ -1154,6 +1154,11 @@ keywordAllowedIdent
 		|SNAPSHOT { identifier = "snapshot"; }
 		|VARIABLE { identifier = "variable"; }		
 		|WINDOW { identifier = "window"; }
+		|LEFT { identifier = "left"; }
+		|RIGHT { identifier = "right"; }
+		|OUTER { identifier = "outer"; }
+		|FULL { identifier = "full"; }
+		|JOIN { identifier = "join"; }
 	-> ^(IDENT[identifier])
 	;
 		

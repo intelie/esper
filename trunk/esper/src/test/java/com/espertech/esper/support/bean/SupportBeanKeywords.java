@@ -30,6 +30,12 @@ public class SupportBeanKeywords
     private int snapshot = 1;
     private int variable = 1;
     private int window = 1;
+    private int full = 1;
+    private int inner = 1;
+    private int outer = 1;
+    private int left = 1;
+    private int right = 1;
+    private int join = 1;
 
     public int getCount()
     {
@@ -169,5 +175,35 @@ public class SupportBeanKeywords
     public int getWindow()
     {
         return window;
+    }
+
+    public int getFull()
+    {
+        return full;
+    }
+
+    public int getInner()
+    {
+        return inner;
+    }
+
+    public int getOuter()
+    {
+        return outer;
+    }
+
+    public int getLeft()
+    {
+        return left;
+    }
+
+    public int getRight()
+    {
+        return right;
+    }
+
+    public int getJoin()
+    {
+        return join;
     }
 }

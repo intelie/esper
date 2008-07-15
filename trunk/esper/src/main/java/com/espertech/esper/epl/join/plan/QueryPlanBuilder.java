@@ -7,11 +7,11 @@
  **************************************************************************************/
 package com.espertech.esper.epl.join.plan;
 
-import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.epl.expression.ExprValidationException;
 import com.espertech.esper.epl.spec.OuterJoinDesc;
-import com.espertech.esper.type.OuterJoinType;
+import com.espertech.esper.epl.join.table.HistoricalStreamIndexList;
 import com.espertech.esper.event.EventType;
+import com.espertech.esper.type.OuterJoinType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -25,18 +25,24 @@ public class QueryPlanBuilder
     /**
      * Build query plan using the filter.
      * @param outerJoinDescList - list of outer join criteria, or null if there are no outer joins
-     * @param optionalFilterNode - filter tree
      * @param streamNames - names of streams
      * @param typesPerStream - event types for each stream
+     * @param queryGraph - relationships between streams based on filter expressions and outer-join on-criteria
+     * @param hasHistorical - indicator if there is one or more historical streams in the join
+     * @param isHistorical - indicator for each stream if it is a historical streams or not
+     * @param dependencyGraph - dependencies between historical streams
+     * @param historicalStreamIndexLists - index management, populated for the query plan
      * @return query plan
+     * @throws ExprValidationException if the query plan fails
      */
     public static QueryPlan getPlan(EventType[] typesPerStream,
                                     List<OuterJoinDesc> outerJoinDescList,
-                                    ExprNode optionalFilterNode,
+                                    QueryGraph queryGraph,
                                     String[] streamNames,
                                     boolean hasHistorical,
                                     boolean[] isHistorical,
-                                    HistoricalDependencyGraph dependencyGraph)
+                                    HistoricalDependencyGraph dependencyGraph,
+                                    HistoricalStreamIndexList[] historicalStreamIndexLists)
             throws ExprValidationException
     {
         String methodName = ".getPlan ";
@@ -49,39 +55,6 @@ public class QueryPlanBuilder
         if (outerJoinDescList.size() >= numStreams)
         {
             throw new IllegalArgumentException("Too many outer join descriptors found");
-        }
-
-        QueryGraph queryGraph = new QueryGraph(numStreams);
-
-        // For outer joins the query graph will just contain outer join relationships
-        if (!outerJoinDescList.isEmpty())
-        {
-            OuterJoinAnalyzer.analyze(outerJoinDescList, queryGraph);
-            if (log.isDebugEnabled())
-            {
-                log.debug(methodName + " After outer join queryGraph=\n" + queryGraph);
-            }
-        }
-        else
-        {
-            // Let the query graph reflect the where-clause
-            if (optionalFilterNode != null)
-            {
-                // Analyze relationships between streams using the optional filter expression.
-                // Relationships are properties in AND and EQUALS nodes of joins.
-                FilterExprAnalyzer.analyze(optionalFilterNode, queryGraph);
-                if (log.isDebugEnabled())
-                {
-                    log.debug(methodName + "After filter expression queryGraph=\n" + queryGraph);
-                }
-
-                // Add navigation entries based on key and index property equivalency (a=b, b=c follows a=c)
-                QueryGraph.fillEquivalentNav(queryGraph);
-                if (log.isDebugEnabled())
-                {
-                    log.debug(methodName + "After fill equiv. nav. queryGraph=\n" + queryGraph);
-                }
-            }
         }
 
         if (numStreams == 2)
@@ -104,7 +77,7 @@ public class QueryPlanBuilder
         if (outerJoinDescList.isEmpty())
         {
             QueryPlan queryPlan = NStreamQueryPlanBuilder.build(queryGraph, typesPerStream,
-                                    hasHistorical, isHistorical, dependencyGraph);
+                                    hasHistorical, isHistorical, dependencyGraph, historicalStreamIndexLists);
 
             if (log.isDebugEnabled())
             {
@@ -115,7 +88,7 @@ public class QueryPlanBuilder
         }
 
         return NStreamOuterQueryPlanBuilder.build(queryGraph, outerJoinDescList, streamNames, typesPerStream,
-                                    hasHistorical, isHistorical, dependencyGraph);
+                                    hasHistorical, isHistorical, dependencyGraph, historicalStreamIndexLists);
     }
 
     private static final Log log = LogFactory.getLog(QueryPlanBuilder.class);

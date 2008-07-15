@@ -11,6 +11,7 @@ import com.espertech.esper.epl.join.exec.ExecNode;
 import com.espertech.esper.epl.join.exec.LookupInstructionExecNode;
 import com.espertech.esper.epl.join.exec.LookupInstructionExec;
 import com.espertech.esper.epl.join.table.EventTable;
+import com.espertech.esper.epl.join.table.HistoricalStreamIndexList;
 import com.espertech.esper.epl.join.assemble.BaseAssemblyNode;
 import com.espertech.esper.event.EventType;
 import com.espertech.esper.util.IndentWriter;
@@ -56,14 +57,14 @@ public class LookupInstructionQueryPlanNode extends QueryPlanNode
         this.assemblyInstructions = assemblyInstructions;
     }
 
-    public ExecNode makeExec(EventTable[][] indexesPerStream, EventType[] streamTypes, Viewable[] streamViews)
+    public ExecNode makeExec(EventTable[][] indexesPerStream, EventType[] streamTypes, Viewable[] streamViews, HistoricalStreamIndexList[] historicalStreamIndexLists)
     {
         LookupInstructionExec execs[] = new LookupInstructionExec[lookupInstructions.size()];
 
         int count = 0;
         for (LookupInstructionPlan instruction : lookupInstructions)
         {
-            LookupInstructionExec exec = instruction.makeExec(indexesPerStream, streamTypes, streamViews);
+            LookupInstructionExec exec = instruction.makeExec(indexesPerStream, streamTypes, streamViews, historicalStreamIndexLists);
             execs[count] = exec;
             count++;
         }

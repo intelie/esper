@@ -11,6 +11,7 @@ import com.espertech.esper.collection.InterchangeablePair;
 import com.espertech.esper.epl.expression.ExprValidationException;
 import com.espertech.esper.epl.join.assemble.AssemblyStrategyTreeBuilder;
 import com.espertech.esper.epl.join.assemble.BaseAssemblyNode;
+import com.espertech.esper.epl.join.table.HistoricalStreamIndexList;
 import com.espertech.esper.epl.spec.OuterJoinDesc;
 import com.espertech.esper.event.EventType;
 import com.espertech.esper.type.OuterJoinType;
@@ -32,7 +33,12 @@ public class NStreamOuterQueryPlanBuilder
      * @param streamNames - stream names or aliases
      * @param outerJoinDescList - descriptors for all outer joins
      * @param typesPerStream - event types for each stream
+     * @param hasHistorical - indicator if there is one or more historical streams in the join
+     * @param isHistorical - indicator for each stream if it is a historical streams or not
+     * @param dependencyGraph - dependencies between historical streams
+     * @param historicalStreamIndexLists - index management, populated for the query plan
      * @return query plan
+     * @throws ExprValidationException if the query planning failed
      */
     protected static QueryPlan build(QueryGraph queryGraph,
                                      List<OuterJoinDesc> outerJoinDescList,
@@ -40,7 +46,8 @@ public class NStreamOuterQueryPlanBuilder
                                      EventType[] typesPerStream,
                                      boolean hasHistorical,
                                      boolean[] isHistorical,
-                                     HistoricalDependencyGraph dependencyGraph)
+                                     HistoricalDependencyGraph dependencyGraph,
+                                     HistoricalStreamIndexList[] historicalStreamIndexLists)
             throws ExprValidationException
     {
         if (log.isDebugEnabled())
@@ -89,7 +96,7 @@ public class NStreamOuterQueryPlanBuilder
                 continue;
             }
 
-            QueryPlanNode queryPlanNode = buildPlanNode(numStreams, streamNo, streamNames, queryGraph, outerInnerGraph, outerJoinDescList, innerJoins, indexSpecs, typesPerStream, isHistorical, dependencyGraph);
+            QueryPlanNode queryPlanNode = buildPlanNode(numStreams, streamNo, streamNames, queryGraph, outerInnerGraph, outerJoinDescList, innerJoins, indexSpecs, typesPerStream, isHistorical, dependencyGraph, historicalStreamIndexLists);
 
             if (log.isDebugEnabled())
             {
@@ -119,7 +126,8 @@ public class NStreamOuterQueryPlanBuilder
                                                QueryPlanIndex[] indexSpecs,
                                                EventType[] typesPerStream,
                                                boolean[] ishistorical,
-                                               HistoricalDependencyGraph dependencyGraph)
+                                               HistoricalDependencyGraph dependencyGraph,
+                                               HistoricalStreamIndexList[] historicalStreamIndexLists)
             throws ExprValidationException
     {
         // For each stream build an array of substreams, considering required streams (inner joins) first
@@ -140,7 +148,7 @@ public class NStreamOuterQueryPlanBuilder
 
         // build list of instructions for lookup
         List<LookupInstructionPlan> lookupInstructions = buildLookupInstructions(streamNo, substreamsPerStream, requiredPerStream,
-                streamNames, queryGraph, indexSpecs, typesPerStream, outerJoinDescList, ishistorical);
+                streamNames, queryGraph, indexSpecs, typesPerStream, outerJoinDescList, ishistorical, historicalStreamIndexLists);
 
         // build strategy tree for putting the result back together
         BaseAssemblyNode assemblyTopNode = AssemblyStrategyTreeBuilder.build(streamNo, substreamsPerStream, requiredPerStream);
@@ -159,7 +167,8 @@ public class NStreamOuterQueryPlanBuilder
             QueryPlanIndex[] indexSpecs,
             EventType[] typesPerStream,
             List<OuterJoinDesc> outerJoinDescList,
-            boolean[] isHistorical)
+            boolean[] isHistorical,
+            HistoricalStreamIndexList[] historicalStreamIndexLists)
     {
         List<LookupInstructionPlan> result = new LinkedList<LookupInstructionPlan>();
 
@@ -192,7 +201,12 @@ public class NStreamOuterQueryPlanBuilder
 
                 if (isHistorical[toStream])
                 {
-                    historicalPlans[i] = new HistoricalDataPlanNode(toStream, rootStreamNum, -1, typesPerStream.length, queryGraph, outerJoinDesc.makeExprNode());
+                    if (historicalStreamIndexLists[toStream] == null)
+                    {
+                        historicalStreamIndexLists[toStream] = new HistoricalStreamIndexList(toStream, typesPerStream, queryGraph);
+                    }
+                    historicalStreamIndexLists[toStream].addIndex(fromStream);
+                    historicalPlans[i] = new HistoricalDataPlanNode(toStream, rootStreamNum, fromStream, typesPerStream.length, outerJoinDesc.makeExprNode());
                 }
                 else
                 {
@@ -220,6 +234,10 @@ public class NStreamOuterQueryPlanBuilder
      * @param completedStreams is a temporary holder for streams already considered
      * @param substreamsPerStream is the ordered, tree-like structure to be filled
      * @param requiredPerStream indicates which streams are required and which are optional
+     * @param innerJoins is a map of inner-joined streams
+     * @param streamCallStack the query plan call stack of streams available via cursor
+     * @param dependencyGraph - dependencies between historical streams
+     * @throws ExprValidationException if the query planning failed
      */
     protected static void recursiveBuild(int streamNum,
                                          Stack<Integer> streamCallStack,
@@ -239,7 +257,7 @@ public class NStreamOuterQueryPlanBuilder
         // check if the dependencies have been satisfied
         if (dependencyGraph.hasDependency(streamNum))
         {
-            Set<Integer> dependencies = dependencyGraph.getDependencies().get(streamNum);
+            Set<Integer> dependencies = dependencyGraph.getDependenciesForStream(streamNum);
             for (Integer dependentStream : dependencies)
             {
                 if (!streamCallStack.contains(dependentStream))

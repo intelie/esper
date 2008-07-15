@@ -65,7 +65,7 @@ select insert from MyEvent]]></programlisting>
 				<row><entry>exists</entry><entry>-</entry></row>
 				<row><entry>first</entry><entry>yes</entry></row>
 				<row><entry>from</entry><entry>-</entry></row>
-				<row><entry>full</entry><entry>-</entry></row>
+				<row><entry>full</entry><entry>yes</entry></row>
 				<row><entry>group</entry><entry>-</entry></row>
 				<row><entry>having</entry><entry>-</entry></row>
 				<row><entry>in</entry><entry>-</entry></row>
@@ -76,10 +76,10 @@ select insert from MyEvent]]></programlisting>
 				<row><entry>irstream</entry><entry>-</entry></row>
 				<row><entry>is</entry><entry>-</entry></row>
 				<row><entry>istream</entry><entry>-</entry></row>
-				<row><entry>join</entry><entry>-</entry></row>
+				<row><entry>join</entry><entry>yes</entry></row>
 				<row><entry>last</entry><entry>yes</entry></row>
 				<row><entry>lastweekday</entry><entry>yes</entry></row>
-				<row><entry>left</entry><entry>-</entry></row>
+				<row><entry>left</entry><entry>yes</entry></row>
 				<row><entry>like</entry><entry>-</entry></row>
 				<row><entry>max</entry><entry>yes</entry></row>
 				<row><entry>median</entry><entry>yes</entry></row>
@@ -90,13 +90,13 @@ select insert from MyEvent]]></programlisting>
 				<row><entry>on</entry><entry>-</entry></row>
 				<row><entry>or</entry><entry>-</entry></row>
 				<row><entry>order</entry><entry>-</entry></row>
-				<row><entry>outer</entry><entry>-</entry></row>
+				<row><entry>outer</entry><entry>yes</entry></row>
 				<row><entry>output</entry><entry>-</entry></row>
 				<row><entry>pattern</entry><entry>yes</entry></row>
 				<row><entry>prev</entry><entry>yes</entry></row>
 				<row><entry>prior</entry><entry>yes</entry></row>
 				<row><entry>regexp</entry><entry>-</entry></row>
-				<row><entry>right</entry><entry>-</entry></row>
+				<row><entry>right</entry><entry>yes</entry></row>
 				<row><entry>rstream</entry><entry>-</entry></row>
 				<row><entry>seconds</entry><entry>yes</entry></row>
 				<row><entry>select</entry><entry>-</entry></row>

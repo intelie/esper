@@ -6,10 +6,18 @@ import com.espertech.esper.collection.MultiKey;
 import java.util.Map;
 import java.util.HashMap;
 
+/**
+ * For use in iteration over historical joins, a {@link DataCache} implementation
+ * that serves to hold EventBean rows generated during a join evaluation
+ * involving historical streams stable for the same cache lookup keys. 
+ */
 public class DataCacheClearableMap implements DataCache
 {
     private Map<MultiKey<Object>, EventTable> cache;
 
+    /**
+     * Ctor.
+     */
     public DataCacheClearableMap()
     {
         this.cache = new HashMap<MultiKey<Object>, EventTable>();
@@ -32,6 +40,9 @@ public class DataCacheClearableMap implements DataCache
         return false;
     }
 
+    /**
+     * Clears the cache.
+     */
     public void clear()
     {
         cache.clear();

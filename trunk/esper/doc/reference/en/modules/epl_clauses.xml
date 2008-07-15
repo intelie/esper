@@ -1916,15 +1916,14 @@ where price > (select max(price) from MarketData(symbol='GOOG').std:lastevent())
 		</para>
 
 		<para>
-			The following restrictions currently apply:
+			Joins or outer joins in which only SQL statements or method invocations are listed in the <literal>from</literal> clause and no other event streams are termed <emphasis>passive</emphasis> joins. A passive join does not produce an insert or remove stream and therefore does not invoke statement listeners with results. A passive join can be iterated on (polled) using a statement's <literal>safeIterator</literal> and <literal>iterator</literal> methods.
+		</para>
+
+		<para>
+			There are no restrictions to the number of SQL statements or types of streams joined. The following restrictions currently apply:
 		</para>
 
 		<itemizedlist spacing="compact">
-			<listitem>
-				<para>
-					Only one event stream and one SQL query can be joined; Joins of two or more event streams with an SQL query are not yet supported.
-				</para>
-			</listitem>
 			<listitem>
 				<para>
 					Sub-views on an SQL query are not allowed; That is, one cannot create a time or length window on an SQL query. However one can use the <literal>insert into</literal> syntax to make join results available to a further statement.
@@ -2010,7 +2009,7 @@ where price > (select max(price) from MarketData(symbol='GOOG').std:lastevent())
 			</para>
 
 			<para>
-				Esper analyzes the expression in the EPL <literal>where</literal> clause, if present, and builds the appropriate indexes from that information at runtime, to ensure fast matching of event stream events to SQL query results, even if your SQL query returns a large number of rows. Your applications must ensure to configure a cache for your database using Esper configuration, as such indexes are held with regular data in a cache. If you application does not enable caching of SQL query results, the engine does not build indexes on cached data.
+				Esper analyzes the expression in the EPL <literal>where</literal> clause and outer-join <literal>on</literal> clause, if present, and builds the appropriate indexes from that information at runtime, to ensure fast matching of event stream events to SQL query results, even if your SQL query returns a large number of rows. Your applications must ensure to configure a cache for your database using Esper configuration, as such indexes are held with regular data in a cache. If you application does not enable caching of SQL query results, the engine does not build indexes on cached data.
 			</para>
 
 			<para>
@@ -2158,19 +2157,18 @@ select orderId, orderAmount from
 		</para>
 			
 		<para>
-			Esper can join and outer join all types of event streams to the data returned by your method invocation. In addition, Esper can be configured to cache the data returned by your method invocations.
+			Esper can join and outer join an unlimited number and all types of event streams to the data returned by your method invocation. In addition, Esper can be configured to cache the data returned by your method invocations.
 		</para>
 		
+		<para>
+			Joins or outer joins in which only SQL statements or method invocations are listed in the <literal>from</literal> clause and no other event streams are termed <emphasis>passive</emphasis> joins. A passive join does not produce an insert or remove stream and therefore does not invoke statement listeners with results. A passive join can be iterated on (polled) using a statement's <literal>safeIterator</literal> and <literal>iterator</literal> methods.
+		</para>
+
 		<para>
 			The following restrictions currently apply:
 		</para>
 
 		<itemizedlist spacing="compact">
-			<listitem>
-				<para>
-					Only one event stream and one method invocation can be joined; That is, in a join with a method invocation only one other event stream is allowed.
-				</para>
-			</listitem>
 			<listitem>
 				<para>
 					Sub-views on a method invocations are not allowed; That is, one cannot create a time or length window on a method invocation. However one can use the <literal>insert into</literal> syntax to make join results available to a further statement.
@@ -2203,12 +2201,17 @@ select orderId, orderAmount from
 where asset.assetid = desc.assetid]]></programlisting>
 	
 			<para>
-				Your method invocation may return zero, one or many rows for each method invocation. If you have caching enabled through configuration, then Esper can avoid the method invocation and instead use cached results. Similar to SQL joins, Esper also indexes cached result rows such that join operations based on the <literal>where</literal> clause can be very efficient, especially if your method invocation returns a large number of rows.
+				Your method invocation may return zero, one or many rows for each method invocation. If you have caching enabled through configuration, then Esper can avoid the method invocation and instead use cached results. Similar to SQL joins, Esper also indexes cached result rows such that join operations based on the <literal>where</literal> clause or outer-join <literal>on</literal> clause can be very efficient, especially if your method invocation returns a large number of rows.
 			</para>
 
 			<para>
 				If the time taken by method invocations is critical to your application, you may configure local caches as <xref linkend="config-method-invocations"/> describes.
 			</para>
+
+			<para>
+				Esper analyzes the expression in the EPL <literal>where</literal> clause and outer-join <literal>on</literal> clause, if present, and builds the appropriate indexes from that information at runtime, to ensure fast matching of event stream events to method invocation results, even if your method invocation returns a large number of rows. Your applications must ensure to configure a cache for your method invocation using Esper configuration, as such indexes are held with regular data in a cache. If you application does not enable caching of method invocation results, the engine does not build indexes on cached data.
+			</para>
+			
 		</sect2>
 
 		<sect2 id="joining_method_polling" revision="1">

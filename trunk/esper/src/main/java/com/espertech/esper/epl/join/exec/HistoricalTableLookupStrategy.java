@@ -20,23 +20,34 @@ import java.util.Set;
 import java.util.HashSet;
 import java.util.Iterator;
 
+/**
+ * A lookup strategy for use in outer joins onto historical streams.
+ */
 public class HistoricalTableLookupStrategy implements TableLookupStrategy
 {
     private final HistoricalEventViewable viewable;
     private final PollResultIndexingStrategy indexingStrategy;
     private final HistoricalIndexLookupStrategy lookupStrategy;
-    private final int numStreams;
     private final int streamNum;
     private final int rootStreamNum;
     private final ExprNode outerJoinExprNode;
     private final EventBean[][] lookupEventsPerStream;
 
+    /**
+     * Ctor.
+     * @param viewable providing the polling access
+     * @param indexingStrategy strategy for indexing results
+     * @param lookupStrategy strategy for using indexed results
+     * @param numStreams number of streams
+     * @param streamNum stream number of the historical stream
+     * @param rootStreamNum the query plan root stream number
+     * @param outerJoinExprNode an optional outer join expression
+     */
     public HistoricalTableLookupStrategy(HistoricalEventViewable viewable, PollResultIndexingStrategy indexingStrategy, HistoricalIndexLookupStrategy lookupStrategy, int numStreams, int streamNum, int rootStreamNum, ExprNode outerJoinExprNode)
     {
         this.viewable = viewable;
         this.indexingStrategy = indexingStrategy;
         this.lookupStrategy = lookupStrategy;
-        this.numStreams = numStreams;
         this.streamNum = streamNum;
         this.rootStreamNum = rootStreamNum;
         this.outerJoinExprNode = outerJoinExprNode;

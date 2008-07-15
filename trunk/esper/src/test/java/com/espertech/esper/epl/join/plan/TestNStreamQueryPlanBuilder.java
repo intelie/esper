@@ -39,7 +39,7 @@ public class TestNStreamQueryPlanBuilder extends TestCase
 
     public void testBuild()
     {
-        QueryPlan plan = NStreamQueryPlanBuilder.build(queryGraph, typesPerStream, false, isHistorical, dependencyGraph);
+        QueryPlan plan = NStreamQueryPlanBuilder.build(queryGraph, typesPerStream, false, isHistorical, dependencyGraph, null);
 
         log.debug(".testBuild plan=" + plan);
     }
@@ -52,7 +52,7 @@ public class TestNStreamQueryPlanBuilder extends TestCase
             log.debug(".testCreateStreamPlan index " + i + " = " + indexes[i]);
         }
 
-        QueryPlanNode plan = NStreamQueryPlanBuilder.createStreamPlan(0, new int[] {2, 4, 3, 1}, queryGraph,indexes, typesPerStream, isHistorical);
+        QueryPlanNode plan = NStreamQueryPlanBuilder.createStreamPlan(0, new int[] {2, 4, 3, 1}, queryGraph,indexes, typesPerStream, isHistorical, null);
 
         log.debug(".testCreateStreamPlan plan=" + plan);
 

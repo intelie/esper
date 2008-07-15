@@ -160,7 +160,7 @@ public class QueryGraph
      * until no additional entries to be added are found, ie. several passes can be made.
      * @param queryGraph - navigablity info between streamss
      */
-    protected static void fillEquivalentNav(QueryGraph queryGraph)
+    public static void fillEquivalentNav(QueryGraph queryGraph)
     {
         boolean addedEquivalency = false;
 

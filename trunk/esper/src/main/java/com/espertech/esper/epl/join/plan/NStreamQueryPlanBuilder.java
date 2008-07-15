@@ -14,6 +14,7 @@ import java.util.Map;
 import com.espertech.esper.collection.NumberSetPermutationEnumeration;
 import com.espertech.esper.event.EventType;
 import com.espertech.esper.util.JavaClassHelper;
+import com.espertech.esper.epl.join.table.HistoricalStreamIndexList;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -103,12 +104,17 @@ public class NStreamQueryPlanBuilder
      * Build a query plan based on the stream property relationships indicated in queryGraph.
      * @param queryGraph - navigation info between streams
      * @param typesPerStream - event types for each stream
+     * @param hasHistorical - indicator if there is one or more historical streams in the join
+     * @param isHistorical - indicator for each stream if it is a historical streams or not
+     * @param dependencyGraph - dependencies between historical streams
+     * @param historicalStreamIndexLists - index management, populated for the query plan
      * @return query plan
      */
     protected static QueryPlan build(QueryGraph queryGraph, EventType[] typesPerStream,
                                      boolean hasHistorical,
                                      boolean[] isHistorical,
-                                     HistoricalDependencyGraph dependencyGraph)
+                                     HistoricalDependencyGraph dependencyGraph,
+                                     HistoricalStreamIndexList[] historicalStreamIndexLists)
     {
         if (log.isDebugEnabled())
         {
@@ -150,7 +156,7 @@ public class NStreamQueryPlanBuilder
                 log.debug(".build For stream " + streamNo + " bestChain=" + Arrays.toString(bestChain));
             }
 
-            planNodeSpecs[streamNo] = createStreamPlan(streamNo, bestChain, queryGraph, indexSpecs, typesPerStream, isHistorical);
+            planNodeSpecs[streamNo] = createStreamPlan(streamNo, bestChain, queryGraph, indexSpecs, typesPerStream, isHistorical, historicalStreamIndexLists);
             if (log.isDebugEnabled())
             {
                 log.debug(".build spec=" + planNodeSpecs[streamNo]);
@@ -168,12 +174,13 @@ public class NStreamQueryPlanBuilder
      * @param queryGraph - the repository for key properties to indexes
      * @param indexSpecsPerStream - specifications of indexes
      * @param typesPerStream - event types for each stream
-     * @param isHistorical 
+     * @param isHistorical - indicator for each stream if it is a historical streams or not
+     * @param historicalStreamIndexLists - index management, populated for the query plan
      * @return NestedIterationNode with lookups attached underneath
      */
     protected static QueryPlanNode createStreamPlan(int lookupStream, int[] bestChain, QueryGraph queryGraph,
                                                     QueryPlanIndex[] indexSpecsPerStream, EventType[] typesPerStream,
-                                                    boolean[] isHistorical)
+                                                    boolean[] isHistorical, HistoricalStreamIndexList[] historicalStreamIndexLists)
     {
         NestedIterationNode nestedIterNode = new NestedIterationNode(bestChain);
         int currentLookupStream = lookupStream;
@@ -186,7 +193,12 @@ public class NStreamQueryPlanBuilder
             QueryPlanNode node;
             if (isHistorical[indexedStream])
             {
-                node = new HistoricalDataPlanNode(indexedStream, lookupStream, currentLookupStream, typesPerStream.length, queryGraph, null);
+                if (historicalStreamIndexLists[indexedStream] == null)
+                {
+                    historicalStreamIndexLists[indexedStream] = new HistoricalStreamIndexList(indexedStream, typesPerStream, queryGraph);
+                }
+                historicalStreamIndexLists[indexedStream].addIndex(currentLookupStream);
+                node = new HistoricalDataPlanNode(indexedStream, lookupStream, currentLookupStream, typesPerStream.length, null);
             }
             else
             {
@@ -280,6 +292,7 @@ public class NStreamQueryPlanBuilder
      *
      * @param lookupStream - stream to start look up
      * @param queryGraph - navigability between streams
+     * @param dependencyGraph - dependencies between historical streams
      * @return chain and chain depth
      */
     protected static BestChainResult computeBestPath(int lookupStream, QueryGraph queryGraph, HistoricalDependencyGraph dependencyGraph)

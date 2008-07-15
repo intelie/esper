@@ -1,23 +1,22 @@
 package com.espertech.esper.regression.view;
 
-import java.util.Arrays;
-
-import junit.framework.TestCase;
-import com.espertech.esper.client.EPServiceProvider;
-import com.espertech.esper.client.EPStatement;
-import com.espertech.esper.client.EPServiceProviderManager;
 import com.espertech.esper.client.Configuration;
-import com.espertech.esper.client.time.TimerControlEvent;
-import com.espertech.esper.support.util.SupportUpdateListener;
-import com.espertech.esper.support.util.ArrayAssertionUtil;
+import com.espertech.esper.client.EPServiceProvider;
+import com.espertech.esper.client.EPServiceProviderManager;
+import com.espertech.esper.client.EPStatement;
+import com.espertech.esper.event.EventBean;
+import com.espertech.esper.event.EventType;
 import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.bean.SupportBeanComplexProps;
 import com.espertech.esper.support.bean.SupportBeanKeywords;
 import com.espertech.esper.support.client.SupportConfigFactory;
-import com.espertech.esper.event.EventBean;
-import com.espertech.esper.event.EventType;
+import com.espertech.esper.support.util.ArrayAssertionUtil;
+import com.espertech.esper.support.util.SupportUpdateListener;
+import junit.framework.TestCase;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import java.util.Arrays;
 
 public class TestSelectExpr extends TestCase
 {
@@ -49,7 +48,7 @@ public class TestSelectExpr extends TestCase
 
     public void testKeywordsAllowed()
     {
-        String fields = "count,escape,every,sum,avg,max,min,coalesce,median,stddev,avedev,events,seconds,minutes,first,last,unidirectional,pattern,sql,metadatasql,prev,prior,weekday,lastweekday,cast,snapshot,variable,window";
+        String fields = "count,escape,every,sum,avg,max,min,coalesce,median,stddev,avedev,events,seconds,minutes,first,last,unidirectional,pattern,sql,metadatasql,prev,prior,weekday,lastweekday,cast,snapshot,variable,window,left,right,full,outer,join";
         epService.getEPAdministrator().getConfiguration().addEventTypeAlias("Keywords", SupportBeanKeywords.class);
         EPStatement stmt = epService.getEPAdministrator().createEPL("select " + fields + " from Keywords");
         stmt.addListener(testListener);

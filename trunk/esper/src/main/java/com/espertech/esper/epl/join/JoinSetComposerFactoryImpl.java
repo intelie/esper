@@ -13,10 +13,7 @@ import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.epl.expression.ExprValidationException;
 import com.espertech.esper.epl.join.exec.ExecNode;
 import com.espertech.esper.epl.join.plan.*;
-import com.espertech.esper.epl.join.table.EventTable;
-import com.espertech.esper.epl.join.table.PropertyIndTableCoerceAll;
-import com.espertech.esper.epl.join.table.PropertyIndexedEventTable;
-import com.espertech.esper.epl.join.table.UnindexedEventTable;
+import com.espertech.esper.epl.join.table.*;
 import com.espertech.esper.epl.spec.OuterJoinDesc;
 import com.espertech.esper.epl.spec.SelectClauseStreamSelectorEnum;
 import com.espertech.esper.event.EventType;
@@ -100,8 +97,44 @@ public class JoinSetComposerFactoryImpl implements JoinSetComposerFactory
             throw new ExprValidationException("The unidirectional keyword requires that no views are declared onto the stream");
         }
 
-        QueryPlan queryPlan = QueryPlanBuilder.getPlan(streamTypes, outerJoinDescList, optionalFilterNode, streamNames,
-                hasHistorical, isHistorical, historicalDependencyGraph);
+        // Query graph for graph relationships between streams/historicals
+        // For outer joins the query graph will just contain outer join relationships
+        QueryGraph queryGraph = new QueryGraph(streamTypes.length);
+        if (!outerJoinDescList.isEmpty())
+        {
+            OuterJoinAnalyzer.analyze(outerJoinDescList, queryGraph);
+            if (log.isDebugEnabled())
+            {
+                log.debug(".makeComposer After outer join queryGraph=\n" + queryGraph);
+            }
+        }
+        else
+        {
+            // Let the query graph reflect the where-clause
+            if (optionalFilterNode != null)
+            {
+                // Analyze relationships between streams using the optional filter expression.
+                // Relationships are properties in AND and EQUALS nodes of joins.
+                FilterExprAnalyzer.analyze(optionalFilterNode, queryGraph);
+                if (log.isDebugEnabled())
+                {
+                    log.debug(".makeComposer After filter expression queryGraph=\n" + queryGraph);
+                }
+
+                // Add navigation entries based on key and index property equivalency (a=b, b=c follows a=c)
+                QueryGraph.fillEquivalentNav(queryGraph);
+                if (log.isDebugEnabled())
+                {
+                    log.debug(".makeComposer After fill equiv. nav. queryGraph=\n" + queryGraph);
+                }
+            }
+        }
+
+        // Historical index lists
+        HistoricalStreamIndexList[] historicalStreamIndexLists = new HistoricalStreamIndexList[streamTypes.length];
+
+        QueryPlan queryPlan = QueryPlanBuilder.getPlan(streamTypes, outerJoinDescList, queryGraph, streamNames,
+                hasHistorical, isHistorical, historicalDependencyGraph, historicalStreamIndexLists);
 
         // Build indexes
         QueryPlanIndex[] indexSpecs = queryPlan.getIndexSpecs();
@@ -134,7 +167,7 @@ public class JoinSetComposerFactoryImpl implements JoinSetComposerFactory
                 continue;
             }
 
-            ExecNode executionNode = planNode.makeExec(indexes, streamTypes, streamViews);
+            ExecNode executionNode = planNode.makeExec(indexes, streamTypes, streamViews, historicalStreamIndexLists);
 
             if (log.isDebugEnabled())
             {
@@ -201,7 +234,7 @@ public class JoinSetComposerFactoryImpl implements JoinSetComposerFactory
             }
             else
             {
-                if ((graph.getDependencies().get(0).size() == 0))
+                if ((graph.getDependenciesForStream(0).size() == 0))
                 {
                     streamViewNum = 0;
                     polledViewNum = 1;
@@ -313,6 +346,18 @@ public class JoinSetComposerFactoryImpl implements JoinSetComposerFactory
         return determineIndexing(queryGraph, polledViewType, streamViewType, polledViewStreamNum, streamViewStreamNum);
     }
 
+    /**
+     * Constructs indexing and lookup strategy for a given relationship that a historical stream may have with another
+     * stream (historical or not) that looks up into results of a poll of a historical stream.
+     * <p>
+     * The term "polled" refers to the assumed-historical stream.
+     * @param queryGraph relationship representation of where-clause filter and outer join on-expressions
+     * @param polledViewType the event type of the historical that is indexed
+     * @param streamViewType the event type of the stream looking up in indexes
+     * @param polledViewStreamNum the stream number of the historical that is indexed
+     * @param streamViewStreamNum the stream number of the historical that is looking up
+     * @return indexing and lookup strategy pair
+     */
     public static Pair<HistoricalIndexLookupStrategy, PollResultIndexingStrategy> determineIndexing(QueryGraph queryGraph,
                                                                                                   EventType polledViewType,
                                                                                                   EventType streamViewType,

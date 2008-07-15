@@ -15,6 +15,7 @@ New Features
   - allow polling via iterator a from a statement that contains only an SQL query or a method invocation
   - fix for ESPER-xxx which is support for iterator on an SQL join or a method join
   - "as" not required in create window
+  - removed limitation on historical data joins, now supporting an unlimited number of streams in join and iterator
   
 Minor changes	    		
 

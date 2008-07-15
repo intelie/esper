@@ -84,6 +84,10 @@ public class OuterJoinDesc implements MetaDefItem
         return addRightNode;
     }
 
+    /**
+     * Make an expression node that represents the outer join criteria as specified in the on-clause.
+     * @return expression node for outer join criteria
+     */
     public ExprNode makeExprNode()
     {
         ExprNode representativeNode = new ExprEqualsNode(false);

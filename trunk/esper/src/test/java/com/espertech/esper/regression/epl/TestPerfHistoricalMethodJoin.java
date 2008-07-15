@@ -135,17 +135,17 @@ public class TestPerfHistoricalMethodJoin extends TestCase
     {
         String expression;
 
-        expression = "select s0.id as s0id, s1.id as s1id, h0.val as valh0 " +
-                   "from SupportBeanInt(id like 'E%').std:lastevent() as s0, " +
-                   "method:SupportJoinMethods.fetchVal('H0', 100) as h0, " +
-                   "SupportBeanInt(id like 'H%').std:lastevent() as s1 " +
-                   "where h0.index = s0.p00 and h0.val = s1.id";
+        expression = "select s0.id as s0id, s1.id as s1id, h0.val as valh0, h0.index as indexh0 from " +
+                    "method:SupportJoinMethods.fetchVal('H0', 100) as h0, " +
+                    "SupportBeanInt(id like 'H%').std:lastevent() as s1, " +
+                    "SupportBeanInt(id like 'E%').std:lastevent() as s0 " +
+                    "where h0.index = s0.p00 and h0.val = s1.id";
 
         EPStatement stmt = epService.getEPAdministrator().createEPL(expression);
         listener = new SupportUpdateListener();
         stmt.addListener(listener);
 
-        String[] fields = "s0id,s1id,valh0".split(",");
+        String[] fields = "s0id,s1id,valh0,indexh0".split(",");
         Random random = new Random();
 
         long start = System.currentTimeMillis();
@@ -155,7 +155,7 @@ public class TestPerfHistoricalMethodJoin extends TestCase
             sendBeanInt("E1", num);
             sendBeanInt("H0" + num, num);
 
-            Object[][] result = new Object[][] {{"E1", "F1", "H0" + num}};
+            Object[][] result = new Object[][] {{"E1", "H0" + num, "H0" + num, num}};
             ArrayAssertionUtil.assertPropsPerRow(listener.getLastNewDataAndReset(), fields, result);
 
             // send reset events to avoid duplicate matches

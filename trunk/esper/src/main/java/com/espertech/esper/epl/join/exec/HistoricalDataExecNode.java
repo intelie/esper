@@ -14,6 +14,11 @@ import java.util.Iterator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+/**
+ * Execution node for executing a join or outer join against a historical data source,
+ * using an lookup strategy for looking up into cached indexes, and an indexing strategy for indexing poll results
+ * for future lookups.  
+ */
 public class HistoricalDataExecNode extends ExecNode
 {
     private static final Log log = LogFactory.getLog(HistoricalDataExecNode.class);
@@ -25,6 +30,14 @@ public class HistoricalDataExecNode extends ExecNode
     private final HistoricalIndexLookupStrategy indexLookupStrategy;
     private final int historicalStreamNumber;
 
+    /**
+     * Ctor.
+     * @param historicalEventViewable the view of the historical
+     * @param indexingStrategy the strategy to index poll result for future use
+     * @param indexLookupStrategy the strategy to use past indexed results
+     * @param numStreams the number of streams in the join
+     * @param historicalStreamNumber the stream number of the historical
+     */
     public HistoricalDataExecNode(HistoricalEventViewable historicalEventViewable, PollResultIndexingStrategy indexingStrategy, HistoricalIndexLookupStrategy indexLookupStrategy, int numStreams, int historicalStreamNumber)
     {
         this.historicalEventViewable = historicalEventViewable;

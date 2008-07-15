@@ -47,6 +47,11 @@ public class HistoricalDependencyGraph
         return buf.toString();
     }
 
+    /**
+     * Adds dependencies that a target may have on required streams.
+     * @param target the stream having dependencies on one or more other streams
+     * @param requiredStreams the streams that the target stream has a dependency on
+     */
     public void addDependency(int target, SortedSet<Integer> requiredStreams)
     {
         if (requiredStreams.contains(target))
@@ -63,6 +68,11 @@ public class HistoricalDependencyGraph
         dependencies.put(target, requiredStreams);
     }
 
+    /**
+     * Adds a single dependency of target on a required streams.
+     * @param target the stream having dependencies on one or more other streams
+     * @param from a single required streams that the target stream has a dependency on
+     */
     public void addDependency(int target, int from)
     {
         if (target == from)
@@ -80,6 +90,11 @@ public class HistoricalDependencyGraph
         toSet.add(from);
     }
 
+    /**
+     * Returns true if the stream asked for has a dependency.
+     * @param stream to check dependency for
+     * @return true if a dependency exist, false if not
+     */
     public boolean hasDependency(int stream)
     {
         SortedSet<Integer> dep = dependencies.get(stream);
@@ -90,6 +105,25 @@ public class HistoricalDependencyGraph
         return false;        
     }
 
+    /**
+     * Returns the set of dependent streams for a given stream.
+     * @param stream to return dependent streams for
+     * @return set of stream numbers of stream providing properties
+     */
+    public Set<Integer> getDependenciesForStream(int stream)
+    {
+        SortedSet<Integer> dep = dependencies.get(stream);
+        if (dep != null)
+        {
+            return dep;
+        }
+        return Collections.emptySet();
+    }
+
+    /**
+     * Returns a map of stream number and the streams dependencies.
+     * @return map of dependencies
+     */
     public Map<Integer, SortedSet<Integer>> getDependencies()
     {
         return dependencies;
@@ -97,7 +131,7 @@ public class HistoricalDependencyGraph
 
     /**
      * Returns a set of stream numbers that are not a dependency of any stream.
-     * @return
+     * @return set of stream number of streams without dependencies
      */
     public Set<Integer> getRootNodes()
     {
@@ -124,6 +158,10 @@ public class HistoricalDependencyGraph
         return rootNodes;
     }
 
+    /**
+     * Returns any circular dependency as a stack of stream numbers, or null if none exist.
+     * @return circular dependency stack
+     */
     public Stack<Integer> getFirstCircularDependency()
     {
         for (int i = 0; i < numStreams; i++)
