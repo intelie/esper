@@ -611,7 +611,7 @@ public class EPStatementStartMethod
         ResultSetProcessor resultSetProcessor = ResultSetProcessorFactory.getProcessor(
                 statementSpec, statementContext, typeService, viewResourceDelegate);
 
-        // Validate where-clause filter tree and outer join clause
+        // Validate where-clause filter tree, outer join clause and output limit expression
         validateNodes(statementSpec, statementContext, typeService, viewResourceDelegate);
 
         // Materialize views
@@ -787,6 +787,33 @@ public class EPStatementStartMethod
             catch (ExprValidationException ex)
             {
                 log.debug(".validateNodes Validation exception for filter=" + optionalFilterNode.toExpressionString(), ex);
+                throw new EPStatementException("Error validating expression: " + ex.getMessage(), statementContext.getExpression());
+            }
+        }
+
+        if ((statementSpec.getOutputLimitSpec() != null) && (statementSpec.getOutputLimitSpec().getWhenExpressionNode() != null))
+        {
+            ExprNode outputLimitWhenNode = statementSpec.getOutputLimitSpec().getWhenExpressionNode();
+
+            // Validate where clause, initializing nodes to the stream ids used
+            try
+            {
+                Map<String, Class> outputLimitProperties = new HashMap<String, Class>();
+                EventType outputLimitType = statementContext.getEventAdapterService().createAnonymousMapType(outputLimitProperties);
+                StreamTypeService typeServiceOutputWhen = new StreamTypeServiceImpl(new EventType[0], new String[0], statementContext.getEngineURI(), new String[0]); 
+                outputLimitWhenNode = outputLimitWhenNode.getValidatedSubtree(typeServiceOutputWhen, methodResolutionService, null, statementContext.getSchedulingService(), statementContext.getVariableService());
+                statementSpec.getOutputLimitSpec().setWhenExpressionNode(outputLimitWhenNode);
+
+                // Make sure there is no aggregation in the where clause
+                List<ExprAggregateNode> aggregateNodes = new LinkedList<ExprAggregateNode>();
+                ExprAggregateNode.getAggregatesBottomUp(outputLimitWhenNode, aggregateNodes);
+                if (!aggregateNodes.isEmpty())
+                {
+                    throw new ExprValidationException("An aggregate function may not appear in a OUTPUT LIMIT clause");
+                }
+            }
+            catch (ExprValidationException ex)
+            {
                 throw new EPStatementException("Error validating expression: " + ex.getMessage(), statementContext.getExpression());
             }
         }

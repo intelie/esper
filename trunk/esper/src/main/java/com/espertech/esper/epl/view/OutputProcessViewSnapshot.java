@@ -79,7 +79,7 @@ public class OutputProcessViewSnapshot extends OutputProcessView
         	oldDataLength = oldData.length;
         }
 
-        outputCondition.updateOutputCondition(newDataLength, oldDataLength);
+        outputCondition.updateOutputCondition(newDataLength, oldDataLength, null, newData);
     }
 
     /**
@@ -111,7 +111,7 @@ public class OutputProcessViewSnapshot extends OutputProcessView
             oldEventsSize = oldEvents.size();
         }
 
-        outputCondition.updateOutputCondition(newEventsSize, oldEventsSize);
+        outputCondition.updateOutputCondition(newEventsSize, oldEventsSize, newEvents, null);
     }
 
 	/**

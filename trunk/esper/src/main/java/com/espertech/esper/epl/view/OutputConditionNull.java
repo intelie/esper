@@ -7,6 +7,11 @@
  **************************************************************************************/
 package com.espertech.esper.epl.view;
 
+import com.espertech.esper.event.EventBean;
+import com.espertech.esper.collection.MultiKey;
+
+import java.util.Set;
+
 /**
  * An empty output condition that is always satisfied.
  */
@@ -30,7 +35,7 @@ public class OutputConditionNull implements OutputCondition {
 		this.outputCallback = outputCallback;
 	}
 
-	public void updateOutputCondition(int newEventsCount, int oldEventsCount) {
+	public void updateOutputCondition(int newEventsCount, int oldEventsCount, Set<MultiKey<EventBean>> newEvents, EventBean[] newData) {
 		outputCallback.continueOutputProcessing(DO_OUTPUT, FORCE_UPDATE);
 	}
 

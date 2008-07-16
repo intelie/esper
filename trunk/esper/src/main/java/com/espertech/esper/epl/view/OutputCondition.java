@@ -7,6 +7,11 @@
  **************************************************************************************/
 package com.espertech.esper.epl.view;
 
+import com.espertech.esper.event.EventBean;
+import com.espertech.esper.collection.MultiKey;
+
+import java.util.Set;
+
 
 /**
  * A condition that must be satisfied before output processing
@@ -18,7 +23,9 @@ public interface OutputCondition
 	/**
 	 * Update the output condition.
 	 * @param newEventsCount - number of new events incoming
-	 * @param oldEventsCount  - number of old events incoming
-	 */
-	public void updateOutputCondition(int newEventsCount, int oldEventsCount);
+     * @param oldEventsCount  - number of old events incoming
+     * @param newEvents
+     * @param newData
+     */
+	public void updateOutputCondition(int newEventsCount, int oldEventsCount, Set<MultiKey<EventBean>> newEvents, EventBean[] newData);
 }

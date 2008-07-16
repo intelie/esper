@@ -10,6 +10,10 @@ package com.espertech.esper.epl.view;
 import com.espertech.esper.epl.spec.OutputLimitSpec;
 import com.espertech.esper.epl.spec.OutputLimitLimitType;
 import com.espertech.esper.core.StatementContext;
+import com.espertech.esper.event.EventBean;
+import com.espertech.esper.collection.MultiKey;
+
+import java.util.Set;
 
 /**
  * An output condition that is satisfied at the first event
@@ -34,13 +38,13 @@ public class OutputConditionFirst implements OutputCondition
 			throw new NullPointerException("Output condition by count requires a non-null callback");
 		}
 		this.outputCallback = outputCallback;
-		OutputLimitSpec innerSpec = new OutputLimitSpec(outputLimitSpec.getRate(), outputLimitSpec.getVariableName(), outputLimitSpec.getRateType(), OutputLimitLimitType.DEFAULT);
+		OutputLimitSpec innerSpec = new OutputLimitSpec(outputLimitSpec.getRate(), outputLimitSpec.getVariableName(), outputLimitSpec.getRateType(), OutputLimitLimitType.DEFAULT, outputLimitSpec.getWhenExpressionNode(), outputLimitSpec.getCrontabAtSchedule());
 		OutputCallback localCallback = createCallbackToLocal();
 		this.innerCondition = statementContext.getOutputConditionFactory().createCondition(innerSpec, statementContext, localCallback);
 		this.witnessedFirst = false;
 	}
 
-	public void updateOutputCondition(int newEventsCount, int oldEventsCount)
+	public void updateOutputCondition(int newEventsCount, int oldEventsCount, Set<MultiKey<EventBean>> newEvents, EventBean[] newData)
 	{
 		if(!witnessedFirst)
 		{
@@ -49,7 +53,7 @@ public class OutputConditionFirst implements OutputCondition
 			boolean forceUpdate = false;
 			outputCallback.continueOutputProcessing(doOutput, forceUpdate);
 		}
-		innerCondition.updateOutputCondition(newEventsCount, oldEventsCount);
+		innerCondition.updateOutputCondition(newEventsCount, oldEventsCount, newEvents, newData);
 	}
 
 	private OutputCallback createCallbackToLocal()

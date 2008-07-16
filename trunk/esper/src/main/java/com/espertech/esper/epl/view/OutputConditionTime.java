@@ -14,9 +14,13 @@ import com.espertech.esper.core.EPStatementHandleCallback;
 import com.espertech.esper.core.ExtensionServicesContext;
 import com.espertech.esper.util.ExecutionPathDebugLog;
 import com.espertech.esper.epl.variable.VariableReader;
+import com.espertech.esper.event.EventBean;
+import com.espertech.esper.collection.MultiKey;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import java.util.Set;
 
 /**
  * Output condition that is satisfied at the end
@@ -84,7 +88,6 @@ public final class OutputConditionTime implements OutputCondition
             intervalSize = intervalSize * 60d;
         }
         this.msecIntervalSize = Math.round(1000 * intervalSize);
-
     }
 
     /**
@@ -96,7 +99,7 @@ public final class OutputConditionTime implements OutputCondition
         return msecIntervalSize;
     }
 
-    public final void updateOutputCondition(int newEventsCount, int oldEventsCount)
+    public final void updateOutputCondition(int newEventsCount, int oldEventsCount, Set<MultiKey<EventBean>> newEvents, EventBean[] newData)
     {
         if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
         {

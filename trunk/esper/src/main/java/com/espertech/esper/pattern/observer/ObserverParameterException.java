@@ -13,4 +13,9 @@ public class ObserverParameterException extends Exception
     {
         super(message);
     }
+
+    public ObserverParameterException(String message, Throwable cause)
+    {
+        super(message, cause);
+    }
 }

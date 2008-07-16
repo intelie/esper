@@ -18,5 +18,9 @@ public enum OutputLimitRateType
     /**
      * Output by minutes.
      */
-    TIME_MIN
+    TIME_MIN,
+
+    CRONTAB,
+
+    WHEN_EXPRESSION
 }

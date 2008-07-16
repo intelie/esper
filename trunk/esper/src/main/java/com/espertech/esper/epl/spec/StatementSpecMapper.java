@@ -236,7 +236,8 @@ public class StatementSpecMapper
             mapContext.setHasVariables(true);
         }
 
-        OutputLimitSpec spec = new OutputLimitSpec(frequency, frequencyVariable, rateType, displayLimit);
+        // TODO
+        OutputLimitSpec spec = new OutputLimitSpec(frequency, frequencyVariable, rateType, displayLimit, null, null);
         raw.setOutputLimitSpec(spec);
     }
 

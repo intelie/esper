@@ -84,6 +84,7 @@ tokens
 	SET='set';
 	VARIABLE='variable';
 	UNTIL='until';
+	AT='at';
 	
    	NUMERIC_PARAM_RANGE;
    	NUMERIC_PARAM_LIST;
@@ -136,6 +137,9 @@ tokens
 	SEC_LIMIT_EXPR;
 	MIN_LIMIT_EXPR;
 	TIMEPERIOD_LIMIT_EXPR;
+	CRONTAB_LIMIT_EXPR;
+	CRONTAB_LIMIT_EXPR_PARAM;
+	WHEN_LIMIT_EXPR;
 	INSERTINTO_EXPR;
 	INSERTINTO_EXPRCOL;
 	CONCAT;	
@@ -682,16 +686,31 @@ havingClause
 outputLimit
 @init  { paraphrases.push("output rate clause"); }
 @after { paraphrases.pop(); }
-	:   (k=ALL|k=FIRST|k=LAST|k=SNAPSHOT)? EVERY_EXPR 
-		( 
-		  (time_period) => time_period
-		| (number | i=IDENT) (e=EVENTS|sec=SECONDS|min=MINUTES)
+	:   (k=ALL|k=FIRST|k=LAST|k=SNAPSHOT)? 
+	      (
+	        ( ev=EVERY_EXPR 
+		  ( 
+		    (time_period) => time_period
+		  | (number | i=IDENT) (e=EVENTS|sec=SECONDS|min=MINUTES)
+		  )
 		)
-	    -> {$e != null}? ^(EVENT_LIMIT_EXPR $k? number? $i?)
-	    -> {$sec != null}? ^(SEC_LIMIT_EXPR $k? number? $i?)
-	    -> {$min != null}? ^(MIN_LIMIT_EXPR $k? number? $i?)
-	    -> ^(TIMEPERIOD_LIMIT_EXPR $k? time_period)		
+		|
+		( at=AT crontabLimitParameterSet )
+		|
+		( wh=WHEN expression )
+	      )
+	    -> {$ev != null && $e != null}? ^(EVENT_LIMIT_EXPR $k? number? $i?)
+	    -> {$ev != null && $sec != null}? ^(SEC_LIMIT_EXPR $k? number? $i?)
+	    -> {$ev != null && $min != null}? ^(MIN_LIMIT_EXPR $k? number? $i?)
+	    -> {$ev != null}? ^(TIMEPERIOD_LIMIT_EXPR $k? time_period)		
+	    -> {$at != null}? ^(CRONTAB_LIMIT_EXPR $k? crontabLimitParameterSet)		
+	    -> ^(WHEN_LIMIT_EXPR $k? expression)		
 	;	
+
+crontabLimitParameterSet
+	:	LPAREN parameter COMMA parameter COMMA parameter COMMA parameter COMMA parameter (COMMA parameter)? RPAREN 
+		-> ^(CRONTAB_LIMIT_EXPR_PARAM parameter*)			
+	;			
 
 whenClause
 	: (WHEN! expression THEN! expression)

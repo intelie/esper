@@ -91,7 +91,7 @@ public class OutputProcessViewPolicy extends OutputProcessView
         // add the incoming events to the event batches
         viewEventsList.add(new UniformPair<EventBean[]>(newData, oldData));
 
-        outputCondition.updateOutputCondition(newDataLength, oldDataLength);
+        outputCondition.updateOutputCondition(newDataLength, oldDataLength, null, newData);
     }
 
     /**
@@ -125,7 +125,7 @@ public class OutputProcessViewPolicy extends OutputProcessView
         Set<MultiKey<EventBean>> copyOld = new LinkedHashSet<MultiKey<EventBean>>(oldEvents);
         joinEventsSet.add(new UniformPair<Set<MultiKey<EventBean>>>(copyNew, copyOld));
 
-        outputCondition.updateOutputCondition(newEventsSize, oldEventsSize);
+        outputCondition.updateOutputCondition(newEventsSize, oldEventsSize, newEvents, null);
     }
 
 	/**

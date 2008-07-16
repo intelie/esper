@@ -11,6 +11,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import com.espertech.esper.util.ExecutionPathDebugLog;
 import com.espertech.esper.epl.variable.VariableReader;
+import com.espertech.esper.event.EventBean;
+import com.espertech.esper.collection.MultiKey;
+
+import java.util.Set;
 
 /**
  * Output limit condition that is satisfied when either
@@ -76,7 +80,7 @@ public final class OutputConditionCount implements OutputCondition
         return eventRate;
     }
 
-    public final void updateOutputCondition(int newDataCount, int oldDataCount)
+    public final void updateOutputCondition(int newDataCount, int oldDataCount, Set<MultiKey<EventBean>> newEvents, EventBean[] newData)
     {
         if (variableReader != null)
         {

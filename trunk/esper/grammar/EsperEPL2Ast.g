@@ -220,6 +220,12 @@ outputLimitExpr
 	|   	^(sec=SEC_LIMIT_EXPR (ALL|FIRST|LAST|SNAPSHOT)? (number|IDENT) { leaveNode($sec); } )
 	|   	^(min=MIN_LIMIT_EXPR (ALL|FIRST|LAST|SNAPSHOT)? (number|IDENT) { leaveNode($min); } )
 	|   	^(tp=TIMEPERIOD_LIMIT_EXPR (ALL|FIRST|LAST|SNAPSHOT)? time_period { leaveNode($tp); } )
+	|   	^(cron=CRONTAB_LIMIT_EXPR (ALL|FIRST|LAST|SNAPSHOT)? crontabLimitParameterSet { leaveNode($cron); } )
+	|   	^(when=WHEN_LIMIT_EXPR (ALL|FIRST|LAST|SNAPSHOT)? valueExpr { leaveNode($when); } )
+	;
+
+crontabLimitParameterSet
+	:	^(CRONTAB_LIMIT_EXPR_PARAM parameter parameter parameter parameter parameter parameter?)
 	;
 
 relationalExpr

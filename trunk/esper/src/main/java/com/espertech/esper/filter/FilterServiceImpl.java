@@ -12,12 +12,16 @@ import com.espertech.esper.event.EventBean;
 import java.util.Collection;
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 /**
  * Implementation of the filter service interface.
  * Does not allow the same filter callback to be added more then once.
  */
 public final class FilterServiceImpl implements FilterService
 {
+    private static final Log log = LogFactory.getLog(FilterServiceImpl.class);
     private final EventTypeIndexBuilder indexBuilder;
     private final EventTypeIndex eventTypeIndex;
     private final AtomicLong numEventsEvaluated = new AtomicLong();
@@ -33,6 +37,7 @@ public final class FilterServiceImpl implements FilterService
 
     public void destroy()
     {
+        log.info("Destroying filter service");
         eventTypeIndex.destroy();
         indexBuilder.destroy();
     }

@@ -27,7 +27,7 @@ public class TestOutputProcessViewPolicy extends TestCase
     {
         OutputStrategy outputStrategy = new OutputStrategySimple();
         resultSetProcessor = new SupportResultSetProcessor();
-        OutputLimitSpec spec = new OutputLimitSpec(1d, null, OutputLimitRateType.EVENTS, OutputLimitLimitType.DEFAULT);
+        OutputLimitSpec spec = new OutputLimitSpec(1d, null, OutputLimitRateType.EVENTS, OutputLimitLimitType.DEFAULT, null, null);
         outputProcessViewUpdate = new OutputProcessViewPolicy(resultSetProcessor, outputStrategy, false, 1, spec, SupportStatementContextFactory.makeContext());
         outputProcessViewProcess = new OutputProcessViewPolicy(resultSetProcessor, outputStrategy, false, 2, spec, SupportStatementContextFactory.makeContext());
         

@@ -54,7 +54,15 @@ public class OutputConditionFactoryDefault implements OutputConditionFactory
 			return new OutputConditionFirst(outputLimitSpec, statementContext, outputCallback);
 		}
         
-        if(outputLimitSpec.getRateType() == OutputLimitRateType.EVENTS)
+        if(outputLimitSpec.getRateType() == OutputLimitRateType.CRONTAB)
+        {
+            return new OutputConditionCrontab(outputLimitSpec.getCrontabAtSchedule(), statementContext, outputCallback);
+        }
+        else if(outputLimitSpec.getRateType() == OutputLimitRateType.WHEN_EXPRESSION)
+        {
+            return new OutputConditionExpression(outputLimitSpec.getWhenExpressionNode(), statementContext, outputCallback);
+        }
+        else if(outputLimitSpec.getRateType() == OutputLimitRateType.EVENTS)
 		{
             if (log.isDebugEnabled())
             {

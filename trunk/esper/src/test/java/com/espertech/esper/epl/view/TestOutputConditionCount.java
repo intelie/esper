@@ -5,7 +5,6 @@ import com.espertech.esper.support.util.SupportUpdateListener;
 
 public class TestOutputConditionCount extends TestCase
 {
-
 	private OutputConditionCount fireEvery1;	
 	private OutputConditionCount fireEvery2;	
 	private OutputConditionCount fireEvery3;	
@@ -156,16 +155,12 @@ public class TestOutputConditionCount extends TestCase
     	assertEquals(0,fireEvery3.getOldEventsCount());
     }
     
-
-    
-
     private void sendEventToAll(int newEventsLength, int oldEventsLength)
 	{   
-    	fireEvery1.updateOutputCondition(newEventsLength, oldEventsLength);
-    	fireEvery2.updateOutputCondition(newEventsLength, oldEventsLength);
-    	fireEvery3.updateOutputCondition(newEventsLength, oldEventsLength);
+    	fireEvery1.updateOutputCondition(newEventsLength, oldEventsLength, null, null);
+    	fireEvery2.updateOutputCondition(newEventsLength, oldEventsLength, null, null);
+    	fireEvery3.updateOutputCondition(newEventsLength, oldEventsLength, null, null);
 	}
-
 
 	public void testIncorrectUse()
 	{
@@ -188,7 +183,4 @@ public class TestOutputConditionCount extends TestCase
 	    	// Expected exception
 	    }
 	}
-
-
-
 }

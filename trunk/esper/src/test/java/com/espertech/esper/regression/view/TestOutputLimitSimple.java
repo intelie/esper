@@ -1,20 +1,20 @@
 package com.espertech.esper.regression.view;
 
-import junit.framework.TestCase;
 import com.espertech.esper.client.*;
-import com.espertech.esper.client.time.TimerControlEvent;
 import com.espertech.esper.client.time.CurrentTimeEvent;
-import com.espertech.esper.client.time.TimerEvent;
-import com.espertech.esper.support.bean.SupportBean;
-import com.espertech.esper.support.bean.SupportBeanString;
-import com.espertech.esper.support.bean.SupportBean_A;
-import com.espertech.esper.support.bean.SupportMarketDataBean;
-import com.espertech.esper.support.util.SupportUpdateListener;
-import com.espertech.esper.support.util.ArrayAssertionUtil;
-import com.espertech.esper.support.client.SupportConfigFactory;
+import com.espertech.esper.client.time.TimerControlEvent;
 import com.espertech.esper.event.EventBean;
-import com.espertech.esper.regression.support.ResultAssertTestResult;
 import com.espertech.esper.regression.support.ResultAssertExecution;
+import com.espertech.esper.regression.support.ResultAssertTestResult;
+import com.espertech.esper.support.bean.*;
+import com.espertech.esper.support.client.SupportConfigFactory;
+import com.espertech.esper.support.util.ArrayAssertionUtil;
+import com.espertech.esper.support.util.SupportUpdateListener;
+import com.espertech.esper.support.util.SupportSubscriber;
+import junit.framework.TestCase;
+
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 
 public class TestOutputLimitSimple extends TestCase
 {
@@ -1010,6 +1010,76 @@ public class TestOutputLimitSimple extends TestCase
     	assertNull(updateListener.getLastOldData());
     }
 
+    public void testOutputCrontabAt() {
+
+        String[] fields = "symbol".split(",");
+        sendTimeEvent(1, 17, 10, 0, 0);
+
+        // every 15 minutes 8am to 5pm
+        String expression = "select * from MarketData.std:lastevent() output at (*/15, 8:17, *, *, *)";
+        EPStatement stmt = epService.getEPAdministrator().createEPL(expression);
+        stmt.addListener(listener);
+
+        sendEvent("S1", 0);
+        assertFalse(listener.isInvoked());
+
+        sendTimeEvent(1, 17, 14, 59, 0);
+        sendEvent("S2", 0);
+        assertFalse(listener.isInvoked());
+
+        sendTimeEvent(1, 17, 15, 0, 0);
+        ArrayAssertionUtil.assertPropsPerRow(listener.getLastNewDataAndReset(), fields, new Object[][] {{"S1"}, {"S2"}});
+
+        sendTimeEvent(1, 17, 18, 0, 00);
+        sendEvent("S3", 0);
+        assertFalse(listener.isInvoked());
+
+        sendTimeEvent(1, 17, 30, 0, 0);
+        ArrayAssertionUtil.assertPropsPerRow(listener.getLastNewDataAndReset(), fields, new Object[][] {{"S3"}});
+
+        sendTimeEvent(1, 17, 35, 0, 0);
+        sendTimeEvent(1, 17, 45, 0, 0);
+        ArrayAssertionUtil.assertPropsPerRow(listener.getLastNewDataAndReset(), fields, null);
+
+        sendEvent("S4", 0);
+        sendEvent("S5", 0);
+        sendTimeEvent(1, 18, 0, 0, 0);
+        assertFalse(listener.isInvoked());
+
+        sendTimeEvent(1, 18, 1, 0, 0);
+        sendEvent("S6", 0);
+
+        sendTimeEvent(1, 18, 15, 0, 0);
+        assertFalse(listener.isInvoked());
+
+        sendTimeEvent(2, 7, 59, 59, 0);
+        assertFalse(listener.isInvoked());
+
+        sendTimeEvent(2, 8, 0, 0, 0);
+        ArrayAssertionUtil.assertPropsPerRow(listener.getLastNewDataAndReset(), fields, new Object[][] {{"S4"}, {"S5"}, {"S6"}});
+    }
+
+    // TODO
+    //  test OM
+    //  test variables and count and last timestamp in output limit expression
+    //  test invalid aggregation function in output limit
+    public void testOutputWhenExpression()
+    {
+        epService.getEPAdministrator().getConfiguration().addVariable("myvar", int.class, 0);
+        epService.getEPAdministrator().createEPL("on SupportBean set myvar = intPrimitive");
+
+        String expression = "select symbol from MarketData.win:length(2) output when myvar =0";
+        EPStatement stmt =  epService.getEPAdministrator().createEPL(expression);
+        SupportSubscriber subscriber = new SupportSubscriber();
+        stmt.setSubscriber(subscriber);
+
+        sendEvent("S1", 0);
+        assertFalse(listener.isInvoked());
+
+        epService.getEPRuntime().sendEvent(new SupportBean("E1", 0));
+        ArrayAssertionUtil.assertEqualsExactOrder(subscriber.getLastNewData(), new Object[] {"S1"});
+    }
+
     private void sendTimeEvent(int timeIncrement){
     	currentTime += timeIncrement;
         CurrentTimeEvent event = new CurrentTimeEvent(currentTime);
@@ -1040,5 +1110,12 @@ public class TestOutputLimitSimple extends TestCase
     {
         SupportMarketDataBean bean = new SupportMarketDataBean(symbol, price, 0L, null);
         epService.getEPRuntime().sendEvent(bean);
+    }
+
+    private void sendTimeEvent(int day, int hour, int minute, int second, int millis){
+    	Calendar calendar = GregorianCalendar.getInstance();
+        calendar.set(2008, 1, day, hour, minute, second);
+        calendar.set(Calendar.MILLISECOND, millis);
+        epService.getEPRuntime().sendEvent(new CurrentTimeEvent(calendar.getTimeInMillis()));
     }
 }

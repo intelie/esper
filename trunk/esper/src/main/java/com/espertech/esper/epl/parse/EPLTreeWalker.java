@@ -245,6 +245,8 @@ public class EPLTreeWalker extends EsperEPL2Ast
             case SEC_LIMIT_EXPR:
             case MIN_LIMIT_EXPR:
             case TIMEPERIOD_LIMIT_EXPR:
+            case CRONTAB_LIMIT_EXPR:
+            case WHEN_LIMIT_EXPR:
             	leaveOutputLimit(node);
             	break;
             case INSERTINTO_EXPR:
@@ -1304,7 +1306,7 @@ public class EPLTreeWalker extends EsperEPL2Ast
     {
         log.debug(".leaveOutputLimit");
 
-        OutputLimitSpec spec = ASTOutputLimitHelper.buildOutputLimitSpec(node);
+        OutputLimitSpec spec = ASTOutputLimitHelper.buildOutputLimitSpec(node, engineTime, astExprNodeMap);
         statementSpec.setOutputLimitSpec(spec);
 
         if (spec.getVariableName() != null)

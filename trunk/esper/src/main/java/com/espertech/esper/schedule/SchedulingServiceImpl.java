@@ -51,6 +51,7 @@ public final class SchedulingServiceImpl implements SchedulingService
 
     public void destroy()
     {
+        log.info("Destroying scheduling service");
         handleSetMap.clear();
         timeHandleMap.clear();
     }

@@ -38,7 +38,7 @@ public class TestOutputConditionTime extends TestCase
         schedulingServiceStub.setTime(startTime);
         
     	// 2 new, 3 old
-        condition.updateOutputCondition(2, 3);
+        condition.updateOutputCondition(2, 3, null, null);
         // update time
         schedulingServiceStub.setTime(startTime + TEST_INTERVAL_MSEC);
         // check callback scheduled, pretend callback
@@ -48,9 +48,9 @@ public class TestOutputConditionTime extends TestCase
         ((EPStatementHandleCallback) result).getScheduleCallback().scheduledTrigger(null);
   
         // 2 new, 3 old
-        condition.updateOutputCondition(2, 3);
+        condition.updateOutputCondition(2, 3, null, null);
     	// 2 new, 3 old
-        condition.updateOutputCondition(2, 3);
+        condition.updateOutputCondition(2, 3, null, null);
         // update time
         schedulingServiceStub.setTime(startTime + 2*TEST_INTERVAL_MSEC);
         // check callback scheduled, pretend callback
@@ -60,7 +60,7 @@ public class TestOutputConditionTime extends TestCase
 
         
     	// 0 new, 0 old
-        condition.updateOutputCondition(0, 0);
+        condition.updateOutputCondition(0, 0, null, null);
         // update time
         schedulingServiceStub.setTime(startTime + 3*TEST_INTERVAL_MSEC);
         // check update

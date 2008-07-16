@@ -1316,7 +1316,7 @@ timer:within(125)</programlisting>
 				<programlisting><![CDATA[every timer:at(5, *, *, *, *)]]></programlisting>
 	
 				<para>
-					The below <literal>timer:at</literal> pattern matches every 15 minutes from 8am to 5pm on even numbered days of the month as well as on the 
+					The below <literal>timer:at</literal> pattern matches every 15 minutes from 8am to 5:45pm (hours 8 to 17 at 0, 15, 30 and 45 minutes past the hour) on even numbered days of the month as well as on the 
 					first day of the month.
 				</para>
 				<programlisting><![CDATA[timer:at (*/15, 8:17, [*/2, 1], *, *)]]></programlisting>
