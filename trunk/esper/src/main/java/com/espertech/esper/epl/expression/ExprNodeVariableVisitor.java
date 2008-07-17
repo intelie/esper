@@ -1,11 +1,15 @@
 package com.espertech.esper.epl.expression;
 
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * Visitor for expression node trees that determines if the expressions within contain a variable.
  */
 public class ExprNodeVariableVisitor implements ExprNodeVisitor
 {
     private boolean hasVariables;
+    private Set<String> variableNames;
 
     public boolean isVisit(ExprNode exprNode)
     {
@@ -28,5 +32,17 @@ public class ExprNodeVariableVisitor implements ExprNodeVisitor
             return;
         }
         hasVariables = true;
+
+        ExprVariableNode variableNode = (ExprVariableNode) exprNode;
+        if (variableNames == null)
+        {
+            variableNames = new HashSet<String>();
+        }
+        variableNames.add(variableNode.getVariableName());
+    }
+
+    public Set<String> getVariableNames()
+    {
+        return variableNames;
     }
 }

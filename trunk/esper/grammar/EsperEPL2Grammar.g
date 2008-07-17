@@ -697,14 +697,14 @@ outputLimit
 		|
 		( at=AT crontabLimitParameterSet )
 		|
-		( wh=WHEN expression )
+		( wh=WHEN expression (THEN onSetExpr)? )
 	      )
 	    -> {$ev != null && $e != null}? ^(EVENT_LIMIT_EXPR $k? number? $i?)
 	    -> {$ev != null && $sec != null}? ^(SEC_LIMIT_EXPR $k? number? $i?)
 	    -> {$ev != null && $min != null}? ^(MIN_LIMIT_EXPR $k? number? $i?)
 	    -> {$ev != null}? ^(TIMEPERIOD_LIMIT_EXPR $k? time_period)		
 	    -> {$at != null}? ^(CRONTAB_LIMIT_EXPR $k? crontabLimitParameterSet)		
-	    -> ^(WHEN_LIMIT_EXPR $k? expression)		
+	    -> ^(WHEN_LIMIT_EXPR $k? expression onSetExpr?)		
 	;	
 
 crontabLimitParameterSet

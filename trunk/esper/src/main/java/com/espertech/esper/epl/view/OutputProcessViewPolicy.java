@@ -6,6 +6,7 @@ import com.espertech.esper.core.StatementContext;
 import com.espertech.esper.epl.core.ResultSetProcessor;
 import com.espertech.esper.epl.spec.OutputLimitSpec;
 import com.espertech.esper.epl.spec.OutputLimitLimitType;
+import com.espertech.esper.epl.expression.ExprValidationException;
 import com.espertech.esper.event.EventBean;
 import com.espertech.esper.util.ExecutionPathDebugLog;
 import org.apache.commons.logging.Log;
@@ -49,6 +50,7 @@ public class OutputProcessViewPolicy extends OutputProcessView
                           int streamCount,
     					  OutputLimitSpec outputLimitSpec,
     					  StatementContext statementContext)
+            throws ExprValidationException
     {
         super(resultSetProcessor, outputStrategy, isInsertInto, statementContext.getStatementResultService());
         log.debug(".ctor");
@@ -91,7 +93,7 @@ public class OutputProcessViewPolicy extends OutputProcessView
         // add the incoming events to the event batches
         viewEventsList.add(new UniformPair<EventBean[]>(newData, oldData));
 
-        outputCondition.updateOutputCondition(newDataLength, oldDataLength, null, newData);
+        outputCondition.updateOutputCondition(newDataLength, oldDataLength);
     }
 
     /**
@@ -125,7 +127,7 @@ public class OutputProcessViewPolicy extends OutputProcessView
         Set<MultiKey<EventBean>> copyOld = new LinkedHashSet<MultiKey<EventBean>>(oldEvents);
         joinEventsSet.add(new UniformPair<Set<MultiKey<EventBean>>>(copyNew, copyOld));
 
-        outputCondition.updateOutputCondition(newEventsSize, oldEventsSize, newEvents, null);
+        outputCondition.updateOutputCondition(newEventsSize, oldEventsSize);
     }
 
 	/**

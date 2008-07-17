@@ -1,6 +1,7 @@
 package com.espertech.esper.epl.view;
 
 import com.espertech.esper.epl.spec.OutputLimitSpec;
+import com.espertech.esper.epl.expression.ExprValidationException;
 import com.espertech.esper.core.StatementContext;
 
 /**
@@ -17,5 +18,6 @@ public interface OutputConditionFactory
      */
 	public OutputCondition createCondition(OutputLimitSpec outputLimitSpec,
 										   StatementContext statementContext,
-										   OutputCallback outputCallback);
+										   OutputCallback outputCallback)
+            throws ExprValidationException;
 }

@@ -10,10 +10,12 @@ package com.espertech.esper.epl.parse;
 import com.espertech.esper.epl.spec.OutputLimitSpec;
 import com.espertech.esper.epl.spec.OutputLimitLimitType;
 import com.espertech.esper.epl.spec.OutputLimitRateType;
+import com.espertech.esper.epl.spec.OnTriggerSetAssignment;
 import com.espertech.esper.epl.generated.EsperEPL2GrammarParser;
 import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.type.TimePeriodParameter;
 import com.espertech.esper.schedule.ScheduleSpec;
+import com.espertech.esper.collection.Pair;
 import org.antlr.runtime.tree.Tree;
 
 import java.util.List;
@@ -65,16 +67,16 @@ public class ASTOutputLimitHelper
         double rate = -1;
         ExprNode whenExpression = null;
         Object[] crontabScheduleSpec = null;
+        List<OnTriggerSetAssignment> thenExpressions = null;
 
         if (node.getType() == EsperEPL2GrammarParser.WHEN_LIMIT_EXPR)
         {
-            if (astExprNodeMap.size() != 1)
+            Tree expressionNode = node.getChild(0);
+            whenExpression = astExprNodeMap.remove(expressionNode);
+            if (node.getChildCount() > 1)
             {
-                throw new IllegalStateException("When-condition output limit clause generated zero or more then one expression nodes");
+                thenExpressions = EPLTreeWalker.getOnTriggerSetAssignments(node.getChild(1), astExprNodeMap);
             }
-
-            // Just assign the single root ExprNode not consumed yet
-            whenExpression = astExprNodeMap.values().iterator().next();
         }
         else if (node.getType() == EsperEPL2GrammarParser.CRONTAB_LIMIT_EXPR)
         {
@@ -113,16 +115,16 @@ public class ASTOutputLimitHelper
         switch (node.getType())
         {
             case EsperEPL2GrammarParser.EVENT_LIMIT_EXPR:
-                return new OutputLimitSpec(rate, variableName, OutputLimitRateType.EVENTS, displayLimit, null, null);
+                return new OutputLimitSpec(rate, variableName, OutputLimitRateType.EVENTS, displayLimit, null, null, null);
             case EsperEPL2GrammarParser.SEC_LIMIT_EXPR:
             case EsperEPL2GrammarParser.TIMEPERIOD_LIMIT_EXPR:
-                return new OutputLimitSpec(rate, variableName, OutputLimitRateType.TIME_SEC, displayLimit, null, null);
+                return new OutputLimitSpec(rate, variableName, OutputLimitRateType.TIME_SEC, displayLimit, null, null, null);
             case EsperEPL2GrammarParser.MIN_LIMIT_EXPR:
-                return new OutputLimitSpec(rate, variableName, OutputLimitRateType.TIME_MIN, displayLimit, null, null);
+                return new OutputLimitSpec(rate, variableName, OutputLimitRateType.TIME_MIN, displayLimit, null, null, null);
             case EsperEPL2GrammarParser.CRONTAB_LIMIT_EXPR:
-                return new OutputLimitSpec(null, null, OutputLimitRateType.CRONTAB, displayLimit, null, crontabScheduleSpec);
+                return new OutputLimitSpec(null, null, OutputLimitRateType.CRONTAB, displayLimit, null, null, crontabScheduleSpec);
             case EsperEPL2GrammarParser.WHEN_LIMIT_EXPR:
-                return new OutputLimitSpec(null, null, OutputLimitRateType.WHEN_EXPRESSION, displayLimit, whenExpression, null);
+                return new OutputLimitSpec(null, null, OutputLimitRateType.WHEN_EXPRESSION, displayLimit, whenExpression, thenExpressions, null);
             default:
                 throw new IllegalArgumentException("Node type " + node.getType() + " not a recognized output limit type");
 		 }

@@ -24,8 +24,6 @@ public interface OutputCondition
 	 * Update the output condition.
 	 * @param newEventsCount - number of new events incoming
      * @param oldEventsCount  - number of old events incoming
-     * @param newEvents
-     * @param newData
      */
-	public void updateOutputCondition(int newEventsCount, int oldEventsCount, Set<MultiKey<EventBean>> newEvents, EventBean[] newData);
+	public void updateOutputCondition(int newEventsCount, int oldEventsCount);
 }

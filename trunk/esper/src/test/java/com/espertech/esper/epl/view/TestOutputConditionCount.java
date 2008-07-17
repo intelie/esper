@@ -157,9 +157,9 @@ public class TestOutputConditionCount extends TestCase
     
     private void sendEventToAll(int newEventsLength, int oldEventsLength)
 	{   
-    	fireEvery1.updateOutputCondition(newEventsLength, oldEventsLength, null, null);
-    	fireEvery2.updateOutputCondition(newEventsLength, oldEventsLength, null, null);
-    	fireEvery3.updateOutputCondition(newEventsLength, oldEventsLength, null, null);
+    	fireEvery1.updateOutputCondition(newEventsLength, oldEventsLength);
+    	fireEvery2.updateOutputCondition(newEventsLength, oldEventsLength);
+    	fireEvery3.updateOutputCondition(newEventsLength, oldEventsLength);
 	}
 
 	public void testIncorrectUse()

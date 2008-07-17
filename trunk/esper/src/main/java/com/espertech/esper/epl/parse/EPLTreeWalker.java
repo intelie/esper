@@ -525,18 +525,18 @@ public class EPLTreeWalker extends EsperEPL2Ast
         }
         else
         {
-            OnTriggerSetDesc setDesc = getOnTriggerSet(typeChildNode);
-            statementSpec.setOnTriggerDesc(setDesc);
+            List<OnTriggerSetAssignment> assignments = getOnTriggerSetAssignments(typeChildNode, astExprNodeMap);
+            statementSpec.setOnTriggerDesc(new OnTriggerSetDesc(assignments));
         }
         statementSpec.getStreamSpecs().add(streamSpec);
     }
 
-    private OnTriggerSetDesc getOnTriggerSet(Tree typeChildNode)
+    protected static List<OnTriggerSetAssignment> getOnTriggerSetAssignments(Tree childNode, Map<Tree, ExprNode> astExprNodeMap)
     {
-        OnTriggerSetDesc desc = new OnTriggerSetDesc();
+        List<OnTriggerSetAssignment> assignments = new ArrayList<OnTriggerSetAssignment>();
 
         int count = 0;
-        Tree child = typeChildNode.getChild(count);
+        Tree child = childNode.getChild(count);
         do
         {
             // get variable name
@@ -547,16 +547,16 @@ public class EPLTreeWalker extends EsperEPL2Ast
             String variableName = child.getText();
 
             // get expression
-            child = typeChildNode.getChild(++count);
+            child = childNode.getChild(++count);
             ExprNode childEvalNode = astExprNodeMap.get(child);
             astExprNodeMap.remove(child);
 
-            desc.addAssignment(new OnTriggerSetAssignment(variableName, childEvalNode));
-            child = typeChildNode.getChild(++count);
+            assignments.add(new OnTriggerSetAssignment(variableName, childEvalNode));
+            child = childNode.getChild(++count);
         }
-        while (count < typeChildNode.getChildCount());
+        while (count < childNode.getChildCount());
 
-        return desc;
+        return assignments;
     }
 
     private UniformPair<String> getWindowName(Tree typeChildNode)

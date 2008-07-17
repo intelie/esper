@@ -7,13 +7,10 @@
  **************************************************************************************/
 package com.espertech.esper.epl.view;
 
-import com.espertech.esper.epl.spec.OutputLimitSpec;
-import com.espertech.esper.epl.spec.OutputLimitLimitType;
 import com.espertech.esper.core.StatementContext;
-import com.espertech.esper.event.EventBean;
-import com.espertech.esper.collection.MultiKey;
-
-import java.util.Set;
+import com.espertech.esper.epl.spec.OutputLimitLimitType;
+import com.espertech.esper.epl.spec.OutputLimitSpec;
+import com.espertech.esper.epl.expression.ExprValidationException;
 
 /**
  * An output condition that is satisfied at the first event
@@ -32,19 +29,20 @@ public class OutputConditionFirst implements OutputCondition
      * @param outputCallback is the method to invoke for output
 	 */
 	public OutputConditionFirst(OutputLimitSpec outputLimitSpec, StatementContext statementContext, OutputCallback outputCallback)
-	{
+            throws ExprValidationException
+    {
 		if(outputCallback ==  null)
 		{
 			throw new NullPointerException("Output condition by count requires a non-null callback");
 		}
 		this.outputCallback = outputCallback;
-		OutputLimitSpec innerSpec = new OutputLimitSpec(outputLimitSpec.getRate(), outputLimitSpec.getVariableName(), outputLimitSpec.getRateType(), OutputLimitLimitType.DEFAULT, outputLimitSpec.getWhenExpressionNode(), outputLimitSpec.getCrontabAtSchedule());
+		OutputLimitSpec innerSpec = new OutputLimitSpec(outputLimitSpec.getRate(), outputLimitSpec.getVariableName(), outputLimitSpec.getRateType(), OutputLimitLimitType.DEFAULT, outputLimitSpec.getWhenExpressionNode(), outputLimitSpec.getThenExpressions(), outputLimitSpec.getCrontabAtSchedule());
 		OutputCallback localCallback = createCallbackToLocal();
 		this.innerCondition = statementContext.getOutputConditionFactory().createCondition(innerSpec, statementContext, localCallback);
 		this.witnessedFirst = false;
 	}
 
-	public void updateOutputCondition(int newEventsCount, int oldEventsCount, Set<MultiKey<EventBean>> newEvents, EventBean[] newData)
+	public void updateOutputCondition(int newEventsCount, int oldEventsCount)
 	{
 		if(!witnessedFirst)
 		{
@@ -53,7 +51,7 @@ public class OutputConditionFirst implements OutputCondition
 			boolean forceUpdate = false;
 			outputCallback.continueOutputProcessing(doOutput, forceUpdate);
 		}
-		innerCondition.updateOutputCondition(newEventsCount, oldEventsCount, newEvents, newData);
+		innerCondition.updateOutputCondition(newEventsCount, oldEventsCount);
 	}
 
 	private OutputCallback createCallbackToLocal()

@@ -28,6 +28,7 @@ import com.espertech.esper.epl.variable.VariableExistsException;
 import com.espertech.esper.epl.view.FilterExprView;
 import com.espertech.esper.epl.view.OutputProcessView;
 import com.espertech.esper.epl.view.OutputProcessViewFactory;
+import com.espertech.esper.epl.view.OutputConditionExpression;
 import com.espertech.esper.event.EventBean;
 import com.espertech.esper.event.EventType;
 import com.espertech.esper.event.vaevent.ValueAddEventProcessor;
@@ -798,9 +799,8 @@ public class EPStatementStartMethod
             // Validate where clause, initializing nodes to the stream ids used
             try
             {
-                Map<String, Class> outputLimitProperties = new HashMap<String, Class>();
-                EventType outputLimitType = statementContext.getEventAdapterService().createAnonymousMapType(outputLimitProperties);
-                StreamTypeService typeServiceOutputWhen = new StreamTypeServiceImpl(new EventType[0], new String[0], statementContext.getEngineURI(), new String[0]); 
+                EventType outputLimitType = OutputConditionExpression.getBuiltInEventType(statementContext.getEventAdapterService());
+                StreamTypeService typeServiceOutputWhen = new StreamTypeServiceImpl(new EventType[] {outputLimitType}, new String[]{null}, statementContext.getEngineURI(), new String[]{null});
                 outputLimitWhenNode = outputLimitWhenNode.getValidatedSubtree(typeServiceOutputWhen, methodResolutionService, null, statementContext.getSchedulingService(), statementContext.getVariableService());
                 statementSpec.getOutputLimitSpec().setWhenExpressionNode(outputLimitWhenNode);
 

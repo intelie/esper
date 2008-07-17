@@ -1180,19 +1180,34 @@ select symbol, sum(price) from StockTickEvent.std:groupby(symbol).win:length(10)
 				<title>Output Clause Options</title>
 			
 				<para>
-				The <literal>output</literal> clause is optional in Esper and is used to control or stabilize the rate at which events are output. For example, the following statement outputs, every 60 seconds, the total price for all orders in the 30-minute time window:		
+					The <literal>output</literal> clause is optional in Esper and is used to control or stabilize the rate at which events are output. The EPL language provides for several different ways to control output rate.
 				</para>
-			    <programlisting>select sum(price) from OrderEvent.win:time(30 min) output snapshot every 60 seconds</programlisting>
 
 				<para>
-					Here is the syntax for output rate limiting: 
+					Here is the syntax for output rate limiting that specifies a rate in time interval or number of events:
 				</para>
 				<synopsis>output [all | first | last | snapshot] every <emphasis>output_rate</emphasis> [minutes | seconds | events]</synopsis>
 
 				<para>
-					An alternate syntax specifies the time period as outlined in <xref linkend="epl-syntax-time-periods"/> :
+					An alternate syntax specifies the time period between output as outlined in <xref linkend="epl-syntax-time-periods"/> :
 				</para>
 				<synopsis>output [all | first | last | snapshot] every <emphasis>time_period</emphasis></synopsis>
+
+				<para>
+					A crontab-like schedule can also be specified using below syntax. The schedule parameters follow the pattern observer parameters and are further described in <xref linkend="pattern-timer-at"/> :
+				</para>
+				<synopsis>output [all | first | last | snapshot] at (<emphasis>minutes, hours, days of month, months, days of week [, seconds]</emphasis>)</synopsis>
+
+				<para>
+					Last, output can be controlled by an expression using this syntax:
+				</para>
+				<synopsis>output [all | first | last | snapshot] when <emphasis>expression</emphasis> 
+    [then set <emphasis>variable_name</emphasis> = <emphasis>expression</emphasis> [, <emphasis>variable_name</emphasis> = <emphasis>expression</emphasis> [,...]]</synopsis>
+
+				<para>
+					For example, the following statement outputs, every 60 seconds, the total price for all orders in the 30-minute time window:		
+				</para>
+			    <programlisting>select sum(price) from OrderEvent.win:time(30 min) output snapshot every 60 seconds</programlisting>
 
 				<para>
 					The <literal>all</literal> keyword is the default and specifies that all events in a batch should be output, each incoming row in the batch producing an output row.
@@ -1242,6 +1257,20 @@ select symbol, sum(price) from StockTickEvent.std:groupby(symbol).win:length(10)
 					and only be informed every now and again after the specified output interval, but be informed the moment it first happens. 
 				</para>
 			    <programlisting>select * from TickRate.win:time(30 seconds) where rate&lt;100 output first every 60 seconds</programlisting>
+
+				<para>
+					A sample statement using the Unix "crontab"-command schedule is shown next. See <xref linkend="pattern-timer-at"/> for details on the schedule syntax. For the below statement output occurs every 15 minutes from 8am to 5:45pm (hours 8 to 17 at 0, 15, 30 and 45 minutes past the hour):
+				</para>
+				<synopsis>select symbol, sum(price) from StockTickEvent group by symbol output at (*/15, 8:17, [*/2, 1], *, *)</synopsis>
+
+				<sect3 id="epl-output-options" >
+					<title>Controlling Output Using an Expression</title>
+
+					<para>
+						The <literal>when</literal> keyword in the output rate clause is followed by an expression in the syntax shown before.
+					</para>
+					<synopsis>select symbol, sum(price) from StockTickEvent group by symbol output at (*/15, 8:17, [*/2, 1], *, *)</synopsis>
+				</sect3>
 
 		</sect2>
 

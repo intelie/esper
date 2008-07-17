@@ -7,8 +7,13 @@
  **************************************************************************************/
 package com.espertech.esper.client.soda;
 
+import com.espertech.esper.collection.Pair;
+import com.espertech.esper.type.EPLParameterType;
+
 import java.io.Serializable;
 import java.io.StringWriter;
+import java.util.List;
+import java.util.ArrayList;
 
 /**
  * An output limit clause defines how to limit output of statements and consists of
@@ -22,6 +27,9 @@ public class OutputLimitClause implements Serializable
     private Double frequency;
     private String frequencyVariable;
     private OutputLimitUnit unit;
+    private Expression whenExpression;
+    private List<Pair<String, Expression>> thenAssignments;
+    private Object[] crontabAtParameters;
 
     /**
      * Creates an output limit clause.
@@ -70,6 +78,24 @@ public class OutputLimitClause implements Serializable
     }
 
     /**
+     * Creates an output limit clause with a when-expression and optional then-assignment expressions to be added.
+     * @return clause
+     */
+    public static OutputLimitClause create(Expression whenExpression)
+    {
+        return new OutputLimitClause(OutputLimitSelector.DEFAULT, whenExpression, new ArrayList<Pair<String, Expression>>());
+    }
+
+    /**
+     * Creates an output limit clause with a crontab 'at' schedule parameters, see {@link com.espertech.esper.type.FrequencyParameter} and related.
+     * @return clause
+     */
+    public static OutputLimitClause create(Object[] scheduleParameters)
+    {
+        return new OutputLimitClause(OutputLimitSelector.DEFAULT, scheduleParameters);
+    }
+
+    /**
      * Ctor.
      * @param selector is the events to select
      * @param frequency a frequency to output at
@@ -108,6 +134,21 @@ public class OutputLimitClause implements Serializable
         this.frequency = frequency;
         this.frequencyVariable = frequencyVariable;
         this.unit = unit;
+    }
+
+    public OutputLimitClause(OutputLimitSelector selector, Object[] crontabAtParameters)
+    {
+        this.selector = selector;
+        this.crontabAtParameters = crontabAtParameters;
+        this.unit = OutputLimitUnit.CRONTAB_EXPRESSION;
+    }
+
+    public OutputLimitClause(OutputLimitSelector selector, Expression whenExpression, List<Pair<String, Expression>> thenAssignments)
+    {
+        this.selector = selector;
+        this.whenExpression = whenExpression;
+        this.thenAssignments = thenAssignments;
+        this.unit = OutputLimitUnit.WHEN_EXPRESSION;
     }
 
     /**
@@ -182,6 +223,27 @@ public class OutputLimitClause implements Serializable
         this.frequencyVariable = frequencyVariable;
     }
 
+    public Expression getWhenExpression()
+    {
+        return whenExpression;
+    }
+
+    public List<Pair<String, Expression>> getThenAssignments()
+    {
+        return thenAssignments;
+    }
+
+    public OutputLimitClause addThenAssignment(String variableName, Expression assignmentExpression)
+    {
+        thenAssignments.add(new Pair<String, Expression>(variableName, assignmentExpression));
+        return this;
+    }
+
+    public Object[] getCrontabAtParameters()
+    {
+        return crontabAtParameters;
+    }
+
     /**
      * Renders the clause in textual representation.
      * @param writer to output to
@@ -193,30 +255,65 @@ public class OutputLimitClause implements Serializable
             writer.write(selector.getText());
             writer.write(" ");
         }
-        writer.write("every ");
-        if (unit != OutputLimitUnit.EVENTS)
+        if (unit == OutputLimitUnit.WHEN_EXPRESSION)
         {
-            if (frequencyVariable == null)
+            writer.write("when ");
+            whenExpression.toEPL(writer);
+
+            if ((thenAssignments != null) && (thenAssignments.size() > 0))
             {
-                writer.write(Double.toString(frequency));
+                writer.write(" then set ");
+
+                String delimiter = "";
+                for (Pair<String, Expression> pair : thenAssignments)
+                {
+                    writer.write(delimiter);
+                    writer.write(pair.getFirst());
+                    writer.write(" = ");
+                    pair.getSecond().toEPL(writer);
+                    delimiter = ", ";
+                }
             }
-            else
+        }
+        else if (unit == OutputLimitUnit.CRONTAB_EXPRESSION)
+        {
+            writer.write("at (");
+            String delimiter = "";
+            for (int i = 0; i < crontabAtParameters.length; i++)
             {
-                writer.write(frequencyVariable);
+                writer.write(delimiter);
+                ((EPLParameterType) crontabAtParameters[i]).toEPL(writer);
+                delimiter = ", ";
             }
+            writer.write(")");
         }
         else
         {
-            if (frequencyVariable == null)
+            writer.write("every ");
+            if (unit != OutputLimitUnit.EVENTS)
             {
-                writer.write(Integer.toString(frequency.intValue()));
+                if (frequencyVariable == null)
+                {
+                    writer.write(Double.toString(frequency));
+                }
+                else
+                {
+                    writer.write(frequencyVariable);
+                }
             }
             else
             {
-                writer.write(frequencyVariable);
+                if (frequencyVariable == null)
+                {
+                    writer.write(Integer.toString(frequency.intValue()));
+                }
+                else
+                {
+                    writer.write(frequencyVariable);
+                }
             }
+            writer.write(' ');
+            writer.write(unit.getText());
         }
-        writer.write(' ');
-        writer.write(unit.getText());
     }
 }

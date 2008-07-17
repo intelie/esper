@@ -37,7 +37,7 @@ public final class FilterServiceImpl implements FilterService
 
     public void destroy()
     {
-        log.info("Destroying filter service");
+        log.debug("Destroying filter service");
         eventTypeIndex.destroy();
         indexBuilder.destroy();
     }

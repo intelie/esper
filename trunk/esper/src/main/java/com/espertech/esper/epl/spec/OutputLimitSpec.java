@@ -7,8 +7,10 @@
  **************************************************************************************/
 package com.espertech.esper.epl.spec;
 
-import com.espertech.esper.util.MetaDefItem;
 import com.espertech.esper.epl.expression.ExprNode;
+import com.espertech.esper.util.MetaDefItem;
+
+import java.util.List;
 
 /**
  * Spec for defining an output rate
@@ -20,6 +22,7 @@ public class OutputLimitSpec implements MetaDefItem
     private final Double rate;
     private final String variableName;
     private ExprNode whenExpressionNode;
+    private final List<OnTriggerSetAssignment> thenExpressions;    
     private final Object[] crontabAtSchedule;
 
     /**
@@ -30,7 +33,7 @@ public class OutputLimitSpec implements MetaDefItem
      * @param variableForRate - an optional variable name instead of the rate
      * @param rateType - type of the rate
 	 */
-	public OutputLimitSpec(Double rate, String variableForRate, OutputLimitRateType rateType, OutputLimitLimitType displayLimit, ExprNode whenExpressionNode, Object[] crontabAtSchedule)
+	public OutputLimitSpec(Double rate, String variableForRate, OutputLimitRateType rateType, OutputLimitLimitType displayLimit, ExprNode whenExpressionNode, List<OnTriggerSetAssignment> thenExpressions, Object[] crontabAtSchedule)
 	{
 		this.rate = rate;
 		this.displayLimit = displayLimit;
@@ -38,6 +41,7 @@ public class OutputLimitSpec implements MetaDefItem
         this.rateType = rateType;
         this.crontabAtSchedule = crontabAtSchedule;
         this.whenExpressionNode = whenExpressionNode;
+        this.thenExpressions = thenExpressions;
     }
 
     /**
@@ -89,5 +93,10 @@ public class OutputLimitSpec implements MetaDefItem
     public void setWhenExpressionNode(ExprNode whenExpressionNode)
     {
         this.whenExpressionNode = whenExpressionNode;
+    }
+
+    public List<OnTriggerSetAssignment> getThenExpressions()
+    {
+        return thenExpressions;
     }
 }

@@ -66,7 +66,7 @@ public final class OutputConditionCrontab implements OutputCondition
         }
     }
 
-    public final void updateOutputCondition(int newEventsCount, int oldEventsCount, Set<MultiKey<EventBean>> newEvents, EventBean[] newData)
+    public final void updateOutputCondition(int newEventsCount, int oldEventsCount)
     {
         if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
         {

@@ -5,6 +5,7 @@ import com.espertech.esper.collection.UniformPair;
 import com.espertech.esper.core.StatementContext;
 import com.espertech.esper.epl.core.ResultSetProcessor;
 import com.espertech.esper.epl.spec.OutputLimitSpec;
+import com.espertech.esper.epl.expression.ExprValidationException;
 import com.espertech.esper.event.EventBean;
 import com.espertech.esper.util.ExecutionPathDebugLog;
 import org.apache.commons.logging.Log;
@@ -38,6 +39,7 @@ public class OutputProcessViewSnapshot extends OutputProcessView
                           int streamCount,
     					  OutputLimitSpec outputLimitSpec,
     					  StatementContext statementContext)
+            throws ExprValidationException
     {
         super(resultSetProcessor, outputStrategy, isInsertInto, statementContext.getStatementResultService());
         log.debug(".ctor");
@@ -79,7 +81,7 @@ public class OutputProcessViewSnapshot extends OutputProcessView
         	oldDataLength = oldData.length;
         }
 
-        outputCondition.updateOutputCondition(newDataLength, oldDataLength, null, newData);
+        outputCondition.updateOutputCondition(newDataLength, oldDataLength);
     }
 
     /**
@@ -111,7 +113,7 @@ public class OutputProcessViewSnapshot extends OutputProcessView
             oldEventsSize = oldEvents.size();
         }
 
-        outputCondition.updateOutputCondition(newEventsSize, oldEventsSize, newEvents, null);
+        outputCondition.updateOutputCondition(newEventsSize, oldEventsSize);
     }
 
 	/**

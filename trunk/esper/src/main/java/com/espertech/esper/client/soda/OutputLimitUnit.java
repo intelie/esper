@@ -25,7 +25,17 @@ public enum OutputLimitUnit
     /**
      * The number of events unit.
      */
-    EVENTS ("events");
+    EVENTS ("events"),
+
+    /**
+     * The unit representing a when-expression.
+     */
+    WHEN_EXPRESSION ("when"),
+
+    /**
+     * The unit representing a crontab-at-expression.
+     */
+    CRONTAB_EXPRESSION ("crontab");
 
     private String text;
 

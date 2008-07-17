@@ -229,9 +229,10 @@ public class TestEPLParser extends TestCase
         assertIsValid("select a from B output snapshot every 3 day");
         assertIsValid("select a from B output snapshot every 1 day 2 hours 3 minutes 4 seconds 5 milliseconds");
         assertIsValid("select a from B output first every 5 events");
-        assertIsValid("select a from B output snapshot at (123)");
+        assertIsValid("select a from B output snapshot at (123, 333, 33, 33, 3)");
         assertIsValid("select a from B output snapshot at (*, *, *, *, *)");
-        assertIsValid("select a from B output snapshot when myvar*count(*) > 10");
+        assertIsValid("select a from B output snapshot when myvar*count > 10");
+        assertIsValid("select a from B output snapshot when myvar*count > 10 then set myvar = 1, myvar2 = 2*5");
 
         assertIsValid(preFill + "(string='test',intPrimitive=20).win:lenght(100)");
         assertIsValid(preFill + "(string in ('b', 'a'))");

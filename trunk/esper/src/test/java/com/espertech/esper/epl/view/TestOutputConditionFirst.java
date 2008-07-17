@@ -32,9 +32,9 @@ public class TestOutputConditionFirst extends TestCase
 		witnessedCallback = false;
 	}
 	
-	public void testUpdateTime()
+	public void testUpdateTime() throws Exception
 	{
-		OutputLimitSpec outputConditionSpec = new OutputLimitSpec(TEST_INTERVAL_MSEC/1000d, null, OutputLimitRateType.TIME_SEC, OutputLimitLimitType.FIRST, null, null);
+		OutputLimitSpec outputConditionSpec = new OutputLimitSpec(TEST_INTERVAL_MSEC/1000d, null, OutputLimitRateType.TIME_SEC, OutputLimitLimitType.FIRST, null, null, null);
 		SupportSchedulingServiceImpl schedulingServiceStub = new SupportSchedulingServiceImpl();
 		StatementContext statementContext = SupportStatementContextFactory.makeContext(schedulingServiceStub);
 		
@@ -44,7 +44,7 @@ public class TestOutputConditionFirst extends TestCase
         schedulingServiceStub.setTime(startTime);
         
     	// 2 new, 3 old
-        condition.updateOutputCondition(2, 3, null, null);
+        condition.updateOutputCondition(2, 3);
         // update time
         schedulingServiceStub.setTime(startTime + TEST_INTERVAL_MSEC);
         // check callback scheduled, pretend callback
@@ -53,9 +53,9 @@ public class TestOutputConditionFirst extends TestCase
         ((EPStatementHandleCallback) schedulingServiceStub.getAdded().get(TEST_INTERVAL_MSEC)).getScheduleCallback().scheduledTrigger(null);
         
         // 2 new, 3 old
-        condition.updateOutputCondition(2, 3, null, null);
+        condition.updateOutputCondition(2, 3);
     	// 2 new, 3 old
-        condition.updateOutputCondition(2, 3, null, null);
+        condition.updateOutputCondition(2, 3);
         // update time
         schedulingServiceStub.setTime(startTime + 2*TEST_INTERVAL_MSEC);
         // check callback scheduled, pretend callback
@@ -65,7 +65,7 @@ public class TestOutputConditionFirst extends TestCase
 
         
     	// 0 new, 0 old
-        condition.updateOutputCondition(0, 0, null, null);
+        condition.updateOutputCondition(0, 0);
         // update time
         schedulingServiceStub.setTime(startTime + 3*TEST_INTERVAL_MSEC);
         // check update
@@ -74,40 +74,40 @@ public class TestOutputConditionFirst extends TestCase
         schedulingServiceStub.getAdded().clear();
 	}
 	
-	public void testUpdateCount()
+	public void testUpdateCount() throws Exception
 	{
 		// 'output first every 3 events'
-		OutputLimitSpec outputConditionSpec = new OutputLimitSpec(3d, null, OutputLimitRateType.EVENTS, OutputLimitLimitType.FIRST, null, null);
+		OutputLimitSpec outputConditionSpec = new OutputLimitSpec(3d, null, OutputLimitRateType.EVENTS, OutputLimitLimitType.FIRST, null, null, null);
 		StatementContext statementContext = SupportStatementContextFactory.makeContext();
 		
 		OutputCondition condition = (new OutputConditionFactoryDefault()).createCondition(outputConditionSpec, statementContext, callback);
 
 		// Send first event of the batch, callback should be made
-		condition.updateOutputCondition(1, 0, null, null);
+		condition.updateOutputCondition(1, 0);
 		Boolean doOutput = true;
 		Boolean forceUpdate = false;
 		assertCallbackAndReset(doOutput, forceUpdate);
 		
 		// Send more events in the same batch
-		condition.updateOutputCondition(1, 1, null, null);
+		condition.updateOutputCondition(1, 1);
 		assertFalse(witnessedCallback);
 		
 		// Send enough events to end the batch
-		condition.updateOutputCondition(1, 0, null, null);
+		condition.updateOutputCondition(1, 0);
 		doOutput = false;
 		assertCallbackAndReset(doOutput, forceUpdate);
 		
 		// Start the next batch
-		condition.updateOutputCondition(1, 1, null, null);
+		condition.updateOutputCondition(1, 1);
 		doOutput = true;
 		assertCallbackAndReset(doOutput, forceUpdate);
 		
 		// More events in the same batch, not enough to end
-		condition.updateOutputCondition(1, 1, null, null);
+		condition.updateOutputCondition(1, 1);
 		assertFalse(witnessedCallback);
 		
 		// Send enough events to end the batch
-		condition.updateOutputCondition(1, 0, null, null);
+		condition.updateOutputCondition(1, 0);
 		doOutput = false;
 		assertCallbackAndReset(doOutput, forceUpdate);
 	}

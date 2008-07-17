@@ -8,8 +8,8 @@ import com.espertech.esper.epl.core.EngineImportException;
 import com.espertech.esper.epl.core.EngineImportService;
 import com.espertech.esper.epl.core.EngineImportUndefinedException;
 import com.espertech.esper.epl.expression.*;
-import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.epl.parse.ASTFilterSpecHelper;
+import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.pattern.*;
 import com.espertech.esper.type.MathArithTypeEnum;
 import com.espertech.esper.type.MinMaxTypeEnum;
@@ -78,7 +78,7 @@ public class StatementSpecMapper
         unmapWhere(statementSpec.getFilterRootNode(), model, unmapContext);
         unmapGroupBy(statementSpec.getGroupByExpressions(), model, unmapContext);
         unmapHaving(statementSpec.getHavingExprRootNode(), model, unmapContext);
-        unmapOutputLimit(statementSpec.getOutputLimitSpec(), model);
+        unmapOutputLimit(statementSpec.getOutputLimitSpec(), model, unmapContext);
         unmapOrderBy(statementSpec.getOrderByList(), model, unmapContext);
 
         return new StatementSpecUnMapResult(model, unmapContext.getIndexedParams());
@@ -152,7 +152,7 @@ public class StatementSpecMapper
         model.setOrderByClause(clause);
     }
 
-    private static void unmapOutputLimit(OutputLimitSpec outputLimitSpec, EPStatementObjectModel model)
+    private static void unmapOutputLimit(OutputLimitSpec outputLimitSpec, EPStatementObjectModel model, StatementSpecUnMapContext unmapContext)
     {
         if (outputLimitSpec == null)
         {
@@ -177,17 +177,43 @@ public class StatementSpecMapper
             selector = OutputLimitSelector.ALL;
         }
 
+        OutputLimitClause clause;
         OutputLimitUnit unit = OutputLimitUnit.EVENTS;
         if (outputLimitSpec.getRateType() == OutputLimitRateType.TIME_MIN)
         {
             unit = OutputLimitUnit.MINUTES;
+            clause = new OutputLimitClause(selector, outputLimitSpec.getRate(), outputLimitSpec.getVariableName(), unit);
         }
-        if (outputLimitSpec.getRateType() == OutputLimitRateType.TIME_SEC)
+        else if (outputLimitSpec.getRateType() == OutputLimitRateType.TIME_SEC)
         {
             unit = OutputLimitUnit.SECONDS;
+            clause = new OutputLimitClause(selector, outputLimitSpec.getRate(), outputLimitSpec.getVariableName(), unit);
+        }
+        else if (outputLimitSpec.getRateType() == OutputLimitRateType.WHEN_EXPRESSION)
+        {
+            unit = OutputLimitUnit.WHEN_EXPRESSION;
+            Expression whenExpression = unmapExpressionDeep(outputLimitSpec.getWhenExpressionNode(), unmapContext);
+            List<Pair<String, Expression>> thenAssignments = new ArrayList<Pair<String, Expression>>();
+            clause = new OutputLimitClause(selector, whenExpression, thenAssignments);
+            if (outputLimitSpec.getThenExpressions() != null)
+            {
+                for (OnTriggerSetAssignment assignment : outputLimitSpec.getThenExpressions())
+                {
+                    Expression expr = unmapExpressionDeep(assignment.getExpression(), unmapContext);
+                    clause.addThenAssignment(assignment.getVariableName(), expr);
+                }
+            }            
+        }
+        else if (outputLimitSpec.getRateType() == OutputLimitRateType.CRONTAB)
+        {
+            unit = OutputLimitUnit.CRONTAB_EXPRESSION;
+            clause = new OutputLimitClause(selector, outputLimitSpec.getCrontabAtSchedule()); 
+        }
+        else
+        {
+            clause = new OutputLimitClause(selector, outputLimitSpec.getRate(), outputLimitSpec.getVariableName(), unit);
         }
 
-        OutputLimitClause clause = new OutputLimitClause(selector, outputLimitSpec.getRate(), outputLimitSpec.getVariableName(), unit);
         model.setOutputLimitClause(clause);
     }
 
@@ -227,6 +253,14 @@ public class StatementSpecMapper
         {
             rateType = OutputLimitRateType.TIME_SEC;
         }
+        else if (outputLimitClause.getUnit() == OutputLimitUnit.CRONTAB_EXPRESSION)
+        {
+            rateType = OutputLimitRateType.CRONTAB;
+        }
+        else if (outputLimitClause.getUnit() == OutputLimitUnit.WHEN_EXPRESSION)
+        {
+            rateType = OutputLimitRateType.WHEN_EXPRESSION;
+        }
 
         Double frequency = outputLimitClause.getFrequency();
         String frequencyVariable = outputLimitClause.getFrequencyVariable();
@@ -236,8 +270,21 @@ public class StatementSpecMapper
             mapContext.setHasVariables(true);
         }
 
-        // TODO
-        OutputLimitSpec spec = new OutputLimitSpec(frequency, frequencyVariable, rateType, displayLimit, null, null);
+        ExprNode whenExpression = null;
+        List<OnTriggerSetAssignment> assignments = null;
+        if (outputLimitClause.getWhenExpression() != null)
+        {
+            whenExpression = mapExpressionDeep(outputLimitClause.getWhenExpression(), mapContext);
+
+            assignments = new ArrayList<OnTriggerSetAssignment>();
+            for (Pair<String, Expression> pair : outputLimitClause.getThenAssignments())
+            {
+                ExprNode expr = mapExpressionDeep(pair.getSecond(), mapContext);
+                assignments.add(new OnTriggerSetAssignment(pair.getFirst(), expr));
+            }
+        }
+
+        OutputLimitSpec spec = new OutputLimitSpec(frequency, frequencyVariable, rateType, displayLimit, whenExpression, assignments, outputLimitClause.getCrontabAtParameters());
         raw.setOutputLimitSpec(spec);
     }
 
@@ -261,13 +308,14 @@ public class StatementSpecMapper
         else if (onExpr instanceof OnSetClause)
         {
             OnSetClause setClause = (OnSetClause) onExpr;
-            OnTriggerSetDesc desc = new OnTriggerSetDesc();
             mapContext.setHasVariables(true);
+            List<OnTriggerSetAssignment> assignments = new ArrayList<OnTriggerSetAssignment>();
             for (Pair<String, Expression> pair : setClause.getAssignments())
             {
                 ExprNode expr = mapExpressionDeep(pair.getSecond(), mapContext);
-                desc.addAssignment(new OnTriggerSetAssignment(pair.getFirst(), expr));
+                assignments.add(new OnTriggerSetAssignment(pair.getFirst(), expr));
             }
+            OnTriggerSetDesc desc = new OnTriggerSetDesc(assignments);
             raw.setOnTriggerDesc(desc);
         }
         else

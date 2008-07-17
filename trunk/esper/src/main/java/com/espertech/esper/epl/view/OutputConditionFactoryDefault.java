@@ -6,6 +6,7 @@ import com.espertech.esper.epl.spec.OutputLimitSpec;
 import com.espertech.esper.epl.spec.OutputLimitLimitType;
 import com.espertech.esper.epl.spec.OutputLimitRateType;
 import com.espertech.esper.epl.variable.VariableReader;
+import com.espertech.esper.epl.expression.ExprValidationException;
 import com.espertech.esper.core.StatementContext;
 import com.espertech.esper.util.JavaClassHelper;
 
@@ -26,7 +27,8 @@ public class OutputConditionFactoryDefault implements OutputConditionFactory
 	public OutputCondition createCondition(OutputLimitSpec outputLimitSpec,
 										 	  	  StatementContext statementContext,
 										 	      OutputCallback outputCallback)
-	{
+            throws ExprValidationException
+    {
 		if(outputCallback ==  null)
 		{
 			throw new NullPointerException("Output condition by count requires a non-null callback");
@@ -60,7 +62,7 @@ public class OutputConditionFactoryDefault implements OutputConditionFactory
         }
         else if(outputLimitSpec.getRateType() == OutputLimitRateType.WHEN_EXPRESSION)
         {
-            return new OutputConditionExpression(outputLimitSpec.getWhenExpressionNode(), statementContext, outputCallback);
+            return new OutputConditionExpression(outputLimitSpec.getWhenExpressionNode(), outputLimitSpec.getThenExpressions(), statementContext, outputCallback);
         }
         else if(outputLimitSpec.getRateType() == OutputLimitRateType.EVENTS)
 		{
