@@ -1,29 +1,29 @@
 package com.espertech.esper.epl.view;
 
+import com.espertech.esper.core.StatementContext;
 import com.espertech.esper.core.EPStatementHandleCallback;
 import com.espertech.esper.core.ExtensionServicesContext;
-import com.espertech.esper.core.StatementContext;
 import com.espertech.esper.epl.expression.ExprNode;
+import com.espertech.esper.epl.expression.ExprNodeIdentifierVisitor;
 import com.espertech.esper.epl.expression.ExprNodeVariableVisitor;
 import com.espertech.esper.epl.expression.ExprValidationException;
-import com.espertech.esper.epl.expression.ExprNodeIdentifierVisitor;
 import com.espertech.esper.epl.spec.OnTriggerSetAssignment;
 import com.espertech.esper.epl.variable.VariableChangeCallback;
 import com.espertech.esper.epl.variable.VariableReadWritePackage;
 import com.espertech.esper.epl.variable.VariableReader;
-import com.espertech.esper.schedule.ScheduleHandleCallback;
-import com.espertech.esper.schedule.ScheduleSlot;
-import com.espertech.esper.util.ExecutionPathDebugLog;
 import com.espertech.esper.event.EventBean;
 import com.espertech.esper.event.EventType;
 import com.espertech.esper.event.EventAdapterService;
+import com.espertech.esper.schedule.ScheduleSlot;
+import com.espertech.esper.schedule.ScheduleHandleCallback;
+import com.espertech.esper.util.ExecutionPathDebugLog;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.util.List;
-import java.util.Set;
-import java.util.Map;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class OutputConditionExpression implements OutputCondition, VariableChangeCallback
 {
@@ -60,9 +60,26 @@ public class OutputConditionExpression implements OutputCondition, VariableChang
         Set<String> variableNames = variableVisitor.getVariableNames();
 
         // determine if using properties
-        ExprNodeIdentifierVisitor propertyVisitor = new ExprNodeIdentifierVisitor(false);
-        whenExpressionNode.accept(propertyVisitor);
-        if (!propertyVisitor.getExprProperties().isEmpty())
+        boolean containsBuiltinProperties = false;
+        if (containsBuiltinProperties(whenExpressionNode))
+        {
+            containsBuiltinProperties = true;
+        }
+        else
+        {
+            if (assignments != null)
+            {
+                for (OnTriggerSetAssignment assignment : assignments)
+                {
+                    if (containsBuiltinProperties(assignment.getExpression()))
+                    {
+                        containsBuiltinProperties = true;
+                    }
+                }
+            }
+        }
+
+        if (containsBuiltinProperties)
         {
             builtinProperties = new HashMap<String, Object>();
             builtinPropertiesEventType = getBuiltInEventType(context.getEventAdapterService());
@@ -97,7 +114,7 @@ public class OutputConditionExpression implements OutputCondition, VariableChang
         boolean isOutput = evaluate();
         if (isOutput)
         {
-            outputCallback.continueOutputProcessing(true, false);
+            outputCallback.continueOutputProcessing(true, true);
             resetBuiltinProperties();
         }
     }
@@ -154,7 +171,7 @@ public class OutputConditionExpression implements OutputCondition, VariableChang
             public void scheduledTrigger(ExtensionServicesContext extensionServicesContext)
             {
                 OutputConditionExpression.this.isCallbackScheduled = false;
-                OutputConditionExpression.this.outputCallback.continueOutputProcessing(true, false);
+                OutputConditionExpression.this.outputCallback.continueOutputProcessing(true, true);
                 resetBuiltinProperties();
             }
         };
@@ -164,9 +181,17 @@ public class OutputConditionExpression implements OutputCondition, VariableChang
         // execute assignments
         if (variableReadWritePackage != null)
         {
+            if (builtinProperties != null)
+            {
+                builtinProperties.put("count_insert", totalNewEventsCount);
+                builtinProperties.put("count_remove", totalOldEventsCount);
+                builtinProperties.put("last_output_timestamp", lastOutputTimestamp);
+                eventsPerStream[0] = context.getEventAdapterService().createMapFromValues(builtinProperties, builtinPropertiesEventType);
+            }
+
             ignoreVariableCallbacks = true;
             try {
-                variableReadWritePackage.writeVariables(context.getVariableService(), null, null);
+                variableReadWritePackage.writeVariables(context.getVariableService(), eventsPerStream, null);
             }
             finally {
                 ignoreVariableCallbacks = false;
@@ -191,5 +216,12 @@ public class OutputConditionExpression implements OutputCondition, VariableChang
             totalOldEventsCount = 0;
             lastOutputTimestamp = context.getSchedulingService().getTime();
         }
+    }
+
+    private boolean containsBuiltinProperties(ExprNode expr)
+    {
+        ExprNodeIdentifierVisitor propertyVisitor = new ExprNodeIdentifierVisitor(false);
+        expr.accept(propertyVisitor);
+        return !propertyVisitor.getExprProperties().isEmpty();
     }
 }

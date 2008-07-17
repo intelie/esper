@@ -803,13 +803,21 @@ public class EPStatementStartMethod
                 StreamTypeService typeServiceOutputWhen = new StreamTypeServiceImpl(new EventType[] {outputLimitType}, new String[]{null}, statementContext.getEngineURI(), new String[]{null});
                 outputLimitWhenNode = outputLimitWhenNode.getValidatedSubtree(typeServiceOutputWhen, methodResolutionService, null, statementContext.getSchedulingService(), statementContext.getVariableService());
                 statementSpec.getOutputLimitSpec().setWhenExpressionNode(outputLimitWhenNode);
-
-                // Make sure there is no aggregation in the where clause
-                List<ExprAggregateNode> aggregateNodes = new LinkedList<ExprAggregateNode>();
-                ExprAggregateNode.getAggregatesBottomUp(outputLimitWhenNode, aggregateNodes);
-                if (!aggregateNodes.isEmpty())
+                
+                if (JavaClassHelper.getBoxedType(outputLimitWhenNode.getType()) != Boolean.class)
                 {
-                    throw new ExprValidationException("An aggregate function may not appear in a OUTPUT LIMIT clause");
+                    throw new ExprValidationException("The when-trigger expression in the OUTPUT WHEN clause must return a boolean-type value");
+                }
+                validateNoAggregations(outputLimitWhenNode, "An aggregate function may not appear in a OUTPUT LIMIT clause");
+
+                if (statementSpec.getOutputLimitSpec().getThenExpressions() != null)
+                {
+                    for (OnTriggerSetAssignment assign : statementSpec.getOutputLimitSpec().getThenExpressions())
+                    {
+                        ExprNode node = assign.getExpression().getValidatedSubtree(typeServiceOutputWhen, methodResolutionService, null, statementContext.getSchedulingService(), statementContext.getVariableService());
+                        assign.setExpression(node);
+                        validateNoAggregations(node, "An aggregate function may not appear in a OUTPUT LIMIT clause");
+                    }
                 }
             }
             catch (ExprValidationException ex)
@@ -845,6 +853,18 @@ public class EPStatementStartMethod
 
                 }
             }
+        }
+    }
+
+    private static void validateNoAggregations(ExprNode exprNode, String errorMsg)
+            throws ExprValidationException
+    {
+        // Make sure there is no aggregation in the where clause
+        List<ExprAggregateNode> aggregateNodes = new LinkedList<ExprAggregateNode>();
+        ExprAggregateNode.getAggregatesBottomUp(exprNode, aggregateNodes);
+        if (!aggregateNodes.isEmpty())
+        {
+            throw new ExprValidationException(errorMsg);
         }
     }
 

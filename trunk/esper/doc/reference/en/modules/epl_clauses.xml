@@ -1194,15 +1194,14 @@ select symbol, sum(price) from StockTickEvent.std:groupby(symbol).win:length(10)
 				<synopsis>output [all | first | last | snapshot] every <emphasis>time_period</emphasis></synopsis>
 
 				<para>
-					A crontab-like schedule can also be specified using below syntax. The schedule parameters follow the pattern observer parameters and are further described in <xref linkend="pattern-timer-at"/> :
+					A crontab-like schedule can also be specified. The schedule parameters follow the pattern observer parameters and are further described in <xref linkend="pattern-timer-at"/> :
 				</para>
-				<synopsis>output [all | first | last | snapshot] at (<emphasis>minutes, hours, days of month, months, days of week [, seconds]</emphasis>)</synopsis>
+				<synopsis>output [all | first | last | snapshot] at 
+  (<emphasis>minutes, hours, days of month, months, days of week [, seconds]</emphasis>)</synopsis>
 
 				<para>
-					Last, output can be controlled by an expression using this syntax:
+					Last, output can be controlled by an expression that may contain variables, user-defined functions and information about the number of collected events. Output that is controlled by an expression is discussed in detail below.
 				</para>
-				<synopsis>output [all | first | last | snapshot] when <emphasis>expression</emphasis> 
-    [then set <emphasis>variable_name</emphasis> = <emphasis>expression</emphasis> [, <emphasis>variable_name</emphasis> = <emphasis>expression</emphasis> [,...]]</synopsis>
 
 				<para>
 					For example, the following statement outputs, every 60 seconds, the total price for all orders in the 30-minute time window:		
@@ -1259,17 +1258,114 @@ select symbol, sum(price) from StockTickEvent.std:groupby(symbol).win:length(10)
 			    <programlisting>select * from TickRate.win:time(30 seconds) where rate&lt;100 output first every 60 seconds</programlisting>
 
 				<para>
-					A sample statement using the Unix "crontab"-command schedule is shown next. See <xref linkend="pattern-timer-at"/> for details on the schedule syntax. For the below statement output occurs every 15 minutes from 8am to 5:45pm (hours 8 to 17 at 0, 15, 30 and 45 minutes past the hour):
+					A sample statement using the Unix "crontab"-command schedule is shown next. See <xref linkend="pattern-timer-at"/> for details on schedule syntax. Here, output occurs every 15 minutes from 8am to 5:45pm (hours 8 to 17 at 0, 15, 30 and 45 minutes past the hour):
 				</para>
-				<synopsis>select symbol, sum(price) from StockTickEvent group by symbol output at (*/15, 8:17, [*/2, 1], *, *)</synopsis>
+				<synopsis>select symbol, sum(price) from StockTickEvent group by symbol output at (*/15, 8:17, *, *, *)</synopsis>
 
-				<sect3 id="epl-output-options" >
+				<sect3 id="epl-output-expression" >
 					<title>Controlling Output Using an Expression</title>
 
+					<indexterm><primary>output when</primary></indexterm>
 					<para>
-						The <literal>when</literal> keyword in the output rate clause is followed by an expression in the syntax shown before.
+						Output can also be controlled by an expression that may check variable values, use user-defined functions and query built-in properties that provide additional information. The synopsis is as follows:
 					</para>
-					<synopsis>select symbol, sum(price) from StockTickEvent group by symbol output at (*/15, 8:17, [*/2, 1], *, *)</synopsis>
+					<synopsis>output [all | first | last | snapshot] when <emphasis>trigger_expression</emphasis> 
+    [then set <emphasis>variable_name</emphasis> = <emphasis>assign_expression</emphasis> [, <emphasis>variable_name</emphasis> = <emphasis>assign_expression</emphasis> [,...]]]</synopsis>
+
+					<para>
+						The <literal>when</literal> keyword must be followed by a trigger expression returning a boolean value of true or false, indicating whether to output.
+						Use the optional <literal>then</literal> keyword to change variable values after the trigger expression evaluates to true. An assignment expression assigns a new value to variable(s).
+					</para>
+
+					<para>
+						Lets consider an example. The next statement assumes that your application has defined a variable by name OutputTriggerVar of boolean type. The statement outputs rows only when the OutputTriggerVar variable has a boolean value of true:
+					</para>
+					<synopsis>select sum(price) from StockTickEvent output when OutputTriggerVar = true</synopsis>
+
+					<para>
+						The engine evaluates the trigger expression when streams and data views post one or more insert or remove stream events after considering the <literal>where</literal> clause, if present. It also evaluates the trigger expression when any of the variables used in the trigger expression, if any, changes value. Thus output occurs as follows:
+					</para>
+
+					<orderedlist spacing="compact">
+						<listitem>
+							<para>
+								When there are insert or remove stream events and the <literal>when</literal> trigger expression evaluates to true, the engine outputs the resulting rows.
+							</para>
+						</listitem>
+						<listitem>
+							<para>
+								When any of the variables in the <literal>when</literal> trigger expression changes value, the engine evaluates the expression and outputs results. Result output occurs within the minimum time interval of timer resolution (100 milliseconds).
+							</para>
+						</listitem>
+					</orderedlist>
+
+					<para>
+						By adding a <literal>then</literal> part to the EPL, we can reset any variables after the trigger expression evaluated to true:
+					</para>
+					<synopsis>select sum(price) from StockTickEvent 
+  output when OutputTriggerVar = true  
+  then set OutputTriggerVar = false</synopsis>
+
+					<para>
+						Expressions in the <literal>when</literal> and <literal>then</literal> may, for example, use variables, user defined functions or any of the built-in named properties that are described in the below list.
+					</para>
+					
+					<para>
+						The following built-in properties are available for use:
+					</para>
+					<table frame="topbot" id="epl-output-expression-builtin" revision="2">
+						<title>Built-In Properties for Use with Output When</title>
+						<tgroup cols="2">
+							<colspec colwidth="1*"/>
+							<colspec colwidth="2.5*"/>
+							<thead>
+								<row>
+									<entry>Built-In Property Name</entry>
+									<entry>Description</entry>
+								</row>
+							</thead>
+							<tbody>
+								<row>
+									<entry><literal>last_output_timestamp</literal></entry>
+									<entry>Timestamp when the last output occured for the statement; Initially set to time of statement creation</entry>
+								</row>
+								<row>
+									<entry><literal>count_insert</literal></entry>
+									<entry>Number of insert stream events</entry>
+								</row>
+								<row>
+									<entry><literal>count_remove</literal></entry>
+									<entry>Number of remove stream events</entry>
+								</row>
+							</tbody>
+						</tgroup>
+					</table>
+
+					<para>
+						The values provided by <literal>count_insert</literal> and <literal>count_remove</literal> are non-continues: The number returned for these properties may 'jump' up rather then count up by 1.
+						The counts reset to zero upon output.
+					</para>        
+					
+					<para>
+						The following restrictions apply to expressions used in the output rate clause:
+					</para>        
+					<itemizedlist spacing="compact">
+						<listitem>
+							<para>
+								Event property names cannot be used in the output clause.
+							</para>
+						</listitem>
+						<listitem>
+							<para>
+								Aggregation functions cannot be used in the output clause.
+							</para>
+						</listitem>
+						<listitem>
+							<para>
+								The <literal>prev</literal> previous event function and the <literal>prior</literal> prior event function cannot be used in the output clause.
+							</para>
+						</listitem>
+					</itemizedlist>
 				</sect3>
 
 		</sect2>

@@ -28,7 +28,7 @@ public class FixMsgParser
             throws FixMsgParserException
     {
 		Map<String, String> parsedMessage = internalParse(fixMsg);
-        validate(parsedMessage);
+        validate(parsedMessage, fixMsg);
         return parsedMessage;
 	}
 
@@ -68,7 +68,7 @@ public class FixMsgParser
         return parsedMessage;
     }
 
-    public static void validate(Map<String, String> fix) throws FixMsgInvalidException
+    public static void validate(Map<String, String> fix, String fixMsg) throws FixMsgInvalidException
     {
         for (String required : new String[] {"8", "9", "35", "10"})
         {
@@ -76,6 +76,31 @@ public class FixMsgParser
             {
                 throw new FixMsgInvalidException("Failed to find tag " + required + " in fix message");
             }
+        }
+
+        String checksum = fix.get("10");
+        if (checksum == null)
+        {
+            throw new FixMsgInvalidException("Checksum validation failed, could not find tag '8'");
+        }
+
+        int deliveredChecksum;
+        try {
+            deliveredChecksum = Integer.parseInt(checksum);
+        }
+        catch (RuntimeException ex)
+        {
+            throw new FixMsgInvalidException("Invalid non-numeric checksum");
+        }
+
+        String checksumText = fixMsg.substring(fixMsg.indexOf("8="));
+        int offset = checksumText.lastIndexOf("\u000110=");
+        checksumText = checksumText.substring(0, offset) + soh;
+        int computedChecksum = FixMsgMarshaller.checkSum(checksumText);
+
+        if (computedChecksum != deliveredChecksum)
+        {
+            throw new FixMsgInvalidException("Invalid checksum, failed to validate checksum, found " + deliveredChecksum + " but should be " + computedChecksum);
         }
     }
 }

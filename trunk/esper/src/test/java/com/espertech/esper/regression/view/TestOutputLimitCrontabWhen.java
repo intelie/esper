@@ -123,13 +123,15 @@ public class TestOutputLimitCrontabWhen extends TestCase
 
     // TODO
     //  test with and without force_update
+    //  test built-in properties in the then-clause and their validation
     public void testOutputWhenThenExpression()
     {
         sendTimeEvent(1, 8, 0, 0, 0);
         epService.getEPAdministrator().getConfiguration().addVariable("myvar", int.class, 0);
+        epService.getEPAdministrator().getConfiguration().addVariable("count_insert_var", int.class, 0);
         epService.getEPAdministrator().createEPL("on SupportBean set myvar = intPrimitive");
 
-        String expression = "select symbol from MarketData.win:length(2) output when (myvar = 1) then set myvar = 0";
+        String expression = "select symbol from MarketData.win:length(2) output when (myvar = 1) then set myvar = 0, count_insert_var = count_insert";
         EPStatement stmt =  epService.getEPAdministrator().createEPL(expression);
         runAssertion(1, stmt);
 
@@ -137,7 +139,8 @@ public class TestOutputLimitCrontabWhen extends TestCase
         model.setSelectClause(SelectClause.create("symbol"));
         model.setFromClause(FromClause.create(FilterStream.create("MarketData").addView("win", "length", 2)));
         model.setOutputLimitClause(OutputLimitClause.create(Expressions.eq("myvar", 1))
-                                    .addThenAssignment("myvar", Expressions.constant(0)));
+                                    .addThenAssignment("myvar", Expressions.constant(0))
+                                    .addThenAssignment("count_insert_var", Expressions.property("count_insert")));
 
         String epl = model.toEPL();
         assertEquals(expression, epl);
@@ -163,6 +166,7 @@ public class TestOutputLimitCrontabWhen extends TestCase
         sendTimeEvent(days, 8, 0, 1, 0);
         ArrayAssertionUtil.assertEqualsExactOrder(subscriber.getAndResetLastNewData(), new Object[] {"S1"});
         assertEquals(0, epService.getEPRuntime().getVariableValue("myvar"));
+        assertEquals(1, epService.getEPRuntime().getVariableValue("count_insert_var"));
 
         sendEvent("S2", 0);
         sendEvent("S3", 0);
@@ -170,6 +174,7 @@ public class TestOutputLimitCrontabWhen extends TestCase
         sendTimeEvent(days, 8, 0, 3, 0);
         epService.getEPRuntime().sendEvent(new SupportBean("E2", 1));
         assertEquals(0, epService.getEPRuntime().getVariableValue("myvar"));
+        assertEquals(2, epService.getEPRuntime().getVariableValue("count_insert_var"));
 
         assertFalse(subscriber.isInvoked());
         sendTimeEvent(days, 8, 0, 4, 0);
@@ -319,6 +324,9 @@ public class TestOutputLimitCrontabWhen extends TestCase
 
     public void testInvalid()
     {
+        epService.getEPAdministrator().getConfiguration().addVariable("myvardummy", int.class, 0);
+        epService.getEPAdministrator().getConfiguration().addVariable("myvarlong", long.class, 0);
+
         tryInvalid("select * from MarketData output when sum(price) > 0",
                    "Error validating expression: Property named 'price' is not valid in any stream [select * from MarketData output when sum(price) > 0]");
 
@@ -327,6 +335,15 @@ public class TestOutputLimitCrontabWhen extends TestCase
 
         tryInvalid("select * from MarketData output when prev(1, count_insert) = 0",
                    "Error validating expression: Previous function cannot be used in this context [select * from MarketData output when prev(1, count_insert) = 0]");
+
+        tryInvalid("select * from MarketData output when myvardummy",
+                   "Error validating expression: The when-trigger expression in the OUTPUT WHEN clause must return a boolean-type value [select * from MarketData output when myvardummy]");
+
+        tryInvalid("select * from MarketData output when true then set myvardummy = 'b'",
+                   "Error starting view: Variable 'myvardummy' of declared type 'java.lang.Integer' cannot be assigned a value of type 'java.lang.String' [select * from MarketData output when true then set myvardummy = 'b']");
+
+        tryInvalid("select * from MarketData output when true then set myvardummy = sum(myvardummy)",
+                   "Error validating expression: An aggregate function may not appear in a OUTPUT LIMIT clause [select * from MarketData output when true then set myvardummy = sum(myvardummy)]");
     }
 
     private void tryInvalid(String expression, String message)

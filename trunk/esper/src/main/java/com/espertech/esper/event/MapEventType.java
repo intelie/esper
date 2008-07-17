@@ -239,7 +239,13 @@ public class MapEventType implements EventType
         if (index == -1)
         {
             // dynamic property for maps is allowed
-            Property prop = PropertyParser.parse(propertyName, eventAdapterService.getBeanEventTypeFactory(), false);
+            BeanEventTypeFactory beanFactory = null;
+            if (eventAdapterService != null)
+            {
+                beanFactory = eventAdapterService.getBeanEventTypeFactory();
+            }
+
+            Property prop = PropertyParser.parse(propertyName, beanFactory, false);
             if (prop instanceof DynamicProperty)
             {
                 return prop.getGetterMap(null);

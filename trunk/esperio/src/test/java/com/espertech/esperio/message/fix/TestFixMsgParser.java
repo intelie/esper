@@ -29,7 +29,7 @@ public class TestFixMsgParser extends TestCase
         tryInvalid(replaceSOH("8=FIX4.2<SOH>9"), "Unrecognizable fix message, number of tokens is less then 4 for message text '8=FIX4.2\u00019'");
     }
 
-    private String replaceSOH(String fixMsg)
+    protected static String replaceSOH(String fixMsg)
     {
         byte[] separator = new byte[1];
         separator[0] = 1;
