@@ -76,7 +76,8 @@ public class ExprRelationalOpNode extends ExprNode
         }
 
         Class compareType = JavaClassHelper.getCompareToCoercionType(typeOne, typeTwo);
-        computer = relationalOpEnum.getComputer(compareType);
+
+        computer = relationalOpEnum.getComputer(compareType, typeOne, typeTwo);
     }
 
     public Class getType() throws ExprValidationException

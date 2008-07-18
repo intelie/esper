@@ -121,9 +121,6 @@ public class TestOutputLimitCrontabWhen extends TestCase
         listener.reset();
     }
 
-    // TODO
-    //  test with and without force_update
-    //  test built-in properties in the then-clause and their validation
     public void testOutputWhenThenExpression()
     {
         sendTimeEvent(1, 8, 0, 0, 0);

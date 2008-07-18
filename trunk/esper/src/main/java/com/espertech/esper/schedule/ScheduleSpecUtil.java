@@ -9,8 +9,18 @@ import java.util.EnumMap;
 import java.util.TreeSet;
 import java.util.Set;
 
+/**
+ * Utility for computing from a set of parameter objects a schedule specification carry a
+ * crontab-like schedule definition.
+ */
 public class ScheduleSpecUtil
 {
+    /**
+     * Compute from parameters a crontab schedule.
+     * @param args parameters
+     * @return crontab schedule
+     * @throws ScheduleParameterException if the parameters are invalid
+     */
     public static ScheduleSpec computeValues(Object[] args) throws ScheduleParameterException
     {
         EnumMap<ScheduleUnit, SortedSet<Integer>> unitMap = new EnumMap<ScheduleUnit, SortedSet<Integer>>(ScheduleUnit.class);

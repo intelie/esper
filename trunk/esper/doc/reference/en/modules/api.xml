@@ -602,7 +602,7 @@ runtime.sendEvent(new MarketDataBean('IBM', 75.0));
 ]]></programlisting>
 
         <para>
-			Events, in theoretical terms, are observations of a state change that occured in the past. Since one cannot change an event that happened in the past, events are best modelled as immutable objects. 
+			Events, in theoretical terms, are observations of a state change that occurred in the past. Since one cannot change an event that happened in the past, events are best modelled as immutable objects. 
         </para>
 
         <para>

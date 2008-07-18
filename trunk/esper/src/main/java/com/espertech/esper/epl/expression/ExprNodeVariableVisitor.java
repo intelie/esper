@@ -41,6 +41,10 @@ public class ExprNodeVariableVisitor implements ExprNodeVisitor
         variableNames.add(variableNode.getVariableName());
     }
 
+    /**
+     * Returns the set of variable names encoountered.
+     * @return variable names
+     */
     public Set<String> getVariableNames()
     {
         return variableNames;

@@ -1327,7 +1327,7 @@ select symbol, sum(price) from StockTickEvent.std:groupby(symbol).win:length(10)
 							<tbody>
 								<row>
 									<entry><literal>last_output_timestamp</literal></entry>
-									<entry>Timestamp when the last output occured for the statement; Initially set to time of statement creation</entry>
+									<entry>Timestamp when the last output occurred for the statement; Initially set to time of statement creation</entry>
 								</row>
 								<row>
 									<entry><literal>count_insert</literal></entry>

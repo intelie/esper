@@ -12,6 +12,9 @@ import java.util.HashMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+/**
+ * A convenience class for dealing with reading and updating multiple variable values.
+ */
 public class VariableReadWritePackage
 {
     private static final Log log = LogFactory.getLog(VariableReadWritePackage.class);
@@ -21,6 +24,12 @@ public class VariableReadWritePackage
     private final boolean[] mustCoerce;
     private final Map<String, Object> variableTypes;
 
+    /**
+     * Ctor.
+     * @param assignments the list of variable assignments
+     * @param variableService variable service
+     * @throws ExprValidationException when variables cannot be found
+     */
     public VariableReadWritePackage(List<OnTriggerSetAssignment> assignments, VariableService variableService)
             throws ExprValidationException
     {
@@ -69,6 +78,15 @@ public class VariableReadWritePackage
         }
     }
 
+    /**
+     * Write new variable values and commit, evaluating assignment expressions using the given
+     * events per stream.
+     * <p>
+     * Populates an optional map of new values if a non-null map is passed.
+     * @param variableService variable service
+     * @param eventsPerStream events per stream
+     * @param valuesWritten null or an empty map to populate with written values
+     */
     public void writeVariables(VariableService variableService,
                                  EventBean[] eventsPerStream,
                                  Map<String, Object> valuesWritten)
@@ -113,11 +131,19 @@ public class VariableReadWritePackage
         }
     }
 
+    /**
+     * Returns the readers to all variables.
+     * @return readers
+     */
     public VariableReader[] getReaders()
     {
         return readers;
     }
 
+    /**
+     * Returns a map of variable names and type of variable.
+     * @return variables
+     */
     public Map<String, Object> getVariableTypes()
     {
         return variableTypes;

@@ -9,6 +9,8 @@ import java.io.LineNumberReader;
 import java.io.Reader;
 import java.io.Serializable;
 import java.util.*;
+import java.math.BigInteger;
+import java.math.BigDecimal;
 
 public class TestJavaClassHelper extends TestCase
 {
@@ -102,7 +104,7 @@ public class TestJavaClassHelper extends TestCase
         final Class[] numericClasses = {
             float.class, Float.class, double.class, Double.class,
             byte.class, Byte.class, short.class, Short.class, int.class, Integer.class,
-            long.class, Long.class };
+            long.class, Long.class, BigInteger.class, BigDecimal.class };
 
         final Class[] nonnumericClasses = {
             String.class, boolean.class, Boolean.class, TestCase.class };
@@ -390,6 +392,20 @@ public class TestJavaClassHelper extends TestCase
         assertEquals(Long.class, JavaClassHelper.getCompareToCoercionType(int.class, int.class));
         assertEquals(Long.class, JavaClassHelper.getCompareToCoercionType(Short.class, Integer.class));
 
+        assertEquals(BigDecimal.class, JavaClassHelper.getCompareToCoercionType(BigDecimal.class, int.class));
+        assertEquals(BigDecimal.class, JavaClassHelper.getCompareToCoercionType(Double.class, BigDecimal.class));
+        assertEquals(BigDecimal.class, JavaClassHelper.getCompareToCoercionType(byte.class, BigDecimal.class));
+        assertEquals(BigDecimal.class, JavaClassHelper.getCompareToCoercionType(BigInteger.class, BigDecimal.class));
+        assertEquals(BigDecimal.class, JavaClassHelper.getCompareToCoercionType(BigDecimal.class, BigDecimal.class));
+        assertEquals(BigDecimal.class, JavaClassHelper.getCompareToCoercionType(double.class, BigInteger.class));
+        assertEquals(BigDecimal.class, JavaClassHelper.getCompareToCoercionType(Float.class, BigInteger.class));
+        assertEquals(BigInteger.class, JavaClassHelper.getCompareToCoercionType(BigInteger.class, BigInteger.class));
+        assertEquals(BigInteger.class, JavaClassHelper.getCompareToCoercionType(long.class, BigInteger.class));
+        assertEquals(BigInteger.class, JavaClassHelper.getCompareToCoercionType(short.class, BigInteger.class));
+        assertEquals(BigInteger.class, JavaClassHelper.getCompareToCoercionType(Integer.class, BigInteger.class));
+
+        tryInvalidGetRelational(Boolean.class, BigInteger.class);
+        tryInvalidGetRelational(String.class, BigDecimal.class);
         tryInvalidGetRelational(String.class, int.class);
         tryInvalidGetRelational(Long.class, String.class);
         tryInvalidGetRelational(Long.class, Boolean.class);
@@ -723,6 +739,14 @@ public class TestJavaClassHelper extends TestCase
         assertFalse(JavaClassHelper.isSimpleNameFullyQualfied("DABC","abc.ABC"));
         assertFalse(JavaClassHelper.isSimpleNameFullyQualfied("AB","abc.ABC"));
         assertFalse(JavaClassHelper.isSimpleNameFullyQualfied("AB","ABC"));
+    }
+
+    public void testIsBigNumberType()
+    {
+        assertTrue(JavaClassHelper.isBigNumberType(BigInteger.class));
+        assertTrue(JavaClassHelper.isBigNumberType(BigDecimal.class));
+        assertFalse(JavaClassHelper.isBigNumberType(String.class));
+        assertFalse(JavaClassHelper.isBigNumberType(Double.class));
     }
 
     private void tryInvalidGetCommonCoercionType(Class[] types)

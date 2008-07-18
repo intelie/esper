@@ -20,7 +20,13 @@ public enum OutputLimitRateType
      */
     TIME_MIN,
 
+    /**
+     * Output following a crontab-like schedule.
+     */
     CRONTAB,
 
+    /**
+     * Output when an expression turns true.
+     */
     WHEN_EXPRESSION
 }

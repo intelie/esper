@@ -31,7 +31,8 @@ public class ASTOutputLimitHelper
      * Build an output limit spec from the AST node supplied.
      *
      * @param node - parse node
-     * @param astExprNodeMap
+     * @param astExprNodeMap is the map of current AST tree nodes to their respective expression root node
+     * @param engineTime is current engine time
      * @return output limit spec
      */
     public static OutputLimitSpec buildOutputLimitSpec(Tree node, long engineTime, Map<Tree, ExprNode> astExprNodeMap)

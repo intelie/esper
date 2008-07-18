@@ -79,6 +79,7 @@ public class OutputLimitClause implements Serializable
 
     /**
      * Creates an output limit clause with a when-expression and optional then-assignment expressions to be added.
+     * @param whenExpression the expression that returns true to trigger output
      * @return clause
      */
     public static OutputLimitClause create(Expression whenExpression)
@@ -88,6 +89,7 @@ public class OutputLimitClause implements Serializable
 
     /**
      * Creates an output limit clause with a crontab 'at' schedule parameters, see {@link com.espertech.esper.type.FrequencyParameter} and related.
+     * @param scheduleParameters the crontab schedule parameters
      * @return clause
      */
     public static OutputLimitClause create(Object[] scheduleParameters)
@@ -136,6 +138,11 @@ public class OutputLimitClause implements Serializable
         this.unit = unit;
     }
 
+    /**
+     * Ctor.
+     * @param selector is the events to select
+     * @param crontabAtParameters the crontab schedule parameters
+     */
     public OutputLimitClause(OutputLimitSelector selector, Object[] crontabAtParameters)
     {
         this.selector = selector;
@@ -143,6 +150,12 @@ public class OutputLimitClause implements Serializable
         this.unit = OutputLimitUnit.CRONTAB_EXPRESSION;
     }
 
+    /**
+     * Ctor.
+     * @param selector is the events to select
+     * @param whenExpression the boolean expression to evaluate to control output
+     * @param thenAssignments the variable assignments, optional or an empty list
+     */
     public OutputLimitClause(OutputLimitSelector selector, Expression whenExpression, List<Pair<String, Expression>> thenAssignments)
     {
         this.selector = selector;
@@ -223,22 +236,40 @@ public class OutputLimitClause implements Serializable
         this.frequencyVariable = frequencyVariable;
     }
 
+    /**
+     * Returns the expression that controls output for use with the when-keyword.
+     * @return expression should be boolean result
+     */
     public Expression getWhenExpression()
     {
         return whenExpression;
     }
 
+    /**
+     * Returns the list of optional then-keyword variable assignments, if any
+     * @return list of variable assignments or null if none
+     */
     public List<Pair<String, Expression>> getThenAssignments()
     {
         return thenAssignments;
     }
 
+    /**
+     * Adds a then-keyword variable assigment for use with the when-keyword.
+     * @param variableName to set
+     * @param assignmentExpression expression to calculate new value
+     * @return clause
+     */
     public OutputLimitClause addThenAssignment(String variableName, Expression assignmentExpression)
     {
         thenAssignments.add(new Pair<String, Expression>(variableName, assignmentExpression));
         return this;
     }
 
+    /**
+     * Returns the crontab parameters, or null if not using crontab-like schedule.
+     * @return parameters
+     */
     public Object[] getCrontabAtParameters()
     {
         return crontabAtParameters;

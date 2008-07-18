@@ -25,6 +25,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * Output condition for output rate limiting that handles when-then expressions for controlling output.
+ */
 public class OutputConditionExpression implements OutputCondition, VariableChangeCallback
 {
     private static final Log log = LogFactory.getLog(OutputConditionExpression.class);
@@ -45,6 +48,14 @@ public class OutputConditionExpression implements OutputCondition, VariableChang
     private int totalOldEventsCount;
     private Long lastOutputTimestamp;
 
+    /**
+     * Ctor.
+     * @param whenExpressionNode the expression to evaluate, returning true when to output
+     * @param assignments is the optional then-clause variable assignments, or null or empty if none
+     * @param context statement context
+     * @param outputCallback callback
+     * @throws ExprValidationException when validation fails
+     */
     public OutputConditionExpression(ExprNode whenExpressionNode, List<OnTriggerSetAssignment> assignments, StatementContext context, OutputCallback outputCallback)
             throws ExprValidationException
     {
@@ -199,6 +210,11 @@ public class OutputConditionExpression implements OutputCondition, VariableChang
         }
     }
 
+    /**
+     * Build the event type for built-in properties.
+     * @param eventAdapterService event adapters
+     * @return event type
+     */
     public static EventType getBuiltInEventType(EventAdapterService eventAdapterService)
     {
         Map<String, Object> outputLimitProperties = new HashMap<String, Object>();

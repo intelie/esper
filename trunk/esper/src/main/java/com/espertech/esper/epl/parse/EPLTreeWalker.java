@@ -531,6 +531,12 @@ public class EPLTreeWalker extends EsperEPL2Ast
         statementSpec.getStreamSpecs().add(streamSpec);
     }
 
+    /**
+     * Returns the list of set-variable assignments under the given node.
+     * @param childNode node to inspect
+     * @param astExprNodeMap map of AST to expression
+     * @return list of assignments
+     */
     protected static List<OnTriggerSetAssignment> getOnTriggerSetAssignments(Tree childNode, Map<Tree, ExprNode> astExprNodeMap)
     {
         List<OnTriggerSetAssignment> assignments = new ArrayList<OnTriggerSetAssignment>();

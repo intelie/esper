@@ -43,6 +43,7 @@ public class OutputProcessViewPolicy extends OutputProcessView
      * @param statementContext is the services the output condition may depend on
      * @param isInsertInto is true if the statement is a insert-into
      * @param outputStrategy is the method to use to produce output
+     * @throws ExprValidationException if validation of the output expressions fails
      */
     public OutputProcessViewPolicy(ResultSetProcessor resultSetProcessor,
                           OutputStrategy outputStrategy,

@@ -4,6 +4,7 @@ import junit.framework.TestCase;
 
 import java.lang.management.ThreadMXBean;
 import java.lang.management.ManagementFactory;
+import java.math.BigInteger;
 
 // TODO - remove me
 public class TestCPUUsage extends TestCase
@@ -13,6 +14,26 @@ public class TestCPUUsage extends TestCase
     public void setIS_A(boolean IS_A)
     {
         //this.IS_A = IS_A;
+    }
+
+    public void testLongCost()
+    {
+        BigInteger bigint = BigInteger.valueOf(1233);
+
+        long start = System.currentTimeMillis();
+        Number l = new Long(10101002);
+        //Number l = new Integer(10101002);
+        Integer intVal = 10101002;
+        for (int i = 0; i < 100000000; i++)
+        {
+            if (l.longValue() == intVal.longValue())
+            {
+
+            }
+        }
+        long end = System.currentTimeMillis();
+        long delta = end - start;
+        System.out.println(delta);
     }
 
     public void testBooleanCost()

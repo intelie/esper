@@ -11,6 +11,8 @@ import com.espertech.esper.collection.MultiKey;
 
 import java.util.Map;
 import java.util.HashMap;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 
 /**
  * Enum representing relational types of operation.
@@ -87,23 +89,50 @@ public enum RelationalOpEnum
         computers.put(new MultiKey<Object>(new Object[] {Double.class, GE}), new GEDoubleComputer());
         computers.put(new MultiKey<Object>(new Object[] {Double.class, LT}), new LTDoubleComputer());
         computers.put(new MultiKey<Object>(new Object[] {Double.class, LE}), new LEDoubleComputer());
+        computers.put(new MultiKey<Object>(new Object[] {BigDecimal.class, GT}), new GTBigDecComputer());
+        computers.put(new MultiKey<Object>(new Object[] {BigDecimal.class, GE}), new GEBigDecComputer());
+        computers.put(new MultiKey<Object>(new Object[] {BigDecimal.class, LT}), new LTBigDecComputer());
+        computers.put(new MultiKey<Object>(new Object[] {BigDecimal.class, LE}), new LEBigDecComputer());
+        computers.put(new MultiKey<Object>(new Object[] {BigInteger.class, GT}), new GTBigIntComputer());
+        computers.put(new MultiKey<Object>(new Object[] {BigInteger.class, GE}), new GEBigIntComputer());
+        computers.put(new MultiKey<Object>(new Object[] {BigInteger.class, LT}), new LTBigIntComputer());
+        computers.put(new MultiKey<Object>(new Object[] {BigInteger.class, LE}), new LEBigIntComputer());
     }
 
     /**
      * Returns the computer to use for the relational operation based on the coercion type.
      * @param coercedType is the object type
-     * @return computer for performing the relational op
+     * @param typeOne
+     *@param typeTwo @return computer for performing the relational op
      */
-    public RelationalOpEnum.Computer getComputer(Class coercedType)
+    public RelationalOpEnum.Computer getComputer(Class coercedType, Class typeOne, Class typeTwo)
     {
         if ( (coercedType != Double.class) &&
              (coercedType != Long.class) &&
-             (coercedType != String.class))
+             (coercedType != String.class) &&
+             (coercedType != BigDecimal.class) &&
+             (coercedType != BigInteger.class))
         {
             throw new IllegalArgumentException("Unsupported type for relational op compare, type " + coercedType);
         }
+
+        if (coercedType == BigDecimal.class)
+        {
+            return makeBigDecimalComputer(typeOne, typeTwo);
+        }
+        if (coercedType == BigInteger.class)
+        {
+            return makeBigIntegerComputer(typeOne, typeTwo);
+        }
+
         MultiKey<Object> key = new MultiKey<Object>(new Object[] {coercedType, this});
         return computers.get(key);
+    }
+
+    private Computer makeBigDecimalComputer(Class typeOne, Class typeTwo)
+    {
+
+
     }
 
     /**
@@ -265,6 +294,106 @@ public enum RelationalOpEnum
             Number s1 = (Number) objOne;
             Number s2 = (Number) objTwo;
             return s1.doubleValue() <= s2.doubleValue();
+        }
+    }
+
+    /**
+     * Computer for relational op compare.
+     */
+    public static class GTBigDecComputer implements Computer
+    {
+        public boolean compare(Object objOne, Object objTwo)
+        {
+            BigDecimal s1 = (BigDecimal) objOne;
+            BigDecimal s2 = (BigDecimal) objTwo;
+            int result = s1.compareTo(s2);
+            return result > 0;
+        }
+    }
+    /**
+     * Computer for relational op compare.
+     */
+    public static class GEBigDecComputer implements Computer
+    {
+        public boolean compare(Object objOne, Object objTwo)
+        {
+            BigDecimal s1 = (BigDecimal) objOne;
+            BigDecimal s2 = (BigDecimal) objTwo;
+            return s1.compareTo(s2) >= 0;
+        }
+    }
+    /**
+     * Computer for relational op compare.
+     */
+    public static class LEBigDecComputer implements Computer
+    {
+        public boolean compare(Object objOne, Object objTwo)
+        {
+            BigDecimal s1 = (BigDecimal) objOne;
+            BigDecimal s2 = (BigDecimal) objTwo;
+            return s1.compareTo(s2) <= 0;
+        }
+    }
+    /**
+     * Computer for relational op compare.
+     */
+    public static class LTBigDecComputer implements Computer
+    {
+        public boolean compare(Object objOne, Object objTwo)
+        {
+            BigDecimal s1 = (BigDecimal) objOne;
+            BigDecimal s2 = (BigDecimal) objTwo;
+            return s1.compareTo(s2) < 0;
+        }
+    }
+
+    /**
+     * Computer for relational op compare.
+     */
+    public static class GTBigIntComputer implements Computer
+    {
+        public boolean compare(Object objOne, Object objTwo)
+        {
+            BigInteger s1 = (BigInteger) objOne;
+            BigInteger s2 = (BigInteger) objTwo;
+            int result = s1.compareTo(s2);
+            return result > 0;
+        }
+    }
+    /**
+     * Computer for relational op compare.
+     */
+    public static class GEBigIntComputer implements Computer
+    {
+        public boolean compare(Object objOne, Object objTwo)
+        {
+            BigInteger s1 = (BigInteger) objOne;
+            BigInteger s2 = (BigInteger) objTwo;
+            return s1.compareTo(s2) >= 0;
+        }
+    }
+    /**
+     * Computer for relational op compare.
+     */
+    public static class LEBigIntComputer implements Computer
+    {
+        public boolean compare(Object objOne, Object objTwo)
+        {
+            BigInteger s1 = (BigInteger) objOne;
+            BigInteger s2 = (BigInteger) objTwo;
+            return s1.compareTo(s2) <= 0;
+        }
+    }
+    /**
+     * Computer for relational op compare.
+     */
+    public static class LTBigIntComputer implements Computer
+    {
+        public boolean compare(Object objOne, Object objTwo)
+        {
+            BigInteger s1 = (BigInteger) objOne;
+            BigInteger s2 = (BigInteger) objTwo;
+            return s1.compareTo(s2) < 0;
         }
     }
 

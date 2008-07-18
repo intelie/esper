@@ -15,6 +15,7 @@ public interface OutputConditionFactory
      * @param statementContext supplies the services required such as for scheduling callbacks
      * @param outputCallback is the method to invoke for output
      * @return instance for performing output
+     * @throws  ExprValidationException if validation of the output expressions fails
      */
 	public OutputCondition createCondition(OutputLimitSpec outputLimitSpec,
 										   StatementContext statementContext,

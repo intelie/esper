@@ -13,6 +13,8 @@ import com.espertech.esper.type.*;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.math.BigInteger;
+import java.math.BigDecimal;
 
 /**
  * Helper for questions about Java classes such as
@@ -153,6 +155,8 @@ public class JavaClassHelper
     {
         if ((clazz == Double.class) ||
             (clazz == double.class) ||
+            (clazz == BigDecimal.class) ||
+            (clazz == BigInteger.class) ||
             (clazz == Float.class) ||
             (clazz == float.class) ||
             (clazz == Short.class) ||
@@ -390,11 +394,38 @@ public class JavaClassHelper
             throw new IllegalArgumentException("Types cannot be compared: " +
                     typeOne.getName() + " and " + typeTwo.getName());
         }
+        if ((typeOne == BigDecimal.class) || (typeTwo == BigDecimal.class))
+        {
+            return BigDecimal.class;
+        }
+        if ((isFloatingPointClass(typeOne) && (typeTwo == BigInteger.class)) ||
+            (isFloatingPointClass(typeTwo) && (typeOne == BigInteger.class)))
+        {
+            return BigDecimal.class;
+        }
         if (isFloatingPointClass(typeOne) || isFloatingPointClass(typeTwo))
         {
             return Double.class;
         }
+        if ((typeOne == BigInteger.class) || (typeTwo == BigInteger.class))
+        {
+            return BigInteger.class;
+        }
         return Long.class;
+    }
+
+    /**
+     * Returns true if the type is one of the big number types, i.e. BigDecimal or BigInteger
+     * @param clazz to check
+     * @return true for big number
+     */
+    public static boolean isBigNumberType(Class clazz)
+    {
+        if ((clazz == BigInteger.class) || (clazz == BigDecimal.class))
+        {
+            return true;
+        }
+        return false;
     }
 
     /**

@@ -12,13 +12,12 @@ import com.espertech.esper.core.ExtensionServicesContext;
 import com.espertech.esper.core.StatementContext;
 import com.espertech.esper.schedule.*;
 import com.espertech.esper.util.ExecutionPathDebugLog;
-import com.espertech.esper.event.EventBean;
-import com.espertech.esper.collection.MultiKey;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.util.Set;
-
+/**
+ * Output condition handling crontab-at schedule output.
+ */
 public final class OutputConditionCrontab implements OutputCondition
 {
     private static final boolean DO_OUTPUT = true;
@@ -37,6 +36,7 @@ public final class OutputConditionCrontab implements OutputCondition
      * Constructor.
      * @param context is the view context for time scheduling
      * @param outputCallback is the callback to make once the condition is satisfied
+     * @param scheduleSpecParameterList list of schedule parameters
      */
     public OutputConditionCrontab(Object[] scheduleSpecParameterList,
                                    StatementContext context,
