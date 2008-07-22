@@ -6,6 +6,8 @@ import com.espertech.esper.collection.MultiKeyUntyped;
 import com.espertech.esper.client.EPException;
 
 import java.lang.reflect.Method;
+import java.math.BigInteger;
+import java.math.BigDecimal;
 
 /**
  * Implements method resolution.
@@ -78,6 +80,14 @@ public class MethodResolutionServiceImpl implements MethodResolutionService
 
     public AggregationMethod makeSumAggregator(Class type)
     {
+        if (type == BigInteger.class)
+        {
+            return new BigIntegerSumAggregator();
+        }
+        if (type == BigDecimal.class)
+        {
+            return new BigDecimalSumAggregator();
+        }
         if ((type == Long.class) || (type == long.class))
         {
             return new LongSumAggregator();
@@ -102,8 +112,12 @@ public class MethodResolutionServiceImpl implements MethodResolutionService
         return new DistinctValueAggregator(aggregationMethod, childType);
     }
 
-    public AggregationMethod makeAvgAggregator()
+    public AggregationMethod makeAvgAggregator(Class type)
     {
+        if ((type == BigDecimal.class) || (type == BigInteger.class))
+        {
+            return new BigDecimalAvgAggregator();
+        }
         return new AvgAggregator();
     }
 

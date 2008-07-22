@@ -281,6 +281,19 @@ public class JavaClassHelper
             throw new CoercionException("Cannot coerce types " + typeOne.getName() + " and " + typeTwo.getName());
         }
 
+        if ((boxedOne == BigDecimal.class) || (boxedTwo == BigDecimal.class))
+        {
+            return BigDecimal.class;
+        }
+        if ( ((boxedOne == BigInteger.class) && JavaClassHelper.isFloatingPointClass(boxedTwo)) ||
+             ((boxedTwo == BigInteger.class) && JavaClassHelper.isFloatingPointClass(boxedOne)))
+        {
+            return BigDecimal.class;
+        }
+        if ((boxedOne == BigInteger.class) || (boxedTwo == BigInteger.class))
+        {
+            return BigInteger.class;
+        }
         if ((boxedOne == Double.class) || (boxedTwo == Double.class))
         {
             return Double.class;
@@ -299,6 +312,9 @@ public class JavaClassHelper
     /**
      * Coerce the given number to the given type, assuming the type is a Boxed type. Allows coerce to lower resultion number.
      * Does't coerce to primitive types.
+     * <p>
+     * Meant for statement compile-time use, not for runtime use.
+     * 
      * @param numToCoerce is the number to coerce to the given type
      * @param resultBoxedType is the boxed result type to return
      * @return the numToCoerce as a value in the given result type
@@ -316,6 +332,18 @@ public class JavaClassHelper
         if (resultBoxedType == Long.class)
         {
             return numToCoerce.longValue();
+        }
+        if (resultBoxedType == BigInteger.class)
+        {
+            return BigInteger.valueOf(numToCoerce.longValue());
+        }
+        if (resultBoxedType == BigDecimal.class)
+        {
+            if (JavaClassHelper.isFloatingPointNumber(numToCoerce))
+            {
+                return BigDecimal.valueOf(numToCoerce.doubleValue());
+            }
+            return BigDecimal.valueOf(numToCoerce.longValue());
         }
         if (resultBoxedType == Float.class)
         {
@@ -466,6 +494,25 @@ public class JavaClassHelper
                     (boxedFrom == Long.class) ||
                     (boxedFrom == Float.class) ||
                     (boxedFrom == Double.class));
+        }
+        else if (boxedTo == BigDecimal.class)
+        {
+            return ((boxedFrom == Byte.class) ||
+                    (boxedFrom == Short.class) ||
+                    (boxedFrom == Integer.class) ||
+                    (boxedFrom == Long.class) ||
+                    (boxedFrom == Float.class) ||
+                    (boxedFrom == Double.class) ||
+                    (boxedFrom == BigInteger.class) ||
+                    (boxedFrom == BigDecimal.class));
+        }
+        else if (boxedTo == BigInteger.class)
+        {
+            return ((boxedFrom == Byte.class) ||
+                    (boxedFrom == Short.class) ||
+                    (boxedFrom == Integer.class) ||
+                    (boxedFrom == Long.class) ||
+                    (boxedFrom == BigInteger.class));
         }
         else if (boxedTo == Long.class)
         {

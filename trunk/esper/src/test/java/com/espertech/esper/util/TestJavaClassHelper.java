@@ -1,16 +1,15 @@
 package com.espertech.esper.util;
 
-import junit.framework.TestCase;
 import com.espertech.esper.support.bean.*;
-import com.espertech.esper.event.EventAdapterException;
+import junit.framework.TestCase;
 
 import java.io.BufferedReader;
 import java.io.LineNumberReader;
 import java.io.Reader;
 import java.io.Serializable;
-import java.util.*;
-import java.math.BigInteger;
 import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.util.*;
 
 public class TestJavaClassHelper extends TestCase
 {
@@ -56,6 +55,18 @@ public class TestJavaClassHelper extends TestCase
         assertTrue(JavaClassHelper.canCoerce(long.class, double.class));
         assertTrue(JavaClassHelper.canCoerce(int.class, double.class));
 
+        assertTrue(JavaClassHelper.canCoerce(BigInteger.class, BigInteger.class));
+        assertTrue(JavaClassHelper.canCoerce(long.class, BigInteger.class));
+        assertTrue(JavaClassHelper.canCoerce(Integer.class, BigInteger.class));
+        assertTrue(JavaClassHelper.canCoerce(short.class, BigInteger.class));
+
+        assertTrue(JavaClassHelper.canCoerce(float.class, BigDecimal.class));
+        assertTrue(JavaClassHelper.canCoerce(Double.class, BigDecimal.class));
+        assertTrue(JavaClassHelper.canCoerce(BigInteger.class, BigDecimal.class));
+        assertTrue(JavaClassHelper.canCoerce(long.class, BigDecimal.class));
+        assertTrue(JavaClassHelper.canCoerce(Integer.class, BigDecimal.class));
+        assertTrue(JavaClassHelper.canCoerce(short.class, BigDecimal.class));
+
         try
         {
             JavaClassHelper.canCoerce(String.class, Float.class);
@@ -77,7 +88,7 @@ public class TestJavaClassHelper extends TestCase
         }
     }
 
-    public void testCoerceNumber()
+    public void testCoerceBoxed()
     {
         assertEquals(1d, JavaClassHelper.coerceBoxed(1d, Double.class));
         assertEquals(5d, JavaClassHelper.coerceBoxed(5, Double.class));
@@ -87,6 +98,9 @@ public class TestJavaClassHelper extends TestCase
         assertEquals(4, JavaClassHelper.coerceBoxed((long) 4, Integer.class));
         assertEquals((byte) 5, JavaClassHelper.coerceBoxed((long) 5, Byte.class));
         assertEquals(8l, JavaClassHelper.coerceBoxed((long) 8, Long.class));
+        assertEquals(BigInteger.valueOf(8), JavaClassHelper.coerceBoxed(8, BigInteger.class));
+        assertEquals(BigDecimal.valueOf(8), JavaClassHelper.coerceBoxed(8, BigDecimal.class));
+        assertEquals(BigDecimal.valueOf(8d), JavaClassHelper.coerceBoxed(8d, BigDecimal.class));
 
         try
         {
@@ -321,7 +335,7 @@ public class TestJavaClassHelper extends TestCase
         assertFalse(JavaClassHelper.isBoolean(String.class));
     }
 
-    public void testGetCoercionType()
+    public void testGetArithmaticCoercionType()
     {
         assertEquals(Double.class, JavaClassHelper.getArithmaticCoercionType(Double.class, int.class));
         assertEquals(Double.class, JavaClassHelper.getArithmaticCoercionType(byte.class, double.class));
@@ -331,6 +345,12 @@ public class TestJavaClassHelper extends TestCase
         assertEquals(Float.class, JavaClassHelper.getArithmaticCoercionType(byte.class, float.class));
         assertEquals(Integer.class, JavaClassHelper.getArithmaticCoercionType(byte.class, int.class));
         assertEquals(Integer.class, JavaClassHelper.getArithmaticCoercionType(Integer.class, int.class));
+        assertEquals(BigDecimal.class, JavaClassHelper.getArithmaticCoercionType(Integer.class, BigDecimal.class));
+        assertEquals(BigDecimal.class, JavaClassHelper.getArithmaticCoercionType(BigDecimal.class, Integer.class));
+        assertEquals(BigDecimal.class, JavaClassHelper.getArithmaticCoercionType(BigInteger.class, float.class));
+        assertEquals(BigDecimal.class, JavaClassHelper.getArithmaticCoercionType(float.class, BigInteger.class));
+        assertEquals(BigInteger.class, JavaClassHelper.getArithmaticCoercionType(Integer.class, BigInteger.class));
+        assertEquals(BigInteger.class, JavaClassHelper.getArithmaticCoercionType(BigInteger.class, int.class));
 
         try
         {

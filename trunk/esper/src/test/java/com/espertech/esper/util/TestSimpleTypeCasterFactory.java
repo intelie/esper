@@ -2,6 +2,9 @@ package com.espertech.esper.util;
 
 import junit.framework.TestCase;
 
+import java.math.BigInteger;
+import java.math.BigDecimal;
+
 public class TestSimpleTypeCasterFactory extends TestCase
 {
     public void testGetCaster() throws Exception
@@ -18,8 +21,12 @@ public class TestSimpleTypeCasterFactory extends TestCase
 
         for (int i = 0; i < tests.length; i++)
         {
-            SimpleTypeCaster caster = SimpleTypeCasterFactory.getCaster((Class)tests[i][0]);
+            SimpleTypeCaster caster = SimpleTypeCasterFactory.getCaster(null, (Class)tests[i][0]);
             assertEquals("error in row:" + i, tests[i][2], caster.cast(tests[i][1]));
         }
+        
+        assertEquals(BigInteger.valueOf(100), SimpleTypeCasterFactory.getCaster(Long.class, BigInteger.class).cast(100L));
+        assertEquals(BigDecimal.valueOf(100), SimpleTypeCasterFactory.getCaster(Long.class, BigDecimal.class).cast(100L));
+        assertEquals(BigDecimal.valueOf(100d), SimpleTypeCasterFactory.getCaster(Double.class, BigDecimal.class).cast(100d));
     }
 }

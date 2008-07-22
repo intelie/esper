@@ -1,11 +1,14 @@
 package com.espertech.esper.regression.view;
 
-import junit.framework.TestCase;
 import com.espertech.esper.client.*;
 import com.espertech.esper.support.bean.*;
 import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.support.epl.SupportStaticMethodLib;
 import com.espertech.esper.support.util.SupportUpdateListener;
+import junit.framework.TestCase;
+
+import java.math.BigDecimal;
+import java.math.BigInteger;
 
 public class TestFilterExpressions extends TestCase
 {
@@ -573,7 +576,7 @@ public class TestFilterExpressions extends TestCase
         tryFilterRelationalOpRange(text, new int[] {1, 2, 3, 4}, new boolean[] {false, false, true, true});
     }
 
-    public void tryFilterRelationalOpRange(String text, int[] testData, boolean[] isReceived)
+    private void tryFilterRelationalOpRange(String text, int[] testData, boolean[] isReceived)
     {
         EPStatement stmt = epService.getEPAdministrator().createEPL(text);
         stmt.addListener(listener);

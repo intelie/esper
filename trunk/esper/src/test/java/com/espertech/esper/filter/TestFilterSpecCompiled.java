@@ -1,6 +1,5 @@
 package com.espertech.esper.filter;
 
-import junit.framework.TestCase;
 import com.espertech.esper.event.EventBean;
 import com.espertech.esper.event.EventType;
 import com.espertech.esper.pattern.MatchedEventMap;
@@ -9,6 +8,9 @@ import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.event.SupportEventAdapterService;
 import com.espertech.esper.support.event.SupportEventBeanFactory;
 import com.espertech.esper.support.filter.SupportFilterSpecBuilder;
+import com.espertech.esper.util.SimpleNumberCoercer;
+import com.espertech.esper.util.SimpleNumberCoercerFactory;
+import junit.framework.TestCase;
 
 import java.util.List;
 import java.util.Vector;
@@ -66,7 +68,8 @@ public class TestFilterSpecCompiled extends TestCase
     {
         List<FilterSpecParam> params = SupportFilterSpecBuilder.buildList(new Object[]
                                     { "intPrimitive", FilterOperator.EQUAL, 2 });
-        params.add(new FilterSpecParamEventProp("doubleBoxed", FilterOperator.EQUAL, "asName", "doublePrimitive", false, Double.class));
+        SimpleNumberCoercer numberCoercer = SimpleNumberCoercerFactory.getCoercer(int.class, Double.class);
+        params.add(new FilterSpecParamEventProp("doubleBoxed", FilterOperator.EQUAL, "asName", "doublePrimitive", false, numberCoercer, Double.class));
         FilterSpecCompiled filterSpec = new FilterSpecCompiled(eventType, "SupportBean", params);
 
         SupportBean eventBean = new SupportBean();

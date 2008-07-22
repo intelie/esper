@@ -65,7 +65,7 @@ public class ExprMathNode extends ExprNode
         {
             resultType = JavaClassHelper.getArithmaticCoercionType(childTypeOne, childTypeTwo);
         }
-        arithTypeEnumComputer = mathArithTypeEnum.getComputer(resultType);
+        arithTypeEnumComputer = mathArithTypeEnum.getComputer(resultType, childTypeOne, childTypeTwo);
     }
 
     public Class getType() throws ExprValidationException

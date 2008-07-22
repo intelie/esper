@@ -212,7 +212,7 @@ for user-controlled imports of classes and packages as outlined in <xref linkend
 			<itemizedlist>
 				<listitem>
 					<para>
-						Any of the Java built-in types: <literal>int, long, byte, short, char, double, float, string</literal>, where <literal>string</literal>  is a short notation for <literal>java.lang.String</literal>. The type name is not case-sensitive. For example:
+						Any of the Java built-in types: <literal>int, long, byte, short, char, double, float, string, BigInteger, BigDecimal</literal>, where <literal>string</literal>  is a short notation for <literal>java.lang.String</literal> and <literal>BigInteger</literal> as well as <literal>BigDecimal</literal> are the classes in <literal>java.math</literal>. The type name is not case-sensitive. For example:
 						<synopsis>cast(price, double)</synopsis>
 					</para>
 				</listitem>

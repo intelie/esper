@@ -6,7 +6,12 @@ import java.lang.management.ThreadMXBean;
 import java.lang.management.ManagementFactory;
 import java.math.BigInteger;
 
-// TODO - remove me
+// TODO - Document:
+//   !BigDecimal.valueOf(1.0).equals(BigDecimal.valueOf(1))
+//   Conversion automatic to higher resolution
+//   All math, equals and relationship operators use BigDecimal or BigNumber methods
+//   Aggregation uses long value (BigInt) and double (BigDec) for: avedev, stddev, median; for all others the result is BigInt/BigDec
+//   
 public class TestCPUUsage extends TestCase
 {
     private final static boolean IS_A = false;

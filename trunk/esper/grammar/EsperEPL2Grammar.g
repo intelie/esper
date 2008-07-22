@@ -365,6 +365,7 @@ tokens
 	parserTokenParaphases.put(SET, "'set'");
 	parserTokenParaphases.put(VARIABLE, "'variable'");
 	parserTokenParaphases.put(UNTIL, "'until'");
+	parserTokenParaphases.put(AT, "'at'");
     }
     return parserTokenParaphases;
   }
@@ -979,8 +980,8 @@ atomicExpression
 	;
 		
 observerExpression
-	:	ns=IDENT COLON nm=IDENT LPAREN parameterSet? RPAREN
-		-> ^(OBSERVER_EXPR $ns $nm parameterSet?)
+	:	ns=IDENT COLON (nm=IDENT | a=AT) LPAREN parameterSet? RPAREN
+		-> ^(OBSERVER_EXPR $ns $nm? ^(IDENT[$a.text])? parameterSet?)
 	;
 
 guardExpression
@@ -1143,6 +1144,7 @@ eventPropertyIdent
 keywordAllowedIdent
   @init { String identifier = ""; } 
 	:	i1=IDENT { identifier = $i1.getText(); }
+		|AT { identifier = "at"; }
 		|COUNT { identifier = "count"; }
 		|ESCAPE { identifier = "escape"; }
     		|EVERY_EXPR { identifier = "every"; }

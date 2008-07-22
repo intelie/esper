@@ -6,15 +6,20 @@ import com.espertech.esper.client.EPServiceProviderManager;
 import com.espertech.esper.client.EPStatement;
 import com.espertech.esper.support.bean.SupportMarketDataBean;
 import com.espertech.esper.support.bean.SupportBean;
+import com.espertech.esper.support.bean.SupportBeanNumeric;
 import com.espertech.esper.support.util.SupportUpdateListener;
+import com.espertech.esper.support.util.ArrayAssertionUtil;
 import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.event.EventBean;
+
+import java.math.BigDecimal;
+import java.math.BigInteger;
 
 public class TestViewWhereClause extends TestCase
 {
     private EPServiceProvider epService;
-    private SupportUpdateListener testListener;
-    private EPStatement testView;
+    private SupportUpdateListener listener;
+    private EPStatement stmt;
 
     public void setUp()
     {
@@ -22,24 +27,24 @@ public class TestViewWhereClause extends TestCase
         epService.initialize();
 
         String viewExpr = "select * from " + SupportMarketDataBean.class.getName() + ".win:length(3) where symbol='CSCO'";
-        testView = epService.getEPAdministrator().createEPL(viewExpr);
-        testListener = new SupportUpdateListener();
-        testView.addListener(testListener);
+        stmt = epService.getEPAdministrator().createEPL(viewExpr);
+        listener = new SupportUpdateListener();
+        stmt.addListener(listener);
     }
     
     public void testWhere()
     {
         sendMarketDataEvent("IBM");
-        assertFalse(testListener.getAndClearIsInvoked());
+        assertFalse(listener.getAndClearIsInvoked());
 
         sendMarketDataEvent("CSCO");
-        assertTrue(testListener.getAndClearIsInvoked());
+        assertTrue(listener.getAndClearIsInvoked());
 
         sendMarketDataEvent("IBM");
-        assertFalse(testListener.getAndClearIsInvoked());
+        assertFalse(listener.getAndClearIsInvoked());
 
         sendMarketDataEvent("CSCO");
-        assertTrue(testListener.getAndClearIsInvoked());
+        assertTrue(listener.getAndClearIsInvoked());
     }
 
     public void testWhereNumericType()
@@ -51,15 +56,15 @@ public class TestViewWhereClause extends TestCase
                 " from " + SupportBean.class.getName() + ".win:length(3) where " +
                 "intPrimitive=longPrimitive and intPrimitive=doublePrimitive and floatPrimitive=doublePrimitive";
 
-        testView = epService.getEPAdministrator().createEPL(viewExpr);
-        testListener = new SupportUpdateListener();
-        testView.addListener(testListener);
+        stmt = epService.getEPAdministrator().createEPL(viewExpr);
+        listener = new SupportUpdateListener();
+        stmt.addListener(listener);
 
         sendSupportBeanEvent(1,2,3,4);
-        assertFalse(testListener.isInvoked());
+        assertFalse(listener.getAndClearIsInvoked());
 
         sendSupportBeanEvent(2, 2, 2, 2);
-        EventBean event = testListener.getAndResetLastNewData()[0];
+        EventBean event = listener.getAndResetLastNewData()[0];
         assertEquals(Long.class, event.getEventType().getPropertyType("p1"));
         assertEquals(4l, event.get("p1"));
         assertEquals(Double.class, event.getEventType().getPropertyType("p2"));

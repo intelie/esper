@@ -11,6 +11,9 @@ import com.espertech.esper.util.SimpleTypeCasterFactory;
 import com.espertech.esper.util.JavaClassHelper;
 import com.espertech.esper.util.SimpleTypeCasterAnyType;
 
+import java.math.BigInteger;
+import java.math.BigDecimal;
+
 /**
  * Represents the CAST(expression, type) function is an expression tree.
  */
@@ -46,13 +49,27 @@ public class ExprCastNode extends ExprNode
             throw new ExprValidationException("Cast function node must have exactly 1 child node");
         }
 
+        Class fromType = this.getChildNodes().get(0).getType();
+
         // try the primitive names including "string"
         targetType = JavaClassHelper.getPrimitiveClassForName(classIdentifier.trim());
         if (targetType != null)
         {
             targetType = JavaClassHelper.getBoxedType(targetType);
-            caster = SimpleTypeCasterFactory.getCaster(targetType);
+            caster = SimpleTypeCasterFactory.getCaster(fromType, targetType);
             isNumeric = caster.isNumericCast();
+        }
+        else if (classIdentifier.trim().toLowerCase().equals("BigInteger".toLowerCase()))
+        {
+            targetType = BigInteger.class;
+            caster = SimpleTypeCasterFactory.getCaster(fromType, targetType);
+            isNumeric = true;
+        }
+        else if (classIdentifier.trim().toLowerCase().equals("BigDecimal".toLowerCase()))
+        {
+            targetType = BigDecimal.class;
+            caster = SimpleTypeCasterFactory.getCaster(fromType, targetType);
+            isNumeric = true;
         }
         else
         {

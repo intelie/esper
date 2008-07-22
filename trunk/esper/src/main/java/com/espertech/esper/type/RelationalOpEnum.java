@@ -8,11 +8,14 @@
 package com.espertech.esper.type;
 
 import com.espertech.esper.collection.MultiKey;
+import com.espertech.esper.util.SimpleNumberBigIntegerCoercer;
+import com.espertech.esper.util.SimpleNumberBigDecimalCoercer;
+import com.espertech.esper.util.SimpleNumberCoercerFactory;
 
-import java.util.Map;
-import java.util.HashMap;
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Enum representing relational types of operation.
@@ -102,8 +105,9 @@ public enum RelationalOpEnum
     /**
      * Returns the computer to use for the relational operation based on the coercion type.
      * @param coercedType is the object type
-     * @param typeOne
-     *@param typeTwo @return computer for performing the relational op
+     * @param typeOne the compare-to type on the LHS
+     * @param typeTwo the compare-to type on the RHS
+     * @return computer for performing the relational op
      */
     public RelationalOpEnum.Computer getComputer(Class coercedType, Class typeOne, Class typeTwo)
     {
@@ -131,8 +135,48 @@ public enum RelationalOpEnum
 
     private Computer makeBigDecimalComputer(Class typeOne, Class typeTwo)
     {
+        if ((typeOne == BigDecimal.class) && (typeTwo == BigDecimal.class))
+        {
+            return computers.get(new MultiKey<Object>(new Object[] {BigDecimal.class, this}));
+        }
+        SimpleNumberBigDecimalCoercer convertorOne = SimpleNumberCoercerFactory.getCoercerBigDecimal(typeOne);
+        SimpleNumberBigDecimalCoercer convertorTwo = SimpleNumberCoercerFactory.getCoercerBigDecimal(typeTwo);
+        if (this == GT)
+        {
+            return new GTBigDecConvComputer(convertorOne, convertorTwo);
+        }
+        if (this == LT)
+        {
+            return new LTBigDecConvComputer(convertorOne, convertorTwo);
+        }
+        if (this == GE)
+        {
+            return new GEBigDecConvComputer(convertorOne, convertorTwo);
+        }
+        return new LEBigDecConvComputer(convertorOne, convertorTwo);
+    }
 
-
+    private Computer makeBigIntegerComputer(Class typeOne, Class typeTwo)
+    {
+        if ((typeOne == BigInteger.class) && (typeTwo == BigInteger.class))
+        {
+            return computers.get(new MultiKey<Object>(new Object[] {BigInteger.class, this}));
+        }
+        SimpleNumberBigIntegerCoercer convertorOne = SimpleNumberCoercerFactory.getCoercerBigInteger(typeOne);
+        SimpleNumberBigIntegerCoercer convertorTwo = SimpleNumberCoercerFactory.getCoercerBigInteger(typeTwo);
+        if (this == GT)
+        {
+            return new GTBigIntConvComputer(convertorOne, convertorTwo);
+        }
+        if (this == LT)
+        {
+            return new LTBigIntConvComputer(convertorOne, convertorTwo);
+        }
+        if (this == GE)
+        {
+            return new GEBigIntConvComputer(convertorOne, convertorTwo);
+        }
+        return new LEBigIntConvComputer(convertorOne, convertorTwo);
     }
 
     /**
@@ -393,6 +437,218 @@ public enum RelationalOpEnum
         {
             BigInteger s1 = (BigInteger) objOne;
             BigInteger s2 = (BigInteger) objTwo;
+            return s1.compareTo(s2) < 0;
+        }
+    }
+
+    /**
+     * Computer for relational op compare.
+     */
+    public static class GTBigIntConvComputer implements Computer
+    {
+        private final SimpleNumberBigIntegerCoercer convOne;
+        private final SimpleNumberBigIntegerCoercer convTwo;
+
+        /**
+         * Ctor.
+         * @param convOne convertor for LHS
+         * @param convTwo convertor for RHS
+         */
+        public GTBigIntConvComputer(SimpleNumberBigIntegerCoercer convOne, SimpleNumberBigIntegerCoercer convTwo)
+        {
+            this.convOne = convOne;
+            this.convTwo = convTwo;
+        }
+
+        public boolean compare(Object objOne, Object objTwo)
+        {
+            BigInteger s1 = convOne.coerceBoxedBigInt((Number)objOne);
+            BigInteger s2 = convTwo.coerceBoxedBigInt((Number)objTwo);
+            int result = s1.compareTo(s2);
+            return result > 0;
+        }
+    }
+    /**
+     * Computer for relational op compare.
+     */
+    public static class GEBigIntConvComputer implements Computer
+    {
+        private final SimpleNumberBigIntegerCoercer convOne;
+        private final SimpleNumberBigIntegerCoercer convTwo;
+
+        /**
+         * Ctor.
+         * @param convOne convertor for LHS
+         * @param convTwo convertor for RHS
+         */
+        public GEBigIntConvComputer(SimpleNumberBigIntegerCoercer convOne, SimpleNumberBigIntegerCoercer convTwo)
+        {
+            this.convOne = convOne;
+            this.convTwo = convTwo;
+        }
+
+        public boolean compare(Object objOne, Object objTwo)
+        {
+            BigInteger s1 = convOne.coerceBoxedBigInt((Number)objOne);
+            BigInteger s2 = convTwo.coerceBoxedBigInt((Number)objTwo);
+            return s1.compareTo(s2) >= 0;
+        }
+    }
+    /**
+     * Computer for relational op compare.
+     */
+    public static class LEBigIntConvComputer implements Computer
+    {
+        private final SimpleNumberBigIntegerCoercer convOne;
+        private final SimpleNumberBigIntegerCoercer convTwo;
+
+        /**
+         * Ctor.
+         * @param convOne convertor for LHS
+         * @param convTwo convertor for RHS
+         */
+        public LEBigIntConvComputer(SimpleNumberBigIntegerCoercer convOne, SimpleNumberBigIntegerCoercer convTwo)
+        {
+            this.convOne = convOne;
+            this.convTwo = convTwo;
+        }
+
+        public boolean compare(Object objOne, Object objTwo)
+        {
+            BigInteger s1 = convOne.coerceBoxedBigInt((Number)objOne);
+            BigInteger s2 = convTwo.coerceBoxedBigInt((Number)objTwo);
+            return s1.compareTo(s2) <= 0;
+        }
+    }
+    /**
+     * Computer for relational op compare.
+     */
+    public static class LTBigIntConvComputer implements Computer
+    {
+        private final SimpleNumberBigIntegerCoercer convOne;
+        private final SimpleNumberBigIntegerCoercer convTwo;
+
+        /**
+         * Ctor.
+         * @param convOne convertor for LHS
+         * @param convTwo convertor for RHS
+         */
+        public LTBigIntConvComputer(SimpleNumberBigIntegerCoercer convOne, SimpleNumberBigIntegerCoercer convTwo)
+        {
+            this.convOne = convOne;
+            this.convTwo = convTwo;
+        }
+
+        public boolean compare(Object objOne, Object objTwo)
+        {
+            BigInteger s1 = convOne.coerceBoxedBigInt((Number)objOne);
+            BigInteger s2 = convTwo.coerceBoxedBigInt((Number)objTwo);
+            return s1.compareTo(s2) < 0;
+        }
+    }
+
+    /**
+     * Computer for relational op compare.
+     */
+    public static class GTBigDecConvComputer implements Computer
+    {
+        private final SimpleNumberBigDecimalCoercer convOne;
+        private final SimpleNumberBigDecimalCoercer convTwo;
+
+        /**
+         * Ctor.
+         * @param convOne convertor for LHS
+         * @param convTwo convertor for RHS
+         */
+        public GTBigDecConvComputer(SimpleNumberBigDecimalCoercer convOne, SimpleNumberBigDecimalCoercer convTwo)
+        {
+            this.convOne = convOne;
+            this.convTwo = convTwo;
+        }
+
+        public boolean compare(Object objOne, Object objTwo)
+        {
+            BigDecimal s1 = convOne.coerceBoxedBigDec((Number)objOne);
+            BigDecimal s2 = convTwo.coerceBoxedBigDec((Number)objTwo);
+            int result = s1.compareTo(s2);
+            return result > 0;
+        }
+    }
+    /**
+     * Computer for relational op compare.
+     */
+    public static class GEBigDecConvComputer implements Computer
+    {
+        private final SimpleNumberBigDecimalCoercer convOne;
+        private final SimpleNumberBigDecimalCoercer convTwo;
+
+        /**
+         * Ctor.
+         * @param convOne convertor for LHS
+         * @param convTwo convertor for RHS
+         */
+        public GEBigDecConvComputer(SimpleNumberBigDecimalCoercer convOne, SimpleNumberBigDecimalCoercer convTwo)
+        {
+            this.convOne = convOne;
+            this.convTwo = convTwo;
+        }
+
+        public boolean compare(Object objOne, Object objTwo)
+        {
+            BigDecimal s1 = convOne.coerceBoxedBigDec((Number)objOne);
+            BigDecimal s2 = convTwo.coerceBoxedBigDec((Number)objTwo);
+            return s1.compareTo(s2) >= 0;
+        }
+    }
+    /**
+     * Computer for relational op compare.
+     */
+    public static class LEBigDecConvComputer implements Computer
+    {
+        private final SimpleNumberBigDecimalCoercer convOne;
+        private final SimpleNumberBigDecimalCoercer convTwo;
+
+        /**
+         * Ctor.
+         * @param convOne convertor for LHS
+         * @param convTwo convertor for RHS
+         */
+        public LEBigDecConvComputer(SimpleNumberBigDecimalCoercer convOne, SimpleNumberBigDecimalCoercer convTwo)
+        {
+            this.convOne = convOne;
+            this.convTwo = convTwo;
+        }
+
+        public boolean compare(Object objOne, Object objTwo)
+        {
+            BigDecimal s1 = convOne.coerceBoxedBigDec((Number)objOne);
+            BigDecimal s2 = convTwo.coerceBoxedBigDec((Number)objTwo);
+            return s1.compareTo(s2) <= 0;
+        }
+    }
+    /**
+     * Computer for relational op compare.
+     */
+    public static class LTBigDecConvComputer implements Computer
+    {
+        private final SimpleNumberBigDecimalCoercer convOne;
+        private final SimpleNumberBigDecimalCoercer convTwo;
+
+        /**
+         * Ctor.
+         * @param convOne convertor for LHS
+         * @param convTwo convertor for RHS
+         */
+        public LTBigDecConvComputer(SimpleNumberBigDecimalCoercer convOne, SimpleNumberBigDecimalCoercer convTwo)
+        {
+            this.convOne = convOne;
+            this.convTwo = convTwo;
+        }
+
+        public boolean compare(Object objOne, Object objTwo)
+        {
+            BigDecimal s1 = convOne.coerceBoxedBigDec((Number)objOne);
+            BigDecimal s2 = convTwo.coerceBoxedBigDec((Number)objTwo);
             return s1.compareTo(s2) < 0;
         }
     }

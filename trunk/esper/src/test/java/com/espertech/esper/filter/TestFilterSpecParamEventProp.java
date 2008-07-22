@@ -1,16 +1,13 @@
 package com.espertech.esper.filter;
 
-import junit.framework.TestCase;
+import com.espertech.esper.event.EventBean;
 import com.espertech.esper.pattern.MatchedEventMap;
 import com.espertech.esper.pattern.MatchedEventMapImpl;
 import com.espertech.esper.support.bean.SupportBean;
-import com.espertech.esper.support.event.SupportEventTypeFactory;
 import com.espertech.esper.support.event.SupportEventBeanFactory;
-import com.espertech.esper.event.EventBean;
-import com.espertech.esper.event.EventType;
-
-import java.util.Map;
-import java.util.HashMap;
+import com.espertech.esper.util.SimpleNumberCoercer;
+import com.espertech.esper.util.SimpleNumberCoercerFactory;
+import junit.framework.TestCase;
 
 public class TestFilterSpecParamEventProp extends TestCase
 {
@@ -66,6 +63,7 @@ public class TestFilterSpecParamEventProp extends TestCase
 
     private FilterSpecParamEventProp makeParam(String eventAsName, String property)
     {
-        return new FilterSpecParamEventProp("intPrimitive", FilterOperator.EQUAL, eventAsName, property, false, int.class);
+        SimpleNumberCoercer numberCoercer = SimpleNumberCoercerFactory.getCoercer(int.class, int.class);
+        return new FilterSpecParamEventProp("intPrimitive", FilterOperator.EQUAL, eventAsName, property, false, numberCoercer, int.class);
     }
 }

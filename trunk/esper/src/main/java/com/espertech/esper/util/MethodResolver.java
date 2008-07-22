@@ -238,7 +238,6 @@ public class MethodResolver
 	// that have to be converted
 	private static int compareParameterTypes(Method method, Class[] invocationParameters)
 	{
-
 		Class[] declarationParameters = method.getParameterTypes();
 		
 		if(invocationParameters == null)

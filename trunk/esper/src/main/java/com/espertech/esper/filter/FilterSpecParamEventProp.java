@@ -9,7 +9,7 @@ package com.espertech.esper.filter;
 
 import com.espertech.esper.event.EventBean;
 import com.espertech.esper.pattern.MatchedEventMap;
-import com.espertech.esper.util.JavaClassHelper;
+import com.espertech.esper.util.SimpleNumberCoercer;
 
 /**
  * This class represents a filter parameter containing a reference to another event's property
@@ -20,6 +20,7 @@ public final class FilterSpecParamEventProp extends FilterSpecParam
     private final String resultEventAsName;
     private final String resultEventProperty;
     private final boolean isMustCoerce;
+    private final SimpleNumberCoercer numberCoercer;
     private final Class coercionType;
 
     /**
@@ -30,16 +31,19 @@ public final class FilterSpecParamEventProp extends FilterSpecParam
      * @param resultEventProperty is the name of the property to get from the named result event
      * @param isMustCoerce indicates on whether numeric coercion must be performed
      * @param coercionType indicates the numeric coercion type to use
+     * @param numberCoercer interface to use to perform coercion
      * @throws IllegalArgumentException if an operator was supplied that does not take a single constant value
      */
     public FilterSpecParamEventProp(String propertyName, FilterOperator filterOperator, String resultEventAsName,
-                                    String resultEventProperty, boolean isMustCoerce, Class coercionType)
+                                    String resultEventProperty, boolean isMustCoerce,
+                                    SimpleNumberCoercer numberCoercer, Class coercionType)
         throws IllegalArgumentException
     {
         super(propertyName, filterOperator);
         this.resultEventAsName = resultEventAsName;
         this.resultEventProperty = resultEventProperty;
         this.isMustCoerce = isMustCoerce;
+        this.numberCoercer = numberCoercer;
         this.coercionType = coercionType;
 
         if (filterOperator.isRangeOperator())
@@ -99,7 +103,7 @@ public final class FilterSpecParamEventProp extends FilterSpecParam
         // Coerce if necessary
         if (isMustCoerce)
         {
-            value = JavaClassHelper.coerceBoxed((Number) value, coercionType);
+            value = numberCoercer.coerceBoxed((Number) value);
         }
         return value;
     }

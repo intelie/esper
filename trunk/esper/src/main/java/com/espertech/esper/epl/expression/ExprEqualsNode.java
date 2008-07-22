@@ -7,13 +7,15 @@
  **************************************************************************************/
 package com.espertech.esper.epl.expression;
 
-import com.espertech.esper.util.JavaClassHelper;
-import com.espertech.esper.event.EventBean;
 import com.espertech.esper.epl.core.MethodResolutionService;
 import com.espertech.esper.epl.core.StreamTypeService;
 import com.espertech.esper.epl.core.ViewResourceDelegate;
 import com.espertech.esper.epl.variable.VariableService;
+import com.espertech.esper.event.EventBean;
 import com.espertech.esper.schedule.TimeProvider;
+import com.espertech.esper.util.JavaClassHelper;
+import com.espertech.esper.util.SimpleNumberCoercer;
+import com.espertech.esper.util.SimpleNumberCoercerFactory;
 
 /**
  * Represents an equals (=) comparator in a filter expressiun tree.
@@ -23,7 +25,8 @@ public class ExprEqualsNode extends ExprNode
     private final boolean isNotEquals;
 
     private boolean mustCoerce;
-    private Class coercionType;
+    private SimpleNumberCoercer numberCoercerLHS;
+    private SimpleNumberCoercer numberCoercerRHS;
 
     /**
      * Ctor.
@@ -68,6 +71,7 @@ public class ExprEqualsNode extends ExprNode
         }
 
         // Get the common type such as Bool, String or Double and Long
+        Class coercionType;
         try
         {
             coercionType = JavaClassHelper.getCompareToCoercionType(typeOne, typeTwo);
@@ -94,6 +98,8 @@ public class ExprEqualsNode extends ExprNode
                 throw new IllegalStateException("Coercion type " + coercionType + " not numeric");
             }
             mustCoerce = true;
+            numberCoercerLHS = SimpleNumberCoercerFactory.getCoercer(typeOne, coercionType);
+            numberCoercerRHS = SimpleNumberCoercerFactory.getCoercer(typeTwo, coercionType);
         }
     }
 
@@ -127,8 +133,8 @@ public class ExprEqualsNode extends ExprNode
         }
         else
         {
-            Number left = JavaClassHelper.coerceBoxed((Number) leftResult, coercionType);
-            Number right = JavaClassHelper.coerceBoxed((Number) rightResult, coercionType);
+            Number left = numberCoercerLHS.coerceBoxed((Number) leftResult);
+            Number right = numberCoercerRHS.coerceBoxed((Number) rightResult);
             return left.equals(right) ^ isNotEquals;
         }
     }
@@ -152,12 +158,6 @@ public class ExprEqualsNode extends ExprNode
         }
 
         ExprEqualsNode other = (ExprEqualsNode) node;
-
-        if (other.isNotEquals != this.isNotEquals)
-        {
-            return false;
-        }
-
-        return true;
+        return other.isNotEquals == this.isNotEquals;
     }
 }

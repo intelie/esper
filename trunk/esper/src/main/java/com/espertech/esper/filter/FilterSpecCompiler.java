@@ -17,6 +17,8 @@ import com.espertech.esper.event.EventType;
 import com.espertech.esper.schedule.TimeProvider;
 import com.espertech.esper.type.RelationalOpEnum;
 import com.espertech.esper.util.JavaClassHelper;
+import com.espertech.esper.util.SimpleNumberCoercer;
+import com.espertech.esper.util.SimpleNumberCoercerFactory;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -533,6 +535,7 @@ public final class FilterSpecCompiler
         String propertyName = identNodeLeft.getResolvedPropertyName();
 
         boolean isMustCoerce = false;
+        SimpleNumberCoercer numberCoercer = null;
         Class numericCoercionType = identNodeLeft.getType();
         if (identNodeRight.getType() != identNodeLeft.getType())
         {
@@ -543,11 +546,12 @@ public final class FilterSpecCompiler
                     throwConversionError(identNodeRight.getType(), identNodeLeft.getType(), identNodeLeft.getResolvedPropertyName());
                 }
                 isMustCoerce = true;
+                numberCoercer = SimpleNumberCoercerFactory.getCoercer(identNodeRight.getType(), numericCoercionType);
             }
         }
 
         return new FilterSpecParamEventProp(propertyName, op, identNodeRight.getResolvedStreamName(), identNodeRight.getResolvedPropertyName(),
-                isMustCoerce, numericCoercionType);
+                isMustCoerce, numberCoercer, numericCoercionType);
     }
 
     private static void throwConversionError(Class fromType, Class toType, String propertyName)

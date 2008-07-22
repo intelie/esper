@@ -43,6 +43,7 @@ select insert from MyEvent]]></programlisting>
 				<row><entry>all</entry><entry>-</entry></row>
 				<row><entry>and</entry><entry>-</entry></row>
 				<row><entry>as</entry><entry>-</entry></row>
+				<row><entry>at</entry><entry>yes</entry></row>
 				<row><entry>asc</entry><entry>-</entry></row>
 				<row><entry>avedev</entry><entry>yes</entry></row>
 				<row><entry>avg</entry><entry>yes</entry></row>

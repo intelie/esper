@@ -1,19 +1,28 @@
 package com.espertech.esper.epl.agg;
 
-import com.espertech.esper.epl.agg.AggregationMethod;
 import com.espertech.esper.epl.core.MethodResolutionService;
 
+import java.math.BigDecimal;
+
 /**
- * Average that generates double-typed numbers.
+ * Sum for BigInteger values.
  */
-public class AvgAggregator implements AggregationMethod
+public class BigDecimalSumAggregator implements AggregationMethod
 {
-    private double sum;
+    private BigDecimal sum;
     private long numDataPoints;
+
+    /**
+     * Ctor.
+     */
+    public BigDecimalSumAggregator()
+    {
+        sum = BigDecimal.valueOf(0.0);
+    }
 
     public void clear()
     {
-        sum = 0;
+        sum = BigDecimal.valueOf(0.0);
         numDataPoints = 0;
     }
 
@@ -24,7 +33,7 @@ public class AvgAggregator implements AggregationMethod
             return;
         }
         numDataPoints++;
-        sum += ((Number) object).doubleValue();
+        sum = sum.add((BigDecimal)object);
     }
 
     public void leave(Object object)
@@ -34,7 +43,7 @@ public class AvgAggregator implements AggregationMethod
             return;
         }
         numDataPoints--;
-        sum -= ((Number) object).doubleValue();
+        sum = sum.subtract((BigDecimal)object);
     }
 
     public Object getValue()
@@ -43,16 +52,16 @@ public class AvgAggregator implements AggregationMethod
         {
             return null;
         }
-        return sum / numDataPoints;
+        return sum;
     }
 
     public Class getValueType()
     {
-        return Double.class;
+        return BigDecimal.class;
     }
 
     public AggregationMethod newAggregator(MethodResolutionService methodResolutionService)
     {
-        return methodResolutionService.makeAvgAggregator(Double.class);
+        return methodResolutionService.makeSumAggregator(BigDecimal.class);
     }
 }

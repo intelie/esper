@@ -8,9 +8,14 @@
 package com.espertech.esper.type;
 
 import com.espertech.esper.collection.MultiKey;
+import com.espertech.esper.util.SimpleNumberBigIntegerCoercer;
+import com.espertech.esper.util.SimpleNumberCoercerFactory;
+import com.espertech.esper.util.SimpleNumberBigDecimalCoercer;
 
-import java.util.Map;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Enumeration for the type of arithmatic to use.
@@ -51,22 +56,32 @@ public enum MathArithTypeEnum
         computers.put(new MultiKey<Object>(new Object[] {Float.class, ADD}), new AddFloat());
         computers.put(new MultiKey<Object>(new Object[] {Long.class, ADD}), new AddLong());
         computers.put(new MultiKey<Object>(new Object[] {Integer.class, ADD}), new AddInt());
+        computers.put(new MultiKey<Object>(new Object[] {BigDecimal.class, ADD}), new AddBigDec());
+        computers.put(new MultiKey<Object>(new Object[] {BigInteger.class, ADD}), new AddBigInt());
         computers.put(new MultiKey<Object>(new Object[] {Double.class, SUBTRACT}), new SubtractDouble());
         computers.put(new MultiKey<Object>(new Object[] {Float.class, SUBTRACT}), new SubtractFloat());
         computers.put(new MultiKey<Object>(new Object[] {Long.class, SUBTRACT}), new SubtractLong());
         computers.put(new MultiKey<Object>(new Object[] {Integer.class, SUBTRACT}), new SubtractInt());
+        computers.put(new MultiKey<Object>(new Object[] {BigDecimal.class, SUBTRACT}), new SubtractBigDec());
+        computers.put(new MultiKey<Object>(new Object[] {BigInteger.class, SUBTRACT}), new SubtractBigInt());
         computers.put(new MultiKey<Object>(new Object[] {Double.class, DIVIDE}), new DivideDouble());
         computers.put(new MultiKey<Object>(new Object[] {Float.class, DIVIDE}), new DivideFloat());
         computers.put(new MultiKey<Object>(new Object[] {Long.class, DIVIDE}), new DivideLong());
         computers.put(new MultiKey<Object>(new Object[] {Integer.class, DIVIDE}), new DivideInt());
+        computers.put(new MultiKey<Object>(new Object[] {BigDecimal.class, DIVIDE}), new DivideBigDec());
+        computers.put(new MultiKey<Object>(new Object[] {BigInteger.class, DIVIDE}), new DivideBigInt());
         computers.put(new MultiKey<Object>(new Object[] {Double.class, MULTIPLY}), new MultiplyDouble());
         computers.put(new MultiKey<Object>(new Object[] {Float.class, MULTIPLY}), new MultiplyFloat());
         computers.put(new MultiKey<Object>(new Object[] {Long.class, MULTIPLY}), new MultiplyLong());
         computers.put(new MultiKey<Object>(new Object[] {Integer.class, MULTIPLY}), new MultiplyInt());
+        computers.put(new MultiKey<Object>(new Object[] {BigDecimal.class, MULTIPLY}), new MultiplyBigDec());
+        computers.put(new MultiKey<Object>(new Object[] {BigInteger.class, MULTIPLY}), new MultiplyBigInt());
         computers.put(new MultiKey<Object>(new Object[] {Double.class, MODULO}), new ModuloDouble());
         computers.put(new MultiKey<Object>(new Object[] {Float.class, MODULO}), new ModuloFloat());
         computers.put(new MultiKey<Object>(new Object[] {Long.class, MODULO}), new ModuloLong());
         computers.put(new MultiKey<Object>(new Object[] {Integer.class, MODULO}), new ModuloInt());
+        computers.put(new MultiKey<Object>(new Object[] {BigDecimal.class, MODULO}), new ModuloDouble());
+        computers.put(new MultiKey<Object>(new Object[] {BigInteger.class, MODULO}), new ModuloLong());
     }
 
     /**
@@ -93,17 +108,31 @@ public enum MathArithTypeEnum
     /**
      * Returns number cruncher for the target coercion type.
      * @param coercedType - target type
+     * @param typeOne - the LHS type
+     * @param typeTwo - the RHS type
      * @return number cruncher
      */
-    public Computer getComputer(Class coercedType)
+    public Computer getComputer(Class coercedType, Class typeOne, Class typeTwo)
     {
         if ( (coercedType != Double.class) &&
              (coercedType != Float.class) &&
              (coercedType != Long.class) &&
-             (coercedType != Integer.class))
+             (coercedType != Integer.class) &&
+             (coercedType != BigDecimal.class) &&
+             (coercedType != BigInteger.class))
         {
             throw new IllegalArgumentException("Expected base numeric type for computation result but got type " + coercedType);
         }
+
+        if (coercedType == BigDecimal.class)
+        {
+            return makeBigDecimalComputer(typeOne, typeTwo);
+        }
+        if (coercedType == BigInteger.class)
+        {
+            return makeBigIntegerComputer(typeOne, typeTwo);
+        }
+
         MultiKey<Object> key = new MultiKey<Object>(new Object[] {coercedType, this});
         Computer computer = computers.get(key);
 
@@ -112,6 +141,60 @@ public enum MathArithTypeEnum
             throw new IllegalArgumentException("Could not determine process or type " + this + " type " + coercedType);
         }
         return computer;
+    }
+
+    private Computer makeBigDecimalComputer(Class typeOne, Class typeTwo)
+    {
+        if ((typeOne == BigDecimal.class) && (typeTwo == BigDecimal.class))
+        {
+            return computers.get(new MultiKey<Object>(new Object[] {BigDecimal.class, this}));
+        }
+        SimpleNumberBigDecimalCoercer convertorOne = SimpleNumberCoercerFactory.getCoercerBigDecimal(typeOne);
+        SimpleNumberBigDecimalCoercer convertorTwo = SimpleNumberCoercerFactory.getCoercerBigDecimal(typeTwo);
+        if (this == ADD)
+        {
+            return new AddBigDecConvComputer(convertorOne, convertorTwo);
+        }
+        if (this == SUBTRACT)
+        {
+            return new SubtractBigDecConvComputer(convertorOne, convertorTwo);
+        }
+        if (this == MULTIPLY)
+        {
+            return new MultiplyBigDecConvComputer(convertorOne, convertorTwo);
+        }
+        if (this == DIVIDE)
+        {
+            return new DivideBigDecConvComputer(convertorOne, convertorTwo);
+        }
+        return new ModuloDouble();
+    }
+
+    private Computer makeBigIntegerComputer(Class typeOne, Class typeTwo)
+    {
+        if ((typeOne == BigDecimal.class) && (typeTwo == BigDecimal.class))
+        {
+            return computers.get(new MultiKey<Object>(new Object[] {BigDecimal.class, this}));
+        }
+        SimpleNumberBigIntegerCoercer convertorOne = SimpleNumberCoercerFactory.getCoercerBigInteger(typeOne);
+        SimpleNumberBigIntegerCoercer convertorTwo = SimpleNumberCoercerFactory.getCoercerBigInteger(typeTwo);
+        if (this == ADD)
+        {
+            return new AddBigIntConvComputer(convertorOne, convertorTwo);
+        }
+        if (this == SUBTRACT)
+        {
+            return new SubtractBigIntConvComputer(convertorOne, convertorTwo);
+        }
+        if (this == MULTIPLY)
+        {
+            return new MultiplyBigIntConvComputer(convertorOne, convertorTwo);
+        }
+        if (this == DIVIDE)
+        {
+            return new DivideBigIntConvComputer(convertorOne, convertorTwo);
+        }
+        return new ModuloLong();
     }
 
     /**
@@ -152,6 +235,31 @@ public enum MathArithTypeEnum
         public Number compute(Number d1, Number d2)
         {
             return d1.intValue() + d2.intValue();
+        }
+    }
+
+    /**
+     * Computer for type-specific arith. operations.
+     */
+    public static class AddBigInt implements Computer
+    {
+        public Number compute(Number d1, Number d2)
+        {
+            BigInteger b1 = (BigInteger) d1;
+            BigInteger b2 = (BigInteger) d2;
+            return b1.add(b2);
+        }
+    }
+    /**
+     * Computer for type-specific arith. operations.
+     */
+    public static class AddBigDec implements Computer
+    {
+        public Number compute(Number d1, Number d2)
+        {
+            BigDecimal b1 = (BigDecimal) d1;
+            BigDecimal b2 = (BigDecimal) d2;
+            return b1.add(b2);
         }
     }
 
@@ -199,6 +307,31 @@ public enum MathArithTypeEnum
     /**
      * Computer for type-specific arith. operations.
      */
+    public static class SubtractBigInt implements Computer
+    {
+        public Number compute(Number d1, Number d2)
+        {
+            BigInteger b1 = (BigInteger) d1;
+            BigInteger b2 = (BigInteger) d2;
+            return b1.subtract(b2);
+        }
+    }
+    /**
+     * Computer for type-specific arith. operations.
+     */
+    public static class SubtractBigDec implements Computer
+    {
+        public Number compute(Number d1, Number d2)
+        {
+            BigDecimal b1 = (BigDecimal) d1;
+            BigDecimal b2 = (BigDecimal) d2;
+            return b1.subtract(b2);
+        }
+    }
+
+    /**
+     * Computer for type-specific arith. operations.
+     */
     public static class DivideDouble implements Computer
     {
         public Number compute(Number d1, Number d2)
@@ -234,6 +367,31 @@ public enum MathArithTypeEnum
         public Number compute(Number d1, Number d2)
         {
             return d1.intValue() / d2.intValue();
+        }
+    }
+
+    /**
+     * Computer for type-specific arith. operations.
+     */
+    public static class DivideBigInt implements Computer
+    {
+        public Number compute(Number d1, Number d2)
+        {
+            BigInteger b1 = (BigInteger) d1;
+            BigInteger b2 = (BigInteger) d2;
+            return b1.divide(b2);
+        }
+    }
+    /**
+     * Computer for type-specific arith. operations.
+     */
+    public static class DivideBigDec implements Computer
+    {
+        public Number compute(Number d1, Number d2)
+        {
+            BigDecimal b1 = (BigDecimal) d1;
+            BigDecimal b2 = (BigDecimal) d2;
+            return b1.divide(b2);
         }
     }
 
@@ -281,6 +439,31 @@ public enum MathArithTypeEnum
     /**
      * Computer for type-specific arith. operations.
      */
+    public static class MultiplyBigInt implements Computer
+    {
+        public Number compute(Number d1, Number d2)
+        {
+            BigInteger b1 = (BigInteger) d1;
+            BigInteger b2 = (BigInteger) d2;
+            return b1.multiply(b2);
+        }
+    }
+    /**
+     * Computer for type-specific arith. operations.
+     */
+    public static class MultiplyBigDec implements Computer
+    {
+        public Number compute(Number d1, Number d2)
+        {
+            BigDecimal b1 = (BigDecimal) d1;
+            BigDecimal b2 = (BigDecimal) d2;
+            return b1.multiply(b2);
+        }
+    }
+
+    /**
+     * Computer for type-specific arith. operations.
+     */
     public static class ModuloDouble implements Computer
     {
         public Number compute(Number d1, Number d2)
@@ -319,6 +502,221 @@ public enum MathArithTypeEnum
         }
     }
 
+    /**
+     * Computer for math op.
+     */
+    public static class AddBigDecConvComputer implements Computer
+    {
+        private final SimpleNumberBigDecimalCoercer convOne;
+        private final SimpleNumberBigDecimalCoercer convTwo;
+
+        /**
+         * Ctor.
+         * @param convOne conversion for LHS
+         * @param convTwo conversion for RHS
+         */
+        public AddBigDecConvComputer(SimpleNumberBigDecimalCoercer convOne, SimpleNumberBigDecimalCoercer convTwo)
+        {
+            this.convOne = convOne;
+            this.convTwo = convTwo;
+        }
+
+        public Number compute(Number d1, Number d2)
+        {
+            BigDecimal s1 = convOne.coerceBoxedBigDec(d1);
+            BigDecimal s2 = convTwo.coerceBoxedBigDec(d2);
+            return s1.add(s2);
+        }
+    }
+
+    /**
+     * Computer for math op.
+     */
+    public static class SubtractBigDecConvComputer implements Computer
+    {
+        private final SimpleNumberBigDecimalCoercer convOne;
+        private final SimpleNumberBigDecimalCoercer convTwo;
+
+        /**
+         * Ctor.
+         * @param convOne convertor for LHS
+         * @param convTwo convertor for RHS
+         */
+        public SubtractBigDecConvComputer(SimpleNumberBigDecimalCoercer convOne, SimpleNumberBigDecimalCoercer convTwo)
+        {
+            this.convOne = convOne;
+            this.convTwo = convTwo;
+        }
+
+        public Number compute(Number d1, Number d2)
+        {
+            BigDecimal s1 = convOne.coerceBoxedBigDec(d1);
+            BigDecimal s2 = convTwo.coerceBoxedBigDec(d2);
+            return s1.subtract(s2);
+        }
+    }
+
+    /**
+     * Computer for math op.
+     */
+    public static class MultiplyBigDecConvComputer implements Computer
+    {
+        private final SimpleNumberBigDecimalCoercer convOne;
+        private final SimpleNumberBigDecimalCoercer convTwo;
+
+        /**
+         * Ctor.
+         * @param convOne conversion for LHS
+         * @param convTwo conversion for RHS
+         */
+        public MultiplyBigDecConvComputer(SimpleNumberBigDecimalCoercer convOne, SimpleNumberBigDecimalCoercer convTwo)
+        {
+            this.convOne = convOne;
+            this.convTwo = convTwo;
+        }
+
+        public Number compute(Number d1, Number d2)
+        {
+            BigDecimal s1 = convOne.coerceBoxedBigDec(d1);
+            BigDecimal s2 = convTwo.coerceBoxedBigDec(d2);
+            return s1.multiply(s2);
+        }
+    }
+
+    /**
+     * Computer for math op.
+     */
+    public static class DivideBigDecConvComputer implements Computer
+    {
+        private final SimpleNumberBigDecimalCoercer convOne;
+        private final SimpleNumberBigDecimalCoercer convTwo;
+
+        /**
+         * Ctor.
+         * @param convOne convertor for LHS
+         * @param convTwo convertor for RHS
+         */
+        public DivideBigDecConvComputer(SimpleNumberBigDecimalCoercer convOne, SimpleNumberBigDecimalCoercer convTwo)
+        {
+            this.convOne = convOne;
+            this.convTwo = convTwo;
+        }
+
+        public Number compute(Number d1, Number d2)
+        {
+            BigDecimal s1 = convOne.coerceBoxedBigDec(d1);
+            BigDecimal s2 = convTwo.coerceBoxedBigDec(d2);
+            return s1.divide(s2);
+        }
+    }
+
+    /**
+     * Computer for math op.
+     */
+    public static class AddBigIntConvComputer implements Computer
+    {
+        private final SimpleNumberBigIntegerCoercer convOne;
+        private final SimpleNumberBigIntegerCoercer convTwo;
+
+        /**
+         * Ctor.
+         * @param convOne conversion for LHS
+         * @param convTwo conversion for RHS
+         */
+        public AddBigIntConvComputer(SimpleNumberBigIntegerCoercer convOne, SimpleNumberBigIntegerCoercer convTwo)
+        {
+            this.convOne = convOne;
+            this.convTwo = convTwo;
+        }
+
+        public Number compute(Number d1, Number d2)
+        {
+            BigInteger s1 = convOne.coerceBoxedBigInt(d1);
+            BigInteger s2 = convTwo.coerceBoxedBigInt(d2);
+            return s1.add(s2);
+        }
+    }
+
+    /**
+     * Computer for math op.
+     */
+    public static class SubtractBigIntConvComputer implements Computer
+    {
+        private final SimpleNumberBigIntegerCoercer convOne;
+        private final SimpleNumberBigIntegerCoercer convTwo;
+
+        /**
+         * Ctor.
+         * @param convOne convertor for LHS
+         * @param convTwo convertor for RHS
+         */
+        public SubtractBigIntConvComputer(SimpleNumberBigIntegerCoercer convOne, SimpleNumberBigIntegerCoercer convTwo)
+        {
+            this.convOne = convOne;
+            this.convTwo = convTwo;
+        }
+
+        public Number compute(Number d1, Number d2)
+        {
+            BigInteger s1 = convOne.coerceBoxedBigInt(d1);
+            BigInteger s2 = convTwo.coerceBoxedBigInt(d2);
+            return s1.subtract(s2);
+        }
+    }
+
+    /**
+     * Computer for math op.
+     */
+    public static class MultiplyBigIntConvComputer implements Computer
+    {
+        private final SimpleNumberBigIntegerCoercer convOne;
+        private final SimpleNumberBigIntegerCoercer convTwo;
+
+        /**
+         * Ctor.
+         * @param convOne conversion for LHS
+         * @param convTwo conversion for RHS
+         */
+        public MultiplyBigIntConvComputer(SimpleNumberBigIntegerCoercer convOne, SimpleNumberBigIntegerCoercer convTwo)
+        {
+            this.convOne = convOne;
+            this.convTwo = convTwo;
+        }
+
+        public Number compute(Number d1, Number d2)
+        {
+            BigInteger s1 = convOne.coerceBoxedBigInt(d1);
+            BigInteger s2 = convTwo.coerceBoxedBigInt(d2);
+            return s1.multiply(s2);
+        }
+    }
+
+    /**
+     * Computer for math op.
+     */
+    public static class DivideBigIntConvComputer implements Computer
+    {
+        private final SimpleNumberBigIntegerCoercer convOne;
+        private final SimpleNumberBigIntegerCoercer convTwo;
+
+        /**
+         * Ctor.
+         * @param convOne convertor for LHS
+         * @param convTwo convertor for RHS
+         */
+        public DivideBigIntConvComputer(SimpleNumberBigIntegerCoercer convOne, SimpleNumberBigIntegerCoercer convTwo)
+        {
+            this.convOne = convOne;
+            this.convTwo = convTwo;
+        }
+
+        public Number compute(Number d1, Number d2)
+        {
+            BigInteger s1 = convOne.coerceBoxedBigInt(d1);
+            BigInteger s2 = convTwo.coerceBoxedBigInt(d2);
+            return s1.divide(s2);
+        }
+    }
     /**
      * Returns string representation of enum.
      * @return text for enum

@@ -91,9 +91,10 @@ public interface MethodResolutionService
 
     /**
      * Makes a new avg-aggregator.
+     * @param type the expression return type
      * @return aggregator
      */
-    public AggregationMethod makeAvgAggregator();
+    public AggregationMethod makeAvgAggregator(Class type);
 
     /**
      * Makes a new avedev-aggregator.

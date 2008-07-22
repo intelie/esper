@@ -27,8 +27,8 @@ public class ExprAvgNode extends ExprAggregateNode
 
     public AggregationMethod validateAggregationChild(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService) throws ExprValidationException
     {
-        super.validateSingleNumericChild(streamTypeService);
-        return methodResolutionService.makeAvgAggregator();
+        Class childType = super.validateSingleNumericChild(streamTypeService);
+        return methodResolutionService.makeAvgAggregator(childType);
     }
 
     protected String getAggregationFunctionName()

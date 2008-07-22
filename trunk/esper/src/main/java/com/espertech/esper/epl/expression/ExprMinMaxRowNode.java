@@ -9,12 +9,18 @@ package com.espertech.esper.epl.expression;
 
 import com.espertech.esper.event.EventBean;
 import com.espertech.esper.util.JavaClassHelper;
-import com.espertech.esper.type.MinMaxTypeEnum;
+import com.espertech.esper.util.SimpleNumberBigDecimalCoercer;
+import com.espertech.esper.util.SimpleNumberBigIntegerCoercer;
+import com.espertech.esper.util.SimpleNumberCoercerFactory;
+import com.espertech.esper.type.*;
 import com.espertech.esper.epl.core.MethodResolutionService;
 import com.espertech.esper.epl.core.StreamTypeService;
 import com.espertech.esper.epl.core.ViewResourceDelegate;
 import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.schedule.TimeProvider;
+
+import java.math.BigInteger;
+import java.math.BigDecimal;
 
 /**
  * Represents the MAX(a,b) and MIN(a,b) functions is an expression tree.
@@ -23,6 +29,7 @@ public class ExprMinMaxRowNode extends ExprNode
 {
     private MinMaxTypeEnum minMaxTypeEnum;
     private Class resultType;
+    private MinMaxTypeEnum.Computer computer;
 
     /**
      * Ctor.
@@ -69,6 +76,36 @@ public class ExprMinMaxRowNode extends ExprNode
         {
             resultType = JavaClassHelper.getArithmaticCoercionType(resultType, this.getChildNodes().get(i).getType());
         }
+
+        ExprNode[] childNodes = this.getChildNodes().toArray(new ExprNode[this.getChildNodes().size()]);
+        if (resultType == BigInteger.class)
+        {
+            SimpleNumberBigIntegerCoercer[] convertors = new SimpleNumberBigIntegerCoercer[childNodes.length];
+            for (int i = 0; i < childNodes.length; i++)
+            {
+                convertors[i] = SimpleNumberCoercerFactory.getCoercerBigInteger(childNodes[i].getType());
+            }
+            computer = new MinMaxTypeEnum.ComputerBigIntCoerce(childNodes, convertors, (minMaxTypeEnum == MinMaxTypeEnum.MAX));
+        }
+        else if (resultType == BigDecimal.class)
+        {
+            SimpleNumberBigDecimalCoercer[] convertors = new SimpleNumberBigDecimalCoercer[childNodes.length];
+            for (int i = 0; i < childNodes.length; i++)
+            {
+                convertors[i] = SimpleNumberCoercerFactory.getCoercerBigDecimal(childNodes[i].getType());
+            }
+            computer = new MinMaxTypeEnum.ComputerBigDecCoerce(childNodes, convertors, (minMaxTypeEnum == MinMaxTypeEnum.MAX));
+        }
+        else {
+            if (minMaxTypeEnum == MinMaxTypeEnum.MAX)
+            {
+                computer = new MinMaxTypeEnum.MaxComputerDoubleCoerce(childNodes);
+            }
+            else
+            {
+                computer = new MinMaxTypeEnum.MinComputerDoubleCoerce(childNodes);
+            }                
+        }
     }
 
     public Class getType() throws ExprValidationException
@@ -83,63 +120,7 @@ public class ExprMinMaxRowNode extends ExprNode
 
     public Object evaluate(EventBean[] eventsPerStream, boolean isNewData)
     {
-        Number valueChildOne = (Number) this.getChildNodes().get(0).evaluate(eventsPerStream, isNewData);
-        Number valueChildTwo = (Number) this.getChildNodes().get(1).evaluate(eventsPerStream, isNewData);
-
-        if ((valueChildOne == null) || (valueChildTwo == null))
-        {
-            return null;
-        }
-
-        Number result = null;
-        if (minMaxTypeEnum == MinMaxTypeEnum.MAX)
-        {
-            if (valueChildOne.doubleValue() > valueChildTwo.doubleValue())
-            {
-                result = valueChildOne;
-            }
-            else
-            {
-                result = valueChildTwo;
-            }
-
-            for (int i = 2; i < this.getChildNodes().size(); i++)
-            {
-                Number valueChild = (Number) this.getChildNodes().get(i).evaluate(eventsPerStream, isNewData);
-                if (valueChild == null)
-                {
-                    return null;
-                }
-                if (valueChild.doubleValue() > result.doubleValue())
-                {
-                    result = valueChild;
-                }
-            }
-        }
-        else
-        {
-            if (valueChildOne.doubleValue() > valueChildTwo.doubleValue())
-            {
-                result = valueChildTwo;
-            }
-            else
-            {
-                result = valueChildOne;
-            }
-            for (int i = 2; i < this.getChildNodes().size(); i++)
-            {
-                Number valueChild = (Number) this.getChildNodes().get(i).evaluate(eventsPerStream, isNewData);
-                if (valueChild == null)
-                {
-                    return null;
-                }
-                if (valueChild.doubleValue() < result.doubleValue())
-                {
-                    result = valueChild;
-                }
-            }
-        }
-
+        Number result = computer.execute(eventsPerStream, isNewData);
         return JavaClassHelper.coerceBoxed(result, resultType);
     }
 

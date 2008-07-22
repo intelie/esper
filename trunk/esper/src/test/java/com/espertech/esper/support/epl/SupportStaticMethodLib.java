@@ -6,6 +6,8 @@ import com.espertech.esper.support.bean.SupportMarketDataBean;
 
 import java.util.Map;
 import java.util.HashMap;
+import java.math.BigInteger;
+import java.math.BigDecimal;
 
 public class SupportStaticMethodLib 
 {
@@ -369,5 +371,15 @@ public class SupportStaticMethodLib
     public static boolean volumeGreaterZero(SupportMarketDataBean bean)
     {
         return bean.getVolume() > 0;
+    }
+
+    public static BigInteger myBigIntFunc(BigInteger val)
+    {
+        return val;
+    }
+
+    public static BigDecimal myBigDecFunc(BigDecimal val)
+    {
+        return val;
     }
 }
