@@ -69,6 +69,11 @@ public class Configuration implements ConfigurationOperations, ConfigurationInfo
      */
     protected Map<String, Map<String, Object>> nestableMapAliases;
 
+    /**
+     * Maps event type that are subtypes of another Map event type
+     */
+    protected Map<String, String> mapSuperTypes;
+
 	/**
 	 * The class and package name imports that
 	 * will be used to resolve partial class names.
@@ -282,6 +287,11 @@ public class Configuration implements ConfigurationOperations, ConfigurationInfo
             properties.put(entry.getKey(), entry.getValue().getName());
         }
         addEventTypeAlias(eventTypeAlias, properties);
+    }
+
+    public void addMapSuperType(String mapEventTypeAlias, String mapSupertypeAlias)
+    {
+        this.mapSuperTypes.put(mapEventTypeAlias, mapSupertypeAlias);
     }
 
     /**
@@ -763,6 +773,7 @@ public class Configuration implements ConfigurationOperations, ConfigurationInfo
         plugInEventTypes = new HashMap<String, ConfigurationPlugInEventType>();
         revisionEventTypes = new HashMap<String, ConfigurationRevisionEventType>();
         variantStreams = new HashMap<String, ConfigurationVariantStream>();
+        mapSuperTypes = new HashMap<String, String>();
     }
 
     /**

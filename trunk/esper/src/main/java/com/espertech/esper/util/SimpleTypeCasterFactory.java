@@ -224,7 +224,7 @@ public class SimpleTypeCasterFactory
 
         public boolean isNumericCast()
         {
-            return true;
+            return false;
         }
     }
 }

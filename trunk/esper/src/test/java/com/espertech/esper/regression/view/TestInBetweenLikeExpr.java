@@ -109,8 +109,10 @@ public class TestInBetweenLikeExpr extends TestCase
         ArrayAssertionUtil.assertProps(testListener.assertOneGetNewAndReset(), fields, new Object[] {true, false});
         epService.getEPRuntime().sendEvent(new SupportBeanArrayCollMap(2L, null, new Long[0], new int[0]));
         ArrayAssertionUtil.assertProps(testListener.assertOneGetNewAndReset(), fields, new Object[] {false, true});
+
         epService.getEPRuntime().sendEvent(new SupportBeanArrayCollMap(null, null, null, new int[] {3,4,5,6,7,7,7,8,8,8,1}));
         ArrayAssertionUtil.assertProps(testListener.assertOneGetNewAndReset(), fields, new Object[] {true, false});
+
         epService.getEPRuntime().sendEvent(new SupportBeanArrayCollMap(-1L, null, new Long[] {1L}, new int[] {3,4,5,6,7,7,7,8,8}));
         ArrayAssertionUtil.assertProps(testListener.assertOneGetNewAndReset(), fields, new Object[] {false, true});
         epService.getEPRuntime().sendEvent(new SupportBeanArrayCollMap(-1L, new int[] {1}, null, new int[] {}));

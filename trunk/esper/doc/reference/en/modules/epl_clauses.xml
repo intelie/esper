@@ -164,96 +164,127 @@ select insert from MyEvent]]></programlisting>
 			</para>
 		</sect2>
 
-		<sect2 id="epl-syntax-constants">
-			<title>Data Type of Constants</title>
-			<indexterm><primary>constants</primary></indexterm>
-			<indexterm><primary>literals</primary></indexterm>
-
-			<para>
-				An EPL constant is a number or a character string that indicates a fixed value. Constants can be used as expressions in many EPL statements, including variable assignment and case-when statements. They can also be used as parameter values for many built-in objects and clauses. Constants are also called literals.				
-			</para>
+		<sect2 id="epl-syntax-datatype">
+			<title>Data Types</title>
+			<indexterm><primary>data types</primary></indexterm>
 			
 			<para>
-				EPL supports the standard SQL constant notation as well as Java data type literals.
+				EPL honors all Java built-in primitive and boxed types, including <literal>java.math.BigInteger</literal> and <literal>java.math.BigDecimal</literal>.
 			</para>
 
 			<para>
-				The following are types of EPL constants:
+				EPL also follows Java standards in terms of widening, performing widening automatically in cases where widening type conversion is allowed without loss of precision. In cases where loss of precision is possible because of narrowing requirements, EPL compilation outputs a compilation error.
 			</para>
 
-			<table frame="topbot">
-				<title>Types of EPL constants</title>
-				<tgroup cols="3">
-					<colspec colwidth="0.20*"/>
-					<colspec colwidth="1*"/>
-					<colspec colwidth="0.75*"/>
-					<thead>
-						<row>
-							<entry>Type</entry>
-							<entry>Description</entry>
-							<entry>Examples</entry>
-						</row>
-					</thead>
-					<tbody>
-						<row>
-							<entry>string</entry>
-							<entry>A single character to an unlimited number of characters. Valid delimiters are the single quote (') or double quote (").</entry>
-							<entry><programlisting><![CDATA[select 'volume' as field1,
+			<para>
+				EPL supports casting via the <literal>cast</literal> function.
+			</para>
+
+			<sect3 id="epl-syntax-datatype-constants">
+				<title>Data Type of Constants</title>
+				<indexterm><primary>constants</primary></indexterm>
+				<indexterm><primary>literals</primary></indexterm>
+	
+				<para>
+					An EPL constant is a number or a character string that indicates a fixed value. Constants can be used as expressions in many EPL statements, including variable assignment and case-when statements. They can also be used as parameter values for many built-in objects and clauses. Constants are also called literals.				
+				</para>
+				
+				<para>
+					EPL supports the standard SQL constant notation as well as Java data type literals.
+				</para>
+	
+				<para>
+					The following are types of EPL constants:
+				</para>
+	
+				<table frame="topbot">
+					<title>Types of EPL constants</title>
+					<tgroup cols="3">
+						<colspec colwidth="0.20*"/>
+						<colspec colwidth="1*"/>
+						<colspec colwidth="0.75*"/>
+						<thead>
+							<row>
+								<entry>Type</entry>
+								<entry>Description</entry>
+								<entry>Examples</entry>
+							</row>
+						</thead>
+						<tbody>
+							<row>
+								<entry>string</entry>
+								<entry>A single character to an unlimited number of characters. Valid delimiters are the single quote (') or double quote (").</entry>
+								<entry><programlisting><![CDATA[select 'volume' as field1,
    "sleep" as field2, 
   "\u0041" as unicodeA]]></programlisting></entry>
-						</row>
-						<row>
-							<entry>boolean</entry>
-							<entry>A boolean value.</entry>
-							<entry><programlisting><![CDATA[select true as field1, 
+							</row>
+							<row>
+								<entry>boolean</entry>
+								<entry>A boolean value.</entry>
+								<entry><programlisting><![CDATA[select true as field1, 
   false as field2]]></programlisting></entry>
-						</row>
-						<row>
-							<entry>integer</entry>
-							<entry>An integer value (4 byte).</entry>
-							<entry><programlisting><![CDATA[select 1 as field1, 
+							</row>
+							<row>
+								<entry>integer</entry>
+								<entry>An integer value (4 byte).</entry>
+								<entry><programlisting><![CDATA[select 1 as field1, 
   -1 as field2, 
   1e2 as field3]]></programlisting></entry>
-						</row>
-						<row>
-							<entry>long</entry>
-							<entry>A long value (8 byte). Use the "L" or "l" (lowercase L) suffix.</entry>
-							<entry><programlisting><![CDATA[select 1L as field1, 
+							</row>
+							<row>
+								<entry>long</entry>
+								<entry>A long value (8 byte). Use the "L" or "l" (lowercase L) suffix.</entry>
+								<entry><programlisting><![CDATA[select 1L as field1, 
   1l as field2]]></programlisting></entry>
-						</row>
-						<row>
-							<entry>double</entry>
-							<entry>A double-precision 64-bit IEEE 754 floating point.</entry>
-							<entry><programlisting><![CDATA[select 1.67 as field1, 
+							</row>
+							<row>
+								<entry>double</entry>
+								<entry>A double-precision 64-bit IEEE 754 floating point.</entry>
+								<entry><programlisting><![CDATA[select 1.67 as field1, 
   167e-2 as field2, 
   1.67d as field3]]></programlisting></entry>
-						</row>
-						<row>
-							<entry>float</entry>
-							<entry>A single-precision 32-bit IEEE 754 floating point. Use the "f" suffix.</entry>
-							<entry><programlisting><![CDATA[select 1.2f as field1, 
+							</row>
+							<row>
+								<entry>float</entry>
+								<entry>A single-precision 32-bit IEEE 754 floating point. Use the "f" suffix.</entry>
+								<entry><programlisting><![CDATA[select 1.2f as field1, 
   1.2F as field2]]></programlisting></entry>
-						</row>
-						<row>
-							<entry>byte</entry>
-							<entry>A 8-bit signed two's complement integer.</entry>
-							<entry><programlisting><![CDATA[select 0x10 as field1]]></programlisting></entry>
-						</row>
-					</tbody>
-				</tgroup>				
-			</table>
-			
-			<para>
-				EPL does not have a single-byte character data type for its literals. Single character literals are treated as string.
-			</para>
-			
-			<para>
-				EPL supports casting via the <literal>cast</literal> function. EPL performs automatic coercion in cases where coercion is allowed without loss of precision.
-			</para>
+							</row>
+							<row>
+								<entry>byte</entry>
+								<entry>A 8-bit signed two's complement integer.</entry>
+								<entry><programlisting><![CDATA[select 0x10 as field1]]></programlisting></entry>
+							</row>
+						</tbody>
+					</tgroup>				
+				</table>
+				
+				<para>
+					EPL does not have a single-byte character data type for its literals. Single character literals are treated as string.
+				</para>
+				
+				<para>
+					Internal byte representation and boundary values of constants follow the Java standard.
+				</para>
 
-			<para>
-				Internal byte representation and boundary values of constants follow the Java standard.
-			</para>
+			</sect3>
+
+			<sect3 id="epl-syntax-datatype-bignumber">
+				<title>BigInteger and BigDecimal</title>
+
+				<para>
+					EPL automatically performs widening of numbers to <literal>BigInteger</literal> and <literal>BigDecimal</literal> as required, and employs the respective <literal>equals</literal>, <literal>compareTo</literal> and arithmetic methods provided by <literal>BigInteger</literal> and <literal>BigDecimal</literal>.
+				</para>
+	
+				<para>
+					To explicitly create <literal>BigInteger</literal> and <literal>BigDecimal</literal> constants in EPL, please use the cast syntax : <literal>cast(<emphasis>value</emphasis>, BigInteger)</literal>.
+				</para>
+				
+				<para>
+					Note that since <literal>BigDecimal.valueOf(1.0)</literal> is not the same as <literal>BigDecimal.valueOf(1)</literal> (in terms of equality through <literal>equals</literal>), care should be taken towards the consistent use of scale.
+				</para>
+			</sect3>
+
 		</sect2>
 
     </sect1>

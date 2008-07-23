@@ -50,7 +50,7 @@ public class TimerAtObserverFactory implements ObserverFactory, MetaDefItem
         }
         catch (ScheduleParameterException e)
         {
-            throw new IllegalArgumentException("Error computing observer schedule specification: " + e.getMessage(), e);
+            throw new ObserverParameterException("Error computing observer schedule specification: " + e.getMessage(), e);
         }
     }
 

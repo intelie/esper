@@ -7,9 +7,6 @@ import java.lang.management.ManagementFactory;
 import java.math.BigInteger;
 
 // TODO - Document:
-//   !BigDecimal.valueOf(1.0).equals(BigDecimal.valueOf(1))
-//   Conversion automatic to higher resolution
-//   All math, equals and relationship operators use BigDecimal or BigNumber methods
 //   Aggregation uses long value (BigInt) and double (BigDec) for: avedev, stddev, median; for all others the result is BigInt/BigDec
 //   
 public class TestCPUUsage extends TestCase
@@ -23,6 +20,9 @@ public class TestCPUUsage extends TestCase
 
     public void testLongCost()
     {
+        long one = 20;
+        long two = 4;
+        double x = two / one;
         BigInteger bigint = BigInteger.valueOf(1233);
 
         long start = System.currentTimeMillis();

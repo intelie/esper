@@ -121,6 +121,10 @@ public class ExprMinMaxRowNode extends ExprNode
     public Object evaluate(EventBean[] eventsPerStream, boolean isNewData)
     {
         Number result = computer.execute(eventsPerStream, isNewData);
+        if (result == null)
+        {
+            return null;
+        }
         return JavaClassHelper.coerceBoxed(result, resultType);
     }
 

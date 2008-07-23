@@ -12,7 +12,7 @@ public class TestExprCastNode extends TestCase
         castNodes = new ExprCastNode[2];
 
         castNodes[0] = new ExprCastNode("long");
-        castNodes[0].addChildNode(new SupportExprNode(10, Long.class));
+        castNodes[0].addChildNode(new SupportExprNode(10L, Long.class));
 
         castNodes[1] = new ExprCastNode("java.lang.Integer");
         castNodes[1].addChildNode(new SupportExprNode(0x10, byte.class));

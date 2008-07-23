@@ -536,7 +536,7 @@ public final class FilterSpecCompiler
 
         boolean isMustCoerce = false;
         SimpleNumberCoercer numberCoercer = null;
-        Class numericCoercionType = identNodeLeft.getType();
+        Class numericCoercionType = JavaClassHelper.getBoxedType(identNodeLeft.getType());
         if (identNodeRight.getType() != identNodeLeft.getType())
         {
             if (JavaClassHelper.isNumeric(identNodeRight.getType()))

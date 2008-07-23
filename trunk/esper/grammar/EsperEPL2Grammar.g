@@ -981,7 +981,8 @@ atomicExpression
 		
 observerExpression
 	:	ns=IDENT COLON (nm=IDENT | a=AT) LPAREN parameterSet? RPAREN
-		-> ^(OBSERVER_EXPR $ns $nm? ^(IDENT[$a.text])? parameterSet?)
+		-> {$a != null}? ^(OBSERVER_EXPR $ns ^(IDENT[$a.text]) parameterSet?)
+		-> ^(OBSERVER_EXPR $ns $nm parameterSet?)
 	;
 
 guardExpression

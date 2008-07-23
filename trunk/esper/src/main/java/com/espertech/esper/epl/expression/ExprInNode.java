@@ -137,14 +137,18 @@ public class ExprInNode extends ExprNode
         Iterator<ExprNode> it = this.getChildNodes().iterator();
         Object inPropResult = it.next().evaluate(eventsPerStream, isNewData);
 
-        if (mustCoerce)
-        {
-            inPropResult = JavaClassHelper.coerceBoxed((Number) inPropResult, coercionType);
-        }
-
         boolean matched = false;
         if (!hasCollection)
         {
+            // coerce upfront when comparing single values, coerce later when comparing against collections
+            if (mustCoerce)
+            {
+                if (inPropResult != null)
+                {
+                    inPropResult = JavaClassHelper.coerceBoxed((Number) inPropResult, coercionType);
+                }
+            }
+
             // handle value-by-value compare
             do
             {
@@ -261,6 +265,10 @@ public class ExprInNode extends ExprNode
 
         if (rightResult.getClass().isArray())
         {
+            if (mustCoerce)
+            {
+                leftResult = JavaClassHelper.coerceBoxed((Number) leftResult, coercionType);
+            }
             for (int i = 0; i < Array.getLength(rightResult); i++)
             {
                 Object value = Array.get(rightResult, i);
@@ -293,6 +301,7 @@ public class ExprInNode extends ExprNode
         {
             if (mustCoerce)
             {
+                leftResult = JavaClassHelper.coerceBoxed((Number) leftResult, coercionType);
                 rightResult = JavaClassHelper.coerceBoxed((Number) rightResult, coercionType);
             }
             return leftResult.equals(rightResult);

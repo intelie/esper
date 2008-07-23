@@ -176,5 +176,15 @@ public class TestMapEvent extends TestCase
         }
     }
 
+    private Map<String, Object> makeMap(Object[][] entries)
+    {
+        Map result = new HashMap<String, Object>();
+        for (int i = 0; i < entries.length; i++)
+        {
+            result.put(entries[i][0], entries[i][1]);
+        }
+        return result;
+    }
+
     private static Log log = LogFactory.getLog(TestMapEvent.class);
 }

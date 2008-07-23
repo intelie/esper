@@ -108,17 +108,18 @@ public class TestExprMinMaxRowNode extends TestCase
         {
             nodeMin.addChildNode(new SupportExprNode(new Float(floatValue)));
         }
-        nodeMin.getValidatedSubtree(null, null, null, null, null);
+        nodeMin.validate(null, null, null, null, null);
     }
 
     private ExprMinMaxRowNode makeNode(Object valueOne, Class typeOne,
                                        Object valueTwo, Class typeTwo,
-                                       Object valueThree, Class typeThree)
+                                       Object valueThree, Class typeThree) throws Exception
     {
         ExprMinMaxRowNode maxNode = new ExprMinMaxRowNode(MinMaxTypeEnum.MAX);
         maxNode.addChildNode(new SupportExprNode(valueOne, typeOne));
         maxNode.addChildNode(new SupportExprNode(valueTwo, typeTwo));
         maxNode.addChildNode(new SupportExprNode(valueThree, typeThree));
+        maxNode.validate(null, null, null, null, null);
         return maxNode;
     }
 

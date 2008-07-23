@@ -16,6 +16,41 @@ import java.util.Map;
 
 public class TestMapEventNested extends TestCase
 {
+    // TODO
+    //   xml config, runtime config
+    public void testMapInheritancInitTime()
+    {
+        Configuration configuration = SupportConfigFactory.getConfiguration();
+        configuration.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
+
+        Map<String, Object> root = makeMap(new Object[][] {{"base", String.class}});
+        Map<String, Object> sub1 = makeMap(new Object[][] {{"sub1", String.class}});
+        Map<String, Object> sub2 = makeMap(new Object[][] {{"sub2", String.class}});
+        Map<String, Object> sub11 = makeMap(new Object[][] {{"sub11", String.class}});
+        configuration.addEventTypeAliasNestable("RootEvent", root);
+        configuration.addEventTypeAliasNestable("Sub1Event", sub1);
+        configuration.addEventTypeAliasNestable("Sub2Event", sub2);
+        configuration.addEventTypeAliasNestable("Sub11Event", sub11);
+        
+        configuration.addMapSuperType("Sub1Event", "RootEvent");
+        configuration.addMapSuperType("Sub2Event", "RootEvent");
+        configuration.addMapSuperType("Sub11Event", "Sub1Event");
+
+        EPServiceProvider epService = EPServiceProviderManager.getDefaultProvider(configuration);
+        epService.initialize();
+
+        EPStatement statement = epService.getEPAdministrator().createEPL("select base, sub1?, sub2?, sub11? from RootEvent");
+        SupportUpdateListener listener = new SupportUpdateListener();
+        statement.addListener(listener);
+
+        epService.getEPRuntime().sendEvent(makeMap(new Object[][] {{"base", "a"},{"sub1", "b"},{"sub11", "c"}}));
+        String[] fields = "base,sub1?,sub2?,sub11?".split(",");
+        EventBean received = listener.assertOneGetNewAndReset();
+        ArrayAssertionUtil.assertProps(received, fields, new Object[] {"a", "b", "c"});
+
+
+    }
+
     public void testEscapedDot()
     {
         Map<String, Object> definition = makeMap(new Object[][] {
