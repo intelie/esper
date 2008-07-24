@@ -131,7 +131,7 @@ public class ConfigurationOperationsImpl implements ConfigurationOperations
         Map<String, Class> types = createPropertyTypes(typeMap);
         try
         {
-            eventAdapterService.addMapType(eventTypeAlias, types);
+            eventAdapterService.addMapType(eventTypeAlias, types, null);
         }
         catch (EventAdapterException t)
         {
@@ -143,7 +143,7 @@ public class ConfigurationOperationsImpl implements ConfigurationOperations
     {
         try
         {
-            eventAdapterService.addMapType(eventTypeAlias, typeMap);
+            eventAdapterService.addMapType(eventTypeAlias, typeMap, null);
         }
         catch (EventAdapterException t)
         {
@@ -155,7 +155,7 @@ public class ConfigurationOperationsImpl implements ConfigurationOperations
     {
         try
         {
-            eventAdapterService.addNestableMapType(eventTypeAlias, typeMap);
+            eventAdapterService.addNestableMapType(eventTypeAlias, typeMap, null);
         }
         catch (EventAdapterException t)
         {
@@ -167,7 +167,7 @@ public class ConfigurationOperationsImpl implements ConfigurationOperations
     {
         try
         {
-            eventAdapterService.addNestableMapType(eventTypeAlias, typeMap);
+            eventAdapterService.addNestableMapType(eventTypeAlias, typeMap, null);
         }
         catch (EventAdapterException t)
         {

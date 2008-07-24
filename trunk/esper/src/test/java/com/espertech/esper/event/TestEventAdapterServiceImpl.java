@@ -73,7 +73,7 @@ public class TestEventAdapterServiceImpl extends TestCase
         props.put("b", String.class);
 
         // check result type
-        EventType typeOne = adapterService.addMapType("latencyEvent", props);
+        EventType typeOne = adapterService.addMapType("latencyEvent", props, null);
         assertEquals(Long.class, typeOne.getPropertyType("a"));
         assertEquals(String.class, typeOne.getPropertyType("b"));
         assertEquals(2, typeOne.getPropertyNames().length);
@@ -81,14 +81,14 @@ public class TestEventAdapterServiceImpl extends TestCase
         assertSame(typeOne, adapterService.getExistsTypeByAlias("latencyEvent"));
 
         // add the same type with the same name, should succeed and return the same reference
-        EventType typeTwo = adapterService.addMapType("latencyEvent", props);
+        EventType typeTwo = adapterService.addMapType("latencyEvent", props, null);
         assertSame(typeOne, typeTwo);
 
         // add the same name with a different type, should fail
         props.put("b", boolean.class);
         try
         {
-            adapterService.addMapType("latencyEvent", props);
+            adapterService.addMapType("latencyEvent", props, null);
             fail();
         }
         catch (EventAdapterException ex)

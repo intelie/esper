@@ -376,7 +376,7 @@ public class EventAdapterServiceImpl implements EventAdapterService
         return eventType;
     }
 
-    public synchronized EventType addMapType(String eventTypeAlias, Map<String, Class> propertyTypes) throws EventAdapterException
+    public synchronized EventType addMapType(String eventTypeAlias, Map<String, Class> propertyTypes, Set<String> optionalSuperType) throws EventAdapterException
     {
         MapEventType newEventType = new MapEventType(eventTypeAlias, propertyTypes, this);
 
@@ -399,7 +399,7 @@ public class EventAdapterServiceImpl implements EventAdapterService
         return newEventType;
     }
 
-    public synchronized EventType addNestableMapType(String eventTypeAlias, Map<String, Object> propertyTypes) throws EventAdapterException
+    public synchronized EventType addNestableMapType(String eventTypeAlias, Map<String, Object> propertyTypes, Set<String> optionalSuperType) throws EventAdapterException
     {
         MapEventType newEventType = new MapEventType(eventTypeAlias, this, propertyTypes);
 

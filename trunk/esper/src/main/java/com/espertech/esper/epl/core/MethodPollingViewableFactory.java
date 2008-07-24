@@ -117,10 +117,10 @@ public class MethodPollingViewableFactory
         }
 
         // Determine event type from class and method name
-        EventType eventType = null;
+        EventType eventType;
         if (mapType != null)
         {
-            eventType = eventAdapterService.addMapType(mapTypeName, mapType);
+            eventType = eventAdapterService.addMapType(mapTypeName, mapType, null);
         }
         else
         {

@@ -70,9 +70,9 @@ public class Configuration implements ConfigurationOperations, ConfigurationInfo
     protected Map<String, Map<String, Object>> nestableMapAliases;
 
     /**
-     * Maps event type that are subtypes of another Map event type
+     * Map event types that are subtypes of one or more Map event types
      */
-    protected Map<String, String> mapSuperTypes;
+    protected Map<String, Set<String>> mapSuperTypes;
 
 	/**
 	 * The class and package name imports that
@@ -291,7 +291,13 @@ public class Configuration implements ConfigurationOperations, ConfigurationInfo
 
     public void addMapSuperType(String mapEventTypeAlias, String mapSupertypeAlias)
     {
-        this.mapSuperTypes.put(mapEventTypeAlias, mapSupertypeAlias);
+        Set<String> superTypes = mapSuperTypes.get(mapEventTypeAlias);
+        if (superTypes == null)
+        {
+            superTypes = new HashSet<String>();
+            mapSuperTypes.put(mapEventTypeAlias, superTypes);
+        }
+        superTypes.add(mapSupertypeAlias);
     }
 
     /**
@@ -429,6 +435,11 @@ public class Configuration implements ConfigurationOperations, ConfigurationInfo
     public Map<String, ConfigurationRevisionEventType> getRevisionEventTypes()
     {
         return revisionEventTypes;
+    }
+
+    public Map<String, Set<String>> getMapSuperTypes()
+    {
+        return mapSuperTypes;
     }
 
     /**
@@ -773,7 +784,7 @@ public class Configuration implements ConfigurationOperations, ConfigurationInfo
         plugInEventTypes = new HashMap<String, ConfigurationPlugInEventType>();
         revisionEventTypes = new HashMap<String, ConfigurationRevisionEventType>();
         variantStreams = new HashMap<String, ConfigurationVariantStream>();
-        mapSuperTypes = new HashMap<String, String>();
+        mapSuperTypes = new HashMap<String, Set<String>>();
     }
 
     /**

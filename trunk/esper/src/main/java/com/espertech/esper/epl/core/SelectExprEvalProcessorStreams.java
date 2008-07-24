@@ -242,7 +242,7 @@ public class SelectExprEvalProcessorStreams implements SelectExprProcessor
                 }
                 else
                 {
-                    resultEventType = eventAdapterService.addNestableMapType(insertIntoDesc.getEventTypeAlias(), selPropertyTypes);
+                    resultEventType = eventAdapterService.addNestableMapType(insertIntoDesc.getEventTypeAlias(), selPropertyTypes, null);
                 }
             }
             catch (EventAdapterException ex)

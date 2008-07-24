@@ -69,11 +69,11 @@ public class TestEventAdapterSvcMT extends TestCase
                     {
                         if (index == 0)
                         {
-                            return service.addMapType("A", typeOne);
+                            return service.addMapType("A", typeOne, null);
                         }
                         else
                         {
-                            return service.addMapType("A", typeTwo);
+                            return service.addMapType("A", typeTwo, null);
                         }
                     }
                     catch (EventAdapterException ex)

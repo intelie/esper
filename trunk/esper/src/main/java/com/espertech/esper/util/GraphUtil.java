@@ -4,37 +4,54 @@ import java.util.*;
 
 public class GraphUtil
 {
-    public static List<String> getTopDownOrder(Map<String, String> graph)
+    public static Set<String> getTopDownOrder(Map<String, Set<String>> graph) throws GraphCircularDependencyException
     {
-        Map<String, List<String>> reversedGraph = new HashMap<String, List<String>>();
+        Stack<String> circularDependency = getFirstCircularDependency(graph);
+        if (circularDependency != null)
+        {
+            throw new GraphCircularDependencyException("Circular dependency detected between " + circularDependency);
+        }
+
+        Map<String, Set<String>> reversedGraph = new HashMap<String, Set<String>>();
 
         // Reverse the graph - build a list of children per parent
-        for (Map.Entry<String, String> entry : graph.entrySet())
+        for (Map.Entry<String, Set<String>> entry : graph.entrySet())
         {
-            String parent = entry.getValue();
+            Set<String> parents = entry.getValue();
             String child = entry.getKey();
-            List<String> childList = reversedGraph.get(parent);
-            if (childList == null)
+
+            for (String parent : parents)
             {
-                childList = new ArrayList<String>();
-                reversedGraph.put(parent, childList);
+                Set<String> childList = reversedGraph.get(parent);
+                if (childList == null)
+                {
+                    childList = new LinkedHashSet<String>();
+                    reversedGraph.put(parent, childList);
+                }
+                childList.add(child);
             }
-            childList.add(child);
         }
 
         // Determine all root nodes, which are those without parent
-        List<String> roots = new ArrayList<String>();
-        for (String node : graph.values())
+        TreeSet<String> roots = new TreeSet<String>();
+        for (Set<String> parents : graph.values())
         {
-            // node not itself a child
-            if (!graph.containsKey(node))
+            if (parents == null)
             {
-                roots.add(node);
+                continue;
+            }
+            for (String parent : parents)
+            {
+                // node not itself a child
+                if (!graph.containsKey(parent))
+                {
+                    roots.add(parent);
+                }
             }
         }
 
         // for each root, recursively add its child nodes
-        List<String> graphFlattened = new ArrayList<String>();
+        Set<String> graphFlattened = new LinkedHashSet<String>();
         for (String root : roots)
         {
             recusiveAdd(graphFlattened, root, reversedGraph);
@@ -43,10 +60,10 @@ public class GraphUtil
         return graphFlattened;
     }
 
-    private static void recusiveAdd(List<String> graphFlattened, String root, Map<String, List<String>> reversedGraph)
+    private static void recusiveAdd(Set<String> graphFlattened, String root, Map<String, Set<String>> reversedGraph)
     {
         graphFlattened.add(root);
-        List<String> childNodes = reversedGraph.get(root);
+        Set<String> childNodes = reversedGraph.get(root);
         if (childNodes == null)
         {
             return;
@@ -55,5 +72,51 @@ public class GraphUtil
         {
             recusiveAdd(graphFlattened, child, reversedGraph);
         }
+    }
+
+    /**
+     * Returns any circular dependency as a stack of stream numbers, or null if none exist.
+     * @return circular dependency stack
+     */
+    private static Stack<String> getFirstCircularDependency(Map<String, Set<String>> graph)
+    {
+        for (String child : graph.keySet())
+        {
+            Stack<String> deepDependencies = new Stack<String>();
+            deepDependencies.push(child);
+
+            boolean isCircular = recursiveDeepDepends(deepDependencies, child, graph);
+            if (isCircular)
+            {
+                return deepDependencies;
+            }
+        }
+        return null;
+    }
+
+    private static boolean recursiveDeepDepends(Stack<String> deepDependencies, String currentChild, Map<String, Set<String>> graph)
+    {
+        Set<String> required = graph.get(currentChild);
+        if (required == null)
+        {
+            return false;
+        }
+
+        for (String parent : required)
+        {
+            if (deepDependencies.contains(parent))
+            {
+                return true;
+            }
+            deepDependencies.push(parent);
+            boolean isDeep = recursiveDeepDepends(deepDependencies, parent, graph);
+            if (isDeep)
+            {
+                return true;
+            }
+            deepDependencies.pop();
+        }
+
+        return false;
     }
 }

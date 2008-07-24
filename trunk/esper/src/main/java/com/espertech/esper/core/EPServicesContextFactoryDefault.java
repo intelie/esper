@@ -31,14 +31,14 @@ import com.espertech.esper.schedule.SchedulingServiceProvider;
 import com.espertech.esper.timer.*;
 import com.espertech.esper.util.JavaClassHelper;
 import com.espertech.esper.util.ManagedReadWriteLock;
+import com.espertech.esper.util.GraphUtil;
+import com.espertech.esper.util.GraphCircularDependencyException;
 import com.espertech.esper.view.stream.StreamFactoryService;
 import com.espertech.esper.view.stream.StreamFactoryServiceProvider;
 
 import java.io.Serializable;
 import java.net.URI;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
 /**
  * Factory for services context.
@@ -205,34 +205,45 @@ public class EPServicesContextFactoryDefault implements EPServicesContextFactory
             }
         }
 
-        // Add map event types
-        Map<String, Properties> mapAliases = configSnapshot.getEventTypesMapEvents();
-        for(Map.Entry<String, Properties> entry : mapAliases.entrySet())
+        // Add maps in dependency order such that supertypes are added before subtypes
+        Set<String> dependentMapOrder;
+        try
         {
-            try
+            dependentMapOrder = GraphUtil.getTopDownOrder(configSnapshot.getMapSuperTypes());
+        }
+        catch (GraphCircularDependencyException e)
+        {
+            throw new ConfigurationException("Error configuring engine, dependency graph between map aliases is circular: " + e.getMessage(), e);
+        }
+        
+        Map<String, Properties> mapAliases = configSnapshot.getEventTypesMapEvents();
+        Map<String, Map<String, Object>> nestableMapAliases = configSnapshot.getEventTypesNestableMapEvents();
+        dependentMapOrder.addAll(mapAliases.keySet());
+        dependentMapOrder.addAll(nestableMapAliases.keySet());
+        try
+        {
+            for (String mapName : dependentMapOrder)
             {
-                Map<String, Class> propertyTypes = createPropertyTypes(entry.getValue());
-                eventAdapterService.addMapType(entry.getKey(), propertyTypes);
+                Set<String> superTypes = configSnapshot.getMapSuperTypes().get(mapName);
+                Properties propertiesUnnested = mapAliases.get(mapName);
+                if (propertiesUnnested != null)
+                {
+                    Map<String, Class> propertyTypes = createPropertyTypes(propertiesUnnested);
+                    eventAdapterService.addMapType(mapName, propertyTypes, superTypes);
+                }
+
+                Map<String, Object> propertiesNestable = nestableMapAliases.get(mapName);
+                if (propertiesNestable != null)
+                {
+                    eventAdapterService.addNestableMapType(mapName, propertiesNestable, superTypes);
+                }
             }
-            catch (EventAdapterException ex)
-            {
-                throw new ConfigurationException("Error configuring engine: " + ex.getMessage(), ex);
-            }
+        }
+        catch (EventAdapterException ex)
+        {
+            throw new ConfigurationException("Error configuring engine: " + ex.getMessage(), ex);
         }
 
-        // Add nestable map event types
-        Map<String, Map<String, Object>> nestableMapAliases = configSnapshot.getEventTypesNestableMapEvents();
-        for(Map.Entry<String, Map<String, Object>> entry : nestableMapAliases.entrySet())
-        {
-            try
-            {
-                eventAdapterService.addNestableMapType(entry.getKey(), entry.getValue());
-            }
-            catch (EventAdapterException ex)
-            {
-                throw new ConfigurationException("Error configuring engine: " + ex.getMessage(), ex);
-            }
-        }
 
         // Add plug-in event representations
         Map<URI, ConfigurationPlugInEventRepresentation> plugInReps = configSnapshot.getPlugInEventRepresentation();

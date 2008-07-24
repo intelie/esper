@@ -12,6 +12,7 @@ import org.w3c.dom.Node;
 import java.io.Serializable;
 import java.net.URI;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Interface for a service to resolve event names to event type.
@@ -47,7 +48,7 @@ public interface EventAdapterService
      * @return event type is the type added
      * @throws EventAdapterException if alias already exists and doesn't match property type info
      */
-    public EventType addMapType(String eventTypeAlias, Map<String, Class> propertyTypes) throws EventAdapterException;
+    public EventType addMapType(String eventTypeAlias, Map<String, Class> propertyTypes, Set<String> optionalSupertype) throws EventAdapterException;
 
     /**
      * Add an event type with the given alias and a given set of properties,
@@ -64,7 +65,7 @@ public interface EventAdapterService
      * @return event type is the type added
      * @throws EventAdapterException if alias already exists and doesn't match property type info
      */
-    public EventType addNestableMapType(String eventTypeAlias, Map<String, Object> propertyTypes) throws EventAdapterException;
+    public EventType addNestableMapType(String eventTypeAlias, Map<String, Object> propertyTypes, Set<String> optionalSupertype) throws EventAdapterException;
     
     /**
      * Add an event type with the given alias and the given underlying event type, 

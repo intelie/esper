@@ -860,7 +860,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
             // Some columns selected, use the types of the columns
             if (spec.getSelectClauseSpec().getSelectExprList().size() > 0)
             {
-                targetType = statementContext.getEventAdapterService().addNestableMapType(typeName, properties);
+                targetType = statementContext.getEventAdapterService().addNestableMapType(typeName, properties, null);
             }
             else
             {
@@ -868,7 +868,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
                 if (selectFromType instanceof MapEventType)
                 {
                     MapEventType mapType = (MapEventType) selectFromType;
-                    targetType = statementContext.getEventAdapterService().addNestableMapType(typeName, mapType.getTypes());
+                    targetType = statementContext.getEventAdapterService().addNestableMapType(typeName, mapType.getTypes(), null);
                 }
                 else
                 {

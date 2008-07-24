@@ -269,7 +269,7 @@ public class SelectExprEvalProcessor implements SelectExprProcessor
                         }
                         else
                         {
-                            resultEventType = eventAdapterService.addNestableMapType(insertIntoDesc.getEventTypeAlias(), selPropertyTypes);
+                            resultEventType = eventAdapterService.addNestableMapType(insertIntoDesc.getEventTypeAlias(), selPropertyTypes, null);
                         }
                     }
                     if (vaeProcessor != null)

@@ -163,6 +163,8 @@ public interface ConfigurationInformation
      * @return map of alias and variant stream config
      */
     public Map<String, ConfigurationVariantStream> getVariantStreams();
+
+    public Map<String, Set<String>> getMapSuperTypes();    
 }
 
 

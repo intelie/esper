@@ -140,7 +140,7 @@ public class ArrayAssertionUtil
 
         for (int i = 0; i < expectedValues.length; i++)
         {
-            TestCase.assertEquals(expectedValues[i], data[i]);
+            TestCase.assertEquals("at element " + i, expectedValues[i], data[i]);
         }
     }
 
