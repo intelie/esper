@@ -36,8 +36,28 @@ public class TestGraphUtil extends TestCase
 
         add(graph, "1", "R");
         ArrayAssertionUtil.assertEqualsExactOrder("R,0,0_1,1,1_1,1_1_1,1_1_2,1_2,1_2_1".split(","), GraphUtil.getTopDownOrder(graph).toArray());
+    }
 
-        // so far each child had 1 parent, add a second parent
+    public void testAcyclic() throws Exception
+    {
+        Map<String, Set<String>> graph = new LinkedHashMap<String, Set<String>>();
+
+        add(graph, "1_1", "R2");
+        add(graph, "A", "R1");
+        add(graph, "A", "R2");
+        ArrayAssertionUtil.assertEqualsExactOrder(GraphUtil.getTopDownOrder(graph).toArray(), "R1,R2,1_1,A".split(","));
+
+        add(graph, "R1", "R2");
+        ArrayAssertionUtil.assertEqualsExactOrder(GraphUtil.getTopDownOrder(graph).toArray(), "R2,1_1,R1,A".split(","));
+
+        add(graph, "1_1", "A");
+        ArrayAssertionUtil.assertEqualsExactOrder(GraphUtil.getTopDownOrder(graph).toArray(), "R2,R1,A,1_1".split(","));
+
+        add(graph, "0", "1_1");
+        ArrayAssertionUtil.assertEqualsExactOrder(GraphUtil.getTopDownOrder(graph).toArray(), "R2,R1,A,1_1,0".split(","));
+
+        add(graph, "R1", "0");
+        tryInvalid(graph, "Circular dependency detected between [1_1, A, R1, 0]");
     }
 
     public void testInvalid() throws Exception

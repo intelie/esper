@@ -164,8 +164,13 @@ public interface ConfigurationInformation
      */
     public Map<String, ConfigurationVariantStream> getVariantStreams();
 
-    public Map<String, Set<String>> getMapSuperTypes();    
+    /**
+     * Returns for each Map event type alias the set of supertype event type aliases (Map types only).
+     * @return map of alias to set of supertype aliases
+     */
+    public Map<String, Set<String>> getMapSuperTypes();
 }
+
 
 
 

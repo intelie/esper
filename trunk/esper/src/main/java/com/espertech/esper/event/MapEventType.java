@@ -1,12 +1,12 @@
 package com.espertech.esper.event;
 
 import com.espertech.esper.client.EPException;
+import com.espertech.esper.epl.parse.ASTFilterSpecHelper;
 import com.espertech.esper.event.property.DynamicProperty;
 import com.espertech.esper.event.property.MapPropertyGetter;
 import com.espertech.esper.event.property.Property;
 import com.espertech.esper.event.property.PropertyParser;
 import com.espertech.esper.util.JavaClassHelper;
-import com.espertech.esper.epl.parse.ASTFilterSpecHelper;
 
 import java.util.*;
 
@@ -17,9 +17,11 @@ public class MapEventType implements EventType
 {
     private final String typeName;
     private final EventAdapterService eventAdapterService;
+    private final EventType[] optionalSuperTypes;
+    private final Iterator<EventType> optionalDeepSupertypesIterator;
 
     // Simple (not-nested) properties are stored here
-    private final String[] propertyNames;       // Cache an array of property names so not to construct one frequently
+    private String[] propertyNames;       // Cache an array of property names so not to construct one frequently
     private final Map<String, Class> simplePropertyTypes;     // Mapping of property name (simple-only) and type
     private final Map<String, EventPropertyGetter> propertyGetters;   // Mapping of property name and getters
 
@@ -38,7 +40,9 @@ public class MapEventType implements EventType
      */
     public MapEventType(String typeName,
                         Map<String, Class> propertyTypes,
-                        EventAdapterService eventAdapterService)
+                        EventAdapterService eventAdapterService,
+                        EventType[] optionalSuperTypes,
+                        Set<EventType> optionalDeepSupertypes)
     {
         this.typeName = typeName;
         this.eventAdapterService = eventAdapterService;
@@ -48,6 +52,16 @@ public class MapEventType implements EventType
         this.nestableTypes.putAll(propertyTypes);
         this.simplePropertyTypes = new HashMap<String, Class>();
         this.simplePropertyTypes.putAll(propertyTypes);
+
+        this.optionalSuperTypes = optionalSuperTypes;
+        if (optionalDeepSupertypes == null)
+        {
+            optionalDeepSupertypesIterator = null;
+        }
+        else
+        {
+            optionalDeepSupertypesIterator = optionalDeepSupertypes.iterator();
+        }
 
         hashCode = typeName.hashCode();
         propertyNames = new String[simplePropertyTypes.size()];
@@ -64,6 +78,9 @@ public class MapEventType implements EventType
             propertyGetters.put(name, getter);
             propertyNames[index++] = name;
         }
+
+        // Copy parent properties to child
+        copySuperTypes();
     }
 
     /**
@@ -77,7 +94,9 @@ public class MapEventType implements EventType
      */
     public MapEventType(String typeName,
                         EventAdapterService eventAdapterService,
-                        Map<String, Object> propertyTypes)
+                        Map<String, Object> propertyTypes,
+                        EventType[] optionalSuperTypes,
+                        Set<EventType> optionalDeepSupertypes)
     {
         this.typeName = typeName;
         this.eventAdapterService = eventAdapterService;
@@ -86,6 +105,16 @@ public class MapEventType implements EventType
         List<String> propertyNameList = new ArrayList<String>();
         this.nestableTypes = new HashMap<String, Object>();
         this.nestableTypes.putAll(propertyTypes);
+
+        this.optionalSuperTypes = optionalSuperTypes;
+        if (optionalDeepSupertypes == null)
+        {
+            optionalDeepSupertypesIterator = null;
+        }
+        else
+        {
+            optionalDeepSupertypesIterator = optionalDeepSupertypes.iterator();
+        }
 
         hashCode = typeName.hashCode();
         propertyGetters = new HashMap<String, EventPropertyGetter>();
@@ -144,6 +173,9 @@ public class MapEventType implements EventType
         }
 
         propertyNames = propertyNameList.toArray(new String[propertyNameList.size()]);
+
+        // Copy parent properties to child
+        copySuperTypes();
     }
 
     public final Class getPropertyType(String propertyName)
@@ -402,12 +434,12 @@ public class MapEventType implements EventType
 
     public EventType[] getSuperTypes()
     {
-        return null;
+        return optionalSuperTypes;
     }
 
     public Iterator<EventType> getDeepSuperTypes()
     {
-        return null;
+        return optionalDeepSupertypesIterator;
     }
 
     public String toString()
@@ -572,5 +604,22 @@ public class MapEventType implements EventType
         String clazzName = (value == null) ? "null" : value.getClass().getSimpleName();
         throw new EPException("Nestable map type configuration encountered an unexpected property type of '"
             + clazzName + "' for property '" + name + "', expected java.lang.Class or java.util.Map");
+    }
+
+    private void copySuperTypes()
+    {
+        if (optionalSuperTypes != null)
+        {
+            Set<String> allProperties = new LinkedHashSet<String>(Arrays.asList(propertyNames));
+            for (int i = 0; i < optionalSuperTypes.length; i++)
+            {
+                allProperties.addAll(Arrays.asList(optionalSuperTypes[i].getPropertyNames()));
+                MapEventType mapSuperType = (MapEventType) optionalSuperTypes[i];
+                simplePropertyTypes.putAll(mapSuperType.simplePropertyTypes);
+                propertyGetters.putAll(mapSuperType.propertyGetters);
+                nestableTypes.putAll(mapSuperType.nestableTypes);
+            }
+            propertyNames = allProperties.toArray(new String[allProperties.size()]);
+        }
     }
 }

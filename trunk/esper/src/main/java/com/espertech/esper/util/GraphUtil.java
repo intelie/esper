@@ -2,8 +2,18 @@ package com.espertech.esper.util;
 
 import java.util.*;
 
+/**
+ * Utility for working with acyclic graph: determines cyclic dependency and dependency-satisfying processing order.
+ */
 public class GraphUtil
 {
+    /**
+     * Check cyclic dependency and determine processing order for the given graph.
+     * @param graph is represented as child nodes that have one or more parent nodes that they are dependent on
+     * @return set of parent and child nodes in order such that no node's dependency is not satisfied
+     * by a prior nodein the set
+     * @throws GraphCircularDependencyException if a dependency has been detected
+     */
     public static Set<String> getTopDownOrder(Map<String, Set<String>> graph) throws GraphCircularDependencyException
     {
         Stack<String> circularDependency = getFirstCircularDependency(graph);
@@ -50,14 +60,55 @@ public class GraphUtil
             }
         }
 
-        // for each root, recursively add its child nodes
+        // for each root, recursively add its child nodes, this becomes the default order
         Set<String> graphFlattened = new LinkedHashSet<String>();
         for (String root : roots)
         {
             recusiveAdd(graphFlattened, root, reversedGraph);
         }
 
-        return graphFlattened;
+        // now walk down the default order and for each node ensure all parents are created
+        Set<String> created = new LinkedHashSet<String>();
+        Set<String> removeList = new HashSet<String>();
+        while (!graphFlattened.isEmpty())
+        {
+            removeList.clear();
+            for (String node : graphFlattened)
+            {
+                if (!recursiveParentsCreated(node, created, graph))
+                {
+                    continue;
+                }
+                created.add(node);
+                removeList.add(node);
+            }
+            graphFlattened.removeAll(removeList);
+        }
+
+        return created;
+    }
+
+    // Determine if all the node's parents and their parents have been added to the created set
+    private static boolean recursiveParentsCreated(String node, Set<String> created, Map<String, Set<String>> graph)
+    {
+        Set<String> parents = graph.get(node);
+        if (parents == null)
+        {
+            return true;
+        }
+        for (String parent : parents)
+        {
+            if (!created.contains(parent))
+            {
+                return false;
+            }
+            boolean allParentsCreated = recursiveParentsCreated(parent, created, graph);
+            if (!allParentsCreated)
+            {
+                return false;
+            }
+        }
+        return true;
     }
 
     private static void recusiveAdd(Set<String> graphFlattened, String root, Map<String, Set<String>> reversedGraph)

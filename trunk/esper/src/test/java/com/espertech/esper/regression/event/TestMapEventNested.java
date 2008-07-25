@@ -13,12 +13,13 @@ import org.apache.commons.logging.LogFactory;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 public class TestMapEventNested extends TestCase
 {
     // TODO
-    //   xml config, runtime config
-    public void testMapInheritancInitTime()
+    //   xml config
+    public void testMapInheritanceInitTime()
     {
         Configuration configuration = SupportConfigFactory.getConfiguration();
         configuration.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
@@ -26,29 +27,97 @@ public class TestMapEventNested extends TestCase
         Map<String, Object> root = makeMap(new Object[][] {{"base", String.class}});
         Map<String, Object> sub1 = makeMap(new Object[][] {{"sub1", String.class}});
         Map<String, Object> sub2 = makeMap(new Object[][] {{"sub2", String.class}});
-        Map<String, Object> sub11 = makeMap(new Object[][] {{"sub11", String.class}});
+        Properties suba = makeProperties(new Object[][] {{"suba", String.class}});
+        Map<String, Object> subb = makeMap(new Object[][] {{"subb", String.class}});
         configuration.addEventTypeAliasNestable("RootEvent", root);
         configuration.addEventTypeAliasNestable("Sub1Event", sub1);
         configuration.addEventTypeAliasNestable("Sub2Event", sub2);
-        configuration.addEventTypeAliasNestable("Sub11Event", sub11);
-        
+        configuration.addEventTypeAlias("SubAEvent", suba);
+        configuration.addEventTypeAliasNestable("SubBEvent", subb);
+
         configuration.addMapSuperType("Sub1Event", "RootEvent");
         configuration.addMapSuperType("Sub2Event", "RootEvent");
-        configuration.addMapSuperType("Sub11Event", "Sub1Event");
+        configuration.addMapSuperType("SubAEvent", "Sub1Event");
+        configuration.addMapSuperType("SubBEvent", "Sub1Event");
+        configuration.addMapSuperType("SubBEvent", "Sub2Event");
 
         EPServiceProvider epService = EPServiceProviderManager.getDefaultProvider(configuration);
         epService.initialize();
 
-        EPStatement statement = epService.getEPAdministrator().createEPL("select base, sub1?, sub2?, sub11? from RootEvent");
-        SupportUpdateListener listener = new SupportUpdateListener();
-        statement.addListener(listener);
+        runMapInheritanceInitTime(epService);
+    }
+    
+    public void testMapInheritanceRuntime()
+    {
+        Configuration configuration = SupportConfigFactory.getConfiguration();
+        configuration.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
 
-        epService.getEPRuntime().sendEvent(makeMap(new Object[][] {{"base", "a"},{"sub1", "b"},{"sub11", "c"}}));
-        String[] fields = "base,sub1?,sub2?,sub11?".split(",");
-        EventBean received = listener.assertOneGetNewAndReset();
-        ArrayAssertionUtil.assertProps(received, fields, new Object[] {"a", "b", "c"});
+        EPServiceProvider epService = EPServiceProviderManager.getDefaultProvider(configuration);
+        epService.initialize();
 
+        Map<String, Object> root = makeMap(new Object[][] {{"base", String.class}});
+        Map<String, Object> sub1 = makeMap(new Object[][] {{"sub1", String.class}});
+        Map<String, Object> sub2 = makeMap(new Object[][] {{"sub2", String.class}});
+        Map<String, Object> suba = makeMap(new Object[][] {{"suba", String.class}});
+        Map<String, Object> subb = makeMap(new Object[][] {{"subb", String.class}});
 
+        epService.getEPAdministrator().getConfiguration().addEventTypeAliasNestable("RootEvent", root);
+        epService.getEPAdministrator().getConfiguration().addEventTypeAliasNestable("Sub1Event", sub1, new String[] {"RootEvent"});
+        epService.getEPAdministrator().getConfiguration().addEventTypeAliasNestable("Sub2Event", sub2, new String[] {"RootEvent"});
+        epService.getEPAdministrator().getConfiguration().addEventTypeAliasNestable("SubAEvent", suba, new String[] {"Sub1Event"});
+        epService.getEPAdministrator().getConfiguration().addEventTypeAliasNestable("SubBEvent", subb, new String[] {"Sub1Event", "Sub2Event"});
+
+        runMapInheritanceInitTime(epService);
+    }
+
+    private void runMapInheritanceInitTime(EPServiceProvider epService)
+    {
+        SupportUpdateListener listeners[] = new SupportUpdateListener[5];
+        String[] statements = {
+                "select base as vbase, sub1? as v1, sub2? as v2, suba? as va, subb? as vb from RootEvent",  // 0
+                "select base as vbase, sub1 as v1, sub2? as v2, suba? as va, subb? as vb from Sub1Event",   // 1
+                "select base as vbase, sub1? as v1, sub2 as v2, suba? as va, subb? as vb from Sub2Event",   // 2
+                "select base as vbase, sub1 as v1, sub2? as v2, suba as va, subb? as vb from SubAEvent",    // 3
+                "select base as vbase, sub1? as v1, sub2 as v2, suba? as va, subb as vb from SubBEvent"     // 4
+        };
+        for (int i = 0; i < statements.length; i++)
+        {
+            EPStatement statement = epService.getEPAdministrator().createEPL(statements[i]);
+            listeners[i] = new SupportUpdateListener();
+            statement.addListener(listeners[i]);
+        }
+        String[] fields = "vbase,v1,v2,va,vb".split(",");
+
+        epService.getEPRuntime().sendEvent(makeMap("base=a,sub1=b,sub2=x,suba=c,subb=y"), "SubAEvent");
+        ArrayAssertionUtil.assertProps(listeners[0].assertOneGetNewAndReset(), fields, new Object[] {"a", "b", "x", "c", "y"});
+        assertFalse(listeners[2].isInvoked() || listeners[4].isInvoked());
+        ArrayAssertionUtil.assertProps(listeners[1].assertOneGetNewAndReset(), fields, new Object[] {"a", "b", "x", "c", "y"});
+        ArrayAssertionUtil.assertProps(listeners[3].assertOneGetNewAndReset(), fields, new Object[] {"a", "b", "x", "c", "y"});
+
+        epService.getEPRuntime().sendEvent(makeMap("base=XBASE,sub1=X1,sub2=X2,subb=XY"), "SubBEvent");
+        Object[] values = new Object[] {"XBASE","X1","X2",null,"XY"};
+        ArrayAssertionUtil.assertProps(listeners[0].assertOneGetNewAndReset(), fields, values);
+        assertFalse(listeners[3].isInvoked());
+        ArrayAssertionUtil.assertProps(listeners[1].assertOneGetNewAndReset(), fields, values);
+        ArrayAssertionUtil.assertProps(listeners[2].assertOneGetNewAndReset(), fields, values);
+        ArrayAssertionUtil.assertProps(listeners[4].assertOneGetNewAndReset(), fields, values);
+
+        epService.getEPRuntime().sendEvent(makeMap("base=YBASE,sub1=Y1"), "Sub1Event");
+        values = new Object[] {"YBASE","Y1", null, null, null};
+        ArrayAssertionUtil.assertProps(listeners[0].assertOneGetNewAndReset(), fields, values);
+        assertFalse(listeners[2].isInvoked() || listeners[3].isInvoked() || listeners[4].isInvoked());
+        ArrayAssertionUtil.assertProps(listeners[1].assertOneGetNewAndReset(), fields, values);
+
+        epService.getEPRuntime().sendEvent(makeMap("base=YBASE,sub2=Y2"), "Sub2Event");
+        values = new Object[] {"YBASE",null, "Y2", null, null};
+        ArrayAssertionUtil.assertProps(listeners[0].assertOneGetNewAndReset(), fields, values);
+        assertFalse(listeners[1].isInvoked() || listeners[3].isInvoked() || listeners[4].isInvoked());
+        ArrayAssertionUtil.assertProps(listeners[2].assertOneGetNewAndReset(), fields, values);
+
+        epService.getEPRuntime().sendEvent(makeMap("base=ZBASE"), "RootEvent");
+        values = new Object[] {"ZBASE",null, null, null, null};
+        ArrayAssertionUtil.assertProps(listeners[0].assertOneGetNewAndReset(), fields, values);
+        assertFalse(listeners[1].isInvoked() || listeners[2].isInvoked() || listeners[3].isInvoked() || listeners[4].isInvoked());
     }
 
     public void testEscapedDot()
@@ -413,12 +482,35 @@ public class TestMapEventNested extends TestCase
         return levelZero;
     }
 
+    private Map<String, Object> makeMap(String nameValuePairs)
+    {
+        Map result = new HashMap<String, Object>();
+        String[] elements = nameValuePairs.split(",");
+        for (int i = 0; i < elements.length; i++)
+        {
+            String[] pair = elements[i].split("=");
+            result.put(pair[0], pair[1]);
+        }
+        return result;
+    }
+
     private Map<String, Object> makeMap(Object[][] entries)
     {
         Map result = new HashMap<String, Object>();
         for (int i = 0; i < entries.length; i++)
         {
             result.put(entries[i][0], entries[i][1]);
+        }
+        return result;
+    }
+
+    private Properties makeProperties(Object[][] entries)
+    {
+        Properties result = new Properties();
+        for (int i = 0; i < entries.length; i++)
+        {
+            Class clazz = (Class) entries[i][1];
+            result.put(entries[i][0], clazz.getName());
         }
         return result;
     }

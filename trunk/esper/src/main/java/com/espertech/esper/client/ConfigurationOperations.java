@@ -146,6 +146,24 @@ public interface ConfigurationOperations
             throws ConfigurationException;
 
     /**
+     * Add an alias for an event type that represents java.util.Map events,
+     * and for which each property may itself be a Map of further properties,
+     * with unlimited nesting levels, and specify an optional list of super types
+     * to the new Map event type.
+     * <p>
+     * Each entry in the type mapping must contain the String property name
+     * and either a Class or further Map<String, Object> value.
+     * @param eventTypeAlias is the alias for the event type
+     * @param typeMap maps the name of each property in the Map event to the type
+     * (fully qualified classname) of its value in Map event instances.
+     * @param superTypes is an array of event type alias of further Map types that this
+     * 
+     * @throws ConfigurationException if the alias is already in used for a different type
+     */
+    public void addEventTypeAliasNestable(String eventTypeAlias, Map<String, Object> typeMap, String[] superTypes)
+            throws ConfigurationException;
+
+    /**
      * Add an alias for an event type that represents nestable strong-typed java.util.Map events, taking a Map of
      * event property and class name as a parameter.
      * <p>

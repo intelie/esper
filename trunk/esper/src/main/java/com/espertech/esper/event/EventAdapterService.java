@@ -45,6 +45,7 @@ public interface EventAdapterService
      * If the alias does not already exists, adds the alias and constructs a new {@link com.espertech.esper.event.MapEventType}.
      * @param eventTypeAlias is the alias name for the event type
      * @param propertyTypes is the names and types of event properties
+     * @param optionalSupertype an optional set of Map event type aliases that are supertypes to the type
      * @return event type is the type added
      * @throws EventAdapterException if alias already exists and doesn't match property type info
      */
@@ -62,6 +63,7 @@ public interface EventAdapterService
      * If the alias does not already exists, adds the alias and constructs a new {@link com.espertech.esper.event.MapEventType}.
      * @param eventTypeAlias is the alias name for the event type
      * @param propertyTypes is the names and types of event properties
+     * @param optionalSupertype an optional set of Map event type aliases that are supertypes to the type
      * @return event type is the type added
      * @throws EventAdapterException if alias already exists and doesn't match property type info
      */

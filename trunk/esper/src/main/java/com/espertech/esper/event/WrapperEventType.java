@@ -49,7 +49,7 @@ public class WrapperEventType implements EventType
 		checkForRepeatedPropertyNames(eventType, properties);
 		
 		this.underlyingEventType = eventType;
-		this.underlyingMapType = new MapEventType(typeName, eventAdapterService, properties);
+		this.underlyingMapType = new MapEventType(typeName, eventAdapterService, properties, null, null);
         this.hashCode = underlyingMapType.hashCode() ^ underlyingEventType.hashCode();
         this.isNoMapProperties = properties.isEmpty();
 

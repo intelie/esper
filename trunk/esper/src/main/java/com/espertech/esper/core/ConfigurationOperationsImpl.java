@@ -19,9 +19,7 @@ import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.epl.variable.VariableExistsException;
 import com.espertech.esper.epl.variable.VariableTypeException;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 import java.net.URI;
 import java.io.Serializable;
 
@@ -156,6 +154,24 @@ public class ConfigurationOperationsImpl implements ConfigurationOperations
         try
         {
             eventAdapterService.addNestableMapType(eventTypeAlias, typeMap, null);
+        }
+        catch (EventAdapterException t)
+        {
+            throw new ConfigurationException(t.getMessage(), t);
+        }
+    }
+
+    public void addEventTypeAliasNestable(String eventTypeAlias, Map<String, Object> typeMap, String[] superTypes) throws ConfigurationException
+    {
+        Set<String> superTypeAliases = null;
+        if ((superTypes != null) && (superTypes.length > 0))
+        {
+            superTypeAliases = new HashSet<String>(Arrays.asList(superTypes));
+        }
+
+        try
+        {
+            eventAdapterService.addNestableMapType(eventTypeAlias, typeMap, superTypeAliases);
         }
         catch (EventAdapterException t)
         {

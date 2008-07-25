@@ -270,6 +270,18 @@ public class Configuration implements ConfigurationOperations, ConfigurationInfo
     	addNestableEventTypeAlias(eventTypeAlias, typeMap);
     }
 
+    public void addEventTypeAliasNestable(String eventTypeAlias, Map<String, Object> typeMap, String[] superTypes)
+    {
+        addNestableEventTypeAlias(eventTypeAlias, typeMap);
+        if (superTypes != null)
+        {
+            for (int i = 0; i < superTypes.length; i++)
+            {
+                this.addMapSuperType(eventTypeAlias, superTypes[i]);
+            }
+        }
+    }
+
     /**
      * Add an alias for an event type that represents java.util.Map events, taking a Map of
      * event property and class name as a parameter.
@@ -289,6 +301,14 @@ public class Configuration implements ConfigurationOperations, ConfigurationInfo
         addEventTypeAlias(eventTypeAlias, properties);
     }
 
+    /**
+     * Add, for a given Map event type identified by the first parameter, the event type alias supertype
+     * of a Map supertype.
+     * <p>
+     * Each Map event type may have any number of supertypes, each supertype must also be of a Map-type event.
+     * @param mapEventTypeAlias the alias of a Map event type, that is to have a supertype
+     * @param mapSupertypeAlias the alias of a Map event type that is the supertype 
+     */
     public void addMapSuperType(String mapEventTypeAlias, String mapSupertypeAlias)
     {
         Set<String> superTypes = mapSuperTypes.get(mapEventTypeAlias);
