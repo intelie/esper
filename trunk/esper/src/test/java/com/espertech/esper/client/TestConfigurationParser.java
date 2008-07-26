@@ -8,6 +8,7 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
+import java.util.Set;
 
 import com.espertech.esper.client.soda.StreamSelector;
 import com.espertech.esper.support.util.ArrayAssertionUtil;
@@ -101,6 +102,11 @@ public class TestConfigurationParser extends TestCase
         expectedProps.put("myInt", "int");
         expectedProps.put("myString", "string");
         assertEquals(expectedProps, config.getEventTypesMapEvents().get("MyMapEvent"));
+        assertEquals(1, config.getMapSuperTypes().size());
+        Set<String> superTypes = config.getMapSuperTypes().get("MyMapEvent");
+        assertEquals(2, superTypes.size());
+        assertTrue(superTypes.contains("MyMapSuperType1") && superTypes.contains("MyMapSuperType2"));
+
 
         // assert legacy type declaration
         assertEquals(1, config.getEventTypesLegacy().size());

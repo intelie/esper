@@ -8,6 +8,49 @@ import java.util.*;
 public class GraphUtil
 {
     /**
+     * Deep-merge a map into another map returning a result map.
+     * <p>
+     * Copies all values present in the original map to a new map,
+     * adding additional value present in the second map passed in,
+     * ignoring same-key values in the second map that are present in the original.
+     * <p>
+     * If the value is a Map itself, repeats the operation on the Map value.
+     * @param original nestable Map of entries to retain and not overwrite
+     * @param additional nestable Map of entries to add to the original
+     * @return merge of original and additional nestable map
+     */
+    public static Map<String, Object> mergeNestableMap(Map<String, Object> original, Map<String, Object> additional)
+    {
+        Map<String, Object> result = new HashMap<String, Object>(original);
+
+        for (Map.Entry<String, Object> additionalEntry : additional.entrySet())
+        {
+            String name = additionalEntry.getKey();
+            Object additionalValue = additionalEntry.getValue();
+
+            Object originalValue = original.get(name);
+
+            Object newValue;
+            if ((originalValue instanceof Map) &&
+                (additionalValue instanceof Map))
+            {
+                Map<String, Object> innerAdditional = (Map<String, Object>) additionalValue;
+                Map<String, Object> innerOriginal = (Map<String, Object>) originalValue;
+                newValue = mergeNestableMap(innerOriginal, innerAdditional);
+                result.put(name, newValue);
+                continue;
+            }
+
+            if (original.containsKey(name))
+            {
+                continue;
+            }
+            result.put(name, additionalValue);
+        }
+        return result;
+    }
+
+    /**
      * Check cyclic dependency and determine processing order for the given graph.
      * @param graph is represented as child nodes that have one or more parent nodes that they are dependent on
      * @return set of parent and child nodes in order such that no node's dependency is not satisfied
@@ -127,6 +170,7 @@ public class GraphUtil
 
     /**
      * Returns any circular dependency as a stack of stream numbers, or null if none exist.
+     * @param graph the dependency graph
      * @return circular dependency stack
      */
     private static Stack<String> getFirstCircularDependency(Map<String, Set<String>> graph)

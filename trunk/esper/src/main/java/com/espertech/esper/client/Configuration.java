@@ -15,6 +15,7 @@ import java.util.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.w3c.dom.*;
+import com.espertech.esper.util.GraphUtil;
 
 /**
  * An instance of <tt>Configuration</tt> allows the application
@@ -612,6 +613,11 @@ public class Configuration implements ConfigurationOperations, ConfigurationInfo
     public Map<String, ConfigurationVariantStream> getVariantStreams()
     {
         return variantStreams;
+    }
+
+    public void updateMapEventType(String mapEventTypeAlias, Map<String, Object> typeMap) throws ConfigurationException
+    {
+        throw new UnsupportedOperationException("Map type update is only available in runtime configuration");
     }
 
     /**

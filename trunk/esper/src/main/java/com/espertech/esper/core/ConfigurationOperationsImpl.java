@@ -277,4 +277,16 @@ public class ConfigurationOperationsImpl implements ConfigurationOperations
     {
         valueAddEventService.addVariantStream(variantEventTypeAlias, variantStreamConfig, eventAdapterService);
     }
+
+    public void updateMapEventType(String mapEventTypeAlias, Map<String, Object> typeMap) throws ConfigurationException
+    {
+        try
+        {
+            eventAdapterService.updateMapEventType(mapEventTypeAlias, typeMap);
+        }
+        catch (EventAdapterException e)
+        {
+            throw new ConfigurationException("Error updating Map event type: " + e.getMessage(), e);
+        }
+    }
 }

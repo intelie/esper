@@ -417,6 +417,14 @@ where address('work').streetName = 'Park Ave'
 		</para>
 
 		<para>
+			A given Map event type can have one or more supertypes that must also be Map event types. All properties available on any of the Map supertypes are available on the type itself. In addition, anywhere within EPL that an event type alias of a Map supertype is used, any of its Map subtypes and their subtypes match that expression.
+		</para>
+
+		<para>
+			Your application can add properties to an existing Map event type during runtime using the configuration operation <literal>updateMapEventType</literal>. Properties may not be updated or deleted - properties can only be added, and nested properties can be added as well.
+		</para>
+
+		<para>
 			The engine can process <literal>java.util.Map</literal> events via the <literal>sendEvent(Map map, String eventTypeAlias)</literal> method on the <literal>EPRuntime</literal> interface. Entries in the Map represent event properties. Keys must be of type <literal>java.util.String</literal> for the engine to be able to look up event property names specified by pattern or EPL statements. 
 		</para>
 			
@@ -548,6 +556,40 @@ from AccountUpdate]]></programlisting>
 			<programlisting><![CDATA[insert into MyStream select fields from NestedMapEvent
 // this does not work ... instead select the individual fields in the insert-into statement
 select fields.name from MyStream ]]></programlisting>
+	   </sect2>
+
+		<sect2 id="eventrep-xml-map-supertype">
+		   <title>Map Supertypes</title>
+		   
+		   <para>
+			   Your <literal>Map</literal> event type may declare one or more supertypes when configuring the type at engine initialization time or at runtime through the administrative interface. 
+		   </para>
+
+		   <para>
+			   Supertypes of a <literal>Map</literal> event type must also be Map event types. All property names and types of a supertype are also available on a subtype and override such same-name properties of the subtype. In addition, anywhere within EPL that an event type alias of a Map supertype is used, any of its Map subtypes also matches that expression (similar to the concept of interface in Java).
+		   </para>
+		   
+		   <para>
+			   This example assumes that the <literal>BaseUpdate</literal> event type has been declared and acts as a supertype to the <literal>AccountUpdate</literal> event type (both Map event types): 
+		   </para>
+		<programlisting><![CDATA[epService.getEPAdministrator().getConfiguration().
+    addNestableEventTypeAlias("AccountUpdate", accountUpdateDef, 
+    new String[] {"BaseUpdate"});]]></programlisting>
+
+		   <para>
+			   Your application EPL statements may select <literal>BaseUpdate</literal> events and receive both <literal>BaseUpdate</literal> and <literal>AccountUpdate</literal> events, as well as any other subtypes of <literal>BaseUpdate</literal> and their subtypes.
+		   </para>
+			<programlisting><![CDATA[// Receive BaseUpdate and any subtypes including subtypes of subtypes
+select * from BaseUpdate]]></programlisting>
+
+		   <para>
+			   Your application Map event type may have multiple supertypes. The multiple inheritance hierarchy between Maps can be arbitrarily deep, however cyclic dependencies are not allowed. If using runtime configuration, supertypes must exist before a subtype to a supertype can be added.
+		   </para>
+		   
+		   <para>
+			   See <xref linkend="config-java-util-map"/> for more information on configuring Map event types.
+		   </para>
+
 	   </sect2>
 
     </sect1>
@@ -704,6 +746,7 @@ such event metadata and event data into one of the built-in event representation
 	</sect1>
 
 </chapter>
+
 
 
 

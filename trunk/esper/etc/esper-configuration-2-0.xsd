@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xs:schema targetNamespace="http://www.espertech.com/schema/esper" xmlns:esper="http://www.espertech.com/schema/esper" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+<xs:schema targetNamespace="http://www.espertech.com/schema/esper" elementFormDefault="qualified" xmlns:esper="http://www.espertech.com/schema/esper" xmlns:xs="http://www.w3.org/2001/XMLSchema">
 	<xs:element name="esper-configuration">
 		<xs:complexType>
 			<xs:sequence>
@@ -16,7 +16,7 @@
 				<xs:element ref="esper:plugin-pattern-observer" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:element ref="esper:plugin-event-representation" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:element ref="esper:plugin-event-type" minOccurs="0" maxOccurs="unbounded"/>
-				<xs:element ref="esper:plugin-event-type-alias-resolution" minOccurs="0" maxOccurs="1"/>				
+				<xs:element ref="esper:plugin-event-type-alias-resolution" minOccurs="0"/>
 				<xs:element ref="esper:variable" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:element ref="esper:plugin-loader" minOccurs="0" maxOccurs="unbounded"/>
 				<xs:element ref="esper:engine-settings" minOccurs="0" maxOccurs="unbounded"/>
@@ -89,6 +89,7 @@
 			<xs:sequence maxOccurs="unbounded">
 				<xs:element ref="esper:map-property"/>
 			</xs:sequence>
+			<xs:attribute name="supertype-aliases" type="xs:string" use="optional"/>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="map-property">
@@ -153,9 +154,9 @@
 		<xs:complexType>
 			<xs:choice>
 				<xs:sequence>
-					<xs:element ref="esper:base-event-type" minOccurs="1" maxOccurs="unbounded"/>
-					<xs:element ref="esper:delta-event-type" minOccurs="1" maxOccurs="unbounded"/>
-					<xs:element ref="esper:key-property" minOccurs="1" maxOccurs="unbounded"/>
+					<xs:element ref="esper:base-event-type" maxOccurs="unbounded"/>
+					<xs:element ref="esper:delta-event-type" maxOccurs="unbounded"/>
+					<xs:element ref="esper:key-property" maxOccurs="unbounded"/>
 				</xs:sequence>
 			</xs:choice>
 			<xs:attribute name="alias" type="xs:string" use="required"/>
@@ -509,7 +510,7 @@
 		<xs:complexType>
 			<xs:choice>
 				<xs:sequence>
-					<xs:element ref="esper:initializer" minOccurs="0" maxOccurs="1"/>
+					<xs:element ref="esper:initializer" minOccurs="0"/>
 				</xs:sequence>
 			</xs:choice>
 			<xs:attribute name="uri" type="xs:string" use="required"/>
@@ -520,8 +521,8 @@
 		<xs:complexType>
 			<xs:choice>
 				<xs:sequence>
-					<xs:element ref="esper:resolution-uri" minOccurs="1" maxOccurs="unbounded"/>
-					<xs:element ref="esper:initializer" minOccurs="0" maxOccurs="1"/>
+					<xs:element ref="esper:resolution-uri" maxOccurs="unbounded"/>
+					<xs:element ref="esper:initializer" minOccurs="0"/>
 				</xs:sequence>
 			</xs:choice>
 			<xs:attribute name="alias" type="xs:string" use="required"/>
@@ -531,7 +532,7 @@
 		<xs:complexType>
 			<xs:choice>
 				<xs:sequence>
-					<xs:element ref="esper:resolution-uri" minOccurs="1" maxOccurs="unbounded"/>
+					<xs:element ref="esper:resolution-uri" maxOccurs="unbounded"/>
 				</xs:sequence>
 			</xs:choice>
 		</xs:complexType>
@@ -541,13 +542,13 @@
 			<xs:attribute name="value" type="xs:string" use="required"/>
 		</xs:complexType>
 	</xs:element>
-    <xs:element name="initializer">
-      <xs:complexType>
-        <xs:sequence>
-          <xs:any minOccurs="0"/>
-        </xs:sequence>
-      </xs:complexType>
-    </xs:element>
+	<xs:element name="initializer">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:any minOccurs="0"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
 	<xs:element name="variant-stream">
 		<xs:complexType>
 			<xs:choice>

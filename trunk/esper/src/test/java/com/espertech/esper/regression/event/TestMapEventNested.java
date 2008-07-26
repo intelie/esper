@@ -14,11 +14,84 @@ import org.apache.commons.logging.LogFactory;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Arrays;
 
 public class TestMapEventNested extends TestCase
 {
-    // TODO
-    //   xml config
+    public void testMapTypeUpdate()
+    {
+        Configuration configuration = SupportConfigFactory.getConfiguration();
+        configuration.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
+
+        Map<String, Object> type = makeMap(new Object[][] {
+                {"base1", String.class},
+                {"base2", makeMap(new Object[][] {{"n1", int.class}})}
+                });
+        configuration.addEventTypeAliasNestable("MyEvent", type);
+
+        EPServiceProvider epService = EPServiceProviderManager.getDefaultProvider(configuration);
+        epService.initialize();
+
+        EPStatement statementOne = epService.getEPAdministrator().createEPL(
+                "select base1 as v1, base2.n1 as v2, base3? as v3, base2.n2? as v4  from MyEvent");
+        EPStatement statementOneSelectAll = epService.getEPAdministrator().createEPL("select * from MyEvent");
+        assertEquals("[base1, base2]", Arrays.toString(statementOneSelectAll.getEventType().getPropertyNames()));
+        SupportUpdateListener listenerOne = new SupportUpdateListener();
+        statementOne.addListener(listenerOne);
+        String[] fields = "v1,v2,v3,v4".split(",");
+
+        epService.getEPRuntime().sendEvent(makeMap(new Object[][] {
+                {"base1", "abc"},
+                {"base2", makeMap(new Object[][] {{"n1", 10}})}
+                }), "MyEvent");
+        ArrayAssertionUtil.assertProps(listenerOne.assertOneGetNewAndReset(), fields, new Object[] {"abc", 10, null, null});
+
+        // update type
+        Map<String, Object> typeNew = makeMap(new Object[][] {
+                {"base3", Long.class},
+                {"base2", makeMap(new Object[][] {{"n2", String.class}})}
+                });
+        epService.getEPAdministrator().getConfiguration().updateMapEventType("MyEvent", typeNew);
+
+        EPStatement statementTwo = epService.getEPAdministrator().createEPL("select base1 as v1, base2.n1 as v2, base3 as v3, base2.n2 as v4 from MyEvent");
+        EPStatement statementTwoSelectAll = epService.getEPAdministrator().createEPL("select * from MyEvent");
+        SupportUpdateListener listenerTwo = new SupportUpdateListener();
+        statementTwo.addListener(listenerTwo);
+
+        epService.getEPRuntime().sendEvent(makeMap(new Object[][] {
+                {"base1", "def"},
+                {"base2", makeMap(new Object[][] {{"n1", 9}, {"n2", "xyz"}})},
+                {"base3", 20L},
+                }), "MyEvent");
+        ArrayAssertionUtil.assertProps(listenerOne.assertOneGetNewAndReset(), fields, new Object[] {"def", 9, 20L, "xyz"});
+        ArrayAssertionUtil.assertProps(listenerTwo.assertOneGetNewAndReset(), fields, new Object[] {"def", 9, 20L, "xyz"});
+
+        // assert event type
+        assertEquals("[base1, base2, base3]", Arrays.toString(statementOneSelectAll.getEventType().getPropertyNames()));
+        assertEquals("[base1, base2, base3]", Arrays.toString(statementTwoSelectAll.getEventType().getPropertyNames()));
+        
+        try
+        {
+            epService.getEPAdministrator().getConfiguration().updateMapEventType("dummy", typeNew);
+            fail();
+        }
+        catch (ConfigurationException ex)
+        {
+            assertEquals("Error updating Map event type: Event type alias 'dummy' has not been declared", ex.getMessage());
+        }
+
+        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("SupportBean", SupportBean.class);
+        try
+        {
+            epService.getEPAdministrator().getConfiguration().updateMapEventType("SupportBean", typeNew);
+            fail();
+        }
+        catch (ConfigurationException ex)
+        {
+            assertEquals("Error updating Map event type: Event type by alias 'SupportBean' is not a Map event type", ex.getMessage());
+        }
+    }
+
     public void testMapInheritanceInitTime()
     {
         Configuration configuration = SupportConfigFactory.getConfiguration();
@@ -46,7 +119,7 @@ public class TestMapEventNested extends TestCase
 
         runMapInheritanceInitTime(epService);
     }
-    
+
     public void testMapInheritanceRuntime()
     {
         Configuration configuration = SupportConfigFactory.getConfiguration();
@@ -118,6 +191,28 @@ public class TestMapEventNested extends TestCase
         values = new Object[] {"ZBASE",null, null, null, null};
         ArrayAssertionUtil.assertProps(listeners[0].assertOneGetNewAndReset(), fields, values);
         assertFalse(listeners[1].isInvoked() || listeners[2].isInvoked() || listeners[3].isInvoked() || listeners[4].isInvoked());
+
+        // try property not available
+        try
+        {
+            epService.getEPAdministrator().createEPL("select suba from Sub1Event");
+            fail();
+        }
+        catch (EPStatementException ex)
+        {
+            assertEquals("Error starting view: Property named 'suba' is not valid in any stream [select suba from Sub1Event]",ex.getMessage());
+        }
+
+        // try supertype not exists
+        try
+        {
+            epService.getEPAdministrator().getConfiguration().addEventTypeAliasNestable("Sub1Event", makeMap(""), new String[] {"doodle"});
+            fail();
+        }
+        catch (ConfigurationException ex)
+        {
+            assertEquals("Map supertype by alias 'doodle' could not be found",ex.getMessage());
+        }
     }
 
     public void testEscapedDot()
@@ -489,7 +584,10 @@ public class TestMapEventNested extends TestCase
         for (int i = 0; i < elements.length; i++)
         {
             String[] pair = elements[i].split("=");
-            result.put(pair[0], pair[1]);
+            if (pair.length == 2)
+            {
+                result.put(pair[0], pair[1]);
+            }
         }
         return result;
     }
@@ -497,6 +595,10 @@ public class TestMapEventNested extends TestCase
     private Map<String, Object> makeMap(Object[][] entries)
     {
         Map result = new HashMap<String, Object>();
+        if (entries == null)
+        {
+            return result;
+        }
         for (int i = 0; i < entries.length; i++)
         {
             result.put(entries[i][0], entries[i][1]);

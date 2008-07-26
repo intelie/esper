@@ -64,7 +64,7 @@ Features
 
 * Event Representations
 	
-        * Supports event-type inheritance and polymorphism as provided by the Java language
+        * Supports event-type inheritance and polymorphism as provided by the Java language, for Java object events as well as for Map-type events
 
         * Events can be plain Java objects, XML (DOM and streaming through Apache Axiom) and java.util.Map including nested objects and hierarchical maps
 

@@ -16,6 +16,9 @@ New Features
   - fix for ESPER-xxx which is support for iterator on an SQL join or a method join
   - "as" not required in create window
   - removed limitation on historical data joins, now supporting an unlimited number of streams in join and iterator
+  - support for Map inheritance
+  - support for adding properties at runtime
+  - optimization for simple filter-only statements that filter using a where-clause
   
 Minor changes	    		
 
@@ -373,5 +376,6 @@ This enabled event patterns and EQL to use short event names not requiring makin
 version 0.7.0
 -------------
 Initial alpha version
+
 
 

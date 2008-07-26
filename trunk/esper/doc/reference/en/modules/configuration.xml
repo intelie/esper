@@ -392,6 +392,16 @@ configuration.addEventTypeAlias("MyMapEvent", properties);]]></programlisting>
 			</para>
 			<programlisting>select carType, assembly.chassisTag, count(assembly.numParts) from MyMapEvent.win:time(60 sec)</programlisting>
 
+			<para>
+				A Map event type may also become a subtype of one or more supertypes that must also be Map event types. The <literal>java-util-map</literal> element provides an optional attribute <literal>supertype-aliases</literal> that accepts a comma-separated list of aliases of Map event types that are supertypes to the type:
+			</para>
+			<programlisting><![CDATA[<event-type alias="AccountUpdate">
+<java-util-map supertype-aliases="BaseUpdate, AccountEvent">
+...]]></programlisting>			
+
+			<para>
+				For initialization time configuration, the <literal>addMapSuperType</literal> method can be used to add Map hierarchy information. For runtime configuration, pass the supertype aliases to the <literal>addEventTypeAliasNestable</literal> method in <literal>ConfigurationOperations</literal>.
+			</para>
 		</sect2>
 		
 		<sect2 id="config-xml-dom" revision="1">

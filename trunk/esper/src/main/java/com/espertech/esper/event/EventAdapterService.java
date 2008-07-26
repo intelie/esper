@@ -271,4 +271,12 @@ public interface EventAdapterService
      * plug-in event representations
      */
     public EventSender getDynamicTypeEventSender(EPRuntimeEventSender runtimeEventSender, URI[] uri);
+
+    /**
+     * Update a given Map  event type.
+     * @param mapEventTypeAlias alias to update
+     * @param typeMap additional properties to add, nesting allowed
+     * @throws EventAdapterException when the type is not found or is not a Map 
+     */
+    public void updateMapEventType(String mapEventTypeAlias, Map<String, Object> typeMap) throws EventAdapterException;
 }

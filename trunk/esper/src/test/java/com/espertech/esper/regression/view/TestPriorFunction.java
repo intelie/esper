@@ -250,6 +250,23 @@ public class TestPriorFunction extends TestCase
         assertNewEvents("E", "B", 3d);
     }
 
+    public void testPriorNoDataWindowWhere()
+    {
+        String text = "select * from " + SupportMarketDataBean.class.getName() +
+                      " where prior(1, price) = 100";
+        EPStatement stmt = epService.getEPAdministrator().createEPL(text);
+        stmt.addListener(testListener);
+
+        sendMarketEvent("IBM", 75);
+        assertFalse(testListener.isInvoked());
+
+        sendMarketEvent("IBM", 100);
+        assertFalse(testListener.isInvoked());
+
+        sendMarketEvent("IBM", 120);
+        assertTrue(testListener.isInvoked());
+    }
+
     public void testLongRunningSingle()
     {
         String viewExpr = "select symbol as currSymbol, " +

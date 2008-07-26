@@ -220,7 +220,18 @@ class ConfigurationParser {
 
     private static void handleMap(String aliasName, Configuration configuration, Element eventTypeElement)
     {
-		Properties propertyTypeNames = new Properties();
+        Node superTypesList = eventTypeElement.getAttributes().getNamedItem("supertype-aliases");
+        if (superTypesList != null)
+        {
+            String value = superTypesList.getTextContent();
+            String[] aliases = value.split(",");
+            for (String superTypeAlias : aliases)
+            {
+                configuration.addMapSuperType(aliasName, superTypeAlias.trim());
+            }
+        }
+
+        Properties propertyTypeNames = new Properties();
 		NodeList propertyList = eventTypeElement.getElementsByTagName("map-property");
 		for (int i = 0; i < propertyList.getLength(); i++)
 	    {

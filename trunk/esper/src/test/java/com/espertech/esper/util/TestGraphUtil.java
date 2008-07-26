@@ -8,7 +8,34 @@ import com.espertech.esper.support.util.ArrayAssertionUtil;
 
 public class TestGraphUtil extends TestCase
 {
-    public void testSimple() throws Exception
+    public void testMerge()
+    {
+        Map<String, Object> mapOne = makeMap(new Object[][] {
+                {"base1", 1},
+                {"base3", makeMap(new Object[][] {{"n1", 9}})},
+                {"base4", null},
+                });
+
+        Map<String, Object> mapTwo = makeMap(new Object[][] {
+                {"base1", null},
+                {"base2", 5},
+                {"base5", null},
+                {"base3", makeMap(new Object[][] {{"n1", 7}, {"n2", 10}})}
+                });
+
+        Map<String, Object> merged = GraphUtil.mergeNestableMap(mapOne, mapTwo);
+        assertEquals(1, merged.get("base1"));
+        assertEquals(5, merged.get("base2"));
+        assertEquals(null, merged.get("base4"));
+        assertEquals(null, merged.get("base5"));
+        assertEquals(5, merged.size());
+        Map<String, Object> nested = (Map<String, Object>) merged.get("base3");
+        assertEquals(2, nested.size());
+        assertEquals(9, nested.get("n1"));
+        assertEquals(10, nested.get("n2"));
+    }
+
+    public void testSimpleTopDownOrder() throws Exception
     {
         Map<String, Set<String>> graph = new LinkedHashMap<String, Set<String>>();
         assertEquals(0, GraphUtil.getTopDownOrder(graph).size());
@@ -38,7 +65,7 @@ public class TestGraphUtil extends TestCase
         ArrayAssertionUtil.assertEqualsExactOrder("R,0,0_1,1,1_1,1_1_1,1_1_2,1_2,1_2_1".split(","), GraphUtil.getTopDownOrder(graph).toArray());
     }
 
-    public void testAcyclic() throws Exception
+    public void testAcyclicTopDownOrder() throws Exception
     {
         Map<String, Set<String>> graph = new LinkedHashMap<String, Set<String>>();
 
@@ -60,7 +87,7 @@ public class TestGraphUtil extends TestCase
         tryInvalid(graph, "Circular dependency detected between [1_1, A, R1, 0]");
     }
 
-    public void testInvalid() throws Exception
+    public void testInvalidTopDownOder() throws Exception
     {
         Map<String, Set<String>> graph = new LinkedHashMap<String, Set<String>>();
         add(graph, "1_1", "1");
@@ -98,5 +125,19 @@ public class TestGraphUtil extends TestCase
             graph.put(child, parents);
         }
         parents.add(parent);
+    }
+
+    private Map<String, Object> makeMap(Object[][] entries)
+    {
+        Map result = new HashMap<String, Object>();
+        if (entries == null)
+        {
+            return result;
+        }
+        for (int i = 0; i < entries.length; i++)
+        {
+            result.put(entries[i][0], entries[i][1]);
+        }
+        return result;
     }
 }

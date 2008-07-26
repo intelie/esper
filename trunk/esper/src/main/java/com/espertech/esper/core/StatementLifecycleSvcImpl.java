@@ -160,7 +160,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
         StatementSpecCompiled compiledSpec;
         try
         {
-            compiledSpec = compile(statementSpec, expression, statementContext);
+            compiledSpec = compile(statementSpec, expression, statementContext, false);
         }
         catch (EPStatementException ex)
         {
@@ -706,10 +706,42 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
      * @return compiled statement
      * @throws EPStatementException if the statement cannot be compiled
      */
-    protected static StatementSpecCompiled compile(StatementSpecRaw spec, String eplStatement, StatementContext statementContext) throws EPStatementException
+    protected static StatementSpecCompiled compile(StatementSpecRaw spec, String eplStatement, StatementContext statementContext, boolean isSubquery) throws EPStatementException
     {
         List<StreamSpecCompiled> compiledStreams;
 
+        // If not using a join and not specifying a data window, make the where-clause, if present, the filter of the stream
+        // if selecting using filter spec, and not subquery in where clause
+        if ((spec.getStreamSpecs().size() == 1) &&
+            (spec.getStreamSpecs().get(0) instanceof FilterStreamSpecRaw) &&
+            (spec.getStreamSpecs().get(0).getViewSpecs().isEmpty()) &&
+            (spec.getFilterRootNode() != null) &&
+            (spec.getOnTriggerDesc() == null) &&
+            (!isSubquery))
+        {
+            boolean disqualified;
+            ExprNode whereClause = spec.getFilterRootNode();
+
+            ExprNodeSubselectVisitor visitor = new ExprNodeSubselectVisitor();
+            whereClause.accept(visitor);
+            disqualified = visitor.getSubselects().size() > 0;
+
+            if (!disqualified)
+            {
+                ExprNodeViewResourceVisitor viewResourceVisitor = new ExprNodeViewResourceVisitor();
+                whereClause.accept(viewResourceVisitor);
+                disqualified = viewResourceVisitor.getExprNodes().size() > 0;
+            }
+
+            if (!disqualified)
+            {
+                spec.setFilterRootNode(null);
+                FilterStreamSpecRaw streamSpec = (FilterStreamSpecRaw) spec.getStreamSpecs().get(0);
+                streamSpec.getRawFilterSpec().getFilterExpressions().add(whereClause);
+            }
+        }
+
+        // compile each stream used
         try
         {
             compiledStreams = new ArrayList<StreamSpecCompiled>();
@@ -790,7 +822,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
         for (ExprSubselectNode subselect : visitor.getSubselects())
         {
             StatementSpecRaw raw = subselect.getStatementSpecRaw();
-            StatementSpecCompiled compiled = compile(raw, eplStatement, statementContext);
+            StatementSpecCompiled compiled = compile(raw, eplStatement, statementContext, true);
             subselect.setStatementSpecCompiled(compiled);
         }
 

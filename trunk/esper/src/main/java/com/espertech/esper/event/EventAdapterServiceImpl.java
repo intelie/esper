@@ -178,6 +178,22 @@ public class EventAdapterServiceImpl implements EventAdapterService
         throw new EventTypeException("An event sender for event type named '" + eventTypeAlias + "' could not be created as the type is internal");
     }
 
+    public void updateMapEventType(String mapEventTypeAlias, Map<String, Object> typeMap) throws EventAdapterException
+    {
+        EventType type = aliasToTypeMap.get(mapEventTypeAlias);
+        if (type == null)
+        {
+            throw new EventAdapterException("Event type alias '" + mapEventTypeAlias + "' has not been declared");
+        }
+        if (!(type instanceof MapEventType))
+        {
+            throw new EventAdapterException("Event type by alias '" + mapEventTypeAlias + "' is not a Map event type");
+        }
+
+        MapEventType mapEventType = (MapEventType) type;
+        mapEventType.addAdditionalProperties(typeMap);
+    }
+
     public EventSender getDynamicTypeEventSender(EPRuntimeEventSender epRuntime, URI[] uri) throws EventTypeException
     {
         List<EventSenderURIDesc> handlingFactories = new ArrayList<EventSenderURIDesc>();
