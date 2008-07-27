@@ -1,0 +1,116 @@
+JIRA issue
+==========
+Left outer join between stream and historical (SQL/method) may incorrectly return no rows
+
+This problem manifests itself when using an left outer join between a stream and a historical (being SQL or method invocation). 
+In such statement, if an event arrives for which no matching rows exists in the historical following outer-join criteria, 
+there are no rows posted to listeners. 
+
+Example:
+ select s0.field, h0.field 
+ from MyEvent as s0
+   left outer join
+   sql:MyDB ['select * from table'] as h0 
+   on s0.field = h0.field
+   
+If the SQL query in above example returns one or more rows and none of the rows returned matches the outer join criteria, 
+then the query should output a row since the join is a left outer join; however the query currently does not.
+This bug only occurs if the query returns rows and none matches join criteria. If the query returns no rows, the problem does not occur.
+=====================================
+
+
+H0			H1
+--			--
+E1  1			
+E2  2			E2  2
+			E3  3
+
+(1) H0 left outer join H1
+execute H0 only, no need to execute H1 since H1 can only exist with H0 rows
+
+(2) H0 right outer join H1
+execute H1 only, no need to execute H0 since H0 can only exist with H1 rows
+
+(3) H0 full outer join H1
+execute H0 and execute H1, since even if there is no H0 rows, H1 must be executed
+
+What we have:
+- create query strategy for historical streams for which no parameters are required, implement JoinSetComposer change
+- continue N-stream join testing
+- test index use and performance
+
+Design
+======
+2-Stream joins
+  Stream-historical
+    No parameters
+      select * from S0, method:H0()
+	  - use S0 view iterator and for the first event, call H0, and duplicate for each event
+      DONE
+    With parameters
+      select * from S0, method:H0(s0.p00)
+	  - use S0 view iterator
+      DONE
+   
+  Historical-only
+    No parameters
+      select * from method:H0(), method:H1()
+          - method call for H0, execute the query strategy
+      DONE
+    With parameters
+      select * from method:H0(), method:H1(p00)
+          - method call for H0, execute the query strategy
+      DONE
+
+2-Stream outer joins
+  Stream-historical
+    No parameters
+      DONE
+    With parameters   
+      DONE
+  Historical-only
+    No parameters
+    With parameters   
+
+N-stream joins
+  Stream-historical    
+    No parameters
+    With parameters   
+  Historical-only      
+    No parameters
+    With parameters   
+
+2-Stream outer joins
+  Stream-historical    
+    No parameters
+    With parameters   
+  Historical-only
+    No parameters
+    With parameters   
+
+N-stream outer joins
+  Stream-historical    
+    No parameters
+    With parameters   
+  Historical-only
+    No parameters
+    With parameters   
+
+=> for N-stream (outer) joins, compute query stratgy for historical streams even through no events arrive, for use in iteration
+
+(A) Joins with only historical streams
+Iterator: 
+  For the first historical view that is not dependent on any other stream, then 
+    execute historical
+    use each event to perform the associated query strategy
+
+(B) Joins with historical and one or more real-time streams
+Iterator:
+  For each non-historical stream
+    iterate over the view's events 
+    use each event to perform the associated query strategy
+    query strategy should only call the method once if none of the parameters depend on already-joined streams
+
+=> If the historical stream does not have a dependency, then it has a query strategy
+=> If the non-historical stream does not have a repository, the use the view iterator
+=> If the non-historical stream does have a repository, use the repository
