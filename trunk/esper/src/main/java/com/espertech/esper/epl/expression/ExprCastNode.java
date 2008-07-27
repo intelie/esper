@@ -6,10 +6,7 @@ import com.espertech.esper.epl.core.ViewResourceDelegate;
 import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.event.EventBean;
 import com.espertech.esper.schedule.TimeProvider;
-import com.espertech.esper.util.SimpleTypeCaster;
-import com.espertech.esper.util.SimpleTypeCasterFactory;
-import com.espertech.esper.util.JavaClassHelper;
-import com.espertech.esper.util.SimpleTypeCasterAnyType;
+import com.espertech.esper.util.*;
 
 import java.math.BigInteger;
 import java.math.BigDecimal;
@@ -21,7 +18,7 @@ public class ExprCastNode extends ExprNode
 {
     private final String classIdentifier;
     private Class targetType;
-    private SimpleTypeCaster caster;
+    private CasterParserComputer casterParserComputer;
     private boolean isNumeric;
 
     /**
@@ -51,7 +48,9 @@ public class ExprCastNode extends ExprNode
 
         Class fromType = this.getChildNodes().get(0).getType();
 
+        // identify target type
         // try the primitive names including "string"
+        SimpleTypeCaster caster;
         targetType = JavaClassHelper.getPrimitiveClassForName(classIdentifier.trim());
         if (targetType != null)
         {
@@ -83,6 +82,28 @@ public class ExprCastNode extends ExprNode
             }
             caster = new SimpleTypeCasterAnyType(targetType);
         }
+
+        // to-string
+        if (targetType == String.class)
+        {
+            casterParserComputer = new StringXFormComputer();
+        }
+        // parse
+        else if (fromType == String.class)
+        {
+            SimpleTypeParser parser = SimpleTypeParserFactory.getParser(JavaClassHelper.getBoxedType(targetType));
+            casterParserComputer = new StringParserComputer(parser);
+        }
+        // numeric cast with check
+        else if (isNumeric)
+        {
+            casterParserComputer = new NumberCasterComputer(caster);
+        }
+        // non-numeric cast
+        else
+        {
+            casterParserComputer = new NonnumericCasterComputer(caster);
+        }
     }
 
     public boolean isConstantResult()
@@ -103,23 +124,7 @@ public class ExprCastNode extends ExprNode
             return null;
         }
 
-        // Numeric
-        if (isNumeric)
-        {
-            if (result instanceof Number)
-            {
-                return caster.cast(result);
-            }
-            return null;
-        }
-        else if (targetType == String.class)
-        {
-            return result.toString();
-        }
-        else
-        {
-            return caster.cast(result);
-        }
+        return casterParserComputer.compute(result);
     }
 
     public String toExpressionString()
@@ -147,4 +152,67 @@ public class ExprCastNode extends ExprNode
 
         return false;
     }
+
+    public interface CasterParserComputer
+    {
+        public Object compute(Object input);
+    }
+
+    public static class StringXFormComputer implements CasterParserComputer
+    {
+        public Object compute(Object input)
+        {
+            return input.toString();
+        }
+    }
+
+    public static class NumberCasterComputer implements CasterParserComputer
+    {
+        private final SimpleTypeCaster numericTypeCaster;
+
+        public NumberCasterComputer(SimpleTypeCaster numericTypeCaster)
+        {
+            this.numericTypeCaster = numericTypeCaster;
+        }
+
+        public Object compute(Object input)
+        {
+            if (input instanceof Number)
+            {
+                return numericTypeCaster.cast(input);
+            }
+            return null;
+        }
+    }
+
+    public static class StringParserComputer implements CasterParserComputer
+    {
+        private final SimpleTypeParser parser;
+
+        public StringParserComputer(SimpleTypeParser parser)
+        {
+            this.parser = parser;
+        }
+
+        public Object compute(Object input)
+        {
+            return parser.parse(input.toString());
+        }
+    }
+
+    public static class NonnumericCasterComputer implements CasterParserComputer
+    {
+        private final SimpleTypeCaster caster;
+
+        public NonnumericCasterComputer(SimpleTypeCaster numericTypeCaster)
+        {
+            this.caster = numericTypeCaster;
+        }
+
+        public Object compute(Object input)
+        {
+            return caster.cast(input);
+        }
+    }
+
 }
