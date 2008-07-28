@@ -262,4 +262,6 @@ public interface ConfigurationOperations
      * @throws ConfigurationException if the event type alias could not be found or is not a Map
      */
     public void updateMapEventType(String mapEventTypeAlias, Map<String, Object> typeMap) throws ConfigurationException;
+
+    public boolean isVariantStreamExists(String name);
 }

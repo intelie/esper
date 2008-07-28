@@ -11,6 +11,7 @@ import com.espertech.esper.client.*;
 import com.espertech.esper.event.EventAdapterException;
 import com.espertech.esper.event.EventAdapterService;
 import com.espertech.esper.event.vaevent.ValueAddEventService;
+import com.espertech.esper.event.vaevent.VariantEventType;
 import com.espertech.esper.util.JavaClassHelper;
 import com.espertech.esper.epl.core.EngineImportService;
 import com.espertech.esper.epl.core.EngineImportException;
@@ -288,5 +289,10 @@ public class ConfigurationOperationsImpl implements ConfigurationOperations
         {
             throw new ConfigurationException("Error updating Map event type: " + e.getMessage(), e);
         }
+    }
+
+    public boolean isVariantStreamExists(String name)
+    {
+        return valueAddEventService.getValueAddProcessor(name).getValueAddEventType() instanceof VariantEventType;
     }
 }
