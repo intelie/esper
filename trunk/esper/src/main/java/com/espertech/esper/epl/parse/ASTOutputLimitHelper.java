@@ -7,13 +7,12 @@
  **************************************************************************************/
 package com.espertech.esper.epl.parse;
 
-import com.espertech.esper.epl.spec.OutputLimitSpec;
-import com.espertech.esper.epl.spec.OutputLimitLimitType;
-import com.espertech.esper.epl.spec.OutputLimitRateType;
-import com.espertech.esper.epl.spec.OnTriggerSetAssignment;
+import com.espertech.esper.epl.spec.*;
 import com.espertech.esper.epl.generated.EsperEPL2GrammarParser;
 import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.type.TimePeriodParameter;
+import com.espertech.esper.type.IntParameter;
+import com.espertech.esper.type.IntValue;
 import com.espertech.esper.schedule.ScheduleSpec;
 import com.espertech.esper.collection.Pair;
 import org.antlr.runtime.tree.Tree;
@@ -129,6 +128,66 @@ public class ASTOutputLimitHelper
             default:
                 throw new IllegalArgumentException("Node type " + node.getType() + " not a recognized output limit type");
 		 }
-	 }
+	}
 
+    public static RowLimitSpec buildRowLimitSpec(Tree node)
+    {
+        Object numRows;
+        Object offset;
+
+        if (node.getChildCount() == 1)
+        {
+            numRows = parseNumOrVariableIdent(node.getChild(0));
+            offset = null;
+        }
+        else
+        {
+            if (node.getChild(node.getChildCount()- 1).getType() == EsperEPL2GrammarParser.COMMA)
+            {
+                offset = parseNumOrVariableIdent(node.getChild(0));
+                numRows = parseNumOrVariableIdent(node.getChild(1));
+            }
+            else
+            {
+                numRows = parseNumOrVariableIdent(node.getChild(0));
+                offset = parseNumOrVariableIdent(node.getChild(1));
+            }
+        }
+
+        Integer numRowsInt = null;
+        String numRowsVariable = null;
+        if (numRows instanceof String)
+        {
+            numRowsVariable = (String) numRows;
+        }
+        else
+        {
+            numRowsInt = (Integer) numRows;
+        }
+
+        Integer offsetInt = null;
+        String offsetVariable = null;
+        if (offset instanceof String)
+        {
+            offsetVariable = (String) offset;
+        }
+        else
+        {
+            offsetInt = (Integer) offset;
+        }
+
+        return new RowLimitSpec(numRowsInt, offsetInt, numRowsVariable, offsetVariable);        
+    }
+
+    private static Object parseNumOrVariableIdent(Tree child)
+    {
+        if (child.getType() == EsperEPL2GrammarParser.IDENT)
+        {
+            return child.getText();
+        }
+        else
+        {
+            return IntValue.parseString(child.getText());
+        }
+    }
 }

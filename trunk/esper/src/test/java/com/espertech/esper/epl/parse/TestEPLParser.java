@@ -14,7 +14,7 @@ public class TestEPLParser extends TestCase
     {
         String className = SupportBean.class.getName();
         //String expression = "select a\\.b\\.c[43]\\.dd('a') from A";
-        String expression = "select count from A";
+        String expression = "select count from A limit 1";
 
         log.debug(".testDisplayAST parsing: " + expression);
         Tree ast = parse(expression);
@@ -612,6 +612,15 @@ public class TestEPLParser extends TestCase
         // properties escaped
         assertIsValid("select a\\.b, a\\.b\\.c.d.e\\.f, zz\\.\\.\\.aa\\.\\.\\.b\\.\\. from A");
         assertIsValid("select count from A");
+
+        // limit
+        assertIsValid("select count from A limit 1");
+        assertIsValid("select count from A limit 1,2");
+        assertIsValid("select count from A limit 1 offset 2");
+        assertIsValid("select count from A where a=b group by x having c=d output every 5 events order by r limit 1 offset 2");
+        assertIsValid("select count from A limit myvar");
+        assertIsValid("select count from A limit myvar,myvar2");
+        assertIsValid("select count from A limit myvar offset myvar2");
     }
 
     public void testBitWiseCases() throws Exception

@@ -347,7 +347,7 @@ public class TestEPLTreeWalker extends TestCase
                         CLASSNAME + "(string='a').win:length(10).std:lastevent() as win1," +
                         CLASSNAME + "(string='b').win:length(9).std:lastevent() as win2, " +
                         CLASSNAME + "(string='c').win:length(3).std:lastevent() as win3 " +
-                        "where win1.f1=win2.f2 and win3.f3=f4";
+                        "where win1.f1=win2.f2 and win3.f3=f4 limit 5 offset 10";
 
         EPLTreeWalker walker = parseAndWalkEPL(expression);
 
@@ -383,6 +383,9 @@ public class TestEPLTreeWalker extends TestCase
         identNode = (ExprIdentNode) equalsNode.getChildNodes().get(1);
         assertNull(identNode.getStreamOrPropertyName());
         assertEquals("f4", identNode.getUnresolvedPropertyName());
+        
+        assertEquals(5, (int) walker.getStatementSpec().getRowLimitSpec().getNumRows());
+        assertEquals(10, (int) walker.getStatementSpec().getRowLimitSpec().getOptionalOffset());
     }
 
     public void testWalkPerRowFunctions() throws Exception

@@ -260,7 +260,7 @@ public class ResultSetProcessorFactory
 
         // Construct the processor for sorting output events
         OrderByProcessor orderByProcessor = OrderByProcessorFactory.getProcessor(namedSelectionList,
-                groupByNodes, orderByList, aggregationService, stmtContext.getEventAdapterService());
+                groupByNodes, orderByList, aggregationService, statementSpecCompiled.getRowLimitSpec());
 
         // Construct the processor for evaluating the select clause
         SelectExprProcessor selectExprProcessor = SelectExprProcessorFactory.getProcessor(selectClauseSpec.getSelectExprList(), isUsingWildcard, insertIntoDesc, typeService, stmtContext.getEventAdapterService(), stmtContext.getStatementResultService(), stmtContext.getValueAddEventService());
@@ -301,7 +301,7 @@ public class ResultSetProcessorFactory
             // (1a)
             // There is no need to perform select expression processing, the single view itself (no join) generates
             // events in the desired format, therefore there is no output processor. There are no order-by expressions.
-            if (orderByNodes.isEmpty() && optionalHavingNode == null && !isOutputLimiting)
+            if (orderByNodes.isEmpty() && optionalHavingNode == null && !isOutputLimiting && statementSpecCompiled.getRowLimitSpec() == null)
             {
                 log.debug(".getProcessor Using no result processor");
                 return new ResultSetProcessorHandThrough(selectExprProcessor, isSelectRStream);

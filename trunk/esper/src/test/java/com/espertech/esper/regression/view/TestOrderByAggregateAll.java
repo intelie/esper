@@ -1,11 +1,9 @@
 package com.espertech.esper.regression.view;
 
+import com.espertech.esper.client.Configuration;
 import com.espertech.esper.client.EPServiceProvider;
 import com.espertech.esper.client.EPServiceProviderManager;
 import com.espertech.esper.client.EPStatement;
-import com.espertech.esper.client.Configuration;
-import com.espertech.esper.event.EventBean;
-import com.espertech.esper.event.EventType;
 import com.espertech.esper.support.bean.SupportBeanString;
 import com.espertech.esper.support.bean.SupportMarketDataBean;
 import com.espertech.esper.support.client.SupportConfigFactory;
@@ -14,10 +12,6 @@ import com.espertech.esper.support.util.SupportUpdateListener;
 import junit.framework.TestCase;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 public class TestOrderByAggregateAll extends TestCase
 {
@@ -326,45 +320,6 @@ public class TestOrderByAggregateAll extends TestCase
                 {"CAT", 11.0}, {"CAT", 11.0}, {"CMU", 21.0}, {"CMU", 21.0}, {"IBM", 18.0}, {"IBM", 18.0}});
     }
     
-	private void assertOnlyProperties(List<String> requiredProperties)
-    {
-    	EventBean[] events = testListener.getLastNewData();
-    	if(events == null || events.length == 0)
-    	{
-    		return;
-    	}
-    	EventType type = events[0].getEventType();
-    	List<String> actualProperties = new ArrayList<String>(Arrays.asList(type.getPropertyNames()));
-    	log.debug(".assertOnlyProperties actualProperties=="+actualProperties);
-    	assertTrue(actualProperties.containsAll(requiredProperties));
-    	actualProperties.removeAll(requiredProperties);
-    	assertTrue(actualProperties.isEmpty());
-    }
-
-    private void assertValues(List values, String valueName)
-    {
-    	EventBean[] events = testListener.getLastNewData();
-    	assertEquals(values.size(), events.length);
-    	log.debug(".assertValues values: " + values);
-    	for(int i = 0; i < events.length; i++)
-    	{
-    		log.debug(".assertValues events["+i+"]=="+events[i].get(valueName));
-    		assertEquals(values.get(i), events[i].get(valueName));
-    	}
-    }
-
-	private void createAndSend(String statementString) {
-		testListener = new SupportUpdateListener();
-        EPStatement statement = epService.getEPAdministrator().createEPL(statementString);
-        statement.addListener(testListener);
-    	sendEvent("IBM", 2);
-    	sendEvent("KGB", 1);
-    	sendEvent("CMU", 3);
-    	sendEvent("IBM", 6);
-    	sendEvent("CAT", 6);
-    	sendEvent("CAT", 5);
-	}
-
 	private void sendEvent(String symbol, double price)
 	{
 	    SupportMarketDataBean bean = new SupportMarketDataBean(symbol, price, 0L, null);

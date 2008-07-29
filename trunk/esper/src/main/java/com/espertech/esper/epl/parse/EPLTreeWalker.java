@@ -249,6 +249,9 @@ public class EPLTreeWalker extends EsperEPL2Ast
             case WHEN_LIMIT_EXPR:
             	leaveOutputLimit(node);
             	break;
+            case ROW_LIMIT_EXPR:
+            	leaveRowLimit(node);
+            	break;
             case INSERTINTO_EXPR:
             	leaveInsertInto(node);
             	break;
@@ -1316,6 +1319,19 @@ public class EPLTreeWalker extends EsperEPL2Ast
         statementSpec.setOutputLimitSpec(spec);
 
         if (spec.getVariableName() != null)
+        {
+            statementSpec.setHasVariables(true);
+        }
+    }
+
+    private void leaveRowLimit(Tree node) throws ASTWalkException
+    {
+        log.debug(".leaveRowLimit");
+
+        RowLimitSpec spec = ASTOutputLimitHelper.buildRowLimitSpec(node);
+        statementSpec.setRowLimitSpec(spec);
+
+        if ((spec.getNumRowsVariable() != null) || (spec.getOptionalOffsetVariable() != null))
         {
             statementSpec.setHasVariables(true);
         }

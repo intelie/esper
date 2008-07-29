@@ -33,6 +33,7 @@ public class StatementSpecCompiled
     private final List<OrderByItem> orderByList;
     private final List<ExprSubselectNode> subSelectExpressions;
     private final boolean hasVariables;
+    private final RowLimitSpec rowLimitSpec;
 
     /**
      * Ctor.
@@ -66,7 +67,8 @@ public class StatementSpecCompiled
                                  OutputLimitSpec outputLimitSpec,
                                  List<OrderByItem> orderByList,
                                  List<ExprSubselectNode> subSelectExpressions,
-                                 boolean hasVariables)
+                                 boolean hasVariables,
+                                 RowLimitSpec rowLimitSpec)
     {
         this.onTriggerDesc = onTriggerDesc;
         this.createWindowDesc = createWindowDesc;
@@ -83,6 +85,7 @@ public class StatementSpecCompiled
         this.orderByList = orderByList;
         this.subSelectExpressions = subSelectExpressions;
         this.hasVariables = hasVariables;
+        this.rowLimitSpec = rowLimitSpec;
     }
 
     /**
@@ -105,6 +108,7 @@ public class StatementSpecCompiled
         orderByList = new ArrayList<OrderByItem>();
         subSelectExpressions = new ArrayList<ExprSubselectNode>();
         hasVariables = false;
+        rowLimitSpec = null;
     }
 
     /**
@@ -256,5 +260,10 @@ public class StatementSpecCompiled
      */
     public void setSelectStreamDirEnum(SelectClauseStreamSelectorEnum selectStreamDirEnum) {
         this.selectStreamDirEnum = selectStreamDirEnum;
+    }
+
+    public RowLimitSpec getRowLimitSpec()
+    {
+        return rowLimitSpec;
     }
 }

@@ -55,6 +55,7 @@ public class EPStatementObjectModel implements Serializable
     private Expression havingClause;
     private OutputLimitClause outputLimitClause;
     private OrderByClause orderByClause;
+    private RowLimitClause rowLimitClause;
 
     private List<SubstitutionParameterExpression> substitutions = new ArrayList<SubstitutionParameterExpression>();
 
@@ -320,6 +321,11 @@ public class EPStatementObjectModel implements Serializable
             writer.write(" order by ");
             orderByClause.toEPL(writer);
         }
+        if (rowLimitClause != null)
+        {
+            writer.write(" limit ");
+            rowLimitClause.toEPL(writer);
+        }
 
         return writer.toString();
     }
@@ -380,5 +386,15 @@ public class EPStatementObjectModel implements Serializable
     public void setCreateVariable(CreateVariableClause createVariable)
     {
         this.createVariable = createVariable;
+    }
+
+    public RowLimitClause getRowLimitClause()
+    {
+        return rowLimitClause;
+    }
+
+    public void setRowLimitClause(RowLimitClause rowLimitClause)
+    {
+        this.rowLimitClause = rowLimitClause;
     }
 }

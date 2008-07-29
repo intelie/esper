@@ -30,6 +30,7 @@ public class StatementSpecRaw implements MetaDefItem
     private List<ExprNode> groupByExpressions = new LinkedList<ExprNode>();
     private ExprNode havingExprRootNode;
     private OutputLimitSpec outputLimitSpec;
+    private RowLimitSpec rowLimitSpec;
     private List<OrderByItem> orderByList = new LinkedList<OrderByItem>();
     private boolean existsSubstitutionParameters;
     private boolean hasVariables;
@@ -292,5 +293,15 @@ public class StatementSpecRaw implements MetaDefItem
     public void setCreateVariableDesc(CreateVariableDesc createVariableDesc)
     {
         this.createVariableDesc = createVariableDesc;
+    }
+
+    public RowLimitSpec getRowLimitSpec()
+    {
+        return rowLimitSpec;
+    }
+
+    public void setRowLimitSpec(RowLimitSpec rowLimitSpec)
+    {
+        this.rowLimitSpec = rowLimitSpec;
     }
 }

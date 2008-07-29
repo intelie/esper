@@ -8,6 +8,7 @@ options
 }
 
 // language tokens
+// Declare all tokens here and add to the "parserTokenParaphases" map below.
 tokens
 {
 	CREATE='create';
@@ -55,8 +56,6 @@ tokens
 	ALL='all';
 	OUTPUT='output';
 	EVENTS='events';
-	SECONDS='seconds';
-	MINUTES='minutes';
 	FIRST='first';
 	LAST='last';
 	INSERT='insert';
@@ -85,6 +84,23 @@ tokens
 	VARIABLE='variable';
 	UNTIL='until';
 	AT='at';
+	TIMEPERIOD_DAY='day';
+	TIMEPERIOD_DAYS='days';
+	TIMEPERIOD_HOUR='hour';
+	TIMEPERIOD_HOURS='hours';
+	TIMEPERIOD_MINUTE='minute';
+	TIMEPERIOD_MINUTES='minutes';
+	TIMEPERIOD_SEC='sec';
+	TIMEPERIOD_SECOND='second';
+	TIMEPERIOD_SECONDS='seconds';	
+	TIMEPERIOD_MILLISEC='msec';
+	TIMEPERIOD_MILLISECOND='millisecond';
+	TIMEPERIOD_MILLISECONDS='milliseconds';
+	BOOLEAN_TRUE='true';
+	BOOLEAN_FALSE='false';
+	VALUE_NULL='null';
+	ROW_LIMIT_EXPR='limit';
+	OFFSET='offset';
 	
    	NUMERIC_PARAM_RANGE;
    	NUMERIC_PARAM_LIST;
@@ -227,11 +243,19 @@ tokens
 @members {
   // provide nice error messages
   private Stack<String> paraphrases = new Stack<String>();
-  private Map<Integer, String> lexerTokenParaphases = new HashMap<Integer, String>();
-  private Map<Integer, String> parserTokenParaphases = new HashMap<Integer, String>();
   
+  // static information initialized once
+  private static Map<Integer, String> lexerTokenParaphases = new HashMap<Integer, String>();
+  private static Map<Integer, String> parserTokenParaphases = new HashMap<Integer, String>();
+  private static java.util.Set<String> parserKeywordSet = new java.util.HashSet<String>();
+    
   public Stack getParaphrases() {
     return paraphrases;
+  }
+
+  public java.util.Set<String> getKeywords() {
+  	getParserTokenParaphrases();
+  	return parserKeywordSet;
   }
   
   public Map<Integer, String> getLexerTokenParaphrases() {
@@ -285,7 +309,7 @@ tokens
 	lexerTokenParaphases.put(BAND_ASSIGN, "a binary and assign '&='");
 	lexerTokenParaphases.put(LAND, "a logical and '&&'");
 	lexerTokenParaphases.put(SEMI, "a semicolon ';'");
-	lexerTokenParaphases.put(DOT, "a dot '.'");	
+	lexerTokenParaphases.put(DOT, "a dot '.'");		
     }
     return lexerTokenParaphases;
   }
@@ -336,8 +360,6 @@ tokens
 	parserTokenParaphases.put(ALL, "'all'");
 	parserTokenParaphases.put(OUTPUT, "'output'");
 	parserTokenParaphases.put(EVENTS, "'events'");
-	parserTokenParaphases.put(SECONDS, "'seconds'");
-	parserTokenParaphases.put(MINUTES, "'minutes'");
 	parserTokenParaphases.put(FIRST, "'first'");
 	parserTokenParaphases.put(LAST, "'last'");
 	parserTokenParaphases.put(INSERT, "'insert'");
@@ -366,6 +388,23 @@ tokens
 	parserTokenParaphases.put(VARIABLE, "'variable'");
 	parserTokenParaphases.put(UNTIL, "'until'");
 	parserTokenParaphases.put(AT, "'at'");
+	parserTokenParaphases.put(TIMEPERIOD_DAY, "'day'");
+	parserTokenParaphases.put(TIMEPERIOD_DAYS, "'days'");
+	parserTokenParaphases.put(TIMEPERIOD_HOUR, "'hour'");
+	parserTokenParaphases.put(TIMEPERIOD_HOURS, "'hours'");
+	parserTokenParaphases.put(TIMEPERIOD_MINUTE, "'minute'");
+	parserTokenParaphases.put(TIMEPERIOD_MINUTES, "'minutes'");
+	parserTokenParaphases.put(TIMEPERIOD_SEC, "'sec'");
+	parserTokenParaphases.put(TIMEPERIOD_SECOND, "'second'");
+	parserTokenParaphases.put(TIMEPERIOD_SECONDS, "'seconds';");
+	parserTokenParaphases.put(TIMEPERIOD_MILLISEC, "'msec'");
+	parserTokenParaphases.put(TIMEPERIOD_MILLISECOND, "'millisecond'");
+	parserTokenParaphases.put(TIMEPERIOD_MILLISECONDS, "'milliseconds'");
+	parserTokenParaphases.put(BOOLEAN_TRUE, "'true'");
+	parserTokenParaphases.put(BOOLEAN_FALSE, "'false'");
+	parserTokenParaphases.put(VALUE_NULL, "'null'");
+
+	parserKeywordSet = new java.util.TreeSet<String>(parserTokenParaphases.values());
     }
     return parserTokenParaphases;
   }
@@ -424,9 +463,9 @@ constant
 		-> {$m != null}? {adaptor.create($number.tree.getType(), "-" + $number.text)}
 		-> number
 	|   stringconstant
-    	|   t='true' -> ^(BOOL_TYPE[$t])
-    	|   f='false' -> ^(BOOL_TYPE[$f])
-    	|   nu='null' -> ^(NULL_TYPE[$nu])
+    	|   t=BOOLEAN_TRUE -> ^(BOOL_TYPE[$t])
+    	|   f=BOOLEAN_FALSE -> ^(BOOL_TYPE[$f])
+    	|   nu=VALUE_NULL -> ^(NULL_TYPE[$nu])
 	;
 
 stringconstant
@@ -453,6 +492,7 @@ selectExpr
 		(HAVING! havingClause)?
 		(OUTPUT! outputLimit)?
 		(ORDER! BY! orderByListExpr)?
+		(ROW_LIMIT_EXPR! rowLimit)?
 	;
 	
 onExpr 
@@ -692,7 +732,7 @@ outputLimit
 	        ( ev=EVERY_EXPR 
 		  ( 
 		    (time_period) => time_period
-		  | (number | i=IDENT) (e=EVENTS|sec=SECONDS|min=MINUTES)
+		  | (number | i=IDENT) (e=EVENTS|sec=TIMEPERIOD_SECONDS|min=TIMEPERIOD_MINUTES)
 		  )
 		)
 		|
@@ -706,6 +746,13 @@ outputLimit
 	    -> {$ev != null}? ^(TIMEPERIOD_LIMIT_EXPR $k? time_period)		
 	    -> {$at != null}? ^(CRONTAB_LIMIT_EXPR $k? crontabLimitParameterSet)		
 	    -> ^(WHEN_LIMIT_EXPR $k? expression onSetExpr?)		
+	;	
+
+rowLimit
+@init  { paraphrases.push("row limit clause"); }
+@after { paraphrases.pop(); }
+	:   (n1=number | i1=IDENT) ((c=COMMA | o=OFFSET) (n2=number | i2=IDENT))?
+	    -> ^(ROW_LIMIT_EXPR $n1? $i1? $n2? $i2? $o? $c?)		
 	;	
 
 crontabLimitParameterSet
@@ -1158,8 +1205,8 @@ keywordAllowedIdent
 		|STDDEV { identifier = "stddev"; }
 		|AVEDEV { identifier = "avedev"; }
 		|EVENTS { identifier = "events"; }
-		|SECONDS { identifier = "seconds"; }
-		|MINUTES { identifier = "minutes"; }
+		|TIMEPERIOD_SECONDS { identifier = "seconds"; }
+		|TIMEPERIOD_MINUTES { identifier = "minutes"; }
 		|FIRST { identifier = "first"; }
 		|LAST { identifier = "last"; }
 		|UNIDIRECTIONAL { identifier = "unidirectional"; }
@@ -1197,27 +1244,27 @@ time_period
 	;
 
 dayPart
-	:	number ('days' | 'day')
+	:	number (TIMEPERIOD_DAYS | TIMEPERIOD_DAY)
 		-> ^(DAY_PART number)
 	;
 
 hourPart 
-	:	number ('hours' | 'hour')
+	:	number (TIMEPERIOD_HOURS | TIMEPERIOD_HOUR)
 		-> ^(HOUR_PART number)
 	;
 
 minutePart 
-	:	number ('minutes' | 'minute' | 'min')
+	:	number (TIMEPERIOD_MINUTES | TIMEPERIOD_MINUTE | MIN)
 		-> ^(MINUTE_PART number)
 	;
 	
 secondPart 
-	:	number ('seconds' | 'second' | 'sec')
+	:	number (TIMEPERIOD_SECONDS | TIMEPERIOD_SECOND | TIMEPERIOD_SEC)
 		-> ^(SECOND_PART number)
 	;
 	
 millisecondPart 
-	:	number ('milliseconds' | 'millisecond' | 'msec')
+	:	number (TIMEPERIOD_MILLISECONDS | TIMEPERIOD_MILLISECOND | TIMEPERIOD_MILLISEC)
 		-> ^(MILLISECOND_PART number)
 	;
 	

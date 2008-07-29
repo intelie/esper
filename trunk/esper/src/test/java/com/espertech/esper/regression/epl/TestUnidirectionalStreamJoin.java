@@ -1,10 +1,8 @@
 package com.espertech.esper.regression.epl;
 
 import junit.framework.TestCase;
-import com.espertech.esper.client.EPServiceProvider;
-import com.espertech.esper.client.EPServiceProviderManager;
-import com.espertech.esper.client.EPStatement;
-import com.espertech.esper.client.EPStatementException;
+import com.espertech.esper.client.*;
+import com.espertech.esper.client.time.CurrentTimeEvent;
 import com.espertech.esper.client.soda.*;
 import com.espertech.esper.support.bean.*;
 import com.espertech.esper.support.client.SupportConfigFactory;
@@ -19,7 +17,9 @@ public class TestUnidirectionalStreamJoin extends TestCase
 
     public void setUp()
     {
-        epService = EPServiceProviderManager.getDefaultProvider(SupportConfigFactory.getConfiguration());
+        Configuration config = SupportConfigFactory.getConfiguration();
+        config.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
+        epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();
         listener = new SupportUpdateListener();
     }
@@ -128,6 +128,33 @@ public class TestUnidirectionalStreamJoin extends TestCase
 
         EPStatement stmt = epService.getEPAdministrator().createEPL(stmtText);
         try3TableOuterJoin(stmt);
+    }
+
+    public void testPatternJoin()
+    {
+        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("SupportBean", SupportBean.class);
+        epService.getEPRuntime().sendEvent(new CurrentTimeEvent(1000));
+
+        // no iterator allowed
+        String stmtText = "select count(*) as num " +
+                "from pattern [every timer:at(*/1,*,*,*,*)] unidirectional,\n" +
+                "SupportBean(intPrimitive=1).std:unique(string) a,\n" +
+                "SupportBean(intPrimitive=2).std:unique(string) b\n" +
+                "where a.string = b.string";
+        EPStatement stmt = epService.getEPAdministrator().createEPL(stmtText);
+        stmt.addListener(listener);
+
+        sendEvent("A", 1);
+        sendEvent("A", 2);
+        sendEvent("B", 1);
+        sendEvent("B", 2);
+        assertFalse(listener.isInvoked());
+
+        epService.getEPRuntime().sendEvent(new CurrentTimeEvent(70000));
+        assertEquals(2L, listener.assertOneGetNewAndReset().get("num"));
+
+        epService.getEPRuntime().sendEvent(new CurrentTimeEvent(140000));
+        assertEquals(4L, listener.assertOneGetNewAndReset().get("num"));
     }
 
     private void try3TableOuterJoin(EPStatement statement)

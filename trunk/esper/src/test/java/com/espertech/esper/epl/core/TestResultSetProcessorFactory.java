@@ -188,6 +188,7 @@ public class TestResultSetProcessorFactory extends TestCase
                 outputLimitSpec,
                 orderByList,
                 null,
-                false);
+                false,
+                null);
     }
 }

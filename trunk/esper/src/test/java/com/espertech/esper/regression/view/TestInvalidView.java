@@ -29,8 +29,20 @@ public class TestInvalidView extends TestCase
 
     public void testInvalidSyntax()
     {
-        String exceptionText = getSyntaxExceptionView("select * * from " + EVENT_NUM);
+        // keyword used in package
+        String exceptionText = getSyntaxExceptionView("select * from com.true.mycompany.MyEvent");
+        assertEquals("Incorrect syntax near 'true' (a reserved keyword) expecting an identifier but found 'true' at line 1 column 18, please check the view specifications within the from clause [select * from com.true.mycompany.MyEvent]", exceptionText);
+
+        // keyword as part of identifier
+        exceptionText = getSyntaxExceptionView("select * from MyEvent, MyEvent2 where a.day=b.day");
+        assertEquals("Incorrect syntax near 'a' at line 1 column 38, please check the where clause near reserved keyword 'day' [select * from MyEvent, MyEvent2 where a.day=b.day]", exceptionText);
+
+        exceptionText = getSyntaxExceptionView("select * * from " + EVENT_NUM);
         assertEquals("Incorrect syntax near '*' expecting 'from' but found a star '*' at line 1 column 9 [select * * from com.espertech.esper.support.bean.SupportBean_N]", exceptionText);
+
+        // keyword in select clause
+        exceptionText = getSyntaxExceptionView("select day from MyEvent, MyEvent2");
+        assertEquals("Incorrect syntax near 'day' (a reserved keyword) at line 1 column 7, please check the select clause [select day from MyEvent, MyEvent2]", exceptionText);
     }
 
     public void testStatementException() throws Exception

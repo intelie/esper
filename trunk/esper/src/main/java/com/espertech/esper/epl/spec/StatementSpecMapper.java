@@ -56,6 +56,7 @@ public class StatementSpecMapper
         mapHaving(sodaStatement.getHavingClause(), raw, mapContext);
         mapOutputLimit(sodaStatement.getOutputLimitClause(), raw, mapContext);
         mapOrderBy(sodaStatement.getOrderByClause(), raw, mapContext);
+        mapRowLimit(sodaStatement.getRowLimitClause(), raw, mapContext);
         return raw;
     }
 
@@ -80,6 +81,7 @@ public class StatementSpecMapper
         unmapHaving(statementSpec.getHavingExprRootNode(), model, unmapContext);
         unmapOutputLimit(statementSpec.getOutputLimitSpec(), model, unmapContext);
         unmapOrderBy(statementSpec.getOrderByList(), model, unmapContext);
+        unmapRowLimit(statementSpec.getRowLimitSpec(), model, unmapContext);
 
         return new StatementSpecUnMapResult(model, unmapContext.getIndexedParams());
     }
@@ -217,6 +219,17 @@ public class StatementSpecMapper
         model.setOutputLimitClause(clause);
     }
 
+    private static void unmapRowLimit(RowLimitSpec rowLimitSpec, EPStatementObjectModel model, StatementSpecUnMapContext unmapContext)
+    {
+        if (rowLimitSpec == null)
+        {
+            return;
+        }
+        RowLimitClause spec = new RowLimitClause(rowLimitSpec.getNumRows(), rowLimitSpec.getOptionalOffset(),
+                rowLimitSpec.getNumRowsVariable(), rowLimitSpec.getOptionalOffsetVariable());
+        model.setRowLimitClause(spec);
+    }
+
     private static void mapOrderBy(OrderByClause orderByClause, StatementSpecRaw raw, StatementSpecMapContext mapContext)
     {
         if (orderByClause == null)
@@ -322,6 +335,16 @@ public class StatementSpecMapper
         {
             throw new IllegalArgumentException("Cannot map on-clause expression type : " + onExpr);
         }
+    }
+
+    private static void mapRowLimit(RowLimitClause rowLimitClause, StatementSpecRaw raw, StatementSpecMapContext mapContext)
+    {
+        if (rowLimitClause == null)
+        {
+            return;
+        }        
+        raw.setRowLimitSpec(new RowLimitSpec(rowLimitClause.getNumRows(), rowLimitClause.getOptionalOffsetRows(),
+                rowLimitClause.getNumRowsVariable(), rowLimitClause.getOptionalOffsetRowsVariable()));
     }
 
     private static void mapHaving(Expression havingClause, StatementSpecRaw raw, StatementSpecMapContext mapContext)
