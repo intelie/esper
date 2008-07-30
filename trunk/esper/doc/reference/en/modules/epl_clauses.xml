@@ -74,6 +74,7 @@ from <emphasis>stream_def</emphasis> [as name] [, <emphasis>stream_def</emphasis
 [having <emphasis>grouping_search_conditions</emphasis>]
 [output <emphasis>output_specification</emphasis>]
 [order by <emphasis>order_by_expression_list</emphasis>]
+[limit <emphasis>num_rows</emphasis>]
 </synopsis>
 
 		<sect2 id="epl-syntax-time-periods">
@@ -1202,10 +1203,10 @@ select symbol, sum(price) from StockTickEvent.std:groupby(symbol).win:length(10)
     </sect1>
 
     <sect1 id="epl-output-rate">
-        <title>Stabilizing and Limiting Output: the <emphasis>Output</emphasis> Clause</title>
+        <title>Stabilizing and Controlling Output: the <emphasis>Output</emphasis> Clause</title>
 
-		<indexterm><primary>output limiting and stabilizing clause</primary></indexterm>
-		<indexterm><primary>EPL</primary><secondary>output limiting and stabilizing</secondary></indexterm>
+		<indexterm><primary>output control and stabilizing clause</primary></indexterm>
+		<indexterm><primary>EPL</primary><secondary>output control and stabilizing</secondary></indexterm>
 
         <sect2 id="epl-output-options" >
 				<title>Output Clause Options</title>
@@ -1215,7 +1216,7 @@ select symbol, sum(price) from StockTickEvent.std:groupby(symbol).win:length(10)
 				</para>
 
 				<para>
-					Here is the syntax for output rate limiting that specifies a rate in time interval or number of events:
+					Here is the syntax for the <literal>output</literal> clause that specifies a rate in time interval or number of events:
 				</para>
 				<synopsis>output [all | first | last | snapshot] every <emphasis>output_rate</emphasis> [minutes | seconds | events]</synopsis>
 
@@ -1264,7 +1265,7 @@ select symbol, sum(price) from StockTickEvent.std:groupby(symbol).win:length(10)
 				</para>
 
 				<para>
-					Please consult the <xref linkend="appendix_outputspec"/> for detailed information on insert and remove stream output for the various output rate limiting keywords.
+					Please consult the <xref linkend="appendix_outputspec"/> for detailed information on insert and remove stream output for the various <literal>output</literal> clause keywords.
 				</para>
 				
 				<para>
@@ -1405,7 +1406,7 @@ select symbol, sum(price) from StockTickEvent.std:groupby(symbol).win:length(10)
 				<title>Aggregation, Group By, Having and Output clause interaction</title>
 			
 				<para>
-					Remove stream events can also useful in conjunction with aggregation and output rate limiting: When the engine posts remove stream events for fully-aggregated queries, it presents the aggregation state before the expiring event leaves the data window. Your application can thus easily obtain a delta between the new aggregation value and the prior aggregation value.
+					Remove stream events can also useful in conjunction with aggregation and the <literal>output</literal> clause: When the engine posts remove stream events for fully-aggregated queries, it presents the aggregation state before the expiring event leaves the data window. Your application can thus easily obtain a delta between the new aggregation value and the prior aggregation value.
 				</para>
 				
 				<para>
@@ -1520,6 +1521,76 @@ order by price, volume</programlisting>
 			Otherwise, any kind of expression that can appear in the <literal>select</literal> clause, 
 			as well as any alias defined in the <literal>select</literal> clause, is also valid in the order by clause.
 		</para>		
+	</sect1>
+
+    <sect1 id="epl-limit">
+        <title>Limiting Row Count: the <emphasis>Limit</emphasis> Clause</title>
+
+		<indexterm><primary>limiting output row count</primary></indexterm>
+		<indexterm><primary>output row count</primary></indexterm>
+		<indexterm><primary>limit clause</primary></indexterm>
+		<indexterm><primary>EPL</primary><secondary>limit clause</secondary></indexterm>
+
+		<para>
+			The <literal>limit</literal> clause is typically used together with the <literal>order by</literal> and <literal>output</literal> clause to limit your query results to those that fall within a specified range. You can use it to receive the first given number of result rows, or to receive a range of result rows. 
+		</para>
+
+		<para>
+			There are two syntaxes for the <literal>limit</literal> clause, each can be parameterized by integer constants or by variable names. The first syntax is shown below:				
+		</para>
+		<synopsis>limit <emphasis>row_count</emphasis> [offset <emphasis>offset_count</emphasis>]</synopsis>
+
+		<para>
+			The required <emphasis>row_count</emphasis> parameter specifies the number of rows to output. The <emphasis>row_count</emphasis> can be an integer constant 
+			and can also be the name of the integer-type variable to evaluate at runtime.
+		</para>
+
+		<para>
+			The optional <emphasis>offset_count</emphasis> parameter specifies the number of rows that should be skipped (offset) at the beginning of the result set. A variable can also be used for this parameter.
+		</para>
+
+		<para>
+			The next sample EPL query outputs the top 10 counts per property 'uri' every 1 minute.
+		</para>
+		<programlisting>select uri, count(*) from WebEvent 
+group by uri 
+output snapshot every 1 minute
+order by count(*) desc 
+limit 10</programlisting>
+
+		<para>
+			The next statement demonstrates the use of the <literal>offset</literal> keyword. It outputs ranks 3 to 10 per property 'uri' every 1 minute:
+		</para>
+		<programlisting>select uri, count(*) from WebEvent 
+group by uri 
+output snapshot every 1 minute
+order by count(*) desc 
+limit 8 offset 2</programlisting>
+
+		<para>
+			The second syntax for the <literal>limit</literal> clause is for SQL standard compatibility and specifies the offset first, followed by the row count:
+		</para>
+		<synopsis>limit <emphasis>offset_count</emphasis>[, <emphasis>row_count</emphasis>]</synopsis>
+
+		<para>
+			The following are equivalent:
+		</para>
+		<programlisting>limit 8 offset 2
+// ...equivalent to
+limit 2, 8</programlisting>
+
+		<para>
+			A negative value for <emphasis>row_count</emphasis> returns an unlimited number or rows, and a zero value returns no rows. If variables are used, then the current variable value at the time of output dictates the row count and offset. A variable returning a null value for <emphasis>row_count</emphasis> also returns an unlimited number or rows. 
+		</para>
+		
+		<para>
+			A negative value for offset is not allowed. If your variable returns a negative or null value for offset then the value is assumed to be zero (i.e. no offset).
+		</para>
+
+		<para>
+			The <literal>iterator</literal> pull API also honors the <literal>limit</literal> clause, if present.
+		</para>
+		
 	</sect1>
 
     <sect1 id="epl-insert-into">
@@ -2564,7 +2635,7 @@ where asset.assetid = desc.assetid]]></programlisting>
 			</para>
 
 			<para>
-				There are two syntax for creating a named window: The first syntax allows to model a named window after an existing event type. The second syntax is similar to the SQL create-table syntax and provides a list of column names and column types. 
+				There are two syntaxes for creating a named window: The first syntax allows to model a named window after an existing event type. The second syntax is similar to the SQL create-table syntax and provides a list of column names and column types. 
 			</para>
 
 			<para>

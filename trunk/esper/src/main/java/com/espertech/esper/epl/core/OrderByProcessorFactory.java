@@ -14,6 +14,7 @@ import com.espertech.esper.epl.expression.ExprValidationException;
 import com.espertech.esper.epl.spec.OrderByItem;
 import com.espertech.esper.epl.spec.RowLimitSpec;
 import com.espertech.esper.epl.spec.SelectClauseExprCompiledSpec;
+import com.espertech.esper.epl.variable.VariableService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -38,7 +39,8 @@ public class OrderByProcessorFactory {
 											   List<ExprNode> groupByNodes,
 											   List<OrderByItem> orderByList,
 											   AggregationService aggregationService,
-                                               RowLimitSpec rowLimitSpec)
+                                               RowLimitSpec rowLimitSpec,
+                                               VariableService variableService)
 	throws ExprValidationException
 	{
 		// Get the order by expression nodes
@@ -54,7 +56,7 @@ public class OrderByProcessorFactory {
 			log.debug(".getProcessor Using no OrderByProcessor");
             if (rowLimitSpec != null)
             {
-                return new OrderByProcessorRowLimit(rowLimitSpec);
+                return new OrderByProcessorRowLimit(rowLimitSpec, variableService);
             }
 		}
 		
@@ -84,9 +86,17 @@ public class OrderByProcessorFactory {
         // Tell the order-by processor whether to compute group-by
         // keys if they are not present
     	boolean needsGroupByKeys = !selectionList.isEmpty() && !orderAggNodes.isEmpty();
-        
-    	log.debug(".getProcessor Using OrderByProcessorSimple");
-    	return new OrderByProcessorSimple(orderByList, groupByNodes, needsGroupByKeys, aggregationService);
+
+        log.debug(".getProcessor Using OrderByProcessorImpl");
+        OrderByProcessorImpl orderByProcessor = new OrderByProcessorImpl(orderByList, groupByNodes, needsGroupByKeys, aggregationService);
+        if (rowLimitSpec == null)
+        {
+            return orderByProcessor;
+        }
+        else
+        {
+            return new OrderByProcessorOrderedLimit(orderByProcessor, new OrderByProcessorRowLimit(rowLimitSpec, variableService));
+        }
 	}
 	
 

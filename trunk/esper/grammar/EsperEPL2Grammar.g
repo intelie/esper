@@ -459,13 +459,17 @@ substitution
 	;
 	
 constant
-	:  (m=MINUS | p=PLUS)? number
-		-> {$m != null}? {adaptor.create($number.tree.getType(), "-" + $number.text)}
-		-> number
+	:   numberconstant
 	|   stringconstant
     	|   t=BOOLEAN_TRUE -> ^(BOOL_TYPE[$t])
     	|   f=BOOLEAN_FALSE -> ^(BOOL_TYPE[$f])
     	|   nu=VALUE_NULL -> ^(NULL_TYPE[$nu])
+	;
+
+numberconstant
+	:  (m=MINUS | p=PLUS)? number
+		-> {$m != null}? {adaptor.create($number.tree.getType(), "-" + $number.text)}
+		-> number
 	;
 
 stringconstant
@@ -751,7 +755,7 @@ outputLimit
 rowLimit
 @init  { paraphrases.push("row limit clause"); }
 @after { paraphrases.pop(); }
-	:   (n1=number | i1=IDENT) ((c=COMMA | o=OFFSET) (n2=number | i2=IDENT))?
+	:   (n1=numberconstant | i1=IDENT) ((c=COMMA | o=OFFSET) (n2=numberconstant | i2=IDENT))?
 	    -> ^(ROW_LIMIT_EXPR $n1? $i1? $n2? $i2? $o? $c?)		
 	;	
 

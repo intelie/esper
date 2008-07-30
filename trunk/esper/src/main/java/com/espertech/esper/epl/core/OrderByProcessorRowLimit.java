@@ -16,19 +16,18 @@ import org.apache.commons.logging.LogFactory;
  */
 public class OrderByProcessorRowLimit implements OrderByProcessor {
 
-	private static final Log log = LogFactory.getLog(OrderByProcessorSimple.class);
+	private static final Log log = LogFactory.getLog(OrderByProcessorImpl.class);
 
     private final VariableReader numRowsVariableReader;
-    private final Integer numRowsSpec;
     private final VariableReader offsetVariableReader;
-    private final Integer offsetSpec;
+    private int currentRowLimit;
+    private int currentOffset;
 
     public OrderByProcessorRowLimit(RowLimitSpec rowLimitSpec, VariableService variableService)
             throws ExprValidationException
     {
         if (rowLimitSpec.getNumRowsVariable() != null)
         {
-            numRowsSpec = null;
             numRowsVariableReader = variableService.getReader(rowLimitSpec.getNumRowsVariable());
             if (numRowsVariableReader == null)
             {
@@ -42,17 +41,16 @@ public class OrderByProcessorRowLimit implements OrderByProcessor {
         else
         {
             numRowsVariableReader = null;
-            numRowsSpec = rowLimitSpec.getNumRows();
+            currentRowLimit = rowLimitSpec.getNumRows();
 
-            if (numRowsSpec <= 1)
+            if (currentRowLimit < 0)
             {
-                throw new ExprValidationException("Limit clause requires a positive offset");
+                currentRowLimit = Integer.MAX_VALUE;
             }
         }
 
         if (rowLimitSpec.getOptionalOffsetVariable() != null)
         {
-            offsetSpec = null;
             offsetVariableReader = variableService.getReader(rowLimitSpec.getOptionalOffsetVariable());
             if (offsetVariableReader == null)
             {
@@ -66,11 +64,18 @@ public class OrderByProcessorRowLimit implements OrderByProcessor {
         else
         {
             offsetVariableReader = null;
-            offsetSpec = rowLimitSpec.getOptionalOffset();
-
-            if ((offsetSpec != null) && (offsetSpec <= 0))
+            if (rowLimitSpec.getOptionalOffset() != null)
             {
-                throw new ExprValidationException("Limit clause requires a positive offset");
+                currentOffset = rowLimitSpec.getOptionalOffset();
+
+                if (currentOffset <= 0)
+                {
+                    throw new ExprValidationException("Limit clause requires a positive offset");
+                }
+            }
+            else
+            {
+                currentOffset = 0;
             }
         }
     }
@@ -82,7 +87,7 @@ public class OrderByProcessorRowLimit implements OrderByProcessor {
 
     public EventBean[] sort(EventBean[] outgoingEvents, EventBean[][] generatingEvents, MultiKeyUntyped[] groupByKeys, boolean isNewData)
     {
-        return new EventBean[0];  //To change body of implemented methods use File | Settings | File Templates.
+        return applyLimit(outgoingEvents);
     }
 
     public MultiKeyUntyped getSortKey(EventBean[] eventsPerStream, boolean isNewData)
@@ -100,37 +105,85 @@ public class OrderByProcessorRowLimit implements OrderByProcessor {
         return applyLimit(outgoingEvents);
     }
 
-    private EventBean[] applyLimit(EventBean[] outgoingEvents)
+    protected EventBean[] applyLimit(EventBean[] outgoingEvents)
     {
-        int rowLimit = 0;
         if (numRowsVariableReader != null)
         {
-            rowLimit = ((Number) numRowsVariableReader.getValue()).intValue();
-        }
-        else
-        {
-            rowLimit = numRowsSpec;
+            Number varValue = (Number) numRowsVariableReader.getValue();
+            if (varValue != null)
+            {
+                currentRowLimit = varValue.intValue();
+            }
+            else
+            {
+                currentRowLimit = Integer.MAX_VALUE;
+            }
+            if (currentRowLimit < 0)
+            {
+                currentRowLimit = Integer.MAX_VALUE;
+            }
         }
 
-        int offset = -1;
         if (offsetVariableReader != null)
         {
-            offset = ((Number) offsetVariableReader.getValue()).intValue();
-        }
-        if (offsetSpec != null)
-        {
-            offset = offsetSpec;
+            Number varValue = (Number) offsetVariableReader.getValue();
+            if (varValue != null)
+            {
+                currentOffset = varValue.intValue();
+            }
+            else
+            {
+                currentOffset = 0;
+            }
+            if (currentOffset < 0)
+            {
+                currentOffset = 0;
+            }
         }
 
-        if (offset == 1-1)
+        // no offset
+        if (currentOffset == 0)
         {
-            if (outgoingEvents.length <= rowLimit)
+            if ((outgoingEvents.length <= currentRowLimit))
             {
                 return outgoingEvents;
             }
 
-            EventBean[] limited = new EventBean[rowLimit];
-            System.arraycopy(outgoingEvents, 0, limited, 0, rowLimit);
+            if (currentRowLimit == 0)
+            {
+                return null;
+            }
+
+            EventBean[] limited = new EventBean[currentRowLimit];
+            System.arraycopy(outgoingEvents, 0, limited, 0, currentRowLimit);
+            return limited;
+        }
+        // with offset
+        else
+        {
+            int maxInterested = currentRowLimit + currentOffset;
+            if (currentRowLimit == Integer.MAX_VALUE)
+            {
+                maxInterested = Integer.MAX_VALUE;
+            }
+
+            // more rows then requested
+            if (outgoingEvents.length > maxInterested)
+            {
+                EventBean[] limited = new EventBean[currentRowLimit];
+                System.arraycopy(outgoingEvents, currentOffset, limited, 0, currentRowLimit);
+                return limited;
+            }
+
+            // less or equal rows to offset
+            if (outgoingEvents.length <= currentOffset)
+            {
+                return null;
+            }
+
+            int size = outgoingEvents.length - currentOffset;
+            EventBean[] limited = new EventBean[size];
+            System.arraycopy(outgoingEvents, currentOffset, limited, 0, size);
             return limited;
         }
     }

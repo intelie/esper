@@ -97,6 +97,22 @@ public class ResultSetProcessorSimple extends ResultSetProcessorBaseSimple
         return new UniformPair<EventBean[]>(selectNewEvents, selectOldEvents);
     }
 
+    public UniformPair<EventBean[]> processViewResultIterator(EventBean[] newData)
+    {
+        EventBean[] selectOldEvents = null;
+        EventBean[] selectNewEvents;
+        if (optionalHavingExpr == null)
+        {
+            selectNewEvents = getSelectEventsNoHaving(selectExprProcessor, null, newData, true, true);
+        }
+        else
+        {
+            selectNewEvents = getSelectEventsHaving(selectExprProcessor, null, newData, optionalHavingExpr, true, true);
+        }
+
+        return new UniformPair<EventBean[]>(selectNewEvents, selectOldEvents);
+    }
+
     /**
      * Applies the select-clause to the given events returning the selected events. The number of events stays the
      * same, i.e. this method does not filter it just transforms the result set.
@@ -335,8 +351,12 @@ public class ResultSetProcessorSimple extends ResultSetProcessorBaseSimple
             {
                 eventsPerStream[0] = aParent;
                 MultiKeyUntyped orderKey = orderByProcessor.getSortKey(eventsPerStream, true);
-                UniformPair<EventBean[]> pair = processViewResult(eventsPerStream, null, true);
-                events.add(pair.getFirst()[0]);
+                UniformPair<EventBean[]> pair = processViewResultIterator(eventsPerStream);
+                EventBean[] result = pair.getFirst();
+                if (result.length != 0)
+                {
+                    events.add(result[0]);
+                }
                 orderKeys.add(orderKey);
             }
 

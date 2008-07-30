@@ -342,7 +342,12 @@ public class StatementSpecMapper
         if (rowLimitClause == null)
         {
             return;
-        }        
+        }
+        if ((rowLimitClause.getNumRowsVariable() != null) ||
+            (rowLimitClause.getOptionalOffsetRowsVariable() != null))
+        {
+            raw.setHasVariables(true);
+        }
         raw.setRowLimitSpec(new RowLimitSpec(rowLimitClause.getNumRows(), rowLimitClause.getOptionalOffsetRows(),
                 rowLimitClause.getNumRowsVariable(), rowLimitClause.getOptionalOffsetRowsVariable()));
     }

@@ -621,6 +621,7 @@ public class TestEPLParser extends TestCase
         assertIsValid("select count from A limit myvar");
         assertIsValid("select count from A limit myvar,myvar2");
         assertIsValid("select count from A limit myvar offset myvar2");
+        assertIsValid("select count from A limit -1");
     }
 
     public void testBitWiseCases() throws Exception

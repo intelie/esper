@@ -260,7 +260,7 @@ public class ResultSetProcessorFactory
 
         // Construct the processor for sorting output events
         OrderByProcessor orderByProcessor = OrderByProcessorFactory.getProcessor(namedSelectionList,
-                groupByNodes, orderByList, aggregationService, statementSpecCompiled.getRowLimitSpec());
+                groupByNodes, orderByList, aggregationService, statementSpecCompiled.getRowLimitSpec(), stmtContext.getVariableService());
 
         // Construct the processor for evaluating the select clause
         SelectExprProcessor selectExprProcessor = SelectExprProcessorFactory.getProcessor(selectClauseSpec.getSelectExprList(), isUsingWildcard, insertIntoDesc, typeService, stmtContext.getEventAdapterService(), stmtContext.getStatementResultService(), stmtContext.getValueAddEventService());
