@@ -261,7 +261,6 @@ public class TestNamedWindowTypes extends TestCase
         EPStatement stmtCreateTwo = epService.getEPAdministrator().createEPL(stmtTextCreateTwo);
         stmtCreateTwo.addListener(listenerWindow);
 
-        /*
         // create insert into
         String stmtTextInsertOne = "insert into MyWindow select * from " + SupportBean_A.class.getName();
         epService.getEPAdministrator().createEPL(stmtTextInsertOne);
@@ -275,7 +274,6 @@ public class TestNamedWindowTypes extends TestCase
         String[] fields = new String[] {"id"};
         ArrayAssertionUtil.assertProps(listenerWindow.assertOneGetNewAndReset(), fields, new Object[] {"E1"});
         ArrayAssertionUtil.assertProps(listenerStmtOne.assertOneGetNewAndReset(), fields, new Object[] {"E1"});
-        */
     }
 
     public void testWildcardWithFields()

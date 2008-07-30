@@ -767,19 +767,34 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
         {
             try
             {
-                FilterStreamSpecCompiled filterStreamSpec = (FilterStreamSpecCompiled) compiledStreams.get(0);
-                EventType selectFromType = filterStreamSpec.getFilterSpec().getEventType();
-                String selectFromTypeAlias = filterStreamSpec.getFilterSpec().getEventTypeAlias();
-                Pair<FilterSpecCompiled, SelectClauseSpecRaw> newFilter = handleCreateWindow(selectFromType, selectFromTypeAlias, spec, eplStatement, statementContext);
-                filterStreamSpec.setFilterSpec(newFilter.getFirst());
-                spec.setSelectClauseSpec(newFilter.getSecond());
-
                 // view must be non-empty list
                 if (spec.getCreateWindowDesc().getViewSpecs().isEmpty())
                 {
                     throw new ExprValidationException(NamedWindowService.ERROR_MSG_DATAWINDOWS);
                 }
-                filterStreamSpec.getViewSpecs().addAll(spec.getCreateWindowDesc().getViewSpecs());
+
+                StreamSpecCompiled createWindowTypeSpec = compiledStreams.get(0);
+                EventType selectFromType;
+                String selectFromTypeAlias;
+                if (createWindowTypeSpec instanceof FilterStreamSpecCompiled)
+                {
+                    FilterStreamSpecCompiled filterStreamSpec = (FilterStreamSpecCompiled) createWindowTypeSpec;
+                    selectFromType = filterStreamSpec.getFilterSpec().getEventType();
+                    selectFromTypeAlias = filterStreamSpec.getFilterSpec().getEventTypeAlias();
+                }
+                else
+                {
+                    NamedWindowConsumerStreamSpec consumerStreamSpec = (NamedWindowConsumerStreamSpec) createWindowTypeSpec;
+                    selectFromType = statementContext.getEventAdapterService().getExistsTypeByAlias(consumerStreamSpec.getWindowName());
+                    selectFromTypeAlias = consumerStreamSpec.getWindowName();
+                }
+                Pair<FilterSpecCompiled, SelectClauseSpecRaw> newFilter = handleCreateWindow(selectFromType, selectFromTypeAlias, spec, eplStatement, statementContext);
+
+                // use the filter specification of the newly created event type and the views for the named window
+                compiledStreams.clear();
+                List<ViewSpec> views = new ArrayList<ViewSpec>(spec.getCreateWindowDesc().getViewSpecs());
+                compiledStreams.add(new FilterStreamSpecCompiled(newFilter.getFirst(), views, null, false));
+                spec.setSelectClauseSpec(newFilter.getSecond());
             }
             catch (ExprValidationException e)
             {
@@ -859,7 +874,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
             throws ExprValidationException
     {
         String typeName = spec.getCreateWindowDesc().getWindowName();
-        EventType targetType = null;
+        EventType targetType;
 
         // Validate the select expressions which consists of properties only
         List<SelectClauseExprCompiledSpec> select = compileLimitedSelect(spec.getSelectClauseSpec(), eplStatement, selectFromType, selectFromTypeAlias, statementContext.getEngineURI());
