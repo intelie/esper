@@ -130,6 +130,11 @@ public class ASTOutputLimitHelper
 		 }
 	}
 
+    /**
+     * Builds a row limit specification.
+     * @param node to interrogate
+     * @return row limit spec
+     */
     public static RowLimitSpec buildRowLimitSpec(Tree node)
     {
         Object numRows;

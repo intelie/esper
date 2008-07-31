@@ -559,6 +559,8 @@ public class TestEPLParser extends TestCase
         assertIsValid("create window AAA as select 0 as val, 2 as noway, '' as stringval, true as boolval from MyType");
         assertIsValid("create window AAA as (a b, c d, e f)");
         assertIsValid("create window AAA (a b, c d, e f)");
+        assertIsValid("create window AAA as select * from MyOtherNamedWindow insert");
+        assertIsValid("create window AAA as MyOtherNamedWindow insert where b=4");
 
         // on-delete statement
         assertIsValid("on MyEvent delete from MyNamedWindow");

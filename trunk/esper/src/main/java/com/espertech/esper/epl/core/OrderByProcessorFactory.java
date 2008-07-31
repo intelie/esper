@@ -32,6 +32,8 @@ public class OrderByProcessorFactory {
      * @param groupByNodes is a list of group-by expressions
      * @param orderByList is a list of order-by expressions
      * @param aggregationService is the service for aggregation, ie. building sums and averages per group or overall
+     * @param rowLimitSpec specification for row limit, or null if no row limit is defined
+     * @param variableService for retrieving variable state for use with row limiting
      * @return ordering processor instance
      * @throws com.espertech.esper.epl.expression.ExprValidationException when validation of expressions fails
      */

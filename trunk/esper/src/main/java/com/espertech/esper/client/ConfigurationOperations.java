@@ -263,5 +263,10 @@ public interface ConfigurationOperations
      */
     public void updateMapEventType(String mapEventTypeAlias, Map<String, Object> typeMap) throws ConfigurationException;
 
+    /**
+     * Returns true if a variant stream by the name has been declared, or false if not.
+     * @param name of variant stream
+     * @return indicator whether the variant stream by that name exists 
+     */
     public boolean isVariantStreamExists(String name);
 }

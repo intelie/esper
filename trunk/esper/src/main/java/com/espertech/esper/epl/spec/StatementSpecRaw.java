@@ -295,11 +295,19 @@ public class StatementSpecRaw implements MetaDefItem
         this.createVariableDesc = createVariableDesc;
     }
 
+    /**
+     * Returns the row limit, or null if none.
+     * @return row limit
+     */
     public RowLimitSpec getRowLimitSpec()
     {
         return rowLimitSpec;
     }
 
+    /**
+     * Sets the row limit, or null if none.
+     * @param rowLimitSpec row limit
+     */
     public void setRowLimitSpec(RowLimitSpec rowLimitSpec)
     {
         this.rowLimitSpec = rowLimitSpec;

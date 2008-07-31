@@ -96,7 +96,12 @@ createWindowExpr
 			       | 
 			        (createColTypeList)
 			)
+			createWindowExprInsert?
 		{ leaveNode($i); })
+	;
+
+createWindowExprInsert
+	:	^(INSERT valueExpr?)
 	;
 	
 createSelectionList

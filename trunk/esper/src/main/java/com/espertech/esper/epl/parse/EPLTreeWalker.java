@@ -21,6 +21,7 @@ import com.espertech.esper.type.*;
 import com.espertech.esper.util.JavaClassHelper;
 import com.espertech.esper.util.PlaceholderParser;
 import com.espertech.esper.util.PlaceholderParseException;
+import com.espertech.esper.antlr.ASTUtil;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.antlr.runtime.tree.Tree;
@@ -396,13 +397,10 @@ public class EPLTreeWalker extends EsperEPL2Ast
         String windowName = node.getChild(0).getText();
 
         String eventName = null;
-        for (int i = 0; i < node.getChildCount(); i++)
+        Tree eventNameNode = ASTUtil.findFirstNode(node, CLASS_IDENT);
+        if (eventNameNode != null)
         {
-        	Tree child = node.getChild(i);
-            if (child.getType() == CLASS_IDENT) // the event type
-            {
-                eventName = child.getText();
-            }
+            eventName = eventNameNode.getText();
         }
         if (eventName == null)
         {
@@ -423,7 +421,19 @@ public class EPLTreeWalker extends EsperEPL2Ast
             }
         }
 
-        CreateWindowDesc desc = new CreateWindowDesc(windowName, viewSpecs);
+        boolean isInsert = false;
+        ExprNode insertWhereExpr = null;
+        Tree insertNode = ASTUtil.findFirstNode(node, INSERT);
+        if (insertNode != null)
+        {
+            isInsert = true;
+            if (insertNode.getChildCount() > 0)
+            {
+                insertWhereExpr = ASTUtil.getRemoveExpr(insertNode.getChild(0),  this.astExprNodeMap);
+            }
+        }
+
+        CreateWindowDesc desc = new CreateWindowDesc(windowName, viewSpecs, isInsert, eventName, insertWhereExpr);
         statementSpec.setCreateWindowDesc(desc);
 
         FilterSpecRaw rawFilterSpec = new FilterSpecRaw(eventName, new LinkedList<ExprNode>());

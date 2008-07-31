@@ -97,6 +97,11 @@ public class ResultSetProcessorSimple extends ResultSetProcessorBaseSimple
         return new UniformPair<EventBean[]>(selectNewEvents, selectOldEvents);
     }
 
+    /**
+     * Process view results for the iterator.
+     * @param newData new events
+     * @return pair of insert and remove stream
+     */
     public UniformPair<EventBean[]> processViewResultIterator(EventBean[] newData)
     {
         EventBean[] selectOldEvents = null;

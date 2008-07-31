@@ -204,12 +204,14 @@ public class TestEPLTreeWalker extends TestCase
 
     public void testWalkCreateWindow() throws Exception
     {
-        String expression = "create window MyWindow.std:groupby(symbol).win:length(20) as select *, aprop, bprop as someval from com.MyClass";
+        String expression = "create window MyWindow.std:groupby(symbol).win:length(20) as select *, aprop, bprop as someval from com.MyClass insert where a=b";
         EPLTreeWalker walker = parseAndWalkEPL(expression);
         StatementSpecRaw raw = walker.getStatementSpec();
 
         // window name
         assertEquals("MyWindow", raw.getCreateWindowDesc().getWindowName());
+        assertTrue(raw.getCreateWindowDesc().isInsert());
+        assertTrue(raw.getCreateWindowDesc().getInsertFilter() instanceof ExprEqualsNode);
 
         // select clause
         assertTrue(raw.getSelectClauseSpec().isUsingWildcard());

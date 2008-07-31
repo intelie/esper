@@ -34,6 +34,10 @@ public class ExprNodeViewResourceVisitor implements ExprNodeVisitor
         return true;
     }
 
+    /**
+     * Returns the list of expression nodes requiring view resources.
+     * @return expr nodes such as 'prior' or 'prev'
+     */
     public List<ExprNode> getExprNodes()
     {
         return exprNodes;

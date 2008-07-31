@@ -270,8 +270,8 @@ public class EPStatementStartMethod
         String windowName = statementSpec.getCreateWindowDesc().getWindowName();
         EventType windowType = filterStreamSpec.getFilterSpec().getEventType();
 
-        ValueAddEventProcessor revisionProcessor = statementContext.getValueAddEventService().getValueAddProcessor(windowName);
-        services.getNamedWindowService().addProcessor(windowName, windowType, statementContext.getEpStatementHandle(), statementContext.getStatementResultService(), revisionProcessor);
+        ValueAddEventProcessor optionalRevisionProcessor = statementContext.getValueAddEventService().getValueAddProcessor(windowName);
+        services.getNamedWindowService().addProcessor(windowName, windowType, statementContext.getEpStatementHandle(), statementContext.getStatementResultService(), optionalRevisionProcessor);
 
         // Create streams and views
         Viewable eventStreamParentViewable;
@@ -337,6 +337,38 @@ public class EPStatementStartMethod
         OutputProcessView outputView = OutputProcessViewFactory.makeView(resultSetProcessor, statementSpec, statementContext, services.getInternalEventRouter());
         finalView.addView(outputView);
         finalView = outputView;
+
+        // Handle insert case
+        if (statementSpec.getCreateWindowDesc().isInsert())
+        {
+            String insertFromWindow = statementSpec.getCreateWindowDesc().getInsertFromWindow();
+            NamedWindowProcessor otherWindow = services.getNamedWindowService().getProcessor(insertFromWindow);
+            List<EventBean> events = new ArrayList<EventBean>();
+            if (statementSpec.getCreateWindowDesc().getInsertFilter() != null)
+            {
+                EventBean[] eventsPerStream = new EventBean[1];
+                ExprNode filter = statementSpec.getCreateWindowDesc().getInsertFilter();
+                for (Iterator<EventBean> it = otherWindow.getTailView().iterator(); it.hasNext();)
+                {
+                    EventBean candidate = it.next();
+                    eventsPerStream[0] = candidate;
+                    Boolean result = (Boolean) filter.evaluate(eventsPerStream, true);
+                    if ((result == null) || (!result))
+                    {
+                        continue;
+                    }
+                    events.add(candidate);
+                }
+            }
+            else
+            {
+                for (Iterator<EventBean> it = otherWindow.getTailView().iterator(); it.hasNext();)
+                {
+                    events.add(it.next());
+                }
+            }
+            rootView.update(events.toArray(new EventBean[events.size()]), null);            
+        }
 
         log.debug(".start Statement start completed");
 

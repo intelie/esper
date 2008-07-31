@@ -248,34 +248,6 @@ public class TestNamedWindowTypes extends TestCase
         ArrayAssertionUtil.assertProps(listenerStmtOne.assertOneGetNewAndReset(), fields, new Object[] {"E1"});
     }
 
-    public void testCreateNamedAfterNamed()
-    {
-        // TODO
-        // create window
-        String stmtTextCreateOne = "create window MyWindow.win:keepall() as " + SupportBean_A.class.getName();
-        EPStatement stmtCreateOne = epService.getEPAdministrator().createEPL(stmtTextCreateOne);
-        stmtCreateOne.addListener(listenerWindow);
-
-        // create window
-        String stmtTextCreateTwo = "create window MyWindowTwo.win:keepall() as MyWindow";
-        EPStatement stmtCreateTwo = epService.getEPAdministrator().createEPL(stmtTextCreateTwo);
-        stmtCreateTwo.addListener(listenerWindow);
-
-        // create insert into
-        String stmtTextInsertOne = "insert into MyWindow select * from " + SupportBean_A.class.getName();
-        epService.getEPAdministrator().createEPL(stmtTextInsertOne);
-
-        // create consumer
-        String stmtTextSelectOne = "select id from MyWindow";
-        EPStatement stmtSelectOne = epService.getEPAdministrator().createEPL(stmtTextSelectOne);
-        stmtSelectOne.addListener(listenerStmtOne);
-
-        epService.getEPRuntime().sendEvent(new SupportBean_A("E1"));
-        String[] fields = new String[] {"id"};
-        ArrayAssertionUtil.assertProps(listenerWindow.assertOneGetNewAndReset(), fields, new Object[] {"E1"});
-        ArrayAssertionUtil.assertProps(listenerStmtOne.assertOneGetNewAndReset(), fields, new Object[] {"E1"});
-    }
-
     public void testWildcardWithFields()
     {
         // create window

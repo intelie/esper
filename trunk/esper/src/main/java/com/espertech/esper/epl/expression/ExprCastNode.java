@@ -153,11 +153,22 @@ public class ExprCastNode extends ExprNode
         return false;
     }
 
+    /**
+     * Casting and parsing computer.
+     */
     public interface CasterParserComputer
     {
+        /**
+         * Compute an result performing casting and parsing.
+         * @param input to process
+         * @return cast or parse result
+         */
         public Object compute(Object input);
     }
 
+    /**
+     * Casting and parsing computer.
+     */
     public static class StringXFormComputer implements CasterParserComputer
     {
         public Object compute(Object input)
@@ -166,10 +177,17 @@ public class ExprCastNode extends ExprNode
         }
     }
 
+    /**
+     * Casting and parsing computer.
+     */
     public static class NumberCasterComputer implements CasterParserComputer
     {
         private final SimpleTypeCaster numericTypeCaster;
 
+        /**
+         * Ctor.
+         * @param numericTypeCaster caster
+         */
         public NumberCasterComputer(SimpleTypeCaster numericTypeCaster)
         {
             this.numericTypeCaster = numericTypeCaster;
@@ -185,10 +203,17 @@ public class ExprCastNode extends ExprNode
         }
     }
 
+    /**
+     * Casting and parsing computer.
+     */
     public static class StringParserComputer implements CasterParserComputer
     {
         private final SimpleTypeParser parser;
 
+        /**
+         * Ctor.
+         * @param parser parser
+         */
         public StringParserComputer(SimpleTypeParser parser)
         {
             this.parser = parser;
@@ -200,10 +225,17 @@ public class ExprCastNode extends ExprNode
         }
     }
 
+    /**
+     * Casting and parsing computer.
+     */
     public static class NonnumericCasterComputer implements CasterParserComputer
     {
         private final SimpleTypeCaster caster;
 
+        /**
+         * Ctor.
+         * @param numericTypeCaster caster
+         */
         public NonnumericCasterComputer(SimpleTypeCaster numericTypeCaster)
         {
             this.caster = numericTypeCaster;

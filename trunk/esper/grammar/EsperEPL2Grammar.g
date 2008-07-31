@@ -548,7 +548,10 @@ createWindowExpr
 		  (
 		  	createWindowExprModelAfter		  
 		  |   	LPAREN createWindowColumnList RPAREN
-		  )			
+		  )		
+		  (i1=INSERT (WHERE expression)? )?
+		-> {i1 != null}? ^(CREATE_WINDOW_EXPR $i viewExpression* createWindowExprModelAfter? createWindowColumnList? 
+				^(INSERT expression?))
 		-> ^(CREATE_WINDOW_EXPR $i viewExpression* createWindowExprModelAfter? createWindowColumnList?)
 	;
 

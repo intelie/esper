@@ -23,6 +23,12 @@ public class OrderByProcessorRowLimit implements OrderByProcessor {
     private int currentRowLimit;
     private int currentOffset;
 
+    /**
+     * Ctor.
+     * @param rowLimitSpec specification for row limit, or null if no row limit is defined
+     * @param variableService for retrieving variable state for use with row limiting
+     * @throws ExprValidationException if row limit specification validation fails
+     */
     public OrderByProcessorRowLimit(RowLimitSpec rowLimitSpec, VariableService variableService)
             throws ExprValidationException
     {
@@ -105,6 +111,11 @@ public class OrderByProcessorRowLimit implements OrderByProcessor {
         return applyLimit(outgoingEvents);
     }
 
+    /**
+     * Applys the limiting function to outgoing events.
+     * @param outgoingEvents unlimited
+     * @return limited
+     */
     protected EventBean[] applyLimit(EventBean[] outgoingEvents)
     {
         if (numRowsVariableReader != null)

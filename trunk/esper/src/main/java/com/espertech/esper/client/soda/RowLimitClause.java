@@ -10,6 +10,9 @@ package com.espertech.esper.client.soda;
 import java.io.Serializable;
 import java.io.StringWriter;
 
+/**
+ * Specification object for a row limit.
+ */
 public class RowLimitClause implements Serializable
 {
     private static final long serialVersionUID = 0L;
@@ -21,6 +24,7 @@ public class RowLimitClause implements Serializable
 
     /**
      * Creates a row limit clause.
+     * @param numRowsVariable name of the variable providing the maximum number of rows
      * @return clause
      */
     public static RowLimitClause create(String numRowsVariable)
@@ -30,6 +34,8 @@ public class RowLimitClause implements Serializable
 
     /**
      * Creates a row limit clause.
+     * @param numRowsVariable name of the variable providing the maximum number of rows
+     * @param offsetVariable name of the variable providing the offset
      * @return clause
      */
     public static RowLimitClause create(String numRowsVariable, String offsetVariable)
@@ -39,6 +45,7 @@ public class RowLimitClause implements Serializable
 
     /**
      * Creates a row limit clause.
+     * @param numRows maximum number of rows
      * @return clause
      */
     public static RowLimitClause create(int numRows)
@@ -48,6 +55,8 @@ public class RowLimitClause implements Serializable
 
     /**
      * Creates a row limit clause.
+     * @param numRows maximum number of rows
+     * @param offset offset
      * @return clause
      */
     public static RowLimitClause create(int numRows, int offset)
@@ -57,6 +66,10 @@ public class RowLimitClause implements Serializable
 
     /**
      * Ctor.
+     * @param numRows maximum number of rows
+     * @param optionalOffsetRows offset
+     * @param numRowsVariable name of the variable providing the maximum number of rows
+     * @param optionalOffsetRowsVariable name of the variable providing the offset
      */
     public RowLimitClause(Integer numRows, Integer optionalOffsetRows, String numRowsVariable, String optionalOffsetRowsVariable)
     {
@@ -66,41 +79,73 @@ public class RowLimitClause implements Serializable
         this.optionalOffsetRowsVariable = optionalOffsetRowsVariable;
     }
 
+    /**
+     * Returns the maximum number of rows, or null if using variable.
+     * @return max num rows
+     */
     public Integer getNumRows()
     {
         return numRows;
     }
 
+    /**
+     * Sets the maximum number of rows.
+     * @param numRows max num rows
+     */
     public void setNumRows(Integer numRows)
     {
         this.numRows = numRows;
     }
 
+    /**
+     * Returns the offset, or null if using variable or not using offset.
+     * @return offset
+     */
     public Integer getOptionalOffsetRows()
     {
         return optionalOffsetRows;
     }
 
+    /**
+     * Sets the offset.
+     * @param optionalOffsetRows offset
+     */
     public void setOptionalOffsetRows(Integer optionalOffsetRows)
     {
         this.optionalOffsetRows = optionalOffsetRows;
     }
 
+    /**
+     * Returns the variable providing maximum number of rows, or null if using constant.
+     * @return max num rows variable
+     */
     public String getNumRowsVariable()
     {
         return numRowsVariable;
     }
 
+    /**
+     * Sets the variable providing maximum number of rows.
+     * @param numRowsVariable max num rows variable
+     */
     public void setNumRowsVariable(String numRowsVariable)
     {
         this.numRowsVariable = numRowsVariable;
     }
 
+    /**
+     * Returns the name of the variable providing offset values.
+     * @return variable name for offset
+     */
     public String getOptionalOffsetRowsVariable()
     {
         return optionalOffsetRowsVariable;
     }
 
+    /**
+     * Sets the name of the variable providing offset values.
+     * @param optionalOffsetRowsVariable variable name for offset
+     */
     public void setOptionalOffsetRowsVariable(String optionalOffsetRowsVariable)
     {
         this.optionalOffsetRowsVariable = optionalOffsetRowsVariable;

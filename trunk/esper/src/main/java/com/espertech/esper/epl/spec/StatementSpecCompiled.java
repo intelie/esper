@@ -52,6 +52,7 @@ public class StatementSpecCompiled
      * @param createWindowDesc describes create-window statements
      * @param createVariableDesc describes create-variable statements
      * @param hasVariables indicator whether the statement uses variables
+     * @param rowLimitSpec row limit specification, or null if none supplied
      */
     public StatementSpecCompiled(OnTriggerDesc onTriggerDesc,
                                  CreateWindowDesc createWindowDesc,
@@ -262,6 +263,10 @@ public class StatementSpecCompiled
         this.selectStreamDirEnum = selectStreamDirEnum;
     }
 
+    /**
+     * Returns the row limit specification, or null if none supplied.
+     * @return row limit spec if any
+     */
     public RowLimitSpec getRowLimitSpec()
     {
         return rowLimitSpec;

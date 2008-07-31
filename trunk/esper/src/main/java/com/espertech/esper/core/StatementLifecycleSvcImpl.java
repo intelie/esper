@@ -703,6 +703,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
      * @param spec is the statement specification
      * @param eplStatement the statement to compile
      * @param statementContext the statement services
+     * @param isSubquery is true for subquery compilation or false for statement compile
      * @return compiled statement
      * @throws EPStatementException if the statement cannot be compiled
      */
@@ -767,12 +768,6 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
         {
             try
             {
-                // view must be non-empty list
-                if (spec.getCreateWindowDesc().getViewSpecs().isEmpty())
-                {
-                    throw new ExprValidationException(NamedWindowService.ERROR_MSG_DATAWINDOWS);
-                }
-
                 StreamSpecCompiled createWindowTypeSpec = compiledStreams.get(0);
                 EventType selectFromType;
                 String selectFromTypeAlias;
@@ -787,8 +782,27 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
                     NamedWindowConsumerStreamSpec consumerStreamSpec = (NamedWindowConsumerStreamSpec) createWindowTypeSpec;
                     selectFromType = statementContext.getEventAdapterService().getExistsTypeByAlias(consumerStreamSpec.getWindowName());
                     selectFromTypeAlias = consumerStreamSpec.getWindowName();
+
+                    if (spec.getCreateWindowDesc().getInsertFilter() != null)
+                    {
+                        ExprNode insertIntoFilter = spec.getCreateWindowDesc().getInsertFilter();
+                        String checkMinimal = insertIntoFilter.isMinimalExpression();
+                        if (checkMinimal != null)
+                        {
+                            throw new ExprValidationException("Create window where-clause may not have " + checkMinimal);
+                        }
+                        StreamTypeService streamTypeService = new StreamTypeServiceImpl(selectFromType, selectFromTypeAlias, statementContext.getEngineURI(), selectFromTypeAlias);
+                        ExprNode insertFilter = spec.getCreateWindowDesc().getInsertFilter().getValidatedSubtree(streamTypeService, statementContext.getMethodResolutionService(), null, statementContext.getSchedulingService(), statementContext.getVariableService());
+                        spec.getCreateWindowDesc().setInsertFilter(insertFilter);
+                    }
                 }
                 Pair<FilterSpecCompiled, SelectClauseSpecRaw> newFilter = handleCreateWindow(selectFromType, selectFromTypeAlias, spec, eplStatement, statementContext);
+
+                // view must be non-empty list
+                if (spec.getCreateWindowDesc().getViewSpecs().isEmpty())
+                {
+                    throw new ExprValidationException(NamedWindowService.ERROR_MSG_DATAWINDOWS);
+                }
 
                 // use the filter specification of the newly created event type and the views for the named window
                 compiledStreams.clear();

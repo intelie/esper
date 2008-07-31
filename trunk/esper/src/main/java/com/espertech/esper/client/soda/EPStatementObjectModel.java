@@ -388,11 +388,19 @@ public class EPStatementObjectModel implements Serializable
         this.createVariable = createVariable;
     }
 
+    /**
+     * Returns the row limit specification, or null if none supplied.
+     * @return row limit spec if any
+     */
     public RowLimitClause getRowLimitClause()
     {
         return rowLimitClause;
     }
 
+    /**
+     * Sets the row limit specification, or null if none applicable.
+     * @param rowLimitClause row limit spec if any
+     */
     public void setRowLimitClause(RowLimitClause rowLimitClause)
     {
         this.rowLimitClause = rowLimitClause;
