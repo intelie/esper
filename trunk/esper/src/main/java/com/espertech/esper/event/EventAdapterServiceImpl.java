@@ -718,4 +718,33 @@ public class EventAdapterServiceImpl implements EventAdapterService
             }
         }
     }
+
+    public EventBean[] typeCast(List<EventBean> events, EventType targetType)
+    {
+        EventBean[] convertedArray = new EventBean[events.size()];
+        int count = 0;
+        for (EventBean event : events)
+        {
+            EventBean converted;
+            if (event instanceof WrapperEventBean)
+            {
+                WrapperEventBean wrapper = (WrapperEventBean) event;
+                converted = createWrapper(wrapper.getUnderlyingEvent(), wrapper.getDecoratingProperties(), targetType);
+            }
+            else if (event instanceof MapEventBean)
+            {
+                MapEventBean mapEvent = (MapEventBean) event;
+                converted = this.createMapFromValues(mapEvent.getProperties(), targetType);
+            }
+            else
+            {
+                throw new EPException("Unknown event type " + event.getEventType());
+            }
+            convertedArray[count] = converted;
+            count++;
+        }
+        return convertedArray;
+    }
+
+
 }

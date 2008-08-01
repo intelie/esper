@@ -60,7 +60,8 @@ public class OrderByProcessorFactory {
             {
                 return new OrderByProcessorRowLimit(rowLimitSpec, variableService);
             }
-		}
+            return null;
+        }
 		
         // Determine aggregate functions used in select, if any
         List<ExprAggregateNode> selectAggNodes = new LinkedList<ExprAggregateNode>();

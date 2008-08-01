@@ -35,7 +35,7 @@ public class TestInvalidSyntaxMsg extends TestCase
                    "Incorrect syntax near 'a' expecting a closing parenthesis ')' but found end of input at line 1 column 15, please check the insert-into clause [insert into A (a]");
 
         tryCompile("select case when 1>2 from A",
-                   "Incorrect syntax near 'from' expecting 'then' but found 'from' at line 1 column 21, please check the case expression within the select clause [select case when 1>2 from A]");
+                   "Incorrect syntax near 'from' (a reserved keyword) expecting 'then' but found 'from' at line 1 column 21, please check the case expression within the select clause [select case when 1>2 from A]");
 
         tryCompile("select * from A full outer join B on A.field < B.field",
                    "Incorrect syntax near '<' expecting an equals '=' but found a lesser then '<' at line 1 column 45, please check the outer join within the from clause [select * from A full outer join B on A.field < B.field]");
@@ -50,7 +50,7 @@ public class TestInvalidSyntaxMsg extends TestCase
                    "Incorrect syntax near 'google' expecting 'from' but found an identifier at line 1 column 9 [select * google]");
 
         tryCompile("insert into into",
-                   "Incorrect syntax near 'into' expecting an identifier but found 'into' at line 1 column 12, please check the insert-into clause [insert into into]");
+                   "Incorrect syntax near 'into' (a reserved keyword) expecting an identifier but found 'into' at line 1 column 12, please check the insert-into clause [insert into into]");
 
         tryCompile("select prior(A, x) from A",
                    "Incorrect syntax near 'prior' (a reserved keyword) at line 1 column 7, please check the select clause [select prior(A, x) from A]");

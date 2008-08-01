@@ -239,8 +239,17 @@ public class EPStatementObjectModel implements Serializable
         {
             createWindow.toEPL(writer);
             writer.write(" as ");
+            if (selectClause == null)
+            {
+                throw new IllegalStateException("Select clause has not been defined");
+            }
             selectClause.toEPL(writer);
+            if (fromClause == null)
+            {
+                throw new IllegalStateException("From clause has not been defined");
+            }
             fromClause.toEPL(writer);
+            createWindow.toEPLInsertPart(writer);
             return writer.toString();
         }
 

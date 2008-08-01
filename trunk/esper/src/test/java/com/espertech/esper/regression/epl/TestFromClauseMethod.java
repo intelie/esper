@@ -489,7 +489,7 @@ public class TestFromClauseMethod extends TestCase
                    "Error starting view: Invalid return type for static method 'sleep' of class 'com.espertech.esper.support.epl.SupportStaticMethodLib', expecting a Java class [select * from SupportBean, method:com.espertech.esper.support.epl.SupportStaticMethodLib.sleep(100) where 1=2]");
 
         tryInvalid("select * from SupportBean, method:AClass. where 1=2",
-                   "Incorrect syntax near 'where' expecting an identifier but found 'where' at line 1 column 42, please check the view specifications within the from clause [select * from SupportBean, method:AClass. where 1=2]");
+                   "Incorrect syntax near 'where' (a reserved keyword) expecting an identifier but found 'where' at line 1 column 42, please check the view specifications within the from clause [select * from SupportBean, method:AClass. where 1=2]");
 
         tryInvalid("select * from SupportBean, method:Dummy.abc where 1=2",
                    "Error starting view: Could not load class by name 'Dummy'  [select * from SupportBean, method:Dummy.abc where 1=2]");

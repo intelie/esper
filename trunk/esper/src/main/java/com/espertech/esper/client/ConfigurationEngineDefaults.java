@@ -23,6 +23,7 @@ public class ConfigurationEngineDefaults implements Serializable
     private Variables variables;
     private StreamSelection streamSelection;
     private TimeSource timeSource;
+    private MetricsReporting metricsReporting;
 
     /**
      * Ctor.
@@ -36,6 +37,7 @@ public class ConfigurationEngineDefaults implements Serializable
         variables = new Variables();
         streamSelection = new StreamSelection();
         timeSource = new TimeSource();
+        metricsReporting = new MetricsReporting();
     }
 
     /**
@@ -99,6 +101,15 @@ public class ConfigurationEngineDefaults implements Serializable
     public TimeSource getTimeSource()
     {
         return timeSource;
+    }
+
+    /**
+     * Returns the metrics reporting configuration.
+     * @return metrics reporting config
+     */
+    public MetricsReporting getMetricsReporting()
+    {
+        return metricsReporting;
     }
 
     /**
@@ -557,6 +568,77 @@ public class ConfigurationEngineDefaults implements Serializable
         public void setTimeSourceType(TimeSourceType timeSourceType)
         {
             this.timeSourceType = timeSourceType;
+        }
+    }
+
+    /**
+     * Time source configuration, the default in MILLI (millisecond resolution from System.currentTimeMillis).
+     */
+    public static class MetricsReporting implements Serializable
+    {
+        private static boolean isMetricsReporting;
+        private long engineMetricsInterval;
+        private long statementMetricsInterval;
+        private long datawindowMetricsInterval;
+        private String statementMetricsFilterRegex;
+
+        public MetricsReporting()
+        {
+            isMetricsReporting = false;
+            engineMetricsInterval = 10 * 1000; // 10 seconds
+            statementMetricsInterval = 10 * 1000; // 10 seconds
+            datawindowMetricsInterval = 10 * 1000; // 10 seconds
+            statementMetricsFilterRegex = null;
+        }
+
+        public static boolean isMetricsReporting()
+        {
+            return isMetricsReporting;
+        }
+
+        public long getEngineMetricsInterval()
+        {
+            return engineMetricsInterval;
+        }
+
+        public long getStatementMetricsInterval()
+        {
+            return statementMetricsInterval;
+        }
+
+        public long getDatawindowMetricsInterval()
+        {
+            return datawindowMetricsInterval;
+        }
+
+        public String getStatementMetricsFilterRegex()
+        {
+            return statementMetricsFilterRegex;
+        }
+
+        public static void setMetricsReporting(boolean metricsReporting)
+        {
+            isMetricsReporting = metricsReporting;
+        }
+
+        public void setEngineMetricsInterval(long engineMetricsInterval)
+        {
+            this.engineMetricsInterval = engineMetricsInterval;
+        }
+
+        public void setStatementMetricsInterval(long statementMetricsInterval)
+        {
+            this.statementMetricsInterval = statementMetricsInterval;
+        }
+
+        public void setDatawindowMetricsInterval(long datawindowMetricsInterval)
+        {
+            this.datawindowMetricsInterval = datawindowMetricsInterval;
+        }
+
+        public void setStatementMetricsFilterRegex(String statementMetricsFilterRegex)
+        {
+            this.statementMetricsFilterRegex = statementMetricsFilterRegex;
         }
     }
 

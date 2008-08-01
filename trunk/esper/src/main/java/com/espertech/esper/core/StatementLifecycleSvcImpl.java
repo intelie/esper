@@ -565,7 +565,14 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
         String[] statementIds = getStatementIds();
         for (int i = 0; i < statementIds.length; i++)
         {
-            destroy(statementIds[i]);
+            try
+            {
+                destroy(statementIds[i]);
+            }
+            catch (Exception ex)
+            {
+                log.warn("Error destroying statement:" + ex.getMessage());
+            }
         }
     }
 
@@ -795,6 +802,9 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
                         ExprNode insertFilter = spec.getCreateWindowDesc().getInsertFilter().getValidatedSubtree(streamTypeService, statementContext.getMethodResolutionService(), null, statementContext.getSchedulingService(), statementContext.getVariableService());
                         spec.getCreateWindowDesc().setInsertFilter(insertFilter);
                     }
+
+                    // set the window to insert from
+                    spec.getCreateWindowDesc().setInsertFromWindow(consumerStreamSpec.getWindowName());
                 }
                 Pair<FilterSpecCompiled, SelectClauseSpecRaw> newFilter = handleCreateWindow(selectFromType, selectFromTypeAlias, spec, eplStatement, statementContext);
 
@@ -915,7 +925,15 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
         }
         else if (isWildcard)
         {
-            targetType = statementContext.getEventAdapterService().addWrapperType(typeName, selectFromType, properties);
+            if ((selectFromType instanceof MapEventType) && (properties.size() ==0))
+            {
+                MapEventType mapType = (MapEventType) selectFromType;
+                targetType = statementContext.getEventAdapterService().addNestableMapType(typeName, mapType.getTypes(), null);
+            }
+            else
+            {
+                targetType = statementContext.getEventAdapterService().addWrapperType(typeName, selectFromType, properties);
+            }
         }
         else
         {

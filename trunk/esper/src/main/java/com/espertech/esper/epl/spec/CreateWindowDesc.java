@@ -21,15 +21,13 @@ public class CreateWindowDesc implements MetaDefItem
      * @param windowName the window name
      * @param viewSpecs the view definitions
      * @param insert true for insert-info
-     * @param insertFromWindow name of window to insert from
      * @param insertFilter optional filter expression
      */
-    public CreateWindowDesc(String windowName, List<ViewSpec> viewSpecs, boolean insert, String insertFromWindow, ExprNode insertFilter)
+    public CreateWindowDesc(String windowName, List<ViewSpec> viewSpecs, boolean insert, ExprNode insertFilter)
     {
         this.windowName = windowName;
         this.viewSpecs = viewSpecs;
         this.isInsert = insert;
-        this.insertFromWindow = insertFromWindow;
         this.insertFilter = insertFilter;
     }
 
@@ -85,5 +83,14 @@ public class CreateWindowDesc implements MetaDefItem
     public void setInsertFilter(ExprNode insertFilter)
     {
         this.insertFilter = insertFilter;
+    }
+
+    /**
+     * Sets the source named window if inserting from another named window.
+     * @param insertFromWindow source named window
+     */
+    public void setInsertFromWindow(String insertFromWindow)
+    {
+        this.insertFromWindow = insertFromWindow;
     }
 }

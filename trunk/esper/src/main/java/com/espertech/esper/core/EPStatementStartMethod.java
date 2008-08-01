@@ -342,13 +342,13 @@ public class EPStatementStartMethod
         if (statementSpec.getCreateWindowDesc().isInsert())
         {
             String insertFromWindow = statementSpec.getCreateWindowDesc().getInsertFromWindow();
-            NamedWindowProcessor otherWindow = services.getNamedWindowService().getProcessor(insertFromWindow);
+            NamedWindowProcessor sourceWindow = services.getNamedWindowService().getProcessor(insertFromWindow);
             List<EventBean> events = new ArrayList<EventBean>();
             if (statementSpec.getCreateWindowDesc().getInsertFilter() != null)
             {
                 EventBean[] eventsPerStream = new EventBean[1];
                 ExprNode filter = statementSpec.getCreateWindowDesc().getInsertFilter();
-                for (Iterator<EventBean> it = otherWindow.getTailView().iterator(); it.hasNext();)
+                for (Iterator<EventBean> it = sourceWindow.getTailView().iterator(); it.hasNext();)
                 {
                     EventBean candidate = it.next();
                     eventsPerStream[0] = candidate;
@@ -362,12 +362,17 @@ public class EPStatementStartMethod
             }
             else
             {
-                for (Iterator<EventBean> it = otherWindow.getTailView().iterator(); it.hasNext();)
+                for (Iterator<EventBean> it = sourceWindow.getTailView().iterator(); it.hasNext();)
                 {
                     events.add(it.next());
                 }
             }
-            rootView.update(events.toArray(new EventBean[events.size()]), null);            
+            if (events.size() > 0)
+            {
+                EventType rootViewType = rootView.getEventType();
+                EventBean[] convertedEvents = services.getEventAdapterService().typeCast(events, rootViewType);
+                rootView.update(convertedEvents, null);
+            }
         }
 
         log.debug(".start Statement start completed");

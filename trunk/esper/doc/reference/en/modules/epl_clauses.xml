@@ -2616,7 +2616,7 @@ where asset.assetid = desc.assetid]]></programlisting>
 		</para>
 		
 		<para>
-			The <literal>create window</literal> clause declares a new named window. The named window starts up empty. Events must be inserted into the named window using the <literal>insert into</literal> clause. Events can also be deleted from a named window via the <literal>on delete</literal> clause. 
+			The <literal>create window</literal> clause declares a new named window. The named window starts up empty unless populated from an existing named window at time of creation. Events must be inserted into the named window using the <literal>insert into</literal> clause. Events can also be deleted from a named window via the <literal>on delete</literal> clause. 
 		</para>	
 			
 		<para>
@@ -2635,11 +2635,11 @@ where asset.assetid = desc.assetid]]></programlisting>
 			</para>
 
 			<para>
-				There are two syntaxes for creating a named window: The first syntax allows to model a named window after an existing event type. The second syntax is similar to the SQL create-table syntax and provides a list of column names and column types. 
+				There are two syntaxes for creating a named window: The first syntax allows to model a named window after an existing event type or an existing named window. The second syntax is similar to the SQL create-table syntax and provides a list of column names and column types. 
 			</para>
 
 			<para>
-				A new named window starts up empty. It must be explicitly inserted into by one or more statements, as discussed below. 
+				A new named window starts up empty. It must be explicitly inserted into by one or more statements, as discussed below. A named window can also be populated at time of creation from an existing named window.
 			</para>
 
 			<para>
@@ -2654,13 +2654,15 @@ where asset.assetid = desc.assetid]]></programlisting>
 				<title>Creation by Modelling after an Existing Type</title>
 
 				<para>
-					The benefit of modelling a named window after an existing event type is that event properties can be nested, indexed, mapped or other types that your event objects may provide as properties, including the type of the underlying event itself.
+					The benefit of modelling a named window after an existing event type is that event properties can be nested, indexed, mapped or other types that your event objects may provide as properties, including the type of the underlying event itself. Also, using the wildcard (*) operator means your EPL does not need to list each individual property explicitly.
 				</para>
 
 				<para>
 					The syntax for creating a named window by modelling the named window after an existing event type, is as follows: 
 				</para>
-				<synopsis>create window <emphasis>window_name</emphasis>.<emphasis>view_specifications</emphasis> [as] [select <emphasis>list_of_properties</emphasis> from] <emphasis>event_type</emphasis></synopsis>
+				<synopsis>create window <emphasis>window_name</emphasis>.<emphasis>view_specifications</emphasis> 
+    [as] [select <emphasis>list_of_properties</emphasis> from] <emphasis>event_type_or_windowname</emphasis>
+    [insert [where <emphasis>filter_expression</emphasis>]]</synopsis>
 						
 				<para>
 					The <emphasis>window_name</emphasis> you assign to the named window can be any identifier. The name should not already be in use as an event type or stream name.
@@ -2675,9 +2677,13 @@ where asset.assetid = desc.assetid]]></programlisting>
 				</para>
 	
 				<para>				
-					Finally, the <emphasis>event_type</emphasis> is required if using the model-after syntax. It provides the name of the event type of events held in the data window, unless column names and types have been explicitly selected via <literal>select</literal>.
+					The <emphasis>event_type_or_windowname</emphasis> is required if using the model-after syntax. It provides the name of the event type of events held in the data window, unless column names and types have been explicitly selected via <literal>select</literal>. The name of an (existing) other named window is also allowed here. Please find more details in <xref linkend="named_populate_named"/>.
 				</para>
 	
+				<para>				
+					Finally, the <literal>insert</literal> clause and optional <emphasis>filter_expression</emphasis> are used if the new named windows is modelled after an existing named window, and the data of the existing named window is to be populated, upon time of creation of the new window, from the existing named window. The optional <emphasis>filter_expression</emphasis> can be used to exclude events.
+				</para>
+
 				<para>
 					The next statement creates a named window 'AllOrdersNamedWindow' for which the expiry policy is simply to keep all events. Assume that the event type 'OrderMapEventType' has been configured. The named window is to hold events of type 'OrderMapEventType':
 				</para>
@@ -3065,6 +3071,29 @@ select win.* from OrdersNamedWindow as win]]></programlisting>
 			</para>
 			<programlisting><![CDATA[select symbol, sum(volume) from MyOrderStream(userId='user1') group by symbol]]></programlisting>
 		</sect2>
+
+		<sect2 id="named_populate_named" revision="1">
+			<title>Populating a Named Window from an Existing Named Window</title>
+			
+			<indexterm><primary>create window, insert</primary></indexterm>
+			<indexterm><primary>named window</primary><secondary>populating from a named window</secondary></indexterm>
+			<indexterm><primary>EPL</primary><secondary>named window</secondary><tertiary>populating from a named window</tertiary></indexterm>
+			<para>
+				Your EPL statement may specify the name of an existing named window when creating a new named window, and may use the <literal>insert</literal> keyword to indicate that the new named window is to be populated from 
+				the events currently held by the existing named window.
+			</para>
+
+			<para>
+				For example, and assuming the named window <literal>OrdersNamedWindow</literal> already exists, this statement creates a new named window <literal>ScratchOrders</literal> and populates all orders in <literal>OrdersNamedWindow</literal> into the new named window:
+			</para>
+			<programlisting>create window ScratchOrders as OrdersNamedWindow insert</programlisting>
+
+			<para>
+				The <literal>where</literal> keyword is also available to perform filtering, for example:
+			</para>
+			<programlisting>create window ScratchBuyOrders as OrdersNamedWindow insert where side = 'buy'</programlisting>
+
+		</sect2> 
 
 		<sect2 id="named_update" revision="1">
 			<title>Updating and Versioning Events in Named Windows</title>

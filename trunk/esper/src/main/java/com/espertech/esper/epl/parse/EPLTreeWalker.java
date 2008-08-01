@@ -433,7 +433,7 @@ public class EPLTreeWalker extends EsperEPL2Ast
             }
         }
 
-        CreateWindowDesc desc = new CreateWindowDesc(windowName, viewSpecs, isInsert, eventName, insertWhereExpr);
+        CreateWindowDesc desc = new CreateWindowDesc(windowName, viewSpecs, isInsert, insertWhereExpr);
         statementSpec.setCreateWindowDesc(desc);
 
         FilterSpecRaw rawFilterSpec = new FilterSpecRaw(eventName, new LinkedList<ExprNode>());

@@ -23,14 +23,14 @@ public class StockTickerMonitor
         this.epService = epService;
 
         // Listen to all limits to be set
-        String expressionText = "every limit=PriceLimit()";
+        String expressionText = "every pricelimit=PriceLimit()";
 	    EPStatement factory = epService.getEPAdministrator().createPattern(expressionText);
 
 	    factory.addListener(new UpdateListener()
         {
             public void update(EventBean[] newEvents, EventBean[] oldEvents)
             {
-                PriceLimit limitBean = (PriceLimit) newEvents[0].get("limit");
+                PriceLimit limitBean = (PriceLimit) newEvents[0].get("pricelimit");
 
                 if (log.isDebugEnabled())
                 {
@@ -49,7 +49,7 @@ public class StockTickerMonitor
         this.epService = epService;
         this.limit = limit;
 
-        String expressionText = "every limit=PriceLimit" +
+        String expressionText = "every pricelimit=PriceLimit" +
                 "(userId='" + limit.getUserId() + "'," +
                 "stockSymbol='" + limit.getStockSymbol() + "')";
         newLimitListener = epService.getEPAdministrator().createPattern(expressionText);
