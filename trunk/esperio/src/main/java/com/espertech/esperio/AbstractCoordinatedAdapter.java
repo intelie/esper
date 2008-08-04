@@ -16,6 +16,7 @@ import com.espertech.esper.schedule.ScheduleSlot;
 import com.espertech.esper.schedule.SchedulingService;
 import com.espertech.esper.util.ManagedLockImpl;
 import com.espertech.esper.util.ExecutionPathDebugLog;
+import com.espertech.esper.epl.metric.StatementMetricHandle;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -43,7 +44,8 @@ public abstract class AbstractCoordinatedAdapter implements CoordinatedAdapter
      */
     protected ScheduleSlot scheduleSlot;
 
-	private EPRuntime runtime;
+    private EPServiceProvider epService;
+    private EPRuntime runtime;
 	private SchedulingService schedulingService;
 	private boolean usingEngineThread, usingExternalTimer;
 	private long currentTime = 0;
@@ -70,9 +72,10 @@ public abstract class AbstractCoordinatedAdapter implements CoordinatedAdapter
 		{
 			throw new IllegalArgumentException("Invalid epService provided");
 		}
-		this.runtime = ((EPServiceProviderSPI)epService).getEPRuntime();
+        this.epService = epService;
+		this.runtime = epService.getEPRuntime();
 		this.schedulingService = ((EPServiceProviderSPI)epService).getSchedulingService();
-	}
+    }
 
 	public AdapterState getState()
 	{
@@ -308,7 +311,9 @@ public abstract class AbstractCoordinatedAdapter implements CoordinatedAdapter
 	private void scheduleNextCallback()
 	{
 		ScheduleHandleCallback nextScheduleCallback = new ScheduleHandleCallback() { public void scheduledTrigger(ExtensionServicesContext extensionServicesContext) { continueSendingEvents(); } };
-        EPStatementHandleCallback scheduleCSVHandle = new EPStatementHandleCallback(new EPStatementHandle("AbstractCoordinatedAdapter", new ManagedLockImpl("CSV"), "AbstractCoordinatedAdapter", false), nextScheduleCallback);
+        EPServiceProviderSPI spi = (EPServiceProviderSPI)epService;
+        StatementMetricHandle metricsHandle = spi.getMetricReportingService().getStatementHandle("AbstractCoordinatedAdapter", "AbstractCoordinatedAdapter");
+        EPStatementHandleCallback scheduleCSVHandle = new EPStatementHandleCallback(new EPStatementHandle("AbstractCoordinatedAdapter", new ManagedLockImpl("CSV"), "AbstractCoordinatedAdapter", false, metricsHandle), nextScheduleCallback);
         ScheduleSlot nextScheduleSlot;
 
 		if(eventsToSend.isEmpty())

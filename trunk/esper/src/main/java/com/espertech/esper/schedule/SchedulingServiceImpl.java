@@ -28,8 +28,6 @@ public final class SchedulingServiceImpl implements SchedulingService
     // Map of handle and handle list for faster removal
     private final Map<ScheduleHandle, SortedMap<ScheduleSlot, ScheduleHandle>> handleSetMap;
 
-    private final TimeSourceService timeSourceService;
-
     // Current time - used for evaluation as well as for adding new handles
     private volatile long currentTime;
 
@@ -42,7 +40,6 @@ public final class SchedulingServiceImpl implements SchedulingService
      */
     public SchedulingServiceImpl(TimeSourceService timeSourceService)
     {
-        this.timeSourceService = timeSourceService;
         this.timeHandleMap = new TreeMap<Long, SortedMap<ScheduleSlot, ScheduleHandle>>();
         this.handleSetMap = new Hashtable<ScheduleHandle, SortedMap<ScheduleSlot, ScheduleHandle>>();
         // initialize time to just before now as there is a check for duplicate external time events

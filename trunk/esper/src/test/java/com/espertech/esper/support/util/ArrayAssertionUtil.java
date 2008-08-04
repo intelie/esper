@@ -299,7 +299,7 @@ public class ArrayAssertionUtil
      * @param iterator returns the data to assertEqualsExactOrder against
      * @param expectedValues is the expected values
      */
-    public static void assertEqualsExactOrder(Iterator<Object> iterator, Object[] expectedValues)
+    public static void assertEqualsExactOrder(Iterator iterator, Object[] expectedValues)
     {
         ArrayList<Object> values = new ArrayList<Object>();
         while (iterator.hasNext())

@@ -1,51 +1,24 @@
 package com.espertech.esper.client.metric;
 
-public class EngineMetric
+public class EngineMetric extends MetricEvent
 {
-    private final String engineURI;
-    private final long engineTimestamp;
-    private final long inputCountExternal;
-    private final long inputCountStream;
+    private final long inputCount;
     private final long scheduleDepth;
-    private final long timerJitter;
 
-    public EngineMetric(String engineURI, long engineTimestamp, long inputCountExternal, long inputCountStream, long scheduleDepth, long timerJitter)
+    public EngineMetric(String engineURI, long engineTimestamp, long inputCount, long scheduleDepth)
     {
-        this.engineURI = engineURI;
-        this.engineTimestamp = engineTimestamp;
-        this.inputCountExternal = inputCountExternal;
-        this.inputCountStream = inputCountStream;
+        super(engineURI, engineTimestamp);
+        this.inputCount = inputCount;
         this.scheduleDepth = scheduleDepth;
-        this.timerJitter = timerJitter;
     }
 
-    public String getEngineURI()
+    public long getInputCount()
     {
-        return engineURI;
-    }
-
-    public long getEngineTimestamp()
-    {
-        return engineTimestamp;
-    }
-
-    public long getInputCountExternal()
-    {
-        return inputCountExternal;
-    }
-
-    public long getInputCountStream()
-    {
-        return inputCountStream;
+        return inputCount;
     }
 
     public long getScheduleDepth()
     {
         return scheduleDepth;
-    }
-
-    public long getTimerJitter()
-    {
-        return timerJitter;
     }
 }

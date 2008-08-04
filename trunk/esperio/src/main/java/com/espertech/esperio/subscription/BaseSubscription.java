@@ -13,6 +13,7 @@ import com.espertech.esper.filter.FilterSpecCompiled;
 import com.espertech.esper.filter.FilterSpecParam;
 import com.espertech.esper.filter.FilterValueSet;
 import com.espertech.esper.util.ManagedLockImpl;
+import com.espertech.esper.epl.metric.StatementMetricHandle;
 
 import java.util.LinkedList;
 
@@ -88,7 +89,8 @@ public abstract class BaseSubscription implements Subscription, FilterHandleCall
         FilterValueSet fvs = new FilterSpecCompiled(eventType, null, new LinkedList<FilterSpecParam>()).getValueSet(null);
 
         String name = "subscription:" + subscriptionName;
-        EPStatementHandle statementHandle = new EPStatementHandle(name, new ManagedLockImpl(name), name, false);
+        StatementMetricHandle metricsHandle = spi.getMetricReportingService().getStatementHandle(name, name);
+        EPStatementHandle statementHandle = new EPStatementHandle(name, new ManagedLockImpl(name), name, false, metricsHandle);
         EPStatementHandleCallback registerHandle = new EPStatementHandleCallback(statementHandle, this);
         spi.getFilterService().add(fvs, registerHandle);
     }

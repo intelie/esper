@@ -569,6 +569,7 @@ public class ConfigurationEngineDefaults implements Serializable
         {
             this.timeSourceType = timeSourceType;
         }
+
     }
 
     /**
@@ -576,24 +577,29 @@ public class ConfigurationEngineDefaults implements Serializable
      */
     public static class MetricsReporting implements Serializable
     {
-        private static boolean isMetricsReporting;
+        private boolean enableMetricsReporting;
+        private boolean isUseMetricsThreading;
         private long engineMetricsInterval;
         private long statementMetricsInterval;
-        private long datawindowMetricsInterval;
         private String statementMetricsFilterRegex;
 
         public MetricsReporting()
         {
-            isMetricsReporting = false;
+            enableMetricsReporting = false;
+            isUseMetricsThreading = true;
             engineMetricsInterval = 10 * 1000; // 10 seconds
             statementMetricsInterval = 10 * 1000; // 10 seconds
-            datawindowMetricsInterval = 10 * 1000; // 10 seconds
             statementMetricsFilterRegex = null;
         }
 
-        public static boolean isMetricsReporting()
+        public boolean isUseMetricsThreading()
         {
-            return isMetricsReporting;
+            return isUseMetricsThreading;
+        }
+
+        public void setUseMetricsThreading(boolean useMetricsThreading)
+        {
+            isUseMetricsThreading = useMetricsThreading;
         }
 
         public long getEngineMetricsInterval()
@@ -606,19 +612,19 @@ public class ConfigurationEngineDefaults implements Serializable
             return statementMetricsInterval;
         }
 
-        public long getDatawindowMetricsInterval()
-        {
-            return datawindowMetricsInterval;
-        }
-
         public String getStatementMetricsFilterRegex()
         {
             return statementMetricsFilterRegex;
         }
 
-        public static void setMetricsReporting(boolean metricsReporting)
+        public boolean isEnableMetricsReporting()
         {
-            isMetricsReporting = metricsReporting;
+            return enableMetricsReporting;
+        }
+
+        public void setEnableMetricsReporting(boolean enableMetricsReporting)
+        {
+            this.enableMetricsReporting = enableMetricsReporting;
         }
 
         public void setEngineMetricsInterval(long engineMetricsInterval)
@@ -629,11 +635,6 @@ public class ConfigurationEngineDefaults implements Serializable
         public void setStatementMetricsInterval(long statementMetricsInterval)
         {
             this.statementMetricsInterval = statementMetricsInterval;
-        }
-
-        public void setDatawindowMetricsInterval(long datawindowMetricsInterval)
-        {
-            this.datawindowMetricsInterval = datawindowMetricsInterval;
         }
 
         public void setStatementMetricsFilterRegex(String statementMetricsFilterRegex)

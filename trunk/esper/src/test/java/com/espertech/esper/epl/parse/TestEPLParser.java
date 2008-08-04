@@ -105,7 +105,7 @@ public class TestEPLParser extends TestCase
         assertIsInvalid("insert into A(,a) select 1 from b.win:length(1)");
         assertIsInvalid("insert xxx into A(,a) select 1 from b.win:length(1)");
 
-        assertIsInvalid("select coalesce(tick.price) from x");
+        assertIsInvalid("select coalesce(processTimeEvent.price) from x");
 
         // time periods
         assertIsInvalid("select * from x.win:time(sec 99)");
@@ -375,9 +375,9 @@ public class TestEPLParser extends TestCase
         assertIsValid("select istream 1, 2 from xxx");
 
         // coalesce
-        assertIsValid("select coalesce(tick.price, 0) from x");
-        assertIsValid("select coalesce(tick.price, null, -1) from x");
-        assertIsValid("select coalesce(tick.price, tick.price, tick.price, tick.price) from x");
+        assertIsValid("select coalesce(processTimeEvent.price, 0) from x");
+        assertIsValid("select coalesce(processTimeEvent.price, null, -1) from x");
+        assertIsValid("select coalesce(processTimeEvent.price, processTimeEvent.price, processTimeEvent.price, processTimeEvent.price) from x");
 
         // time intervals
         assertIsValid("select * from x.win:time(1 seconds)");

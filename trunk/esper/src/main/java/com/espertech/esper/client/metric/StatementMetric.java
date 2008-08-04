@@ -1,9 +1,7 @@
 package com.espertech.esper.client.metric;
 
-public class StatementMetric
+public class StatementMetric extends MetricEvent
 {
-    private final String engineURI;
-    private final long engineTimestamp;
     private final String statementName;
     private final String stmtId;
     private final long totalCPU;
@@ -14,8 +12,7 @@ public class StatementMetric
 
     public StatementMetric(String engineURI, long engineTimestamp, String statementName, String stmtId, long totalCPU, long totalWall, long numOutputs, long numOutputRStream, long numOutputIStream)
     {
-        this.engineURI = engineURI;
-        this.engineTimestamp = engineTimestamp;
+        super(engineURI, engineTimestamp);
         this.statementName = statementName;
         this.stmtId = stmtId;
         this.totalCPU = totalCPU;
@@ -23,16 +20,6 @@ public class StatementMetric
         this.numOutputs = numOutputs;
         this.numOutputRStream = numOutputRStream;
         this.numOutputIStream = numOutputIStream;
-    }
-
-    public String getEngineURI()
-    {
-        return engineURI;
-    }
-
-    public long getEngineTimestamp()
-    {
-        return engineTimestamp;
     }
 
     public String getStatementName()

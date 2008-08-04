@@ -97,7 +97,7 @@ public class TestStreamFactorySvcImpl extends TestCase
 
     public void testCreateNoJoin()
     {
-        EPStatementHandle stmtHande = new EPStatementHandle("id", new ManagedLockImpl("id"), "text", false);
+        EPStatementHandle stmtHande = new EPStatementHandle("id", new ManagedLockImpl("id"), "text", false, null);
         streams = new EventStream[4];
         streams[0] = streamFactoryService.createStream(filterSpecs[0], supportFilterService, stmtHande, false).getFirst();
         streams[1] = streamFactoryService.createStream(filterSpecs[0], supportFilterService, stmtHande, false).getFirst();
@@ -118,7 +118,7 @@ public class TestStreamFactorySvcImpl extends TestCase
 
     public void testDropNoJoin()
     {
-        EPStatementHandle stmtHande = new EPStatementHandle("id", new ManagedLockImpl("id"), "text", false);
+        EPStatementHandle stmtHande = new EPStatementHandle("id", new ManagedLockImpl("id"), "text", false, null);
         streams = new EventStream[4];
         streams[0] = streamFactoryService.createStream(filterSpecs[0], supportFilterService, stmtHande, false).getFirst();
         streams[1] = streamFactoryService.createStream(filterSpecs[0], supportFilterService, stmtHande, false).getFirst();

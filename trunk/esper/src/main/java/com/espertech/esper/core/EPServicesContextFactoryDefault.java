@@ -16,6 +16,9 @@ import com.espertech.esper.epl.variable.VariableServiceImpl;
 import com.espertech.esper.epl.variable.VariableTypeException;
 import com.espertech.esper.epl.view.OutputConditionFactory;
 import com.espertech.esper.epl.view.OutputConditionFactoryDefault;
+import com.espertech.esper.epl.metric.MetricReportingService;
+import com.espertech.esper.epl.metric.MetricReportingServiceImpl;
+import com.espertech.esper.epl.metric.MetricReportingSpec;
 import com.espertech.esper.event.EventAdapterException;
 import com.espertech.esper.event.EventAdapterService;
 import com.espertech.esper.event.EventAdapterServiceImpl;
@@ -91,12 +94,14 @@ public class EPServicesContextFactoryDefault implements EPServicesContextFactory
         ValueAddEventService valueAddEventService = new ValueAddEventServiceImpl();
         valueAddEventService.init(configSnapshot.getRevisionEventTypes(), configSnapshot.getVariantStreams(), eventAdapterService);
 
+        MetricReportingService metricsReporting = new MetricReportingServiceImpl(configSnapshot.getEngineDefaults().getMetricsReporting(), epServiceProvider.getURI());
+
         // New services context
         EPServicesContext services = new EPServicesContext(epServiceProvider.getURI(), schedulingService,
                 eventAdapterService, engineImportService, engineSettingsService, databaseConfigService, plugInViews,
                 statementLockFactory, eventProcessingRWLock, null, jndiContext, statementContextFactory,
                 plugInPatternObj, outputConditionFactory, timerService, filterService, streamFactoryService,
-                namedWindowService, variableService, timeSourceService, valueAddEventService);
+                namedWindowService, variableService, timeSourceService, valueAddEventService, metricsReporting);
 
         // Circular dependency
         StatementLifecycleSvc statementLifecycleSvc = new StatementLifecycleSvcImpl(epServiceProvider, services);

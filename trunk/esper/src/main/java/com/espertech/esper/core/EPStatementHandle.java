@@ -2,6 +2,7 @@ package com.espertech.esper.core;
 
 import com.espertech.esper.util.MetaDefItem;
 import com.espertech.esper.util.ManagedLock;
+import com.espertech.esper.epl.metric.StatementMetricHandle;
 
 /**
  * Class exists once per statement and hold statement resource lock(s).
@@ -20,6 +21,7 @@ public class EPStatementHandle implements MetaDefItem
     private boolean canSelfJoin;
     private boolean hasVariables;
     private InsertIntoLatchFactory insertIntoLatchFactory;
+    private StatementMetricHandle metricsHandle;
 
     /**
      * Ctor.
@@ -28,11 +30,12 @@ public class EPStatementHandle implements MetaDefItem
      * @param expressionText is the expression
      * @param hasVariables indicator whether the statement uses variables
      */
-    public EPStatementHandle(String statementId, ManagedLock statementLock, String expressionText, boolean hasVariables)
+    public EPStatementHandle(String statementId, ManagedLock statementLock, String expressionText, boolean hasVariables, StatementMetricHandle metricsHandle)
     {
         this.statementId = statementId;
         this.statementLock = statementLock;
         this.hasVariables = hasVariables;
+        this.metricsHandle = metricsHandle;
         hashCode = expressionText.hashCode() ^ statementLock.hashCode();
     }
 
@@ -143,5 +146,10 @@ public class EPStatementHandle implements MetaDefItem
     public boolean isCanSelfJoin()
     {
         return canSelfJoin;
+    }
+
+    public StatementMetricHandle getMetricsHandle()
+    {
+        return metricsHandle;
     }
 }

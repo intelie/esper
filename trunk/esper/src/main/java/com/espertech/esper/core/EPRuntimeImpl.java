@@ -17,6 +17,7 @@ import com.espertech.esper.epl.variable.VariableReader;
 import com.espertech.esper.epl.spec.SelectClauseStreamSelectorEnum;
 import com.espertech.esper.epl.spec.StatementSpecRaw;
 import com.espertech.esper.epl.spec.StatementSpecCompiled;
+import com.espertech.esper.epl.metric.MetricReportingPath;
 import com.espertech.esper.event.EventBean;
 import com.espertech.esper.filter.FilterHandle;
 import com.espertech.esper.filter.FilterHandleCallback;
@@ -32,6 +33,8 @@ import org.apache.commons.logging.LogFactory;
 
 import java.util.*;
 import java.net.URI;
+import java.lang.management.ThreadMXBean;
+import java.lang.management.ManagementFactory;
 
 /**
  * Implements runtime interface. Also accepts timer callbacks for synchronizing time events with regular events
@@ -294,6 +297,11 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
             }
         }
         services.getSchedulingService().setTime(currentTime);
+
+        if (MetricReportingPath.isMetricsEnabled)
+        {
+            services.getMetricsReportingService().processTimeEvent(currentTime);
+        }
 
         processSchedule();
 
@@ -632,26 +640,59 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
                 continue;
             }
 
-            handle.getStatementLock().acquireLock(services.getStatementLockFactory());
-            try
+            if (MetricReportingPath.isMetricsEnabled)
             {
-                if (handle.isHasVariables())
+                ThreadMXBean tmbb = ManagementFactory.getThreadMXBean();
+                long cpuTimeBefore = tmbb.getCurrentThreadCpuTime();
+
+                handle.getStatementLock().acquireLock(services.getStatementLockFactory());
+                try
                 {
-                    services.getVariableService().setLocalVersion();
+                    if (handle.isHasVariables())
+                    {
+                        services.getVariableService().setLocalVersion();
+                    }
+
+                    handleCallback.getFilterCallback().matchFound(event);
+
+                    // internal join processing, if applicable
+                    handle.internalDispatch();
+                }
+                catch (RuntimeException ex)
+                {
+                    throw ex;
+                }
+                finally
+                {
+                    handleCallback.getEpStatementHandle().getStatementLock().releaseLock(services.getStatementLockFactory());
                 }
 
-                handleCallback.getFilterCallback().matchFound(event);
+                long cpuTimeAfter = tmbb.getCurrentThreadCpuTime();
+                services.getMetricsReportingService().account(handle.getMetricsHandle());
+            }
+            else
+            {
+                handle.getStatementLock().acquireLock(services.getStatementLockFactory());
+                try
+                {
+                    if (handle.isHasVariables())
+                    {
+                        services.getVariableService().setLocalVersion();
+                    }
 
-                // internal join processing, if applicable
-                handle.internalDispatch();
-            }
-            catch (RuntimeException ex)
-            {
-                throw ex;
-            }
-            finally
-            {
-                handleCallback.getEpStatementHandle().getStatementLock().releaseLock(services.getStatementLockFactory());
+                    handleCallback.getFilterCallback().matchFound(event);
+
+                    // internal join processing, if applicable
+                    handle.internalDispatch();
+                }
+                catch (RuntimeException ex)
+                {
+                    throw ex;
+                }
+                finally
+                {
+                    handleCallback.getEpStatementHandle().getStatementLock().releaseLock(services.getStatementLockFactory());
+                }
             }
         }
         matches.clear();
