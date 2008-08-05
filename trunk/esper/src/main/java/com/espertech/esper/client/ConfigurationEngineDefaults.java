@@ -23,7 +23,7 @@ public class ConfigurationEngineDefaults implements Serializable
     private Variables variables;
     private StreamSelection streamSelection;
     private TimeSource timeSource;
-    private MetricsReporting metricsReporting;
+    private ConfigurationMetricsReporting metricsReporting;
 
     /**
      * Ctor.
@@ -37,7 +37,7 @@ public class ConfigurationEngineDefaults implements Serializable
         variables = new Variables();
         streamSelection = new StreamSelection();
         timeSource = new TimeSource();
-        metricsReporting = new MetricsReporting();
+        metricsReporting = new ConfigurationMetricsReporting();
     }
 
     /**
@@ -107,7 +107,7 @@ public class ConfigurationEngineDefaults implements Serializable
      * Returns the metrics reporting configuration.
      * @return metrics reporting config
      */
-    public MetricsReporting getMetricsReporting()
+    public ConfigurationMetricsReporting getMetricsReporting()
     {
         return metricsReporting;
     }
@@ -570,77 +570,6 @@ public class ConfigurationEngineDefaults implements Serializable
             this.timeSourceType = timeSourceType;
         }
 
-    }
-
-    /**
-     * Time source configuration, the default in MILLI (millisecond resolution from System.currentTimeMillis).
-     */
-    public static class MetricsReporting implements Serializable
-    {
-        private boolean enableMetricsReporting;
-        private boolean isUseMetricsThreading;
-        private long engineMetricsInterval;
-        private long statementMetricsInterval;
-        private String statementMetricsFilterRegex;
-
-        public MetricsReporting()
-        {
-            enableMetricsReporting = false;
-            isUseMetricsThreading = true;
-            engineMetricsInterval = 10 * 1000; // 10 seconds
-            statementMetricsInterval = 10 * 1000; // 10 seconds
-            statementMetricsFilterRegex = null;
-        }
-
-        public boolean isUseMetricsThreading()
-        {
-            return isUseMetricsThreading;
-        }
-
-        public void setUseMetricsThreading(boolean useMetricsThreading)
-        {
-            isUseMetricsThreading = useMetricsThreading;
-        }
-
-        public long getEngineMetricsInterval()
-        {
-            return engineMetricsInterval;
-        }
-
-        public long getStatementMetricsInterval()
-        {
-            return statementMetricsInterval;
-        }
-
-        public String getStatementMetricsFilterRegex()
-        {
-            return statementMetricsFilterRegex;
-        }
-
-        public boolean isEnableMetricsReporting()
-        {
-            return enableMetricsReporting;
-        }
-
-        public void setEnableMetricsReporting(boolean enableMetricsReporting)
-        {
-            this.enableMetricsReporting = enableMetricsReporting;
-        }
-
-        public void setEngineMetricsInterval(long engineMetricsInterval)
-        {
-            this.engineMetricsInterval = engineMetricsInterval;
-        }
-
-        public void setStatementMetricsInterval(long statementMetricsInterval)
-        {
-            this.statementMetricsInterval = statementMetricsInterval;
-        }
-
-        public void setStatementMetricsFilterRegex(String statementMetricsFilterRegex)
-        {
-            this.statementMetricsFilterRegex = statementMetricsFilterRegex;
-        }
     }
 
     /**

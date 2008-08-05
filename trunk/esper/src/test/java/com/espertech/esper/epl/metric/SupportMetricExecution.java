@@ -1,6 +1,6 @@
 package com.espertech.esper.epl.metric;
 
-public class SupportMetricExecution implements MetricExecution
+public class SupportMetricExecution implements MetricExec
 {
     private boolean executed;
 

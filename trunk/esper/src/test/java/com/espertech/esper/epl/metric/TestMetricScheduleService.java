@@ -11,7 +11,7 @@ public class TestMetricScheduleService extends TestCase
 {
     private MetricScheduleService svc;
     private SupportMetricExecution execs[];
-    private List<MetricExecution> executions;
+    private List<MetricExec> executions;
 
     public void setUp()
     {
@@ -23,7 +23,7 @@ public class TestMetricScheduleService extends TestCase
             execs[i] = new SupportMetricExecution();
         }
 
-        executions = new ArrayList<MetricExecution>();
+        executions = new ArrayList<MetricExec>();
     }
 
     public void testFlow()

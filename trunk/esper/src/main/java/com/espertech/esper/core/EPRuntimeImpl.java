@@ -644,6 +644,7 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
             {
                 ThreadMXBean tmbb = ManagementFactory.getThreadMXBean();
                 long cpuTimeBefore = tmbb.getCurrentThreadCpuTime();
+                long wallTimeBefore = System.currentTimeMillis();
 
                 handle.getStatementLock().acquireLock(services.getStatementLockFactory());
                 try
@@ -667,8 +668,11 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
                     handleCallback.getEpStatementHandle().getStatementLock().releaseLock(services.getStatementLockFactory());
                 }
 
+                long wallTimeAfter = System.currentTimeMillis();
                 long cpuTimeAfter = tmbb.getCurrentThreadCpuTime();
-                services.getMetricsReportingService().account(handle.getMetricsHandle());
+                long deltaCPU = cpuTimeAfter - cpuTimeBefore;
+                long deltaWall = wallTimeAfter - wallTimeBefore;
+                services.getMetricsReportingService().accountTime(handle.getMetricsHandle(), deltaCPU, deltaWall);
             }
             else
             {

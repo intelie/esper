@@ -1,25 +1,21 @@
 package com.espertech.esper.client.metric;
 
+import java.util.concurrent.atomic.AtomicLong;
+
 public class StatementMetric extends MetricEvent
 {
-    private final String statementName;
-    private final String stmtId;
-    private final long totalCPU;
-    private final long totalWall;
-    private final long numOutputs;
-    private final long numOutputRStream;
-    private final long numOutputIStream;
+    private String statementName;
+    private AtomicLong cpuTime;
+    private AtomicLong wallTime;
+    private long numOutputRStream;
+    private long numOutputIStream;
 
-    public StatementMetric(String engineURI, long engineTimestamp, String statementName, String stmtId, long totalCPU, long totalWall, long numOutputs, long numOutputRStream, long numOutputIStream)
+    public StatementMetric(String engineURI, String statementName)
     {
-        super(engineURI, engineTimestamp);
+        super(engineURI);
         this.statementName = statementName;
-        this.stmtId = stmtId;
-        this.totalCPU = totalCPU;
-        this.totalWall = totalWall;
-        this.numOutputs = numOutputs;
-        this.numOutputRStream = numOutputRStream;
-        this.numOutputIStream = numOutputIStream;
+        this.cpuTime = new AtomicLong();
+        this.wallTime = new AtomicLong();
     }
 
     public String getStatementName()
@@ -27,24 +23,24 @@ public class StatementMetric extends MetricEvent
         return statementName;
     }
 
-    public String getStmtId()
+    public long getCpuTime()
     {
-        return stmtId;
+        return cpuTime.get();
     }
 
-    public long getTotalCPU()
+    public void addTotalCPU(long delta)
     {
-        return totalCPU;
+        cpuTime.addAndGet(delta);
     }
 
-    public long getTotalWall()
+    public void addTotalWall(long wall)
     {
-        return totalWall;
+        wallTime.addAndGet(wall);
     }
 
-    public long getNumOutputs()
+    public long getWallTime()
     {
-        return numOutputs;
+        return wallTime.get();
     }
 
     public long getNumOutputRStream()
@@ -56,4 +52,5 @@ public class StatementMetric extends MetricEvent
     {
         return numOutputIStream;
     }
+
 }

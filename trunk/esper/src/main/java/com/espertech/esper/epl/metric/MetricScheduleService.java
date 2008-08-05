@@ -17,7 +17,7 @@ public final class MetricScheduleService implements MetricTimeSource
 {
     private static final Log log = LogFactory.getLog(MetricScheduleService.class);
 
-    private final SortedMap<Long, List<MetricExecution>> timeHandleMap;
+    private final SortedMap<Long, List<MetricExec>> timeHandleMap;
 
     // Current time - used for evaluation as well as for adding new handles
     private volatile Long currentTime;
@@ -29,7 +29,7 @@ public final class MetricScheduleService implements MetricTimeSource
      */
     public MetricScheduleService()
     {
-        this.timeHandleMap = new TreeMap<Long, List<MetricExecution>>();
+        this.timeHandleMap = new TreeMap<Long, List<MetricExec>>();
     }
 
     public long getCurrentTime()
@@ -49,14 +49,18 @@ public final class MetricScheduleService implements MetricTimeSource
         this.currentTime = currentTime;
     }
 
-    public synchronized final void add(long afterMSec, MetricExecution execution)
+    public synchronized final void add(long afterMSec, MetricExec execution)
             throws ScheduleServiceException
     {
+        if (execution == null)
+        {
+            throw new IllegalArgumentException("Unexpected parameters : null execution");
+        }
         long triggerOnTime = currentTime + afterMSec;
-        List<MetricExecution> handleSet = timeHandleMap.get(triggerOnTime);
+        List<MetricExec> handleSet = timeHandleMap.get(triggerOnTime);
         if (handleSet == null)
         {
-            handleSet = new ArrayList<MetricExecution>();
+            handleSet = new ArrayList<MetricExec>();
             timeHandleMap.put(triggerOnTime, handleSet);
         }
         handleSet.add(execution);
@@ -64,18 +68,18 @@ public final class MetricScheduleService implements MetricTimeSource
         nearestTime = timeHandleMap.firstKey();
     }
 
-    public synchronized final void evaluate(Collection<MetricExecution> handles)
+    public synchronized final void evaluate(Collection<MetricExec> handles)
     {
-        SortedMap<Long, List<MetricExecution>> headMap = timeHandleMap.headMap(currentTime + 1);
+        SortedMap<Long, List<MetricExec>> headMap = timeHandleMap.headMap(currentTime + 1);
 
         // First determine all triggers to shoot
         List<Long> removeKeys = new LinkedList<Long>();
-        for (Map.Entry<Long, List<MetricExecution>> entry : headMap.entrySet())
+        for (Map.Entry<Long, List<MetricExec>> entry : headMap.entrySet())
         {
             Long key = entry.getKey();
-            List<MetricExecution> value = entry.getValue();
+            List<MetricExec> value = entry.getValue();
             removeKeys.add(key);
-            for (MetricExecution handle : value)
+            for (MetricExec handle : value)
             {
                 handles.add(handle);
             }

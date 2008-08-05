@@ -1,16 +1,15 @@
 package com.espertech.esper.epl.metric;
 
 import com.espertech.esper.client.metric.EngineMetric;
-import com.espertech.esper.core.EPServicesContext;
 
-public class EngineMetricExecution implements MetricExecution
+public class MetricExecEngine implements MetricExec
 {
     private final MetricEventRouter metricEventRouter;
     private final String engineURI;
     private final MetricScheduleService metricScheduleService;
     private final long interval;
 
-    public EngineMetricExecution(MetricEventRouter metricEventRouter, String engineURI, MetricScheduleService metricScheduleService, long interval)
+    public MetricExecEngine(MetricEventRouter metricEventRouter, String engineURI, MetricScheduleService metricScheduleService, long interval)
     {
         this.metricEventRouter = metricEventRouter;
         this.engineURI = engineURI;

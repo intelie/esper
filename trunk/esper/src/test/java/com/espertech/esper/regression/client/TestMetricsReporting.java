@@ -1,52 +1,53 @@
 package com.espertech.esper.regression.client;
 
-import com.espertech.esper.client.Configuration;
-import com.espertech.esper.client.EPServiceProvider;
-import com.espertech.esper.client.EPServiceProviderManager;
-import com.espertech.esper.client.EPStatement;
+import com.espertech.esper.client.*;
 import com.espertech.esper.client.metric.EngineMetric;
 import com.espertech.esper.client.metric.StatementMetric;
 import com.espertech.esper.client.time.CurrentTimeEvent;
+import com.espertech.esper.event.EventBean;
 import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.client.SupportConfigFactory;
-import com.espertech.esper.support.util.SupportUpdateListener;
 import com.espertech.esper.support.util.ArrayAssertionUtil;
-import com.espertech.esper.event.EventBean;
+import com.espertech.esper.support.util.SupportUpdateListener;
 import junit.framework.TestCase;
 
-import java.lang.management.ThreadMXBean;
 import java.lang.management.ManagementFactory;
-import java.math.BigInteger;
+import java.lang.management.ThreadMXBean;
 
 public class TestMetricsReporting extends TestCase
 {
     private EPServiceProvider epService;
     private SupportUpdateListener listener;
+    private SupportUpdateListener listenerTwo;
+
+    private final long cpuGoalOneNano = 80 * 1000 * 1000;
+    private final long cpuGoalTwoNano = 50 * 1000 * 1000;
+    private final long wallGoalOneMsec = 200;
+    private final long wallGoalTwoMsec = 400;
 
     public void setUp()
     {
-        listener = new SupportUpdateListener();
-
-        Configuration configuration = SupportConfigFactory.getConfiguration();
-        configuration.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
-
-        configuration.getEngineDefaults().getMetricsReporting().setEnableMetricsReporting(true);
-        configuration.getEngineDefaults().getMetricsReporting().setUseMetricsThreading(false);  // use external timer thread
-        configuration.getEngineDefaults().getMetricsReporting().setStatementMetricsInterval(-1);
-
-        configuration.addImport(MyMetricFunctions.class.getName());
-
-        configuration.addEventTypeAlias("SupportBean", SupportBean.class);
-        
-        epService = EPServiceProviderManager.getProvider("MyURI", configuration);
-        epService.initialize();
+        listener = new SupportUpdateListener(); 
+        listenerTwo = new SupportUpdateListener();
     }
 
+    // TODO
+    //  proper runtime integration: count for all places in which statement can be executed
+    //  add output event counting
+    //  statement destroy
+    //  add threading
+    //  statement groups testing
+    //  add engine CPU/wall time
+    //  statements that are not currently reported on should not get counted
+    //  runtime API
     public void tearDown()
     {
         try
         {
-            epService.destroy();
+            if (epService != null)
+            {
+                epService.destroy();
+            }
         }
         catch (RuntimeException ex)
         {
@@ -56,6 +57,9 @@ public class TestMetricsReporting extends TestCase
 
     public void testEngineMetrics()
     {
+        epService = EPServiceProviderManager.getProvider("MyURI", getConfig(10000, -1));
+        epService.initialize();
+
         String[] engineFields = "engineURI,timestamp,inputCount,scheduleDepth".split(",");
         sendTimer(1000);
 
@@ -85,34 +89,82 @@ public class TestMetricsReporting extends TestCase
 
     public void testStatementMetrics()
     {
-        String[] engineFields = "engineURI,statementName,cpuTime".split(",");
+        Configuration config = getConfig(-1, -1);
+
+        // report on all statements every 10 seconds
+        ConfigurationMetricsReporting.StmtGroupMetrics configOne = new ConfigurationMetricsReporting.StmtGroupMetrics();
+        configOne.setInterval(10000);
+        configOne.addIncludeLike("%cpuStmt%");
+        configOne.addIncludeLike("%wallStmt%");
+        config.getEngineDefaults().getMetricsReporting().addStmtGroup("nonmetrics", configOne);
+
+        // exclude metrics themselves from reporting
+        ConfigurationMetricsReporting.StmtGroupMetrics configTwo = new ConfigurationMetricsReporting.StmtGroupMetrics();
+        configTwo.setInterval(-1);
+        configOne.addExcludeLike("%metrics%");
+        config.getEngineDefaults().getMetricsReporting().addStmtGroup("metrics", configTwo);
+
+        epService = EPServiceProviderManager.getProvider("MyURI", config);
+        epService.initialize();
+
         sendTimer(1000);
 
         String text = "select * from " + StatementMetric.class.getName();
-        EPStatement stmt = epService.getEPAdministrator().createEPL(text);
+        EPStatement stmt = epService.getEPAdministrator().createEPL(text, "stmt_metrics");
         stmt.addListener(listener);
 
-        long cpuGoalOne = 1000000;
-        long cpuGoalTwo = 2000000;
-        EPStatement stmtOne = epService.getEPAdministrator().createEPL("select * from SupportBean(intPrimitive=1) where MyMetricFunctions.takeCPUTime(" + cpuGoalOne + ")", "stmtOne");
-        EPStatement stmtTwo = epService.getEPAdministrator().createEPL("select * from SupportBean(intPrimitive=2) where MyMetricFunctions.takeCPUTime(" + cpuGoalOne + ")", "stmtTwo");
+        stmt = epService.getEPAdministrator().createEPL("select * from SupportBean(intPrimitive=1).win:keepall() where MyMetricFunctions.takeCPUTime(longPrimitive)", "cpuStmtOne");
+        stmt.addListener(listenerTwo);
+        stmt = epService.getEPAdministrator().createEPL("select * from SupportBean(intPrimitive=2).win:keepall() where MyMetricFunctions.takeCPUTime(longPrimitive)", "cpuStmtTwo");
+        stmt.addListener(listenerTwo);
+        stmt = epService.getEPAdministrator().createEPL("select * from SupportBean(intPrimitive=3).win:keepall() where MyMetricFunctions.takeWallTime(longPrimitive)", "wallStmtThree");
+        stmt.addListener(listenerTwo);
+        stmt = epService.getEPAdministrator().createEPL("select * from SupportBean(intPrimitive=4).win:keepall() where MyMetricFunctions.takeWallTime(longPrimitive)", "wallStmtFour");
+        stmt.addListener(listenerTwo);
 
-        for (int i = 0; i < 10000; i++)
-        {
-            epService.getEPRuntime().sendEvent(new SupportBean("E", 1));
-            epService.getEPRuntime().sendEvent(new SupportBean("E", 2));
-        }
+        sendEvent("E1", 1, cpuGoalOneNano);
+        sendEvent("E2", 2, cpuGoalTwoNano);
+        sendEvent("E3", 3, wallGoalOneMsec);
+        sendEvent("E4", 4, wallGoalTwoMsec);
 
         sendTimer(10999);
         assertFalse(listener.isInvoked());
 
         sendTimer(11000);
-        assertEquals(2, listener.getLastNewData().length);
-        ArrayAssertionUtil.assertProps(listener.getLastNewData()[0], engineFields, new Object[] {"MyURI", "stmtOne"});
-        ArrayAssertionUtil.assertProps(listener.getLastNewData()[1], engineFields, new Object[] {"MyURI", "stmtTwo"});
-        BigInteger cpuOne = (BigInteger) listener.getLastNewData()[0].get("cpuTime");
-        BigInteger cpuTwo = (BigInteger) listener.getLastNewData()[1].get("cpuTime");
-        assertTrue(cpuOne.compareTo(BigInteger.valueOf(cpuGoalOne * 10000L)) > 0);
+        runAssertion();
+
+        sendEvent("E1", 1, cpuGoalOneNano);
+        sendEvent("E2", 2, cpuGoalTwoNano);
+        sendEvent("E3", 3, wallGoalOneMsec);
+        sendEvent("E4", 4, wallGoalTwoMsec);
+
+        sendTimer(21000);
+        runAssertion();
+    }
+
+    private void runAssertion()
+    {
+        String[] fields = "engineURI,statementName".split(",");
+
+        assertEquals(4, listener.getNewDataList().size());
+        EventBean[] received = listener.getNewDataListFlattened();
+
+        ArrayAssertionUtil.assertProps(received[0], fields, new Object[] {"MyURI", "cpuStmtOne"});
+        ArrayAssertionUtil.assertProps(received[1], fields, new Object[] {"MyURI", "cpuStmtTwo"});
+        ArrayAssertionUtil.assertProps(received[2], fields, new Object[] {"MyURI", "wallStmtThree"});
+        ArrayAssertionUtil.assertProps(received[3], fields, new Object[] {"MyURI", "wallStmtFour"});
+
+        long cpuOne = (Long) received[0].get("cpuTime");
+        long cpuTwo = (Long) received[1].get("cpuTime");
+        long wallOne = (Long) received[2].get("wallTime");
+        long wallTwo = (Long) received[3].get("wallTime");
+
+        assertTrue("cpuOne=" + cpuOne, cpuOne > cpuGoalOneNano);
+        assertTrue("cpuTwo=" + cpuTwo, cpuTwo > cpuGoalTwoNano);
+        assertTrue("wallOne=" + wallOne, (wallOne + 50) > wallGoalOneMsec);
+        assertTrue("wallTwo=" + wallTwo, (wallTwo + 50) > wallGoalTwoMsec);
+
+        listener.reset();
     }
 
     public void testTakeCPUTime()
@@ -141,5 +193,29 @@ public class TestMetricsReporting extends TestCase
     private void sendTimer(long currentTime)
     {
         epService.getEPRuntime().sendEvent(new CurrentTimeEvent(currentTime));
+    }
+
+    private Configuration getConfig(long engineMetricInterval, long stmtMetricInterval)
+    {
+        Configuration configuration = SupportConfigFactory.getConfiguration();
+        configuration.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
+
+        configuration.getEngineDefaults().getMetricsReporting().setEnableMetricsReporting(true);
+        configuration.getEngineDefaults().getMetricsReporting().setUseMetricsThreading(false);  // use external timer thread
+        configuration.getEngineDefaults().getMetricsReporting().setEngineMetricsInterval(engineMetricInterval);
+        configuration.getEngineDefaults().getMetricsReporting().setDefaultStmtMetricsInterval(stmtMetricInterval);
+
+        configuration.addImport(MyMetricFunctions.class.getName());
+
+        configuration.addEventTypeAlias("SupportBean", SupportBean.class);
+
+        return configuration;
+    }
+
+    private void sendEvent(String id, int intPrimitive, long longPrimitive)
+    {
+        SupportBean bean = new SupportBean(id, intPrimitive);
+        bean.setLongPrimitive(longPrimitive);
+        epService.getEPRuntime().sendEvent(bean);
     }
 }

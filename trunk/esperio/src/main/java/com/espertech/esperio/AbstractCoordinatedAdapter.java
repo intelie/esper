@@ -284,7 +284,7 @@ public abstract class AbstractCoordinatedAdapter implements CoordinatedAdapter
 				}
 				sendFirstEvent();
 			}
-			// send final time tick
+			// send final time processTimeEvent
 			this.runtime.sendEvent(new CurrentTimeEvent(lastEventTime));
 		}
 		else

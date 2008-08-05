@@ -37,4 +37,17 @@ public class MyMetricFunctions
 
         return true;
     }
+
+    public static boolean takeWallTime(long msecTarget)
+    {
+        try
+        {
+            Thread.sleep(msecTarget);
+        }
+        catch (InterruptedException e)
+        {
+            e.printStackTrace();
+        }
+        return true;
+    }
 }

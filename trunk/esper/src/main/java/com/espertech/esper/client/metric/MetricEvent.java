@@ -11,6 +11,11 @@ public abstract class MetricEvent
         this.timestamp = timestamp;
     }
 
+    protected MetricEvent(String engineURI)
+    {
+        this.engineURI = engineURI;
+    }
+
     public String getEngineURI()
     {
         return engineURI;
