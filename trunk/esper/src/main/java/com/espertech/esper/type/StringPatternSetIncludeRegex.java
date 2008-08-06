@@ -1,19 +1,14 @@
 package com.espertech.esper.type;
 
-public class StringPatternSetIncludeRegex extends StringPatternSetRegexBase
+public class StringPatternSetIncludeRegex extends StringPatternSetRegexBase implements StringPatternSetInclude
 {
     public StringPatternSetIncludeRegex(String likeString)
     {
         super(likeString);
     }
 
-    public Boolean isInclude(String stringToMatch)
+    public boolean match(String stringToMatch)
     {
         return super.matchString(stringToMatch);
-    }
-
-    public Boolean isExclude(String stringToMatch)
-    {
-        return null;
     }
 }

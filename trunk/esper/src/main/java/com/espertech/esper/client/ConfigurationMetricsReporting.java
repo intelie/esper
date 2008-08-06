@@ -3,27 +3,24 @@ package com.espertech.esper.client;
 import com.espertech.esper.type.*;
 
 import java.io.Serializable;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class ConfigurationMetricsReporting implements Serializable
 {
     private boolean enableMetricsReporting;
-    private boolean isUseMetricsThreading;
-    private long engineMetricsInterval;
-    private long defaultStmtMetricsInterval;
+    private boolean isThreading;
+    private long engineInterval;
+    private long statementInterval;
 
     private Map<String, StmtGroupMetrics> statementGroups;
 
     public ConfigurationMetricsReporting()
     {
         enableMetricsReporting = false;
-        isUseMetricsThreading = true;
-        engineMetricsInterval = 10 * 1000; // 10 seconds
-        defaultStmtMetricsInterval = 10 * 1000;
-        statementGroups = new HashMap<String, StmtGroupMetrics>();
+        isThreading = true;
+        engineInterval = 10 * 1000; // 10 seconds
+        statementInterval = 10 * 1000;
+        statementGroups = new LinkedHashMap<String, StmtGroupMetrics>();
     }
 
     public void addStmtGroup(String name, StmtGroupMetrics config)
@@ -41,34 +38,34 @@ public class ConfigurationMetricsReporting implements Serializable
         this.enableMetricsReporting = enableMetricsReporting;
     }
 
-    public boolean isUseMetricsThreading()
+    public boolean isThreading()
     {
-        return isUseMetricsThreading;
+        return isThreading;
     }
 
-    public void setUseMetricsThreading(boolean useMetricsThreading)
+    public void setThreading(boolean threading)
     {
-        isUseMetricsThreading = useMetricsThreading;
+        isThreading = threading;
     }
 
-    public long getEngineMetricsInterval()
+    public long getEngineInterval()
     {
-        return engineMetricsInterval;
+        return engineInterval;
     }
 
-    public void setEngineMetricsInterval(long engineMetricsInterval)
+    public void setEngineInterval(long engineInterval)
     {
-        this.engineMetricsInterval = engineMetricsInterval;
+        this.engineInterval = engineInterval;
     }
 
-    public long getDefaultStmtMetricsInterval()
+    public long getStatementInterval()
     {
-        return defaultStmtMetricsInterval;
+        return statementInterval;
     }
 
-    public void setDefaultStmtMetricsInterval(long defaultStmtMetricsInterval)
+    public void setStatementInterval(long statementInterval)
     {
-        this.defaultStmtMetricsInterval = defaultStmtMetricsInterval;
+        this.statementInterval = statementInterval;
     }
 
     public Map<String, StmtGroupMetrics> getStatementGroups()
@@ -76,17 +73,28 @@ public class ConfigurationMetricsReporting implements Serializable
         return statementGroups;
     }
 
+    public void setStatementGroupInterval(String stmtGroupName, long newInterval)
+    {
+        StmtGroupMetrics metrics = statementGroups.get(stmtGroupName);
+        if (metrics == null)
+        {
+            metrics.setInterval(newInterval);
+        }
+    }
+
     public static class StmtGroupMetrics implements Serializable
     {
         private List<StringPatternSet> patterns;
-        private int initialNumStmts;
+        private int numStatements;
         private long interval;
+        private boolean reportInactive;
+        private boolean defaultInclude;
 
         public StmtGroupMetrics()
         {
             patterns = new ArrayList<StringPatternSet>();
             interval =  10000;
-            initialNumStmts = 100;
+            numStatements = 100;
         }
 
         public void addIncludeLike(String likeExpression)
@@ -124,15 +132,34 @@ public class ConfigurationMetricsReporting implements Serializable
             return patterns;
         }
 
-        public int getInitialNumStmts()
+        public int getNumStatements()
         {
-            return initialNumStmts;
+            return numStatements;
         }
 
-        public void setInitialNumStmts(int initialNumStmts)
+        public void setNumStatements(int numStatements)
         {
-            this.initialNumStmts = initialNumStmts;
+            this.numStatements = numStatements;
+        }
+
+        public boolean isReportInactive()
+        {
+            return reportInactive;
+        }
+
+        public void setReportInactive(boolean reportInactive)
+        {
+            this.reportInactive = reportInactive;
+        }
+
+        public boolean isDefaultInclude()
+        {
+            return defaultInclude;
+        }
+
+        public void setDefaultInclude(boolean defaultInclude)
+        {
+            this.defaultInclude = defaultInclude;
         }
     }
-
 }

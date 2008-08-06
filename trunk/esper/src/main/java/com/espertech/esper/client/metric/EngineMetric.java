@@ -2,12 +2,14 @@ package com.espertech.esper.client.metric;
 
 public class EngineMetric extends MetricEvent
 {
+    private final long timestamp;
     private final long inputCount;
     private final long scheduleDepth;
 
-    public EngineMetric(String engineURI, long engineTimestamp, long inputCount, long scheduleDepth)
+    public EngineMetric(String engineURI, long timestamp, long inputCount, long scheduleDepth)
     {
-        super(engineURI, engineTimestamp);
+        super(engineURI);
+        this.timestamp = timestamp;
         this.inputCount = inputCount;
         this.scheduleDepth = scheduleDepth;
     }
@@ -20,5 +22,10 @@ public class EngineMetric extends MetricEvent
     public long getScheduleDepth()
     {
         return scheduleDepth;
+    }
+
+    public long getTimestamp()
+    {
+        return timestamp;
     }
 }

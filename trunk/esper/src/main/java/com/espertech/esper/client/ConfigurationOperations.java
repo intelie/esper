@@ -269,4 +269,6 @@ public interface ConfigurationOperations
      * @return indicator whether the variant stream by that name exists 
      */
     public boolean isVariantStreamExists(String name);
+    
+    public void setMetricsReportingInterval(String stmtGroupName, long newInterval);
 }

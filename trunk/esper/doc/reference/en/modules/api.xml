@@ -1250,4 +1250,139 @@ EPStatement statement = epService.getEPAdministrator().create(prepared);]]></pro
 	
   </sect1>
       
+  <sect1 id="api-instrumentation">
+        <title>Engine and Statement Metrics Reporting</title>
+        
+        <para>
+			Metrics reporting is a feature that allows an appplication to receive ongoing reports about key engine-level and statement-level metrics. Some example are the number of incoming events, the CPU time and wall time of statement executions and the number of output events per statement. <xref linkend="config-engine-instrumentation"/>
+        </para>
+
+        <para>
+			Metrics reporting is by default disabled. To enabled reporting, please follow the steps as outlined in <xref linkend="config-engine-instrumentation"/>. Metrics reporting must be enabled at engine initialization time. Reporting intervals can be controlled at runtime via the <literal>ConfigurationOperations</literal> interface available from the administrative API.
+        </para>
+
+        <para>
+			Your application receives metrics at the configured intervals via EPL statement. A metric datapoint is simply a well-defined event. The events are <literal>EngineMetric</literal> and <literal>StatementMetric</literal> and can be found in the client API in package <literal>com.espertech.esper.client.metric</literal>.
+        </para>
+
+        <para>
+			Since metric events behave like any other events, your EPL may use any construct on such events. For example, your application may filter, aggregate properties, sort or insert into a stream or named window the metric events.
+        </para>
+        
+        <para>
+			This example statement simply selects all engine metric events:
+        </para>        
+		<programlisting><![CDATA[select * from com.espertech.esper.client.metric.EngineMetric]]></programlisting>
+
+        <para>
+			Make sure to have metrics reporting enabled, only then do listeners or the subscriber to the statement above receive metric events. The engine provides metric events after the configured interval of time has passed.
+        </para>        
+
+        <para>
+			Metrics reporting honors externally-supplied time, if using external timer events. The default configuration performs the publishing of metric events in a separate thread (an Esper daemon thread under the control of the engine instance).
+        </para>        
+
+		<para>
+			The following limitations apply:
+		</para>
+
+		<itemizedlist spacing="compact">
+			<listitem>
+				<para>
+					If your Java VM version does not report current thread CPU time (most JVM do), then CPU time is reported as zero (use <literal> ManagementFactory.getThreadMXBean().isCurrentThreadCpuTimeSupported()</literal> to determine if your JVM supports this feature).
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					Your Java VM may not provide high resolution time via <literal>System.nanoTime</literal>. In such case wall time may be be inaccurate and inprecise.
+				</para>
+			</listitem>
+		</itemizedlist>
+		
+		<sect2 id="api-instrumentation-enginemetrics">
+			<title>Engine Metrics</title>
+
+			<para>
+				Engine metrics are properties of <literal>EngineMetric</literal>. These are the properties:
+			</para>
+			
+			<table frame="topbot" id="api-instrumentation-events-engine" revision="2">
+				<title>EngineMetric Properties</title>
+				<tgroup cols="2">
+					<colspec colwidth="0.5*"/>
+					<colspec colwidth="2.0*"/>
+					<thead>
+						<row>
+							<entry>Name</entry>
+							<entry>Description</entry>
+						</row>
+					</thead>
+					<tbody>
+						<row>
+							<entry>engineURI</entry>
+							<entry>The URI of the engine instance.</entry>
+						</row>
+						<row>
+							<entry>timestamp</entry>
+							<entry>The current engine time.</entry>
+						</row>
+						<row>
+							<entry>inputCount</entry>
+							<entry>Cumulative number of input events: defined as events send in via application threads as well as <literal>insert into</literal> events.</entry>
+						</row>
+						<row>
+							<entry>scheduleDepth</entry>
+							<entry>Number of outstanding schedules.</entry>
+						</row>
+					</tbody>
+				</tgroup>
+			</table>
+		</sect2>
+
+		<sect2 id="api-instrumentation-statementmetrics">
+			<title>Statement Metrics</title>
+
+			<para>
+				Statement metrics are properties of <literal>StatementMetric</literal>. The properties are:
+			</para>
+			
+			<table frame="topbot" id="api-instrumentation-events-engine" revision="2">
+				<title>EngineMetric Properties</title>
+				<tgroup cols="2">
+					<colspec colwidth="0.5*"/>
+					<colspec colwidth="2.0*"/>
+					<thead>
+						<row>
+							<entry>Name</entry>
+							<entry>Description</entry>
+						</row>
+					</thead>
+					<tbody>
+						<row>
+							<entry>engineURI</entry>
+							<entry>The URI of the engine instance.</entry>
+						</row>
+						<row>
+							<entry>timestamp</entry>
+							<entry>The current engine time.</entry>
+						</row>
+						<row>
+							<entry>statementName</entry>
+							<entry>Statement name, if provided at time of statement creation, otherwise a generated name.</entry>
+						</row>
+						<row>
+							<entry>cpuTime</entry>
+							<entry>Statement processing CPU time (system and user) in nanoseconds, cumulative since last report (if available by Java VM)</entry>
+						</row>
+						<row>
+							<entry>wallTime</entry>
+							<entry>Statement processing wall time in nanoseconds, cumulative since last report (based on <literal>System.nanoTime</literal>)</entry>
+						</row>
+					</tbody>
+				</tgroup>
+			</table>
+		</sect2>
+
+  </sect1>
+
 </chapter>

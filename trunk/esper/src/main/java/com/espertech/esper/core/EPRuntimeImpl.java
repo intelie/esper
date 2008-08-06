@@ -24,17 +24,12 @@ import com.espertech.esper.filter.FilterHandleCallback;
 import com.espertech.esper.schedule.ScheduleHandle;
 import com.espertech.esper.schedule.ScheduleHandleCallback;
 import com.espertech.esper.timer.TimerCallback;
-import com.espertech.esper.util.ExecutionPathDebugLog;
-import com.espertech.esper.util.ManagedLock;
-import com.espertech.esper.util.ThreadLogUtil;
-import com.espertech.esper.util.UuidGenerator;
+import com.espertech.esper.util.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.util.*;
 import java.net.URI;
-import java.lang.management.ThreadMXBean;
-import java.lang.management.ManagementFactory;
 
 /**
  * Implements runtime interface. Also accepts timer callbacks for synchronizing time events with regular events
@@ -365,28 +360,25 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
         {
             Object[] handleArray = handles.getArray();
             EPStatementHandleCallback handle = (EPStatementHandleCallback) handleArray[0];
-            ManagedLock statementLock = handle.getEpStatementHandle().getStatementLock();
 
-            statementLock.acquireLock(services.getStatementLockFactory());
-            try
+            if (MetricReportingPath.isMetricsEnabled)
             {
-                if (handle.getEpStatementHandle().isHasVariables())
-                {
-                    services.getVariableService().setLocalVersion();
-                }
+                long cpuTimeBefore = MetricUtil.getCPUCurrentThread();
+                long wallTimeBefore = MetricUtil.getWall();
 
-                handle.getScheduleCallback().scheduledTrigger(services.getExtensionServicesContext());
+                processStatementScheduleSingle(handle);
 
-                handle.getEpStatementHandle().internalDispatch();
+                long wallTimeAfter = MetricUtil.getWall();
+                long cpuTimeAfter = MetricUtil.getCPUCurrentThread();
+                long deltaCPU = cpuTimeAfter - cpuTimeBefore;
+                long deltaWall = wallTimeAfter - wallTimeBefore;
+                services.getMetricsReportingService().accountTime(handle.getEpStatementHandle().getMetricsHandle(), deltaCPU, deltaWall);
             }
-            catch (RuntimeException ex)
+            else
             {
-                throw ex;
+                processStatementScheduleSingle(handle);                
             }
-            finally
-            {
-                handle.getEpStatementHandle().getStatementLock().releaseLock(services.getStatementLockFactory());
-            }
+
             handles.clear();
             return;
         }
@@ -434,38 +426,22 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
             EPStatementHandle handle = entry.getKey();
             Object callbackObject = entry.getValue();
 
-            handle.getStatementLock().acquireLock(services.getStatementLockFactory());
-            try
+            if (MetricReportingPath.isMetricsEnabled)
             {
-                if (handle.isHasVariables())
-                {
-                    services.getVariableService().setLocalVersion();
-                }
+                long cpuTimeBefore = MetricUtil.getCPUCurrentThread();
+                long wallTimeBefore = MetricUtil.getWall();
 
-                if (callbackObject instanceof LinkedList)
-                {
-                    LinkedList<ScheduleHandleCallback> callbackList = (LinkedList<ScheduleHandleCallback>) callbackObject;
-                    for (ScheduleHandleCallback callback : callbackList)
-                    {
-                        callback.scheduledTrigger(services.getExtensionServicesContext());
-                    }
-                }
-                else
-                {
-                    ScheduleHandleCallback callback = (ScheduleHandleCallback) callbackObject;
-                    callback.scheduledTrigger(services.getExtensionServicesContext());
-                }
+                processStatementScheduleMultiple(handle, callbackObject);
 
-                // internal join processing, if applicable
-                handle.internalDispatch();
+                long wallTimeAfter = MetricUtil.getWall();
+                long cpuTimeAfter = MetricUtil.getCPUCurrentThread();
+                long deltaCPU = cpuTimeAfter - cpuTimeBefore;
+                long deltaWall = wallTimeAfter - wallTimeBefore;
+                services.getMetricsReportingService().accountTime(handle.getMetricsHandle(), deltaCPU, deltaWall);
             }
-            catch (RuntimeException ex)
+            else
             {
-                throw ex;
-            }
-            finally
-            {
-                handle.getStatementLock().releaseLock(services.getStatementLockFactory());
+                processStatementScheduleMultiple(handle, callbackObject);
             }
         }
     }
@@ -642,61 +618,20 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
 
             if (MetricReportingPath.isMetricsEnabled)
             {
-                ThreadMXBean tmbb = ManagementFactory.getThreadMXBean();
-                long cpuTimeBefore = tmbb.getCurrentThreadCpuTime();
-                long wallTimeBefore = System.currentTimeMillis();
+                long cpuTimeBefore = MetricUtil.getCPUCurrentThread();
+                long wallTimeBefore = MetricUtil.getWall();
 
-                handle.getStatementLock().acquireLock(services.getStatementLockFactory());
-                try
-                {
-                    if (handle.isHasVariables())
-                    {
-                        services.getVariableService().setLocalVersion();
-                    }
+                processStatementFilterSingle(handle, handleCallback, event);
 
-                    handleCallback.getFilterCallback().matchFound(event);
-
-                    // internal join processing, if applicable
-                    handle.internalDispatch();
-                }
-                catch (RuntimeException ex)
-                {
-                    throw ex;
-                }
-                finally
-                {
-                    handleCallback.getEpStatementHandle().getStatementLock().releaseLock(services.getStatementLockFactory());
-                }
-
-                long wallTimeAfter = System.currentTimeMillis();
-                long cpuTimeAfter = tmbb.getCurrentThreadCpuTime();
+                long wallTimeAfter = MetricUtil.getWall();
+                long cpuTimeAfter = MetricUtil.getCPUCurrentThread();
                 long deltaCPU = cpuTimeAfter - cpuTimeBefore;
                 long deltaWall = wallTimeAfter - wallTimeBefore;
                 services.getMetricsReportingService().accountTime(handle.getMetricsHandle(), deltaCPU, deltaWall);
             }
             else
             {
-                handle.getStatementLock().acquireLock(services.getStatementLockFactory());
-                try
-                {
-                    if (handle.isHasVariables())
-                    {
-                        services.getVariableService().setLocalVersion();
-                    }
-
-                    handleCallback.getFilterCallback().matchFound(event);
-
-                    // internal join processing, if applicable
-                    handle.internalDispatch();
-                }
-                catch (RuntimeException ex)
-                {
-                    throw ex;
-                }
-                finally
-                {
-                    handleCallback.getEpStatementHandle().getStatementLock().releaseLock(services.getStatementLockFactory());
-                }
+                processStatementFilterSingle(handle, handleCallback, event);
             }
         }
         matches.clear();
@@ -708,34 +643,142 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
         for (Map.Entry<EPStatementHandle, Object> entry : stmtCallbacks.entrySet())
         {
             EPStatementHandle handle = entry.getKey();
+            List<FilterHandleCallback> callbackList = (List<FilterHandleCallback>) entry.getValue();
 
-            handle.getStatementLock().acquireLock(services.getStatementLockFactory());
-            try
+            if (MetricReportingPath.isMetricsEnabled)
             {
-                if (handle.isHasVariables())
-                {
-                    services.getVariableService().setLocalVersion();
-                }
+                long cpuTimeBefore = MetricUtil.getCPUCurrentThread();
+                long wallTimeBefore = MetricUtil.getWall();
 
-                List<FilterHandleCallback> callbackList = (List<FilterHandleCallback>) entry.getValue();
-                for (FilterHandleCallback callback : callbackList)
-                {
-                    callback.matchFound(event);
-                }
+                processStatementFilterMultiple(handle, callbackList, event);
 
-                // internal join processing, if applicable
-                handle.internalDispatch();
+                long wallTimeAfter = MetricUtil.getWall();
+                long cpuTimeAfter = MetricUtil.getCPUCurrentThread();
+                long deltaCPU = cpuTimeAfter - cpuTimeBefore;
+                long deltaWall = wallTimeAfter - wallTimeBefore;
+                services.getMetricsReportingService().accountTime(handle.getMetricsHandle(), deltaCPU, deltaWall);
             }
-            catch (RuntimeException ex)
+            else
             {
-                throw ex;
-            }
-            finally
-            {
-                handle.getStatementLock().releaseLock(services.getStatementLockFactory());
+                processStatementFilterMultiple(handle, callbackList, event);
             }
         }
         stmtCallbacks.clear();
+    }
+
+    private void processStatementScheduleMultiple(EPStatementHandle handle, Object callbackObject)
+    {
+        handle.getStatementLock().acquireLock(services.getStatementLockFactory());
+        try
+        {
+            if (handle.isHasVariables())
+            {
+                services.getVariableService().setLocalVersion();
+            }
+
+            if (callbackObject instanceof LinkedList)
+            {
+                LinkedList<ScheduleHandleCallback> callbackList = (LinkedList<ScheduleHandleCallback>) callbackObject;
+                for (ScheduleHandleCallback callback : callbackList)
+                {
+                    callback.scheduledTrigger(services.getExtensionServicesContext());
+                }
+            }
+            else
+            {
+                ScheduleHandleCallback callback = (ScheduleHandleCallback) callbackObject;
+                callback.scheduledTrigger(services.getExtensionServicesContext());
+            }
+
+            // internal join processing, if applicable
+            handle.internalDispatch();
+        }
+        catch (RuntimeException ex)
+        {
+            throw ex;
+        }
+        finally
+        {
+            handle.getStatementLock().releaseLock(services.getStatementLockFactory());
+        }
+    }
+
+    private void processStatementScheduleSingle(EPStatementHandleCallback handle)
+    {
+        ManagedLock statementLock = handle.getEpStatementHandle().getStatementLock();
+        statementLock.acquireLock(services.getStatementLockFactory());
+        try
+        {
+            if (handle.getEpStatementHandle().isHasVariables())
+            {
+                services.getVariableService().setLocalVersion();
+            }
+
+            handle.getScheduleCallback().scheduledTrigger(services.getExtensionServicesContext());
+
+            handle.getEpStatementHandle().internalDispatch();
+        }
+        catch (RuntimeException ex)
+        {
+            throw ex;
+        }
+        finally
+        {
+            handle.getEpStatementHandle().getStatementLock().releaseLock(services.getStatementLockFactory());
+        }
+    }
+
+    private void processStatementFilterMultiple(EPStatementHandle handle, List<FilterHandleCallback> callbackList, EventBean event)
+    {
+        handle.getStatementLock().acquireLock(services.getStatementLockFactory());
+        try
+        {
+            if (handle.isHasVariables())
+            {
+                services.getVariableService().setLocalVersion();
+            }
+
+            for (FilterHandleCallback callback : callbackList)
+            {
+                callback.matchFound(event);
+            }
+
+            // internal join processing, if applicable
+            handle.internalDispatch();
+        }
+        catch (RuntimeException ex)
+        {
+            throw ex;
+        }
+        finally
+        {
+            handle.getStatementLock().releaseLock(services.getStatementLockFactory());
+        }
+    }
+
+    private void processStatementFilterSingle(EPStatementHandle handle, EPStatementHandleCallback handleCallback, EventBean event)
+    {
+        handle.getStatementLock().acquireLock(services.getStatementLockFactory());
+        try
+        {
+            if (handle.isHasVariables())
+            {
+                services.getVariableService().setLocalVersion();
+            }
+
+            handleCallback.getFilterCallback().matchFound(event);
+
+            // internal join processing, if applicable
+            handle.internalDispatch();
+        }
+        catch (RuntimeException ex)
+        {
+            throw ex;
+        }
+        finally
+        {
+            handleCallback.getEpStatementHandle().getStatementLock().releaseLock(services.getStatementLockFactory());
+        }
     }
 
     private void dispatch()

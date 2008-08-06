@@ -4,11 +4,12 @@ import java.util.concurrent.atomic.AtomicLong;
 
 public class StatementMetric extends MetricEvent
 {
+    private long timestamp;
     private String statementName;
     private AtomicLong cpuTime;
     private AtomicLong wallTime;
-    private long numOutputRStream;
-    private long numOutputIStream;
+    private AtomicLong numOutputRStream;
+    private AtomicLong numOutputIStream;
 
     public StatementMetric(String engineURI, String statementName)
     {
@@ -16,6 +17,8 @@ public class StatementMetric extends MetricEvent
         this.statementName = statementName;
         this.cpuTime = new AtomicLong();
         this.wallTime = new AtomicLong();
+        this.numOutputIStream = new AtomicLong();
+        this.numOutputRStream = new AtomicLong();
     }
 
     public String getStatementName()
@@ -26,6 +29,16 @@ public class StatementMetric extends MetricEvent
     public long getCpuTime()
     {
         return cpuTime.get();
+    }
+
+    public void setTimestamp(long timestamp)
+    {
+        this.timestamp = timestamp;
+    }
+
+    public long getTimestamp()
+    {
+        return timestamp;
     }
 
     public void addTotalCPU(long delta)
@@ -45,12 +58,21 @@ public class StatementMetric extends MetricEvent
 
     public long getNumOutputRStream()
     {
-        return numOutputRStream;
+        return numOutputRStream.get();
     }
 
     public long getNumOutputIStream()
     {
-        return numOutputIStream;
+        return numOutputIStream.get();
     }
 
+    public void addIStream(int numIStream)
+    {
+        numOutputIStream.addAndGet(numIStream);
+    }
+
+    public void addRStream(int numRStream)
+    {
+        numOutputRStream.addAndGet(numRStream);
+    }
 }

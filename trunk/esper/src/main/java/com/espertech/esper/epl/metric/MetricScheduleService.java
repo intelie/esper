@@ -105,4 +105,12 @@ public final class MetricScheduleService implements MetricTimeSource
     {
         return nearestTime;
     }
+
+    public void remove(MetricExec metricExec)
+    {
+        for (Map.Entry<Long, List<MetricExec>> entry : timeHandleMap.entrySet())
+        {
+            entry.getValue().remove(metricExec);
+        }
+    }
 }

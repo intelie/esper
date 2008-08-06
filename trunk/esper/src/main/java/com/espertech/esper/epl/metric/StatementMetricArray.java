@@ -27,6 +27,7 @@ public class StatementMetricArray
     //  Read lock applies to each current transaction on a StatementMetric instance
     //  Write lock applies to flush and to add a new statement
     private final ManagedReadWriteLock rwLock;
+    private final boolean isReportInactive;
 
     // Active statements
     private String[] statementNames;
@@ -40,9 +41,11 @@ public class StatementMetricArray
     // Statements ids to remove with the next flush
     private Set<String> removedStatementNames;
 
-    public StatementMetricArray(String engineURI, String name, int initialSize)
+    public StatementMetricArray(String engineURI, String name, int initialSize, boolean isReportInactive)
     {
         this.engineURI = engineURI;
+        this.isReportInactive = isReportInactive;
+        
         metrics = new StatementMetric[initialSize];
         statementNames = new String[initialSize];
         currentLastElement = -1;
@@ -122,8 +125,20 @@ public class StatementMetricArray
                 isEmpty = true;
             }
 
+            // first fill in the blanks if there are no reports and we report inactive statements
+            if (isReportInactive)
+            {
+                for (int i = 0; i <= currentLastElement; i++)
+                {
+                    if (statementNames[i] != null)
+                    {
+                        metrics[i] = new StatementMetric(engineURI, statementNames[i]);
+                    }
+                }
+            }
+
             // remove statement ids that disappeared during the interval
-            if (currentLastElement > -1)
+            if ((currentLastElement > -1) && (!removedStatementNames.isEmpty()))
             {
                 for (int i = 0; i <= currentLastElement; i++)
                 {
@@ -144,7 +159,7 @@ public class StatementMetricArray
             {
                 return null;    // no copies made if empty collection
             }
-            
+
             // perform flush
             StatementMetric[] newMetrics = new StatementMetric[metrics.length];
             StatementMetric[] oldMetrics = metrics;

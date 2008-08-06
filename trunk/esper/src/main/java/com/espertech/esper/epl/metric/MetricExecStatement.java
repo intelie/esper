@@ -6,8 +6,9 @@ public class MetricExecStatement implements MetricExec
 {
     private final MetricEventRouter metricEventRouter;
     private final MetricScheduleService metricScheduleService;
-    private final long interval;
     private final int statementGroup;
+
+    private long interval;
 
     public MetricExecStatement(MetricEventRouter metricEventRouter, MetricScheduleService metricScheduleService, long interval, int statementGroup)
     {
@@ -19,18 +20,34 @@ public class MetricExecStatement implements MetricExec
 
     public void execute(MetricExecutionContext context)
     {
+        long timestamp = metricScheduleService.getCurrentTime();
         StatementMetric[] metrics = context.getStatementMetricRepository().reportGroup(statementGroup);
-        if (metrics == null)
+        if (metrics != null)
         {
-            return;
-        }
-        for (int i = 0; i < metrics.length; i++)
-        {
-            if (metrics[i] != null)
+            for (int i = 0; i < metrics.length; i++)
             {
-                metricEventRouter.route(metrics[i]);
+                StatementMetric metric = metrics[i];
+                if (metric != null)
+                {
+                    metric.setTimestamp(timestamp);
+                    metricEventRouter.route(metrics[i]);
+                }
             }
         }
-        metricScheduleService.add(interval, this);
+        
+        if (interval != -1)
+        {
+            metricScheduleService.add(interval, this);
+        }
+    }
+
+    public void setInterval(long newInterval)
+    {
+        interval = newInterval;
+        metricScheduleService.remove(this);
+        if (interval != -1)
+        {
+            metricScheduleService.add(interval, this);
+        }
     }
 }

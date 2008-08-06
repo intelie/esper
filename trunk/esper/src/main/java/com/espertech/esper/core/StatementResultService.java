@@ -1,8 +1,8 @@
 package com.espertech.esper.core;
 
 import com.espertech.esper.client.EPServiceProvider;
-import com.espertech.esper.client.EPStatement;
 import com.espertech.esper.collection.UniformPair;
+import com.espertech.esper.epl.metric.StatementMetricHandle;
 import com.espertech.esper.event.EventBean;
 
 /**
@@ -19,7 +19,7 @@ public interface StatementResultService
      * @param isPattern true if this is a pattern statement
      */
     public void setContext(EPStatementSPI epStatement, EPServiceProvider epServiceProvider,
-                           boolean isInsertInto, boolean isPattern);
+                           boolean isInsertInto, boolean isPattern, StatementMetricHandle statementMetricHandle);
 
     /**
      * For initialize of the service providing select clause column types and names.

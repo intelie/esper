@@ -12,18 +12,24 @@ public class StringPatternSetUtil
         {
             if (result)
             {
-                Boolean testResult = pattern.isExclude(literal);
-                if ((testResult != null) && (testResult))
+                if (pattern instanceof StringPatternSetExclude)
                 {
-                    result = false;
+                    boolean testResult = pattern.match(literal);
+                    if (testResult)
+                    {
+                        result = false;
+                    }
                 }
             }
             else
             {
-                Boolean testResult = pattern.isInclude(literal);
-                if ((testResult != null) && (testResult))
+                if (pattern instanceof StringPatternSetInclude)
                 {
-                    result = true;
+                    boolean testResult = pattern.match(literal);
+                    if (testResult)
+                    {
+                        result = true;
+                    }
                 }
             }
         }

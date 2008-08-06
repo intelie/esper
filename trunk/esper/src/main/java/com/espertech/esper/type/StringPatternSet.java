@@ -4,6 +4,5 @@ import java.io.Serializable;
 
 public interface StringPatternSet extends Serializable
 {
-    public Boolean isInclude(String stringToMatch);
-    public Boolean isExclude(String stringToMatch);
+    public boolean match(String stringToMatch);    
 }

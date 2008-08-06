@@ -7,11 +7,13 @@ import com.espertech.esper.type.StringPatternSetUtil;
 
 import java.util.Map;
 import java.util.List;
+import java.util.HashMap;
 
 public class StatementMetricRepository
 {
     private final ConfigurationMetricsReporting specification;
     private final StatementMetricArray[] groupMetrics;
+    private final Map<String, Integer> statementGroups;
 
     public StatementMetricRepository(String engineURI, ConfigurationMetricsReporting specification)
     {
@@ -20,7 +22,7 @@ public class StatementMetricRepository
         this.groupMetrics = new StatementMetricArray[numGroups];
 
         // default group
-        groupMetrics[0] = new StatementMetricArray(engineURI, "group-default", 100);
+        groupMetrics[0] = new StatementMetricArray(engineURI, "group-default", 100, false);
 
         // initialize all other groups
         int countGroups = 1;
@@ -28,14 +30,16 @@ public class StatementMetricRepository
         {
             ConfigurationMetricsReporting.StmtGroupMetrics config = entry.getValue();
 
-            int initialNumStmts = config.getInitialNumStmts();
+            int initialNumStmts = config.getNumStatements();
             if (initialNumStmts < 10)
             {
                 initialNumStmts = 10;
             }
-            groupMetrics[countGroups] = new StatementMetricArray(engineURI, "group-" + countGroups, initialNumStmts);
+            groupMetrics[countGroups] = new StatementMetricArray(engineURI, "group-" + countGroups, initialNumStmts, config.isReportInactive());
             countGroups++;
         }
+
+        statementGroups = new HashMap<String, Integer>();
     }
 
     public StatementMetricHandle addStatement(String stmtName)
@@ -46,7 +50,7 @@ public class StatementMetricRepository
         for (Map.Entry<String, ConfigurationMetricsReporting.StmtGroupMetrics> entry : specification.getStatementGroups().entrySet())
         {
             List<StringPatternSet> patterns = entry.getValue().getPatterns();
-            boolean result = StringPatternSetUtil.evaluate(false, patterns, stmtName);
+            boolean result = StringPatternSetUtil.evaluate(entry.getValue().isDefaultInclude(), patterns, stmtName);
 
             if (result)
             {
@@ -63,12 +67,19 @@ public class StatementMetricRepository
         }
 
         int index = groupMetrics[groupNumber].addStatementGetIndex(stmtName);
+
+        statementGroups.put(stmtName, groupNumber);
+
         return new StatementMetricHandle(groupNumber, index);
     }
 
-    public void removeStatement(StatementMetricHandle handle, String stmtId)
+    public void removeStatement(String stmtName)
     {
-        groupMetrics[handle.getGroupNum()].removeStatement(stmtId);
+        Integer group = statementGroups.remove(stmtName);
+        if (group != null)
+        {
+            groupMetrics[group].removeStatement(stmtName);
+        }
     }
 
     public void accountTimes(StatementMetricHandle handle, long cpu, long wall)
@@ -80,6 +91,22 @@ public class StatementMetricRepository
             StatementMetric metric = array.getAddMetric(handle.getIndex());
             metric.addTotalCPU(cpu);
             metric.addTotalWall(wall);
+        }
+        finally
+        {
+            array.getRwLock().releaseReadLock();
+        }
+    }
+
+    public void accountOutput(StatementMetricHandle handle, int numIStream, int numRStream)
+    {
+        StatementMetricArray array = groupMetrics[handle.getGroupNum()];
+        array.getRwLock().acquireReadLock();
+        try
+        {
+            StatementMetric metric = array.getAddMetric(handle.getIndex());
+            metric.addIStream(numIStream);
+            metric.addRStream(numRStream);
         }
         finally
         {

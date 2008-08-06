@@ -1,19 +1,14 @@
 package com.espertech.esper.type;
 
-public class StringPatternSetIncludeLike extends StringPatternSetLikeBase
+public class StringPatternSetIncludeLike extends StringPatternSetLikeBase implements StringPatternSetInclude
 {
     public StringPatternSetIncludeLike(String likeString)
     {
         super(likeString);
     }
 
-    public Boolean isInclude(String stringToMatch)
+    public boolean match(String stringToMatch)
     {
         return super.matchString(stringToMatch);
-    }
-
-    public Boolean isExclude(String stringToMatch)
-    {
-        return null;
     }
 }

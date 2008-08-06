@@ -12,6 +12,9 @@ public interface MetricReportingService
     public void destroy();
 
     public void accountTime(StatementMetricHandle metricsHandle, long deltaCPU, long deltaWall);
+    public void accountOutput(StatementMetricHandle handle, int numIStream, int numRStream);
 
     public StatementMetricHandle getStatementHandle(String statementId, String statementName);
+
+    public void setMetricsReportingInterval(String stmtGroupName, long newInterval);
 }

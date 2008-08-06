@@ -624,6 +624,11 @@ public class Configuration implements ConfigurationOperations, ConfigurationInfo
         return variantStreams.containsKey(name);
     }
 
+    public void setMetricsReportingInterval(String stmtGroupName, long newInterval)
+    {
+        this.getEngineDefaults().getMetricsReporting().setStatementGroupInterval(stmtGroupName, newInterval);
+    }
+
     /**
 	 * Use the configuration specified in an application
 	 * resource named <tt>esper.cfg.xml</tt>.

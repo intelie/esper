@@ -6,15 +6,10 @@ import com.espertech.esper.support.util.ArrayAssertionUtil;
 
 public class TestStatementMetricArray extends TestCase
 {
-    private StatementMetricArray rep;
-
-    public void setUp()
+    public void testFlowReportActive()
     {
-        rep = new StatementMetricArray("uri", "name", 3);
-    }
+        StatementMetricArray rep = new StatementMetricArray("uri", "name", 3, false);
 
-    public void testFlow()
-    {
         assertEquals(0, rep.size());
 
         assertEquals(0, rep.addStatementGetIndex("001"));
@@ -66,6 +61,26 @@ public class TestStatementMetricArray extends TestCase
 
         flushed = rep.flushMetrics();
         assertEquals(6, flushed.length);
+        for (int i = 0; i < flushed.length; i++)
+        {
+            assertNull(flushed[i]);
+        }
         assertEquals(1, rep.size());
+    }
+
+    public void testFlowReportInactive()
+    {
+        StatementMetricArray rep = new StatementMetricArray("uri", "name", 3, true);
+
+        assertEquals(0, rep.addStatementGetIndex("001"));
+        assertEquals(1, rep.addStatementGetIndex("002"));
+        assertEquals(2, rep.addStatementGetIndex("003"));
+        rep.removeStatement("002");
+
+        StatementMetric[] flushed = rep.flushMetrics();
+        for (int i = 0; i < 3; i++)
+        {
+            assertNotNull(flushed[i]);
+        }
     }
 }
