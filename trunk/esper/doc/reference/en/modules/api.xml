@@ -1254,32 +1254,36 @@ EPStatement statement = epService.getEPAdministrator().create(prepared);]]></pro
         <title>Engine and Statement Metrics Reporting</title>
         
         <para>
-			Metrics reporting is a feature that allows an appplication to receive ongoing reports about key engine-level and statement-level metrics. Some example are the number of incoming events, the CPU time and wall time of statement executions and the number of output events per statement. <xref linkend="config-engine-instrumentation"/>
+			Metrics reporting is a feature that allows an application to receive ongoing reports about key engine-level and statement-level metrics. Examples are the number of incoming events, the CPU time and wall time taken by statement executions or the number of output events per statement.
         </para>
 
         <para>
-			Metrics reporting is by default disabled. To enabled reporting, please follow the steps as outlined in <xref linkend="config-engine-instrumentation"/>. Metrics reporting must be enabled at engine initialization time. Reporting intervals can be controlled at runtime via the <literal>ConfigurationOperations</literal> interface available from the administrative API.
+			Metrics reporting is, by default, disabled. To enable reporting, please follow the steps as outlined in <xref linkend="config-engine-instrumentation"/>. Metrics reporting must be enabled at engine initialization time. Reporting intervals can be controlled at runtime via the <literal>ConfigurationOperations</literal> interface available from the administrative API.
         </para>
 
         <para>
-			Your application receives metrics at the configured intervals via EPL statement. A metric datapoint is simply a well-defined event. The events are <literal>EngineMetric</literal> and <literal>StatementMetric</literal> and can be found in the client API in package <literal>com.espertech.esper.client.metric</literal>.
+			Your application receives metrics at configurable intervals via EPL statement. A metric datapoint is simply a well-defined event. The events are <literal>EngineMetric</literal> and <literal>StatementMetric</literal> and the Java class representing the events can be found in the client API in package <literal>com.espertech.esper.client.metric</literal>.
         </para>
 
         <para>
-			Since metric events behave like any other events, your EPL may use any construct on such events. For example, your application may filter, aggregate properties, sort or insert into a stream or named window the metric events.
+			Since metric events are processed by the engine the same as application events, your EPL may use any construct on such events. For example, your application may select, filter, aggregate properties, sort or insert into a stream or named window all metric events the same as application events.
         </para>
         
         <para>
-			This example statement simply selects all engine metric events:
+			This example statement selects all engine metric events:
         </para>        
 		<programlisting><![CDATA[select * from com.espertech.esper.client.metric.EngineMetric]]></programlisting>
 
         <para>
-			Make sure to have metrics reporting enabled, only then do listeners or the subscriber to the statement above receive metric events. The engine provides metric events after the configured interval of time has passed. By default, only started statements that have activity in the form of event or timer processing within an interval are reported upon.
+			Make sure to have metrics reporting enabled since only then do listeners or subscribers to a statement such as above receive metric events.
         </para>        
 
         <para>
-			Metrics reporting honors externally-supplied time, if using external timer events. The default configuration performs the publishing of metric events in a separate thread (an Esper daemon thread under the control of the engine instance).
+			The engine provides metric events after the configured interval of time has passed. By default, only started statements that have activity within an interval (in the form of event or timer processing) are reported upon.
+        </para>        
+
+        <para>
+			The default configuration performs the publishing of metric events in an Esper daemon thread under the control of the engine instance. Metrics reporting honors externally-supplied time, if using external timer events. 
         </para>        
 
 		<para>
@@ -1297,13 +1301,18 @@ EPStatement statement = epService.getEPAdministrator().create(prepared);]]></pro
 					Your Java VM may not provide high resolution time via <literal>System.nanoTime</literal>. In such case wall time may be be inaccurate and inprecise.
 				</para>
 			</listitem>
+			<listitem>
+				<para>
+					There is a performance cost to collecting and reporting metrics.
+				</para>
+			</listitem>
 		</itemizedlist>
 		
 		<sect2 id="api-instrumentation-enginemetrics">
 			<title>Engine Metrics</title>
 
 			<para>
-				Engine metrics are properties of <literal>EngineMetric</literal>. These are the properties:
+				Engine metrics are properties of <literal>EngineMetric</literal> events:
 			</para>
 			
 			<table frame="topbot" id="api-instrumentation-events-engine" revision="2">
@@ -1328,7 +1337,7 @@ EPStatement statement = epService.getEPAdministrator().create(prepared);]]></pro
 						</row>
 						<row>
 							<entry>inputCount</entry>
-							<entry>Cumulative number of input events: defined as events send in via application threads as well as <literal>insert into</literal> events.</entry>
+							<entry>Cumulative number of input events since engine initialization time. Input events are defined as events send in via application threads as well as <literal>insert into</literal> events.</entry>
 						</row>
 						<row>
 							<entry>scheduleDepth</entry>
@@ -1372,23 +1381,27 @@ EPStatement statement = epService.getEPAdministrator().create(prepared);]]></pro
 						</row>
 						<row>
 							<entry>cpuTime</entry>
-							<entry>Statement processing CPU time (system and user) in nanoseconds, cumulative since last report (if available by Java VM)</entry>
+							<entry>Statement processing CPU time (system and user) in nanoseconds (if available by Java VM).</entry>
 						</row>
 						<row>
 							<entry>wallTime</entry>
-							<entry>Statement processing wall time in nanoseconds, cumulative since last report (based on <literal>System.nanoTime</literal>)</entry>
+							<entry>Statement processing wall time in nanoseconds (based on <literal>System.nanoTime</literal>).</entry>
 						</row>
 						<row>
 							<entry>numOutputIStream</entry>
-							<entry>Number of insert stream rows output to listeners or the subscriber, if any, cumulative since last report</entry>
+							<entry>Number of insert stream rows output to listeners or the subscriber, if any.</entry>
 						</row>
 						<row>
 							<entry>numOutputRStream</entry>
-							<entry>Number of remove stream rows output to listeners or the subscriber, if any, cumulative since last report</entry>
+							<entry>Number of remove stream rows output to listeners or the subscriber, if any.</entry>
 						</row>
 					</tbody>
 				</tgroup>
 			</table>
+
+			<para>
+				The totals reported are cumulative relative to the last metric report.
+			</para>
 		</sect2>
 
   </sect1>
