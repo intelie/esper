@@ -1325,40 +1325,65 @@ config.getEngineDefaults().getTimeSource().
 
 		<sect2 id="config-engine-instrumentation" revision="1">
 			<title>Engine Settings related to Metrics Reporting</title>
+
+			<para>
+				This section explains how to enable and configure metrics reporting, which is by default disabled. Please see <xref linkend="api-instrumentation"/> for more information on the metrics data reported to your application.
+			</para>
+
+			<para>
+				The flag that enables metrics reporting is global to a Java virtual machine. If metrics reporting is enabled, the overhead incurred for reporting metrics is carried by all engine instances per Java VM.
+			</para>
+
+			<para>
+				Metrics reporting occurs by an engine-controlled separate daemon thread that each engine instance starts if metrics reporting is enabled for that engine at initialization time, and if threading is enabled (the default).
+			</para>
 			
-			<sect3 id="config-engine-timesource-choices" revision="1">
-				<title>Default Time Source</title>
+			<para>
+			    Engine and statement metric intervals are in milliseconds. A negative or zero millisecond interval value may be provided for intervals to disable reporting.
+			</para>
 
-				<para>
-				   This setting only applies if internal timer events control engine time (default). If external timer events provide engine clocking, the setting does not apply.
-				</para>
+			<para>
+			    To control statement metric reporting, the engine provides a facility that groups statements by statement name. Each such statement group may have different reporting intervals configured, and such intervals can be
+			    changed at runtime through runtime configuration. A statement group is assigned a group name at configuration time to identify the group.
+			</para>
 
-				<para>
-				   By default, the internal timer uses the call <literal>System.currentTimeMillis()</literal> to determine engine time in milliseconds. Via this setting the internal timer can be instructed to use <literal>System.nanoTime()</literal> instead. Please see <xref linkend="api-time-resolution"/> for more information. 
-				</para>
-				   
-				<para>
-					Note: This is a Java VM global setting. If running multiple engine instances in a Java VM, the timer setting is global and applies to all engine instances in the same Java VM, for performance reasons.
-				</para>
-
-				<para>
-					A sample XML configuration for this setting is shown below, whereas the sample setting sets the time source to the nanosecond time provider:
-				</para>
-					<programlisting><![CDATA[<engine-settings>
+			<para>
+			    A sample XML configuration is shown below. Metrics reporting configuration is part of the engine default settings. All configuration options are also available via the <literal>Configuration</literal> API.
+			</para>
+			<programlisting><![CDATA[<engine-settings>
   <defaults>
-    <time-source>
-      <time-source-type value="nano" />
-    </time-source>
+    <metrics-reporting enabled="true" engine-interval="1000" statement-interval="1000" threading="true"/>
   </defaults>
 </engine-settings>]]></programlisting>
 
-				<para>
-					The equivalent code snippet using the configuration API is here:
-				</para>
-				<programlisting><![CDATA[Configuration config = new Configuration();
-config.getEngineDefaults().getTimeSource().
-      setTimeSourceType(ConfigurationEngineDefaults.TimeSourceType.NANO);]]></programlisting>
-			</sect3>
+			<para>
+			    The <literal>engine-interval</literal> setting (default 10 seconds) determine the frequency in milliseconds at which the engine reports engine metrics, in this example every 1 second. The <literal>statement-interval</literal> is for statement metrics. The <literal>threading</literal> flag is true by default since reporting takes place by a dedicated engine thread and can be set to false to use the external or intenal timer thread.
+			</para>
+
+			<para>
+			    The next example XML adds a statement group, such that certain statements ma follow a different reporting frequency.
+			</para>
+
+			<programlisting><![CDATA[<metrics-reporting enabled="true" statement-interval="0">
+  <stmtgroup name="MyStmtGroup" interval="2000" default-include="true" num-stmts="100" report-inactive="true">
+    <exclude-regex>.*test.*</exclude-regex>
+  </stmtgroup>
+</metrics-reporting>]]></programlisting>
+
+			<para>
+			    The above example configuration for metrics reporting sets the <literal>statement-interval</literal> to zero to disable reporting for all statements. Then it defines a statement group by name <literal>MyStmtGroup</literal> and specifies an 2-second interval. The <literal>default-include</literal> is flag is by default false, and the example sets the flag to true to include all statements in that statement group. The example also sets <literal>report-inactive</literal>to true (by default false) to report inactive statements.
+			</para>
+
+			<programlisting><![CDATA[<metrics-reporting enabled="true" statement-interval="0">
+  <stmtgroup name="MyStmtGroup" interval="1000" default-include="true" num-stmts="100" report-inactive="true">
+    <!-- samples of include/exclude using RegEx and SQL-Like syntax -->
+    <include-like>%MyFraudAnalysisStatement%</include-like>
+    <exclude-like>%MyMetricsStatement%</exclude-like>
+    <include-regex>.*</include-regex>
+    <exclude-regex>.*test.*</exclude-regex>
+  </stmtgroup>
+</metrics-reporting>]]></programlisting>
+
 		</sect2>
 
 		<sect2 id="config-revisionevent" revision="1">

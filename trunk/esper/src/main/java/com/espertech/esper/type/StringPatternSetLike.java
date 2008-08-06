@@ -4,18 +4,30 @@ import com.espertech.esper.util.LikeUtil;
 
 import java.io.Serializable;
 
-public abstract class StringPatternSetLikeBase implements Serializable
+/**
+ * 
+ */
+public class StringPatternSetLike implements StringPatternSet
 {
     private final String likeString;
     private final LikeUtil likeUtil;
 
-    public StringPatternSetLikeBase(String likeString)
+    /**
+     * Ctor.
+     * @param likeString pattern to match
+     */
+    public StringPatternSetLike(String likeString)
     {
         this.likeString = likeString;
         likeUtil = new LikeUtil(likeString, '\\', false);
     }
 
-    protected boolean matchString(String stringToMatch)
+    /**
+     * Match the string returning true for a match, using SQL-like semantics.
+     * @param stringToMatch string to match
+     * @return true for match
+     */
+    public boolean match(String stringToMatch)
     {
         return likeUtil.compare(stringToMatch);
     }
@@ -25,7 +37,7 @@ public abstract class StringPatternSetLikeBase implements Serializable
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        StringPatternSetLikeBase that = (StringPatternSetLikeBase) o;
+        StringPatternSetLike that = (StringPatternSetLike) o;
 
         if (!likeString.equals(that.likeString)) return false;
 

@@ -17,6 +17,7 @@ public interface StatementResultService
      * @param epServiceProvider the engine instance
      * @param isInsertInto true if this is insert into
      * @param isPattern true if this is a pattern statement
+     * @param statementMetricHandle handle for metrics reporting
      */
     public void setContext(EPStatementSPI epStatement, EPServiceProvider epServiceProvider,
                            boolean isInsertInto, boolean isPattern, StatementMetricHandle statementMetricHandle);

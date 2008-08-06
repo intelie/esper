@@ -6,6 +6,9 @@ import org.apache.commons.logging.LogFactory;
 import java.lang.management.ManagementFactory;
 import java.lang.management.ThreadMXBean;
 
+/**
+ * Utility for CPU and wall time metrics.
+ */
 public class MetricUtil
 {
     private static final Log log = LogFactory.getLog(MetricUtil.class);
@@ -13,6 +16,9 @@ public class MetricUtil
     private static ThreadMXBean threadMXBean;
     private static boolean isCPUEnabled;
 
+    /**
+     * Initialize metrics mgmt.
+     */
     public static void initialize()
     {
         threadMXBean = ManagementFactory.getThreadMXBean();
@@ -24,6 +30,10 @@ public class MetricUtil
         }
     }
 
+    /**
+     * Returns CPU time for the current thread.
+     * @return cpu current thread
+     */
     public static long getCPUCurrentThread()
     {
         if (isCPUEnabled)
@@ -33,6 +43,10 @@ public class MetricUtil
         return 0;
     }
 
+    /**
+     * Returns wall time using System#nanoTime.
+     * @return wall time
+     */
     public static long getWall()
     {
         return System.nanoTime();

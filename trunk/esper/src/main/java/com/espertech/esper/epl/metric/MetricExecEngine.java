@@ -2,6 +2,9 @@ package com.espertech.esper.epl.metric;
 
 import com.espertech.esper.client.metric.EngineMetric;
 
+/**
+ * Metrics execution producing engine metric events.
+ */
 public class MetricExecEngine implements MetricExec
 {
     private final MetricEventRouter metricEventRouter;
@@ -9,6 +12,13 @@ public class MetricExecEngine implements MetricExec
     private final MetricScheduleService metricScheduleService;
     private final long interval;
 
+    /**
+     * Ctor.
+     * @param metricEventRouter for routing metric events
+     * @param engineURI engine uri
+     * @param metricScheduleService for scheduling a new execution
+     * @param interval for rescheduling the execution
+     */
     public MetricExecEngine(MetricEventRouter metricEventRouter, String engineURI, MetricScheduleService metricScheduleService, long interval)
     {
         this.metricEventRouter = metricEventRouter;

@@ -83,5 +83,9 @@ public interface EPServiceProviderSPI extends EPServiceProvider
      */
     public ExtensionServicesContext getExtensionServicesContext();
 
+    /**
+     * Returns metrics reporting.
+     * @return metrics reporting
+     */
     public MetricReportingService getMetricReportingService();
 }

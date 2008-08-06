@@ -2,10 +2,10 @@ package com.espertech.esper.client;
 
 import com.espertech.esper.client.soda.StreamSelector;
 import com.espertech.esper.support.util.ArrayAssertionUtil;
-import com.espertech.esper.type.StringPatternSetIncludeRegex;
-import com.espertech.esper.type.StringPatternSetExcludeRegex;
-import com.espertech.esper.type.StringPatternSetExcludeLike;
-import com.espertech.esper.type.StringPatternSetIncludeLike;
+import com.espertech.esper.type.StringPatternSet;
+import com.espertech.esper.type.StringPatternSetRegex;
+import com.espertech.esper.type.StringPatternSetLike;
+import com.espertech.esper.collection.Pair;
 import junit.framework.TestCase;
 
 import javax.xml.xpath.XPathConstants;
@@ -253,11 +253,11 @@ public class TestConfigurationParser extends TestCase
         assertEquals(50, def.getNumStatements());
         assertTrue(def.isReportInactive());
         assertEquals(5, def.getPatterns().size());
-        assertEquals(def.getPatterns().get(0), new StringPatternSetIncludeRegex(".*"));
-        assertEquals(def.getPatterns().get(1), new StringPatternSetExcludeRegex(".*test.*"));
-        assertEquals(def.getPatterns().get(2), new StringPatternSetExcludeLike("%MyMetricsStatement%"));
-        assertEquals(def.getPatterns().get(3), new StringPatternSetIncludeLike("%MyFraudAnalysisStatement%"));
-        assertEquals(def.getPatterns().get(4), new StringPatternSetIncludeLike("%SomerOtherStatement%"));
+        assertEquals(def.getPatterns().get(0), new Pair<StringPatternSet, Boolean>(new StringPatternSetRegex(".*"), true));
+        assertEquals(def.getPatterns().get(1), new Pair<StringPatternSet, Boolean>(new StringPatternSetRegex(".*test.*"), false));
+        assertEquals(def.getPatterns().get(2), new Pair<StringPatternSet, Boolean>(new StringPatternSetLike("%MyMetricsStatement%"), false));
+        assertEquals(def.getPatterns().get(3), new Pair<StringPatternSet, Boolean>(new StringPatternSetLike("%MyFraudAnalysisStatement%"), true));
+        assertEquals(def.getPatterns().get(4), new Pair<StringPatternSet, Boolean>(new StringPatternSetLike("%SomerOtherStatement%"), true));
         def = metrics.getStatementGroups().get("MyStmtGroupTwo");
         assertEquals(200, def.getInterval());
         assertFalse(def.isDefaultInclude());

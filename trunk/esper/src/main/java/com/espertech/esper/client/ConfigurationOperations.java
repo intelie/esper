@@ -269,6 +269,11 @@ public interface ConfigurationOperations
      * @return indicator whether the variant stream by that name exists 
      */
     public boolean isVariantStreamExists(String name);
-    
-    public void setMetricsReportingInterval(String stmtGroupName, long newInterval);
+
+    /**
+     * Sets a new interval for metrics reporting for a pre-configured statement group.
+     * @param stmtGroupName name of statement group
+     * @param newIntervalMSec millisecond interval, use zero or negative value to disable
+     */
+    public void setMetricsReportingInterval(String stmtGroupName, long newIntervalMSec);
 }

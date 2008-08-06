@@ -11,10 +11,10 @@ import com.espertech.esper.util.DOMElementIterator;
 import com.espertech.esper.util.JavaClassHelper;
 import com.espertech.esper.event.EventAdapterException;
 import com.espertech.esper.client.soda.StreamSelector;
-import com.espertech.esper.type.StringPatternSetIncludeRegex;
-import com.espertech.esper.type.StringPatternSetExcludeRegex;
-import com.espertech.esper.type.StringPatternSetIncludeLike;
-import com.espertech.esper.type.StringPatternSetExcludeLike;
+import com.espertech.esper.type.StringPatternSet;
+import com.espertech.esper.type.StringPatternSetRegex;
+import com.espertech.esper.type.StringPatternSetLike;
+import com.espertech.esper.collection.Pair;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.w3c.dom.Document;
@@ -1068,19 +1068,23 @@ class ConfigurationParser {
             Element subElement = nodeIterator.next();
             if (subElement.getNodeName().equals("include-regex"))
             {
-                groupDef.getPatterns().add(new StringPatternSetIncludeRegex(subElement.getChildNodes().item(0).getTextContent()));
+                String text = subElement.getChildNodes().item(0).getTextContent();
+                groupDef.getPatterns().add(new Pair<StringPatternSet, Boolean>(new StringPatternSetRegex(text), true));
             }
             if (subElement.getNodeName().equals("exclude-regex"))
             {
-                groupDef.getPatterns().add(new StringPatternSetExcludeRegex(subElement.getChildNodes().item(0).getTextContent()));
+                String text = subElement.getChildNodes().item(0).getTextContent();
+                groupDef.getPatterns().add(new Pair<StringPatternSet, Boolean>(new StringPatternSetRegex(text), false));
             }
             if (subElement.getNodeName().equals("include-like"))
             {
-                groupDef.getPatterns().add(new StringPatternSetIncludeLike(subElement.getChildNodes().item(0).getTextContent()));
+                String text = subElement.getChildNodes().item(0).getTextContent();
+                groupDef.getPatterns().add(new Pair<StringPatternSet, Boolean>(new StringPatternSetLike(text), true));
             }
             if (subElement.getNodeName().equals("exclude-like"))
             {
-                groupDef.getPatterns().add(new StringPatternSetExcludeLike(subElement.getChildNodes().item(0).getTextContent()));
+                String text = subElement.getChildNodes().item(0).getTextContent();
+                groupDef.getPatterns().add(new Pair<StringPatternSet, Boolean>(new StringPatternSetLike(text), false));
             }
         }
     }

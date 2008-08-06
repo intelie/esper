@@ -2,6 +2,9 @@ package com.espertech.esper.epl.metric;
 
 import com.espertech.esper.client.metric.StatementMetric;
 
+/**
+ * Metrics execution producing statement metric events.
+ */
 public class MetricExecStatement implements MetricExec
 {
     private final MetricEventRouter metricEventRouter;
@@ -10,6 +13,13 @@ public class MetricExecStatement implements MetricExec
 
     private long interval;
 
+    /**
+     * Ctor.
+     * @param metricEventRouter for routing metric events
+     * @param metricScheduleService for scheduling a new execution
+     * @param interval for rescheduling the execution
+     * @param statementGroup group number of statement group
+     */
     public MetricExecStatement(MetricEventRouter metricEventRouter, MetricScheduleService metricScheduleService, long interval, int statementGroup)
     {
         this.metricEventRouter = metricEventRouter;
@@ -41,11 +51,16 @@ public class MetricExecStatement implements MetricExec
         }
     }
 
+    /**
+     * Set a new interval, cancels the existing schedule, re-establishes the new schedule if the interval is a
+     * positive number.
+     * @param newInterval to set
+     */
     public void setInterval(long newInterval)
     {
         interval = newInterval;
         metricScheduleService.remove(this);
-        if (interval != -1)
+        if (interval > 0)
         {
             metricScheduleService.add(interval, this);
         }

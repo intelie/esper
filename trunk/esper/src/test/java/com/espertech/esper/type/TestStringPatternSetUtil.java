@@ -5,9 +5,11 @@ import junit.framework.TestCase;
 import java.util.List;
 import java.util.LinkedList;
 
+import com.espertech.esper.collection.Pair;
+
 public class TestStringPatternSetUtil extends TestCase
 {
-    private List<StringPatternSet> patterns = new LinkedList<StringPatternSet>();
+    private List<Pair<StringPatternSet, Boolean>> patterns = new LinkedList<Pair<StringPatternSet, Boolean>>();
 
     public void testEmpty()
     {
@@ -17,20 +19,20 @@ public class TestStringPatternSetUtil extends TestCase
 
     public void testCombinationLike()
     {
-        patterns.add(new StringPatternSetIncludeLike("%123%"));
-        patterns.add(new StringPatternSetExcludeLike("%abc%"));
-        patterns.add(new StringPatternSetIncludeLike("%def%"));
-        patterns.add(new StringPatternSetExcludeLike("%xyz%"));
+        patterns.add(new Pair<StringPatternSet, Boolean>(new StringPatternSetLike("%123%"), true));
+        patterns.add(new Pair<StringPatternSet, Boolean>(new StringPatternSetLike("%abc%"), false));
+        patterns.add(new Pair<StringPatternSet, Boolean>(new StringPatternSetLike("%def%"), true));
+        patterns.add(new Pair<StringPatternSet, Boolean>(new StringPatternSetLike("%xyz%"), false));
 
         runAssertion();
     }
 
     public void testCombinationRegex()
     {
-        patterns.add(new StringPatternSetIncludeRegex("(.)*123(.)*"));
-        patterns.add(new StringPatternSetExcludeRegex("(.)*abc(.)*"));
-        patterns.add(new StringPatternSetIncludeRegex("(.)*def(.)*"));
-        patterns.add(new StringPatternSetExcludeRegex("(.)*xyz(.)*"));
+        patterns.add(new Pair<StringPatternSet, Boolean>(new StringPatternSetRegex("(.)*123(.)*"), true));
+        patterns.add(new Pair<StringPatternSet, Boolean>(new StringPatternSetRegex("(.)*abc(.)*"), false));
+        patterns.add(new Pair<StringPatternSet, Boolean>(new StringPatternSetRegex("(.)*def(.)*"), true));
+        patterns.add(new Pair<StringPatternSet, Boolean>(new StringPatternSetRegex("(.)*xyz(.)*"), false));
 
         runAssertion();
     }

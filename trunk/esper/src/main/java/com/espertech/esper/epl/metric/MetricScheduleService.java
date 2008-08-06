@@ -13,6 +13,9 @@ import org.apache.commons.logging.LogFactory;
 
 import java.util.*;
 
+/**
+ * Scheduling for metrics execution is handles=d by this service.
+ */
 public final class MetricScheduleService implements MetricTimeSource
 {
     private static final Log log = LogFactory.getLog(MetricScheduleService.class);
@@ -37,6 +40,9 @@ public final class MetricScheduleService implements MetricTimeSource
         return currentTime;
     }
 
+    /**
+     * Destroys the schedule.
+     */
     public void destroy()
     {
         log.debug("Destroying scheduling service");
@@ -44,13 +50,21 @@ public final class MetricScheduleService implements MetricTimeSource
         nearestTime = null;
     }
 
+    /**
+     * Sets current time.
+     * @param currentTime to set
+     */
     public synchronized final void setTime(long currentTime)
     {
         this.currentTime = currentTime;
     }
 
+    /**
+     * Adds an execution to the schedule.
+     * @param afterMSec offset to add at
+     * @param execution execution to add
+     */
     public synchronized final void add(long afterMSec, MetricExec execution)
-            throws ScheduleServiceException
     {
         if (execution == null)
         {
@@ -68,6 +82,10 @@ public final class MetricScheduleService implements MetricTimeSource
         nearestTime = timeHandleMap.firstKey();
     }
 
+    /**
+     * Evaluate the schedule and populates executions, if any.
+     * @param handles to populate
+     */
     public synchronized final void evaluate(Collection<MetricExec> handles)
     {
         SortedMap<Long, List<MetricExec>> headMap = timeHandleMap.headMap(currentTime + 1);
@@ -101,11 +119,19 @@ public final class MetricScheduleService implements MetricTimeSource
         }
     }
 
+    /**
+     * Returns nearest scheduled time.
+     * @return nearest scheduled time, or null if none/empty schedule.
+     */
     public Long getNearestTime()
     {
         return nearestTime;
     }
 
+    /**
+     * Remove from schedule an execution.
+     * @param metricExec to remove
+     */
     public void remove(MetricExec metricExec)
     {
         for (Map.Entry<Long, List<MetricExec>> entry : timeHandleMap.entrySet())

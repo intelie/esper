@@ -29,6 +29,7 @@ public class EPStatementHandle implements MetaDefItem
      * @param statementLock is the statement resource lock
      * @param expressionText is the expression
      * @param hasVariables indicator whether the statement uses variables
+     * @param metricsHandle handle for metrics reporting
      */
     public EPStatementHandle(String statementId, ManagedLock statementLock, String expressionText, boolean hasVariables, StatementMetricHandle metricsHandle)
     {
@@ -148,6 +149,10 @@ public class EPStatementHandle implements MetaDefItem
         return canSelfJoin;
     }
 
+    /**
+     * Returns handle for metrics reporting.
+     * @return handle for metrics reporting
+     */
     public StatementMetricHandle getMetricsHandle()
     {
         return metricsHandle;

@@ -10,14 +10,14 @@ public class TestStatementMetricArray extends TestCase
     {
         StatementMetricArray rep = new StatementMetricArray("uri", "name", 3, false);
 
-        assertEquals(0, rep.size());
+        assertEquals(0, rep.sizeLastElement());
 
         assertEquals(0, rep.addStatementGetIndex("001"));
-        assertEquals(1, rep.size());
+        assertEquals(1, rep.sizeLastElement());
 
         assertEquals(1, rep.addStatementGetIndex("002"));
         assertEquals(2, rep.addStatementGetIndex("003"));
-        assertEquals(3, rep.size());
+        assertEquals(3, rep.sizeLastElement());
 
         rep.removeStatement("002");
 
@@ -44,20 +44,20 @@ public class TestStatementMetricArray extends TestCase
         rep.removeStatement("004");
         rep.removeStatement("006");
         rep.removeStatement("007");
-        assertEquals(6, rep.size());
+        assertEquals(6, rep.sizeLastElement());
         rep.removeStatement("008");
-        assertEquals(6, rep.size());
+        assertEquals(6, rep.sizeLastElement());
 
         flushed = rep.flushMetrics();
         assertEquals(6, flushed.length);
-        assertEquals(0, rep.size());
+        assertEquals(0, rep.sizeLastElement());
 
         flushed = rep.flushMetrics();
         assertNull(flushed);
-        assertEquals(0, rep.size());
+        assertEquals(0, rep.sizeLastElement());
 
         assertEquals(0, rep.addStatementGetIndex("009"));
-        assertEquals(1, rep.size());
+        assertEquals(1, rep.sizeLastElement());
 
         flushed = rep.flushMetrics();
         assertEquals(6, flushed.length);
@@ -65,7 +65,7 @@ public class TestStatementMetricArray extends TestCase
         {
             assertNull(flushed[i]);
         }
-        assertEquals(1, rep.size());
+        assertEquals(1, rep.sizeLastElement());
     }
 
     public void testFlowReportInactive()

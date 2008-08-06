@@ -1,11 +1,21 @@
 package com.espertech.esper.client.metric;
 
+/**
+ * Reports engine-level instrumentation values.
+ */
 public class EngineMetric extends MetricEvent
 {
     private final long timestamp;
     private final long inputCount;
     private final long scheduleDepth;
 
+    /**
+     * Ctor.
+     * @param engineURI engine URI
+     * @param timestamp engine timestamp
+     * @param inputCount number of input events
+     * @param scheduleDepth schedule depth
+     */
     public EngineMetric(String engineURI, long timestamp, long inputCount, long scheduleDepth)
     {
         super(engineURI);
@@ -14,16 +24,28 @@ public class EngineMetric extends MetricEvent
         this.scheduleDepth = scheduleDepth;
     }
 
+    /**
+     * Returns input count.
+     * @return input count
+     */
     public long getInputCount()
     {
         return inputCount;
     }
 
+    /**
+     * Returns schedule depth.
+     * @return schedule depth
+     */
     public long getScheduleDepth()
     {
         return scheduleDepth;
     }
 
+    /**
+     * Returns engine timestamp.
+     * @return timestamp
+     */
     public long getTimestamp()
     {
         return timestamp;

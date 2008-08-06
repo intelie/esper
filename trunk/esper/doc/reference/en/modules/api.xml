@@ -1275,7 +1275,7 @@ EPStatement statement = epService.getEPAdministrator().create(prepared);]]></pro
 		<programlisting><![CDATA[select * from com.espertech.esper.client.metric.EngineMetric]]></programlisting>
 
         <para>
-			Make sure to have metrics reporting enabled, only then do listeners or the subscriber to the statement above receive metric events. The engine provides metric events after the configured interval of time has passed.
+			Make sure to have metrics reporting enabled, only then do listeners or the subscriber to the statement above receive metric events. The engine provides metric events after the configured interval of time has passed. By default, only started statements that have activity in the form of event or timer processing within an interval are reported upon.
         </para>        
 
         <para>
@@ -1346,8 +1346,8 @@ EPStatement statement = epService.getEPAdministrator().create(prepared);]]></pro
 				Statement metrics are properties of <literal>StatementMetric</literal>. The properties are:
 			</para>
 			
-			<table frame="topbot" id="api-instrumentation-events-engine" revision="2">
-				<title>EngineMetric Properties</title>
+			<table frame="topbot" id="api-instrumentation-events-statement" revision="2">
+				<title>StatementMetric Properties</title>
 				<tgroup cols="2">
 					<colspec colwidth="0.5*"/>
 					<colspec colwidth="2.0*"/>
@@ -1377,6 +1377,14 @@ EPStatement statement = epService.getEPAdministrator().create(prepared);]]></pro
 						<row>
 							<entry>wallTime</entry>
 							<entry>Statement processing wall time in nanoseconds, cumulative since last report (based on <literal>System.nanoTime</literal>)</entry>
+						</row>
+						<row>
+							<entry>numOutputIStream</entry>
+							<entry>Number of insert stream rows output to listeners or the subscriber, if any, cumulative since last report</entry>
+						</row>
+						<row>
+							<entry>numOutputRStream</entry>
+							<entry>Number of remove stream rows output to listeners or the subscriber, if any, cumulative since last report</entry>
 						</row>
 					</tbody>
 				</tgroup>

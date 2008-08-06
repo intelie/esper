@@ -3,6 +3,9 @@ package com.espertech.esper.epl.metric;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+/**
+ * Global boolean for enabling and disable metrics reporting.
+ */
 public class MetricReportingPath
 {
     private static final Log log = LogFactory.getLog(MetricReportingPath.class);
@@ -14,7 +17,7 @@ public class MetricReportingPath
 
     /**
      * Sets execution path debug logging.
-     * @param metricsEnabled
+     * @param metricsEnabled true if metric reporting should be enabled
      */
     public static void setMetricsEnabled(boolean metricsEnabled)
     {

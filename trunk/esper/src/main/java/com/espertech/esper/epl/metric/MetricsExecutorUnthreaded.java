@@ -1,5 +1,8 @@
 package com.espertech.esper.epl.metric;
 
+/**
+ * Metrics executor executing in-thread.
+ */
 public class MetricsExecutorUnthreaded implements MetricsExecutor
 {
     public void execute(MetricExec execution, MetricExecutionContext executionContext)
@@ -9,6 +12,6 @@ public class MetricsExecutorUnthreaded implements MetricsExecutor
 
     public void destroy()
     {
-        // no action required, noting to stop
+        // no action required, nothing to stop
     }
 }

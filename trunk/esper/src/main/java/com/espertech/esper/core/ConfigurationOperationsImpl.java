@@ -44,6 +44,7 @@ public class ConfigurationOperationsImpl implements ConfigurationOperations
      * @param variableService - provides access to variable values
      * @param engineSettingsService - some engine settings are writable
      * @param valueAddEventService - update event handling
+     * @param metricReportingService - for metric reporting
      */
     public ConfigurationOperationsImpl(EventAdapterService eventAdapterService,
                                        EngineImportService engineImportService,

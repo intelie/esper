@@ -2,6 +2,9 @@ package com.espertech.esper.client.metric;
 
 import java.util.concurrent.atomic.AtomicLong;
 
+/**
+ * Reports statement-level instrumentation values.
+ */
 public class StatementMetric extends MetricEvent
 {
     private long timestamp;
@@ -11,6 +14,11 @@ public class StatementMetric extends MetricEvent
     private AtomicLong numOutputRStream;
     private AtomicLong numOutputIStream;
 
+    /**
+     * Ctor.
+     * @param engineURI engine URI
+     * @param statementName statement name
+     */
     public StatementMetric(String engineURI, String statementName)
     {
         super(engineURI);
@@ -21,57 +29,101 @@ public class StatementMetric extends MetricEvent
         this.numOutputRStream = new AtomicLong();
     }
 
+    /**
+     * Returns statement name.
+     * @return statement name
+     */
     public String getStatementName()
     {
         return statementName;
     }
 
+    /**
+     * Returns CPU time.
+     * @return cpu time
+     */
     public long getCpuTime()
     {
         return cpuTime.get();
     }
 
+    /**
+     * Sets engine timestamp.
+     * @param timestamp to set
+     */
     public void setTimestamp(long timestamp)
     {
         this.timestamp = timestamp;
     }
 
+    /**
+     * Returns engine timestamp.
+     * @return timestamp
+     */
     public long getTimestamp()
     {
         return timestamp;
     }
 
-    public void addTotalCPU(long delta)
+    /**
+     * Adds CPU time.
+     * @param delta to add
+     */
+    public void addCPUTime(long delta)
     {
         cpuTime.addAndGet(delta);
     }
 
-    public void addTotalWall(long wall)
+    /**
+     * Adds wall time.
+     * @param wall to add
+     */
+    public void addWallTime(long wall)
     {
         wallTime.addAndGet(wall);
     }
 
+    /**
+     * Returns wall time.
+     * @return wall time
+     */
     public long getWallTime()
     {
         return wallTime.get();
     }
 
+    /**
+     * Returns number of output rows in remove stream.
+     * @return number of output rows in remove stream
+     */
     public long getNumOutputRStream()
     {
         return numOutputRStream.get();
     }
 
+    /**
+     * Returns number of output rows in insert stream.
+     * @return number of output rows in insert stream
+     */
     public long getNumOutputIStream()
     {
         return numOutputIStream.get();
     }
 
-    public void addIStream(int numIStream)
+    /**
+     * Adds number of output rows in insert stream.
+     * @param numIStream to add
+     */
+    public void addNumOutputIStream(int numIStream)
     {
         numOutputIStream.addAndGet(numIStream);
     }
 
-    public void addRStream(int numRStream)
+    /**
+     * Adds number of output rows in remove stream.
+     * @param numRStream to add
+     */
+    public void addNumOutputRStream(int numRStream)
     {
         numOutputRStream.addAndGet(numRStream);
     }

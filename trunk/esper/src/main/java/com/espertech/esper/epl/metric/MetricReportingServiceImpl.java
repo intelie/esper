@@ -16,7 +16,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 
-// Statements report usage/output etc. even if not in a statement group currently reporting stats
+/**
+ * Metrics reporting.
+ * <p>
+ * Reports for all statements even if not in a statement group, i.e. statement in default group.
+ */
 public class MetricReportingServiceImpl implements MetricReportingService, MetricEventRouter, StatementLifecycleObserver
 {
     private static final Log log = LogFactory.getLog(MetricReportingServiceImpl.class);
@@ -32,6 +36,11 @@ public class MetricReportingServiceImpl implements MetricReportingService, Metri
     private final Map<String, MetricExecStatement> statementGroupExecutions;
     private final MetricsExecutor metricsExecutor;
 
+    /**
+     * Ctor.
+     * @param specification configuration
+     * @param engineUri engine URI
+     */
     public MetricReportingServiceImpl(ConfigurationMetricsReporting specification, String engineUri)
     {
         if (specification.isEnableMetricsReporting())
@@ -62,6 +71,11 @@ public class MetricReportingServiceImpl implements MetricReportingService, Metri
 
     public void processTimeEvent(long timeEventTime)
     {
+        if (!MetricReportingPath.isMetricsEnabled)
+        {
+            return;
+        }
+        
         if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
         {
             log.debug(".processTimeEvent Setting time and evaluating schedules");

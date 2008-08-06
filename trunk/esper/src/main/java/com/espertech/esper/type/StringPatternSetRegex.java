@@ -3,18 +3,30 @@ package com.espertech.esper.type;
 import java.util.regex.Pattern;
 import java.io.Serializable;
 
-public abstract class StringPatternSetRegexBase implements Serializable
+/**
+ * Regular expression matcher.
+ */
+public class StringPatternSetRegex implements StringPatternSet
 {
     private final String patternText;
     private final Pattern pattern;
 
-    public StringPatternSetRegexBase(String patternText)
+    /**
+     * Ctor.
+     * @param patternText regex to match
+     */
+    public StringPatternSetRegex(String patternText)
     {
         this.patternText = patternText;
         this.pattern = Pattern.compile(patternText);
     }
 
-    protected boolean matchString(String stringToMatch)
+    /**
+     * Match the string returning true for a match, using regular expression semantics.
+     * @param stringToMatch string to match
+     * @return true for match
+     */
+    public boolean match(String stringToMatch)
     {
         return pattern.matcher(stringToMatch).matches();
     }
@@ -24,7 +36,7 @@ public abstract class StringPatternSetRegexBase implements Serializable
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        StringPatternSetRegexBase that = (StringPatternSetRegexBase) o;
+        StringPatternSetRegex that = (StringPatternSetRegex) o;
 
         if (!patternText.equals(that.patternText)) return false;
 

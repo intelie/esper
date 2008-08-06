@@ -59,6 +59,7 @@ public class StatementResultServiceImpl implements StatementResultService
     /**
      * Ctor.
      * @param statementLifecycleSvc handles persistence for statements
+     * @param metricReportingService for metrics reporting
      */
     public StatementResultServiceImpl(StatementLifecycleSvc statementLifecycleSvc, MetricReportingService metricReportingService)
     {

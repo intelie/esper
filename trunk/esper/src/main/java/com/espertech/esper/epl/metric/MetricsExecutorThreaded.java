@@ -5,10 +5,17 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * Metrics executor relying on a cached threadpool.
+ */
 public class MetricsExecutorThreaded implements MetricsExecutor
 {
     private final ExecutorService threadPool;
 
+    /**
+     * Ctor.
+     * @param engineURI engine URI
+     */
     public MetricsExecutorThreaded(final String engineURI)
     {
         ThreadFactory threadFactory = new ThreadFactory()

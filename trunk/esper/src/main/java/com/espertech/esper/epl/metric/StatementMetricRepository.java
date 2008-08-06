@@ -4,17 +4,28 @@ import com.espertech.esper.client.metric.StatementMetric;
 import com.espertech.esper.client.ConfigurationMetricsReporting;
 import com.espertech.esper.type.StringPatternSet;
 import com.espertech.esper.type.StringPatternSetUtil;
+import com.espertech.esper.collection.Pair;
 
 import java.util.Map;
 import java.util.List;
 import java.util.HashMap;
 
+/**
+ * A repository for all statement metrics that organizes statements into statement groups.
+ * <p>
+ * At a minimum there is one group (the default) of index zero.
+ */
 public class StatementMetricRepository
 {
     private final ConfigurationMetricsReporting specification;
     private final StatementMetricArray[] groupMetrics;
     private final Map<String, Integer> statementGroups;
 
+    /**
+     * Ctor.
+     * @param engineURI engine URI
+     * @param specification specifies statement groups
+     */
     public StatementMetricRepository(String engineURI, ConfigurationMetricsReporting specification)
     {
         this.specification = specification;
@@ -42,6 +53,11 @@ public class StatementMetricRepository
         statementGroups = new HashMap<String, Integer>();
     }
 
+    /**
+     * Add a statement, inspecting the statement name and adding it to a statement group or the default group, if none.
+     * @param stmtName name to inspect
+     * @return handle for statement
+     */
     public StatementMetricHandle addStatement(String stmtName)
     {
         // determine group
@@ -49,7 +65,7 @@ public class StatementMetricRepository
         int groupNumber = -1;
         for (Map.Entry<String, ConfigurationMetricsReporting.StmtGroupMetrics> entry : specification.getStatementGroups().entrySet())
         {
-            List<StringPatternSet> patterns = entry.getValue().getPatterns();
+            List<Pair<StringPatternSet, Boolean>> patterns = entry.getValue().getPatterns();
             boolean result = StringPatternSetUtil.evaluate(entry.getValue().isDefaultInclude(), patterns, stmtName);
 
             if (result)
@@ -73,6 +89,10 @@ public class StatementMetricRepository
         return new StatementMetricHandle(groupNumber, index);
     }
 
+    /**
+     * Remove statement.
+     * @param stmtName to remove
+     */
     public void removeStatement(String stmtName)
     {
         Integer group = statementGroups.remove(stmtName);
@@ -82,6 +102,12 @@ public class StatementMetricRepository
         }
     }
 
+    /**
+     * Account statement times.
+     * @param handle statement handle
+     * @param cpu time
+     * @param wall time
+     */
     public void accountTimes(StatementMetricHandle handle, long cpu, long wall)
     {
         StatementMetricArray array = groupMetrics[handle.getGroupNum()];
@@ -89,8 +115,8 @@ public class StatementMetricRepository
         try
         {
             StatementMetric metric = array.getAddMetric(handle.getIndex());
-            metric.addTotalCPU(cpu);
-            metric.addTotalWall(wall);
+            metric.addCPUTime(cpu);
+            metric.addWallTime(wall);
         }
         finally
         {
@@ -98,6 +124,12 @@ public class StatementMetricRepository
         }
     }
 
+    /**
+     * Account row output.
+     * @param handle statement handle
+     * @param numIStream num rows insert stream
+     * @param numRStream num rows remove stream
+     */
     public void accountOutput(StatementMetricHandle handle, int numIStream, int numRStream)
     {
         StatementMetricArray array = groupMetrics[handle.getGroupNum()];
@@ -105,8 +137,8 @@ public class StatementMetricRepository
         try
         {
             StatementMetric metric = array.getAddMetric(handle.getIndex());
-            metric.addIStream(numIStream);
-            metric.addRStream(numRStream);
+            metric.addNumOutputIStream(numIStream);
+            metric.addNumOutputRStream(numRStream);
         }
         finally
         {
@@ -114,6 +146,11 @@ public class StatementMetricRepository
         }
     }
 
+    /**
+     * Report for a given statement group.
+     * @param group to report
+     * @return metrics or null if none
+     */
     public StatementMetric[] reportGroup(int group)
     {
         return groupMetrics[group].flushMetrics();

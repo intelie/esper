@@ -89,6 +89,7 @@ public final class EPServicesContext
      * @param variableService provides access to variable values
      * @param valueAddEventService handles update events
      * @param timeSourceService time source provider class
+     * @param metricsReportingService - for metric reporting
      */
     public EPServicesContext(String engineURI,
                              SchedulingService schedulingService,
@@ -466,6 +467,10 @@ public final class EPServicesContext
         return valueAddEventService;
     }
 
+    /**
+     * Returns metrics reporting.
+     * @return metrics reporting
+     */
     public MetricReportingService getMetricsReportingService()
     {
         return metricsReportingService;
