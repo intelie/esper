@@ -44,6 +44,7 @@ public class ResultSetProcessorAggregateAll implements ResultSetProcessor
      * @param aggregationService - handles aggregation
      * @param optionalHavingNode - having clause expression node
      * @param isSelectRStream - true if remove stream events should be generated
+     * @param isUnidirectional - true if unidirectional join
      */
     public ResultSetProcessorAggregateAll(SelectExprProcessor selectExprProcessor,
                                           OrderByProcessor orderByProcessor,

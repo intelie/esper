@@ -65,6 +65,7 @@ public class ResultSetProcessorAggregateGrouped implements ResultSetProcessor
      * @param optionalHavingNode - expression node representing validated HAVING clause, or null if none given.
      * Aggregation functions in the having node must have been pointed to the AggregationService for evaluation.
      * @param isSelectRStream - true if remove stream events should be generated
+     * @param isUnidirectional - true if unidirectional join
      */
     public ResultSetProcessorAggregateGrouped(SelectExprProcessor selectExprProcessor,
                                       		  OrderByProcessor orderByProcessor,

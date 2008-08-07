@@ -259,6 +259,72 @@ public class TestNamedWindowViews extends TestCase
         assertFalse(listenerStmtOne.isInvoked());
     }
 
+    public void testTimeFirstWindow()
+    {
+        String[] fields = new String[] {"key", "value"};
+
+        sendTimer(1000);
+
+        // create window
+        String stmtTextCreate = "create window MyWindow.win:firsttime(10 sec) as MyMap";
+        EPStatement stmtCreate = epService.getEPAdministrator().createEPL(stmtTextCreate);
+        stmtCreate.addListener(listenerWindow);
+        ArrayAssertionUtil.assertEqualsExactOrder(stmtCreate.iterator(), fields, null);
+
+        // create insert into
+        String stmtTextInsert = "insert into MyWindow select string as key, longBoxed as value from " + SupportBean.class.getName();
+        epService.getEPAdministrator().createEPL(stmtTextInsert);
+
+        // create consumer
+        String stmtTextSelectOne = "select irstream key, value as value from MyWindow";
+        EPStatement stmtSelectOne = epService.getEPAdministrator().createEPL(stmtTextSelectOne);
+        stmtSelectOne.addListener(listenerStmtOne);
+
+        // create delete stmt
+        String stmtTextDelete = "on " + SupportMarketDataBean.class.getName() + " as s0 delete from MyWindow as s1 where s0.symbol = s1.key";
+        EPStatement stmtDelete = epService.getEPAdministrator().createEPL(stmtTextDelete);
+        stmtDelete.addListener(listenerStmtDelete);
+
+        sendSupportBean("E1", 1L);
+        ArrayAssertionUtil.assertProps(listenerWindow.assertOneGetNewAndReset(), fields, new Object[] {"E1", 1L});
+        ArrayAssertionUtil.assertProps(listenerStmtOne.assertOneGetNewAndReset(), fields, new Object[] {"E1", 1L});
+        ArrayAssertionUtil.assertEqualsExactOrder(stmtCreate.iterator(), fields, new Object[][] {{"E1", 1L}});
+
+        sendTimer(5000);
+        sendSupportBean("E2", 2L);
+        ArrayAssertionUtil.assertProps(listenerWindow.assertOneGetNewAndReset(), fields, new Object[] {"E2", 2L});
+        ArrayAssertionUtil.assertProps(listenerStmtOne.assertOneGetNewAndReset(), fields, new Object[] {"E2", 2L});
+        ArrayAssertionUtil.assertEqualsExactOrder(stmtCreate.iterator(), fields, new Object[][] {{"E1", 1L}, {"E2", 2L}});
+
+        sendTimer(10000);
+        sendSupportBean("E3", 3L);
+        ArrayAssertionUtil.assertProps(listenerWindow.assertOneGetNewAndReset(), fields, new Object[] {"E3", 3L});
+        ArrayAssertionUtil.assertProps(listenerStmtOne.assertOneGetNewAndReset(), fields, new Object[] {"E3", 3L});
+        ArrayAssertionUtil.assertEqualsExactOrder(stmtCreate.iterator(), fields, new Object[][] {{"E1", 1L}, {"E2", 2L}, {"E3", 3L}});
+
+        // Should not push out the window
+        sendTimer(12000);
+        assertFalse(listenerWindow.isInvoked());
+        assertFalse(listenerStmtOne.isInvoked());
+        ArrayAssertionUtil.assertEqualsExactOrder(stmtCreate.iterator(), fields, new Object[][] {{"E1", 1L}, {"E2", 2L}, {"E3", 3L}});
+
+        sendSupportBean("E4", 4L);
+        assertFalse(listenerWindow.isInvoked());
+        assertFalse(listenerStmtOne.isInvoked());
+        ArrayAssertionUtil.assertEqualsExactOrder(stmtCreate.iterator(), fields, new Object[][] {{"E1", 1L}, {"E2", 2L}, {"E3", 3L}});
+
+        // delete E2
+        sendMarketBean("E2");
+        ArrayAssertionUtil.assertProps(listenerWindow.assertOneGetOldAndReset(), fields, new Object[] {"E2", 2L});
+        ArrayAssertionUtil.assertProps(listenerStmtOne.assertOneGetOldAndReset(), fields, new Object[] {"E2", 2L});
+        ArrayAssertionUtil.assertEqualsExactOrder(stmtCreate.iterator(), fields, new Object[][] {{"E1", 1L}, {"E3", 3L}});
+
+        // nothing pushed
+        sendTimer(100000);
+        assertFalse(listenerWindow.isInvoked());
+        assertFalse(listenerStmtOne.isInvoked());
+    }
+
     public void testExtTimeWindow()
     {
         String[] fields = new String[] {"key", "value"};
@@ -451,6 +517,58 @@ public class TestNamedWindowViews extends TestCase
 
         assertFalse(listenerWindow.isInvoked());
         assertFalse(listenerStmtOne.isInvoked());
+    }
+
+    public void testLengthFirstWindow()
+    {
+        String[] fields = new String[] {"key", "value"};
+
+        // create window
+        String stmtTextCreate = "create window MyWindow.win:firstlength(2) as MyMap";
+        EPStatement stmtCreate = epService.getEPAdministrator().createEPL(stmtTextCreate);
+        stmtCreate.addListener(listenerWindow);
+
+        // create insert into
+        String stmtTextInsert = "insert into MyWindow select string as key, longBoxed as value from " + SupportBean.class.getName();
+        epService.getEPAdministrator().createEPL(stmtTextInsert);
+
+        // create consumer
+        String stmtTextSelectOne = "select irstream key, value as value from MyWindow";
+        EPStatement stmtSelectOne = epService.getEPAdministrator().createEPL(stmtTextSelectOne);
+        stmtSelectOne.addListener(listenerStmtOne);
+
+        // create delete stmt
+        String stmtTextDelete = "on " + SupportMarketDataBean.class.getName() + " delete from MyWindow where symbol = key";
+        EPStatement stmtDelete = epService.getEPAdministrator().createEPL(stmtTextDelete);
+        stmtDelete.addListener(listenerStmtDelete);
+
+        sendSupportBean("E1", 1L);
+        ArrayAssertionUtil.assertProps(listenerWindow.assertOneGetNewAndReset(), fields, new Object[] {"E1", 1L});
+        ArrayAssertionUtil.assertProps(listenerStmtOne.assertOneGetNewAndReset(), fields, new Object[] {"E1", 1L});
+
+        sendSupportBean("E2", 2L);
+        ArrayAssertionUtil.assertProps(listenerWindow.assertOneGetNewAndReset(), fields, new Object[] {"E2", 2L});
+        ArrayAssertionUtil.assertProps(listenerStmtOne.assertOneGetNewAndReset(), fields, new Object[] {"E2", 2L});
+
+        sendSupportBean("E3", 3L);
+        assertFalse(listenerWindow.isInvoked());
+        ArrayAssertionUtil.assertEqualsExactOrder(stmtCreate.iterator(), fields, new Object[][] {{"E1", 1L}, {"E2", 2L}});
+
+        // delete E2
+        sendMarketBean("E2");
+        ArrayAssertionUtil.assertProps(listenerWindow.assertOneGetOldAndReset(), fields, new Object[] {"E2", 2L});
+        ArrayAssertionUtil.assertProps(listenerStmtOne.assertOneGetOldAndReset(), fields, new Object[] {"E2", 2L});
+        ArrayAssertionUtil.assertEqualsExactOrder(stmtCreate.iterator(), fields, new Object[][] {{"E1", 1L}});
+
+        sendSupportBean("E4", 4L);
+        ArrayAssertionUtil.assertProps(listenerWindow.assertOneGetNewAndReset(), fields, new Object[] {"E4", 4L});
+        ArrayAssertionUtil.assertProps(listenerStmtOne.assertOneGetNewAndReset(), fields, new Object[] {"E4", 4L});
+        ArrayAssertionUtil.assertEqualsExactOrder(stmtCreate.iterator(), fields, new Object[][] {{"E1", 1L}, {"E4", 4L}});
+
+        sendSupportBean("E5", 5L);
+        assertFalse(listenerWindow.isInvoked());
+        assertFalse(listenerStmtOne.isInvoked());
+        ArrayAssertionUtil.assertEqualsExactOrder(stmtCreate.iterator(), fields, new Object[][] {{"E1", 1L}, {"E4", 4L}});
     }
 
     public void testTimeAccum()
@@ -1142,6 +1260,70 @@ public class TestNamedWindowViews extends TestCase
         assertFalse(listenerStmtOne.isInvoked());
     }
 
+    public void testFirstEvent()
+    {
+        String[] fields = new String[] {"key", "value"};
+
+        // create window
+        String stmtTextCreate = "create window MyWindow.std:firstevent() as MyMap";
+        EPStatement stmtCreate = epService.getEPAdministrator().createEPL(stmtTextCreate);
+        stmtCreate.addListener(listenerWindow);
+
+        // create insert into
+        String stmtTextInsert = "insert into MyWindow select string as key, longBoxed as value from " + SupportBean.class.getName();
+        epService.getEPAdministrator().createEPL(stmtTextInsert);
+
+        // create consumer
+        String stmtTextSelectOne = "select irstream key, value as value from MyWindow";
+        EPStatement stmtSelectOne = epService.getEPAdministrator().createEPL(stmtTextSelectOne);
+        stmtSelectOne.addListener(listenerStmtOne);
+
+        // create delete stmt
+        String stmtTextDelete = "on " + SupportMarketDataBean.class.getName() + " as s0 delete from MyWindow as s1 where s0.symbol = s1.key";
+        EPStatement stmtDelete = epService.getEPAdministrator().createEPL(stmtTextDelete);
+        stmtDelete.addListener(listenerStmtDelete);
+
+        sendSupportBean("E1", 1L);
+        ArrayAssertionUtil.assertProps(listenerStmtOne.getLastNewData()[0], fields, new Object[] {"E1", 1L});
+        assertNull(listenerStmtOne.getLastOldData());
+        listenerStmtOne.reset();
+        ArrayAssertionUtil.assertEqualsExactOrder(stmtCreate.iterator(), fields, new Object[][] {{"E1", 1L}});
+
+        sendSupportBean("E2", 2L);
+        assertFalse(listenerStmtOne.isInvoked());
+        ArrayAssertionUtil.assertEqualsExactOrder(stmtCreate.iterator(), fields, new Object[][] {{"E1", 1L}});
+
+        // delete E2
+        sendMarketBean("E1");
+        ArrayAssertionUtil.assertProps(listenerStmtOne.getLastOldData()[0], fields, new Object[] {"E1", 1L});
+        assertNull(listenerStmtOne.getLastNewData());
+        ArrayAssertionUtil.assertEqualsExactOrder(stmtCreate.iterator(), fields, null);
+
+        sendSupportBean("E3", 3L);
+        ArrayAssertionUtil.assertProps(listenerStmtOne.getLastNewData()[0], fields, new Object[] {"E3", 3L});
+        assertNull(listenerStmtOne.getLastOldData());
+        listenerStmtOne.reset();
+        ArrayAssertionUtil.assertEqualsExactOrder(stmtCreate.iterator(), fields, new Object[][] {{"E3", 3L}});
+
+        // delete E3
+        sendMarketBean("E2");   // no effect
+        sendMarketBean("E3");
+        ArrayAssertionUtil.assertProps(listenerStmtOne.getLastOldData()[0], fields, new Object[] {"E3", 3L});
+        assertNull(listenerStmtOne.getLastNewData());
+        listenerStmtOne.reset();
+        ArrayAssertionUtil.assertEqualsExactOrder(stmtCreate.iterator(), fields, null);
+
+        sendSupportBean("E4", 4L);
+        ArrayAssertionUtil.assertProps(listenerStmtOne.getLastNewData()[0], fields, new Object[] {"E4", 4L});
+        assertNull(listenerStmtOne.getLastOldData());
+        listenerStmtOne.reset();
+        ArrayAssertionUtil.assertEqualsExactOrder(stmtCreate.iterator(), fields, new Object[][] {{"E4", 4L}});
+
+        // delete other event
+        sendMarketBean("E1");
+        assertFalse(listenerStmtOne.isInvoked());
+    }
+
     public void testUnique()
     {
         String[] fields = new String[] {"key", "value"};
@@ -1205,6 +1387,59 @@ public class TestNamedWindowViews extends TestCase
         ArrayAssertionUtil.assertProps(listenerStmtOne.getLastOldData()[0], fields, new Object[] {"G1", 2L});
         assertNull(listenerStmtOne.getLastNewData());
         ArrayAssertionUtil.assertEqualsExactOrder(stmtCreate.iterator(), fields, new Object[][] {{"G2", 22L}});
+    }
+
+    public void testFirstUnique()
+    {
+        String[] fields = new String[] {"key", "value"};
+
+        // create window
+        String stmtTextCreate = "create window MyWindow.std:firstunique(key) as MyMap";
+        EPStatement stmtCreate = epService.getEPAdministrator().createEPL(stmtTextCreate);
+        stmtCreate.addListener(listenerWindow);
+
+        // create insert into
+        String stmtTextInsert = "insert into MyWindow select string as key, longBoxed as value from " + SupportBean.class.getName();
+        epService.getEPAdministrator().createEPL(stmtTextInsert);
+
+        // create consumer
+        String stmtTextSelectOne = "select irstream key, value as value from MyWindow";
+        EPStatement stmtSelectOne = epService.getEPAdministrator().createEPL(stmtTextSelectOne);
+        stmtSelectOne.addListener(listenerStmtOne);
+
+        // create delete stmt
+        String stmtTextDelete = "on " + SupportMarketDataBean.class.getName() + " as s0 delete from MyWindow as s1 where s0.symbol = s1.key";
+        EPStatement stmtDelete = epService.getEPAdministrator().createEPL(stmtTextDelete);
+        stmtDelete.addListener(listenerStmtDelete);
+
+        sendSupportBean("G1", 1L);
+        ArrayAssertionUtil.assertProps(listenerStmtOne.assertOneGetNewAndReset(), fields, new Object[] {"G1", 1L});
+        ArrayAssertionUtil.assertEqualsExactOrder(stmtCreate.iterator(), fields, new Object[][] {{"G1", 1L}});
+
+        sendSupportBean("G2", 20L);
+        ArrayAssertionUtil.assertProps(listenerStmtOne.assertOneGetNewAndReset(), fields, new Object[] {"G2", 20L});
+        ArrayAssertionUtil.assertEqualsExactOrder(stmtCreate.iterator(), fields, new Object[][] {{"G1", 1L}, {"G2", 20L}});
+
+        // delete G2
+        sendMarketBean("G2");
+        ArrayAssertionUtil.assertProps(listenerStmtOne.assertOneGetOldAndReset(), fields, new Object[] {"G2", 20L});
+        ArrayAssertionUtil.assertEqualsExactOrder(stmtCreate.iterator(), fields, new Object[][] {{"G1", 1L}});
+
+        sendSupportBean("G1", 2L);  // ignored
+        assertFalse(listenerStmtOne.isInvoked());
+        ArrayAssertionUtil.assertEqualsExactOrder(stmtCreate.iterator(), fields, new Object[][] {{"G1", 1L}});
+
+        sendSupportBean("G2", 21L);
+        ArrayAssertionUtil.assertProps(listenerStmtOne.assertOneGetNewAndReset(), fields, new Object[] {"G2", 21L});
+        ArrayAssertionUtil.assertEqualsExactOrder(stmtCreate.iterator(), fields, new Object[][] {{"G1", 1L}, {"G2", 21L}});
+
+        sendSupportBean("G2", 22L); // ignored
+        assertFalse(listenerStmtOne.isInvoked());
+        ArrayAssertionUtil.assertEqualsExactOrder(stmtCreate.iterator(), fields, new Object[][] {{"G1", 1L}, {"G2", 21L}});
+
+        sendMarketBean("G1");
+        ArrayAssertionUtil.assertProps(listenerStmtOne.assertOneGetOldAndReset(), fields, new Object[] {"G1", 1L});
+        ArrayAssertionUtil.assertEqualsExactOrder(stmtCreate.iterator(), fields, new Object[][] {{"G2", 21L}});
     }
 
     public void testFilteringConsumer()

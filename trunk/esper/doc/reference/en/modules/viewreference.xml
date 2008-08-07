@@ -38,37 +38,37 @@
 					<row>
 						<entry>Length window</entry>
 						<entry>win:length(<emphasis>size</emphasis>)</entry>
-						<entry>Sliding length window extending the specified number of elements into the past</entry>
+						<entry>Sliding length window extending the specified number of elements into the past.</entry>
 					</row>
 					<row>
 						<entry>Length batch window</entry>
 						<entry>win:length_batch(<emphasis>size</emphasis>)</entry>
-						<entry>Tumbling window that batches events and releases them when a given minimum number of events has been collected</entry>
+						<entry>Tumbling window that batches events and releases them when a given minimum number of events has been collected.</entry>
 					</row>
 					<row>
 						<entry>Time window</entry>
 						<entry>win:time(<emphasis>time period</emphasis>)</entry>
-						<entry>Sliding time window extending the specified time interval into the past</entry>
+						<entry>Sliding time window extending the specified time interval into the past.</entry>
 					</row>
 					<row>
 						<entry>Externally-timed window</entry>
 						<entry>win:ext_timed(<emphasis>timestamp property</emphasis>, <emphasis>time period</emphasis>)</entry>
-						<entry>Sliding time window, based on the millisecond time value supplied by an event property</entry>
+						<entry>Sliding time window, based on the millisecond time value supplied by an event property.</entry>
 					</row>
 					<row>
 						<entry>Time batch window</entry>
 						<entry>win:time_batch(<emphasis>time period</emphasis>[,<emphasis>optional_reference_point</emphasis>])</entry>
-						<entry>Tumbling window that batches events and releases them every specified time interval</entry>
+						<entry>Tumbling window that batches events and releases them every specified time interval.</entry>
 					</row>
 					<row>
 						<entry>Time-Length combination batch window</entry>
 						<entry>win:time_length_batch(<emphasis>time period, size</emphasis>)</entry>
-						<entry>Tumbling multi-policy time and length batch window with flow control options</entry>
+						<entry>Tumbling multi-policy time and length batch window with flow control options.</entry>
 					</row>
 					<row>
 						<entry>Time-Accumulating window</entry>
 						<entry>win:time_accum(<emphasis>time period</emphasis>)</entry>
-						<entry>Sliding time window accumulates events until no more events arrive within a given time interval</entry>
+						<entry>Sliding time window accumulates events until no more events arrive within a given time interval.</entry>
 					</row>
 					<row>
 						<entry>Keep-All window</entry>
@@ -78,27 +78,47 @@
 					<row>
 						<entry>Sorted window</entry>
 						<entry>ext:sort(<emphasis>property names, descending, size</emphasis>)</entry>
-						<entry>Sorts by values of the specified properties and keeps only the top events up to the given size</entry>
+						<entry>Sorts by values of the specified properties and keeps only the top events up to the given size.</entry>
 					</row>
 					<row>
 						<entry>Time-Order View</entry>
 						<entry>ext:time_order(<emphasis>property name, time_period</emphasis>)</entry>
-						<entry>Orders events that arrive out-of-order, using a timestamp-property supplied by each event to be ordered</entry>
+						<entry>Orders events that arrive out-of-order, using a timestamp-property supplied by each event to be ordered.</entry>
 					</row>
 					<row>
 						<entry>Unique</entry>
 						<entry>std:unique(<emphasis>property name(s)</emphasis>)</entry>
-						<entry>Retains only the most recent among events having the same value for the specified property or properties. Acts as a length window of size 1 for each distinct value of the property</entry>
+						<entry>Retains only the most recent among events having the same value for the specified property or properties. Acts as a length window of size 1 for each distinct value of the property.</entry>
 					</row>
 					<row>
 						<entry>Group By</entry>
 						<entry>std:groupby(<emphasis>property name(s)</emphasis>)</entry>
-						<entry>Groups events into sub-views by the value of the specified field or fields, generally used to provide a separate data window per group</entry>
+						<entry>Groups events into sub-views by the value of the specified field or fields, generally used to provide a separate data window per group.</entry>
 					</row>
 					<row>
 						<entry>Last Event</entry>
 						<entry>std:lastevent()</entry>
-						<entry>Retains the last event, acts as a length window of size 1</entry>
+						<entry>Retains the last event, acts as a length window of size 1.</entry>
+					</row>
+					<row>
+						<entry>First Event</entry>
+						<entry>std:firstevent()</entry>
+						<entry>Retains the very first arriving event, disregarding all subsequent events.</entry>
+					</row>
+					<row>
+						<entry>First Unique</entry>
+						<entry>std:firstunique(<emphasis>property name(s)</emphasis>)</entry>
+						<entry>Retains only the very first among events having the same value for the specified property or properties, disregarding all subsequent events for same property value(s).</entry>
+					</row>
+					<row>
+						<entry>First Length</entry>
+						<entry>win:firstlength(<emphasis>size</emphasis>)</entry>
+						<entry>Retains the first <emphasis>size</emphasis> events, disregarding all subsequent events.</entry>
+					</row>
+					<row>
+						<entry>First Time</entry>
+						<entry>win:firsttime(<emphasis>time period</emphasis>)</entry>
+						<entry>Retains the events arriving until the time interval has passed, disregarding all subsequent events.</entry>
 					</row>
 				</tbody>
 			</tgroup>
@@ -434,6 +454,53 @@ following conditions occurs, whichever occurs first: the data window has collect
 				</para>
 			</sect2>
 
+			<sect2 id="view-win-firstlength" >
+			   <title>First Length (<literal>win:firstlength</literal>)</title>
+		
+				<indexterm><primary>first length window</primary></indexterm>
+				<indexterm><primary>views</primary><secondary>first length window</secondary></indexterm>
+
+				<para>
+					The <literal>firstlength</literal> view retains the very first <emphasis>size</emphasis> events.
+				</para>
+				
+				<para>
+					The synopsis is:
+				</para>
+				<synopsis>win:firstlength(<emphasis>size</emphasis>)</synopsis>
+
+				<para>
+					If used within a named window and an <literal>on-delete</literal> clause deletes events, the view accepts further arriving events until the number of retained events reaches <emphasis>size</emphasis>.
+				</para>
+
+				<para>
+					The below example creates a view that retains only the first 10 events:
+				</para>
+				<programlisting><![CDATA[select * from MyEvent.win:firstlength(10)]]></programlisting>				
+			</sect2>
+			
+			<sect2 id="view-win-firsttime" >
+			   <title>First Time (<literal>win:firsttime</literal>)</title>
+		
+				<indexterm><primary>first time window</primary></indexterm>
+				<indexterm><primary>views</primary><secondary>first time window</secondary></indexterm>
+
+				<para>
+					The <literal>firsttime</literal> view retains all events arriving within a given time interval after statement start.
+				</para>
+				
+				<para>
+					The synopsis is:
+				</para>
+				<synopsis>win:firsttime(<emphasis>time period</emphasis>)</synopsis>
+				<synopsis>win:firsttime(<emphasis>number of seconds</emphasis>)</synopsis>
+
+				<para>
+					The below example creates a view that retains only those events arriving within 1 minute and 10 seconds of statement start:
+				</para>
+				<programlisting><![CDATA[select * from MyEvent.win:firsttime(1 minute 10 seconds)]]></programlisting>				
+			</sect2>
+
 	   </sect1>
 
         <sect1 id="std-views" >
@@ -593,6 +660,58 @@ following conditions occurs, whichever occurs first: the data window has collect
 				</para>
 	
 				<programlisting><![CDATA[select * from StockTickEvent(symbol='IBM').stat:uni(price).std:lastevent()]]></programlisting>
+			</sect2>
+
+			<sect2 id="view-std-first" >
+			   <title>First Event (<literal>std:firstevent</literal>)</title>
+		
+				<indexterm><primary>first event</primary></indexterm>
+				<indexterm><primary>views</primary><secondary>first event</secondary></indexterm>
+
+				<para>
+					This view retains only the first arriving event:
+				</para>
+				<synopsis>std:firstevent()</synopsis>
+
+				<para>
+					All events arriving after the first event are discarded.
+				</para>
+
+				<para>
+					If used within a named window and an <literal>on-delete</literal> clause deletes the first event, the view resets and will retain the next arriving event.
+				</para>
+
+				<para>
+					An example of a statement that retains the first <literal>ReferenceData</literal> event arriving is:
+				</para>
+	
+				<programlisting><![CDATA[select * from ReferenceData.std:firstevent()]]></programlisting>
+			</sect2>
+
+			<sect2 id="view-std-firstunique" >
+			   <title>First Unique (<literal>std:firstunique</literal>)</title>
+		
+				<indexterm><primary>first unique window</primary></indexterm>
+				<indexterm><primary>views</primary><secondary>first unique window</secondary></indexterm>
+
+				<para>
+					The <literal>firstunique</literal> view retains only the very first among events having the same value for the specified field or list of fields.
+				</para>
+				
+				<para>
+					The synopsis is:
+				</para>
+				<synopsis>std:firstunique(<emphasis>property_name</emphasis> [, <emphasis>property_name</emphasis> ...])</synopsis>
+
+				<para>
+					If used within a named window and an <literal>on-delete</literal> clause deletes events, the view resets and will retain the next arriving event for the property value(s) of the deleted events.
+				</para>
+
+				<para>
+					The below example creates a view that retains only the first event per category:
+				</para>
+				<programlisting><![CDATA[select * from ReferenceData.std:firstunique(category)]]></programlisting>
+				
 			</sect2>
 	   </sect1>
   

@@ -33,6 +33,7 @@ public final class TimerServiceImpl implements TimerService
      * Constructor.
      * @param msecTimerResolution is the millisecond resolution or interval the internal timer thread
      * processes schedules
+     * @param engineURI engine URI
      */
     public TimerServiceImpl(String engineURI, long msecTimerResolution)
     {

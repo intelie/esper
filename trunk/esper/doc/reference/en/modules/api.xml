@@ -1303,6 +1303,11 @@ EPStatement statement = epService.getEPAdministrator().create(prepared);]]></pro
 			</listitem>
 			<listitem>
 				<para>
+					CPU time and wall time have nanosecond precision but not necessarily nanosecond accuracy, please check with your Java VM provider.
+				</para>
+			</listitem>
+			<listitem>
+				<para>
 					There is a performance cost to collecting and reporting metrics.
 				</para>
 			</listitem>

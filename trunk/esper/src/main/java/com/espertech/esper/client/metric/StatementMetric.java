@@ -46,7 +46,7 @@ public class StatementMetric extends MetricEvent
     }
 
     /**
-     * Returns CPU time.
+     * Returns CPU time in nanoseconds.
      * @return cpu time
      */
     public long getCpuTime()
@@ -91,7 +91,7 @@ public class StatementMetric extends MetricEvent
     }
 
     /**
-     * Returns wall time.
+     * Returns wall time in nanoseconds.
      * @return wall time
      */
     public long getWallTime()

@@ -16,6 +16,20 @@ import java.util.Map;
 
 public class TestEventBeanUtility extends TestCase
 {
+    public void testArrayOp()
+    {
+        EventBean[] testEvent = makeEventArray(new String[] {"a1", "a2", "a3"});
+
+        ArrayAssertionUtil.assertEqualsAnyOrder(new Object[] {testEvent[0]},
+                EventBeanUtility.addToArray(new EventBean[0], testEvent[0]));
+
+        ArrayAssertionUtil.assertEqualsAnyOrder(new Object[] {testEvent[0], testEvent[1]},
+                EventBeanUtility.addToArray(new EventBean[] {testEvent[0]}, testEvent[1]));
+
+        ArrayAssertionUtil.assertEqualsAnyOrder(new Object[] {testEvent[0], testEvent[1], testEvent[2]},
+                EventBeanUtility.addToArray(new EventBean[] {testEvent[0], testEvent[1]}, testEvent[2]));
+    }
+
     public void testFlattenList()
     {
         // test many arrays

@@ -17,6 +17,11 @@ public enum ViewEnum
     LENGTH_WINDOW("win", "length", LengthWindowViewFactory.class, null),
 
     /**
+     * Length first window.
+     */
+    FIRST_LENGTH_WINDOW("win", "firstlength", FirstLengthWindowViewFactory.class, null),
+
+    /**
      * Length batch window.
      */
     LENGTH_BATCH("win", "length_batch", LengthBatchViewFactory.class, null),
@@ -25,6 +30,11 @@ public enum ViewEnum
      * Time window.
      */
     TIME_WINDOW("win", "time", TimeWindowViewFactory.class, null),
+
+    /**
+     * Time first window.
+     */
+    FIRST_TIME_WINDOW("win", "firsttime", FirstTimeViewFactory.class, null),
 
     /**
      * Time batch.
@@ -62,9 +72,19 @@ public enum ViewEnum
     LAST_EVENT("std", "lastevent", LastElementViewFactory.class, null),
 
     /**
+     * First event.
+     */
+    FIRST_EVENT("std", "firstevent", FirstElementViewFactory.class, null),
+
+    /**
      * Unique.
      */
     UNIQUE_BY_PROPERTY("std", "unique", UniqueByPropertyViewFactory.class, null),
+
+    /**
+     * Unique.
+     */
+    UNIQUE_FIRST_BY_PROPERTY("std", "firstunique", FirstUniqueByPropertyViewFactory.class, null),
 
     /**
      * Group-by merge.

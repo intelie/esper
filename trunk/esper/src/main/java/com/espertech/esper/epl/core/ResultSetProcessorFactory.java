@@ -54,6 +54,7 @@ public class ResultSetProcessorFactory
      * @param viewResourceDelegate - delegates views resource factory to expression resources requirements
      * @param statementSpecCompiled - the statement specification
      * @param stmtContext - engine and statement level services
+     * @param isUnidirectionalStream - true if unidirectional join for any of the streams
      * @return result set processor instance
      * @throws ExprValidationException when any of the expressions is invalid
      */

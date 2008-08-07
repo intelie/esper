@@ -130,6 +130,11 @@ public class ConfigurationMetricsReporting implements Serializable
         return statementGroups;
     }
 
+    /**
+     * Sets a new interval for a statement group identified by name.
+     * @param stmtGroupName name of statement group as assigned through configuration
+     * @param newInterval new interval, or a -1 or zero value to disable reporting
+     */
     public void setStatementGroupInterval(String stmtGroupName, long newInterval)
     {
         StmtGroupMetrics metrics = statementGroups.get(stmtGroupName);
