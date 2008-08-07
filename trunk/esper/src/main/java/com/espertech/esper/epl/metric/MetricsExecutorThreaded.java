@@ -1,9 +1,17 @@
+/**************************************************************************************
+ * Copyright (C) 2006 Thomas Bernhardt. All rights reserved.                          *
+ * http://esper.codehaus.org                                                          *
+ * ---------------------------------------------------------------------------------- *
+ * The software in this package is published under the terms of the GPL license       *
+ * a copy of which has been included with this distribution in the license.txt file.  *
+ **************************************************************************************/
 package com.espertech.esper.epl.metric;
 
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Metrics executor relying on a cached threadpool.
@@ -20,12 +28,16 @@ public class MetricsExecutorThreaded implements MetricsExecutor
     {
         ThreadFactory threadFactory = new ThreadFactory()
         {
-            int count = 0;
+            AtomicInteger count = new AtomicInteger(0);
             public Thread newThread(Runnable r)
             {
+                String uri = engineURI;
+                if (engineURI == null)
+                {
+                    uri = "default";
+                }
                 Thread t = new Thread(r);
-                t.setName("com.espertech.esper.metricsreporting-" + engineURI + "-" + count);
-                count++;
+                t.setName("com.espertech.esper.MetricReporting-" + uri + "-" + count.getAndIncrement());
                 t.setDaemon(true);
                 return t;
             }

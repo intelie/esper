@@ -20,6 +20,7 @@ New Features
   - support for adding properties at runtime
   - optimization for simple filter-only statements that filter using a where-clause
   - allow create window model after another create window, allow populate from another named window
+  - instrumentation
   
 Minor changes	    		
 

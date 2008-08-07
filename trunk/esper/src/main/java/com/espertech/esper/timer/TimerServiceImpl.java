@@ -21,6 +21,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public final class TimerServiceImpl implements TimerService
 {
+    private final String engineURI;
     private final long msecTimerResolution;
     private TimerCallback timerCallback;
     private ScheduledThreadPoolExecutor timer;
@@ -33,8 +34,9 @@ public final class TimerServiceImpl implements TimerService
      * @param msecTimerResolution is the millisecond resolution or interval the internal timer thread
      * processes schedules
      */
-    public TimerServiceImpl(long msecTimerResolution)
+    public TimerServiceImpl(String engineURI, long msecTimerResolution)
     {
+        this.engineURI = engineURI;
         this.msecTimerResolution = msecTimerResolution;
         id = NEXT_ID.getAndIncrement();
     }
@@ -142,7 +144,12 @@ public final class TimerServiceImpl implements TimerService
 		timer = new ScheduledThreadPoolExecutor(1, new ThreadFactory() {
 			// set new thread as daemon thread and name appropriately
 			public Thread newThread(Runnable r) {
-				Thread t = new Thread(r, "com.espertech.esper.Timer-" + id);
+                String uri = engineURI;
+                if (engineURI == null)
+                {
+                    uri = "default";
+                }
+                Thread t = new Thread(r, "com.espertech.esper.Timer-" + uri + "-" + id);
 				t.setDaemon(true);
 				return t;
 			}

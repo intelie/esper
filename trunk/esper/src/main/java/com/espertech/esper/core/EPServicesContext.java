@@ -330,6 +330,10 @@ public final class EPServicesContext
         {
             metricsReportingService.destroy();
         }
+        if (statementLifecycleSvc != null)
+        {
+            statementLifecycleSvc.destroy();
+        }
         if (filterService != null)
         {
             filterService.destroy();
@@ -338,17 +342,13 @@ public final class EPServicesContext
         {
             schedulingService.destroy();
         }
-        if (namedWindowService != null)
-        {
-            namedWindowService.destroy();
-        }
-        if (statementLifecycleSvc != null)
-        {
-            statementLifecycleSvc.destroy();
-        }
         if (streamFactoryService != null)
         {
             streamFactoryService.destroy();
+        }
+        if (namedWindowService != null)
+        {
+            namedWindowService.destroy();
         }
         if (extensionServicesContext != null)
         {

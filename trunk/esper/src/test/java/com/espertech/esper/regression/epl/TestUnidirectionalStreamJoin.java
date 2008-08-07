@@ -91,14 +91,14 @@ public class TestUnidirectionalStreamJoin extends TestCase
         assertFalse(listener.isInvoked());
 
         sendEventMD("E1", 3L);
-        ArrayAssertionUtil.assertProps(listener.getLastNewData()[0], fields, new Object[] {3L});
-        ArrayAssertionUtil.assertProps(listener.getLastOldData()[0], fields, new Object[] {1L});
+        ArrayAssertionUtil.assertProps(listener.getLastNewData()[0], fields, new Object[] {2L});
+        ArrayAssertionUtil.assertProps(listener.getLastOldData()[0], fields, new Object[] {0L});
         listener.reset();
 
         sendEvent("E2", 40);
         sendEventMD("E2", 4L);
-        ArrayAssertionUtil.assertProps(listener.getLastNewData()[0], fields, new Object[] {4L});
-        ArrayAssertionUtil.assertProps(listener.getLastOldData()[0], fields, new Object[] {3L});
+        ArrayAssertionUtil.assertProps(listener.getLastNewData()[0], fields, new Object[] {1L});
+        ArrayAssertionUtil.assertProps(listener.getLastOldData()[0], fields, new Object[] {0L});
         listener.reset();
     }
 
@@ -154,7 +154,35 @@ public class TestUnidirectionalStreamJoin extends TestCase
         assertEquals(2L, listener.assertOneGetNewAndReset().get("num"));
 
         epService.getEPRuntime().sendEvent(new CurrentTimeEvent(140000));
-        assertEquals(4L, listener.assertOneGetNewAndReset().get("num"));
+        assertEquals(2L, listener.assertOneGetNewAndReset().get("num"));
+    }
+
+    public void testPatternJoinOutputRate()
+    {
+        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("SupportBean", SupportBean.class);
+        epService.getEPRuntime().sendEvent(new CurrentTimeEvent(1000));
+
+        // no iterator allowed
+        String stmtText = "select count(*) as num " +
+                "from pattern [every timer:at(*/1,*,*,*,*)] unidirectional,\n" +
+                "SupportBean(intPrimitive=1).std:unique(string) a,\n" +
+                "SupportBean(intPrimitive=2).std:unique(string) b\n" +
+                "where a.string = b.string output every 2 minutes";
+        EPStatement stmt = epService.getEPAdministrator().createEPL(stmtText);
+        stmt.addListener(listener);
+
+        sendEvent("A", 1);
+        sendEvent("A", 2);
+        sendEvent("B", 1);
+        sendEvent("B", 2);
+        assertFalse(listener.isInvoked());
+
+        epService.getEPRuntime().sendEvent(new CurrentTimeEvent(70000));
+        epService.getEPRuntime().sendEvent(new CurrentTimeEvent(140000));
+
+        epService.getEPRuntime().sendEvent(new CurrentTimeEvent(210000));
+        assertEquals(2L, listener.getLastNewData()[0].get("num"));
+        assertEquals(2L, listener.getLastNewData()[1].get("num"));
     }
 
     private void try3TableOuterJoin(EPStatement statement)

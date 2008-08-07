@@ -130,6 +130,19 @@ public class ConfigurationMetricsReporting implements Serializable
         return statementGroups;
     }
 
+    public void setStatementGroupInterval(String stmtGroupName, long newInterval)
+    {
+        StmtGroupMetrics metrics = statementGroups.get(stmtGroupName);
+        if (metrics != null)
+        {
+            metrics.setInterval(newInterval);
+        }
+        else
+        {
+            throw new ConfigurationException("Statement group by name '" + stmtGroupName + "' could not be found");
+        }
+    }
+
     /**
      * Class to configure statement metrics reporting for a group of one or more statements. 
      */

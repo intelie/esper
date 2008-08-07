@@ -79,7 +79,7 @@ public class EPServicesContextFactoryDefault implements EPServicesContextFactory
         {
             throw new ConfigurationException("Timer resolution configuration not set to a valid value, expecting a non-zero value");
         }
-        TimerService timerService = new TimerServiceImpl(msecTimerResolution);
+        TimerService timerService = new TimerServiceImpl(epServiceProvider.getURI(), msecTimerResolution);
 
         VariableService variableService = new VariableServiceImpl(configSnapshot.getEngineDefaults().getVariables().getMsecVersionRelease(), schedulingService, null);
         initVariables(variableService, configSnapshot.getVariables());

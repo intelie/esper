@@ -44,6 +44,7 @@ public class ResultSetProcessorAggregateGrouped implements ResultSetProcessor
     private final ExprNode optionalHavingNode;
     private final boolean isSorting;
     private final boolean isSelectRStream;
+    private final boolean isUnidirectional;
 
     // For output limiting, keep a representative of each group-by group
     private final Map<MultiKeyUntyped, EventBean[]> eventGroupReps = new HashMap<MultiKeyUntyped, EventBean[]>();
@@ -70,7 +71,8 @@ public class ResultSetProcessorAggregateGrouped implements ResultSetProcessor
                                       		  AggregationService aggregationService,
                                       		  List<ExprNode> groupKeyNodes,
                                       		  ExprNode optionalHavingNode,
-                                                boolean isSelectRStream)
+                                              boolean isSelectRStream,
+                                              boolean isUnidirectional)
     {
         this.selectExprProcessor = selectExprProcessor;
         this.orderByProcessor = orderByProcessor;
@@ -79,6 +81,7 @@ public class ResultSetProcessorAggregateGrouped implements ResultSetProcessor
         this.optionalHavingNode = optionalHavingNode;
         this.isSorting = orderByProcessor != null;
         this.isSelectRStream = isSelectRStream;
+        this.isUnidirectional = isUnidirectional;
     }
 
     public EventType getResultEventType()
@@ -96,6 +99,11 @@ public class ResultSetProcessorAggregateGrouped implements ResultSetProcessor
         if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
         {
             log.debug(".processJoinResults creating old output events");
+        }
+
+        if (isUnidirectional)
+        {
+            this.clear();
         }
 
         // update aggregates
@@ -334,6 +342,10 @@ public class ResultSetProcessorAggregateGrouped implements ResultSetProcessor
         {
             EventBean[] eventsPerStream = row.getArray();
 
+            if (isUnidirectional)
+            {
+                this.clear();
+            }
             aggregationService.setCurrentRow(groupByKeys[count]);
 
             // Filter the having clause
@@ -489,6 +501,11 @@ public class ResultSetProcessorAggregateGrouped implements ResultSetProcessor
                 MultiKeyUntyped[] newDataMultiKey = generateGroupKeys(newData, true);
                 MultiKeyUntyped[] oldDataMultiKey = generateGroupKeys(oldData, false);
 
+                if (isUnidirectional)
+                {
+                    this.clear();
+                }
+
                 if (newData != null)
                 {
                     // apply new data to aggregates
@@ -570,6 +587,11 @@ public class ResultSetProcessorAggregateGrouped implements ResultSetProcessor
 
                 MultiKeyUntyped[] newDataMultiKey = generateGroupKeys(newData, true);
                 MultiKeyUntyped[] oldDataMultiKey = generateGroupKeys(oldData, false);
+
+                if (isUnidirectional)
+                {
+                    this.clear();
+                }
 
                 if (newData != null)
                 {
@@ -666,6 +688,11 @@ public class ResultSetProcessorAggregateGrouped implements ResultSetProcessor
 
                 MultiKeyUntyped[] newDataMultiKey = generateGroupKeys(newData, true);
                 MultiKeyUntyped[] oldDataMultiKey = generateGroupKeys(oldData, false);
+
+                if (isUnidirectional)
+                {
+                    this.clear();
+                }
 
                 if (newData != null)
                 {

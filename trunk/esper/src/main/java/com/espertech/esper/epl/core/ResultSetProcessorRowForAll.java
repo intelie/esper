@@ -30,7 +30,8 @@ import java.util.Set;
  */
 public class ResultSetProcessorRowForAll implements ResultSetProcessor
 {
-    private boolean isSelectRStream;
+    private final boolean isSelectRStream;
+    private final boolean isUnidirectional;
     private final SelectExprProcessor selectExprProcessor;
     private final AggregationService aggregationService;
     private final OrderByProcessor orderByProcessor;
@@ -48,13 +49,15 @@ public class ResultSetProcessorRowForAll implements ResultSetProcessor
                                        AggregationService aggregationService,
                                        OrderByProcessor orderByProcessor,
                                        ExprNode optionalHavingNode,
-                                       boolean isSelectRStream)
+                                       boolean isSelectRStream,
+                                       boolean isUnidirectional)
     {
         this.selectExprProcessor = selectExprProcessor;
         this.aggregationService = aggregationService;
         this.optionalHavingNode = optionalHavingNode;
         this.orderByProcessor = orderByProcessor;
         this.isSelectRStream = isSelectRStream;
+        this.isUnidirectional = isUnidirectional;
     }
 
     public EventType getResultEventType()
@@ -66,6 +69,11 @@ public class ResultSetProcessorRowForAll implements ResultSetProcessor
     {
         EventBean[] selectOldEvents = null;
         EventBean[] selectNewEvents;
+
+        if (isUnidirectional)
+        {
+            this.clear();
+        }
 
         if (isSelectRStream)
         {
@@ -219,6 +227,11 @@ public class ResultSetProcessorRowForAll implements ResultSetProcessor
 
             for (UniformPair<Set<MultiKey<EventBean>>> pair : joinEventsSet)
             {
+                if (isUnidirectional)
+                {
+                    this.clear();
+                }
+
                 Set<MultiKey<EventBean>> newData = pair.getFirst();
                 Set<MultiKey<EventBean>> oldData = pair.getSecond();
 
@@ -278,6 +291,11 @@ public class ResultSetProcessorRowForAll implements ResultSetProcessor
 
             for (UniformPair<Set<MultiKey<EventBean>>> pair : joinEventsSet)
             {
+                if (isUnidirectional)
+                {
+                    this.clear();
+                }
+
                 Set<MultiKey<EventBean>> newData = pair.getFirst();
                 Set<MultiKey<EventBean>> oldData = pair.getSecond();
 

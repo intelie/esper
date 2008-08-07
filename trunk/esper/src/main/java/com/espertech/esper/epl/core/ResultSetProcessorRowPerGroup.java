@@ -38,6 +38,7 @@ public class ResultSetProcessorRowPerGroup implements ResultSetProcessor
     private final ExprNode optionalHavingNode;
     private final boolean isSorting;
     private final boolean isSelectRStream;
+    private final boolean isUnidirectional;
 
     // For output rate limiting, keep a representative event for each group for
     // representing each group in an output limit clause
@@ -63,7 +64,8 @@ public class ResultSetProcessorRowPerGroup implements ResultSetProcessor
                                          AggregationService aggregationService,
                                          List<ExprNode> groupKeyNodes,
                                          ExprNode optionalHavingNode,
-                                         boolean isSelectRStream)
+                                         boolean isSelectRStream,
+                                         boolean isUnidirectional)
     {
         this.selectExprProcessor = selectExprProcessor;
         this.orderByProcessor = orderByProcessor;
@@ -72,6 +74,7 @@ public class ResultSetProcessorRowPerGroup implements ResultSetProcessor
         this.optionalHavingNode = optionalHavingNode;
         this.isSorting = orderByProcessor != null;
         this.isSelectRStream = isSelectRStream;
+        this.isUnidirectional = isUnidirectional;
     }
 
     public EventType getResultEventType()
@@ -85,6 +88,11 @@ public class ResultSetProcessorRowPerGroup implements ResultSetProcessor
         Map<MultiKeyUntyped, EventBean[]> keysAndEvents = new HashMap<MultiKeyUntyped, EventBean[]>();
         MultiKeyUntyped[] newDataMultiKey = generateGroupKeys(newEvents, keysAndEvents, true);
         MultiKeyUntyped[] oldDataMultiKey = generateGroupKeys(oldEvents, keysAndEvents, false);
+
+        if (isUnidirectional)
+        {
+            this.clear();
+        }
 
         // generate old events
         EventBean[] selectOldEvents = null;
@@ -538,6 +546,11 @@ public class ResultSetProcessorRowPerGroup implements ResultSetProcessor
                 Set<MultiKey<EventBean>> newData = pair.getFirst();
                 Set<MultiKey<EventBean>> oldData = pair.getSecond();
 
+                if (isUnidirectional)
+                {
+                    this.clear();
+                }
+
                 MultiKeyUntyped[] newDataMultiKey = generateGroupKeys(newData, keysAndEvents, true);
                 MultiKeyUntyped[] oldDataMultiKey = generateGroupKeys(oldData, keysAndEvents, false);
 
@@ -625,6 +638,11 @@ public class ResultSetProcessorRowPerGroup implements ResultSetProcessor
             {
                 Set<MultiKey<EventBean>> newData = pair.getFirst();
                 Set<MultiKey<EventBean>> oldData = pair.getSecond();
+
+                if (isUnidirectional)
+                {
+                    this.clear();
+                }
 
                 if (newData != null)
                 {
@@ -719,6 +737,11 @@ public class ResultSetProcessorRowPerGroup implements ResultSetProcessor
             {
                 Set<MultiKey<EventBean>> newData = pair.getFirst();
                 Set<MultiKey<EventBean>> oldData = pair.getSecond();
+
+                if (isUnidirectional)
+                {
+                    this.clear();
+                }
 
                 if (newData != null)
                 {
