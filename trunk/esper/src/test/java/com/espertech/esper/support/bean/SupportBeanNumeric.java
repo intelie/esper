@@ -6,14 +6,14 @@ import java.math.BigDecimal;
 
 public class SupportBeanNumeric implements Serializable
 {
-    private int intOne;
-    private int intTwo;
+    private Integer intOne;
+    private Integer intTwo;
     private BigInteger bigint;
     private BigDecimal bigdec;
     private double doubleOne;
     private double doubleTwo;
 
-    public SupportBeanNumeric(int intOne, int intTwo, BigInteger bigint, BigDecimal bigdec, double doubleOne, double doubleTwo)
+    public SupportBeanNumeric(Integer intOne, Integer intTwo, BigInteger bigint, BigDecimal bigdec, double doubleOne, double doubleTwo)
     {
         this.intOne = intOne;
         this.intTwo = intTwo;
@@ -23,7 +23,7 @@ public class SupportBeanNumeric implements Serializable
         this.doubleTwo = doubleTwo;
     }
 
-    public SupportBeanNumeric(int intOne, int intTwo)
+    public SupportBeanNumeric(Integer intOne, Integer intTwo)
     {
         this.intOne = intOne;
         this.intTwo = intTwo;
@@ -35,12 +35,12 @@ public class SupportBeanNumeric implements Serializable
         this.bigdec = bigdec;
     }
 
-    public int getIntOne()
+    public Integer getIntOne()
     {
         return intOne;
     }
 
-    public int getIntTwo()
+    public Integer getIntTwo()
     {
         return intTwo;
     }
@@ -65,12 +65,12 @@ public class SupportBeanNumeric implements Serializable
         return doubleTwo;
     }
 
-    public void setIntOne(int intOne)
+    public void setIntOne(Integer intOne)
     {
         this.intOne = intOne;
     }
 
-    public void setIntTwo(int intTwo)
+    public void setIntTwo(Integer intTwo)
     {
         this.intTwo = intTwo;
     }

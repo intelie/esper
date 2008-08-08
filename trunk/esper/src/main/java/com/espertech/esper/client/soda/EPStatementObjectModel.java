@@ -55,6 +55,7 @@ public class EPStatementObjectModel implements Serializable
     private Expression havingClause;
     private OutputLimitClause outputLimitClause;
     private OrderByClause orderByClause;
+    private RowLimitClause rowLimitClause;
 
     private List<SubstitutionParameterExpression> substitutions = new ArrayList<SubstitutionParameterExpression>();
 
@@ -238,8 +239,17 @@ public class EPStatementObjectModel implements Serializable
         {
             createWindow.toEPL(writer);
             writer.write(" as ");
+            if (selectClause == null)
+            {
+                throw new IllegalStateException("Select clause has not been defined");
+            }
             selectClause.toEPL(writer);
+            if (fromClause == null)
+            {
+                throw new IllegalStateException("From clause has not been defined");
+            }
             fromClause.toEPL(writer);
+            createWindow.toEPLInsertPart(writer);
             return writer.toString();
         }
 
@@ -320,6 +330,11 @@ public class EPStatementObjectModel implements Serializable
             writer.write(" order by ");
             orderByClause.toEPL(writer);
         }
+        if (rowLimitClause != null)
+        {
+            writer.write(" limit ");
+            rowLimitClause.toEPL(writer);
+        }
 
         return writer.toString();
     }
@@ -380,5 +395,23 @@ public class EPStatementObjectModel implements Serializable
     public void setCreateVariable(CreateVariableClause createVariable)
     {
         this.createVariable = createVariable;
+    }
+
+    /**
+     * Returns the row limit specification, or null if none supplied.
+     * @return row limit spec if any
+     */
+    public RowLimitClause getRowLimitClause()
+    {
+        return rowLimitClause;
+    }
+
+    /**
+     * Sets the row limit specification, or null if none applicable.
+     * @param rowLimitClause row limit spec if any
+     */
+    public void setRowLimitClause(RowLimitClause rowLimitClause)
+    {
+        this.rowLimitClause = rowLimitClause;
     }
 }

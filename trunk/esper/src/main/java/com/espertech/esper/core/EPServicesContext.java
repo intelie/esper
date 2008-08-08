@@ -14,6 +14,7 @@ import com.espertech.esper.emit.EmitServiceProvider;
 import com.espertech.esper.epl.core.EngineImportService;
 import com.espertech.esper.epl.core.EngineSettingsService;
 import com.espertech.esper.epl.db.DatabaseConfigService;
+import com.espertech.esper.epl.metric.MetricReportingService;
 import com.espertech.esper.epl.named.NamedWindowService;
 import com.espertech.esper.epl.spec.PluggableObjectCollection;
 import com.espertech.esper.epl.variable.VariableService;
@@ -22,8 +23,8 @@ import com.espertech.esper.event.EventAdapterService;
 import com.espertech.esper.event.vaevent.ValueAddEventService;
 import com.espertech.esper.filter.FilterService;
 import com.espertech.esper.schedule.SchedulingService;
-import com.espertech.esper.timer.TimerService;
 import com.espertech.esper.timer.TimeSourceService;
+import com.espertech.esper.timer.TimerService;
 import com.espertech.esper.util.ManagedReadWriteLock;
 import com.espertech.esper.view.ViewService;
 import com.espertech.esper.view.ViewServiceProvider;
@@ -59,6 +60,7 @@ public final class EPServicesContext
     private VariableService variableService;
     private TimeSourceService timeSourceService;
     private ValueAddEventService valueAddEventService;
+    private MetricReportingService metricsReportingService;
 
     // Supplied after construction to avoid circular dependency
     private StatementLifecycleSvc statementLifecycleSvc;
@@ -87,6 +89,7 @@ public final class EPServicesContext
      * @param variableService provides access to variable values
      * @param valueAddEventService handles update events
      * @param timeSourceService time source provider class
+     * @param metricsReportingService - for metric reporting
      */
     public EPServicesContext(String engineURI,
                              SchedulingService schedulingService,
@@ -108,7 +111,8 @@ public final class EPServicesContext
                              NamedWindowService namedWindowService,
                              VariableService variableService,
                              TimeSourceService timeSourceService,
-                             ValueAddEventService valueAddEventService)
+                             ValueAddEventService valueAddEventService,
+                             MetricReportingService metricsReportingService)
     {
         this.engineURI = engineURI;
         this.schedulingService = schedulingService;
@@ -134,6 +138,7 @@ public final class EPServicesContext
         this.variableService = variableService;
         this.timeSourceService = timeSourceService;
         this.valueAddEventService = valueAddEventService;
+        this.metricsReportingService = metricsReportingService;
     }
 
     /**
@@ -321,13 +326,13 @@ public final class EPServicesContext
      */
     public void destroy()
     {
+        if (metricsReportingService != null)
+        {
+            metricsReportingService.destroy();
+        }
         if (statementLifecycleSvc != null)
         {
             statementLifecycleSvc.destroy();
-        }
-        if (extensionServicesContext != null)
-        {
-            extensionServicesContext.destroy();
         }
         if (filterService != null)
         {
@@ -344,6 +349,10 @@ public final class EPServicesContext
         if (namedWindowService != null)
         {
             namedWindowService.destroy();
+        }
+        if (extensionServicesContext != null)
+        {
+            extensionServicesContext.destroy();
         }
     }
 
@@ -374,6 +383,7 @@ public final class EPServicesContext
         this.plugInPatternObjects = null;
         this.namedWindowService = null;
         this.valueAddEventService = null;
+        this.metricsReportingService = null;
     }
 
     /**
@@ -455,5 +465,14 @@ public final class EPServicesContext
     public ValueAddEventService getValueAddEventService()
     {
         return valueAddEventService;
+    }
+
+    /**
+     * Returns metrics reporting.
+     * @return metrics reporting
+     */
+    public MetricReportingService getMetricsReportingService()
+    {
+        return metricsReportingService;
     }
 }

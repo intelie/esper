@@ -1,17 +1,20 @@
 package com.espertech.esper.client;
 
+import com.espertech.esper.client.soda.StreamSelector;
+import com.espertech.esper.support.util.ArrayAssertionUtil;
+import com.espertech.esper.type.StringPatternSet;
+import com.espertech.esper.type.StringPatternSetRegex;
+import com.espertech.esper.type.StringPatternSetLike;
+import com.espertech.esper.collection.Pair;
 import junit.framework.TestCase;
 
 import javax.xml.xpath.XPathConstants;
-import java.net.URL;
 import java.net.URI;
+import java.net.URL;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
-
-import com.espertech.esper.client.soda.StreamSelector;
-import com.espertech.esper.support.util.ArrayAssertionUtil;
 
 public class TestConfigurationParser extends TestCase
 {
@@ -106,7 +109,6 @@ public class TestConfigurationParser extends TestCase
         Set<String> superTypes = config.getMapSuperTypes().get("MyMapEvent");
         assertEquals(2, superTypes.size());
         assertTrue(superTypes.contains("MyMapSuperType1") && superTypes.contains("MyMapSuperType2"));
-
 
         // assert legacy type declaration
         assertEquals(1, config.getEventTypesLegacy().size());
@@ -238,6 +240,30 @@ public class TestConfigurationParser extends TestCase
         assertEquals(StreamSelector.RSTREAM_ISTREAM_BOTH, config.getEngineDefaults().getStreamSelection().getDefaultStreamSelector());
 
         assertEquals(ConfigurationEngineDefaults.TimeSourceType.NANO, config.getEngineDefaults().getTimeSource().getTimeSourceType());
+
+        ConfigurationMetricsReporting metrics = config.getEngineDefaults().getMetricsReporting();
+        assertTrue(metrics.isEnableMetricsReporting());
+        assertEquals(4000L, metrics.getEngineInterval());
+        assertEquals(500L, metrics.getStatementInterval());
+        assertFalse(metrics.isThreading());
+        assertEquals(2, metrics.getStatementGroups().size());
+        ConfigurationMetricsReporting.StmtGroupMetrics def = metrics.getStatementGroups().get("MyStmtGroup");
+        assertEquals(5000, def.getInterval());
+        assertTrue(def.isDefaultInclude());
+        assertEquals(50, def.getNumStatements());
+        assertTrue(def.isReportInactive());
+        assertEquals(5, def.getPatterns().size());
+        assertEquals(def.getPatterns().get(0), new Pair<StringPatternSet, Boolean>(new StringPatternSetRegex(".*"), true));
+        assertEquals(def.getPatterns().get(1), new Pair<StringPatternSet, Boolean>(new StringPatternSetRegex(".*test.*"), false));
+        assertEquals(def.getPatterns().get(2), new Pair<StringPatternSet, Boolean>(new StringPatternSetLike("%MyMetricsStatement%"), false));
+        assertEquals(def.getPatterns().get(3), new Pair<StringPatternSet, Boolean>(new StringPatternSetLike("%MyFraudAnalysisStatement%"), true));
+        assertEquals(def.getPatterns().get(4), new Pair<StringPatternSet, Boolean>(new StringPatternSetLike("%SomerOtherStatement%"), true));
+        def = metrics.getStatementGroups().get("MyStmtGroupTwo");
+        assertEquals(200, def.getInterval());
+        assertFalse(def.isDefaultInclude());
+        assertEquals(100, def.getNumStatements());
+        assertFalse(def.isReportInactive());
+        assertEquals(0, def.getPatterns().size());
 
         // variables
         assertEquals(2, config.getVariables().size());

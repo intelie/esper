@@ -21,6 +21,10 @@ public class TestRFIDTagsPerSensorStmt extends TestCase
     public void setUp() {
         URL url = TestRFIDTagsPerSensorStmt.class.getClassLoader().getResource("esper.examples.cfg.xml");
         Configuration config = new Configuration();
+        if (url == null)
+        {
+            throw new RuntimeException("Could not load sample config file from classpath");
+        }
         config.configure(url);
 
         epService = EPServiceProviderManager.getProvider("AutoIdSim", config);

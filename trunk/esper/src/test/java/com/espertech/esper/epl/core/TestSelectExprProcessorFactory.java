@@ -20,7 +20,7 @@ import java.util.List;
 public class TestSelectExprProcessorFactory extends TestCase
 {
     private List<SelectClauseStreamCompiledSpec> listOfStreamsSelected = new ArrayList<SelectClauseStreamCompiledSpec>();
-    private StatementResultService statementResultService = new StatementResultServiceImpl(null); 
+    private StatementResultService statementResultService = new StatementResultServiceImpl(null, null); 
 
     public void testGetProcessorInvalid() throws Exception
     {

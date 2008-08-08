@@ -9,7 +9,6 @@ package com.espertech.esper.client;
 
 import javax.naming.Context;
 
-
 /**
  * This class provides access to the EPRuntime and EPAdministrator implementations.
  */
@@ -37,9 +36,12 @@ public interface EPServiceProvider
     public Context getContext();
 
     /**
-     * Frees any resources associated with this runtime instance, and leaves the engine instance
+     * Frees any resources associated with this engine instance, and leaves the engine instance
      * ready for further use.
-     * <p>Stops and destroys any existing statement resources such as filters, patterns, expressions, views.
+     * <p>
+     * Retains the existing configuration of the engine instance but forgets any runtime configuration changes.
+     * <p>
+     * Stops and destroys any existing statement resources such as filters, patterns, expressions, views.
      */
     public void initialize();
 
@@ -54,7 +56,9 @@ public interface EPServiceProvider
      * <p>
      * Releases any resources held by the service. The service enteres a state in
      * which operations provided by administrative and runtime interfaces originiated by the service
-     * are not guaranteed to operate properly.   
+     * are not guaranteed to operate properly.
+     * <p>
+     * Removes the service URI from the known URIs. Allows configuration to change for the instance.
      */
     public void destroy();
 

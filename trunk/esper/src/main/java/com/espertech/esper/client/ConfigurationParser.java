@@ -11,6 +11,10 @@ import com.espertech.esper.util.DOMElementIterator;
 import com.espertech.esper.util.JavaClassHelper;
 import com.espertech.esper.event.EventAdapterException;
 import com.espertech.esper.client.soda.StreamSelector;
+import com.espertech.esper.type.StringPatternSet;
+import com.espertech.esper.type.StringPatternSetRegex;
+import com.espertech.esper.type.StringPatternSetLike;
+import com.espertech.esper.collection.Pair;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.w3c.dom.Document;
@@ -818,6 +822,10 @@ class ConfigurationParser {
             {
                 handleDefaultsTimeSource(configuration, subElement);
             }
+            if (subElement.getNodeName().equals("metrics-reporting"))
+            {
+                handleMetricsReporting(configuration, subElement);
+            }
         }
     }
 
@@ -992,6 +1000,95 @@ class ConfigurationParser {
         }
     }
 
+    private static void handleMetricsReporting(Configuration configuration, Element parentElement)
+    {
+        String enabled = getRequiredAttribute(parentElement, "enabled");
+        boolean isEnabled = Boolean.parseBoolean(enabled);
+        configuration.getEngineDefaults().getMetricsReporting().setEnableMetricsReporting(isEnabled);
+
+        String engineInterval = getOptionalAttribute(parentElement, "engine-interval");
+        if (engineInterval != null)
+        {
+            configuration.getEngineDefaults().getMetricsReporting().setEngineInterval(Long.parseLong(engineInterval));
+        }
+
+        String statementInterval = getOptionalAttribute(parentElement, "statement-interval");
+        if (statementInterval != null)
+        {
+            configuration.getEngineDefaults().getMetricsReporting().setStatementInterval(Long.parseLong(statementInterval));
+        }
+
+        String threading = getOptionalAttribute(parentElement, "threading");
+        if (threading != null)
+        {
+            configuration.getEngineDefaults().getMetricsReporting().setThreading(Boolean.parseBoolean(threading));
+        }
+
+        DOMElementIterator nodeIterator = new DOMElementIterator(parentElement.getChildNodes());
+        while (nodeIterator.hasNext())
+        {
+            Element subElement = nodeIterator.next();
+            if (subElement.getNodeName().equals("stmtgroup"))
+            {
+                String name = getRequiredAttribute(subElement, "name");
+                long interval = Long.parseLong(getRequiredAttribute(subElement, "interval"));
+
+                ConfigurationMetricsReporting.StmtGroupMetrics metrics = new ConfigurationMetricsReporting.StmtGroupMetrics();
+                metrics.setInterval(interval);
+                configuration.getEngineDefaults().getMetricsReporting().addStmtGroup(name, metrics);
+
+                String defaultInclude = getOptionalAttribute(subElement, "default-include");
+                if (defaultInclude != null)
+                {
+                    metrics.setDefaultInclude(Boolean.parseBoolean(defaultInclude));
+                }
+                
+                String numStmts = getOptionalAttribute(subElement, "num-stmts");
+                if (numStmts != null)
+                {
+                    metrics.setNumStatements(Integer.parseInt(numStmts));
+                }
+
+                String reportInactive = getOptionalAttribute(subElement, "report-inactive");
+                if (reportInactive != null)
+                {
+                    metrics.setReportInactive(Boolean.parseBoolean(reportInactive));
+                }
+
+                handleMetricsReportingPatterns(metrics, subElement);
+            }
+        }
+    }
+
+    private static void handleMetricsReportingPatterns(ConfigurationMetricsReporting.StmtGroupMetrics groupDef, Element parentElement)
+    {
+        DOMElementIterator nodeIterator = new DOMElementIterator(parentElement.getChildNodes());
+        while (nodeIterator.hasNext())
+        {
+            Element subElement = nodeIterator.next();
+            if (subElement.getNodeName().equals("include-regex"))
+            {
+                String text = subElement.getChildNodes().item(0).getTextContent();
+                groupDef.getPatterns().add(new Pair<StringPatternSet, Boolean>(new StringPatternSetRegex(text), true));
+            }
+            if (subElement.getNodeName().equals("exclude-regex"))
+            {
+                String text = subElement.getChildNodes().item(0).getTextContent();
+                groupDef.getPatterns().add(new Pair<StringPatternSet, Boolean>(new StringPatternSetRegex(text), false));
+            }
+            if (subElement.getNodeName().equals("include-like"))
+            {
+                String text = subElement.getChildNodes().item(0).getTextContent();
+                groupDef.getPatterns().add(new Pair<StringPatternSet, Boolean>(new StringPatternSetLike(text), true));
+            }
+            if (subElement.getNodeName().equals("exclude-like"))
+            {
+                String text = subElement.getChildNodes().item(0).getTextContent();
+                groupDef.getPatterns().add(new Pair<StringPatternSet, Boolean>(new StringPatternSetLike(text), false));
+            }
+        }
+    }
+
     private static void handleDefaultsEventMeta(Configuration configuration, Element parentElement)
     {
         DOMElementIterator nodeIterator = new DOMElementIterator(parentElement.getChildNodes());
@@ -1059,6 +1156,16 @@ class ConfigurationParser {
             return valueNode.getTextContent();
         }
         return null;
+    }
+
+    private static String getRequiredAttribute(Node node, String key)
+    {
+        Node valueNode = node.getAttributes().getNamedItem(key);
+        if (valueNode == null)
+        {
+            throw new ConfigurationException("Required attribute by name '" + key + "' not found");
+        }
+        return valueNode.getTextContent();
     }
 
     private static Log log = LogFactory.getLog(ConfigurationParser.class);

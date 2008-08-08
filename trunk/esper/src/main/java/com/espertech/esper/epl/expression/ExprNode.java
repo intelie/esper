@@ -16,6 +16,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.util.LinkedList;
+import java.util.List;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 
@@ -254,6 +255,35 @@ public abstract class ExprNode implements ExprValidator, ExprEvaluator, MetaDefI
             }
         }
         return true;
+    }
+
+    /**
+     * Check if the expression is minimal: does not have a subselect, aggregation and does not need view resources
+     * @return null if minimal, otherwise name of offending sub-expression
+     */
+    public String isMinimalExpression()
+    {
+        ExprNodeSubselectVisitor subselectVisitor = new ExprNodeSubselectVisitor();
+        this.accept(subselectVisitor);
+        if (subselectVisitor.getSubselects().size() > 0)
+        {
+            return "a subselect";
+        }
+
+        ExprNodeViewResourceVisitor viewResourceVisitor = new ExprNodeViewResourceVisitor();
+        this.accept(viewResourceVisitor);
+        if (viewResourceVisitor.getExprNodes().size() > 0)
+        {
+            return "a function that requires view resources (prior, prev)";
+        }
+
+        List<ExprAggregateNode> aggregateNodes = new LinkedList<ExprAggregateNode>();
+        ExprAggregateNode.getAggregatesBottomUp(this, aggregateNodes);
+        if (!aggregateNodes.isEmpty())
+        {
+            return "an aggregation function";
+        }
+        return null;
     }
 
     // Since static method calls such as "Class.method('a')" and mapped properties "Stream.property('key')"

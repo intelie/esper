@@ -14,6 +14,7 @@ import com.espertech.esper.filter.FilterService;
 import com.espertech.esper.schedule.SchedulingService;
 import com.espertech.esper.timer.TimerService;
 import com.espertech.esper.epl.named.NamedWindowService;
+import com.espertech.esper.epl.metric.MetricReportingService;
 
 import javax.naming.Context;
 
@@ -81,4 +82,10 @@ public interface EPServiceProviderSPI extends EPServiceProvider
      * @return extension services context
      */
     public ExtensionServicesContext getExtensionServicesContext();
+
+    /**
+     * Returns metrics reporting.
+     * @return metrics reporting
+     */
+    public MetricReportingService getMetricReportingService();
 }

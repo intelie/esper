@@ -78,7 +78,7 @@ public class LastElementView extends ViewSupport implements CloneableView
         {
             for (int i = 0; i < oldData.length; i++)
             {
-                if (oldData[i].equals(lastEvent))
+                if (oldData[i] == lastEvent)
                 {
                     if (oldDataToPost == null)
                     {

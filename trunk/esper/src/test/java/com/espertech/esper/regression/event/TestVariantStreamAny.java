@@ -23,6 +23,7 @@ public class TestVariantStreamAny extends TestCase
         ConfigurationVariantStream variant = new ConfigurationVariantStream();
         variant.setTypeVariance(ConfigurationVariantStream.TypeVariance.ANY);
         config.addVariantStream("MyVariantStream", variant);
+        assertTrue(config.isVariantStreamExists("MyVariantStream"));
 
         epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();
@@ -31,6 +32,7 @@ public class TestVariantStreamAny extends TestCase
 
     public void testAnyType()
     {
+        assertTrue(epService.getEPAdministrator().getConfiguration().isVariantStreamExists("MyVariantStream"));
         epService.getEPAdministrator().createEPL("insert into MyVariantStream select * from " + SupportBean.class.getName());
         epService.getEPAdministrator().createEPL("insert into MyVariantStream select * from " + SupportBeanVariantStream.class.getName());
         epService.getEPAdministrator().createEPL("insert into MyVariantStream select * from " + SupportBean_A.class.getName());

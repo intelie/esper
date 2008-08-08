@@ -14,6 +14,8 @@ public class CreateWindowClause implements Serializable
 
     private String windowName;
     private List<View> views;
+    private boolean isInsert;
+    private Expression insertWhereClause;
 
     /**
      * Creates a clause to create a named window.
@@ -116,6 +118,23 @@ public class CreateWindowClause implements Serializable
     }
 
     /**
+     * Renders the clause in textual representation.
+     * @param writer to output to
+     */
+    public void toEPLInsertPart(StringWriter writer)
+    {
+        if (isInsert)
+        {
+            writer.write(" insert");
+            if (insertWhereClause != null)
+            {
+                writer.write(" where ");
+                insertWhereClause.toEPL(writer);
+            }
+        }
+    }
+
+    /**
      * Returns the window name.
      * @return window name
      */
@@ -140,6 +159,46 @@ public class CreateWindowClause implements Serializable
     public List<View> getViews()
     {
         return views;
+    }
+
+    /**
+     * Returns true if inserting from another named window, false if not.
+     * @return insert from named window
+     */
+    public boolean isInsert()
+    {
+        return isInsert;
+    }
+
+    /**
+     * Filter expression for inserting from another named window, or null if not inserting from another named window.
+     * @return filter expression
+     */
+    public Expression getInsertWhereClause()
+    {
+        return insertWhereClause;
+    }
+
+    /**
+     * Sets flag indicating that an insert from another named window should take place at the time of window creation.
+     * @param insert true for insert from another named window
+     * @return clause
+     */
+    public CreateWindowClause setInsert(boolean insert)
+    {
+        isInsert = insert;
+        return this;
+    }
+
+    /**
+     * Sets the filter expression for inserting from another named window
+     * @param insertWhereClause filter expression
+     * @return create window clause
+     */
+    public CreateWindowClause setInsertWhereClause(Expression insertWhereClause)
+    {
+        this.insertWhereClause = insertWhereClause;
+        return this;
     }
 
     /**

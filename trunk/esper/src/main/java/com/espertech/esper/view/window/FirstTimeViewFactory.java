@@ -1,0 +1,109 @@
+package com.espertech.esper.view.window;
+
+import com.espertech.esper.epl.core.ViewResourceCallback;
+import com.espertech.esper.epl.named.RemoveStreamViewCapability;
+import com.espertech.esper.type.TimePeriodParameter;
+import com.espertech.esper.event.EventType;
+import com.espertech.esper.util.JavaClassHelper;
+import com.espertech.esper.view.*;
+import com.espertech.esper.core.StatementContext;
+
+import java.util.List;
+
+/**
+ * Factory for {@link FirstTimeView}.
+ */
+public class FirstTimeViewFactory implements DataWindowViewFactory
+{
+    private EventType eventType;
+
+    /**
+     * Number of msec before expiry.
+     */
+    protected long millisecondsBeforeExpiry;
+
+    public void setViewParameters(ViewFactoryContext viewFactoryContext, List<Object> viewParameters) throws ViewParameterException
+    {
+        String errorMessage = "Time first view requires a single numeric or time period parameter";
+        if (viewParameters.size() != 1)
+        {
+            throw new ViewParameterException(errorMessage);
+        }
+
+        Object parameter = viewParameters.get(0);
+        if (parameter instanceof TimePeriodParameter)
+        {
+            TimePeriodParameter param = (TimePeriodParameter) parameter;
+            millisecondsBeforeExpiry = Math.round(1000d * param.getNumSeconds());
+        }
+        else if (!(parameter instanceof Number))
+        {
+            throw new ViewParameterException(errorMessage);
+        }
+        else
+        {
+            Number param = (Number) parameter;
+            if (JavaClassHelper.isFloatingPointNumber(param))
+            {
+                millisecondsBeforeExpiry = Math.round(1000d * param.doubleValue());
+            }
+            else
+            {
+                millisecondsBeforeExpiry = 1000 * param.longValue();
+            }
+        }
+
+        if (millisecondsBeforeExpiry < 1)
+        {
+            throw new ViewParameterException("Time first view requires a size of at least 1 msec");
+        }
+    }
+
+    public void attach(EventType parentEventType, StatementContext statementContext, ViewFactory optionalParentFactory, List<ViewFactory> parentViewFactories) throws ViewAttachException
+    {
+        this.eventType = parentEventType;
+    }
+
+    public boolean canProvideCapability(ViewCapability viewCapability)
+    {
+        if (viewCapability instanceof RemoveStreamViewCapability)
+        {
+            return true;
+        }
+        return false;
+    }
+
+    public void setProvideCapability(ViewCapability viewCapability, ViewResourceCallback resourceCallback)
+    {
+        if (!canProvideCapability(viewCapability))
+        {
+            throw new UnsupportedOperationException("View capability " + viewCapability.getClass().getSimpleName() + " not supported");
+        }
+    }
+
+    public View makeView(StatementContext statementContext)
+    {
+        return new FirstTimeView(this, statementContext, millisecondsBeforeExpiry);
+    }
+
+    public EventType getEventType()
+    {
+        return eventType;
+    }
+
+    public boolean canReuse(View view)
+    {
+        if (!(view instanceof FirstTimeView))
+        {
+            return false;
+        }
+
+        FirstTimeView myView = (FirstTimeView) view;
+        if (myView.getMsecIntervalSize() != millisecondsBeforeExpiry)
+        {
+            return false;
+        }
+
+        return myView.isEmpty();
+    }
+}

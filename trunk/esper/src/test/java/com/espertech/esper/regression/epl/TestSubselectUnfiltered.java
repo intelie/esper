@@ -168,10 +168,10 @@ public class TestSubselectUnfiltered extends TestCase {
                    "Incorrect syntax near ',' expecting 'from' but found a comma ',' at line 1 column 17, please check the subquery within the select clause [select (select id, id from S1) as idS1 from S0]");
 
         tryInvalid("select (select id from S1.std:lastevent() group by id) as idS1 from S0",
-                   "Incorrect syntax near 'group' expecting a closing parenthesis ')' but found 'group' at line 1 column 42, please check the subquery within the select clause [select (select id from S1.std:lastevent() group by id) as idS1 from S0]");
+                   "Incorrect syntax near 'group' (a reserved keyword) expecting a closing parenthesis ')' but found 'group' at line 1 column 42, please check the subquery within the select clause [select (select id from S1.std:lastevent() group by id) as idS1 from S0]");
 
         tryInvalid("select (select (select id from S1.std:lastevent()) id from S1.std:lastevent()) as idS1 from S0",
-                   "Incorrect syntax near 'id' at line 1 column 51, please check the subquery within the select clause [select (select (select id from S1.std:lastevent()) id from S1.std:lastevent()) as idS1 from S0]");
+                   "Incorrect syntax near 'id' at line 1 column 51, please check the subquery within the select clause near reserved keyword 'from' [select (select (select id from S1.std:lastevent()) id from S1.std:lastevent()) as idS1 from S0]");
 
         tryInvalid("select (select id from S1.std:lastevent() where (sum(id) = 5)) as idS1 from S0",
                    "Error starting view: Aggregation functions are not supported within subquery filters, consider using insert-into instead [select (select id from S1.std:lastevent() where (sum(id) = 5)) as idS1 from S0]");

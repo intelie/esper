@@ -45,7 +45,7 @@ public class StatementSpecMapper
     private static StatementSpecRaw map(EPStatementObjectModel sodaStatement, StatementSpecMapContext mapContext)
     {
         StatementSpecRaw raw = new StatementSpecRaw(SelectClauseStreamSelectorEnum.ISTREAM_ONLY);
-        mapCreateWindow(sodaStatement.getCreateWindow(), raw);
+        mapCreateWindow(sodaStatement.getCreateWindow(), raw, mapContext);
         mapCreateVariable(sodaStatement.getCreateVariable(), raw, mapContext);
         mapOnTrigger(sodaStatement.getOnExpr(), raw, mapContext);
         mapInsertInto(sodaStatement.getInsertInto(), raw);
@@ -56,6 +56,7 @@ public class StatementSpecMapper
         mapHaving(sodaStatement.getHavingClause(), raw, mapContext);
         mapOutputLimit(sodaStatement.getOutputLimitClause(), raw, mapContext);
         mapOrderBy(sodaStatement.getOrderByClause(), raw, mapContext);
+        mapRowLimit(sodaStatement.getRowLimitClause(), raw, mapContext);
         return raw;
     }
 
@@ -69,7 +70,7 @@ public class StatementSpecMapper
         StatementSpecUnMapContext unmapContext = new StatementSpecUnMapContext();
 
         EPStatementObjectModel model = new EPStatementObjectModel();
-        unmapCreateWindow(statementSpec.getCreateWindowDesc(), model);
+        unmapCreateWindow(statementSpec.getCreateWindowDesc(), model, unmapContext);
         unmapCreateVariable(statementSpec.getCreateVariableDesc(), model, unmapContext);
         unmapOnClause(statementSpec.getOnTriggerDesc(), model, unmapContext);
         unmapInsertInto(statementSpec.getInsertIntoDesc(), model);
@@ -80,6 +81,7 @@ public class StatementSpecMapper
         unmapHaving(statementSpec.getHavingExprRootNode(), model, unmapContext);
         unmapOutputLimit(statementSpec.getOutputLimitSpec(), model, unmapContext);
         unmapOrderBy(statementSpec.getOrderByList(), model, unmapContext);
+        unmapRowLimit(statementSpec.getRowLimitSpec(), model, unmapContext);
 
         return new StatementSpecUnMapResult(model, unmapContext.getIndexedParams());
     }
@@ -113,13 +115,22 @@ public class StatementSpecMapper
         }
     }
 
-    private static void unmapCreateWindow(CreateWindowDesc createWindowDesc, EPStatementObjectModel model)
+    private static void unmapCreateWindow(CreateWindowDesc createWindowDesc, EPStatementObjectModel model, StatementSpecUnMapContext unmapContext)
     {
         if (createWindowDesc == null)
         {
             return;
         }
-        model.setCreateWindow(new CreateWindowClause(createWindowDesc.getWindowName(), unmapViews(createWindowDesc.getViewSpecs())));
+        Expression filter = null;
+        if (createWindowDesc.getInsertFilter() != null)
+        {
+            filter = unmapExpressionDeep(createWindowDesc.getInsertFilter(), unmapContext);
+        }
+
+        CreateWindowClause clause = new CreateWindowClause(createWindowDesc.getWindowName(), unmapViews(createWindowDesc.getViewSpecs()));
+        clause.setInsert(createWindowDesc.isInsert());
+        clause.setInsertWhereClause(filter);
+        model.setCreateWindow(clause);
     }
 
     private static void unmapCreateVariable(CreateVariableDesc createVariableDesc, EPStatementObjectModel model, StatementSpecUnMapContext unmapContext)
@@ -215,6 +226,17 @@ public class StatementSpecMapper
         }
 
         model.setOutputLimitClause(clause);
+    }
+
+    private static void unmapRowLimit(RowLimitSpec rowLimitSpec, EPStatementObjectModel model, StatementSpecUnMapContext unmapContext)
+    {
+        if (rowLimitSpec == null)
+        {
+            return;
+        }
+        RowLimitClause spec = new RowLimitClause(rowLimitSpec.getNumRows(), rowLimitSpec.getOptionalOffset(),
+                rowLimitSpec.getNumRowsVariable(), rowLimitSpec.getOptionalOffsetVariable());
+        model.setRowLimitClause(spec);
     }
 
     private static void mapOrderBy(OrderByClause orderByClause, StatementSpecRaw raw, StatementSpecMapContext mapContext)
@@ -322,6 +344,21 @@ public class StatementSpecMapper
         {
             throw new IllegalArgumentException("Cannot map on-clause expression type : " + onExpr);
         }
+    }
+
+    private static void mapRowLimit(RowLimitClause rowLimitClause, StatementSpecRaw raw, StatementSpecMapContext mapContext)
+    {
+        if (rowLimitClause == null)
+        {
+            return;
+        }
+        if ((rowLimitClause.getNumRowsVariable() != null) ||
+            (rowLimitClause.getOptionalOffsetRowsVariable() != null))
+        {
+            raw.setHasVariables(true);
+        }
+        raw.setRowLimitSpec(new RowLimitSpec(rowLimitClause.getNumRows(), rowLimitClause.getOptionalOffsetRows(),
+                rowLimitClause.getNumRowsVariable(), rowLimitClause.getOptionalOffsetRowsVariable()));
     }
 
     private static void mapHaving(Expression havingClause, StatementSpecRaw raw, StatementSpecMapContext mapContext)
@@ -514,14 +551,19 @@ public class StatementSpecMapper
                         insertIntoDesc.getColumnNames().toArray(new String[0]), s));
     }
 
-    private static void mapCreateWindow(CreateWindowClause createWindow, StatementSpecRaw raw)
+    private static void mapCreateWindow(CreateWindowClause createWindow, StatementSpecRaw raw, StatementSpecMapContext mapContext)
     {
         if (createWindow == null)
         {
             return;
         }
 
-        raw.setCreateWindowDesc(new CreateWindowDesc(createWindow.getWindowName(), mapViews(createWindow.getViews())));
+        ExprNode insertFromWhereExpr = null;
+        if (createWindow.getInsertWhereClause() != null)
+        {
+            insertFromWhereExpr = mapExpressionDeep(createWindow.getInsertWhereClause(), mapContext);
+        }
+        raw.setCreateWindowDesc(new CreateWindowDesc(createWindow.getWindowName(), mapViews(createWindow.getViews()), createWindow.isInsert(), insertFromWhereExpr));
     }
 
     private static void mapCreateVariable(CreateVariableClause createVariable, StatementSpecRaw raw, StatementSpecMapContext mapContext)

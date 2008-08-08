@@ -332,6 +332,7 @@
 				<xs:element ref="esper:variables" minOccurs="0"/>
 				<xs:element ref="esper:stream-selection" minOccurs="0"/>
 				<xs:element ref="esper:time-source" minOccurs="0"/>
+				<xs:element ref="esper:metrics-reporting" minOccurs="0"/>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
@@ -569,6 +570,34 @@
 	<xs:element name="variant-event-type">
 		<xs:complexType>
 			<xs:attribute name="alias" type="xs:string" use="required"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="metrics-reporting">
+		<xs:complexType>
+			<xs:choice>
+				<xs:sequence>
+					<xs:element ref="esper:stmtgroup" minOccurs="0" maxOccurs="unbounded"/>
+				</xs:sequence>
+			</xs:choice>
+			<xs:attribute name="enabled" type="xs:boolean" use="required"/>
+			<xs:attribute name="threading" type="xs:boolean" use="optional"/>
+			<xs:attribute name="engine-interval" type="xs:long" use="optional"/>
+			<xs:attribute name="statement-interval" type="xs:long" use="optional"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="stmtgroup">
+		<xs:complexType>
+			<xs:choice minOccurs="0" maxOccurs="unbounded">
+					<xs:element name="include-like" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element name="exclude-like" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element name="include-regex" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+					<xs:element name="exclude-regex" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+			</xs:choice>
+			<xs:attribute name="name" type="xs:string" use="required"/>
+			<xs:attribute name="interval" type="xs:long" use="required"/>
+			<xs:attribute name="num-stmts" type="xs:int" use="optional"/>
+			<xs:attribute name="default-include" type="xs:boolean" use="optional"/>
+			<xs:attribute name="report-inactive" type="xs:boolean" use="optional"/>
 		</xs:complexType>
 	</xs:element>
 </xs:schema>

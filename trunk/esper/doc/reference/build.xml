@@ -80,7 +80,7 @@ Changes made:
         </copy>
 
         <!-- Create the XSL/FO temporary file. -->
-        <java classname="com.icl.saxon.StyleSheet" fork="true" dir="${basedir}" maxmemory="128m" >
+        <java classname="com.icl.saxon.StyleSheet" fork="true" dir="${basedir}" maxmemory="256m" >
             <classpath refid="lib.classpath"/>
             <arg value="-o"/>
             <arg value="${build.dir}/${lang}/pdf/docbook_fop.tmp"/>
@@ -100,7 +100,7 @@ Changes made:
         </copy>
 
         <!-- Create a PDF from the XSL/FO, using customized fop userconfig.xml -->
-        <java classname="org.apache.fop.apps.Fop" fork="true" dir="${basedir}" maxmemory="128m" >
+        <java classname="org.apache.fop.apps.Fop" fork="true" dir="${basedir}" maxmemory="256m" >
             <classpath refid="lib.classpath"/>
             <arg value="-c"/>
             <arg value="${basedir}/${lang}/fop/userconfig.xml"/>
@@ -111,7 +111,7 @@ Changes made:
 
     <target name="lang.docpdf.normal" depends="lang.docpdf.prepare" unless="custom.fop.userconfig.present">
         <!-- Create a PDF from the XSL/FO. -->
-        <java classname="org.apache.fop.apps.Fop" fork="true" dir="${basedir}">
+        <java classname="org.apache.fop.apps.Fop" fork="true" dir="${basedir}" maxmemory="256m">
             <classpath refid="lib.classpath"/>
             <arg value="${build.dir}/${lang}/pdf/docbook_fop.tmp"/>
             <arg value="${build.dir}/${lang}/pdf/${docname}.pdf"/>
@@ -144,7 +144,7 @@ Changes made:
 
         <mkdir dir="${build.dir}/${lang}/html_single/"/>
 
-        <java classname="com.icl.saxon.StyleSheet" fork="true" dir="${basedir}">
+        <java classname="com.icl.saxon.StyleSheet" fork="true" dir="${basedir}" maxmemory="256m">
             <classpath refid="lib.classpath"/>
             <arg value="-o"/>
             <arg value="${build.dir}/${lang}/html_single/index.html"/>
@@ -172,7 +172,7 @@ Changes made:
 
     <target name="lang.section-check" depends="lang.dochtml"
             description="Reports missing unique chapter/section identifiers (set lang)">
-        <java classname="com.icl.saxon.StyleSheet" fork="true" dir="${build.dir}/${lang}/html">
+        <java classname="com.icl.saxon.StyleSheet" fork="true" dir="${build.dir}/${lang}/html" maxmemory="256m">
             <classpath refid="lib.classpath"/>
             <arg value="${basedir}/${lang}/master.xml"/>
             <arg value="${support.dir}/section-check.xsl"/>

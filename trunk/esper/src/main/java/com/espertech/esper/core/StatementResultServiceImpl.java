@@ -9,6 +9,9 @@ import com.espertech.esper.event.EventBean;
 import com.espertech.esper.event.EventBeanUtility;
 import com.espertech.esper.util.ExecutionPathDebugLog;
 import com.espertech.esper.view.ViewSupport;
+import com.espertech.esper.epl.metric.MetricReportingPath;
+import com.espertech.esper.epl.metric.StatementMetricHandle;
+import com.espertech.esper.epl.metric.MetricReportingService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -21,12 +24,15 @@ public class StatementResultServiceImpl implements StatementResultService
 {
     private static Log log = LogFactory.getLog(StatementResultServiceImpl.class);
 
+    private final StatementLifecycleSvc statementLifecycleSvc;
+    private final MetricReportingService metricReportingService;
+
     // Part of the statement context
     private EPStatementSPI epStatement;
     private EPServiceProvider epServiceProvider;
     private boolean isInsertInto;
     private boolean isPattern;
-    private StatementLifecycleSvc statementLifecycleSvc;
+    private StatementMetricHandle statementMetricHandle;
 
     // For natural delivery derived out of select-clause expressions
     private Class[] selectClauseTypes;
@@ -53,21 +59,24 @@ public class StatementResultServiceImpl implements StatementResultService
     /**
      * Ctor.
      * @param statementLifecycleSvc handles persistence for statements
+     * @param metricReportingService for metrics reporting
      */
-    public StatementResultServiceImpl(StatementLifecycleSvc statementLifecycleSvc)
+    public StatementResultServiceImpl(StatementLifecycleSvc statementLifecycleSvc, MetricReportingService metricReportingService)
     {
         log.debug(".ctor");
         this.statementLifecycleSvc = statementLifecycleSvc;
+        this.metricReportingService = metricReportingService;
     }
 
     public void setContext(EPStatementSPI epStatement, EPServiceProvider epServiceProvider,
-                           boolean isInsertInto, boolean isPattern)
+                           boolean isInsertInto, boolean isPattern, StatementMetricHandle statementMetricHandle)
     {
         this.epStatement = epStatement;
         this.epServiceProvider = epServiceProvider;
         this.isInsertInto = isInsertInto;
         this.isPattern = isPattern;
         isMakeSynthetic = isInsertInto || isPattern;
+        this.statementMetricHandle = statementMetricHandle;
     }
 
     public void setSelectClause(Class[] selectClauseTypes, String[] selectClauseColumnNames)
@@ -130,6 +139,13 @@ public class StatementResultServiceImpl implements StatementResultService
     {
         if (results != null)
         {
+            if (MetricReportingPath.isMetricsEnabled)
+            {
+                int numIStream = (results.getFirst() != null) ? results.getFirst().length : 0;
+                int numRStream = (results.getSecond() != null) ? results.getSecond().length : 0; 
+                this.metricReportingService.accountOutput(statementMetricHandle, numIStream, numRStream);
+            }
+
             if ((results.getFirst() != null) && (results.getFirst().length != 0))
             {
                 lastResults.get().add(results);

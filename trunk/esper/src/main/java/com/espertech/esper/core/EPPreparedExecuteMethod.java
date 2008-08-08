@@ -77,7 +77,7 @@ public class EPPreparedExecuteMethod
         StreamTypeService typeService = new StreamTypeServiceImpl(typesPerStream, namesPerStream, services.getEngineURI(), namesPerStream);
         EPStatementStartMethod.validateNodes(statementSpec, statementContext, typeService, null);
 
-        resultSetProcessor = ResultSetProcessorFactory.getProcessor(statementSpec, statementContext, typeService, null);
+        resultSetProcessor = ResultSetProcessorFactory.getProcessor(statementSpec, statementContext, typeService, null, new boolean[0]);
 
         if (numStreams > 1)
         {

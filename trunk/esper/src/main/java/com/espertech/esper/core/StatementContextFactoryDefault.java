@@ -8,6 +8,7 @@ import com.espertech.esper.epl.spec.CreateWindowDesc;
 import com.espertech.esper.epl.spec.OnTriggerDesc;
 import com.espertech.esper.epl.spec.OnTriggerWindowDesc;
 import com.espertech.esper.epl.spec.PluggableObjectCollection;
+import com.espertech.esper.epl.metric.StatementMetricHandle;
 import com.espertech.esper.pattern.*;
 import com.espertech.esper.schedule.ScheduleBucket;
 import com.espertech.esper.util.ManagedLock;
@@ -83,7 +84,8 @@ public class StatementContextFactoryDefault implements StatementContextFactory
             statementResourceLock = engineServices.getStatementLockFactory().getStatementLock(statementName, expression);
         }
 
-        EPStatementHandle epStatementHandle = new EPStatementHandle(statementId, statementResourceLock, expression, hasVariables);
+        StatementMetricHandle stmtMetric = engineServices.getMetricsReportingService().getStatementHandle(statementId, statementName);
+        EPStatementHandle epStatementHandle = new EPStatementHandle(statementId, statementResourceLock, expression, hasVariables, stmtMetric);
 
         MethodResolutionService methodResolutionService = new MethodResolutionServiceImpl(engineServices.getEngineImportService());
 
@@ -113,7 +115,7 @@ public class StatementContextFactoryDefault implements StatementContextFactory
                 engineServices.getOutputConditionFactory(),
                 engineServices.getNamedWindowService(),
                 engineServices.getVariableService(),
-                new StatementResultServiceImpl(engineServices.getStatementLifecycleSvc()),
+                new StatementResultServiceImpl(engineServices.getStatementLifecycleSvc(), engineServices.getMetricsReportingService()),
                 engineServices.getEngineSettingsService().getPlugInEventTypeResolutionURIs(),
                 engineServices.getValueAddEventService());
     }

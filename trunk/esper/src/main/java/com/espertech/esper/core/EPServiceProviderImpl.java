@@ -16,6 +16,8 @@ import com.espertech.esper.util.ExecutionPathDebugLog;
 import com.espertech.esper.util.SerializableObjectCopier;
 import com.espertech.esper.epl.spec.SelectClauseStreamSelectorEnum;
 import com.espertech.esper.epl.named.NamedWindowService;
+import com.espertech.esper.epl.metric.MetricReportingPath;
+import com.espertech.esper.epl.metric.MetricReportingService;
 import com.espertech.esper.timer.TimerService;
 
 import javax.naming.Context;
@@ -111,6 +113,11 @@ public class EPServiceProviderImpl implements EPServiceProviderSPI
         return engine.getServices().getStatementLifecycleSvc();
     }
 
+    public MetricReportingService getMetricReportingService()
+    {
+        return engine.getServices().getMetricsReportingService();
+    }
+
     public Context getContext()
     {
         return engine.getServices().getEngineEnvContext();
@@ -161,6 +168,9 @@ public class EPServiceProviderImpl implements EPServiceProviderSPI
     {
         // This setting applies to all engines in a given VM
         ExecutionPathDebugLog.setDebugEnabled(configSnapshot.getEngineDefaults().getLogging().isEnableExecutionDebug());
+
+        // This setting applies to all engines in a given VM
+        MetricReportingPath.setMetricsEnabled(configSnapshot.getEngineDefaults().getMetricsReporting().isEnableMetricsReporting());
 
         if (engine != null)
         {
@@ -233,7 +243,7 @@ public class EPServiceProviderImpl implements EPServiceProviderSPI
         services.getStatementLifecycleSvc().init();
 
         // New admin
-        ConfigurationOperations configOps = new ConfigurationOperationsImpl(services.getEventAdapterService(), services.getEngineImportService(), services.getVariableService(), services.getEngineSettingsService(), services.getValueAddEventService());
+        ConfigurationOperations configOps = new ConfigurationOperationsImpl(services.getEventAdapterService(), services.getEngineImportService(), services.getVariableService(), services.getEngineSettingsService(), services.getValueAddEventService(), services.getMetricsReportingService());
         SelectClauseStreamSelectorEnum defaultStreamSelector = SelectClauseStreamSelectorEnum.mapFromSODA(configSnapshot.getEngineDefaults().getStreamSelection().getDefaultStreamSelector());
         EPAdministratorImpl admin = new EPAdministratorImpl(services, configOps, defaultStreamSelector);
 
@@ -263,6 +273,12 @@ public class EPServiceProviderImpl implements EPServiceProviderSPI
         if (services.getExtensionServicesContext() != null)
         {
             services.getExtensionServicesContext().init();
+        }
+
+        // Start metrics reporting, if any
+        if (configSnapshot.getEngineDefaults().getMetricsReporting().isEnableMetricsReporting())
+        {
+            services.getMetricsReportingService().setContext(runtime, services);
         }
     }
 

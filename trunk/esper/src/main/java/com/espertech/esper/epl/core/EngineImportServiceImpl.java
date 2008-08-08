@@ -308,7 +308,7 @@ public class EngineImportServiceImpl implements EngineImportService
 
 	private static boolean isClassName(String importName)
 	{
-		String classNameRegEx = "(\\w+\\.)*\\w+";
+		String classNameRegEx = "(\\w+\\.)*\\w+(\\$\\w+)?";
 		return importName.matches(classNameRegEx);
 	}
 

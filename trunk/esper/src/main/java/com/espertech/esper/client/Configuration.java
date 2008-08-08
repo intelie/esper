@@ -7,15 +7,14 @@
  **************************************************************************************/
 package com.espertech.esper.client;
 
-import java.io.*;
-import java.net.URL;
-import java.net.URI;
-import java.util.*;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.w3c.dom.*;
-import com.espertech.esper.util.GraphUtil;
+import org.w3c.dom.Document;
+
+import java.io.*;
+import java.net.URI;
+import java.net.URL;
+import java.util.*;
 
 /**
  * An instance of <tt>Configuration</tt> allows the application
@@ -618,6 +617,16 @@ public class Configuration implements ConfigurationOperations, ConfigurationInfo
     public void updateMapEventType(String mapEventTypeAlias, Map<String, Object> typeMap) throws ConfigurationException
     {
         throw new UnsupportedOperationException("Map type update is only available in runtime configuration");
+    }
+
+    public boolean isVariantStreamExists(String name)
+    {
+        return variantStreams.containsKey(name);
+    }
+
+    public void setMetricsReportingInterval(String stmtGroupName, long newInterval)
+    {
+        this.getEngineDefaults().getMetricsReporting().setStatementGroupInterval(stmtGroupName, newInterval);
     }
 
     /**

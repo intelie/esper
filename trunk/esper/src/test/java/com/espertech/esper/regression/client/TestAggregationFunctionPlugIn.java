@@ -10,6 +10,7 @@ import com.espertech.esper.support.epl.SupportPluginAggregationMethodTwo;
 import com.espertech.esper.support.util.ArrayAssertionUtil;
 import com.espertech.esper.support.util.SupportUpdateListener;
 import com.espertech.esper.util.SerializableObjectCopier;
+import com.espertech.esper.epl.agg.AggregationSupport;
 import junit.framework.TestCase;
 
 public class TestAggregationFunctionPlugIn extends TestCase
@@ -23,6 +24,7 @@ public class TestAggregationFunctionPlugIn extends TestCase
 
         Configuration configuration = SupportConfigFactory.getConfiguration();
         configuration.addPlugInAggregationFunction("concatstring", MyConcatAggregationFunction.class.getName());
+        configuration.addPlugInAggregationFunction("totalup", MyInnerAggFunction.class.getName());
         configuration.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
         epService = EPServiceProviderManager.getProvider("TestAggregationFunctionPlugIn", configuration);
         epService.initialize();
@@ -324,6 +326,38 @@ public class TestAggregationFunctionPlugIn extends TestCase
         catch (EPStatementException ex)
         {
             assertEquals(expectedMsg, ex.getMessage());
+        }
+    }
+
+    public class MyInnerAggFunction extends AggregationSupport
+    {
+        private int total;
+        public void validate(Class childNodeType)
+        {
+        }
+
+        public void enter(Object value)
+        {
+            total += ((Number)value).intValue();
+        }
+
+        public void leave(Object value)
+        {
+            total -= ((Number)value).intValue();
+        }
+
+        public Object getValue()
+        {
+            return total;
+        }
+
+        public Class getValueType()
+        {
+            return Integer.class;
+        }
+
+        public void clear()
+        {
         }
     }
 }

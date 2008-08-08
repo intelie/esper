@@ -23,6 +23,7 @@ public class ConfigurationEngineDefaults implements Serializable
     private Variables variables;
     private StreamSelection streamSelection;
     private TimeSource timeSource;
+    private ConfigurationMetricsReporting metricsReporting;
 
     /**
      * Ctor.
@@ -36,6 +37,7 @@ public class ConfigurationEngineDefaults implements Serializable
         variables = new Variables();
         streamSelection = new StreamSelection();
         timeSource = new TimeSource();
+        metricsReporting = new ConfigurationMetricsReporting();
     }
 
     /**
@@ -99,6 +101,15 @@ public class ConfigurationEngineDefaults implements Serializable
     public TimeSource getTimeSource()
     {
         return timeSource;
+    }
+
+    /**
+     * Returns the metrics reporting configuration.
+     * @return metrics reporting config
+     */
+    public ConfigurationMetricsReporting getMetricsReporting()
+    {
+        return metricsReporting;
     }
 
     /**
@@ -558,6 +569,7 @@ public class ConfigurationEngineDefaults implements Serializable
         {
             this.timeSourceType = timeSourceType;
         }
+
     }
 
     /**

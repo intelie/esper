@@ -1323,6 +1323,90 @@ config.getEngineDefaults().getTimeSource().
 			</sect3>
 		</sect2>
 
+		<sect2 id="config-engine-instrumentation" revision="1">
+			<title>Engine Settings related to Metrics Reporting</title>
+
+			<para>
+				This section explains how to enable and configure metrics reporting, which is by default disabled. Please see <xref linkend="api-instrumentation"/> for more information on the metrics data reported to your application.
+			</para>
+
+			<para>
+				The flag that enables metrics reporting is global to a Java virtual machine. If metrics reporting is enabled, the overhead incurred for reporting metrics is carried by all engine instances per Java VM.
+			</para>
+
+			<para>
+				Metrics reporting occurs by an engine-controlled separate daemon thread that each engine instance starts at engine initialization time, if metrics reporting and threading is enabled (threading enabled is the default).
+			</para>
+			
+			<para>
+			    Engine and statement metric intervals are in milliseconds. A negative or zero millisecond interval value may be provided to disable reporting.
+			</para>
+
+			<para>
+			    To control statement metric reporting for individual statements or groups of statements, the engine provides a facility that groups statements by statement name. 
+			    Each such statement group may have different reporting intervals configured, and intervals can be
+			    changed at runtime through runtime configuration. A statement group is assigned a group name at configuration time to identify the group.
+			</para>
+
+			<para>
+			    Metrics reporting configuration is part of the engine default settings. All configuration options are also available via the <literal>Configuration</literal> API.
+			</para>
+
+			<para>
+			    A sample XML configuration is shown below:
+			</para>
+			<programlisting><![CDATA[<engine-settings>
+  <defaults>
+    <metrics-reporting enabled="true" engine-interval="1000" statement-interval="1000" 
+        threading="true"/>
+  </defaults>
+</engine-settings>]]></programlisting>
+
+			<para>
+			    The <literal>engine-interval</literal> setting (defaults to 10 seconds) determines the frequency in milliseconds at which the engine reports engine metrics, in this example every 1 second. The <literal>statement-interval</literal> is for statement metrics. The <literal>threading</literal> flag is true by default since reporting takes place by a dedicated engine thread and can be set to false to use the external or internal timer thread instead.
+			</para>
+
+			<para>
+			    The next example XML declares a statement group: The statements that have statement names that fall within the group follow a different reporting frequency:
+			</para>
+
+			<programlisting><![CDATA[<metrics-reporting enabled="true" statement-interval="0">
+  <stmtgroup name="MyStmtGroup" interval="2000" default-include="true" num-stmts="100" 
+        report-inactive="true">
+    <exclude-regex>.*test.*</exclude-regex>
+  </stmtgroup>
+</metrics-reporting>]]></programlisting>
+
+			<para>
+			    The above example configuration sets the <literal>statement-interval</literal> to zero to disable reporting for all statements. It defines a statement group by name <literal>MyStmtGroup</literal> and specifies a 2-second interval. The example sets the <literal>default-include</literal> flag to true (by default false) to include all statements in the statement group. The example also sets <literal>report-inactive</literal> to true (by default false) to report inactive statements.
+			</para>
+			
+			<para>
+			  The <literal>exclude-regex</literal> element may be used to specify a regular expression that serves to exclude statements from the group. Any statement whose statement name matches the exclude regular expression is not included in the group. In the above example, all statements with the characters 'test' inside their statement name are excluded from the group.
+			</para>
+
+			<para>
+			  Any statement not belonging to any of the statement groups follow the configured statement interval. 
+			</para>
+
+			<para>
+			 There are additional elements available to include and exclude statements: <literal>include-regex</literal>, <literal>include-like</literal> and <literal>exclude-like</literal>. The latter two apply SQL-like matching. All patterns are case-sensitive.
+			</para>
+
+			<para>
+			 Here is a further example of a possible statement group definition, which includes statements whose statement name have the characters <literal>Fraud</literal> or <literal>Trade</literal>, and excludes statements whose statement name have the characters <literal>test</literal> or <literal>metrics</literal> inside.
+			</para>
+
+			<programlisting><![CDATA[<metrics-reporting enabled="true">
+  <stmtgroup name="MyStmtGroup" interval="1000">
+    <include-like>%Fraud%</include-like>
+    <include-regex>.*Trade.*</include-like>
+    <exclude-like>%test%</exclude-like>
+    <exclude-regex>.*metrics.*</exclude-regex>
+  </stmtgroup>
+</metrics-reporting>]]></programlisting>
+		</sect2>
+
 		<sect2 id="config-revisionevent" revision="1">
 			<title>Revision Event Type</title>
 			

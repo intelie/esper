@@ -12,8 +12,9 @@ import com.espertech.esper.epl.expression.ExprAggregateNode;
 import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.epl.expression.ExprValidationException;
 import com.espertech.esper.epl.spec.OrderByItem;
+import com.espertech.esper.epl.spec.RowLimitSpec;
 import com.espertech.esper.epl.spec.SelectClauseExprCompiledSpec;
-import com.espertech.esper.event.EventAdapterService;
+import com.espertech.esper.epl.variable.VariableService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -31,7 +32,8 @@ public class OrderByProcessorFactory {
      * @param groupByNodes is a list of group-by expressions
      * @param orderByList is a list of order-by expressions
      * @param aggregationService is the service for aggregation, ie. building sums and averages per group or overall
-     * @param eventAdapterService provides event adapters
+     * @param rowLimitSpec specification for row limit, or null if no row limit is defined
+     * @param variableService for retrieving variable state for use with row limiting
      * @return ordering processor instance
      * @throws com.espertech.esper.epl.expression.ExprValidationException when validation of expressions fails
      */
@@ -39,7 +41,8 @@ public class OrderByProcessorFactory {
 											   List<ExprNode> groupByNodes,
 											   List<OrderByItem> orderByList,
 											   AggregationService aggregationService,
-                                               EventAdapterService eventAdapterService)
+                                               RowLimitSpec rowLimitSpec,
+                                               VariableService variableService)
 	throws ExprValidationException
 	{
 		// Get the order by expression nodes
@@ -53,8 +56,12 @@ public class OrderByProcessorFactory {
 		if(orderByList.isEmpty())
 		{
 			log.debug(".getProcessor Using no OrderByProcessor");
-			return null;
-		}
+            if (rowLimitSpec != null)
+            {
+                return new OrderByProcessorRowLimit(rowLimitSpec, variableService);
+            }
+            return null;
+        }
 		
         // Determine aggregate functions used in select, if any
         List<ExprAggregateNode> selectAggNodes = new LinkedList<ExprAggregateNode>();
@@ -82,9 +89,17 @@ public class OrderByProcessorFactory {
         // Tell the order-by processor whether to compute group-by
         // keys if they are not present
     	boolean needsGroupByKeys = !selectionList.isEmpty() && !orderAggNodes.isEmpty();
-        
-    	log.debug(".getProcessor Using OrderByProcessorSimple");
-    	return new OrderByProcessorSimple(orderByList, groupByNodes, needsGroupByKeys, aggregationService);
+
+        log.debug(".getProcessor Using OrderByProcessorImpl");
+        OrderByProcessorImpl orderByProcessor = new OrderByProcessorImpl(orderByList, groupByNodes, needsGroupByKeys, aggregationService);
+        if (rowLimitSpec == null)
+        {
+            return orderByProcessor;
+        }
+        else
+        {
+            return new OrderByProcessorOrderedLimit(orderByProcessor, new OrderByProcessorRowLimit(rowLimitSpec, variableService));
+        }
 	}
 	
 

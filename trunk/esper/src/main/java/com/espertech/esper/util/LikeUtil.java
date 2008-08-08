@@ -7,10 +7,12 @@
  **************************************************************************************/
 package com.espertech.esper.util;
 
+import java.io.Serializable;
+
 /**
  * Utility for performing a SQL Like comparsion.
  */
-public class LikeUtil
+public class LikeUtil implements Serializable
 {
     private final static int UNDERSCORE_CHAR = 1;
     private final static int PERCENT_CHAR    = 2;

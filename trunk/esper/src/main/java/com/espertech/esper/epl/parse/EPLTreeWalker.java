@@ -21,6 +21,7 @@ import com.espertech.esper.type.*;
 import com.espertech.esper.util.JavaClassHelper;
 import com.espertech.esper.util.PlaceholderParser;
 import com.espertech.esper.util.PlaceholderParseException;
+import com.espertech.esper.antlr.ASTUtil;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.antlr.runtime.tree.Tree;
@@ -249,6 +250,9 @@ public class EPLTreeWalker extends EsperEPL2Ast
             case WHEN_LIMIT_EXPR:
             	leaveOutputLimit(node);
             	break;
+            case ROW_LIMIT_EXPR:
+            	leaveRowLimit(node);
+            	break;
             case INSERTINTO_EXPR:
             	leaveInsertInto(node);
             	break;
@@ -393,13 +397,10 @@ public class EPLTreeWalker extends EsperEPL2Ast
         String windowName = node.getChild(0).getText();
 
         String eventName = null;
-        for (int i = 0; i < node.getChildCount(); i++)
+        Tree eventNameNode = ASTUtil.findFirstNode(node, CLASS_IDENT);
+        if (eventNameNode != null)
         {
-        	Tree child = node.getChild(i);
-            if (child.getType() == CLASS_IDENT) // the event type
-            {
-                eventName = child.getText();
-            }
+            eventName = eventNameNode.getText();
         }
         if (eventName == null)
         {
@@ -420,7 +421,19 @@ public class EPLTreeWalker extends EsperEPL2Ast
             }
         }
 
-        CreateWindowDesc desc = new CreateWindowDesc(windowName, viewSpecs);
+        boolean isInsert = false;
+        ExprNode insertWhereExpr = null;
+        Tree insertNode = ASTUtil.findFirstNode(node, INSERT);
+        if (insertNode != null)
+        {
+            isInsert = true;
+            if (insertNode.getChildCount() > 0)
+            {
+                insertWhereExpr = ASTUtil.getRemoveExpr(insertNode.getChild(0),  this.astExprNodeMap);
+            }
+        }
+
+        CreateWindowDesc desc = new CreateWindowDesc(windowName, viewSpecs, isInsert, insertWhereExpr);
         statementSpec.setCreateWindowDesc(desc);
 
         FilterSpecRaw rawFilterSpec = new FilterSpecRaw(eventName, new LinkedList<ExprNode>());
@@ -1316,6 +1329,19 @@ public class EPLTreeWalker extends EsperEPL2Ast
         statementSpec.setOutputLimitSpec(spec);
 
         if (spec.getVariableName() != null)
+        {
+            statementSpec.setHasVariables(true);
+        }
+    }
+
+    private void leaveRowLimit(Tree node) throws ASTWalkException
+    {
+        log.debug(".leaveRowLimit");
+
+        RowLimitSpec spec = ASTOutputLimitHelper.buildRowLimitSpec(node);
+        statementSpec.setRowLimitSpec(spec);
+
+        if ((spec.getNumRowsVariable() != null) || (spec.getOptionalOffsetVariable() != null))
         {
             statementSpec.setHasVariables(true);
         }

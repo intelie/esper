@@ -55,6 +55,8 @@ select insert from MyEvent]]></programlisting>
 				<row><entry>count</entry><entry>yes</entry></row>
 				<row><entry>create</entry><entry>-</entry></row>
 				<row><entry>current_timestamp</entry><entry>-</entry></row>
+				<row><entry>day</entry><entry>-</entry></row>
+				<row><entry>days</entry><entry>-</entry></row>
 				<row><entry>delete</entry><entry>-</entry></row>
 				<row><entry>desc</entry><entry>-</entry></row>
 				<row><entry>distinct</entry><entry>-</entry></row>
@@ -64,11 +66,14 @@ select insert from MyEvent]]></programlisting>
 				<row><entry>events</entry><entry>yes</entry></row>
 				<row><entry>every</entry><entry>yes</entry></row>
 				<row><entry>exists</entry><entry>-</entry></row>
+				<row><entry>false</entry><entry>yes</entry></row>
 				<row><entry>first</entry><entry>yes</entry></row>
 				<row><entry>from</entry><entry>-</entry></row>
 				<row><entry>full</entry><entry>yes</entry></row>
 				<row><entry>group</entry><entry>-</entry></row>
 				<row><entry>having</entry><entry>-</entry></row>
+				<row><entry>hour</entry><entry>-</entry></row>
+				<row><entry>hours</entry><entry>-</entry></row>
 				<row><entry>in</entry><entry>-</entry></row>
 				<row><entry>inner</entry><entry>-</entry></row>
 				<row><entry>insert</entry><entry>-</entry></row>
@@ -86,8 +91,13 @@ select insert from MyEvent]]></programlisting>
 				<row><entry>median</entry><entry>yes</entry></row>
 				<row><entry>metadatasql</entry><entry>yes</entry></row>
 				<row><entry>min</entry><entry>yes</entry></row>
+				<row><entry>minute</entry><entry>yes</entry></row>
 				<row><entry>minutes</entry><entry>yes</entry></row>
+				<row><entry>msec</entry><entry>yes</entry></row>
+				<row><entry>millisecond</entry><entry>yes</entry></row>
+				<row><entry>milliseconds</entry><entry>yes</entry></row>
 				<row><entry>not</entry><entry>-</entry></row>
+				<row><entry>null</entry><entry>-</entry></row>
 				<row><entry>on</entry><entry>-</entry></row>
 				<row><entry>or</entry><entry>-</entry></row>
 				<row><entry>order</entry><entry>-</entry></row>
@@ -99,6 +109,8 @@ select insert from MyEvent]]></programlisting>
 				<row><entry>regexp</entry><entry>-</entry></row>
 				<row><entry>right</entry><entry>yes</entry></row>
 				<row><entry>rstream</entry><entry>-</entry></row>
+				<row><entry>sec</entry><entry>yes</entry></row>
+				<row><entry>second</entry><entry>yes</entry></row>
 				<row><entry>seconds</entry><entry>yes</entry></row>
 				<row><entry>select</entry><entry>-</entry></row>
 				<row><entry>set</entry><entry>-</entry></row>
@@ -107,6 +119,7 @@ select insert from MyEvent]]></programlisting>
 				<row><entry>stddev</entry><entry>yes</entry></row>
 				<row><entry>sum</entry><entry>yes</entry></row>
 				<row><entry>then</entry><entry>-</entry></row>
+				<row><entry>true</entry><entry>-</entry></row>
 				<row><entry>unidirectional</entry><entry>yes</entry></row>
 				<row><entry>until</entry><entry>yes</entry></row>
 				<row><entry>variable</entry><entry>yes</entry></row>

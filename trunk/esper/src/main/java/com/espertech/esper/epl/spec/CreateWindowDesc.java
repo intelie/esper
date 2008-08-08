@@ -1,6 +1,7 @@
 package com.espertech.esper.epl.spec;
 
 import com.espertech.esper.util.MetaDefItem;
+import com.espertech.esper.epl.expression.ExprNode;
 
 import java.util.List;
 
@@ -11,16 +12,23 @@ public class CreateWindowDesc implements MetaDefItem
 {
     private String windowName;
     private List<ViewSpec> viewSpecs;
+    private boolean isInsert;
+    private String insertFromWindow;
+    private ExprNode insertFilter;
 
     /**
      * Ctor.
      * @param windowName the window name
      * @param viewSpecs the view definitions
+     * @param insert true for insert-info
+     * @param insertFilter optional filter expression
      */
-    public CreateWindowDesc(String windowName, List<ViewSpec> viewSpecs)
+    public CreateWindowDesc(String windowName, List<ViewSpec> viewSpecs, boolean insert, ExprNode insertFilter)
     {
         this.windowName = windowName;
         this.viewSpecs = viewSpecs;
+        this.isInsert = insert;
+        this.insertFilter = insertFilter;
     }
 
     /**
@@ -39,5 +47,50 @@ public class CreateWindowDesc implements MetaDefItem
     public List<ViewSpec> getViewSpecs()
     {
         return viewSpecs;
+    }
+
+    /**
+     * Returns true for insert-from.
+     * @return indicator to insert from another named window
+     */
+    public boolean isInsert()
+    {
+        return isInsert;
+    }
+
+    /**
+     * Returns the expression to filter insert-from events, or null if none supplied.
+     * @return insert filter expression
+     */
+    public ExprNode getInsertFilter()
+    {
+        return insertFilter;
+    }
+
+    /**
+     * Returns the window name to insert from.
+     * @return window name to insert from
+     */
+    public String getInsertFromWindow()
+    {
+        return insertFromWindow;
+    }
+
+    /**
+     * Sets the filter expression to use to apply
+     * @param insertFilter filter
+     */
+    public void setInsertFilter(ExprNode insertFilter)
+    {
+        this.insertFilter = insertFilter;
+    }
+
+    /**
+     * Sets the source named window if inserting from another named window.
+     * @param insertFromWindow source named window
+     */
+    public void setInsertFromWindow(String insertFromWindow)
+    {
+        this.insertFromWindow = insertFromWindow;
     }
 }

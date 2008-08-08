@@ -13,7 +13,7 @@ public class TestTimerServiceImpl extends TestCase
     public void setUp()
     {
         callback = new SupportTimerCallback();
-        service = new TimerServiceImpl(100);
+        service = new TimerServiceImpl(null, 100);
         service.setCallback(callback);
     }
 

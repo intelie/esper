@@ -13,6 +13,7 @@ import java.io.Serializable;
 import java.net.URI;
 import java.util.Map;
 import java.util.Set;
+import java.util.List;
 
 /**
  * Interface for a service to resolve event names to event type.
@@ -279,4 +280,12 @@ public interface EventAdapterService
      * @throws EventAdapterException when the type is not found or is not a Map 
      */
     public void updateMapEventType(String mapEventTypeAlias, Map<String, Object> typeMap) throws EventAdapterException;
+
+    /**
+     * Casts event type of a list of events to either Wrapper or Map type.
+     * @param events to cast
+     * @param targetType target type
+     * @return type casted event array
+     */
+    public EventBean[] typeCast(List<EventBean> events, EventType targetType);
 }

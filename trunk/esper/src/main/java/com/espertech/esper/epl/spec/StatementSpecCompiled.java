@@ -33,6 +33,7 @@ public class StatementSpecCompiled
     private final List<OrderByItem> orderByList;
     private final List<ExprSubselectNode> subSelectExpressions;
     private final boolean hasVariables;
+    private final RowLimitSpec rowLimitSpec;
 
     /**
      * Ctor.
@@ -51,6 +52,7 @@ public class StatementSpecCompiled
      * @param createWindowDesc describes create-window statements
      * @param createVariableDesc describes create-variable statements
      * @param hasVariables indicator whether the statement uses variables
+     * @param rowLimitSpec row limit specification, or null if none supplied
      */
     public StatementSpecCompiled(OnTriggerDesc onTriggerDesc,
                                  CreateWindowDesc createWindowDesc,
@@ -66,7 +68,8 @@ public class StatementSpecCompiled
                                  OutputLimitSpec outputLimitSpec,
                                  List<OrderByItem> orderByList,
                                  List<ExprSubselectNode> subSelectExpressions,
-                                 boolean hasVariables)
+                                 boolean hasVariables,
+                                 RowLimitSpec rowLimitSpec)
     {
         this.onTriggerDesc = onTriggerDesc;
         this.createWindowDesc = createWindowDesc;
@@ -83,6 +86,7 @@ public class StatementSpecCompiled
         this.orderByList = orderByList;
         this.subSelectExpressions = subSelectExpressions;
         this.hasVariables = hasVariables;
+        this.rowLimitSpec = rowLimitSpec;
     }
 
     /**
@@ -105,6 +109,7 @@ public class StatementSpecCompiled
         orderByList = new ArrayList<OrderByItem>();
         subSelectExpressions = new ArrayList<ExprSubselectNode>();
         hasVariables = false;
+        rowLimitSpec = null;
     }
 
     /**
@@ -256,5 +261,14 @@ public class StatementSpecCompiled
      */
     public void setSelectStreamDirEnum(SelectClauseStreamSelectorEnum selectStreamDirEnum) {
         this.selectStreamDirEnum = selectStreamDirEnum;
+    }
+
+    /**
+     * Returns the row limit specification, or null if none supplied.
+     * @return row limit spec if any
+     */
+    public RowLimitSpec getRowLimitSpec()
+    {
+        return rowLimitSpec;
     }
 }

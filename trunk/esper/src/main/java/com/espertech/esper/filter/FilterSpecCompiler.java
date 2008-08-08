@@ -287,7 +287,7 @@ public final class FilterSpecCompiler
             {
                 FilterSpecParamEventProp eventProp = (FilterSpecParamEventProp) param;
                 values.add(new InSetOfValuesEventProp(eventProp.getResultEventAsName(), eventProp.getResultEventProperty(),
-                        eventProp.isMustCoerce(), eventProp.getCoercionType()));
+                        eventProp.isMustCoerce(), JavaClassHelper.getBoxedType(eventProp.getCoercionType())));
             }
             else
             {
@@ -426,7 +426,7 @@ public final class FilterSpecCompiler
                     }
 
                     boolean isMustCoerce = false;
-                    Class numericCoercionType = identNodeInSet.getType();
+                    Class numericCoercionType = JavaClassHelper.getBoxedType(identNodeInSet.getType());
                     if (identNodeInner.getType() != identNodeInSet.getType())
                     {
                         if (JavaClassHelper.isNumeric(identNodeInSet.getType()))

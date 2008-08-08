@@ -35,6 +35,7 @@ public class ResultSetProcessorAggregateAll implements ResultSetProcessor
     private final AggregationService aggregationService;
     private final ExprNode optionalHavingNode;
     private final boolean isSelectRStream;
+    private final boolean isUnidirectional;
 
     /**
      * Ctor.
@@ -43,18 +44,21 @@ public class ResultSetProcessorAggregateAll implements ResultSetProcessor
      * @param aggregationService - handles aggregation
      * @param optionalHavingNode - having clause expression node
      * @param isSelectRStream - true if remove stream events should be generated
+     * @param isUnidirectional - true if unidirectional join
      */
     public ResultSetProcessorAggregateAll(SelectExprProcessor selectExprProcessor,
                                           OrderByProcessor orderByProcessor,
                                           AggregationService aggregationService,
                                           ExprNode optionalHavingNode,
-                                          boolean isSelectRStream)
+                                          boolean isSelectRStream,
+                                          boolean isUnidirectional)
     {
         this.selectExprProcessor = selectExprProcessor;
         this.orderByProcessor = orderByProcessor;
         this.aggregationService = aggregationService;
         this.optionalHavingNode = optionalHavingNode;
         this.isSelectRStream = isSelectRStream;
+        this.isUnidirectional = isUnidirectional;
     }
 
     public EventType getResultEventType()
@@ -66,6 +70,11 @@ public class ResultSetProcessorAggregateAll implements ResultSetProcessor
     {
         EventBean[] selectOldEvents = null;
         EventBean[] selectNewEvents;
+
+        if (isUnidirectional)
+        {
+            this.clear();
+        }
 
         if (!newEvents.isEmpty())
         {
@@ -249,6 +258,11 @@ public class ResultSetProcessorAggregateAll implements ResultSetProcessor
                 Set<MultiKey<EventBean>> newData = pair.getFirst();
                 Set<MultiKey<EventBean>> oldData = pair.getSecond();
 
+                if (isUnidirectional)
+                {
+                    this.clear();
+                }
+
                 if (newData != null)
                 {
                     // apply new data to aggregates
@@ -332,6 +346,11 @@ public class ResultSetProcessorAggregateAll implements ResultSetProcessor
             {
                 Set<MultiKey<EventBean>> newData = pair.getFirst();
                 Set<MultiKey<EventBean>> oldData = pair.getSecond();
+
+                if (isUnidirectional)
+                {
+                    this.clear();
+                }
 
                 if (newData != null)
                 {

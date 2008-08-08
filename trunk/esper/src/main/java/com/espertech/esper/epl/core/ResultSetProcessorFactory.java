@@ -54,13 +54,15 @@ public class ResultSetProcessorFactory
      * @param viewResourceDelegate - delegates views resource factory to expression resources requirements
      * @param statementSpecCompiled - the statement specification
      * @param stmtContext - engine and statement level services
+     * @param isUnidirectionalStream - true if unidirectional join for any of the streams
      * @return result set processor instance
      * @throws ExprValidationException when any of the expressions is invalid
      */
     public static ResultSetProcessor getProcessor(StatementSpecCompiled statementSpecCompiled,
                                                   StatementContext stmtContext,
                                                   StreamTypeService typeService,
-                                                  ViewResourceDelegate viewResourceDelegate)
+                                                  ViewResourceDelegate viewResourceDelegate,
+                                                  boolean[] isUnidirectionalStream)
             throws ExprValidationException
     {
         SelectClauseSpecCompiled selectClauseSpec = statementSpecCompiled.getSelectClauseSpec();
@@ -76,6 +78,12 @@ public class ResultSetProcessorFactory
                     " selectionList=" + selectClauseSpec.getSelectExprList() +
                     " groupByNodes=" + Arrays.toString(groupByNodes.toArray()) +
                     " optionalHavingNode=" + optionalHavingNode);
+        }
+
+        boolean isUnidirectional = false;
+        for (int i = 0; i < isUnidirectionalStream.length; i++)
+        {
+            isUnidirectional |= isUnidirectionalStream[i];
         }
 
         // Expand any instances of select-clause aliases in the
@@ -260,7 +268,7 @@ public class ResultSetProcessorFactory
 
         // Construct the processor for sorting output events
         OrderByProcessor orderByProcessor = OrderByProcessorFactory.getProcessor(namedSelectionList,
-                groupByNodes, orderByList, aggregationService, stmtContext.getEventAdapterService());
+                groupByNodes, orderByList, aggregationService, statementSpecCompiled.getRowLimitSpec(), stmtContext.getVariableService());
 
         // Construct the processor for evaluating the select clause
         SelectExprProcessor selectExprProcessor = SelectExprProcessorFactory.getProcessor(selectClauseSpec.getSelectExprList(), isUsingWildcard, insertIntoDesc, typeService, stmtContext.getEventAdapterService(), stmtContext.getStatementResultService(), stmtContext.getValueAddEventService());
@@ -301,7 +309,7 @@ public class ResultSetProcessorFactory
             // (1a)
             // There is no need to perform select expression processing, the single view itself (no join) generates
             // events in the desired format, therefore there is no output processor. There are no order-by expressions.
-            if (orderByNodes.isEmpty() && optionalHavingNode == null && !isOutputLimiting)
+            if (orderByNodes.isEmpty() && optionalHavingNode == null && !isOutputLimiting && statementSpecCompiled.getRowLimitSpec() == null)
             {
                 log.debug(".getProcessor Using no result processor");
                 return new ResultSetProcessorHandThrough(selectExprProcessor, isSelectRStream);
@@ -332,14 +340,14 @@ public class ResultSetProcessorFactory
             if ((nonAggregatedProps.isEmpty()) && (!isUsingWildcard))
             {
                 log.debug(".getProcessor Using ResultSetProcessorRowForAll");
-                return new ResultSetProcessorRowForAll(selectExprProcessor, aggregationService, orderByProcessor, optionalHavingNode, isSelectRStream);
+                return new ResultSetProcessorRowForAll(selectExprProcessor, aggregationService, orderByProcessor, optionalHavingNode, isSelectRStream, isUnidirectional);
             }
 
             // (4)
             // There is no group-by clause but there are aggregate functions with event properties in the select clause (aggregation case)
             // or having clause and not all event properties are aggregated (some properties are not under aggregation functions).
             log.debug(".getProcessor Using ResultSetProcessorAggregateAll");
-            return new ResultSetProcessorAggregateAll(selectExprProcessor, orderByProcessor, aggregationService, optionalHavingNode, isSelectRStream);
+            return new ResultSetProcessorAggregateAll(selectExprProcessor, orderByProcessor, aggregationService, optionalHavingNode, isSelectRStream, isUnidirectional);
         }
 
         // Handle group-by cases
@@ -390,14 +398,14 @@ public class ResultSetProcessorFactory
         if (allInGroupBy && allInSelect)
         {
             log.debug(".getProcessor Using ResultSetProcessorRowPerGroup");
-            return new ResultSetProcessorRowPerGroup(selectExprProcessor, orderByProcessor, aggregationService, groupByNodes, optionalHavingNode, isSelectRStream);
+            return new ResultSetProcessorRowPerGroup(selectExprProcessor, orderByProcessor, aggregationService, groupByNodes, optionalHavingNode, isSelectRStream, isUnidirectional);
         }
 
         // (6)
         // There is a group-by clause, and one or more event properties in the select clause that are not under an aggregation
         // function are not listed in the group-by clause (output one row per event, not one row per group)
         log.debug(".getProcessor Using ResultSetProcessorAggregateGrouped");
-        return new ResultSetProcessorAggregateGrouped(selectExprProcessor, orderByProcessor, aggregationService, groupByNodes, optionalHavingNode, isSelectRStream);
+        return new ResultSetProcessorAggregateGrouped(selectExprProcessor, orderByProcessor, aggregationService, groupByNodes, optionalHavingNode, isSelectRStream, isUnidirectional);
     }
 
     private static void validateHaving(Set<Pair<Integer, String>> propertiesGroupedBy,

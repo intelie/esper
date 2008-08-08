@@ -262,4 +262,18 @@ public interface ConfigurationOperations
      * @throws ConfigurationException if the event type alias could not be found or is not a Map
      */
     public void updateMapEventType(String mapEventTypeAlias, Map<String, Object> typeMap) throws ConfigurationException;
+
+    /**
+     * Returns true if a variant stream by the name has been declared, or false if not.
+     * @param name of variant stream
+     * @return indicator whether the variant stream by that name exists 
+     */
+    public boolean isVariantStreamExists(String name);
+
+    /**
+     * Sets a new interval for metrics reporting for a pre-configured statement group.
+     * @param stmtGroupName name of statement group
+     * @param newIntervalMSec millisecond interval, use zero or negative value to disable
+     */
+    public void setMetricsReportingInterval(String stmtGroupName, long newIntervalMSec);
 }

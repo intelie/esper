@@ -57,6 +57,15 @@ public class MapEventBean implements EventBean
         return eventType;
     }
 
+    /**
+     * Returns the properties.
+     * @return properties
+     */
+    public Map<String, Object> getProperties()
+    {
+        return properties;
+    }
+
     public Object get(String property) throws IllegalArgumentException, PropertyAccessException
     {
         EventPropertyGetter getter = eventType.getGetter(property);

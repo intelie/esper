@@ -10,6 +10,9 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+
+import com.espertech.esper.epl.expression.ExprNode;
 
 /**
  * Utility class for AST node handling.
@@ -19,6 +22,26 @@ public class ASTUtil
     private static Log log = LogFactory.getLog(ASTUtil.class);
 
     private final static String PROPERTY_ENABLED_AST_DUMP = "ENABLE_AST_DUMP";
+
+    /**
+     * Returns the first child node (shallow search) of the given parent that matches type, or null if no child node
+     * matches type.
+     * @param parent whose child nodes to ask for type
+     * @param type the type looked for
+     * @return child node if found, or null if not found
+     */
+    public static Tree findFirstNode(Tree parent, int type)
+    {
+        for (int i = 0; i < parent.getChildCount(); i++)
+        {
+            Tree child = parent.getChild(i);
+            if (child.getType() == type)
+            {
+                return child;
+            }
+        }
+        return null;
+    }
 
     /**
      * Dump the AST node to system.out.
@@ -111,4 +134,16 @@ public class ASTUtil
         printer.println();
     }
 
+    /**
+     * For the given child, return the expression for that child and remove from node-to-expression map
+     * @param child to ask for expression
+     * @param astExprNodeMap map to remove node from
+     * @return expression
+     */
+    public static ExprNode getRemoveExpr(Tree child, Map<Tree, ExprNode> astExprNodeMap)
+    {
+        ExprNode thisEvalNode = astExprNodeMap.get(child);
+        astExprNodeMap.remove(child);
+        return thisEvalNode;
+    }
 }

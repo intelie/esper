@@ -14,17 +14,20 @@ public class PrintUpdateListener implements UpdateListener
     {
         for (int i = 0; i < newEvents.length; i++)
         {
-            log.debug(".update Event#" + i + " : " + newEvents[i]);
-            dumpProperties(newEvents[i]);
+            log.info(".update Event#" + i + " : " + dumpProperties(newEvents[i]));
         }
     }
 
-    private void dumpProperties(EventBean newEvent)
+    private String dumpProperties(EventBean newEvent)
     {
+        StringBuilder buf = new StringBuilder();
         for (String name : newEvent.getEventType().getPropertyNames())
-        {            
-            log.debug(" " + name + " = " + newEvent.get(name));
+        {
+            buf.append(' ');
+            buf.append(name);
+            buf.append("=");
+            buf.append(newEvent.get(name));
         }
-
+        return buf.toString();
     }
 }

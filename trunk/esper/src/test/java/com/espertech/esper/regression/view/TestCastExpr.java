@@ -6,6 +6,7 @@ import com.espertech.esper.client.EPServiceProviderManager;
 import com.espertech.esper.client.EPStatement;
 import com.espertech.esper.client.soda.*;
 import com.espertech.esper.support.util.SupportUpdateListener;
+import com.espertech.esper.support.util.ArrayAssertionUtil;
 import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.support.bean.*;
 import com.espertech.esper.util.SerializableObjectCopier;
@@ -60,6 +61,24 @@ public class TestCastExpr extends TestCase
         epService.getEPRuntime().sendEvent(bean);
         event = listener.assertOneGetNewAndReset();
         assertResults(event, new Object[] {null, null, null, null, 100, 100L, 100, null});
+        bean = new SupportBean(null, 100);
+        bean.setFloatBoxed(null);
+        bean.setIntBoxed(null);
+        epService.getEPRuntime().sendEvent(bean);
+        event = listener.assertOneGetNewAndReset();
+        assertResults(event, new Object[] {null, null, null, null, 100, 100L, 100, null});
+    }
+
+    public void testCastAsParse()
+    {
+        String stmtText = "select cast(string, int) as t0 from " + SupportBean.class.getName();
+        EPStatement selectTestCase = epService.getEPAdministrator().createEPL(stmtText);
+        selectTestCase.addListener(listener);
+
+        assertEquals(Integer.class, selectTestCase.getEventType().getPropertyType("t0"));
+
+        epService.getEPRuntime().sendEvent(new SupportBean("12", 1));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), "t0".split(","), new Object[] {12});
     }
 
     public void testCastDoubleAndNull_OM() throws Exception

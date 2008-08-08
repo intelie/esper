@@ -339,4 +339,18 @@ public class EventBeanUtility
 
         return new UniformPair<Set<MultiKey<EventBean>>>(newEvents, oldEvents);
     }
+
+    /**
+     * Expand the array passed in by the single element to add.
+     * @param array to expand
+     * @param eventToAdd element to add
+     * @return resized array
+     */
+    public static EventBean[] addToArray(EventBean[] array, EventBean eventToAdd)
+    {
+        EventBean[] newArray = new EventBean[array.length + 1];
+        System.arraycopy(array, 0, newArray, 0, array.length);
+        newArray[newArray.length - 1] = eventToAdd;
+        return newArray;
+    }
 }

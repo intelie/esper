@@ -16,6 +16,7 @@ import org.antlr.runtime.RecognitionException;
 import org.antlr.runtime.Token;
 
 import java.util.Stack;
+import java.util.Set;
 
 /**
  * This exception is thrown to indicate a problem in statement creation.
@@ -75,6 +76,13 @@ public class EPStatementSyntaxException extends EPStatementException
             check = checkList.toString();
         }
 
+        // check if token is a reserved keyword
+        Set<String> keywords = parser.getKeywords();
+        if (keywords.contains(token))
+        {
+            token += " (a reserved keyword)";
+        }
+
         String message = "Incorrect syntax near " + token + positionInfo + check;
         if (e instanceof NoViableAltException)
         {
@@ -87,7 +95,27 @@ public class EPStatementSyntaxException extends EPStatementException
             {
                 if (parser.getParserTokenParaphrases().get(nvae.token.getType()) != null)
                 {
-                    message = "Incorrect syntax near " + token + " (a reserved keyword)" + positionInfo + check;
+                    message = "Incorrect syntax near " + token + positionInfo + check;
+                }
+                else
+                {
+                    // find next keyword in the next 3 tokens
+                    int currentIndex = e.index + 1;
+                    while ((currentIndex > 0) &&
+                           (currentIndex < parser.getTokenStream().size() - 1) &&
+                           (currentIndex < e.index + 3))
+                    {
+                        Token next = parser.getTokenStream().get(currentIndex);
+                        currentIndex++;
+
+                        String quotedToken = "'" + next.getText() + "'";
+                        if (parser.getKeywords().contains(quotedToken))
+                        {
+                            check += " near reserved keyword '" + next.getText() + "'";
+                            break;
+                        }
+                    }
+                    message = "Incorrect syntax near " + token + positionInfo + check;
                 }
             }
         }
@@ -192,6 +220,7 @@ public class EPStatementSyntaxException extends EPStatementException
                 : "";
     }
 }
+
 
 
 

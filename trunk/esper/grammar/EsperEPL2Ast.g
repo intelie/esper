@@ -96,7 +96,12 @@ createWindowExpr
 			       | 
 			        (createColTypeList)
 			)
+			createWindowExprInsert?
 		{ leaveNode($i); })
+	;
+
+createWindowExprInsert
+	:	^(INSERT valueExpr?)
 	;
 	
 createSelectionList
@@ -132,6 +137,7 @@ selectExpr
 		(havingClause)?
 		(outputLimitExpr)?
 		(orderByClause)?
+		(rowLimitClause)?
 	;
 	
 insertIntoExpr
@@ -222,6 +228,10 @@ outputLimitExpr
 	|   	^(tp=TIMEPERIOD_LIMIT_EXPR (ALL|FIRST|LAST|SNAPSHOT)? time_period { leaveNode($tp); } )
 	|   	^(cron=CRONTAB_LIMIT_EXPR (ALL|FIRST|LAST|SNAPSHOT)? crontabLimitParameterSet { leaveNode($cron); } )
 	|   	^(when=WHEN_LIMIT_EXPR (ALL|FIRST|LAST|SNAPSHOT)? valueExpr onSetExpr? { leaveNode($when); } )
+	;
+
+rowLimitClause
+	:	^(e=ROW_LIMIT_EXPR (number|IDENT) (number|IDENT)? COMMA? OFFSET? { leaveNode($e); } ) 
 	;
 
 crontabLimitParameterSet

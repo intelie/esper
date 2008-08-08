@@ -204,12 +204,14 @@ public class TestEPLTreeWalker extends TestCase
 
     public void testWalkCreateWindow() throws Exception
     {
-        String expression = "create window MyWindow.std:groupby(symbol).win:length(20) as select *, aprop, bprop as someval from com.MyClass";
+        String expression = "create window MyWindow.std:groupby(symbol).win:length(20) as select *, aprop, bprop as someval from com.MyClass insert where a=b";
         EPLTreeWalker walker = parseAndWalkEPL(expression);
         StatementSpecRaw raw = walker.getStatementSpec();
 
         // window name
         assertEquals("MyWindow", raw.getCreateWindowDesc().getWindowName());
+        assertTrue(raw.getCreateWindowDesc().isInsert());
+        assertTrue(raw.getCreateWindowDesc().getInsertFilter() instanceof ExprEqualsNode);
 
         // select clause
         assertTrue(raw.getSelectClauseSpec().isUsingWildcard());
@@ -347,7 +349,7 @@ public class TestEPLTreeWalker extends TestCase
                         CLASSNAME + "(string='a').win:length(10).std:lastevent() as win1," +
                         CLASSNAME + "(string='b').win:length(9).std:lastevent() as win2, " +
                         CLASSNAME + "(string='c').win:length(3).std:lastevent() as win3 " +
-                        "where win1.f1=win2.f2 and win3.f3=f4";
+                        "where win1.f1=win2.f2 and win3.f3=f4 limit 5 offset 10";
 
         EPLTreeWalker walker = parseAndWalkEPL(expression);
 
@@ -383,6 +385,9 @@ public class TestEPLTreeWalker extends TestCase
         identNode = (ExprIdentNode) equalsNode.getChildNodes().get(1);
         assertNull(identNode.getStreamOrPropertyName());
         assertEquals("f4", identNode.getUnresolvedPropertyName());
+        
+        assertEquals(5, (int) walker.getStatementSpec().getRowLimitSpec().getNumRows());
+        assertEquals(10, (int) walker.getStatementSpec().getRowLimitSpec().getOptionalOffset());
     }
 
     public void testWalkPerRowFunctions() throws Exception
