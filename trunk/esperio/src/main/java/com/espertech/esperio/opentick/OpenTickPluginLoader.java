@@ -32,6 +32,8 @@ public class OpenTickPluginLoader implements PluginLoader
 
     public void destroy()
     {
+        log.info("Destroying adapter");
+
         if (adapter == null)
         {
             return;
@@ -49,11 +51,14 @@ public class OpenTickPluginLoader implements PluginLoader
 
     public void init(String name, Properties properties, EPServiceProviderSPI epService)
     {
+        log.info("Initializing adapter named " + name + " configured as " + properties);
+        
         if (adapter != null)
         {
             destroy();
         }
-        
+
+        // Load configuration
         ConfigurationOpenTick configurationOpenTick = new ConfigurationOpenTick();
         String resource = properties.getProperty(CLASSPATH_CONTEXT);
         if (resource != null)
@@ -68,7 +73,8 @@ public class OpenTickPluginLoader implements PluginLoader
             {
                 throw new IllegalArgumentException("Required property not found: " + CLASSPATH_CONTEXT + " or " + FILE_APP_CONTEXT);
             }
-            try {
+            try
+            {
                 ConfigurationParser.doConfigure(configurationOpenTick, new FileInputStream(resource), resource);
             }
             catch (FileNotFoundException fnfe) {
@@ -79,12 +85,12 @@ public class OpenTickPluginLoader implements PluginLoader
         // Load adapters
         log.debug("Configuring from resource: " + resource);
 
-        // Initialize adapters
+        // Initialize adapter
         adapter = new OpenTickInputAdapter(configurationOpenTick);
         adapter.start();
     }
 
-    protected static InputStream getResourceAsStream(String resource)
+    private static InputStream getResourceAsStream(String resource)
     {
         String stripped = resource.startsWith("/") ?
                 resource.substring(1) : resource;

@@ -2,9 +2,18 @@ package com.espertech.esper.regression.pattern;
 
 import junit.framework.*;
 import java.util.Calendar;
+import java.util.GregorianCalendar;
+import java.util.List;
+import java.util.ArrayList;
+
 import com.espertech.esper.regression.support.*;
-import com.espertech.esper.support.bean.SupportBeanConstants;
+import com.espertech.esper.support.bean.*;
+import com.espertech.esper.support.client.SupportConfigFactory;
+import com.espertech.esper.support.util.SupportUpdateListener;
+import com.espertech.esper.support.util.ArrayAssertionUtil;
 import com.espertech.esper.client.soda.*;
+import com.espertech.esper.client.*;
+import com.espertech.esper.client.time.CurrentTimeEvent;
 import com.espertech.esper.util.SerializableObjectCopier;
 
 public class TestTimerAtObserver extends TestCase implements SupportBeanConstants
@@ -174,6 +183,48 @@ public class TestTimerAtObserver extends TestCase implements SupportBeanConstant
         // Run all tests
         PatternTestHarness util = new PatternTestHarness(testData, testCaseList);
         util.runTest();
+    }
+
+    public void testAtWeekdays()
+    {
+        String expression = "select * from pattern [every timer:at(0,8,*,*,[1,2,3,4,5])]";
+
+        Configuration config = SupportConfigFactory.getConfiguration();
+        config.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
+        EPServiceProvider epService = EPServiceProviderManager.getDefaultProvider(config);
+        epService.initialize();
+
+        Calendar cal = GregorianCalendar.getInstance();
+        cal.set(2008, 7, 3, 10, 0, 0);      // start on a Sunday at 6am, August 3 2008
+        sendTimer(cal.getTimeInMillis(), epService);
+
+        EPStatement statement = epService.getEPAdministrator().createEPL(expression);
+        SupportUpdateListener listener = new SupportUpdateListener();
+        statement.addListener(listener);
+
+        List<String> invocations = new ArrayList<String>();
+        for (int i = 0; i < 24*60*7; i++)   // run for 1 week
+        {
+            cal.add(Calendar.MINUTE, 1);
+            sendTimer(cal.getTimeInMillis(), epService);
+
+            if (listener.getAndClearIsInvoked())
+            {
+                // System.out.println("invoked at calendar " + cal.getTime().toString());
+                invocations.add(cal.getTime().toString());
+            }
+        }
+
+        ArrayAssertionUtil.assertEqualsExactOrder(invocations.toArray(), new 
+                String[] {"Mon Aug 04 08:00:00 EDT 2008", "Tue Aug 05 08:00:00 EDT 2008", "Wed Aug 06 08:00:00 EDT 2008",
+                            "Thu Aug 07 08:00:00 EDT 2008", "Fri Aug 08 08:00:00 EDT 2008"});
+    }
+
+    private void sendTimer(long timeInMSec, EPServiceProvider epService)
+    {
+        CurrentTimeEvent event = new CurrentTimeEvent(timeInMSec);
+        EPRuntime runtime = epService.getEPRuntime();
+        runtime.sendEvent(event);
     }
 
     private void addAll (EventExpressionCase desc)

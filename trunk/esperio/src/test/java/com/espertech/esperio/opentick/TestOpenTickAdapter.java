@@ -3,6 +3,8 @@ package com.espertech.esperio.opentick;
 import com.espertech.esper.client.Configuration;
 import com.espertech.esper.client.EPServiceProvider;
 import com.espertech.esper.client.EPServiceProviderManager;
+import com.espertech.esper.client.EPStatement;
+import com.espertech.esperio.support.util.PrintUpdateListener;
 
 import java.util.Properties;
 
@@ -21,5 +23,19 @@ public class TestOpenTickAdapter extends TestCase
         
         EPServiceProvider provider = EPServiceProviderManager.getDefaultProvider(config);
         provider.initialize();
+
+        EPServiceProvider engine = EPServiceProviderManager.getProvider("MyEngineURI");
+        EPStatement stmt = engine.getEPAdministrator().createEPL("select * from OTQuote");
+        stmt.addListener(new PrintUpdateListener());
+
+        try
+        {
+            Thread.sleep(30000);
+        }
+        catch (InterruptedException e)
+        {
+        }
+
+        provider.destroy();
     }
 }
