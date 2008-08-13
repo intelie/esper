@@ -15,6 +15,10 @@
       <level value="DEBUG"/>
    </logger>
 
+   <logger name="com.espertech.esperio">
+      <level value="DEBUG"/>
+   </logger>
+
    <root>
       <level value="WARN"/>
       <appender-ref ref="terminal"/>
