@@ -1,12 +1,12 @@
 package com.espertech.esperio.opentick;
 
-public class OpenTickSubscriberSpec
+public class OpentickSubscriberSpec
 {
     private final String exchange;
     private final String symbol;
     private final Integer optionalType;
 
-    public OpenTickSubscriberSpec(String exchange, String symbol, Integer optionalType)
+    public OpentickSubscriberSpec(String exchange, String symbol, Integer optionalType)
     {
         this.exchange = exchange;
         this.symbol = symbol;

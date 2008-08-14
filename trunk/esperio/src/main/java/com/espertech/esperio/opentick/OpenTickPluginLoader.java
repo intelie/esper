@@ -14,9 +14,9 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.Properties;
 
-public class OpenTickPluginLoader implements PluginLoader
+public class OpentickPluginLoader implements PluginLoader
 {
-    private static final Log log = LogFactory.getLog(OpenTickPluginLoader.class);
+    private static final Log log = LogFactory.getLog(OpentickPluginLoader.class);
 
     /**
      * Use to configure a classpath context.
@@ -28,7 +28,7 @@ public class OpenTickPluginLoader implements PluginLoader
      */
     public final static String FILE_APP_CONTEXT = "file-app-context";
 
-    private OpenTickInputAdapter adapter;
+    private OpentickInputAdapter adapter;
 
     public void destroy()
     {
@@ -59,7 +59,7 @@ public class OpenTickPluginLoader implements PluginLoader
         }
 
         // Load configuration
-        ConfigurationOpenTick configurationOpenTick = new ConfigurationOpenTick();
+        ConfigurationOpentick configurationOpenTick = new ConfigurationOpentick();
         String resource = properties.getProperty(CLASSPATH_CONTEXT);
         if (resource != null)
         {
@@ -86,7 +86,7 @@ public class OpenTickPluginLoader implements PluginLoader
         log.debug("Configuring from resource: " + resource);
 
         // Initialize adapter
-        adapter = new OpenTickInputAdapter(configurationOpenTick);
+        adapter = new OpentickInputAdapter(configurationOpenTick);
         adapter.start();
     }
 

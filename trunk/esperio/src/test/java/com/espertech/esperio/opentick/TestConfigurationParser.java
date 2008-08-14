@@ -7,11 +7,11 @@ import java.util.List;
 
 public class TestConfigurationParser extends TestCase
 {
-    private ConfigurationOpenTick config;
+    private ConfigurationOpentick config;
 
     public void setUp()
     {
-        config = new ConfigurationOpenTick();
+        config = new ConfigurationOpentick();
     }
 
     public void testConfigureFromStream() throws Exception
@@ -25,7 +25,7 @@ public class TestConfigurationParser extends TestCase
         assertFileConfig(config);
     }
 
-    protected static void assertFileConfig(ConfigurationOpenTick config) throws Exception
+    protected static void assertFileConfig(ConfigurationOpentick config) throws Exception
     {
         // assert connection
         assertEquals(2, config.getConnection().getHosts().size());
@@ -44,7 +44,7 @@ public class TestConfigurationParser extends TestCase
 
         // assert masks
         assertEquals(1, config.getSymbolLists().size());
-        List<ConfigurationOpenTick.ExchangeAndSymbol> maskList = config.getSymbolLists().get("list1");
+        List<ConfigurationOpentick.ExchangeAndSymbol> maskList = config.getSymbolLists().get("list1");
         assertEquals(2, maskList.size());
         assertEquals("NASDAQ", maskList.get(0).getExchange());
         assertEquals("MSFT", maskList.get(0).getSymbol());

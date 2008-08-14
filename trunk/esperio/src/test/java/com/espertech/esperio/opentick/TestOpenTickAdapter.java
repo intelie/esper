@@ -7,22 +7,52 @@ import com.espertech.esper.client.EPStatement;
 import com.espertech.esperio.support.util.PrintUpdateListener;
 
 import java.util.Properties;
+import java.net.URL;
 
 import junit.framework.TestCase;
 
-public class TestOpenTickAdapter extends TestCase
+public class TestOpentickAdapter extends TestCase
 {
-    public void testAdapter()
+    public void testPlugInLoader()
     {
         Configuration config = new Configuration();
         config.getEngineDefaults().getThreading().setInternalTimerEnabled(false);   // automated tests run usually without timer
 
         Properties pluginProperties = new Properties();
         pluginProperties.put("classpath-app-context","esperio-opentickadapter-config-sample.xml");
-        config.addPluginLoader("OpenTickPluginLoader", OpenTickPluginLoader.class.getName(), pluginProperties);
+        config.addPluginLoader("OpentickPluginLoader", OpentickPluginLoader.class.getName(), pluginProperties);
         
         EPServiceProvider provider = EPServiceProviderManager.getDefaultProvider(config);
         provider.initialize();
+
+        EPServiceProvider engine = EPServiceProviderManager.getProvider("MyEngineURI");
+        EPStatement stmt = engine.getEPAdministrator().createEPL("select * from OTQuote");
+        stmt.addListener(new PrintUpdateListener());
+
+        try
+        {
+            Thread.sleep(30000);
+        }
+        catch (InterruptedException e)
+        {
+        }
+
+        provider.destroy();
+    }
+
+    public void testAdapterStart()
+    {
+        Configuration config = new Configuration();
+        config.getEngineDefaults().getThreading().setInternalTimerEnabled(false);   // automated tests run usually without timer
+        EPServiceProvider provider = EPServiceProviderManager.getDefaultProvider(config);
+        provider.initialize();
+
+        ConfigurationOpentick configOT = new ConfigurationOpentick();
+        URL url = Thread.currentThread().getContextClassLoader().getResource("esperio-opentickadapter-config-sample.xml");
+        configOT.configure(url);
+
+        OpentickInputAdapter adapter = new OpentickInputAdapter(configOT);
+        adapter.start();
 
         EPServiceProvider engine = EPServiceProviderManager.getProvider("MyEngineURI");
         EPStatement stmt = engine.getEPAdministrator().createEPL("select * from OTQuote");

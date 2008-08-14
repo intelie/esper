@@ -31,7 +31,7 @@ public class ConfigurationParser
      * @param resourceName The name to use in warning/error messages
      * @throws com.espertech.esper.client.EPException is thrown when the configuration could not be parsed
      */
-    protected static void doConfigure(ConfigurationOpenTick configuration, InputStream stream, String resourceName)
+    protected static void doConfigure(ConfigurationOpentick configuration, InputStream stream, String resourceName)
     {
         Document document = getDocument(stream, resourceName);
         doConfigure(configuration, document);
@@ -78,7 +78,7 @@ public class ConfigurationParser
      * @param configuration is the configuration object to populate
      * @param doc to parse
      */
-    protected static void doConfigure(ConfigurationOpenTick configuration, Document doc)
+    protected static void doConfigure(ConfigurationOpentick configuration, Document doc)
     {
         Element root = doc.getDocumentElement();
 
@@ -106,7 +106,7 @@ public class ConfigurationParser
         }
     }
 
-    private static void handleSymbolLists(ConfigurationOpenTick configuration, Element parentElement)
+    private static void handleSymbolLists(ConfigurationOpentick configuration, Element parentElement)
     {
         DOMElementIterator eventTypeNodeIterator = new DOMElementIterator(parentElement.getChildNodes());
         while (eventTypeNodeIterator.hasNext())
@@ -123,7 +123,7 @@ public class ConfigurationParser
         }
     }
 
-    private static void handleStreamSymbollists(ConfigurationOpenTick configuration, Element parentElement)
+    private static void handleStreamSymbollists(ConfigurationOpentick configuration, Element parentElement)
     {
         DOMElementIterator eventTypeNodeIterator = new DOMElementIterator(parentElement.getChildNodes());
         while (eventTypeNodeIterator.hasNext())
@@ -139,7 +139,7 @@ public class ConfigurationParser
         }
     }
 
-    private static void handleConnection(ConfigurationOpenTick configuration, Element parentElement)
+    private static void handleConnection(ConfigurationOpentick configuration, Element parentElement)
     {
         DOMElementIterator eventTypeNodeIterator = new DOMElementIterator(parentElement.getChildNodes());
         while (eventTypeNodeIterator.hasNext())
@@ -154,7 +154,7 @@ public class ConfigurationParser
             {
                 String name = element.getAttributes().getNamedItem("name").getTextContent();
                 String password = element.getAttributes().getNamedItem("password").getTextContent();
-                ConfigurationOpenTick.ConnectionLogin login = new ConfigurationOpenTick.ConnectionLogin();
+                ConfigurationOpentick.ConnectionLogin login = new ConfigurationOpentick.ConnectionLogin();
                 login.setName(name);
                 login.setPassword(password);
                 configuration.getConnection().setLogin(login);
@@ -162,7 +162,7 @@ public class ConfigurationParser
         }
     }
 
-    private static void handleStreams(ConfigurationOpenTick configuration, Element parentElement)
+    private static void handleStreams(ConfigurationOpentick configuration, Element parentElement)
     {
         DOMElementIterator eventTypeNodeIterator = new DOMElementIterator(parentElement.getChildNodes());
         while (eventTypeNodeIterator.hasNext())
@@ -176,7 +176,7 @@ public class ConfigurationParser
                 String engineURI = element.getAttributes().getNamedItem("engine-uri").getTextContent();
                 String alias = element.getAttributes().getNamedItem("alias").getTextContent();
                 
-                ConfigurationOpenTick.OpenTickStream stream = new ConfigurationOpenTick.OpenTickStream();
+                ConfigurationOpentick.OpenTickStream stream = new ConfigurationOpentick.OpenTickStream();
                 stream.setEnabled(enable);
                 stream.setEngineURI(engineURI);
                 stream.setAlias(alias);
@@ -185,7 +185,7 @@ public class ConfigurationParser
         }
     }
 
-    private static void handleHosts(ConfigurationOpenTick configuration, Element parentElement)
+    private static void handleHosts(ConfigurationOpentick configuration, Element parentElement)
     {
         DOMElementIterator eventTypeNodeIterator = new DOMElementIterator(parentElement.getChildNodes());
         while (eventTypeNodeIterator.hasNext())
@@ -196,7 +196,7 @@ public class ConfigurationParser
             {
                 String name = element.getAttributes().getNamedItem("name").getTextContent();
                 int port = Integer.parseInt(element.getAttributes().getNamedItem("port").getTextContent());
-                ConfigurationOpenTick.ConnectionHost host = new ConfigurationOpenTick.ConnectionHost();
+                ConfigurationOpentick.ConnectionHost host = new ConfigurationOpentick.ConnectionHost();
                 host.setHostname(name);
                 host.setPort(port);
                 configuration.getConnection().addHost(host);

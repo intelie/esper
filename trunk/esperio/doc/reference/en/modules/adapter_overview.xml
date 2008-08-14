@@ -37,6 +37,14 @@
 						</para>
 					</entry>
 				</row>
+				<row>
+					<entry>Opentick Input Adapter</entry>
+					<entry>
+						<para>
+							The opentick input adapter receives real-time stock market data from opentick corporation's API. Please see <literal>http://www.opentick.com</literal> for more information. Opentick license, copyright and trademark are properties of opentick corporation.
+						</para>
+					</entry>
+				</row>
 			</tbody>
 		</tgroup>
 	</table>

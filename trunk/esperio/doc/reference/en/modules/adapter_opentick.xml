@@ -1,0 +1,88 @@
+<chapter id="adapter_opentick">
+    <title>The Opentick Input Adapter</title>
+    
+    <sect1 id="adapter-opentick-intro">
+        <title>Overview</title>
+
+		<para>
+			This section describes the use of the Opentick input adapter. Opentick is an API and a service of opentick corporation to receive real-time stock market data, see <literal>http://www.opentick.com</literal>.
+		</para>
+    
+		<para>
+			The Opentick input adapter is configured through an XML configuration file or directly through the <literal>ConfigurationOpentick</literal> class. The distribution provides a sample configuration file <literal>esperio-opentickadapter-config-sample.xml</literal> in the EsperIO <literal>etc</literal> folder.
+		</para>
+			
+		<para>
+			There are two path available to start adapter operation: The first option is to register the adapter's plug-in loader and thus automatically load and start the adapter at time of engine initialization. The second option requires your application to instantiate an <literal>OpentickInputAdapter</literal>.
+		</para>
+
+		<sect4 id="adapter-opentick-loader">
+			<title>Adapter Start via Plug-in Loader</title>
+		
+			<para>
+				This method loads the adapter automatically at time of engine initialization.
+			</para>
+
+			<para>
+				First, register the <literal>OpentickPluginLoader</literal> as one of the a plug-in loaders via the <literal>addPluginLoader</literal> method on the <literal>Configuration</literal> class or within the Esper configuration XML. For example:
+			</para>
+			<programlisting><![CDATA[Properties pluginProperties = new Properties();
+pluginProperties.put("classpath-app-context","esperio-opentickadapter-config-sample.xml");
+config.addPluginLoader("OpentickPluginLoader", OpentickPluginLoader.class.getName(), pluginProperties);]]></programlisting>
+
+			<para>
+				At the time of engine initialization the loader class retrieves the XML configuration file from classpath and instantiates and starts the <literal>OpentickInputAdapter</literal>.
+			</para>
+		</sect4>
+
+		<sect4 id="adapter-opentick-adapter">
+			<title>Adapter Start via Instantiation</title>
+				<para>
+					Your application may choose to use the <literal>OpenTickInputAdapter</literal> class directly to start, pause, resume and destroy of the adapter separate from an engine instance, or to configure via API and change the configuration at runtime.
+				</para>
+
+				<para>
+					This code snippet load a configuration file from a classpath URL then starts the adapter:
+				</para>
+				<programlisting><![CDATA[ConfigurationOpentick configOT = new ConfigurationOpentick();
+URL url = Thread.currentThread().getContextClassLoader().getResource("esperio-opentickadapter-config-sample.xml");
+configOT.configure(url);
+
+OpentickInputAdapter adapter = new OpentickInputAdapter(configOT);
+adapter.start();]]></programlisting>
+		</sect4>
+    </sect1>
+    
+    <sect1 id="adapter-opentick-config">
+        <title>Configuration</title>
+        <para>
+			The opentick adapter XML and API configuration configures the connection information and streams subscribed to in OT, and defines symbol lists as well as associates symbol lists to streams. Please review the sample configuration file
+			in the <literal>etc</literal> folder of EsperIO distribution.
+        </para>
+
+        <para>
+			As part of the <literal>stream</literal> configuration your application may list the following stream names: OTQuote, OTMMQuote, OTTrade, OTBBO. 
+			The <literal>alias</literal> attribute assigns an alias to the opentick event types available in EPL statements. 
+			The event representation are the respective opentick API POJO objects: <literal>com.opentick.OTTrade</literal>.
+        </para>
+        
+        <para>
+			The <literal>symbollists</literal> element serves to define named lists of exchange and symbol combinations. The <literal>stream-symbollist</literal> element associates symbols to streams requested through the opentick API.
+        </para>
+    </sect1>
+
+    <sect1 id="adapter-opentick-operation">
+        <title>Operation</title>
+        <para>
+			This opentick adapter, once running, may be configured at runtime as well. To change symbol lists or request new streams at runtime, your application may obtain the <literal>ConfigurationOpentick</literal> from 
+			the adapter, make changes, and restart the adapter via its <literal>pause, resume, start and stop</literal> operations. 
+        </para>
+
+        <para>
+			Use the <literal>pause</literal> and <literal>resume</literal> operations to retain the existing connection, drop streams and request new streams based on the new configuration.
+			Use the <literal>destroy</literal> and <literal>start</literal> operations to disconnect and reconnect.
+        </para>
+    </sect1>
+</chapter>
+
+

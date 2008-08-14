@@ -13,12 +13,12 @@ import org.apache.commons.logging.LogFactory;
 
 import java.util.*;
 
-public class OpenTickInputAdapter implements InputAdapter, AdapterSPI
+public class OpentickInputAdapter implements InputAdapter, AdapterSPI
 {
-    private static final Log log = LogFactory.getLog(OpenTickInputAdapter.class);
+    private static final Log log = LogFactory.getLog(OpentickInputAdapter.class);
 
-    private final ConfigurationOpenTick configuration;
-    private final EsperOpenTickClient openTickClient;
+    private final ConfigurationOpentick configuration;
+    private final OTEventBasedClient openTickClient;
     private final ArrayList<Integer> opentickRequestIds;
     private final Map<String, Pair<Class, Integer>> knownStreamNames;
 
@@ -26,10 +26,10 @@ public class OpenTickInputAdapter implements InputAdapter, AdapterSPI
     private boolean isActive;
     private EPServiceProvider defaultEpService;
 
-    public OpenTickInputAdapter(ConfigurationOpenTick configuration)
+    public OpentickInputAdapter(ConfigurationOpentick configuration)
     {
         this.configuration = configuration;
-        openTickClient = new EsperOpenTickClient();
+        openTickClient = new OTEventBasedClient();
         opentickRequestIds = new ArrayList<Integer>();
 
         knownStreamNames = new HashMap<String, Pair<Class, Integer>>();
@@ -37,6 +37,11 @@ public class OpenTickInputAdapter implements InputAdapter, AdapterSPI
         knownStreamNames.put("OTMMQuote", new Pair<Class, Integer>(OTMMQuote.class, OTConstants.OT_TICK_TYPE_MMQUOTE));
         knownStreamNames.put("OTTrade", new Pair<Class, Integer>(OTTrade.class, OTConstants.OT_TICK_TYPE_TRADE));
         knownStreamNames.put("OTBBO", new Pair<Class, Integer>(OTBBO.class, OTConstants.OT_TICK_TYPE_BBO));
+    }
+
+    public ConfigurationOpentick getConfiguration()
+    {
+        return configuration;
     }
 
     public void start() throws EPException
@@ -47,7 +52,7 @@ public class OpenTickInputAdapter implements InputAdapter, AdapterSPI
         {
             throw new EPException("Configuration does not have any opentick hosts");
         }
-        for (ConfigurationOpenTick.ConnectionHost host : configuration.getConnection().getHosts())
+        for (ConfigurationOpentick.ConnectionHost host : configuration.getConnection().getHosts())
         {
             log.debug("Adding opentick host " + host.getHostname() + " and port " + host.getPort());
             openTickClient.addHost(host.getHostname(), host.getPort());
@@ -77,6 +82,7 @@ public class OpenTickInputAdapter implements InputAdapter, AdapterSPI
         }
 
         //Wait until logged in
+        log.info("Waiting for log-in confirmation");
         int count = 0;
         while (!openTickClient.isLoggedIn())
         {
@@ -99,8 +105,8 @@ public class OpenTickInputAdapter implements InputAdapter, AdapterSPI
             }
         }
 
-        log.info("Adding subscriptions to OT and sending to Esper");
-        for (Map.Entry<String, ConfigurationOpenTick.OpenTickStream> entry : configuration.getStreams().entrySet())
+        log.info("Adding OpenTick listeners");
+        for (Map.Entry<String, ConfigurationOpentick.OpenTickStream> entry : configuration.getStreams().entrySet())
         {
             if (!entry.getValue().isEnabled())
             {
@@ -121,30 +127,38 @@ public class OpenTickInputAdapter implements InputAdapter, AdapterSPI
             EPServiceProvider provider = EPServiceProviderManager.getProvider(engineURI);
             provider.getEPAdministrator().getConfiguration().addEventTypeAlias(aliasName, streamTypeInfo.getFirst());
 
+            String type;
             if (streamTypeInfo.getSecond() == OTConstants.OT_TICK_TYPE_QUOTE)
             {
                 openTickClient.addRtQuoteListener(new OTListenerEsperSender(provider));
+                type = "OT_TICK_TYPE_QUOTE";
             }
             else if (streamTypeInfo.getSecond() == OTConstants.OT_TICK_TYPE_MMQUOTE)
             {
                 openTickClient.addRtMMQuoteListener(new OTListenerEsperSender(provider));
+                type = "OT_TICK_TYPE_MMQUOTE";
             }
             else if (streamTypeInfo.getSecond() == OTConstants.OT_TICK_TYPE_TRADE)
             {
                 openTickClient.addRtTradeListener(new OTListenerEsperSender(provider));
+                type = "OT_TICK_TYPE_TRADE";
             }
             else if (streamTypeInfo.getSecond() == OTConstants.OT_TICK_TYPE_BBO)
             {
                 openTickClient.addRtBBOListener(new OTListenerEsperSender(provider));
+                type = "OT_TICK_TYPE_BBO";
             }
             else
             {
                 throw new EPException("Unknown stream by name '" + streamName + "', valid values are " + knownStreamNames.values());
             }
+            log.info("Added OpenTick " + type + " listener forwarding to Esper engine URI " + engineURI);
         }
 
         activateStreams();
         isStarted = true;
+
+        log.info("Completed startup");
     }
 
     public void pause() throws EPException
@@ -164,6 +178,7 @@ public class OpenTickInputAdapter implements InputAdapter, AdapterSPI
 
     public void destroy() throws EPException
     {
+        log.info("Logging out");
         try
         {
             openTickClient.logout();
@@ -195,6 +210,7 @@ public class OpenTickInputAdapter implements InputAdapter, AdapterSPI
 
     private void deactivateStreams()
     {
+        log.info("Cancelling " + opentickRequestIds.size() + " tick streams");
         for (int requestId : opentickRequestIds)
         {
             try
@@ -213,14 +229,20 @@ public class OpenTickInputAdapter implements InputAdapter, AdapterSPI
 
     private void activateStreams()
     {
-        Set<OpenTickSubscriberSpec> subscribers = computeSubscribers();
-        for (OpenTickSubscriberSpec subscriber : subscribers)
+        log.info("Computing subscriptions");
+        Set<OpentickSubscriberSpec> subscribers = computeSubscribers();
+
+        for (OpentickSubscriberSpec subscriber : subscribers)
         {
             try
             {
-                OTDataEntity entity = new OTDataEntity(subscriber.getExchange(), subscriber.getSymbol());
+                String exchange = subscriber.getExchange();
+                String symbol = subscriber.getSymbol();
+                OTDataEntity entity = new OTDataEntity(exchange, symbol);
                 int requestId = openTickClient.requestTickStream(entity, subscriber.getOptionalType());
                 opentickRequestIds.add(requestId);
+
+                log.info("Requested tick stream for exchange " + exchange + " and symbol " + symbol + " type " + subscriber.getOptionalType());
             }
             catch (OTException e)
             {
@@ -230,14 +252,15 @@ public class OpenTickInputAdapter implements InputAdapter, AdapterSPI
             }
         }
         isActive = true;
+        log.info("Completed requesting tick streams");
     }
 
-    private Set<OpenTickSubscriberSpec> computeSubscribers()
+    private Set<OpentickSubscriberSpec> computeSubscribers()
     {
-        Set<OpenTickSubscriberSpec> subscribers = new LinkedHashSet<OpenTickSubscriberSpec>();
+        Set<OpentickSubscriberSpec> subscribers = new LinkedHashSet<OpentickSubscriberSpec>();
 
         // for each enabled stream
-        for (Map.Entry<String, ConfigurationOpenTick.OpenTickStream> entry : configuration.getStreams().entrySet())
+        for (Map.Entry<String, ConfigurationOpentick.OpenTickStream> entry : configuration.getStreams().entrySet())
         {
             if (!entry.getValue().isEnabled())
             {
@@ -252,7 +275,7 @@ public class OpenTickInputAdapter implements InputAdapter, AdapterSPI
             }
 
             // For each symbol list assigned to the same stream
-            for (ConfigurationOpenTick.StreamSymbolList symbolList : configuration.getStreamSymbolLists())
+            for (ConfigurationOpentick.StreamSymbolList symbolList : configuration.getStreamSymbolLists())
             {
                 if (!symbolList.getStreamName().equals(streamName))
                 {
@@ -260,16 +283,16 @@ public class OpenTickInputAdapter implements InputAdapter, AdapterSPI
                 }
 
                 String symbolListName = symbolList.getSymbolListName();
-                List<ConfigurationOpenTick.ExchangeAndSymbol> combinations = configuration.getSymbolLists().get(symbolListName);
+                List<ConfigurationOpentick.ExchangeAndSymbol> combinations = configuration.getSymbolLists().get(symbolListName);
                 if (combinations == null)
                 {
                     continue;
                 }
 
                 // For each combination of exchange and symbol
-                for (ConfigurationOpenTick.ExchangeAndSymbol combination : combinations)
+                for (ConfigurationOpentick.ExchangeAndSymbol combination : combinations)
                 {
-                    subscribers.add(new OpenTickSubscriberSpec(combination.getExchange(), combination.getSymbol(), streamTypeInfo.getSecond()));
+                    subscribers.add(new OpentickSubscriberSpec(combination.getExchange(), combination.getSymbol(), streamTypeInfo.getSecond()));
                 }
             }
         }
