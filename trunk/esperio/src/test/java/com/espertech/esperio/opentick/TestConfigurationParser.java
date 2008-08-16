@@ -32,9 +32,10 @@ public class TestConfigurationParser extends TestCase
         assertEquals("feed1.opentick.com", config.getConnection().getHosts().get(0).getHostname());
         assertEquals(10010, config.getConnection().getHosts().get(0).getPort());
         assertEquals("feed2.opentick.com", config.getConnection().getHosts().get(1).getHostname());
-        assertEquals(10011, config.getConnection().getHosts().get(1).getPort());
+        assertEquals(10010, config.getConnection().getHosts().get(1).getPort());
         assertEquals("login", config.getConnection().getLogin().getName());
         assertEquals("password", config.getConnection().getLogin().getPassword());
+        assertEquals(20000, config.getConnection().getLogin().getTimeoutMSec());
 
         // assert streams
         assertEquals(4, config.getStreams().size());

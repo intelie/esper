@@ -261,6 +261,12 @@ public class ConfigurationOpentick
     {
         private String name;
         private String password;
+        private long timeoutMSec;
+
+        public ConnectionLogin()
+        {
+            timeoutMSec = 10000;
+        }
 
         public String getName()
         {
@@ -280,6 +286,16 @@ public class ConfigurationOpentick
         public void setPassword(String password)
         {
             this.password = password;
+        }
+
+        public long getTimeoutMSec()
+        {
+            return timeoutMSec;
+        }
+
+        public void setTimeoutMSec(long timeoutMSec)
+        {
+            this.timeoutMSec = timeoutMSec;
         }
     }
 

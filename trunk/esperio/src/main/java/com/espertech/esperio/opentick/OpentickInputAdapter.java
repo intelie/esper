@@ -54,7 +54,7 @@ public class OpentickInputAdapter implements InputAdapter, AdapterSPI
         }
         for (ConfigurationOpentick.ConnectionHost host : configuration.getConnection().getHosts())
         {
-            log.debug("Adding opentick host " + host.getHostname() + " and port " + host.getPort());
+            log.info("Adding opentick host " + host.getHostname() + " and port " + host.getPort());
             openTickClient.addHost(host.getHostname(), host.getPort());
         }
 
@@ -64,15 +64,16 @@ public class OpentickInputAdapter implements InputAdapter, AdapterSPI
         openTickClient.addErrorListener(new ErrorListener());
         openTickClient.addEquityInitListener(new EquityInitListener());
 
-        log.info("Logging in");
         if (configuration.getConnection().getLogin() == null)
         {
             throw new EPException("Configuration does not have login information");
         }
         String loginId = configuration.getConnection().getLogin().getName();
+        String pwd = configuration.getConnection().getLogin().getPassword();
+        log.info("Logging in using login id '" + loginId + "' and password '" + pwd + "'");
         try
         {
-            openTickClient.login(configuration.getConnection().getLogin().getName(), configuration.getConnection().getLogin().getPassword());
+            openTickClient.login(configuration.getConnection().getLogin().getName(), pwd);
         }
         catch (OTLoginException e)
         {
@@ -82,14 +83,14 @@ public class OpentickInputAdapter implements InputAdapter, AdapterSPI
         }
 
         //Wait until logged in
-        log.info("Waiting for log-in confirmation");
-        int count = 0;
+        long timeout = configuration.getConnection().getLogin().getTimeoutMSec();
+        log.info("Waiting for log-in confirmation within " + timeout + " msec");
+        long startTime = System.currentTimeMillis();
         while (!openTickClient.isLoggedIn())
         {
             try
             {
                 Thread.sleep(100);
-                count++;
             }
             catch (InterruptedException e)
             {
@@ -99,9 +100,10 @@ public class OpentickInputAdapter implements InputAdapter, AdapterSPI
             {
                 throw new EPException("OpenTick client reported OT_STATUS_INACTIVE");
             }
-            if (count > 50)
+            long timeDelta = System.currentTimeMillis() - startTime;
+            if (timeDelta > timeout)
             {
-                throw new EPException("OpenTick not logging in: timeout occured");
+                throw new EPException("OpenTick not logging in: timeout occured, maximum wait time was specified as " + timeout + " msec");
             }
         }
 
@@ -308,37 +310,5 @@ public class OpentickInputAdapter implements InputAdapter, AdapterSPI
     public EPServiceProvider getEPServiceProvider()
     {
         return defaultEpService;
-    }
-
-    final class StatusListener implements OTListener<Integer>
-    {
-        public void dataArrived(Integer data)
-        {
-            log.info("Status changed: " + data);
-        }
-    }
-
-    final class LoginListener implements OTListener
-    {
-        public void dataArrived(Object data)
-        {
-            log.info("Logged in: " + data);
-        }
-    }
-
-    final class ErrorListener implements OTListener<OTError>
-    {
-        public void dataArrived(OTError data)
-        {
-            log.error("Error reported: " + data);
-        }
-    }
-
-    final class EquityInitListener implements OTListener<OTEquityInit>
-    {
-        public void dataArrived(OTEquityInit data)
-        {
-            log.info("EquityInit: " + data);
-        }
     }
 }

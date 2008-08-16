@@ -7,9 +7,9 @@
 	<connection>
 	    <hosts>
 			<host name="feed1.opentick.com" port="10010"/>
-			<host name="feed2.opentick.com" port="10011"/>
+			<host name="feed2.opentick.com" port="10010"/>
 	    </hosts>
-	    <login name="login" password="password"/>	    
+	    <login name="login" password="password" timeout-msec="20000"/>	    
 	</connection>
     <!-- 
 		List of streams and engine instance destination; The stream name is a reference to the event subscribed to. 

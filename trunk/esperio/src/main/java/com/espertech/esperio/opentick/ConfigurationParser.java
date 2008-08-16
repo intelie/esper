@@ -154,9 +154,11 @@ public class ConfigurationParser
             {
                 String name = element.getAttributes().getNamedItem("name").getTextContent();
                 String password = element.getAttributes().getNamedItem("password").getTextContent();
+                long timeoutMsec = Long.parseLong(element.getAttributes().getNamedItem("timeout-msec").getTextContent());
                 ConfigurationOpentick.ConnectionLogin login = new ConfigurationOpentick.ConnectionLogin();
                 login.setName(name);
                 login.setPassword(password);
+                login.setTimeoutMSec(timeoutMsec);
                 configuration.getConnection().setLogin(login);
             }
         }

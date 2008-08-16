@@ -55,6 +55,12 @@
 			<artifactId>spring</artifactId>
 			<version>2.0.5</version>
 		</dependency>
+		<!-- mvn install:install-file -DgroupId=opentick -DartifactId=opentick -Dversion=07-04-08 -Dpackaging=jar -Dfile=lib/OTFeed.jar -->
+		<dependency>
+			<groupId>opentick</groupId>
+			<artifactId>opentick</artifactId>
+			<version>07-04-08</version>
+		</dependency>
         <!-- for some reason commons-pool is not properly referenced by activemq-core -->
         <dependency>
 			<groupId>commons-pool</groupId>

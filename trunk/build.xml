@@ -36,7 +36,7 @@
         examples/terminalsvc-jse/lib/*.jar,
         **/antlr-3.0.1.jar,
         **/junit-4.4.jar, **/junit.license,
-        **/mysql-connector-java-*.jar"/>
+        **/mysql-connector-java-*.jar,**/OTFeed*.jar"/>
 
 	<target name="info" description="The master build is done my Maven">
 		<echo message="Please use Maven 2 to build Esper and related components. Maven build instructions are available on the website." />

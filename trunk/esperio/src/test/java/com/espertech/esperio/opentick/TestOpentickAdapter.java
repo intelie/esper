@@ -19,7 +19,7 @@ public class TestOpentickAdapter extends TestCase
         config.getEngineDefaults().getThreading().setInternalTimerEnabled(false);   // automated tests run usually without timer
 
         Properties pluginProperties = new Properties();
-        pluginProperties.put("classpath-app-context","esperio-opentickadapter-config-sample.xml");
+        pluginProperties.put("classpath-app-context","esperio-opentickadapter-config-play.xml");
         config.addPluginLoader("OpentickPluginLoader", OpentickPluginLoader.class.getName(), pluginProperties);
         
         EPServiceProvider provider = EPServiceProviderManager.getDefaultProvider(config);
@@ -31,7 +31,7 @@ public class TestOpentickAdapter extends TestCase
 
         try
         {
-            Thread.sleep(30000);
+            Thread.sleep(2000);
         }
         catch (InterruptedException e)
         {
@@ -60,7 +60,7 @@ public class TestOpentickAdapter extends TestCase
 
         try
         {
-            Thread.sleep(30000);
+            Thread.sleep(2000);
         }
         catch (InterruptedException e)
         {
