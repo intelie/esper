@@ -154,7 +154,7 @@ public class EPStatementStartMethod
                 }
             };
 
-            PatternContext patternContext = statementContext.getPatternContextFactory().createContext(statementContext, 0, rootNode);
+            PatternContext patternContext = statementContext.getPatternContextFactory().createContext(statementContext, 0, rootNode, !patternStreamSpec.getArrayEventTypes().isEmpty());
             PatternStopCallback patternStopCallback = rootNode.start(callback, patternContext);
             stopCallbacks.add(patternStopCallback);
         }
@@ -527,7 +527,7 @@ public class EPStatementStartMethod
                 };
 
                 PatternContext patternContext = statementContext.getPatternContextFactory().createContext(statementContext,
-                        i, rootNode);
+                        i, rootNode, !patternStreamSpec.getArrayEventTypes().isEmpty());
                 PatternStopCallback patternStopCallback = rootNode.start(callback, patternContext);
                 stopCallbacks.add(patternStopCallback);
             }
