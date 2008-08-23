@@ -85,10 +85,11 @@ public class EPStatementStartMethod
      * Starts the EPL statement.
      * @return a viewable to attach to for listening to events, and a stop method to invoke to clean up
      * @param isNewStatement indicator whether the statement is new or a stop-restart statement
+     * @param isRecoveringStatement true to indicate the statement is in the process of being recovered
      * @throws ExprValidationException when the expression validation fails
      * @throws ViewProcessingException when views cannot be started
      */
-    public Pair<Viewable, EPStatementStopMethod> start(boolean isNewStatement)
+    public Pair<Viewable, EPStatementStopMethod> start(boolean isNewStatement, boolean isRecoveringStatement)
         throws ExprValidationException, ViewProcessingException
     {
         statementContext.getVariableService().setLocalVersion();    // get current version of variables
@@ -99,7 +100,7 @@ public class EPStatementStartMethod
         }
         else if (statementSpec.getCreateWindowDesc() != null)
         {
-            return startCreateWindow();
+            return startCreateWindow(isNewStatement, isRecoveringStatement);
         }
         else if (statementSpec.getCreateVariableDesc() != null)
         {
@@ -271,7 +272,7 @@ public class EPStatementStartMethod
         return new Pair<Viewable, EPStatementStopMethod>(onExprView, stopMethod);
     }
 
-    private Pair<Viewable, EPStatementStopMethod> startCreateWindow()
+    private Pair<Viewable, EPStatementStopMethod> startCreateWindow(boolean isNewStatement, boolean isRecoveringStatement)
         throws ExprValidationException, ViewProcessingException
     {
         final FilterStreamSpecCompiled filterStreamSpec = (FilterStreamSpecCompiled) statementSpec.getStreamSpecs().get(0);
@@ -347,7 +348,7 @@ public class EPStatementStartMethod
         finalView = outputView;
 
         // Handle insert case
-        if (statementSpec.getCreateWindowDesc().isInsert())
+        if (statementSpec.getCreateWindowDesc().isInsert() && !isRecoveringStatement)
         {
             String insertFromWindow = statementSpec.getCreateWindowDesc().getInsertFromWindow();
             NamedWindowProcessor sourceWindow = services.getNamedWindowService().getProcessor(insertFromWindow);
