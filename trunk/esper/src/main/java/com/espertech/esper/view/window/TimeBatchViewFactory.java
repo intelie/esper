@@ -50,16 +50,23 @@ public class TimeBatchViewFactory extends TimeBatchViewFactoryParams implements 
         if (viewParameters.size() >= 2)
         {
             Object paramRef = viewParameters.get(1);
-            if ((!(paramRef instanceof Number)) || (JavaClassHelper.isFloatingPointNumber((Number)paramRef)))
+            if (paramRef instanceof String)
+            {
+                processKeywords(viewParameters.get(1), errorMessage);
+            }
+            else if ((!(paramRef instanceof Number)) || (JavaClassHelper.isFloatingPointNumber((Number)paramRef)))
             {
                 throw new ViewParameterException("Time batch view requires a Long-typed reference point in msec as a second parameter");
             }
-            optionalReferencePoint = ((Number) paramRef).longValue();
+            else
+            {
+                optionalReferencePoint = ((Number) paramRef).longValue();
+            }
         }
 
         if (viewParameters.size() == 3)
         {
-            processKeywords(viewParameters.get(3), errorMessage);
+            processKeywords(viewParameters.get(2), errorMessage);
         }
     }
 

@@ -11,6 +11,7 @@ import com.espertech.esper.client.Configuration;
 import com.espertech.esper.support.util.SupportUpdateListener;
 import com.espertech.esper.support.util.DoubleValueAssertionUtil;
 import com.espertech.esper.support.bean.SupportMarketDataBean;
+import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.view.ViewFieldEnum;
 import com.espertech.esper.event.EventBean;
@@ -27,6 +28,7 @@ public class TestViewTimeBatchMean extends TestCase
     {
         testListener = new SupportUpdateListener();
         Configuration config = SupportConfigFactory.getConfiguration();
+        config.addEventTypeAlias("SupportBean", SupportBean.class);
         config.getEngineDefaults().getThreading().setInternalTimerEnabled(true);
         epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();
