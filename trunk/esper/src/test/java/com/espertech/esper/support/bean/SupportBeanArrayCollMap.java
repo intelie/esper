@@ -1,0 +1,160 @@
+package com.espertech.esper.support.bean;
+
+import java.util.*;
+
+public class SupportBeanArrayCollMap
+{
+    private int[] intArr;
+    private Long[] longArr;
+    private Collection<Integer> intCol;
+    private Collection<Long> longCol;
+    private Map<Integer, String> intMap;
+    private Map<Long, String> longMap;
+    private Long longBoxed;
+    private Object[] objectArr;
+
+    public SupportBeanArrayCollMap(Object[] objectArr)
+    {
+        this.objectArr = objectArr;
+    }
+
+    public SupportBeanArrayCollMap(int[] intArr)
+    {
+        this.intArr = intArr;
+    }
+
+    public SupportBeanArrayCollMap(int[] intArr, Long[] longArr)
+    {
+        this.intArr = intArr;
+        this.longArr = longArr;
+    }
+
+    public SupportBeanArrayCollMap(boolean makeCol, int[] intArr, Long[] longArr, Long longBoxed)
+    {
+        this(makeCol, intArr, longArr);
+        this.longBoxed = longBoxed;
+    }
+
+    public SupportBeanArrayCollMap(boolean makeCol, int[] intArr, Long[] longArr)
+    {
+        if (makeCol)
+        {
+            intCol = convertCol(intArr);
+            longCol = convertCol(longArr);
+        }
+        else
+        {
+            intMap = convertMap(intArr);
+            longMap = convertMap(longArr);
+        }
+    }
+
+    public SupportBeanArrayCollMap(Long longBoxed, int[] intArr, Long[] longColl, int[] intMap)
+    {
+        this.longBoxed = longBoxed;
+        this.intArr = intArr;
+        this.longMap = convertMap(longColl);
+        this.intCol = convertCol(intMap);
+    }
+
+    public Long getLongBoxed()
+    {
+        return longBoxed;
+    }
+
+    public int[] getIntArr()
+    {
+        return intArr;
+    }
+
+    public Long[] getLongArr()
+    {
+        return longArr;
+    }
+
+    public Collection<Integer> getIntCol()
+    {
+        return intCol;
+    }
+
+    public Collection<Long> getLongCol()
+    {
+        return longCol;
+    }
+
+    public Map<Integer, String> getIntMap()
+    {
+        return intMap;
+    }
+
+    public Map<Long, String> getLongMap()
+    {
+        return longMap;
+    }
+
+    public Object[] getObjectArr()
+    {
+        return objectArr;
+    }
+
+    private static HashMap<Long, String> convertMap(Long[] longArr)
+    {
+        if (longArr == null)
+        {
+            return null;
+        }
+
+        HashMap<Long, String> longMap = new HashMap<Long, String>();
+        for (Long along : longArr)
+        {
+            longMap.put(along, "");
+        }
+        return longMap;
+    }
+
+    private static HashMap<Integer, String> convertMap(int[] intArr)
+    {
+        if (intArr == null)
+        {
+            return null;
+        }
+
+        HashMap<Integer, String> intMap = new HashMap<Integer, String>();
+        for (int anIntArr : intArr)
+        {
+            intMap.put(anIntArr, "");
+        }
+        return intMap;
+    }
+
+    private static ArrayList<Long> convertCol(Long[] longArr)
+    {
+        if (longArr == null)
+        {
+            return null;
+        }
+
+        ArrayList<Long> longCol = new ArrayList<Long>();
+        for (Long along : longArr)
+        {
+            longCol.add(along);
+        }
+        return longCol;
+    }
+
+    private static ArrayList<Integer> convertCol(int[] intArr)
+    {
+        if (intArr == null)
+        {
+            return null;
+        }
+
+        ArrayList<Integer> intCol = new ArrayList<Integer>();
+        for (int anIntArr : intArr)
+        {
+            intCol.add(anIntArr);
+        }
+        return intCol;
+    }
+
+}
