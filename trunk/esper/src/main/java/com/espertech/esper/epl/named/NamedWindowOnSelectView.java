@@ -94,9 +94,12 @@ public class NamedWindowOnSelectView extends NamedWindowOnExprBaseView
 
         if (internalEventRouter != null)
         {
-            for (int i = 0; i < newData.length; i++)
+            if (newData != null)
             {
-                internalEventRouter.route(newData[i], statementHandle);
+                for (int i = 0; i < newData.length; i++)
+                {
+                    internalEventRouter.route(newData[i], statementHandle);
+                }
             }
         }
 
