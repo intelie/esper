@@ -220,6 +220,9 @@ public class EPStatementStartMethod
                     namedWindowType, namedWindowAlias, namedWindowTypeAlias,
                     streamEventType, streamAlias, triggerEventTypeAlias);
 
+            // validate filter, output rate limiting
+            validateNodes(statementSpec, statementContext, typeService, null);
+
             // Construct a processor for results; for use in on-select to process selection results
             // Use a wildcard select if the select-clause is empty, such as for on-delete.
             // For on-select the select clause is not empty.

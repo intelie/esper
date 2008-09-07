@@ -49,9 +49,9 @@ public class TestInvalidView extends TestCase
     {
         String exceptionText = null;
 
-        // where-clause equals has invalid type compare
-        exceptionText = getStatementExceptionView("select * from " + EVENT_NUM + ".win:length(1) where doublePrimitive=true");
-        assertEquals("Error validating expression: Implicit conversion from datatype 'Boolean' to 'Double' is not allowed [select * from com.espertech.esper.support.bean.SupportBean_N.win:length(1) where doublePrimitive=true]", exceptionText);
+        // aggregation in where clause known
+        exceptionText = getStatementExceptionView("select * from " + SupportBean.class.getName() + " where sum(intPrimitive) > 10");
+        assertEquals("", exceptionText);
 
         // class not found
         exceptionText = getStatementExceptionView("select * from dummypkg.dummy().win:length(10)");
