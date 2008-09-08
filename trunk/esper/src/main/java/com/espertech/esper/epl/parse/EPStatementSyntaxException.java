@@ -11,10 +11,7 @@ package com.espertech.esper.epl.parse;
 import com.espertech.esper.client.EPStatementException;
 import com.espertech.esper.epl.generated.EsperEPL2GrammarParser;
 import com.espertech.esper.epl.generated.EsperEPL2Ast;
-import org.antlr.runtime.MismatchedTokenException;
-import org.antlr.runtime.NoViableAltException;
-import org.antlr.runtime.RecognitionException;
-import org.antlr.runtime.Token;
+import org.antlr.runtime.*;
 
 import java.util.Stack;
 import java.util.Set;
@@ -38,7 +35,7 @@ public class EPStatementSyntaxException extends EPStatementException
      * Converts from a syntax error to a nice statement exception.
      * @param e is the syntax error
      * @param expression is the expression text
-     * @param parser the parser that parsed the expression 
+     * @param parser the parser that parsed the expression
      * @return syntax exception
      */
     public static EPStatementSyntaxException convert(RecognitionException e, String expression, EsperEPL2GrammarParser parser)
@@ -46,7 +43,7 @@ public class EPStatementSyntaxException extends EPStatementException
         if (expression.trim().length() == 0)
         {
             String message = "Unexpected end of input";
-            return new EPStatementSyntaxException(message, expression);            
+            return new EPStatementSyntaxException(message, expression);
         }
 
         Token t;
@@ -57,7 +54,7 @@ public class EPStatementSyntaxException extends EPStatementException
         else
         {
             t = parser.getTokenStream().get(parser.getTokenStream().size() - 1);
-        }                
+        }
         String positionInfo = getPositionInfo(t);
         String token = "'" + t.getText() + "'";
 
@@ -161,6 +158,13 @@ public class EPStatementSyntaxException extends EPStatementException
             message = "Incorrect syntax near " + token + expecting + positionInfo + check;
         }
 
+        if (e instanceof EarlyExitException)
+        {
+            EarlyExitException ee = (EarlyExitException) e;
+            char c = (char) ee.c;
+            message = "Incorrect syntax near " + token + positionInfo + " unexpected character '" + c + "', check for an invalid identifier";
+        }
+
         return new EPStatementSyntaxException(message, expression);
     }
 
@@ -168,7 +172,7 @@ public class EPStatementSyntaxException extends EPStatementException
      * Converts from a syntax error to a nice statement exception.
      * @param e is the syntax error
      * @param expression is the expression text
-     * @param treeWalker the tree walker that walked the tree 
+     * @param treeWalker the tree walker that walked the tree
      * @return syntax exception
      */
     public static EPStatementSyntaxException convert(RecognitionException e, String expression, EsperEPL2Ast treeWalker)

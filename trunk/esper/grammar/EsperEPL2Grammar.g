@@ -239,6 +239,14 @@ tokens
   protected boolean recoverFromMismatchedElement(IntStream intStream, RecognitionException recognitionException, BitSet bitSet) {
     throw new RuntimeException("Error recovering from mismatched element", recognitionException);
   }
+  
+  public String getErrorMessage(RecognitionException e, String[] tokenNames) {
+    if(e instanceof EarlyExitException)
+        {
+            throw new RuntimeException(e);
+        }
+    return super.getErrorMessage(e, tokenNames);
+  }
 }
 @members {
   // provide nice error messages
