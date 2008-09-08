@@ -109,8 +109,15 @@ public class MetricReportingServiceImpl implements MetricReportingService, Metri
         schedule.setTime(timeEventTime);
         if (!isScheduled)
         {
-            scheduleExecutions();
-            isScheduled = true;
+            if (executionContext != null)
+            {
+                scheduleExecutions();
+                isScheduled = true;
+            }
+            else
+            {
+                return; // not initialized yet, race condition and must wait till initialized
+            }
         }
 
         // fast evaluation against nearest scheduled time
