@@ -41,6 +41,16 @@ public class EventSenderXMLDOM implements EventSender
 
     public void sendEvent(Object node) throws EPException
     {
+        sendEvent(node, false);
+    }
+
+    public void route(Object node) throws EPException
+    {
+        sendEvent(node, true);
+    }
+
+    private void sendEvent(Object node, boolean isRoute) throws EPException
+    {
         Node namedNode;
         if (node instanceof Document)
         {
@@ -67,6 +77,13 @@ public class EventSenderXMLDOM implements EventSender
         }
 
         EventBean event = new XMLEventBean(namedNode, baseXMLEventType);
-        runtimeEventSender.processWrappedEvent(event);
+        if (isRoute)
+        {
+            runtimeEventSender.routeEventBean(event);            
+        }
+        else
+        {
+            runtimeEventSender.processWrappedEvent(event);
+        }
     }
 }

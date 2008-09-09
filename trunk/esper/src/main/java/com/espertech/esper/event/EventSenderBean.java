@@ -42,6 +42,18 @@ public class EventSenderBean implements EventSender
 
     public void sendEvent(Object event)
     {
+        EventBean eventBean = getEventBean(event);
+        runtime.processWrappedEvent(eventBean);
+    }
+
+    public void route(Object event) throws EPException
+    {
+        EventBean eventBean = getEventBean(event);
+        runtime.routeEventBean(eventBean);
+    }
+
+    private EventBean getEventBean(Object event)
+    {
         // type check
         if (event.getClass() != beanEventType.getUnderlyingType())
         {
@@ -63,6 +75,6 @@ public class EventSenderBean implements EventSender
             }
         }
 
-        runtime.processWrappedEvent(new BeanEventBean(event, beanEventType));
+        return new BeanEventBean(event, beanEventType);        
     }
 }

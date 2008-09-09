@@ -38,6 +38,16 @@ public class AxionEventSender implements EventSender
 
     public void sendEvent(Object node)
     {
+        processEvent(node, false);
+    }
+
+    public void route(Object node)
+    {
+        processEvent(node, true);
+    }
+
+    public void processEvent(Object node, boolean isRoute)
+    {
         OMElement namedNode;
         if (node instanceof OMDocument)
         {
@@ -59,6 +69,13 @@ public class AxionEventSender implements EventSender
             throw new EPException("Unexpected root element name '" + rootElementNameFound + "' encountered, expected '" + rootElementNameRequired + "'");
         }
 
-        runtimeEventSender.processWrappedEvent(new AxiomEventBean(namedNode, eventType));
+        if (isRoute)
+        {
+            runtimeEventSender.routeEventBean(new AxiomEventBean(namedNode, eventType));
+        }
+        else
+        {
+            runtimeEventSender.processWrappedEvent(new AxiomEventBean(namedNode, eventType));
+        }
     }
 }

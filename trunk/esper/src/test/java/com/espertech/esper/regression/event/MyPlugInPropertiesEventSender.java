@@ -27,4 +27,14 @@ public class MyPlugInPropertiesEventSender implements EventSender
         EventBean eventBean = new MyPlugInPropertiesEventBean(type, (Properties) event);
         runtimeSender.processWrappedEvent(eventBean);
     }
+
+    public void route(Object event)
+    {
+        if (!(event instanceof Properties))
+        {
+            throw new EPException("Sender expects a properties event");
+        }
+        EventBean eventBean = new MyPlugInPropertiesEventBean(type, (Properties) event);
+        runtimeSender.routeEventBean(eventBean);
+    }
 }

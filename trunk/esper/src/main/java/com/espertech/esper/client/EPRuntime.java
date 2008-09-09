@@ -114,6 +114,34 @@ public interface EPRuntime
     public void route(final Object event);
 
     /**
+     * Route the event object back to the event stream processing runtime for internal dispatching,
+     * to avoid the possibility of a stack overflow due to nested calls to sendEvent.
+     * The route event is processed just like it was sent to the runtime, that is any
+     * active expressions seeking that event receive it. The routed event has priority over other
+     * events sent to the runtime. In a single-threaded application the routed event is
+     * processed before the next event is sent to the runtime through the
+     * EPRuntime.sendEvent method.
+     * @param map - map that contains event property values. Keys are expected to be of type String while values
+     * can be of any type. Keys and values should match those declared via Configuration for the given eventTypeAlias.
+     * @param eventTypeAlias - the alias for the (property name, property type) information for this map
+     * @throws EPException - when the processing of the event leads to an error
+     */
+    public void route(Map map, String eventTypeAlias) throws EPException;
+
+    /**
+     * Route the event object back to the event stream processing runtime for internal dispatching,
+     * to avoid the possibility of a stack overflow due to nested calls to sendEvent.
+     * The route event is processed just like it was sent to the runtime, that is any
+     * active expressions seeking that event receive it. The routed event has priority over other
+     * events sent to the runtime. In a single-threaded application the routed event is
+     * processed before the next event is sent to the runtime through the
+     * EPRuntime.sendEvent method.
+     * @param node is the DOM node as an event
+     * @throws EPException is thrown when the processing of the event lead to an error
+     */
+    public void route(org.w3c.dom.Node node) throws EPException;
+
+    /**
      * Sets a listener to receive events that are unmatched by any statement.
      * <p>
      * Events that can be unmatched are all events that are send into a runtime via one

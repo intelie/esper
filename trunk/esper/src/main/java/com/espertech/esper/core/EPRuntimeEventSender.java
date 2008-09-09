@@ -20,4 +20,6 @@ public interface EPRuntimeEventSender
      * @param eventBean is the event object wrapped by an event bean providing the event metadata
      */
     public void processWrappedEvent(EventBean eventBean);
+
+    public void routeEventBean(EventBean event);
 }

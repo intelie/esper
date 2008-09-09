@@ -45,4 +45,15 @@ public class EventSenderMap implements EventSender
         MapEventBean mapEvent = new MapEventBean(map, mapEventType);
         runtimeEventSender.processWrappedEvent(mapEvent);
     }
+
+    public void route(Object event)
+    {
+        if (!(event instanceof Map))
+        {
+            throw new EPException("Unexpected event object of type " + event.getClass().getName() + ", expected " + Map.class.getName());
+        }
+        Map<String, Object> map = (Map<String, Object>) event;
+        MapEventBean mapEvent = new MapEventBean(map, mapEventType);
+        runtimeEventSender.routeEventBean(mapEvent);
+    }
 }

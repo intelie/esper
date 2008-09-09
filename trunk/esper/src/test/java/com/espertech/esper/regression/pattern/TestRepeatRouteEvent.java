@@ -1,15 +1,21 @@
 package com.espertech.esper.regression.pattern;
 
 import junit.framework.TestCase;
-import com.espertech.esper.client.EPServiceProvider;
-import com.espertech.esper.client.EPServiceProviderManager;
-import com.espertech.esper.client.EPStatement;
-import com.espertech.esper.client.UpdateListener;
+import com.espertech.esper.client.*;
 import com.espertech.esper.client.time.CurrentTimeEvent;
 import com.espertech.esper.client.time.TimerControlEvent;
 import com.espertech.esper.event.EventBean;
 import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.client.SupportConfigFactory;
+
+import java.io.StringReader;
+import java.util.HashMap;
+
+import org.xml.sax.InputSource;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+
+import javax.xml.parsers.DocumentBuilderFactory;
 
 public class TestRepeatRouteEvent extends TestCase
 {
@@ -31,7 +37,7 @@ public class TestRepeatRouteEvent extends TestCase
      * The Listener when it receives an event will generate a single new event
      * that it routes back into the runtime, up to X number of times.
      */
-    public void testRouteSingle()
+    public void testRouteSingle() throws Exception
     {
         SingleRouteUpdateListener listener = new SingleRouteUpdateListener();
         patternStmt.addListener(listener);
@@ -41,6 +47,17 @@ public class TestRepeatRouteEvent extends TestCase
 
         // Should have fired X times
         assertEquals(1000, listener.getCount());
+
+        // test route map and XML doc - smoke test
+        patternStmt.addListener(new StatementAwareUpdateListener() {
+
+            public void update(EventBean[] newEvents, EventBean[] oldEvents, EPStatement statement, EPServiceProvider epServiceProvider)
+            {
+                Node event = getXMLEvent("<root><value>5</value></root>");
+                epServiceProvider.getEPRuntime().route(event);
+                epServiceProvider.getEPRuntime().route(new HashMap(), "MyMap");
+            }
+        });
     }
 
     /**
@@ -104,6 +121,23 @@ public class TestRepeatRouteEvent extends TestCase
         event.setIntPrimitive(intValue);
         epService.getEPRuntime().route(event);
         return event;
+    }
+
+    private Node getXMLEvent(String xml)
+    {
+        try
+        {
+            StringReader reader = new StringReader(xml);
+            InputSource source = new InputSource(reader);
+            DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
+            builderFactory.setNamespaceAware(true);
+            Document simpleDoc = builderFactory.newDocumentBuilder().parse(source);
+            return simpleDoc;
+        }
+        catch (Exception ex)
+        {
+            throw new RuntimeException(ex);
+        }
     }
 
     class SingleRouteUpdateListener implements UpdateListener {

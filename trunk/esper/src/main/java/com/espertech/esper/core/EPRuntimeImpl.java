@@ -135,6 +135,24 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
         processEvent(eventBean);
     }
 
+    public void route(org.w3c.dom.Node document) throws EPException
+    {
+        if (document == null)
+        {
+            log.fatal(".sendEvent Null object supplied");
+            return;
+        }
+
+        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
+        {
+            log.debug(".sendEvent Processing DOM node event " + document);
+        }
+
+        // Get it wrapped up, process event
+        EventBean eventBean = services.getEventAdapterService().adapterForDOM(document);
+        ThreadWorkQueue.add(eventBean);
+    }
+
     public void sendEvent(Map map, String eventTypeAlias) throws EPException
     {
         if (map == null)
@@ -152,6 +170,23 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
         processEvent(eventBean);
     }
 
+    public void route(Map map, String eventTypeAlias) throws EPException
+    {
+        if (map == null)
+        {
+            throw new IllegalArgumentException("Invalid null event object");
+        }
+
+        if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
+        {
+            log.debug(".route Processing event " + map);
+        }
+
+        // Process event
+        EventBean event = services.getEventAdapterService().adapterForMap(map, eventTypeAlias);
+        ThreadWorkQueue.add(event);
+    }
+
     public long getNumEventsReceived()
     {
         return services.getFilterService().getNumEventsEvaluated();
@@ -165,6 +200,11 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
     public void resetStats() {
         services.getFilterService().resetStats();
         services.getEmitService().resetStats();
+    }
+
+    public void routeEventBean(EventBean event)
+    {
+        ThreadWorkQueue.add(event);
     }
 
     public void route(Object event)

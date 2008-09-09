@@ -10,7 +10,6 @@ package com.espertech.esper.event;
 
 import com.espertech.esper.client.EPException;
 import com.espertech.esper.client.EventSender;
-import com.espertech.esper.core.EPRuntimeImpl;
 import com.espertech.esper.core.EPRuntimeEventSender;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -43,6 +42,16 @@ public class EventSenderImpl implements EventSender
 
     public void sendEvent(Object event) throws EPException
     {
+        sendIn(event, false);
+    }
+
+    public void route(Object event) throws EPException
+    {
+        sendIn(event, true);
+    }
+
+    private void sendIn(Object event, boolean isRoute) throws EPException
+    {
         // Ask each factory in turn to take care of it
         for (EventSenderURIDesc entry : handlingFactories)
         {
@@ -59,7 +68,14 @@ public class EventSenderImpl implements EventSender
 
             if (eventBean != null)
             {
-                epRuntime.processWrappedEvent(eventBean);
+                if (isRoute)
+                {
+                    epRuntime.routeEventBean(eventBean);
+                }
+                else
+                {
+                    epRuntime.processWrappedEvent(eventBean);
+                }
                 return;
             }
         }
