@@ -3,6 +3,11 @@ Esper Changelog
 
 Changes in version 2.2.0
 ------------------------
+Significant performance improvement in group-by view.
+
+
+Changes in version 2.2.0
+------------------------
 
 Major API changes
  - Two new reserved keywords: LIMIT and OFFSET; Added for support of the SQL-standard row limit clause.

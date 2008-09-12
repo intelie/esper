@@ -40,7 +40,7 @@ public class TestGroupedLengthWinWeightAvg extends TestCase
         }
 
         // measure
-        long numEvents = 1000000;
+        long numEvents = 1;
         long startTime = System.nanoTime();
         for (int i = 0; i < numEvents; i++) {
             //int modulo = i % 10;

@@ -49,7 +49,8 @@ public final class GroupByView extends ViewSupport implements CloneableView
 
     private final Map<MultiKey<Object>, List<View>> subViewsPerKey = new HashMap<MultiKey<Object>, List<View>>();
 
-    private HashMap<List<View>, Pair<List<EventBean>, List<EventBean>>> groupedEvents = new HashMap<List<View>, Pair<List<EventBean>, List<EventBean>>>();
+    private final HashMap<List<View>, Pair<List<EventBean>, List<EventBean>>> groupedEvents = new HashMap<List<View>, Pair<List<EventBean>, List<EventBean>>>();
+    private final EventBean[] newDataToPost = new EventBean[1];
 
     /**
      * Constructor.
@@ -106,31 +107,61 @@ public final class GroupByView extends ViewSupport implements CloneableView
             dumpUpdateParams("GroupByView", newData, oldData);
         }
 
-        if (newData != null)
+        // Algorithm for single new event
+        if ((newData != null) && (oldData == null) && (newData.length == 1))
         {
-            for (EventBean newValue : newData)
+            EventBean event = newData[0];
+            newDataToPost[0] = event;
+
+            Object[] groupByValues = new Object[groupFieldGetters.length];
+            for (int i = 0; i < groupFieldGetters.length; i++)
             {
-                handleEvent(newValue, true);
+                groupByValues[i] = groupFieldGetters[i].get(event);
             }
-        }
+            MultiKey<Object> groupByValuesKey = new MultiKey<Object>(groupByValues);
 
-        if (oldData != null)
-        {
-            for (EventBean oldValue : oldData)
+            // Get child views that belong to this group-by value combination
+            List<View> subViews = this.subViewsPerKey.get(groupByValuesKey);
+
+            // If this is a new group-by value, the list of subviews is null and we need to make clone sub-views
+            if (subViews == null)
             {
-                handleEvent(oldValue, false);
+                subViews = makeSubViews(this, groupByValuesKey.getArray(), statementContext);
+                subViewsPerKey.put(groupByValuesKey, subViews);
             }
-        }
 
-        // Update child views
-        for (Map.Entry<List<View>, Pair<List<EventBean>, List<EventBean>>> entry : groupedEvents.entrySet())
+            ViewSupport.updateChildren(subViews, newDataToPost, null);
+        }
+        else
         {
-            EventBean[] newEvents = EventBeanUtility.toArray(entry.getValue().getFirst());
-            EventBean[] oldEvents = EventBeanUtility.toArray(entry.getValue().getSecond());
-            ViewSupport.updateChildren(entry.getKey(), newEvents, oldEvents);
-        }
 
-        groupedEvents.clear();
+            // Algorithm for dispatching multiple events
+            if (newData != null)
+            {
+                for (EventBean newValue : newData)
+                {
+                    handleEvent(newValue, true);
+                }
+            }
+
+            if (oldData != null)
+            {
+                for (EventBean oldValue : oldData)
+                {
+                    handleEvent(oldValue, false);
+                }
+            }
+
+            // Update child views
+            for (Map.Entry<List<View>, Pair<List<EventBean>, List<EventBean>>> entry : groupedEvents.entrySet())
+            {
+                EventBean[] newEvents = EventBeanUtility.toArray(entry.getValue().getFirst());
+                EventBean[] oldEvents = EventBeanUtility.toArray(entry.getValue().getSecond());
+                ViewSupport.updateChildren(entry.getKey(), newEvents, oldEvents);
+            }
+
+            groupedEvents.clear();
+        }
     }
 
     private void handleEvent(EventBean event, boolean isNew)
