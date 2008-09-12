@@ -152,8 +152,8 @@ public final class WeightedAverageView extends ViewSupport implements CloneableV
             else
             {
                 updateChildren(new EventBean[] {newDataEvent}, new EventBean[] {lastNewEvent});
-                lastNewEvent = newDataEvent;
             }
+            lastNewEvent = newDataEvent;
         }
     }
 
