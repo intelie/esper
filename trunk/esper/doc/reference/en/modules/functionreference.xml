@@ -563,7 +563,7 @@ from Trade.std:groupby(symbol).ext:sort(price, false, 1)</programlisting>
 						<entry>sum([all|distinct] <emphasis>expression</emphasis>)</entry>
 						<entry>
 							<para>
-								Totals the (distinct) values in the expression, returning a value of <literal>long, double, float or integer</literal> type depending on the expression
+								Totals the (distinct) values in the expression, returning a value of <literal>long, double, float or integer</literal> type depending on the expression.
 							</para>
 						</entry>
 					</row>
@@ -571,7 +571,7 @@ from Trade.std:groupby(symbol).ext:sort(price, false, 1)</programlisting>
 						<entry>avg([all|distinct] <emphasis>expression</emphasis>)</entry>
 						<entry>
 							<para>
-								Average of the (distinct) values in the expression, returning a value of <literal>double</literal> type
+								Average of the (distinct) values in the expression, returning a value of <literal>double</literal> type.
 							</para>
 						</entry>
 					</row>
@@ -579,7 +579,7 @@ from Trade.std:groupby(symbol).ext:sort(price, false, 1)</programlisting>
 						<entry>count([all|distinct] <emphasis>expression</emphasis>)</entry>
 						<entry>
 							<para>
-								Number of the (distinct) non-null values in the expression, returning a value of <literal>long</literal> type
+								Number of the (distinct) non-null values in the expression, returning a value of <literal>long</literal> type.
 							</para>
 						</entry>
 					</row>
@@ -587,7 +587,7 @@ from Trade.std:groupby(symbol).ext:sort(price, false, 1)</programlisting>
 						<entry>count(*)</entry>
 						<entry>
 							<para>
-								Number of events, returning a value of <literal>long</literal> type
+								Number of events, returning a value of <literal>long</literal> type.
 							</para>
 						</entry>
 					</row>
@@ -595,7 +595,7 @@ from Trade.std:groupby(symbol).ext:sort(price, false, 1)</programlisting>
 						<entry>max([all|distinct] <emphasis>expression</emphasis>)</entry>
 						<entry>
 							<para>
-								Highest (distinct) value in the expression, returning a value of the same type as the expression itself returns
+								Highest (distinct) value in the expression, returning a value of the same type as the expression itself returns.
 							</para>
 						</entry>
 					</row>
@@ -603,7 +603,7 @@ from Trade.std:groupby(symbol).ext:sort(price, false, 1)</programlisting>
 						<entry>min([all|distinct] <emphasis>expression</emphasis>)</entry>
 						<entry>
 							<para>
-								Lowest (distinct) value in the expression, returning a value of the same type as the expression itself returns
+								Lowest (distinct) value in the expression, returning a value of the same type as the expression itself returns.
 							</para>
 						</entry>
 					</row>
@@ -611,7 +611,7 @@ from Trade.std:groupby(symbol).ext:sort(price, false, 1)</programlisting>
 						<entry>median([all|distinct] <emphasis>expression</emphasis>)</entry>
 						<entry>
 							<para>
-								Median (distinct) value in the expression, returning a value of <literal>double</literal> type
+								Median (distinct) value in the expression, returning a value of <literal>double</literal> type. Double Not-a-Number (NaN) values are ignored in the median computation.
 							</para>
 						</entry>
 					</row>
@@ -619,7 +619,7 @@ from Trade.std:groupby(symbol).ext:sort(price, false, 1)</programlisting>
 						<entry>stddev([all|distinct] <emphasis>expression</emphasis>)</entry>
 						<entry>
 							<para>
-								Standard deviation of the (distinct) values in the expression, returning a value of <literal>double</literal> type
+								Standard deviation of the (distinct) values in the expression, returning a value of <literal>double</literal> type.
 							</para>
 						</entry>
 					</row>
@@ -627,7 +627,7 @@ from Trade.std:groupby(symbol).ext:sort(price, false, 1)</programlisting>
 						<entry>avedev([all|distinct] <emphasis>expression</emphasis>)</entry>
 						<entry>
 							<para>
-								Mean deviation of the (distinct) values in the expression, returning a value of <literal>double</literal> type
+								Mean deviation of the (distinct) values in the expression, returning a value of <literal>double</literal> type.
 							</para>
 						</entry>
 					</row>

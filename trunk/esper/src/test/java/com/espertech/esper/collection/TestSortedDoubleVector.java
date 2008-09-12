@@ -70,6 +70,9 @@ public class TestSortedDoubleVector extends TestCase
         {
             // expected
         }
+
+        vector.add(Double.NaN);
+        vector.remove(Double.NaN);
     }
 
     public void testFindInsertIndex()

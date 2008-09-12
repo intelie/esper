@@ -58,6 +58,11 @@ public class SortedDoubleVector
      */
     public void add(double value)
     {
+        if (Double.isNaN(value))
+        {
+            return;
+        }
+
         int index = findInsertIndex(value);
 
         if (index == -1)
@@ -77,8 +82,18 @@ public class SortedDoubleVector
      */
     public void remove(double value)
     {
+        if (Double.isNaN(value))
+        {
+            return;
+        }
+
         int index = findInsertIndex(value);
-        if ((index == -1) || (values.get(index) != value))
+        if (index == -1)
+        {
+            throw new IllegalStateException("Value not found in collection");
+        }
+        Double valueAtIndex = values.get(index);
+        if ((valueAtIndex != null) && (!valueAtIndex.equals(value)))
         {
             throw new IllegalStateException("Value not found in collection");
         }
