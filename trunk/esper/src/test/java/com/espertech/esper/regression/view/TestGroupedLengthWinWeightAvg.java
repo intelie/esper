@@ -20,7 +20,8 @@ public class TestGroupedLengthWinWeightAvg extends TestCase
         SupportUpdateListener listener = new SupportUpdateListener();
         if (useGroup)
         {
-            String stmtString = "SELECT * FROM Sensor.std:groupby(type).win:length(1000).stat:weighted_avg('measurement','confidence')";
+            String stmtString = "select * from Sensor.std:groupby(type).win:length(1000000).stat:weighted_avg(measurement, confidence)";
+            //String stmtString = "SELECT * FROM Sensor.std:groupby(type).win:length(1000).stat:weighted_avg('measurement','confidence')";
             EPStatement stmt = epService.getEPAdministrator().createEPL(stmtString);
             stmt.addListener(listener);
         }

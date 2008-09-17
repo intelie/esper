@@ -27,7 +27,7 @@ public class MapEventType implements EventType
     private final String typeName;
     private final EventAdapterService eventAdapterService;
     private final EventType[] optionalSuperTypes;
-    private final Iterator<EventType> optionalDeepSupertypesIterator;
+    private final Set<EventType> optionalDeepSupertypes;
 
     // Simple (not-nested) properties are stored here
     private String[] propertyNames;       // Cache an array of property names so not to construct one frequently
@@ -67,11 +67,11 @@ public class MapEventType implements EventType
         this.optionalSuperTypes = optionalSuperTypes;
         if (optionalDeepSupertypes == null)
         {
-            optionalDeepSupertypesIterator = null;
+            this.optionalDeepSupertypes = Collections.EMPTY_SET;
         }
         else
         {
-            optionalDeepSupertypesIterator = optionalDeepSupertypes.iterator();
+            this.optionalDeepSupertypes = optionalDeepSupertypes;
         }
 
         hashCode = typeName.hashCode();
@@ -120,11 +120,11 @@ public class MapEventType implements EventType
         this.optionalSuperTypes = optionalSuperTypes;
         if (optionalDeepSupertypes == null)
         {
-            optionalDeepSupertypesIterator = null;
+            this.optionalDeepSupertypes = Collections.EMPTY_SET;
         }
         else
         {
-            optionalDeepSupertypesIterator = optionalDeepSupertypes.iterator();
+            this.optionalDeepSupertypes = optionalDeepSupertypes;
         }
 
         // determine property set and prepare getters
@@ -405,7 +405,7 @@ public class MapEventType implements EventType
 
     public Iterator<EventType> getDeepSuperTypes()
     {
-        return optionalDeepSupertypesIterator;
+        return optionalDeepSupertypes.iterator();
     }
 
     public String toString()

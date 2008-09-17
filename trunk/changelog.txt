@@ -1,9 +1,17 @@
 Esper Changelog
 ===================
 
-Changes in version 2.2.0
+Changes in version 2.2 bug fix release 1
 ------------------------
-Significant performance improvement in group-by view.
+- Fixed issue ESPER-286 Map inheritance event type processes first derived event only for queries against supertype events
+- Fixed issue ESPER-282	Memory leak in grouped data window when combined with weighted-avg view
+- Fixed issue ESPER-281	On-Select with Insert-Into throws NPE if no data selected from named window
+- Fixed issue ESPER-280	isVariantStreamExists throws nptr
+- Fixed issue ESPER-277	Add route methods for routing Maps, XML and plug-in event representation events
+- Fixed issue ESPER-276	NullPointerException reported when enabling metrics reporting but still working
+- Fixed issue ESPER-275	Identifiers that are scientific notation numbers don't cause a parser error
+- Fixed issue ESPER-274	Strange exception using median collection
+- Performance improvement in group-by view.
 
 
 Changes in version 2.2.0

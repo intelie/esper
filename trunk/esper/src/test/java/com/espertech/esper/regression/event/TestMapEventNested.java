@@ -167,6 +167,12 @@ public class TestMapEventNested extends TestCase
         ArrayAssertionUtil.assertProps(listeners[1].assertOneGetNewAndReset(), fields, new Object[] {"a", "b", "x", "c", "y"});
         ArrayAssertionUtil.assertProps(listeners[3].assertOneGetNewAndReset(), fields, new Object[] {"a", "b", "x", "c", "y"});
 
+        epService.getEPRuntime().sendEvent(makeMap("base=f1,sub1=f2,sub2=f3,suba=f4,subb=f5"), "SubAEvent");
+        ArrayAssertionUtil.assertProps(listeners[0].assertOneGetNewAndReset(), fields, new Object[] {"f1", "f2", "f3", "f4", "f5"});
+        assertFalse(listeners[2].isInvoked() || listeners[4].isInvoked());
+        ArrayAssertionUtil.assertProps(listeners[1].assertOneGetNewAndReset(), fields, new Object[] {"f1", "f2", "f3", "f4", "f5"});
+        ArrayAssertionUtil.assertProps(listeners[3].assertOneGetNewAndReset(), fields, new Object[] {"f1", "f2", "f3", "f4", "f5"});
+
         epService.getEPRuntime().sendEvent(makeMap("base=XBASE,sub1=X1,sub2=X2,subb=XY"), "SubBEvent");
         Object[] values = new Object[] {"XBASE","X1","X2",null,"XY"};
         ArrayAssertionUtil.assertProps(listeners[0].assertOneGetNewAndReset(), fields, values);

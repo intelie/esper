@@ -50,7 +50,6 @@ public final class GroupByView extends ViewSupport implements CloneableView
     private final Map<MultiKey<Object>, List<View>> subViewsPerKey = new HashMap<MultiKey<Object>, List<View>>();
 
     private final HashMap<List<View>, Pair<List<EventBean>, List<EventBean>>> groupedEvents = new HashMap<List<View>, Pair<List<EventBean>, List<EventBean>>>();
-    private final EventBean[] newDataToPost = new EventBean[1];
 
     /**
      * Constructor.
@@ -111,7 +110,7 @@ public final class GroupByView extends ViewSupport implements CloneableView
         if ((newData != null) && (oldData == null) && (newData.length == 1))
         {
             EventBean event = newData[0];
-            newDataToPost[0] = event;
+            EventBean[] newDataToPost = new EventBean[] {event};
 
             Object[] groupByValues = new Object[groupFieldGetters.length];
             for (int i = 0; i < groupFieldGetters.length; i++)

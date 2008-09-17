@@ -51,7 +51,7 @@ public class TestInvalidView extends TestCase
 
         // aggregation in where clause known
         exceptionText = getStatementExceptionView("select * from " + SupportBean.class.getName() + " where sum(intPrimitive) > 10");
-        assertEquals("", exceptionText);
+        assertEquals("Aggregation functions not allowed within filters [select * from com.espertech.esper.support.bean.SupportBean where sum(intPrimitive) > 10]", exceptionText);
 
         // class not found
         exceptionText = getStatementExceptionView("select * from dummypkg.dummy().win:length(10)");
