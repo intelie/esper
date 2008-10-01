@@ -96,8 +96,13 @@ public class ResultDeliveryStrategyImpl implements ResultDeliveryStrategy
             }
         }
 
-        EventBean[] newData = result.getFirst();
-        EventBean[] oldData = result.getSecond();
+        EventBean[] newData = null;
+        EventBean[] oldData = null;
+        if (result != null)
+        {
+            newData = result.getFirst();
+            oldData = result.getSecond();
+        }
 
         if ((newData != null) && (newData.length > 0)) {
             for (int i = 0; i < newData.length; i++) {
