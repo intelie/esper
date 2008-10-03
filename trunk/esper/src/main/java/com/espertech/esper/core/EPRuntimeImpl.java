@@ -899,7 +899,6 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
 
     public Map<String, Class> getVariableTypeAll()
     {
-        services.getVariableService().setLocalVersion();
         Map<String, VariableReader> variables = services.getVariableService().getVariables();
         Map<String, Class> values = new HashMap<String, Class>();
         for (Map.Entry<String, VariableReader> entry : variables.entrySet())
@@ -908,6 +907,16 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
             values.put(entry.getValue().getVariableName(), type);
         }
         return values;
+    }
+
+    public Class getVariableType(String variableName)
+    {
+        VariableReader reader = services.getVariableService().getReader(variableName);
+        if (reader == null)
+        {
+            return null;
+        }
+        return reader.getType();
     }
 
     public EPQueryResult executeQuery(String epl)

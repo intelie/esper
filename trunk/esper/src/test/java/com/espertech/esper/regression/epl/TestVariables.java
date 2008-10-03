@@ -10,6 +10,7 @@ import com.espertech.esper.support.bean.SupportBean_S0;
 import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.support.util.ArrayAssertionUtil;
 import com.espertech.esper.support.util.SupportUpdateListener;
+import com.espertech.esper.core.EPRuntimeSPI;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 
@@ -38,6 +39,13 @@ public class TestVariables extends TestCase
     {
         epService.getEPAdministrator().getConfiguration().addVariable("var1", int.class, -1);
         epService.getEPAdministrator().getConfiguration().addVariable("var2", String.class, "abc");
+        EPRuntimeSPI runtimeSPI = (EPRuntimeSPI) epService.getEPRuntime();
+        Map<String, Class> types = runtimeSPI.getVariableTypeAll();
+        assertEquals(2, types.size());
+        assertEquals(Integer.class, types.get("var1"));
+        assertEquals(String.class, types.get("var2"));
+        assertEquals(Integer.class, runtimeSPI.getVariableType("var1"));
+        assertEquals(String.class, runtimeSPI.getVariableType("var2"));
 
         String stmtTextSet = "on " + SupportBean.class.getName() + " set var1 = intPrimitive, var2 = string";
         epService.getEPAdministrator().createEPL(stmtTextSet);

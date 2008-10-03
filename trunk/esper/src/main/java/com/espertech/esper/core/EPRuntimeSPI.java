@@ -37,4 +37,10 @@ public interface EPRuntimeSPI extends EPRuntime
      * @return variable names and types
      */
     public Map<String, Class> getVariableTypeAll();
+
+    /**
+     * Returns a variable's type.
+     * @return variable type or null if the variable is not declared
+     */
+    public Class getVariableType(String variableName);
 }
