@@ -29,6 +29,8 @@ public class NamedWindowProcessor
     private final NamedWindowTailView tailView;
     private final NamedWindowRootView rootView;
     private final EventType eventType;
+    private final String eplExpression;
+    private final String statementName;
 
     /**
      * Ctor.
@@ -39,9 +41,11 @@ public class NamedWindowProcessor
      * @param statementResultService for coordinating on whether insert and remove stream events should be posted
      * @param revisionProcessor for revision processing
      */
-    public NamedWindowProcessor(NamedWindowService namedWindowService, String windowName, EventType eventType, EPStatementHandle createWindowStmtHandle, StatementResultService statementResultService, ValueAddEventProcessor revisionProcessor)
+    public NamedWindowProcessor(NamedWindowService namedWindowService, String windowName, EventType eventType, EPStatementHandle createWindowStmtHandle, StatementResultService statementResultService, ValueAddEventProcessor revisionProcessor, String eplExpression, String statementName)
     {
         this.eventType = eventType;
+        this.eplExpression = eplExpression;
+        this.statementName = statementName;
 
         rootView = new NamedWindowRootView(revisionProcessor);
         tailView = new NamedWindowTailView(eventType, namedWindowService, rootView, createWindowStmtHandle, statementResultService, revisionProcessor);
@@ -94,6 +98,11 @@ public class NamedWindowProcessor
         return eventType;
     }
 
+    public long getCountDataWindow()
+    {
+        return tailView.getNumberOfEvents();
+    }
+
     /**
      * Adds a consuming (selecting) statement to the named window.
      * @param statementHandle is the statement's handle for locking
@@ -104,6 +113,16 @@ public class NamedWindowProcessor
     public NamedWindowConsumerView addConsumer(List<ExprNode> filterList, EPStatementHandle statementHandle, StatementStopService statementStopService)
     {
         return tailView.addConsumer(filterList, statementHandle, statementStopService);
+    }
+
+    public String getEplExpression()
+    {
+        return eplExpression;
+    }
+
+    public String getStatementName()
+    {
+        return statementName;
     }
 
     /**

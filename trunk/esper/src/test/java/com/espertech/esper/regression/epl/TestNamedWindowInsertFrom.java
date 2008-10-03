@@ -10,6 +10,8 @@ import com.espertech.esper.support.bean.SupportBean_B;
 import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.support.util.ArrayAssertionUtil;
 import com.espertech.esper.support.util.SupportUpdateListener;
+import com.espertech.esper.epl.named.NamedWindowProcessor;
+import com.espertech.esper.core.EPServiceProviderSPI;
 import junit.framework.TestCase;
 
 import java.util.HashMap;
@@ -68,7 +70,7 @@ public class TestNamedWindowInsertFrom extends TestCase
 
         // create window
         String stmtTextCreateOne = "create window MyWindow.win:keepall() as SupportBean";
-        EPStatement stmtCreateOne = epService.getEPAdministrator().createEPL(stmtTextCreateOne);
+        EPStatement stmtCreateOne = epService.getEPAdministrator().createEPL(stmtTextCreateOne, "name1");
         stmtCreateOne.addListener(listeners[0]);
         EventType eventTypeOne = stmtCreateOne.getEventType();
 
@@ -77,11 +79,16 @@ public class TestNamedWindowInsertFrom extends TestCase
         epService.getEPAdministrator().createEPL(stmtTextInsertOne);
 
         // populate some data
+        assertEquals(0, getCount("MyWindow"));
         epService.getEPRuntime().sendEvent(new SupportBean("A1", 1));
-        epService.getEPRuntime().sendEvent(new SupportBean("B2", 2));
-        epService.getEPRuntime().sendEvent(new SupportBean("C3", 3));
+        assertEquals(1, getCount("MyWindow"));
+        epService.getEPRuntime().sendEvent(new SupportBean("B2", 1));
+        epService.getEPRuntime().sendEvent(new SupportBean("C3", 1));
         epService.getEPRuntime().sendEvent(new SupportBean("A4", 4));
-        epService.getEPRuntime().sendEvent(new SupportBean("C5", 5));
+        epService.getEPRuntime().sendEvent(new SupportBean("C5", 4));
+        assertEquals(5, getCount("MyWindow"));
+        assertEquals("name1", getStatementName("MyWindow"));
+        assertEquals(stmtTextCreateOne, getEPL("MyWindow"));
         listeners[0].reset();
         
         // create window with keep-all
@@ -91,6 +98,7 @@ public class TestNamedWindowInsertFrom extends TestCase
         ArrayAssertionUtil.assertEqualsExactOrder(stmtCreateTwo.iterator(), fields, new Object[][] {{"A1"}, {"B2"}, {"C3"}, {"A4"}, {"C5"}});
         EventType eventTypeTwo = stmtCreateTwo.iterator().next().getEventType();
         assertFalse(listeners[2].isInvoked());
+        assertEquals(5, getCount("MyWindowTwo"));
 
         // create window with keep-all and filter
         String stmtTextCreateThree = "create window MyWindowThree.win:keepall() as MyWindow insert where string like 'A%'";
@@ -99,14 +107,16 @@ public class TestNamedWindowInsertFrom extends TestCase
         ArrayAssertionUtil.assertEqualsExactOrder(stmtCreateThree.iterator(), fields, new Object[][] {{"A1"}, {"A4"}});
         EventType eventTypeThree = stmtCreateThree.iterator().next().getEventType();
         assertFalse(listeners[3].isInvoked());
+        assertEquals(2, getCount("MyWindowThree"));
 
         // create window with last-per-id
         String stmtTextCreateFour = "create window MyWindowFour.std:unique(intPrimitive) as MyWindow insert";
         EPStatement stmtCreateFour = epService.getEPAdministrator().createEPL(stmtTextCreateFour);
         stmtCreateFour.addListener(listeners[4]);
-        ArrayAssertionUtil.assertEqualsExactOrder(stmtCreateThree.iterator(), fields, new Object[][] {{"A1"}, {"A4"}});
+        ArrayAssertionUtil.assertEqualsExactOrder(stmtCreateFour.iterator(), fields, new Object[][] {{"C3"}, {"C5"}});
         EventType eventTypeFour = stmtCreateFour.iterator().next().getEventType();
         assertFalse(listeners[4].isInvoked());
+        assertEquals(2, getCount("MyWindowFour"));
 
         epService.getEPAdministrator().createEPL("insert into MyWindow select * from SupportBean(string like 'A%')");
         epService.getEPAdministrator().createEPL("insert into MyWindowTwo select * from SupportBean(string like 'B%')");
@@ -119,6 +129,7 @@ public class TestNamedWindowInsertFrom extends TestCase
         ArrayAssertionUtil.assertProps(received, fields, new Object[] {"B9"});
         assertSame(eventTypeTwo, received.getEventType());
         assertFalse(listeners[0].isInvoked() || listeners[3].isInvoked() || listeners[4].isInvoked());
+        assertEquals(6, getCount("MyWindowTwo"));
 
         epService.getEPRuntime().sendEvent(new SupportBean("A8", -8));
         received = listeners[0].assertOneGetNewAndReset();
@@ -246,5 +257,23 @@ public class TestNamedWindowInsertFrom extends TestCase
             result.put(entries[i][0], entries[i][1]);
         }
         return result;
+    }
+
+    private long getCount(String windowName)
+    {
+        NamedWindowProcessor processor = ((EPServiceProviderSPI)epService).getNamedWindowService().getProcessor(windowName);
+        return processor.getCountDataWindow();
+    }    
+
+    private String getStatementName(String windowName)
+    {
+        NamedWindowProcessor processor = ((EPServiceProviderSPI)epService).getNamedWindowService().getProcessor(windowName);
+        return processor.getStatementName();
+    }
+
+    private String getEPL(String windowName)
+    {
+        NamedWindowProcessor processor = ((EPServiceProviderSPI)epService).getNamedWindowService().getProcessor(windowName);
+        return processor.getEplExpression();
     }
 }

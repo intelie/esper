@@ -279,7 +279,7 @@ public class EPStatementStartMethod
         EventType windowType = filterStreamSpec.getFilterSpec().getEventType();
 
         ValueAddEventProcessor optionalRevisionProcessor = statementContext.getValueAddEventService().getValueAddProcessor(windowName);
-        services.getNamedWindowService().addProcessor(windowName, windowType, statementContext.getEpStatementHandle(), statementContext.getStatementResultService(), optionalRevisionProcessor);
+        services.getNamedWindowService().addProcessor(windowName, windowType, statementContext.getEpStatementHandle(), statementContext.getStatementResultService(), optionalRevisionProcessor, statementContext.getExpression(), statementContext.getStatementName());
 
         // Create streams and views
         Viewable eventStreamParentViewable;

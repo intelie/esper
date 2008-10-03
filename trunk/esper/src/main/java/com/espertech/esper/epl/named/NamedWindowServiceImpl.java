@@ -98,14 +98,14 @@ public class NamedWindowServiceImpl implements NamedWindowService
         return processor;
     }
 
-    public NamedWindowProcessor addProcessor(String name, EventType eventType, EPStatementHandle createWindowStmtHandle, StatementResultService statementResultService, ValueAddEventProcessor revisionProcessor) throws ViewProcessingException
+    public NamedWindowProcessor addProcessor(String name, EventType eventType, EPStatementHandle createWindowStmtHandle, StatementResultService statementResultService, ValueAddEventProcessor revisionProcessor, String eplExpression, String statementName) throws ViewProcessingException
     {
         if (processors.containsKey(name))
         {
             throw new ViewProcessingException("A named window by name '" + name + "' has already been created");
         }
 
-        NamedWindowProcessor processor = new NamedWindowProcessor(this, name, eventType, createWindowStmtHandle, statementResultService, revisionProcessor);
+        NamedWindowProcessor processor = new NamedWindowProcessor(this, name, eventType, createWindowStmtHandle, statementResultService, revisionProcessor, eplExpression, statementName);
         processors.put(name, processor);
 
         return processor;
