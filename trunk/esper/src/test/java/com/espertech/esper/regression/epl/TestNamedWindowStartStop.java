@@ -11,6 +11,9 @@ import com.espertech.esper.support.bean.SupportBean_B;
 import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.support.util.SupportUpdateListener;
 import com.espertech.esper.support.util.ArrayAssertionUtil;
+import com.espertech.esper.support.epl.SupportNamedWindowObserver;
+import com.espertech.esper.core.EPServiceProviderSPI;
+import com.espertech.esper.epl.named.NamedWindowLifecycleEvent;
 
 public class TestNamedWindowStartStop extends TestCase
 {
@@ -31,14 +34,25 @@ public class TestNamedWindowStartStop extends TestCase
 
     public void testStartStopDeleter()
     {
+        SupportNamedWindowObserver observer = new SupportNamedWindowObserver();
+        ((EPServiceProviderSPI) epService).getNamedWindowService().addObserver(observer);
+
         // create window
         String stmtTextCreate = "create window MyWindow.win:keepall() as select string as a, intPrimitive as b from " + SupportBean.class.getName();
         EPStatement stmtCreate = epService.getEPAdministrator().createEPL(stmtTextCreate);
         stmtCreate.addListener(listenerWindow);
+        NamedWindowLifecycleEvent event = observer.getFirstAndReset();
+        assertEquals(NamedWindowLifecycleEvent.LifecycleEventType.CREATE, event.getEventType());
+        assertEquals("MyWindow", event.getName());
 
         // stop and start, no consumers or deleters
         stmtCreate.stop();
+        event = observer.getFirstAndReset();
+        assertEquals(NamedWindowLifecycleEvent.LifecycleEventType.DESTROY, event.getEventType());
+        assertEquals("MyWindow", event.getName());
+
         stmtCreate.start();
+        assertEquals(NamedWindowLifecycleEvent.LifecycleEventType.CREATE, observer.getFirstAndReset().getEventType());
 
         // create delete stmt
         String stmtTextDelete = "on " + SupportBean_A.class.getName() + " delete from MyWindow";
@@ -78,6 +92,7 @@ public class TestNamedWindowStartStop extends TestCase
 
         // Start the deleting statement
         stmtDelete.start();
+
         sendSupportBean_A("A3");
         ArrayAssertionUtil.assertProps(listenerWindow.assertOneGetOldAndReset(), fields, new Object[] {"E2", 2});
         ArrayAssertionUtil.assertProps(listenerSelect.assertOneGetOldAndReset(), fields, new Object[] {"E2", 2});

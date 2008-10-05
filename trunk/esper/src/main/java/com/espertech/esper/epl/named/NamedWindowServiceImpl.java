@@ -30,6 +30,7 @@ public class NamedWindowServiceImpl implements NamedWindowService
     private final Map<String, ManagedLock> windowStatementLocks;
     private final StatementLockFactory statementLockFactory;
     private final VariableService variableService;
+    private final Set<NamedWindowLifecycleObserver> observers;
 
     private ThreadLocal<List<NamedWindowConsumerDispatchUnit>> threadLocal = new ThreadLocal<List<NamedWindowConsumerDispatchUnit>>()
     {
@@ -58,6 +59,7 @@ public class NamedWindowServiceImpl implements NamedWindowService
         this.windowStatementLocks = new HashMap<String, ManagedLock>();
         this.statementLockFactory = statementLockFactory;
         this.variableService = variableService;
+        this.observers = new HashSet<NamedWindowLifecycleObserver>();  
     }
 
     public void destroy()
@@ -108,6 +110,15 @@ public class NamedWindowServiceImpl implements NamedWindowService
         NamedWindowProcessor processor = new NamedWindowProcessor(this, name, eventType, createWindowStmtHandle, statementResultService, revisionProcessor, eplExpression, statementName);
         processors.put(name, processor);
 
+        if (!observers.isEmpty())
+        {
+            NamedWindowLifecycleEvent event = new NamedWindowLifecycleEvent(name, processor, NamedWindowLifecycleEvent.LifecycleEventType.CREATE);
+            for (NamedWindowLifecycleObserver observer : observers)
+            {
+                observer.observe(event);
+            }
+        }
+
         return processor;
     }
 
@@ -118,6 +129,15 @@ public class NamedWindowServiceImpl implements NamedWindowService
         {
             processor.destroy();
             processors.remove(name);
+
+            if (!observers.isEmpty())
+            {
+                NamedWindowLifecycleEvent event = new NamedWindowLifecycleEvent(name, processor, NamedWindowLifecycleEvent.LifecycleEventType.DESTROY);
+                for (NamedWindowLifecycleObserver observer : observers)
+                {
+                    observer.observe(event);
+                }
+            }
         }
     }
 
@@ -287,5 +307,15 @@ public class NamedWindowServiceImpl implements NamedWindowService
         dispatchesPerStmt.clear();
 
         return true;
+    }
+
+    public void addObserver(NamedWindowLifecycleObserver observer)
+    {
+        observers.add(observer);
+    }
+
+    public void removeObserver(NamedWindowLifecycleObserver observer)
+    {
+        observers.remove(observer);
     }
 }
