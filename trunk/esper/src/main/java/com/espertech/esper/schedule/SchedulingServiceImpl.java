@@ -173,9 +173,13 @@ public final class SchedulingServiceImpl implements SchedulingService
         return timeHandleMap.size();
     }
 
-    public long getFurthestTimeHandle()
+    public Long getFurthestTimeHandle()
     {
-        return timeHandleMap.lastKey();
+        if (!timeHandleMap.isEmpty())
+        {
+            return timeHandleMap.lastKey();
+        }
+        return null;
     }
 
     public int getScheduleHandleCount()

@@ -99,7 +99,7 @@ public class SupportSchedulingServiceImpl implements SchedulingService
         throw new RuntimeException("not implemented");
     }
 
-    public long getFurthestTimeHandle() {
+    public Long getFurthestTimeHandle() {
         throw new RuntimeException("not implemented");
     }
 

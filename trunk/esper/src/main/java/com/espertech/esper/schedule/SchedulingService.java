@@ -83,19 +83,19 @@ public interface SchedulingService extends TimeProvider
      * Returns time handle count.
      * @return count
      */
-    int getTimeHandleCount();
+    public int getTimeHandleCount();
 
     /**
      * Returns furthest in the future handle.
      * @return future handle
      */
-    long getFurthestTimeHandle();
+    public Long getFurthestTimeHandle();
 
     /**
      * Returns count of handles.
      * @return count
      */
-    int getScheduleHandleCount();
+    public int getScheduleHandleCount();
 }
 
 
