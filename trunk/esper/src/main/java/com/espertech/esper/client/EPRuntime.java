@@ -53,8 +53,8 @@ public interface EPRuntime
     public void sendEvent(org.w3c.dom.Node node) throws EPException;
 
     /**
-     * Number of events received over the lifetime of the event stream processing runtime,
-     * or since the last resetStats() call
+     * Number of events evaluated over the lifetime of the event stream processing runtime,
+     * or since the last resetStats() call.
      * @return number of events received
      */
     public long getNumEventsReceived();

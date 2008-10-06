@@ -9,7 +9,6 @@
 package com.espertech.esper.core;
 
 import com.espertech.esper.client.EPRuntime;
-import com.espertech.esper.event.EventBean;
 
 import java.util.Map;
 
@@ -43,4 +42,16 @@ public interface EPRuntimeSPI extends EPRuntime
      * @return variable type or null if the variable is not declared
      */
     public Class getVariableType(String variableName);
+
+    /**
+     * Number of events routed internally.
+     * @return event count routed internally
+     */
+    public long getRoutedInternal();
+
+    /**
+     * Number of events routed externally.
+     * @return event count routed externally
+     */
+    public long getRoutedExternal();
 }

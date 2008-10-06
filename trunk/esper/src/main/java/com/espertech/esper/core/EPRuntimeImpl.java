@@ -14,11 +14,11 @@ import com.espertech.esper.client.time.TimerControlEvent;
 import com.espertech.esper.client.time.TimerEvent;
 import com.espertech.esper.collection.ArrayBackedCollection;
 import com.espertech.esper.collection.ThreadWorkQueue;
-import com.espertech.esper.epl.variable.VariableReader;
-import com.espertech.esper.epl.spec.SelectClauseStreamSelectorEnum;
-import com.espertech.esper.epl.spec.StatementSpecRaw;
-import com.espertech.esper.epl.spec.StatementSpecCompiled;
 import com.espertech.esper.epl.metric.MetricReportingPath;
+import com.espertech.esper.epl.spec.SelectClauseStreamSelectorEnum;
+import com.espertech.esper.epl.spec.StatementSpecCompiled;
+import com.espertech.esper.epl.spec.StatementSpecRaw;
+import com.espertech.esper.epl.variable.VariableReader;
 import com.espertech.esper.event.EventBean;
 import com.espertech.esper.filter.FilterHandle;
 import com.espertech.esper.filter.FilterHandleCallback;
@@ -29,8 +29,9 @@ import com.espertech.esper.util.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.util.*;
 import java.net.URI;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Implements runtime interface. Also accepts timer callbacks for synchronizing time events with regular events
@@ -42,6 +43,8 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
     private boolean isLatchStatementInsertStream;
     private boolean isUsingExternalClocking;
     private volatile UnmatchedListener unmatchedListener;
+    private AtomicLong routedInternal;
+    private AtomicLong routedExternal;
 
     private ThreadLocal<ArrayBackedCollection<FilterHandle>> matchesArrayThreadLocal = new ThreadLocal<ArrayBackedCollection<FilterHandle>>()
     {
@@ -86,6 +89,18 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
         this.services = services;
         isLatchStatementInsertStream = this.services.getEngineSettingsService().getEngineSettings().getThreading().isInsertIntoDispatchPreserveOrder();
         isUsingExternalClocking = !this.services.getEngineSettingsService().getEngineSettings().getThreading().isInternalTimerEnabled();
+        routedInternal = new AtomicLong();
+        routedExternal = new AtomicLong();
+    }
+
+    public long getRoutedInternal()
+    {
+        return routedInternal.get();
+    }
+
+    public long getRoutedExternal()
+    {
+        return routedExternal.get();
     }
 
     public void timerCallback()
@@ -165,16 +180,21 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
     public void resetStats() {
         services.getFilterService().resetStats();
         services.getEmitService().resetStats();
+        routedInternal.set(0);
+        routedExternal.set(0);
     }
 
     public void route(Object event)
     {
+        routedExternal.incrementAndGet();
         ThreadWorkQueue.add(event);
     }
 
     // Internal route of events via insert-into, holds a statement lock
     public void route(EventBean event, EPStatementHandle epStatementHandle)
     {
+        routedInternal.incrementAndGet();
+        
         if (isLatchStatementInsertStream)
         {
             InsertIntoLatchFactory insertIntoLatchFactory = epStatementHandle.getInsertIntoLatchFactory();
