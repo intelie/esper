@@ -1,29 +1,27 @@
 Technology Links
 ~~~~~~~~~~~~~~
 
-  The CEP website is an excellent source for more material, at {{http://www.complexevents.com/}}, and check out the {{{http://forum.complexevents.com/}forum}}.
-  
-  The book {{{http://www.amazon.com/o/ASIN/1847191525/105-2169855-7435661?SubscriptionId=0MGFBM1Z93R5P4E1JRG2}OSWorkflow: A guide for Java developers and architects to integrating open-source Business Process Management}} by Diego Adrian Naya Lazo 
-  contains a chapter about Esper.
-        
-  Read about CEP in WikiPedia at {{http://en.wikipedia.org/wiki/Complex_event_processing}}
-  
-  Read about ESP in WikiPedia at {{http://en.wikipedia.org/wiki/Event_Stream_Processing_%28ESP%29}}
-  
-  A book about CEP is {{{http://www.amazon.com/gp/product/0201727897/104-9839765-5431907?v=glance&n=283155}The Power of Events}} by David Luckham, from Stanford University. 
-      
-  {{{http://dist.codehaus.org/esper/CEP_MasterThesis_PaulDekkers_200709.pdf}Master Thesis}} By Paul Dekkers about CEP, from the Radboud University Nijmegen  
+* Esper and NEsper resources
 
-  Blogs about CEP and ESP..
-  
-   * {{http://www.rulecore.com/espblog}}
-   
-   * {{http://cep.weblogger.com/stories/storyReader$157}}
-   
-   []
+  Be sure to read our {{{../tutorial/presentations.html}collection of articles and presentations}} about Esper and NEsper.
 
+* CEP resources
 
-  Influential papers (not comprehensive) :
+  The {{{http://www.complexevents.com/}Complex Event Processing}} website is an excellent source for more materials and news feeds.
+  Be sure to check out the Complex Event Processing {{{http://forum.complexevents.com/}forum}}.
+
+  Read about {{{http://en.wikipedia.org/wiki/Complex_event_processing}CEP in WikiPedia}}.
+
+  Read about {{{http://en.wikipedia.org/wiki/Event_Stream_Processing_%28ESP%29}ESP in WikiPedia}}.
+
+  An introductory book about CEP is {{{http://www.amazon.com/gp/product/0201727897/104-9839765-5431907?v=glance&n=283155}The Power of Events}} by David Luckham, from Stanford University.
+
+* CEP blogs and feeds
+
+   There are numerous blogs covering CEP. The best way is to track activities through {{{http://delicious.com/tag/esper}Delicious on Esper}} and
+   {{{http://delicious.com/tag/cep}Delicious on CEP}}.
+
+* Influential papers (not comprehensive)
   
    * {{{http://www.cs.brown.edu/~ugur/8rulesSigRec.pdf}The 8 requirements of Real-time Stream Processing}} by Stonebraker et. al. 
    
@@ -34,7 +32,7 @@ Technology Links
    []
    
   
-  Relevant university research (not comprehensive) :
+*  Relevant university research (not comprehensive)
   
    * {{{http://pavg.stanford.edu/rapide/}The Stanford Rapide(TM) Project}}
    

@@ -27,19 +27,15 @@
 				<item name="About Esper for Java" href="/about/esper/esper.html"/>
 				<item name="About NEsper for .NET" href="/about/nesper/nesper.html"/>
 				<item name="License" href="/about/license/license.html"/>
-                	<item name="Terms of Use" href="/about/license/terms.html"/>
-            		</item>
+                <item name="Terms of Use" href="/about/license/terms.html"/>
+            </item>
 			<item name="Tutorials and Case Studies" href="/tutorials/tutorials.html" collapse="false">
 				<item name="Tutorial" href="/tutorials/tutorial/tutorial.html"/>
 				<item name="Quick Start" href="/tutorials/tutorial/quickstart.html"/>
-				<item name="Short Case Study" href="/tutorials/tutorial/feedmonitor_casestudy.html"/>
+                <item name="Articles and Presentations" href="/tutorials/tutorial/presentations.html"/>
+                <item name="Solution Patterns" href="/tutorials/solution_patterns/solution_patterns.html"/>
+                <item name="Short Case Study" href="/tutorials/tutorial/feedmonitor_casestudy.html"/>
 				<item name="Longer Case Study" href="/tutorials/tutorial/transaction_casestudy.html"/>
-				<item name="Solution Patterns" href="/tutorials/solution_patterns/solution_patterns.html"/>
-				<item name="OnJava Article" href="http://www.onjava.com/pub/a/onjava/2007/03/07/esper-event-stream-processing-and-correlation.html"/>
-				<item name="TheServerSide Article" href="http://www.theserverside.com/tt/articles/article.tss?l=ComplexEventProcessing"/>				
-				<item name="Past Presentations" href="/tutorials/tutorial/presentations.html"/>
-				<item name="FAQ for Java" href="/tutorials/faq_esper/faq.html"/>
-				<item name="FAQ for .NET" href="/tutorials/faq_nesper/faq.html"/>
 				<item name="Additional Examples" href="/tutorials/tutorial/examples.html"/>
 				<item name="Technology Links" href="/tutorials/links/links.html"/>
 			</item>
@@ -47,6 +43,7 @@
 				<item name="Download" href="/esper/download/download.html"/>
 				<item name="Change History" href="/esper/history/history.html"/>
 				<item name="Documentation" href="/esper/documentation/documentation.html"/>
+                <item name="FAQ" href="/tutorials/faq_esper/faq.html"/>
 				<item name="Reporting Issues" href="/esper/issues/issues.html"/>
 				<item name="Building" href="/esper/building/building.html"/>
 				<item name="On Performance" href="/esper/performance/performance.html"/>
@@ -55,6 +52,7 @@
 				<item name="Download" href="/nesper/download/download.html"/>
 				<item name="Change History" href="/nesper/history/history.html"/>
 				<item name="Documentation" href="/nesper/documentation/documentation.html"/>
+                <item name="FAQ" href="/tutorials/faq_nesper/faq.html"/>
 				<item name="Reporting Issues" href="/nesper/issues/issues.html"/>
 				<item name="Building" href="/nesper/building/building.html"/>
 			</item>
