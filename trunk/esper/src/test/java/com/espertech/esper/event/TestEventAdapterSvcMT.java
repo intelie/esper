@@ -35,10 +35,10 @@ public class TestEventAdapterSvcMT extends TestCase
             {
                 public Object call() throws Exception
                 {
-                    EventType type = service.addBeanType("a", SupportMarketDataBean.class);
+                    EventType type = service.addBeanType("a", SupportMarketDataBean.class, true);
                     types.add(type);
 
-                    type = service.addBeanType("b", SupportMarketDataBean.class);
+                    type = service.addBeanType("b", SupportMarketDataBean.class, true);
                     types.add(type);
                     return true;
                 }
@@ -106,11 +106,11 @@ public class TestEventAdapterSvcMT extends TestCase
                     {
                         if (index == 0)
                         {
-                            return service.addBeanType("X", SupportBean_S1.class);
+                            return service.addBeanType("X", SupportBean_S1.class, true);
                         }
                         else
                         {
-                            return service.addBeanType("X", SupportBean_S0.class);
+                            return service.addBeanType("X", SupportBean_S0.class, true);
                         }
                     }
                     catch (EventAdapterException ex)

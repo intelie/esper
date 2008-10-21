@@ -73,29 +73,29 @@ public class TestCompositeEventType extends TestCompositeEventBase
     public void testEquals()
     {
         Map<String, Pair<EventType, String>> taggedEventTypes = new HashMap<String, Pair<EventType, String>>();
-        taggedEventTypes.put("a", new Pair<EventType, String>(SupportEventAdapterService.getService().addBeanType("A", SupportBean.class), "SupportBean"));
-        taggedEventTypes.put("b", new Pair<EventType, String>(SupportEventAdapterService.getService().addBeanType("B", SupportBeanComplexProps.class), "SupportBeanComplexProps"));
+        taggedEventTypes.put("a", new Pair<EventType, String>(SupportEventAdapterService.getService().addBeanType("A", SupportBean.class, true), "SupportBean"));
+        taggedEventTypes.put("b", new Pair<EventType, String>(SupportEventAdapterService.getService().addBeanType("B", SupportBeanComplexProps.class, true), "SupportBeanComplexProps"));
 
         Map<String, Pair<EventType, String>> arrayEventTypes = new HashMap<String, Pair<EventType, String>>();
-        arrayEventTypes.put("c", new Pair<EventType, String>(SupportEventAdapterService.getService().addBeanType("C", SupportBean_C.class), "SupportBean_C"));
+        arrayEventTypes.put("c", new Pair<EventType, String>(SupportEventAdapterService.getService().addBeanType("C", SupportBean_C.class, true), "SupportBean_C"));
 
         // construct compare-to types
-        EventType eventTypeTwo = new CompositeEventType("alias", taggedEventTypes, arrayEventTypes);
-        EventType eventTypeThree = new CompositeEventType("alias2", taggedEventTypes, arrayEventTypes);
+        EventType eventTypeTwo = new CompositeEventType(null, "alias", taggedEventTypes, arrayEventTypes);
+        EventType eventTypeThree = new CompositeEventType(null, "alias2", taggedEventTypes, arrayEventTypes);
 
         Map<String, Pair<EventType, String>> taggedEventTypesTwo = new HashMap<String, Pair<EventType, String>>();
-        taggedEventTypesTwo.put("a", new Pair<EventType, String>(SupportEventAdapterService.getService().addBeanType("A", SupportBean.class), "SupportBean"));
-        EventType eventTypeFour = new CompositeEventType("alias", taggedEventTypesTwo, arrayEventTypes);
+        taggedEventTypesTwo.put("a", new Pair<EventType, String>(SupportEventAdapterService.getService().addBeanType("A", SupportBean.class, true), "SupportBean"));
+        EventType eventTypeFour = new CompositeEventType(null, "alias", taggedEventTypesTwo, arrayEventTypes);
 
         assertEquals(eventTypeTwo, eventType);
         assertTrue(eventTypeThree.equals(eventType));   // different name is allowed - the type is anonymous
         assertFalse(eventTypeFour.equals(eventType));
 
-        EventType eventTypeFive = new CompositeEventType("alias", taggedEventTypes, new HashMap<String, Pair<EventType, String>>());
+        EventType eventTypeFive = new CompositeEventType(null, "alias", taggedEventTypes, new HashMap<String, Pair<EventType, String>>());
         assertFalse(eventTypeFive.equals(eventType));
 
-        arrayEventTypes.put("c", new Pair<EventType, String>(SupportEventAdapterService.getService().addBeanType("D", SupportBean_D.class), "SupportBean_D"));
-        EventType eventTypeSix = new CompositeEventType("alias", taggedEventTypes, arrayEventTypes);
+        arrayEventTypes.put("c", new Pair<EventType, String>(SupportEventAdapterService.getService().addBeanType("D", SupportBean_D.class, true), "SupportBean_D"));
+        EventType eventTypeSix = new CompositeEventType(null, "alias", taggedEventTypes, arrayEventTypes);
         assertFalse(eventTypeSix.equals(eventType));
     }
 }

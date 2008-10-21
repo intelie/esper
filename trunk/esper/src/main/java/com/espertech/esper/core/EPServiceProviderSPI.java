@@ -11,6 +11,7 @@ package com.espertech.esper.core;
 import com.espertech.esper.client.ConfigurationInformation;
 import com.espertech.esper.client.EPServiceProvider;
 import com.espertech.esper.event.EventAdapterService;
+import com.espertech.esper.event.vaevent.ValueAddEventService;
 import com.espertech.esper.filter.FilterService;
 import com.espertech.esper.schedule.SchedulingService;
 import com.espertech.esper.timer.TimerService;
@@ -89,4 +90,6 @@ public interface EPServiceProviderSPI extends EPServiceProvider
      * @return metrics reporting
      */
     public MetricReportingService getMetricReportingService();
+
+    public ValueAddEventService getValueAddEventService();
 }

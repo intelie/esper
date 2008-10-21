@@ -127,7 +127,7 @@ public class SelectExprEvalProcessorStreams implements SelectExprProcessor
                     }
 
                     // create or get an underlying type for that Class
-                    underlyingEventType = eventAdapterService.addBeanType(propertyType.getName(), propertyType);
+                    underlyingEventType = eventAdapterService.addBeanType(propertyType.getName(), propertyType, false);
                     underlyingPropertyEventGetter = typeService.getEventTypes()[streamNumber].getGetter(propertyName);
                     if (underlyingPropertyEventGetter == null)
                     {
@@ -246,11 +246,11 @@ public class SelectExprEvalProcessorStreams implements SelectExprProcessor
             {
                 if (underlyingEventType != null)
                 {
-                    resultEventType = eventAdapterService.addWrapperType(insertIntoDesc.getEventTypeAlias(), underlyingEventType, selPropertyTypes);
+                    resultEventType = eventAdapterService.addWrapperType(insertIntoDesc.getEventTypeAlias(), underlyingEventType, selPropertyTypes, false, true);
                 }
                 else
                 {
-                    resultEventType = eventAdapterService.addNestableMapType(insertIntoDesc.getEventTypeAlias(), selPropertyTypes, null);
+                    resultEventType = eventAdapterService.addNestableMapType(insertIntoDesc.getEventTypeAlias(), selPropertyTypes, null, false, false, true);
                 }
             }
             catch (EventAdapterException ex)

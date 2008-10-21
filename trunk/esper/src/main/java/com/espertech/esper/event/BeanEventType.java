@@ -21,8 +21,9 @@ import java.util.*;
 /**
  * Implementation of the EventType interface for handling JavaBean-type classes.
  */
-public class BeanEventType implements EventType
+public class BeanEventType implements EventTypeSPI
 {
+    private final EventTypeMetadata metadata;
     private final Class clazz;
     private final BeanEventTypeFactory beanEventTypeFactory;
     private final ConfigurationEventTypeLegacy optionalLegacyDef;
@@ -48,11 +49,13 @@ public class BeanEventType implements EventType
      * @param optionalLegacyDef optional configuration supplying legacy event type information
      * @param alias is the event type alias for the class
      */
-    public BeanEventType(Class clazz,
+    public BeanEventType(EventTypeMetadata metadata,
+                         Class clazz,
                          BeanEventTypeFactory beanEventTypeFactory,
                          ConfigurationEventTypeLegacy optionalLegacyDef,
                          String alias)
     {
+        this.metadata = metadata;
         this.clazz = clazz;
         this.beanEventTypeFactory = beanEventTypeFactory;
         this.optionalLegacyDef = optionalLegacyDef;
@@ -66,7 +69,7 @@ public class BeanEventType implements EventType
             this.propertyResolutionStyle = beanEventTypeFactory.getDefaultPropertyResolutionStyle();
         }
 
-        initialize();
+        initialize(false);
     }
 
     public final Class getPropertyType(String propertyName)
@@ -250,7 +253,7 @@ public class BeanEventType implements EventType
                " clazz=" + clazz.getName();
     }
 
-    private void initialize()
+    private void initialize(boolean isConfigured)
     {
         PropertyListBuilder propertyListBuilder = PropertyListBuilderFactory.createBuilder(optionalLegacyDef);
         List<EventPropertyDescriptor> properties = propertyListBuilder.assessProperties(clazz);
@@ -385,7 +388,7 @@ public class BeanEventType implements EventType
         deepSuperTypes = new HashSet<EventType>();
         for (Class superClass : supers)
         {
-            EventType superType = beanEventTypeFactory.createBeanType(superClass.getName(), superClass);
+            EventType superType = beanEventTypeFactory.createBeanType(superClass.getName(), superClass, isConfigured);
             deepSuperTypes.add(superType);
         }
     }
@@ -414,7 +417,7 @@ public class BeanEventType implements EventType
         {
             if (!superclass.getName().startsWith("java"))
             {
-                EventType superType = beanEventTypeFactory.createBeanType(superclass.getName(), superclass);
+                EventType superType = beanEventTypeFactory.createBeanType(superclass.getName(), superclass, false);
                 superTypes.add(superType);
             }
         }
@@ -574,6 +577,11 @@ public class BeanEventType implements EventType
         {
             return descriptor;
         }
+    }
+
+    public EventTypeMetadata getMetadata()
+    {
+        return metadata;
     }
 
     private static final Log log = LogFactory.getLog(BeanEventType.class);

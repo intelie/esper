@@ -33,11 +33,11 @@ public class TestPropertyUtility extends TestCase
     public void setUp()
     {
         types = new EventType[5];
-        types[0] = eventSource.addBeanType("D1", SupportDeltaOne.class);
-        types[1] = eventSource.addBeanType("D2", SupportDeltaTwo.class);
-        types[2] = eventSource.addBeanType("D3", SupportDeltaThree.class);
-        types[3] = eventSource.addBeanType("D4", SupportDeltaFour.class);
-        types[4] = eventSource.addBeanType("D5", SupportDeltaFive.class);
+        types[0] = eventSource.addBeanType("D1", SupportDeltaOne.class, false);
+        types[1] = eventSource.addBeanType("D2", SupportDeltaTwo.class, false);
+        types[2] = eventSource.addBeanType("D3", SupportDeltaThree.class, false);
+        types[3] = eventSource.addBeanType("D4", SupportDeltaFour.class, false);
+        types[4] = eventSource.addBeanType("D5", SupportDeltaFive.class, false);
     }
 
     public void testAnalyze()

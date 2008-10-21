@@ -45,7 +45,7 @@ public class NestedPropertyGetter implements EventPropertyGetter
 
             if (i < (getterChain.length - 1))
             {
-                EventType type = beanEventTypeFactory.createBeanType(value.getClass().getName(), value.getClass());
+                EventType type = beanEventTypeFactory.createBeanType(value.getClass().getName(), value.getClass(), false);
                 eventBean = new BeanEventBean(value, type);
             }
         }
@@ -68,7 +68,7 @@ public class NestedPropertyGetter implements EventPropertyGetter
             }
             else
             {
-                EventType type = beanEventTypeFactory.createBeanType(value.getClass().getName(), value.getClass());
+                EventType type = beanEventTypeFactory.createBeanType(value.getClass().getName(), value.getClass(), false);
                 eventBean = new BeanEventBean(value, type);
             }
         }

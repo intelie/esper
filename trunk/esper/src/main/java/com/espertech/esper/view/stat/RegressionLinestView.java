@@ -62,7 +62,7 @@ public final class RegressionLinestView extends BaseBivariateStatisticsView impl
      */
     protected static EventType createEventType(StatementContext statementContext)
     {
-        return statementContext.getEventAdapterService().addBeanType(RegressionBean.class.getName(), RegressionBean.class);
+        return statementContext.getEventAdapterService().addBeanType(RegressionBean.class.getName(), RegressionBean.class, false);
     }
 }
 

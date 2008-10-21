@@ -17,6 +17,7 @@ import com.sun.org.apache.xerces.internal.dom.DOMXSImplementationSourceImpl;
 
 import com.espertech.esper.event.EventPropertyGetter;
 import com.espertech.esper.event.TypedEventPropertyGetter;
+import com.espertech.esper.event.EventTypeMetadata;
 import com.espertech.esper.client.ConfigurationEventTypeXMLDOM;
 import com.espertech.esper.client.EPException;
 import com.espertech.esper.util.ResourceLoader;
@@ -50,9 +51,9 @@ public class SchemaXMLEventType extends BaseXMLEventType {
      * Ctor.
      * @param configurationEventTypeXMLDOM - configuration for type
      */
-    public SchemaXMLEventType(ConfigurationEventTypeXMLDOM configurationEventTypeXMLDOM)
+    public SchemaXMLEventType(EventTypeMetadata eventTypeMetadata, ConfigurationEventTypeXMLDOM configurationEventTypeXMLDOM)
     {
-        super(configurationEventTypeXMLDOM);
+        super(eventTypeMetadata, configurationEventTypeXMLDOM);
         propertyGetterCache = new HashMap<String, TypedEventPropertyGetter>();
 
         // Load schema

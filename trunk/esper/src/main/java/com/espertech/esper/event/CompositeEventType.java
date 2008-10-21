@@ -17,8 +17,8 @@ import com.espertech.esper.event.property.PropertyParser;
 
 import java.lang.reflect.Array;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.LinkedHashSet;
+import java.util.Map;
 
 /**
  * Event type for events that itself have event properties that are event wrappers.
@@ -27,8 +27,10 @@ import java.util.LinkedHashSet;
  * composite event indicates that the whole patterns matched, and indicates the
  * individual events that caused the pattern as event properties to the event.
  */
-public class CompositeEventType implements EventType, TaggedCompositeEventType
+public class CompositeEventType implements EventTypeSPI, TaggedCompositeEventType
 {
+    private final EventTypeMetadata metadata;
+
     /**
      * Map of tag name and event type for all properties that are events.
      */
@@ -48,10 +50,12 @@ public class CompositeEventType implements EventType, TaggedCompositeEventType
      * @param taggedEventTypes is a map of name tags and event type per tag
      * @param arrayEventTypes is a map of name tags and event type per tag for repeat-expressions that generate an array of events
      */
-    public CompositeEventType(String alias,
+    public CompositeEventType(EventTypeMetadata metadata,
+                              String alias,
                               Map<String, Pair<EventType, String>> taggedEventTypes,
                               Map<String, Pair<EventType, String>> arrayEventTypes)
     {
+        this.metadata = metadata;
         this.taggedEventTypes = taggedEventTypes;
         this.arrayEventTypes = arrayEventTypes;
         this.alias = alias;
@@ -461,4 +465,9 @@ public class CompositeEventType implements EventType, TaggedCompositeEventType
     {
         return taggedEventTypes;
     }
+
+    public EventTypeMetadata getMetadata()
+    {
+        return metadata;
+    }    
 }

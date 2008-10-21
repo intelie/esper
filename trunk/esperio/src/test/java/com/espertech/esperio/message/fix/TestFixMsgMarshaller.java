@@ -45,7 +45,7 @@ public class TestFixMsgMarshaller extends TestCase
         {
             properties.put(Integer.toString(i), String.class);
         }
-        EventType eventType = new MapEventType("fixtest", null, properties, null, null);
+        EventType eventType = new MapEventType(null, "fixtest", null, properties, null, null);
         EventBean event = new MapEventBean(fixFields, eventType);
 
         String msg = FixMsgMarshaller.marshalFix(event);

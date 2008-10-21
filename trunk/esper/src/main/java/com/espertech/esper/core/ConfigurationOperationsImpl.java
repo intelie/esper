@@ -111,7 +111,7 @@ public class ConfigurationOperationsImpl implements ConfigurationOperations
     {
         try
         {
-            eventAdapterService.addBeanType(eventTypeAlias, javaEventClass);
+            eventAdapterService.addBeanType(eventTypeAlias, javaEventClass, true);
         }
         catch (EventAdapterException t)
         {
@@ -123,7 +123,7 @@ public class ConfigurationOperationsImpl implements ConfigurationOperations
     {
         try
         {
-            eventAdapterService.addBeanType(javaEventClass.getSimpleName(), javaEventClass);
+            eventAdapterService.addBeanType(javaEventClass.getSimpleName(), javaEventClass, true);
         }
         catch (EventAdapterException t)
         {
@@ -160,7 +160,7 @@ public class ConfigurationOperationsImpl implements ConfigurationOperations
     {
         try
         {
-            eventAdapterService.addNestableMapType(eventTypeAlias, typeMap, null);
+            eventAdapterService.addNestableMapType(eventTypeAlias, typeMap, null, true, false, false);
         }
         catch (EventAdapterException t)
         {
@@ -178,7 +178,7 @@ public class ConfigurationOperationsImpl implements ConfigurationOperations
 
         try
         {
-            eventAdapterService.addNestableMapType(eventTypeAlias, typeMap, superTypeAliases);
+            eventAdapterService.addNestableMapType(eventTypeAlias, typeMap, superTypeAliases, true, false, false);
         }
         catch (EventAdapterException t)
         {
@@ -190,7 +190,7 @@ public class ConfigurationOperationsImpl implements ConfigurationOperations
     {
         try
         {
-            eventAdapterService.addNestableMapType(eventTypeAlias, typeMap, null);
+            eventAdapterService.addNestableMapType(eventTypeAlias, typeMap, null, true, false, false);
         }
         catch (EventAdapterException t)
         {

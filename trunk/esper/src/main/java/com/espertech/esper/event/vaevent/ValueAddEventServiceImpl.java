@@ -49,6 +49,21 @@ public class ValueAddEventServiceImpl implements ValueAddEventService
         variantProcessors = new HashMap<String, ValueAddEventProcessor>();
     }
 
+    public EventType[] getValueAddedTypes()
+    {
+        List<EventType> types = new ArrayList<EventType>();
+        for (Map.Entry<String, ValueAddEventProcessor> revisionNamedWindow : processorsByNamedWindow.entrySet())
+        {
+            types.add(revisionNamedWindow.getValue().getValueAddEventType());
+        }
+        for (Map.Entry<String, ValueAddEventProcessor> variantProcessor : variantProcessors.entrySet())
+        {
+            types.add(variantProcessor.getValue().getValueAddEventType());
+        }
+
+        return types.toArray(new EventType[types.size()]);
+    }
+
     public void init(Map<String, ConfigurationRevisionEventType> configRevision, Map<String, ConfigurationVariantStream> configVariant, EventAdapterService eventAdapterService)
             throws ConfigurationException
     {

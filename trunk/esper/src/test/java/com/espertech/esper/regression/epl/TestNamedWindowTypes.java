@@ -9,6 +9,9 @@ import com.espertech.esper.support.bean.*;
 import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.support.util.ArrayAssertionUtil;
 import com.espertech.esper.support.util.SupportUpdateListener;
+import com.espertech.esper.event.EventTypeSPI;
+import com.espertech.esper.event.EventTypeMetadata;
+import com.espertech.esper.core.EPServiceProviderSPI;
 
 import java.util.Map;
 import java.util.HashMap;
@@ -48,6 +51,14 @@ public class TestNamedWindowTypes extends TestCase
         assertEquals(String.class, stmtCreate.getEventType().getPropertyType("a"));
         assertEquals(long.class, stmtCreate.getEventType().getPropertyType("b"));
         assertEquals(Long.class, stmtCreate.getEventType().getPropertyType("c"));
+
+        // assert type metadata
+        EventTypeSPI type = (EventTypeSPI) ((EPServiceProviderSPI)epService).getEventAdapterService().getExistsTypeByAlias("MyWindow");
+        assertEquals(null, type.getMetadata().getOptionalApplicationType());
+        assertEquals(null, type.getMetadata().getOptionalSecondaryNames());
+        assertEquals("MyWindow", type.getMetadata().getPrimaryAssociationName());
+        assertEquals(EventTypeMetadata.TypeClass.NAMED_WINDOW, type.getMetadata().getTypeClass());
+        assertEquals(false, type.getMetadata().isApplicationConfigured());
 
         // create insert into
         String stmtTextInsertOne = "insert into MyWindow select string as a, longPrimitive as b, longBoxed as c from " + SupportBean.class.getName();
@@ -158,6 +169,14 @@ public class TestNamedWindowTypes extends TestCase
         String stmtTextCreate = "create window MyWindow.win:keepall() (stringValOne varchar, stringValTwo string, intVal int, longVal long)";
         EPStatement stmtCreate = epService.getEPAdministrator().createEPL(stmtTextCreate);
         stmtCreate.addListener(listenerWindow);
+
+        // assert type metadata
+        EventTypeSPI type = (EventTypeSPI) ((EPServiceProviderSPI)epService).getEventAdapterService().getExistsTypeByAlias("MyWindow");
+        assertEquals(null, type.getMetadata().getOptionalApplicationType());
+        assertEquals(null, type.getMetadata().getOptionalSecondaryNames());
+        assertEquals("MyWindow", type.getMetadata().getPrimaryAssociationName());
+        assertEquals(EventTypeMetadata.TypeClass.NAMED_WINDOW, type.getMetadata().getTypeClass());
+        assertEquals(false, type.getMetadata().isApplicationConfigured());
 
         // create insert into
         String stmtTextInsertOne = "insert into MyWindow select string as stringValOne, string as stringValTwo, cast(longPrimitive, int) as intVal, longBoxed as longVal from " + SupportBean.class.getName();

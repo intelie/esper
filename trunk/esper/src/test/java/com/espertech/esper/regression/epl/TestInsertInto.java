@@ -10,10 +10,13 @@ import com.espertech.esper.client.time.CurrentTimeEvent;
 import com.espertech.esper.client.time.TimerControlEvent;
 import com.espertech.esper.event.EventBean;
 import com.espertech.esper.event.EventType;
+import com.espertech.esper.event.EventTypeSPI;
+import com.espertech.esper.event.EventTypeMetadata;
 import com.espertech.esper.support.bean.*;
 import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.support.util.SupportUpdateListener;
 import com.espertech.esper.util.SerializableObjectCopier;
+import com.espertech.esper.core.EPServiceProviderSPI;
 
 import java.util.Map;
 
@@ -189,6 +192,14 @@ public class TestInsertInto extends TestCase
                         " where s0.string = s1.id";
 
         runAsserts(stmtText, null);
+
+        // assert type metadata
+        EventTypeSPI type = (EventTypeSPI) ((EPServiceProviderSPI)epService).getEventAdapterService().getExistsTypeByAlias("Event_1");
+        assertEquals(null, type.getMetadata().getOptionalApplicationType());
+        assertEquals(null, type.getMetadata().getOptionalSecondaryNames());
+        assertEquals("Event_1", type.getMetadata().getPrimaryAssociationName());
+        assertEquals(EventTypeMetadata.TypeClass.STREAM, type.getMetadata().getTypeClass());
+        assertEquals(false, type.getMetadata().isApplicationConfigured());
     }
 
     public void testVariantTwoJoinWildcard()

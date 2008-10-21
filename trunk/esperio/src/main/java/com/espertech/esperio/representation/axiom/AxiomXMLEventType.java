@@ -9,9 +9,7 @@
 package com.espertech.esperio.representation.axiom;
 
 import com.espertech.esper.client.EPException;
-import com.espertech.esper.event.EventPropertyGetter;
-import com.espertech.esper.event.EventType;
-import com.espertech.esper.event.TypedEventPropertyGetter;
+import com.espertech.esper.event.*;
 import com.espertech.esper.event.xml.SimpleXMLPropertyParser;
 import org.apache.axiom.om.OMNode;
 import org.apache.axiom.om.xpath.AXIOMXPath;
@@ -35,8 +33,9 @@ import java.util.Set;
  * <p>
  * See {@link AxiomEventRepresentation} for more details.
  */
-public class AxiomXMLEventType implements EventType
+public class AxiomXMLEventType implements EventTypeSPI
 {
+    private EventTypeMetadata metadata;
     private String defaultNamespacePrefix;
     private ConfigurationEventTypeAxiom config;
     private AxiomXPathNamespaceContext namespaceContext;
@@ -46,8 +45,9 @@ public class AxiomXMLEventType implements EventType
      * Ctor.
      * @param configurationEventTypeAxiom is the configuration for XML access
      */
-    public AxiomXMLEventType(ConfigurationEventTypeAxiom configurationEventTypeAxiom)
+    public AxiomXMLEventType(EventTypeMetadata metadata, ConfigurationEventTypeAxiom configurationEventTypeAxiom)
     {
+        this.metadata = metadata;
         this.config = configurationEventTypeAxiom;
         this.propertyGetterCache = new HashMap<String, TypedEventPropertyGetter>();
 
@@ -142,6 +142,11 @@ public class AxiomXMLEventType implements EventType
     {
         return config;
     }
+
+    public EventTypeMetadata getMetadata()
+    {
+        return metadata;
+    }    
 
     private TypedEventPropertyGetter resolveDynamicProperty(String property) throws XPathExpressionException
     {

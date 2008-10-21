@@ -8,6 +8,9 @@ import com.espertech.esper.support.bean.SupportBeanFinal;
 import com.espertech.esper.support.util.SupportUpdateListener;
 import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.event.EventType;
+import com.espertech.esper.event.EventTypeSPI;
+import com.espertech.esper.event.EventTypeMetadata;
+import com.espertech.esper.core.EPServiceProviderSPI;
 
 import java.util.Map;
 import java.util.HashMap;
@@ -92,6 +95,15 @@ public class TestLegacyBeanEvents extends TestCase
         epService = EPServiceProviderManager.getProvider(this.getClass().getName() + ".test1" + codeGeneration, config);
         epService.initialize();
 
+        // assert type metadata
+        EventTypeSPI type = (EventTypeSPI) ((EPServiceProviderSPI)epService).getEventAdapterService().getExistsTypeByAlias("MyLegacyEvent");
+        assertEquals(EventTypeMetadata.ApplicationType.CLASS, type.getMetadata().getOptionalApplicationType());
+        assertEquals(1, type.getMetadata().getOptionalSecondaryNames().size());
+        assertEquals(SupportLegacyBean.class.getName(), type.getMetadata().getOptionalSecondaryNames().iterator().next());
+        assertEquals("MyLegacyEvent", type.getMetadata().getPrimaryAssociationName());
+        assertEquals(EventTypeMetadata.TypeClass.APPLICATION, type.getMetadata().getTypeClass());
+        assertEquals(true, type.getMetadata().isApplicationConfigured());
+
         String statementText = "select " +
                     "fieldLegacyVal as fieldSimple," +
                     "fieldStringArray as fieldArr," +
@@ -164,6 +176,13 @@ public class TestLegacyBeanEvents extends TestCase
         assertEquals(legacyBean.readStringIndexed(0), listener.getLastNewData()[0].get("explicitMArray[0]"));
         assertEquals(legacyBean.readStringIndexed(1), listener.getLastNewData()[0].get("explicitMIndexed[1]"));
         assertEquals(legacyBean.readMapByKey("key2"), listener.getLastNewData()[0].get("explicitMMapped('key2')"));
+
+        EventTypeSPI stmtType = (EventTypeSPI) statement.getEventType();
+        assertEquals(null, stmtType.getMetadata().getOptionalApplicationType());
+        assertEquals(null, stmtType.getMetadata().getOptionalSecondaryNames());
+        assertNotNull(stmtType.getMetadata().getPrimaryAssociationName());
+        assertEquals(EventTypeMetadata.TypeClass.ANONYMOUS, stmtType.getMetadata().getTypeClass());
+        assertEquals(false, stmtType.getMetadata().isApplicationConfigured());        
     }
 
     private void tryExplicitOnlyAccessors(ConfigurationEventTypeLegacy.CodeGeneration codeGeneration)

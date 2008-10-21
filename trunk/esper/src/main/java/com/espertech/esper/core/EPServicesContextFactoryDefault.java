@@ -249,7 +249,7 @@ public class EPServicesContextFactoryDefault implements EPServicesContextFactory
                 Map<String, Object> propertiesNestable = nestableMapAliases.get(mapName);
                 if (propertiesNestable != null)
                 {
-                    eventAdapterService.addNestableMapType(mapName, propertiesNestable, superTypes);
+                    eventAdapterService.addNestableMapType(mapName, propertiesNestable, superTypes, true, false, false);
                 }
             }
         }

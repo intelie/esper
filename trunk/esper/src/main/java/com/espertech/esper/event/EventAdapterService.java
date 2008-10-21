@@ -43,6 +43,8 @@ public interface EventAdapterService
      */
     public EventType getExistsTypeByAlias(String eventTypeAlias);
 
+    public EventType[] getAllTypes();
+
     /**
      * Add an event type with the given alias and a given set of properties.
      * <p>
@@ -76,7 +78,7 @@ public interface EventAdapterService
      * @return event type is the type added
      * @throws EventAdapterException if alias already exists and doesn't match property type info
      */
-    public EventType addNestableMapType(String eventTypeAlias, Map<String, Object> propertyTypes, Set<String> optionalSupertype) throws EventAdapterException;
+    public EventType addNestableMapType(String eventTypeAlias, Map<String, Object> propertyTypes, Set<String> optionalSupertype, boolean isConfigured, boolean namedWindow, boolean insertInto) throws EventAdapterException;
 
     /**
      * Add an event type with the given alias and the given underlying event type,
@@ -87,7 +89,7 @@ public interface EventAdapterService
      * @return eventType is the type added
      * @throws EventAdapterException if alias already exists and doesn't match this type's info
      */
-    public EventType addWrapperType(String eventTypeAlias, EventType underlyingEventType, Map<String, Object> propertyTypes) throws EventAdapterException;
+    public EventType addWrapperType(String eventTypeAlias, EventType underlyingEventType, Map<String, Object> propertyTypes, boolean isNamedWindow, boolean isInsertInto) throws EventAdapterException;
 
     /**
      * Creates a new anonymous EventType instance for an event type that contains a map of name value pairs.
@@ -151,7 +153,7 @@ public interface EventAdapterService
      * @return event type is the type added
      * @throws EventAdapterException if alias already exists and doesn't match class names
      */
-    public EventType addBeanType(String eventTypeAlias, Class clazz) throws EventAdapterException;
+    public EventType addBeanType(String eventTypeAlias, Class clazz, boolean isConfigured) throws EventAdapterException;
 
     /**
      * Wrap the native event returning an {@link EventBean}.

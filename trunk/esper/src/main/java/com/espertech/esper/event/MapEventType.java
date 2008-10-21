@@ -14,16 +14,17 @@ import com.espertech.esper.event.property.DynamicProperty;
 import com.espertech.esper.event.property.MapPropertyGetter;
 import com.espertech.esper.event.property.Property;
 import com.espertech.esper.event.property.PropertyParser;
-import com.espertech.esper.util.JavaClassHelper;
 import com.espertech.esper.util.GraphUtil;
+import com.espertech.esper.util.JavaClassHelper;
 
 import java.util.*;
 
 /**
  * Implementation of the {@link EventType} interface for handling plain Maps containing name value pairs.
  */
-public class MapEventType implements EventType
+public class MapEventType implements EventTypeSPI
 {
+    private final EventTypeMetadata metadata;
     private final String typeName;
     private final EventAdapterService eventAdapterService;
     private final EventType[] optionalSuperTypes;
@@ -49,12 +50,14 @@ public class MapEventType implements EventType
      * @param optionalSuperTypes the supertypes to this type if any, or null if there are no supertypes
      * @param optionalDeepSupertypes the deep supertypes to this type if any, or null if there are no deep supertypes
      */
-    public MapEventType(String typeName,
+    public MapEventType(EventTypeMetadata metadata,
+                        String typeName,
                         Map<String, Class> propertyTypes,
                         EventAdapterService eventAdapterService,
                         EventType[] optionalSuperTypes,
                         Set<EventType> optionalDeepSupertypes)
     {
+        this.metadata = metadata;
         this.typeName = typeName;
         this.eventAdapterService = eventAdapterService;
 
@@ -105,12 +108,14 @@ public class MapEventType implements EventType
      * @param optionalSuperTypes the supertypes to this type if any, or null if there are no supertypes
      * @param optionalDeepSupertypes the deep supertypes to this type if any, or null if there are no deep supertypes
      */
-    public MapEventType(String typeName,
+    public MapEventType(EventTypeMetadata metadata,
+                        String typeName,
                         EventAdapterService eventAdapterService,
                         Map<String, Object> propertyTypes,
                         EventType[] optionalSuperTypes,
                         Set<EventType> optionalDeepSupertypes)
     {
+        this.metadata = metadata;
         this.typeName = typeName;
         this.eventAdapterService = eventAdapterService;
 
@@ -202,7 +207,7 @@ public class MapEventType implements EventType
         else if (nestedType instanceof Class)
         {
             Class simpleClass = (Class) nestedType;
-            EventType nestedEventType = eventAdapterService.addBeanType(simpleClass.getName(), simpleClass);
+            EventType nestedEventType = eventAdapterService.addBeanType(simpleClass.getName(), simpleClass, false);
             return nestedEventType.getPropertyType(propertyNested);
         }
         else if (nestedType instanceof EventType)
@@ -295,7 +300,7 @@ public class MapEventType implements EventType
         {
             // ask the nested class to resolve the property
             Class simpleClass = (Class) nestedType;
-            EventType nestedEventType = eventAdapterService.addBeanType(simpleClass.getName(), simpleClass);
+            EventType nestedEventType = eventAdapterService.addBeanType(simpleClass.getName(), simpleClass, false);
             final EventPropertyGetter nestedGetter = nestedEventType.getGetter(propertyNested);
             if (nestedGetter == null)
             {
@@ -362,7 +367,7 @@ public class MapEventType implements EventType
         }
 
         // ask the nested class to resolve the property
-        EventType nestedType = eventAdapterService.addBeanType(result.getName(), result);
+        EventType nestedType = eventAdapterService.addBeanType(result.getName(), result, false);
         final EventPropertyGetter nestedGetter = nestedType.getGetter(propertyNested);
         if (nestedGetter == null)
         {
@@ -686,6 +691,11 @@ public class MapEventType implements EventType
         }
 
         return new PropertySetDescriptor(propertyNameList, simplePropertyTypes, propertyGetters);
+    }
+
+    public EventTypeMetadata getMetadata()
+    {
+        return metadata;
     }
 
     /**

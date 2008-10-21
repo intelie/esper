@@ -237,7 +237,7 @@ public class SelectExprEvalProcessor implements SelectExprProcessor
                     }
                     else
                     {
-                        resultEventType = eventAdapterService.addWrapperType(insertIntoDesc.getEventTypeAlias(), eventType, selPropertyTypes);                        
+                        resultEventType = eventAdapterService.addWrapperType(insertIntoDesc.getEventTypeAlias(), eventType, selPropertyTypes, false, true);                        
                     }
                 }
                 else
@@ -270,7 +270,7 @@ public class SelectExprEvalProcessor implements SelectExprProcessor
                         }
                         else
                         {
-                            resultEventType = eventAdapterService.addNestableMapType(insertIntoDesc.getEventTypeAlias(), selPropertyTypes, null);
+                            resultEventType = eventAdapterService.addNestableMapType(insertIntoDesc.getEventTypeAlias(), selPropertyTypes, null, false, false, true);
                         }
                     }
                     if (vaeProcessor != null)

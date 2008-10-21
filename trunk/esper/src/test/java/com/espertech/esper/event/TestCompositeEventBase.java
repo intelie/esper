@@ -21,12 +21,12 @@ public abstract class TestCompositeEventBase extends TestCase
     public void setUp()
     {
         Map<String, Pair<EventType, String>> taggedEventTypes = new HashMap<String, Pair<EventType, String>>();
-        taggedEventTypes.put("a", new Pair<EventType, String>(SupportEventAdapterService.getService().addBeanType("A", SupportBean.class), "AType"));
-        taggedEventTypes.put("b", new Pair<EventType, String>(SupportEventAdapterService.getService().addBeanType("B", SupportBeanComplexProps.class), "BType"));
+        taggedEventTypes.put("a", new Pair<EventType, String>(SupportEventAdapterService.getService().addBeanType("A", SupportBean.class, true), "AType"));
+        taggedEventTypes.put("b", new Pair<EventType, String>(SupportEventAdapterService.getService().addBeanType("B", SupportBeanComplexProps.class, true), "BType"));
 
         Map<String, Pair<EventType, String>> arrayEventTypes = new HashMap<String, Pair<EventType, String>>();
-        arrayEventTypes.put("c", new Pair<EventType, String>(SupportEventAdapterService.getService().addBeanType("C", SupportBean_C.class), "CType"));
-        eventType = new CompositeEventType("alias", taggedEventTypes, arrayEventTypes);
+        arrayEventTypes.put("c", new Pair<EventType, String>(SupportEventAdapterService.getService().addBeanType("C", SupportBean_C.class, true), "CType"));
+        eventType = new CompositeEventType(null, "alias", taggedEventTypes, arrayEventTypes);
 
         event = new SupportBean();
         event.setIntPrimitive(1);

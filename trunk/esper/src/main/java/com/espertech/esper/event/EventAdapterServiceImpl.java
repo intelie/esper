@@ -70,6 +70,12 @@ public class EventAdapterServiceImpl implements EventAdapterService
         plugInRepresentations = new HashMap<URI, PlugInEventRepresentation>();
     }
 
+    public EventType[] getAllTypes()
+    {
+        Collection<EventType> types = aliasToTypeMap.values();
+        return types.toArray(new EventType[types.size()]);
+    }
+
     public synchronized void addTypeByAlias(String alias, EventType eventType) throws EventAdapterException
     {
         if (aliasToTypeMap.containsKey(alias))
@@ -282,7 +288,7 @@ public class EventAdapterServiceImpl implements EventAdapterService
      * @return event type
      * @throws EventAdapterException to indicate an error constructing the type
      */
-    public synchronized EventType addBeanType(String eventTypeAlias, Class clazz) throws EventAdapterException
+    public synchronized EventType addBeanType(String eventTypeAlias, Class clazz, boolean isConfigured) throws EventAdapterException
     {
         if (log.isDebugEnabled())
         {
@@ -301,7 +307,7 @@ public class EventAdapterServiceImpl implements EventAdapterService
                     "' has already been declared with differing column name or type information");
         }
 
-        EventType eventType = beanEventAdapter.createBeanType(eventTypeAlias, clazz);
+        EventType eventType = beanEventAdapter.createBeanType(eventTypeAlias, clazz, isConfigured);
         aliasToTypeMap.put(eventTypeAlias, eventType);
 
         return eventType;
@@ -318,7 +324,7 @@ public class EventAdapterServiceImpl implements EventAdapterService
         if (eventType == null)
         {
             // This will update the typesPerJavaBean mapping
-            eventType = beanEventAdapter.createBeanType(event.getClass().getName(), event.getClass());
+            eventType = beanEventAdapter.createBeanType(event.getClass().getName(), event.getClass(), false);
         }
         return new BeanEventBean(event, eventType);
     }
@@ -394,7 +400,7 @@ public class EventAdapterServiceImpl implements EventAdapterService
             }
         }
 
-        EventType eventType = beanEventAdapter.createBeanType(eventTypeAlias, clazz);
+        EventType eventType = beanEventAdapter.createBeanType(eventTypeAlias, clazz, true);
         aliasToTypeMap.put(eventTypeAlias, eventType);
 
         return eventType;
@@ -403,7 +409,8 @@ public class EventAdapterServiceImpl implements EventAdapterService
     public synchronized EventType addMapType(String eventTypeAlias, Map<String, Class> propertyTypes, Set<String> optionalSuperType) throws EventAdapterException
     {
         Pair<EventType[], Set<EventType>> mapSuperTypes = getMapSuperTypes(optionalSuperType);
-        MapEventType newEventType = new MapEventType(eventTypeAlias, propertyTypes, this, mapSuperTypes.getFirst(), mapSuperTypes.getSecond());
+        EventTypeMetadata metadata = EventTypeMetadata.createMapType(eventTypeAlias, true, false, false);
+        MapEventType newEventType = new MapEventType(metadata, eventTypeAlias, propertyTypes, this, mapSuperTypes.getFirst(), mapSuperTypes.getSecond());
 
         EventType existingType = aliasToTypeMap.get(eventTypeAlias);
         if (existingType != null)
@@ -424,10 +431,11 @@ public class EventAdapterServiceImpl implements EventAdapterService
         return newEventType;
     }
 
-    public synchronized EventType addNestableMapType(String eventTypeAlias, Map<String, Object> propertyTypes, Set<String> optionalSuperType) throws EventAdapterException
+    public synchronized EventType addNestableMapType(String eventTypeAlias, Map<String, Object> propertyTypes, Set<String> optionalSuperType, boolean isConfigured, boolean namedWindow, boolean insertInto) throws EventAdapterException
     {
         Pair<EventType[], Set<EventType>> mapSuperTypes = getMapSuperTypes(optionalSuperType);
-        MapEventType newEventType = new MapEventType(eventTypeAlias, this, propertyTypes, mapSuperTypes.getFirst(), mapSuperTypes.getSecond());
+        EventTypeMetadata metadata = EventTypeMetadata.createMapType(eventTypeAlias, isConfigured, namedWindow, insertInto);
+        MapEventType newEventType = new MapEventType(metadata, eventTypeAlias, this, propertyTypes, mapSuperTypes.getFirst(), mapSuperTypes.getSecond());
 
         EventType existingType = aliasToTypeMap.get(eventTypeAlias);
         if (existingType != null)
@@ -521,14 +529,15 @@ public class EventAdapterServiceImpl implements EventAdapterService
             return existingType;
         }
 
+        EventTypeMetadata metadata = EventTypeMetadata.createXMLType(eventTypeAlias);
         EventType type;
         if (configurationEventTypeXMLDOM.getSchemaResource() == null)
         {
-            type = new SimpleXMLEventType(configurationEventTypeXMLDOM);
+            type = new SimpleXMLEventType(metadata, configurationEventTypeXMLDOM);
         }
         else
         {
-            type = new SchemaXMLEventType(configurationEventTypeXMLDOM);
+            type = new SchemaXMLEventType(metadata, configurationEventTypeXMLDOM);
         }
 
         aliasToTypeMap.put(eventTypeAlias, type);
@@ -542,7 +551,7 @@ public class EventAdapterServiceImpl implements EventAdapterService
         return new MapEventBean(properties, eventType);
     }
 
-    public synchronized EventType addWrapperType(String eventTypeAlias, EventType underlyingEventType, Map<String, Object> propertyTypes) throws EventAdapterException
+    public synchronized EventType addWrapperType(String eventTypeAlias, EventType underlyingEventType, Map<String, Object> propertyTypes, boolean isNamedWindow, boolean isInsertInto) throws EventAdapterException
 	{
         // If we are wrapping an underlying type that is itself a wrapper, then this is a special case
         if (underlyingEventType instanceof WrapperEventType)
@@ -558,7 +567,8 @@ public class EventAdapterServiceImpl implements EventAdapterService
             propertyTypes = propertiesSuperset;
         }
 
-        WrapperEventType newEventType = new WrapperEventType(eventTypeAlias, underlyingEventType, propertyTypes, this);
+        EventTypeMetadata metadata = EventTypeMetadata.createWrapper(eventTypeAlias, isNamedWindow, isInsertInto); 
+        WrapperEventType newEventType = new WrapperEventType(metadata, eventTypeAlias, underlyingEventType, propertyTypes, this);
 
 	    EventType existingType = aliasToTypeMap.get(eventTypeAlias);
 	    if (existingType != null)
@@ -625,13 +635,15 @@ public class EventAdapterServiceImpl implements EventAdapterService
     public final EventType createAnonymousMapType(Map<String, Object> propertyTypes) throws EventAdapterException
     {
         String alias = UuidGenerator.generate(propertyTypes);
-        return new MapEventType(alias, this, propertyTypes, null, null);
+        EventTypeMetadata metadata = EventTypeMetadata.createAnonymous(alias);
+        return new MapEventType(metadata, alias, this, propertyTypes, null, null);
     }
 
     public final EventType createAnonymousWrapperType(EventType underlyingEventType, Map<String, Object> propertyTypes) throws EventAdapterException
     {
         String alias = UuidGenerator.generate(propertyTypes);
-    	return new WrapperEventType(alias, underlyingEventType, propertyTypes, this);
+        EventTypeMetadata metadata = EventTypeMetadata.createAnonymous(alias);
+    	return new WrapperEventType(metadata, alias, underlyingEventType, propertyTypes, this);
     }
 
     public final EventType createAddToEventType(EventType originalType, String[] fieldNames, Class[] fieldTypes)
@@ -657,7 +669,8 @@ public class EventAdapterServiceImpl implements EventAdapterService
                                                         Map<String, Pair<EventType, String>> arrayEventTypes)
     {
         String alias = UuidGenerator.generate(taggedEventTypes);
-        return new CompositeEventType(alias, taggedEventTypes, arrayEventTypes);
+        EventTypeMetadata metadata = EventTypeMetadata.createAnonymous(alias);
+        return new CompositeEventType(metadata, alias, taggedEventTypes, arrayEventTypes);
     }
 
 	public final EventBean createWrapper(EventBean event, Map<String, Object> properties, EventType eventType)

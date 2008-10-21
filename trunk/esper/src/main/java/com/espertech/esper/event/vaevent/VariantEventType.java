@@ -10,6 +10,8 @@ package com.espertech.esper.event.vaevent;
 
 import com.espertech.esper.event.EventPropertyGetter;
 import com.espertech.esper.event.EventType;
+import com.espertech.esper.event.EventTypeSPI;
+import com.espertech.esper.event.EventTypeMetadata;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -21,8 +23,9 @@ import java.util.Set;
  * <p>
  * Caches properties after having resolved a property via a resolution strategy.
  */
-public class VariantEventType implements EventType
+public class VariantEventType implements EventTypeSPI
 {
+    private final EventTypeMetadata metadata;
     private final EventType[] variants;
     private final VariantPropResolutionStrategy propertyResStrategy;
     private final Map<String, VariantPropertyDesc> propertyDesc;
@@ -33,8 +36,9 @@ public class VariantEventType implements EventType
      * @param variantSpec the variant specification
      * @param propertyResStrategy stragegy for resolving properties
      */
-    public VariantEventType(VariantSpec variantSpec, VariantPropResolutionStrategy propertyResStrategy)
+    public VariantEventType(EventTypeMetadata metadata, VariantSpec variantSpec, VariantPropResolutionStrategy propertyResStrategy)
     {
+        this.metadata = metadata;
         this.variants = variantSpec.getEventTypes();
         this.propertyResStrategy = propertyResStrategy;
         propertyDesc = new HashMap<String, VariantPropertyDesc>();
@@ -130,5 +134,10 @@ public class VariantEventType implements EventType
             propertyDesc.put(propertyName, desc);
         }
         return desc;
+    }
+
+    public EventTypeMetadata getMetadata()
+    {
+        return metadata;
     }
 }

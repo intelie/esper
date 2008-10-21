@@ -28,8 +28,10 @@ import java.util.Map;
  * Uses a the map event type {@link com.espertech.esper.event.MapEventType} to represent the mapped properties. This is because the additional properties
  * can also be beans or complex types and the Map event type handles these nicely.
  */
-public class WrapperEventType implements EventType
+public class WrapperEventType implements EventTypeSPI
 {
+    protected final EventTypeMetadata metadata;
+
     /**
      * The underlying wrapped event type.
      */
@@ -52,12 +54,14 @@ public class WrapperEventType implements EventType
      * @param properties is the additional properties this wrapper adds
      * @param eventAdapterService is the ser
      */
-    public WrapperEventType(String typeName, EventType eventType, Map<String, Object> properties, EventAdapterService eventAdapterService)
+    public WrapperEventType(EventTypeMetadata metadata, String typeName, EventType eventType, Map<String, Object> properties, EventAdapterService eventAdapterService)
 	{
 		checkForRepeatedPropertyNames(eventType, properties);
 
+        this.metadata = metadata;
 		this.underlyingEventType = eventType;
-		this.underlyingMapType = new MapEventType(typeName, eventAdapterService, properties, null, null);
+        EventTypeMetadata metadataMapType = EventTypeMetadata.createAnonymous(typeName);
+        this.underlyingMapType = new MapEventType(metadataMapType, typeName, eventAdapterService, properties, null, null);
         this.hashCode = underlyingMapType.hashCode() ^ underlyingEventType.hashCode();
         this.isNoMapProperties = properties.isEmpty();
 
@@ -235,6 +239,11 @@ public class WrapperEventType implements EventType
     public int hashCode()
     {
         return hashCode;
+    }
+
+    public EventTypeMetadata getMetadata()
+    {
+        return metadata;
     }
 
     private void checkForRepeatedPropertyNames(EventType eventType, Map<String, Object> properties)

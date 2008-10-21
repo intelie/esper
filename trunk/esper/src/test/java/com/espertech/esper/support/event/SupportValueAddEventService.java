@@ -47,4 +47,9 @@ public class SupportValueAddEventService implements ValueAddEventService
     {
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
+
+    public EventType[] getValueAddedTypes()
+    {
+        return new EventType[0];  
+    }
 }

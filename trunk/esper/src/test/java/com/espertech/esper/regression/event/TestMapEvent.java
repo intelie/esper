@@ -4,6 +4,10 @@ import com.espertech.esper.client.*;
 import com.espertech.esper.support.bean.SupportBeanComplexProps;
 import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.support.util.SupportUpdateListener;
+import com.espertech.esper.core.EPServiceProviderSPI;
+import com.espertech.esper.event.EventType;
+import com.espertech.esper.event.EventTypeSPI;
+import com.espertech.esper.event.EventTypeMetadata;
 import junit.framework.TestCase;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -36,6 +40,19 @@ public class TestMapEvent extends TestCase
 
         epService = EPServiceProviderManager.getDefaultProvider(configuration);
         epService.initialize();
+    }
+
+    public void testMetadata()
+    {
+        EventTypeSPI type = (EventTypeSPI) ((EPServiceProviderSPI)epService).getEventAdapterService().getExistsTypeByAlias("myMapEvent");
+        assertEquals(EventTypeMetadata.ApplicationType.MAP, type.getMetadata().getOptionalApplicationType());
+        assertEquals(null, type.getMetadata().getOptionalSecondaryNames());
+        assertEquals("myMapEvent", type.getMetadata().getPrimaryAssociationName());
+        assertEquals(EventTypeMetadata.TypeClass.APPLICATION, type.getMetadata().getTypeClass());
+        assertEquals(true, type.getMetadata().isApplicationConfigured());
+        
+        EventType[] types = ((EPServiceProviderSPI)epService).getEventAdapterService().getAllTypes();
+        assertEquals(1, types.length);
     }
 
     public void testNestedObjects()

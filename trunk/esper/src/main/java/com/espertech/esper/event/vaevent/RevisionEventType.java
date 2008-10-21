@@ -9,10 +9,7 @@
 package com.espertech.esper.event.vaevent;
 
 import com.espertech.esper.epl.parse.ASTFilterSpecHelper;
-import com.espertech.esper.event.EventAdapterService;
-import com.espertech.esper.event.EventPropertyGetter;
-import com.espertech.esper.event.EventType;
-import com.espertech.esper.event.BeanEventType;
+import com.espertech.esper.event.*;
 import com.espertech.esper.event.property.*;
 
 import java.util.Iterator;
@@ -22,8 +19,9 @@ import java.util.Set;
 /**
  * Event type of revision events.
  */
-public class RevisionEventType implements EventType
+public class RevisionEventType implements EventTypeSPI
 {
+    private final EventTypeMetadata metadata;
     private String[] propertyNames;
     private Map<String, RevisionPropertyTypeDesc> propertyDesc;
     private EventAdapterService eventAdapterService;
@@ -33,8 +31,9 @@ public class RevisionEventType implements EventType
      * @param propertyDesc describes each properties type
      * @param eventAdapterService for nested property handling
      */
-    public RevisionEventType(Map<String, RevisionPropertyTypeDesc> propertyDesc, EventAdapterService eventAdapterService)
+    public RevisionEventType(EventTypeMetadata metadata, Map<String, RevisionPropertyTypeDesc> propertyDesc, EventAdapterService eventAdapterService)
     {
+        this.metadata = metadata;
         this.propertyDesc = propertyDesc;
         Set<String> keys = propertyDesc.keySet();
         propertyNames = keys.toArray(new String[keys.size()]);
@@ -86,7 +85,7 @@ public class RevisionEventType implements EventType
                 return null;
             }
             Class nestedClass = (Class) desc.getPropertyType();
-            BeanEventType complexProperty = (BeanEventType) eventAdapterService.addBeanType(nestedClass.getName(), nestedClass);
+            BeanEventType complexProperty = (BeanEventType) eventAdapterService.addBeanType(nestedClass.getName(), nestedClass, false);
             return prop.getGetter(complexProperty);
         }
 
@@ -109,7 +108,7 @@ public class RevisionEventType implements EventType
         {
             // ask the nested class to resolve the property
             Class simpleClass = (Class) desc.getPropertyType();
-            EventType nestedEventType = eventAdapterService.addBeanType(simpleClass.getName(), simpleClass);
+            EventType nestedEventType = eventAdapterService.addBeanType(simpleClass.getName(), simpleClass, false);
             final EventPropertyGetter nestedGetter = nestedEventType.getGetter(propertyNested);
             if (nestedGetter == null)
             {
@@ -167,7 +166,7 @@ public class RevisionEventType implements EventType
         else if (desc.getPropertyType() instanceof Class)
         {
             Class simpleClass = (Class) desc.getPropertyType();
-            EventType nestedEventType = eventAdapterService.addBeanType(simpleClass.getName(), simpleClass);
+            EventType nestedEventType = eventAdapterService.addBeanType(simpleClass.getName(), simpleClass, false);
             return nestedEventType.getPropertyType(propertyNested);
         }
         else
@@ -200,4 +199,9 @@ public class RevisionEventType implements EventType
     {
         return null;
     }
+
+    public EventTypeMetadata getMetadata()
+    {
+        return metadata;
+    }    
 }

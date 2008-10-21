@@ -10,6 +10,7 @@ package com.espertech.esper.event.vaevent;
 
 import com.espertech.esper.event.EventType;
 import com.espertech.esper.event.EventBean;
+import com.espertech.esper.event.EventTypeMetadata;
 import com.espertech.esper.epl.named.NamedWindowRootView;
 import com.espertech.esper.epl.named.NamedWindowIndexRepository;
 import com.espertech.esper.epl.expression.ExprValidationException;
@@ -53,7 +54,8 @@ public class VAEVariantProcessor implements ValueAddEventProcessor
             strategy = new VariantPropResolutionStrategyDefault(variantSpec);
         }
 
-        variantEventType = new VariantEventType(variantSpec, strategy);
+        EventTypeMetadata metadata = EventTypeMetadata.createValueAdd(variantSpec.getVariantStreamName(), EventTypeMetadata.TypeClass.VARIANT);
+        variantEventType = new VariantEventType(metadata, variantSpec, strategy);
     }
 
     public EventType getValueAddEventType()

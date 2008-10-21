@@ -99,13 +99,13 @@ public class TestEventAdapterServiceImpl extends TestCase
 
     public void testAddWrapperType()
     {
-        EventType beanEventType = adapterService.addBeanType("mybean", SupportMarketDataBean.class);
+        EventType beanEventType = adapterService.addBeanType("mybean", SupportMarketDataBean.class, true);
         Map<String, Object> props = new HashMap<String, Object>();
         props.put("a", Long.class);
         props.put("b", String.class);
 
         // check result type
-        EventType typeOne = adapterService.addWrapperType("latencyEvent", beanEventType, props);
+        EventType typeOne = adapterService.addWrapperType("latencyEvent", beanEventType, props, false, false);
         assertEquals(Long.class, typeOne.getPropertyType("a"));
         assertEquals(String.class, typeOne.getPropertyType("b"));
         assertEquals(7, typeOne.getPropertyNames().length);
@@ -116,8 +116,8 @@ public class TestEventAdapterServiceImpl extends TestCase
         props.put("b", boolean.class);
         try
         {
-            EventType beanTwoEventType = adapterService.addBeanType("mybean", SupportBean.class);
-            adapterService.addWrapperType("latencyEvent", beanTwoEventType, props);
+            EventType beanTwoEventType = adapterService.addBeanType("mybean", SupportBean.class, true);
+            adapterService.addWrapperType("latencyEvent", beanTwoEventType, props, false, false);
             fail();
         }
         catch (EventAdapterException ex)
@@ -149,12 +149,12 @@ public class TestEventAdapterServiceImpl extends TestCase
 
     public void testAddClass()
     {
-        EventType typeOne = adapterService.addBeanType("latencyEvent", SupportBean.class);
+        EventType typeOne = adapterService.addBeanType("latencyEvent", SupportBean.class, false);
         assertEquals(SupportBean.class, typeOne.getUnderlyingType());
 
         assertSame(typeOne, adapterService.getExistsTypeByAlias("latencyEvent"));
 
-        EventType typeTwo = adapterService.addBeanType("latencyEvent", SupportBean.class);
+        EventType typeTwo = adapterService.addBeanType("latencyEvent", SupportBean.class, false);
         assertSame(typeOne, typeTwo);
 
         try

@@ -861,11 +861,11 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
             if ((selectFromType instanceof MapEventType) && (properties.size() ==0))
             {
                 MapEventType mapType = (MapEventType) selectFromType;
-                targetType = statementContext.getEventAdapterService().addNestableMapType(typeName, mapType.getTypes(), null);
+                targetType = statementContext.getEventAdapterService().addNestableMapType(typeName, mapType.getTypes(), null, false, true, false);
             }
             else
             {
-                targetType = statementContext.getEventAdapterService().addWrapperType(typeName, selectFromType, properties);
+                targetType = statementContext.getEventAdapterService().addWrapperType(typeName, selectFromType, properties, true, false);
             }
         }
         else
@@ -873,7 +873,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
             // Some columns selected, use the types of the columns
             if (spec.getSelectClauseSpec().getSelectExprList().size() > 0)
             {
-                targetType = statementContext.getEventAdapterService().addNestableMapType(typeName, properties, null);
+                targetType = statementContext.getEventAdapterService().addNestableMapType(typeName, properties, null, false, true, false);
             }
             else
             {
@@ -881,12 +881,12 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
                 if (selectFromType instanceof MapEventType)
                 {
                     MapEventType mapType = (MapEventType) selectFromType;
-                    targetType = statementContext.getEventAdapterService().addNestableMapType(typeName, mapType.getTypes(), null);
+                    targetType = statementContext.getEventAdapterService().addNestableMapType(typeName, mapType.getTypes(), null, false, true, false);
                 }
                 else
                 {
                     Map<String, Object> addOnTypes = new HashMap<String, Object>();
-                    targetType = statementContext.getEventAdapterService().addWrapperType(typeName, selectFromType, addOnTypes);
+                    targetType = statementContext.getEventAdapterService().addWrapperType(typeName, selectFromType, addOnTypes, true, false);
                 }
             }
         }
@@ -907,7 +907,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
                 continue;
             }
             SelectClauseExprRawSpec exprSpec = (SelectClauseExprRawSpec) raw;
-            ExprNode validatedExpression = null;
+            ExprNode validatedExpression;
             try
             {
                 validatedExpression = exprSpec.getSelectExpression().getValidatedSubtree(streams, null, null, null, null);

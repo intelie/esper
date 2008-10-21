@@ -4,10 +4,13 @@ import junit.framework.TestCase;
 import com.espertech.esper.client.*;
 import com.espertech.esper.client.time.TimerControlEvent;
 import com.espertech.esper.event.EventBean;
+import com.espertech.esper.event.EventTypeSPI;
+import com.espertech.esper.event.EventTypeMetadata;
 import com.espertech.esper.support.util.SupportUpdateListener;
 import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.support.xml.SupportXPathFunctionResolver;
 import com.espertech.esper.support.xml.SupportXPathVariableResolver;
+import com.espertech.esper.core.EPServiceProviderSPI;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.w3c.dom.Document;
@@ -60,6 +63,14 @@ public class TestNoSchemaXMLEvent extends TestCase
         epService.initialize();
         updateListener = new SupportUpdateListener();
         epService.getEPRuntime().sendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
+
+        // assert type metadata
+        EventTypeSPI type = (EventTypeSPI) ((EPServiceProviderSPI)epService).getEventAdapterService().getExistsTypeByAlias("TestXMLNoSchemaType");
+        assertEquals(EventTypeMetadata.ApplicationType.XML, type.getMetadata().getOptionalApplicationType());
+        assertEquals(null, type.getMetadata().getOptionalSecondaryNames());
+        assertEquals("TestXMLNoSchemaType", type.getMetadata().getPrimaryAssociationName());
+        assertEquals(EventTypeMetadata.TypeClass.APPLICATION, type.getMetadata().getTypeClass());
+        assertEquals(true, type.getMetadata().isApplicationConfigured());
 
         String stmt =
                 "select element1," +

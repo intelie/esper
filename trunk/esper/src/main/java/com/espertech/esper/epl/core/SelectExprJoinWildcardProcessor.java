@@ -53,7 +53,7 @@ public class SelectExprJoinWildcardProcessor implements SelectExprProcessor
         {
         	try
             {
-                resultEventType = eventAdapterService.addNestableMapType(insertIntoDesc.getEventTypeAlias(), eventTypeMap, null);
+                resultEventType = eventAdapterService.addNestableMapType(insertIntoDesc.getEventTypeAlias(), eventTypeMap, null, false, false, true);
             }
             catch (EventAdapterException ex)
             {

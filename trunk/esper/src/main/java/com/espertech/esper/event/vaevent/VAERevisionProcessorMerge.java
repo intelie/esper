@@ -160,7 +160,8 @@ public class VAERevisionProcessorMerge extends VAERevisionProcessorBase implemen
             throw new IllegalArgumentException("Unknown revision type '" + spec.getPropertyRevision() + "'");
         }
 
-        revisionEventType = new RevisionEventType(propertyDesc, eventAdapterService);
+        EventTypeMetadata metadata = EventTypeMetadata.createValueAdd(revisionEventTypeAlias, EventTypeMetadata.TypeClass.REVISION);
+        revisionEventType = new RevisionEventType(metadata, propertyDesc, eventAdapterService);
     }
 
     public EventBean getValueAddEventBean(EventBean event)

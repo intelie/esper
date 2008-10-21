@@ -52,7 +52,7 @@ public class TestSimpleXMLEventType extends TestCase {
         config.setRootElementName("simpleEvent");
         config.addXPathProperty("customProp", "count(/simpleEvent/nested3/nested4)", XPathConstants.NUMBER);
 
-        SimpleXMLEventType eventType = new SimpleXMLEventType(config);
+        SimpleXMLEventType eventType = new SimpleXMLEventType(null, config);
 		event = new XMLEventBean(simpleDoc, eventType);
 	}
 

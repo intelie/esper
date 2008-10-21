@@ -1,15 +1,12 @@
 package com.espertech.esper.epl.join.plan;
 
-import junit.framework.TestCase;
-import com.espertech.esper.support.util.ArrayAssertionUtil;
-import com.espertech.esper.support.event.SupportEventAdapterService;
-import com.espertech.esper.support.bean.SupportBean_S1;
-import com.espertech.esper.support.bean.SupportBean_S0;
-import com.espertech.esper.epl.join.plan.QueryGraph;
-import com.espertech.esper.epl.join.plan.QueryPlan;
-import com.espertech.esper.epl.join.plan.TwoStreamQueryPlanBuilder;
-import com.espertech.esper.type.OuterJoinType;
 import com.espertech.esper.event.EventType;
+import com.espertech.esper.support.bean.SupportBean_S0;
+import com.espertech.esper.support.bean.SupportBean_S1;
+import com.espertech.esper.support.event.SupportEventAdapterService;
+import com.espertech.esper.support.util.ArrayAssertionUtil;
+import com.espertech.esper.type.OuterJoinType;
+import junit.framework.TestCase;
 
 public class TestTwoStreamQueryPlanBuilder extends TestCase
 {
@@ -18,8 +15,8 @@ public class TestTwoStreamQueryPlanBuilder extends TestCase
     public void setUp()
     {
         typesPerStream = new EventType[] {
-                SupportEventAdapterService.getService().addBeanType(SupportBean_S0.class.getName(), SupportBean_S0.class),
-                SupportEventAdapterService.getService().addBeanType(SupportBean_S1.class.getName(), SupportBean_S1.class)
+                SupportEventAdapterService.getService().addBeanType(SupportBean_S0.class.getName(), SupportBean_S0.class, true),
+                SupportEventAdapterService.getService().addBeanType(SupportBean_S1.class.getName(), SupportBean_S1.class, true)
         };
     }
 

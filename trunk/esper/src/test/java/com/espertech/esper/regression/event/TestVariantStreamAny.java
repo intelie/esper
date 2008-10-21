@@ -5,6 +5,10 @@ import com.espertech.esper.support.bean.*;
 import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.support.util.ArrayAssertionUtil;
 import com.espertech.esper.support.util.SupportUpdateListener;
+import com.espertech.esper.event.EventTypeSPI;
+import com.espertech.esper.event.EventTypeMetadata;
+import com.espertech.esper.event.EventType;
+import com.espertech.esper.core.EPServiceProviderSPI;
 import junit.framework.TestCase;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -28,6 +32,18 @@ public class TestVariantStreamAny extends TestCase
         epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();
         listener = new SupportUpdateListener();
+
+        // assert type metadata
+        EventTypeSPI type = (EventTypeSPI) ((EPServiceProviderSPI)epService).getValueAddEventService().getValueAddProcessor("MyVariantStream").getValueAddEventType();
+        assertEquals(null, type.getMetadata().getOptionalApplicationType());
+        assertEquals(null, type.getMetadata().getOptionalSecondaryNames());
+        assertEquals("MyVariantStream", type.getMetadata().getPrimaryAssociationName());
+        assertEquals(EventTypeMetadata.TypeClass.VARIANT, type.getMetadata().getTypeClass());
+        assertEquals(true, type.getMetadata().isApplicationConfigured());
+
+        EventType[] valueAddTypes = ((EPServiceProviderSPI)epService).getValueAddEventService().getValueAddedTypes();
+        assertEquals(1, valueAddTypes.length);
+        assertSame(type, valueAddTypes[0]);        
     }
 
     public void testAnyType()

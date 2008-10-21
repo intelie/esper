@@ -13,6 +13,7 @@ import com.espertech.esper.client.ConfigurationEventTypeXMLDOM;
 import com.espertech.esper.client.EPException;
 import com.espertech.esper.event.EventPropertyGetter;
 import com.espertech.esper.event.TypedEventPropertyGetter;
+import com.espertech.esper.event.EventTypeMetadata;
 
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
@@ -44,9 +45,9 @@ public class SimpleXMLEventType extends BaseXMLEventType {
      * Ctor.
      * @param configurationEventTypeXMLDOM configures the event type
      */
-    public SimpleXMLEventType(ConfigurationEventTypeXMLDOM configurationEventTypeXMLDOM)
+    public SimpleXMLEventType(EventTypeMetadata eventTypeMetadata, ConfigurationEventTypeXMLDOM configurationEventTypeXMLDOM)
     {
-        super(configurationEventTypeXMLDOM);
+        super(eventTypeMetadata, configurationEventTypeXMLDOM);
         isResolvePropertiesAbsolute = configurationEventTypeXMLDOM.isResolvePropertiesAbsolute();
 
         // Set of namespace context for XPath expressions

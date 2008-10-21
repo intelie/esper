@@ -23,7 +23,7 @@ public class TestFilterSpecCompiled extends TestCase
     public void setUp()
     {
         eventTypeAlias = SupportBean.class.getName();
-        eventType = SupportEventAdapterService.getService().addBeanType(eventTypeAlias, SupportBean.class);
+        eventType = SupportEventAdapterService.getService().addBeanType(eventTypeAlias, SupportBean.class, true);
     }
 
     public void testHashCode()

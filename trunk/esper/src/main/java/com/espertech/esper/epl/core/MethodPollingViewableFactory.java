@@ -132,7 +132,7 @@ public class MethodPollingViewableFactory
         }
         else
         {
-            eventType = eventAdapterService.addBeanType(beanClass.getName(), beanClass);
+            eventType = eventAdapterService.addBeanType(beanClass.getName(), beanClass, true);
         }
 
         // Construct polling strategy as a method invocation

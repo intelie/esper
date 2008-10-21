@@ -8,7 +8,7 @@ public class SupportEventTypeFactory
 {
     public static EventType createBeanType(Class clazz)
     {
-        return SupportEventAdapterService.getService().addBeanType(clazz.getName(), clazz);
+        return SupportEventAdapterService.getService().addBeanType(clazz.getName(), clazz, false);
     }
 
     public static EventType createMapType(Map<String,Object> map)

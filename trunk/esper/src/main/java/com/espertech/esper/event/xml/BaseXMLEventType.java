@@ -48,9 +48,9 @@ public abstract class BaseXMLEventType extends BaseConfigurableEventType {
      * Ctor.
      * @param configurationEventTypeXMLDOM is the XML DOM configuration such as root element and schema names
      */
-    public BaseXMLEventType(ConfigurationEventTypeXMLDOM configurationEventTypeXMLDOM)
+    public BaseXMLEventType(EventTypeMetadata metadata, ConfigurationEventTypeXMLDOM configurationEventTypeXMLDOM)
     {
-        super(Node.class);
+        super(metadata, Node.class);
         this.rootElementName = configurationEventTypeXMLDOM.getRootElementName();
         this.configurationEventTypeXMLDOM = configurationEventTypeXMLDOM;
         xPathFactory = XPathFactory.newInstance();

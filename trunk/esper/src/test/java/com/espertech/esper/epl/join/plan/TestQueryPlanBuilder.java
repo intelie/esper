@@ -22,8 +22,8 @@ public class TestQueryPlanBuilder extends TestCase
     public void setUp()
     {
         typesPerStream = new EventType[] {
-                SupportEventAdapterService.getService().addBeanType(SupportBean_S0.class.getName(), SupportBean_S0.class),
-                SupportEventAdapterService.getService().addBeanType(SupportBean_S1.class.getName(), SupportBean_S1.class)
+                SupportEventAdapterService.getService().addBeanType(SupportBean_S0.class.getName(), SupportBean_S0.class, true),
+                SupportEventAdapterService.getService().addBeanType(SupportBean_S1.class.getName(), SupportBean_S1.class, true)
         };
         dependencyGraph = new HistoricalDependencyGraph(2);
         isHistorical = new boolean[2];

@@ -28,7 +28,7 @@ public interface BeanEventTypeFactory
      * @param clazz is the class for which to generate an event type
      * @return is the event type for the class
      */
-    public BeanEventType createBeanType(String alias, Class clazz);
+    public BeanEventType createBeanType(String alias, Class clazz, boolean isConfigured);
 
     /**
      * Returns the default property resolution style.

@@ -82,7 +82,7 @@ public class NestedProperty implements Property
                 {
                     return null;
                 }
-                eventType = beanEventTypeFactory.createBeanType(clazz.getName(), clazz);
+                eventType = beanEventTypeFactory.createBeanType(clazz.getName(), clazz, false);
             }
             getters.add(getter);
         }
@@ -118,7 +118,7 @@ public class NestedProperty implements Property
                     return null;
                 }
 
-                eventType = beanEventTypeFactory.createBeanType(result.getName(), result);
+                eventType = beanEventTypeFactory.createBeanType(result.getName(), result, false);
             }
         }
 
@@ -175,7 +175,7 @@ public class NestedProperty implements Property
             if (nestedType instanceof Class)
             {
                 Class pojoClass = (Class) nestedType;
-                BeanEventType beanType = beanEventTypeFactory.createBeanType(pojoClass.getName(), pojoClass);
+                BeanEventType beanType = beanEventTypeFactory.createBeanType(pojoClass.getName(), pojoClass, false);
                 String remainingProps = toPropertyEPL(properties, count);
                 return beanType.getPropertyType(remainingProps);
             }
@@ -243,7 +243,7 @@ public class NestedProperty implements Property
                     {
                         // treat the return type of the map property as a POJO
                         Class pojoClass = (Class) propertyReturnType;
-                        BeanEventType beanType = beanEventTypeFactory.createBeanType(pojoClass.getName(), pojoClass);
+                        BeanEventType beanType = beanEventTypeFactory.createBeanType(pojoClass.getName(), pojoClass, false);
                         String remainingProps = toPropertyEPL(properties, count);
                         getters.add(beanType.getGetter(remainingProps));
                         break; // the single Pojo getter handles the rest

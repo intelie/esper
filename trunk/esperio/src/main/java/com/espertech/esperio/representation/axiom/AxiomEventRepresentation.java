@@ -9,6 +9,7 @@
 package com.espertech.esperio.representation.axiom;
 
 import com.espertech.esper.plugin.*;
+import com.espertech.esper.event.EventTypeMetadata;
 
 import java.util.Map;
 import java.util.HashMap;
@@ -53,7 +54,8 @@ public class AxiomEventRepresentation implements PlugInEventRepresentation
             config = (ConfigurationEventTypeAxiom) eventTypeContext.getTypeInitializer();
         }
 
-        AxiomXMLEventType eventType = new AxiomXMLEventType(config);
+        EventTypeMetadata metadata = EventTypeMetadata.createXMLType(config.getRootElementName());
+        AxiomXMLEventType eventType = new AxiomXMLEventType(metadata, config);
         types.put(config.getRootElementName(), eventType);  // keep a handle on the types created to allow dynamic event reflection via bean factory
         return new AxiomEventTypeHandler(eventType);
     }

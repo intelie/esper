@@ -11,6 +11,7 @@ package com.espertech.esper.core;
 import com.espertech.esper.plugin.PluginLoader;
 import com.espertech.esper.client.*;
 import com.espertech.esper.event.EventAdapterService;
+import com.espertech.esper.event.vaevent.ValueAddEventService;
 import com.espertech.esper.schedule.SchedulingService;
 import com.espertech.esper.filter.FilterService;
 import com.espertech.esper.util.ExecutionPathDebugLog;
@@ -117,6 +118,11 @@ public class EPServiceProviderImpl implements EPServiceProviderSPI
     public MetricReportingService getMetricReportingService()
     {
         return engine.getServices().getMetricsReportingService();
+    }
+
+    public ValueAddEventService getValueAddEventService()
+    {
+        return engine.getServices().getValueAddEventService();
     }
 
     public Context getContext()

@@ -6,6 +6,10 @@ import com.espertech.esper.support.util.SupportUpdateListener;
 import com.espertech.esper.support.util.ArrayAssertionUtil;
 import com.espertech.esper.support.bean.*;
 import com.espertech.esper.event.EventBean;
+import com.espertech.esper.event.EventTypeSPI;
+import com.espertech.esper.event.EventTypeMetadata;
+import com.espertech.esper.event.EventType;
+import com.espertech.esper.core.EPServiceProviderSPI;
 import junit.framework.TestCase;
 
 import java.util.Random;
@@ -61,6 +65,18 @@ public class TestRevisionDeclared extends TestCase
         epService.getEPAdministrator().createEPL("insert into RevQuote select * from D3");
         epService.getEPAdministrator().createEPL("insert into RevQuote select * from D4");
         epService.getEPAdministrator().createEPL("insert into RevQuote select * from D5");
+
+        // assert type metadata
+        EventTypeSPI type = (EventTypeSPI) ((EPServiceProviderSPI)epService).getValueAddEventService().getValueAddProcessor("RevQuote").getValueAddEventType();
+        assertEquals(null, type.getMetadata().getOptionalApplicationType());
+        assertEquals(null, type.getMetadata().getOptionalSecondaryNames());
+        assertEquals("RevisableQuote", type.getMetadata().getPrimaryAssociationName());
+        assertEquals(EventTypeMetadata.TypeClass.REVISION, type.getMetadata().getTypeClass());
+        assertEquals(true, type.getMetadata().isApplicationConfigured());
+
+        EventType[] valueAddTypes = ((EPServiceProviderSPI)epService).getValueAddEventService().getValueAddedTypes();
+        assertEquals(1, valueAddTypes.length);
+        assertSame(type, valueAddTypes[0]);
     }
 
     public void testRevision()

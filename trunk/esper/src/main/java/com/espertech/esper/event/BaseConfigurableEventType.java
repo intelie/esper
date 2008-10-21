@@ -17,8 +17,9 @@ import java.util.Map;
  * EventType than can be supplied with a preconfigured list of properties getters (aka. explicit properties).
  * @author pablo
  */
-public abstract class BaseConfigurableEventType implements EventType {
+public abstract class BaseConfigurableEventType implements EventTypeSPI {
 
+    private final EventTypeMetadata metadata;
     private Class underlyngType;
 	private Map<String,TypedEventPropertyGetter> explicitProperties;
 
@@ -26,8 +27,9 @@ public abstract class BaseConfigurableEventType implements EventType {
      * Ctor.
      * @param underlyngType is the underlying type returned by the event type
      */
-    protected BaseConfigurableEventType(Class underlyngType)
+    protected BaseConfigurableEventType(EventTypeMetadata metadata, Class underlyngType)
     {
+        this.metadata = metadata;
         this.underlyngType = underlyngType;
     }
 
@@ -89,6 +91,11 @@ public abstract class BaseConfigurableEventType implements EventType {
 	 * @return property type
 	 */
 	protected abstract Class doResolvePropertyType(String property);
+
+    public EventTypeMetadata getMetadata()
+    {
+        return metadata;
+    }
 }
 
 
