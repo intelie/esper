@@ -13,6 +13,8 @@ import com.espertech.esper.epl.expression.ExprSubselectNode;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Set;
+import java.util.HashSet;
 
 /**
  * Specification object representing a complete EPL statement including all EPL constructs.
@@ -35,6 +37,7 @@ public class StatementSpecCompiled
     private final List<ExprSubselectNode> subSelectExpressions;
     private final boolean hasVariables;
     private final RowLimitSpec rowLimitSpec;
+    private final Set<String> eventTypeReferences;
 
     /**
      * Ctor.
@@ -70,7 +73,8 @@ public class StatementSpecCompiled
                                  List<OrderByItem> orderByList,
                                  List<ExprSubselectNode> subSelectExpressions,
                                  boolean hasVariables,
-                                 RowLimitSpec rowLimitSpec)
+                                 RowLimitSpec rowLimitSpec,
+                                 Set<String> eventTypeReferences)
     {
         this.onTriggerDesc = onTriggerDesc;
         this.createWindowDesc = createWindowDesc;
@@ -88,6 +92,7 @@ public class StatementSpecCompiled
         this.subSelectExpressions = subSelectExpressions;
         this.hasVariables = hasVariables;
         this.rowLimitSpec = rowLimitSpec;
+        this.eventTypeReferences = eventTypeReferences;
     }
 
     /**
@@ -111,6 +116,7 @@ public class StatementSpecCompiled
         subSelectExpressions = new ArrayList<ExprSubselectNode>();
         hasVariables = false;
         rowLimitSpec = null;
+        eventTypeReferences = new HashSet<String>();
     }
 
     /**
@@ -271,5 +277,10 @@ public class StatementSpecCompiled
     public RowLimitSpec getRowLimitSpec()
     {
         return rowLimitSpec;
+    }
+
+    public Set<String> getEventTypeReferences()
+    {
+        return eventTypeReferences;
     }
 }

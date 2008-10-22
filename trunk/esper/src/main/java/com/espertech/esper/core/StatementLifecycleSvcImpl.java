@@ -193,6 +193,9 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
         boolean canSelfJoin = isPotentialSelfJoin(compiledSpec.getStreamSpecs());
         statementContext.getEpStatementHandle().setCanSelfJoin(canSelfJoin);
 
+        // add event types references
+        services.getStatementEventTypeRefService().addReferences(statementName, compiledSpec.getEventTypeReferences());
+
         eventProcessingRWLock.acquireWriteLock();
         try
         {
@@ -221,7 +224,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
                 insertIntoStreamName = statementSpec.getInsertIntoDesc().getEventTypeAlias();
             }
 
-            statementDesc = new EPStatementDesc(statement, startMethod, null, insertIntoStreamName, statementContext.getEpStatementHandle());
+            statementDesc = new EPStatementDesc(statement, startMethod, null, insertIntoStreamName, statementContext.getEpStatementHandle(), compiledSpec.getEventTypeReferences());
             stmtIdToDescMap.put(statementId, statementDesc);
             stmtNameToStmtMap.put(statementName, statement);
             stmtNameToIdMap.put(statementName, statementId);
@@ -497,6 +500,9 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
                 return;
             }
 
+            // remove referenced event types
+            services.getStatementEventTypeRefService().removeReferences(desc.getEpStatement().getName(), desc.eventTypesReferenced);            
+
             EPStatementSPI statement = desc.getEpStatement();
             if (statement.getState() == EPStatementState.STARTED)
             {
@@ -650,6 +656,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
     protected static StatementSpecCompiled compile(StatementSpecRaw spec, String eplStatement, StatementContext statementContext, boolean isSubquery) throws EPStatementException
     {
         List<StreamSpecCompiled> compiledStreams;
+        Set<String> eventTypeReferences = new HashSet<String>();
 
         // If not using a join and not specifying a data window, make the where-clause, if present, the filter of the stream
         // if selecting using filter spec, and not subquery in where clause
@@ -688,7 +695,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
             compiledStreams = new ArrayList<StreamSpecCompiled>();
             for (StreamSpecRaw rawSpec : spec.getStreamSpecs())
             {
-                StreamSpecCompiled compiled = rawSpec.compile(statementContext.getEventAdapterService(), statementContext.getMethodResolutionService(), statementContext.getPatternResolutionService(), statementContext.getSchedulingService(), statementContext.getNamedWindowService(), statementContext.getValueAddEventService(), statementContext.getVariableService(), statementContext.getEngineURI(), statementContext.getPlugInTypeResolutionURIs());
+                StreamSpecCompiled compiled = rawSpec.compile(statementContext.getEventAdapterService(), statementContext.getMethodResolutionService(), statementContext.getPatternResolutionService(), statementContext.getSchedulingService(), statementContext.getNamedWindowService(), statementContext.getValueAddEventService(), statementContext.getVariableService(), statementContext.getEngineURI(), statementContext.getPlugInTypeResolutionURIs(), eventTypeReferences);
                 compiledStreams.add(compiled);
             }
         }
@@ -814,7 +821,8 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
                 spec.getOrderByList(),
                 visitor.getSubselects(),
                 spec.isHasVariables(),
-                spec.getRowLimitSpec()
+                spec.getRowLimitSpec(),
+                eventTypeReferences
                 );
     }
 
@@ -949,6 +957,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
         private EPStatementStopMethod stopMethod;
         private String optInsertIntoStream;
         private EPStatementHandle statementHandle;
+        private Set<String> eventTypesReferenced;
 
         /**
          * Ctor.
@@ -958,13 +967,14 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
          * @param optInsertIntoStream is the insert-into stream name, or null if not using insert-into
          * @param statementHandle is the locking handle for the statement
          */
-        public EPStatementDesc(EPStatementSPI epStatement, EPStatementStartMethod startMethod, EPStatementStopMethod stopMethod, String optInsertIntoStream, EPStatementHandle statementHandle)
+        public EPStatementDesc(EPStatementSPI epStatement, EPStatementStartMethod startMethod, EPStatementStopMethod stopMethod, String optInsertIntoStream, EPStatementHandle statementHandle, Set<String> eventTypesReferenced)
         {
             this.epStatement = epStatement;
             this.startMethod = startMethod;
             this.stopMethod = stopMethod;
             this.optInsertIntoStream = optInsertIntoStream;
             this.statementHandle = statementHandle;
+            this.eventTypesReferenced = eventTypesReferenced;
         }
 
         /**

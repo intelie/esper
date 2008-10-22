@@ -101,13 +101,14 @@ public class EPServicesContextFactoryDefault implements EPServicesContextFactory
         valueAddEventService.init(configSnapshot.getRevisionEventTypes(), configSnapshot.getVariantStreams(), eventAdapterService);
 
         MetricReportingServiceImpl metricsReporting = new MetricReportingServiceImpl(configSnapshot.getEngineDefaults().getMetricsReporting(), epServiceProvider.getURI());
+        StatementEventTypeRef statementEventTypeRef = new StatementEventTypeRefImpl();
 
         // New services context
         EPServicesContext services = new EPServicesContext(epServiceProvider.getURI(), epServiceProvider.getURI(), schedulingService,
                 eventAdapterService, engineImportService, engineSettingsService, databaseConfigService, plugInViews,
                 statementLockFactory, eventProcessingRWLock, null, jndiContext, statementContextFactory,
                 plugInPatternObj, outputConditionFactory, timerService, filterService, streamFactoryService,
-                namedWindowService, variableService, timeSourceService, valueAddEventService, metricsReporting);
+                namedWindowService, variableService, timeSourceService, valueAddEventService, metricsReporting, statementEventTypeRef);
 
         // Circular dependency
         StatementLifecycleSvc statementLifecycleSvc = new StatementLifecycleSvcImpl(epServiceProvider, services);

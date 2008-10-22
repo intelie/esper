@@ -69,7 +69,8 @@ public class PatternStreamSpecRaw extends StreamSpecBase implements StreamSpecRa
                                       ValueAddEventService valueAddEventService,
                                       VariableService variableService,
                                       String engineURI,
-                                      URI[] plugInTypeResolutionURIs)
+                                      URI[] plugInTypeResolutionURIs,
+                                      Set<String> eventTypeReferences)
             throws ExprValidationException
     {
         // Determine all the filter nodes used in the pattern

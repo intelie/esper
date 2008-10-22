@@ -16,6 +16,7 @@ import com.espertech.esper.support.epl.parse.SupportEPLTreeWalkerFactory;
 import com.espertech.esper.support.event.SupportEventAdapterService;
 
 import java.util.List;
+import java.util.HashSet;
 
 import org.antlr.runtime.tree.Tree;
 
@@ -202,7 +203,7 @@ public class TestPatternStreamSpecRaw extends TestCase
 
     private PatternStreamSpecCompiled compile(PatternStreamSpecRaw raw) throws Exception
     {
-        PatternStreamSpecCompiled compiled = (PatternStreamSpecCompiled) raw.compile(SupportEventAdapterService.getService(), new MethodResolutionServiceImpl(new EngineImportServiceImpl()), null, null, new NamedWindowServiceImpl(null, null), null, null, "default", null);
+        PatternStreamSpecCompiled compiled = (PatternStreamSpecCompiled) raw.compile(SupportEventAdapterService.getService(), new MethodResolutionServiceImpl(new EngineImportServiceImpl()), null, null, new NamedWindowServiceImpl(null, null), null, null, "default", null, new HashSet<String>());
         return compiled;
     }
 

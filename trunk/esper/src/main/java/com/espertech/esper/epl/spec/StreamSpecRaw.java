@@ -18,6 +18,7 @@ import com.espertech.esper.pattern.PatternObjectResolutionService;
 import com.espertech.esper.schedule.TimeProvider;
 
 import java.net.URI;
+import java.util.Set;
 
 /**
  * An uncompiled, unoptimize for of stream specification created by a parser.
@@ -47,7 +48,8 @@ public interface StreamSpecRaw extends StreamSpec
                                       ValueAddEventService valueAddEventService,
                                       VariableService variableService,
                                       String engineURI,
-                                      URI[] optionalPlugInTypeResolutionURIS)
+                                      URI[] optionalPlugInTypeResolutionURIS,
+                                      Set<String> eventTypeReferences)
         throws ExprValidationException;
 
 }

@@ -18,6 +18,7 @@ import com.espertech.esper.schedule.TimeProvider;
 import com.espertech.esper.util.MetaDefItem;
 
 import java.util.List;
+import java.util.Set;
 import java.net.URI;
 
 /**
@@ -81,7 +82,8 @@ public class DBStatementStreamSpec extends StreamSpecBase implements StreamSpecR
                                       ValueAddEventService valueAddEventService,
                                       VariableService variableService,
                                       String engineURI,
-                                      URI[] plugInTypeResolutionURIs)
+                                      URI[] plugInTypeResolutionURIs,
+                                      Set<String> eventTypeReferences)
     {
         return this;
     }

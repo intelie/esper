@@ -17,6 +17,7 @@ import com.espertech.esper.support.event.SupportValueAddEventService;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.HashSet;
 
 import org.antlr.runtime.tree.Tree;
 
@@ -251,7 +252,7 @@ public class TestFilterStreamSpecRaw extends TestCase
 
     private FilterSpecCompiled compile(FilterStreamSpecRaw raw) throws Exception
     {
-        FilterStreamSpecCompiled compiled = (FilterStreamSpecCompiled) raw.compile(SupportEventAdapterService.getService(), new MethodResolutionServiceImpl(new EngineImportServiceImpl()), null, null, new NamedWindowServiceImpl(null, null), new SupportValueAddEventService(), null, "default", null);
+        FilterStreamSpecCompiled compiled = (FilterStreamSpecCompiled) raw.compile(SupportEventAdapterService.getService(), new MethodResolutionServiceImpl(new EngineImportServiceImpl()), null, null, new NamedWindowServiceImpl(null, null), new SupportValueAddEventService(), null, "default", null, new HashSet<String>());
         return compiled.getFilterSpec();
     }
 

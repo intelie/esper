@@ -10,6 +10,7 @@ package com.espertech.esper.client;
 
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 import java.net.URI;
 import java.io.Serializable;
 

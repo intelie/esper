@@ -125,6 +125,11 @@ public class EPServiceProviderImpl implements EPServiceProviderSPI
         return engine.getServices().getValueAddEventService();
     }
 
+    public StatementEventTypeRef getStatementEventTypeRef()
+    {
+        return engine.getServices().getStatementEventTypeRefService();
+    }
+
     public Context getContext()
     {
         return engine.getServices().getEngineEnvContext();

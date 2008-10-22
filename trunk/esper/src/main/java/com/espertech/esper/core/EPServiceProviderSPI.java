@@ -10,13 +10,13 @@ package com.espertech.esper.core;
 
 import com.espertech.esper.client.ConfigurationInformation;
 import com.espertech.esper.client.EPServiceProvider;
+import com.espertech.esper.epl.metric.MetricReportingService;
+import com.espertech.esper.epl.named.NamedWindowService;
 import com.espertech.esper.event.EventAdapterService;
 import com.espertech.esper.event.vaevent.ValueAddEventService;
 import com.espertech.esper.filter.FilterService;
 import com.espertech.esper.schedule.SchedulingService;
 import com.espertech.esper.timer.TimerService;
-import com.espertech.esper.epl.named.NamedWindowService;
-import com.espertech.esper.epl.metric.MetricReportingService;
 
 import javax.naming.Context;
 
@@ -92,4 +92,6 @@ public interface EPServiceProviderSPI extends EPServiceProvider
     public MetricReportingService getMetricReportingService();
 
     public ValueAddEventService getValueAddEventService();
+
+    public StatementEventTypeRef getStatementEventTypeRef();
 }

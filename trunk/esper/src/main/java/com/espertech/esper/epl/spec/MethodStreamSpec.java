@@ -20,6 +20,7 @@ import com.espertech.esper.pattern.PatternObjectResolutionService;
 import com.espertech.esper.schedule.TimeProvider;
 
 import java.util.List;
+import java.util.Set;
 import java.net.URI;
 
 /**
@@ -86,7 +87,7 @@ public class MethodStreamSpec extends StreamSpecBase implements StreamSpecRaw, S
         return expressions;
     }
 
-    public StreamSpecCompiled compile(EventAdapterService eventAdapterService, MethodResolutionService methodResolutionService, PatternObjectResolutionService patternObjectResolutionService, TimeProvider timeProvider, NamedWindowService namedWindowService, ValueAddEventService valueAddEventService, VariableService variableService, String engineURI, URI[] plugInTypeResolutionURIs) throws ExprValidationException
+    public StreamSpecCompiled compile(EventAdapterService eventAdapterService, MethodResolutionService methodResolutionService, PatternObjectResolutionService patternObjectResolutionService, TimeProvider timeProvider, NamedWindowService namedWindowService, ValueAddEventService valueAddEventService, VariableService variableService, String engineURI, URI[] plugInTypeResolutionURIs, Set<String> eventTypeReferences) throws ExprValidationException
     {
         if (!ident.equals("method"))
         {

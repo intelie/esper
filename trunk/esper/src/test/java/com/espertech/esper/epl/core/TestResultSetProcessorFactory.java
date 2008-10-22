@@ -5,8 +5,6 @@ import com.espertech.esper.epl.expression.ExprIdentNode;
 import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.epl.expression.ExprValidationException;
 import com.espertech.esper.epl.spec.*;
-import com.espertech.esper.event.EventAdapterService;
-import com.espertech.esper.event.EventAdapterServiceImpl;
 import com.espertech.esper.support.epl.SupportExprNodeFactory;
 import com.espertech.esper.support.epl.SupportSelectExprFactory;
 import com.espertech.esper.support.epl.SupportStreamTypeSvc1Stream;
@@ -14,6 +12,7 @@ import com.espertech.esper.support.epl.SupportStreamTypeSvc3Stream;
 import com.espertech.esper.support.view.SupportStatementContextFactory;
 import junit.framework.TestCase;
 
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -22,9 +21,7 @@ public class TestResultSetProcessorFactory extends TestCase
     private StreamTypeService typeService1Stream;
     private StreamTypeService typeService3Stream;
     private List<ExprNode> groupByList;
-    private EventAdapterService eventAdapterService;
     private List<OrderByItem> orderByList;
-    private MethodResolutionService methodResolutionService;
     private StatementContext stmtContext;
 
     public void setUp()
@@ -32,7 +29,6 @@ public class TestResultSetProcessorFactory extends TestCase
         typeService1Stream = new SupportStreamTypeSvc1Stream();
         typeService3Stream = new SupportStreamTypeSvc3Stream();
         groupByList = new LinkedList<ExprNode>();
-        eventAdapterService = new EventAdapterServiceImpl();
         orderByList = new LinkedList<OrderByItem>();
         stmtContext = SupportStatementContextFactory.makeContext();
     }
@@ -189,6 +185,7 @@ public class TestResultSetProcessorFactory extends TestCase
                 orderByList,
                 null,
                 false,
-                null);
+                null,
+                new HashSet<String>());
     }
 }

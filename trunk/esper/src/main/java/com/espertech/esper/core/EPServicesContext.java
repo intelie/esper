@@ -62,6 +62,7 @@ public final class EPServicesContext
     private TimeSourceService timeSourceService;
     private ValueAddEventService valueAddEventService;
     private MetricReportingService metricsReportingService;
+    private StatementEventTypeRef statementEventTypeRef;
 
     // Supplied after construction to avoid circular dependency
     private StatementLifecycleSvc statementLifecycleSvc;
@@ -115,7 +116,8 @@ public final class EPServicesContext
                              VariableService variableService,
                              TimeSourceService timeSourceService,
                              ValueAddEventService valueAddEventService,
-                             MetricReportingService metricsReportingService)
+                             MetricReportingService metricsReportingService,
+                             StatementEventTypeRef statementEventTypeRef)
     {
         this.engineURI = engineURI;
         this.engineInstanceId = engineInstanceId;
@@ -143,6 +145,7 @@ public final class EPServicesContext
         this.timeSourceService = timeSourceService;
         this.valueAddEventService = valueAddEventService;
         this.metricsReportingService = metricsReportingService;
+        this.statementEventTypeRef = statementEventTypeRef;
     }
 
     /**
@@ -388,6 +391,7 @@ public final class EPServicesContext
         this.namedWindowService = null;
         this.valueAddEventService = null;
         this.metricsReportingService = null;
+        this.statementEventTypeRef = null;
     }
 
     /**
@@ -478,5 +482,10 @@ public final class EPServicesContext
     public MetricReportingService getMetricsReportingService()
     {
         return metricsReportingService;
+    }
+
+    public StatementEventTypeRef getStatementEventTypeRefService()
+    {
+        return statementEventTypeRef;
     }
 }
