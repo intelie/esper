@@ -15,6 +15,8 @@ import com.espertech.esper.support.epl.SupportNamedWindowObserver;
 import com.espertech.esper.core.EPServiceProviderSPI;
 import com.espertech.esper.epl.named.NamedWindowLifecycleEvent;
 
+import java.util.Set;
+
 public class TestNamedWindowStartStop extends TestCase
 {
     private EPServiceProvider epService;
@@ -206,21 +208,21 @@ public class TestNamedWindowStartStop extends TestCase
     {
         // create window
         String stmtTextCreate = "create window MyWindow.win:keepall() as select string as a, intPrimitive as b from " + SupportBean.class.getName();
-        EPStatement stmtCreate = epService.getEPAdministrator().createEPL(stmtTextCreate);
+        EPStatement stmtCreate = epService.getEPAdministrator().createEPL(stmtTextCreate, "stmtCreateFirst");
         stmtCreate.addListener(listenerWindow);
 
         // create delete stmt
         String stmtTextDelete = "on " + SupportBean_A.class.getName() + " delete from MyWindow";
-        EPStatement stmtDelete = epService.getEPAdministrator().createEPL(stmtTextDelete);
+        EPStatement stmtDelete = epService.getEPAdministrator().createEPL(stmtTextDelete, "stmtDelete");
 
         // create insert into
         String stmtTextInsertOne = "insert into MyWindow select string as a, intPrimitive as b from " + SupportBean.class.getName();
-        epService.getEPAdministrator().createEPL(stmtTextInsertOne);
+        EPStatement stmtInsert = epService.getEPAdministrator().createEPL(stmtTextInsertOne, "stmtInsert");
 
         // create consumer
         String[] fields = new String[] {"a", "b"};
         String stmtTextSelect = "select a, b from MyWindow as s1";
-        EPStatement stmtSelect = epService.getEPAdministrator().createEPL(stmtTextSelect);
+        EPStatement stmtSelect = epService.getEPAdministrator().createEPL(stmtTextSelect, "stmtSelect");
         stmtSelect.addListener(listenerSelect);
 
         // send 1 event
@@ -267,7 +269,7 @@ public class TestNamedWindowStartStop extends TestCase
 
         // create window anew
         stmtTextCreate = "create window MyWindow.win:keepall() as select string as a, intPrimitive as b from " + SupportBean.class.getName();
-        stmtCreate = epService.getEPAdministrator().createEPL(stmtTextCreate);
+        stmtCreate = epService.getEPAdministrator().createEPL(stmtTextCreate, "stmtCreate");
         stmtCreate.addListener(listenerWindow);
 
         sendSupportBean("E6", 6);
@@ -275,6 +277,59 @@ public class TestNamedWindowStartStop extends TestCase
         ArrayAssertionUtil.assertEqualsExactOrder(stmtCreate.iterator(), fields, new Object[][] {{"E6", 6}});
         assertFalse(listenerSelect.isInvoked());
         ArrayAssertionUtil.assertEqualsExactOrder(stmtSelect.iterator(), fields, new Object[][] {{"E3", 3}, {"E4", 4}});
+
+        // create select stmt
+        String stmtTextOnSelect = "on " + SupportBean_A.class.getName() + " insert into A select * from MyWindow";
+        EPStatement stmtOnSelect = epService.getEPAdministrator().createEPL(stmtTextOnSelect, "stmtOnSelect");
+
+        // assert statement-type reference
+        EPServiceProviderSPI spi = (EPServiceProviderSPI) epService;
+
+        assertTrue(spi.getStatementEventTypeRef().isInUse("MyWindow"));
+        Set<String> stmtNames = spi.getStatementEventTypeRef().getStatementNamesForType("MyWindow");
+        ArrayAssertionUtil.assertEqualsAnyOrder(new String[] {"stmtCreate", "stmtSelect", "stmtInsert", "stmtDelete", "stmtOnSelect"},stmtNames.toArray());
+
+        assertTrue(spi.getStatementEventTypeRef().isInUse(SupportBean.class.getName()));
+        stmtNames = spi.getStatementEventTypeRef().getStatementNamesForType(SupportBean.class.getName());
+        ArrayAssertionUtil.assertEqualsAnyOrder(new String[] {"stmtCreate", "stmtInsert"}, stmtNames.toArray());
+
+        assertTrue(spi.getStatementEventTypeRef().isInUse(SupportBean_A.class.getName()));
+        stmtNames = spi.getStatementEventTypeRef().getStatementNamesForType(SupportBean_A.class.getName());
+        ArrayAssertionUtil.assertEqualsAnyOrder(new String[] {"stmtDelete", "stmtOnSelect"}, stmtNames.toArray());
+
+        stmtInsert.destroy();
+        stmtDelete.destroy();
+
+        assertTrue(spi.getStatementEventTypeRef().isInUse("MyWindow"));
+        stmtNames = spi.getStatementEventTypeRef().getStatementNamesForType("MyWindow");
+        ArrayAssertionUtil.assertEqualsAnyOrder(new String[] {"stmtCreate", "stmtSelect", "stmtOnSelect"},stmtNames.toArray());
+
+        assertTrue(spi.getStatementEventTypeRef().isInUse(SupportBean.class.getName()));
+        stmtNames = spi.getStatementEventTypeRef().getStatementNamesForType(SupportBean.class.getName());
+        ArrayAssertionUtil.assertEqualsAnyOrder(new String[] {"stmtCreate"}, stmtNames.toArray());
+
+        assertTrue(spi.getStatementEventTypeRef().isInUse(SupportBean_A.class.getName()));
+        stmtNames = spi.getStatementEventTypeRef().getStatementNamesForType(SupportBean_A.class.getName());
+        ArrayAssertionUtil.assertEqualsAnyOrder(new String[] {"stmtOnSelect"}, stmtNames.toArray());
+
+        stmtCreate.destroy();
+
+        assertTrue(spi.getStatementEventTypeRef().isInUse("MyWindow"));
+        stmtNames = spi.getStatementEventTypeRef().getStatementNamesForType("MyWindow");
+        ArrayAssertionUtil.assertEqualsAnyOrder(new String[] {"stmtSelect", "stmtOnSelect"},stmtNames.toArray());
+
+        assertFalse(spi.getStatementEventTypeRef().isInUse(SupportBean.class.getName()));
+
+        assertTrue(spi.getStatementEventTypeRef().isInUse(SupportBean_A.class.getName()));
+        stmtNames = spi.getStatementEventTypeRef().getStatementNamesForType(SupportBean_A.class.getName());
+        ArrayAssertionUtil.assertEqualsAnyOrder(new String[] {"stmtOnSelect"}, stmtNames.toArray());
+
+        stmtOnSelect.destroy();
+        stmtSelect.destroy();
+
+        assertFalse(spi.getStatementEventTypeRef().isInUse("MyWindow"));
+        assertFalse(spi.getStatementEventTypeRef().isInUse(SupportBean.class.getName()));
+        assertFalse(spi.getStatementEventTypeRef().isInUse(SupportBean_A.class.getName()));
     }
 
     private SupportBean_A sendSupportBean_A(String id)

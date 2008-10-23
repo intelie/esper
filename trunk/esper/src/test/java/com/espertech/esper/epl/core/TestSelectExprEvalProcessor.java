@@ -1,6 +1,7 @@
 package com.espertech.esper.epl.core;
 
 import java.util.List;
+import java.util.HashSet;
 
 import junit.framework.TestCase;
 import com.espertech.esper.event.EventBean;
@@ -26,14 +27,15 @@ public class TestSelectExprEvalProcessor extends TestCase
         List<SelectClauseExprCompiledSpec> selectList = SupportSelectExprFactory.makeNoAggregateSelectList();
         EventAdapterService eventAdapterService = SupportEventAdapterService.getService();
         SupportValueAddEventService vaeService = new SupportValueAddEventService();
+        SelectExprEventTypeRegistry selectExprEventTypeRegistry = new SelectExprEventTypeRegistry(new HashSet<String>());
 
-        methodOne = new SelectExprEvalProcessor(selectList, null, false, new SupportStreamTypeSvc1Stream(), eventAdapterService, vaeService);
+        methodOne = new SelectExprEvalProcessor(selectList, null, false, new SupportStreamTypeSvc1Stream(), eventAdapterService, vaeService, selectExprEventTypeRegistry);
 
         InsertIntoDesc insertIntoDesc = new InsertIntoDesc(true, "Hello");
         insertIntoDesc.add("a");
         insertIntoDesc.add("b");
 
-        methodTwo = new SelectExprEvalProcessor(selectList, insertIntoDesc, false, new SupportStreamTypeSvc1Stream(), eventAdapterService, vaeService);
+        methodTwo = new SelectExprEvalProcessor(selectList, insertIntoDesc, false, new SupportStreamTypeSvc1Stream(), eventAdapterService, vaeService, selectExprEventTypeRegistry);
     }
 
     public void testGetResultEventType()

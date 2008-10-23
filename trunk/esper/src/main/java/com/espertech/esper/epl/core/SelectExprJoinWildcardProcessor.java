@@ -31,7 +31,7 @@ public class SelectExprJoinWildcardProcessor implements SelectExprProcessor
      * @param insertIntoDesc - describes the insert-into clause
      * @throws ExprValidationException if the expression validation failed 
      */
-    public SelectExprJoinWildcardProcessor(String[] streamNames, EventType[] streamTypes, EventAdapterService eventAdapterService, InsertIntoDesc insertIntoDesc) throws ExprValidationException
+    public SelectExprJoinWildcardProcessor(String[] streamNames, EventType[] streamTypes, EventAdapterService eventAdapterService, InsertIntoDesc insertIntoDesc, SelectExprEventTypeRegistry selectExprEventTypeRegistry) throws ExprValidationException
     {
         if ((streamNames.length < 2) || (streamTypes.length < 2) || (streamNames.length != streamTypes.length))
         {
@@ -54,6 +54,7 @@ public class SelectExprJoinWildcardProcessor implements SelectExprProcessor
         	try
             {
                 resultEventType = eventAdapterService.addNestableMapType(insertIntoDesc.getEventTypeAlias(), eventTypeMap, null, false, false, true);
+                selectExprEventTypeRegistry.add(resultEventType);
             }
             catch (EventAdapterException ex)
             {

@@ -9,5 +9,5 @@ public interface StatementEventTypeRef
     public Set<String> getStatementNamesForType(String eventTypeAlias);
 
     public void addReferences(String statementName, Set<String> eventTypesReferenced);
-    public void removeReferences(String name, Set<String> eventTypesReferenced);
+    public void removeReferences(String statementName);
 }

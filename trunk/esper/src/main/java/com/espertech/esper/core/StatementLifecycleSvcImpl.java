@@ -17,6 +17,7 @@ import com.espertech.esper.epl.named.NamedWindowService;
 import com.espertech.esper.epl.spec.*;
 import com.espertech.esper.event.EventType;
 import com.espertech.esper.event.MapEventType;
+import com.espertech.esper.event.EventTypeSPI;
 import com.espertech.esper.filter.FilterSpecCompiled;
 import com.espertech.esper.filter.FilterSpecParam;
 import com.espertech.esper.pattern.EvalFilterNode;
@@ -193,7 +194,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
         boolean canSelfJoin = isPotentialSelfJoin(compiledSpec.getStreamSpecs());
         statementContext.getEpStatementHandle().setCanSelfJoin(canSelfJoin);
 
-        // add event types references
+        // add statically typed event type references: those in the from clause; Dynamic (created) types collected by statement context and added on start 
         services.getStatementEventTypeRefService().addReferences(statementName, compiledSpec.getEventTypeReferences());
 
         eventProcessingRWLock.acquireWriteLock();
@@ -224,7 +225,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
                 insertIntoStreamName = statementSpec.getInsertIntoDesc().getEventTypeAlias();
             }
 
-            statementDesc = new EPStatementDesc(statement, startMethod, null, insertIntoStreamName, statementContext.getEpStatementHandle(), compiledSpec.getEventTypeReferences());
+            statementDesc = new EPStatementDesc(statement, startMethod, null, insertIntoStreamName, statementContext.getEpStatementHandle(), statementContext);
             stmtIdToDescMap.put(statementId, statementDesc);
             stmtNameToStmtMap.put(statementName, statement);
             stmtNameToIdMap.put(statementName, statementId);
@@ -431,6 +432,10 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
             throw new EPStatementException("Error starting view: " + ex.getMessage(), statement.getText());
         }
 
+        // add statically typed event type references: those in the from clause; Dynamic (created) types collected by statement context and added on start
+        services.getStatementEventTypeRefService().addReferences(desc.getEpStatement().getName(), desc.getStatementContext().getDynamicReferenceEventTypes());
+
+        // hook up
         Viewable parentView = pair.getFirst();
         EPStatementStopMethod stopMethod = pair.getSecond();
         desc.setStopMethod(stopMethod);
@@ -501,8 +506,8 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
             }
 
             // remove referenced event types
-            services.getStatementEventTypeRefService().removeReferences(desc.getEpStatement().getName(), desc.eventTypesReferenced);            
-
+            services.getStatementEventTypeRefService().removeReferences(desc.getEpStatement().getName());
+        
             EPStatementSPI statement = desc.getEpStatement();
             if (statement.getState() == EPStatementState.STARTED)
             {
@@ -747,6 +752,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
                     spec.getCreateWindowDesc().setInsertFromWindow(consumerStreamSpec.getWindowName());
                 }
                 Pair<FilterSpecCompiled, SelectClauseSpecRaw> newFilter = handleCreateWindow(selectFromType, selectFromTypeAlias, spec, eplStatement, statementContext);
+                eventTypeReferences.add(((EventTypeSPI)newFilter.getFirst().getEventType()).getMetadata().getPrimaryAssociationName());
 
                 // view must be non-empty list
                 if (spec.getCreateWindowDesc().getViewSpecs().isEmpty())
@@ -804,7 +810,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
             StatementSpecCompiled compiled = compile(raw, eplStatement, statementContext, true);
             subselect.setStatementSpecCompiled(compiled);
         }
-
+        
         return new StatementSpecCompiled(
                 spec.getOnTriggerDesc(),
                 spec.getCreateWindowDesc(),
@@ -957,7 +963,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
         private EPStatementStopMethod stopMethod;
         private String optInsertIntoStream;
         private EPStatementHandle statementHandle;
-        private Set<String> eventTypesReferenced;
+        private StatementContext statementContext;
 
         /**
          * Ctor.
@@ -967,14 +973,14 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
          * @param optInsertIntoStream is the insert-into stream name, or null if not using insert-into
          * @param statementHandle is the locking handle for the statement
          */
-        public EPStatementDesc(EPStatementSPI epStatement, EPStatementStartMethod startMethod, EPStatementStopMethod stopMethod, String optInsertIntoStream, EPStatementHandle statementHandle, Set<String> eventTypesReferenced)
+        public EPStatementDesc(EPStatementSPI epStatement, EPStatementStartMethod startMethod, EPStatementStopMethod stopMethod, String optInsertIntoStream, EPStatementHandle statementHandle, StatementContext statementContext)
         {
             this.epStatement = epStatement;
             this.startMethod = startMethod;
             this.stopMethod = stopMethod;
             this.optInsertIntoStream = optInsertIntoStream;
             this.statementHandle = statementHandle;
-            this.eventTypesReferenced = eventTypesReferenced;
+            this.statementContext = statementContext;
         }
 
         /**
@@ -1029,6 +1035,11 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
         public EPStatementHandle getStatementHandle()
         {
             return statementHandle;
+        }
+
+        public StatementContext getStatementContext()
+        {
+            return statementContext;
         }
     }
 }

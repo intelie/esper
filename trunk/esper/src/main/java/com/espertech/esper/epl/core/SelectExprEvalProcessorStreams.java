@@ -47,19 +47,21 @@ public class SelectExprEvalProcessorStreams implements SelectExprProcessor
     /**
      * Ctor.
      * @param selectionList - list of select-clause items
+     * @param selectedStreams - list of stream selectors (e.g. select alias.* from Event as alias)
      * @param insertIntoDesc - descriptor for insert-into clause contains column names overriding select clause names
      * @param isUsingWildcard - true if the wildcard (*) appears in the select clause
      * @param typeService -service for information about streams
      * @param eventAdapterService - service for generating events and handling event types
-     * @param selectedStreams - list of stream selectors (e.g. select alias.* from Event as alias)
-     * @throws com.espertech.esper.epl.expression.ExprValidationException thrown if any of the expressions don't validate
+     * @param selectExprEventTypeRegistry
+     * @throws ExprValidationException thrown if any of the expressions don't validate
      */
     public SelectExprEvalProcessorStreams(List<SelectClauseExprCompiledSpec> selectionList,
-                                   List<SelectClauseStreamCompiledSpec> selectedStreams,
-                                   InsertIntoDesc insertIntoDesc,
-                                   boolean isUsingWildcard,
-                                   StreamTypeService typeService,
-                                   EventAdapterService eventAdapterService) throws ExprValidationException
+                                          List<SelectClauseStreamCompiledSpec> selectedStreams,
+                                          InsertIntoDesc insertIntoDesc,
+                                          boolean isUsingWildcard,
+                                          StreamTypeService typeService,
+                                          EventAdapterService eventAdapterService,
+                                          SelectExprEventTypeRegistry selectExprEventTypeRegistry) throws ExprValidationException
     {
         this.eventAdapterService = eventAdapterService;
         this.isUsingWildcard = isUsingWildcard;
@@ -128,6 +130,7 @@ public class SelectExprEvalProcessorStreams implements SelectExprProcessor
 
                     // create or get an underlying type for that Class
                     underlyingEventType = eventAdapterService.addBeanType(propertyType.getName(), propertyType, false);
+                    selectExprEventTypeRegistry.add(underlyingEventType);
                     underlyingPropertyEventGetter = typeService.getEventTypes()[streamNumber].getGetter(propertyName);
                     if (underlyingPropertyEventGetter == null)
                     {
@@ -160,14 +163,15 @@ public class SelectExprEvalProcessorStreams implements SelectExprProcessor
             }
         }
 
-        init(selectionList, aliasedStreams, insertIntoDesc, eventAdapterService, typeService);
+        init(selectionList, aliasedStreams, insertIntoDesc, eventAdapterService, typeService, selectExprEventTypeRegistry);
     }
 
     private void init(List<SelectClauseExprCompiledSpec> selectionList,
                       List<SelectClauseStreamCompiledSpec> aliasedStreams,
                       InsertIntoDesc insertIntoDesc,
                       EventAdapterService eventAdapterService,
-                      StreamTypeService typeService)
+                      StreamTypeService typeService,
+                      SelectExprEventTypeRegistry selectExprEventTypeRegistry)
         throws ExprValidationException
     {
         // Get expression nodes
@@ -252,6 +256,9 @@ public class SelectExprEvalProcessorStreams implements SelectExprProcessor
                 {
                     resultEventType = eventAdapterService.addNestableMapType(insertIntoDesc.getEventTypeAlias(), selPropertyTypes, null, false, false, true);
                 }
+
+                // add reference to the type obtained
+                selectExprEventTypeRegistry.add(resultEventType);
             }
             catch (EventAdapterException ex)
             {

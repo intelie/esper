@@ -14,6 +14,7 @@ import junit.framework.TestCase;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.HashSet;
 
 public class TestResultSetProcessorRowPerGroup extends TestCase
 {
@@ -22,8 +23,9 @@ public class TestResultSetProcessorRowPerGroup extends TestCase
 
     public void setUp() throws Exception
     {
+        SelectExprEventTypeRegistry selectExprEventTypeRegistry = new SelectExprEventTypeRegistry(new HashSet<String>());
         SelectExprProcessor selectProcessor = new SelectExprEvalProcessor(SupportSelectExprFactory.makeSelectListFromIdent("string", "s0"),
-        		null, false, new SupportStreamTypeSvc1Stream(), SupportEventAdapterService.getService(), null);
+        		null, false, new SupportStreamTypeSvc1Stream(), SupportEventAdapterService.getService(), null, selectExprEventTypeRegistry);
         supportAggregationService = new SupportAggregationService();
 
         List<ExprNode> groupKeyNodes = new LinkedList<ExprNode>();

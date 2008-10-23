@@ -49,6 +49,7 @@ public class SelectExprEvalProcessor implements SelectExprProcessor
      * @param typeService -service for information about streams
      * @param eventAdapterService - service for generating events and handling event types
      * @param revisionService - service that handles update events
+     * @param selectExprEventTypeRegistry
      * @throws com.espertech.esper.epl.expression.ExprValidationException thrown if any of the expressions don't validate
      */
     public SelectExprEvalProcessor(List<SelectClauseExprCompiledSpec> selectionList,
@@ -56,7 +57,8 @@ public class SelectExprEvalProcessor implements SelectExprProcessor
                                    boolean isUsingWildcard,
                                    StreamTypeService typeService,
                                    EventAdapterService eventAdapterService,
-                                   ValueAddEventService revisionService) throws ExprValidationException
+                                   ValueAddEventService revisionService,
+                                   SelectExprEventTypeRegistry selectExprEventTypeRegistry) throws ExprValidationException
     {
         this.eventAdapterService = eventAdapterService;
         this.isUsingWildcard = isUsingWildcard;
@@ -83,7 +85,7 @@ public class SelectExprEvalProcessor implements SelectExprProcessor
         // Build a subordinate wildcard processor for joins
         if(typeService.getStreamNames().length > 1 && isUsingWildcard)
         {
-        	joinWildcardProcessor = new SelectExprJoinWildcardProcessor(typeService.getStreamNames(), typeService.getEventTypes(), eventAdapterService, null);
+        	joinWildcardProcessor = new SelectExprJoinWildcardProcessor(typeService.getStreamNames(), typeService.getEventTypes(), eventAdapterService, null, selectExprEventTypeRegistry);
         }
 
         // Resolve underlying event type in the case of wildcard select
@@ -104,7 +106,7 @@ public class SelectExprEvalProcessor implements SelectExprProcessor
         	}
         }
 
-        init(selectionList, insertIntoDesc, underlyingType, eventAdapterService, typeService, revisionService);
+        init(selectionList, insertIntoDesc, underlyingType, eventAdapterService, typeService, revisionService, selectExprEventTypeRegistry);
     }
 
     private void init(List<SelectClauseExprCompiledSpec> selectionList,
@@ -112,7 +114,8 @@ public class SelectExprEvalProcessor implements SelectExprProcessor
                       EventType eventType,
                       EventAdapterService eventAdapterService,
                       StreamTypeService typeService,
-                      ValueAddEventService valueAddEventService)
+                      ValueAddEventService valueAddEventService,
+                      SelectExprEventTypeRegistry selectExprEventTypeRegistry)
         throws ExprValidationException
     {
         // Get expression nodes
@@ -281,6 +284,9 @@ public class SelectExprEvalProcessor implements SelectExprProcessor
                         isRevisionEvent = true;
                     }
                 }
+
+                // add reference to the type obtained
+                selectExprEventTypeRegistry.add(resultEventType);
             }
             catch (EventAdapterException ex)
             {

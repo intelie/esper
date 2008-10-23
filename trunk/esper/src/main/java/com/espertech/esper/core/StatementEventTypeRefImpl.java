@@ -15,15 +15,22 @@ public class StatementEventTypeRefImpl implements StatementEventTypeRef
 
     private final ManagedReadWriteLock mapLock;
     private final HashMap<String, Set<String>> typeToStmt;
+    private final HashMap<String, Set<String>> stmtToType;
 
     public StatementEventTypeRefImpl()
     {
         typeToStmt = new HashMap<String, Set<String>>();
+        stmtToType = new HashMap<String, Set<String>>();
         mapLock = new ManagedReadWriteLock("StatementEventTypeRefImpl", false);
     }
 
     public void addReferences(String statementName, Set<String> eventTypesReferenced)
     {
+        if (eventTypesReferenced.isEmpty())
+        {
+            return;    
+        }
+
         mapLock.acquireWriteLock();
         try
         {
@@ -38,14 +45,18 @@ public class StatementEventTypeRefImpl implements StatementEventTypeRef
         }
     }
 
-    public void removeReferences(String statementName, Set<String> eventTypesReferenced)
+    public void removeReferences(String statementName)
     {
         mapLock.acquireWriteLock();
         try
         {
-            for (String ref : eventTypesReferenced)
+            Set<String> types = stmtToType.remove(statementName);
+            if (types != null)
             {
-                removeReference(statementName, ref);
+                for (String type : types)
+                {
+                    removeReference(statementName, type);
+                }
             }
         }
         finally
@@ -91,11 +102,20 @@ public class StatementEventTypeRefImpl implements StatementEventTypeRef
             typeToStmt.put(eventTypeAlias, statements);
         }
         statements.add(statementName);
+
+        // add to statements
+        Set<String> types = stmtToType.get(statementName);
+        if (types == null)
+        {
+            types = new HashSet<String>();
+            stmtToType.put(statementName, types);
+        }
+        types.add(eventTypeAlias);
     }
 
     private void removeReference(String statementName, String eventTypeAlias)
     {
-        // remove to types
+        // remove from types
         Set<String> statements = typeToStmt.get(eventTypeAlias);
         if (statements != null)
         {
@@ -109,5 +129,30 @@ public class StatementEventTypeRefImpl implements StatementEventTypeRef
                 typeToStmt.remove(eventTypeAlias);
             }
         }
+
+        // remove from statements
+        Set<String> types = stmtToType.get(statementName);
+        if (types != null)
+        {
+            if (!types.remove(eventTypeAlias))
+            {
+                log.info("Failed to find event type '" + statementName + "' in collection");
+            }
+
+            if (types.isEmpty())
+            {
+                stmtToType.remove(statementName);
+            }
+        }
+    }
+
+    protected HashMap<String, Set<String>> getTypeToStmt()
+    {
+        return typeToStmt;
+    }
+
+    protected HashMap<String, Set<String>> getStmtToType()
+    {
+        return stmtToType;
     }
 }

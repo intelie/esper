@@ -134,6 +134,7 @@ public class MethodPollingViewableFactory
         {
             eventType = eventAdapterService.addBeanType(beanClass.getName(), beanClass, true);
         }
+        // TODO selectExprEventTypeRegistry.add(eventType);
 
         // Construct polling strategy as a method invocation
         ConfigurationMethodRef configCache = engineImportService.getConfigurationMethodRef(declaringClass.getName());

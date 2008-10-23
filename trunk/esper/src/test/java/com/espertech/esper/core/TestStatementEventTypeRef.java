@@ -1,6 +1,5 @@
-package com.espertech.esper.epl.core;
+package com.espertech.esper.core;
 
-import com.espertech.esper.core.StatementEventTypeRefImpl;
 import com.espertech.esper.support.util.ArrayAssertionUtil;
 import junit.framework.TestCase;
 
@@ -38,15 +37,15 @@ public class TestStatementEventTypeRef extends TestCase
         assertTrue(service.isInUse("e3"));
         ArrayAssertionUtil.assertEqualsAnyOrder(service.getStatementNamesForType("e3").toArray(), new Object[] {"s2"});
 
-        removeReference("s2", "e3");
+        service.removeReferences("s2");
         assertFalse(service.isInUse("e3"));
         ArrayAssertionUtil.assertEqualsAnyOrder(service.getStatementNamesForType("e3").toArray(), new Object[0]);
 
-        removeReference("s0", "e1");
+        service.removeReferences("s0");
         assertTrue(service.isInUse("e1"));
         ArrayAssertionUtil.assertEqualsAnyOrder(service.getStatementNamesForType("e1").toArray(), new Object[] {"s1"});
 
-        removeReference("s1", "e1");
+        service.removeReferences("s1");
         assertFalse(service.isInUse("e1"));
         ArrayAssertionUtil.assertEqualsAnyOrder(service.getStatementNamesForType("e1").toArray(), new Object[0]);
 
@@ -59,34 +58,37 @@ public class TestStatementEventTypeRef extends TestCase
         assertTrue(service.isInUse("e6"));
         ArrayAssertionUtil.assertEqualsAnyOrder(service.getStatementNamesForType("e5").toArray(), new Object[] {"s4"});
 
-        service.removeReferences("s4", values);
+        service.removeReferences("s4");
 
         assertFalse(service.isInUse("e5"));
         assertFalse(service.isInUse("e6"));
         ArrayAssertionUtil.assertEqualsAnyOrder(service.getStatementNamesForType("e5").toArray(), new Object[0]);
+
+        assertEquals(0, service.getTypeToStmt().size());
+        assertEquals(0, service.getTypeToStmt().size());
     }
 
     public void testInvalid()
     {
-        removeReference("s1", "e1");
+        service.removeReferences("s1");
 
         addReference("s2", "e2");
-
-        removeReference("s2", "e1");
-        removeReference("s3", "e2");
 
         assertTrue(service.isInUse("e2"));
         ArrayAssertionUtil.assertEqualsAnyOrder(service.getStatementNamesForType("e2").toArray(), new Object[] {"s2"});
 
-        removeReference("s2", "e2");
+        service.removeReferences("s2");
 
         assertFalse(service.isInUse("e2"));
         ArrayAssertionUtil.assertEqualsAnyOrder(service.getStatementNamesForType("e2").toArray(), new Object[0]);
 
-        removeReference("s2", "e2");
+        service.removeReferences("s2");
 
         assertFalse(service.isInUse("e2"));
         ArrayAssertionUtil.assertEqualsAnyOrder(service.getStatementNamesForType("e2").toArray(), new Object[0]);
+
+        assertEquals(0, service.getTypeToStmt().size());
+        assertEquals(0, service.getTypeToStmt().size());
     }
 
     private void addReference(String stmtName, String typeName)
@@ -94,12 +96,5 @@ public class TestStatementEventTypeRef extends TestCase
         HashSet<String> set = new HashSet<String>();
         set.add(typeName);
         service.addReferences(stmtName, set);
-    }
-
-    private void removeReference(String stmtName, String typeName)
-    {
-        HashSet<String> set = new HashSet<String>();
-        set.add(typeName);
-        service.removeReferences(stmtName, set);
     }
 }

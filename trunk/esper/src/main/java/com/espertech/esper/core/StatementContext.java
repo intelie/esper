@@ -24,6 +24,7 @@ import com.espertech.esper.view.StatementStopService;
 import com.espertech.esper.view.ViewResolutionService;
 
 import java.net.URI;
+import java.util.HashSet;
 
 /**
  * Contains handles to the implementation of the the scheduling service for use in view evaluation.
@@ -53,6 +54,7 @@ public final class StatementContext
     private final StatementResultService statementResultService;
     private final URI[] plugInTypeResolutionURIs;
     private final ValueAddEventService valueAddEventService;
+    private final HashSet<String> dynamicReferenceEventTypes;
 
     /**
      * Constructor.
@@ -127,6 +129,7 @@ public final class StatementContext
         this.statementResultService = statementResultService;
         this.plugInTypeResolutionURIs = plugInTypeResolutionURIs;
         this.valueAddEventService = valueAddEventService;
+        this.dynamicReferenceEventTypes = new HashSet<String>();
     }
 
     /**
@@ -334,6 +337,16 @@ public final class StatementContext
     public ValueAddEventService getValueAddEventService()
     {
         return valueAddEventService;
+    }
+
+    public void addDynamicReferenceEventType(String eventTypeAlias)
+    {
+        dynamicReferenceEventTypes.add(eventTypeAlias);
+    }
+
+    public HashSet<String> getDynamicReferenceEventTypes()
+    {
+        return dynamicReferenceEventTypes;
     }
 
     public String toString()

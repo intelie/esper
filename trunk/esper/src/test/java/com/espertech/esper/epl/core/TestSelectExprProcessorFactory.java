@@ -1,6 +1,5 @@
 package com.espertech.esper.epl.core;
 
-import junit.framework.TestCase;
 import com.espertech.esper.core.StatementResultService;
 import com.espertech.esper.core.StatementResultServiceImpl;
 import com.espertech.esper.epl.expression.ExprNode;
@@ -12,8 +11,10 @@ import com.espertech.esper.epl.spec.SelectClauseStreamCompiledSpec;
 import com.espertech.esper.support.epl.SupportExprNodeFactory;
 import com.espertech.esper.support.epl.SupportStreamTypeSvc3Stream;
 import com.espertech.esper.support.event.SupportEventAdapterService;
+import junit.framework.TestCase;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -21,6 +22,7 @@ public class TestSelectExprProcessorFactory extends TestCase
 {
     private List<SelectClauseStreamCompiledSpec> listOfStreamsSelected = new ArrayList<SelectClauseStreamCompiledSpec>();
     private StatementResultService statementResultService = new StatementResultServiceImpl(null, null); 
+    private SelectExprEventTypeRegistry selectExprEventTypeRegistry = new SelectExprEventTypeRegistry(new HashSet<String>());
 
     public void testGetProcessorInvalid() throws Exception
     {
@@ -33,7 +35,7 @@ public class TestSelectExprProcessorFactory extends TestCase
         try
         {
             SelectExprProcessorFactory.getProcessor(selectionList, false, null,
-                    new SupportStreamTypeSvc3Stream(), null, null, null);
+                    new SupportStreamTypeSvc3Stream(), null, null, null, null);
             fail();
         }
         catch (ExprValidationException ex)
@@ -47,7 +49,7 @@ public class TestSelectExprProcessorFactory extends TestCase
         List<SelectClauseElementCompiled> selectionList = new LinkedList<SelectClauseElementCompiled>();
         selectionList.add(new SelectClauseElementWildcard());
         SelectExprProcessor processor = SelectExprProcessorFactory.getProcessor(selectionList, false, null,
-                new SupportStreamTypeSvc3Stream(), SupportEventAdapterService.getService(), statementResultService, null);
+                new SupportStreamTypeSvc3Stream(), SupportEventAdapterService.getService(), statementResultService, null, selectExprEventTypeRegistry);
         assertTrue(processor instanceof SelectExprResultProcessor);
     }
 
@@ -57,7 +59,7 @@ public class TestSelectExprProcessorFactory extends TestCase
         ExprNode identNode = SupportExprNodeFactory.makeIdentNode("doubleBoxed", "s0");
         selectionList.add(new SelectClauseExprCompiledSpec(identNode, "result"));
         SelectExprProcessor processor = SelectExprProcessorFactory.getProcessor(selectionList, false, null,
-                new SupportStreamTypeSvc3Stream(), SupportEventAdapterService.getService(), statementResultService, null);
+                new SupportStreamTypeSvc3Stream(), SupportEventAdapterService.getService(), statementResultService, null,selectExprEventTypeRegistry);
         assertTrue(processor != null);
     }
 

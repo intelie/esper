@@ -200,6 +200,7 @@ public class EPStatementStartMethod
             OnTriggerWindowDesc onTriggerDesc = (OnTriggerWindowDesc) statementSpec.getOnTriggerDesc();
             NamedWindowProcessor processor = services.getNamedWindowService().getProcessor(onTriggerDesc.getWindowName());
             EventType namedWindowType = processor.getNamedWindowType();
+            statementContext.getDynamicReferenceEventTypes().add(onTriggerDesc.getWindowName());
 
             String namedWindowAlias = onTriggerDesc.getOptionalAsName();
             if (namedWindowAlias == null)
