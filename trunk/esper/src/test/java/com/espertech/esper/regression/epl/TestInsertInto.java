@@ -19,6 +19,7 @@ import com.espertech.esper.util.SerializableObjectCopier;
 import com.espertech.esper.core.EPServiceProviderSPI;
 
 import java.util.Map;
+import java.util.Set;
 
 public class TestInsertInto extends TestCase
 {
@@ -58,6 +59,18 @@ public class TestInsertInto extends TestCase
         EPStatementObjectModel modelTwo = epService.getEPAdministrator().compileEPL(model.toEPL());
         model = (EPStatementObjectModel) SerializableObjectCopier.copy(model);
         assertEquals(epl, modelTwo.toEPL());
+
+        // assert statement-type reference
+        EPServiceProviderSPI spi = (EPServiceProviderSPI) epService;
+        assertTrue(spi.getStatementEventTypeRef().isInUse("Event_1"));
+        Set<String> stmtNames = spi.getStatementEventTypeRef().getStatementNamesForType(SupportBean.class.getName());
+        assertTrue(stmtNames.contains("s1"));
+
+        stmt.destroy();
+
+        assertFalse(spi.getStatementEventTypeRef().isInUse("Event_1"));
+        stmtNames = spi.getStatementEventTypeRef().getStatementNamesForType(SupportBean.class.getName());
+        assertFalse(stmtNames.contains("s1"));
     }
 
     public void testVariantOneOMToStmt() throws Exception

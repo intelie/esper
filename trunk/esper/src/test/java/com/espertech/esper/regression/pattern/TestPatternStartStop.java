@@ -4,9 +4,14 @@ import com.espertech.esper.client.EPServiceProvider;
 import com.espertech.esper.client.EPStatement;
 import com.espertech.esper.client.EPServiceProviderManager;
 import com.espertech.esper.support.util.SupportUpdateListener;
+import com.espertech.esper.support.util.ArrayAssertionUtil;
 import com.espertech.esper.support.bean.SupportBean;
+import com.espertech.esper.support.bean.SupportMarketDataBean;
 import com.espertech.esper.support.client.SupportConfigFactory;
+import com.espertech.esper.core.EPServiceProviderSPI;
 import junit.framework.TestCase;
+
+import java.util.Set;
 
 public class TestPatternStartStop extends TestCase
 {
@@ -22,7 +27,7 @@ public class TestPatternStartStop extends TestCase
 
         String viewExpr = "every tag=" + SupportBean.class.getName();
 
-        patternStmt = epService.getEPAdministrator().createPattern(viewExpr);
+        patternStmt = epService.getEPAdministrator().createPattern(viewExpr, "MyPattern");
     }
 
     public void testStartStop()
@@ -50,6 +55,18 @@ public class TestPatternStartStop extends TestCase
         // Start again, iterator is zero
         patternStmt.start();
         assertFalse(patternStmt.iterator().hasNext());
+
+        // assert statement-eventtype reference info
+        EPServiceProviderSPI spi = (EPServiceProviderSPI) epService;
+        assertTrue(spi.getStatementEventTypeRef().isInUse(SupportBean.class.getName()));
+        Set<String> stmtNames = spi.getStatementEventTypeRef().getStatementNamesForType(SupportBean.class.getName());
+        assertTrue(stmtNames.contains("MyPattern"));
+
+        patternStmt.destroy();
+
+        assertFalse(spi.getStatementEventTypeRef().isInUse(SupportBean.class.getName()));
+        stmtNames = spi.getStatementEventTypeRef().getStatementNamesForType(SupportBean.class.getName());
+        assertFalse(stmtNames.contains("MyPattern"));
     }
 
     public void testAddRemoveListener()

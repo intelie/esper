@@ -17,6 +17,7 @@ import com.espertech.esper.epl.expression.ExprValidationException;
 import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.event.EventAdapterService;
 import com.espertech.esper.event.EventType;
+import com.espertech.esper.event.EventTypeSPI;
 import com.espertech.esper.event.vaevent.ValueAddEventService;
 import com.espertech.esper.filter.FilterSpecCompiled;
 import com.espertech.esper.filter.FilterSpecCompiler;
@@ -138,6 +139,10 @@ public class PatternStreamSpecRaw extends StreamSpecBase implements StreamSpecRa
             String eventName = filterNode.getRawFilterSpec().getEventTypeAlias();
             EventType eventType = FilterStreamSpecRaw.resolveType(engineURI, eventName, eventAdapterService, plugInTypeResolutionURIs);
             String optionalTag = filterNode.getEventAsName();
+            if (eventType instanceof EventTypeSPI)
+            {
+                eventTypeReferences.add(((EventTypeSPI) eventType).getMetadata().getPrimaryAssociationName());                
+            }
 
             // If a tag was supplied for the type, the tags must stay with this type, i.e. a=BeanA -> b=BeanA -> a=BeanB is a no
             if (optionalTag != null)

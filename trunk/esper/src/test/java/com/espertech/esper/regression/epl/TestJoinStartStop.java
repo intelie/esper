@@ -76,9 +76,16 @@ public class TestJoinStartStop extends TestCase
 
         // assert type-statement reference
         EPServiceProviderSPI spi = (EPServiceProviderSPI) epService;
-        spi.getStatementEventTypeRef().isInUse(SupportMarketDataBean.class.getName());
+        assertTrue(spi.getStatementEventTypeRef().isInUse(SupportMarketDataBean.class.getName()));
         Set<String> stmtNames = spi.getStatementEventTypeRef().getStatementNamesForType(SupportMarketDataBean.class.getName());
-        ArrayAssertionUtil.assertEqualsAnyOrder(new Object[] {"MyJoin"}, stmtNames.toArray());
+        assertTrue(stmtNames.contains("MyJoin"));
+
+        joinView.destroy();
+
+        assertFalse(spi.getStatementEventTypeRef().isInUse(SupportMarketDataBean.class.getName()));
+        stmtNames = spi.getStatementEventTypeRef().getStatementNamesForType(SupportMarketDataBean.class.getName());
+        ArrayAssertionUtil.assertEqualsAnyOrder(null, stmtNames.toArray());
+        assertFalse(stmtNames.contains("MyJoin"));
     }
 
     private void sendEvent(Object event)
