@@ -50,4 +50,6 @@ public interface EPStatementSPI extends EPStatement
      * @param viewable is the statement viewable
      */
     public void setParentView(Viewable viewable);
+
+    public StatementMetadata getStatementMetadata();
 }

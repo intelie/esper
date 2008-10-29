@@ -11,6 +11,8 @@ import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.support.util.ArrayAssertionUtil;
 import com.espertech.esper.support.util.SupportUpdateListener;
+import com.espertech.esper.core.EPStatementSPI;
+import com.espertech.esper.core.StatementType;
 
 import java.util.Arrays;
 import java.util.Map;
@@ -80,6 +82,7 @@ public class TestVariablesCreate extends TestCase
     {
         String stmtCreateTextOne = "create variable long var1 = null";
         EPStatement stmtCreateOne = epService.getEPAdministrator().createEPL(stmtCreateTextOne);
+        assertEquals(StatementType.CREATE_VARIABLE, ((EPStatementSPI) stmtCreateOne).getStatementMetadata().getStatementType());
         stmtCreateOne.addListener(listenerCreateOne);
         String[] fieldsVar1 = new String[] {"var1"};
         ArrayAssertionUtil.assertEqualsExactOrder(stmtCreateOne.iterator(), fieldsVar1, new Object[][] {{null}});

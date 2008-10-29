@@ -197,6 +197,40 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
         // add statically typed event type references: those in the from clause; Dynamic (created) types collected by statement context and added on start 
         services.getStatementEventTypeRefService().addReferences(statementName, compiledSpec.getEventTypeReferences());
 
+        // determine statement type
+        StatementType statementType = null;
+        if (statementSpec.getCreateVariableDesc() != null) {
+            statementType = StatementType.CREATE_VARIABLE;
+        }
+        else if (statementSpec.getCreateWindowDesc() != null) {
+            statementType = StatementType.CREATE_WINDOW;
+        }
+        else if (statementSpec.getOnTriggerDesc() != null) {
+            if (statementSpec.getOnTriggerDesc().getOnTriggerType() == OnTriggerType.ON_DELETE) {
+                statementType = StatementType.ON_DELETE;
+            }
+            else if (statementSpec.getOnTriggerDesc().getOnTriggerType() == OnTriggerType.ON_SELECT) {
+                if (statementSpec.getInsertIntoDesc() != null) {
+                    statementType = StatementType.ON_INSERT;
+                }
+                else {
+                    statementType = StatementType.ON_SELECT;
+                }
+            }
+            else if (statementSpec.getOnTriggerDesc().getOnTriggerType() == OnTriggerType.ON_SET) {
+                statementType = StatementType.ON_SET;
+            }
+        }
+        else if (statementSpec.getInsertIntoDesc() != null) {
+            statementType = StatementType.INSERT_INTO;
+        }
+        else if (isPattern) {
+            statementType = StatementType.PATTERN;
+        }
+        if (statementType == null) {
+            statementType = StatementType.SELECT;
+        }
+
         eventProcessingRWLock.acquireWriteLock();
         try
         {
@@ -208,7 +242,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
             EPStatementSPI statement = new EPStatementImpl(statementId, statementName, expression, isPattern,
                     services.getDispatchService(), this, timeLastStateChange, preserveDispatchOrder, isSpinLocks, blockingTimeout,
                     statementContext.getEpStatementHandle(), statementContext.getVariableService(), statementContext.getStatementResultService(),
-                    services.getTimeSource());
+                    services.getTimeSource(), new StatementMetadata(statementType));
 
             boolean isInsertInto = statementSpec.getInsertIntoDesc() != null;
             statementContext.getStatementResultService().setContext(statement, epServiceProvider,

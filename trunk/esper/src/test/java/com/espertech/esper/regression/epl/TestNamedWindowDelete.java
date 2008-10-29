@@ -12,6 +12,8 @@ import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.support.util.ArrayAssertionUtil;
 import com.espertech.esper.support.util.SupportUpdateListener;
 import com.espertech.esper.core.EPServiceProviderSPI;
+import com.espertech.esper.core.StatementType;
+import com.espertech.esper.core.EPStatementSPI;
 import com.espertech.esper.epl.named.NamedWindowProcessor;
 
 import java.util.LinkedList;
@@ -59,6 +61,7 @@ public class TestNamedWindowDelete extends TestCase
         String stmtTextDelete = "on MyWindowOne delete from MyWindowTwo where a1 = a2";
         EPStatement stmtDelete = epService.getEPAdministrator().createEPL(stmtTextDelete);
         stmtDelete.addListener(listenerDelete);
+        assertEquals(StatementType.ON_DELETE, ((EPStatementSPI) stmtDelete).getStatementMetadata().getStatementType());
 
         // create insert into
         String stmtTextInsert = "insert into MyWindowOne select string as a1, intPrimitive as b1 from " + SupportBean.class.getName() + "(intPrimitive > 0)";

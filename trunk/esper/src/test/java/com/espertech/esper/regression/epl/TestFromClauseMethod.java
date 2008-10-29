@@ -8,6 +8,8 @@ import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.support.util.ArrayAssertionUtil;
 import com.espertech.esper.support.util.SupportUpdateListener;
 import com.espertech.esper.support.epl.SupportStaticMethodLib;
+import com.espertech.esper.core.StatementType;
+import com.espertech.esper.core.EPStatementSPI;
 
 public class TestFromClauseMethod extends TestCase
 {
@@ -128,7 +130,8 @@ public class TestFromClauseMethod extends TestCase
         epService.getEPAdministrator().getConfiguration().addEventTypeAlias("SupportBean", SupportBean.class);
         epService.getEPAdministrator().createEPL("create variable int lower");
         epService.getEPAdministrator().createEPL("create variable int upper");
-        epService.getEPAdministrator().createEPL("on SupportBean set lower=intPrimitive,upper=intBoxed");
+        EPStatement setStmt = epService.getEPAdministrator().createEPL("on SupportBean set lower=intPrimitive,upper=intBoxed");
+        assertEquals(StatementType.ON_SET, ((EPStatementSPI) setStmt).getStatementMetadata().getStatementType());
 
         String className = SupportStaticMethodLib.class.getName();
         String stmtText;

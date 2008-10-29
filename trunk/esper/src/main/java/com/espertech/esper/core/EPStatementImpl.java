@@ -42,6 +42,7 @@ public class EPStatementImpl implements EPStatementSPI
     private com.espertech.esper.event.EventType eventType;
     private EPStatementHandle epStatementHandle;
     private StatementResultService statementResultService;
+    private StatementMetadata statementMetadata;
 
     /**
      * Ctor.
@@ -73,7 +74,8 @@ public class EPStatementImpl implements EPStatementSPI
                               EPStatementHandle epStatementHandle,
                               VariableService variableService,
                               StatementResultService statementResultService,
-                              TimeSourceService timeSourceService)
+                              TimeSourceService timeSourceService,
+                              StatementMetadata statementMetadata)
     {
         this.isPattern = isPattern;
         this.statementId = statementId;
@@ -101,6 +103,7 @@ public class EPStatementImpl implements EPStatementSPI
         this.epStatementHandle = epStatementHandle;
         this.variableService = variableService;
         this.statementResultService = statementResultService;
+        this.statementMetadata = statementMetadata;
         statementResultService.setUpdateListeners(statementListenerSet);
     }
 
@@ -360,5 +363,10 @@ public class EPStatementImpl implements EPStatementSPI
 
     public boolean isPattern() {
         return isPattern;
+    }
+
+    public StatementMetadata getStatementMetadata()
+    {
+        return statementMetadata;
     }
 }

@@ -10,6 +10,8 @@ import com.espertech.esper.support.bean.*;
 import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.support.util.SupportUpdateListener;
 import com.espertech.esper.support.util.ArrayAssertionUtil;
+import com.espertech.esper.core.StatementType;
+import com.espertech.esper.core.EPStatementSPI;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -118,6 +120,7 @@ public class TestFollowedByOperator extends TestCase implements SupportBeanConst
 
         SupportUpdateListener listener = new SupportUpdateListener();
         EPStatement statement = epService.getEPAdministrator().createEPL(stmt);
+        assertEquals(StatementType.SELECT, ((EPStatementSPI) statement).getStatementMetadata().getStatementType());
         statement.addListener(listener);
 
         SupportBean_A eventA = null;

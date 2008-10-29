@@ -9,6 +9,8 @@ import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.bean.SupportMarketDataBean;
 import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.core.EPServiceProviderSPI;
+import com.espertech.esper.core.StatementType;
+import com.espertech.esper.core.EPStatementSPI;
 import junit.framework.TestCase;
 
 import java.util.Set;
@@ -28,6 +30,7 @@ public class TestPatternStartStop extends TestCase
         String viewExpr = "every tag=" + SupportBean.class.getName();
 
         patternStmt = epService.getEPAdministrator().createPattern(viewExpr, "MyPattern");
+        assertEquals(StatementType.PATTERN, ((EPStatementSPI) patternStmt).getStatementMetadata().getStatementType());
     }
 
     public void testStartStop()

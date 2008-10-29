@@ -18,6 +18,8 @@ import com.espertech.esper.support.util.SupportUpdateListener;
 import com.espertech.esper.support.util.ArrayAssertionUtil;
 import com.espertech.esper.util.SerializableObjectCopier;
 import com.espertech.esper.core.EPServiceProviderSPI;
+import com.espertech.esper.core.StatementType;
+import com.espertech.esper.core.EPStatementSPI;
 
 import java.util.Map;
 import java.util.Set;
@@ -179,6 +181,7 @@ public class TestInsertInto extends TestCase
 
         // Attach listener to feed
         EPStatement stmtOne = epService.getEPAdministrator().createEPL(stmtText, "stmt1");
+        assertEquals(StatementType.INSERT_INTO, ((EPStatementSPI) stmtOne).getStatementMetadata().getStatementType());
         SupportUpdateListener listenerOne = new SupportUpdateListener();
         stmtOne.addListener(listenerOne);
         EPStatement stmtTwo = epService.getEPAdministrator().createEPL(otherText, "stmt2");

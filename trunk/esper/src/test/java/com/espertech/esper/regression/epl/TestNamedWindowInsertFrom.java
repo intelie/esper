@@ -12,6 +12,8 @@ import com.espertech.esper.support.util.ArrayAssertionUtil;
 import com.espertech.esper.support.util.SupportUpdateListener;
 import com.espertech.esper.epl.named.NamedWindowProcessor;
 import com.espertech.esper.core.EPServiceProviderSPI;
+import com.espertech.esper.core.StatementType;
+import com.espertech.esper.core.EPStatementSPI;
 import junit.framework.TestCase;
 
 import java.util.HashMap;
@@ -99,6 +101,7 @@ public class TestNamedWindowInsertFrom extends TestCase
         EventType eventTypeTwo = stmtCreateTwo.iterator().next().getEventType();
         assertFalse(listeners[2].isInvoked());
         assertEquals(5, getCount("MyWindowTwo"));
+        assertEquals(StatementType.CREATE_WINDOW, ((EPStatementSPI) stmtCreateTwo).getStatementMetadata().getStatementType());
 
         // create window with keep-all and filter
         String stmtTextCreateThree = "create window MyWindowThree.win:keepall() as MyWindow insert where string like 'A%'";

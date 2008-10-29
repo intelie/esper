@@ -13,6 +13,8 @@ import com.espertech.esper.support.util.SupportUpdateListener;
 import com.espertech.esper.support.util.ArrayAssertionUtil;
 import com.espertech.esper.support.epl.SupportNamedWindowObserver;
 import com.espertech.esper.core.EPServiceProviderSPI;
+import com.espertech.esper.core.StatementType;
+import com.espertech.esper.core.EPStatementSPI;
 import com.espertech.esper.epl.named.NamedWindowLifecycleEvent;
 
 import java.util.Set;
@@ -42,6 +44,7 @@ public class TestNamedWindowStartStop extends TestCase
         // create window
         String stmtTextCreate = "create window MyWindow.win:keepall() as select string as a, intPrimitive as b from " + SupportBean.class.getName();
         EPStatement stmtCreate = epService.getEPAdministrator().createEPL(stmtTextCreate);
+        assertEquals(StatementType.CREATE_WINDOW, ((EPStatementSPI) stmtCreate).getStatementMetadata().getStatementType());
         stmtCreate.addListener(listenerWindow);
         NamedWindowLifecycleEvent event = observer.getFirstAndReset();
         assertEquals(NamedWindowLifecycleEvent.LifecycleEventType.CREATE, event.getEventType());

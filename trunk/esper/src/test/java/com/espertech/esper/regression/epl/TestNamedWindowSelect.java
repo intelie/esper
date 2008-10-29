@@ -9,6 +9,8 @@ import com.espertech.esper.support.bean.SupportBean_B;
 import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.support.util.ArrayAssertionUtil;
 import com.espertech.esper.support.util.SupportUpdateListener;
+import com.espertech.esper.core.StatementType;
+import com.espertech.esper.core.EPStatementSPI;
 
 public class TestNamedWindowSelect extends TestCase
 {
@@ -45,6 +47,7 @@ public class TestNamedWindowSelect extends TestCase
         String stmtTextSelect = "on " + SupportBean_A.class.getName() + " insert into MyStream select mywin.* from MyWindow as mywin order by string asc";
         EPStatement stmtSelect = epService.getEPAdministrator().createEPL(stmtTextSelect);
         stmtSelect.addListener(listenerSelect);
+        assertEquals(StatementType.ON_INSERT, ((EPStatementSPI) stmtSelect).getStatementMetadata().getStatementType());
 
         // create consuming statement
         String stmtTextConsumer = "select * from default.MyStream";
@@ -143,6 +146,7 @@ public class TestNamedWindowSelect extends TestCase
         String stmtTextSelect = "on " + SupportBean_A.class.getName() + " select mywin.*, id from MyWindow as mywin where MyWindow.b < 3 order by a asc";
         EPStatement stmtSelect = epService.getEPAdministrator().createEPL(stmtTextSelect);
         stmtSelect.addListener(listenerSelect);
+        assertEquals(StatementType.ON_SELECT, ((EPStatementSPI) stmtSelect).getStatementMetadata().getStatementType());
 
         // create insert into
         String stmtTextInsertOne = "insert into MyWindow select string as a, intPrimitive as b from " + SupportBean.class.getName();
