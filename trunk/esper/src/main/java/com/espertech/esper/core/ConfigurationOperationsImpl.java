@@ -11,6 +11,7 @@ package com.espertech.esper.core;
 import com.espertech.esper.client.*;
 import com.espertech.esper.event.EventAdapterException;
 import com.espertech.esper.event.EventAdapterService;
+import com.espertech.esper.event.EventType;
 import com.espertech.esper.event.vaevent.ValueAddEventService;
 import com.espertech.esper.event.vaevent.VariantEventType;
 import com.espertech.esper.util.JavaClassHelper;
@@ -37,6 +38,7 @@ public class ConfigurationOperationsImpl implements ConfigurationOperations
     private final EngineSettingsService engineSettingsService;
     private final ValueAddEventService valueAddEventService;
     private final MetricReportingService metricReportingService;
+    private final StatementEventTypeRef statementEventTypeRef;
 
     /**
      * Ctor.
@@ -46,13 +48,15 @@ public class ConfigurationOperationsImpl implements ConfigurationOperations
      * @param engineSettingsService - some engine settings are writable
      * @param valueAddEventService - update event handling
      * @param metricReportingService - for metric reporting
+     * @param statementEventTypeRef - statement to event type reference holding 
      */
     public ConfigurationOperationsImpl(EventAdapterService eventAdapterService,
                                        EngineImportService engineImportService,
                                        VariableService variableService,
                                        EngineSettingsService engineSettingsService,
                                        ValueAddEventService valueAddEventService,
-                                       MetricReportingService metricReportingService)
+                                       MetricReportingService metricReportingService,
+                                       StatementEventTypeRef statementEventTypeRef)
     {
         this.eventAdapterService = eventAdapterService;
         this.engineImportService = engineImportService;
@@ -60,6 +64,7 @@ public class ConfigurationOperationsImpl implements ConfigurationOperations
         this.engineSettingsService = engineSettingsService;
         this.valueAddEventService = valueAddEventService;
         this.metricReportingService = metricReportingService;
+        this.statementEventTypeRef = statementEventTypeRef;
     }
 
     public void addEventTypeAutoAlias(String javaPackageName)
@@ -361,5 +366,35 @@ public class ConfigurationOperationsImpl implements ConfigurationOperations
     public boolean isVariantStreamExists(String name)
     {
         return valueAddEventService.getValueAddProcessor(name).getValueAddEventType() instanceof VariantEventType;
+    }
+
+    public boolean removeEventType(String alias, boolean force) throws ConfigurationException
+    {
+        if (!force) {
+            Set<String> statements = statementEventTypeRef.getStatementNamesForType(alias);
+            if ((statements != null) && (!statements.isEmpty())) {
+                throw new ConfigurationException("Event type '" + alias + "' is in use by one or more statements");
+            }
+        }
+
+        EventType type = eventAdapterService.getExistsTypeByAlias(alias);
+        if (type == null)
+        {
+            return false;
+        }
+
+        eventAdapterService.removeType(alias);
+        statementEventTypeRef.removeReferencesType(alias);
+        return true;
+    }
+
+    public Set<String> getEventTypeAliasUsedBy(String alias)
+    {
+        Set<String> statements = statementEventTypeRef.getStatementNamesForType(alias);
+        if ((statements == null) || (statements.isEmpty()))
+        {
+            return Collections.emptySet();
+        }
+        return Collections.unmodifiableSet(statements);
     }
 }

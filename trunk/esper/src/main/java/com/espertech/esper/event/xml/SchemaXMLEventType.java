@@ -50,6 +50,7 @@ public class SchemaXMLEventType extends BaseXMLEventType {
     /**
      * Ctor.
      * @param configurationEventTypeXMLDOM - configuration for type
+     * @param eventTypeMetadata - event type metadata
      */
     public SchemaXMLEventType(EventTypeMetadata eventTypeMetadata, ConfigurationEventTypeXMLDOM configurationEventTypeXMLDOM)
     {

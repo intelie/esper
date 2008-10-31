@@ -26,6 +26,7 @@ public interface BeanEventTypeFactory
      * Returns the bean event type for a given class assigning the given alias.
      * @param alias is the alias
      * @param clazz is the class for which to generate an event type
+     * @param isConfigured if the class is a configuration value
      * @return is the event type for the class
      */
     public BeanEventType createBeanType(String alias, Class clazz, boolean isConfigured);

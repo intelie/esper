@@ -1,11 +1,9 @@
 package com.espertech.esper.regression.event;
 
 import com.espertech.esper.client.*;
-import com.espertech.esper.support.bean.SupportLegacyBean;
-import com.espertech.esper.support.bean.SupportBean;
-import com.espertech.esper.support.bean.SupportLegacyBeanInt;
-import com.espertech.esper.support.bean.SupportBeanFinal;
+import com.espertech.esper.support.bean.*;
 import com.espertech.esper.support.util.SupportUpdateListener;
+import com.espertech.esper.support.util.ArrayAssertionUtil;
 import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.event.EventType;
 import com.espertech.esper.event.EventTypeSPI;
@@ -28,6 +26,83 @@ public class TestLegacyBeanEvents extends TestCase
         mappedProperty.put("key1", "value1");
         mappedProperty.put("key2", "value2");
         legacyBean = new SupportLegacyBean("leg", new String[] {"a", "b"}, mappedProperty, "nest");
+    }
+
+    public void testAddRemoveType()
+    {
+        Configuration config = new Configuration();
+        config.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
+        epService = EPServiceProviderManager.getDefaultProvider(config);
+        epService.initialize();
+        ConfigurationOperations configOps = epService.getEPAdministrator().getConfiguration();
+
+        // test remove type with statement used (no force)
+        configOps.addEventTypeAlias("MyBeanEvent", SupportBean_A.class);
+        EPStatement stmt = epService.getEPAdministrator().createEPL("select id from MyBeanEvent", "stmtOne");
+        ArrayAssertionUtil.assertEqualsExactOrder(new String[] {"stmtOne"}, configOps.getEventTypeAliasUsedBy("MyBeanEvent").toArray());
+
+        try {
+            configOps.removeEventType("MyBeanEvent", false);
+        }
+        catch (ConfigurationException ex) {
+            assertTrue(ex.getMessage().contains("MyBeanEvent"));
+        }
+
+        // destroy statement and type
+        stmt.destroy();
+        assertNull(configOps.getEventTypeAliasUsedBy("MyBeanEvent"));
+        assertTrue(configOps.isEventTypeAliasExists("MyBeanEvent"));
+        assertTrue(configOps.removeEventType("MyBeanEvent", false));
+        assertFalse(configOps.removeEventType("MyBeanEvent", false));    // try double-remove
+        assertFalse(configOps.isEventTypeAliasExists("MyBeanEvent"));
+        try {
+            epService.getEPAdministrator().createEPL("select id from MyBeanEvent");
+            fail();
+        }
+        catch (EPException ex) {
+            // expected
+        }
+
+        // add back the type
+        configOps.addEventTypeAlias("MyBeanEvent", SupportBean.class);
+        assertTrue(configOps.isEventTypeAliasExists("MyBeanEvent"));
+        assertNull(configOps.getEventTypeAliasUsedBy("MyBeanEvent"));
+
+        // compile
+        epService.getEPAdministrator().createEPL("select boolPrimitive from MyBeanEvent", "stmtTwo");
+        ArrayAssertionUtil.assertEqualsExactOrder(new String[] {"stmtTwo"}, configOps.getEventTypeAliasUsedBy("MyBeanEvent").toArray());
+        try {
+            epService.getEPAdministrator().createEPL("select id from MyBeanEvent");
+            fail();
+        }
+        catch (EPException ex) {
+            // expected
+        }
+
+        // remove with force
+        try {
+            configOps.removeEventType("MyBeanEvent", false);
+        }
+        catch (ConfigurationException ex) {
+            assertTrue(ex.getMessage().contains("MyBeanEvent"));
+        }
+        assertTrue(configOps.removeEventType("MyBeanEvent", true));
+        assertFalse(configOps.isEventTypeAliasExists("MyBeanEvent"));
+        assertNull(configOps.getEventTypeAliasUsedBy("MyBeanEvent"));
+
+        // add back the type
+        configOps.addEventTypeAlias("MyBeanEvent", SupportMarketDataBean.class);
+        assertTrue(configOps.isEventTypeAliasExists("MyBeanEvent"));
+
+        // compile
+        epService.getEPAdministrator().createEPL("select feed from MyBeanEvent");
+        try {
+            epService.getEPAdministrator().createEPL("select boolPrimitive from MyBeanEvent");
+            fail();
+        }
+        catch (EPException ex) {
+            // expected
+        }
     }
 
     public void testPublicAccessors()
@@ -100,7 +175,7 @@ public class TestLegacyBeanEvents extends TestCase
         assertEquals(EventTypeMetadata.ApplicationType.CLASS, type.getMetadata().getOptionalApplicationType());
         assertEquals(1, type.getMetadata().getOptionalSecondaryNames().size());
         assertEquals(SupportLegacyBean.class.getName(), type.getMetadata().getOptionalSecondaryNames().iterator().next());
-        assertEquals("MyLegacyEvent", type.getMetadata().getPrimaryAssociationName());
+        assertEquals("MyLegacyEvent", type.getMetadata().getPrimaryName());
         assertEquals(EventTypeMetadata.TypeClass.APPLICATION, type.getMetadata().getTypeClass());
         assertEquals(true, type.getMetadata().isApplicationConfigured());
 
@@ -180,7 +255,7 @@ public class TestLegacyBeanEvents extends TestCase
         EventTypeSPI stmtType = (EventTypeSPI) statement.getEventType();
         assertEquals(null, stmtType.getMetadata().getOptionalApplicationType());
         assertEquals(null, stmtType.getMetadata().getOptionalSecondaryNames());
-        assertNotNull(stmtType.getMetadata().getPrimaryAssociationName());
+        assertNotNull(stmtType.getMetadata().getPrimaryName());
         assertEquals(EventTypeMetadata.TypeClass.ANONYMOUS, stmtType.getMetadata().getTypeClass());
         assertEquals(false, stmtType.getMetadata().isApplicationConfigured());        
     }

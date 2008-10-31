@@ -74,6 +74,10 @@ public class MetricExecStatement implements MetricExec
         }
     }
 
+    /**
+     * Returns reporting interval.
+     * @return reporting interval
+     */
     public long getInterval()
     {
         return interval;

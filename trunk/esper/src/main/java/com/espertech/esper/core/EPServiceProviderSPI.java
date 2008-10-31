@@ -91,7 +91,15 @@ public interface EPServiceProviderSPI extends EPServiceProvider
      */
     public MetricReportingService getMetricReportingService();
 
+    /**
+     * Returns value-added type service.
+     * @return value types
+     */
     public ValueAddEventService getValueAddEventService();
 
+    /**
+     * Returns statement event type reference service.
+     * @return statement-type reference service
+     */
     public StatementEventTypeRef getStatementEventTypeRef();
 }

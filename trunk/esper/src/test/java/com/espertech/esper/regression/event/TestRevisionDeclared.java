@@ -70,7 +70,7 @@ public class TestRevisionDeclared extends TestCase
         EventTypeSPI type = (EventTypeSPI) ((EPServiceProviderSPI)epService).getValueAddEventService().getValueAddProcessor("RevQuote").getValueAddEventType();
         assertEquals(null, type.getMetadata().getOptionalApplicationType());
         assertEquals(null, type.getMetadata().getOptionalSecondaryNames());
-        assertEquals("RevisableQuote", type.getMetadata().getPrimaryAssociationName());
+        assertEquals("RevisableQuote", type.getMetadata().getPrimaryName());
         assertEquals(EventTypeMetadata.TypeClass.REVISION, type.getMetadata().getTypeClass());
         assertEquals(true, type.getMetadata().isApplicationConfigured());
 

@@ -141,7 +141,7 @@ public class PatternStreamSpecRaw extends StreamSpecBase implements StreamSpecRa
             String optionalTag = filterNode.getEventAsName();
             if (eventType instanceof EventTypeSPI)
             {
-                eventTypeReferences.add(((EventTypeSPI) eventType).getMetadata().getPrimaryAssociationName());                
+                eventTypeReferences.add(((EventTypeSPI) eventType).getMetadata().getPrimaryName());
             }
 
             // If a tag was supplied for the type, the tags must stay with this type, i.e. a=BeanA -> b=BeanA -> a=BeanB is a no

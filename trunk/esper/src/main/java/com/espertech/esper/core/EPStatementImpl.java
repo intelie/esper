@@ -60,6 +60,7 @@ public class EPStatementImpl implements EPStatementSPI
      * @param variableService provides access to variable values
      * @param statementResultService handles statement result generation
      * @param timeSourceService time source provider
+     * @param statementMetadata statement metadata
      */
     public EPStatementImpl(String statementId,
                               String statementName,

@@ -231,6 +231,10 @@ public class NamedWindowTailView extends ViewSupport implements Iterable<EventBe
         consumers.clear();
     }
 
+    /**
+     * Returns the number of events held.
+     * @return number of events
+     */
     public long getNumberOfEvents()
     {
         return numberOfEvents;

@@ -359,6 +359,51 @@ public class TestMapEventNested extends TestCase
                 new Object[] {"1ma0", null});
     }
 
+    public void testEventType()
+    {
+        EPServiceProvider epService = getEngineInitialized("NestedMap", getTestDefTwo());
+        EPStatement stmt = epService.getEPAdministrator().createEPL(("select * from NestedMap"));
+        EventType eventType = stmt.getEventType();
+
+        String[] propertiesReceived = eventType.getPropertyNames();
+        String[] propertiesExpected = new String[] {"simple", "object", "nodefmap", "map"};
+        ArrayAssertionUtil.assertEqualsAnyOrder(propertiesReceived, propertiesExpected);
+        assertEquals(String.class, eventType.getPropertyType("simple"));
+        assertEquals(Map.class, eventType.getPropertyType("map"));
+        assertEquals(Map.class, eventType.getPropertyType("nodefmap"));
+        assertEquals(SupportBean_A.class, eventType.getPropertyType("object"));
+
+        assertNull(eventType.getPropertyType("map.mapOne.simpleOne"));
+    }
+
+    public void testInvalidType()
+    {
+        EPServiceProvider epService = getEngineInitialized(null, null);
+
+        Map<String, Object> invalid = makeMap(new Object[][] {{new SupportBean(), null} });
+        tryInvalid(epService, invalid, "Invalid map type configuration: property name is not a String-type value");
+
+        invalid = makeMap(new Object[][] {{"abc", new SupportBean()} });
+        tryInvalid(epService, invalid, "Nestable map type configuration encountered an unexpected property type of 'SupportBean' for property 'abc', expected java.lang.Class or java.util.Map");
+    }
+
+    public void testArrayProperty()
+    {
+        EPServiceProvider epService = getEngineInitialized(null, null);
+
+        Map<String, Object> arrayDef = makeMap(new Object[][] {{"p0", int[].class}, {"p1", SupportBean[].class }});
+        epService.getEPAdministrator().getConfiguration().addEventTypeAliasNestable("MyArrayMap", arrayDef);
+
+        EPStatement stmt = epService.getEPAdministrator().createEPL("select p0[0], p0[1], p1[0].intPrimitive, p1[1] from MyArrayMap");
+        SupportUpdateListener listener = new SupportUpdateListener();
+        stmt.addListener(listener);
+
+        SupportBean[] beans = new SupportBean[] {new SupportBean("e1", 1), new SupportBean("e2", 2)};
+        Map<String, Object> event = makeMap(new Object[][] {{"p0", new int[] {1, 2, 3}}, {"p1", beans}});
+        epService.getEPRuntime().sendEvent(event);
+                 
+    }
+
     public void testIsExists()
     {
         EPServiceProvider epService = getEngineInitialized("NestedMap", getTestDefTwo());
@@ -414,34 +459,6 @@ public class TestMapEventNested extends TestCase
         assertSame(((Map)mapEvent.get("nested")).get("n2"), event.get("c"));
         assertSame("def", event.get("d"));
         statement.stop();
-    }
-
-    public void testEventType()
-    {
-        EPServiceProvider epService = getEngineInitialized("NestedMap", getTestDefTwo());
-        EPStatement stmt = epService.getEPAdministrator().createEPL(("select * from NestedMap"));
-        EventType eventType = stmt.getEventType();
-        
-        String[] propertiesReceived = eventType.getPropertyNames();
-        String[] propertiesExpected = new String[] {"simple", "object", "nodefmap", "map"};
-        ArrayAssertionUtil.assertEqualsAnyOrder(propertiesReceived, propertiesExpected);
-        assertEquals(String.class, eventType.getPropertyType("simple"));
-        assertEquals(Map.class, eventType.getPropertyType("map"));
-        assertEquals(Map.class, eventType.getPropertyType("nodefmap"));
-        assertEquals(SupportBean_A.class, eventType.getPropertyType("object"));
-
-        assertNull(eventType.getPropertyType("map.mapOne.simpleOne"));
-    }
-
-    public void testInvalidType()
-    {
-        EPServiceProvider epService = getEngineInitialized(null, null);
-
-        Map<String, Object> invalid = makeMap(new Object[][] {{new SupportBean(), null} });
-        tryInvalid(epService, invalid, "Invalid map type configuration: property name is not a String-type value");
-
-        invalid = makeMap(new Object[][] {{"abc", new SupportBean()} });
-        tryInvalid(epService, invalid, "Nestable map type configuration encountered an unexpected property type of 'SupportBean' for property 'abc', expected java.lang.Class or java.util.Map");
     }
 
     private void tryInvalid(EPServiceProvider epService, Map<String, Object> config, String message)

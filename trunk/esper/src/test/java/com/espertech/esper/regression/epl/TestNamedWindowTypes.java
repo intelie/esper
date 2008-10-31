@@ -56,7 +56,7 @@ public class TestNamedWindowTypes extends TestCase
         EventTypeSPI type = (EventTypeSPI) ((EPServiceProviderSPI)epService).getEventAdapterService().getExistsTypeByAlias("MyWindow");
         assertEquals(null, type.getMetadata().getOptionalApplicationType());
         assertEquals(null, type.getMetadata().getOptionalSecondaryNames());
-        assertEquals("MyWindow", type.getMetadata().getPrimaryAssociationName());
+        assertEquals("MyWindow", type.getMetadata().getPrimaryName());
         assertEquals(EventTypeMetadata.TypeClass.NAMED_WINDOW, type.getMetadata().getTypeClass());
         assertEquals(false, type.getMetadata().isApplicationConfigured());
 
@@ -174,7 +174,7 @@ public class TestNamedWindowTypes extends TestCase
         EventTypeSPI type = (EventTypeSPI) ((EPServiceProviderSPI)epService).getEventAdapterService().getExistsTypeByAlias("MyWindow");
         assertEquals(null, type.getMetadata().getOptionalApplicationType());
         assertEquals(null, type.getMetadata().getOptionalSecondaryNames());
-        assertEquals("MyWindow", type.getMetadata().getPrimaryAssociationName());
+        assertEquals("MyWindow", type.getMetadata().getPrimaryName());
         assertEquals(EventTypeMetadata.TypeClass.NAMED_WINDOW, type.getMetadata().getTypeClass());
         assertEquals(false, type.getMetadata().isApplicationConfigured());
 

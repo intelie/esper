@@ -321,4 +321,40 @@ public interface ConfigurationOperations
      * @throws ConfigurationException if use at runtime and metrics reporting had not been enabled at initialization time
      */
     public void setMetricsReportingDisabled() throws ConfigurationException;
+
+    /**
+     * Remove an event type by its alias name, returning an indicator whether the event type was found and removed.
+     * <p>
+     * This method deletes the event type by it's alias name from the memory of the engine,
+     * thereby allowing that the name to be reused for a new event type and disallowing new statements
+     * that attempt to use the deleted name.
+     * <p>
+     * If there are one or more statements in started or stopped state that reference the event type,
+     * this operation throws ConfigurationException unless the force flag is passed.
+     * <p>
+     * If using the force flag to remove the type while statements use the type, the exact
+     * behavior of the engine depends on the event representation of the deleted event type and is thus
+     * not well defined. It is recommended to destroy statements that use the type before removing the type.
+     * Use #getEventTypeAliasUsedBy to obtain a list of statements that use a type.
+     * <p>
+     * The method can be used for event types implicitly created for insert-into streams and for named windows. 
+     * The method does not remove variant streams and does not remove revision event types.
+     * @param alias the name of the event type to remove
+     * @param force false to include a check that the type is no longer in use, true to force the remove
+     * even though there can be one or more statements relying on that type
+     * @return indicator whether the event type was found and removed
+     * @throws ConfigurationException thrown to indicate that the remove operation failed
+     */
+    public boolean removeEventType(String alias, boolean force) throws ConfigurationException;
+
+    /**
+     * Return the set of statement names of statements that are in started or stopped state and
+     * that reference the given event type alias.
+     * <p>
+     * A reference counts as any mention of the event type in a from-clause, a pattern, a insert-into or
+     * as part of on-trigger.
+     * @param eventTypeAlias name of the event type
+     * @return statement names 
+     */
+    public Set<String> getEventTypeAliasUsedBy(String eventTypeAlias);
 }

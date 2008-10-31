@@ -46,6 +46,7 @@ public class CompositeEventType implements EventTypeSPI, TaggedCompositeEventTyp
 
     /**
      * Ctor.
+     * @param metadata event type metadata
      * @param alias is the event type alias
      * @param taggedEventTypes is a map of name tags and event type per tag
      * @param arrayEventTypes is a map of name tags and event type per tag for repeat-expressions that generate an array of events

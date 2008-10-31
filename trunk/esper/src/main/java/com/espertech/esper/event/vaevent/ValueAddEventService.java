@@ -82,5 +82,9 @@ public interface ValueAddEventService
      */
     public ValueAddEventProcessor getValueAddProcessor(String alias);
 
+    /**
+     * Returns all event types representing value-add event types.
+     * @return value-add event type
+     */
     public EventType[] getValueAddedTypes();
 }

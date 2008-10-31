@@ -3,12 +3,14 @@ package com.espertech.esper.regression.event;
 import junit.framework.TestCase;
 import com.espertech.esper.client.*;
 import com.espertech.esper.support.util.SupportUpdateListener;
+import com.espertech.esper.support.util.ArrayAssertionUtil;
 import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.event.EventBean;
 
 import javax.xml.xpath.XPathConstants;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.StringReader;
+import java.util.Properties;
 
 import org.xml.sax.InputSource;
 import org.w3c.dom.Document;
@@ -72,6 +74,79 @@ public class TestSchemaXMLEvent extends TestCase
         joinView.addListener(updateListener);
     }
 
+    public void testAddRemoveType()
+    {
+        ConfigurationOperations configOps = epService.getEPAdministrator().getConfiguration();
+
+        // test remove type with statement used (no force)
+        configOps.addEventTypeAlias("MyXMLEvent", getConfigTestType("p01"));
+        EPStatement stmt = epService.getEPAdministrator().createEPL("select p01 from MyXMLEvent", "stmtOne");
+        ArrayAssertionUtil.assertEqualsExactOrder(new String[] {"stmtOne"}, configOps.getEventTypeAliasUsedBy("MyXMLEvent").toArray());
+
+        try {
+            configOps.removeEventType("MyXMLEvent", false);
+        }
+        catch (ConfigurationException ex) {
+            assertTrue(ex.getMessage().contains("MyXMLEvent"));
+        }
+
+        // destroy statement and type
+        stmt.destroy();
+        assertNull(configOps.getEventTypeAliasUsedBy("MyXMLEvent"));
+        assertTrue(configOps.isEventTypeAliasExists("MyXMLEvent"));
+        assertTrue(configOps.removeEventType("MyXMLEvent", false));
+        assertFalse(configOps.removeEventType("MyXMLEvent", false));    // try double-remove
+        assertFalse(configOps.isEventTypeAliasExists("MyXMLEvent"));
+        try {
+            epService.getEPAdministrator().createEPL("select p01 from MyXMLEvent");
+            fail();
+        }
+        catch (EPException ex) {
+            // expected
+        }
+
+        // add back the type
+        configOps.addEventTypeAlias("MyXMLEvent", getConfigTestType("p20"));
+        assertTrue(configOps.isEventTypeAliasExists("MyXMLEvent"));
+        assertNull(configOps.getEventTypeAliasUsedBy("MyXMLEvent"));
+
+        // compile
+        epService.getEPAdministrator().createEPL("select p20 from MyXMLEvent", "stmtTwo");
+        ArrayAssertionUtil.assertEqualsExactOrder(new String[] {"stmtTwo"}, configOps.getEventTypeAliasUsedBy("MyXMLEvent").toArray());
+        try {
+            epService.getEPAdministrator().createEPL("select p01 from MyXMLEvent");
+            fail();
+        }
+        catch (EPException ex) {
+            // expected
+        }
+
+        // remove with force
+        try {
+            configOps.removeEventType("MyXMLEvent", false);
+        }
+        catch (ConfigurationException ex) {
+            assertTrue(ex.getMessage().contains("MyXMLEvent"));
+        }
+        assertTrue(configOps.removeEventType("MyXMLEvent", true));
+        assertFalse(configOps.isEventTypeAliasExists("MyXMLEvent"));
+        assertNull(configOps.getEventTypeAliasUsedBy("MyXMLEvent"));
+
+        // add back the type
+        configOps.addEventTypeAlias("MyXMLEvent", getConfigTestType("p03"));
+        assertTrue(configOps.isEventTypeAliasExists("MyXMLEvent"));
+
+        // compile
+        epService.getEPAdministrator().createEPL("select p03 from MyXMLEvent");
+        try {
+            epService.getEPAdministrator().createEPL("select p20 from MyXMLEvent");
+            fail();
+        }
+        catch (EPException ex) {
+            // expected
+        }
+    }
+
     public void testSimpleXML() throws Exception
     {
         sendEvent("test");
@@ -110,14 +185,7 @@ public class TestSchemaXMLEvent extends TestCase
     {
         Configuration configuration = SupportConfigFactory.getConfiguration();
         configuration.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
-        ConfigurationEventTypeXMLDOM eventTypeMeta = new ConfigurationEventTypeXMLDOM();
-        eventTypeMeta.setRootElementName("simpleEvent");
-        String schemaUri = TestSchemaXMLEvent.class.getClassLoader().getResource(CLASSLOADER_SCHEMA_URI).toString();
-        eventTypeMeta.setSchemaResource(schemaUri);
-        eventTypeMeta.addNamespacePrefix("ss", "samples:schemas:simpleSchema");
-        eventTypeMeta.addXPathProperty("customProp", "count(/ss:simpleEvent/ss:nested3/ss:nested4)", XPathConstants.NUMBER);
-        configuration.addEventTypeAlias("TestXMLSchemaType", eventTypeMeta);
-
+        configuration.addEventTypeAlias("TestXMLSchemaType", getConfigTestType(null));
         return configuration;
     }
 
@@ -132,6 +200,21 @@ public class TestSchemaXMLEvent extends TestCase
         Document simpleDoc = builderFactory.newDocumentBuilder().parse(source);
 
         epService.getEPRuntime().sendEvent(simpleDoc);
+    }
+
+    private ConfigurationEventTypeXMLDOM getConfigTestType(String additionalXPathProperty)
+    {
+        ConfigurationEventTypeXMLDOM eventTypeMeta = new ConfigurationEventTypeXMLDOM();
+        eventTypeMeta.setRootElementName("simpleEvent");
+        String schemaUri = TestSchemaXMLEvent.class.getClassLoader().getResource(CLASSLOADER_SCHEMA_URI).toString();
+        eventTypeMeta.setSchemaResource(schemaUri);
+        eventTypeMeta.addNamespacePrefix("ss", "samples:schemas:simpleSchema");
+        eventTypeMeta.addXPathProperty("customProp", "count(/ss:simpleEvent/ss:nested3/ss:nested4)", XPathConstants.NUMBER);
+        if (additionalXPathProperty != null)
+        {
+            eventTypeMeta.addXPathProperty(additionalXPathProperty, "count(/ss:simpleEvent/ss:nested3/ss:nested4)", XPathConstants.NUMBER);
+        }
+        return eventTypeMeta;        
     }
 
     private static final Log log = LogFactory.getLog(TestSchemaXMLEvent.class);

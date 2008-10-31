@@ -11,7 +11,14 @@ package com.espertech.esper.event;
 import java.util.Iterator;
 import java.util.Map;
 
+/**
+ * Service provider interface for internal use for event types.
+ */
 public interface EventTypeSPI extends EventType
 {
+    /**
+     * Returns the type metadata.
+     * @return type metadata
+     */
     public EventTypeMetadata getMetadata();
 }

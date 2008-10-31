@@ -68,7 +68,7 @@ public class TestNoSchemaXMLEvent extends TestCase
         EventTypeSPI type = (EventTypeSPI) ((EPServiceProviderSPI)epService).getEventAdapterService().getExistsTypeByAlias("TestXMLNoSchemaType");
         assertEquals(EventTypeMetadata.ApplicationType.XML, type.getMetadata().getOptionalApplicationType());
         assertEquals(null, type.getMetadata().getOptionalSecondaryNames());
-        assertEquals("TestXMLNoSchemaType", type.getMetadata().getPrimaryAssociationName());
+        assertEquals("TestXMLNoSchemaType", type.getMetadata().getPrimaryName());
         assertEquals(EventTypeMetadata.TypeClass.APPLICATION, type.getMetadata().getTypeClass());
         assertEquals(true, type.getMetadata().isApplicationConfigured());
 

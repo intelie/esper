@@ -30,6 +30,9 @@ import java.util.Map;
  */
 public class WrapperEventType implements EventTypeSPI
 {
+    /**
+     * event type metadata
+     */
     protected final EventTypeMetadata metadata;
 
     /**
@@ -52,7 +55,8 @@ public class WrapperEventType implements EventTypeSPI
      * @param typeName is the event type alias name
      * @param eventType is the event type of the wrapped events
      * @param properties is the additional properties this wrapper adds
-     * @param eventAdapterService is the ser
+     * @param metadata event type metadata
+     * @param eventAdapterService is the service for resolving unknown wrapped types
      */
     public WrapperEventType(EventTypeMetadata metadata, String typeName, EventType eventType, Map<String, Object> properties, EventAdapterService eventAdapterService)
 	{

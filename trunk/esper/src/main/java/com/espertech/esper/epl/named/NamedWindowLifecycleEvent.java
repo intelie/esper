@@ -30,6 +30,7 @@ public class NamedWindowLifecycleEvent
 
     /**
      * Ctor.
+     * @param name is the name of the named window
      * @param processor instance for processing the named window contents
      * @param eventType the type of event
      * @param params event parameters
@@ -42,11 +43,19 @@ public class NamedWindowLifecycleEvent
         this.params = params;
     }
 
+    /**
+     * Returns the named window name.
+     * @return name
+     */
     public String getName()
     {
         return name;
     }
 
+    /**
+     * Return the processor originating the event.
+     * @return processor
+     */
     public NamedWindowProcessor getProcessor()
     {
         return processor;

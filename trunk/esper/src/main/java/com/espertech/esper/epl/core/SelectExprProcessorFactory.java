@@ -37,8 +37,9 @@ public class SelectExprProcessorFactory
      * @param eventAdapterService - for generating wrapper instances for events
      * @param statementResultService handles listeners/subscriptions awareness to reduce output result generation
      * @param valueAddEventService - service that handles update events and variant events
+     * @param selectExprEventTypeRegistry - registry for event type to statements
      * @return select-clause expression processor
-     * @throws com.espertech.esper.epl.expression.ExprValidationException to indicate the select expression cannot be validated
+     * @throws ExprValidationException to indicate the select expression cannot be validated
      */
     public static SelectExprProcessor getProcessor(List<SelectClauseElementCompiled> selectionList,
                                                    boolean isUsingWildcard,

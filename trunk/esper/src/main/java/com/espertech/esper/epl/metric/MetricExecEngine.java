@@ -44,6 +44,10 @@ public class MetricExecEngine implements MetricExec
         metricScheduleService.add(interval, this);        
     }
 
+    /**
+     * Returns reporting interval.
+     * @return reporting interval
+     */
     public long getInterval()
     {
         return interval;

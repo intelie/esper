@@ -10,10 +10,7 @@ package com.espertech.esper.event;
 
 import com.espertech.esper.client.EPException;
 import com.espertech.esper.epl.parse.ASTFilterSpecHelper;
-import com.espertech.esper.event.property.DynamicProperty;
-import com.espertech.esper.event.property.MapPropertyGetter;
-import com.espertech.esper.event.property.Property;
-import com.espertech.esper.event.property.PropertyParser;
+import com.espertech.esper.event.property.*;
 import com.espertech.esper.util.GraphUtil;
 import com.espertech.esper.util.JavaClassHelper;
 
@@ -49,6 +46,7 @@ public class MapEventType implements EventTypeSPI
      * @param eventAdapterService is required for access to objects properties within map values
      * @param optionalSuperTypes the supertypes to this type if any, or null if there are no supertypes
      * @param optionalDeepSupertypes the deep supertypes to this type if any, or null if there are no deep supertypes
+     * @param metadata event type metadata
      */
     public MapEventType(EventTypeMetadata metadata,
                         String typeName,
@@ -107,6 +105,7 @@ public class MapEventType implements EventTypeSPI
      * @param eventAdapterService is required for access to objects properties within map values
      * @param optionalSuperTypes the supertypes to this type if any, or null if there are no supertypes
      * @param optionalDeepSupertypes the deep supertypes to this type if any, or null if there are no deep supertypes
+     * @param metadata event type metadata
      */
     public MapEventType(EventTypeMetadata metadata,
                         String typeName,
@@ -166,7 +165,29 @@ public class MapEventType implements EventTypeSPI
             {
                 return Object.class;
             }
-            return null;
+
+            // parse, can be an indexed property
+            Property property = PropertyParser.parse(propertyName, eventAdapterService.getBeanEventTypeFactory(), false);
+            if (!(property instanceof IndexedProperty))
+            {
+                return null;
+            }
+            IndexedProperty indexedProp = (IndexedProperty) property;
+            Object type = nestableTypes.get(indexedProp.getPropertyNameAtomic());
+            if (type == null)
+            {
+                return null;
+            }
+            if (!(type instanceof Class))
+            {
+                return null;
+            }
+            if (!((Class) type).isArray())
+            {
+                return null;
+            }
+            // its an array
+            return ((Class)type).getComponentType();
         }
 
         // Map event types allow 2 types of properties inside:

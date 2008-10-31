@@ -547,36 +547,18 @@ finally {
 			</itemizedlist>				
 	    </sect2>
 
-	    <sect2 id="api-admin-runtime-config">		
-			<title>Runtime Engine Configuration</title>
+	    <sect2 id="api-admin-runtime-config">
+			<title>Runtime Configuration</title>
 
 			<indexterm><primary>configuration</primary><secondary>runtime</secondary></indexterm>
 			<para>
 				Certain configuration changes are available to perform on an engine instance while in operation. Such configuration operations are available via the <literal>getConfiguration</literal> method on <literal>EPAdministrator</literal>,
-				which returns an <literal>ConfigurationOperations</literal> object.
+				which returns a <literal>ConfigurationOperations</literal> object.
 			</para>
 
 			<para>
-				The  configuration operations available on a running engine instance are as follows. Please see <xref linkend="configuration"/> for more information. 
+				Please consult the JavaDoc of <literal>ConfigurationOperations</literal> for further information. The section <xref linkend="configuration-runtime"/> provides a summary of available configurations.
 			</para>
-
-			<itemizedlist spacing="compact">
-				<listitem>
-					<para>
-						Add an new event type for a JavaBean class, legacy Java class or custom Java class
-					</para>
-				</listitem>
-				<listitem>
-					<para>
-						Add an new DOM XML event type
-					</para>
-				</listitem>
-				<listitem>
-					<para>
-						Add an new Map-based event type
-					</para>
-				</listitem>
-			</itemizedlist>				
 	    </sect2>
 
     </sect1>

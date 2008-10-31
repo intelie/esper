@@ -4,6 +4,7 @@ import com.espertech.esper.client.*;
 import com.espertech.esper.support.bean.SupportBeanComplexProps;
 import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.support.util.SupportUpdateListener;
+import com.espertech.esper.support.util.ArrayAssertionUtil;
 import com.espertech.esper.core.EPServiceProviderSPI;
 import com.espertech.esper.event.EventType;
 import com.espertech.esper.event.EventTypeSPI;
@@ -47,12 +48,87 @@ public class TestMapEvent extends TestCase
         EventTypeSPI type = (EventTypeSPI) ((EPServiceProviderSPI)epService).getEventAdapterService().getExistsTypeByAlias("myMapEvent");
         assertEquals(EventTypeMetadata.ApplicationType.MAP, type.getMetadata().getOptionalApplicationType());
         assertEquals(null, type.getMetadata().getOptionalSecondaryNames());
-        assertEquals("myMapEvent", type.getMetadata().getPrimaryAssociationName());
+        assertEquals("myMapEvent", type.getMetadata().getPrimaryName());
         assertEquals(EventTypeMetadata.TypeClass.APPLICATION, type.getMetadata().getTypeClass());
         assertEquals(true, type.getMetadata().isApplicationConfigured());
         
         EventType[] types = ((EPServiceProviderSPI)epService).getEventAdapterService().getAllTypes();
         assertEquals(1, types.length);
+    }
+
+    public void testAddRemoveType()
+    {
+        // test remove type with statement used (no force)
+        ConfigurationOperations configOps = epService.getEPAdministrator().getConfiguration();
+        EPStatement stmt = epService.getEPAdministrator().createEPL("select myInt from myMapEvent", "stmtOne");
+        ArrayAssertionUtil.assertEqualsExactOrder(new String[] {"stmtOne"}, configOps.getEventTypeAliasUsedBy("myMapEvent").toArray());
+
+        try {
+            configOps.removeEventType("myMapEvent", false);
+        }
+        catch (ConfigurationException ex) {
+            assertTrue(ex.getMessage().contains("myMapEvent"));
+        }
+
+        // destroy statement and type
+        stmt.destroy();
+        assertNull(configOps.getEventTypeAliasUsedBy("myMapEvent"));
+        assertTrue(configOps.isEventTypeAliasExists("myMapEvent"));
+        assertTrue(configOps.removeEventType("myMapEvent", false));
+        assertFalse(configOps.removeEventType("myMapEvent", false));    // try double-remove
+        assertFalse(configOps.isEventTypeAliasExists("myMapEvent"));
+        try {
+            epService.getEPAdministrator().createEPL("select myInt from myMapEvent");
+            fail();
+        }
+        catch (EPException ex) {
+            // expected
+        }
+
+        // add back the type
+        Properties properties = new Properties();
+        properties.put("p01", "string");
+        configOps.addEventTypeAlias("myMapEvent", properties);
+        assertTrue(configOps.isEventTypeAliasExists("myMapEvent"));
+        assertNull(configOps.getEventTypeAliasUsedBy("myMapEvent"));
+
+        // compile
+        epService.getEPAdministrator().createEPL("select p01 from myMapEvent", "stmtTwo");
+        ArrayAssertionUtil.assertEqualsExactOrder(new String[] {"stmtTwo"}, configOps.getEventTypeAliasUsedBy("myMapEvent").toArray());
+        try {
+            epService.getEPAdministrator().createEPL("select myInt from myMapEvent");
+            fail();
+        }
+        catch (EPException ex) {
+            // expected
+        }
+
+        // remove with force
+        try {
+            configOps.removeEventType("myMapEvent", false);
+        }
+        catch (ConfigurationException ex) {
+            assertTrue(ex.getMessage().contains("myMapEvent"));
+        }
+        assertTrue(configOps.removeEventType("myMapEvent", true));
+        assertFalse(configOps.isEventTypeAliasExists("myMapEvent"));
+        assertNull(configOps.getEventTypeAliasUsedBy("myMapEvent"));
+
+        // add back the type
+        properties = new Properties();
+        properties.put("newprop", "string");
+        configOps.addEventTypeAlias("myMapEvent", properties);
+        assertTrue(configOps.isEventTypeAliasExists("myMapEvent"));
+
+        // compile
+        epService.getEPAdministrator().createEPL("select newprop from myMapEvent");
+        try {
+            epService.getEPAdministrator().createEPL("select p01 from myMapEvent");
+            fail();
+        }
+        catch (EPException ex) {
+            // expected
+        }
     }
 
     public void testNestedObjects()

@@ -52,7 +52,7 @@ public class SelectExprEvalProcessorStreams implements SelectExprProcessor
      * @param isUsingWildcard - true if the wildcard (*) appears in the select clause
      * @param typeService -service for information about streams
      * @param eventAdapterService - service for generating events and handling event types
-     * @param selectExprEventTypeRegistry
+     * @param selectExprEventTypeRegistry - service for statement to type registry
      * @throws ExprValidationException thrown if any of the expressions don't validate
      */
     public SelectExprEvalProcessorStreams(List<SelectClauseExprCompiledSpec> selectionList,

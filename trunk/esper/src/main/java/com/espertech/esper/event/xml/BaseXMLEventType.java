@@ -47,6 +47,7 @@ public abstract class BaseXMLEventType extends BaseConfigurableEventType {
     /**
      * Ctor.
      * @param configurationEventTypeXMLDOM is the XML DOM configuration such as root element and schema names
+     * @param metadata event type metadata
      */
     public BaseXMLEventType(EventTypeMetadata metadata, ConfigurationEventTypeXMLDOM configurationEventTypeXMLDOM)
     {

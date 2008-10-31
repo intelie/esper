@@ -540,7 +540,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
             }
 
             // remove referenced event types
-            services.getStatementEventTypeRefService().removeReferences(desc.getEpStatement().getName());
+            services.getStatementEventTypeRefService().removeReferencesStatement(desc.getEpStatement().getName());
         
             EPStatementSPI statement = desc.getEpStatement();
             if (statement.getState() == EPStatementState.STARTED)
@@ -786,7 +786,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
                     spec.getCreateWindowDesc().setInsertFromWindow(consumerStreamSpec.getWindowName());
                 }
                 Pair<FilterSpecCompiled, SelectClauseSpecRaw> newFilter = handleCreateWindow(selectFromType, selectFromTypeAlias, spec, eplStatement, statementContext);
-                eventTypeReferences.add(((EventTypeSPI)newFilter.getFirst().getEventType()).getMetadata().getPrimaryAssociationName());
+                eventTypeReferences.add(((EventTypeSPI)newFilter.getFirst().getEventType()).getMetadata().getPrimaryName());
 
                 // view must be non-empty list
                 if (spec.getCreateWindowDesc().getViewSpecs().isEmpty())
@@ -1006,6 +1006,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
          * @param stopMethod the stop method
          * @param optInsertIntoStream is the insert-into stream name, or null if not using insert-into
          * @param statementHandle is the locking handle for the statement
+         * @param statementContext statement context
          */
         public EPStatementDesc(EPStatementSPI epStatement, EPStatementStartMethod startMethod, EPStatementStopMethod stopMethod, String optInsertIntoStream, EPStatementHandle statementHandle, StatementContext statementContext)
         {
@@ -1071,6 +1072,10 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
             return statementHandle;
         }
 
+        /**
+         * Returns the statement context.
+         * @return statement context
+         */
         public StatementContext getStatementContext()
         {
             return statementContext;

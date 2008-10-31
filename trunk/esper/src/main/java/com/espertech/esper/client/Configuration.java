@@ -620,6 +620,11 @@ public class Configuration implements ConfigurationOperations, ConfigurationInfo
         throw new UnsupportedOperationException("Map type update is only available in runtime configuration");
     }
 
+    public Set<String> getEventTypeAliasUsedBy(String alias)
+    {
+        throw new UnsupportedOperationException("Get event type by alias is only available in runtime configuration");
+    }
+
     public boolean isVariantStreamExists(String name)
     {
         return variantStreams.containsKey(name);
@@ -750,8 +755,21 @@ public class Configuration implements ConfigurationOperations, ConfigurationInfo
         return this;
     }
 
+    public boolean removeEventType(String alias, boolean force) throws ConfigurationException
+    {
+        eventClasses.remove(alias);
+        eventTypesXMLDOM.remove(alias);
+        eventTypesLegacy.remove(alias);
+        mapAliases.remove(alias);
+        nestableMapAliases.remove(alias);
+        mapSuperTypes.remove(alias);
+        plugInEventTypes.remove(alias);
+        revisionEventTypes.remove(alias);
+        variantStreams.remove(alias);
+        return true;
+    }
 
-	/**
+    /**
 	 * Use the mappings and properties specified in the given XML document.
 	 * The format of the file is defined in
 	 * <tt>esper-configuration-2.0.xsd</tt>.

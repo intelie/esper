@@ -48,6 +48,7 @@ public class BeanEventType implements EventTypeSPI
      * @param beanEventTypeFactory is the chache and factory for event bean types and event wrappers
      * @param optionalLegacyDef optional configuration supplying legacy event type information
      * @param alias is the event type alias for the class
+     * @param metadata event type metadata
      */
     public BeanEventType(EventTypeMetadata metadata,
                          Class clazz,

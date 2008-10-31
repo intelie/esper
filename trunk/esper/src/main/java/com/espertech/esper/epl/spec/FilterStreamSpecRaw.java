@@ -96,7 +96,7 @@ public class FilterStreamSpecRaw extends StreamSpecBase implements StreamSpecRaw
             List<ExprNode> validatedNodes = FilterSpecCompiler.validateDisallowSubquery(rawFilterSpec.getFilterExpressions(),
                 streamTypeService, methodResolutionService, timeProvider, variableService);
 
-            eventTypeReferences.add(((EventTypeSPI) namedWindowType).getMetadata().getPrimaryAssociationName());
+            eventTypeReferences.add(((EventTypeSPI) namedWindowType).getMetadata().getPrimaryName());
             return new NamedWindowConsumerStreamSpec(eventName, this.getOptionalStreamName(), this.getViewSpecs(), validatedNodes, this.isUnidirectional());
         }
 
@@ -105,13 +105,13 @@ public class FilterStreamSpecRaw extends StreamSpecBase implements StreamSpecRaw
         if (valueAddEventService.isRevisionTypeAlias(eventName))
         {
             eventType = valueAddEventService.getValueAddUnderlyingType(eventName);
-            eventTypeReferences.add(((EventTypeSPI) eventType).getMetadata().getPrimaryAssociationName());
+            eventTypeReferences.add(((EventTypeSPI) eventType).getMetadata().getPrimaryName());
         }
 
         if (eventType == null)
         {
             eventType = resolveType(engineURI, eventName, eventAdapterService, optionalPlugInTypeResolutionURIS);
-            eventTypeReferences.add(((EventTypeSPI) eventType).getMetadata().getPrimaryAssociationName());
+            eventTypeReferences.add(((EventTypeSPI) eventType).getMetadata().getPrimaryName());
         }
 
         // Validate all nodes, make sure each returns a boolean and types are good;
@@ -181,7 +181,7 @@ public class FilterStreamSpecRaw extends StreamSpecBase implements StreamSpecRaw
         }
         catch (EventAdapterException ex)
         {
-            log.info(".resolveType Event type alias '" + eventName + "' not resolved as POJO event");
+            log.info(".resolveType Event type alias '" + eventName + "' not resolved as Java-Class event");
             message = "Failed to resolve event type: " + ex.getMessage();
         }
 

@@ -26,6 +26,7 @@ public abstract class BaseConfigurableEventType implements EventTypeSPI {
     /**
      * Ctor.
      * @param underlyngType is the underlying type returned by the event type
+     * @param metadata event type metadata
      */
     protected BaseConfigurableEventType(EventTypeMetadata metadata, Class underlyngType)
     {

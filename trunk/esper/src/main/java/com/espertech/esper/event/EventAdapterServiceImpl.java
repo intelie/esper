@@ -767,5 +767,21 @@ public class EventAdapterServiceImpl implements EventAdapterService
         return convertedArray;
     }
 
+    public boolean removeType(String alias)
+    {
+        EventType eventType = aliasToTypeMap.remove(alias);
+        if (eventType == null)
+        {
+            return false;
+        }
 
+        if (eventType instanceof BaseXMLEventType)
+        {
+            BaseXMLEventType baseXML = (BaseXMLEventType) eventType;
+            xmldomRootElementNames.remove(baseXML.getRootElementName());
+        }
+
+        aliasToHandlerMap.remove(alias);
+        return true;
+    }
 }

@@ -35,6 +35,7 @@ public class VariantEventType implements EventTypeSPI
      * Ctor.
      * @param variantSpec the variant specification
      * @param propertyResStrategy stragegy for resolving properties
+     * @param metadata event type metadata
      */
     public VariantEventType(EventTypeMetadata metadata, VariantSpec variantSpec, VariantPropResolutionStrategy propertyResStrategy)
     {

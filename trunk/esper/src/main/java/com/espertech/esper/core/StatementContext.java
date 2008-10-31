@@ -339,11 +339,19 @@ public final class StatementContext
         return valueAddEventService;
     }
 
+    /**
+     * Add an event type name created during statement start and not available through static analysis.
+     * @param eventTypeAlias to add
+     */
     public void addDynamicReferenceEventType(String eventTypeAlias)
     {
         dynamicReferenceEventTypes.add(eventTypeAlias);
     }
 
+    /**
+     * Returns event type names created during statement start and not available through static analysis.
+     * @return event type names
+     */
     public HashSet<String> getDynamicReferenceEventTypes()
     {
         return dynamicReferenceEventTypes;

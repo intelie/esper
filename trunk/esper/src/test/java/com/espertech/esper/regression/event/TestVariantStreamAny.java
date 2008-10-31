@@ -37,7 +37,7 @@ public class TestVariantStreamAny extends TestCase
         EventTypeSPI type = (EventTypeSPI) ((EPServiceProviderSPI)epService).getValueAddEventService().getValueAddProcessor("MyVariantStream").getValueAddEventType();
         assertEquals(null, type.getMetadata().getOptionalApplicationType());
         assertEquals(null, type.getMetadata().getOptionalSecondaryNames());
-        assertEquals("MyVariantStream", type.getMetadata().getPrimaryAssociationName());
+        assertEquals("MyVariantStream", type.getMetadata().getPrimaryName());
         assertEquals(EventTypeMetadata.TypeClass.VARIANT, type.getMetadata().getTypeClass());
         assertEquals(true, type.getMetadata().isApplicationConfigured());
 

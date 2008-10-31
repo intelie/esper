@@ -44,6 +44,7 @@ public class SimpleXMLEventType extends BaseXMLEventType {
     /**
      * Ctor.
      * @param configurationEventTypeXMLDOM configures the event type
+     * @param eventTypeMetadata event type metadata
      */
     public SimpleXMLEventType(EventTypeMetadata eventTypeMetadata, ConfigurationEventTypeXMLDOM configurationEventTypeXMLDOM)
     {

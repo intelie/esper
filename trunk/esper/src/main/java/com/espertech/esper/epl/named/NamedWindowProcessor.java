@@ -40,6 +40,8 @@ public class NamedWindowProcessor
      * @param createWindowStmtHandle the statement handle of the statement that created the named window
      * @param statementResultService for coordinating on whether insert and remove stream events should be posted
      * @param revisionProcessor for revision processing
+     * @param eplExpression epl expression
+     * @param statementName statement name
      */
     public NamedWindowProcessor(NamedWindowService namedWindowService, String windowName, EventType eventType, EPStatementHandle createWindowStmtHandle, StatementResultService statementResultService, ValueAddEventProcessor revisionProcessor, String eplExpression, String statementName)
     {
@@ -98,6 +100,10 @@ public class NamedWindowProcessor
         return eventType;
     }
 
+    /**
+     * Returns the number of events held.
+     * @return number of events
+     */
     public long getCountDataWindow()
     {
         return tailView.getNumberOfEvents();
@@ -115,11 +121,19 @@ public class NamedWindowProcessor
         return tailView.addConsumer(filterList, statementHandle, statementStopService);
     }
 
+    /**
+     * Returns the EPL expression.
+     * @return epl
+     */
     public String getEplExpression()
     {
         return eplExpression;
     }
 
+    /**
+     * Returns the statement name.
+     * @return name
+     */
     public String getStatementName()
     {
         return statementName;

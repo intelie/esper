@@ -93,6 +93,7 @@ public final class EPServicesContext
      * @param valueAddEventService handles update events
      * @param timeSourceService time source provider class
      * @param metricsReportingService - for metric reporting
+     * @param statementEventTypeRef - statement to event type reference holding
      */
     public EPServicesContext(String engineURI,
                              String engineInstanceId,
@@ -484,6 +485,10 @@ public final class EPServicesContext
         return metricsReportingService;
     }
 
+    /**
+     * Returns service for statement to event type mapping.
+     * @return statement-type mapping
+     */
     public StatementEventTypeRef getStatementEventTypeRefService()
     {
         return statementEventTypeRef;

@@ -9,6 +9,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * Service for holding references between statements and their event type use.
+ */
 public class StatementEventTypeRefImpl implements StatementEventTypeRef
 {
     private static final Log log = LogFactory.getLog(StatementEventTypeRefImpl.class);
@@ -17,6 +20,9 @@ public class StatementEventTypeRefImpl implements StatementEventTypeRef
     private final HashMap<String, Set<String>> typeToStmt;
     private final HashMap<String, Set<String>> stmtToType;
 
+    /**
+     * Ctor.
+     */
     public StatementEventTypeRefImpl()
     {
         typeToStmt = new HashMap<String, Set<String>>();
@@ -45,7 +51,7 @@ public class StatementEventTypeRefImpl implements StatementEventTypeRef
         }
     }
 
-    public void removeReferences(String statementName)
+    public void removeReferencesStatement(String statementName)
     {
         mapLock.acquireWriteLock();
         try
@@ -56,6 +62,26 @@ public class StatementEventTypeRefImpl implements StatementEventTypeRef
                 for (String type : types)
                 {
                     removeReference(statementName, type);
+                }
+            }
+        }
+        finally
+        {
+            mapLock.releaseWriteLock();
+        }
+    }
+
+    public void removeReferencesType(String alias)
+    {
+        mapLock.acquireWriteLock();
+        try
+        {
+            Set<String> statementNames = typeToStmt.remove(alias);
+            if (statementNames != null)
+            {
+                for (String statementName : statementNames)
+                {
+                    removeReference(statementName, alias);
                 }
             }
         }
@@ -146,11 +172,19 @@ public class StatementEventTypeRefImpl implements StatementEventTypeRef
         }
     }
 
+    /**
+     * For testing, returns the mapping of event type alias to statement names.
+     * @return mapping
+     */
     protected HashMap<String, Set<String>> getTypeToStmt()
     {
         return typeToStmt;
     }
 
+    /**
+     * For testing, returns the mapping of statement names to event type aliases.
+     * @return mapping
+     */
     protected HashMap<String, Set<String>> getStmtToType()
     {
         return stmtToType;

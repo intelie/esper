@@ -57,6 +57,7 @@ public class StatementSpecCompiled
      * @param createVariableDesc describes create-variable statements
      * @param hasVariables indicator whether the statement uses variables
      * @param rowLimitSpec row limit specification, or null if none supplied
+     * @param eventTypeReferences event type names statically determined
      */
     public StatementSpecCompiled(OnTriggerDesc onTriggerDesc,
                                  CreateWindowDesc createWindowDesc,
@@ -279,6 +280,10 @@ public class StatementSpecCompiled
         return rowLimitSpec;
     }
 
+    /**
+     * Returns the event type aliases in used by the statement.
+     * @return set of event type alias
+     */
     public Set<String> getEventTypeReferences()
     {
         return eventTypeReferences;
