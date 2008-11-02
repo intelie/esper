@@ -92,7 +92,7 @@ public class TestSchemaXMLEvent extends TestCase
 
         // destroy statement and type
         stmt.destroy();
-        assertNull(configOps.getEventTypeAliasUsedBy("MyXMLEvent"));
+        assertTrue(configOps.getEventTypeAliasUsedBy("MyXMLEvent").isEmpty());
         assertTrue(configOps.isEventTypeAliasExists("MyXMLEvent"));
         assertTrue(configOps.removeEventType("MyXMLEvent", false));
         assertFalse(configOps.removeEventType("MyXMLEvent", false));    // try double-remove

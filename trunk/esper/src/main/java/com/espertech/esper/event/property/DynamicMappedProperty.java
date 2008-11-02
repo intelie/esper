@@ -10,6 +10,7 @@ package com.espertech.esper.event.property;
 
 import com.espertech.esper.event.EventPropertyGetter;
 import com.espertech.esper.event.BeanEventType;
+import com.espertech.esper.event.EventAdapterService;
 
 import java.util.Map;
 import java.io.StringWriter;
@@ -44,12 +45,12 @@ public class DynamicMappedProperty extends PropertyBase implements DynamicProper
         return Object.class;
     }
 
-    public Class getPropertyTypeMap(Map optionalMapPropTypes)
+    public Class getPropertyTypeMap(Map optionalMapPropTypes, EventAdapterService eventAdapterService)
     {
         return Object.class;
     }
 
-    public EventPropertyGetter getGetterMap(Map optionalMapPropTypes)
+    public EventPropertyGetter getGetterMap(Map optionalMapPropTypes, EventAdapterService eventAdapterService)
     {
         return new MapMappedPropertyGetter(this.getPropertyNameAtomic(), key);
     }

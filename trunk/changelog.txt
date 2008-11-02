@@ -1,6 +1,10 @@
 Esper Changelog
 ===================
 
+Changes in version 2.3.0
+------------------------
+Array map properties and Map type name as property name in map, one-to-many
+
 Changes in version 2.2.0
 ------------------------
 

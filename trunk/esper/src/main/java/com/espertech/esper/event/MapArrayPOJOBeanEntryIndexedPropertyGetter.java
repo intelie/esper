@@ -1,21 +1,15 @@
-/**************************************************************************************
- * Copyright (C) 2008 EsperTech, Inc. All rights reserved.                            *
- * http://esper.codehaus.org                                                          *
- * http://www.espertech.com                                                           *
- * ---------------------------------------------------------------------------------- *
- * The software in this package is published under the terms of the GPL license       *
- * a copy of which has been included with this distribution in the license.txt file.  *
- **************************************************************************************/
 package com.espertech.esper.event;
 
 import java.util.Map;
+import java.lang.reflect.Array;
 
 /**
  * A getter that works on POJO events residing within a Map as an event property.
  */
-public class MapPOJOEntryPropertyGetter implements EventPropertyGetter {
+public class MapArrayPOJOBeanEntryIndexedPropertyGetter implements EventPropertyGetter {
 
     private final String propertyMap;
+    private final int index;
     private final EventPropertyGetter mapEntryGetter;
     private final EventAdapterService eventAdapterService;
 
@@ -25,8 +19,9 @@ public class MapPOJOEntryPropertyGetter implements EventPropertyGetter {
      * @param mapEntryGetter the getter for the map entry
      * @param eventAdapterService for producing wrappers to objects
      */
-    public MapPOJOEntryPropertyGetter(String propertyMap, EventPropertyGetter mapEntryGetter, EventAdapterService eventAdapterService) {
+    public MapArrayPOJOBeanEntryIndexedPropertyGetter(String propertyMap, int index, EventPropertyGetter mapEntryGetter, EventAdapterService eventAdapterService) {
         this.propertyMap = propertyMap;
+        this.index = index;
         this.mapEntryGetter = mapEntryGetter;
         this.eventAdapterService = eventAdapterService;
     }
@@ -51,9 +46,22 @@ public class MapPOJOEntryPropertyGetter implements EventPropertyGetter {
         {
             return null;
         }
+        if (!value.getClass().isArray())
+        {
+            return null;
+        }
+        if (Array.getLength(value) <= index)
+        {
+            return null;
+        }
+        Object arrayItem = Array.get(value, index);
+        if (arrayItem == null)
+        {
+            return null;
+        }
 
         // Object within the map
-        EventBean event = eventAdapterService.adapterForBean(value);
+        EventBean event = eventAdapterService.adapterForBean(arrayItem);
         return mapEntryGetter.get(event);
     }
 

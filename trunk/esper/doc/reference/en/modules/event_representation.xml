@@ -411,26 +411,44 @@ where address('work').streetName = 'Park Ave'
 	   
 		<indexterm><primary>map event representation</primary></indexterm>
 		<indexterm><primary>event</primary><secondary>Map representation</secondary></indexterm>
-		<para>
-			Events can also be represented by objects that implement the <literal>java.util.Map</literal> interface. 
-			Event properties of <literal>Map</literal> events are the values in the map accessible through the <literal>get</literal> method exposed by the <literal>java.util.Map</literal> interface.
-		</para>
 
-		<para>
-			A given Map event type can have one or more supertypes that must also be Map event types. All properties available on any of the Map supertypes are available on the type itself. In addition, anywhere within EPL that an event type alias of a Map supertype is used, any of its Map subtypes and their subtypes match that expression.
-		</para>
-
-		<para>
-			Your application can add properties to an existing Map event type during runtime using the configuration operation <literal>updateMapEventType</literal>. Properties may not be updated or deleted - properties can only be added, and nested properties can be added as well.
-		</para>
-
-		<para>
-			The engine can process <literal>java.util.Map</literal> events via the <literal>sendEvent(Map map, String eventTypeAlias)</literal> method on the <literal>EPRuntime</literal> interface. Entries in the Map represent event properties. Keys must be of type <literal>java.util.String</literal> for the engine to be able to look up event property names specified by pattern or EPL statements. 
-		</para>
+		<sect2 id="eventrep-map-overview">
+		   <title>Overview</title>
+			<para>
+				Events can also be represented by objects that implement the <literal>java.util.Map</literal> interface. 
+				Event properties of <literal>Map</literal> events are the values in the map accessible through the <literal>get</literal> method exposed by the <literal>java.util.Map</literal> interface.
+			</para>
+	
+			<para>
+				The Map event type is a comprehensive type system that can eliminate the need to use Java classes as event types, thereby making it easier to change types at runtime or generate type information from another source.
+			</para>
+	
+			<para>
+				A given Map event type can have one or more supertypes that must also be Map event types. All properties available on any of the Map supertypes are available on the type itself. In addition, anywhere within EPL that an event type alias of a Map supertype is used, any of its Map subtypes and their subtypes match that expression.
+			</para>
+	
+			<para>
+				Your application can add properties to an existing Map event type during runtime using the configuration operation <literal>updateMapEventType</literal>. Properties may not be updated or deleted - properties can only be added, and nested properties can be added as well. The runtime configuration also allows removing Map event types and adding them back with new type information.
+			</para>
+	
+			<para>
+				After your application configures a Map event type by providing a type name, the type name can be used when defining further Map event types by specifying the type name as a property type or an array property type.
+			</para>
+	
+			<para>
+				One-to-Many relationships in Map event types are represented via arrays. A property in a Map event type may be an array of primitive, an array of Java object or an array of Map. 
+			</para>
+	
+			<para>
+				The engine can process <literal>java.util.Map</literal> events via the <literal>sendEvent(Map map, String eventTypeAlias)</literal> method on the <literal>EPRuntime</literal> interface. Entries in the Map represent event properties. Keys must be of type <literal>java.util.String</literal> for the engine to be able to look up event property names specified by pattern or EPL statements. 
+			</para>
+		</sect2>
 			
-		<para>
-			Map event properties can be of any type. Map event properties that are Java application objects or that are of type <literal>java.util.Map</literal> offer additional power:
-		</para>
+		<sect2 id="eventrep-map-properties">
+		   <title>Map Properties</title>
+			<para>
+				Map event properties can be of any type. Map event properties that are Java application objects or that are of type <literal>java.util.Map</literal> (or arrays thereof) offer additional power:
+			</para>
 
 			<itemizedlist spacing="compact">
 				<listitem>
@@ -440,125 +458,47 @@ where address('work').streetName = 'Park Ave'
 				</listitem>
 				<listitem>
 					<para>
-						Properties that are of type <literal>Map</literal> allow Maps to be nested arbitrarily deep and thus can be used to represent complex domain information. The nested, indexed, mapped and dynamic property syntax can be used to query Maps within Maps.. 					
+						Properties that are of type <literal>Map</literal> allow Maps to be nested arbitrarily deep and thus can be used to represent complex domain information. The nested, indexed, mapped and dynamic property syntax can be used to query Maps within Maps and arrays of Maps within Maps. 					
 					</para>
 				</listitem>
 			</itemizedlist>
 
-		<para>
-			In order to use <literal>Map</literal> events, the event type name and property names and types must be made known to the engine via Configuration. Please see the examples in <xref linkend="config-java-util-map"/>.
-		</para>
-	   									
-		<para>
-			The code snippet below creates and processes a <literal>Map</literal> event. The example assumes the <literal>CarLocationUpdateEvent</literal> event type alias has been configured.
-		</para>
-
-		<programlisting><![CDATA[Map event = new HashMap();
+			<para>
+				In order to use <literal>Map</literal> events, the event type name and property names and types must be made known to the engine via Configuration. Please see the examples in <xref linkend="config-java-util-map"/>.
+			</para>
+											
+			<para>
+				The code snippet below creates and processes a <literal>Map</literal> event. It defines a <literal>CarLocationUpdateEvent</literal> event type first:
+			</para>
+	
+			<programlisting><![CDATA[Map event = new HashMap();
 event.put("carId", carId);
 event.put("direction", direction);
 epRuntime.sendEvent(event, "CarLocUpdateEvent");]]></programlisting>
 	
-		<para>
-			The <literal>CarLocUpdateEvent</literal> can now be used in a statement:
-		</para>
-		<programlisting>select carId from CarLocUpdateEvent.win:time(1 min) where direction = 1</programlisting> 
-		
-		<para>
-			The engine can also query Java objects as values in a <literal>Map</literal> event via the nested property syntax. Thus <literal>Map</literal> events can be used to 
-			aggregate multiple data structures into a single event and query the composite information in a convenient way. The example below demonstrates a <literal>Map</literal> event with a transaction and an account object.
-		</para>
-		<programlisting><![CDATA[Map event = new HashMap();
+			<para>
+				The <literal>CarLocUpdateEvent</literal> can now be used in a statement:
+			</para>
+			<programlisting>select carId from CarLocUpdateEvent.win:time(1 min) where direction = 1</programlisting> 
+			
+			<para>
+				The engine can also query Java objects as values in a <literal>Map</literal> event via the nested property syntax. Thus <literal>Map</literal> events can be used to 
+				aggregate multiple data structures into a single event and query the composite information in a convenient way. The example below demonstrates a <literal>Map</literal> event with a transaction and an account object.
+			</para>
+			<programlisting><![CDATA[Map event = new HashMap();
 event.put("txn", txn);
 event.put("account", account);
 epRuntime.sendEvent(event, "TxnEvent");]]></programlisting>
 
-		<para>
-			An example statement could look as follows.
-		</para>
-		<programlisting>select account.id, account.rate * txn.amount 
-from TxnEvent.win:time(60 sec) 
-group by account.id</programlisting> 
-		
-		<sect2 id="eventrep-xml-map-nested">
-		   <title>Map-Within-Map Nested Events</title>
-		   
-		   <para>
-			   Strongly-typed nested <literal>Map</literal>-within-<literal>Map</literal> events can be used to build rich, type-safe event types on the fly. Use the <literal>addNestableEventTypeAlias</literal> method on <literal>Configuration</literal> or <literal>ConfigurationOperations</literal> for initialization-time and runtime-time type definition.
-		   </para>
-
-		   <para>
-			   Noteworthy points are:
-		   </para>
-
-			<itemizedlist spacing="compact">
-				<listitem>
-					<para>
-						JavaBean (POJO) objects can also appear as properties in <literal>Map</literal>-within-<literal>Map</literal>. 
-					</para>
-				</listitem>
-				<listitem>
-					<para>
-						There is no limit to the number of nesting levels. 
-					</para>
-				</listitem>
-				<listitem>
-					<para>
-						Dynamic properties can be used to query <literal>Map</literal>-within-<literal>Map</literal> keys that may not be known in advance. 
-					</para>
-				</listitem>
-				<listitem>
-					<para>
-						The engine returns a <literal>null</literal> value for properties for which the access path into the nested structure cannot be followed where map entries do not exist.
-					</para>
-				</listitem>
-			</itemizedlist>
-
-		   <para>
-			   For demonstration, in this example our top-level event type is an AccountUpdate event, which has an UpdatedField structure as a property. Inside the UpdatedField structure the example defines various fields, as well as a property by name 'history' that holds a JavaBean class 'UpdateHistory' to represent the update history for the account. The code snippet to define the event type is thus:
-		   </para>
-
-		<programlisting><![CDATA[Map<String, Object> updatedFieldDef = new HashMap<String, Object>();
-updatedFieldDef.put("name", String.class);
-updatedFieldDef.put("addressLine1", String.class);
-updatedFieldDef.put("history", UpdateHistory.class);
-
-Map<String, Object> accountUpdateDef = new HashMap<String, Object>();
-accountUpdateDef.put("accountId", long.class);
-accountUpdateDef.put("fields", updatedFieldDef);
-
-epService.getEPAdministrator().getConfiguration().
-    addNestableEventTypeAlias("AccountUpdate", accountUpdateDef);]]></programlisting>
-
-		   <para>
-			   The next code snippet populates a sample event and sends the event into the engine:
-		   </para>
-
-		<programlisting><![CDATA[Map<String, Object> updatedField = new HashMap<String, Object>();
-updatedField.put("name", "Joe Doe");
-updatedField.put("addressLine1", "40 Popular Street");
-updatedField.put("history", new UpdateHistory());
-
-Map<String, Object> accountUpdate = new HashMap<String, Object>();
-accountUpdate.put("accountId", 10009901);
-accountUpdate.put("fields", updatedField);
-
-epService.getEPRuntime().sendEvent(accountUpdate, "AccountUpdate");]]></programlisting>
-
-		   <para>
-			   Last, a sample query to interrogate AccountUpdate events is as follows:
-		   </para>
-			<programlisting><![CDATA[select accountId, fields.name, fields.addressLine1, fields.history.lastUpdate
-from AccountUpdate]]></programlisting>
-
 			<para>
-				Note that type information for nested maps is only available to the immediately selecting stream. For example, the second select-query does not work:
-			</para>			
-			<programlisting><![CDATA[insert into MyStream select fields from NestedMapEvent
-// this does not work ... instead select the individual fields in the insert-into statement
-select fields.name from MyStream ]]></programlisting>
-	   </sect2>
+				An example statement could look as follows.
+			</para>
+			<programlisting>select account.id, account.rate * txn.amount 
+from TxnEvent.win:time(60 sec) 
+group by account.id</programlisting> 		
+		</sect2>
 
-		<sect2 id="eventrep-xml-map-supertype">
+		<sect2 id="eventrep-map-supertype">
 		   <title>Map Supertypes</title>
 		   
 		   <para>
@@ -573,7 +513,7 @@ select fields.name from MyStream ]]></programlisting>
 			   This example assumes that the <literal>BaseUpdate</literal> event type has been declared and acts as a supertype to the <literal>AccountUpdate</literal> event type (both Map event types): 
 		   </para>
 		<programlisting><![CDATA[epService.getEPAdministrator().getConfiguration().
-    addNestableEventTypeAlias("AccountUpdate", accountUpdateDef, 
+    addEventTypeAliasNestable("AccountUpdate", accountUpdateDef, 
     new String[] {"BaseUpdate"});]]></programlisting>
 
 		   <para>
@@ -592,6 +532,177 @@ select * from BaseUpdate]]></programlisting>
 
 	   </sect2>
 
+		<sect2 id="eventrep-map-advanced">
+		   <title>Advanced Map Property Types</title>
+
+			<sect3 id="eventrep-map-nested">
+			   <title>Nested Properties</title>
+			   
+			   <para>
+				   Strongly-typed nested <literal>Map</literal>-within-<literal>Map</literal> events can be used to build rich, type-safe event types on the fly. Use the <literal>addEventTypeAliasNestable</literal> method on <literal>Configuration</literal> or <literal>ConfigurationOperations</literal> for initialization-time and runtime-time type definition.
+			   </para>
+	
+			   <para>
+				   Noteworthy points are:
+			   </para>
+	
+				<itemizedlist spacing="compact">
+					<listitem>
+						<para>
+							JavaBean (POJO) objects can appear as properties in <literal>Map</literal>-within-<literal>Map</literal>. 
+						</para>
+					</listitem>
+					<listitem>
+						<para>
+							One may represent Map-within-Map and Map-Array within Map using the name of a previously registered Map event type.
+						</para>
+					</listitem>
+					<listitem>
+						<para>
+							There is no limit to the number of nesting levels.
+						</para>
+					</listitem>
+					<listitem>
+						<para>
+							Dynamic properties can be used to query <literal>Map</literal>-within-<literal>Map</literal> keys that may not be known in advance. 
+						</para>
+					</listitem>
+					<listitem>
+						<para>
+							The engine returns a <literal>null</literal> value for properties for which the access path into the nested structure cannot be followed where map entries do not exist.
+						</para>
+					</listitem>
+				</itemizedlist>
+	
+			   <para>
+				   For demonstration, in this example our top-level event type is an <literal>AccountUpdate</literal> event, which has an <literal>UpdatedField</literal> structure as a property. Inside the <literal>UpdatedField</literal> structure the example defines various fields, as well as a property by name 'history' that holds a JavaBean class <literal>UpdateHistory</literal> to represent the update history for the account. The code snippet to define the event type is thus:
+			   </para>
+
+			<programlisting><![CDATA[Map<String, Object> updatedFieldDef = new HashMap<String, Object>();
+updatedFieldDef.put("name", String.class);
+updatedFieldDef.put("addressLine1", String.class);
+updatedFieldDef.put("history", UpdateHistory.class);
+
+Map<String, Object> accountUpdateDef = new HashMap<String, Object>();
+accountUpdateDef.put("accountId", long.class);
+accountUpdateDef.put("fields", updatedFieldDef);
+
+epService.getEPAdministrator().getConfiguration().
+    addEventTypeAliasNestable("AccountUpdate", accountUpdateDef);]]></programlisting>
+
+			   <para>
+				   The next code snippet populates a sample event and sends the event into the engine:
+			   </para>
+	
+			<programlisting><![CDATA[Map<String, Object> updatedField = new HashMap<String, Object>();
+updatedField.put("name", "Joe Doe");
+updatedField.put("addressLine1", "40 Popular Street");
+updatedField.put("history", new UpdateHistory());
+
+Map<String, Object> accountUpdate = new HashMap<String, Object>();
+accountUpdate.put("accountId", 10009901);
+accountUpdate.put("fields", updatedField);
+
+epService.getEPRuntime().sendEvent(accountUpdate, "AccountUpdate");]]></programlisting>
+
+			   <para>
+				   Last, a sample query to interrogate <literal>AccountUpdate</literal> events is as follows:
+			   </para>
+				<programlisting><![CDATA[select accountId, fields.name, fields.addressLine1, fields.history.lastUpdate
+from AccountUpdate]]></programlisting>
+
+				<para>
+					Note that type information for nested maps is only available to the immediately selecting stream. For example, the second select-query does not work:
+				</para>			
+				<programlisting><![CDATA[insert into MyStream select fields from NestedMapEvent
+// this does not work ... instead select the individual fields in the insert-into statement
+select fields.name from MyStream ]]></programlisting>
+		   </sect3>
+	
+			<sect3 id="eventrep-map-typereuse">
+			   <title>Map Event Type Properties</title>
+			   
+			   <para>
+				   Your application may declare a Map event type for reuse within other Map event types or for one-to-many properties represented by an array of Maps.
+			   </para>
+	
+			   <para>
+				   This example declares a Map event type by name <literal>AmountCurrency</literal> with amount and currency properties:
+			   </para>
+	
+			<programlisting><![CDATA[Map<String, Object> amountAndCurr = new HashMap<String, Object>();
+amountAndCurr.put("amount", double.class);
+amountAndCurr.put("currency", String.class);
+
+epService.getEPAdministrator().getConfiguration().
+    addEventTypeAliasNestable("AmountCurrency", amountAndCurr);]]></programlisting>
+
+			   <para>
+				   The <literal>AmountCurrency</literal> type is now available for use as a property type itself. Below code snippet declares <literal>OrderItem</literal> to hold an item number and <literal>AmountCurrency</literal>:
+			   </para>
+	
+			<programlisting><![CDATA[Map<String, Object> orderItem = new HashMap<String, Object>();
+orderItem.put("itemNum", int.class);
+orderItem.put("price", "AmountCurrency");    // The property type is the name itself
+
+epService.getEPAdministrator().getConfiguration().
+    addEventTypeAliasNestable("OrderItem", orderItem);]]></programlisting>
+
+		   </sect3>
+	
+			<sect3 id="eventrep-map-array">
+			   <title>One-to-Many Relationships</title>
+			   
+			   <para>
+				   To model repeated properties within a Map, you may use arrays as properties in a Map. You may use an array of primitive types or an array of JavaBean objects or an array of a previously declared Map event type.
+			   </para>
+	
+			   <para>
+				   When using a previously declared Map event type as an array property, the literal <literal>[]</literal> must be appended after the event type name.
+			   </para>
+
+			   <para>
+				   This following example defines a Map event type by name <literal>Sale</literal> to hold array properties of the various types. It assumes a <literal>SalesPerson</literal> Java class exists and a Map event type by name <literal>OrderItem</literal> was declared:
+			   </para>
+	
+			<programlisting><![CDATA[Map<String, Object> sale = new HashMap<String, Object>();
+sale.put("userids", int[].class);
+sale.put("salesPersons", SalesPerson[].class);
+sale.put("items", "OrderItem[]");	 // The property type is the name itself appended by []
+
+epService.getEPAdministrator().getConfiguration().
+    addEventTypeAliasNestable("SaleEvent", sale);]]></programlisting>
+
+			   <para>
+				   The three properties that the above example declares are:
+			   </para>
+			   <itemizedlist>
+				   <listitem>
+					   <para>
+						 An integer array of user ids.
+					   </para>
+				   </listitem>
+				   <listitem>
+					   <para>
+						 An array of <literal>SalesPerson</literal> Java objects.
+					   </para>
+				   </listitem>
+				   <listitem>
+					   <para>
+						 An array of Maps for order items.
+					   </para>
+				   </listitem>			   
+			   </itemizedlist>
+			   
+			   <para>
+				   The next EPL statement is a sample query asking for property values held by arrays:
+			   </para>
+	
+			<programlisting><![CDATA[select userids[0], salesPersons[1].name, 
+    items[1], items[1].price.amount from SaleEvent]]></programlisting>
+
+		   </sect3>
+		</sect2>
     </sect1>
 
 	<sect1 id="eventrep-xml-dom">

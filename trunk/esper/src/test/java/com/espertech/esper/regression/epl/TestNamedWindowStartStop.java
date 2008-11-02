@@ -175,7 +175,7 @@ public class TestNamedWindowStartStop extends TestCase
 
         // destroy statement and type
         stmt.destroy();
-        assertNull(configOps.getEventTypeAliasUsedBy("MyWindowEventType"));
+        assertTrue(configOps.getEventTypeAliasUsedBy("MyWindowEventType").isEmpty());
         assertTrue(configOps.isEventTypeAliasExists("MyWindowEventType"));
         assertTrue(configOps.removeEventType("MyWindowEventType", false));
         assertFalse(configOps.removeEventType("MyWindowEventType", false));    // try double-remove

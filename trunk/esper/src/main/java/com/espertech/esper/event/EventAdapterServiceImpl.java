@@ -205,7 +205,7 @@ public class EventAdapterServiceImpl implements EventAdapterService
         }
 
         MapEventType mapEventType = (MapEventType) type;
-        mapEventType.addAdditionalProperties(typeMap);
+        mapEventType.addAdditionalProperties(typeMap, this);
     }
 
     public EventSender getDynamicTypeEventSender(EPRuntimeEventSender epRuntime, URI[] uri) throws EventTypeException

@@ -111,7 +111,9 @@ public class FilterStreamSpecRaw extends StreamSpecBase implements StreamSpecRaw
         if (eventType == null)
         {
             eventType = resolveType(engineURI, eventName, eventAdapterService, optionalPlugInTypeResolutionURIS);
-            eventTypeReferences.add(((EventTypeSPI) eventType).getMetadata().getPrimaryName());
+            if (eventType instanceof EventTypeSPI) {
+                eventTypeReferences.add(((EventTypeSPI) eventType).getMetadata().getPrimaryName());                
+            }
         }
 
         // Validate all nodes, make sure each returns a boolean and types are good;

@@ -354,7 +354,7 @@ public interface ConfigurationOperations
      * A reference counts as any mention of the event type in a from-clause, a pattern, a insert-into or
      * as part of on-trigger.
      * @param eventTypeAlias name of the event type
-     * @return statement names 
+     * @return statement names referencing that type
      */
     public Set<String> getEventTypeAliasUsedBy(String eventTypeAlias);
 }

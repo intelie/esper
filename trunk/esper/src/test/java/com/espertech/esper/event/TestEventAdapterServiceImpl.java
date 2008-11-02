@@ -105,7 +105,7 @@ public class TestEventAdapterServiceImpl extends TestCase
         props.put("b", String.class);
 
         // check result type
-        EventType typeOne = adapterService.addWrapperType("latencyEvent", beanEventType, props, false, false);
+        EventType typeOne = adapterService.addWrapperType("latencyEvent", beanEventType, props, false, true);
         assertEquals(Long.class, typeOne.getPropertyType("a"));
         assertEquals(String.class, typeOne.getPropertyType("b"));
         assertEquals(7, typeOne.getPropertyNames().length);

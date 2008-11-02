@@ -391,17 +391,118 @@ public class TestMapEventNested extends TestCase
     {
         EPServiceProvider epService = getEngineInitialized(null, null);
 
+        // test map containing first-level property that is an array of primitive or Class
         Map<String, Object> arrayDef = makeMap(new Object[][] {{"p0", int[].class}, {"p1", SupportBean[].class }});
         epService.getEPAdministrator().getConfiguration().addEventTypeAliasNestable("MyArrayMap", arrayDef);
 
-        EPStatement stmt = epService.getEPAdministrator().createEPL("select p0[0], p0[1], p1[0].intPrimitive, p1[1] from MyArrayMap");
+        EPStatement stmt = epService.getEPAdministrator().createEPL("select p0[0] as a, p0[1] as b, p1[0].intPrimitive as c, p1[1] as d, p0 as e from MyArrayMap");
         SupportUpdateListener listener = new SupportUpdateListener();
         stmt.addListener(listener);
 
-        SupportBean[] beans = new SupportBean[] {new SupportBean("e1", 1), new SupportBean("e2", 2)};
-        Map<String, Object> event = makeMap(new Object[][] {{"p0", new int[] {1, 2, 3}}, {"p1", beans}});
-        epService.getEPRuntime().sendEvent(event);
-                 
+        int[] p0 = new int[] {1, 2, 3};
+        SupportBean[] beans = new SupportBean[] {new SupportBean("e1", 5), new SupportBean("e2", 6)};
+        Map<String, Object> event = makeMap(new Object[][] {{"p0", p0}, {"p1", beans}});
+        epService.getEPRuntime().sendEvent(event, "MyArrayMap");
+
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), "a,b,c,d,e".split(","), new Object[] {1, 2, 5, beans[1], p0});
+        assertEquals(int.class, stmt.getEventType().getPropertyType("a"));
+        assertEquals(int.class, stmt.getEventType().getPropertyType("b"));
+        assertEquals(int.class, stmt.getEventType().getPropertyType("c"));
+        assertEquals(SupportBean.class, stmt.getEventType().getPropertyType("d"));
+        assertEquals(int[].class, stmt.getEventType().getPropertyType("e"));
+        stmt.destroy();
+
+        // test map at the second level of a nested map that is an array of primitive or Class
+        Map<String, Object> arrayDefOuter = makeMap(new Object[][] {{"outer", arrayDef}});
+        epService.getEPAdministrator().getConfiguration().addEventTypeAliasNestable("MyArrayMapOuter", arrayDefOuter);
+
+        stmt = epService.getEPAdministrator().createEPL("select outer.p0[0] as a, outer.p0[1] as b, outer.p1[0].intPrimitive as c, outer.p1[1] as d, outer.p0 as e from MyArrayMapOuter");
+        stmt.addListener(listener);
+
+        Map<String, Object> eventOuter = makeMap(new Object[][] {{"outer", event}});
+        epService.getEPRuntime().sendEvent(eventOuter, "MyArrayMapOuter");
+
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), "a,b,c,d".split(","), new Object[] {1, 2, 5, beans[1]});
+        assertEquals(int.class, stmt.getEventType().getPropertyType("a"));
+        assertEquals(int.class, stmt.getEventType().getPropertyType("b"));
+        assertEquals(int.class, stmt.getEventType().getPropertyType("c"));
+        assertEquals(SupportBean.class, stmt.getEventType().getPropertyType("d"));
+        assertEquals(int[].class, stmt.getEventType().getPropertyType("e"));
+    }
+
+    public void testMapNamePropertyNested()
+    {
+        EPServiceProvider epService = getEngineInitialized(null, null);
+
+        // create a named map
+        Map<String, Object> namedDef = makeMap(new Object[][] {{"n0", int.class}});
+        epService.getEPAdministrator().getConfiguration().addEventTypeAliasNestable("MyNamedMap", namedDef);
+
+        // create a map using the name
+        Map<String, Object> eventDef = makeMap(new Object[][] {{"p0", "MyNamedMap"}, {"p1", "MyNamedMap[]"}});
+        epService.getEPAdministrator().getConfiguration().addEventTypeAliasNestable("MyMapWithAMap", eventDef);
+
+        // test named-map at the second level of a nested map
+        Map<String, Object> arrayDefOuter = makeMap(new Object[][] {{"outer", eventDef}});
+        epService.getEPAdministrator().getConfiguration().addEventTypeAliasNestable("MyArrayMapOuter", arrayDefOuter);
+
+        SupportUpdateListener listener = new SupportUpdateListener();
+        EPStatement stmt = epService.getEPAdministrator().createEPL("select outer.p0.n0 as a, outer.p1[0].n0 as b, outer.p1[1].n0 as c, outer.p0 as d, outer.p1 as e from MyArrayMapOuter");
+        stmt.addListener(listener);
+
+        Map<String, Object> n0_1 = makeMap(new Object[][] {{"n0", 1}});
+        Map<String, Object> n0_21 = makeMap(new Object[][] {{"n0", 2}});
+        Map<String, Object> n0_22 = makeMap(new Object[][] {{"n0", 3}});
+        Map[] n0_2 = new Map[] {n0_21, n0_22};
+        Map<String, Object> event = makeMap(new Object[][] {{"p0", n0_1}, {"p1", n0_2 }});
+        Map<String, Object> eventOuter = makeMap(new Object[][] {{"outer", event}});
+        epService.getEPRuntime().sendEvent(eventOuter, "MyArrayMapOuter");
+
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), "a,b,c,d,e".split(","), new Object[] {1, 2, 3, n0_1, n0_2});
+        assertEquals(int.class, stmt.getEventType().getPropertyType("a"));
+        assertEquals(int.class, stmt.getEventType().getPropertyType("b"));
+        assertEquals(int.class, stmt.getEventType().getPropertyType("c"));
+        assertEquals(Map.class, stmt.getEventType().getPropertyType("d"));
+        assertEquals(Map[].class, stmt.getEventType().getPropertyType("e"));
+
+        stmt.destroy();
+        stmt = epService.getEPAdministrator().createEPL("select outer.p0.n0? as a, outer.p1[0].n0? as b, outer.p1[1]?.n0 as c, outer.p0? as d, outer.p1? as e from MyArrayMapOuter");
+        stmt.addListener(listener);
+        epService.getEPRuntime().sendEvent(eventOuter, "MyArrayMapOuter");
+
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), "a,b,c,d,e".split(","), new Object[] {1, 2, 3, n0_1, n0_2});
+        assertEquals(int.class, stmt.getEventType().getPropertyType("a"));
+    }
+
+    public void testMapNameProperty()
+    {
+        EPServiceProvider epService = getEngineInitialized(null, null);
+
+        // create a named map
+        Map<String, Object> namedDef = makeMap(new Object[][] {{"n0", int.class}});
+        epService.getEPAdministrator().getConfiguration().addEventTypeAliasNestable("MyNamedMap", namedDef);
+
+        // create a map using the name
+        Map<String, Object> eventDef = makeMap(new Object[][] {{"p0", "MyNamedMap"}, {"p1", "MyNamedMap[]"}});
+        epService.getEPAdministrator().getConfiguration().addEventTypeAliasNestable("MyMapWithAMap", eventDef);
+
+        EPStatement stmt = epService.getEPAdministrator().createEPL("select p0.n0 as a, p1[0].n0 as b, p1[1].n0 as c, p0 as d, p1 as e from MyMapWithAMap");
+        SupportUpdateListener listener = new SupportUpdateListener();
+        stmt.addListener(listener);
+
+        Map<String, Object> n0_1 = makeMap(new Object[][] {{"n0", 1}});
+        Map<String, Object> n0_21 = makeMap(new Object[][] {{"n0", 2}});
+        Map<String, Object> n0_22 = makeMap(new Object[][] {{"n0", 3}});
+        Map[] n0_2 = new Map[] {n0_21, n0_22};
+        Map<String, Object> event = makeMap(new Object[][] {{"p0", n0_1}, {"p1", n0_2 }});
+        epService.getEPRuntime().sendEvent(event, "MyMapWithAMap");
+
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), "a,b,c,d,e".split(","), new Object[] {1, 2, 3, n0_1, n0_2});
+        assertEquals(int.class, stmt.getEventType().getPropertyType("a"));
+        assertEquals(int.class, stmt.getEventType().getPropertyType("b"));
+        assertEquals(int.class, stmt.getEventType().getPropertyType("c"));
+        assertEquals(Map.class, stmt.getEventType().getPropertyType("d"));
+        assertEquals(Map[].class, stmt.getEventType().getPropertyType("e"));
     }
 
     public void testIsExists()

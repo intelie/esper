@@ -72,7 +72,7 @@ public class TestMapEvent extends TestCase
 
         // destroy statement and type
         stmt.destroy();
-        assertNull(configOps.getEventTypeAliasUsedBy("myMapEvent"));
+        assertTrue(configOps.getEventTypeAliasUsedBy("myMapEvent").isEmpty());
         assertTrue(configOps.isEventTypeAliasExists("myMapEvent"));
         assertTrue(configOps.removeEventType("myMapEvent", false));
         assertFalse(configOps.removeEventType("myMapEvent", false));    // try double-remove

@@ -50,7 +50,7 @@ public class TestLegacyBeanEvents extends TestCase
 
         // destroy statement and type
         stmt.destroy();
-        assertNull(configOps.getEventTypeAliasUsedBy("MyBeanEvent"));
+        assertTrue(configOps.getEventTypeAliasUsedBy("MyBeanEvent").isEmpty());
         assertTrue(configOps.isEventTypeAliasExists("MyBeanEvent"));
         assertTrue(configOps.removeEventType("MyBeanEvent", false));
         assertFalse(configOps.removeEventType("MyBeanEvent", false));    // try double-remove

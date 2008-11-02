@@ -11,6 +11,7 @@ package com.espertech.esper.event.property;
 import com.espertech.esper.event.EventPropertyGetter;
 import com.espertech.esper.event.BeanEventType;
 import com.espertech.esper.event.EventPropertyDescriptor;
+import com.espertech.esper.event.EventAdapterService;
 import net.sf.cglib.reflect.FastClass;
 import net.sf.cglib.reflect.FastMethod;
 
@@ -79,12 +80,12 @@ public class MappedProperty extends PropertyBase
         return propertyDesc.getReadMethod().getReturnType();
     }
 
-    public Class getPropertyTypeMap(Map optionalMapPropTypes)
+    public Class getPropertyTypeMap(Map optionalMapPropTypes, EventAdapterService eventAdapterService)
     {
         return null;  // Mapped properties are not allowed in non-dynamic form in a map
     }
 
-    public EventPropertyGetter getGetterMap(Map optionalMapPropTypes)
+    public EventPropertyGetter getGetterMap(Map optionalMapPropTypes, EventAdapterService eventAdapterService)
     {
         return null;  // Mapped properties are not allowed in non-dynamic form in a map
     }

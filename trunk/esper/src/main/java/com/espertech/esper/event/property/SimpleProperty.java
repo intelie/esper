@@ -9,6 +9,7 @@
 package com.espertech.esper.event.property;
 
 import com.espertech.esper.event.*;
+import com.espertech.esper.client.EPException;
 
 import java.util.Map;
 import java.io.StringWriter;
@@ -51,7 +52,7 @@ public class SimpleProperty extends PropertyBase
         return eventType.getPropertyType(propertyNameAtomic);
     }
 
-    public Class getPropertyTypeMap(Map optionalMapPropTypes)
+    public Class getPropertyTypeMap(Map optionalMapPropTypes, EventAdapterService eventAdapterService)
     {
         // The simple, none-dynamic property needs a definition of the map contents else no property
         if (optionalMapPropTypes == null)
@@ -67,16 +68,37 @@ public class SimpleProperty extends PropertyBase
         {
             return (Class) def;
         }
-        if (def instanceof Map)
+        else if (def instanceof Map)
         {
             return Map.class;
+        }
+        else if (def instanceof String)
+        {
+            String propertyName = def.toString();
+            boolean isArray = MapEventType.isPropertyArray(propertyName);
+            if (isArray) {
+                propertyName = MapEventType.getPropertyRemoveArray(propertyName);
+            }
+
+            EventType eventType = eventAdapterService.getExistsTypeByAlias(propertyName);
+            if (eventType instanceof MapEventType)
+            {
+                if (isArray)
+                {
+                    return Map[].class;
+                }
+                else
+                {
+                    return Map.class;
+                }
+            }
         }
         String message = "Nestable map type configuration encountered an unexpected value type of '"
             + def.getClass() + " for property '" + propertyNameAtomic + "', expected Map or Class";
         throw new PropertyAccessException(message);
     }
 
-    public EventPropertyGetter getGetterMap(Map optionalMapPropTypes)
+    public EventPropertyGetter getGetterMap(Map optionalMapPropTypes, EventAdapterService eventAdapterService)
     {
         // The simple, none-dynamic property needs a definition of the map contents else no property
         if (optionalMapPropTypes == null)

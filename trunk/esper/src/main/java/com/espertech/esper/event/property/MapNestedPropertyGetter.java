@@ -20,6 +20,7 @@ public class MapNestedPropertyGetter implements EventPropertyGetter
 {
     private final EventPropertyGetter[] getterChain;
     private final BeanEventTypeFactory beanEventTypeFactory;
+    private final int lastElementIndex;
 
     /**
      * Ctor.
@@ -30,6 +31,7 @@ public class MapNestedPropertyGetter implements EventPropertyGetter
                                    BeanEventTypeFactory beanEventTypeFactory)
     {
         this.getterChain = getterChain.toArray(new EventPropertyGetter[getterChain.size()]);
+        lastElementIndex = this.getterChain.length - 1;
         this.beanEventTypeFactory = beanEventTypeFactory;
     }
 
@@ -47,7 +49,7 @@ public class MapNestedPropertyGetter implements EventPropertyGetter
             }
 
             // this is not the last element
-            if (i < (getterChain.length - 1))
+            if (i < lastElementIndex)
             {
                 if (result instanceof Map)
                 {

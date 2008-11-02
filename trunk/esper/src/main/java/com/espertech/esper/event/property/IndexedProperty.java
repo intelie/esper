@@ -119,14 +119,88 @@ public class IndexedProperty extends PropertyBase
         return null;
     }
 
-    public Class getPropertyTypeMap(Map optionalMapPropTypes)
+    public Class getPropertyTypeMap(Map optionalMapPropTypes, EventAdapterService eventAdapterService)
     {
-        return null;  // indexed properties are not allowed in non-dynamic form in a map
+        Object type = optionalMapPropTypes.get(propertyNameAtomic);
+        if (type == null)
+        {
+            return null;
+        }
+        if (type instanceof String) // resolve a property that is a map event type
+        {
+            String nestedName = type.toString();
+            boolean isArray = MapEventType.isPropertyArray(nestedName);
+            if (isArray) {
+                nestedName = MapEventType.getPropertyRemoveArray(nestedName);
+            }
+            EventType innerType = eventAdapterService.getExistsTypeByAlias(nestedName);
+            if (!(innerType instanceof MapEventType))
+            {
+                return null;
+            }
+            if (!isArray)
+            {
+                return null; // must be declared as an index to use array notation
+            }
+            else
+            {
+                return Map[].class;
+            }
+        }
+        else {
+            if (!(type instanceof Class))
+            {
+                return null;
+            }
+            if (!((Class) type).isArray())
+            {
+                return null;
+            }
+            Class componentType = ((Class) type).getComponentType();
+            return componentType;            
+        }
     }
 
-    public EventPropertyGetter getGetterMap(Map optionalMapPropTypes)
+    public EventPropertyGetter getGetterMap(Map optionalMapPropTypes, EventAdapterService eventAdapterService)
     {
-        return null;  // indexed properties are not allowed in non-dynamic form in a map
+        Object type = optionalMapPropTypes.get(propertyNameAtomic);
+        if (type == null)
+        {
+            return null;
+        }
+        if (type instanceof String) // resolve a property that is a map event type
+        {
+            String nestedName = type.toString();
+            boolean isArray = MapEventType.isPropertyArray(nestedName);
+            if (isArray) {
+                nestedName = MapEventType.getPropertyRemoveArray(nestedName);
+            }
+            EventType innerType = eventAdapterService.getExistsTypeByAlias(nestedName);
+            if (!(innerType instanceof MapEventType))
+            {
+                return null;
+            }
+            if (!isArray)
+            {
+                return null; // must be declared as an array to use an indexed notation
+            }
+            else
+            {
+                return new MapNamedMapArrayIndexPropertyGetter(this.propertyNameAtomic, index);
+            }
+        }
+        else {
+            if (!(type instanceof Class))
+            {
+                return null;
+            }
+            if (!((Class) type).isArray())
+            {
+                return null;
+            }
+            // its an array
+            return new MapArrayPOJOEntryIndexedPropertyGetter(propertyNameAtomic, index);
+        }
     }
 
     public void toPropertyEPL(StringWriter writer)
