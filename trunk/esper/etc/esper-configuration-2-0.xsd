@@ -191,6 +191,7 @@
 			<xs:choice>
 				<xs:sequence>
 					<xs:element ref="esper:datasource-connection" minOccurs="0"/>
+					<xs:element ref="esper:datasourcefactory-connection" minOccurs="0"/>
 					<xs:element ref="esper:drivermanager-connection" minOccurs="0"/>
 					<xs:element ref="esper:connection-settings" minOccurs="0"/>
 					<xs:element ref="esper:connection-lifecycle" minOccurs="0"/>
@@ -210,6 +211,14 @@
 				<xs:element ref="esper:env-property" minOccurs="0" maxOccurs="unbounded"/>
 			</xs:sequence>
 			<xs:attribute name="context-lookup-name" type="xs:string" use="required"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="datasourcefactory-connection">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="esper:env-property" minOccurs="0" maxOccurs="unbounded"/>
+			</xs:sequence>
+			<xs:attribute name="class-name" type="xs:string" use="required"/>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="env-property">

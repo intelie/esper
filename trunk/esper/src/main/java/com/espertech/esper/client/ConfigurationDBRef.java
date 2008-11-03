@@ -43,12 +43,7 @@ public class ConfigurationDBRef implements Serializable
         sqlTypesMapping = new HashMap<Integer, String>();
     }
 
-    public void setDataSourceFactoryDBCP(Properties properties)
-    {
-        connectionFactoryDesc = new DataSourceFactory(properties, "org.apache.commons.dbcp.BasicDataSourceFactory");
-    }
-
-    public void setDataSourceFactoryCustom(Properties properties, String dataSourceFactoryClassName)
+    public void setDataSourceFactory(Properties properties, String dataSourceFactoryClassName)
     {
         connectionFactoryDesc = new DataSourceFactory(properties, dataSourceFactoryClassName);
     }
@@ -588,6 +583,11 @@ public class ConfigurationDBRef implements Serializable
         public String getFactoryClassname()
         {
             return factoryClassname;
+        }
+
+        public void addProperty(String name, String value)
+        {
+            properties.put(name, value);
         }
     }
 

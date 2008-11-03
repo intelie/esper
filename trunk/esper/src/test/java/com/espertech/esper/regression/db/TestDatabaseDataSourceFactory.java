@@ -1,31 +1,22 @@
 package com.espertech.esper.regression.db;
 
-import junit.framework.TestCase;
 import com.espertech.esper.client.*;
-import com.espertech.esper.client.time.CurrentTimeEvent;
-import com.espertech.esper.client.soda.*;
-import com.espertech.esper.support.util.SupportUpdateListener;
-import com.espertech.esper.support.util.ArrayAssertionUtil;
-import com.espertech.esper.support.epl.SupportDatabaseService;
-import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.support.bean.SupportBean;
-import com.espertech.esper.support.bean.SupportBean_A;
-import com.espertech.esper.support.bean.SupportBeanComplexProps;
-import com.espertech.esper.support.bean.SupportBean_S0;
-import com.espertech.esper.event.EventBean;
-import com.espertech.esper.event.EventType;
-import com.espertech.esper.util.SerializableObjectCopier;
+import com.espertech.esper.support.client.SupportConfigFactory;
+import com.espertech.esper.support.epl.SupportDataSourceFactory;
+import com.espertech.esper.support.epl.SupportDatabaseService;
+import com.espertech.esper.support.util.ArrayAssertionUtil;
+import com.espertech.esper.support.util.SupportUpdateListener;
+import junit.framework.TestCase;
 
 import java.util.Properties;
-import java.math.BigDecimal;
-import java.sql.*;
 
 public class TestDatabaseDataSourceFactory extends TestCase
 {
     private EPServiceProvider epService;
     private SupportUpdateListener listener;
 
-    public void testDBCP()
+    public void testDBCP() throws Exception
     {
         Properties props = new Properties();
         props.put("driverClassName", SupportDatabaseService.DRIVER);
@@ -34,13 +25,14 @@ public class TestDatabaseDataSourceFactory extends TestCase
         props.put("password", SupportDatabaseService.DBPWD);
 
         ConfigurationDBRef configDB = new ConfigurationDBRef();
-        configDB.setDataSourceFactoryDBCP(props);
+        // for DBCP, use setDataSourceFactoryDBCP
+        configDB.setDataSourceFactory(props, SupportDataSourceFactory.class.getName());
         configDB.setConnectionLifecycleEnum(ConfigurationDBRef.ConnectionLifecycleEnum.POOLED);
 
         Configuration configuration = SupportConfigFactory.getConfiguration();
         configuration.addDatabaseReference("MyDB", configDB);
         configuration.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
-
+    
         epService = EPServiceProviderManager.getDefaultProvider(configuration);
         epService.initialize();
 
@@ -49,9 +41,9 @@ public class TestDatabaseDataSourceFactory extends TestCase
 
     private void runAssertion()
     {
-        String stmtText = "select myInt from " +
-                " sql:MyDB ['select myInt from mytesttable where ${intPrimitive} = mytesttable.mybigint'] as s0," +
-                SupportBean.class.getName() + ".win:keepall() as s1";
+        String stmtText = "select istream myint from " +
+                " sql:MyDB ['select myint from mytesttable where ${intPrimitive} = mytesttable.mybigint'] as s0," +
+                SupportBean.class.getName() + " as s1";
         EPStatement statement = epService.getEPAdministrator().createEPL(stmtText);
 
         String[] fields = new String[] {"myint"};
@@ -59,7 +51,10 @@ public class TestDatabaseDataSourceFactory extends TestCase
         statement.addListener(listener);
 
         sendSupportBeanEvent(10);
-        ArrayAssertionUtil.assertEqualsExactOrder(statement.iterator(), fields, new Object[][] {{100}});
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {100});
+
+        sendSupportBeanEvent(6);
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {60});
     }
 
     private void sendSupportBeanEvent(int intPrimitive)

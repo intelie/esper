@@ -389,6 +389,12 @@ class ConfigurationParser {
                 Properties properties = handleProperties(subElement, "env-property");
                 configDBRef.setDataSourceConnection(lookup, properties);
             }
+            if (subElement.getNodeName().equals("datasourcefactory-connection"))
+            {
+                String className = subElement.getAttributes().getNamedItem("class-name").getTextContent();
+                Properties properties = handleProperties(subElement, "env-property");
+                configDBRef.setDataSourceFactory(properties, className);
+            }
             else if (subElement.getNodeName().equals("drivermanager-connection"))
             {
                 String className = subElement.getAttributes().getNamedItem("class-name").getTextContent();

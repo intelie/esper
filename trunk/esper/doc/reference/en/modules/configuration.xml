@@ -793,7 +793,7 @@ config.addImport("com.mycompany.mypackage.MyLib");   // class import]]></program
 			<itemizedlist spacing="compact">
 				<listitem>
 					<para>
-						Database connections can be obtained via JDBC <literal>javax.xml.DataSource</literal> or alternatively via <literal>java.sql.DriverManager</literal>. Either one of these methods to obtain new database connections is a required configuration.
+						Database connections can be obtained via JDBC <literal>javax.xml.DataSource</literal>, via <literal>java.sql.DriverManager</literal> and via data source factory. Either one of these methods to obtain database connections is a required configuration.
 					</para>
 				</listitem>
 				<listitem>
@@ -803,7 +803,7 @@ config.addImport("com.mycompany.mypackage.MyLib");   // class import]]></program
 				</listitem>
 				<listitem>
 					<para>
-						Optionally, a connection lifecycle can be set to indicate to the engine whether the engine must retain connections or must obtain a new connection for each lookup.
+						Optionally, a connection lifecycle can be set to indicate to the engine whether the engine must retain connections or must obtain a new connection for each lookup and close the connection when the lookup is done (pooled).
 					</para>
 				</listitem>
 				<listitem>
@@ -823,6 +823,18 @@ config.addImport("com.mycompany.mypackage.MyLib");   // class import]]></program
 						
 			<sect3 id="config-database-datasource" revision="1">
 				<title>Connections obtained via DataSource</title>
+
+				<para>
+					This configuration causes Esper to obtain a database connection from a <literal>javax.sql.DataSource</literal> available from your JNDI provider.
+				</para>
+
+				<para>
+					The setting is most useful when running within an application server or when a JNDI directory is otherwise present in your Java VM. If your application environment does not provide an available <literal>DataSource</literal>, the next section outlines how to use Apache DBCP as a <literal>DataSource</literal> implementation with connection pooling options and outlines how to use a custom factory for <literal>DataSource</literal> implementations.
+				</para>
+
+				<para>
+					If your <literal>DataSource</literal> provides connections out of a connection pool, your configuration should set the collection lifecycle setting to <literal>pooled</literal>.
+				</para>
 
 				<para>
 				The snippet of XML below configures a database named <literal>mydb1</literal> to obtain connections via a <literal>javax.sql.DataSource</literal>. The <literal>datasource-connection</literal> element instructs the engine to obtain new connections to the database <literal>mydb1</literal> by performing a lookup via <literal>javax.naming.InitialContext</literal> for the given object lookup name. Optional environment properties for the <literal>InitialContext</literal> are also shown in the example.
@@ -846,6 +858,78 @@ else {
 }
 DataSource dataSource = (DataSource) initialContext.lookup(lookupName);
 Connection connection = dataSource.getConnection();]]></programlisting>
+			</sect3>
+
+			<sect3 id="config-database-datasourcefactory" revision="1">
+				<title>Connections obtained via DataSource Factory</title>
+
+				<para>
+					This section describes how to use <ulink url="http://commons.apache.org/dbcp"><citetitle>Apache Commons Database Connection Pooling (Apache DBCP)</citetitle></ulink> with Esper. We also explain how to provide a custom application-specific <literal>DataSource</literal> factory if not using Apache DBCP.
+				</para>
+
+				<para>
+					If your <literal>DataSource</literal> provides connections out of a connection pool, your configuration should set the collection lifecycle setting to <literal>pooled</literal>.
+				</para>
+					
+				<para>
+					Apache DBCP provides comprehensive means to test for dead connections or grow and shrik a connection pool. Configuration properties for Apache DBCP can be found at <ulink url="http://commons.apache.org/dbcp/configuration.html"><citetitle>Apache DBCP configuration</citetitle></ulink>. The listed properties are passed to Apache DBCP via the properties list provided as part of the Esper configuration.
+				</para>
+
+				<para>
+				   The snippet of XML below is an example that configures a database named <literal>mydb3</literal> to obtain connections via the pooling <literal>DataSource</literal> provided by Apache DBCP <literal>BasicDataSourceFactory</literal>.
+				</para>
+
+				<para>
+				   The listed properties are passed to DBCP to instruct DBCP how to manage the connection pool. The settings below initialize the connection pool to 2 connections and provide the validation query <literal>select 1 from dual</literal> for DBCP to validate a connection before providing a connection from the pool to Esper:
+				</para>
+
+				<programlisting><![CDATA[<database-reference name="mydb3">
+  <!-- For a complete list of properties see Apache DBCP. -->
+  <datasourcefactory-connection class-name="org.apache.commons.dbcp.BasicDataSourceFactory">	
+    <env-property name="username" value ="myusername"/>
+    <env-property name="password" value ="mypassword"/>
+    <env-property name="driverClassName" value ="com.mysql.jdbc.Driver"/>
+    <env-property name="url" value ="jdbc:mysql://localhost/test"/>
+    <env-property name="initialSize" value ="2"/>
+    <env-property name="validationQuery" value ="select 1 from dual"/>
+  </datasourcefactory-connection>
+  <connection-lifecycle value="pooled"/>
+</database-reference>]]></programlisting>
+
+				<para>
+					The same configuration options provided through the API:
+				</para>
+				<programlisting><![CDATA[Properties props = new Properties();
+props.put("username", "myusername");
+props.put("password", "mypassword");
+props.put("driverClassName", "com.mysql.jdbc.Driver");
+props.put("url", "jdbc:mysql://localhost/test");
+props.put("initialSize", 2);
+props.put("validationQuery", "select 1 from dual");
+
+ConfigurationDBRef configDB = new ConfigurationDBRef();
+// BasicDataSourceFactory is an Apache DBCP import
+configDB.setDataSourceFactory(props, BasicDataSourceFactory.class.getName());
+configDB.setConnectionLifecycleEnum(ConfigurationDBRef.ConnectionLifecycleEnum.POOLED);
+
+Configuration configuration = new Configuration();;
+configuration.addDatabaseReference("mydb3", configDB);]]></programlisting>
+				
+				<para>
+					Apache Commons DBCP is a separate download and not provided as part of the Esper distribution. The Apache Commons DBCP jar file requires the Apache Commons Pool jar file.
+				</para>
+
+				<para>
+					Your application can provide its own factory implementation for <literal>DataSource</literal> instances: Set the class name to the name of the application class that provides a public static method named <literal>createDataSource</literal> which takes a single <literal>Properties</literal> object as parameter and returns a  <literal>DataSource</literal> implementation. For example:
+				</para>
+				
+				<programlisting><![CDATA[configDB.setDataSourceFactory(props, MyOwnDataSourceFactory.class.getName());
+...
+class MyOwnDataSourceFactory {
+  public static DataSource createDataSource(Properties properties) {
+    return new MyDataSourceImpl(properties);
+  }
+}]]></programlisting>
 			</sect3>
 
 			<sect3 id="config-database-drivermanager" revision="1">
@@ -897,7 +981,7 @@ Connection connection = dataSource.getConnection();]]></programlisting>
 				<title>Connections lifecycle settings</title>
 
 				<para>
-					By default the engine retains a separate database connection for each started EPL statement. However, it is possible to override this behavior and require the engine to obtain a new database connection for each lookup, and to close that database connection after the lookup is completed. This often makes sense when you have a large number of EPL statements and require pooling of connections via a connection pool. If your runtime environment includes an application server, the connection pool may be exposed as a <literal>DataSource</literal>.
+					By default the engine retains a separate database connection for each started EPL statement. However, it is possible to override this behavior and require the engine to obtain a new database connection for each lookup, and to close that database connection after the lookup is completed. This often makes sense when you have a large number of EPL statements and require pooling of connections via a connection pool.
 				</para>
 
 				<para>
