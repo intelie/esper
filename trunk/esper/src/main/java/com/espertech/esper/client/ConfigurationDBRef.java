@@ -43,6 +43,16 @@ public class ConfigurationDBRef implements Serializable
         sqlTypesMapping = new HashMap<Integer, String>();
     }
 
+    public void setDataSourceFactoryDBCP(Properties properties)
+    {
+        connectionFactoryDesc = new DataSourceFactory(properties, "org.apache.commons.dbcp.BasicDataSourceFactory");
+    }
+
+    public void setDataSourceFactoryCustom(Properties properties, String dataSourceFactoryClassName)
+    {
+        connectionFactoryDesc = new DataSourceFactory(properties, dataSourceFactoryClassName);
+    }
+
     /**
      * Sets the connection factory to use {@link javax.sql.DataSource} to obtain a
      * connection.
@@ -545,6 +555,39 @@ public class ConfigurationDBRef implements Serializable
         public Properties getOptionalProperties()
         {
             return optionalProperties;
+        }
+    }
+
+    /**
+     * Connection factory settings for using a Apache DBCP or other provider DataSource factory.
+     */
+    public static class DataSourceFactory implements ConnectionFactoryDesc, Serializable
+    {
+        private Properties properties;
+        private String factoryClassname;
+
+        /**
+         * Ctor.
+         * @param properties to pass to the data source factory
+         */
+        public DataSourceFactory(Properties properties, String factoryClassname)
+        {
+            this.properties = properties;
+            this.factoryClassname = factoryClassname;
+        }
+
+        /**
+         * Returns the properties to pass to the static createDataSource method provided.
+         * @return properties to pass to createDataSource
+         */
+        public Properties getProperties()
+        {
+            return properties;
+        }
+
+        public String getFactoryClassname()
+        {
+            return factoryClassname;
         }
     }
 

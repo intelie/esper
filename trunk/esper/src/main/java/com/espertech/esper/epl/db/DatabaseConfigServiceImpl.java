@@ -80,16 +80,29 @@ public class DatabaseConfigServiceImpl implements DatabaseConfigService
             throw new DatabaseConfigException("Cannot locate configuration information for database '" + databaseName + '\'');
         }
 
-        ConfigurationDBRef.ConnectionSettings settings = (ConfigurationDBRef.ConnectionSettings) config.getConnectionSettings();
+        ConfigurationDBRef.ConnectionSettings settings = config.getConnectionSettings();
         if (config.getConnectionFactoryDesc() instanceof ConfigurationDBRef.DriverManagerConnection)
         {
             ConfigurationDBRef.DriverManagerConnection dmConfig = (ConfigurationDBRef.DriverManagerConnection) config.getConnectionFactoryDesc();
             factory = new DatabaseDMConnFactory(dmConfig, settings);
         }
-        else
+        else if (config.getConnectionFactoryDesc() instanceof ConfigurationDBRef.DataSourceConnection)
         {
             ConfigurationDBRef.DataSourceConnection dsConfig = (ConfigurationDBRef.DataSourceConnection) config.getConnectionFactoryDesc();
             factory = new DatabaseDSConnFactory(dsConfig, settings);
+        }
+        else if (config.getConnectionFactoryDesc() instanceof ConfigurationDBRef.DataSourceFactory)
+        {
+            ConfigurationDBRef.DataSourceFactory dsConfig = (ConfigurationDBRef.DataSourceFactory) config.getConnectionFactoryDesc();
+            factory = new DatabaseDSFactoryConnFactory(dsConfig, settings);
+        }
+        else if (config.getConnectionFactoryDesc() == null)
+        {
+            throw new DatabaseConfigException("No connection factory setting provided in configuration");
+        }
+        else
+        {
+            throw new DatabaseConfigException("Unknown connection factory setting provided in configuration");
         }
 
         connectionFactories.put(databaseName, factory);

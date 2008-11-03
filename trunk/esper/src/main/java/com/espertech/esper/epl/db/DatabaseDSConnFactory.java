@@ -25,6 +25,8 @@ public class DatabaseDSConnFactory implements DatabaseConnectionFactory
     private final ConfigurationDBRef.DataSourceConnection dsConfig;
     private final ConfigurationDBRef.ConnectionSettings connectionSettings;
 
+    private DataSource dataSource;
+
     /**
      * Ctor.
      * @param dsConfig is the datasource object name and initial context properties.
@@ -39,49 +41,54 @@ public class DatabaseDSConnFactory implements DatabaseConnectionFactory
 
     public Connection getConnection() throws DatabaseConfigException
     {
-        Properties envProps = dsConfig.getEnvProperties();
-        if (envProps == null)
+        if (dataSource == null)
         {
-            envProps = new Properties();
-        }
-
-        InitialContext ctx = null;
-        try
-        {
-            if (!envProps.isEmpty())
+            Properties envProps = dsConfig.getEnvProperties();
+            if (envProps == null)
             {
-                ctx = new InitialContext(envProps);
+                envProps = new Properties();
             }
-            else
+
+            InitialContext ctx;
+            try
             {
-                ctx = new InitialContext();
+                if (!envProps.isEmpty())
+                {
+                    ctx = new InitialContext(envProps);
+                }
+                else
+                {
+                    ctx = new InitialContext();
+                }
             }
-        }
-        catch (NamingException ex)
-        {
-            throw new DatabaseConfigException("Error instantiating initial context", ex);
+            catch (NamingException ex)
+            {
+                throw new DatabaseConfigException("Error instantiating initial context", ex);
+            }
+
+            DataSource ds;
+            String lookupName = dsConfig.getContextLookupName();
+            try
+            {
+                ds = (DataSource)ctx.lookup(lookupName);
+            }
+            catch (NamingException ex)
+            {
+                throw new DatabaseConfigException("Error looking up data source in context using name '" + lookupName + '\'', ex);
+            }
+
+            if (ds == null)
+            {
+                throw new DatabaseConfigException("Null data source obtained through context using name '" + lookupName + '\'');
+            }
+
+            dataSource = ds;
         }
 
-        DataSource ds = null;
-        String lookupName = dsConfig.getContextLookupName();
+        Connection connection;
         try
         {
-            ds = (DataSource)ctx.lookup(lookupName);
-        }
-        catch (NamingException ex)
-        {
-            throw new DatabaseConfigException("Error looking up data source in context using name '" + lookupName + '\'', ex);
-        }
-
-        if (ds == null)
-        {
-            throw new DatabaseConfigException("Null data source obtained through context using name '" + lookupName + '\'');
-        }
-
-        Connection connection = null;
-        try
-        {
-            connection = ds.getConnection();
+            connection = dataSource.getConnection();
         }
         catch (SQLException ex)
         {
