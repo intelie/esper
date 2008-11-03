@@ -1,10 +1,7 @@
 package com.espertech.esper.regression.view;
 
 import junit.framework.TestCase;
-import com.espertech.esper.client.EPServiceProvider;
-import com.espertech.esper.client.EPServiceProviderManager;
-import com.espertech.esper.client.EPStatement;
-import com.espertech.esper.client.EPException;
+import com.espertech.esper.client.*;
 import com.espertech.esper.client.soda.*;
 import com.espertech.esper.support.util.SupportUpdateListener;
 import com.espertech.esper.support.bean.*;
@@ -60,6 +57,16 @@ public class TestLikeRegexpExpr extends TestCase
         selectTestCase.addListener(testListener);
 
         runLikeRegexStringAndNull();
+
+        String epl = "select * from " + SupportBean.class.getName() + "((string not like \"foo%\"))";
+        EPPreparedStatement eps = epService.getEPAdministrator().prepareEPL(epl);
+        EPStatement statement = epService.getEPAdministrator().create(eps);
+        assertEquals(epl, statement.getText());
+
+        epl = "select * from " + SupportBean.class.getName() + "((string not regexp \"foo\"))";
+        eps = epService.getEPAdministrator().prepareEPL(epl);
+        statement = epService.getEPAdministrator().create(eps);
+        assertEquals(epl, statement.getText());
     }
 
     public void testLikeRegexStringAndNull_Compile() throws Exception

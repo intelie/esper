@@ -182,6 +182,52 @@ public class Expressions implements Serializable
     }
 
     /**
+     * Regular expression negated (not regexp).
+     * @param left returns the values to match
+     * @param right returns the value to match against
+     * @return expression
+     */
+    public static RegExpExpression notRegexp(Expression left, Expression right)
+    {
+        return new RegExpExpression(left, right, true);
+    }
+
+    /**
+     * Regular expression negated (not regexp).
+     * @param left returns the values to match
+     * @param right returns the value to match against
+     * @param escape is the escape character
+     * @return expression
+     */
+    public static RegExpExpression notRegexp(Expression left, Expression right, String escape)
+    {
+        return new RegExpExpression(left, right, new ConstantExpression(escape), true);
+    }
+
+    /**
+     * Regular expression negated (not regexp).
+     * @param property the name of the property returning values to match
+     * @param regExExpression a regular expression to match against
+     * @return expression
+     */
+    public static RegExpExpression notRegexp(String property, String regExExpression)
+    {
+        return new RegExpExpression(getPropExpr(property), new ConstantExpression(regExExpression), true);
+    }
+
+    /**
+     * Regular expression negated (not regexp).
+     * @param property the name of the property returning values to match
+     * @param regExExpression a regular expression to match against
+     * @param escape is the escape character
+     * @return expression
+     */
+    public static RegExpExpression notRegexp(String property, String regExExpression, String escape)
+    {
+        return new RegExpExpression(getPropExpr(property), new ConstantExpression(regExExpression), new ConstantExpression(escape), true);
+    }
+
+    /**
      * Array expression, representing the syntax of "{1, 2, 3}" returning an integer array of 3 elements valued 1, 2, 3.
      * @return expression
      */
@@ -784,6 +830,52 @@ public class Expressions implements Serializable
     public static LikeExpression like(Expression left, Expression right, Expression escape)
     {
         return new LikeExpression(left, right, escape);
+    }
+
+    /**
+     * SQL-Like negated (not like).
+     * @param propertyName the name of the property providing values to match
+     * @param value is the string to match against
+     * @return expression
+     */
+    public static LikeExpression notLike(String propertyName, String value)
+    {
+        return new LikeExpression(getPropExpr(propertyName), new ConstantExpression(value), true);
+    }
+
+    /**
+     * SQL-Like negated (not like).
+     * @param left provides value to match
+     * @param right provides string to match against
+     * @return expression
+     */
+    public static LikeExpression notLike(Expression left, Expression right)
+    {
+        return new LikeExpression(left, right, true);
+    }
+
+    /**
+     * SQL-Like negated (not like).
+     * @param propertyName the name of the property providing values to match
+     * @param value is the string to match against
+     * @param escape the escape character(s)
+     * @return expression
+     */
+    public static LikeExpression notLike(String propertyName, Object value, String escape)
+    {
+        return new LikeExpression(getPropExpr(propertyName), new ConstantExpression(value), new ConstantExpression(escape), true);
+    }
+
+    /**
+     * SQL-Like negated (not like).
+     * @param left provides value to match
+     * @param right provides string to match against
+     * @param escape the escape character(s)
+     * @return expression
+     */
+    public static LikeExpression notLike(Expression left, Expression right, Expression escape)
+    {
+        return new LikeExpression(left, right, escape, true);
     }
 
     /**

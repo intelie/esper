@@ -15,11 +15,52 @@ import java.io.StringWriter;
  */
 public class RegExpExpression extends ExpressionBase
 {
+    private boolean isNot;
+
+    /**
+     * Ctor - for use to create an expression tree, without child expression.
+     * @param isNot true for negated regex
+     */
+    public RegExpExpression(boolean isNot)
+    {
+        this.isNot = isNot;
+    }
+
+    /**
+     * Ctor.
+     * @param left provides values to match against regexp string
+     * @param right provides the regexp string
+     * @param isNot true for negated regex
+     */
+    public RegExpExpression(Expression left, Expression right, boolean isNot)
+    {
+        this(left, right, null, isNot);
+    }
+
+    /**
+     * Ctor.
+     * @param left provides values to match against regexp string
+     * @param right provides the regexp string
+     * @param escape provides the escape character
+     * @param isNot true for negated regex
+     */
+    public RegExpExpression(Expression left, Expression right, Expression escape, boolean isNot)
+    {
+        this.getChildren().add(left);
+        this.getChildren().add(right);
+        if (escape != null)
+        {
+            this.getChildren().add(escape);
+        }
+        this.isNot = isNot;
+    }
+
     /**
      * Ctor - for use to create an expression tree, without child expression.
      */    
     public RegExpExpression()
     {
+        isNot = false;
     }
 
     /**
@@ -46,6 +87,7 @@ public class RegExpExpression extends ExpressionBase
         {
             this.getChildren().add(escape);
         }
+        isNot = false;
     }
 
     /**
@@ -56,6 +98,10 @@ public class RegExpExpression extends ExpressionBase
     {
         writer.write("(");
         this.getChildren().get(0).toEPL(writer);
+        if (isNot)
+        {
+            writer.write(" not");            
+        }
         writer.write(" regexp ");
         this.getChildren().get(1).toEPL(writer);
 
@@ -65,5 +111,10 @@ public class RegExpExpression extends ExpressionBase
             this.getChildren().get(2).toEPL(writer);
         }
         writer.write(")");
+    }
+
+    public boolean isNot()
+    {
+        return isNot;
     }
 }

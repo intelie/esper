@@ -176,4 +176,9 @@ public class ExprLikeNode extends ExprNode
 
         return buffer.toString();
     }
+
+    public boolean isNot()
+    {
+        return isNot;
+    }
 }

@@ -167,4 +167,9 @@ public class ExprRegexpNode extends ExprNode
 
         return buffer.toString();
     }
+
+    public boolean isNot()
+    {
+        return isNot;
+    }
 }

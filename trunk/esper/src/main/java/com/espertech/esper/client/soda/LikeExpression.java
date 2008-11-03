@@ -15,6 +15,8 @@ import java.io.StringWriter;
  */
 public class LikeExpression extends ExpressionBase
 {
+    private boolean isNot;
+
     /**
      * Ctor - for use to create an expression tree, without child expression.
      * <p>
@@ -22,6 +24,18 @@ public class LikeExpression extends ExpressionBase
      */
     public LikeExpression()
     {
+        isNot = false;
+    }
+
+    /**
+     * Ctor - for use to create an expression tree, without child expression.
+     * <p>
+     * Use add methods to add child expressions to acts upon.
+     * @param isNot if the like-expression is negated
+     */
+    public LikeExpression(boolean isNot)
+    {
+        this.isNot = isNot;
     }
 
     /**
@@ -48,12 +62,46 @@ public class LikeExpression extends ExpressionBase
         {
             this.getChildren().add(escape);
         }
+        this.isNot = false;
+    }
+
+    /**
+     * Ctor.
+     * @param left provides the value to match
+     * @param right provides the like-expression to match against
+     * @param isNot if the like-expression is negated
+     */
+    public LikeExpression(Expression left, Expression right, boolean isNot)
+    {
+        this(left, right, null, isNot);
+    }
+
+    /**
+     * Ctor.
+     * @param left provides the value to match
+     * @param right provides the like-expression to match against
+     * @param escape is the expression providing the string escape character
+     * @param isNot if the like-expression is negated
+     */
+    public LikeExpression(Expression left, Expression right, Expression escape, boolean isNot)
+    {
+        this.getChildren().add(left);
+        this.getChildren().add(right);
+        if (escape != null)
+        {
+            this.getChildren().add(escape);
+        }
+        this.isNot = isNot;
     }
 
     public void toEPL(StringWriter writer)
     {
         writer.write("(");
         this.getChildren().get(0).toEPL(writer);
+        if (isNot)
+        {
+            writer.write(" not");
+        }
         writer.write(" like ");
         this.getChildren().get(1).toEPL(writer);
 
@@ -63,5 +111,10 @@ public class LikeExpression extends ExpressionBase
             this.getChildren().get(2).toEPL(writer);
         }
         writer.write(")");
+    }
+
+    public boolean isNot()
+    {
+        return isNot;
     }
 }

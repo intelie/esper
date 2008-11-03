@@ -825,11 +825,13 @@ public class StatementSpecMapper
         }
         else if (expr instanceof LikeExpression)
         {
-            return new ExprLikeNode(false);
+            LikeExpression like = (LikeExpression) expr;
+            return new ExprLikeNode(like.isNot());
         }
         else if (expr instanceof RegExpExpression)
         {
-            return new ExprRegexpNode(false);
+            RegExpExpression regexp = (RegExpExpression) expr;
+            return new ExprRegexpNode(regexp.isNot());
         }
         else if (expr instanceof MedianProjectionExpression)
         {
@@ -1066,11 +1068,13 @@ public class StatementSpecMapper
         }
         else if (expr instanceof ExprLikeNode)
         {
-            return new LikeExpression();
+            ExprLikeNode exprLikeNode = (ExprLikeNode) expr;
+            return new LikeExpression(exprLikeNode.isNot());
         }
         else if (expr instanceof ExprRegexpNode)
         {
-            return new RegExpExpression();
+            ExprRegexpNode exprRegexNode = (ExprRegexpNode) expr;
+            return new RegExpExpression(exprRegexNode.isNot());
         }
         else if (expr instanceof ExprMedianNode)
         {
