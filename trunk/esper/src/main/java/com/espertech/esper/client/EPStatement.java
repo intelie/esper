@@ -106,6 +106,3 @@ public interface EPStatement extends EPListenable, EPIterable
      */
     public boolean isPattern();
 }
-
-
-

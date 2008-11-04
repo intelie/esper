@@ -88,6 +88,11 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
         observers.add(observer);
     }
 
+    public void removeObserver(StatementLifecycleObserver observer)
+    {
+        observers.remove(observer);
+    }
+
     public void destroy()
     {
         this.destroyAllStatements();

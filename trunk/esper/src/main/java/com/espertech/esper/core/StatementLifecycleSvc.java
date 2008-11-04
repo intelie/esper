@@ -31,6 +31,12 @@ public interface StatementLifecycleSvc
     public void addObserver(StatementLifecycleObserver observer);
 
     /**
+     * Remove an observer to be called back when statement-state or listener/subscriber changes are registered.
+     * @param observer to remove
+     */
+    public void removeObserver(StatementLifecycleObserver observer);
+
+    /**
      * Dispatch event to observers.
      * @param event to dispatch
      */

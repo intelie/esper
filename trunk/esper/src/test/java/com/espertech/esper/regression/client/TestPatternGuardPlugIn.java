@@ -39,6 +39,24 @@ public class TestPatternGuardPlugIn extends TestCase
         assertFalse(listener.isInvoked());
     }
 
+    public void testGuardVariable()
+    {
+        epService.getEPAdministrator().createEPL("create variable int COUNT_TO = 3");
+        String stmtText = "select * from pattern [(every Bean) where myplugin:count_to(COUNT_TO)]";
+        EPStatement statement = epService.getEPAdministrator().createEPL(stmtText);
+        statement.addListener(listener);
+
+        for (int i = 0; i < 3; i++)
+        {
+            epService.getEPRuntime().sendEvent(new SupportBean());
+            assertTrue(listener.isInvoked());
+            listener.reset();
+        }
+
+        epService.getEPRuntime().sendEvent(new SupportBean());
+        assertFalse(listener.isInvoked());
+    }
+
     public void testInvalid()
     {
         try

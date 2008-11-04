@@ -18,6 +18,7 @@ public class MapArrayPOJOBeanEntryIndexedPropertyGetter implements EventProperty
      * @param propertyMap the property to look at
      * @param mapEntryGetter the getter for the map entry
      * @param eventAdapterService for producing wrappers to objects
+     * @param index the index to fetch the array element for
      */
     public MapArrayPOJOBeanEntryIndexedPropertyGetter(String propertyMap, int index, EventPropertyGetter mapEntryGetter, EventAdapterService eventAdapterService) {
         this.propertyMap = propertyMap;

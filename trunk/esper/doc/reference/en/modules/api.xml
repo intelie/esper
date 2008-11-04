@@ -49,7 +49,13 @@
 		<programlisting><![CDATA[EPServiceProvider epService = EPServiceProviderManager.getProvider("RFIDProcessor1");]]></programlisting>
       
         <para>
-			An existing Esper engine instance can be reset via the <literal>initialize</literal> method on the <literal>EPServiceProvider</literal> instance. This stops and removes all statements in the Engine.
+			An existing Esper engine instance can be reset via the <literal>initialize</literal> method on the <literal>EPServiceProvider</literal> instance. This operation stops and removes all statements and 
+			resets the engine to the configuration provided when the engine instance was originally obtained. After an <literal>initialize</literal> the engine is ready for use.
+        </para>
+
+        <para>
+			An existing Esper engine instance can be destroyed via the <literal>destroy</literal> method on the <literal>EPServiceProvider</literal> instance. This stops and removes all statements
+			as well as frees all resources held by the instance. After a <literal>destroy</literal> the engine can no longer be used.
         </para>
     </sect1>
 
@@ -669,6 +675,24 @@ sender.sendEvent(myEvent);]]></programlisting>
 		</sect2>
     </sect1>
 
+    <sect1 id="api-serviceprovider">
+        <title>The Service Provider Interface</title>
+
+		<indexterm><primary>EPServiceProvider class</primary></indexterm>
+
+        <para>
+			The <literal>EPServiceProvider</literal> interface represents an engine instance. The interface makes it possible to receive a callback when, for example, a new statement has been created or a engine instance is about to be destroyed.
+        </para>
+
+        <para>
+			The <literal>EPServiceStateListener</literal> interface is used to receive callbacks when an engine instance is about to be destroyed and after an engine instance has been initialized. Listeners are registered via <literal>addServiceStateListener</literal>.
+        </para>
+
+        <para>
+			The <literal>EPStatementStateListener</literal> interface is used to receives callbacks when a new statement gets created and when a statement gets started, stopped or destroyed. Listeners are registered via <literal>addStatementStateListener</literal>.
+        </para>
+    </sect1>
+
     <sect1 id="api-events-received">
         <title>Events Received from the Engine</title>
 
@@ -690,15 +714,12 @@ EPStatement priceStatsView = epService.getEPAdministrator().createEPL(stmt);
 priceStatsView.addListener(testListener);
 ]]></programlisting>
 		<programlisting><![CDATA[// Example listener code
-public class MyUpdateListener implements UpdateListener
-{
-    public void update(EventBean[] newData, EventBean[] oldData)
-    {
-        // Interrogate events
-        System.out.println("new average price=" + newData[0].get("average");
-	}
-}
-]]></programlisting>
+public class MyUpdateListener implements UpdateListener {
+  public void update(EventBean[] newData, EventBean[] oldData) {
+    // Interrogate events
+    System.out.println("new average price=" + newData[0].get("average")
+  }
+}]]></programlisting>
 
         <para>
 			Composite events are events that aggregate one or more other events. Composite events are typically created by the engine for statements that join two event streams, and for event patterns in which the causal events are retained and reported in a composite event. The example below shows such an event pattern.

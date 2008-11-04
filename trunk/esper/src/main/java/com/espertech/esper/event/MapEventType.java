@@ -681,6 +681,7 @@ public class MapEventType implements EventTypeSPI
      * <p.
      * Ignores properties already present. Allows nesting.
      * @param typeMap properties to add
+     * @param eventAdapterService for resolving further map event types that are property types
      */
     public void addAdditionalProperties(Map<String, Object> typeMap, EventAdapterService eventAdapterService)
     {
@@ -898,11 +899,21 @@ public class MapEventType implements EventTypeSPI
         return metadata;
     }
 
+    /**
+     * Returns true if the name indicates that the type is an array type.
+     * @param name the property name
+     * @return true if array type
+     */
     public static boolean isPropertyArray(String name)
     {
-        return name.endsWith("[]");
+        return name.trim().endsWith("[]");
     }
 
+    /**
+     * Returns the property name without the array type extension, if present.
+     * @param name property name
+     * @return property name with removed array extension name
+     */
     public static String getPropertyRemoveArray(String name)
     {
         return name.replaceAll("\\[", "").replaceAll("\\]", "");

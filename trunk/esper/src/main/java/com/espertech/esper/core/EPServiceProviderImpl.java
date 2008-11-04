@@ -8,33 +8,42 @@
  **************************************************************************************/
 package com.espertech.esper.core;
 
-import com.espertech.esper.plugin.PluginLoader;
 import com.espertech.esper.client.*;
-import com.espertech.esper.event.EventAdapterService;
-import com.espertech.esper.event.vaevent.ValueAddEventService;
-import com.espertech.esper.schedule.SchedulingService;
-import com.espertech.esper.filter.FilterService;
-import com.espertech.esper.util.ExecutionPathDebugLog;
-import com.espertech.esper.util.SerializableObjectCopier;
-import com.espertech.esper.epl.spec.SelectClauseStreamSelectorEnum;
-import com.espertech.esper.epl.named.NamedWindowService;
 import com.espertech.esper.epl.metric.MetricReportingPath;
 import com.espertech.esper.epl.metric.MetricReportingService;
+import com.espertech.esper.epl.named.NamedWindowService;
+import com.espertech.esper.epl.spec.SelectClauseStreamSelectorEnum;
+import com.espertech.esper.event.EventAdapterService;
+import com.espertech.esper.event.vaevent.ValueAddEventService;
+import com.espertech.esper.filter.FilterService;
+import com.espertech.esper.plugin.PluginLoader;
+import com.espertech.esper.schedule.SchedulingService;
 import com.espertech.esper.timer.TimerService;
+import com.espertech.esper.util.ExecutionPathDebugLog;
+import com.espertech.esper.util.SerializableObjectCopier;
 
 import javax.naming.Context;
 import javax.naming.NamingException;
-import java.util.List;
 import java.io.IOException;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * Service provider encapsulates the engine's services for runtime and administration interfaces.
  */
 public class EPServiceProviderImpl implements EPServiceProviderSPI
 {
+    private static final Log log = LogFactory.getLog(EPServiceProviderImpl.class);
     private volatile EPServiceEngine engine;
     private ConfigurationInformation configSnapshot;
     private String engineURI;
+    private Set<EPServiceStateListener> serviceListeners;
+    private Set<EPStatementStateListener> statementListeners;
+    private StatementEventDispatcherUnthreaded stmtEventDispatcher;
 
     /**
      * Constructor - initializes services.
@@ -50,6 +59,8 @@ public class EPServiceProviderImpl implements EPServiceProviderSPI
         }
         this.engineURI = engineURI;
         configSnapshot = takeSnapshot(configuration);
+        serviceListeners = new CopyOnWriteArraySet<EPServiceStateListener>();
+        statementListeners = new CopyOnWriteArraySet<EPStatementStateListener>();
         initialize();
     }
 
@@ -139,6 +150,18 @@ public class EPServiceProviderImpl implements EPServiceProviderSPI
     {
         if (engine != null)
         {
+            for (EPServiceStateListener listener : serviceListeners)
+            {
+                try
+                {
+                    listener.onEPServiceDestroyRequested(this);
+                }
+                catch (RuntimeException ex)
+                {
+                    log.error("Runtime exception caught during an onEPServiceDestroyRequested callback:" + ex.getMessage(), ex);
+                }
+            }
+
             engine.getServices().getTimerService().stopInternalClock(false);
             // Give the timer thread a little moment to catch up
             try
@@ -292,6 +315,19 @@ public class EPServiceProviderImpl implements EPServiceProviderSPI
         {
             services.getMetricsReportingService().setContext(runtime, services);
         }
+
+        // call initialize listeners
+        for (EPServiceStateListener listener : serviceListeners)
+        {
+            try
+            {
+                listener.onEPServiceInitialized(this);
+            }
+            catch (RuntimeException ex)
+            {
+                log.error("Runtime exception caught during an onEPServiceInitialized callback:" + ex.getMessage(), ex);
+            }
+        }        
     }
 
     /**
@@ -390,6 +426,52 @@ public class EPServiceProviderImpl implements EPServiceProviderSPI
         catch (ClassNotFoundException e)
         {
             throw new ConfigurationException("Failed to snapshot configuration instance through serialization : " + e.getMessage(), e);
+        }
+    }
+
+    public void addServiceStateListener(EPServiceStateListener listener)
+    {
+        serviceListeners.add(listener);
+    }
+
+    public boolean removeServiceStateListener(EPServiceStateListener listener)
+    {
+        return serviceListeners.remove(listener);
+    }
+
+    public void removeAllServiceStateListeners()
+    {
+        serviceListeners.clear();
+    }
+
+    public synchronized void addStatementStateListener(EPStatementStateListener listener)
+    {
+        if (statementListeners.isEmpty())
+        {
+            stmtEventDispatcher = new StatementEventDispatcherUnthreaded(this, statementListeners);
+            this.getStatementLifecycleSvc().addObserver(stmtEventDispatcher);
+        }
+        statementListeners.add(listener);
+    }
+
+    public synchronized boolean removeStatementStateListener(EPStatementStateListener listener)
+    {
+        boolean result = statementListeners.remove(listener);
+        if (statementListeners.isEmpty())
+        {
+            this.getStatementLifecycleSvc().removeObserver(stmtEventDispatcher);
+            stmtEventDispatcher = null;
+        }
+        return result;
+    }
+
+    public synchronized void removeAllStatementStateListeners()
+    {
+        statementListeners.clear();
+        if (statementListeners.isEmpty())
+        {
+            this.getStatementLifecycleSvc().removeObserver(stmtEventDispatcher);
+            stmtEventDispatcher = null;
         }
     }
 }

@@ -113,6 +113,10 @@ public class RegExpExpression extends ExpressionBase
         writer.write(")");
     }
 
+    /**
+     * Returns true if negated.
+     * @return indicator whether negated
+     */
     public boolean isNot()
     {
         return isNot;

@@ -68,4 +68,42 @@ public interface EPServiceProvider
      * @return indicator whether the service has been destroyed
      */
     public boolean isDestroyed();
+
+    /**
+     * Add a listener to service provider state changes that receives a before-destroy event.
+     * The listener collection applies set-semantics.
+     * @param listener to add
+     */
+    public void addServiceStateListener(EPServiceStateListener listener);
+
+    /**
+     * Removate a listener to service provider state changes.
+     * @param listener to remove
+     * @return true to indicate the listener was removed, or fals
+     */
+    public boolean removeServiceStateListener(EPServiceStateListener listener);
+
+    /**
+     * Remove all listeners to service provider state changes.
+     */
+    public void removeAllServiceStateListeners();
+
+    /**
+     * Add a listener to statement state changes that receives statement-level events.
+     * The listener collection applies set-semantics.
+     * @param listener to add
+     */
+    public void addStatementStateListener(EPStatementStateListener listener);
+
+    /**
+     * Removate a listener to statement state changes.
+     * @param listener to remove
+     * @return true to indicate the listener was removed, or fals
+     */
+    public boolean removeStatementStateListener(EPStatementStateListener listener);
+
+    /**
+     * Remove all listeners to statement state changes.
+     */
+    public void removeAllStatementStateListeners();
 }

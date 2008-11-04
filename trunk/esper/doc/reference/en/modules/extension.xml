@@ -610,6 +610,10 @@
     return new MyCountToPatternGuard(numCountTo, quitable);
 }]]></programlisting>
 
+			<para>
+				Plug-in guard factories as well as observers may allow variable names as part of the parameters list. When allowing variables as parameters, the <literal>VariableService</literal> available via the pattern
+				context allows resolving variable names and values at runtime.
+			</para>
 		</sect2>
 
 		<sect2 id="custom-pattern-guard-implementing" revision="1">

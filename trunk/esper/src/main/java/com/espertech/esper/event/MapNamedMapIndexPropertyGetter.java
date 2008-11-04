@@ -6,6 +6,10 @@ public class MapNamedMapIndexPropertyGetter implements EventPropertyGetter
 {
     private final String propertyName;
 
+    /**
+     * Ctor.
+     * @param propertyName is the name of the property to look up in the map
+     */
     public MapNamedMapIndexPropertyGetter(String propertyName)
     {
         this.propertyName = propertyName;

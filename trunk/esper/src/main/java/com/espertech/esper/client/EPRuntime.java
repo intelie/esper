@@ -8,9 +8,6 @@
  **************************************************************************************/
 package com.espertech.esper.client;
 
-import com.espertech.esper.core.EPQueryResult;
-import com.espertech.esper.core.EPPreparedQuery;
-
 import java.util.Map;
 import java.util.Set;
 import java.net.URI;

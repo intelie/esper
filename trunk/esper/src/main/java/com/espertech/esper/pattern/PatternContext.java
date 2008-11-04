@@ -15,6 +15,7 @@ import com.espertech.esper.event.EventAdapterService;
 import com.espertech.esper.filter.FilterService;
 import com.espertech.esper.schedule.ScheduleBucket;
 import com.espertech.esper.schedule.SchedulingService;
+import com.espertech.esper.epl.variable.VariableService;
 
 /**
  * Contains handles to implementations of services needed by evaluation nodes.
@@ -146,5 +147,14 @@ public final class PatternContext
     public StatementExtensionSvcContext getExtensionServicesContext()
     {
         return statementContext.getExtensionServicesContext();
+    }
+
+    /**
+     * Returns the variable service.
+     * @return variable service
+     */
+    public VariableService getVariableService()
+    {
+        return statementContext.getVariableService();
     }
 }

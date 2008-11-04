@@ -7,6 +7,11 @@ public class MapNamedMapArrayIndexPropertyGetter implements EventPropertyGetter
     private final String propertyName;
     private final int index;
 
+    /**
+     * Ctor.
+     * @param propertyName is the name of the property to look up in the map
+     * @param index the index to fetch the array element for
+     */
     public MapNamedMapArrayIndexPropertyGetter(String propertyName, int index)
     {
         this.propertyName = propertyName;

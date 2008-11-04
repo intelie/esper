@@ -8,29 +8,37 @@
  **************************************************************************************/
 package com.espertech.esper.type;
 
-import com.espertech.esper.util.MetaDefItem;
-
 import java.util.Set;
+import java.util.HashSet;
 import java.io.StringWriter;
 
 /**
- * Interface to generate a set of integers from parameters that include ranges, lists and frequencies.
+ * Represents a variable as a parameter.
  */
-public interface NumberSetParameter extends MetaDefItem, EPLParameterType
+public class VariableParameter implements EPLParameterType
 {
-    /**
-     * Returns true if all values between and including min and max are supplied by the parameter.
-     * @param min - lower end of range
-     * @param max - upper end of range
-     * @return true if parameter specifies all int values between min and max, false if not
-     */
-    public boolean isWildcard(int min, int max);
+    private String variableName;
 
     /**
-     * Return a set of int values representing the value of the parameter for the given range.
-     * @param min - lower end of range
-     * @param max - upper end of range
-     * @return set of integer
+     * Ctor.
+     * @param variableName the name of the variable
      */
-    public Set<Integer> getValuesInRange(int min, int max);
+    public VariableParameter(String variableName)
+    {
+        this.variableName = variableName;
+    }
+
+    /**
+     * Returns the variable name.
+     * @return variable name
+     */
+    public String getVariableName()
+    {
+        return variableName;
+    }
+
+    public void toEPL(StringWriter writer)
+    {
+        writer.write(variableName);
+    }
 }

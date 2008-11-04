@@ -43,6 +43,20 @@ public class ConfigurationDBRef implements Serializable
         sqlTypesMapping = new HashMap<Integer, String>();
     }
 
+    /**
+     * Set the connection factory to use a factory class that provides an instance of {@link javax.sql.DataSource}.
+     * <p>
+     * This method is designed for use with Apache Commons DBCP and its BasicDataSourceFactory
+     * but can also work for any application-provided factory for DataSource instances.
+     * <p>
+     * When using Apache DBCP, specify BasicDataSourceFactory.class.getName() as the class name
+     * and populate all properties that Apache DBCP takes for connection pool configuration.
+     * <p>
+     * When using an application-provided data source factory, pass the class name of
+     * a class that provides a public static method createDataSource(Properties properties) returning DataSource.  
+     * @param dataSourceFactoryClassName the classname of the data source factory
+     * @param properties passed to the createDataSource method of the data source factory class
+     */
     public void setDataSourceFactory(Properties properties, String dataSourceFactoryClassName)
     {
         connectionFactoryDesc = new DataSourceFactory(properties, dataSourceFactoryClassName);
@@ -564,6 +578,7 @@ public class ConfigurationDBRef implements Serializable
         /**
          * Ctor.
          * @param properties to pass to the data source factory
+         * @param factoryClassname the class name of the data source factory
          */
         public DataSourceFactory(Properties properties, String factoryClassname)
         {
@@ -580,11 +595,20 @@ public class ConfigurationDBRef implements Serializable
             return properties;
         }
 
+        /**
+         * Returns the class name of the data source factory.
+         * @return fully qualified class name
+         */
         public String getFactoryClassname()
         {
             return factoryClassname;
         }
 
+        /**
+         * Adds a property.
+         * @param name key
+         * @param value value of property
+         */
         public void addProperty(String name, String value)
         {
             properties.put(name, value);

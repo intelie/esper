@@ -23,7 +23,6 @@ import org.antlr.runtime.tree.Tree;
  */
 public class ASTParameterHelper
 {
-
     /**
      * Returns the parse Object for the parameter/constant AST node whose text to parse.
      * @param parameterNode - AST node to parse
@@ -62,9 +61,16 @@ public class ASTParameterHelper
             case EsperEPL2GrammarParser.NUMERIC_PARAM_LIST:        return makeList(node, engineTime);
             case EsperEPL2GrammarParser.ARRAY_PARAM_LIST:          return makeArray(node, engineTime);
             case EsperEPL2GrammarParser.TIME_PERIOD:               return makeTimePeriod(node, engineTime);
+            case EsperEPL2GrammarParser.EVENT_PROP_EXPR:           return makeVariableParameter(node);
             default:
                 throw new ASTWalkException("Unexpected constant of type " + node.getType() + " encountered");
         }
+    }
+
+    private static Object makeVariableParameter(Tree node)
+    {
+        String name = ASTFilterSpecHelper.getPropertyName(node, 0);
+        return new VariableParameter(name);
     }
 
     /**

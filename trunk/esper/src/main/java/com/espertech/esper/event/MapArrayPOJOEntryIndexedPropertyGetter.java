@@ -11,6 +11,11 @@ public class MapArrayPOJOEntryIndexedPropertyGetter implements EventPropertyGett
     private final String propertyMap;
     private final int index;
 
+    /**
+     * Ctor.
+     * @param propertyMap the property to use for the map lookup
+     * @param index the index to fetch the array element for
+     */
     public MapArrayPOJOEntryIndexedPropertyGetter(String propertyMap, int index)
     {
         this.propertyMap = propertyMap;
