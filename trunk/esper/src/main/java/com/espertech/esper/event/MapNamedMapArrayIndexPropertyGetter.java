@@ -2,6 +2,9 @@ package com.espertech.esper.event;
 
 import java.util.Map;
 
+/**
+ * Getter that reads a Map array from a Map.
+ */
 public class MapNamedMapArrayIndexPropertyGetter implements EventPropertyGetter
 {
     private final String propertyName;

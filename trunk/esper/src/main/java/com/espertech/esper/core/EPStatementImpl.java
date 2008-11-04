@@ -43,6 +43,7 @@ public class EPStatementImpl implements EPStatementSPI
     private EPStatementHandle epStatementHandle;
     private StatementResultService statementResultService;
     private StatementMetadata statementMetadata;
+    private Object userObject;
 
     /**
      * Ctor.
@@ -61,6 +62,7 @@ public class EPStatementImpl implements EPStatementSPI
      * @param statementResultService handles statement result generation
      * @param timeSourceService time source provider
      * @param statementMetadata statement metadata
+     * @param userObject the application define user object associated to each statement, if supplied
      */
     public EPStatementImpl(String statementId,
                               String statementName,
@@ -76,7 +78,8 @@ public class EPStatementImpl implements EPStatementSPI
                               VariableService variableService,
                               StatementResultService statementResultService,
                               TimeSourceService timeSourceService,
-                              StatementMetadata statementMetadata)
+                              StatementMetadata statementMetadata,
+                              Object userObject)
     {
         this.isPattern = isPattern;
         this.statementId = statementId;
@@ -105,6 +108,7 @@ public class EPStatementImpl implements EPStatementSPI
         this.variableService = variableService;
         this.statementResultService = statementResultService;
         this.statementMetadata = statementMetadata;
+        this.userObject = userObject;
         statementResultService.setUpdateListeners(statementListenerSet);
     }
 
@@ -369,5 +373,10 @@ public class EPStatementImpl implements EPStatementSPI
     public StatementMetadata getStatementMetadata()
     {
         return statementMetadata;
+    }
+
+    public Object getUserObject()
+    {
+        return userObject;
     }
 }

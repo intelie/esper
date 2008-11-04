@@ -103,11 +103,11 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
         // called after services are activated, to begin statement loading from store
     }
 
-    public synchronized EPStatement createAndStart(StatementSpecRaw statementSpec, String expression, boolean isPattern, String optStatementName)
+    public synchronized EPStatement createAndStart(StatementSpecRaw statementSpec, String expression, boolean isPattern, String optStatementName, Object userObject)
     {
         // Generate statement id
         String statementId = UuidGenerator.generate(expression);
-        return createAndStart(statementSpec, expression, isPattern, optStatementName, statementId, null);
+        return createAndStart(statementSpec, expression, isPattern, optStatementName, statementId, null, userObject);
     }
 
     /**
@@ -118,9 +118,10 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
      * @param optStatementName is the optional statement name
      * @param statementId is the statement id
      * @param optAdditionalContext additional context for use by the statement context
+     * @param userObject the application define user object associated to each statement, if supplied
      * @return started statement
      */
-    protected synchronized EPStatement createAndStart(StatementSpecRaw statementSpec, String expression, boolean isPattern, String optStatementName, String statementId, Map<String, Object> optAdditionalContext)
+    protected synchronized EPStatement createAndStart(StatementSpecRaw statementSpec, String expression, boolean isPattern, String optStatementName, String statementId, Map<String, Object> optAdditionalContext, Object userObject)
     {
         // Determine a statement name, i.e. use the id or use/generate one for the name passed in
         String statementName = statementId;
@@ -129,7 +130,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
             statementName = getUniqueStatementName(optStatementName, statementId);
         }
 
-        EPStatementDesc desc = createStopped(statementSpec, expression, isPattern, statementName, statementId, optAdditionalContext);
+        EPStatementDesc desc = createStopped(statementSpec, expression, isPattern, statementName, statementId, optAdditionalContext, userObject);
         start(statementId, desc, true);
         return desc.getEpStatement();
     }
@@ -142,15 +143,16 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
      * @param statementName is the statement name
      * @param statementId is the statement id
      * @param optAdditionalContext additional context for use by the statement context
+     * @param userObject the application define user object associated to each statement, if supplied
      * @return statement
      */
-    protected synchronized EPStatement createStarted(StatementSpecRaw statementSpec, String expression, boolean isPattern, String statementName, String statementId, Map<String, Object> optAdditionalContext)
+    protected synchronized EPStatement createStarted(StatementSpecRaw statementSpec, String expression, boolean isPattern, String statementName, String statementId, Map<String, Object> optAdditionalContext, Object userObject)
     {
         if (log.isDebugEnabled())
         {
             log.debug(".start Creating and starting statement " + statementId);
         }
-        EPStatementDesc desc = createStopped(statementSpec, expression, isPattern, statementName, statementId, optAdditionalContext);
+        EPStatementDesc desc = createStopped(statementSpec, expression, isPattern, statementName, statementId, optAdditionalContext, userObject);
         start(statementId, desc, true);
         return desc.getEpStatement();
     }
@@ -163,9 +165,10 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
      * @param statementName is the statement name assigned or given
      * @param statementId is the statement id
      * @param optAdditionalContext additional context for use by the statement context
+     * @param userObject the application define user object associated to each statement, if supplied
      * @return stopped statement
      */
-    protected synchronized EPStatementDesc createStopped(StatementSpecRaw statementSpec, String expression, boolean isPattern, String statementName, String statementId, Map<String, Object> optAdditionalContext)
+    protected synchronized EPStatementDesc createStopped(StatementSpecRaw statementSpec, String expression, boolean isPattern, String statementName, String statementId, Map<String, Object> optAdditionalContext, Object userObject)
     {
         EPStatementDesc statementDesc;
         EPStatementStartMethod startMethod;
@@ -247,7 +250,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
             EPStatementSPI statement = new EPStatementImpl(statementId, statementName, expression, isPattern,
                     services.getDispatchService(), this, timeLastStateChange, preserveDispatchOrder, isSpinLocks, blockingTimeout,
                     statementContext.getEpStatementHandle(), statementContext.getVariableService(), statementContext.getStatementResultService(),
-                    services.getTimeSource(), new StatementMetadata(statementType));
+                    services.getTimeSource(), new StatementMetadata(statementType), userObject);
 
             boolean isInsertInto = statementSpec.getInsertIntoDesc() != null;
             statementContext.getStatementResultService().setContext(statement, epServiceProvider,

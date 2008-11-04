@@ -8,12 +8,20 @@ import java.util.Iterator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+/**
+ * Dispatcher for statement lifecycle events to service provider statement state listeners.
+ */
 public class StatementEventDispatcherUnthreaded implements StatementLifecycleObserver
 {
     private static Log log = LogFactory.getLog(StatementEventDispatcherUnthreaded.class);
     private final EPServiceProvider serviceProvider;
     private final Iterable<EPStatementStateListener> statementListeners;
 
+    /**
+     * Ctor.
+     * @param serviceProvider engine instance
+     * @param statementListeners listeners to dispatch to
+     */
     public StatementEventDispatcherUnthreaded(EPServiceProvider serviceProvider, Iterable<EPStatementStateListener> statementListeners)
     {
         this.serviceProvider = serviceProvider;

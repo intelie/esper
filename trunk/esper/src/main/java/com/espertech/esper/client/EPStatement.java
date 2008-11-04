@@ -105,4 +105,16 @@ public interface EPStatement extends EPListenable, EPIterable
      * @return true if statement is a pattern
      */
     public boolean isPattern();
+
+    /**
+     * Returns the application defined user data object associated with the statement, or null if none
+     * was supplied at time of statement creation.
+     * <p>
+     * The <em>user object</em> is a single, unnamed field that is stored with every statement.
+     * Applications may put arbitrary objects in this field or a null value.
+     * <p>
+     * User objects are passed at time of statement creation as a parameter the create method. 
+     * @return user object or null if none defined
+     */
+    public Object getUserObject();
 }

@@ -2,7 +2,10 @@ package com.espertech.esper.event;
 
 import java.util.Map;
 
-public class MapNamedMapIndexPropertyGetter implements EventPropertyGetter
+/**
+ * Getter that reads a Map out of a Map.
+ */
+public class MapNamedMapPropertyGetter implements EventPropertyGetter
 {
     private final String propertyName;
 
@@ -10,7 +13,7 @@ public class MapNamedMapIndexPropertyGetter implements EventPropertyGetter
      * Ctor.
      * @param propertyName is the name of the property to look up in the map
      */
-    public MapNamedMapIndexPropertyGetter(String propertyName)
+    public MapNamedMapPropertyGetter(String propertyName)
     {
         this.propertyName = propertyName;
     }

@@ -86,28 +86,38 @@ public class EPAdministratorImpl implements EPAdministrator
 
     public EPStatement createPattern(String onExpression) throws EPException
     {
-        return createPatternStmt(onExpression, null);
+        return createPatternStmt(onExpression, null, null);
     }
 
     public EPStatement createEPL(String eplStatement) throws EPException
     {
-        return createEPLStmt(eplStatement, null);
+        return createEPLStmt(eplStatement, null, null);
     }
 
     public EPStatement createPattern(String expression, String statementName) throws EPException
     {
-        return createPatternStmt(expression, statementName);
+        return createPatternStmt(expression, statementName, null);
+    }
+
+    public EPStatement createPattern(String expression, String statementName, Object userObject) throws EPException
+    {
+        return createPatternStmt(expression, statementName, userObject);
     }
 
     public EPStatement createEPL(String eplStatement, String statementName) throws EPException
     {
-        return createEPLStmt(eplStatement, statementName);
+        return createEPLStmt(eplStatement, statementName, null);
     }
 
-    private EPStatement createPatternStmt(String expression, String statementName) throws EPException
+    public EPStatement createEPL(String eplStatement, String statementName, Object userObject) throws EPException
+    {
+        return createEPLStmt(eplStatement, statementName, userObject);
+    }
+
+    private EPStatement createPatternStmt(String expression, String statementName, Object userObject) throws EPException
     {
         StatementSpecRaw rawPattern = compilePattern(expression);
-        return services.getStatementLifecycleSvc().createAndStart(rawPattern, expression, true, statementName);
+        return services.getStatementLifecycleSvc().createAndStart(rawPattern, expression, true, statementName, userObject);
 
         /**
          * For round-trip testing of all statements, of a statement to SODA and creation from SODA, use below lines:
@@ -117,10 +127,10 @@ public class EPAdministratorImpl implements EPAdministrator
          */
     }
 
-    private EPStatement createEPLStmt(String eplStatement, String statementName) throws EPException
+    private EPStatement createEPLStmt(String eplStatement, String statementName, Object userObject) throws EPException
     {
         StatementSpecRaw statementSpec = compileEPL(eplStatement, statementName, services, defaultStreamSelector);
-        EPStatement statement = services.getStatementLifecycleSvc().createAndStart(statementSpec, eplStatement, false, statementName);
+        EPStatement statement = services.getStatementLifecycleSvc().createAndStart(statementSpec, eplStatement, false, statementName, userObject);
 
         log.debug(".createEPLStmt Statement created and started");
         return statement;
@@ -137,13 +147,25 @@ public class EPAdministratorImpl implements EPAdministrator
         return create(sodaStatement, null);
     }
 
+    public EPStatement create(EPStatementObjectModel sodaStatement, String statementName, Object userObject) throws EPException
+    {
+        // Specifies the statement
+        StatementSpecRaw statementSpec = StatementSpecMapper.map(sodaStatement, services.getEngineImportService(), services.getVariableService());
+        String eplStatement = sodaStatement.toEPL();
+
+        EPStatement statement = services.getStatementLifecycleSvc().createAndStart(statementSpec, eplStatement, false, statementName, userObject);
+
+        log.debug(".createEPLStmt Statement created and started");
+        return statement;
+    }
+
     public EPStatement create(EPStatementObjectModel sodaStatement, String statementName) throws EPException
     {
         // Specifies the statement
         StatementSpecRaw statementSpec = StatementSpecMapper.map(sodaStatement, services.getEngineImportService(), services.getVariableService());
         String eplStatement = sodaStatement.toEPL();
 
-        EPStatement statement = services.getStatementLifecycleSvc().createAndStart(statementSpec, eplStatement, false, statementName);
+        EPStatement statement = services.getStatementLifecycleSvc().createAndStart(statementSpec, eplStatement, false, statementName, null);
 
         log.debug(".createEPLStmt Statement created and started");
         return statement;
@@ -174,6 +196,16 @@ public class EPAdministratorImpl implements EPAdministrator
         return new EPPreparedStatementImpl(unmapped.getObjectModel(), unmapped.getIndexedParams());
     }
 
+    public EPStatement create(EPPreparedStatement prepared, String statementName, Object userObject) throws EPException
+    {
+        EPPreparedStatementImpl impl = (EPPreparedStatementImpl) prepared;
+
+        StatementSpecRaw statementSpec = StatementSpecMapper.map(impl.getModel(), services.getEngineImportService(), services.getVariableService());
+        String eplStatement = impl.getModel().toEPL();
+
+        return services.getStatementLifecycleSvc().createAndStart(statementSpec, eplStatement, false, statementName, userObject);
+    }
+
     public EPStatement create(EPPreparedStatement prepared, String statementName) throws EPException
     {
         EPPreparedStatementImpl impl = (EPPreparedStatementImpl) prepared;
@@ -181,7 +213,7 @@ public class EPAdministratorImpl implements EPAdministrator
         StatementSpecRaw statementSpec = StatementSpecMapper.map(impl.getModel(), services.getEngineImportService(), services.getVariableService());
         String eplStatement = impl.getModel().toEPL();
 
-        return services.getStatementLifecycleSvc().createAndStart(statementSpec, eplStatement, false, statementName);
+        return services.getStatementLifecycleSvc().createAndStart(statementSpec, eplStatement, false, statementName, null);
     }
 
     public EPStatement create(EPPreparedStatement prepared) throws EPException

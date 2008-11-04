@@ -48,6 +48,23 @@ public interface EPAdministrator
     public EPStatement createPattern(String onExpression, String statementName) throws EPException;
 
     /**
+     * Create and starts an event pattern statement for the expressing string passed and assign the name passed.
+     * <p>
+     * The statement name is optimally a unique name. If a statement of the same name
+     * has already been created, the engine assigns a postfix to create a unique statement name.
+     * <p>
+     * Accepts an application defined user data object associated with the statement. The <em>user
+     * object</em> is a single, unnamed field that is stored with every statement.
+     * Applications may put arbitrary objects in this field or a null value.
+     * @param onExpression must follow the documented syntax for pattern statements
+     * @param statementName is the name to assign to the statement for use in manageing the statement
+     * @param userObject is the application-defined user object
+     * @return EPStatement to poll data from or to add listeners to
+     * @throws EPException when the expression was not valid
+     */
+    public EPStatement createPattern(String onExpression, String statementName, Object userObject) throws EPException;
+
+    /**
      * Create and starts an EPL statement.
      * <p>
      * The statement name is optimally a unique name. If a statement of the same name
@@ -60,6 +77,23 @@ public interface EPAdministrator
     public EPStatement createEPL(String eplStatement, String statementName) throws EPException;
 
     /**
+     * Create and starts an EPL statement.
+     * <p>
+     * The statement name is optimally a unique name. If a statement of the same name
+     * has already been created, the engine assigns a postfix to create a unique statement name.
+     * <p>
+     * Accepts an application defined user data object associated with the statement. The <em>user
+     * object</em> is a single, unnamed field that is stored with every statement.
+     * Applications may put arbitrary objects in this field or a null value.
+     * @param eplStatement is the query language statement
+     * @param statementName is the name to assign to the statement for use in manageing the statement
+     * @param userObject is the application-defined user object
+     * @return EPStatement to poll data from or to add listeners to
+     * @throws EPException when the expression was not valid
+     */
+    public EPStatement createEPL(String eplStatement, String statementName, Object userObject) throws EPException;
+
+    /**
      * Creates and starts an EPL statement.
      * <p>
      * The statement name is optimally a unique name. If a statement of the same name
@@ -70,6 +104,23 @@ public interface EPAdministrator
      * @throws EPException when the expression was not valid
      */
     public EPStatement create(EPStatementObjectModel sodaStatement, String statementName) throws EPException;
+
+    /**
+     * Creates and starts an EPL statement.
+     * <p>
+     * The statement name is optimally a unique name. If a statement of the same name
+     * has already been created, the engine assigns a postfix to create a unique statement name.
+     * <p>
+     * Accepts an application defined user data object associated with the statement. The <em>user
+     * object</em> is a single, unnamed field that is stored with every statement.
+     * Applications may put arbitrary objects in this field or a null value.
+     * @param sodaStatement is the statement object model
+     * @param statementName is the name to assign to the statement for use in managing the statement
+     * @param userObject is the application-defined user object
+     * @return EPStatement to poll data from or to add listeners to
+     * @throws EPException when the expression was not valid
+     */
+    public EPStatement create(EPStatementObjectModel sodaStatement, String statementName, Object userObject) throws EPException;
 
     /**
      * Creates and starts an EPL statement.
@@ -114,6 +165,23 @@ public interface EPAdministrator
      * @throws EPException when the prepared statement was not valid
      */
     public EPStatement create(EPPreparedStatement prepared, String statementName) throws EPException;
+
+    /**
+     * Creates and starts a prepared statement.
+     * <p>
+     * The statement name is optimally a unique name. If a statement of the same name
+     * has already been created, the engine assigns a postfix to create a unique statement name.
+     * <p>
+     * Accepts an application defined user data object associated with the statement. The <em>user
+     * object</em> is a single, unnamed field that is stored with every statement.
+     * Applications may put arbitrary objects in this field or a null value.
+     * @param prepared is the prepared statement for which all substitution values have been provided
+     * @param statementName is the name to assign to the statement for use in manageing the statement
+     * @param userObject is the application-defined user object
+     * @return EPStatement to poll data from or to add listeners to
+     * @throws EPException when the prepared statement was not valid
+     */
+    public EPStatement create(EPPreparedStatement prepared, String statementName, Object userObject) throws EPException;
 
     /**
      * Creates and starts a prepared statement.

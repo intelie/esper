@@ -4,6 +4,7 @@ Esper Changelog
 Changes in version 2.3.0
 ------------------------
 Array map properties and Map type name as property name in map, one-to-many
+ESPER-273 Send event before EPServiceProvider.destroy()
 
 Changes in version 2.2.0
 ------------------------
