@@ -16,6 +16,8 @@ Presentation, Articles and Books
 *------------------------+------------+----------------------------------------------------------------+
 | {{{http://dist.codehaus.org/esper/TSSJS_Event_Processing_in_Java_A_Financial_Services_Case_Study.pdf}Event Processing in Java, A Financial Services Case Study}} with source code {{{http://dist.codehaus.org/esper/TSSJS_Event_Processing_in_Java_A_Financial_Services_Case_Study.zip}(ZIP)}}| The Server-Side Java Symposium 2008 | March, 2008
 *------------------------+-------------+---------------------------------------------------------------+
+| {{{http://saventech.com/flex/CEP%20and%20RIAs.pdf}CEP and RIAs: Bringing Together the Bold and the Beautiful}} by Shashank Tiwari from Saven Technologies | {{{http://ajax.sys-con.com/node/507330}AJAXWorld}} | March, 2008
+*------------------------+-------------+---------------------------------------------------------------+
 | {{{http://www.zepheira.com/presentations/2008/esper/esper.pdf}What's Going On? : Complex Event Processing with Esper}} by Brian Sletten from Zepheira | {{{http://www.nofluffjuststuff.com}NoFluffJustStuff}} | March, 2008
 *------------------------+--------------+--------------------------------------------------------------+
 | {{{http://dist.codehaus.org/esper/JavaOne_TS-1911_May_11_2007.pdf}Event-Driven Application Servers}} | JavaOne 2007 | May, 2007
@@ -68,6 +70,8 @@ Presentation, Articles and Books
 *-------------------------------------------+-----------+-----------------------------------------------------------------+-----------------+
 | Presentation                              | Event | Date                                                                       | Language
 *-------------------------------------------+------------+----------------------------------------------------------------+-----------------+
+| {{{http://www.agimatec.de/blog/2008/05/event-stream-processing-einleitung-und-beispiele-zu-einer-technologie-die-jede-cocktailparty-bereichert/}Event Stream Processing: Einleitung und Beispiele zu einer Technologie}}| agimatec | May, 2008 | German
+*-------------------------------------------+--------------+--------------------------------------------------------------+-----------------+
 | {{{http://www.touilleur-express.fr/2008/05/19/presentation-d%E2%80%99esper-moteur-de-gestion-de-flux-d%E2%80%99evenements-en-java/}Presentation d'Esper, moteur de gestion de flux d'evenements en Java}}|Le Touilleur Express blog | May, 2008 | French
 *-------------------------------------------+-------------+---------------------------------------------------------------+-----------------+
 | {{{http://adminsight.de/2008/04/17/article-esper-als-eda-plattfrom}Esper als EDA-Plattform}}| Java Magazin | May, 2008 | German

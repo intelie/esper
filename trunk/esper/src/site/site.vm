@@ -302,11 +302,6 @@
     <meta http-equiv="Content-Type" content="text/html; charset=${outputEncoding}" />
     <meta http-equiv="Pragma" content="no-cache"/>
     <meta http-equiv="Expires" content="-1"/>
-	<script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
-	</script>
-	<script type="text/javascript">
-	_uacct = "UA-1261295-1";
-	</script>
 <link rel="shortcut icon" href="$relativePath/images/favicon.ico" />
 <!--[if IE]>
 <style type="text/css" media="screen">
@@ -382,9 +377,13 @@ behavior: url($relativePath/css/csshover.htc);
 
 <!-- google analytics -->
 <script type="text/javascript">
-//_uacct was set in header
-urchinTracker();
-</script>   
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+var pageTracker = _gat._getTracker("UA-1261295-1");
+pageTracker._trackPageview();
+</script>
 </body>
 <!--
 memo:
