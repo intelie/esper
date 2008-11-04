@@ -40,12 +40,14 @@
     <xsl:template name="user.footer.content">
     <hr/>
     <center>&#169; 2008 EsperTech Inc. All Rights Reserved</center>
-	<script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+	<script type="text/javascript">
+	var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+	document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
 	</script>
 	<script type="text/javascript">
-	_uacct = "UA-1261295-1";
-	urchinTracker();
-	</script>  
+	var pageTracker = _gat._getTracker("UA-1261295-1");
+	pageTracker._trackPageview();
+	</script>
     </xsl:template>
     
 <!--###################################################
