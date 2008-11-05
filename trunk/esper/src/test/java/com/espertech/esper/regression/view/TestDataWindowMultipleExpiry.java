@@ -6,6 +6,7 @@ import com.espertech.esper.client.EPServiceProviderManager;
 import com.espertech.esper.client.EPStatement;
 import com.espertech.esper.client.soda.*;
 import com.espertech.esper.support.util.SupportUpdateListener;
+import com.espertech.esper.support.util.ArrayAssertionUtil;
 import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.support.bean.SupportMarketDataBean;
 import com.espertech.esper.support.bean.SupportBean;
@@ -32,15 +33,15 @@ public class TestDataWindowMultipleExpiry extends TestCase
     {
         // Testing the two forms of the case expression
         // Furthermore the test checks the different when clauses and actions related.
-        String caseExpr = "select * " +
+        String caseExpr = "select volume " +
                 "from " +  SupportMarketDataBean.class.getName() + ".std:unique(symbol).win:time(10)";
 
-        EPStatement selectTestCase = epService.getEPAdministrator().createEPL(caseExpr);
-        selectTestCase.addListener(listener);
+        EPStatement stmt = epService.getEPAdministrator().createEPL(caseExpr);
+        stmt.addListener(listener);
         sendMarketDataEvent("DELL", 1, 50);
-
         sendMarketDataEvent("DELL", 2, 50);
-        // TODO
+        Object[] values = ArrayAssertionUtil.iteratorToArray(stmt.iterator());
+        assertEquals(1, values.length);
     }
 
     private void sendMarketDataEvent(String symbol, long volume, double price)

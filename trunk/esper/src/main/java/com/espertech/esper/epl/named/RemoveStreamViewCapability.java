@@ -26,6 +26,17 @@ import java.util.List;
  */
 public class RemoveStreamViewCapability implements ViewCapability
 {
+    private final boolean isAppliesToChildViews;
+
+    /**
+     * Ctor.
+     * @param appliesToChildViews indicates whether to apply to all views
+     */
+    public RemoveStreamViewCapability(boolean appliesToChildViews)
+    {
+        isAppliesToChildViews = appliesToChildViews;
+    }
+
     public boolean inspect(int streamNumber, List<ViewFactory> viewFactories, StatementContext statementContext)
     {
         for (ViewFactory viewFactory : viewFactories)
@@ -46,5 +57,10 @@ public class RemoveStreamViewCapability implements ViewCapability
     public boolean requiresChildViews()
     {
         return false;
+    }
+
+    public boolean appliesToChildViews()
+    {
+        return isAppliesToChildViews;
     }
 }

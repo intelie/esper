@@ -106,7 +106,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
     public synchronized EPStatement createAndStart(StatementSpecRaw statementSpec, String expression, boolean isPattern, String optStatementName, Object userObject)
     {
         // Generate statement id
-        String statementId = UuidGenerator.generate(expression);
+        String statementId = UuidGenerator.generate();
         return createAndStart(statementSpec, expression, isPattern, optStatementName, statementId, null, userObject);
     }
 

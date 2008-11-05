@@ -50,6 +50,8 @@ public class OrderByProcessorImpl implements OrderByProcessor {
 	 * @param aggregationService -
 	 *            used to evaluate aggregate functions in the group-by and
 	 *            sort-by clauses
+     * @param isSortUsingCollator for string value sorting using compare or Collator
+     * @throws ExprValidationException when order-by items don't divulge a type
 	 */
 	public OrderByProcessorImpl(final List<OrderByItem> orderByList,
 								  List<ExprNode> groupByNodes,
@@ -277,6 +279,13 @@ public class OrderByProcessorImpl implements OrderByProcessor {
 		return keys;
 	}
 
+    /**
+     * Returns a comparator for order items that may sort string values using Collator.
+     * @param orderByList order-by items
+     * @param isSortUsingCollator true for Collator string sorting
+     * @return comparator
+     * @throws ExprValidationException if the return type of order items cannot be determined
+     */
     protected static Comparator<MultiKeyUntyped> getComparator(List<OrderByItem> orderByList, boolean isSortUsingCollator) throws ExprValidationException
     {
         Comparator<MultiKeyUntyped> comparator;

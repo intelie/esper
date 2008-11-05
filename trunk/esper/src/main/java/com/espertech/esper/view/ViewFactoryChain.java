@@ -56,4 +56,20 @@ public class ViewFactoryChain
     {
         return viewFactoryChain;
     }
+
+    /**
+     * Returns the number of data window factories for the chain.
+     * @return number of data window factories
+     */
+    public int getDataWindowViewFactoryCount()
+    {
+        int count = 0;
+        for (ViewFactory chainElement : viewFactoryChain) {
+            if (chainElement instanceof DataWindowViewFactory)
+            {
+                count++;
+            }
+        }
+        return count;
+    }
 }

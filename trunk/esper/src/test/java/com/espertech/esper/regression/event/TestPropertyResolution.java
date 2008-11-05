@@ -3,6 +3,7 @@ package com.espertech.esper.regression.event;
 import junit.framework.TestCase;
 import com.espertech.esper.client.*;
 import com.espertech.esper.event.EventBean;
+import com.espertech.esper.event.EventType;
 import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.bean.SupportBeanDupProperty;
 import com.espertech.esper.support.bean.SupportBeanComplexProps;
@@ -25,7 +26,11 @@ public class TestPropertyResolution extends TestCase
 
         Object event = new SupportBeanWriteOnly();
         epService.getEPRuntime().sendEvent(event);
-        assertSame(event, listener.assertOneGetNewAndReset().getUnderlying());
+        EventBean eventBean = listener.assertOneGetNewAndReset();
+        assertSame(event, eventBean.getUnderlying());
+
+        EventType type = stmt.getEventType();
+        assertEquals(0, type.getPropertyNames().length);
     }
 
     public void testCaseSensitive()

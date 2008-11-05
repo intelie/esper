@@ -34,6 +34,11 @@ public abstract class BaseConfigurableEventType implements EventTypeSPI {
         this.underlyngType = underlyngType;
     }
 
+    public String getName()
+    {
+        return metadata.getPrimaryName();
+    }
+
     /**
      * Sets explicit properties using a map of event property name and getter instance for each property.
      * @param explicitProperties is the preconfigured properties not implicit in the event type
@@ -98,5 +103,6 @@ public abstract class BaseConfigurableEventType implements EventTypeSPI {
         return metadata;
     }
 }
+
 
 

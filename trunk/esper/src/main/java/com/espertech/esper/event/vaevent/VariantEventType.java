@@ -82,6 +82,11 @@ public class VariantEventType implements EventTypeSPI
         return Object.class;
     }
 
+    public String getName()
+    {
+        return metadata.getPublicName();
+    }
+
     public EventPropertyGetter getGetter(String property)
     {
         VariantPropertyDesc entry = propertyDesc.get(property);

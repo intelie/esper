@@ -70,6 +70,11 @@ public final class FilterSpecParamRange extends FilterSpecParam
         return super.toString() + "  range=(min=" + min.toString() + ",max=" + max.toString() + ')';
     }
 
+    public int getFilterHash()
+    {
+        return min.getFilterHash() + 31 * max.getFilterHash();
+    }
+
     public boolean equals(Object obj)
     {
         if (this == obj)

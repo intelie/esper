@@ -1562,6 +1562,10 @@ order by price, volume</programlisting>
 			Otherwise, any kind of expression that can appear in the <literal>select</literal> clause, 
 			as well as any alias defined in the <literal>select</literal> clause, is also valid in the order by clause.
 		</para>		
+		
+		<para>
+			By default all sort operations on string values are performed via the <literal>compare</literal> method and are thus not locale dependent. To account for differences in language or locale, see <xref linkend="config-engine-language"/> to change this setting.
+		</para>
 	</sect1>
 
     <sect1 id="epl-limit">

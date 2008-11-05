@@ -49,4 +49,9 @@ public class ViewCapDataWindowAccess implements ViewCapability
     {
         return true;
     }
+
+    public boolean appliesToChildViews()
+    {
+        return false;
+    }
 }

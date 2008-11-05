@@ -52,7 +52,12 @@ public class TestViewFactoryDelegateImpl extends TestCase
 
         public boolean requiresChildViews()
         {
-            return false;  //To change body of implemented methods use File | Settings | File Templates.
+            return false;
+        }
+
+        public boolean appliesToChildViews()
+        {
+            return false;
         }
     }
 }

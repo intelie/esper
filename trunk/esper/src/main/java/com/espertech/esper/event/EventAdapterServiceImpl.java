@@ -634,14 +634,14 @@ public class EventAdapterServiceImpl implements EventAdapterService
 
     public final EventType createAnonymousMapType(Map<String, Object> propertyTypes) throws EventAdapterException
     {
-        String alias = UuidGenerator.generate(propertyTypes);
+        String alias = UuidGenerator.generate();
         EventTypeMetadata metadata = EventTypeMetadata.createAnonymous(alias);
         return new MapEventType(metadata, alias, this, propertyTypes, null, null);
     }
 
     public final EventType createAnonymousWrapperType(EventType underlyingEventType, Map<String, Object> propertyTypes) throws EventAdapterException
     {
-        String alias = UuidGenerator.generate(propertyTypes);
+        String alias = UuidGenerator.generate();
         EventTypeMetadata metadata = EventTypeMetadata.createAnonymous(alias);
     	return new WrapperEventType(metadata, alias, underlyingEventType, propertyTypes, this);
     }
@@ -668,7 +668,7 @@ public class EventAdapterServiceImpl implements EventAdapterService
     public final EventType createAnonymousCompositeType(Map<String, Pair<EventType, String>> taggedEventTypes,
                                                         Map<String, Pair<EventType, String>> arrayEventTypes)
     {
-        String alias = UuidGenerator.generate(taggedEventTypes);
+        String alias = UuidGenerator.generate();
         EventTypeMetadata metadata = EventTypeMetadata.createAnonymous(alias);
         return new CompositeEventType(metadata, alias, taggedEventTypes, arrayEventTypes);
     }

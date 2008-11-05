@@ -308,7 +308,7 @@ public class EPStatementStartMethod
 
         // request remove stream capability from views
         ViewResourceDelegate viewResourceDelegate = new ViewResourceDelegateImpl(new ViewFactoryChain[] {unmaterializedViewChain}, statementContext);
-        if (!viewResourceDelegate.requestCapability(0, new RemoveStreamViewCapability(), null))
+        if (!viewResourceDelegate.requestCapability(0, new RemoveStreamViewCapability(false), null))
         {
             throw new ExprValidationException(NamedWindowService.ERROR_MSG_DATAWINDOWS);
         }
@@ -598,6 +598,18 @@ public class EPStatementStartMethod
         // Construct type information per stream
         StreamTypeService typeService = new StreamTypeServiceImpl(streamEventTypes, streamNames, services.getEngineURI(), eventTypeAliases);
         ViewResourceDelegate viewResourceDelegate = new ViewResourceDelegateImpl(unmaterializedViewChain, statementContext);
+
+        // boolean multiple expiry policy
+        for (int i = 0; i < unmaterializedViewChain.length; i++)
+        {
+            if (unmaterializedViewChain[i].getDataWindowViewFactoryCount() > 1)
+            {
+                if (!viewResourceDelegate.requestCapability(i, new RemoveStreamViewCapability(true), null))
+                {
+                    log.warn("Combination of multiple data window expiry policies with views that do not support remove streams is not allowed");
+                }
+            }
+        }
 
         // create stop method using statement stream specs
         EPStatementStopMethod stopMethod = new EPStatementStopMethod()

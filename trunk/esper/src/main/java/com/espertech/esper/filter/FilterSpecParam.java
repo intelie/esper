@@ -38,6 +38,13 @@ public abstract class FilterSpecParam implements MetaDefItem
     public abstract Object getFilterValue(MatchedEventMap matchedEvents);
 
     /**
+     * Returns a hash code for use in computing a filter expression hash code that matches
+     * when a same-values filter expression is provided.
+     * @return hash code or zero if no recomputable value can be computed
+     */
+    public abstract int getFilterHash();
+
+    /**
      * Returns the property name for the filter parameter.
      * @return property name
      */

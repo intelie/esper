@@ -87,6 +87,11 @@ public class WrapperEventType implements EventTypeSPI
 		return null;
 	}
 
+    public String getName()
+    {
+        return metadata.getPublicName();
+    }
+
     /**
      * Returns the event type alias.
      * @return event type alias

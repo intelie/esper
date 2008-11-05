@@ -1491,6 +1491,36 @@ config.getEngineDefaults().getTimeSource().
 </metrics-reporting>]]></programlisting>
 		</sect2>
 
+		<sect2 id="config-engine-language" revision="1">
+			<title>Engine Settings related to Language and Locale</title>
+			
+			<para>
+				Locale-dependence in Esper is limited to the sort order of string values by the <literal>order by</literal> clause and by the sort view.
+			</para>
+
+			<para>
+				By default, Esper sorts string values using the <literal>compare</literal> method that is not locale dependent. To enable local dependent sorting you must set the configuration flag as described below.
+			</para>
+			
+			<para>
+			 The XML configuration sets the locale dependent sorting as shown below:
+			</para>
+
+			<programlisting><![CDATA[<engine-settings>
+  <defaults>
+    <language sort-using-collator="true"/>
+  </defaults>
+</engine-settings>]]></programlisting>
+			
+			<para>
+			 The API to change the setting:
+			</para>
+
+			<programlisting><![CDATA[Configuration config = new Configuration();
+config.getEngineDefaults().getLanguage().setSortUsingCollator(true);]]></programlisting>
+
+		</sect2>
+
 		<sect2 id="config-revisionevent" revision="1">
 			<title>Revision Event Type</title>
 			

@@ -66,7 +66,7 @@ public class TestLegacyBeanEvents extends TestCase
         // add back the type
         configOps.addEventTypeAlias("MyBeanEvent", SupportBean.class);
         assertTrue(configOps.isEventTypeAliasExists("MyBeanEvent"));
-        assertNull(configOps.getEventTypeAliasUsedBy("MyBeanEvent"));
+        assertTrue(configOps.getEventTypeAliasUsedBy("MyBeanEvent").isEmpty());
 
         // compile
         epService.getEPAdministrator().createEPL("select boolPrimitive from MyBeanEvent", "stmtTwo");
@@ -88,7 +88,7 @@ public class TestLegacyBeanEvents extends TestCase
         }
         assertTrue(configOps.removeEventType("MyBeanEvent", true));
         assertFalse(configOps.isEventTypeAliasExists("MyBeanEvent"));
-        assertNull(configOps.getEventTypeAliasUsedBy("MyBeanEvent"));
+        assertTrue(configOps.getEventTypeAliasUsedBy("MyBeanEvent").isEmpty());
 
         // add back the type
         configOps.addEventTypeAlias("MyBeanEvent", SupportMarketDataBean.class);
@@ -176,6 +176,7 @@ public class TestLegacyBeanEvents extends TestCase
         assertEquals(1, type.getMetadata().getOptionalSecondaryNames().size());
         assertEquals(SupportLegacyBean.class.getName(), type.getMetadata().getOptionalSecondaryNames().iterator().next());
         assertEquals("MyLegacyEvent", type.getMetadata().getPrimaryName());
+        assertEquals("MyLegacyEvent", type.getMetadata().getPublicName());
         assertEquals(EventTypeMetadata.TypeClass.APPLICATION, type.getMetadata().getTypeClass());
         assertEquals(true, type.getMetadata().isApplicationConfigured());
 
@@ -256,6 +257,8 @@ public class TestLegacyBeanEvents extends TestCase
         assertEquals(null, stmtType.getMetadata().getOptionalApplicationType());
         assertEquals(null, stmtType.getMetadata().getOptionalSecondaryNames());
         assertNotNull(stmtType.getMetadata().getPrimaryName());
+        assertNull(stmtType.getMetadata().getPublicName());
+        assertNull(stmtType.getName());
         assertEquals(EventTypeMetadata.TypeClass.ANONYMOUS, stmtType.getMetadata().getTypeClass());
         assertEquals(false, stmtType.getMetadata().isApplicationConfigured());        
     }

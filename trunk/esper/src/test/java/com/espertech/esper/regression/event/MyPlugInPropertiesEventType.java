@@ -11,10 +11,12 @@ import java.util.Set;
 
 public class MyPlugInPropertiesEventType implements EventType
 {
+    private final String name;
     private final Set<String> properties;
 
-    public MyPlugInPropertiesEventType(Set<String> properties)
+    public MyPlugInPropertiesEventType(String name, Set<String> properties)
     {
+        this.name = name;
         this.properties = properties;
     }
 
@@ -69,5 +71,10 @@ public class MyPlugInPropertiesEventType implements EventType
     public Iterator<EventType> getDeepSuperTypes()
     {
         return null;
+    }
+
+    public String getName()
+    {
+        return name;
     }
 }

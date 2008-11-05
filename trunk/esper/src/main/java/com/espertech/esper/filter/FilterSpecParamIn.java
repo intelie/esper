@@ -99,6 +99,11 @@ public final class FilterSpecParamIn extends FilterSpecParam
         return super.toString() + "  in=(listOfValues=" + listOfValues.toString() + ')';
     }
 
+    public int getFilterHash()
+    {
+        return 0;
+    }
+
     public boolean equals(Object obj)
     {
         if (this == obj)

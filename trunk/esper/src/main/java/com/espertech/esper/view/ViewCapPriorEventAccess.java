@@ -82,4 +82,9 @@ public class ViewCapPriorEventAccess implements ViewCapability
     {
         return false;
     }
+
+    public boolean appliesToChildViews()
+    {
+        return false;
+    }    
 }

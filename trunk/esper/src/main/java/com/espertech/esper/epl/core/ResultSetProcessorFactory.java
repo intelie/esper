@@ -267,10 +267,15 @@ public class ResultSetProcessorFactory
         boolean hasGroupBy = !groupByNodes.isEmpty();
         AggregationService aggregationService = AggregationServiceFactory.getService(selectAggregateExprNodes, havingAggregateExprNodes, orderByAggregateExprNodes, hasGroupBy, stmtContext.getMethodResolutionService());
 
+        boolean useCollatorSort = false;
+        if (stmtContext.getConfigSnapshot() != null)
+        {
+            useCollatorSort = stmtContext.getConfigSnapshot().getEngineDefaults().getLanguage().isSortUsingCollator();
+        }
+
         // Construct the processor for sorting output events
         OrderByProcessor orderByProcessor = OrderByProcessorFactory.getProcessor(namedSelectionList,
-                groupByNodes, orderByList, aggregationService, statementSpecCompiled.getRowLimitSpec(), stmtContext.getVariableService(),
-                stmtContext.getConfigSnapshot().getEngineDefaults().getLanguage().isSortUsingCollator());
+                groupByNodes, orderByList, aggregationService, statementSpecCompiled.getRowLimitSpec(), stmtContext.getVariableService(),useCollatorSort);
 
         // Construct the processor for evaluating the select clause
         SelectExprEventTypeRegistry selectExprEventTypeRegistry = new SelectExprEventTypeRegistry(stmtContext.getDynamicReferenceEventTypes());

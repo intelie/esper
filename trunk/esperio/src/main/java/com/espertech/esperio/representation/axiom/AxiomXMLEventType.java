@@ -170,4 +170,9 @@ public class AxiomXMLEventType implements EventTypeSPI
         axXPath.setNamespaceContext(namespaceContext);
         return new AxiomXPathPropertyGetter(propertyName, axXPath, type, optionalCastToType);
     }
+
+    public String getName()
+    {
+        return metadata.getPublicName();
+    }
 }

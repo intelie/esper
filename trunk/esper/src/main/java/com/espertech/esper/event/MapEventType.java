@@ -148,6 +148,11 @@ public class MapEventType implements EventTypeSPI
         copySuperTypes();
     }
 
+    public String getName()
+    {
+        return metadata.getPublicName();
+    }
+
     public final Class getPropertyType(String propertyName)
     {
         Class result = simplePropertyTypes.get(ASTFilterSpecHelper.unescapeDot(propertyName));

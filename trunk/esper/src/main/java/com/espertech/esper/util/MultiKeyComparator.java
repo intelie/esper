@@ -63,6 +63,13 @@ public final class MultiKeyComparator implements Comparator<MultiKeyUntyped>, Me
         }
     }
 
+    /**
+     * Compares two nullable values.
+     * @param valueOne first value to compare
+     * @param valueTwo second value to compare
+     * @param isDescending true for descending
+     * @return compare result
+     */
     protected static int compareValues(Object valueOne, Object valueTwo, boolean isDescending)
     {
         if (valueOne == null || valueTwo == null)
@@ -106,6 +113,14 @@ public final class MultiKeyComparator implements Comparator<MultiKeyUntyped>, Me
         return comparable1.compareTo(valueTwo);
     }
 
+    /**
+     * Compares two nullable values using Collator, for use with string-typed values.
+     * @param valueOne first value to compare
+     * @param valueTwo second value to compare
+     * @param isDescending true for descending
+     * @param collator the Collator for comparing
+     * @return compare result
+     */
     public static int compareValuesCollated(Object valueOne, Object valueTwo, boolean isDescending, Collator collator)
     {
         if (valueOne == null || valueTwo == null)

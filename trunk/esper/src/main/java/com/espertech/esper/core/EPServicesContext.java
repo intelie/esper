@@ -96,6 +96,7 @@ public final class EPServicesContext
      * @param timeSourceService time source provider class
      * @param metricsReportingService - for metric reporting
      * @param statementEventTypeRef - statement to event type reference holding
+     * @param configSnapshot configuration snapshot
      */
     public EPServicesContext(String engineURI,
                              String engineInstanceId,
@@ -498,6 +499,10 @@ public final class EPServicesContext
         return statementEventTypeRef;
     }
 
+    /**
+     * Returns the configuration.
+     * @return configuration
+     */
     public ConfigurationInformation getConfigSnapshot()
     {
         return configSnapshot;

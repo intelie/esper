@@ -48,6 +48,8 @@ public class OrderByProcessorSimple implements OrderByProcessor {
 	 * @param aggregationService -
 	 *            used to evaluate aggregate functions in the group-by and
 	 *            sort-by clauses
+     * @param isSortUsingCollator for string value sorting using compare or Collator
+     * @throws ExprValidationException when order-by items don't divulge a type
 	 */
 	public OrderByProcessorSimple(final List<OrderByItem> orderByList,
 								  List<ExprNode> groupByNodes,

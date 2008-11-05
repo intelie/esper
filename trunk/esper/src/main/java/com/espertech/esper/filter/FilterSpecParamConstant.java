@@ -37,6 +37,15 @@ public final class FilterSpecParamConstant extends FilterSpecParam
         }
     }
 
+    public int getFilterHash()
+    {
+        if (filterConstant != null)
+        {
+            return filterConstant.hashCode();
+        }
+        return 0;
+    }
+
     public Object getFilterValue(MatchedEventMap matchedEvents)
     {
         return filterConstant;

@@ -20,6 +20,7 @@ public final class MultiKeyCollatingComparator implements Comparator<MultiKeyUnt
      * @param isDescendingValues - each value is true if the corresponding (same index)
      *        entry in the multi-keys is to be sorted in descending order. The multikeys
      *        to be compared must have the same number of values as this array.
+     * @param stringTypeValues true for each string-typed column
      */
     public MultiKeyCollatingComparator(boolean[] isDescendingValues, boolean[] stringTypeValues)
     {

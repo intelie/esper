@@ -39,7 +39,7 @@ public class MyPlugInEventRepresentation implements PlugInEventRepresentation
         typeProps.addAll(baseProps);
 
         // save type for testing dynamic event object reflection
-        MyPlugInPropertiesEventType eventType = new MyPlugInPropertiesEventType(typeProps);
+        MyPlugInPropertiesEventType eventType = new MyPlugInPropertiesEventType(null, typeProps);
         types.add(eventType);
         
         return new MyPlugInPropertiesEventTypeHandler(eventType);

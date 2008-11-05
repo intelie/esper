@@ -109,6 +109,11 @@ public final class FilterSpecParamEventProp extends FilterSpecParam
         return value;
     }
 
+    public int getFilterHash()
+    {
+        return resultEventProperty.hashCode();
+    }
+
     public final String toString()
     {
         return super.toString() +

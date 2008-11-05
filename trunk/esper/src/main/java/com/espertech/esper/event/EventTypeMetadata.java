@@ -8,6 +8,7 @@ import java.util.LinkedHashSet;
  */
 public class EventTypeMetadata
 {
+    private final String publicName;
     private final String primaryName;
     private final Set<String> optionalSecondaryNames;
     private final TypeClass typeClass;
@@ -22,8 +23,16 @@ public class EventTypeMetadata
      * @param applicationConfigured true if configured by the application
      * @param applicationType type of application class or null if not an application type
      */
-    private EventTypeMetadata(String primaryName, Set<String> secondaryNames, TypeClass typeClass, boolean applicationConfigured, ApplicationType applicationType)
+    protected EventTypeMetadata(String primaryName, Set<String> secondaryNames, TypeClass typeClass, boolean applicationConfigured, ApplicationType applicationType)
     {
+        if (typeClass.isPublic())
+        {
+            publicName = primaryName;
+        }
+        else
+        {
+            publicName = null;
+        }
         this.primaryName = primaryName;
         this.optionalSecondaryNames = secondaryNames;
         this.typeClass = typeClass;
@@ -194,6 +203,15 @@ public class EventTypeMetadata
     }
 
     /**
+     * Returns the name provided through #EventType.getName.
+     * @return name or null if no public name
+     */
+    public String getPublicName()
+    {
+        return publicName;
+    }
+
+    /**
      * Metatype.
      */
     public static enum TypeClass
@@ -201,32 +219,48 @@ public class EventTypeMetadata
         /**
          * A type that represents the information made available via insert-into.
          */
-        STREAM,
+        STREAM(true),
 
         /**
          * A revision event type.
          */
-        REVISION,
+        REVISION(true),
 
         /**
          * A variant stream event type.
          */
-        VARIANT,
+        VARIANT(true),
 
         /**
          * An application-defined event type such as JavaBean or legacy Java, XML or Map.
          */
-        APPLICATION,
+        APPLICATION(true),
 
         /**
          * A type representing a named window.
          */
-        NAMED_WINDOW,
+        NAMED_WINDOW(true),
 
         /**
          * An anonymous event type.
          */
-        ANONYMOUS
+        ANONYMOUS(false);
+
+        private boolean isPublic;
+
+        /**
+         * Returns true to indicate this is a public type that may be queried for name.
+         * @return indicator public type versus anonymous
+         */
+        public boolean isPublic()
+        {
+            return isPublic;
+        }
+
+        TypeClass(boolean isPublic)
+        {
+            this.isPublic = isPublic;
+        }
     }
 
     /**

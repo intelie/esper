@@ -189,7 +189,12 @@ public class PropertyHelper
                 listedName = propertyName + "[]";     // indexed properties add [] to name
         	}
 
-    		result.add(new EventPropertyDescriptor(propertyName, listedName, readMethod, type));
+            if (readMethod == null)
+            {
+                continue;
+            }
+
+            result.add(new EventPropertyDescriptor(propertyName, listedName, readMethod, type));
         }
     }
 

@@ -83,6 +83,7 @@ public final class StatementContext
      * @param statementResultService handles awareness of listeners/subscriptions for a statement customizing output produced
      * @param plugInTypeResolutionURIs is URIs for resolving the event name against plug-inn event representations, if any
      * @param valueAddEventService - service that handles update events
+     * @param configSnapshot configuration snapshot
      */
     public StatementContext(String engineURI,
                             String engineInstanceId,
@@ -361,6 +362,10 @@ public final class StatementContext
         return dynamicReferenceEventTypes;
     }
 
+    /**
+     * Returns the configuration.
+     * @return configuration
+     */
     public ConfigurationInformation getConfigSnapshot()
     {
         return configSnapshot;

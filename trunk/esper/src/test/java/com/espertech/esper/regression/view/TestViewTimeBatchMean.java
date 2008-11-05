@@ -11,6 +11,7 @@ import com.espertech.esper.client.Configuration;
 import com.espertech.esper.support.util.SupportUpdateListener;
 import com.espertech.esper.support.util.DoubleValueAssertionUtil;
 import com.espertech.esper.support.bean.SupportMarketDataBean;
+import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.view.ViewFieldEnum;
 import com.espertech.esper.event.EventBean;
@@ -30,6 +31,7 @@ public class TestViewTimeBatchMean extends TestCase
         config.getEngineDefaults().getThreading().setInternalTimerEnabled(true);
         epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();
+        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("SupportBean", SupportBean.class);
 
         // Set up a 2 second time window
         timeBatchMean = epService.getEPAdministrator().createEPL(
@@ -96,6 +98,9 @@ public class TestViewTimeBatchMean extends TestCase
         checkMeanIterator(1200); // statistics view received the third batch
         assertTrue(testListener.isInvoked());   // Listener has been invoked
         checkMeanListener(1200);
+
+        // try to compile with flow control, these are tested elsewhere
+        epService.getEPAdministrator().createEPL("select * from SupportBean.win:time_batch(10 sec, 'FORCE_UPDATE, START_EAGER')");
     }
 
     private void sendEvent(String symbol, long volume)

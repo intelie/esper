@@ -191,7 +191,7 @@ public class TestNamedWindowStartStop extends TestCase
         // add back the type
         stmt = epService.getEPAdministrator().createEPL("create window MyWindowEventType.win:keepall() (c int, d string)", "stmtOne");
         assertTrue(configOps.isEventTypeAliasExists("MyWindowEventType"));
-        assertNotNull(configOps.getEventTypeAliasUsedBy("MyWindowEventType"));
+        assertFalse(configOps.getEventTypeAliasUsedBy("MyWindowEventType").isEmpty());
 
         // compile
         epService.getEPAdministrator().createEPL("select d from MyWindowEventType", "stmtTwo");
@@ -214,7 +214,7 @@ public class TestNamedWindowStartStop extends TestCase
         }
         assertTrue(configOps.removeEventType("MyWindowEventType", true));
         assertFalse(configOps.isEventTypeAliasExists("MyWindowEventType"));
-        assertNull(configOps.getEventTypeAliasUsedBy("MyWindowEventType"));
+        assertTrue(configOps.getEventTypeAliasUsedBy("MyWindowEventType").isEmpty());
 
         // add back the type
         stmt.destroy();

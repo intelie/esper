@@ -187,7 +187,7 @@ public class PatternStreamSpecRaw extends StreamSpecBase implements StreamSpecRa
             String selfStreamName = optionalTag;
             if (selfStreamName == null)
             {
-                selfStreamName = "s_" + UuidGenerator.generate(filterNode);
+                selfStreamName = "s_" + UuidGenerator.generate();
             }
             LinkedHashMap<String, Pair<EventType, String>> filterTypes = new LinkedHashMap<String, Pair<EventType, String>>();
             Pair<EventType, String> typePair = new Pair<EventType, String>(eventType, eventName);

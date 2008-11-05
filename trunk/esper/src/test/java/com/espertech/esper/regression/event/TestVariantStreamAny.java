@@ -38,6 +38,8 @@ public class TestVariantStreamAny extends TestCase
         assertEquals(null, type.getMetadata().getOptionalApplicationType());
         assertEquals(null, type.getMetadata().getOptionalSecondaryNames());
         assertEquals("MyVariantStream", type.getMetadata().getPrimaryName());
+        assertEquals("MyVariantStream", type.getMetadata().getPublicName());
+        assertEquals("MyVariantStream", type.getName());
         assertEquals(EventTypeMetadata.TypeClass.VARIANT, type.getMetadata().getTypeClass());
         assertEquals(true, type.getMetadata().isApplicationConfigured());
 

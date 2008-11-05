@@ -981,8 +981,8 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
 
     private EPPreparedExecuteMethod getExecuteMethod(String epl)
     {
-        String stmtName = UuidGenerator.generate(epl);
-        String stmtId = UuidGenerator.generate(epl + " ");
+        String stmtName = UuidGenerator.generate();
+        String stmtId = UuidGenerator.generate();
 
         try
         {

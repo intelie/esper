@@ -165,8 +165,13 @@ public class SortWindowViewFactory implements DataWindowViewFactory
             randomAccessGetterImpl.updated(sortedRandomAccess);
         }
 
-        return new SortWindowView(this, sortFieldNames, isDescendingValues, sortWindowSize, sortedRandomAccess,
-                statementContext.getConfigSnapshot().getEngineDefaults().getLanguage().isSortUsingCollator());
+        boolean useCollatorSort = false;
+        if (statementContext.getConfigSnapshot() != null)
+        {
+            useCollatorSort = statementContext.getConfigSnapshot().getEngineDefaults().getLanguage().isSortUsingCollator();
+        }
+
+        return new SortWindowView(this, sortFieldNames, isDescendingValues, sortWindowSize, sortedRandomAccess, useCollatorSort);
     }
 
     public EventType getEventType()

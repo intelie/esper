@@ -73,6 +73,11 @@ public class BeanEventType implements EventTypeSPI
         initialize(false);
     }
 
+    public String getName()
+    {
+        return metadata.getPublicName();
+    }
+
     public final Class getPropertyType(String propertyName)
     {
         SimplePropertyInfo simpleProp = getSimplePropertyInfo(propertyName);

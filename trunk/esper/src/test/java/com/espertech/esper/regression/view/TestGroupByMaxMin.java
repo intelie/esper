@@ -42,6 +42,7 @@ public class TestGroupByMaxMin extends TestCase
                           "group by symbol";
 
         selectTestView = epService.getEPAdministrator().createEPL(viewExpr);
+        assertNull(selectTestView.getEventType().getName());
         selectTestView.addListener(testListener);
 
         runAssertion();

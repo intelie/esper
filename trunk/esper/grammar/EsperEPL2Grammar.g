@@ -433,15 +433,16 @@ tokens
   }
 }
 
-startPatternExpressionRule 
+startPatternExpressionRule
 	:	patternExpression
 		EOF!
 	;
 	
 startEPLExpressionRule 
-	:	eplExpression
+	:	annotations	
+		eplExpression
 		EOF
-		-> ^(EPL_EXPR eplExpression) 
+		-> ^(EPL_EXPR annotations eplExpression) 
 	;
 
 startEventPropertyRule 
@@ -449,34 +450,8 @@ startEventPropertyRule
 		EOF!
 	;
 
-number
-    :   ni=NUM_INT -> INT_TYPE[$ni]
-    |   nl=NUM_LONG -> LONG_TYPE[$nl]
-    |   nf=NUM_FLOAT -> FLOAT_TYPE[$nf]
-    |   nd=NUM_DOUBLE -> DOUBLE_TYPE[$nd]
-    ;
-
-substitution
-	: q=QUESTION -> SUBSTITUTION[$q]
-	;
-	
-constant
-	:   numberconstant
-	|   stringconstant
-    	|   t=BOOLEAN_TRUE -> ^(BOOL_TYPE[$t])
-    	|   f=BOOLEAN_FALSE -> ^(BOOL_TYPE[$f])
-    	|   nu=VALUE_NULL -> ^(NULL_TYPE[$nu])
-	;
-
-numberconstant
-	:  (m=MINUS | p=PLUS)? number
-		-> {$m != null}? {adaptor.create($number.tree.getType(), "-" + $number.text)}
-		-> number
-	;
-
-stringconstant
-	:   sl=STRING_LITERAL -> ^(STRING_TYPE[$sl])
-	|   qsl=QUOTED_STRING_LITERAL -> ^(STRING_TYPE[$qsl])
+annotations
+	:	(EMAILAT IDENT)*
 	;
 
 //----------------------------------------------------------------------------
@@ -1277,6 +1252,36 @@ millisecondPart
 		-> ^(MILLISECOND_PART number)
 	;
 	
+number
+    :   ni=NUM_INT -> INT_TYPE[$ni]
+    |   nl=NUM_LONG -> LONG_TYPE[$nl]
+    |   nf=NUM_FLOAT -> FLOAT_TYPE[$nf]
+    |   nd=NUM_DOUBLE -> DOUBLE_TYPE[$nd]
+    ;
+
+substitution
+	: q=QUESTION -> SUBSTITUTION[$q]
+	;
+	
+constant
+	:   numberconstant
+	|   stringconstant
+    	|   t=BOOLEAN_TRUE -> ^(BOOL_TYPE[$t])
+    	|   f=BOOLEAN_FALSE -> ^(BOOL_TYPE[$f])
+    	|   nu=VALUE_NULL -> ^(NULL_TYPE[$nu])
+	;
+
+numberconstant
+	:  (m=MINUS | p=PLUS)? number
+		-> {$m != null}? {adaptor.create($number.tree.getType(), "-" + $number.text)}
+		-> number
+	;
+
+stringconstant
+	:   sl=STRING_LITERAL -> ^(STRING_TYPE[$sl])
+	|   qsl=QUOTED_STRING_LITERAL -> ^(STRING_TYPE[$qsl])
+	;
+
 //----------------------------------------------------------------------------
 // LEXER
 //----------------------------------------------------------------------------
@@ -1334,6 +1339,7 @@ NUM_LONG	: '\u18FF';  // assign bogus unicode characters so the token exists
 NUM_DOUBLE	: '\u18FE';
 NUM_FLOAT	: '\u18FD';
 ESCAPECHAR	: '\\';
+EMAILAT		: '@';
 
 // Whitespace -- ignored
 WS	:	(	' '

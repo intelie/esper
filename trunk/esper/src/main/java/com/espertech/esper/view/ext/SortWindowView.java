@@ -57,6 +57,7 @@ public final class SortWindowView extends ViewSupport implements DataWindowView,
      * @param optionalSortedRandomAccess is the friend class handling the random access, if required by
      * expressions
      * @param sortWindowViewFactory for copying this view in a group-by
+     * @param isSortUsingCollator for string value sorting using compare or Collator
      */
     public SortWindowView(SortWindowViewFactory sortWindowViewFactory,
                           String[] sortFieldNames,
@@ -296,6 +297,10 @@ public final class SortWindowView extends ViewSupport implements DataWindowView,
      */
     public boolean isEmpty()
     {
+        if (sortedEvents == null)
+        {
+            return true;
+        }
         return sortedEvents.isEmpty();
     }
 

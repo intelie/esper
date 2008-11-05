@@ -36,4 +36,10 @@ public interface ViewCapability
      * @return true for child views required, false for not required
      */
     public boolean requiresChildViews();
+
+    /**
+     * Returns true to indicate that the capability must be applied to all child views.
+     * @return true if applies to child views, false for not applies
+     */
+    public boolean appliesToChildViews();
 }

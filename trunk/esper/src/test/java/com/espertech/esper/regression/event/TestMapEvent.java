@@ -49,6 +49,8 @@ public class TestMapEvent extends TestCase
         assertEquals(EventTypeMetadata.ApplicationType.MAP, type.getMetadata().getOptionalApplicationType());
         assertEquals(null, type.getMetadata().getOptionalSecondaryNames());
         assertEquals("myMapEvent", type.getMetadata().getPrimaryName());
+        assertEquals("myMapEvent", type.getMetadata().getPublicName());
+        assertEquals("myMapEvent", type.getName());
         assertEquals(EventTypeMetadata.TypeClass.APPLICATION, type.getMetadata().getTypeClass());
         assertEquals(true, type.getMetadata().isApplicationConfigured());
         
@@ -90,7 +92,7 @@ public class TestMapEvent extends TestCase
         properties.put("p01", "string");
         configOps.addEventTypeAlias("myMapEvent", properties);
         assertTrue(configOps.isEventTypeAliasExists("myMapEvent"));
-        assertNull(configOps.getEventTypeAliasUsedBy("myMapEvent"));
+        assertTrue(configOps.getEventTypeAliasUsedBy("myMapEvent").isEmpty());
 
         // compile
         epService.getEPAdministrator().createEPL("select p01 from myMapEvent", "stmtTwo");
@@ -112,7 +114,7 @@ public class TestMapEvent extends TestCase
         }
         assertTrue(configOps.removeEventType("myMapEvent", true));
         assertFalse(configOps.isEventTypeAliasExists("myMapEvent"));
-        assertNull(configOps.getEventTypeAliasUsedBy("myMapEvent"));
+        assertTrue(configOps.getEventTypeAliasUsedBy("myMapEvent").isEmpty());
 
         // add back the type
         properties = new Properties();

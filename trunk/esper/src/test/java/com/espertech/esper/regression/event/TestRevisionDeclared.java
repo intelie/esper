@@ -71,6 +71,8 @@ public class TestRevisionDeclared extends TestCase
         assertEquals(null, type.getMetadata().getOptionalApplicationType());
         assertEquals(null, type.getMetadata().getOptionalSecondaryNames());
         assertEquals("RevisableQuote", type.getMetadata().getPrimaryName());
+        assertEquals("RevisableQuote", type.getMetadata().getPublicName());
+        assertEquals("RevisableQuote", type.getName());
         assertEquals(EventTypeMetadata.TypeClass.REVISION, type.getMetadata().getTypeClass());
         assertEquals(true, type.getMetadata().isApplicationConfigured());
 

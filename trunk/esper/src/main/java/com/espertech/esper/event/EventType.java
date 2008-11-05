@@ -81,4 +81,15 @@ public interface EventType
      * java.lang.Object but excluding java.lang.Object itself
      */
     public Iterator<EventType> getDeepSuperTypes();
+
+    /**
+     * Returns the type name or null if no type name is assigned.
+     * <p>
+     * A type name is available for application-configured event types
+     * and for event types that represent events of a stream populated by insert-into.
+     * <p>
+     * No type name is available for anonymous statement-specific event type. 
+     * @return type name or null if none assigned
+     */
+    public String getName();
 }

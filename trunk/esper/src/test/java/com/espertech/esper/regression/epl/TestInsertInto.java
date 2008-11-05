@@ -237,6 +237,8 @@ public class TestInsertInto extends TestCase
         assertEquals(null, type.getMetadata().getOptionalApplicationType());
         assertEquals(null, type.getMetadata().getOptionalSecondaryNames());
         assertEquals("Event_1", type.getMetadata().getPrimaryName());
+        assertEquals("Event_1", type.getMetadata().getPublicName());
+        assertEquals("Event_1", type.getName());
         assertEquals(EventTypeMetadata.TypeClass.STREAM, type.getMetadata().getTypeClass());
         assertEquals(false, type.getMetadata().isApplicationConfigured());
     }

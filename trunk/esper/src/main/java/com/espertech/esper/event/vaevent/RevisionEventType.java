@@ -125,6 +125,11 @@ public class RevisionEventType implements EventTypeSPI
         }
     }
 
+    public String getName()
+    {
+        return metadata.getPublicName();
+    }
+
     public Class getPropertyType(String propertyName)
     {
         RevisionPropertyTypeDesc desc = propertyDesc.get(propertyName);

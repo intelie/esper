@@ -47,13 +47,23 @@ public class ViewResourceDelegateImpl implements ViewResourceDelegate
         }
 
         // then ask each view in turn to support the capability
+        boolean found = false;
         for (ViewFactory factory : factories.getViewFactoryChain())
         {
             if (factory.canProvideCapability(requestedCabability))
             {
                 factory.setProvideCapability(requestedCabability, resourceCallback);
-                return true;
+                found = true;
+                if (!requestedCabability.appliesToChildViews())
+                {
+                    return true;
+                }
             }
+        }
+
+        if (requestedCabability.appliesToChildViews())
+        {
+            return found;
         }
 
         // check if the capability requires child views

@@ -94,6 +94,7 @@ public final class TimeBatchView extends ViewSupport implements CloneableView, B
         // schedule the first callback
         if (isStartEager)
         {
+            currentReferencePoint = statementContext.getSchedulingService().getTime();
             scheduleCallback();
             isCallbackScheduled = true;
         }

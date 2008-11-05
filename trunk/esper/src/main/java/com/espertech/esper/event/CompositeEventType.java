@@ -76,6 +76,11 @@ public class CompositeEventType implements EventTypeSPI, TaggedCompositeEventTyp
         this.propertyNames = propertySet.toArray(new String[0]);
     }
 
+    public String getName()
+    {
+        return metadata.getPublicName();
+    }
+
     /**
      * Returns the event type alias.
      * @return event type alias

@@ -57,6 +57,8 @@ public class TestNamedWindowTypes extends TestCase
         assertEquals(null, type.getMetadata().getOptionalApplicationType());
         assertEquals(null, type.getMetadata().getOptionalSecondaryNames());
         assertEquals("MyWindow", type.getMetadata().getPrimaryName());
+        assertEquals("MyWindow", type.getMetadata().getPublicName());
+        assertEquals("MyWindow", type.getName());
         assertEquals(EventTypeMetadata.TypeClass.NAMED_WINDOW, type.getMetadata().getTypeClass());
         assertEquals(false, type.getMetadata().isApplicationConfigured());
 
@@ -175,6 +177,8 @@ public class TestNamedWindowTypes extends TestCase
         assertEquals(null, type.getMetadata().getOptionalApplicationType());
         assertEquals(null, type.getMetadata().getOptionalSecondaryNames());
         assertEquals("MyWindow", type.getMetadata().getPrimaryName());
+        assertEquals("MyWindow", type.getMetadata().getPublicName());
+        assertEquals("MyWindow", type.getName());
         assertEquals(EventTypeMetadata.TypeClass.NAMED_WINDOW, type.getMetadata().getTypeClass());
         assertEquals(false, type.getMetadata().isApplicationConfigured());
 

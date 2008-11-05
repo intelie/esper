@@ -108,7 +108,7 @@ public class TestSchemaXMLEvent extends TestCase
         // add back the type
         configOps.addEventTypeAlias("MyXMLEvent", getConfigTestType("p20"));
         assertTrue(configOps.isEventTypeAliasExists("MyXMLEvent"));
-        assertNull(configOps.getEventTypeAliasUsedBy("MyXMLEvent"));
+        assertTrue(configOps.getEventTypeAliasUsedBy("MyXMLEvent").isEmpty());
 
         // compile
         epService.getEPAdministrator().createEPL("select p20 from MyXMLEvent", "stmtTwo");
@@ -130,7 +130,7 @@ public class TestSchemaXMLEvent extends TestCase
         }
         assertTrue(configOps.removeEventType("MyXMLEvent", true));
         assertFalse(configOps.isEventTypeAliasExists("MyXMLEvent"));
-        assertNull(configOps.getEventTypeAliasUsedBy("MyXMLEvent"));
+        assertTrue(configOps.getEventTypeAliasUsedBy("MyXMLEvent").isEmpty());
 
         // add back the type
         configOps.addEventTypeAlias("MyXMLEvent", getConfigTestType("p03"));

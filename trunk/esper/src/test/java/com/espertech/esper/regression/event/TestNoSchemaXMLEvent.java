@@ -69,6 +69,8 @@ public class TestNoSchemaXMLEvent extends TestCase
         assertEquals(EventTypeMetadata.ApplicationType.XML, type.getMetadata().getOptionalApplicationType());
         assertEquals(null, type.getMetadata().getOptionalSecondaryNames());
         assertEquals("TestXMLNoSchemaType", type.getMetadata().getPrimaryName());
+        assertEquals("TestXMLNoSchemaType", type.getMetadata().getPublicName());
+        assertEquals("TestXMLNoSchemaType", type.getName());
         assertEquals(EventTypeMetadata.TypeClass.APPLICATION, type.getMetadata().getTypeClass());
         assertEquals(true, type.getMetadata().isApplicationConfigured());
 
@@ -339,6 +341,7 @@ public class TestNoSchemaXMLEvent extends TestCase
 
     private static final Log log = LogFactory.getLog(TestNoSchemaXMLEvent.class);
 }
+
 
 
 

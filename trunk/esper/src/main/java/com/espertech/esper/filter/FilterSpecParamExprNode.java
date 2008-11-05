@@ -133,6 +133,11 @@ public final class FilterSpecParamExprNode extends FilterSpecParam
         return super.toString() + "  exprNode=" + exprNode.toString();
     }
 
+    public int getFilterHash()
+    {
+        return 0;
+    }
+
     public boolean equals(Object obj)
     {
         if (this == obj)
