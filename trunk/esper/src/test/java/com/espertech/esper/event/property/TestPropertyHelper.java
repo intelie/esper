@@ -88,7 +88,7 @@ public class TestPropertyHelper extends TestCase
 
     public void testGetGetter() throws Exception
     {
-        FastClass fastClass = FastClass.create(SupportBeanPropertyNames.class);
+        FastClass fastClass = FastClass.create(Thread.currentThread().getContextClassLoader(), SupportBeanPropertyNames.class);
         EventBean bean = SupportEventBeanFactory.createObject(new SupportBeanPropertyNames());
         Method method = SupportBeanPropertyNames.class.getMethod("getA", new Class[0]);
         EventPropertyGetter getter = PropertyHelper.getGetter(method, fastClass);

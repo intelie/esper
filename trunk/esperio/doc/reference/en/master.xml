@@ -6,6 +6,7 @@
 	<!ENTITY adapter_jms_spring SYSTEM "modules/adapter_jms_spring.xml">
 	<!ENTITY adapter_event_representations SYSTEM "modules/adapter_event_representations.xml">	
 	<!ENTITY adapter_opentick SYSTEM "modules/adapter_opentick.xml">	
+	<!ENTITY adapter_fix SYSTEM "modules/adapter_fix.xml">	
 ]>
 <book lang="en">
 	<bookinfo>
@@ -43,4 +44,6 @@
     &adapter_event_representations;
 
     &adapter_opentick;
+
+    &adapter_fix;
 </book>

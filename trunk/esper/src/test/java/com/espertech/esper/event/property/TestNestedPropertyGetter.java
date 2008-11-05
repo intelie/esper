@@ -56,14 +56,14 @@ public class TestNestedPropertyGetter extends TestCase
 
     private KeyedFastPropertyGetter makeGetterOne(int index)
     {
-        FastClass fastClassOne = FastClass.create(SupportBeanCombinedProps.class);
+        FastClass fastClassOne = FastClass.create(Thread.currentThread().getContextClassLoader(), SupportBeanCombinedProps.class);
         FastMethod methodOne = fastClassOne.getMethod("getIndexed", new Class[] {int.class});
         return new KeyedFastPropertyGetter(methodOne, index);
     }
 
     private KeyedFastPropertyGetter makeGetterTwo(String key)
     {
-        FastClass fastClassTwo = FastClass.create(SupportBeanCombinedProps.NestedLevOne.class);
+        FastClass fastClassTwo = FastClass.create(Thread.currentThread().getContextClassLoader(), SupportBeanCombinedProps.NestedLevOne.class);
         FastMethod methodTwo = fastClassTwo.getMethod("getMapped", new Class[] {String.class});
         return new KeyedFastPropertyGetter(methodTwo, key);
     }

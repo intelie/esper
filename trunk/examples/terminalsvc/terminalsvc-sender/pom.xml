@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<name>Esper Examples TerminalSvc - Client</name>
 	<artifactId>example-terminalsvc-sender</artifactId>
-	<groupId>esper</groupId>
+	<groupId>com.espertech</groupId>
 	<version>1.0</version>
 	<packaging>jar</packaging>
 	<description>Esper Example - TerminalSvc Sender</description>

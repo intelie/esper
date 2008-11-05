@@ -101,7 +101,7 @@ public abstract class DynamicPropertyGetterBase implements EventPropertyGetter
             }
             else
             {
-                FastClass fastClass = FastClass.create(target);
+                FastClass fastClass = FastClass.create(Thread.currentThread().getContextClassLoader(), target);
                 FastMethod fastMethod = fastClass.getMethod(method);
                 propertyDescriptor = new DynamicPropertyDescriptor(target, fastMethod, fastMethod.getParameterTypes().length > 0);
             }

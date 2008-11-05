@@ -1,15 +1,15 @@
 <project>
 	<modelVersion>4.0.0</modelVersion>
 	<name>Esper IO</name>
+	<groupId>com.espertech</groupId>
 	<artifactId>esperio</artifactId>
-	<groupId>esper</groupId>
 	<version>2.2.0</version>
 	<packaging>jar</packaging>
 	<description>Esper CEP engine for Java - Input Output Adapters</description>
 	<inceptionYear>2005</inceptionYear>
 	<dependencies>
 		<dependency>
-			<groupId>esper</groupId>
+			<groupId>com.espertech</groupId>
 			<artifactId>esper</artifactId>
 			<version>2.2.0</version>
 		</dependency>
@@ -42,12 +42,14 @@
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>4.4</version>
+			<scope>test</scope> 
 		</dependency>
 		<!-- mvn install:install-file -DgroupId=activemq -DartifactId=activemq -Dversion=4.1.0 -Dpackaging=jar -Dfile=lib/apache-activemq-4.1.0-incubator.jar -->
         <dependency>
             <groupId>org.apache.activemq</groupId>
 			<artifactId>activemq-core</artifactId>
 			<version>4.1.1</version>
+			<scope>test</scope> 
 		</dependency>
 		<!-- mvn install:install-file -DgroupId=spring -DartifactId=spring -Dversion=2.0.2 -Dpackaging=jar -Dfile=lib/spring.jar -->
 		<dependency>
@@ -60,12 +62,14 @@
 			<groupId>opentick</groupId>
 			<artifactId>opentick</artifactId>
 			<version>07-04-08</version>
+			<scope>test</scope> 
 		</dependency>
         <!-- for some reason commons-pool is not properly referenced by activemq-core -->
         <dependency>
 			<groupId>commons-pool</groupId>
 			<artifactId>commons-pool</artifactId>
 			<version>1.3</version>
+			<scope>test</scope> 
 		</dependency>
 	   <!--
 			The following dependencies required for Apache Axiom event representation.
@@ -74,36 +78,43 @@
 			<groupId>org.apache.ws.commons.axiom</groupId>
 			<artifactId>axiom-api</artifactId>
 			<version>1.2.5</version>
+			<scope>test</scope> 
 		</dependency>
         <dependency>
 			<groupId>org.apache.ws.commons.axiom</groupId>
 			<artifactId>axiom-dom</artifactId>
 			<version>1.2.5</version>
+			<scope>test</scope> 
 		</dependency>
         <dependency>
 			<groupId>org.apache.ws.commons.axiom</groupId>
 			<artifactId>axiom-impl</artifactId>
 			<version>1.2.5</version>
+			<scope>test</scope> 
 		</dependency>
         <dependency>
 			<groupId>jaxen</groupId>
 			<artifactId>jaxen</artifactId>
 			<version>1.1-beta-9</version>
+			<scope>test</scope> 
 		</dependency>
         <dependency>
 			<groupId>stax</groupId>
 			<artifactId>stax-api</artifactId>
 			<version>1.0.1</version>
+			<scope>test</scope> 
 		</dependency>
         <dependency>
 			<groupId>org.codehaus.woodstox</groupId>
 			<artifactId>wstx-asl</artifactId>
 			<version>3.0.0</version>
+			<scope>test</scope> 
 		</dependency>
         <dependency>
 			<groupId>xml-apis</groupId>
 			<artifactId>xml-apis</artifactId>
 			<version>1.3.03</version>
+			<scope>test</scope> 
 		</dependency>
 	</dependencies>
 	<build>
@@ -136,6 +147,15 @@
 							<value>infoonly_log4j.xml</value>
 						</property>
 					</systemProperties>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<configuration>
+					<archive>
+						<manifestFile>src/main/resources/META-INF/MANIFEST.MF</manifestFile>
+				  </archive>
 				</configuration>
 			</plugin>
 		</plugins>

@@ -40,7 +40,7 @@ public class ResultDeliveryStrategyMap implements ResultDeliveryStrategy
     public ResultDeliveryStrategyMap(Object subscriber, Method method, String[] columnNames)
     {
         this.subscriber = subscriber;
-        FastClass fastClass = FastClass.create(subscriber.getClass());
+        FastClass fastClass = FastClass.create(Thread.currentThread().getContextClassLoader(), subscriber.getClass());
         this.fastMethod = fastClass.getMethod(method);
         this.columnNames = columnNames;
     }

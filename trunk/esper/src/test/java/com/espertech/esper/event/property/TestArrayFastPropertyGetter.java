@@ -55,7 +55,7 @@ public class TestArrayFastPropertyGetter extends TestCase
 
     private ArrayFastPropertyGetter makeGetter(int index)
     {
-        FastClass fastClass = FastClass.create(SupportBeanComplexProps.class);
+        FastClass fastClass = FastClass.create(Thread.currentThread().getContextClassLoader(), SupportBeanComplexProps.class);
         FastMethod method = fastClass.getMethod("getArrayProperty", new Class[0]);
         return new ArrayFastPropertyGetter(method, index);
     }

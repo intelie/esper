@@ -24,6 +24,7 @@ public class ConfigurationEngineDefaults implements Serializable
     private Variables variables;
     private StreamSelection streamSelection;
     private TimeSource timeSource;
+    private Language language;
     private ConfigurationMetricsReporting metricsReporting;
 
     /**
@@ -39,6 +40,7 @@ public class ConfigurationEngineDefaults implements Serializable
         streamSelection = new StreamSelection();
         timeSource = new TimeSource();
         metricsReporting = new ConfigurationMetricsReporting();
+        language = new Language();
     }
 
     /**
@@ -111,6 +113,15 @@ public class ConfigurationEngineDefaults implements Serializable
     public ConfigurationMetricsReporting getMetricsReporting()
     {
         return metricsReporting;
+    }
+
+    /**
+     * Returns the language-related settings for the engine.
+     * @return language-related settings
+     */
+    public Language getLanguage()
+    {
+        return language;
     }
 
     /**
@@ -570,7 +581,44 @@ public class ConfigurationEngineDefaults implements Serializable
         {
             this.timeSourceType = timeSourceType;
         }
+    }
 
+    /**
+     * Language settings in the engine are for string comparisons.
+     */
+    public static class Language implements Serializable
+    {
+        private boolean sortUsingCollator;
+
+        /**
+         * Ctor.
+         */
+        public Language()
+        {
+            sortUsingCollator = false;
+        }
+
+        /**
+         * Returns true to indicate to perform locale-independent string comparisons using Collator.
+         * <p>
+         * By default this setting is false, i.e. string comparisons use the compare method.
+         * @return indicator whether to use Collator for string comparisons
+         */
+        public boolean isSortUsingCollator()
+        {
+            return sortUsingCollator;
+        }
+
+        /**
+         * Set to true to indicate to perform locale-independent string comparisons using Collator.
+         * <p>
+         * Set to false to perform string comparisons via the compare method (the default).
+         * @param sortUsingCollator indicator whether to use Collator for string comparisons
+         */
+        public void setSortUsingCollator(boolean sortUsingCollator)
+        {
+            this.sortUsingCollator = sortUsingCollator;
+        }
     }
 
     /**

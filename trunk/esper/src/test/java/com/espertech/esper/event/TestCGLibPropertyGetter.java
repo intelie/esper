@@ -67,7 +67,7 @@ public class TestCGLibPropertyGetter extends TestCase
 
     private CGLibPropertyGetter makeGetter(Class clazz, String methodName) throws Exception
     {
-        FastClass fastClass = FastClass.create(clazz);
+        FastClass fastClass = FastClass.create(Thread.currentThread().getContextClassLoader(), clazz);
         Method method = clazz.getMethod(methodName, new Class[] {});
         FastMethod fastMethod = fastClass.getMethod(method);
 
@@ -79,7 +79,7 @@ public class TestCGLibPropertyGetter extends TestCase
     public void testGetterSpecial() throws Exception
     {
     	Class clazz = SupportBeanComplexProps.class;
-        FastClass fastClass = FastClass.create(clazz);
+        FastClass fastClass = FastClass.create(Thread.currentThread().getContextClassLoader(), clazz);
         
         // set up bean
         SupportBeanComplexProps bean = SupportBeanComplexProps.makeDefaultBean();
@@ -107,7 +107,7 @@ public class TestCGLibPropertyGetter extends TestCase
 
         Class nestedClazz = SupportBeanComplexProps.SupportBeanSpecialGetterNested.class;
         Method methodNested = nestedClazz.getMethod("getNestedValue", new Class[] {});
-        FastClass fastClassNested = FastClass.create(nestedClazz);        
+        FastClass fastClassNested = FastClass.create(Thread.currentThread().getContextClassLoader(), nestedClazz);        
         fastClassNested.getMethod(methodNested);        
     }
 

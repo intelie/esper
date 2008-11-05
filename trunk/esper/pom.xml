@@ -16,8 +16,8 @@ mvn javadoc:javadoc
 <project>
 	<modelVersion>4.0.0</modelVersion>
 	<name>Esper</name>
+	<groupId>com.espertech</groupId>
 	<artifactId>esper</artifactId>
-	<groupId>esper</groupId>
 	<version>2.2.0</version>
 	<packaging>jar</packaging>
 	<inceptionYear>2005</inceptionYear>
@@ -84,11 +84,13 @@ mvn javadoc:javadoc
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>4.4</version>
+			<scope>test</scope> 
 		</dependency>
 		<dependency>
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
 			<version>3.1.14</version>
+			<scope>test</scope> 
 		</dependency>
 	</dependencies>
 	<build>
@@ -144,6 +146,15 @@ mvn javadoc:javadoc
 							<value>infoonly_log4j.xml</value>
 						</property>
 					</systemProperties>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<configuration>
+					<archive>
+						<manifestFile>src/main/resources/META-INF/MANIFEST.MF</manifestFile>
+				  </archive>
 				</configuration>
 			</plugin>
 		</plugins>

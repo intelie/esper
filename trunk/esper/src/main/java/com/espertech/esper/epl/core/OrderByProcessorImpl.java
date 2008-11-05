@@ -58,7 +58,7 @@ public class OrderByProcessorImpl implements OrderByProcessor {
 		this.groupByNodes = groupByNodes;
 		this.needsGroupByKeys = needsGroupByKeys;
 		this.aggregationService = aggregationService;
-
+        
         this.comparator = new MultiKeyComparator(getIsDescendingValues());
     }
 
@@ -167,50 +167,6 @@ public class OrderByProcessorImpl implements OrderByProcessor {
 		}
 
 		return result;
-	}
-
-    /**
-     * Compares values for sorting.
-     * @param valueOne -first value to compare, can be null
-     * @param valueTwo -second value to compare, can be null
-     * @param descending - true if ascending, false if descending
-     * @return 0 if equal, -1 if smaller, +1 if larger
-     */
-    protected static int compareValues(Object valueOne, Object valueTwo, boolean descending)
-	{
-		if (descending)
-		{
-			Object temp = valueOne;
-			valueOne = valueTwo;
-			valueTwo = temp;
-		}
-
-		if (valueOne == null || valueTwo == null)
-		{
-			// A null value is considered equal to another null
-			// value and smaller than any nonnull value
-			if (valueOne == null && valueTwo == null)
-			{
-				return 0;
-			}
-			if (valueOne == null)
-			{
-				return -1;
-			}
-			return 1;
-		}
-
-		Comparable comparable1;
-		if (valueOne instanceof Comparable)
-		{
-			comparable1 = (Comparable) valueOne;
-		}
-		else
-		{
-			throw new ClassCastException("Sort by clause cannot sort objects of type " + valueOne.getClass());
-		}
-
-		return comparable1.compareTo(valueTwo);
 	}
 
 	private List<MultiKeyUntyped> createSortProperties(EventBean[][] generatingEvents, MultiKeyUntyped[] groupByKeys, boolean isNewData)

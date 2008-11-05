@@ -102,7 +102,8 @@ countStmt.start();]]></programlisting>
 			<para>
 				The <literal>create</literal> methods on <literal>EPAdministrator</literal> also accept a user object.  
 				The user object is associated with a statement at time of statement creation and is a single, unnamed field that is stored with every statement.
-				Applications may put arbitrary objects in this field. Use the <literal>getUserObject</literal> method on <literal>EPStatement</literal> to obtain the user object of a statement.
+				Applications may put arbitrary objects in this field. Use the <literal>getUserObject</literal> method on <literal>EPStatement</literal> to obtain the user object of a statement
+				and <literal>StatementAwareUpdateListener</literal> for listeners.
 			</para>
 	  </sect2>
 

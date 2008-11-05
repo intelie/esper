@@ -156,7 +156,7 @@ public class ExprStaticMethodNode extends ExprNode
 		try
 		{
 			Method method = methodResolutionService.resolveMethod(className, methodName, paramTypes);
-			FastClass declaringClass = FastClass.create(method.getDeclaringClass());
+			FastClass declaringClass = FastClass.create(Thread.currentThread().getContextClassLoader(), method.getDeclaringClass());
 			staticMethod = declaringClass.getMethod(method);
 		}
 		catch(Exception e)

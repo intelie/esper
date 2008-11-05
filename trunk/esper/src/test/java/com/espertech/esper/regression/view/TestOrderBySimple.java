@@ -9,6 +9,7 @@ import com.espertech.esper.event.EventBean;
 import com.espertech.esper.event.EventType;
 import com.espertech.esper.support.bean.SupportBeanString;
 import com.espertech.esper.support.bean.SupportMarketDataBean;
+import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.support.util.SupportUpdateListener;
 import com.espertech.esper.support.util.ArrayAssertionUtil;
@@ -17,6 +18,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.util.*;
+import java.text.Collator;
 
 public class TestOrderBySimple extends TestCase {
 
@@ -37,6 +39,33 @@ public class TestOrderBySimple extends TestCase {
         symbols = new LinkedList<String>();
         prices = new LinkedList<Double>();
         volumes = new LinkedList<Long>();
+    }
+
+    public void testCollatorSortLocale()
+    {
+        List<String> items = Arrays.asList("péché,pêche".split(","));
+
+        Collections.sort(items);
+        System.out.println("Sorted default" + items);
+        
+        Collections.sort(items, new Comparator<String>() {
+            Collator collator = Collator.getInstance(Locale.FRANCE);
+            public int compare(String o1, String o2)
+            {
+                return collator.compare(o1, o2);
+            }
+        });
+        System.out.println("Sorted FR" + items);
+
+        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("SupportBean", SupportBean.class.getName());
+        String stmtText = "select string from SupportBean.win:keepall() order by string asc";
+        EPStatement stmt = epService.getEPAdministrator().createEPL(stmtText);
+        epService.getEPRuntime().sendEvent(new SupportBean("péché", 1));
+        epService.getEPRuntime().sendEvent(new SupportBean("pêche", 1));
+
+        String[] sortedFrench = "péché,pêche".split(",");
+        String[] sortedUS = "péché,pêche".split(",");
+        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), "string".split(","), new Object[][] {{sortedUS[0]}, {sortedUS[1]}});
     }
 
     public void testIterator()

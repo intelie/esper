@@ -8,19 +8,8 @@
  **************************************************************************************/
 package com.espertech.esper.core;
 
-import com.espertech.esper.event.EventBean;
-import com.espertech.esper.event.NaturalEventBean;
-import com.espertech.esper.collection.Pair;
-import net.sf.cglib.reflect.FastMethod;
-import net.sf.cglib.reflect.FastClass;
-
-import java.lang.reflect.Method;
-import java.lang.reflect.InvocationTargetException;
-import java.util.Map;
 import java.util.HashMap;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import java.util.Map;
 
 /**
  * Converts column results into a Map of key-value pairs.

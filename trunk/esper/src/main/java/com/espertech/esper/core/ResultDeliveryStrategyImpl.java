@@ -49,7 +49,7 @@ public class ResultDeliveryStrategyImpl implements ResultDeliveryStrategy
     {
         this.subscriber = subscriber;
         this.deliveryConvertor = deliveryConvertor;
-        FastClass fastClass = FastClass.create(subscriber.getClass());
+        FastClass fastClass = FastClass.create(Thread.currentThread().getContextClassLoader(), subscriber.getClass());
         this.updateFastMethod = fastClass.getMethod(method);
 
         if (startMethod != null)

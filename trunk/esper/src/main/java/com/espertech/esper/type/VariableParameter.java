@@ -8,8 +8,6 @@
  **************************************************************************************/
 package com.espertech.esper.type;
 
-import java.util.Set;
-import java.util.HashSet;
 import java.io.StringWriter;
 
 /**

@@ -18,7 +18,7 @@ public class TestKeyedFastPropertyGetter extends TestCase
     {
         bean = SupportBeanComplexProps.makeDefaultBean();
         event = SupportEventBeanFactory.createObject(bean);
-        FastClass fastClass = FastClass.create(SupportBeanComplexProps.class);
+        FastClass fastClass = FastClass.create(Thread.currentThread().getContextClassLoader(), SupportBeanComplexProps.class);
         FastMethod method = fastClass.getMethod("getIndexed", new Class[] {int.class});
         getter = new KeyedFastPropertyGetter(method, 1);
     }

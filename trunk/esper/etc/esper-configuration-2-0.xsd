@@ -342,6 +342,7 @@
 				<xs:element ref="esper:stream-selection" minOccurs="0"/>
 				<xs:element ref="esper:time-source" minOccurs="0"/>
 				<xs:element ref="esper:metrics-reporting" minOccurs="0"/>
+				<xs:element ref="esper:language" minOccurs="0"/>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
@@ -592,6 +593,11 @@
 			<xs:attribute name="threading" type="xs:boolean" use="optional"/>
 			<xs:attribute name="engine-interval" type="xs:long" use="optional"/>
 			<xs:attribute name="statement-interval" type="xs:long" use="optional"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="language">
+		<xs:complexType>
+			<xs:attribute name="sort-using-collator" type="xs:boolean" use="required"/>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="stmtgroup">

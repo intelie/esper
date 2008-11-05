@@ -1,7 +1,7 @@
 <project>
   <modelVersion>4.0.0</modelVersion>
   <name>Esper Examples TerminalSvc</name>
-  <groupId>esper</groupId>
+  <groupId>com.espertech</groupId>
   <version>1.0</version>
   <artifactId>esper-terminalsvc</artifactId>
   <packaging>pom</packaging>

@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<name>Esper Examples TerminalSvc - EAR</name>
 	<artifactId>example-terminalsvc-ear</artifactId>
-	<groupId>esper</groupId>
+	<groupId>com.espertech</groupId>
 	<version>1.0</version>
 	<packaging>ear</packaging>
 	<description>Esper TerminalSvc example - EAR</description>

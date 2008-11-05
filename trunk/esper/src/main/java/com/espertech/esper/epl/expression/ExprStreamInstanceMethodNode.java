@@ -171,7 +171,7 @@ public class ExprStreamInstanceMethodNode extends ExprNode
 		try
 		{
             Method method = methodResolutionService.resolveMethod(type, methodName, paramTypes);
-			FastClass declaringClass = FastClass.create(method.getDeclaringClass());
+			FastClass declaringClass = FastClass.create(Thread.currentThread().getContextClassLoader(), method.getDeclaringClass());
 			instanceMethod = declaringClass.getMethod(method);
 		}
 		catch(Exception e)

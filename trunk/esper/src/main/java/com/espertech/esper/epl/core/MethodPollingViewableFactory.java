@@ -69,7 +69,7 @@ public class MethodPollingViewableFactory
 		{
 			Method method = methodResolutionService.resolveMethod(methodStreamSpec.getClassName(), methodStreamSpec.getMethodName());
             declaringClass = method.getDeclaringClass();
-            FastClass declaringFastClass = FastClass.create(method.getDeclaringClass());
+            FastClass declaringFastClass = FastClass.create(Thread.currentThread().getContextClassLoader(), method.getDeclaringClass());
 			staticMethod = declaringFastClass.getMethod(method);
 		}
 		catch(Exception e)

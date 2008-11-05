@@ -53,6 +53,7 @@ public class TestConfigurationParser extends TestCase
         assertEquals(ConfigurationEngineDefaults.TimeSourceType.MILLI, config.getEngineDefaults().getTimeSource().getTimeSourceType());
 
         assertEquals(StreamSelector.ISTREAM_ONLY, config.getEngineDefaults().getStreamSelection().getDefaultStreamSelector());
+        assertFalse(config.getEngineDefaults().getLanguage().isSortUsingCollator());
     }
 
     protected static void assertFileConfig(Configuration config) throws Exception
@@ -274,6 +275,7 @@ public class TestConfigurationParser extends TestCase
         assertEquals(100, def.getNumStatements());
         assertFalse(def.isReportInactive());
         assertEquals(0, def.getPatterns().size());
+        assertTrue(config.getEngineDefaults().getLanguage().isSortUsingCollator());
 
         // variables
         assertEquals(2, config.getVariables().size());

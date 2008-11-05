@@ -36,7 +36,7 @@ public class ResultDeliveryStrategyObjectArr implements ResultDeliveryStrategy
     public ResultDeliveryStrategyObjectArr(Object subscriber, Method method)
     {
         this.subscriber = subscriber;
-        FastClass fastClass = FastClass.create(subscriber.getClass());
+        FastClass fastClass = FastClass.create(Thread.currentThread().getContextClassLoader(), subscriber.getClass());
         this.fastMethod = fastClass.getMethod(method);
     }
 

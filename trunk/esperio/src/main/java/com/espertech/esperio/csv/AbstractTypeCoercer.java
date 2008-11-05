@@ -59,7 +59,7 @@ public abstract class AbstractTypeCoercer {
         for(String property : propertyTypes.keySet())
 		{
 			log.debug(".createPropertyConstructors property==" + property + ", type==" + propertyTypes.get(property	));
-			FastClass fastClass = FastClass.create(JavaClassHelper.getBoxedType(propertyTypes.get(property)));
+			FastClass fastClass = FastClass.create(Thread.currentThread().getContextClassLoader(), JavaClassHelper.getBoxedType(propertyTypes.get(property)));
 			FastConstructor constructor = fastClass.getConstructor(parameterTypes);
 			constructors.put(property, constructor);
 		}
