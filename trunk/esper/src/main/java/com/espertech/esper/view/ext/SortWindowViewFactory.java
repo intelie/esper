@@ -8,13 +8,13 @@
  **************************************************************************************/
 package com.espertech.esper.view.ext;
 
+import com.espertech.esper.core.StatementContext;
 import com.espertech.esper.epl.core.ViewResourceCallback;
 import com.espertech.esper.epl.named.RemoveStreamViewCapability;
 import com.espertech.esper.event.EventType;
 import com.espertech.esper.util.JavaClassHelper;
 import com.espertech.esper.view.*;
 import com.espertech.esper.view.window.RandomAccessByIndexGetter;
-import com.espertech.esper.core.StatementContext;
 
 import java.util.Arrays;
 import java.util.List;
@@ -32,7 +32,7 @@ public class SortWindowViewFactory implements DataWindowViewFactory
     /**
      * The flags defining the ascending or descending sort order.
      */
-    protected Boolean[] isDescendingValues;
+    protected boolean[] isDescendingValues;
 
     /**
      * The sort window size.
@@ -56,7 +56,7 @@ public class SortWindowViewFactory implements DataWindowViewFactory
                 (viewParameters.get(2) instanceof Number))
             {
                 sortFieldNames = new String[] {(String)viewParameters.get(0)};
-                isDescendingValues = new Boolean[] {(Boolean) viewParameters.get(1)};
+                isDescendingValues = new boolean[] {(Boolean) viewParameters.get(1)};
                 Number sizeParam = (Number) viewParameters.get(2);
                 if (JavaClassHelper.isFloatingPointNumber(sizeParam))
                 {
@@ -165,7 +165,8 @@ public class SortWindowViewFactory implements DataWindowViewFactory
             randomAccessGetterImpl.updated(sortedRandomAccess);
         }
 
-        return new SortWindowView(this, sortFieldNames, isDescendingValues, sortWindowSize, sortedRandomAccess);
+        return new SortWindowView(this, sortFieldNames, isDescendingValues, sortWindowSize, sortedRandomAccess,
+                statementContext.getConfigSnapshot().getEngineDefaults().getLanguage().isSortUsingCollator());
     }
 
     public EventType getEventType()
@@ -187,7 +188,7 @@ public class SortWindowViewFactory implements DataWindowViewFactory
 
         SortWindowView other = (SortWindowView) view;
         if ((other.getSortWindowSize() != sortWindowSize) ||
-            (!Arrays.deepEquals(other.getIsDescendingValues(), isDescendingValues)) ||
+            (!compare(other.getIsDescendingValues(), isDescendingValues)) ||
             (!Arrays.deepEquals(other.getSortFieldNames(), sortFieldNames)) )
         {
             return false;
@@ -206,12 +207,30 @@ public class SortWindowViewFactory implements DataWindowViewFactory
 
         int length = propertiesAndDirections.length / 2;
         sortFieldNames = new String[length];
-        isDescendingValues  = new Boolean[length];
+        isDescendingValues  = new boolean[length];
 
         for(int i = 0; i < length; i++)
         {
             sortFieldNames[i] = (String)propertiesAndDirections[2*i];
             isDescendingValues[i] = (Boolean)propertiesAndDirections[2*i + 1];
         }
+    }
+
+    private boolean compare(boolean[] one, boolean[] two)
+    {
+        if (one.length != two.length)
+        {
+            return false;
+        }
+
+        for (int i = 0; i < one.length; i++)
+        {
+            if (one[i] != two[i])
+            {
+                return false;
+            }
+        }
+
+        return true;
     }
 }

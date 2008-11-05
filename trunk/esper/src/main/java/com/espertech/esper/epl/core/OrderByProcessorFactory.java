@@ -43,7 +43,8 @@ public class OrderByProcessorFactory {
 											   List<OrderByItem> orderByList,
 											   AggregationService aggregationService,
                                                RowLimitSpec rowLimitSpec,
-                                               VariableService variableService)
+                                               VariableService variableService,
+                                               boolean isSortUsingCollator)
 	throws ExprValidationException
 	{
 		// Get the order by expression nodes
@@ -92,7 +93,7 @@ public class OrderByProcessorFactory {
     	boolean needsGroupByKeys = !selectionList.isEmpty() && !orderAggNodes.isEmpty();
 
         log.debug(".getProcessor Using OrderByProcessorImpl");
-        OrderByProcessorImpl orderByProcessor = new OrderByProcessorImpl(orderByList, groupByNodes, needsGroupByKeys, aggregationService);
+        OrderByProcessorImpl orderByProcessor = new OrderByProcessorImpl(orderByList, groupByNodes, needsGroupByKeys, aggregationService, isSortUsingCollator);
         if (rowLimitSpec == null)
         {
             return orderByProcessor;

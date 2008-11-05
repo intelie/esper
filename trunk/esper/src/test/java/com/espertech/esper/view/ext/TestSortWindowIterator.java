@@ -18,7 +18,7 @@ public class TestSortWindowIterator extends TestCase
     public void setUp()
     {
         events = EventFactoryHelper.makeEventMap(new String[] {"a", "b", "c", "d", "f", "g"});
-        comparator = new MultiKeyComparator(new Boolean[] {false});
+        comparator = new MultiKeyComparator(new boolean[] {false});
         testMap = new TreeMap<MultiKeyUntyped, LinkedList<EventBean>>(comparator);
     }
 

@@ -17,7 +17,7 @@ public class TestSortWindowView extends TestCase
     public void setUp()
     {
         // Set up length window view and a test child view
-        myView = new SortWindowView(null, new String[]{"volume"}, new Boolean[] {false}, 5, null);
+        myView = new SortWindowView(null, new String[]{"volume"}, new boolean[] {false}, 5, null, false);
         childView = new SupportBeanClassView(SupportMarketDataBean.class);
         myView.addView(childView);
     }
@@ -76,7 +76,7 @@ public class TestSortWindowView extends TestCase
     public void testViewTwoProperties()
     {
     	// Set up a sort windows that sorts on two properties
-    	myView = new SortWindowView(null, new String[]{"volume", "price"}, new Boolean[] {false, true}, 5, null);
+    	myView = new SortWindowView(null, new String[]{"volume", "price"}, new boolean[] {false, true}, 5, null, false);
         childView = new SupportBeanClassView(SupportMarketDataBean.class);
         myView.addView(childView);
         

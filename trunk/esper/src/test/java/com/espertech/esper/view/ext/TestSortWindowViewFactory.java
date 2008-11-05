@@ -25,10 +25,10 @@ public class TestSortWindowViewFactory extends TestCase
     public void testSetParameters() throws Exception
     {
         tryParameter(new Object[] {"price", true, 100},
-                     new String[] {"price"}, new Boolean[] {true}, 100);
+                     new String[] {"price"}, new boolean[] {true}, 100);
 
         tryParameter(new Object[] {new Object[] {"price", true, "volume", false}, 100},
-                     new String[] {"price", "volume"}, new Boolean[] {true, false}, 100);
+                     new String[] {"price", "volume"}, new boolean[] {true, false}, 100);
 
         tryInvalidParameter(new Object[] {new Object[] {"price", "a", "volume", false}, 100});
         tryInvalidParameter(new Object[] {});
@@ -63,14 +63,14 @@ public class TestSortWindowViewFactory extends TestCase
 
         factory.setViewParameters(null, Arrays.asList(new Object[] {"price", true, 100}));
         assertFalse(factory.canReuse(new SizeView(context)));
-        assertTrue(factory.canReuse(new SortWindowView(factory, new String[] {"price"}, new Boolean[] {true}, 100, null)));
-        assertFalse(factory.canReuse(new SortWindowView(factory, new String[] {"volume"}, new Boolean[] {true}, 100, null)));
-        assertFalse(factory.canReuse(new SortWindowView(factory, new String[] {"price"}, new Boolean[] {false}, 100, null)));
-        assertFalse(factory.canReuse(new SortWindowView(factory, new String[] {"price"}, new Boolean[] {true}, 99, null)));
+        assertTrue(factory.canReuse(new SortWindowView(factory, new String[] {"price"}, new boolean[] {true}, 100, null, false)));
+        assertFalse(factory.canReuse(new SortWindowView(factory, new String[] {"volume"}, new boolean[] {true}, 100, null, false)));
+        assertFalse(factory.canReuse(new SortWindowView(factory, new String[] {"price"}, new boolean[] {false}, 100, null, false)));
+        assertFalse(factory.canReuse(new SortWindowView(factory, new String[] {"price"}, new boolean[] {true}, 99, null, false)));
 
         factory.setViewParameters(null, Arrays.asList(new Object[] {new Object[] {"price", true, "volume", false}, 100}));
-        assertTrue(factory.canReuse(new SortWindowView(factory, new String[] {"price", "volume"}, new Boolean[] {true, false}, 100, null)));
-        assertFalse(factory.canReuse(new SortWindowView(factory, new String[] {"price", "xxx"}, new Boolean[] {true, false}, 100, null)));
+        assertTrue(factory.canReuse(new SortWindowView(factory, new String[] {"price", "volume"}, new boolean[] {true, false}, 100, null, false)));
+        assertFalse(factory.canReuse(new SortWindowView(factory, new String[] {"price", "xxx"}, new boolean[] {true, false}, 100, null, false)));
     }
 
     private void tryInvalidParameter(Object[] params) throws Exception
@@ -86,7 +86,7 @@ public class TestSortWindowViewFactory extends TestCase
         }
     }
 
-    private void tryParameter(Object[] params, String[] fieldNames, Boolean[] ascInd, int size) throws Exception
+    private void tryParameter(Object[] params, String[] fieldNames, boolean[] ascInd, int size) throws Exception
     {
         factory.setViewParameters(null, Arrays.asList(params));
         SortWindowView view = (SortWindowView) factory.makeView(SupportStatementContextFactory.makeContext());

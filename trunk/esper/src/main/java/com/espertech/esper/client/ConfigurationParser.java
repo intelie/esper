@@ -833,6 +833,10 @@ class ConfigurationParser {
             {
                 handleMetricsReporting(configuration, subElement);
             }
+            if (subElement.getNodeName().equals("language"))
+            {
+                handleLanguage(configuration, subElement);
+            }
         }
     }
 
@@ -1065,6 +1069,13 @@ class ConfigurationParser {
                 handleMetricsReportingPatterns(metrics, subElement);
             }
         }
+    }
+
+    private static void handleLanguage(Configuration configuration, Element parentElement)
+    {
+        String sortUsingCollator = getRequiredAttribute(parentElement, "sort-using-collator");
+        boolean isSortUsingCollator = Boolean.parseBoolean(sortUsingCollator);
+        configuration.getEngineDefaults().getLanguage().setSortUsingCollator(isSortUsingCollator);
     }
 
     private static void handleMetricsReportingPatterns(ConfigurationMetricsReporting.StmtGroupMetrics groupDef, Element parentElement)

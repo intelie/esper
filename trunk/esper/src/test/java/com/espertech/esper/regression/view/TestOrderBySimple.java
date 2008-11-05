@@ -44,7 +44,19 @@ public class TestOrderBySimple extends TestCase {
     public void testCollatorSortLocale()
     {
         List<String> items = Arrays.asList("péché,pêche".split(","));
+        String[] sortedFrench = "pêche,péché".split(",");
+        String[] sortedUS = "péché,pêche".split(",");
 
+        assertEquals(1, "pêche".compareTo("péché"));
+        assertEquals(-1, "péché".compareTo("pêche"));
+        Locale.setDefault(Locale.FRENCH);
+        assertEquals(1, "pêche".compareTo("péché"));
+        assertEquals(-1, Collator.getInstance().compare("pêche", "péché"));
+        assertEquals(-1, "péché".compareTo("pêche"));
+        assertEquals(1, Collator.getInstance().compare("péché", "pêche"));
+        assertFalse("péché".equals("pêche"));
+
+        /*
         Collections.sort(items);
         System.out.println("Sorted default" + items);
         
@@ -56,16 +68,34 @@ public class TestOrderBySimple extends TestCase {
             }
         });
         System.out.println("Sorted FR" + items);
+        */
 
+        Configuration config = SupportConfigFactory.getConfiguration();
+        config.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
+        config.getEngineDefaults().getLanguage().setSortUsingCollator(true);
+        epService = EPServiceProviderManager.getDefaultProvider(config);
+        epService.initialize();
         epService.getEPAdministrator().getConfiguration().addEventTypeAlias("SupportBean", SupportBean.class.getName());
+
+        // test order by
         String stmtText = "select string from SupportBean.win:keepall() order by string asc";
-        EPStatement stmt = epService.getEPAdministrator().createEPL(stmtText);
+        EPStatement stmtOne = epService.getEPAdministrator().createEPL(stmtText);
         epService.getEPRuntime().sendEvent(new SupportBean("péché", 1));
         epService.getEPRuntime().sendEvent(new SupportBean("pêche", 1));
+        ArrayAssertionUtil.assertEqualsExactOrder(stmtOne.iterator(), "string".split(","), new Object[][] {{sortedFrench[0]}, {sortedFrench[1]}});
 
-        String[] sortedFrench = "péché,pêche".split(",");
-        String[] sortedUS = "péché,pêche".split(",");
-        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), "string".split(","), new Object[][] {{sortedUS[0]}, {sortedUS[1]}});
+        // test sort view
+        SupportUpdateListener listener = new SupportUpdateListener();
+        stmtText = "select irstream string from SupportBean.ext:sort(string, false, 2)";
+        EPStatement stmtTwo = epService.getEPAdministrator().createEPL(stmtText);
+        stmtTwo.addListener(listener);
+
+        epService.getEPRuntime().sendEvent(new SupportBean("péché", 1));
+        epService.getEPRuntime().sendEvent(new SupportBean("pêche", 1));
+        epService.getEPRuntime().sendEvent(new SupportBean("abc", 1));
+
+        assertEquals("péché", listener.getLastOldData()[0].get("string"));
+        Locale.setDefault(Locale.US);
     }
 
     public void testIterator()

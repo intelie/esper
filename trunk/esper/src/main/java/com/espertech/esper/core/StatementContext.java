@@ -22,6 +22,7 @@ import com.espertech.esper.schedule.ScheduleBucket;
 import com.espertech.esper.schedule.SchedulingService;
 import com.espertech.esper.view.StatementStopService;
 import com.espertech.esper.view.ViewResolutionService;
+import com.espertech.esper.client.ConfigurationInformation;
 
 import java.net.URI;
 import java.util.HashSet;
@@ -55,6 +56,7 @@ public final class StatementContext
     private final URI[] plugInTypeResolutionURIs;
     private final ValueAddEventService valueAddEventService;
     private final HashSet<String> dynamicReferenceEventTypes;
+    private final ConfigurationInformation configSnapshot;
 
     /**
      * Constructor.
@@ -104,7 +106,8 @@ public final class StatementContext
                               VariableService variableService,
                               StatementResultService statementResultService,
                               URI[] plugInTypeResolutionURIs,
-                              ValueAddEventService valueAddEventService)
+                              ValueAddEventService valueAddEventService,
+                              ConfigurationInformation configSnapshot)
     {
         this.engineURI = engineURI;
         this.engineInstanceId = engineInstanceId;
@@ -130,6 +133,7 @@ public final class StatementContext
         this.plugInTypeResolutionURIs = plugInTypeResolutionURIs;
         this.valueAddEventService = valueAddEventService;
         this.dynamicReferenceEventTypes = new HashSet<String>();
+        this.configSnapshot = configSnapshot;
     }
 
     /**
@@ -355,6 +359,11 @@ public final class StatementContext
     public HashSet<String> getDynamicReferenceEventTypes()
     {
         return dynamicReferenceEventTypes;
+    }
+
+    public ConfigurationInformation getConfigSnapshot()
+    {
+        return configSnapshot;
     }
 
     public String toString()

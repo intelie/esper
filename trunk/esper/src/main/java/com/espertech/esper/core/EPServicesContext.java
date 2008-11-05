@@ -30,6 +30,7 @@ import com.espertech.esper.util.ManagedReadWriteLock;
 import com.espertech.esper.view.ViewService;
 import com.espertech.esper.view.ViewServiceProvider;
 import com.espertech.esper.view.stream.StreamFactoryService;
+import com.espertech.esper.client.ConfigurationInformation;
 
 /**
  * Convenience class to hold implementations for all services.
@@ -63,6 +64,7 @@ public final class EPServicesContext
     private ValueAddEventService valueAddEventService;
     private MetricReportingService metricsReportingService;
     private StatementEventTypeRef statementEventTypeRef;
+    private ConfigurationInformation configSnapshot;
 
     // Supplied after construction to avoid circular dependency
     private StatementLifecycleSvc statementLifecycleSvc;
@@ -118,7 +120,8 @@ public final class EPServicesContext
                              TimeSourceService timeSourceService,
                              ValueAddEventService valueAddEventService,
                              MetricReportingService metricsReportingService,
-                             StatementEventTypeRef statementEventTypeRef)
+                             StatementEventTypeRef statementEventTypeRef,
+                             ConfigurationInformation configSnapshot)
     {
         this.engineURI = engineURI;
         this.engineInstanceId = engineInstanceId;
@@ -147,6 +150,7 @@ public final class EPServicesContext
         this.valueAddEventService = valueAddEventService;
         this.metricsReportingService = metricsReportingService;
         this.statementEventTypeRef = statementEventTypeRef;
+        this.configSnapshot = configSnapshot;
     }
 
     /**
@@ -492,5 +496,10 @@ public final class EPServicesContext
     public StatementEventTypeRef getStatementEventTypeRefService()
     {
         return statementEventTypeRef;
+    }
+
+    public ConfigurationInformation getConfigSnapshot()
+    {
+        return configSnapshot;
     }
 }

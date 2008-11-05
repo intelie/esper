@@ -13,13 +13,13 @@ public class TestMultiKeyComparator extends TestCase
 	
 	public void testCompareSingleProperty()
 	{
-		comparator = new MultiKeyComparator(new Boolean[] {false});
+		comparator = new MultiKeyComparator(new boolean[] {false});
 
 		firstValues = new MultiKeyUntyped(new Object[] {3d});
 		secondValues = new MultiKeyUntyped(new Object[] {4d});
 		assertTrue(comparator.compare(firstValues, secondValues) < 0);
 		
-		comparator = new MultiKeyComparator(new Boolean[] {true});
+		comparator = new MultiKeyComparator(new boolean[] {true});
 
 		assertTrue(comparator.compare(firstValues, secondValues) > 0);
 		assertTrue(comparator.compare(firstValues, firstValues) == 0);
@@ -27,13 +27,13 @@ public class TestMultiKeyComparator extends TestCase
 	
 	public void testCompareTwoProperties()
 	{
-		comparator = new MultiKeyComparator(new Boolean[] {false, false});
+		comparator = new MultiKeyComparator(new boolean[] {false, false});
 
 		firstValues = new MultiKeyUntyped(new Object[] {3d, 3L});
 		secondValues = new MultiKeyUntyped(new Object[] {3d, 4L});
 		assertTrue(comparator.compare(firstValues, secondValues) < 0);
 		
-		comparator = new MultiKeyComparator(new Boolean[] {false, true});
+		comparator = new MultiKeyComparator(new boolean[] {false, true});
 		
 		assertTrue(comparator.compare(firstValues, secondValues) > 0);
 		assertTrue(comparator.compare(firstValues, firstValues) == 0);
@@ -41,7 +41,7 @@ public class TestMultiKeyComparator extends TestCase
 	
 	public void testInvalid()
 	{
-		comparator = new MultiKeyComparator(new Boolean[] {false, false});
+		comparator = new MultiKeyComparator(new boolean[] {false, false});
 	
 		firstValues = new MultiKeyUntyped(new Object[] {3d});
 		secondValues = new MultiKeyUntyped(new Object[] {3d, 4L});

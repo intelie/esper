@@ -108,7 +108,8 @@ public class EPServicesContextFactoryDefault implements EPServicesContextFactory
                 eventAdapterService, engineImportService, engineSettingsService, databaseConfigService, plugInViews,
                 statementLockFactory, eventProcessingRWLock, null, jndiContext, statementContextFactory,
                 plugInPatternObj, outputConditionFactory, timerService, filterService, streamFactoryService,
-                namedWindowService, variableService, timeSourceService, valueAddEventService, metricsReporting, statementEventTypeRef);
+                namedWindowService, variableService, timeSourceService, valueAddEventService, metricsReporting, statementEventTypeRef,
+                configSnapshot);
 
         // Circular dependency
         StatementLifecycleSvc statementLifecycleSvc = new StatementLifecycleSvcImpl(epServiceProvider, services);

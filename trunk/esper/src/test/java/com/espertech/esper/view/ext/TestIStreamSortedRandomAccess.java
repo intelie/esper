@@ -28,7 +28,7 @@ public class TestIStreamSortedRandomAccess extends TestCase
             }
         };
         access = new IStreamSortedRandomAccess(updateObserver);
-        sortedEvents = new TreeMap<MultiKeyUntyped, LinkedList<EventBean>>(new MultiKeyComparator(new Boolean[] {false}));
+        sortedEvents = new TreeMap<MultiKeyUntyped, LinkedList<EventBean>>(new MultiKeyComparator(new boolean[] {false}));
 
         events = new EventBean[100];
         for (int i = 0; i < events.length; i++)

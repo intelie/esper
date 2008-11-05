@@ -11,6 +11,7 @@ package com.espertech.esper.util;
 import com.espertech.esper.collection.MultiKeyUntyped;
 
 import java.util.Comparator;
+import java.text.Collator;
 
 /**
  * A comparator on multikeys. The multikeys must contain the same
@@ -18,7 +19,7 @@ import java.util.Comparator;
  */
 public final class MultiKeyComparator implements Comparator<MultiKeyUntyped>, MetaDefItem
 {
-    private final Boolean[] isDescendingValues;
+    private final boolean[] isDescendingValues;
 
     /**
      * Ctor.
@@ -26,7 +27,7 @@ public final class MultiKeyComparator implements Comparator<MultiKeyUntyped>, Me
      *        entry in the multi-keys is to be sorted in descending order. The multikeys
      *        to be compared must have the same number of values as this array.
      */
-    public MultiKeyComparator(Boolean[] isDescendingValues)
+    public MultiKeyComparator(boolean[] isDescendingValues)
     {
         this.isDescendingValues = isDescendingValues;
     }
@@ -62,15 +63,8 @@ public final class MultiKeyComparator implements Comparator<MultiKeyUntyped>, Me
         }
     }
 
-    private static int compareValues(Object valueOne, Object valueTwo, boolean isDescending)
+    protected static int compareValues(Object valueOne, Object valueTwo, boolean isDescending)
     {
-        if (isDescending)
-        {
-            Object temp = valueOne;
-            valueOne = valueTwo;
-            valueTwo = temp;
-        }
-
         if (valueOne == null || valueTwo == null)
         {
             // A null value is considered equal to another null
@@ -80,6 +74,14 @@ public final class MultiKeyComparator implements Comparator<MultiKeyUntyped>, Me
                 return 0;
             }
             if (valueOne == null)
+            {
+                if (isDescending)
+                {
+                    return 1;
+                }
+                return -1;
+            }
+            if (isDescending)
             {
                 return -1;
             }
@@ -96,6 +98,44 @@ public final class MultiKeyComparator implements Comparator<MultiKeyUntyped>, Me
             throw new ClassCastException("Cannot sort objects of type " + valueOne.getClass());
         }
 
+        if (isDescending)
+        {
+            return -1 * comparable1.compareTo(valueTwo);
+        }
+
         return comparable1.compareTo(valueTwo);
+    }
+
+    public static int compareValuesCollated(Object valueOne, Object valueTwo, boolean isDescending, Collator collator)
+    {
+        if (valueOne == null || valueTwo == null)
+        {
+            // A null value is considered equal to another null
+            // value and smaller than any nonnull value
+            if (valueOne == null && valueTwo == null)
+            {
+                return 0;
+            }
+            if (valueOne == null)
+            {
+                if (isDescending)
+                {
+                    return 1;
+                }
+                return -1;
+            }
+            if (isDescending)
+            {
+                return -1;
+            }
+            return 1;
+        }
+
+        if (isDescending)
+        {
+            return collator.compare(valueTwo, valueOne);
+        }
+
+        return collator.compare(valueOne, valueTwo);
     }
 }

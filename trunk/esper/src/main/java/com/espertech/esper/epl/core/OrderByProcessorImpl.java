@@ -11,10 +11,12 @@ package com.espertech.esper.epl.core;
 import com.espertech.esper.collection.MultiKeyUntyped;
 import com.espertech.esper.epl.agg.AggregationService;
 import com.espertech.esper.epl.expression.ExprNode;
+import com.espertech.esper.epl.expression.ExprValidationException;
 import com.espertech.esper.epl.spec.OrderByItem;
 import com.espertech.esper.event.EventBean;
 import com.espertech.esper.util.MultiKeyComparator;
 import com.espertech.esper.util.ExecutionPathDebugLog;
+import com.espertech.esper.util.MultiKeyCollatingComparator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -52,14 +54,16 @@ public class OrderByProcessorImpl implements OrderByProcessor {
 	public OrderByProcessorImpl(final List<OrderByItem> orderByList,
 								  List<ExprNode> groupByNodes,
 								  boolean needsGroupByKeys,
-								  AggregationService aggregationService)
-	{
+								  AggregationService aggregationService,
+                                  boolean isSortUsingCollator)
+            throws ExprValidationException
+    {
 		this.orderByList = orderByList;
 		this.groupByNodes = groupByNodes;
 		this.needsGroupByKeys = needsGroupByKeys;
 		this.aggregationService = aggregationService;
-        
-        this.comparator = new MultiKeyComparator(getIsDescendingValues());
+
+        comparator = getComparator(orderByList, isSortUsingCollator);
     }
 
     public MultiKeyUntyped getSortKey(EventBean[] eventsPerStream, boolean isNewData)
@@ -273,9 +277,46 @@ public class OrderByProcessorImpl implements OrderByProcessor {
 		return keys;
 	}
 
-	private Boolean[] getIsDescendingValues()
+    protected static Comparator<MultiKeyUntyped> getComparator(List<OrderByItem> orderByList, boolean isSortUsingCollator) throws ExprValidationException
+    {
+        Comparator<MultiKeyUntyped> comparator;
+
+        if (isSortUsingCollator)
+        {
+            // determine String types
+            boolean hasStringTypes = false;
+            boolean stringTypes[] = new boolean[orderByList.size()];
+            int count = 0;
+            for (OrderByItem item : orderByList)
+            {
+                if (item.getExprNode().getType() == String.class)
+                {
+                    hasStringTypes = true;
+                    stringTypes[count] = true;
+                }
+                count++;
+            }
+
+            if (!hasStringTypes)
+            {
+                comparator = new MultiKeyComparator(getIsDescendingValues(orderByList));
+            }
+            else
+            {
+                comparator = new MultiKeyCollatingComparator(getIsDescendingValues(orderByList), stringTypes);
+            }
+        }
+        else
+        {
+            comparator = new MultiKeyComparator(getIsDescendingValues(orderByList));
+        }
+
+        return comparator;
+    }
+
+	private static boolean[] getIsDescendingValues(List<OrderByItem> orderByList)
 	{
-		Boolean[] isDescendingValues  = new Boolean[orderByList.size()];
+		boolean[] isDescendingValues  = new boolean[orderByList.size()];
 		int count = 0;
 		for(OrderByItem pair : orderByList)
 		{

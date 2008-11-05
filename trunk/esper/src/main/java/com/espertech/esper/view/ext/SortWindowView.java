@@ -8,20 +8,19 @@
  **************************************************************************************/
 package com.espertech.esper.view.ext;
 
+import com.espertech.esper.collection.MultiKeyUntyped;
+import com.espertech.esper.core.StatementContext;
+import com.espertech.esper.event.EventBean;
+import com.espertech.esper.event.EventPropertyGetter;
+import com.espertech.esper.event.EventType;
+import com.espertech.esper.util.ExecutionPathDebugLog;
+import com.espertech.esper.util.MultiKeyCollatingComparator;
+import com.espertech.esper.util.MultiKeyComparator;
+import com.espertech.esper.view.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.util.*;
-
-import com.espertech.esper.util.MultiKeyComparator;
-import com.espertech.esper.util.ExecutionPathDebugLog;
-import com.espertech.esper.view.*;
-import com.espertech.esper.view.DataWindowView;
-import com.espertech.esper.collection.MultiKeyUntyped;
-import com.espertech.esper.event.EventPropertyGetter;
-import com.espertech.esper.event.EventType;
-import com.espertech.esper.event.EventBean;
-import com.espertech.esper.core.StatementContext;
 
 /**
  * Window sorting by values in the specified field extending a specified number of elements
@@ -41,9 +40,10 @@ public final class SortWindowView extends ViewSupport implements DataWindowView,
 {
     private final SortWindowViewFactory sortWindowViewFactory;
     private final String[] sortFieldNames;
-    private final Boolean[] isDescendingValues;
+    private final boolean[] isDescendingValues;
     private final int sortWindowSize;
     private final IStreamSortedRandomAccess optionalSortedRandomAccess;
+    private final boolean isSortUsingCollator;
 
     private EventPropertyGetter[] sortFieldGetters;
     private TreeMap<MultiKeyUntyped, LinkedList<EventBean>> sortedEvents;
@@ -60,32 +60,53 @@ public final class SortWindowView extends ViewSupport implements DataWindowView,
      */
     public SortWindowView(SortWindowViewFactory sortWindowViewFactory,
                           String[] sortFieldNames,
-                          Boolean[] descendingValues,
+                          boolean[] descendingValues,
                           int sortWindowSize,
-                          IStreamSortedRandomAccess optionalSortedRandomAccess)
+                          IStreamSortedRandomAccess optionalSortedRandomAccess,
+                          boolean isSortUsingCollator)
     {
         this.sortWindowViewFactory = sortWindowViewFactory;
         this.sortFieldNames = sortFieldNames;
         this.isDescendingValues = descendingValues;
         this.sortWindowSize = sortWindowSize;
         this.optionalSortedRandomAccess = optionalSortedRandomAccess;
-
-        Comparator<MultiKeyUntyped> comparator = new MultiKeyComparator(isDescendingValues);
-        sortedEvents = new TreeMap<MultiKeyUntyped, LinkedList<EventBean>>(comparator);
+        this.isSortUsingCollator = isSortUsingCollator;
     }
 
     public void setParent(Viewable parent)
     {
         super.setParent(parent);
+
+        boolean hasStringTypes = false;
+        boolean stringTypes[] = new boolean[sortFieldNames.length];
+
         if (parent != null)
         {
         	int count = 0;
         	sortFieldGetters = new EventPropertyGetter[sortFieldNames.length];
         	for(String name : sortFieldNames)
         	{
-        		sortFieldGetters[count++] = parent.getEventType().getGetter(name);
-        	}
+        		sortFieldGetters[count] = parent.getEventType().getGetter(name);
+                if (parent.getEventType().getPropertyType(name) == String.class)
+                {
+                    hasStringTypes = true;
+                    stringTypes[count] = true;
+                }
+                count++;
+            }
         }
+
+        Comparator<MultiKeyUntyped> comparator;
+        if ((!hasStringTypes) || (!isSortUsingCollator))
+        {
+            comparator = new MultiKeyComparator(isDescendingValues);
+        }
+        else
+        {
+            comparator = new MultiKeyCollatingComparator(isDescendingValues, stringTypes);
+        }
+
+        sortedEvents = new TreeMap<MultiKeyUntyped, LinkedList<EventBean>>(comparator);
     }
 
     /**
@@ -101,7 +122,7 @@ public final class SortWindowView extends ViewSupport implements DataWindowView,
      * Returns the flags indicating whether to sort in descending order on each property.
      * @return the isDescending value for each sort property
      */
-    protected final Boolean[] getIsDescendingValues()
+    protected final boolean[] getIsDescendingValues()
     {
     	return isDescendingValues;
     }
