@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema targetNamespace="http://www.espertech.com/schema/esperio-opentick" elementFormDefault="qualified" xmlns:esper="http://www.espertech.com/schema/esperio-opentick" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+	<xs:element name="esper-opentickadapter-configuration">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="esper:connection" minOccurs="1" maxOccurs="1"/>
+				<xs:element ref="esper:streams" minOccurs="1" maxOccurs="1"/>
+				<xs:element ref="esper:symbollists" minOccurs="1" maxOccurs="1"/>
+				<xs:element ref="esper:stream-symbollists" minOccurs="1" maxOccurs="1"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="connection">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="esper:hosts" minOccurs="1" maxOccurs="1"/>
+				<xs:element ref="esper:login" minOccurs="1" maxOccurs="1"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="hosts">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="esper:host" minOccurs="1" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="host">
+		<xs:complexType>
+			<xs:attribute name="name" type="xs:string" use="required"/>
+			<xs:attribute name="port" type="xs:int" use="required"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="login">
+		<xs:complexType>
+			<xs:attribute name="name" type="xs:string" use="required"/>
+			<xs:attribute name="password" type="xs:string" use="required"/>
+			<xs:attribute name="timeout-msec" type="xs:long" use="required"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="streams">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="esper:stream" minOccurs="1" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="stream">
+		<xs:complexType>
+			<xs:attribute name="name" type="xs:string" use="required"/>
+			<xs:attribute name="enable" type="xs:boolean" use="required"/>
+			<xs:attribute name="engine-uri" type="xs:string" use="required"/>
+			<xs:attribute name="alias" type="xs:string" use="required"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="symbollists">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="esper:symbollist" minOccurs="1" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="symbollist">
+		<xs:complexType>
+			<xs:attribute name="name" type="xs:string" use="required"/>
+			<xs:attribute name="exchange" type="xs:string" use="required"/>
+			<xs:attribute name="symbols" type="xs:string" use="required"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="stream-symbollists">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="esper:stream-symbollist" minOccurs="1" maxOccurs="unbounded"/>
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="stream-symbollist">
+		<xs:complexType>
+			<xs:attribute name="stream" type="xs:string" use="required"/>
+			<xs:attribute name="symbollist" type="xs:string" use="required"/>
+		</xs:complexType>
+	</xs:element>
+</xs:schema>
