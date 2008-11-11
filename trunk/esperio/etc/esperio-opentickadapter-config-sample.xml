@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<esper-opentickadapter-configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns="http://www.espertech.com/schema/esperio-opentick"
+    xsi:noNamespaceSchemaLocation="esperio-opentickadapter-config.xsd">
+    
+	 <!-- Connection-level information goes here. -->
+	<connection>
+	    <hosts>
+			<host name="feed1.opentick.com" port="10010"/>
+			<host name="feed2.opentick.com" port="10010"/>
+	    </hosts>
+	    <login name="login" password="password" timeout-msec="20000"/>	    
+	</connection>
+    <!-- 
+		List of streams and engine instance destination; The stream name is a reference to the event subscribed to. 
+		Only the following 4 stream names are recognized:  OTQuote, OTMMQuote, OTTrade, OTBBO.
+		Each stream translates into a "addRtQuoteListener" or equivalent listener on the OT client.
+	-->
+	<streams>
+		<stream name="OTQuote" enable="true" engine-uri="MyEngineURI" alias="OTQuote"/>
+		<stream name="OTMMQuote" enable="true" engine-uri="MyEngineURI" alias="OTMMQuote"/>
+		<stream name="OTTrade" enable="true" engine-uri="MyEngineURI" alias="OTTrade"/>
+		<stream name="OTBBO" enable="true" engine-uri="MyEngineURI" alias="OTBBO"/>
+	</streams>
+	<!-- List of symbols: Each provides a combination of exchange and symbols. -->
+	<symbollists>
+		<!-- Exchange and comma-separated list of symbols. -->
+		<symbollist name="list1" exchange="NASDAQ" symbols="MSFT,VDNX"/>
+	</symbollists>
+	<!-- 
+		Association of streams to symbols, multiple associations are allowed however a subscription is once per symbol.. 
+		Each exchange+symbol is subscribed to via requestTickStream on the OT client, for the mask indicated via stream.		
+	-->
+	<stream-symbollists>
+		<stream-symbollist stream="OTQuote" symbollist="list1"/>
+		<stream-symbollist stream="OTMMQuote" symbollist="list1"/>
+		<stream-symbollist stream="OTTrade" symbollist="list1"/>
+		<stream-symbollist stream="OTBBO" symbollist="list1"/>
+	</stream-symbollists>
+</esper-opentickadapter-configuration>
