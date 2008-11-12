@@ -131,29 +131,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
         }
 
         EPStatementDesc desc = createStopped(statementSpec, expression, isPattern, statementName, statementId, optAdditionalContext, userObject);
-        start(statementId, desc, true);
-        return desc.getEpStatement();
-    }
-
-    /**
-     * Creates a started statement.
-     * @param statementSpec is the statement def
-     * @param expression is the expression text
-     * @param isPattern is true for patterns,
-     * @param statementName is the statement name
-     * @param statementId is the statement id
-     * @param optAdditionalContext additional context for use by the statement context
-     * @param userObject the application define user object associated to each statement, if supplied
-     * @return statement
-     */
-    protected synchronized EPStatement createStarted(StatementSpecRaw statementSpec, String expression, boolean isPattern, String statementName, String statementId, Map<String, Object> optAdditionalContext, Object userObject)
-    {
-        if (log.isDebugEnabled())
-        {
-            log.debug(".start Creating and starting statement " + statementId);
-        }
-        EPStatementDesc desc = createStopped(statementSpec, expression, isPattern, statementName, statementId, optAdditionalContext, userObject);
-        start(statementId, desc, true);
+        start(statementId, desc, true, false);
         return desc.getEpStatement();
     }
 
@@ -202,7 +180,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
         boolean canSelfJoin = isPotentialSelfJoin(compiledSpec.getStreamSpecs());
         statementContext.getEpStatementHandle().setCanSelfJoin(canSelfJoin);
 
-        // add statically typed event type references: those in the from clause; Dynamic (created) types collected by statement context and added on start 
+        // add statically typed event type references: those in the from clause; Dynamic (created) types collected by statement context and added on start
         services.getStatementEventTypeRefService().addReferences(statementName, compiledSpec.getEventTypeReferences());
 
         // determine statement type
@@ -383,7 +361,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
             {
                 throw new IllegalStateException("Cannot start statement, statement is in destroyed state");
             }
-            startInternal(statementId, desc, false);
+            startInternal(statementId, desc, false, false);
         }
         catch (RuntimeException ex)
         {
@@ -401,7 +379,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
      * @param desc is the cached statement info
      * @param isNewStatement indicator whether the statement is new or a stop-restart statement
      */
-    public void start(String statementId, EPStatementDesc desc, boolean isNewStatement)
+    public void start(String statementId, EPStatementDesc desc, boolean isNewStatement, boolean isRecoveringStatement)
     {
         if (log.isDebugEnabled())
         {
@@ -413,7 +391,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
         eventProcessingRWLock.acquireWriteLock();
         try
         {
-            startInternal(statementId, desc, isNewStatement);
+            startInternal(statementId, desc, isNewStatement, isRecoveringStatement);
         }
         catch (RuntimeException ex)
         {
@@ -425,7 +403,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
         }
     }
 
-    private void startInternal(String statementId, EPStatementDesc desc, boolean isNewStatement)
+    private void startInternal(String statementId, EPStatementDesc desc, boolean isNewStatement, boolean isRecoveringStatement)
     {
         if (log.isDebugEnabled())
         {
@@ -447,7 +425,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
         Pair<Viewable, EPStatementStopMethod> pair;
         try
         {
-            pair = desc.getStartMethod().start(isNewStatement);
+            pair = desc.getStartMethod().start(isNewStatement, isRecoveringStatement);
         }
         catch (EPStatementException ex)
         {
@@ -549,7 +527,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
 
             // remove referenced event types
             services.getStatementEventTypeRefService().removeReferencesStatement(desc.getEpStatement().getName());
-        
+
             EPStatementSPI statement = desc.getEpStatement();
             if (statement.getState() == EPStatementState.STARTED)
             {
@@ -852,7 +830,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
             StatementSpecCompiled compiled = compile(raw, eplStatement, statementContext, true);
             subselect.setStatementSpecCompiled(compiled);
         }
-        
+
         return new StatementSpecCompiled(
                 spec.getOnTriggerDesc(),
                 spec.getCreateWindowDesc(),

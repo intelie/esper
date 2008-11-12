@@ -107,5 +107,10 @@ public class SupportSchedulingServiceImpl implements SchedulingService
         throw new RuntimeException("not implemented");
     }
 
+    public boolean isScheduled(ScheduleHandle scheduleHandle)
+    {
+        return false;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
     private static final Log log = LogFactory.getLog(SupportSchedulingServiceImpl.class);
 }
