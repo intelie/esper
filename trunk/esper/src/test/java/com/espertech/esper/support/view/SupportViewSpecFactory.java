@@ -6,6 +6,8 @@ import java.util.List;
 import com.espertech.esper.type.PrimitiveValue;
 import com.espertech.esper.type.PrimitiveValueFactory;
 import com.espertech.esper.epl.spec.ViewSpec;
+import com.espertech.esper.epl.expression.ExprNode;
+import com.espertech.esper.epl.expression.ExprConstantNode;
 import com.espertech.esper.view.ViewServiceImpl;
 import com.espertech.esper.view.ViewFactoryChain;
 import com.espertech.esper.view.ViewFactory;
@@ -121,9 +123,9 @@ public class SupportViewSpecFactory
         return new ViewSpec(namespace, viewName, makeParams(paramTypes, paramValues));
     }
 
-    private static LinkedList<Object> makeParams(Class clazz[], String[] values)
+    private static LinkedList<ExprNode> makeParams(Class clazz[], String[] values)
     {
-        LinkedList<Object> params = new LinkedList<Object>();
+        LinkedList<ExprNode> params = new LinkedList<ExprNode>();
 
         if (clazz == null)
         {
@@ -135,7 +137,7 @@ public class SupportViewSpecFactory
             PrimitiveValue placeholder = PrimitiveValueFactory.create(clazz[i]);
             placeholder.parse(values[i]);
             Object value = placeholder.getValueObject();
-            params.add(value);
+            params.add(new ExprConstantNode(value));
         }
 
         return params;

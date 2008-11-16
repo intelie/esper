@@ -172,7 +172,7 @@ public class TestRowLimit extends TestCase {
         EPStatementObjectModel model = new EPStatementObjectModel();
         model.setSelectClause(SelectClause.createWildcard());
         model.getSelectClause().setStreamSelector(StreamSelector.RSTREAM_ISTREAM_BOTH);
-        model.setFromClause(FromClause.create(FilterStream.create("SupportBean").addView("win", "length_batch", 3)));
+        model.setFromClause(FromClause.create(FilterStream.create("SupportBean").addView("win", "length_batch", Expressions.constant(3))));
         model.setRowLimitClause(RowLimitClause.create(1));
         
         String statementString = "select irstream * from SupportBean.win:length_batch(3) limit 1";

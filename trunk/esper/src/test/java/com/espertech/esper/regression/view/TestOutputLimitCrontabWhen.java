@@ -134,7 +134,7 @@ public class TestOutputLimitCrontabWhen extends TestCase
 
         EPStatementObjectModel model = new EPStatementObjectModel();
         model.setSelectClause(SelectClause.create("symbol"));
-        model.setFromClause(FromClause.create(FilterStream.create("MarketData").addView("win", "length", 2)));
+        model.setFromClause(FromClause.create(FilterStream.create("MarketData").addView("win", "length", Expressions.constant(2))));
         model.setOutputLimitClause(OutputLimitClause.create(Expressions.eq("myvar", 1))
                                     .addThenAssignment("myvar", Expressions.constant(0))
                                     .addThenAssignment("count_insert_var", Expressions.property("count_insert")));

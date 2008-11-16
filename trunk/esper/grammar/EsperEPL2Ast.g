@@ -198,7 +198,7 @@ viewListExpr
 	;
 	
 viewExpr
-	:	^(n=VIEW_EXPR IDENT IDENT (parameter)* { leaveNode($n); } )
+	:	^(n=VIEW_EXPR IDENT IDENT (valueExpr)* { leaveNode($n); } )
 	;
 	
 whereClause
@@ -271,6 +271,7 @@ valueExpr
 	|	subSelectInExpr
 	| 	subSelectRowExpr 
 	| 	subSelectExistsExpr
+	|	time_period
 	;
 
 subSelectRowExpr
@@ -373,7 +374,7 @@ exprChoice
 	|	patternOp
 	| 	^( a=EVERY_EXPR exprChoice { leaveNode($a); } )
 	| 	^( n=NOT_EXPR exprChoice { leaveNode($n); } )
-	| 	^( g=GUARD_EXPR exprChoice IDENT IDENT parameter* { leaveNode($g); } )
+	| 	^( g=GUARD_EXPR exprChoice IDENT IDENT valueExpr* { leaveNode($g); } )
 	|	^( m=MATCH_UNTIL_EXPR matchUntilRange? exprChoice exprChoice? { leaveNode($m); } )
 	;
 	
@@ -385,7 +386,7 @@ patternOp
 	
 atomicExpr
 	:	eventFilterExpr
-	|   	^( ac=OBSERVER_EXPR IDENT IDENT parameter* { leaveNode($ac); } )
+	|   	^( ac=OBSERVER_EXPR IDENT IDENT valueExpr* { leaveNode($ac); } )
 	;
 
 eventFilterExpr
@@ -481,7 +482,7 @@ weekDayOperator
 	;
 
 time_period
-	: 	^( TIME_PERIOD timePeriodDef )
+	: 	^( t=TIME_PERIOD timePeriodDef { leaveNode($t); })
 	;
 	
 timePeriodDef
@@ -493,23 +494,23 @@ timePeriodDef
 	;
 	
 dayPart
-	:	^( DAY_PART number)
+	:	^( DAY_PART (number|IDENT))
 	;
 
 hourPart
-	:	^( HOUR_PART number)
+	:	^( HOUR_PART (number|IDENT))
 	;
 
 minutePart
-	:	^( MINUTE_PART number)
+	:	^( MINUTE_PART (number|IDENT))
 	;
 
 secondPart
-	:	^( SECOND_PART number)
+	:	^( SECOND_PART (number|IDENT))
 	;
 
 millisecondPart
-	:	^( MILLISECOND_PART number)
+	:	^( MILLISECOND_PART (number|IDENT))
 	;
 
 substitution

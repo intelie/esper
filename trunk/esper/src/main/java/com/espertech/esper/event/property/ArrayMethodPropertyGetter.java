@@ -46,7 +46,7 @@ public class ArrayMethodPropertyGetter implements EventPropertyGetter
 
         try
         {
-            Object value = method.invoke(underlying, null);
+            Object value = method.invoke(underlying, (Object[]) null);
             if (Array.getLength(value) <= index)
             {
                 return null;

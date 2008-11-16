@@ -60,7 +60,7 @@ public class TestSubselectFiltered extends TestCase
     {
         EPStatementObjectModel subquery = new EPStatementObjectModel();
         subquery.setSelectClause(SelectClause.createWildcard());
-        subquery.setFromClause(FromClause.create(FilterStream.create("S1").addView(View.create("win", "length", 1000))));
+        subquery.setFromClause(FromClause.create(FilterStream.create("S1").addView(View.create("win", "length", Expressions.constant(1000)))));
 
         EPStatementObjectModel model = new EPStatementObjectModel();
         model.setFromClause(FromClause.create(FilterStream.create("S1")));
@@ -172,7 +172,7 @@ public class TestSubselectFiltered extends TestCase
     {
         EPStatementObjectModel subquery = new EPStatementObjectModel();
         subquery.setSelectClause(SelectClause.create().add(Expressions.previous(1, "id")));
-        subquery.setFromClause(FromClause.create(FilterStream.create("S1").addView(View.create("win", "length", 1000))));
+        subquery.setFromClause(FromClause.create(FilterStream.create("S1").addView(View.create("win", "length", Expressions.constant(1000)))));
         subquery.setWhereClause(Expressions.eqProperty("id","s0.id"));
 
         EPStatementObjectModel model = new EPStatementObjectModel();

@@ -1,16 +1,15 @@
 package com.espertech.esper.view.stat;
 
-import junit.framework.TestCase;
-import com.espertech.esper.view.ViewAttachException;
-import com.espertech.esper.view.ViewParameterException;
-import com.espertech.esper.view.ViewFieldEnum;
-import com.espertech.esper.view.std.SizeView;
 import com.espertech.esper.event.EventType;
-import com.espertech.esper.support.event.SupportEventTypeFactory;
 import com.espertech.esper.support.bean.SupportMarketDataBean;
+import com.espertech.esper.support.event.SupportEventTypeFactory;
 import com.espertech.esper.support.view.SupportStatementContextFactory;
-
-import java.util.Arrays;
+import com.espertech.esper.view.TestViewSupport;
+import com.espertech.esper.view.ViewAttachException;
+import com.espertech.esper.view.ViewFieldEnum;
+import com.espertech.esper.view.ViewParameterException;
+import com.espertech.esper.view.std.SizeView;
+import junit.framework.TestCase;
 
 public class TestWeightedAverageViewFactory extends TestCase
 {
@@ -37,13 +36,13 @@ public class TestWeightedAverageViewFactory extends TestCase
         // Should attach to anything as long as the fields exists
         EventType parentType = SupportEventTypeFactory.createBeanType(SupportMarketDataBean.class);
 
-        factory.setViewParameters(null, Arrays.asList(new Object[] {"price", "volume"}));
+        factory.setViewParameters(null, TestViewSupport.toExprList(new Object[] {"price", "volume"}));
         factory.attach(parentType, SupportStatementContextFactory.makeContext(), null, null);
         assertEquals(double.class, factory.getEventType().getPropertyType(ViewFieldEnum.WEIGHTED_AVERAGE__AVERAGE.getName()));
 
         try
         {
-            factory.setViewParameters(null, Arrays.asList(new Object[] {"xxx", "y"}));
+            factory.setViewParameters(null, TestViewSupport.toExprList(new Object[] {"xxx", "y"}));
             factory.attach(parentType, null, null, null);
             fail();
         }
@@ -55,7 +54,7 @@ public class TestWeightedAverageViewFactory extends TestCase
 
     public void testCanReuse() throws Exception
     {
-        factory.setViewParameters(null, Arrays.asList(new Object[] {"a", "b"}));
+        factory.setViewParameters(null, TestViewSupport.toExprList(new Object[] {"a", "b"}));
         assertFalse(factory.canReuse(new SizeView(SupportStatementContextFactory.makeContext())));
         assertFalse(factory.canReuse(new WeightedAverageView(SupportStatementContextFactory.makeContext(), "a", "c")));
         assertFalse(factory.canReuse(new WeightedAverageView(SupportStatementContextFactory.makeContext(), "x", "b")));
@@ -66,7 +65,7 @@ public class TestWeightedAverageViewFactory extends TestCase
     {
         try
         {
-            factory.setViewParameters(null, Arrays.asList(params));
+            factory.setViewParameters(null, TestViewSupport.toExprList(params));
             fail();
         }
         catch (ViewParameterException ex)
@@ -77,7 +76,7 @@ public class TestWeightedAverageViewFactory extends TestCase
 
     private void tryParameter(Object[] params, String fieldNameX, String fieldNameW) throws Exception
     {
-        factory.setViewParameters(null, Arrays.asList(params));
+        factory.setViewParameters(null, TestViewSupport.toExprList(params));
         WeightedAverageView view = (WeightedAverageView) factory.makeView(SupportStatementContextFactory.makeContext());
         assertEquals(fieldNameX, view.getFieldNameX());
         assertEquals(fieldNameW, view.getFieldNameWeight());

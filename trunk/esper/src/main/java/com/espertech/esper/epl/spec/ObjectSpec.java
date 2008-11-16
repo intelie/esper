@@ -9,6 +9,7 @@
 package com.espertech.esper.epl.spec;
 
 import com.espertech.esper.util.MetaDefItem;
+import com.espertech.esper.epl.expression.ExprNode;
 
 import java.util.List;
 
@@ -24,7 +25,7 @@ public abstract class ObjectSpec implements MetaDefItem
 {
     private final String objectNamespace;
     private final String objectName;
-    private final List<Object> objectParameters;
+    private final List<ExprNode> objectParameters;
 
     /**
      * Constructor.
@@ -32,7 +33,7 @@ public abstract class ObjectSpec implements MetaDefItem
      * @param objectName is the name of the object
      * @param objectParameters is a list of values representing the object parameters
      */
-    public ObjectSpec(String namespace, String objectName, List<Object> objectParameters)
+    public ObjectSpec(String namespace, String objectName, List<ExprNode> objectParameters)
     {
         this.objectNamespace = namespace;
         this.objectName = objectName;
@@ -59,9 +60,9 @@ public abstract class ObjectSpec implements MetaDefItem
 
     /**
      * Returns the list of object parameters.
-     * @return list of values representing object parameters
+     * @return list of expressions representing object parameters
      */
-    public final List<Object> getObjectParameters()
+    public final List<ExprNode> getObjectParameters()
     {
         return objectParameters;
     }

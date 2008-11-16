@@ -330,7 +330,7 @@ public class TestFromClauseMethod extends TestCase
         model = new EPStatementObjectModel();
         model.setSelectClause(SelectClause.create("id", "string"));
         model.setFromClause(FromClause.create()
-            .add(FilterStream.create(SupportBean.class.getName(), "s1").addView("win", "length", 3))
+            .add(FilterStream.create(SupportBean.class.getName(), "s1").addView("win", "length", Expressions.constant(3)))
             .add(MethodInvocationStream.create(SupportStaticMethodLib.class.getName(), "fetchArrayNoArg")));
         stmt = epService.getEPAdministrator().create(model);
         assertEquals(joinStatement, model.toEPL());
@@ -376,7 +376,7 @@ public class TestFromClauseMethod extends TestCase
         model.setFromClause(FromClause.create()
             .add(MethodInvocationStream.create(SupportStaticMethodLib.class.getName(), "fetchArrayGen", "s0")
                 .addParameter(Expressions.property("intPrimitive")))
-                .add(FilterStream.create(SupportBean.class.getName()).addView("win", "length", 3))
+                .add(FilterStream.create(SupportBean.class.getName()).addView("win", "length", Expressions.constant(3)))
             );
         stmt = epService.getEPAdministrator().create(model);
         assertEquals(joinStatement, model.toEPL());

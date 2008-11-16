@@ -11,6 +11,7 @@ package com.espertech.esper.view.ext;
 import com.espertech.esper.core.StatementContext;
 import com.espertech.esper.epl.core.ViewResourceCallback;
 import com.espertech.esper.epl.named.RemoveStreamViewCapability;
+import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.event.EventType;
 import com.espertech.esper.util.JavaClassHelper;
 import com.espertech.esper.view.*;
@@ -46,8 +47,9 @@ public class SortWindowViewFactory implements DataWindowViewFactory
 
     private EventType eventType;
 
-    public void setViewParameters(ViewFactoryContext viewFactoryContext, List<Object> viewParameters) throws ViewParameterException
+    public void setViewParameters(ViewFactoryContext viewFactoryContext, List<ExprNode> expressionParameters) throws ViewParameterException
     {
+        List<Object> viewParameters = ViewFactorySupport.evaluate("Sort window view", viewFactoryContext, expressionParameters);
         String errorMessage = "Sort window view requires a field name, a boolean sort order and a numeric size parameter or parameter list";
         if (viewParameters.size() == 3)
         {

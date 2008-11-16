@@ -36,7 +36,7 @@ public class TestHavingNoGroupBy extends TestCase
     {
         EPStatementObjectModel model = new EPStatementObjectModel();
         model.setSelectClause(SelectClause.create("symbol", "price").setStreamSelector(StreamSelector.RSTREAM_ISTREAM_BOTH).add(Expressions.avg("price"), "avgPrice"));
-        model.setFromClause(FromClause.create(FilterStream.create(SupportMarketDataBean.class.getName()).addView("win", "length", 5)));
+        model.setFromClause(FromClause.create(FilterStream.create(SupportMarketDataBean.class.getName()).addView("win", "length", Expressions.constant(5))));
         model.setHavingClause(Expressions.lt(Expressions.property("price"), Expressions.avg("price")));
         model = (EPStatementObjectModel) SerializableObjectCopier.copy(model);
 

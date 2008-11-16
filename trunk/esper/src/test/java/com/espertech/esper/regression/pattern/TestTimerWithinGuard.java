@@ -1,7 +1,9 @@
 package com.espertech.esper.regression.pattern;
 
-import junit.framework.TestCase;
-import com.espertech.esper.client.*;
+import com.espertech.esper.client.EPRuntime;
+import com.espertech.esper.client.EPServiceProvider;
+import com.espertech.esper.client.EPServiceProviderManager;
+import com.espertech.esper.client.EPStatement;
 import com.espertech.esper.client.soda.*;
 import com.espertech.esper.client.time.CurrentTimeEvent;
 import com.espertech.esper.client.time.TimerControlEvent;
@@ -11,6 +13,7 @@ import com.espertech.esper.support.bean.SupportBeanConstants;
 import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.support.util.SupportUpdateListener;
 import com.espertech.esper.util.SerializableObjectCopier;
+import junit.framework.TestCase;
 
 public class TestTimerWithinGuard extends TestCase implements SupportBeanConstants
 {
@@ -20,11 +23,11 @@ public class TestTimerWithinGuard extends TestCase implements SupportBeanConstan
         CaseList testCaseList = new CaseList();
         EventExpressionCase testCase = null;
 
-        testCase = new EventExpressionCase("b=" + EVENT_B_CLASS + "(id=\"B1\") where timer:within(2001 msec)");
-        testCase.add("B1", "b", events.getEvent("B1"));
+        testCase = new EventExpressionCase("b=" + EVENT_B_CLASS + "(id=\"B1\") where timer:within(2 sec)");
         testCaseList.addTest(testCase);
 
-        testCase = new EventExpressionCase("b=" + EVENT_B_CLASS + "(id=\"B1\") where timer:within(2 sec)");
+        testCase = new EventExpressionCase("b=" + EVENT_B_CLASS + "(id=\"B1\") where timer:within(2001 msec)");
+        testCase.add("B1", "b", events.getEvent("B1"));
         testCaseList.addTest(testCase);
 
         testCase = new EventExpressionCase("b=" + EVENT_B_CLASS + "(id=\"B1\") where timer:within(1999 msec)");

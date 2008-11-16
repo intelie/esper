@@ -10,6 +10,7 @@ package com.espertech.esper.view.window;
 
 import com.espertech.esper.epl.core.ViewResourceCallback;
 import com.espertech.esper.epl.named.RemoveStreamViewCapability;
+import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.type.TimePeriodParameter;
 import com.espertech.esper.event.EventType;
 import com.espertech.esper.util.JavaClassHelper;
@@ -45,8 +46,9 @@ public class ExternallyTimedWindowViewFactory implements DataWindowViewFactory
      */
     protected RandomAccessByIndexGetter randomAccessGetterImpl;
 
-    public void setViewParameters(ViewFactoryContext viewFactoryContext, List<Object> viewParameters) throws ViewParameterException
+    public void setViewParameters(ViewFactoryContext viewFactoryContext, List<ExprNode> expressionParameters) throws ViewParameterException
     {
+        List<Object> viewParameters = ViewFactorySupport.evaluate("Externally-timed window view", viewFactoryContext, expressionParameters);
         String errorMessage = "Externally-timed window view requires a timestamp field name and a numeric or time period parameter";
         if (viewParameters.size() != 2)
         {

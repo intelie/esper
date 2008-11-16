@@ -14,6 +14,7 @@ import com.espertech.esper.view.ViewAttachException;
 import com.espertech.esper.view.*;
 import com.espertech.esper.event.EventType;
 import com.espertech.esper.epl.core.ViewResourceCallback;
+import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.core.StatementContext;
 
 import java.util.List;
@@ -29,8 +30,9 @@ public class UnivariateStatisticsViewFactory implements ViewFactory
     protected String fieldName;
     private EventType eventType;
 
-    public void setViewParameters(ViewFactoryContext viewFactoryContext, List<Object> viewParameters) throws ViewParameterException
+    public void setViewParameters(ViewFactoryContext viewFactoryContext, List<ExprNode> expressionParameters) throws ViewParameterException
     {
+        List<Object> viewParameters = ViewFactorySupport.evaluate("'Univariate statistics' view", viewFactoryContext, expressionParameters);
         String errorMessage = "'Univariate statistics' view require a single field name as a parameter";
         if (viewParameters.size() != 1)
         {

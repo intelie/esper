@@ -8,18 +8,16 @@
  **************************************************************************************/
 package com.espertech.esper.epl.parse;
 
-import com.espertech.esper.epl.spec.*;
-import com.espertech.esper.epl.generated.EsperEPL2GrammarParser;
 import com.espertech.esper.epl.expression.ExprNode;
-import com.espertech.esper.type.TimePeriodParameter;
-import com.espertech.esper.type.IntParameter;
+import com.espertech.esper.epl.expression.ExprValidationException;
+import com.espertech.esper.epl.generated.EsperEPL2GrammarParser;
+import com.espertech.esper.epl.spec.*;
 import com.espertech.esper.type.IntValue;
-import com.espertech.esper.schedule.ScheduleSpec;
-import com.espertech.esper.collection.Pair;
+import com.espertech.esper.type.TimePeriodParameter;
 import org.antlr.runtime.tree.Tree;
 
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -104,7 +102,16 @@ public class ASTOutputLimitHelper
             }
             else if (child.getType() == EsperEPL2GrammarParser.TIME_PERIOD)
             {
-                TimePeriodParameter param = ASTParameterHelper.makeTimePeriod(child, 0L);
+                ExprNode expression = astExprNodeMap.remove(child);
+                
+                try {
+                    expression.validate(null, null, null, null, null);
+                }
+                catch (ExprValidationException ex)
+                {
+                    // TODO
+                }
+                TimePeriodParameter param = (TimePeriodParameter) expression.evaluate(null, true);
                 rate = param.getNumSeconds();
             }
             else

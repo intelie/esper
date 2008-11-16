@@ -10,6 +10,7 @@ package com.espertech.esper.view;
 
 import com.espertech.esper.event.EventType;
 import com.espertech.esper.epl.core.ViewResourceCallback;
+import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.core.StatementContext;
 
 import java.util.List;
@@ -26,7 +27,7 @@ public interface ViewFactory
      * @param viewParameters is the objects representing the view parameters
      * @throws ViewParameterException if the parameters don't match view parameter needs
      */
-    public void setViewParameters(ViewFactoryContext viewFactoryContext, List<Object> viewParameters) throws ViewParameterException;
+    public void setViewParameters(ViewFactoryContext viewFactoryContext, List<ExprNode> viewParameters) throws ViewParameterException;
 
     /**
      * Attaches the factory to a parent event type such that the factory can validate

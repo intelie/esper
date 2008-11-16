@@ -4,6 +4,7 @@ import junit.framework.TestCase;
 import com.espertech.esper.support.util.ArrayAssertionUtil;
 import com.espertech.esper.support.view.SupportStatementContextFactory;
 import com.espertech.esper.view.ViewParameterException;
+import com.espertech.esper.view.TestViewSupport;
 
 import java.util.Arrays;
 
@@ -31,7 +32,7 @@ public class TestMergeViewFactory extends TestCase
 
     public void testCanReuse() throws Exception
     {
-        factory.setViewParameters(null, Arrays.asList(new Object[] {"a", "b"}));
+        factory.setViewParameters(null, TestViewSupport.toExprList(new Object[] {"a", "b"}));
         assertFalse(factory.canReuse(new SizeView(SupportStatementContextFactory.makeContext())));
         assertFalse(factory.canReuse(new MergeView(SupportStatementContextFactory.makeContext(), new String[] {"a"}, null)));
         assertTrue(factory.canReuse(new MergeView(SupportStatementContextFactory.makeContext(), new String[] {"a", "b"}, null)));
@@ -42,7 +43,7 @@ public class TestMergeViewFactory extends TestCase
         try
         {
             MergeViewFactory factory = new MergeViewFactory();
-            factory.setViewParameters(null, Arrays.asList(params));
+            factory.setViewParameters(null, TestViewSupport.toExprList(params));
             fail();
         }
         catch (ViewParameterException ex)
@@ -54,7 +55,7 @@ public class TestMergeViewFactory extends TestCase
     private void tryParameter(Object[] params, String[] fieldNames) throws Exception
     {
         MergeViewFactory factory = new MergeViewFactory();
-        factory.setViewParameters(null, Arrays.asList(params));
+        factory.setViewParameters(null, TestViewSupport.toExprList(params));
         MergeView view = (MergeView) factory.makeView(SupportStatementContextFactory.makeContext());
         ArrayAssertionUtil.assertEqualsExactOrder(fieldNames, view.getGroupFieldNames());
     }

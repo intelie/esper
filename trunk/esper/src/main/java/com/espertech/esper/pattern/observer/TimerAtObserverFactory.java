@@ -8,20 +8,17 @@
  **************************************************************************************/
 package com.espertech.esper.pattern.observer;
 
+import com.espertech.esper.epl.expression.ExprNode;
+import com.espertech.esper.pattern.MatchedEventMap;
+import com.espertech.esper.pattern.PatternContext;
+import com.espertech.esper.schedule.ScheduleParameterException;
+import com.espertech.esper.schedule.ScheduleSpec;
+import com.espertech.esper.schedule.ScheduleSpecUtil;
+import com.espertech.esper.util.MetaDefItem;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.util.*;
-
-import com.espertech.esper.pattern.PatternContext;
-import com.espertech.esper.pattern.MatchedEventMap;
-import com.espertech.esper.type.ScheduleUnit;
-import com.espertech.esper.type.CronParameter;
-import com.espertech.esper.type.NumberSetParameter;
-import com.espertech.esper.schedule.ScheduleSpec;
-import com.espertech.esper.schedule.ScheduleSpecUtil;
-import com.espertech.esper.schedule.ScheduleParameterException;
-import com.espertech.esper.util.MetaDefItem;
+import java.util.List;
 
 /**
  * Factory for 'crontab' observers that indicate truth when a time point was reached.
@@ -33,8 +30,10 @@ public class TimerAtObserverFactory implements ObserverFactory, MetaDefItem
      */
     protected ScheduleSpec spec = null;
 
-    public void setObserverParameters(List<Object> observerParameters) throws ObserverParameterException
+    public void setObserverParameters(List<ExprNode> params) throws ObserverParameterException
     {
+        List<Object> observerParameters = EventObserverSupport.evaluate("Timer-at observer", params);
+
         if (log.isDebugEnabled())
         {
             log.debug(".setObserverParameters " + observerParameters);

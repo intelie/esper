@@ -8,6 +8,7 @@ import com.espertech.esper.support.view.SupportStatementContextFactory;
 import com.espertech.esper.view.ViewFieldEnum;
 import com.espertech.esper.view.ViewAttachException;
 import com.espertech.esper.view.ViewParameterException;
+import com.espertech.esper.view.TestViewSupport;
 import com.espertech.esper.view.std.SizeView;
 
 import java.util.Arrays;
@@ -33,7 +34,7 @@ public class TestUnivariateStatisticsViewFactory extends TestCase
 
     public void testCanReuse() throws Exception
     {
-        factory.setViewParameters(null, Arrays.asList(new Object[] {"a"}));
+        factory.setViewParameters(null, TestViewSupport.toExprList(new Object[] {"a"}));
         assertFalse(factory.canReuse(new SizeView(SupportStatementContextFactory.makeContext())));
         assertFalse(factory.canReuse(new UnivariateStatisticsView(SupportStatementContextFactory.makeContext(), "x")));
         assertTrue(factory.canReuse(new UnivariateStatisticsView(SupportStatementContextFactory.makeContext(), "a")));
@@ -44,13 +45,13 @@ public class TestUnivariateStatisticsViewFactory extends TestCase
         // Should attach to anything as long as the fields exists
         EventType parentType = SupportEventTypeFactory.createBeanType(SupportMarketDataBean.class);
 
-        factory.setViewParameters(null, Arrays.asList(new Object[] {"price"}));
+        factory.setViewParameters(null, TestViewSupport.toExprList(new Object[] {"price"}));
         factory.attach(parentType, SupportStatementContextFactory.makeContext(), null, null);
         assertEquals(double.class, factory.getEventType().getPropertyType(ViewFieldEnum.UNIVARIATE_STATISTICS__AVERAGE.getName()));
 
         try
         {
-            factory.setViewParameters(null, Arrays.asList(new Object[] {"xxx"}));
+            factory.setViewParameters(null, TestViewSupport.toExprList(new Object[] {"xxx"}));
             factory.attach(parentType, null, null, null);
             fail();
         }
@@ -64,7 +65,7 @@ public class TestUnivariateStatisticsViewFactory extends TestCase
     {
         try
         {
-            factory.setViewParameters(null, Arrays.asList(params));
+            factory.setViewParameters(null, TestViewSupport.toExprList(params));
             fail();
         }
         catch (ViewParameterException ex)
@@ -75,7 +76,7 @@ public class TestUnivariateStatisticsViewFactory extends TestCase
 
     private void tryParameter(Object[] params, String fieldName) throws Exception
     {
-        factory.setViewParameters(null, Arrays.asList(params));
+        factory.setViewParameters(null, TestViewSupport.toExprList(params));
         UnivariateStatisticsView view = (UnivariateStatisticsView) factory.makeView(SupportStatementContextFactory.makeContext());
         assertEquals(fieldName, view.getFieldName());
     }

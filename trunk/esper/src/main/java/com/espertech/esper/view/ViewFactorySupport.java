@@ -9,6 +9,11 @@
 package com.espertech.esper.view;
 
 import com.espertech.esper.epl.core.ViewResourceCallback;
+import com.espertech.esper.epl.expression.ExprNode;
+import com.espertech.esper.epl.expression.ExprIdentNode;
+
+import java.util.List;
+import java.util.ArrayList;
 
 /**
  * Abstract base class for view factories that do not make re-useable views and that do
@@ -29,5 +34,32 @@ public abstract class ViewFactorySupport implements ViewFactory
     public boolean canReuse(View view)
     {
         return false;
+    }
+
+    public static List<Object> evaluate(String viewName, ViewFactoryContext viewFactoryContext, List<ExprNode> viewParameters)
+            throws ViewParameterException
+    {
+        List<Object> results = new ArrayList<Object>();
+        int count = 0;
+        for (ExprNode expr : viewParameters)
+        {
+            try
+            {
+                if (expr instanceof ExprIdentNode)
+                {
+                    results.add(((ExprIdentNode)expr).getFullUnresolvedName());
+                }
+                else
+                {
+                    results.add(expr.evaluate(null, true));
+                }
+                count++;
+            }
+            catch (RuntimeException ex)
+            {
+                throw new ViewParameterException(viewName + " reports failed parameter evaluation in parameter expression " + count + ": " + ex.getMessage());
+            }
+        }
+        return results;
     }
 }

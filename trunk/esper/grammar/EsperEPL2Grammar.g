@@ -686,8 +686,8 @@ methodJoinExpression
 viewExpression
 @init  { paraphrases.push("view specifications"); }
 @after { paraphrases.pop(); }
-	:	ns=IDENT COLON nm=IDENT LPAREN parameterSet? RPAREN
-		-> ^(VIEW_EXPR $ns $nm parameterSet?)
+	:	ns=IDENT COLON nm=IDENT LPAREN expressionWithTimeList? RPAREN
+		-> ^(VIEW_EXPR $ns $nm expressionWithTimeList?)
 	;
 
 groupByListExpr
@@ -748,8 +748,8 @@ rowLimit
 	;	
 
 crontabLimitParameterSet
-	:	LPAREN parameter COMMA parameter COMMA parameter COMMA parameter COMMA parameter (COMMA parameter)? RPAREN 
-		-> ^(CRONTAB_LIMIT_EXPR_PARAM parameter*)			
+	:	LPAREN expressionWithTime COMMA expressionWithTime COMMA expressionWithTime COMMA expressionWithTime COMMA expressionWithTime (COMMA expressionWithTime)? RPAREN 
+		-> ^(CRONTAB_LIMIT_EXPR_PARAM expressionWithTime*)			
 	;			
 
 whenClause
@@ -878,6 +878,7 @@ unaryExpression
 	| arrayExpression
 	| subSelectExpression
 	| existsSubSelectExpression
+	| time_period
 	;
 	    
 subSelectExpression 
@@ -1019,13 +1020,13 @@ atomicExpression
 	;
 		
 observerExpression
-	:	ns=IDENT COLON (nm=IDENT | a=AT) LPAREN parameterSet? RPAREN
-		-> {$a != null}? ^(OBSERVER_EXPR $ns ^(IDENT[$a.text]) parameterSet?)
-		-> ^(OBSERVER_EXPR $ns $nm parameterSet?)
+	:	ns=IDENT COLON (nm=IDENT | a=AT) LPAREN expressionWithTimeList? RPAREN
+		-> {$a != null}? ^(OBSERVER_EXPR $ns ^(IDENT[$a.text]) expressionWithTimeList?)
+		-> ^(OBSERVER_EXPR $ns $nm expressionWithTimeList?)
 	;
 
 guardExpression
-	:	IDENT COLON! IDENT LPAREN! (parameterSet)? RPAREN!
+	:	IDENT COLON! IDENT LPAREN! (expressionWithTimeList)? RPAREN!
 	;
 	
 // syntax is [a..b]  or [..b]  or  [a..] or [a:b]   wherein a and b may be recognized as double
@@ -1055,64 +1056,6 @@ matchUntilRange
 		-> ^(MATCH_UNTIL_RANGE_HALFCLOSED $db) 
 	;
 	
-//----------------------------------------------------------------------------
-// Parameter Set is used by guards, observers and views
-//----------------------------------------------------------------------------
-parameterSet
-	:	parameter (COMMA! parameter)*
-	;			
-	
-parameter
-	:	(singleParameter) => singleParameter
-	| 	(numericParameterList) => numericParameterList
-	|	(arrayParameterList) => arrayParameterList
-	|	eventProperty
-	;
-
-singleParameter
-	:	rangeOperand	
-	| 	frequencyOperand
-	|	lastOperator
-	|	weekDayOperator
-	|	LAST^
-	|	LW^
-	|	STAR^
-	|	constant
-	|	time_period
-	;
-
-frequencyOperand
-	:	STAR DIV NUM_INT -> ^(NUMERIC_PARAM_FREQUENCY NUM_INT)
-	;
-
-rangeOperand
-	:	l=NUM_INT COLON u=NUM_INT -> ^(NUMERIC_PARAM_RANGE $l $u)
-	;
-
-lastOperator
-	:	l=NUM_INT LAST -> ^(LAST_OPERATOR $l)
-	;
-
-weekDayOperator:
-		wd=NUM_INT WEEKDAY -> ^(WEEKDAY_OPERATOR $wd)
-	;
-
-numericParameterList
-	:	LBRACK numericListParameter (COMMA numericListParameter)* RBRACK
-		-> ^(NUMERIC_PARAM_LIST numericListParameter+)
-	;
-
-numericListParameter
-	:	rangeOperand
-	| 	frequencyOperand
-	|	NUM_INT
-	;
-
-arrayParameterList
-	:	LCURLY (constant (COMMA constant)*)? RCURLY
-		-> ^(ARRAY_PARAM_LIST constant*)
-	;
-
 //----------------------------------------------------------------------------
 // Filter expressions
 //   Operators are the usual bunch =, <, >, =<, >= 
@@ -1147,9 +1090,60 @@ classIdentifierNonGreedy
 	;
 	
 expressionList
-    :   expression (COMMA! expression)*
-    ;
+    	:   	expression (COMMA! expression)*
+    	;
    	
+expressionWithTimeList
+    	:   	expressionWithTime (COMMA! expressionWithTime)*
+    	;
+
+expressionWithTime
+	:   	expression
+	|	(rangeOperand) => rangeOperand
+	| 	(frequencyOperand) => frequencyOperand
+	|	(lastOperator) => lastOperator
+	|	(weekDayOperator) =>  weekDayOperator
+	| 	(numericParameterList) => numericParameterList
+	|	(lastOperand) => lastOperand
+	|	(lastWeekdayOperand) => lastWeekdayOperand
+	|	STAR^
+	;
+	
+lastWeekdayOperand
+	:	LW^
+	;
+	
+lastOperand
+	:	LAST^
+	;
+
+frequencyOperand
+	:	STAR DIV NUM_INT -> ^(NUMERIC_PARAM_FREQUENCY NUM_INT)
+	;
+
+rangeOperand
+	:	l=NUM_INT COLON u=NUM_INT -> ^(NUMERIC_PARAM_RANGE $l $u)
+	;
+
+lastOperator
+	:	l=NUM_INT LAST -> ^(LAST_OPERATOR $l)
+	;
+
+weekDayOperator
+	:	wd=NUM_INT WEEKDAY -> ^(WEEKDAY_OPERATOR $wd)
+	;
+
+numericParameterList
+	:	LBRACK numericListParameter (COMMA numericListParameter)* RBRACK
+		-> ^(NUMERIC_PARAM_LIST numericListParameter+)
+	;
+
+numericListParameter
+	:	rangeOperand
+	| 	frequencyOperand
+	|	NUM_INT
+	;
+	    
 eventProperty
 	:	eventPropertyAtomic (DOT eventPropertyAtomic)* 
 		-> ^(EVENT_PROP_EXPR eventPropertyAtomic+)
@@ -1236,28 +1230,28 @@ time_period
 	;
 
 dayPart
-	:	number (TIMEPERIOD_DAYS | TIMEPERIOD_DAY)
-		-> ^(DAY_PART number)
+	:	(number | i=IDENT) (TIMEPERIOD_DAYS | TIMEPERIOD_DAY)
+		-> ^(DAY_PART number? $i?)
 	;
 
 hourPart 
-	:	number (TIMEPERIOD_HOURS | TIMEPERIOD_HOUR)
-		-> ^(HOUR_PART number)
+	:	(number | i=IDENT) (TIMEPERIOD_HOURS | TIMEPERIOD_HOUR)
+		-> ^(HOUR_PART number? $i?)
 	;
 
 minutePart 
-	:	number (TIMEPERIOD_MINUTES | TIMEPERIOD_MINUTE | MIN)
-		-> ^(MINUTE_PART number)
+	:	(number | i=IDENT) (TIMEPERIOD_MINUTES | TIMEPERIOD_MINUTE | MIN)
+		-> ^(MINUTE_PART number? $i?)
 	;
 	
 secondPart 
-	:	number (TIMEPERIOD_SECONDS | TIMEPERIOD_SECOND | TIMEPERIOD_SEC)
-		-> ^(SECOND_PART number)
+	:	(number | i=IDENT) (TIMEPERIOD_SECONDS | TIMEPERIOD_SECOND | TIMEPERIOD_SEC)
+		-> ^(SECOND_PART number? $i?)
 	;
 	
 millisecondPart 
-	:	number (TIMEPERIOD_MILLISECONDS | TIMEPERIOD_MILLISECOND | TIMEPERIOD_MILLISEC)
-		-> ^(MILLISECOND_PART number)
+	:	(number | i=IDENT) (TIMEPERIOD_MILLISECONDS | TIMEPERIOD_MILLISECOND | TIMEPERIOD_MILLISEC)
+		-> ^(MILLISECOND_PART number? $i?)
 	;
 	
 number

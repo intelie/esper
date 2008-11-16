@@ -82,7 +82,7 @@ public class TestInsertInto extends TestCase
         model.setInsertInto(InsertIntoClause.create("Event_1", "delta", "product"));
         model.setSelectClause(SelectClause.create().add(Expressions.minus("intPrimitive", "intBoxed"), "deltaTag")
                 .add(Expressions.multiply("intPrimitive", "intBoxed"), "productTag"));
-        model.setFromClause(FromClause.create(FilterStream.create(SupportBean.class.getName()).addView(View.create("win", "length", 100))));
+        model.setFromClause(FromClause.create(FilterStream.create(SupportBean.class.getName()).addView(View.create("win", "length", Expressions.constant(100)))));
         model = (EPStatementObjectModel) SerializableObjectCopier.copy(model);
 
         EPStatement stmt = runAsserts(null, model);

@@ -14,6 +14,7 @@ import com.espertech.esper.util.JavaClassHelper;
 import com.espertech.esper.core.StatementContext;
 import com.espertech.esper.epl.core.ViewResourceCallback;
 import com.espertech.esper.epl.named.RemoveStreamViewCapability;
+import com.espertech.esper.epl.expression.ExprNode;
 
 import java.util.List;
 
@@ -32,8 +33,9 @@ public class TimeLengthBatchViewFactory extends TimeBatchViewFactoryParams imple
      */
     protected RelativeAccessByEventNIndexGetter relativeAccessGetterImpl;
 
-    public void setViewParameters(ViewFactoryContext viewFactoryContext, List<Object> viewParameters) throws ViewParameterException
+    public void setViewParameters(ViewFactoryContext viewFactoryContext, List<ExprNode> expressionParameters) throws ViewParameterException
     {
+        List<Object> viewParameters = ViewFactorySupport.evaluate("Time-length combination batch view", viewFactoryContext, expressionParameters);
         String errorMessage = "Time-length combination batch view requires a numeric or time period parameter as a time interval size, and an integer parameter as a maximal number-of-events, and an optional list of control keywords as a string parameter (please see the documentation)";
         if ((viewParameters.size() != 2) && (viewParameters.size() != 3))
         {

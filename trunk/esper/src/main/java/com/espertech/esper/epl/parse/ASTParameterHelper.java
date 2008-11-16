@@ -79,6 +79,7 @@ public class ASTParameterHelper
      * @param engineTime current time
      * @return time period
      */
+    // TODO: remove me
     protected static TimePeriodParameter makeTimePeriod(Tree node, long engineTime)
     {
         double result = 0;

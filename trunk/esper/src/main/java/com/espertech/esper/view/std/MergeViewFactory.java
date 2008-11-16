@@ -11,6 +11,7 @@ package com.espertech.esper.view.std;
 import com.espertech.esper.view.*;
 import com.espertech.esper.event.EventType;
 import com.espertech.esper.epl.core.ViewResourceCallback;
+import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.core.StatementContext;
 
 import java.util.List;
@@ -24,8 +25,9 @@ public class MergeViewFactory implements ViewFactory
     private String[] fieldNames;
     private EventType eventType;
 
-    public void setViewParameters(ViewFactoryContext viewFactoryContext, List<Object> viewParameters) throws ViewParameterException
+    public void setViewParameters(ViewFactoryContext viewFactoryContext, List<ExprNode> expressionParameters) throws ViewParameterException
     {
+        List<Object> viewParameters = ViewFactorySupport.evaluate("Group-by merge view", viewFactoryContext, expressionParameters);
         fieldNames = GroupByViewFactory.getFieldNameParams(viewParameters, "Group-by-merge");
     }
 

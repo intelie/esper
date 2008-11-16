@@ -61,9 +61,9 @@ public class Test3StreamSingleOpJoin extends TestCase
         EPStatementObjectModel model = new EPStatementObjectModel();
         model.setSelectClause(SelectClause.createWildcard());
         FromClause fromClause = FromClause.create(
-                FilterStream.create(eventA, "streamA").addView(View.create("win", "length", 3)),
-                FilterStream.create(eventB, "streamB").addView(View.create("win", "length", 3)),
-                FilterStream.create(eventC, "streamC").addView(View.create("win", "length", 3)));
+                FilterStream.create(eventA, "streamA").addView(View.create("win", "length", Expressions.constant(3))),
+                FilterStream.create(eventB, "streamB").addView(View.create("win", "length", Expressions.constant(3))),
+                FilterStream.create(eventC, "streamC").addView(View.create("win", "length", Expressions.constant(3))));
         model.setFromClause(fromClause);
         model.setWhereClause(Expressions.and(
                 Expressions.eqProperty("streamA.id", "streamB.id"),

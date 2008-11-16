@@ -3,6 +3,7 @@ package com.espertech.esper.regression.client;
 import com.espertech.esper.event.EventType;
 import com.espertech.esper.view.*;
 import com.espertech.esper.core.StatementContext;
+import com.espertech.esper.epl.expression.ExprNode;
 
 import java.util.List;
 
@@ -11,8 +12,9 @@ public class MyTrendSpotterViewFactory extends ViewFactorySupport
     private String fieldName;
     private EventType eventType;
 
-    public void setViewParameters(ViewFactoryContext viewFactoryContext, List<Object> viewParameters) throws ViewParameterException
+    public void setViewParameters(ViewFactoryContext viewFactoryContext, List<ExprNode> expressionParameters) throws ViewParameterException
     {
+        List<Object> viewParameters = ViewFactorySupport.evaluate("'Trend spotter' view", viewFactoryContext, expressionParameters);
         String errorMessage = "'Trend spotter' view require a single field name as a parameter";
         if (viewParameters.size() != 1)
         {

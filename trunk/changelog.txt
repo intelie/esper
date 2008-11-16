@@ -1,6 +1,16 @@
 Esper Changelog
 ===================
 
+Changes in version 3.0.0
+------------------------
+
+- View parameters and pattern object parameters are now expressions:
+  Prepared statements may parameterize views and pattern object.
+  Variables may be used in such expressions.
+
+
+
+
 Changes in version 2.3
 ------------------------
 

@@ -135,7 +135,7 @@ public class StatementSpecMapper
             filter = unmapExpressionDeep(createWindowDesc.getInsertFilter(), unmapContext);
         }
 
-        CreateWindowClause clause = new CreateWindowClause(createWindowDesc.getWindowName(), unmapViews(createWindowDesc.getViewSpecs()));
+        CreateWindowClause clause = new CreateWindowClause(createWindowDesc.getWindowName(), unmapViews(createWindowDesc.getViewSpecs(), unmapContext));
         clause.setInsert(createWindowDesc.isInsert());
         clause.setInsertWhereClause(filter);
         model.setCreateWindow(clause);
@@ -487,7 +487,8 @@ public class StatementSpecMapper
                 ProjectedStream projStream = (ProjectedStream) targetStream;
                 for (ViewSpec viewSpec : stream.getViewSpecs())
                 {
-                    projStream.addView(View.create(viewSpec.getObjectNamespace(), viewSpec.getObjectName(), viewSpec.getObjectParameters()));
+                    List<Expression> viewExpressions = unmapExpressionDeep(viewSpec.getObjectParameters(), unmapContext);
+                    projStream.addView(View.create(viewSpec.getObjectNamespace(), viewSpec.getObjectName(), viewExpressions));
                 }
             }
             from.add(targetStream);
@@ -571,7 +572,7 @@ public class StatementSpecMapper
         {
             insertFromWhereExpr = mapExpressionDeep(createWindow.getInsertWhereClause(), mapContext);
         }
-        raw.setCreateWindowDesc(new CreateWindowDesc(createWindow.getWindowName(), mapViews(createWindow.getViews()), createWindow.isInsert(), insertFromWhereExpr));
+        raw.setCreateWindowDesc(new CreateWindowDesc(createWindow.getWindowName(), mapViews(createWindow.getViews(), mapContext), createWindow.isInsert(), insertFromWhereExpr));
     }
 
     private static void mapCreateVariable(CreateVariableClause createVariable, StatementSpecRaw raw, StatementSpecMapContext mapContext)
@@ -642,11 +643,39 @@ public class StatementSpecMapper
         }
     }
 
+    private static Expression unmapExpressionDeepOptional(ExprNode exprNode, StatementSpecUnMapContext unmapContext)
+    {
+        if (exprNode == null)
+        {
+            return null;
+        }
+        return unmapExpressionDeep(exprNode, unmapContext);
+    }
+
     private static Expression unmapExpressionDeep(ExprNode exprNode, StatementSpecUnMapContext unmapContext)
     {
         Expression parent = unmapExpressionFlat(exprNode, unmapContext);
         unmapExpressionRecursive(parent, exprNode, unmapContext);
         return parent;
+    }
+
+    private static List<ExprNode> mapExpressionDeep(List<Expression> expressions, StatementSpecMapContext mapContext)
+    {
+        List<ExprNode> result = new ArrayList<ExprNode>();
+        for (Expression expr : expressions)
+        {
+            result.add(mapExpressionDeep(expr, mapContext));
+        }
+        return result;
+    }
+
+    private static ExprNode mapExpressionDeepOptional(Expression expr, StatementSpecMapContext mapContext)
+    {
+        if (expr == null)
+        {
+            return null;
+        }
+        return mapExpressionDeep(expr, mapContext);
     }
 
     private static ExprNode mapExpressionDeep(Expression expr, StatementSpecMapContext mapContext)
@@ -866,6 +895,16 @@ public class StatementSpecMapper
         {
             return new ExprTimestampNode();
         }
+        else if (expr instanceof TimePeriodExpression)
+        {
+            TimePeriodExpression tpe = (TimePeriodExpression) expr;
+            ExprNode day = mapExpressionDeepOptional(tpe.getDays(), mapContext);
+            ExprNode hour = mapExpressionDeepOptional(tpe.getHours(), mapContext);
+            ExprNode minute = mapExpressionDeepOptional(tpe.getMinutes(), mapContext);
+            ExprNode second = mapExpressionDeepOptional(tpe.getSeconds(), mapContext);
+            ExprNode milli = mapExpressionDeepOptional(tpe.getMilliseconds(), mapContext);
+            return new ExprTimePeriod(day, hour, minute, second, milli);
+        }
         else if (expr instanceof SubstitutionParameterExpression)
         {
             SubstitutionParameterExpression node = (SubstitutionParameterExpression) expr;
@@ -893,6 +932,16 @@ public class StatementSpecMapper
             }
         }
         throw new IllegalArgumentException("Could not map expression node of type " + expr.getClass().getSimpleName());
+    }
+
+    private static List<Expression> unmapExpressionDeep(List<ExprNode> expressions, StatementSpecUnMapContext unmapContext)
+    {
+        List<Expression> result = new ArrayList<Expression>();
+        for (ExprNode expr : expressions)
+        {
+            result.add(unmapExpressionDeep(expr, unmapContext));
+        }
+        return result;
     }
 
     private static Expression unmapExpressionFlat(ExprNode expr, StatementSpecUnMapContext unmapContext)
@@ -1121,6 +1170,16 @@ public class StatementSpecMapper
             unmapContext.add(node.getIndex(), subParam);
             return subParam;
         }
+        else if (expr instanceof ExprTimePeriod)
+        {
+            ExprTimePeriod node = (ExprTimePeriod) expr;
+            Expression day = unmapExpressionDeepOptional(node.getDay(), unmapContext);
+            Expression hour = unmapExpressionDeepOptional(node.getHour(), unmapContext);
+            Expression minute = unmapExpressionDeepOptional(node.getMinute(), unmapContext);
+            Expression second = unmapExpressionDeepOptional(node.getSecond(), unmapContext);
+            Expression millisecond = unmapExpressionDeepOptional(node.getMillisecond(), unmapContext);
+            return new TimePeriodExpression(day, hour, minute, second, millisecond);
+        }
         throw new IllegalArgumentException("Could not map expression node of type " + expr.getClass().getSimpleName());
     }
 
@@ -1196,7 +1255,7 @@ public class StatementSpecMapper
             if (stream instanceof ProjectedStream)
             {
                 ProjectedStream projectedStream = (ProjectedStream) stream;
-                spec.getViewSpecs().addAll(mapViews(projectedStream.getViews()));
+                spec.getViewSpecs().addAll(mapViews(projectedStream.getViews(), mapContext));
             }
         }
 
@@ -1223,22 +1282,24 @@ public class StatementSpecMapper
         }
     }
 
-    private static List<ViewSpec> mapViews(List<View> views)
+    private static List<ViewSpec> mapViews(List<View> views, StatementSpecMapContext mapContext)
     {
         List<ViewSpec> viewSpecs = new ArrayList<ViewSpec>();
         for (View view : views)
         {
-            viewSpecs.add(new ViewSpec(view.getNamespace(), view.getName(), view.getParameters()));
+            List<ExprNode> viewExpressions = mapExpressionDeep(view.getParameters(), mapContext);
+            viewSpecs.add(new ViewSpec(view.getNamespace(), view.getName(), viewExpressions));
         }
         return viewSpecs;
     }
 
-    private static List<View> unmapViews(List<ViewSpec> viewSpecs)
+    private static List<View> unmapViews(List<ViewSpec> viewSpecs, StatementSpecUnMapContext unmapContext)
     {
         List<View> views = new ArrayList<View>();
         for (ViewSpec viewSpec : viewSpecs)
         {
-            views.add(View.create(viewSpec.getObjectNamespace(), viewSpec.getObjectName(), viewSpec.getObjectParameters()));
+            List<Expression> viewExpressions = unmapExpressionDeep(viewSpec.getObjectParameters(), unmapContext);
+            views.add(View.create(viewSpec.getObjectNamespace(), viewSpec.getObjectName(), viewExpressions));
         }
         return views;
     }
@@ -1274,12 +1335,14 @@ public class StatementSpecMapper
         else if (eval instanceof PatternObserverExpr)
         {
             PatternObserverExpr observer = (PatternObserverExpr) eval;
-            return new EvalObserverNode(new PatternObserverSpec(observer.getNamespace(), observer.getName(), observer.getParameters()));
+            List<ExprNode> expressions = mapExpressionDeep(observer.getParameters(), mapContext);
+            return new EvalObserverNode(new PatternObserverSpec(observer.getNamespace(), observer.getName(), expressions));
         }
         else if (eval instanceof PatternGuardExpr)
         {
             PatternGuardExpr guard = (PatternGuardExpr) eval;
-            return new EvalGuardNode(new PatternGuardSpec(guard.getNamespace(), guard.getName(), guard.getParameters()));
+            List<ExprNode> expressions = mapExpressionDeep(guard.getParameters(), mapContext);
+            return new EvalGuardNode(new PatternGuardSpec(guard.getNamespace(), guard.getName(), expressions));
         }
         else if (eval instanceof PatternNotExpr)
         {
@@ -1324,14 +1387,16 @@ public class StatementSpecMapper
         else if (eval instanceof EvalObserverNode)
         {
             EvalObserverNode observerNode = (EvalObserverNode) eval;
+            List<Expression> expressions = unmapExpressionDeep(observerNode.getPatternObserverSpec().getObjectParameters(), unmapContext);
             return new PatternObserverExpr(observerNode.getPatternObserverSpec().getObjectNamespace(),
-                    observerNode.getPatternObserverSpec().getObjectName(), observerNode.getPatternObserverSpec().getObjectParameters());
+                    observerNode.getPatternObserverSpec().getObjectName(), expressions);
         }
         else if (eval instanceof EvalGuardNode)
         {
             EvalGuardNode guardNode = (EvalGuardNode) eval;
+            List<Expression> expressions = unmapExpressionDeep(guardNode.getPatternGuardSpec().getObjectParameters(), unmapContext);
             return new PatternGuardExpr(guardNode.getPatternGuardSpec().getObjectNamespace(),
-                    guardNode.getPatternGuardSpec().getObjectName(), guardNode.getPatternGuardSpec().getObjectParameters());
+                    guardNode.getPatternGuardSpec().getObjectName(), expressions);
         }
         else if (eval instanceof EvalMatchUntilNode)
         {

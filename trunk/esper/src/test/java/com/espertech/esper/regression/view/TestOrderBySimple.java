@@ -169,7 +169,7 @@ public class TestOrderBySimple extends TestCase {
 
         EPStatementObjectModel model = new EPStatementObjectModel();
         model.setSelectClause(SelectClause.create("symbol"));
-        model.setFromClause(FromClause.create(FilterStream.create(SupportMarketDataBean.class.getName()).addView("win", "length", 5)));
+        model.setFromClause(FromClause.create(FilterStream.create(SupportMarketDataBean.class.getName()).addView("win", "length", Expressions.constant(5))));
         model.setOutputLimitClause(OutputLimitClause.create(6, OutputLimitUnit.EVENTS));
         model.setOrderByClause(OrderByClause.create().add("price", true));
         model = (EPStatementObjectModel) SerializableObjectCopier.copy(model);

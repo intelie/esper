@@ -11,6 +11,7 @@ package com.espertech.esper.pattern.observer;
 import com.espertech.esper.pattern.PatternContext;
 import com.espertech.esper.pattern.MatchedEventMap;
 import com.espertech.esper.pattern.guard.GuardParameterException;
+import com.espertech.esper.epl.expression.ExprNode;
 
 import java.util.List;
 
@@ -24,7 +25,7 @@ public interface ObserverFactory
      * @param observerParameters is a list of parameters
      * @throws ObserverParameterException thrown to indicate a parameter problem
      */
-    public void setObserverParameters(List<Object> observerParameters) throws ObserverParameterException;
+    public void setObserverParameters(List<ExprNode> observerParameters) throws ObserverParameterException;
 
     /**
      * Make an observer instance.

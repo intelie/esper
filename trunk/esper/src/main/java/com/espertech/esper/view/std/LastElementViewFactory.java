@@ -12,6 +12,7 @@ import com.espertech.esper.view.*;
 import com.espertech.esper.event.EventType;
 import com.espertech.esper.epl.core.ViewResourceCallback;
 import com.espertech.esper.epl.named.RemoveStreamViewCapability;
+import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.core.StatementContext;
 
 import java.util.List;
@@ -23,8 +24,9 @@ public class LastElementViewFactory implements DataWindowViewFactory
 {
     private EventType eventType;
 
-    public void setViewParameters(ViewFactoryContext viewFactoryContext, List<Object> viewParameters) throws ViewParameterException
+    public void setViewParameters(ViewFactoryContext viewFactoryContext, List<ExprNode> expressionParameters) throws ViewParameterException
     {
+        List<Object> viewParameters = ViewFactorySupport.evaluate("'Last element' view", viewFactoryContext, expressionParameters);
         String errorMessage = "'Last element' view does not take any parameters";
         if (!viewParameters.isEmpty())
         {

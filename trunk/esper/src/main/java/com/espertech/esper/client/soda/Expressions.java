@@ -404,7 +404,7 @@ public class Expressions implements Serializable
      */
     public static InExpression in(Expression value, Expression ...set)
     {
-        return new InExpression(value, false, set);
+        return new InExpression(value, false, (Object) set);
     }
 
     /**
@@ -415,7 +415,7 @@ public class Expressions implements Serializable
      */
     public static InExpression notIn(Expression value, Expression ...set)
     {
-        return new InExpression(value, true, set);
+        return new InExpression(value, true, (Object) set);
     }
 
     /**
@@ -1395,6 +1395,26 @@ public class Expressions implements Serializable
         return new SubqueryInExpression(expression, model, true);
     }
 
+    public static TimePeriodExpression timePeriod(Double days, Double hours, Double minutes, Double seconds, Double milliseconds)
+    {
+        Expression daysExpr = (days != null) ? constant(days) : null;
+        Expression hoursExpr = (hours != null) ? constant(hours) : null;
+        Expression minutesExpr = (minutes != null) ? constant(minutes) : null;
+        Expression secondsExpr = (seconds != null) ? constant(seconds) : null;
+        Expression millisecondsExpr = (milliseconds != null) ? constant(milliseconds) : null;
+        return new TimePeriodExpression(daysExpr, hoursExpr, minutesExpr, secondsExpr, millisecondsExpr);
+    }
+
+    public static TimePeriodExpression timePeriod(Object days, Object hours, Object minutes, Object seconds, Object milliseconds)
+    {
+        Expression daysExpr = convertVariableNumeric(days);
+        Expression hoursExpr = convertVariableNumeric(hours);
+        Expression minutesExpr = convertVariableNumeric(minutes);
+        Expression secondsExpr = convertVariableNumeric(seconds);
+        Expression millisecondsExpr = convertVariableNumeric(milliseconds);
+        return new TimePeriodExpression(daysExpr, hoursExpr, minutesExpr, secondsExpr, millisecondsExpr);
+    }
+
     /**
      * Returns a list of expressions returning property values for the property names passed in.
      * @param properties is a list of property names
@@ -1418,5 +1438,23 @@ public class Expressions implements Serializable
     protected static PropertyValueExpression getPropExpr(String propertyName)
     {
         return new PropertyValueExpression(propertyName);
+    }
+
+    // TODO test
+    private static Expression convertVariableNumeric(Object object)
+    {
+        if (object == null)
+        {
+            throw new IllegalArgumentException("Invalid null value");
+        }
+        if (object instanceof String)
+        {
+            return property(object.toString());
+        }
+        if (object instanceof Number)
+        {
+            return constant(object);
+        }
+        throw new IllegalArgumentException("Invalid object value, expecting String or numeric value");
     }
 }

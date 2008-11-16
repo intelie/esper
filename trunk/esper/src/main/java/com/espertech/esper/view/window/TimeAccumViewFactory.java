@@ -15,6 +15,7 @@ import com.espertech.esper.util.JavaClassHelper;
 import com.espertech.esper.core.StatementContext;
 import com.espertech.esper.epl.core.ViewResourceCallback;
 import com.espertech.esper.epl.named.RemoveStreamViewCapability;
+import com.espertech.esper.epl.expression.ExprNode;
 
 import java.util.List;
 
@@ -40,8 +41,9 @@ public class TimeAccumViewFactory implements DataWindowViewFactory
      */
     protected boolean isRemoveStreamHandling;
 
-    public void setViewParameters(ViewFactoryContext viewFactoryContext, List<Object> viewParameters) throws ViewParameterException
+    public void setViewParameters(ViewFactoryContext viewFactoryContext, List<ExprNode> expressionParameters) throws ViewParameterException
     {
+        List<Object> viewParameters = ViewFactorySupport.evaluate("Time accumulative batch view", viewFactoryContext, expressionParameters);
         String errorMessage = "Time accumulative batch view requires a single numeric parameter or time period parameter";
         if (viewParameters.size() != 1)
         {

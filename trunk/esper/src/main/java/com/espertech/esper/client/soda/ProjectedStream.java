@@ -56,7 +56,7 @@ public abstract class ProjectedStream extends Stream
      * @param parameters is a list of view parameters
      * @return stream
      */
-    public ProjectedStream addView(String namespace, String name, List<Object> parameters)
+    public ProjectedStream addView(String namespace, String name, List<Expression> parameters)
     {
         views.add(View.create(namespace, name, parameters));
         return this;
@@ -69,7 +69,7 @@ public abstract class ProjectedStream extends Stream
      * @param parameters is a list of view parameters
      * @return stream
      */
-    public ProjectedStream addView(String namespace, String name, Object ...parameters)
+    public ProjectedStream addView(String namespace, String name, Expression ...parameters)
     {
         views.add(View.create(namespace, name, parameters));
         return this;

@@ -127,7 +127,7 @@ public class TestDatabaseJoin extends TestCase
         model.setSelectClause(SelectClause.create(fields));
         FromClause fromClause = FromClause.create(
                 SQLStream.create("MyDB", sql, "s0"),
-                FilterStream.create(SupportBean.class.getName(), "s1").addView(View.create("win", "time_batch", 10)
+                FilterStream.create(SupportBean.class.getName(), "s1").addView(View.create("win", "time_batch", Expressions.constant(10))
                 ));
         model.setFromClause(fromClause);
         SerializableObjectCopier.copy(model);

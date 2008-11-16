@@ -9,6 +9,7 @@
 package com.espertech.esper.view.stat;
 
 import com.espertech.esper.epl.core.ViewResourceCallback;
+import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.event.EventType;
 import com.espertech.esper.view.*;
 import com.espertech.esper.core.StatementContext;
@@ -47,8 +48,9 @@ public class MultiDimStatsViewFactory implements ViewFactory
     protected String pageField;
     private EventType eventType;
 
-    public void setViewParameters(ViewFactoryContext viewFactoryContext, List<Object> viewParameters) throws ViewParameterException
+    public void setViewParameters(ViewFactoryContext viewFactoryContext, List<ExprNode> expressionParameters) throws ViewParameterException
     {
+        List<Object> viewParameters = ViewFactorySupport.evaluate("'Multi-dimensional stats' view", viewFactoryContext, expressionParameters);
         String errorMessage = "'Multi-dimensional stats' view requires a String-array and 2 or more field names as parameters";
         if (viewParameters.size() < 3)
         {

@@ -25,7 +25,7 @@ public class View extends EPBaseNamedObject
      */
     public static View create(String namespace, String name)
     {
-        return new View(namespace, name, new ArrayList<Object>());
+        return new View(namespace, name, new ArrayList<Expression>());
     }
 
     /**
@@ -35,7 +35,8 @@ public class View extends EPBaseNamedObject
      * @param parameters is a list of view parameters, or empty if there are no parameters for the view
      * @return view
      */
-    public static View create(String namespace, String name, List<Object> parameters)
+    // TODO: make all other number parameters available as expressions
+    public static View create(String namespace, String name, List<Expression> parameters)
     {
         return new View(namespace, name, parameters);
     }
@@ -47,7 +48,7 @@ public class View extends EPBaseNamedObject
      * @param parameters is a list of view parameters, or empty if there are no parameters for the view
      * @return view
      */
-    public static View create(String namespace, String name, Object ...parameters)
+    public static View create(String namespace, String name, Expression ...parameters)
     {
         if (parameters != null)
         {
@@ -55,7 +56,7 @@ public class View extends EPBaseNamedObject
         }
         else
         {
-            return new View(namespace, name, new ArrayList<Object>());
+            return new View(namespace, name, new ArrayList<Expression>());
         }
     }
 
@@ -65,7 +66,7 @@ public class View extends EPBaseNamedObject
      * @param name is the view name, i.e. "length" for length window
      * @param parameters is a list of view parameters, or empty if there are no parameters for the view
      */
-    public View(String namespace, String name, List<Object> parameters)
+    public View(String namespace, String name, List<Expression> parameters)
     {
         super(namespace, name, parameters);
     }

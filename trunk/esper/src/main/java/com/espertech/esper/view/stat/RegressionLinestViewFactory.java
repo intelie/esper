@@ -14,6 +14,7 @@ import com.espertech.esper.view.ViewAttachException;
 import com.espertech.esper.view.*;
 import com.espertech.esper.event.EventType;
 import com.espertech.esper.epl.core.ViewResourceCallback;
+import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.core.StatementContext;
 
 import java.util.List;
@@ -33,8 +34,9 @@ public class RegressionLinestViewFactory implements ViewFactory
     protected String fieldNameY;
     private EventType eventType;
 
-    public void setViewParameters(ViewFactoryContext viewFactoryContext, List<Object> viewParameters) throws ViewParameterException
+    public void setViewParameters(ViewFactoryContext viewFactoryContext, List<ExprNode> expressionParameters) throws ViewParameterException
     {
+        List<Object> viewParameters = ViewFactorySupport.evaluate("'Regression line' view", viewFactoryContext, expressionParameters);
         String errorMessage = "'Regression line' view requires two field names as parameters";
         if (viewParameters.size() != 2)
         {

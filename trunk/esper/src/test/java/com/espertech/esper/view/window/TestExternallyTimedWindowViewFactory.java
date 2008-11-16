@@ -1,16 +1,15 @@
 package com.espertech.esper.view.window;
 
-import junit.framework.TestCase;
-import com.espertech.esper.type.TimePeriodParameter;
-import com.espertech.esper.view.ViewParameterException;
-import com.espertech.esper.view.ViewAttachException;
-import com.espertech.esper.view.std.SizeView;
-import com.espertech.esper.support.view.SupportStatementContextFactory;
+import com.espertech.esper.event.EventType;
 import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.event.SupportEventTypeFactory;
-import com.espertech.esper.event.EventType;
-
-import java.util.Arrays;
+import com.espertech.esper.support.view.SupportStatementContextFactory;
+import com.espertech.esper.type.TimePeriodParameter;
+import com.espertech.esper.view.TestViewSupport;
+import com.espertech.esper.view.ViewAttachException;
+import com.espertech.esper.view.ViewParameterException;
+import com.espertech.esper.view.std.SizeView;
+import junit.framework.TestCase;
 
 public class TestExternallyTimedWindowViewFactory extends TestCase
 {
@@ -34,7 +33,7 @@ public class TestExternallyTimedWindowViewFactory extends TestCase
 
     public void testCanReuse() throws Exception
     {
-        factory.setViewParameters(null, Arrays.asList(new Object[] {"price", 1000}));
+        factory.setViewParameters(null, TestViewSupport.toExprList(new Object[] {"price", 1000}));
         assertFalse(factory.canReuse(new SizeView(SupportStatementContextFactory.makeContext())));
         assertFalse(factory.canReuse(new ExternallyTimedWindowView(factory, "volume", 1000, null, false)));
         assertFalse(factory.canReuse(new ExternallyTimedWindowView(factory, "price", 999, null, false)));
@@ -45,7 +44,7 @@ public class TestExternallyTimedWindowViewFactory extends TestCase
     {
         EventType parentType = SupportEventTypeFactory.createBeanType(SupportBean.class);
 
-        factory.setViewParameters(null, Arrays.asList(new Object[] {"dummy", 20}));
+        factory.setViewParameters(null, TestViewSupport.toExprList(new Object[] {"dummy", 20}));
         try
         {
             factory.attach(parentType, null, null, null);
@@ -56,7 +55,7 @@ public class TestExternallyTimedWindowViewFactory extends TestCase
             // expected
         }
 
-        factory.setViewParameters(null, Arrays.asList(new Object[] {"string", 20}));
+        factory.setViewParameters(null, TestViewSupport.toExprList(new Object[] {"string", 20}));
         try
         {
             factory.attach(parentType, null, null, null);
@@ -67,7 +66,7 @@ public class TestExternallyTimedWindowViewFactory extends TestCase
             // expected
         }
 
-        factory.setViewParameters(null, Arrays.asList(new Object[] {"longPrimitive", 20}));
+        factory.setViewParameters(null, TestViewSupport.toExprList(new Object[] {"longPrimitive", 20}));
         factory.attach(parentType, null, null, null);
 
         assertSame(parentType, factory.getEventType());
@@ -78,7 +77,7 @@ public class TestExternallyTimedWindowViewFactory extends TestCase
         try
         {
             ExternallyTimedWindowViewFactory factory = new ExternallyTimedWindowViewFactory();
-            factory.setViewParameters(null, Arrays.asList(new Object[] {param}));
+            factory.setViewParameters(null, TestViewSupport.toExprList(new Object[] {param}));
             fail();
         }
         catch (ViewParameterException ex)
@@ -90,7 +89,7 @@ public class TestExternallyTimedWindowViewFactory extends TestCase
     private void tryParameter(Object[] params, String fieldName, long msec) throws Exception
     {
         ExternallyTimedWindowViewFactory factory = new ExternallyTimedWindowViewFactory();
-        factory.setViewParameters(null, Arrays.asList(params));
+        factory.setViewParameters(null, TestViewSupport.toExprList(params));
         ExternallyTimedWindowView view = (ExternallyTimedWindowView) factory.makeView(SupportStatementContextFactory.makeContext());
         assertEquals(fieldName, view.getTimestampFieldName());
         assertEquals(msec, view.getMillisecondsBeforeExpiry());

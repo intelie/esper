@@ -17,6 +17,7 @@ import com.espertech.esper.epl.expression.*;
 import com.espertech.esper.epl.spec.*;
 import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.epl.generated.EsperEPL2Ast;
+import com.espertech.esper.epl.generated.EsperEPL2GrammarParser;
 import com.espertech.esper.pattern.*;
 import com.espertech.esper.type.*;
 import com.espertech.esper.util.JavaClassHelper;
@@ -28,6 +29,7 @@ import org.apache.commons.logging.LogFactory;
 import org.antlr.runtime.tree.Tree;
 import org.antlr.runtime.tree.TreeNodeStream;
 
+import javax.swing.tree.TreeNode;
 import java.util.*;
 
 /**
@@ -353,6 +355,9 @@ public class EPLTreeWalker extends EsperEPL2Ast
             case ON_EXPR:
                 leaveOnExpr(node);
                 break;
+            case TIME_PERIOD:
+                leaveTimePeriod(node);
+                break;
             default:
                 throw new ASTWalkException("Unhandled node type encountered, type '" + node.getType() +
                         "' with text '" + node.getText() + '\'');
@@ -663,6 +668,48 @@ public class EPLTreeWalker extends EsperEPL2Ast
         astExprNodeMap.put(node, timeNode);
     }
 
+    private void leaveTimePeriod(Tree node)
+    {
+        log.debug(".leaveTimePeriod");
+
+        ExprNode nodes[] = new ExprNode[5];
+        for (int i = 0; i < node.getChildCount(); i++)
+        {
+            Tree child = node.getChild(i);
+            if (child.getType() == MILLISECOND_PART)
+            {
+                nodes[4] = handleTimePeriod(child);
+            }
+            if (child.getType() == SECOND_PART)
+            {
+                nodes[3] = handleTimePeriod(child);
+            }
+            if (child.getType() == MINUTE_PART)
+            {
+                nodes[2] = handleTimePeriod(child);
+            }
+            if (child.getType() == HOUR_PART)
+            {
+                nodes[1] = handleTimePeriod(child);
+            }
+            if (child.getType() == DAY_PART)
+            {
+                nodes[0] = handleTimePeriod(child);
+            }
+        }
+        ExprTimePeriod timeNode = new ExprTimePeriod(nodes[0], nodes[1], nodes[2], nodes[3], nodes[4]);
+        astExprNodeMap.put(node, timeNode);
+    }
+
+    private ExprNode handleTimePeriod(Tree parent)
+    {
+        if (parent.getChild(0).getType() == IDENT)
+        {
+            return new ExprVariableNode(parent.getChild(0).getText());
+        }
+        return new ExprConstantNode(ASTParameterHelper.makeParameter(parent.getChild(0), engineTime));
+    }
+
     private void leaveArray(Tree node)
     {
         log.debug(".leaveArray");
@@ -830,36 +877,8 @@ public class EPLTreeWalker extends EsperEPL2Ast
         log.debug(".leaveView");
         String objectNamespace = node.getChild(0).getText();
         String objectName = node.getChild(1).getText();
-
-        List<Object> objectParams = new LinkedList<Object>();
-
-        for (int i = 2; i < node.getChildCount(); i++)
-        {
-        	Tree child = node.getChild(i);
-
-            // if there is an expression for this parameter, add the expression to the parameter list
-            if (this.astExprNodeMap.containsKey(child))
-            {
-                ExprNode expr = astExprNodeMap.get(child);
-                if (expr instanceof ExprIdentNode)
-                {
-                    ExprIdentNode property = (ExprIdentNode) expr;
-                    objectParams.add(property.getFullUnresolvedName());
-                }
-                else
-                {
-                    objectParams.add(expr);
-                }
-                astExprNodeMap.remove(child);
-            }
-            else
-            {
-                Object object = ASTParameterHelper.makeParameter(child, engineTime);
-                objectParams.add(object);
-            }
-        }
-
-        viewSpecs.add(new ViewSpec(objectNamespace, objectName, objectParams));
+        List<ExprNode> viewParameters = getExprNodes(node, 2); 
+        viewSpecs.add(new ViewSpec(objectNamespace, objectName, viewParameters));
     }
 
     private void leaveStreamExpr(Tree node)
@@ -1642,16 +1661,9 @@ public class EPLTreeWalker extends EsperEPL2Ast
         Tree startGuard = node.getChild(1);
         String objectNamespace = startGuard.getText();
         String objectName = node.getChild(2).getText();
+        List<ExprNode> obsParameters = getExprNodes(node, 3);
 
-        List<Object> objectParams = new LinkedList<Object>();
-        for (int i = 3; i < node.getChildCount(); i++)
-        {
-        	Tree childNode = node.getChild(i);
-            Object object = ASTParameterHelper.makeParameter(childNode, engineTime);
-            objectParams.add(object);
-        }
-
-        PatternGuardSpec guardSpec = new PatternGuardSpec(objectNamespace, objectName, objectParams);
+        PatternGuardSpec guardSpec = new PatternGuardSpec(objectNamespace, objectName, obsParameters);
         EvalGuardNode guardNode = new EvalGuardNode(guardSpec);
         astPatternNodeMap.put(node, guardNode);
     }
@@ -1684,16 +1696,9 @@ public class EPLTreeWalker extends EsperEPL2Ast
         // Get the object information from AST
         String objectNamespace = node.getChild(0).getText();
         String objectName = node.getChild(1).getText();
+        List<ExprNode> obsParameters = getExprNodes(node, 2);
 
-        List<Object> objectParams = new LinkedList<Object>();
-        for (int i = 2; i < node.getChildCount(); i++)
-        {
-        	Tree child = node.getChild(i);
-            Object object = ASTParameterHelper.makeParameter(child, engineTime);
-            objectParams.add(object);
-        }
-
-        PatternObserverSpec observerSpec = new PatternObserverSpec(objectNamespace, objectName, objectParams);
+        PatternObserverSpec observerSpec = new PatternObserverSpec(objectNamespace, objectName, obsParameters);
         EvalObserverNode observerNode = new EvalObserverNode(observerSpec);
         astPatternNodeMap.put(node, observerNode);
     }
@@ -1804,6 +1809,16 @@ public class EPLTreeWalker extends EsperEPL2Ast
             astExprNodeMap.remove(currentNode);
         }
         return exprNodes;
+    }
+
+    private ExprNode getExprNode(Tree node)
+    {
+        ExprNode exprNode = astExprNodeMap.get(node);
+        if (exprNode == null)
+        {
+            throw new IllegalStateException("Expression node for AST node not found for type " + node.getType() + " text " + node.getText());
+        }
+        return astExprNodeMap.remove(node);
     }
 
     private static final Log log = LogFactory.getLog(EPLTreeWalker.class);

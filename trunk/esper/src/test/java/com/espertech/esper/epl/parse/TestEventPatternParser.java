@@ -86,13 +86,9 @@ public class TestEventPatternParser extends TestCase
         assertIsInvalid("every every not f()");
 
         // where a:b
-        assertIsInvalid("a() where a:b(a=b)");
-        assertIsInvalid("a() where a:b(g=5l)");
         assertIsInvalid("a() where a:b(33s)");
-        assertIsInvalid("a() where a:b(m=3.3)");
         assertIsInvalid("a() where a:b('+1E4)");
         assertIsInvalid("a() where a:b(22L2)");
-        assertIsInvalid("a() where a:b(x=2)");
         assertIsInvalid("a() where a:b(2) or b() every where a:b(3)");
         assertIsInvalid("a() where a:b(2) or b() not where a:b(3)");
         assertIsInvalid("where a:b(5) a()");
@@ -101,7 +97,6 @@ public class TestEventPatternParser extends TestCase
         assertIsInvalid("(every a()) (where a:b(1))");
         assertIsInvalid("every ((every a(id=\"A1\")) where a:b(10l) and c()");
 
-        assertIsInvalid("timer:interval(m=10)");
         assertIsInvalid("timer:interval(10) timer:interval(20)");
         assertIsInvalid("a() timer:interval(10)");
         assertIsInvalid("timer:interval(10) b()");
@@ -139,7 +134,6 @@ public class TestEventPatternParser extends TestCase
         assertIsInvalid("timer:at(*,*,*/a,*,*)");
         assertIsInvalid("timer:at(*,*,0/*,*,*)");
         assertIsInvalid("timer:at(*,*,*/*,*,*)");
-        assertIsInvalid("timer:at(*,*,5/5,*,*)");
         assertIsInvalid("timer:at([2:2x],*,*,*,*)");
         assertIsInvalid("timer:at(3:3],*,*,*,*)");
         assertIsInvalid("timer:at(3:3:3,*,*,*,*)");

@@ -198,7 +198,7 @@ public class Patterns
      * @param guarded is the pattern sub-expression to be guarded
      * @return pattern guard expression
      */
-    public static PatternGuardExpr guard(String namespace, String name, Object[] parameters, PatternExpr guarded)
+    public static PatternGuardExpr guard(String namespace, String name, Expression[] parameters, PatternExpr guarded)
     {
         return new PatternGuardExpr(namespace, name, parameters, guarded);
     }
@@ -210,7 +210,7 @@ public class Patterns
      * @param parameters is the observer objects optional parameters, i.e. integer 1 for 1 second
      * @return pattern observer expression
      */
-    public static PatternObserverExpr observer(String namespace, String name, Object[] parameters)
+    public static PatternObserverExpr observer(String namespace, String name, Expression[] parameters)
     {
         return new PatternObserverExpr(namespace, name, parameters);
     }
@@ -223,7 +223,7 @@ public class Patterns
      */
     public static PatternGuardExpr timerWithin(double seconds, PatternExpr guarded)
     {
-        return new PatternGuardExpr("timer", "within", new Object[] {seconds}, guarded);
+        return new PatternGuardExpr("timer", "within", new Expression[] {Expressions.constant(seconds)}, guarded);
     }
 
     /**
@@ -233,7 +233,7 @@ public class Patterns
      */
     public static PatternObserverExpr timerInterval(double seconds)
     {
-        return new PatternObserverExpr("timer", "interval", new Object[] {seconds});
+        return new PatternObserverExpr("timer", "interval", new Expression[] {Expressions.constant(seconds)});
     }
 
     /**
@@ -320,6 +320,7 @@ public class Patterns
         params.add(month == null ? new WildcardParameter() : month);
         params.add(daysOfWeek == null ? new WildcardParameter() : daysOfWeek);
         params.add(seconds == null ? new WildcardParameter() : seconds);
-        return new PatternObserverExpr("timer", "at", params);
+        // TODO empty expression array
+        return new PatternObserverExpr("timer", "at", new Expression[0]);
     }
 }

@@ -51,7 +51,7 @@ public class TestEPStatementObjectModel extends TestCase
             .add("line")
             .add(Expressions.avg("age"), "avgAge"));
         Filter filter = Filter.create(SupportBean.class.getName(), Expressions.in("line", 1, 8, 10));
-        model.setFromClause(FromClause.create(FilterStream.create(filter, "RS").addView("win", "time", 10)));
+        model.setFromClause(FromClause.create(FilterStream.create(filter, "RS").addView("win", "time", Expressions.constant(10))));
         model.setWhereClause(Expressions.isNotNull("waverId"));
         model.setGroupByClause(GroupByClause.create("line"));
         model.setHavingClause(Expressions.lt(Expressions.avg("age"), Expressions.constant(0)));

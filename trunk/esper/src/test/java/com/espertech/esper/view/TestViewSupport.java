@@ -2,8 +2,11 @@ package com.espertech.esper.view;
 
 import junit.framework.TestCase;
 import com.espertech.esper.support.view.SupportSchemaNeutralView;
+import com.espertech.esper.epl.expression.ExprNode;
+import com.espertech.esper.epl.expression.ExprConstantNode;
 
 import java.util.List;
+import java.util.ArrayList;
 
 public class TestViewSupport extends TestCase
 {
@@ -67,5 +70,18 @@ public class TestViewSupport extends TestCase
         assertEquals(null, descendents);
     }
 
+    public static List<ExprNode> toExprList(Object[] constants)
+    {
+        List<ExprNode> expr = new ArrayList<ExprNode>();
+        for (int i = 0; i < constants.length; i++)
+        {
+            expr.add(new ExprConstantNode(constants[i]));
+        }
+        return expr;
+    }
 
+    public static List<ExprNode> toExprList(Object constant)
+    {
+        return toExprList(new Object[] {constant});
+    }
 }

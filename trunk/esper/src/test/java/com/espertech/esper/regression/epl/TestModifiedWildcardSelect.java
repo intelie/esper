@@ -43,7 +43,7 @@ public class TestModifiedWildcardSelect extends TestCase
 
         EPStatementObjectModel model = new EPStatementObjectModel();
         model.setSelectClause(SelectClause.createWildcard().add(Expressions.concat("myString", "myString"), "concat"));
-        model.setFromClause(FromClause.create(FilterStream.create(eventName).addView(View.create("win", "length", 5))));
+        model.setFromClause(FromClause.create(FilterStream.create(eventName).addView(View.create("win", "length", Expressions.constant(5)))));
         model = (EPStatementObjectModel) SerializableObjectCopier.copy(model);
 
         String text = "select *, myString || myString as concat from " + eventName + ".win:length(5)";

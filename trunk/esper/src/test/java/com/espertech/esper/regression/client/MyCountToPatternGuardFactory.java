@@ -3,6 +3,7 @@ package com.espertech.esper.regression.client;
 import com.espertech.esper.pattern.guard.*;
 import com.espertech.esper.pattern.PatternContext;
 import com.espertech.esper.epl.variable.VariableReader;
+import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.client.EPException;
 import com.espertech.esper.type.VariableParameter;
 
@@ -19,8 +20,9 @@ public class MyCountToPatternGuardFactory extends GuardFactorySupport
     private VariableReader variableReader;
     private int numCountTo;
 
-    public void setGuardParameters(List<Object> guardParameters) throws GuardParameterException
+    public void setGuardParameters(List<ExprNode> expressionParameters) throws GuardParameterException
     {
+        List<Object> guardParameters = GuardFactorySupport.evaluate("Count-to guard", expressionParameters);
         String message = "Count-to guard takes a single integer parameter or variable name of an integer variable";
 
         if (guardParameters.size() != 1)

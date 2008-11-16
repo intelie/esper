@@ -13,6 +13,7 @@ import com.espertech.esper.pattern.MatchedEventMap;
 import com.espertech.esper.pattern.PatternContext;
 import com.espertech.esper.util.MetaDefItem;
 import com.espertech.esper.util.JavaClassHelper;
+import com.espertech.esper.epl.expression.ExprNode;
 
 import java.util.List;
 
@@ -26,8 +27,10 @@ public class TimerIntervalObserverFactory implements ObserverFactory, MetaDefIte
      */
     protected long milliseconds;
 
-    public void setObserverParameters(List<Object> observerParameters) throws ObserverParameterException
+    public void setObserverParameters(List<ExprNode> params) throws ObserverParameterException
     {
+        List<Object> observerParameters = EventObserverSupport.evaluate("Timer-interval observer", params);
+
         String errorMessage = "Timer-interval observer requires a single numeric or time period parameter";
         if (observerParameters.size() != 1)
         {

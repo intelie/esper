@@ -75,7 +75,7 @@ public class TestIStreamRStreamKeywords extends TestCase
         String stmtText = "select rstream * from " + SupportBean.class.getName() + ".win:length(3)";
         EPStatementObjectModel model = new EPStatementObjectModel();
         model.setSelectClause(SelectClause.createWildcard(StreamSelector.RSTREAM_ONLY));
-        FromClause fromClause = FromClause.create(FilterStream.create(SupportBean.class.getName()).addView(View.create("win", "length", 3)));
+        FromClause fromClause = FromClause.create(FilterStream.create(SupportBean.class.getName()).addView(View.create("win", "length", Expressions.constant(3))));
         model.setFromClause(fromClause);
         model = (EPStatementObjectModel) SerializableObjectCopier.copy(model);
 

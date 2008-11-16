@@ -28,7 +28,7 @@ public class PatternGuardExpr extends EPBaseNamedObject implements PatternExpr
      * @param name is the guard object name
      * @param parameters is guard object parameters
      */
-    public PatternGuardExpr(String namespace, String name, List<Object> parameters)
+    public PatternGuardExpr(String namespace, String name, List<Expression> parameters)
     {
         super(namespace, name, parameters);
         this.guarded = new ArrayList<PatternExpr>();
@@ -41,7 +41,7 @@ public class PatternGuardExpr extends EPBaseNamedObject implements PatternExpr
      * @param parameters is guard object parameters
      * @param guarded is the guarded pattern expression
      */
-    public PatternGuardExpr(String namespace, String name, Object[] parameters, PatternExpr guarded)
+    public PatternGuardExpr(String namespace, String name, Expression[] parameters, PatternExpr guarded)
     {
         this(namespace, name, Arrays.asList(parameters), guarded);
     }
@@ -53,7 +53,7 @@ public class PatternGuardExpr extends EPBaseNamedObject implements PatternExpr
      * @param parameters is guard object parameters
      * @param guardedPattern is the guarded pattern expression
      */
-    public PatternGuardExpr(String namespace, String name, List<Object> parameters, PatternExpr guardedPattern)
+    public PatternGuardExpr(String namespace, String name, List<Expression> parameters, PatternExpr guardedPattern)
     {
         super(namespace, name, parameters);
         this.guarded = new ArrayList<PatternExpr>();

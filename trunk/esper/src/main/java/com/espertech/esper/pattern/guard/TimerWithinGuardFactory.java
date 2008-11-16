@@ -10,8 +10,10 @@ package com.espertech.esper.pattern.guard;
 
 import com.espertech.esper.type.TimePeriodParameter;
 import com.espertech.esper.pattern.PatternContext;
+import com.espertech.esper.pattern.observer.EventObserverSupport;
 import com.espertech.esper.util.JavaClassHelper;
 import com.espertech.esper.util.MetaDefItem;
+import com.espertech.esper.epl.expression.ExprNode;
 
 import java.util.List;
 
@@ -25,8 +27,10 @@ public class TimerWithinGuardFactory implements GuardFactory, MetaDefItem
      */
     protected long milliseconds;
 
-    public void setGuardParameters(List<Object> guardParameters) throws GuardParameterException
+    public void setGuardParameters(List<ExprNode> params) throws GuardParameterException
     {
+        List<Object> guardParameters = GuardFactorySupport.evaluate("Timer-interval observer", params);
+
         String errorMessage = "Timer-within guard requires a single numeric or time period parameter";
         if (guardParameters.size() != 1)
         {

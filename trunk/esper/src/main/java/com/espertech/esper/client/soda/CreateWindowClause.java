@@ -66,7 +66,7 @@ public class CreateWindowClause implements Serializable
      * @param parameters is a list of view parameters
      * @return named window creation clause
      */
-    public CreateWindowClause addView(String namespace, String name, List<Object> parameters)
+    public CreateWindowClause addView(String namespace, String name, List<Expression> parameters)
     {
         views.add(View.create(namespace, name, parameters));
         return this;
@@ -79,7 +79,7 @@ public class CreateWindowClause implements Serializable
      * @param parameters is a list of view parameters
      * @return named window creation clause
      */
-    public CreateWindowClause addView(String namespace, String name, Object... parameters)
+    public CreateWindowClause addView(String namespace, String name, Expression... parameters)
     {
         views.add(View.create(namespace, name, parameters));
         return this;

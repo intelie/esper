@@ -52,7 +52,7 @@ public class TestOrderByEventPerRow extends TestCase
     {
         EPStatementObjectModel model = new EPStatementObjectModel();
         model.setSelectClause(SelectClause.create("symbol", "volume").add(Expressions.sum("price"), "mySum"));
-        model.setFromClause(FromClause.create(FilterStream.create(SupportMarketDataBean.class.getName()).addView(View.create("win", "length", 20))));
+        model.setFromClause(FromClause.create(FilterStream.create(SupportMarketDataBean.class.getName()).addView(View.create("win", "length", Expressions.constant(20)))));
         model.setGroupByClause(GroupByClause.create("symbol"));
         model.setOutputLimitClause(OutputLimitClause.create(6, OutputLimitUnit.EVENTS));
         model.setOrderByClause(OrderByClause.create(Expressions.sum("price")).add("symbol", false));

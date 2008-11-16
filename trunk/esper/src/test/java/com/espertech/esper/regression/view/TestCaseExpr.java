@@ -52,7 +52,7 @@ public class TestCaseExpr extends TestCase
         model.setSelectClause(SelectClause.create().add(Expressions.caseWhenThen()
                 .add(Expressions.eq("symbol", "GE"), Expressions.property("volume"))
                 .add(Expressions.eq("symbol", "DELL"), Expressions.sum("price")), "p1"));
-        model.setFromClause(FromClause.create(FilterStream.create(SupportMarketDataBean.class.getName()).addView("win", "length", 10)));
+        model.setFromClause(FromClause.create(FilterStream.create(SupportMarketDataBean.class.getName()).addView("win", "length", Expressions.constant(10))));
         model = (EPStatementObjectModel) SerializableObjectCopier.copy(model);
 
         String caseExpr = "select case" +
@@ -125,7 +125,7 @@ public class TestCaseExpr extends TestCase
         model.setSelectClause(SelectClause.create().add(Expressions.caseWhenThen()
                 .setElse(Expressions.property("volume"))
                 .add(Expressions.eq("symbol", "DELL"), Expressions.multiply(Expressions.property("volume"), Expressions.constant(3))), "p1"));
-        model.setFromClause(FromClause.create(FilterStream.create(SupportMarketDataBean.class.getName()).addView("win", "length", 10)));
+        model.setFromClause(FromClause.create(FilterStream.create(SupportMarketDataBean.class.getName()).addView("win", "length", Expressions.constant(10))));
         model = (EPStatementObjectModel) SerializableObjectCopier.copy(model);
 
         String caseExpr = "select case " +
@@ -393,7 +393,7 @@ public class TestCaseExpr extends TestCase
                 .add(Expressions.constant(1), Expressions.constant(null))
                 .add(Expressions.constant(2), Expressions.constant(1.0))
                 .add(Expressions.constant(3), Expressions.constant(null)), "p1"));
-        model.setFromClause(FromClause.create(FilterStream.create(SupportBean.class.getName()).addView("win", "length", 100)));
+        model.setFromClause(FromClause.create(FilterStream.create(SupportBean.class.getName()).addView("win", "length", Expressions.constant(100))));
         model = (EPStatementObjectModel) SerializableObjectCopier.copy(model);
 
         assertEquals(caseExpr, model.toEPL());

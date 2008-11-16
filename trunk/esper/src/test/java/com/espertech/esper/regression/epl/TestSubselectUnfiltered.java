@@ -202,7 +202,7 @@ public class TestSubselectUnfiltered extends TestCase {
     {
         EPStatementObjectModel subquery = new EPStatementObjectModel();
         subquery.setSelectClause(SelectClause.create().add(Expressions.prior(0, "id")));
-        subquery.setFromClause(FromClause.create(FilterStream.create("S1").addView("win", "length", 1000)));
+        subquery.setFromClause(FromClause.create(FilterStream.create("S1").addView("win", "length", Expressions.constant(1000))));
 
         EPStatementObjectModel model = new EPStatementObjectModel();
         model.setSelectClause(SelectClause.create().add(Expressions.subquery(subquery), "idS1"));

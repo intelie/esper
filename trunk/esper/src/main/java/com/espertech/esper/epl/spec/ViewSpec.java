@@ -8,6 +8,8 @@
  **************************************************************************************/
 package com.espertech.esper.epl.spec;
 
+import com.espertech.esper.epl.expression.ExprNode;
+
 import java.util.List;
 
 /**
@@ -19,10 +21,10 @@ public final class ViewSpec extends ObjectSpec
      * Constructor.
      * @param namespace if the namespace the object is in
      * @param objectName is the name of the object
-     * @param objectParameters is a list of values representing the object parameters
+     * @param viewParameters is a list of expressions representing the view parameters
      */
-    public ViewSpec(String namespace, String objectName, List<Object> objectParameters)
+    public ViewSpec(String namespace, String objectName, List<ExprNode> viewParameters)
     {
-        super(namespace, objectName, objectParameters);
+        super(namespace, objectName, viewParameters);
     }
 }

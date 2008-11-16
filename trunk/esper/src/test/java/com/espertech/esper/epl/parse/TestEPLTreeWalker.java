@@ -24,6 +24,7 @@ import org.apache.commons.logging.LogFactory;
 
 import java.util.List;
 
+// TODO: test time period with variables and invalid variables, view an pattern and guard parameters
 public class TestEPLTreeWalker extends TestCase
 {
     private static String CLASSNAME = SupportBean.class.getName();
@@ -34,15 +35,13 @@ public class TestEPLTreeWalker extends TestCase
     public void testWalkViewExpressions() throws Exception
     {
         String className = SupportBean.class.getName();
-        String expression = "select * from " + className + ".win:x(intPrimitive, a.nested, b, c.nested.nested)";
+        String expression = "select * from " + className + ".win:x(intPrimitive, a.nested)";
 
         EPLTreeWalker walker = parseAndWalkEPL(expression);
         List<ViewSpec> viewSpecs = walker.getStatementSpec().getStreamSpecs().get(0).getViewSpecs();
-        List<Object> parameters = viewSpecs.get(0).getObjectParameters();
-        assertEquals("intPrimitive", parameters.get(0));
-        assertEquals("a.nested", parameters.get(1));
-        assertEquals("b", parameters.get(2));
-        assertEquals("c.nested.nested", parameters.get(3));
+        List<ExprNode> parameters = viewSpecs.get(0).getObjectParameters();
+        assertEquals("intPrimitive", ((ExprIdentNode) parameters.get(0)).getFullUnresolvedName());
+        assertEquals("a.nested", ((ExprIdentNode) parameters.get(1)).getFullUnresolvedName());
     }
 
     public void testWalkJoinMethodStatement() throws Exception
@@ -484,23 +483,23 @@ public class TestEPLTreeWalker extends TestCase
         assertEquals(1, filterSpec.getFilterExpressions().size());
 
         // Check views
-        List<ViewSpec> viewSpecs = ((FilterStreamSpecRaw) walker.getStatementSpec().getStreamSpecs().get(0)).getViewSpecs();
+        List<ViewSpec> viewSpecs = walker.getStatementSpec().getStreamSpecs().get(0).getViewSpecs();
         assertEquals(2, viewSpecs.size());
 
         ViewSpec specOne = viewSpecs.get(0);
         assertEquals("win", specOne.getObjectNamespace());
         assertEquals("lenght", specOne.getObjectName());
         assertEquals(3, specOne.getObjectParameters().size());
-        assertEquals(10, specOne.getObjectParameters().get(0));
-        assertEquals(1.1d, specOne.getObjectParameters().get(1));
-        assertEquals("a", specOne.getObjectParameters().get(2));
+        assertEquals(10, ((ExprConstantNode) specOne.getObjectParameters().get(0)).getValue());
+        assertEquals(1.1d, ((ExprConstantNode) specOne.getObjectParameters().get(1)).getValue());
+        assertEquals("a", ((ExprConstantNode) specOne.getObjectParameters().get(2)).getValue());
 
         ViewSpec specTwo = viewSpecs.get(1);
         assertEquals("stat", specTwo.getObjectNamespace());
         assertEquals("uni", specTwo.getObjectName());
         assertEquals(2, specTwo.getObjectParameters().size());
-        assertEquals("price", specTwo.getObjectParameters().get(0));
-        assertEquals(false, specTwo.getObjectParameters().get(1));
+        assertEquals("price", ((ExprIdentNode) specTwo.getObjectParameters().get(0)).getFullUnresolvedName());
+        assertEquals(false, ((ExprConstantNode) specTwo.getObjectParameters().get(1)).getValue());
     }
 
     public void testSelectList() throws Exception
@@ -536,8 +535,10 @@ public class TestEPLTreeWalker extends TestCase
         String text = "select * from " + SupportBean.class.getName() + "().win:lenght({10, 11, 12})";
         EPLTreeWalker walker = parseAndWalkEPL(text);
 
-        List<ViewSpec> viewSpecs = ((FilterStreamSpecRaw) walker.getStatementSpec().getStreamSpecs().get(0)).getViewSpecs();
-        int[] intParams = (int[]) viewSpecs.get(0).getObjectParameters().get(0);
+        List<ViewSpec> viewSpecs = walker.getStatementSpec().getStreamSpecs().get(0).getViewSpecs();
+        ExprNode node = viewSpecs.get(0).getObjectParameters().get(0);
+        node.validate(null, null, null, null, null);
+        Object[] intParams = (Object[]) ((ExprArrayNode) node).evaluate(null, true);
         assertEquals(10, intParams[0]);
         assertEquals(11, intParams[1]);
         assertEquals(12, intParams[2]);
@@ -545,8 +546,10 @@ public class TestEPLTreeWalker extends TestCase
         // Check a list of objects
         text = "select * from " + SupportBean.class.getName() + "().win:lenght({false, 11.2, 's'})";
         walker = parseAndWalkEPL(text);
-        viewSpecs = ((FilterStreamSpecRaw)walker.getStatementSpec().getStreamSpecs().get(0)).getViewSpecs();
-        Object[] objParams = (Object[]) viewSpecs.get(0).getObjectParameters().get(0);
+        viewSpecs = walker.getStatementSpec().getStreamSpecs().get(0).getViewSpecs();
+        ExprNode param = viewSpecs.get(0).getObjectParameters().get(0);
+        param.validate(null, null, null, null, null);
+        Object[] objParams = (Object[]) ((ExprArrayNode) param).evaluate(null, true);
         assertEquals(false, objParams[0]);
         assertEquals(11.2, objParams[1]);
         assertEquals("s", objParams[2]);
@@ -1072,7 +1075,9 @@ public class TestEPLTreeWalker extends TestCase
         assertEquals("win", viewSpec.getObjectNamespace());
         assertEquals("time", viewSpec.getObjectName());
         assertEquals(1, viewSpec.getObjectParameters().size());
-        TimePeriodParameter timePeriodParameter = (TimePeriodParameter) viewSpec.getObjectParameters().get(0);
+        ExprTimePeriod exprNode = (ExprTimePeriod) viewSpec.getObjectParameters().get(0);
+        exprNode.validate(null, null, null, null, null);
+        TimePeriodParameter timePeriodParameter = (TimePeriodParameter) exprNode.evaluate(null, true);
         return timePeriodParameter.getNumSeconds();
     }
 

@@ -5,12 +5,13 @@ import com.espertech.esper.pattern.guard.Guard;
 import com.espertech.esper.pattern.guard.Quitable;
 import com.espertech.esper.pattern.guard.GuardParameterException;
 import com.espertech.esper.pattern.PatternContext;
+import com.espertech.esper.epl.expression.ExprNode;
 
 import java.util.List;
 
 public class SupportGuardFactory implements GuardFactory
 {
-    public void setGuardParameters(List<Object> guardParameters) throws GuardParameterException
+    public void setGuardParameters(List<ExprNode> guardParameters) throws GuardParameterException
     {
         //To change body of implemented methods use File | Settings | File Templates.
     }

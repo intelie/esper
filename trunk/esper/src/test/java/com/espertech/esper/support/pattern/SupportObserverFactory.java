@@ -6,12 +6,13 @@ import com.espertech.esper.pattern.observer.ObserverEventEvaluator;
 import com.espertech.esper.pattern.observer.ObserverParameterException;
 import com.espertech.esper.pattern.PatternContext;
 import com.espertech.esper.pattern.MatchedEventMap;
+import com.espertech.esper.epl.expression.ExprNode;
 
 import java.util.List;
 
 public class SupportObserverFactory implements ObserverFactory
 {
-    public void setObserverParameters(List<Object> observerParameters) throws ObserverParameterException
+    public void setObserverParameters(List<ExprNode> observerParameters) throws ObserverParameterException
     {
         //To change body of implemented methods use File | Settings | File Templates.
     }

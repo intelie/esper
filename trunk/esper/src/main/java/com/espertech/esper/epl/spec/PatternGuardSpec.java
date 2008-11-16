@@ -8,6 +8,8 @@
  **************************************************************************************/
 package com.espertech.esper.epl.spec;
 
+import com.espertech.esper.epl.expression.ExprNode;
+
 import java.util.List;
 
 /**
@@ -21,7 +23,7 @@ public final class PatternGuardSpec extends ObjectSpec
      * @param objectName is the name of the object
      * @param objectParameters is a list of values representing the object parameters
      */
-    public PatternGuardSpec(String namespace, String objectName, List<Object> objectParameters)
+    public PatternGuardSpec(String namespace, String objectName, List<ExprNode> objectParameters)
     {
         super(namespace, objectName, objectParameters);
     }

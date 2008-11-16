@@ -24,7 +24,7 @@ public abstract class EPBaseNamedObject implements Serializable
 
     private String namespace;
     private String name;
-    private List<Object> parameters;
+    private List<Expression> parameters;
 
     /**
      * Ctor.
@@ -32,7 +32,7 @@ public abstract class EPBaseNamedObject implements Serializable
      * @param name is the name of the object, such as the view name
      * @param parameters is the optional parameters to the view or pattern object, or empty list for no parameters
      */
-    protected EPBaseNamedObject(String namespace, String name, List<Object> parameters)
+    protected EPBaseNamedObject(String namespace, String name, List<Expression> parameters)
     {
         this.namespace = namespace;
         this.name = name;
@@ -79,7 +79,7 @@ public abstract class EPBaseNamedObject implements Serializable
      * Returns the object parameters.
      * @return parameters for object, empty list for no parameters
      */
-    public List<Object> getParameters()
+    public List<Expression> getParameters()
     {
         return parameters;
     }
@@ -88,7 +88,7 @@ public abstract class EPBaseNamedObject implements Serializable
      * Sets the parameters for the object.
      * @param parameters parameters for object, empty list for no parameters
      */
-    public void setParameters(List<Object> parameters)
+    public void setParameters(List<Expression> parameters)
     {
         this.parameters = parameters;
     }
@@ -105,22 +105,10 @@ public abstract class EPBaseNamedObject implements Serializable
 
         String delimiter = "";
         writer.write('(');
-        for (Object param : parameters)
+        for (Expression param : parameters)
         {
             writer.write(delimiter);
-            if (param == null)
-            {
-                writer.write("null");
-            }
-            else if (param instanceof EPLParameterType)
-            {
-                EPLParameterType numSet = (EPLParameterType) param;
-                numSet.toEPL(writer);
-            }
-            else
-            {
-                EPStatementObjectModelHelper.renderEPL(writer, param);
-            }
+            param.toEPL(writer);
             delimiter = ", ";
         }
         writer.write(')');

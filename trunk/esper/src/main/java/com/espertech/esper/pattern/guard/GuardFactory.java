@@ -9,6 +9,7 @@
 package com.espertech.esper.pattern.guard;
 
 import com.espertech.esper.pattern.PatternContext;
+import com.espertech.esper.epl.expression.ExprNode;
 
 import java.util.List;
 
@@ -22,7 +23,7 @@ public interface GuardFactory
      * @param guardParameters is a list of parameters
      * @throws GuardParameterException thrown to indicate a parameter problem
      */
-    public void setGuardParameters(List<Object> guardParameters) throws GuardParameterException;
+    public void setGuardParameters(List<ExprNode> guardParameters) throws GuardParameterException;
 
     /**
      * Constructs a guard instance.

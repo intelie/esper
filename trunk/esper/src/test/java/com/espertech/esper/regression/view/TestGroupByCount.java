@@ -39,7 +39,7 @@ public class TestGroupByCount extends TestCase
                 .add(Expressions.countStar(), "countAll")
                 .add(Expressions.countDistinct("volume"), "countDistVol")
                 .add(Expressions.count("volume"), "countVol") );
-        model.setFromClause(FromClause.create(FilterStream.create(SupportMarketDataBean.class.getName()).addView("win", "length", 3)));
+        model.setFromClause(FromClause.create(FilterStream.create(SupportMarketDataBean.class.getName()).addView("win", "length", Expressions.constant(3))));
         model.setWhereClause(Expressions.or()
                 .add(Expressions.eq("symbol", "DELL"))
                 .add(Expressions.eq("symbol", "IBM"))

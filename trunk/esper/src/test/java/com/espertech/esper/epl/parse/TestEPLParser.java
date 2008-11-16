@@ -607,7 +607,7 @@ public class TestEPLParser extends TestCase
         assertIsValid("select a, b from A as y unidirectional, B unidirectional where a.x = b.x");
 
         // expessions and event properties are view/guard/observer parameters
-        assertIsValid("select * from A.win:x(myprop.nested, a.c('s'), 'ss', *, null)");
+        assertIsValid("select * from A.win:x(myprop.nested, a.c('s'), 'ss', abc, null)");
         assertIsValid("select * from pattern[every X where a:b(myprop.nested, a.c('s'), 'ss', *, null)]");
         assertIsValid("select * from pattern[every X:b(myprop.nested, a.c('s'), 'ss', *, null)]");
 
