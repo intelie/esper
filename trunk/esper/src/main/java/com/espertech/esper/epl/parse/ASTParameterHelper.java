@@ -60,7 +60,6 @@ public class ASTParameterHelper
             case EsperEPL2GrammarParser.STAR:                      return new WildcardParameter();
             case EsperEPL2GrammarParser.NUMERIC_PARAM_LIST:        return makeList(node, engineTime);
             case EsperEPL2GrammarParser.ARRAY_PARAM_LIST:          return makeArray(node, engineTime);
-            case EsperEPL2GrammarParser.TIME_PERIOD:               return makeTimePeriod(node, engineTime);
             case EsperEPL2GrammarParser.EVENT_PROP_EXPR:           return makeVariableParameter(node);
             default:
                 throw new ASTWalkException("Unexpected constant of type " + node.getType() + " encountered");
@@ -71,47 +70,6 @@ public class ASTParameterHelper
     {
         String name = ASTFilterSpecHelper.getPropertyName(node, 0);
         return new VariableParameter(name);
-    }
-
-    /**
-     * Returns a time period from an AST node and taking engine time (year etc) into account.
-     * @param node is the AST root node of the time period
-     * @param engineTime current time
-     * @return time period
-     */
-    // TODO: remove me
-    protected static TimePeriodParameter makeTimePeriod(Tree node, long engineTime)
-    {
-        double result = 0;
-        for (int i = 0; i < node.getChildCount(); i++)
-        {
-        	Tree child = node.getChild(i);
-            Number numValue = (Number) parseConstant(child.getChild(0), engineTime);
-            double partValue = numValue.doubleValue();
-
-            switch (child.getType())
-            {
-                case EsperEPL2GrammarParser.MILLISECOND_PART :
-                    result += partValue / 1000d;
-                    break;
-                case EsperEPL2GrammarParser.SECOND_PART :
-                    result += partValue;
-                    break;
-                case EsperEPL2GrammarParser.MINUTE_PART :
-                    result += 60 * partValue;
-                    break;
-                case EsperEPL2GrammarParser.HOUR_PART :
-                    result += 60 * 60 * partValue;
-                    break;
-                case EsperEPL2GrammarParser.DAY_PART :
-                    result += 24 * 60 * 60 * partValue;
-                    break;
-                default:
-                    throw new IllegalStateException("Illegal part of interval encountered, type=" + child.getType() + " text=" + child.getText());
-            }
-        }
-
-        return new TimePeriodParameter(result);
     }
 
     private static Object makeList(Tree node, long engineTime) throws ASTWalkException

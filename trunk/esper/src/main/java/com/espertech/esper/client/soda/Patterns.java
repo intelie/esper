@@ -313,14 +313,15 @@ public class Patterns
      */
     public static PatternObserverExpr timerAt(Integer minutes, Integer hours, Integer daysOfMonth, Integer month, Integer daysOfWeek, Integer seconds)
     {
-        List<Object> params = new ArrayList<Object>();
-        params.add(minutes == null ? new WildcardParameter() : minutes);
-        params.add(hours == null ? new WildcardParameter() : hours);
-        params.add(daysOfMonth == null ? new WildcardParameter() : daysOfMonth);
-        params.add(month == null ? new WildcardParameter() : month);
-        params.add(daysOfWeek == null ? new WildcardParameter() : daysOfWeek);
-        params.add(seconds == null ? new WildcardParameter() : seconds);
-        // TODO empty expression array
-        return new PatternObserverExpr("timer", "at", new Expression[0]);
+        Expression wildcard = new ScheduleItemExpression(ScheduleItemExpression.ScheduleItemType.WILDCARD);
+
+        List<Expression> params = new ArrayList<Expression>();
+        params.add(minutes == null ? wildcard : Expressions.constant(minutes));
+        params.add(hours == null ? wildcard : Expressions.constant(hours));
+        params.add(daysOfMonth == null ? wildcard : Expressions.constant(daysOfMonth));
+        params.add(month == null ? wildcard : Expressions.constant(month));
+        params.add(daysOfWeek == null ? wildcard : Expressions.constant(daysOfWeek));
+        params.add(seconds == null ? wildcard : Expressions.constant(seconds));
+        return new PatternObserverExpr("timer", "at", params);
     }
 }

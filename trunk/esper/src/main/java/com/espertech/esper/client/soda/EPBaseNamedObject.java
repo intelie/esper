@@ -8,12 +8,9 @@
  **************************************************************************************/
 package com.espertech.esper.client.soda;
 
-import com.espertech.esper.type.EPLParameterType;
-import com.espertech.esper.core.EPStatementObjectModelHelper;
-
-import java.util.List;
 import java.io.Serializable;
 import java.io.StringWriter;
+import java.util.List;
 
 /**
  * Base class for named engine objects such as views, patterns guards and observers.

@@ -30,6 +30,15 @@ public class StreamTypeServiceImpl implements StreamTypeService
 
     /**
      * Ctor.
+     * @param engineURI engine URI
+     */
+    public StreamTypeServiceImpl (String engineURI)
+    {
+        this(new EventType[0], new String[0], engineURI, new String[0]);
+    }
+
+    /**
+     * Ctor.
      * @param eventType a single event type for a single stream
      * @param streamName the stream name of the single stream
      * @param engineURI engine URI

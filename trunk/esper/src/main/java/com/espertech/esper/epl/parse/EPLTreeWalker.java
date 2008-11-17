@@ -8,28 +8,26 @@
  **************************************************************************************/
 package com.espertech.esper.epl.parse;
 
+import com.espertech.esper.antlr.ASTUtil;
 import com.espertech.esper.collection.UniformPair;
 import com.espertech.esper.epl.agg.AggregationSupport;
 import com.espertech.esper.epl.core.EngineImportException;
 import com.espertech.esper.epl.core.EngineImportService;
 import com.espertech.esper.epl.core.EngineImportUndefinedException;
 import com.espertech.esper.epl.expression.*;
+import com.espertech.esper.epl.generated.EsperEPL2Ast;
 import com.espertech.esper.epl.spec.*;
 import com.espertech.esper.epl.variable.VariableService;
-import com.espertech.esper.epl.generated.EsperEPL2Ast;
-import com.espertech.esper.epl.generated.EsperEPL2GrammarParser;
 import com.espertech.esper.pattern.*;
 import com.espertech.esper.type.*;
 import com.espertech.esper.util.JavaClassHelper;
-import com.espertech.esper.util.PlaceholderParser;
 import com.espertech.esper.util.PlaceholderParseException;
-import com.espertech.esper.antlr.ASTUtil;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import com.espertech.esper.util.PlaceholderParser;
 import org.antlr.runtime.tree.Tree;
 import org.antlr.runtime.tree.TreeNodeStream;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
-import javax.swing.tree.TreeNode;
 import java.util.*;
 
 /**
@@ -357,6 +355,12 @@ public class EPLTreeWalker extends EsperEPL2Ast
                 break;
             case TIME_PERIOD:
                 leaveTimePeriod(node);
+                break;
+            case NUMBERSETSTAR:
+                leaveNumberSetStar(node);
+                break;
+            case NUMERIC_PARAM_FREQUENCY:
+                leaveNumberSetFrequency(node);
                 break;
             default:
                 throw new ASTWalkException("Unhandled node type encountered, type '" + node.getType() +
@@ -699,6 +703,20 @@ public class EPLTreeWalker extends EsperEPL2Ast
         }
         ExprTimePeriod timeNode = new ExprTimePeriod(nodes[0], nodes[1], nodes[2], nodes[3], nodes[4]);
         astExprNodeMap.put(node, timeNode);
+    }
+
+    private void leaveNumberSetStar(Tree node)
+    {
+        log.debug(".leaveNumberSetStar");
+        ExprNumberSetWildcard exprNode = new ExprNumberSetWildcard();
+        astExprNodeMap.put(node, exprNode);
+    }
+
+    private void leaveNumberSetFrequency(Tree node)
+    {
+        log.debug(".leaveNumberSetFrequency");
+        ExprNumberSetFrequency exprNode = new ExprNumberSetFrequency();
+        astExprNodeMap.put(node, exprNode);
     }
 
     private ExprNode handleTimePeriod(Tree parent)
@@ -1803,7 +1821,7 @@ public class EPLTreeWalker extends EsperEPL2Ast
             ExprNode exprNode = astExprNodeMap.get(currentNode);
             if (exprNode == null)
             {
-                throw new IllegalStateException("Expression node for AST node not found for type " + currentNode.getType());
+                throw new IllegalStateException("Expression node for AST node not found for type " + currentNode.getType() + " and text " + currentNode.getText());
             }
             exprNodes.add(exprNode);
             astExprNodeMap.remove(currentNode);

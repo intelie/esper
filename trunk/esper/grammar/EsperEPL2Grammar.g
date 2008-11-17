@@ -204,6 +204,7 @@ tokens
 	MATCH_UNTIL_RANGE_BOUNDED;
 	CREATE_WINDOW_COL_TYPE_LIST;
 	CREATE_WINDOW_COL_TYPE;
+	NUMBERSETSTAR;
 	
    	INT_TYPE;
    	LONG_TYPE;
@@ -1106,7 +1107,12 @@ expressionWithTime
 	| 	(numericParameterList) => numericParameterList
 	|	(lastOperand) => lastOperand
 	|	(lastWeekdayOperand) => lastWeekdayOperand
-	|	STAR^
+	|	numberSetStar
+	;
+
+numberSetStar
+	:	STAR
+		-> ^(NUMBERSETSTAR)
 	;
 	
 lastWeekdayOperand
@@ -1118,7 +1124,7 @@ lastOperand
 	;
 
 frequencyOperand
-	:	STAR DIV NUM_INT -> ^(NUMERIC_PARAM_FREQUENCY NUM_INT)
+	:	STAR DIV (constant | eventProperty) -> ^(NUMERIC_PARAM_FREQUENCY constant? eventProperty?)
 	;
 
 rangeOperand

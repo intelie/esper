@@ -8,12 +8,14 @@
  **************************************************************************************/
 package com.espertech.esper.epl.spec;
 
+import com.espertech.esper.collection.Pair;
 import com.espertech.esper.epl.core.MethodResolutionService;
 import com.espertech.esper.epl.core.StreamTypeService;
 import com.espertech.esper.epl.core.StreamTypeServiceImpl;
-import com.espertech.esper.epl.named.NamedWindowService;
+import com.espertech.esper.epl.core.ViewResourceDelegate;
 import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.epl.expression.ExprValidationException;
+import com.espertech.esper.epl.named.NamedWindowService;
 import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.event.EventAdapterService;
 import com.espertech.esper.event.EventType;
@@ -22,16 +24,15 @@ import com.espertech.esper.event.vaevent.ValueAddEventService;
 import com.espertech.esper.filter.FilterSpecCompiled;
 import com.espertech.esper.filter.FilterSpecCompiler;
 import com.espertech.esper.pattern.*;
-import com.espertech.esper.pattern.observer.ObserverFactory;
-import com.espertech.esper.pattern.observer.ObserverParameterException;
 import com.espertech.esper.pattern.guard.GuardFactory;
 import com.espertech.esper.pattern.guard.GuardParameterException;
-import com.espertech.esper.util.UuidGenerator;
+import com.espertech.esper.pattern.observer.ObserverFactory;
+import com.espertech.esper.pattern.observer.ObserverParameterException;
 import com.espertech.esper.schedule.TimeProvider;
-import com.espertech.esper.collection.Pair;
+import com.espertech.esper.util.UuidGenerator;
 
-import java.util.*;
 import java.net.URI;
+import java.util.*;
 
 /**
  * Pattern specification in unvalidated, unoptimized form.
@@ -80,16 +81,21 @@ public class PatternStreamSpecRaw extends StreamSpecBase implements StreamSpecRa
         // Resolve guard and observers factories 
         try
         {
+            StreamTypeService streamTypes = new StreamTypeServiceImpl(engineURI);
             for (EvalGuardNode guardNode : evalNodeAnalysisResult.getGuardNodes())
             {
                 GuardFactory guardFactory = patternObjectResolutionService.create(guardNode.getPatternGuardSpec());
-                guardFactory.setGuardParameters(guardNode.getPatternGuardSpec().getObjectParameters());
+                List<ExprNode> validated = validateExpressions(guardNode.getPatternGuardSpec().getObjectParameters(),
+                        streamTypes, methodResolutionService, null, timeProvider, variableService);
+                guardFactory.setGuardParameters(validated);
                 guardNode.setGuardFactory(guardFactory);
             }
             for (EvalObserverNode observerNode : evalNodeAnalysisResult.getObserverNodes())
             {
                 ObserverFactory observerFactory = patternObjectResolutionService.create(observerNode.getPatternObserverSpec());
-                observerFactory.setObserverParameters(observerNode.getPatternObserverSpec().getObjectParameters());
+                List<ExprNode> validated = validateExpressions(observerNode.getPatternObserverSpec().getObjectParameters(),
+                        streamTypes, methodResolutionService, null, timeProvider, variableService);
+                observerFactory.setObserverParameters(validated);
                 observerNode.setObserverFactory(observerFactory);
             }
         }
@@ -223,5 +229,24 @@ public class PatternStreamSpecRaw extends StreamSpecBase implements StreamSpecRa
         }
 
         return new PatternStreamSpecCompiled(evalNode, taggedEventTypes, arrayEventTypes, this.getViewSpecs(), this.getOptionalStreamName(), this.isUnidirectional());
+    }
+
+    private List<ExprNode> validateExpressions(List<ExprNode> objectParameters, StreamTypeService streamTypeService,
+                         MethodResolutionService methodResolutionService,
+                         ViewResourceDelegate viewResourceDelegate,
+                         TimeProvider timeProvider,
+                         VariableService variableService)
+            throws ExprValidationException
+    {
+        if (objectParameters == null)
+        {
+            return objectParameters;
+        }
+        List<ExprNode> validated = new ArrayList<ExprNode>();
+        for (ExprNode node : objectParameters)
+        {
+            validated.add(node.getValidatedSubtree(streamTypeService, methodResolutionService, viewResourceDelegate, timeProvider, variableService));
+        }
+        return validated;
     }
 }

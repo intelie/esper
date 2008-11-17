@@ -1,20 +1,20 @@
 package com.espertech.esper.regression.pattern;
 
-import junit.framework.*;
+import com.espertech.esper.client.*;
+import com.espertech.esper.client.soda.*;
+import com.espertech.esper.client.time.CurrentTimeEvent;
+import com.espertech.esper.regression.support.*;
+import com.espertech.esper.support.bean.SupportBeanConstants;
+import com.espertech.esper.support.client.SupportConfigFactory;
+import com.espertech.esper.support.util.ArrayAssertionUtil;
+import com.espertech.esper.support.util.SupportUpdateListener;
+import com.espertech.esper.util.SerializableObjectCopier;
+import junit.framework.TestCase;
+
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
-import java.util.ArrayList;
-
-import com.espertech.esper.regression.support.*;
-import com.espertech.esper.support.bean.*;
-import com.espertech.esper.support.client.SupportConfigFactory;
-import com.espertech.esper.support.util.SupportUpdateListener;
-import com.espertech.esper.support.util.ArrayAssertionUtil;
-import com.espertech.esper.client.soda.*;
-import com.espertech.esper.client.*;
-import com.espertech.esper.client.time.CurrentTimeEvent;
-import com.espertech.esper.util.SerializableObjectCopier;
 
 public class TestTimerAtObserver extends TestCase implements SupportBeanConstants
 {
@@ -44,17 +44,6 @@ public class TestTimerAtObserver extends TestCase implements SupportBeanConstant
         EventCollection testData = EventCollectionFactory.getEventSetOne(startTime, 1000 * 60 * 10);
         CaseList testCaseList = new CaseList();
         EventExpressionCase testCase = null;
-
-        String text = "select * from pattern [timer:at(10, 8, *, *, *, *)]";
-        EPStatementObjectModel model = new EPStatementObjectModel();
-        model.setSelectClause(SelectClause.createWildcard());
-        PatternExpr pattern = Patterns.timerAt(10, 8, null, null, null, null);
-        model.setFromClause(FromClause.create(PatternStream.create(pattern)));
-        model = (EPStatementObjectModel) SerializableObjectCopier.copy(model);
-        assertEquals(text, model.toEPL());
-        testCase = new EventExpressionCase(model);
-        testCase.add("A1");
-        testCaseList.addTest(testCase);
 
         testCase = new EventExpressionCase("timer:at(10, 8, *, *, *)");
         testCase.add("A1");
@@ -161,6 +150,25 @@ public class TestTimerAtObserver extends TestCase implements SupportBeanConstant
         testCase.add("C1");
         testCaseList.addTest(testCase);
 
+        testCase = new EventExpressionCase("timer:at(*, 9, *, *, *) and timer:at(55, *, *, *, *)");
+        testCase.add("D1");
+        testCaseList.addTest(testCase);
+
+        testCase = new EventExpressionCase("timer:at(40, 8, *, *, *, 1) and b=" + EVENT_B_CLASS);
+        testCase.add("A2", "b", testData.getEvent("B1"));
+        testCaseList.addTest(testCase);
+
+        String text = "select * from pattern [timer:at(10, 8, *, *, *, *)]";
+        EPStatementObjectModel model = new EPStatementObjectModel();
+        model.setSelectClause(SelectClause.createWildcard());
+        PatternExpr pattern = Patterns.timerAt(10, 8, null, null, null, null);
+        model.setFromClause(FromClause.create(PatternStream.create(pattern)));
+        model = (EPStatementObjectModel) SerializableObjectCopier.copy(model);
+        assertEquals(text, model.toEPL());
+        testCase = new EventExpressionCase(model);
+        testCase.add("A1");
+        testCaseList.addTest(testCase);
+
         /**
          * As of release 1.6 this no longer updates listeners when the statement is started.
          * The reason is that the dispatch view only gets attached after a pattern started, therefore
@@ -171,14 +179,6 @@ public class TestTimerAtObserver extends TestCase implements SupportBeanConstant
         testCase.add(EventCollection.ON_START_EVENT_ID);
         testCaseList.addTest(testCase);
          */
-
-        testCase = new EventExpressionCase("timer:at(*, 9, *, *, *) and timer:at(55, *, *, *, *)");
-        testCase.add("D1");
-        testCaseList.addTest(testCase);
-
-        testCase = new EventExpressionCase("timer:at(40, 8, *, *, *, 1) and b=" + EVENT_B_CLASS);
-        testCase.add("A2", "b", testData.getEvent("B1"));
-        testCaseList.addTest(testCase);
 
         // Run all tests
         PatternTestHarness util = new PatternTestHarness(testData, testCaseList);

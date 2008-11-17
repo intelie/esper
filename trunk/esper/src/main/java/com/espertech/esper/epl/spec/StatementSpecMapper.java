@@ -931,6 +931,14 @@ public class StatementSpecMapper
                 throw new EPException("Error resolving aggregation: " + e.getMessage(), e);
             }
         }
+        else if (expr instanceof ScheduleItemExpression)
+        {
+            return new ExprNumberSetWildcard();
+        }
+        else if (expr instanceof FrequencyExpression)
+        {
+            return new ExprNumberSetFrequency();
+        }
         throw new IllegalArgumentException("Could not map expression node of type " + expr.getClass().getSimpleName());
     }
 
@@ -1179,6 +1187,16 @@ public class StatementSpecMapper
             Expression second = unmapExpressionDeepOptional(node.getSecond(), unmapContext);
             Expression millisecond = unmapExpressionDeepOptional(node.getMillisecond(), unmapContext);
             return new TimePeriodExpression(day, hour, minute, second, millisecond);
+        }
+        else if (expr instanceof ExprNumberSetWildcard)
+        {
+            return new ScheduleItemExpression(ScheduleItemExpression.ScheduleItemType.WILDCARD);
+        }
+        else if (expr instanceof ExprNumberSetFrequency)
+        {
+            ExprNumberSetFrequency freq = (ExprNumberSetFrequency) expr;
+            Expression expression = unmapExpressionDeep(freq.getChildNodes().get(0), unmapContext);            
+            return new FrequencyExpression(expression);
         }
         throw new IllegalArgumentException("Could not map expression node of type " + expr.getClass().getSimpleName());
     }

@@ -40,6 +40,7 @@ public abstract class GuardFactorySupport implements GuardFactory
             }
             catch (RuntimeException ex)
             {
+                // TODO - error message not nice
                 throw new GuardParameterException(guardName + " reports failed parameter evaluation in parameter expression " + count + ": " + ex.getMessage());
             }
         }

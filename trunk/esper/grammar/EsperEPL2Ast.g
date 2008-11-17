@@ -198,7 +198,7 @@ viewListExpr
 	;
 	
 viewExpr
-	:	^(n=VIEW_EXPR IDENT IDENT (valueExpr)* { leaveNode($n); } )
+	:	^(n=VIEW_EXPR IDENT IDENT (valueExprWithTime)* { leaveNode($n); } )
 	;
 	
 whereClause
@@ -235,7 +235,7 @@ rowLimitClause
 	;
 
 crontabLimitParameterSet
-	:	^(CRONTAB_LIMIT_EXPR_PARAM parameter parameter parameter parameter parameter parameter?)
+	:	^(CRONTAB_LIMIT_EXPR_PARAM valueExprWithTime valueExprWithTime valueExprWithTime valueExprWithTime valueExprWithTime valueExprWithTime?)
 	;
 
 relationalExpr
@@ -274,6 +274,32 @@ valueExpr
 	|	time_period
 	;
 
+valueExprWithTime
+	:	valueExpr
+	| 	^( r=NUMERIC_PARAM_RANGE NUM_INT NUM_INT { leaveNode($r); })
+	| 	^( f=NUMERIC_PARAM_FREQUENCY constant[true]? eventPropertyExpr? { leaveNode($f); })
+	|	lastOperator
+	|	weekDayOperator
+	| 	^( NUMERIC_PARAM_LIST (numericParameterList)+ )
+	|	s=NUMBERSETSTAR { leaveNode($s); }
+	|	LAST
+	|	LW
+	;
+	
+numericParameterList
+	: 	NUM_INT
+	| 	^( NUMERIC_PARAM_RANGE NUM_INT NUM_INT)
+	| 	^( NUMERIC_PARAM_FREQUENCE NUM_INT)
+	;
+		
+lastOperator
+	:	^( LAST_OPERATOR NUM_INT )
+	;
+
+weekDayOperator
+	:	^( WEEKDAY_OPERATOR NUM_INT )
+	;
+	
 subSelectRowExpr
 	:	{pushStmtContext();} ^(s=SUBSELECT_EXPR subQueryExpr) {leaveNode($s);}
 	;
@@ -374,7 +400,7 @@ exprChoice
 	|	patternOp
 	| 	^( a=EVERY_EXPR exprChoice { leaveNode($a); } )
 	| 	^( n=NOT_EXPR exprChoice { leaveNode($n); } )
-	| 	^( g=GUARD_EXPR exprChoice IDENT IDENT valueExpr* { leaveNode($g); } )
+	| 	^( g=GUARD_EXPR exprChoice IDENT IDENT valueExprWithTime* { leaveNode($g); } )
 	|	^( m=MATCH_UNTIL_EXPR matchUntilRange? exprChoice exprChoice? { leaveNode($m); } )
 	;
 	
@@ -386,7 +412,7 @@ patternOp
 	
 atomicExpr
 	:	eventFilterExpr
-	|   	^( ac=OBSERVER_EXPR IDENT IDENT valueExpr* { leaveNode($ac); } )
+	|   	^( ac=OBSERVER_EXPR IDENT IDENT valueExprWithTime* { leaveNode($ac); } )
 	;
 
 eventFilterExpr
@@ -445,42 +471,6 @@ eventPropertyAtomic
 	|	^(EVENT_PROP_DYNAMIC_MAPPED IDENT (STRING_LITERAL | QUOTED_STRING_LITERAL))
 	;	
 	
-//----------------------------------------------------------------------------
-// Parameter set
-//----------------------------------------------------------------------------
-parameter
-	: 	(singleParameter) => singleParameter
-	| 	^( NUMERIC_PARAM_LIST (numericParameterList)+ )
-	|	^( ARRAY_PARAM_LIST (constant[false])*)
-	|	eventPropertyExpr
-	;
-
-singleParameter
-	: 	STAR
-	|	LAST
-	|	LW
-	|	lastOperator
-	|	weekDayOperator
-	| 	constant[false]
-	| 	^( NUMERIC_PARAM_RANGE NUM_INT NUM_INT)
-	| 	^( NUMERIC_PARAM_FREQUENCY NUM_INT)
-	| 	time_period
-	;
-
-numericParameterList
-	: 	NUM_INT
-	| 	^( NUMERIC_PARAM_RANGE NUM_INT NUM_INT)
-	| 	^( NUMERIC_PARAM_FREQUENCE NUM_INT)
-	;
-
-lastOperator
-	:	^( LAST_OPERATOR NUM_INT )
-	;
-
-weekDayOperator
-	:	^( WEEKDAY_OPERATOR NUM_INT )
-	;
-
 time_period
 	: 	^( t=TIME_PERIOD timePeriodDef { leaveNode($t); })
 	;
