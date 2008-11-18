@@ -275,29 +275,37 @@ valueExpr
 	;
 
 valueExprWithTime
-	:	valueExpr
-	| 	^( r=NUMERIC_PARAM_RANGE NUM_INT NUM_INT { leaveNode($r); })
-	| 	^( f=NUMERIC_PARAM_FREQUENCY constant[true]? eventPropertyExpr? { leaveNode($f); })
+	:	l=LAST { leaveNode($l); }
+	|	lw=LW { leaveNode($lw); }
+	|	valueExpr
+	| 	rangeOperator
+	| 	frequencyOperator
 	|	lastOperator
 	|	weekDayOperator
-	| 	^( NUMERIC_PARAM_LIST (numericParameterList)+ )
+	| 	^( l=NUMERIC_PARAM_LIST numericParameterList+ { leaveNode($l); })
 	|	s=NUMBERSETSTAR { leaveNode($s); }
-	|	LAST
-	|	LW
 	;
 	
 numericParameterList
-	: 	NUM_INT
-	| 	^( NUMERIC_PARAM_RANGE NUM_INT NUM_INT)
-	| 	^( NUMERIC_PARAM_FREQUENCE NUM_INT)
+	: 	constant[true]
+	| 	rangeOperator
+	| 	frequencyOperator
+	;
+	
+rangeOperator
+	:	^( r=NUMERIC_PARAM_RANGE constant[true] constant[true] { leaveNode($r); })
 	;
 		
+frequencyOperator
+	:	^( f=NUMERIC_PARAM_FREQUENCY constant[true] { leaveNode($f); })
+	;
+
 lastOperator
-	:	^( LAST_OPERATOR NUM_INT )
+	:	^( l=LAST_OPERATOR constant[true] { leaveNode($l); })
 	;
 
 weekDayOperator
-	:	^( WEEKDAY_OPERATOR NUM_INT )
+	:	^( w=WEEKDAY_OPERATOR constant[true] { leaveNode($w); })
 	;
 	
 subSelectRowExpr
@@ -484,23 +492,23 @@ timePeriodDef
 	;
 	
 dayPart
-	:	^( DAY_PART (number|IDENT))
+	:	^( DAY_PART number)
 	;
 
 hourPart
-	:	^( HOUR_PART (number|IDENT))
+	:	^( HOUR_PART number)
 	;
 
 minutePart
-	:	^( MINUTE_PART (number|IDENT))
+	:	^( MINUTE_PART number)
 	;
 
 secondPart
-	:	^( SECOND_PART (number|IDENT))
+	:	^( SECOND_PART number)
 	;
 
 millisecondPart
-	:	^( MILLISECOND_PART (number|IDENT))
+	:	^( MILLISECOND_PART number)
 	;
 
 substitution

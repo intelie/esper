@@ -137,7 +137,7 @@ public class TestNamedWindowJoin extends TestCase
     public void testFullOuterJoinNamedAggregationLateStart()
     {
         // create window
-        String stmtTextCreate = "create window MyWindow.std:groupby({'string', 'intPrimitive'}).win:length(3) as select string, intPrimitive, boolPrimitive from " + SupportBean.class.getName();
+        String stmtTextCreate = "create window MyWindow.std:groupby(string, intPrimitive).win:length(3) as select string, intPrimitive, boolPrimitive from " + SupportBean.class.getName();
         EPStatement stmtCreate = epService.getEPAdministrator().createEPL(stmtTextCreate);
 
         // create insert into

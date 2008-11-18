@@ -1415,6 +1415,21 @@ public class Expressions implements Serializable
         return new TimePeriodExpression(daysExpr, hoursExpr, minutesExpr, secondsExpr, millisecondsExpr);
     }
 
+    public static CrontabParameterExpression crontabScheduleWildcard()
+    {
+        return new CrontabParameterExpression(CrontabParameterExpression.ScheduleItemType.WILDCARD);
+    }
+
+    public static CrontabFrequencyExpression crontabScheduleFrequency(int frequency)
+    {
+        return new CrontabFrequencyExpression(constant(frequency));
+    }
+
+    public static CrontabRangeExpression crontabScheduleRange(int lowerBounds, int upperBounds)
+    {
+        return new CrontabRangeExpression(constant(lowerBounds), constant(upperBounds));
+    }
+
     /**
      * Returns a list of expressions returning property values for the property names passed in.
      * @param properties is a list of property names

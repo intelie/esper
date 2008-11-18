@@ -22,8 +22,10 @@ import com.espertech.esper.pattern.*;
 import com.espertech.esper.type.MathArithTypeEnum;
 import com.espertech.esper.type.MinMaxTypeEnum;
 import com.espertech.esper.type.RelationalOpEnum;
+import com.espertech.esper.type.CronOperatorEnum;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -226,7 +228,9 @@ public class StatementSpecMapper
         else if (outputLimitSpec.getRateType() == OutputLimitRateType.CRONTAB)
         {
             unit = OutputLimitUnit.CRONTAB_EXPRESSION;
-            clause = new OutputLimitClause(selector, outputLimitSpec.getCrontabAtSchedule());
+            List<ExprNode> timerAtExpressions = outputLimitSpec.getCrontabAtSchedule();
+            List<Expression> mappedExpr = unmapExpressionDeep(timerAtExpressions, unmapContext);
+            clause = new OutputLimitClause(selector, mappedExpr.toArray(new Expression[mappedExpr.size()]));
         }
         else
         {
@@ -314,7 +318,13 @@ public class StatementSpecMapper
             }
         }
 
-        OutputLimitSpec spec = new OutputLimitSpec(frequency, frequencyVariable, rateType, displayLimit, whenExpression, assignments, outputLimitClause.getCrontabAtParameters());
+        List<ExprNode> timerAtExprList = null;
+        if (outputLimitClause.getCrontabAtParameters() != null)
+        {
+            timerAtExprList = mapExpressionDeep(Arrays.asList(outputLimitClause.getCrontabAtParameters()), mapContext);
+        }
+
+        OutputLimitSpec spec = new OutputLimitSpec(frequency, frequencyVariable, rateType, displayLimit, whenExpression, assignments, timerAtExprList);
         raw.setOutputLimitSpec(spec);
     }
 
@@ -931,13 +941,38 @@ public class StatementSpecMapper
                 throw new EPException("Error resolving aggregation: " + e.getMessage(), e);
             }
         }
-        else if (expr instanceof ScheduleItemExpression)
-        {
-            return new ExprNumberSetWildcard();
-        }
-        else if (expr instanceof FrequencyExpression)
+        else if (expr instanceof CrontabFrequencyExpression)
         {
             return new ExprNumberSetFrequency();
+        }
+        else if (expr instanceof CrontabRangeExpression)
+        {
+            return new ExprNumberSetRange();
+        }
+        else if (expr instanceof CrontabParameterExpression)
+        {
+            CrontabParameterExpression cronParam = (CrontabParameterExpression) expr;
+            if (cronParam.getType() == CrontabParameterExpression.ScheduleItemType.WILDCARD)
+            {
+                return new ExprNumberSetWildcard();
+            }
+            CronOperatorEnum operator;
+            if (cronParam.getType() == CrontabParameterExpression.ScheduleItemType.LASTDAY)
+            {
+                operator = CronOperatorEnum.LASTDAY;
+            }
+            else if (cronParam.getType() == CrontabParameterExpression.ScheduleItemType.WEEKDAY)
+            {
+                operator = CronOperatorEnum.WEEKDAY;
+            }
+            else if (cronParam.getType() == CrontabParameterExpression.ScheduleItemType.LASTWEEKDAY)
+            {
+                operator = CronOperatorEnum.LASTWEEKDAY;
+            }
+            else {
+                throw new IllegalArgumentException("Cron parameter not recognized: " + cronParam.getType());
+            }
+            return new ExprNumberSetCronParam(operator);
         }
         throw new IllegalArgumentException("Could not map expression node of type " + expr.getClass().getSimpleName());
     }
@@ -1190,13 +1225,36 @@ public class StatementSpecMapper
         }
         else if (expr instanceof ExprNumberSetWildcard)
         {
-            return new ScheduleItemExpression(ScheduleItemExpression.ScheduleItemType.WILDCARD);
+            return new CrontabParameterExpression(CrontabParameterExpression.ScheduleItemType.WILDCARD);
         }
         else if (expr instanceof ExprNumberSetFrequency)
         {
-            ExprNumberSetFrequency freq = (ExprNumberSetFrequency) expr;
-            Expression expression = unmapExpressionDeep(freq.getChildNodes().get(0), unmapContext);            
-            return new FrequencyExpression(expression);
+            return new CrontabFrequencyExpression();
+        }
+        else if (expr instanceof ExprNumberSetRange)
+        {
+            return new CrontabRangeExpression();
+        }
+        else if (expr instanceof ExprNumberSetCronParam)
+        {
+            ExprNumberSetCronParam cronParam = (ExprNumberSetCronParam) expr;
+            CrontabParameterExpression.ScheduleItemType type = null;
+            if (cronParam.getCronOperator() == CronOperatorEnum.LASTDAY)
+            {
+                type = CrontabParameterExpression.ScheduleItemType.LASTDAY;
+            }
+            else if (cronParam.getCronOperator() == CronOperatorEnum.LASTWEEKDAY)
+            {
+                type = CrontabParameterExpression.ScheduleItemType.LASTWEEKDAY;
+            }
+            else if (cronParam.getCronOperator() == CronOperatorEnum.WEEKDAY)
+            {
+                type = CrontabParameterExpression.ScheduleItemType.WEEKDAY;
+            }
+            else {
+                throw new IllegalArgumentException("Cron parameter not recognized: " + cronParam.getCronOperator());
+            }
+            return new CrontabParameterExpression(type);
         }
         throw new IllegalArgumentException("Could not map expression node of type " + expr.getClass().getSimpleName());
     }

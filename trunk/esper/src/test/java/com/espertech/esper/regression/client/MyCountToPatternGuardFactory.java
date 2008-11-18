@@ -5,7 +5,6 @@ import com.espertech.esper.pattern.PatternContext;
 import com.espertech.esper.epl.variable.VariableReader;
 import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.client.EPException;
-import com.espertech.esper.type.VariableParameter;
 
 import java.util.List;
 
@@ -34,11 +33,13 @@ public class MyCountToPatternGuardFactory extends GuardFactorySupport
         {
             numCountTo = (Integer) guardParameters.get(0);
         }
+        /*
         else if (guardParameters.get(0) instanceof VariableParameter)
         {
             Object param = guardParameters.get(0);
             variableName = ((VariableParameter) param).getVariableName();
         }
+        */
         else
         {
             throw new GuardParameterException(message);

@@ -8,8 +8,6 @@
  **************************************************************************************/
 package com.espertech.esper.client.soda;
 
-import com.espertech.esper.type.WildcardParameter;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -313,7 +311,7 @@ public class Patterns
      */
     public static PatternObserverExpr timerAt(Integer minutes, Integer hours, Integer daysOfMonth, Integer month, Integer daysOfWeek, Integer seconds)
     {
-        Expression wildcard = new ScheduleItemExpression(ScheduleItemExpression.ScheduleItemType.WILDCARD);
+        Expression wildcard = new CrontabParameterExpression(CrontabParameterExpression.ScheduleItemType.WILDCARD);
 
         List<Expression> params = new ArrayList<Expression>();
         params.add(minutes == null ? wildcard : Expressions.constant(minutes));

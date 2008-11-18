@@ -9,12 +9,11 @@
 package com.espertech.esper.client.soda;
 
 import com.espertech.esper.collection.Pair;
-import com.espertech.esper.type.EPLParameterType;
 
 import java.io.Serializable;
 import java.io.StringWriter;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * An output limit clause defines how to limit output of statements and consists of
@@ -30,7 +29,7 @@ public class OutputLimitClause implements Serializable
     private OutputLimitUnit unit;
     private Expression whenExpression;
     private List<Pair<String, Expression>> thenAssignments;
-    private Object[] crontabAtParameters;
+    private Expression[] crontabAtParameters;
 
     /**
      * Creates an output limit clause.
@@ -93,7 +92,7 @@ public class OutputLimitClause implements Serializable
      * @param scheduleParameters the crontab schedule parameters
      * @return clause
      */
-    public static OutputLimitClause create(Object[] scheduleParameters)
+    public static OutputLimitClause createSchedule(Expression[] scheduleParameters)
     {
         return new OutputLimitClause(OutputLimitSelector.DEFAULT, scheduleParameters);
     }
@@ -144,7 +143,7 @@ public class OutputLimitClause implements Serializable
      * @param selector is the events to select
      * @param crontabAtParameters the crontab schedule parameters
      */
-    public OutputLimitClause(OutputLimitSelector selector, Object[] crontabAtParameters)
+    public OutputLimitClause(OutputLimitSelector selector, Expression[] crontabAtParameters)
     {
         this.selector = selector;
         this.crontabAtParameters = crontabAtParameters;
@@ -271,7 +270,7 @@ public class OutputLimitClause implements Serializable
      * Returns the crontab parameters, or null if not using crontab-like schedule.
      * @return parameters
      */
-    public Object[] getCrontabAtParameters()
+    public Expression[] getCrontabAtParameters()
     {
         return crontabAtParameters;
     }
@@ -314,7 +313,7 @@ public class OutputLimitClause implements Serializable
             for (int i = 0; i < crontabAtParameters.length; i++)
             {
                 writer.write(delimiter);
-                ((EPLParameterType) crontabAtParameters[i]).toEPL(writer);
+                crontabAtParameters[i].toEPL(writer);
                 delimiter = ", ";
             }
             writer.write(")");

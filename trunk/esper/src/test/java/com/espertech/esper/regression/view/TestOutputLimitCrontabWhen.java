@@ -9,9 +9,6 @@ import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.support.util.ArrayAssertionUtil;
 import com.espertech.esper.support.util.SupportSubscriber;
 import com.espertech.esper.support.util.SupportUpdateListener;
-import com.espertech.esper.type.FrequencyParameter;
-import com.espertech.esper.type.RangeParameter;
-import com.espertech.esper.type.WildcardParameter;
 import junit.framework.TestCase;
 
 import java.util.Calendar;
@@ -52,9 +49,14 @@ public class TestOutputLimitCrontabWhen extends TestCase
         EPStatementObjectModel model = new EPStatementObjectModel();
         model.setSelectClause(SelectClause.createWildcard());
         model.setFromClause(FromClause.create(FilterStream.create("MarketData").addView("std", "lastevent")));
-        Object[] crontabParams = new Object[] {new FrequencyParameter(15), new RangeParameter(8, 17),
-                new WildcardParameter(), new WildcardParameter(), new WildcardParameter()};
-        model.setOutputLimitClause(OutputLimitClause.create(crontabParams));
+        Expression[] crontabParams = new Expression[] {
+                Expressions.crontabScheduleFrequency(15),
+                Expressions.crontabScheduleRange(8, 17),
+                Expressions.crontabScheduleWildcard(),
+                Expressions.crontabScheduleWildcard(),
+                Expressions.crontabScheduleWildcard()
+            };
+        model.setOutputLimitClause(OutputLimitClause.createSchedule(crontabParams));
 
         String epl = model.toEPL();
         assertEquals(expression, epl);

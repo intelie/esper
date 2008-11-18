@@ -1099,14 +1099,14 @@ expressionWithTimeList
     	;
 
 expressionWithTime
-	:   	expression
+	:   	(lastOperand) => lastOperand
+	|	(lastWeekdayOperand) => lastWeekdayOperand
+	|	expression
 	|	(rangeOperand) => rangeOperand
 	| 	(frequencyOperand) => frequencyOperand
 	|	(lastOperator) => lastOperator
 	|	(weekDayOperator) =>  weekDayOperator
 	| 	(numericParameterList) => numericParameterList
-	|	(lastOperand) => lastOperand
-	|	(lastWeekdayOperand) => lastWeekdayOperand
 	|	numberSetStar
 	;
 
@@ -1124,19 +1124,19 @@ lastOperand
 	;
 
 frequencyOperand
-	:	STAR DIV (constant | eventProperty) -> ^(NUMERIC_PARAM_FREQUENCY constant? eventProperty?)
+	:	STAR DIV numberconstant -> ^(NUMERIC_PARAM_FREQUENCY numberconstant)
 	;
 
 rangeOperand
-	:	l=NUM_INT COLON u=NUM_INT -> ^(NUMERIC_PARAM_RANGE $l $u)
+	:	numberconstant COLON numberconstant -> ^(NUMERIC_PARAM_RANGE numberconstant numberconstant)
 	;
 
 lastOperator
-	:	l=NUM_INT LAST -> ^(LAST_OPERATOR $l)
+	:	numberconstant LAST -> ^(LAST_OPERATOR numberconstant)
 	;
 
 weekDayOperator
-	:	wd=NUM_INT WEEKDAY -> ^(WEEKDAY_OPERATOR $wd)
+	:	numberconstant WEEKDAY -> ^(WEEKDAY_OPERATOR numberconstant)
 	;
 
 numericParameterList
@@ -1147,7 +1147,7 @@ numericParameterList
 numericListParameter
 	:	rangeOperand
 	| 	frequencyOperand
-	|	NUM_INT
+	|	numberconstant
 	;
 	    
 eventProperty
@@ -1236,28 +1236,28 @@ time_period
 	;
 
 dayPart
-	:	(number | i=IDENT) (TIMEPERIOD_DAYS | TIMEPERIOD_DAY)
-		-> ^(DAY_PART number? $i?)
+	:	number (TIMEPERIOD_DAYS | TIMEPERIOD_DAY)
+		-> ^(DAY_PART number)
 	;
 
 hourPart 
-	:	(number | i=IDENT) (TIMEPERIOD_HOURS | TIMEPERIOD_HOUR)
-		-> ^(HOUR_PART number? $i?)
+	:	number (TIMEPERIOD_HOURS | TIMEPERIOD_HOUR)
+		-> ^(HOUR_PART number)
 	;
 
 minutePart 
-	:	(number | i=IDENT) (TIMEPERIOD_MINUTES | TIMEPERIOD_MINUTE | MIN)
-		-> ^(MINUTE_PART number? $i?)
+	:	number (TIMEPERIOD_MINUTES | TIMEPERIOD_MINUTE | MIN)
+		-> ^(MINUTE_PART number)
 	;
 	
 secondPart 
-	:	(number | i=IDENT) (TIMEPERIOD_SECONDS | TIMEPERIOD_SECOND | TIMEPERIOD_SEC)
-		-> ^(SECOND_PART number? $i?)
+	:	number (TIMEPERIOD_SECONDS | TIMEPERIOD_SECOND | TIMEPERIOD_SEC)
+		-> ^(SECOND_PART number)
 	;
 	
 millisecondPart 
-	:	(number | i=IDENT) (TIMEPERIOD_MILLISECONDS | TIMEPERIOD_MILLISECOND | TIMEPERIOD_MILLISEC)
-		-> ^(MILLISECOND_PART number? $i?)
+	:	number (TIMEPERIOD_MILLISECONDS | TIMEPERIOD_MILLISECOND | TIMEPERIOD_MILLISEC)
+		-> ^(MILLISECOND_PART number)
 	;
 	
 number

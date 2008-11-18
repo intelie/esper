@@ -15,6 +15,10 @@ import org.apache.commons.logging.LogFactory;
 import com.espertech.esper.collection.Pair;
 import com.espertech.esper.core.StatementContext;
 import com.espertech.esper.epl.spec.ViewSpec;
+import com.espertech.esper.epl.expression.ExprNode;
+import com.espertech.esper.epl.expression.ExprValidationException;
+import com.espertech.esper.epl.core.StreamTypeService;
+import com.espertech.esper.epl.core.StreamTypeServiceImpl;
 
 /**
  * Utility methods to deal with chains of views, and for merge/group-by views.

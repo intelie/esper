@@ -56,20 +56,12 @@ public class ASTParameterHelper
             case EsperEPL2GrammarParser.LAST:
             case EsperEPL2GrammarParser.LW:
             case EsperEPL2GrammarParser.WEEKDAY_OPERATOR:
-            case EsperEPL2GrammarParser.LAST_OPERATOR:             return makeCronParameter(node, engineTime);
             case EsperEPL2GrammarParser.STAR:                      return new WildcardParameter();
             case EsperEPL2GrammarParser.NUMERIC_PARAM_LIST:        return makeList(node, engineTime);
             case EsperEPL2GrammarParser.ARRAY_PARAM_LIST:          return makeArray(node, engineTime);
-            case EsperEPL2GrammarParser.EVENT_PROP_EXPR:           return makeVariableParameter(node);
             default:
                 throw new ASTWalkException("Unexpected constant of type " + node.getType() + " encountered");
         }
-    }
-
-    private static Object makeVariableParameter(Tree node)
-    {
-        String name = ASTFilterSpecHelper.getPropertyName(node, 0);
-        return new VariableParameter(name);
     }
 
     private static Object makeList(Tree node, long engineTime) throws ASTWalkException
@@ -105,16 +97,6 @@ public class ASTParameterHelper
         int low = IntValue.parseString(node.getChild(0).getText());
         int high = IntValue.parseString(node.getChild(1).getText());
         return new RangeParameter(low, high);
-    }
-
-    private static Object makeCronParameter(Tree node, long engineTime)
-    {
-       if (node.getChild(0) == null) {
-          return new CronParameter(node.getType(), null, engineTime);
-       }
-       else {
-          return new CronParameter(node.getType(), node.getChild(0).getText(), engineTime);
-       }
     }
 
     private static Object makeArray(Tree node, long engineTime) throws ASTWalkException

@@ -11,10 +11,13 @@ package com.espertech.esper.epl.view;
 import com.espertech.esper.core.EPStatementHandleCallback;
 import com.espertech.esper.core.ExtensionServicesContext;
 import com.espertech.esper.core.StatementContext;
+import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.schedule.*;
 import com.espertech.esper.util.ExecutionPathDebugLog;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import java.util.List;
 
 /**
  * Output condition handling crontab-at schedule output.
@@ -36,9 +39,9 @@ public final class OutputConditionCrontab implements OutputCondition
      * Constructor.
      * @param context is the view context for time scheduling
      * @param outputCallback is the callback to make once the condition is satisfied
-     * @param scheduleSpecParameterList list of schedule parameters
+     * @param scheduleSpecExpressionList list of schedule parameters
      */
-    public OutputConditionCrontab(Object[] scheduleSpecParameterList,
+    public OutputConditionCrontab(List<ExprNode> scheduleSpecExpressionList,
                                    StatementContext context,
                                    OutputCallback outputCallback)
     {
@@ -58,6 +61,7 @@ public final class OutputConditionCrontab implements OutputCondition
 
         try
         {
+            Object[] scheduleSpecParameterList = evaluate(scheduleSpecExpressionList);
             scheduleSpec = ScheduleSpecUtil.computeValues(scheduleSpecParameterList);
         }
         catch (ScheduleParameterException e)
@@ -118,7 +122,26 @@ public final class OutputConditionCrontab implements OutputCondition
         context.getSchedulingService().add(scheduleSpec, handle, scheduleSlot);
     }
 
+    public static Object[] evaluate(List<ExprNode> parameters)
+    {
+        Object[] results = new Object[parameters.size()];
+        int count = 0;
+        for (ExprNode expr : parameters)
+        {
+            try
+            {
+                results[count] = expr.evaluate(null, true);
+                count++;
+            }
+            catch (RuntimeException ex)
+            {
+                String message = "Failed expression evaluation in crontab timer-at for parameter " + count + ": " + ex.getMessage();
+                log.error(message, ex);
+                throw new IllegalArgumentException(message);
+            }
+        }
+        return results;
+    }
+
     private static final Log log = LogFactory.getLog(OutputConditionTime.class);
-
-
 }

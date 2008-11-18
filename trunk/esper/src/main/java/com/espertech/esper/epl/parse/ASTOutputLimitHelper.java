@@ -65,7 +65,7 @@ public class ASTOutputLimitHelper
         String variableName = null;
         double rate = -1;
         ExprNode whenExpression = null;
-        Object[] crontabScheduleSpec = null;
+        List<ExprNode> crontabScheduleSpec = null;
         List<OnTriggerSetAssignment> thenExpressions = null;
 
         if (node.getType() == EsperEPL2GrammarParser.WHEN_LIMIT_EXPR)
@@ -85,14 +85,11 @@ public class ASTOutputLimitHelper
                 parent = node.getChild(1);
             }
 
-            List<Object> parameters = new ArrayList<Object>(parent.getChildCount());
+            crontabScheduleSpec = new ArrayList<ExprNode>(parent.getChildCount());
             for (int i = 0; i < parent.getChildCount(); i++)
             {
-                Tree childNode = parent.getChild(i);
-                Object object = ASTParameterHelper.makeParameter(childNode, engineTime);
-                parameters.add(object);
+                crontabScheduleSpec.add(astExprNodeMap.remove(parent.getChild(i)));
             }
-            crontabScheduleSpec = parameters.toArray();
         }
         else
         {

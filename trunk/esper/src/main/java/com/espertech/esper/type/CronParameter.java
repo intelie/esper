@@ -8,10 +8,6 @@
  **************************************************************************************/
 package com.espertech.esper.type;
 
-import com.espertech.esper.epl.generated.EsperEPL2GrammarParser;
-import com.espertech.esper.client.EPException;
-
-import java.io.StringWriter;
 import java.util.Calendar;
 import java.util.HashSet;
 import java.util.Set;
@@ -20,46 +16,21 @@ import java.util.Set;
  * Hold parameters for timer:at.
  */
 public class CronParameter implements NumberSetParameter {
-    private CronOperator operator;
+    private CronOperatorEnum operator;
     private Calendar calendar;
     private Integer day, month;
-
-    /**
-     * Enumeration for special keywords in crontab timer.
-     */
-    public enum CronOperator
-    {
-        /**
-         * Last day of week or month.
-         */
-        last,
-        /**
-         * Weekday (nearest to a date)
-         */
-        w,
-        /**
-         * Last weekday in a month
-         */
-        lw }
-
-    public void toEPL(StringWriter writer)
-    {
-        writer.write(operator.toString());
-    }
 
     private static int FIRST_DAY_OF_WEEK = Calendar.SUNDAY;
 
     /**
      * Ctor.
-     * @param cronOperator is the operator as text
+     * @param operator is the operator as text
      * @param day is the day text
      * @param engineTime is the current engine time
      */
-    public CronParameter(int cronOperator, String day, long engineTime) {
-        this.operator = assignOperator(cronOperator);
-        if (day != null) {
-            this.day = IntValue.parseString(day);
-        }
+    public CronParameter(CronOperatorEnum operator, Integer day, long engineTime) {
+        this.operator = operator;
+        this.day = day;
         calendar = Calendar.getInstance();
         calendar.setTimeInMillis(engineTime);
         calendar.setFirstDayOfWeek(FIRST_DAY_OF_WEEK);
@@ -82,35 +53,38 @@ public class CronParameter implements NumberSetParameter {
         if (((min != 0) && (min != 1)) || ((max != 6) && (max != 31))) {
             throw new IllegalArgumentException("Invalid usage for timer:at");
         }
-        switch (operator){
-            case last:
-                // If max=6, determine last day of Week (In US Saturday=7)
-                if ((min==0) && (max == 6)) {
-                    if (day == null) {
-                        values.add(determineLastDayOfWeek());
-                    } else {
-                        values.add(determineLastDayOfWeekInMonth());
-                    }
-                }  else if ((min==1) && (max == 31)) {
-                    // "Last day of month"
-                    // or "the last xxx day of the month"
-                    if (day == null) {
-                        values.add(determineLastDayOfMonth());
-                    } else {
-                        values.add(determineLastDayOfWeekInMonth());
-                    }
+        if (operator == CronOperatorEnum.LASTDAY)
+        {
+            // If max=6, determine last day of Week (In US Saturday=7)
+            if ((min==0) && (max == 6)) {
+                if (day == null) {
+                    values.add(determineLastDayOfWeek());
                 } else {
-                    throw new IllegalArgumentException("Invalid value for last operator");
+                    values.add(determineLastDayOfWeekInMonth());
                 }
-                break;
-            case lw:
-                values.add(determineLastWeekDayOfMonth());
-                break;
-            case w:
-                values.add(determineLastWeekDayOfMonth());
-                break;
-            default:
-                    throw new IllegalArgumentException("Invalid special operator for observer");
+            }  else if ((min==1) && (max == 31)) {
+                // "Last day of month"
+                // or "the last xxx day of the month"
+                if (day == null) {
+                    values.add(determineLastDayOfMonth());
+                } else {
+                    values.add(determineLastDayOfWeekInMonth());
+                }
+            } else {
+                throw new IllegalArgumentException("Invalid value for last operator");
+            }
+        }
+        else if (operator == CronOperatorEnum.LASTWEEKDAY)
+        {
+            values.add(determineLastWeekDayOfMonth());
+        }
+        else if (operator == CronOperatorEnum.WEEKDAY)
+        {
+            values.add(determineLastWeekDayOfMonth());
+        }
+        else
+        {
+            throw new IllegalArgumentException("Invalid special operator for observer");
         }
         return values;
     }
@@ -200,20 +174,6 @@ public class CronParameter implements NumberSetParameter {
             return false;
         }
         return true;
-    }
-
-    private static CronOperator assignOperator(int nodeType)
-    {
-        if ((nodeType == EsperEPL2GrammarParser.LAST) || (nodeType == EsperEPL2GrammarParser.LAST_OPERATOR)) {
-            return CronOperator.last;
-        }
-        else if (nodeType == EsperEPL2GrammarParser.WEEKDAY_OPERATOR) {
-            return CronOperator.w;
-        }
-        else if (nodeType == EsperEPL2GrammarParser.LW) {
-            return CronOperator.lw;
-        }
-        throw new EPException("Unrecognized cron-operator node type '" + nodeType + "'");
     }
 
     private void setTime() {

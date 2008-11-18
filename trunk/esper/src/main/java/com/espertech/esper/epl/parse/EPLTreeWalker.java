@@ -362,6 +362,22 @@ public class EPLTreeWalker extends EsperEPL2Ast
             case NUMERIC_PARAM_FREQUENCY:
                 leaveNumberSetFrequency(node);
                 break;
+            case NUMERIC_PARAM_RANGE:
+                leaveNumberSetRange(node);
+                break;
+            case NUMERIC_PARAM_LIST:
+                leaveNumberSetList(node);
+                break;
+            case LAST_OPERATOR:
+            case LAST:
+                leaveLastNumberSetOperator(node);
+                break;
+            case LW:
+                leaveLastWeekdayNumberSetOperator(node);
+                break;
+            case WEEKDAY_OPERATOR:
+                leaveWeekdayNumberSetOperator(node);
+                break;
             default:
                 throw new ASTWalkException("Unhandled node type encountered, type '" + node.getType() +
                         "' with text '" + node.getText() + '\'');
@@ -716,6 +732,41 @@ public class EPLTreeWalker extends EsperEPL2Ast
     {
         log.debug(".leaveNumberSetFrequency");
         ExprNumberSetFrequency exprNode = new ExprNumberSetFrequency();
+        astExprNodeMap.put(node, exprNode);
+    }
+
+    private void leaveNumberSetRange(Tree node)
+    {
+        log.debug(".leaveNumberSetRange");
+        ExprNumberSetRange exprNode = new ExprNumberSetRange();
+        astExprNodeMap.put(node, exprNode);
+    }
+
+    private void leaveNumberSetList(Tree node)
+    {
+        log.debug(".leaveNumberSetList");
+        ExprNumberSetList exprNode = new ExprNumberSetList();
+        astExprNodeMap.put(node, exprNode);
+    }
+
+    private void leaveLastNumberSetOperator(Tree node)
+    {
+        log.debug(".leaveLastNumberSetOperator");        
+        ExprNumberSetCronParam exprNode = new ExprNumberSetCronParam(CronOperatorEnum.LASTDAY);
+        astExprNodeMap.put(node, exprNode);
+    }
+
+    private void leaveLastWeekdayNumberSetOperator(Tree node)
+    {
+        log.debug(".leaveLastWeekdayNumberSetOperator");
+        ExprNumberSetCronParam exprNode = new ExprNumberSetCronParam(CronOperatorEnum.LASTWEEKDAY);
+        astExprNodeMap.put(node, exprNode);
+    }
+
+    private void leaveWeekdayNumberSetOperator(Tree node)
+    {
+        log.debug(".leaveWeekdayNumberSetOperator");
+        ExprNumberSetCronParam exprNode = new ExprNumberSetCronParam(CronOperatorEnum.WEEKDAY);
         astExprNodeMap.put(node, exprNode);
     }
 

@@ -10,12 +10,10 @@ package com.espertech.esper.type;
 
 import com.espertech.esper.util.MetaDefItem;
 
-import java.io.StringWriter;
-
 /**
  * Parameter for views that accept time period information such as "5 sec 100 msec".
  */
-public class TimePeriodParameter implements MetaDefItem, EPLParameterType
+public class TimePeriodParameter implements MetaDefItem
 {
     private double numSeconds;
 
@@ -51,11 +49,5 @@ public class TimePeriodParameter implements MetaDefItem, EPLParameterType
     {
         long temp = numSeconds != +0.0d ? Double.doubleToLongBits(numSeconds) : 0L;
         return (int) (temp ^ (temp >>> 32));
-    }
-
-    public void toEPL(StringWriter writer)
-    {
-        writer.write(Double.toString(numSeconds));
-        writer.write(" sec");
     }
 }

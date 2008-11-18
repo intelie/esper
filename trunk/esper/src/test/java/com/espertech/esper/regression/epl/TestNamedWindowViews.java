@@ -1512,7 +1512,7 @@ public class TestNamedWindowViews extends TestCase
     public void testSelectGroupedViewLateStart()
     {
         // create window
-        String stmtTextCreate = "create window MyWindow.std:groupby({'string', 'intPrimitive'}).win:length(9) as select string, intPrimitive from " + SupportBean.class.getName();
+        String stmtTextCreate = "create window MyWindow.std:groupby(string, intPrimitive).win:length(9) as select string, intPrimitive from " + SupportBean.class.getName();
         EPStatement stmtCreate = epService.getEPAdministrator().createEPL(stmtTextCreate);
 
         // create insert into
@@ -1561,7 +1561,7 @@ public class TestNamedWindowViews extends TestCase
     public void testSelectGroupedViewLateStartVariableIterate()
     {
         // create window
-        String stmtTextCreate = "create window MyWindow.std:groupby({'string', 'intPrimitive'}).win:length(9) as select string, intPrimitive, longPrimitive, boolPrimitive from " + SupportBean.class.getName();
+        String stmtTextCreate = "create window MyWindow.std:groupby(string, intPrimitive).win:length(9) as select string, intPrimitive, longPrimitive, boolPrimitive from " + SupportBean.class.getName();
         EPStatement stmtCreate = epService.getEPAdministrator().createEPL(stmtTextCreate);
 
         // create insert into

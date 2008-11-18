@@ -7,7 +7,8 @@ Changes in version 3.0.0
 - View parameters and pattern object parameters are now expressions:
   Prepared statements may parameterize views and pattern object.
   Variables may be used in such expressions.
-
+  Pattern objects may be parameterized by prior events.
+  namespace.name('b') or namespace.name({'a', 'b'})  not supported, 
 
 
 
@@ -453,6 +454,7 @@ This enabled event patterns and EQL to use short event names not requiring makin
 version 0.7.0
 -------------
 Initial alpha version
+
 
 
 
