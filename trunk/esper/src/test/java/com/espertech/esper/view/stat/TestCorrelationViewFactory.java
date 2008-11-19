@@ -5,13 +5,11 @@ import com.espertech.esper.event.EventType;
 import com.espertech.esper.support.event.SupportEventTypeFactory;
 import com.espertech.esper.support.bean.SupportMarketDataBean;
 import com.espertech.esper.support.view.SupportStatementContextFactory;
+import com.espertech.esper.support.epl.SupportExprNodeFactory;
 import com.espertech.esper.view.ViewFieldEnum;
-import com.espertech.esper.view.ViewAttachException;
 import com.espertech.esper.view.ViewParameterException;
 import com.espertech.esper.view.TestViewSupport;
 import com.espertech.esper.view.std.SizeView;
-
-import java.util.Arrays;
 
 public class TestCorrelationViewFactory extends TestCase
 {
@@ -37,9 +35,9 @@ public class TestCorrelationViewFactory extends TestCase
     {
         factory.setViewParameters(null, TestViewSupport.toExprList(new Object[] {"a", "b"}));
         assertFalse(factory.canReuse(new SizeView(SupportStatementContextFactory.makeContext())));
-        assertFalse(factory.canReuse(new CorrelationView(SupportStatementContextFactory.makeContext(), "a", "c")));
-        assertFalse(factory.canReuse(new CorrelationView(SupportStatementContextFactory.makeContext(), "x", "b")));
-        assertTrue(factory.canReuse(new CorrelationView(SupportStatementContextFactory.makeContext(), "a", "b")));
+        assertFalse(factory.canReuse(new CorrelationView(SupportStatementContextFactory.makeContext(), SupportExprNodeFactory.makeIdentNode("a"), SupportExprNodeFactory.makeIdentNode("c"))));
+        assertFalse(factory.canReuse(new CorrelationView(SupportStatementContextFactory.makeContext(), SupportExprNodeFactory.makeIdentNode("x"), SupportExprNodeFactory.makeIdentNode("b"))));
+        assertTrue(factory.canReuse(new CorrelationView(SupportStatementContextFactory.makeContext(), SupportExprNodeFactory.makeIdentNode("a"), SupportExprNodeFactory.makeIdentNode("b"))));
     }
 
     public void testAttaches() throws Exception
@@ -57,7 +55,7 @@ public class TestCorrelationViewFactory extends TestCase
             factory.attach(parentType, null, null, null);
             fail();
         }
-        catch (ViewAttachException ex)
+        catch (ViewParameterException ex)
         {
             // expected;
         }
@@ -80,7 +78,7 @@ public class TestCorrelationViewFactory extends TestCase
     {
         factory.setViewParameters(null, TestViewSupport.toExprList(params));
         CorrelationView view = (CorrelationView) factory.makeView(SupportStatementContextFactory.makeContext());
-        assertEquals(fieldNameX, view.getFieldNameX());
-        assertEquals(fieldNameY, view.getFieldNameY());
+        assertEquals(fieldNameX, view.getExpressionX());
+        assertEquals(fieldNameY, view.getExpressionY());
     }
 }

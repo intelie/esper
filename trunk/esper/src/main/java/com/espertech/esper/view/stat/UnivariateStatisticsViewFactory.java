@@ -10,7 +10,7 @@ package com.espertech.esper.view.stat;
 
 import com.espertech.esper.view.ViewFactory;
 import com.espertech.esper.view.ViewParameterException;
-import com.espertech.esper.view.ViewAttachException;
+import com.espertech.esper.view.ViewParameterException;
 import com.espertech.esper.view.*;
 import com.espertech.esper.event.EventType;
 import com.espertech.esper.epl.core.ViewResourceCallback;
@@ -24,6 +24,8 @@ import java.util.List;
  */
 public class UnivariateStatisticsViewFactory implements ViewFactory
 {
+    private List<ExprNode> viewParameters;
+
     /**
      * Property name of data field.
      */
@@ -32,7 +34,9 @@ public class UnivariateStatisticsViewFactory implements ViewFactory
 
     public void setViewParameters(ViewFactoryContext viewFactoryContext, List<ExprNode> expressionParameters) throws ViewParameterException
     {
-        List<Object> viewParameters = ViewFactorySupport.evaluate("'Univariate statistics' view", viewFactoryContext, expressionParameters);
+        this.viewParameters = expressionParameters;
+
+        List<Object> viewParameters = ViewFactorySupport.validateAndEvaluate("'Univariate statistics' view", viewFactoryContext, expressionParameters);
         String errorMessage = "'Univariate statistics' view require a single field name as a parameter";
         if (viewParameters.size() != 1)
         {
@@ -47,12 +51,12 @@ public class UnivariateStatisticsViewFactory implements ViewFactory
         fieldName = (String) viewParameters.get(0);
     }
 
-    public void attach(EventType parentEventType, StatementContext statementContext, ViewFactory optionalParentFactory, List<ViewFactory> parentViewFactories) throws ViewAttachException
+    public void attach(EventType parentEventType, StatementContext statementContext, ViewFactory optionalParentFactory, List<ViewFactory> parentViewFactories) throws ViewParameterException
     {
         String result = PropertyCheckHelper.checkNumeric(parentEventType, fieldName);
         if (result != null)
         {
-            throw new ViewAttachException(result);
+            throw new ViewParameterException(result);
         }
         eventType = UnivariateStatisticsView.createEventType(statementContext);
     }

@@ -15,7 +15,7 @@ public abstract class SupportViewFactory implements ViewFactory
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public void attach(EventType parentEventType, StatementContext statementContext, ViewFactory optionalParentFactory, List<ViewFactory> parentViewFactories) throws ViewAttachException
+    public void attach(EventType parentEventType, StatementContext statementContext, ViewFactory optionalParentFactory, List<ViewFactory> parentViewFactories) throws ViewParameterException
     {
         //To change body of implemented methods use File | Settings | File Templates.
     }

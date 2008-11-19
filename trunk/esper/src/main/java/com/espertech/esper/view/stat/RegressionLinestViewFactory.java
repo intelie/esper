@@ -10,12 +10,12 @@ package com.espertech.esper.view.stat;
 
 import com.espertech.esper.view.ViewFactory;
 import com.espertech.esper.view.ViewParameterException;
-import com.espertech.esper.view.ViewAttachException;
 import com.espertech.esper.view.*;
 import com.espertech.esper.event.EventType;
 import com.espertech.esper.epl.core.ViewResourceCallback;
 import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.core.StatementContext;
+import com.espertech.esper.util.JavaClassHelper;
 
 import java.util.List;
 
@@ -24,42 +24,41 @@ import java.util.List;
  */
 public class RegressionLinestViewFactory implements ViewFactory
 {
+    private List<ExprNode> viewParameters;
+
     /**
-     * Property name of X field.
+     * Expression X field.
      */
-    protected String fieldNameX;
+    protected ExprNode expressionX;
+
     /**
-     * Property name of Y field.
+     * Expression Y field.
      */
-    protected String fieldNameY;
+    protected ExprNode expressionY;
+
     private EventType eventType;
 
     public void setViewParameters(ViewFactoryContext viewFactoryContext, List<ExprNode> expressionParameters) throws ViewParameterException
     {
-        List<Object> viewParameters = ViewFactorySupport.evaluate("'Regression line' view", viewFactoryContext, expressionParameters);
-        String errorMessage = "'Regression line' view requires two field names as parameters";
+        this.viewParameters = expressionParameters;
+    }
+
+    public void attach(EventType parentEventType, StatementContext statementContext, ViewFactory optionalParentFactory, List<ViewFactory> parentViewFactories) throws ViewParameterException
+    {
+        ExprNode[] validated = ViewFactorySupport.validate("Correlation view", parentEventType, statementContext, viewParameters, false);
+        String errorMessage = "Regression view requires two expressions providing x and y values as properties";
         if (viewParameters.size() != 2)
         {
             throw new ViewParameterException(errorMessage);
         }
 
-        if ( (!(viewParameters.get(0) instanceof String)) ||
-             (!(viewParameters.get(1) instanceof String)) )
+        if ((!JavaClassHelper.isNumeric(validated[1].getType())) || (!JavaClassHelper.isNumeric(validated[1].getType())))
         {
             throw new ViewParameterException(errorMessage);
         }
 
-        fieldNameX = (String) viewParameters.get(0);
-        fieldNameY = (String) viewParameters.get(1);
-    }
-
-    public void attach(EventType parentEventType, StatementContext statementContext, ViewFactory optionalParentFactory, List<ViewFactory> parentViewFactories) throws ViewAttachException
-    {
-        String result = PropertyCheckHelper.checkNumeric(parentEventType, fieldNameX, fieldNameY);
-        if (result != null)
-        {
-            throw new ViewAttachException(result);
-        }
+        expressionX = validated[0];
+        expressionX = validated[1];
 
         eventType = RegressionLinestView.createEventType(statementContext);
     }
@@ -76,7 +75,7 @@ public class RegressionLinestViewFactory implements ViewFactory
 
     public View makeView(StatementContext statementContext)
     {
-        return new RegressionLinestView(statementContext, fieldNameX, fieldNameY);
+        return new RegressionLinestView(statementContext, expressionX, expressionY);
     }
 
     public boolean canReuse(View view)
@@ -87,8 +86,8 @@ public class RegressionLinestViewFactory implements ViewFactory
         }
 
         RegressionLinestView myView = (RegressionLinestView) view;
-        if ((!myView.getFieldNameX().equals(fieldNameX)) ||
-            (!myView.getFieldNameY().equals(fieldNameY)))
+        if ((!ExprNode.deepEquals(myView.getExpressionX(), expressionX)) ||
+            (!ExprNode.deepEquals(myView.getExpressionY(), expressionY)))
         {
             return false;
         }

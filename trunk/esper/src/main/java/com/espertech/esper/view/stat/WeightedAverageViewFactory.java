@@ -10,7 +10,7 @@ package com.espertech.esper.view.stat;
 
 import com.espertech.esper.view.ViewFactory;
 import com.espertech.esper.view.ViewParameterException;
-import com.espertech.esper.view.ViewAttachException;
+import com.espertech.esper.view.ViewParameterException;
 import com.espertech.esper.view.*;
 import com.espertech.esper.event.EventType;
 import com.espertech.esper.epl.core.ViewResourceCallback;
@@ -24,6 +24,8 @@ import java.util.List;
  */
 public class WeightedAverageViewFactory implements ViewFactory
 {
+    private List<ExprNode> viewParameters;
+
     /**
      * Property name of X field.
      */
@@ -37,7 +39,9 @@ public class WeightedAverageViewFactory implements ViewFactory
 
     public void setViewParameters(ViewFactoryContext viewFactoryContext, List<ExprNode> expressionParameters) throws ViewParameterException
     {
-        List<Object> viewParameters = ViewFactorySupport.evaluate("'Weighted average' view", viewFactoryContext, expressionParameters);
+        this.viewParameters = expressionParameters;
+
+        List<Object> viewParameters = ViewFactorySupport.validateAndEvaluate("'Weighted average' view", viewFactoryContext, expressionParameters);
         String errorMessage = "'Weighted average' view requires two field names as parameters";
         if (viewParameters.size() != 2)
         {
@@ -54,12 +58,12 @@ public class WeightedAverageViewFactory implements ViewFactory
         fieldNameWeight = (String) viewParameters.get(1);
     }
 
-    public void attach(EventType parentEventType, StatementContext statementContext, ViewFactory optionalParentFactory, List<ViewFactory> parentViewFactories) throws ViewAttachException
+    public void attach(EventType parentEventType, StatementContext statementContext, ViewFactory optionalParentFactory, List<ViewFactory> parentViewFactories) throws ViewParameterException
     {
         String result = PropertyCheckHelper.checkNumeric(parentEventType, fieldNameX, fieldNameWeight);
         if (result != null)
         {
-            throw new ViewAttachException(result);
+            throw new ViewParameterException(result);
         }
         eventType = WeightedAverageView.createEventType(statementContext);
     }

@@ -43,7 +43,7 @@ public class TimeWindowViewFactory implements DataWindowViewFactory
 
     public void setViewParameters(ViewFactoryContext viewFactoryContext, List<ExprNode> expressionParameters) throws ViewParameterException
     {
-        List<Object> viewParameters = ViewFactorySupport.evaluate("Time window view", viewFactoryContext, expressionParameters);
+        List<Object> viewParameters = ViewFactorySupport.validateAndEvaluate("Time window view", viewFactoryContext, expressionParameters);
         String errorMessage = "Time window view requires a single numeric or time period parameter";
         if (viewParameters.size() != 1)
         {
@@ -79,7 +79,7 @@ public class TimeWindowViewFactory implements DataWindowViewFactory
         }
     }
 
-    public void attach(EventType parentEventType, StatementContext statementContext, ViewFactory optionalParentFactory, List<ViewFactory> parentViewFactories) throws ViewAttachException
+    public void attach(EventType parentEventType, StatementContext statementContext, ViewFactory optionalParentFactory, List<ViewFactory> parentViewFactories) throws ViewParameterException
     {
         this.eventType = parentEventType;
     }

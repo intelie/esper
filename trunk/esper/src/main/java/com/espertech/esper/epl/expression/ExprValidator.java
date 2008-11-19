@@ -37,7 +37,6 @@ public interface ExprValidator
     /**
      * Returns the type that the node's evaluate method returns an instance of.
      * @return type returned when evaluated
-     * @throws ExprValidationException thrown when validation failed
      */
-    public Class getType() throws ExprValidationException;
+    public Class getType();
 }

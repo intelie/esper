@@ -76,7 +76,7 @@ public class ExprNumberSetList extends ExprNode
         
     }
 
-    public Class getType() throws ExprValidationException
+    public Class getType()
     {
         return ListParameter.class;
     }

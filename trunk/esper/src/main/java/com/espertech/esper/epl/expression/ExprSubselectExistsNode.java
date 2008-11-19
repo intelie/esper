@@ -36,7 +36,7 @@ public class ExprSubselectExistsNode extends ExprSubselectNode
         super(statementSpec);
     }
 
-    public Class getType() throws ExprValidationException
+    public Class getType()
     {
         return Boolean.class;
     }

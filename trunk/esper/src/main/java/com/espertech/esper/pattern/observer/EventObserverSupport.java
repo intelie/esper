@@ -8,9 +8,10 @@
  **************************************************************************************/
 package com.espertech.esper.pattern.observer;
 
-import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.epl.expression.ExprIdentNode;
-import com.espertech.esper.view.ViewFactoryContext;
+import com.espertech.esper.epl.expression.ExprNode;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +21,8 @@ import java.util.List;
  */
 public abstract class EventObserverSupport implements EventObserver
 {
+    private static Log log = LogFactory.getLog(EventObserverSupport.class);
+    
     public static List<Object> evaluate(String observerName, List<ExprNode> parameters)
             throws ObserverParameterException
         {
@@ -41,7 +44,13 @@ public abstract class EventObserverSupport implements EventObserver
             }
             catch (RuntimeException ex)
             {
-                throw new ObserverParameterException(observerName + " reports failed parameter evaluation in parameter expression " + count + ": " + ex.getMessage());
+                String message = observerName + " invalid parameter in expression " + count;
+                if (ex.getMessage() != null)
+                {
+                    message += ": " + ex.getMessage();
+                }
+                log.error(message, ex);
+                throw new ObserverParameterException(message);
             }
         }
         return results;

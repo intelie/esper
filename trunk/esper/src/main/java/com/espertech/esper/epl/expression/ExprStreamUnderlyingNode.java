@@ -68,7 +68,7 @@ public class ExprStreamUnderlyingNode extends ExprNode
         type = eventType.getUnderlyingType();
     }
 
-    public Class getType() throws ExprValidationException
+    public Class getType()
     {
         if (streamNum == -1)
         {

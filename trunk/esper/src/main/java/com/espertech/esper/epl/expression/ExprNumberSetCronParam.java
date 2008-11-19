@@ -72,7 +72,7 @@ public class ExprNumberSetCronParam extends ExprNode
         }
     }
 
-    public Class getType() throws ExprValidationException
+    public Class getType()
     {
         return CronParameter.class;
     }

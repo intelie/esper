@@ -20,6 +20,24 @@ import java.util.LinkedList;
 
 public class SupportExprNodeFactory
 {
+    public static ExprNode[] makeIdentNodes(String ... names) throws Exception
+    {
+        ExprNode[] nodes = new ExprNode[names.length];
+        for (int i = 0; i < names.length; i++)
+        {
+            nodes[i] = new ExprIdentNode(names[i]);
+            validate(nodes[i]);
+        }
+        return nodes;
+    }
+
+    public static ExprNode makeIdentNode(String names) throws Exception
+    {
+        ExprNode node = new ExprIdentNode(names);
+        validate(node);
+        return node;
+    }
+
     public static ExprEqualsNode makeEqualsNode() throws Exception
     {
         ExprEqualsNode topNode = new ExprEqualsNode(false);

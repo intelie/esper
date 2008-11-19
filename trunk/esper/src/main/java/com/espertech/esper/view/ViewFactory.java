@@ -37,13 +37,13 @@ public interface ViewFactory
      * @param optionalParentFactory is null when there is no parent view factory, or contains the
      * parent view factory
      * @param parentViewFactories is a list of all the parent view factories or empty list if there are none
-     * @throws ViewAttachException is thrown to indicate that this view factories's view would not play
+     * @throws ViewParameterException is thrown to indicate that this view factories's view would not play
      * with the parent view factories view
      */
     public void attach(EventType parentEventType,
                        StatementContext statementContext,
                        ViewFactory optionalParentFactory,
-                       List<ViewFactory> parentViewFactories) throws ViewAttachException;
+                       List<ViewFactory> parentViewFactories) throws ViewParameterException;
 
     /**
      * Returns true if the view factory can make views that provide a view resource with the

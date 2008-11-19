@@ -13,6 +13,7 @@ import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.event.EventType;
 import com.espertech.esper.view.*;
 import com.espertech.esper.core.StatementContext;
+import com.espertech.esper.util.JavaClassHelper;
 
 import java.util.Arrays;
 import java.util.List;
@@ -22,6 +23,8 @@ import java.util.List;
  */
 public class MultiDimStatsViewFactory implements ViewFactory
 {
+    private List<ExprNode> viewParameters;
+
     /**
      * Derived fields.
      */
@@ -30,60 +33,62 @@ public class MultiDimStatsViewFactory implements ViewFactory
     /**
      * Property name supplying measures.
      */
-    protected String measureField;
+    protected ExprNode measureExpression;
 
     /**
      * Property name supplying columns.
      */
-    protected String columnField;
+    protected ExprNode columnExpression;
 
     /**
      * Property name supplying rows.
      */
-    protected String rowField;
+    protected ExprNode rowExpression;
 
     /**
      * Property name supplying pages.
      */
-    protected String pageField;
+    protected ExprNode pageExpression;
     private EventType eventType;
 
     public void setViewParameters(ViewFactoryContext viewFactoryContext, List<ExprNode> expressionParameters) throws ViewParameterException
     {
-        List<Object> viewParameters = ViewFactorySupport.evaluate("'Multi-dimensional stats' view", viewFactoryContext, expressionParameters);
-        String errorMessage = "'Multi-dimensional stats' view requires a String-array and 2 or more field names as parameters";
+        this.viewParameters = expressionParameters;
+    }
+
+    public void attach(EventType parentEventType, StatementContext statementContext, ViewFactory optionalParentFactory, List<ViewFactory> parentViewFactories) throws ViewParameterException
+    {
+        ExprNode[] validated = ViewFactorySupport.validate("Multi-dimensional stats view", parentEventType, statementContext, viewParameters, false);
+        String errorMessage = "Multi-dimensional stats view requires a String-array of measure names and 2 or more numeric value expressions as parameters";
         if (viewParameters.size() < 3)
         {
             throw new ViewParameterException(errorMessage);
         }
 
-        if ( (!(viewParameters.get(0) instanceof String[])) ||
-             (!(viewParameters.get(1) instanceof String)) ||
-             (!(viewParameters.get(2) instanceof String)) )
+        if (!(validated[0].getType() == String[].class))
         {
             throw new ViewParameterException(errorMessage);
         }
-
-        derivedMeasures = (String[]) viewParameters.get(0);
-        measureField = (String) viewParameters.get(1);
-        columnField = (String) viewParameters.get(2);
+        derivedMeasures = (String[]) ViewFactorySupport.evaluateNoProperties("Multi-dimensional stats view", validated[0], 0);
+        measureExpression = validated[1];
+        columnExpression = validated[2];
 
         if (viewParameters.size() > 3)
         {
-            if (!(viewParameters.get(3) instanceof String))
+            rowExpression = validated[3];
+            if (!JavaClassHelper.isNumeric(rowExpression.getType()))
             {
                 throw new ViewParameterException(errorMessage);
             }
-            rowField = (String) viewParameters.get(3);
         }
 
         if (viewParameters.size() > 4)
         {
-            if (!(viewParameters.get(4) instanceof String))
+            pageExpression = validated[4];
+            if (!JavaClassHelper.isNumeric(pageExpression.getType()))
             {
                 throw new ViewParameterException(errorMessage);
             }
-            pageField = (String) viewParameters.get(4);
         }
 
         for (String measureName : derivedMeasures)
@@ -93,38 +98,11 @@ public class MultiDimStatsViewFactory implements ViewFactory
                 throw new ViewParameterException("Derived measure named '" + measureName + "' is not a valid measure");
             }
         }
-    }
 
-    public void attach(EventType parentEventType, StatementContext statementContext, ViewFactory optionalParentFactory, List<ViewFactory> parentViewFactories) throws ViewAttachException
-    {
-        String message = PropertyCheckHelper.checkNumeric(parentEventType, measureField);
-        if (message != null)
+        if ( (!JavaClassHelper.isNumeric(measureExpression.getType())) ||
+             (!JavaClassHelper.isNumeric(columnExpression.getType())))
         {
-            throw new ViewAttachException(message);
-        }
-
-        message = PropertyCheckHelper.exists(parentEventType, columnField);
-        if (message != null)
-        {
-            throw new ViewAttachException(message);
-        }
-
-        if (rowField != null)
-        {
-            message = PropertyCheckHelper.exists(parentEventType, rowField);
-            if (message != null)
-            {
-                throw new ViewAttachException(message);
-            }
-        }
-
-        if (pageField != null)
-        {
-            message = PropertyCheckHelper.exists(parentEventType, pageField);
-            if (message != null)
-            {
-                throw new ViewAttachException(message);
-            }
+            throw new ViewParameterException(errorMessage);
         }
 
         eventType = MultiDimStatsView.createEventType(statementContext);
@@ -142,7 +120,7 @@ public class MultiDimStatsViewFactory implements ViewFactory
 
     public View makeView(StatementContext statementContext)
     {
-        return new MultiDimStatsView(statementContext, derivedMeasures, measureField, columnField, rowField, pageField);
+        return new MultiDimStatsView(statementContext, derivedMeasures, measureExpression, columnExpression, rowExpression, pageExpression);
     }
 
     public EventType getEventType()
@@ -162,35 +140,35 @@ public class MultiDimStatsViewFactory implements ViewFactory
         {
             return false;
         }
-        if (!other.getMeasureField().equals(measureField))
+        if (!ExprNode.deepEquals(other.getMeasureField(), measureExpression))
         {
             return false;
         }
-        if (!other.getColumnField().equals(columnField))
+        if (!ExprNode.deepEquals(other.getColumnField(), columnExpression))
         {
             return false;
         }
-        if ((other.getRowField() != null) && (rowField != null))
+        if ((other.getRowField() != null) && (rowExpression != null))
         {
-            if (!other.getRowField().equals(rowField))
+            if (!ExprNode.deepEquals(other.getRowField(), rowExpression))
             {
                 return false;
             }
         }
-        if ( ((other.getRowField() == null) && (rowField != null)) ||
-             ((other.getRowField() != null) && (rowField == null)) )
+        if ( ((other.getRowField() == null) && (rowExpression != null)) ||
+             ((other.getRowField() != null) && (rowExpression == null)) )
         {
             return false;
         }
-        if ((other.getPageField() != null) && (pageField != null))
+        if ((other.getPageField() != null) && (pageExpression != null))
         {
-            if (!other.getPageField().equals(pageField))
+            if (!ExprNode.deepEquals(other.getPageField(), pageExpression))
             {
                 return false;
             }
         }
-        if ( ((other.getPageField() == null) && (pageField != null)) ||
-             ((other.getPageField() != null) && (pageField == null)) )
+        if ( ((other.getPageField() == null) && (pageExpression != null)) ||
+             ((other.getPageField() != null) && (pageExpression == null)) )
         {
             return false;
         }

@@ -5,7 +5,7 @@ import com.espertech.esper.support.bean.SupportMarketDataBean;
 import com.espertech.esper.support.event.SupportEventTypeFactory;
 import com.espertech.esper.support.view.SupportStatementContextFactory;
 import com.espertech.esper.view.TestViewSupport;
-import com.espertech.esper.view.ViewAttachException;
+import com.espertech.esper.view.ViewParameterException;
 import com.espertech.esper.view.ViewFieldEnum;
 import com.espertech.esper.view.ViewParameterException;
 import com.espertech.esper.view.std.SizeView;
@@ -46,7 +46,7 @@ public class TestWeightedAverageViewFactory extends TestCase
             factory.attach(parentType, null, null, null);
             fail();
         }
-        catch (ViewAttachException ex)
+        catch (ViewParameterException ex)
         {
             // expected;
         }

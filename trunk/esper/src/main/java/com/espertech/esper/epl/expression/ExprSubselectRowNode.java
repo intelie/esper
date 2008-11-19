@@ -36,7 +36,7 @@ public class ExprSubselectRowNode extends ExprSubselectNode
         super(statementSpec);
     }
 
-    public Class getType() throws ExprValidationException
+    public Class getType()
     {
         if (selectClause == null)   // wildcards allowed
         {

@@ -14,11 +14,16 @@ import com.espertech.esper.epl.expression.ExprIdentNode;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 /**
  * Abstract class for applications to extend to implement pattern guard objects.
  */
 public abstract class GuardFactorySupport implements GuardFactory
 {
+    private static Log log = LogFactory.getLog(GuardFactorySupport.class);
+
     public static List<Object> evaluate(String guardName, List<ExprNode> parameters)
             throws GuardParameterException
     {
@@ -40,8 +45,13 @@ public abstract class GuardFactorySupport implements GuardFactory
             }
             catch (RuntimeException ex)
             {
-                // TODO - error message not nice
-                throw new GuardParameterException(guardName + " reports failed parameter evaluation in parameter expression " + count + ": " + ex.getMessage());
+                String message = guardName + " invalid parameter in expression " + count;
+                if (ex.getMessage() != null)
+                {
+                    message += ": " + ex.getMessage();
+                }
+                log.error(message, ex);
+                throw new GuardParameterException(message);
             }
         }
         return results;

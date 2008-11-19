@@ -14,6 +14,8 @@ import com.espertech.esper.core.StatementExtensionSvcContext;
 import com.espertech.esper.event.EventAdapterService;
 import com.espertech.esper.schedule.ScheduleBucket;
 import com.espertech.esper.schedule.SchedulingService;
+import com.espertech.esper.epl.core.MethodResolutionService;
+import com.espertech.esper.epl.variable.VariableService;
 
 /**
  * Context calss for specific views within a statement. Each view in a statement gets it's own context
@@ -141,6 +143,26 @@ public class ViewFactoryContext
     public String getViewName()
     {
         return viewName;
+    }
+
+    public String getEngineURI()
+    {
+        return statementContext.getEngineURI();
+    }
+
+    public MethodResolutionService getMethodResolutionService()
+    {
+        return statementContext.getMethodResolutionService();
+    }
+
+    public VariableService getVariableService()
+    {
+        return statementContext.getVariableService();
+    }
+
+    public StatementContext getStatementContext()
+    {
+        return statementContext;
     }
 
     public String toString()

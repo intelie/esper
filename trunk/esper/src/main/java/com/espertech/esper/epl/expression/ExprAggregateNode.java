@@ -97,7 +97,7 @@ public abstract class ExprAggregateNode extends ExprNode
         }
     }
 
-    public Class getType() throws ExprValidationException
+    public Class getType()
     {
         if (aggregationMethod == null)
         {

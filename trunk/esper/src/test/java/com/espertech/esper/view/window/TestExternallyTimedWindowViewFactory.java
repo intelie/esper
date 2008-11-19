@@ -6,7 +6,7 @@ import com.espertech.esper.support.event.SupportEventTypeFactory;
 import com.espertech.esper.support.view.SupportStatementContextFactory;
 import com.espertech.esper.type.TimePeriodParameter;
 import com.espertech.esper.view.TestViewSupport;
-import com.espertech.esper.view.ViewAttachException;
+import com.espertech.esper.view.ViewParameterException;
 import com.espertech.esper.view.ViewParameterException;
 import com.espertech.esper.view.std.SizeView;
 import junit.framework.TestCase;
@@ -50,7 +50,7 @@ public class TestExternallyTimedWindowViewFactory extends TestCase
             factory.attach(parentType, null, null, null);
             fail();
         }
-        catch (ViewAttachException ex)
+        catch (ViewParameterException ex)
         {
             // expected
         }
@@ -61,7 +61,7 @@ public class TestExternallyTimedWindowViewFactory extends TestCase
             factory.attach(parentType, null, null, null);
             fail();
         }
-        catch (ViewAttachException ex)
+        catch (ViewParameterException ex)
         {
             // expected
         }

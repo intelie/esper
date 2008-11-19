@@ -127,7 +127,7 @@ public class ExprCastNode extends ExprNode
         return false;
     }
 
-    public Class getType() throws ExprValidationException
+    public Class getType()
     {
         return targetType;
     }

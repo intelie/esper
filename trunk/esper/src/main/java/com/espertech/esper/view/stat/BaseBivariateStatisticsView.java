@@ -8,13 +8,13 @@
  **************************************************************************************/
 package com.espertech.esper.view.stat;
 
-import java.util.Iterator;
-
 import com.espertech.esper.collection.SingleEventIterator;
-import com.espertech.esper.event.EventBean;
-import com.espertech.esper.event.EventPropertyGetter;
-import com.espertech.esper.view.*;
 import com.espertech.esper.core.StatementContext;
+import com.espertech.esper.epl.expression.ExprNode;
+import com.espertech.esper.event.EventBean;
+import com.espertech.esper.view.ViewSupport;
+
+import java.util.Iterator;
 
 /**
  * View for computing statistics that require 2 input variable arrays containing X and Y datapoints.
@@ -27,10 +27,9 @@ public abstract class BaseBivariateStatisticsView extends ViewSupport
      */
     protected BaseStatisticsBean statisticsBean;
 
-    private String fieldNameX;
-    private String fieldNameY;
-    private EventPropertyGetter fieldXGetter;
-    private EventPropertyGetter fieldYGetter;
+    private ExprNode expressionX;
+    private ExprNode expressionY;
+    private EventBean[] eventsPerStream = new EventBean[1];
 
     /**
      * Services required by implementing classes.
@@ -42,29 +41,19 @@ public abstract class BaseBivariateStatisticsView extends ViewSupport
     /**
      * Constructor requires the name of the two fields to use in the parent view to compute the statistics.
      * @param statisticsBean is the base class prodiving sum of X and Y and squares for use by subclasses
-     * @param fieldNameX is the name of the field within the parent view to get the X values from
-     * @param fieldNameY is the name of the field within the parent view to get the Y values from
+     * @param expressionX is the expression to get the X values from
+     * @param expressionX is the expression to get the Y values from
      * @param statementContext contains required view services
      */
     public BaseBivariateStatisticsView(StatementContext statementContext,
                                        BaseStatisticsBean statisticsBean,
-                                       String fieldNameX,
-                                       String fieldNameY)
+                                       ExprNode expressionX,
+                                       ExprNode expressionY)
     {
         this.statementContext = statementContext;
         this.statisticsBean = statisticsBean;
-        this.fieldNameX = fieldNameX;
-        this.fieldNameY = fieldNameY;
-    }
-
-    public final void setParent(Viewable parent)
-    {
-        super.setParent(parent);
-        if (parent != null)
-        {
-            fieldXGetter = parent.getEventType().getGetter(fieldNameX);
-            fieldYGetter = parent.getEventType().getGetter(fieldNameY);
-        }
+        this.expressionX = expressionX;
+        this.expressionY = expressionY;
     }
 
     public void update(EventBean[] newData, EventBean[] oldData)
@@ -84,8 +73,9 @@ public abstract class BaseBivariateStatisticsView extends ViewSupport
         {
             for (int i = 0; i < newData.length; i++)
             {
-                double X = ((Number) fieldXGetter.get(newData[i])).doubleValue();
-                double Y = ((Number) fieldYGetter.get(newData[i])).doubleValue();
+                eventsPerStream[0] = newData[i];
+                double X = ((Number) expressionX.evaluate(eventsPerStream, true)).doubleValue();
+                double Y = ((Number) expressionX.evaluate(eventsPerStream, true)).doubleValue();
                 statisticsBean.addPoint(X, Y);
             }
         }
@@ -95,8 +85,9 @@ public abstract class BaseBivariateStatisticsView extends ViewSupport
         {
             for (int i = 0; i < oldData.length; i++)
             {
-                double X = ((Number) fieldXGetter.get(oldData[i])).doubleValue();
-                double Y = ((Number) fieldYGetter.get(oldData[i])).doubleValue();
+                eventsPerStream[0] = oldData[i];
+                double X = ((Number) expressionX.evaluate(eventsPerStream, true)).doubleValue();
+                double Y = ((Number) expressionX.evaluate(eventsPerStream, true)).doubleValue();
                 statisticsBean.removePoint(X, Y);
             }
         }
@@ -132,20 +123,20 @@ public abstract class BaseBivariateStatisticsView extends ViewSupport
     }
 
     /**
-     * Returns the field name of the field supplying X data points.
-     * @return X field name
+     * Returns the expression supplying X data points.
+     * @return X expression
      */
-    public final String getFieldNameX()
+    public final ExprNode getExpressionX()
     {
-        return fieldNameX;
+        return expressionX;
     }
 
     /**
-     * Returns the field name of the field supplying Y data points.
-     * @return Y field name
+     * Returns the expression supplying Y data points.
+     * @return Y expression
      */
-    public final String getFieldNameY()
+    public final ExprNode getExpressionY()
     {
-        return fieldNameY;
+        return expressionY;
     }
 }

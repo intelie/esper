@@ -8,16 +8,17 @@ import com.espertech.esper.support.util.ArrayAssertionUtil;
 import com.espertech.esper.support.view.SupportBeanClassView;
 import com.espertech.esper.support.view.SupportStreamImpl;
 import com.espertech.esper.support.view.SupportViewDataChecker;
+import com.espertech.esper.support.epl.SupportExprNodeFactory;
 
 public class TestSortWindowView extends TestCase
 {
     private SortWindowView myView;
     private SupportBeanClassView childView;
 
-    public void setUp()
+    public void setUp() throws Exception
     {
         // Set up length window view and a test child view
-        myView = new SortWindowView(null, new String[]{"volume"}, new boolean[] {false}, 5, null, false);
+        myView = new SortWindowView(null, SupportExprNodeFactory.makeIdentNodes("volume"), new boolean[] {false}, 5, null, false);
         childView = new SupportBeanClassView(SupportMarketDataBean.class);
         myView.addView(childView);
     }
@@ -73,10 +74,10 @@ public class TestSortWindowView extends TestCase
         ArrayAssertionUtil.assertEqualsExactOrder(myView.iterator(), new EventBean[] { bean[8], bean[7], bean[4], bean[10], bean[11] });
     }
     
-    public void testViewTwoProperties()
+    public void testViewTwoProperties() throws Exception
     {
     	// Set up a sort windows that sorts on two properties
-    	myView = new SortWindowView(null, new String[]{"volume", "price"}, new boolean[] {false, true}, 5, null, false);
+    	myView = new SortWindowView(null, SupportExprNodeFactory.makeIdentNodes("volume", "price"), new boolean[] {false, true}, 5, null, false);
         childView = new SupportBeanClassView(SupportMarketDataBean.class);
         myView.addView(childView);
         

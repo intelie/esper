@@ -35,7 +35,7 @@ public class TimeLengthBatchViewFactory extends TimeBatchViewFactoryParams imple
 
     public void setViewParameters(ViewFactoryContext viewFactoryContext, List<ExprNode> expressionParameters) throws ViewParameterException
     {
-        List<Object> viewParameters = ViewFactorySupport.evaluate("Time-length combination batch view", viewFactoryContext, expressionParameters);
+        List<Object> viewParameters = ViewFactorySupport.validateAndEvaluate("Time-length combination batch view", viewFactoryContext, expressionParameters);
         String errorMessage = "Time-length combination batch view requires a numeric or time period parameter as a time interval size, and an integer parameter as a maximal number-of-events, and an optional list of control keywords as a string parameter (please see the documentation)";
         if ((viewParameters.size() != 2) && (viewParameters.size() != 3))
         {
@@ -59,7 +59,7 @@ public class TimeLengthBatchViewFactory extends TimeBatchViewFactoryParams imple
         }
     }
 
-    public void attach(EventType parentEventType, StatementContext statementContext, ViewFactory optionalParentFactory, List<ViewFactory> parentViewFactories) throws ViewAttachException
+    public void attach(EventType parentEventType, StatementContext statementContext, ViewFactory optionalParentFactory, List<ViewFactory> parentViewFactories) throws ViewParameterException
     {
         this.eventType = parentEventType;
     }

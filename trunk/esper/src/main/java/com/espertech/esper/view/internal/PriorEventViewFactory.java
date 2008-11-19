@@ -39,7 +39,7 @@ public class PriorEventViewFactory implements ViewFactory
 
     public void setViewParameters(ViewFactoryContext viewFactoryContext, List<ExprNode> expressionParameters) throws ViewParameterException
     {
-        List<Object> viewParameters = ViewFactorySupport.evaluate("Prior event view", viewFactoryContext, expressionParameters);
+        List<Object> viewParameters = ViewFactorySupport.validateAndEvaluate("Prior event view", viewFactoryContext, expressionParameters);
         if (viewParameters.size() != 1)
         {
             throw new ViewParameterException("View requires a single parameter indicating unbound or not");
@@ -47,7 +47,7 @@ public class PriorEventViewFactory implements ViewFactory
         isUnbound = (Boolean) viewParameters.get(0);
     }
 
-    public void attach(EventType parentEventType, StatementContext statementContext, ViewFactory optionalParentFactory, List<ViewFactory> parentViewFactories) throws ViewAttachException
+    public void attach(EventType parentEventType, StatementContext statementContext, ViewFactory optionalParentFactory, List<ViewFactory> parentViewFactories) throws ViewParameterException
     {
         eventType = parentEventType;
     }

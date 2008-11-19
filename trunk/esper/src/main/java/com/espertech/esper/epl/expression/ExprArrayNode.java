@@ -124,7 +124,7 @@ public class ExprArrayNode extends ExprNode
         return constantResult != null;
     }
 
-    public Class getType() throws ExprValidationException
+    public Class getType()
     {
         return Array.newInstance(coercionType, 0).getClass();
     }

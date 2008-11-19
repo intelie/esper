@@ -56,7 +56,7 @@ public final class ViewServiceImpl implements ViewService
                 attachedViewFactories.add(viewFactories.get(i));
                 parentEventType = factoryToAttach.getEventType();
             }
-            catch (ViewAttachException ex)
+            catch (ViewParameterException ex)
             {
                 String text = "Error attaching view to parent view";
                 if (i == 0)

@@ -49,7 +49,7 @@ public class TimeOrderViewFactory implements DataWindowViewFactory
 
     public void setViewParameters(ViewFactoryContext viewFactoryContext, List<ExprNode> expressionParameters) throws ViewParameterException
     {
-        List<Object> viewParameters = ViewFactorySupport.evaluate("Time order view", viewFactoryContext, expressionParameters);
+        List<Object> viewParameters = ViewFactorySupport.validateAndEvaluate("Time order view", viewFactoryContext, expressionParameters);
         String errorMessage = "Time order view requires the property name supplying timestamp values, and a numeric or time period parameter for interval size";
         if (viewParameters.size() != 2)
         {
@@ -92,14 +92,14 @@ public class TimeOrderViewFactory implements DataWindowViewFactory
         }
     }
 
-    public void attach(EventType parentEventType, StatementContext statementContext, ViewFactory optionalParentFactory, List<ViewFactory> parentViewFactories) throws ViewAttachException
+    public void attach(EventType parentEventType, StatementContext statementContext, ViewFactory optionalParentFactory, List<ViewFactory> parentViewFactories) throws ViewParameterException
     {
         // Attaches to parent views where the sort fields exist and implement Comparable
         String result = PropertyCheckHelper.exists(parentEventType, timestampFieldName);
 
         if(result != null)
         {
-            throw new ViewAttachException(result);
+            throw new ViewParameterException(result);
         }
 
         eventType = parentEventType;

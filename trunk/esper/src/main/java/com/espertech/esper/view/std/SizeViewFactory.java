@@ -25,7 +25,7 @@ public class SizeViewFactory implements ViewFactory
 
     public void setViewParameters(ViewFactoryContext viewFactoryContext, List<ExprNode> expressionParameters) throws ViewParameterException
     {
-        List<Object> viewParameters = ViewFactorySupport.evaluate("'Size' view", viewFactoryContext, expressionParameters);
+        List<Object> viewParameters = ViewFactorySupport.validateAndEvaluate("'Size' view", viewFactoryContext, expressionParameters);
         String errorMessage = "'Size' view does not take any parameters";
         if (!viewParameters.isEmpty())
         {
@@ -33,7 +33,7 @@ public class SizeViewFactory implements ViewFactory
         }
     }
 
-    public void attach(EventType parentEventType, StatementContext statementContext, ViewFactory optionalParentFactory, List<ViewFactory> parentViewFactories) throws ViewAttachException
+    public void attach(EventType parentEventType, StatementContext statementContext, ViewFactory optionalParentFactory, List<ViewFactory> parentViewFactories) throws ViewParameterException
     {
         eventType = SizeView.createEventType(statementContext);
     }

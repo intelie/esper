@@ -1,7 +1,6 @@
 package com.espertech.esper.view.ext;
 
 import junit.framework.TestCase;
-import com.espertech.esper.view.ViewAttachException;
 import com.espertech.esper.view.ViewParameterException;
 import com.espertech.esper.view.TestViewSupport;
 import com.espertech.esper.core.StatementContext;
@@ -11,8 +10,7 @@ import com.espertech.esper.support.event.SupportEventTypeFactory;
 import com.espertech.esper.support.bean.SupportMarketDataBean;
 import com.espertech.esper.support.view.SupportStatementContextFactory;
 import com.espertech.esper.support.util.ArrayAssertionUtil;
-
-import java.util.Arrays;
+import com.espertech.esper.support.epl.SupportExprNodeFactory;
 
 public class TestSortWindowViewFactory extends TestCase
 {
@@ -52,7 +50,7 @@ public class TestSortWindowViewFactory extends TestCase
             factory.attach(parentType, null, null, null);
             fail();
         }
-        catch (ViewAttachException ex)
+        catch (ViewParameterException ex)
         {
             // expected;
         }
@@ -64,14 +62,14 @@ public class TestSortWindowViewFactory extends TestCase
 
         factory.setViewParameters(null, TestViewSupport.toExprList(new Object[] {"price", true, 100}));
         assertFalse(factory.canReuse(new SizeView(context)));
-        assertTrue(factory.canReuse(new SortWindowView(factory, new String[] {"price"}, new boolean[] {true}, 100, null, false)));
-        assertFalse(factory.canReuse(new SortWindowView(factory, new String[] {"volume"}, new boolean[] {true}, 100, null, false)));
-        assertFalse(factory.canReuse(new SortWindowView(factory, new String[] {"price"}, new boolean[] {false}, 100, null, false)));
-        assertFalse(factory.canReuse(new SortWindowView(factory, new String[] {"price"}, new boolean[] {true}, 99, null, false)));
+        assertTrue(factory.canReuse(new SortWindowView(factory, SupportExprNodeFactory.makeIdentNodes("price"), new boolean[] {true}, 100, null, false)));
+        assertFalse(factory.canReuse(new SortWindowView(factory, SupportExprNodeFactory.makeIdentNodes("volume"), new boolean[] {true}, 100, null, false)));
+        assertFalse(factory.canReuse(new SortWindowView(factory, SupportExprNodeFactory.makeIdentNodes("price"), new boolean[] {false}, 100, null, false)));
+        assertFalse(factory.canReuse(new SortWindowView(factory, SupportExprNodeFactory.makeIdentNodes("price"), new boolean[] {true}, 99, null, false)));
 
         factory.setViewParameters(null, TestViewSupport.toExprList(new Object[] {new Object[] {"price", true, "volume", false}, 100}));
-        assertTrue(factory.canReuse(new SortWindowView(factory, new String[] {"price", "volume"}, new boolean[] {true, false}, 100, null, false)));
-        assertFalse(factory.canReuse(new SortWindowView(factory, new String[] {"price", "xxx"}, new boolean[] {true, false}, 100, null, false)));
+        assertTrue(factory.canReuse(new SortWindowView(factory, SupportExprNodeFactory.makeIdentNodes("price", "volume"), new boolean[] {true, false}, 100, null, false)));
+        assertFalse(factory.canReuse(new SortWindowView(factory, SupportExprNodeFactory.makeIdentNodes("price", "xxx"), new boolean[] {true, false}, 100, null, false)));
     }
 
     private void tryInvalidParameter(Object[] params) throws Exception
@@ -92,7 +90,7 @@ public class TestSortWindowViewFactory extends TestCase
         factory.setViewParameters(null, TestViewSupport.toExprList(params));
         SortWindowView view = (SortWindowView) factory.makeView(SupportStatementContextFactory.makeContext());
         assertEquals(size, view.getSortWindowSize());
-        ArrayAssertionUtil.assertEqualsExactOrder(fieldNames, view.getSortFieldNames());
+        ArrayAssertionUtil.assertEqualsExactOrder(fieldNames, view.getSortCriteriaExpressions());
         ArrayAssertionUtil.assertEqualsExactOrder(ascInd, view.getIsDescendingValues());
     }
 }

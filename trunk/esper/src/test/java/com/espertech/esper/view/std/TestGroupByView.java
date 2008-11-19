@@ -8,6 +8,7 @@ import com.espertech.esper.support.bean.SupportMarketDataBean;
 import com.espertech.esper.support.view.*;
 import com.espertech.esper.support.event.SupportEventBeanFactory;
 import com.espertech.esper.support.event.SupportEventTypeFactory;
+import com.espertech.esper.support.epl.SupportExprNodeFactory;
 import com.espertech.esper.view.EventStream;
 import com.espertech.esper.view.View;
 import com.espertech.esper.core.StatementContext;
@@ -19,14 +20,14 @@ public class TestGroupByView extends TestCase
     private SupportBeanClassView ultimateChildView;
     private StatementContext statementContext;
 
-    public void setUp()
+    public void setUp() throws Exception
     {
         statementContext = SupportStatementContextFactory.makeContext();
-        myGroupByView = new GroupByView(statementContext, new String[] {"symbol"});
+        myGroupByView = new GroupByView(statementContext, SupportExprNodeFactory.makeIdentNodes("symbol"));
 
         SupportBeanClassView childView = new SupportBeanClassView(SupportMarketDataBean.class);
 
-        MergeView myMergeView = new MergeView(statementContext, new String[]{"symbol"}, SupportEventTypeFactory.createBeanType(SupportMarketDataBean.class));
+        MergeView myMergeView = new MergeView(statementContext, SupportExprNodeFactory.makeIdentNodes("symbol"), SupportEventTypeFactory.createBeanType(SupportMarketDataBean.class));
 
         ultimateChildView = new SupportBeanClassView(SupportMarketDataBean.class);
 
@@ -107,10 +108,10 @@ public class TestGroupByView extends TestCase
         }
     }
 
-    public void testMakeSubviews()
+    public void testMakeSubviews() throws Exception
     {
         EventStream eventStream = new SupportStreamImpl(SupportMarketDataBean.class, 4);
-        GroupByView groupView = new GroupByView(statementContext, new String[] {"symbol"});
+        GroupByView groupView = new GroupByView(statementContext, SupportExprNodeFactory.makeIdentNodes("symbol"));
         eventStream.addView(groupView);
 
         Object[] groupByValue = new Object[] {"IBM"};
@@ -118,7 +119,7 @@ public class TestGroupByView extends TestCase
         // Invalid for no child nodes
         try
         {
-            GroupByView.makeSubViews(groupView, groupByValue, statementContext);
+            GroupByView.makeSubViews(groupView, "symbol".split(","), groupByValue, statementContext);
             assertTrue(false);
         }
         catch (EPException ex)
@@ -127,11 +128,11 @@ public class TestGroupByView extends TestCase
         }
 
         // Invalid for child node is a merge node - doesn't make sense to group and merge only
-        MergeView mergeViewOne = new MergeView(statementContext, new String[] {"symbol"}, null);
+        MergeView mergeViewOne = new MergeView(statementContext, SupportExprNodeFactory.makeIdentNodes("symbol"), null);
         groupView.addView(mergeViewOne);
         try
         {
-            GroupByView.makeSubViews(groupView, groupByValue, statementContext);
+            GroupByView.makeSubViews(groupView, "symbol".split(","), groupByValue, statementContext);
             assertTrue(false);
         }
         catch (EPException ex)
@@ -140,15 +141,15 @@ public class TestGroupByView extends TestCase
         }
 
         // Add a size view parent of merge view
-        groupView = new GroupByView(statementContext, new String[] {"symbol"});
+        groupView = new GroupByView(statementContext, SupportExprNodeFactory.makeIdentNodes("symbol"));
 
         SizeView sizeView_1 = new SizeView(statementContext);
 
         groupView.addView(sizeView_1);
-        mergeViewOne = new MergeView(statementContext, new String[] {"symbol"}, null);
+        mergeViewOne = new MergeView(statementContext, SupportExprNodeFactory.makeIdentNodes("symbol"), null);
         sizeView_1.addView(mergeViewOne);
 
-        List<View> subViews = GroupByView.makeSubViews(groupView, groupByValue, statementContext);
+        List<View> subViews = GroupByView.makeSubViews(groupView, "symbol".split(","), groupByValue, statementContext);
 
         assertTrue(subViews.size() == 1);
         assertTrue(subViews.get(0) instanceof SizeView);

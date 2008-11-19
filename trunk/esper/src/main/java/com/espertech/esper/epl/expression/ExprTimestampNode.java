@@ -46,7 +46,7 @@ public class ExprTimestampNode extends ExprNode
         return false;
     }
 
-    public Class getType() throws ExprValidationException
+    public Class getType()
     {
         return Long.class;
     }

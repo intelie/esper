@@ -14,7 +14,7 @@ public class MyTrendSpotterViewFactory extends ViewFactorySupport
 
     public void setViewParameters(ViewFactoryContext viewFactoryContext, List<ExprNode> expressionParameters) throws ViewParameterException
     {
-        List<Object> viewParameters = ViewFactorySupport.evaluate("'Trend spotter' view", viewFactoryContext, expressionParameters);
+        List<Object> viewParameters = ViewFactorySupport.validateAndEvaluate("'Trend spotter' view", viewFactoryContext, expressionParameters);
         String errorMessage = "'Trend spotter' view require a single field name as a parameter";
         if (viewParameters.size() != 1)
         {
@@ -29,12 +29,12 @@ public class MyTrendSpotterViewFactory extends ViewFactorySupport
         fieldName = (String) viewParameters.get(0);
     }
 
-    public void attach(EventType parentEventType, StatementContext statementContext, ViewFactory optionalParentFactory, List<ViewFactory> parentViewFactories) throws ViewAttachException
+    public void attach(EventType parentEventType, StatementContext statementContext, ViewFactory optionalParentFactory, List<ViewFactory> parentViewFactories) throws ViewParameterException
     {
         String result = PropertyCheckHelper.checkNumeric(parentEventType, fieldName);
         if (result != null)
         {
-            throw new ViewAttachException(result);
+            throw new ViewParameterException(result);
         }
         eventType = MyTrendSpotterView.createEventType(statementContext);
     }

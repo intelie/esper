@@ -2,11 +2,11 @@ package com.espertech.esper.view.stat;
 
 import com.espertech.esper.event.EventType;
 import com.espertech.esper.support.bean.SupportMarketDataBean;
+import com.espertech.esper.support.epl.SupportExprNodeFactory;
 import com.espertech.esper.support.event.SupportEventTypeFactory;
 import com.espertech.esper.support.util.ArrayAssertionUtil;
 import com.espertech.esper.support.view.SupportStatementContextFactory;
 import com.espertech.esper.view.TestViewSupport;
-import com.espertech.esper.view.ViewAttachException;
 import com.espertech.esper.view.ViewFieldEnum;
 import com.espertech.esper.view.ViewParameterException;
 import com.espertech.esper.view.stat.olap.Cube;
@@ -45,16 +45,16 @@ public class TestMultiDimStatsViewFactory extends TestCase
         factory.setViewParameters(null, TestViewSupport.toExprList(new Object[] {new String[] {"stddev"}, "price", "volume"}));
         assertFalse(factory.canReuse(new SizeView(SupportStatementContextFactory.makeContext())));
         assertFalse(factory.canReuse(new MultiDimStatsView(SupportStatementContextFactory.makeContext(),
-                new String[] {"stddev", "average"}, "price", "volume", null, null)));
+                new String[] {"stddev", "average"}, SupportExprNodeFactory.makeIdentNode("price"), SupportExprNodeFactory.makeIdentNode("volume"), null, null)));
         assertTrue(factory.canReuse(new MultiDimStatsView(SupportStatementContextFactory.makeContext(),
-                new String[] {"stddev"}, "price", "volume", null, null)));
+                new String[] {"stddev"}, SupportExprNodeFactory.makeIdentNode("price"), SupportExprNodeFactory.makeIdentNode("volume"), null, null)));
 
         factory.setViewParameters(null, TestViewSupport.toExprList(new Object[] {new String[] {"stddev"}, "price", "volume", "a", "b"}));
         assertFalse(factory.canReuse(new SizeView(SupportStatementContextFactory.makeContext())));
         assertFalse(factory.canReuse(new MultiDimStatsView(SupportStatementContextFactory.makeContext(),
-                new String[] {"stddev"}, "price", "volume", "x", "b")));
+                new String[] {"stddev"}, SupportExprNodeFactory.makeIdentNode("price"), SupportExprNodeFactory.makeIdentNode("volume"), SupportExprNodeFactory.makeIdentNode("x"), SupportExprNodeFactory.makeIdentNode("b"))));
         assertTrue(factory.canReuse(new MultiDimStatsView(SupportStatementContextFactory.makeContext(),
-                new String[] {"stddev"}, "price", "volume", "a", "b")));
+                new String[] {"stddev"}, SupportExprNodeFactory.makeIdentNode("price"), SupportExprNodeFactory.makeIdentNode("volume"), SupportExprNodeFactory.makeIdentNode("a"), SupportExprNodeFactory.makeIdentNode("b"))));
     }
 
     public void testAttaches() throws Exception
@@ -72,7 +72,7 @@ public class TestMultiDimStatsViewFactory extends TestCase
             factory.attach(parentType, null, null, null);
             fail();
         }
-        catch (ViewAttachException ex)
+        catch (ViewParameterException ex)
         {
             // expected;
         }

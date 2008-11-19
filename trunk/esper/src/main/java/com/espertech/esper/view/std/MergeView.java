@@ -19,6 +19,7 @@ import com.espertech.esper.event.EventBean;
 import com.espertech.esper.collection.IterablesListIterator;
 import com.espertech.esper.core.StatementContext;
 import com.espertech.esper.util.ExecutionPathDebugLog;
+import com.espertech.esper.epl.expression.ExprNode;
 
 /**
  * The merge view works together with a group view that splits the data in a stream to multiple subviews, based on
@@ -33,18 +34,18 @@ import com.espertech.esper.util.ExecutionPathDebugLog;
 public final class MergeView extends ViewSupport implements CloneableView
 {
     private final LinkedList<View> parentViews = new LinkedList<View>();
-    private final String[] groupFieldNames;
+    private final ExprNode[] groupFieldNames;
     private final EventType eventType;
 
     /**
      * Constructor.
-     * @param groupFieldNames is the fields from which to pull the value to group by
+     * @param groupCriteria is the fields from which to pull the value to group by
      * @param resultEventType is passed by the factory as the factory adds the merged fields to an event type
      * @param statementContext contains required view services
      */
-    public MergeView(StatementContext statementContext, String groupFieldNames[], EventType resultEventType)
+    public MergeView(StatementContext statementContext, ExprNode[] groupCriteria, EventType resultEventType)
     {
-        this.groupFieldNames = groupFieldNames;
+        this.groupFieldNames = groupCriteria;
         this.eventType = resultEventType;
     }
 
@@ -57,7 +58,7 @@ public final class MergeView extends ViewSupport implements CloneableView
      * Returns the field name that contains the values to group by.
      * @return field name providing group key value
      */
-    public final String[] getGroupFieldNames()
+    public final ExprNode[] getGroupFieldNames()
     {
         return groupFieldNames;
     }

@@ -12,6 +12,7 @@ import com.espertech.esper.event.EventType;
 import com.espertech.esper.core.StatementContext;
 import com.espertech.esper.view.CloneableView;
 import com.espertech.esper.view.View;
+import com.espertech.esper.epl.expression.ExprNode;
 
 /**
  * A view that calculates correlation on two fields. The view uses internally a {@link CorrelationBean}
@@ -25,18 +26,18 @@ public final class CorrelationView extends BaseBivariateStatisticsView implement
 
     /**
      * Constructor.
-     * @param xFieldName is the field name of the field providing X data points
-     * @param yFieldName is the field name of the field providing X data points
+     * @param xExpression is the expression providing X data points
+     * @param yExpression is the expression providing X data points
      * @param statementContext contains required view services
      */
-    public CorrelationView(StatementContext statementContext, String xFieldName, String yFieldName)
+    public CorrelationView(StatementContext statementContext, ExprNode xExpression, ExprNode yExpression)
     {
-        super(statementContext, new CorrelationBean(), xFieldName, yFieldName);
+        super(statementContext, new CorrelationBean(), xExpression, yExpression);
     }
 
     public View cloneView(StatementContext statementContext)
     {
-        return new CorrelationView(statementContext, this.getFieldNameX(), this.getFieldNameY());
+        return new CorrelationView(statementContext, this.getExpressionX(), this.getExpressionY());
     }
 
     public EventType getEventType()
@@ -51,8 +52,8 @@ public final class CorrelationView extends BaseBivariateStatisticsView implement
     public String toString()
     {
         return this.getClass().getName() +
-                " fieldX=" + this.getFieldNameX() +
-                " fieldY=" + this.getFieldNameY();
+                " fieldX=" + this.getExpressionX() +
+                " fieldY=" + this.getExpressionY();
     }
 
     /**

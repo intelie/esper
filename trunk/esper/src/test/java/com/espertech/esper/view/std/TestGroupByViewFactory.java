@@ -5,8 +5,8 @@ import com.espertech.esper.support.bean.SupportMarketDataBean;
 import com.espertech.esper.support.event.SupportEventTypeFactory;
 import com.espertech.esper.support.util.ArrayAssertionUtil;
 import com.espertech.esper.support.view.SupportStatementContextFactory;
+import com.espertech.esper.support.epl.SupportExprNodeFactory;
 import com.espertech.esper.view.TestViewSupport;
-import com.espertech.esper.view.ViewAttachException;
 import com.espertech.esper.view.ViewParameterException;
 import junit.framework.TestCase;
 
@@ -36,12 +36,12 @@ public class TestGroupByViewFactory extends TestCase
     {
         factory.setViewParameters(null, TestViewSupport.toExprList(new Object[] {"a", "b"}));
         assertFalse(factory.canReuse(new SizeView(SupportStatementContextFactory.makeContext())));
-        assertFalse(factory.canReuse(new GroupByView(SupportStatementContextFactory.makeContext(), new String[] {"a"})));
-        assertTrue(factory.canReuse(new GroupByView(SupportStatementContextFactory.makeContext(), new String[] {"a", "b"})));
+        assertFalse(factory.canReuse(new GroupByView(SupportStatementContextFactory.makeContext(), SupportExprNodeFactory.makeIdentNodes("a"))));
+        assertTrue(factory.canReuse(new GroupByView(SupportStatementContextFactory.makeContext(), SupportExprNodeFactory.makeIdentNodes("a", "b"))));
 
-        factory.setViewParameters(null, TestViewSupport.toExprList(new Object[] {new String[] {"a", "b"}}));
-        assertFalse(factory.canReuse(new GroupByView(SupportStatementContextFactory.makeContext(), new String[] {"a"})));
-        assertTrue(factory.canReuse(new GroupByView(SupportStatementContextFactory.makeContext(), new String[] {"a", "b"})));
+        factory.setViewParameters(null, TestViewSupport.toExprList(new Object[] {SupportExprNodeFactory.makeIdentNodes("a", "b")}));
+        assertFalse(factory.canReuse(new GroupByView(SupportStatementContextFactory.makeContext(), SupportExprNodeFactory.makeIdentNodes("a"))));
+        assertTrue(factory.canReuse(new GroupByView(SupportStatementContextFactory.makeContext(), SupportExprNodeFactory.makeIdentNodes("a", "b"))));
     }
 
     public void testAttaches() throws Exception
@@ -58,7 +58,7 @@ public class TestGroupByViewFactory extends TestCase
             factory.attach(parentType, null, null, null);
             fail();
         }
-        catch (ViewAttachException ex)
+        catch (ViewParameterException ex)
         {
             // expected;
         }
@@ -83,6 +83,6 @@ public class TestGroupByViewFactory extends TestCase
         GroupByViewFactory factory = new GroupByViewFactory();
         factory.setViewParameters(null, TestViewSupport.toExprList(params));
         GroupByView view = (GroupByView) factory.makeView(SupportStatementContextFactory.makeContext());
-        ArrayAssertionUtil.assertEqualsExactOrder(fieldNames, view.getGroupFieldNames());
+        ArrayAssertionUtil.assertEqualsExactOrder(fieldNames, view.getCriteriaExpressions());
     }
 }

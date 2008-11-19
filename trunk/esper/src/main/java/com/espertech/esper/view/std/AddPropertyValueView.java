@@ -16,6 +16,7 @@ import com.espertech.esper.view.CloneableView;
 import com.espertech.esper.view.View;
 import com.espertech.esper.view.ViewSupport;
 import com.espertech.esper.view.Viewable;
+import com.espertech.esper.epl.expression.ExprNode;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -46,9 +47,9 @@ public final class AddPropertyValueView extends ViewSupport implements Cloneable
      * @param mergedResultEventType is the event type that the merge view reports to it's child views
      * @param statementContext contains required view services
      */
-    public AddPropertyValueView(StatementContext statementContext, String[] fieldNames, Object[] mergeValues, EventType mergedResultEventType)
+    public AddPropertyValueView(StatementContext statementContext, String[] propertyNames, Object[] mergeValues, EventType mergedResultEventType)
     {
-        this.propertyNames = fieldNames;
+        this.propertyNames = propertyNames;
         this.propertyValues = mergeValues;
         this.eventType = mergedResultEventType;
         this.statementContext = statementContext;

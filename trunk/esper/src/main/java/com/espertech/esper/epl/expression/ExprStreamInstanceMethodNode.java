@@ -181,7 +181,7 @@ public class ExprStreamInstanceMethodNode extends ExprNode
 		}
 	}
 
-	public Class getType() throws ExprValidationException
+	public Class getType()
 	{
 		if(instanceMethod == null)
 		{

@@ -86,7 +86,7 @@ public class ExprTimePeriod extends ExprNode
         return new TimePeriodParameter(seconds);
     }
 
-    public Class getType() throws ExprValidationException
+    public Class getType()
     {
         return TimePeriodParameter.class;
     }

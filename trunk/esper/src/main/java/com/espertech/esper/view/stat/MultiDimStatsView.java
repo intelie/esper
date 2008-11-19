@@ -21,6 +21,7 @@ import com.espertech.esper.collection.SingleEventIterator;
 import com.espertech.esper.collection.MultiKeyUntyped;
 import com.espertech.esper.core.StatementContext;
 import com.espertech.esper.util.ExecutionPathDebugLog;
+import com.espertech.esper.epl.expression.ExprNode;
 
 /**
  * This view compiles OLAP cubes for the specified fields. New data from the parent view is entered into
@@ -59,36 +60,32 @@ public final class MultiDimStatsView extends ViewSupport implements CloneableVie
 
     private final StatementContext statementContext;
     private final String[] derivedMeasures;
-    private final String measureField;
-    private final String columnField;
-    private final String rowField;
-    private final String pageField;
-
-    private EventPropertyGetter measureFieldGetter;
-    private EventPropertyGetter columnFieldGetter;
-    private EventPropertyGetter rowFieldGetter;
-    private EventPropertyGetter pageFieldGetter;
+    private final ExprNode measureField;
+    private final ExprNode columnField;
+    private final ExprNode rowField;
+    private final ExprNode pageField;
+    private final EventBean[] eventsPerStream = new EventBean[1];
 
     private MultidimCube<BaseStatisticsBean> multidimCube;
 
     /**
      * Constructor.
      * @param derivedMeasures is an array of ViewFieldEnum names defining the measures to derive
-     * @param measureField defines the field supplying measures
-     * @param columnField defines the field supplying column dimension members
-     * @param rowField defines an optional field supplying row dimension members
-     * @param pageField defines an optional field supplying page dimension members
+     * @param measureExpr defines the field supplying measures
+     * @param columnExpr defines the field supplying column dimension members
+     * @param rowExpr defines an optional field supplying row dimension members
+     * @param pagexpr defines an optional field supplying page dimension members
      * @param statementContext contains required view services
      */
     public MultiDimStatsView(StatementContext statementContext,
-                             String[] derivedMeasures, String measureField, String columnField, String rowField, String pageField)
+                             String[] derivedMeasures, ExprNode measureExpr, ExprNode columnExpr, ExprNode rowExpr, ExprNode pagexpr)
     {
         this.statementContext = statementContext;
         this.derivedMeasures = derivedMeasures;
-        this.measureField = measureField;
-        this.columnField = columnField;
-        this.rowField = rowField;
-        this.pageField = pageField;
+        this.measureField = measureExpr;
+        this.columnField = columnExpr;
+        this.rowField = rowExpr;
+        this.pageField = pagexpr;
         eventType = createEventType(statementContext);
     }
 
@@ -110,7 +107,7 @@ public final class MultiDimStatsView extends ViewSupport implements CloneableVie
      * Returns the name of the field to extract the measure values from.
      * @return field for measure values
      */
-    public final String getMeasureField()
+    public final ExprNode getMeasureField()
     {
         return measureField;
     }
@@ -119,7 +116,7 @@ public final class MultiDimStatsView extends ViewSupport implements CloneableVie
      * Returns the name of the field to extract the column values from.
      * @return field for column values
      */
-    public final String getColumnField()
+    public final ExprNode getColumnField()
     {
         return columnField;
     }
@@ -128,7 +125,7 @@ public final class MultiDimStatsView extends ViewSupport implements CloneableVie
      * Returns the name of the field to extract the row values from.
      * @return field for row values
      */
-    public final String getRowField()
+    public final ExprNode getRowField()
     {
         return rowField;
     }
@@ -137,7 +134,7 @@ public final class MultiDimStatsView extends ViewSupport implements CloneableVie
      * Returns the name of the field to extract the page values from.
      * @return field for page values
      */
-    public final String getPageField()
+    public final ExprNode getPageField()
     {
         return pageField;
     }
@@ -155,45 +152,27 @@ public final class MultiDimStatsView extends ViewSupport implements CloneableVie
     {
         super.setParent(parent);
 
-        if (parent == null)
-        {
-            return;
-        }
-
-        measureFieldGetter = parent.getEventType().getGetter(measureField);
-        columnFieldGetter = parent.getEventType().getGetter(columnField);
-
-        if (rowField != null)
-        {
-            rowFieldGetter = parent.getEventType().getGetter(rowField);
-        }
-
-        if (pageField != null)
-        {
-            pageFieldGetter = parent.getEventType().getGetter(pageField);
-        }
-
         // Construct fact cube according to the number of dimensions supplied
         if (pageField != null)
         {
-            String[] dimensionNames = new String[] {measureField, columnField, rowField, pageField};
+            String[] dimensionNames = new String[] {measureField.toExpressionString(), columnField.toExpressionString(), rowField.toExpressionString(), pageField.toExpressionString()};
             multidimCube = new MultidimCubeImpl<BaseStatisticsBean>(dimensionNames, multidimCubeCellFactory);
-            multidimCube.setMembers(2, parent.getEventType().getPropertyType(pageField));
-            multidimCube.setMembers(1, parent.getEventType().getPropertyType(rowField));
+            multidimCube.setMembers(2, parent.getEventType().getPropertyType(pageField.toExpressionString()));
+            multidimCube.setMembers(1, parent.getEventType().getPropertyType(rowField.toExpressionString()));
         }
         else if (rowField != null)
         {
-            String[] dimensionNames = new String[] {measureField, columnField, rowField};
+            String[] dimensionNames = new String[] {measureField.toExpressionString(), columnField.toExpressionString(), rowField.toExpressionString()};
             multidimCube = new MultidimCubeImpl<BaseStatisticsBean>(dimensionNames, multidimCubeCellFactory);
-            multidimCube.setMembers(1, parent.getEventType().getPropertyType(rowField));
+            multidimCube.setMembers(1, parent.getEventType().getPropertyType(rowField.toExpressionString()));
         }
         else
         {
-            String[] dimensionNames = new String[] {measureField, columnField};
+            String[] dimensionNames = new String[] {measureField.toExpressionString(), columnField.toExpressionString()};
             multidimCube = new MultidimCubeImpl<BaseStatisticsBean>(dimensionNames, multidimCubeCellFactory);
         }
 
-        multidimCube.setMembers(0, parent.getEventType().getPropertyType(columnField));
+        multidimCube.setMembers(0, columnField.getType());
     }
 
     public final void update(EventBean[] newData, EventBean[] oldData)
@@ -243,16 +222,17 @@ public final class MultiDimStatsView extends ViewSupport implements CloneableVie
         MultiKeyUntyped coordinates = null;
 
         // Extract member values for each dimension
-        Object columnMember = columnFieldGetter.get(element);
-        if (pageFieldGetter != null)
+        eventsPerStream[0] = element;
+        Object columnMember = columnField.evaluate(eventsPerStream, true);
+        if (pageField != null)
         {
-            Object rowMember = rowFieldGetter.get(element);
-            Object pageMember = pageFieldGetter.get(element);
+            Object rowMember = rowField.evaluate(eventsPerStream, true);
+            Object pageMember = pageField.evaluate(eventsPerStream, true);
             coordinates = new MultiKeyUntyped(columnMember, rowMember, pageMember);
         }
-        else if (rowFieldGetter != null)
+        else if (rowField != null)
         {
-            Object rowMember = rowFieldGetter.get(element);
+            Object rowMember = rowField.evaluate(eventsPerStream, true);
             coordinates = new MultiKeyUntyped(columnMember, rowMember);
         }
         else
@@ -261,7 +241,7 @@ public final class MultiDimStatsView extends ViewSupport implements CloneableVie
         }
 
         // Extract measure value
-        double measureValue = ((Number) measureFieldGetter.get(element)).doubleValue();
+        double measureValue = ((Number) measureField.evaluate(eventsPerStream, true)).doubleValue();
 
         // Add or remove from cube
         BaseStatisticsBean cell = multidimCube.getCellAddMembers(coordinates);

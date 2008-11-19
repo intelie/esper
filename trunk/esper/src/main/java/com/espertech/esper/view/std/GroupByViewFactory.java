@@ -23,29 +23,28 @@ import java.util.Arrays;
  */
 public class GroupByViewFactory implements ViewFactory
 {
+    protected List<ExprNode> viewParameters;
+
     /**
-     * List of group-by field names.
+     * List of criteria expressions.
      */
-    protected String[] groupFieldNames;
+    protected ExprNode[] criteriaExpressions;
 
     private EventType eventType;
 
     public void setViewParameters(ViewFactoryContext viewFactoryContext, List<ExprNode> expressionParameters) throws ViewParameterException
     {
-        List<Object> viewParameters = ViewFactorySupport.evaluate("Group-by view", viewFactoryContext, expressionParameters);
-        groupFieldNames = getFieldNameParams(viewParameters, "Group-by");
+        this.viewParameters = expressionParameters;
     }
 
-    public void attach(EventType parentEventType, StatementContext statementContext, ViewFactory optionalParentFactory, List<ViewFactory> parentViewFactories) throws ViewAttachException
+    public void attach(EventType parentEventType, StatementContext statementContext, ViewFactory optionalParentFactory, List<ViewFactory> parentViewFactories) throws ViewParameterException
     {
-        // Attaches to just about anything as long as all the fields exists
-        for (int i = 0; i < groupFieldNames.length; i++)
+        criteriaExpressions = ViewFactorySupport.validate("Group-by view", parentEventType, statementContext, viewParameters, false);
+
+        if (criteriaExpressions.length == 0)
         {
-            String message = PropertyCheckHelper.exists(parentEventType, groupFieldNames[i]);
-            if (message != null)
-            {
-                throw new ViewAttachException(message);
-            }
+            String errorMessage = "Unique-by view requires a one or more expressions provinding unique values as parameters";
+            throw new ViewParameterException(errorMessage);
         }
 
         this.eventType = parentEventType;
@@ -55,9 +54,9 @@ public class GroupByViewFactory implements ViewFactory
      * Returns the names of fields to group by
      * @return field names
      */
-    public String[] getGroupFieldNames()
+    public ExprNode[] getCriteriaExpressions()
     {
-        return groupFieldNames;
+        return criteriaExpressions;
     }
 
     public boolean canProvideCapability(ViewCapability viewCapability)
@@ -72,7 +71,7 @@ public class GroupByViewFactory implements ViewFactory
 
     public View makeView(StatementContext statementContext)
     {
-        return new GroupByView(statementContext, groupFieldNames);
+        return new GroupByView(statementContext, criteriaExpressions);
     }
 
     public EventType getEventType()
@@ -143,7 +142,7 @@ public class GroupByViewFactory implements ViewFactory
         }
 
         GroupByView myView = (GroupByView) view;
-        if (!Arrays.deepEquals(myView.getGroupFieldNames(), groupFieldNames))
+        if (!ViewFactorySupport.deepEqualsExpr(myView.getCriteriaExpressions(), criteriaExpressions))
         {
             return false;
         }

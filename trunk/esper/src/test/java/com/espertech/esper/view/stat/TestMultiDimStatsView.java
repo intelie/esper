@@ -10,6 +10,7 @@ import com.espertech.esper.support.view.SupportStatementContextFactory;
 import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.bean.SupportEnum;
 import com.espertech.esper.support.event.SupportEventBeanFactory;
+import com.espertech.esper.support.epl.SupportExprNodeFactory;
 import com.espertech.esper.view.ViewFieldEnum;
 import com.espertech.esper.view.stat.olap.Cube;
 import com.espertech.esper.view.stat.olap.MultidimCube;
@@ -28,9 +29,9 @@ public class TestMultiDimStatsView extends TestCase
         derivedFields = new String[] {ViewFieldEnum.UNIVARIATE_STATISTICS__DATAPOINTS.getName()};
     }
 
-    public void testOneDim()
+    public void testOneDim() throws Exception
     {
-        MultiDimStatsView olapView = new MultiDimStatsView(SupportStatementContextFactory.makeContext(), derivedFields, "intPrimitive", "enumValue", null, null);
+        MultiDimStatsView olapView = new MultiDimStatsView(SupportStatementContextFactory.makeContext(), derivedFields, SupportExprNodeFactory.makeIdentNode("intPrimitive"), SupportExprNodeFactory.makeIdentNode("enumValue"), null, null);
         parentStream.addView(olapView);
         olapView.addView(childView);
 
@@ -54,9 +55,9 @@ public class TestMultiDimStatsView extends TestCase
         assertTrue(postedData.get(ViewFieldEnum.MULTIDIM_OLAP__CUBE.getName()) instanceof Cube);
     }
 
-    public void testTwoDim()
+    public void testTwoDim() throws Exception
     {
-        MultiDimStatsView olapView = new MultiDimStatsView(SupportStatementContextFactory.makeContext(), derivedFields, "intPrimitive", "string", "enumValue", null);
+        MultiDimStatsView olapView = new MultiDimStatsView(SupportStatementContextFactory.makeContext(), derivedFields, SupportExprNodeFactory.makeIdentNode("intPrimitive"), SupportExprNodeFactory.makeIdentNode("string"), SupportExprNodeFactory.makeIdentNode("enumValue"), null);
         parentStream.addView(olapView);
         olapView.addView(childView);
 
@@ -78,9 +79,9 @@ public class TestMultiDimStatsView extends TestCase
         checkZero(cube.getCells(), new int[] {0 + 2 * 4, 3 + 2 * 4, 2 + 0 * 4});
     }
 
-    public void testThreeDim()
+    public void testThreeDim() throws Exception
     {
-        MultiDimStatsView olapView = new MultiDimStatsView(SupportStatementContextFactory.makeContext(), derivedFields, "intPrimitive", "boolBoxed", "string", "enumValue");
+        MultiDimStatsView olapView = new MultiDimStatsView(SupportStatementContextFactory.makeContext(), derivedFields, SupportExprNodeFactory.makeIdentNode("intPrimitive"), SupportExprNodeFactory.makeIdentNode("boolBoxed"), SupportExprNodeFactory.makeIdentNode("string"), SupportExprNodeFactory.makeIdentNode("enumValue"));
         parentStream.addView(olapView);
         olapView.addView(childView);
 

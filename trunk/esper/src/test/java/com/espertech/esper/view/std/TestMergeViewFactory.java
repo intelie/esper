@@ -3,6 +3,7 @@ package com.espertech.esper.view.std;
 import junit.framework.TestCase;
 import com.espertech.esper.support.util.ArrayAssertionUtil;
 import com.espertech.esper.support.view.SupportStatementContextFactory;
+import com.espertech.esper.support.epl.SupportExprNodeFactory;
 import com.espertech.esper.view.ViewParameterException;
 import com.espertech.esper.view.TestViewSupport;
 
@@ -34,8 +35,8 @@ public class TestMergeViewFactory extends TestCase
     {
         factory.setViewParameters(null, TestViewSupport.toExprList(new Object[] {"a", "b"}));
         assertFalse(factory.canReuse(new SizeView(SupportStatementContextFactory.makeContext())));
-        assertFalse(factory.canReuse(new MergeView(SupportStatementContextFactory.makeContext(), new String[] {"a"}, null)));
-        assertTrue(factory.canReuse(new MergeView(SupportStatementContextFactory.makeContext(), new String[] {"a", "b"}, null)));
+        assertFalse(factory.canReuse(new MergeView(SupportStatementContextFactory.makeContext(), SupportExprNodeFactory.makeIdentNodes("a"), null)));
+        assertTrue(factory.canReuse(new MergeView(SupportStatementContextFactory.makeContext(), SupportExprNodeFactory.makeIdentNodes("a", "b"), null)));
     }
 
     private void tryInvalidParameter(Object[] params) throws Exception

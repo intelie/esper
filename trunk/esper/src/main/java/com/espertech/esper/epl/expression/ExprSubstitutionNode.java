@@ -53,9 +53,9 @@ public class ExprSubstitutionNode extends ExprNode
         return false;
     }
 
-    public Class getType() throws ExprValidationException
+    public Class getType()
     {
-        throw new ExprValidationException(ERROR_MSG);
+        throw new IllegalStateException(ERROR_MSG);
     }
 
     public Object evaluate(EventBean[] eventsPerStream, boolean isNewData)

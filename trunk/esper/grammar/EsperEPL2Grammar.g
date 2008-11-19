@@ -105,6 +105,7 @@ tokens
    	NUMERIC_PARAM_RANGE;
    	NUMERIC_PARAM_LIST;
    	NUMERIC_PARAM_FREQUENCY;   	
+   	OBJECT_PARAM_ORDERED_EXPR;
    	FOLLOWED_BY_EXPR;
    	ARRAY_PARAM_LIST;
    	EVENT_FILTER_EXPR;
@@ -1101,7 +1102,7 @@ expressionWithTimeList
 expressionWithTime
 	:   	(lastOperand) => lastOperand
 	|	(lastWeekdayOperand) => lastWeekdayOperand
-	|	expression
+	|	expressionSortable
 	|	(rangeOperand) => rangeOperand
 	| 	(frequencyOperand) => frequencyOperand
 	|	(lastOperator) => lastOperator
@@ -1109,6 +1110,13 @@ expressionWithTime
 	| 	(numericParameterList) => numericParameterList
 	|	numberSetStar
 	;
+
+expressionSortable
+	:	expression (a=ASC|d=DESC)?
+		-> {d != null || a != null}? ^(OBJECT_PARAM_ORDERED_EXPR expression $a? $d?)
+		-> expression
+	;
+	
 
 numberSetStar
 	:	STAR

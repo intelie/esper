@@ -81,7 +81,7 @@ public class ExprRelationalOpNode extends ExprNode
         computer = relationalOpEnum.getComputer(compareType, typeOne, typeTwo);
     }
 
-    public Class getType() throws ExprValidationException
+    public Class getType()
     {
         return Boolean.class;
     }

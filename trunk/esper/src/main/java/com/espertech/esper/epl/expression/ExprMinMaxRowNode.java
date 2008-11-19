@@ -109,7 +109,7 @@ public class ExprMinMaxRowNode extends ExprNode
         }
     }
 
-    public Class getType() throws ExprValidationException
+    public Class getType()
     {
         return resultType;
     }

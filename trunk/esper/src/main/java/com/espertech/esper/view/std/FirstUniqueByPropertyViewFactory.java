@@ -10,7 +10,7 @@ package com.espertech.esper.view.std;
 
 import com.espertech.esper.view.ViewFactory;
 import com.espertech.esper.view.ViewParameterException;
-import com.espertech.esper.view.ViewAttachException;
+import com.espertech.esper.view.ViewParameterException;
 import com.espertech.esper.view.*;
 import com.espertech.esper.event.EventType;
 import com.espertech.esper.epl.core.ViewResourceCallback;
@@ -35,11 +35,11 @@ public class FirstUniqueByPropertyViewFactory implements DataWindowViewFactory
 
     public void setViewParameters(ViewFactoryContext viewFactoryContext, List<ExprNode> expressionParameters) throws ViewParameterException
     {
-        List<Object> viewParameters = ViewFactorySupport.evaluate("First unique view", viewFactoryContext, expressionParameters);
+        List<Object> viewParameters = ViewFactorySupport.validateAndEvaluate("First unique view", viewFactoryContext, expressionParameters);
         propertyNames = GroupByViewFactory.getFieldNameParams(viewParameters, "First unique");
     }
 
-    public void attach(EventType parentEventType, StatementContext statementContext, ViewFactory optionalParentFactory, List<ViewFactory> parentViewFactories) throws ViewAttachException
+    public void attach(EventType parentEventType, StatementContext statementContext, ViewFactory optionalParentFactory, List<ViewFactory> parentViewFactories) throws ViewParameterException
     {
         // Attaches to just about anything as long as all the fields exists
         for (int i = 0; i < propertyNames.length; i++)
@@ -47,7 +47,7 @@ public class FirstUniqueByPropertyViewFactory implements DataWindowViewFactory
             String message = PropertyCheckHelper.exists(parentEventType, propertyNames[i]);
             if (message != null)
             {
-                throw new ViewAttachException(message);
+                throw new ViewParameterException(message);
             }
         }
         this.eventType = parentEventType;

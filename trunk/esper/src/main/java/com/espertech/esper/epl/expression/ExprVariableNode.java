@@ -72,7 +72,7 @@ public class ExprVariableNode extends ExprNode
         variableType = reader.getType();
     }
 
-    public Class getType() throws ExprValidationException
+    public Class getType()
     {
         if (variableType == null)
         {

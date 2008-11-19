@@ -69,7 +69,7 @@ public class ExprMathNode extends ExprNode
         arithTypeEnumComputer = mathArithTypeEnum.getComputer(resultType, childTypeOne, childTypeTwo);
     }
 
-    public Class getType() throws ExprValidationException
+    public Class getType()
     {
         return resultType;
     }

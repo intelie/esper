@@ -77,7 +77,7 @@ public class ExprConstantNode extends ExprNode
         this.value = value;
     }
 
-    public Class getType() throws ExprValidationException
+    public Class getType()
     {
         return clazz;
     }

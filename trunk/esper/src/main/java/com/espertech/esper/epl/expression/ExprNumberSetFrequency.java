@@ -43,7 +43,7 @@ public class ExprNumberSetFrequency extends ExprNode
         }
     }
 
-    public Class getType() throws ExprValidationException
+    public Class getType()
     {
         return FrequencyParameter.class;
     }

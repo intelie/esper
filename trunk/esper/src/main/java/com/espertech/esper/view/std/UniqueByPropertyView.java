@@ -8,11 +8,11 @@
  **************************************************************************************/
 package com.espertech.esper.view.std;
 
-import com.espertech.esper.collection.OneEventCollection;
 import com.espertech.esper.collection.MultiKey;
+import com.espertech.esper.collection.OneEventCollection;
 import com.espertech.esper.core.StatementContext;
+import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.event.EventBean;
-import com.espertech.esper.event.EventPropertyGetter;
 import com.espertech.esper.event.EventType;
 import com.espertech.esper.util.ExecutionPathDebugLog;
 import com.espertech.esper.view.CloneableView;
@@ -22,10 +22,10 @@ import com.espertech.esper.view.Viewable;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Arrays;
 
 /**
  * This view includes only the most recent among events having the same value for the specified field or fields.
@@ -45,46 +45,38 @@ import java.util.Arrays;
  */
 public final class UniqueByPropertyView extends ViewSupport implements CloneableView
 {
-    private final String[] uniqueFieldNames;
+    private final ExprNode[] criteriaExpressions;
     private final int numKeys;
-    private EventPropertyGetter uniqueFieldGetter[];
     private final Map<MultiKey<Object>, EventBean> mostRecentEvents = new LinkedHashMap<MultiKey<Object>, EventBean>();
+    private final EventBean[] eventsPerStream = new EventBean[1];
 
     /**
      * Constructor.
-     * @param uniqueFieldNames is the fields from which to pull the unique value
+     * @param criteriaExpressions is the expressions from which to pull the unique value
      */
-    public UniqueByPropertyView(String[] uniqueFieldNames)
+    public UniqueByPropertyView(ExprNode[] criteriaExpressions)
     {
-        this.uniqueFieldNames = uniqueFieldNames;
-        numKeys = uniqueFieldNames.length;
+        this.criteriaExpressions = criteriaExpressions;
+        numKeys = criteriaExpressions.length;
     }
 
     public View cloneView(StatementContext statementContext)
     {
-        return new UniqueByPropertyView(uniqueFieldNames);
+        return new UniqueByPropertyView(criteriaExpressions);
     }
 
     public void setParent(Viewable parent)
     {
         super.setParent(parent);
-        if (parent != null)
-        {
-            uniqueFieldGetter = new EventPropertyGetter[uniqueFieldNames.length];
-            for (int i = 0; i < uniqueFieldNames.length; i++)
-            {
-                uniqueFieldGetter[i] = parent.getEventType().getGetter(uniqueFieldNames[i]);
-            }
-        }
     }
 
     /**
      * Returns the name of the field supplying the unique value to keep the most recent record for.
-     * @return field name for unique value
+     * @return expressions for unique value
      */
-    public final String[] getUniqueFieldNames()
+    public final ExprNode[] getCriteriaExpressions()
     {
-        return uniqueFieldNames;
+        return criteriaExpressions;
     }
 
     public final EventType getEventType()
@@ -184,15 +176,16 @@ public final class UniqueByPropertyView extends ViewSupport implements Cloneable
 
     public final String toString()
     {
-        return this.getClass().getName() + " uniqueFieldNames=" + Arrays.toString(uniqueFieldNames);
+        return this.getClass().getName() + " uniqueFieldNames=" + Arrays.toString(criteriaExpressions);
     }
 
     private MultiKey<Object> getUniqueKey(EventBean event)
     {
+        eventsPerStream[0] = event;
         Object[] values = new Object[numKeys];
         for (int i = 0; i < numKeys; i++)
         {
-            values[i] = uniqueFieldGetter[i].get(event);
+            values[i] = criteriaExpressions[i].evaluate(eventsPerStream, true);
         }
         return new MultiKey<Object>(values);
     }

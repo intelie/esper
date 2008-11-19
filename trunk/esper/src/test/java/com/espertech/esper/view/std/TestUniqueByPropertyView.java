@@ -9,16 +9,17 @@ import com.espertech.esper.support.view.SupportStreamImpl;
 import com.espertech.esper.support.view.SupportViewDataChecker;
 import com.espertech.esper.support.view.SupportStatementContextFactory;
 import com.espertech.esper.support.event.SupportEventBeanFactory;
+import com.espertech.esper.support.epl.SupportExprNodeFactory;
 
 public class TestUniqueByPropertyView extends TestCase
 {
     private UniqueByPropertyView myView;
     private SupportBeanClassView childView;
 
-    public void setUp()
+    public void setUp() throws Exception
     {
         // Set up length window view and a test child view
-        myView = new UniqueByPropertyView(new String[] {"symbol"});
+        myView = new UniqueByPropertyView(SupportExprNodeFactory.makeIdentNodes("string"));
         childView = new SupportBeanClassView(SupportMarketDataBean.class);
         myView.addView(childView);
     }
@@ -75,7 +76,7 @@ public class TestUniqueByPropertyView extends TestCase
         myView.setParent(parent);
 
         UniqueByPropertyView copied = (UniqueByPropertyView) myView.cloneView(SupportStatementContextFactory.makeContext());
-        assertEquals(myView.getUniqueFieldNames()[0], copied.getUniqueFieldNames()[0]);
+        assertEquals(myView.getCriteriaExpressions()[0], copied.getCriteriaExpressions()[0]);
     }
 
     private EventBean makeTradeBean(String symbol, int price)

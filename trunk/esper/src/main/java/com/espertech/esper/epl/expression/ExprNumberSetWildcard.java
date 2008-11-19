@@ -30,7 +30,7 @@ public class ExprNumberSetWildcard extends ExprNode
     {
     }
 
-    public Class getType() throws ExprValidationException
+    public Class getType()
     {
         return WildcardParameter.class;
     }

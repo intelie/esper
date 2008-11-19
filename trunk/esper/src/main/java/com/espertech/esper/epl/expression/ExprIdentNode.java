@@ -114,7 +114,7 @@ public class ExprIdentNode extends ExprNode
         propertyGetter = propertyInfoPair.getFirst().getStreamEventType().getGetter(resolvedPropertyName);
     }
 
-    public Class getType() throws ExprValidationException
+    public Class getType()
     {
         if (resolvedPropertyName == null)
         {

@@ -59,7 +59,7 @@ public class ExprInstanceofNode extends ExprNode
         return false;
     }
 
-    public Class getType() throws ExprValidationException
+    public Class getType()
     {
         return Boolean.class;
     }

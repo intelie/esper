@@ -8,6 +8,7 @@ import com.espertech.esper.support.util.DoubleValueAssertionUtil;
 import com.espertech.esper.support.view.SupportBeanClassView;
 import com.espertech.esper.support.view.SupportStreamImpl;
 import com.espertech.esper.support.view.SupportStatementContextFactory;
+import com.espertech.esper.support.epl.SupportExprNodeFactory;
 import com.espertech.esper.view.ViewFieldEnum;
 
 import java.util.Iterator;
@@ -17,10 +18,11 @@ public class TestCorrelationView extends TestCase
     CorrelationView myView;
     SupportBeanClassView childView;
 
-    public void setUp()
+    public void setUp() throws Exception
     {
         // Set up sum view and a test child view
-        myView = new CorrelationView(SupportStatementContextFactory.makeContext(), "price", "volume");
+        myView = new CorrelationView(SupportStatementContextFactory.makeContext(),
+                SupportExprNodeFactory.makeIdentNode("price"), SupportExprNodeFactory.makeIdentNode("volume"));
 
         childView = new SupportBeanClassView(SupportMarketDataBean.class);
         myView.addView(childView);
@@ -66,8 +68,8 @@ public class TestCorrelationView extends TestCase
     public void testCopyView() throws Exception
     {
         CorrelationView copied = (CorrelationView) myView.cloneView(SupportStatementContextFactory.makeContext());
-        assertTrue(myView.getFieldNameX().equals(copied.getFieldNameX()));
-        assertTrue(myView.getFieldNameY().equals(copied.getFieldNameY()));
+        assertTrue(myView.getExpressionX().equals(copied.getExpressionX()));
+        assertTrue(myView.getExpressionY().equals(copied.getExpressionY()));
     }
 
     private void checkNew(double correlationE)

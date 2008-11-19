@@ -48,7 +48,7 @@ public class ExternallyTimedWindowViewFactory implements DataWindowViewFactory
 
     public void setViewParameters(ViewFactoryContext viewFactoryContext, List<ExprNode> expressionParameters) throws ViewParameterException
     {
-        List<Object> viewParameters = ViewFactorySupport.evaluate("Externally-timed window view", viewFactoryContext, expressionParameters);
+        List<Object> viewParameters = ViewFactorySupport.validateAndEvaluate("Externally-timed window view", viewFactoryContext, expressionParameters);
         String errorMessage = "Externally-timed window view requires a timestamp field name and a numeric or time period parameter";
         if (viewParameters.size() != 2)
         {
@@ -85,12 +85,12 @@ public class ExternallyTimedWindowViewFactory implements DataWindowViewFactory
         }
     }
 
-    public void attach(EventType parentEventType, StatementContext statementContext, ViewFactory optionalParentFactory, List<ViewFactory> parentViewFactories) throws ViewAttachException
+    public void attach(EventType parentEventType, StatementContext statementContext, ViewFactory optionalParentFactory, List<ViewFactory> parentViewFactories) throws ViewParameterException
     {
         String message = PropertyCheckHelper.checkLong(parentEventType, timestampFieldName);
         if (message != null)
         {
-            throw new ViewAttachException(message);
+            throw new ViewParameterException(message);
         }
         this.eventType = parentEventType;
     }

@@ -12,6 +12,7 @@ import com.espertech.esper.event.EventType;
 import com.espertech.esper.core.StatementContext;
 import com.espertech.esper.view.CloneableView;
 import com.espertech.esper.view.View;
+import com.espertech.esper.epl.expression.ExprNode;
 
 /**
  * A view that calculates regression on two fields. The view uses internally a {@link RegressionBean}
@@ -29,14 +30,14 @@ public final class RegressionLinestView extends BaseBivariateStatisticsView impl
      * @param yFieldName is the field name of the field providing X data points
      * @param statementContext contains required view services
      */
-    public RegressionLinestView(StatementContext statementContext, String xFieldName, String yFieldName)
+    public RegressionLinestView(StatementContext statementContext, ExprNode xFieldName, ExprNode yFieldName)
     {
         super(statementContext, new RegressionBean(), xFieldName, yFieldName);
     }
 
     public View cloneView(StatementContext statementContext)
     {
-        return new RegressionLinestView(statementContext, this.getFieldNameX(), this.getFieldNameY());
+        return new RegressionLinestView(statementContext, this.getExpressionX(), this.getExpressionY());
     }
 
     public EventType getEventType()
@@ -51,8 +52,8 @@ public final class RegressionLinestView extends BaseBivariateStatisticsView impl
     public String toString()
     {
         return this.getClass().getName() +
-                " fieldX=" + this.getFieldNameX() +
-                " fieldY=" + this.getFieldNameY();
+                " fieldX=" + this.getExpressionX() +
+                " fieldY=" + this.getExpressionY();
     }
 
     /**
