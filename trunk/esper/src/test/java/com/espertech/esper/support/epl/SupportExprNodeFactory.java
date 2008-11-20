@@ -1,9 +1,7 @@
 package com.espertech.esper.support.epl;
 
 import com.espertech.esper.epl.expression.*;
-import com.espertech.esper.epl.core.ViewResourceDelegateImpl;
-import com.espertech.esper.epl.core.MethodResolutionServiceImpl;
-import com.espertech.esper.epl.core.EngineImportServiceImpl;
+import com.espertech.esper.epl.core.*;
 import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.epl.variable.VariableServiceImpl;
 import com.espertech.esper.type.MathArithTypeEnum;
@@ -12,30 +10,57 @@ import com.espertech.esper.view.ViewFactoryChain;
 import com.espertech.esper.view.ViewFactory;
 import com.espertech.esper.view.window.LengthWindowViewFactory;
 import com.espertech.esper.support.view.SupportStatementContextFactory;
+import com.espertech.esper.support.event.SupportEventTypeFactory;
+import com.espertech.esper.support.bean.SupportBean;
+import com.espertech.esper.support.bean.SupportMarketDataBean;
 import com.espertech.esper.schedule.SchedulingServiceImpl;
 import com.espertech.esper.timer.TimeSourceService;
+import com.espertech.esper.event.EventType;
 
 import java.util.List;
 import java.util.LinkedList;
 
 public class SupportExprNodeFactory
 {
-    public static ExprNode[] makeIdentNodes(String ... names) throws Exception
+    public static ExprNode[] makeIdentNodesBean(String ... names) throws Exception
     {
         ExprNode[] nodes = new ExprNode[names.length];
         for (int i = 0; i < names.length; i++)
         {
             nodes[i] = new ExprIdentNode(names[i]);
-            validate(nodes[i]);
+            validate1StreamBean(nodes[i]);
         }
         return nodes;
     }
 
-    public static ExprNode makeIdentNode(String names) throws Exception
+    public static ExprNode[] makeIdentNodesMD(String ... names) throws Exception
+    {
+        ExprNode[] nodes = new ExprNode[names.length];
+        for (int i = 0; i < names.length; i++)
+        {
+            nodes[i] = new ExprIdentNode(names[i]);
+            validate1StreamMD(nodes[i]);
+        }
+        return nodes;
+    }
+
+    public static ExprNode makeIdentNodeBean(String names) throws Exception
     {
         ExprNode node = new ExprIdentNode(names);
-        validate(node);
+        validate1StreamBean(node);
         return node;
+    }
+
+    public static ExprNode makeIdentNodeMD(String names) throws Exception
+    {
+        ExprNode node = new ExprIdentNode(names);
+        validate1StreamMD(node);
+        return node;
+    }
+
+    public static ExprNode makeIdentNodeNoValid(String names) throws Exception
+    {
+        return new ExprIdentNode(names);
     }
 
     public static ExprEqualsNode makeEqualsNode() throws Exception
@@ -46,7 +71,7 @@ public class SupportExprNodeFactory
         topNode.addChildNode(i1_1);
         topNode.addChildNode(i1_2);
 
-        validate(topNode);
+        validate3Stream(topNode);
 
         return topNode;
     }
@@ -59,7 +84,7 @@ public class SupportExprNodeFactory
         ExprNode propNode = new ExprIdentNode("doublePrimitive", "s1");
         prevNode.addChildNode(propNode);
 
-        validate(prevNode);
+        validate3Stream(prevNode);
 
         return prevNode;
     }
@@ -69,10 +94,10 @@ public class SupportExprNodeFactory
         ExprPriorNode priorNode = new ExprPriorNode();
         ExprNode indexNode = new ExprConstantNode(1);
         priorNode.addChildNode(indexNode);
-        ExprNode propNode = new ExprIdentNode("doublePrimitive", "s1");
+        ExprNode propNode = new ExprIdentNode("doublePrimitive", "s0");
         priorNode.addChildNode(propNode);
 
-        validate(priorNode);
+        validate3Stream(priorNode);
 
         return priorNode;
     }
@@ -97,7 +122,7 @@ public class SupportExprNodeFactory
         e2.addChildNode(i2_1);
         e2.addChildNode(i2_2);
 
-        validate(topNode);
+        validate3Stream(topNode);
 
         return topNode;
     }
@@ -128,7 +153,7 @@ public class SupportExprNodeFactory
         equalNodes[2].addChildNode(i3_1);
         equalNodes[2].addChildNode(i3_2);
 
-        validate(topNode);
+        validate3Stream(topNode);
 
         return topNode;
     }
@@ -136,7 +161,7 @@ public class SupportExprNodeFactory
     public static ExprNode makeIdentNode(String fieldName, String streamName) throws Exception
     {
         ExprIdentNode node = new ExprIdentNode(fieldName, streamName);
-        validate(node);
+        validate3Stream(node);
         return node;
     }
 
@@ -148,7 +173,7 @@ public class SupportExprNodeFactory
         mathNode.addChildNode(node1);
         mathNode.addChildNode(node2);
 
-        validate(mathNode);
+        validate3Stream(mathNode);
 
         return mathNode;
     }
@@ -158,7 +183,7 @@ public class SupportExprNodeFactory
         ExprMathNode mathNode = new ExprMathNode(operator_);
         mathNode.addChildNode(new SupportExprNode(valueLeft_));
         mathNode.addChildNode(new SupportExprNode(valueRight_));
-        validate(mathNode);
+        validate3Stream(mathNode);
         return mathNode;
     }
 
@@ -174,7 +199,7 @@ public class SupportExprNodeFactory
         mathNode.addChildNode(node);
         mathNode.addChildNode(sum);
 
-        validate(mathNode);
+        validate3Stream(mathNode);
 
         return mathNode;
     }
@@ -185,7 +210,7 @@ public class SupportExprNodeFactory
         ExprIdentNode ident = new ExprIdentNode("intPrimitive", "s0");
         top.addChildNode(ident);
 
-        validate(top);
+        validate3Stream(top);
 
         return top;
     }
@@ -196,7 +221,7 @@ public class SupportExprNodeFactory
         countNode.addChildNode(new SupportExprNode(value, type));
         SupportAggregationResultFuture future = new SupportAggregationResultFuture(new Object[] {10, 20});
         countNode.setAggregationResultFuture(future, 1);
-        validate(countNode);
+        validate3Stream(countNode);
         return countNode;
     }
 
@@ -205,7 +230,7 @@ public class SupportExprNodeFactory
         ExprRelationalOpNode opNode = new ExprRelationalOpNode(operator_);
         opNode.addChildNode(new SupportExprNode(valueLeft_, typeLeft_));
         opNode.addChildNode(new SupportExprNode(valueRight_, typeRight_));
-        validate(opNode);
+        validate3Stream(opNode);
         return opNode;
     }
 
@@ -214,7 +239,7 @@ public class SupportExprNodeFactory
         ExprRelationalOpNode opNode = new ExprRelationalOpNode(operator_);
         opNode.addChildNode(new SupportExprNode(typeLeft_));
         opNode.addChildNode(new SupportExprNode(typeRight_));
-        validate(opNode);
+        validate3Stream(opNode);
         return opNode;
     }
 
@@ -223,7 +248,7 @@ public class SupportExprNodeFactory
         ExprRelationalOpNode opNode = new ExprRelationalOpNode(operator_);
         opNode.addChildNode(nodeLeft_);
         opNode.addChildNode(nodeRight_);
-        validate(opNode);
+        validate3Stream(opNode);
         return opNode;
     }
 
@@ -234,7 +259,7 @@ public class SupportExprNodeFactory
         inNode.addChildNode(makeIdentNode("intPrimitive","s0"));
         inNode.addChildNode(new SupportExprNode(1));
         inNode.addChildNode(new SupportExprNode(2));
-        validate(inNode);
+        validate3Stream(inNode);
         return inNode;
     }
 
@@ -244,7 +269,7 @@ public class SupportExprNodeFactory
         ExprRegexpNode node = new ExprRegexpNode(isNot);
         node.addChildNode(makeIdentNode("string","s0"));
         node.addChildNode(new SupportExprNode("[a-z][a-z]"));
-        validate(node);
+        validate3Stream(node);
         return node;
     }
 
@@ -258,7 +283,7 @@ public class SupportExprNodeFactory
         {
             node.addChildNode(new SupportExprNode(optionalEscape));
         }
-        validate(node);
+        validate3Stream(node);
         return node;
     }
 
@@ -281,7 +306,7 @@ public class SupportExprNodeFactory
 
         caseNode.addChildNode(new SupportExprNode("c"));
 
-        validate(caseNode);
+        validate3Stream(caseNode);
 
         return caseNode;
     }
@@ -303,7 +328,7 @@ public class SupportExprNodeFactory
         caseNode.addChildNode(new SupportExprNode("b"));
         caseNode.addChildNode(new SupportExprNode("c"));
 
-        validate(caseNode);
+        validate3Stream(caseNode);
 
         return (caseNode);
     }
@@ -318,7 +343,7 @@ public class SupportExprNodeFactory
         return topNode;
     }
 
-    public static void validate(ExprNode topNode) throws Exception
+    public static void validate3Stream(ExprNode topNode) throws Exception
     {
         SupportStreamTypeSvc3Stream streamTypeService = new SupportStreamTypeSvc3Stream();
 
@@ -336,5 +361,19 @@ public class SupportExprNodeFactory
         variableService.createNewVariable("var1", String.class, "my_variable_value", null);
 
         topNode.getValidatedSubtree(streamTypeService, new MethodResolutionServiceImpl(new EngineImportServiceImpl()), viewResources, null, variableService);
+    }
+
+    public static void validate1StreamBean(ExprNode topNode) throws Exception
+    {
+        EventType eventType = SupportEventTypeFactory.createBeanType(SupportBean.class);
+        StreamTypeService streamTypeService = new StreamTypeServiceImpl(eventType, "s0", "uri", eventType.getName());
+        topNode.getValidatedSubtree(streamTypeService, null, null, null, null);
+    }
+
+    public static void validate1StreamMD(ExprNode topNode) throws Exception
+    {
+        EventType eventType = SupportEventTypeFactory.createBeanType(SupportMarketDataBean.class);
+        StreamTypeService streamTypeService = new StreamTypeServiceImpl(eventType, "s0", "uri", eventType.getName());
+        topNode.getValidatedSubtree(streamTypeService, null, null, null, null);
     }
 }

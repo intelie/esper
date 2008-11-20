@@ -9,7 +9,10 @@ import com.espertech.esper.view.TestViewSupport;
 import com.espertech.esper.view.ViewParameterException;
 import com.espertech.esper.view.ViewFieldEnum;
 import com.espertech.esper.view.std.SizeView;
+import com.espertech.esper.epl.expression.ExprNode;
 import junit.framework.TestCase;
+
+import java.util.Arrays;
 
 public class TestRegressionLinestViewFactory extends TestCase
 {
@@ -24,20 +27,21 @@ public class TestRegressionLinestViewFactory extends TestCase
     {
         tryParameter(new Object[] {"price", "volume"}, "price", "volume");
 
-        tryInvalidParameter(new Object[] {"a", 1.1d});
-        tryInvalidParameter(new Object[] {1.1d, "a"});
+        tryInvalidParameter(new Object[] {"symbol", 1.1d});
+        tryInvalidParameter(new Object[] {1.1d, "symbol"});
         tryInvalidParameter(new Object[] {1.1d});
-        tryInvalidParameter(new Object[] {"a", "b", "c"});
+        tryInvalidParameter(new Object[] {"price", "volume", "symbol"});
         tryInvalidParameter(new Object[] {new String[] {"a", "b"}});
     }
 
     public void testCanReuse() throws Exception
     {
-        factory.setViewParameters(null, TestViewSupport.toExprList(new Object[] {"a", "b"}));
+        factory.setViewParameters(null, TestViewSupport.toExprListMD(new Object[] {"price", "volume"}));
+        factory.attach(SupportEventTypeFactory.createBeanType(SupportMarketDataBean.class), SupportStatementContextFactory.makeContext(), null, null);
         assertFalse(factory.canReuse(new SizeView(SupportStatementContextFactory.makeContext())));
-        assertFalse(factory.canReuse(new RegressionLinestView(SupportStatementContextFactory.makeContext(), SupportExprNodeFactory.makeIdentNode("a"), SupportExprNodeFactory.makeIdentNode("c"))));
-        assertFalse(factory.canReuse(new RegressionLinestView(SupportStatementContextFactory.makeContext(), SupportExprNodeFactory.makeIdentNode("x"), SupportExprNodeFactory.makeIdentNode("b"))));
-        assertTrue(factory.canReuse(new RegressionLinestView(SupportStatementContextFactory.makeContext(), SupportExprNodeFactory.makeIdentNode("a"), SupportExprNodeFactory.makeIdentNode("b"))));
+        assertFalse(factory.canReuse(new RegressionLinestView(SupportStatementContextFactory.makeContext(), SupportExprNodeFactory.makeIdentNodeMD("price"), SupportExprNodeFactory.makeIdentNodeMD("price"))));
+        assertFalse(factory.canReuse(new RegressionLinestView(SupportStatementContextFactory.makeContext(), SupportExprNodeFactory.makeIdentNodeMD("volume"), SupportExprNodeFactory.makeIdentNodeMD("price"))));
+        assertTrue(factory.canReuse(new RegressionLinestView(SupportStatementContextFactory.makeContext(), SupportExprNodeFactory.makeIdentNodeMD("price"), SupportExprNodeFactory.makeIdentNodeMD("volume"))));
     }
 
     public void testAttaches() throws Exception
@@ -45,14 +49,15 @@ public class TestRegressionLinestViewFactory extends TestCase
         // Should attach to anything as long as the fields exists
         EventType parentType = SupportEventTypeFactory.createBeanType(SupportMarketDataBean.class);
 
-        factory.setViewParameters(null, TestViewSupport.toExprList(new Object[] {"price", "volume"}));
+        factory.setViewParameters(null,
+                Arrays.asList(new ExprNode[] {SupportExprNodeFactory.makeIdentNodeMD("volume"), SupportExprNodeFactory.makeIdentNodeMD("price")}));
         factory.attach(parentType, SupportStatementContextFactory.makeContext(), null, null);
         assertEquals(double.class, factory.getEventType().getPropertyType(ViewFieldEnum.REGRESSION__SLOPE.getName()));
 
         try
         {
-            factory.setViewParameters(null, TestViewSupport.toExprList(new Object[] {"xxx", "y"}));
-            factory.attach(parentType, null, null, null);
+            factory.setViewParameters(null, TestViewSupport.toExprListMD(new Object[] {"symbol", "symbol"}));
+            factory.attach(parentType, SupportStatementContextFactory.makeContext(), null, null);
             fail();
         }
         catch (ViewParameterException ex)
@@ -65,7 +70,8 @@ public class TestRegressionLinestViewFactory extends TestCase
     {
         try
         {
-            factory.setViewParameters(null, TestViewSupport.toExprList(params));
+            factory.setViewParameters(null, TestViewSupport.toExprListMD(params));
+            factory.attach(SupportEventTypeFactory.createBeanType(SupportMarketDataBean.class), SupportStatementContextFactory.makeContext(), null, null);
             fail();
         }
         catch (ViewParameterException ex)
@@ -76,9 +82,10 @@ public class TestRegressionLinestViewFactory extends TestCase
 
     private void tryParameter(Object[] params, String fieldNameX, String fieldNameY) throws Exception
     {
-        factory.setViewParameters(null, TestViewSupport.toExprList(params));
+        factory.setViewParameters(null, TestViewSupport.toExprListMD(params));
+        factory.attach(SupportEventTypeFactory.createBeanType(SupportMarketDataBean.class), SupportStatementContextFactory.makeContext(), null, null);
         RegressionLinestView view = (RegressionLinestView) factory.makeView(SupportStatementContextFactory.makeContext());
-        assertEquals(fieldNameX, view.getExpressionX());
-        assertEquals(fieldNameY, view.getExpressionY());
+        assertEquals(fieldNameX, view.getExpressionX().toExpressionString());
+        assertEquals(fieldNameY, view.getExpressionY().toExpressionString());
     }
 }

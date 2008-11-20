@@ -52,7 +52,7 @@ public class TestExprPriorNode extends TestCase
 
     public void testToExpressionString() throws Exception
     {
-        assertEquals("prior(1,s1.doublePrimitive)", priorNode.toExpressionString());
+        assertEquals("prior(1,s0.doublePrimitive)", priorNode.toExpressionString());
     }
 
     private EventBean makeEvent(double doublePrimitive)

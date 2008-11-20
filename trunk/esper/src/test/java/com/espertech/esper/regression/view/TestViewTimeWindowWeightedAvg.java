@@ -33,7 +33,7 @@ public class TestViewTimeWindowWeightedAvg extends TestCase
         // Set up a 1 second time window
         weightedAvgView = epService.getEPAdministrator().createEPL(
                 "select * from " + SupportMarketDataBean.class.getName() +
-                "(symbol='" + SYMBOL + "').win:time(3.0).stat:weighted_avg('price', 'volume')");
+                "(symbol='" + SYMBOL + "').win:time(3.0).stat:weighted_avg(price, volume)");
         weightedAvgView.addListener(testListener);
     }
     

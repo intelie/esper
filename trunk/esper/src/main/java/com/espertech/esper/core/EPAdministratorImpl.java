@@ -289,7 +289,7 @@ public class EPAdministratorImpl implements EPAdministrator
         Tree ast = ParseHelper.parse(eplStatement, eplParseRule);
         CommonTreeNodeStream nodes = new CommonTreeNodeStream(ast);
 
-        EPLTreeWalker walker = new EPLTreeWalker(nodes, services.getEngineImportService(), services.getVariableService(), services.getSchedulingService().getTime(), defaultStreamSelector);
+        EPLTreeWalker walker = new EPLTreeWalker(nodes, services.getEngineImportService(), services.getVariableService(), services.getSchedulingService(), defaultStreamSelector, services.getEngineURI());
 
         try
         {
@@ -324,7 +324,7 @@ public class EPAdministratorImpl implements EPAdministrator
         // Parse and walk
         Tree ast = ParseHelper.parse(expression, patternParseRule);
         CommonTreeNodeStream nodes = new CommonTreeNodeStream(ast);
-        EPLTreeWalker walker = new EPLTreeWalker(nodes, services.getEngineImportService(), services.getVariableService(), services.getSchedulingService().getTime(), defaultStreamSelector);
+        EPLTreeWalker walker = new EPLTreeWalker(nodes, services.getEngineImportService(), services.getVariableService(), services.getSchedulingService(), defaultStreamSelector, services.getEngineURI());
 
         try
         {

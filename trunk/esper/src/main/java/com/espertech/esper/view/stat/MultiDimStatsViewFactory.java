@@ -58,7 +58,7 @@ public class MultiDimStatsViewFactory implements ViewFactory
 
     public void attach(EventType parentEventType, StatementContext statementContext, ViewFactory optionalParentFactory, List<ViewFactory> parentViewFactories) throws ViewParameterException
     {
-        ExprNode[] validated = ViewFactorySupport.validate("Multi-dimensional stats view", parentEventType, statementContext, viewParameters, false);
+        ExprNode[] validated = ViewFactorySupport.validate("Multi-dimensional stats view", parentEventType, statementContext, viewParameters, true);
         String errorMessage = "Multi-dimensional stats view requires a String-array of measure names and 2 or more numeric value expressions as parameters";
         if (viewParameters.size() < 3)
         {

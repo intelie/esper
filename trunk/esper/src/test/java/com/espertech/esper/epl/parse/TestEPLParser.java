@@ -13,8 +13,7 @@ public class TestEPLParser extends TestCase
     public void testDisplayAST() throws Exception
     {
         String className = SupportBean.class.getName();
-        //String expression = "select a\\.b\\.c[43]\\.dd('a') from A";
-        String expression = "select count from A limit 1";
+        String expression = "select * from A.win:time(VAR days)";
 
         log.debug(".testDisplayAST parsing: " + expression);
         Tree ast = parse(expression);

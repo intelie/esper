@@ -52,13 +52,13 @@ public class RegressionLinestViewFactory implements ViewFactory
             throw new ViewParameterException(errorMessage);
         }
 
-        if ((!JavaClassHelper.isNumeric(validated[1].getType())) || (!JavaClassHelper.isNumeric(validated[1].getType())))
+        if ((!JavaClassHelper.isNumeric(validated[0].getType())) || (!JavaClassHelper.isNumeric(validated[1].getType())))
         {
             throw new ViewParameterException(errorMessage);
         }
 
         expressionX = validated[0];
-        expressionX = validated[1];
+        expressionY = validated[1];
 
         eventType = RegressionLinestView.createEventType(statementContext);
     }

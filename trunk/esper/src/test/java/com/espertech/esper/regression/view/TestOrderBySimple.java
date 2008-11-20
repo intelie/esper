@@ -86,7 +86,7 @@ public class TestOrderBySimple extends TestCase {
 
         // test sort view
         SupportUpdateListener listener = new SupportUpdateListener();
-        stmtText = "select irstream string from SupportBean.ext:sort(string, false, 2)";
+        stmtText = "select irstream string from SupportBean.ext:sort(2, string asc)";
         EPStatement stmtTwo = epService.getEPAdministrator().createEPL(stmtText);
         stmtTwo.addListener(listener);
 

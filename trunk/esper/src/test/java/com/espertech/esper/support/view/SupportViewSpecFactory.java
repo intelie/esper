@@ -1,31 +1,31 @@
 package com.espertech.esper.support.view;
 
-import java.util.LinkedList;
-import java.util.List;
-
-import com.espertech.esper.type.PrimitiveValue;
-import com.espertech.esper.type.PrimitiveValueFactory;
-import com.espertech.esper.epl.spec.ViewSpec;
 import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.epl.expression.ExprConstantNode;
-import com.espertech.esper.view.ViewServiceImpl;
-import com.espertech.esper.view.ViewFactoryChain;
-import com.espertech.esper.view.ViewFactory;
+import com.espertech.esper.epl.spec.ViewSpec;
 import com.espertech.esper.event.EventType;
+import static com.espertech.esper.support.epl.SupportExprNodeFactory.makeIdentNode;
+import com.espertech.esper.support.epl.SupportExprNodeFactory;
+import com.espertech.esper.view.ViewFactory;
+import com.espertech.esper.view.ViewFactoryChain;
+import com.espertech.esper.view.ViewServiceImpl;
+
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Convenience class for making view specifications from class and string arrays.
  */
 public class SupportViewSpecFactory
 {
-    public static List<ViewSpec> makeSpecListOne()
+    public static List<ViewSpec> makeSpecListOne() throws Exception
     {
         List<ViewSpec> specifications = new LinkedList<ViewSpec>();
 
         ViewSpec specOne = makeSpec("win", "length",
                 new Class[] { Integer.class}, new String[] { "1000" } );
         ViewSpec specTwo = makeSpec("stat", "uni",
-                new Class[] { String.class}, new String[] { "\"price\"" } );
+                new Class[] { String.class}, new String[] { "intPrimitive" } );
         ViewSpec specThree = makeSpec("std", "lastevent", null, null);
 
         specifications.add(specOne);
@@ -40,12 +40,12 @@ public class SupportViewSpecFactory
         return makeFactories(parentEventType, makeSpecListOne());
     }
 
-    public static List<ViewSpec> makeSpecListTwo()
+    public static List<ViewSpec> makeSpecListTwo() throws Exception
     {
         List<ViewSpec> specifications = new LinkedList<ViewSpec>();
 
         ViewSpec specOne = makeSpec("std", "groupby",
-                new Class[] { String.class }, new String[] { "\"symbol\"" } );
+                new Class[] { String.class }, new String[] { "string" } );
         ViewSpec specTwo = makeSpec("win", "length",
                 new Class[] { int.class }, new String[] { "100" } );
 
@@ -60,14 +60,14 @@ public class SupportViewSpecFactory
         return makeFactories(parentEventType, makeSpecListTwo());
     }
 
-    public static List<ViewSpec> makeSpecListThree()
+    public static List<ViewSpec> makeSpecListThree() throws Exception
     {
         List<ViewSpec> specifications = new LinkedList<ViewSpec>();
 
         ViewSpec specOne = SupportViewSpecFactory.makeSpec("win", "length",
                 new Class[] { Integer.class}, new String[] { "1000" } );
         ViewSpec specTwo = SupportViewSpecFactory.makeSpec("std", "unique",
-                new Class[] { String.class}, new String[] { "\"symbol\"" } );
+                new Class[] { String.class}, new String[] { "string" } );
 
         specifications.add(specOne);
         specifications.add(specTwo);
@@ -80,14 +80,14 @@ public class SupportViewSpecFactory
         return makeFactories(parentEventType, makeSpecListThree());
     }
 
-    public static List<ViewSpec> makeSpecListFour()
+    public static List<ViewSpec> makeSpecListFour() throws Exception
     {
         List<ViewSpec> specifications = new LinkedList<ViewSpec>();
 
         ViewSpec specOne = SupportViewSpecFactory.makeSpec("win", "length",
                 new Class[] { Integer.class}, new String[] { "1000" } );
         ViewSpec specTwo = SupportViewSpecFactory.makeSpec("stat", "uni",
-                new Class[] { String.class}, new String[] { "\"price\"" } );
+                new Class[] { String.class}, new String[] { "intPrimitive" } );
         ViewSpec specThree = SupportViewSpecFactory.makeSpec("std", "size", null, null);
 
         specifications.add(specOne);
@@ -102,7 +102,7 @@ public class SupportViewSpecFactory
         return makeFactories(parentEventType, makeSpecListFour());
     }
 
-    public static List<ViewSpec> makeSpecListFive()
+    public static List<ViewSpec> makeSpecListFive() throws Exception
     {
         List<ViewSpec> specifications = new LinkedList<ViewSpec>();
 
@@ -118,26 +118,44 @@ public class SupportViewSpecFactory
         return makeFactories(parentEventType, makeSpecListFive());
     }
 
-    public static ViewSpec makeSpec(String namespace, String viewName, Class[] paramTypes, String[] paramValues)
+    public static ViewSpec makeSpec(String namespace, String viewName, Class[] paramTypes, String[] paramValues) throws Exception
     {
         return new ViewSpec(namespace, viewName, makeParams(paramTypes, paramValues));
     }
 
-    private static LinkedList<ExprNode> makeParams(Class clazz[], String[] values)
+    private static LinkedList<ExprNode> makeParams(Class clazz[], String[] values) throws Exception
     {
         LinkedList<ExprNode> params = new LinkedList<ExprNode>();
-
-        if (clazz == null)
+        if (values == null)
         {
             return params;
         }
 
-        for (int i = 0; i < clazz.length; i++)
+        for (int i = 0; i < values.length; i++)
         {
-            PrimitiveValue placeholder = PrimitiveValueFactory.create(clazz[i]);
-            placeholder.parse(values[i]);
-            Object value = placeholder.getValueObject();
-            params.add(new ExprConstantNode(value));
+            ExprNode node;
+            String value = values[i];
+            if (clazz[i] == String.class)
+            {
+                if (value.startsWith("\""))
+                {
+                    value = value.replace("\"", "");
+                    node = new ExprConstantNode(value);
+                }
+                else
+                {
+                    node = SupportExprNodeFactory.makeIdentNodeBean(value);
+                }
+            }
+            else if (clazz[i] == Boolean.class)
+            {
+                node = new ExprConstantNode(Boolean.valueOf(value));
+            }
+            else
+            {
+                node = new ExprConstantNode(Integer.valueOf(value));
+            }
+            params.add(node);
         }
 
         return params;

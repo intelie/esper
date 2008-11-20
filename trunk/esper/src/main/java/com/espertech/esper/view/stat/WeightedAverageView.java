@@ -12,6 +12,7 @@ import com.espertech.esper.event.*;
 import com.espertech.esper.view.*;
 import com.espertech.esper.collection.SingleEventIterator;
 import com.espertech.esper.core.StatementContext;
+import com.espertech.esper.epl.expression.ExprNode;
 
 import java.util.Iterator;
 import java.util.Map;
@@ -27,10 +28,9 @@ public final class WeightedAverageView extends ViewSupport implements CloneableV
 {
     private final EventType eventType;
     private final StatementContext statementContext;
-    private final String fieldNameX;
-    private final String fieldNameWeight;
-    private EventPropertyGetter fieldXGetter;
-    private EventPropertyGetter fieldWeightGetter;
+    private final ExprNode fieldNameX;
+    private final ExprNode fieldNameWeight;
+    private EventBean[] eventsPerStream = new EventBean[1];
 
     private double sumXtimesW = Double.NaN;
     private double sumW = Double.NaN;
@@ -46,7 +46,7 @@ public final class WeightedAverageView extends ViewSupport implements CloneableV
      * @param fieldNameWeight is the field name for the weight to apply to each data point
      * @param statementContext contains required view services
      */
-    public WeightedAverageView(StatementContext statementContext, String fieldNameX, String fieldNameWeight)
+    public WeightedAverageView(StatementContext statementContext, ExprNode fieldNameX, ExprNode fieldNameWeight)
     {
         this.fieldNameX = fieldNameX;
         this.fieldNameWeight = fieldNameWeight;
@@ -59,30 +59,20 @@ public final class WeightedAverageView extends ViewSupport implements CloneableV
         return new WeightedAverageView(statementContext, fieldNameX, fieldNameWeight);
     }
 
-    public void setParent(Viewable parent)
-    {
-        super.setParent(parent);
-        if (parent != null)
-        {
-            fieldXGetter = parent.getEventType().getGetter(fieldNameX);
-            fieldWeightGetter = parent.getEventType().getGetter(fieldNameWeight);
-        }
-    }
-
     /**
-     * Returns the name of the field supplying the X values.
-     * @return field name supplying X data points
+     * Returns the expression supplying the X values.
+     * @return expression supplying X data points
      */
-    public final String getFieldNameX()
+    public final ExprNode getFieldNameX()
     {
         return fieldNameX;
     }
 
     /**
-     * Returns the name of the field supplying the weight values.
-     * @return field name supplying weight
+     * Returns the expression supplying the weight values.
+     * @return expression supplying weight
      */
-    public final String getFieldNameWeight()
+    public final ExprNode getFieldNameWeight()
     {
         return fieldNameWeight;
     }
@@ -96,8 +86,9 @@ public final class WeightedAverageView extends ViewSupport implements CloneableV
         {
             for (int i = 0; i < newData.length; i++)
             {
-                double point = ((Number) fieldXGetter.get(newData[i])).doubleValue();
-                double weight = ((Number) fieldWeightGetter.get(newData[i])).doubleValue();
+                eventsPerStream[0] = newData[i];
+                double point = ((Number) fieldNameX.evaluate(eventsPerStream, true)).doubleValue();
+                double weight = ((Number) fieldNameWeight.evaluate(eventsPerStream, true)).doubleValue();
 
                 if (Double.valueOf(sumXtimesW).isNaN())
                 {
@@ -117,8 +108,9 @@ public final class WeightedAverageView extends ViewSupport implements CloneableV
         {
             for (int i = 0; i < oldData.length; i++)
             {
-                double point = ((Number) fieldXGetter.get(oldData[i])).doubleValue();
-                double weight = ((Number) fieldWeightGetter.get(oldData[i])).doubleValue();
+                eventsPerStream[0] = oldData[i];
+                double point = ((Number) fieldNameX.evaluate(eventsPerStream, true)).doubleValue();
+                double weight = ((Number) fieldNameWeight.evaluate(eventsPerStream, true)).doubleValue();
 
                 sumXtimesW -= point * weight;
                 sumW -= weight;

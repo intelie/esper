@@ -2,6 +2,7 @@ package com.espertech.esper.regression.view;
 
 import junit.framework.TestCase;
 import com.espertech.esper.client.*;
+import com.espertech.esper.client.soda.EPStatementObjectModel;
 import com.espertech.esper.client.time.CurrentTimeEvent;
 import com.espertech.esper.client.time.TimerControlEvent;
 import com.espertech.esper.event.EventBean;
@@ -13,6 +14,7 @@ import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.collection.UniformPair;
 import com.espertech.esper.regression.support.ResultAssertTestResult;
 import com.espertech.esper.regression.support.ResultAssertExecution;
+import com.espertech.esper.util.SerializableObjectCopier;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -399,15 +401,15 @@ public class TestOutputLimitRowForAll extends TestCase
         listener.reset();
     }
 
-    public void testJoinSortWindow()
+    public void testJoinSortWindow() throws Exception
     {
         epService.getEPRuntime().sendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
         sendTimer(0);
 
         String viewExpr = "select irstream max(price) as maxVol" +
-                          " from " + SupportMarketDataBean.class.getName() + ".ext:sort(volume, true, 1) as s0," +
-                          SupportBean.class.getName() + " as s1 where s1.string = s0.symbol " +
-                          "output every 1 seconds";
+                          " from " + SupportMarketDataBean.class.getName() + ".ext:sort(1, volume desc) as s0, " +
+                          SupportBean.class.getName() + " as s1 where (s1.string = s0.symbol) " +
+                          "output every 1.0 seconds";
         EPStatement stmt = epService.getEPAdministrator().createEPL(viewExpr);
         stmt.addListener(listener);
         epService.getEPRuntime().sendEvent(new SupportBean("JOIN_KEY", -1));
@@ -425,6 +427,11 @@ public class TestOutputLimitRowForAll extends TestCase
         assertEquals(2, result.getSecond().length);
         assertEquals(null, result.getSecond()[0].get("maxVol"));
         assertEquals(1.0, result.getSecond()[1].get("maxVol"));
+        
+        // statement object model test
+        EPStatementObjectModel model = epService.getEPAdministrator().compileEPL(viewExpr);
+        SerializableObjectCopier.copy(model);
+        assertEquals(viewExpr, model.toEPL());
     }
 
     public void testMaxTimeWindow()
@@ -679,6 +686,7 @@ public class TestOutputLimitRowForAll extends TestCase
 
     private static Log log = LogFactory.getLog(TestOutputLimitRowForAll.class);
 }
+
 
 
 

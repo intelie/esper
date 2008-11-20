@@ -97,12 +97,12 @@ public abstract class ObjectSpec implements MetaDefItem
 
         // Compare object parameter by object parameter
         int index = 0;
-        for (Object thisParam : objectParameters)
+        for (ExprNode thisParam : objectParameters)
         {
-            Object otherParam = other.objectParameters.get(index);
+            ExprNode otherParam = other.objectParameters.get(index);
             index++;
 
-            if (!(thisParam.equals(otherParam)))
+            if (!ExprNode.deepEquals(thisParam, otherParam))
             {
                 return false;
             }
@@ -129,10 +129,10 @@ public abstract class ObjectSpec implements MetaDefItem
 
         if (objectParameters != null)
         {
-            for (Object param : objectParameters)
+            for (ExprNode param : objectParameters)
             {
                 buffer.append(delimiter);
-                buffer.append(param.toString());
+                buffer.append(param.toExpressionString());
                 delimiter = ',';
             }
         }

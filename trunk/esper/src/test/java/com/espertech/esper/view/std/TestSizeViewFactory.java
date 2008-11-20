@@ -2,8 +2,6 @@ package com.espertech.esper.view.std;
 
 import junit.framework.TestCase;
 
-import java.util.Arrays;
-
 import com.espertech.esper.view.ViewParameterException;
 import com.espertech.esper.view.TestViewSupport;
 import com.espertech.esper.support.view.SupportStatementContextFactory;
@@ -34,7 +32,7 @@ public class TestSizeViewFactory extends TestCase
         try
         {
             SizeViewFactory factory = new SizeViewFactory();
-            factory.setViewParameters(null, TestViewSupport.toExprList(new Object[] {param}));
+            factory.setViewParameters(SupportStatementContextFactory.makeViewContext(), TestViewSupport.toExprListBean(new Object[] {param}));
             fail();
         }
         catch (ViewParameterException ex)
@@ -46,7 +44,7 @@ public class TestSizeViewFactory extends TestCase
     private void tryParameter(Object[] param) throws Exception
     {
         SizeViewFactory factory = new SizeViewFactory();
-        factory.setViewParameters(null, TestViewSupport.toExprList(param));
+        factory.setViewParameters(SupportStatementContextFactory.makeViewContext(), TestViewSupport.toExprListBean(param));
         assertTrue(factory.makeView(SupportStatementContextFactory.makeContext()) instanceof SizeView);
     }
 }

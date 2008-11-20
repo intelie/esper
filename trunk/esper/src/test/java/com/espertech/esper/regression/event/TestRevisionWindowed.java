@@ -183,7 +183,7 @@ public class TestRevisionWindowed extends TestCase
 
     public void testUnique()
     {
-        stmtCreateWin = epService.getEPAdministrator().createEPL("create window RevQuote.std:unique('p1') as select * from RevisableQuote");
+        stmtCreateWin = epService.getEPAdministrator().createEPL("create window RevQuote.std:unique(p1) as select * from RevisableQuote");
         epService.getEPAdministrator().createEPL("insert into RevQuote select * from FullEvent");
         epService.getEPAdministrator().createEPL("insert into RevQuote select * from D1");
         epService.getEPAdministrator().createEPL("insert into RevQuote select * from D5");

@@ -2,6 +2,7 @@ package com.espertech.esper.view;
 
 import junit.framework.TestCase;
 import com.espertech.esper.support.view.SupportSchemaNeutralView;
+import com.espertech.esper.support.epl.SupportExprNodeFactory;
 import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.epl.expression.ExprConstantNode;
 
@@ -70,18 +71,42 @@ public class TestViewSupport extends TestCase
         assertEquals(null, descendents);
     }
 
-    public static List<ExprNode> toExprList(Object[] constants)
+    public static List<ExprNode> toExprListBean(Object[] constants) throws Exception
     {
         List<ExprNode> expr = new ArrayList<ExprNode>();
         for (int i = 0; i < constants.length; i++)
         {
-            expr.add(new ExprConstantNode(constants[i]));
+            if (constants[i] instanceof String)
+            {
+                expr.add(SupportExprNodeFactory.makeIdentNodeBean(constants[i].toString()));
+            }
+            else
+            {
+                expr.add(new ExprConstantNode(constants[i]));
+            }
         }
         return expr;
     }
 
-    public static List<ExprNode> toExprList(Object constant)
+    public static List<ExprNode> toExprListMD(Object[] constants) throws Exception
     {
-        return toExprList(new Object[] {constant});
+        List<ExprNode> expr = new ArrayList<ExprNode>();
+        for (int i = 0; i < constants.length; i++)
+        {
+            if (constants[i] instanceof String)
+            {
+                expr.add(SupportExprNodeFactory.makeIdentNodeMD(constants[i].toString()));
+            }
+            else
+            {
+                expr.add(new ExprConstantNode(constants[i]));
+            }
+        }
+        return expr;
+    }
+
+    public static List<ExprNode> toExprList(Object constant) throws Exception
+    {
+        return toExprListBean(new Object[] {constant});
     }
 }

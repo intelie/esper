@@ -84,7 +84,7 @@ public class UniqueByPropertyViewFactory implements DataWindowViewFactory
         }
 
         UniqueByPropertyView myView = (UniqueByPropertyView) view;
-        if (!ViewFactorySupport.deepEqualsExpr(criteriaExpressions, myView.getCriteriaExpressions()))
+        if (!ExprNode.deepEquals(criteriaExpressions, myView.getCriteriaExpressions()))
         {
             return false;
         }

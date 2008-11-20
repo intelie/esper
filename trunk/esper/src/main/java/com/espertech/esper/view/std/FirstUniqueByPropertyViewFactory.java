@@ -8,48 +8,44 @@
  **************************************************************************************/
 package com.espertech.esper.view.std;
 
-import com.espertech.esper.view.ViewFactory;
-import com.espertech.esper.view.ViewParameterException;
-import com.espertech.esper.view.ViewParameterException;
-import com.espertech.esper.view.*;
-import com.espertech.esper.event.EventType;
-import com.espertech.esper.epl.core.ViewResourceCallback;
-import com.espertech.esper.epl.named.RemoveStreamViewCapability;
-import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.core.StatementContext;
+import com.espertech.esper.epl.core.ViewResourceCallback;
+import com.espertech.esper.epl.expression.ExprNode;
+import com.espertech.esper.epl.named.RemoveStreamViewCapability;
+import com.espertech.esper.event.EventType;
+import com.espertech.esper.view.*;
 
 import java.util.List;
-import java.util.Arrays;
 
 /**
  * Factory for {@link FirstUniqueByPropertyView} instances.
  */
 public class FirstUniqueByPropertyViewFactory implements DataWindowViewFactory
 {
+    protected List<ExprNode> viewParameters;
+
     /**
      * Property name to evaluate unique values.
      */
-    protected String[] propertyNames;
+    protected ExprNode[] criteriaExpressions;
 
     private EventType eventType;
 
     public void setViewParameters(ViewFactoryContext viewFactoryContext, List<ExprNode> expressionParameters) throws ViewParameterException
     {
-        List<Object> viewParameters = ViewFactorySupport.validateAndEvaluate("First unique view", viewFactoryContext, expressionParameters);
-        propertyNames = GroupByViewFactory.getFieldNameParams(viewParameters, "First unique");
+        this.viewParameters = expressionParameters;
     }
 
     public void attach(EventType parentEventType, StatementContext statementContext, ViewFactory optionalParentFactory, List<ViewFactory> parentViewFactories) throws ViewParameterException
     {
-        // Attaches to just about anything as long as all the fields exists
-        for (int i = 0; i < propertyNames.length; i++)
+        criteriaExpressions = ViewFactorySupport.validate("First-unique-by view", parentEventType, statementContext, viewParameters, false);
+
+        if (criteriaExpressions.length == 0)
         {
-            String message = PropertyCheckHelper.exists(parentEventType, propertyNames[i]);
-            if (message != null)
-            {
-                throw new ViewParameterException(message);
-            }
+            String errorMessage = "First-unique-by view requires a one or more expressions provinding unique values as parameters";
+            throw new ViewParameterException(errorMessage);
         }
+
         this.eventType = parentEventType;
     }
 
@@ -73,7 +69,7 @@ public class FirstUniqueByPropertyViewFactory implements DataWindowViewFactory
 
     public View makeView(StatementContext statementContext)
     {
-        return new FirstUniqueByPropertyView(propertyNames);
+        return new FirstUniqueByPropertyView(criteriaExpressions);
     }
 
     public EventType getEventType()
@@ -89,16 +85,11 @@ public class FirstUniqueByPropertyViewFactory implements DataWindowViewFactory
         }
 
         FirstUniqueByPropertyView myView = (FirstUniqueByPropertyView) view;
-        if (!Arrays.deepEquals(myView.getUniqueFieldNames(), propertyNames))
+        if (!ExprNode.deepEquals(criteriaExpressions, myView.getUniqueCriteria()))
         {
             return false;
         }
 
-        if (!myView.isEmpty())
-        {
-            return false;
-        }
-
-        return true;
+        return myView.isEmpty();
     }
 }

@@ -941,6 +941,11 @@ public class StatementSpecMapper
                 throw new EPException("Error resolving aggregation: " + e.getMessage(), e);
             }
         }
+        else if (expr instanceof OrderedObjectParamExpression)
+        {
+            OrderedObjectParamExpression order = (OrderedObjectParamExpression) expr;
+            return new ExprOrderedExpr(order.isDescending());
+        }
         else if (expr instanceof CrontabFrequencyExpression)
         {
             return new ExprNumberSetFrequency();
@@ -1234,6 +1239,11 @@ public class StatementSpecMapper
         else if (expr instanceof ExprNumberSetRange)
         {
             return new CrontabRangeExpression();
+        }
+        else if (expr instanceof ExprOrderedExpr)
+        {
+            ExprOrderedExpr order = (ExprOrderedExpr) expr;
+            return new OrderedObjectParamExpression(order.isDescending());
         }
         else if (expr instanceof ExprNumberSetCronParam)
         {

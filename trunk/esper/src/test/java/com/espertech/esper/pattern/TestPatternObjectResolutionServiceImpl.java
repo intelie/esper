@@ -13,7 +13,6 @@ import com.espertech.esper.view.TestViewSupport;
 
 import java.util.List;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import junit.framework.TestCase;
 
@@ -34,10 +33,10 @@ public class TestPatternObjectResolutionServiceImpl extends TestCase
 
     public void testMake() throws Exception
     {
-        assertTrue(service.create(new PatternGuardSpec("g", "h", TestViewSupport.toExprList(new Object[] {100}))) instanceof SupportGuardFactory);
-        assertTrue(service.create(new PatternObserverSpec("a", "b", TestViewSupport.toExprList(new Object[] {100}))) instanceof SupportObserverFactory);
-        assertTrue(service.create(new PatternGuardSpec("timer", "within", TestViewSupport.toExprList(new Object[] {100}))) instanceof TimerWithinGuardFactory);
-        assertTrue(service.create(new PatternObserverSpec("timer", "interval", TestViewSupport.toExprList(new Object[] {100}))) instanceof TimerIntervalObserverFactory);
+        assertTrue(service.create(new PatternGuardSpec("g", "h", TestViewSupport.toExprListBean(new Object[] {100}))) instanceof SupportGuardFactory);
+        assertTrue(service.create(new PatternObserverSpec("a", "b", TestViewSupport.toExprListBean(new Object[] {100}))) instanceof SupportObserverFactory);
+        assertTrue(service.create(new PatternGuardSpec("timer", "within", TestViewSupport.toExprListBean(new Object[] {100}))) instanceof TimerWithinGuardFactory);
+        assertTrue(service.create(new PatternObserverSpec("timer", "interval", TestViewSupport.toExprListBean(new Object[] {100}))) instanceof TimerIntervalObserverFactory);
     }
 
     public void testInvalidConfig()

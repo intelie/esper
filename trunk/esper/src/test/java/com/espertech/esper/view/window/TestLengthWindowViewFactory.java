@@ -19,7 +19,7 @@ public class TestLengthWindowViewFactory extends TestCase
     {
         tryParameter(new Object[] {10}, 10);
 
-        tryInvalidParameter("price");
+        tryInvalidParameter("string");
         tryInvalidParameter(true);
         tryInvalidParameter(1.1d);
         tryInvalidParameter(0);
@@ -27,7 +27,7 @@ public class TestLengthWindowViewFactory extends TestCase
 
     public void testCanReuse() throws Exception
     {
-        factory.setViewParameters(null, TestViewSupport.toExprList(new Object[] {1000}));
+        factory.setViewParameters(SupportStatementContextFactory.makeViewContext(), TestViewSupport.toExprListBean(new Object[] {1000}));
         assertFalse(factory.canReuse(new SizeView(SupportStatementContextFactory.makeContext())));
         assertFalse(factory.canReuse(new LengthWindowView(factory, 1, null)));
         assertTrue(factory.canReuse(new LengthWindowView(factory, 1000, null)));
@@ -38,7 +38,7 @@ public class TestLengthWindowViewFactory extends TestCase
         try
         {
 
-            factory.setViewParameters(null, TestViewSupport.toExprList(new Object[] {param}));
+            factory.setViewParameters(SupportStatementContextFactory.makeViewContext(), TestViewSupport.toExprListBean(new Object[] {param}));
             fail();
         }
         catch (ViewParameterException ex)
@@ -50,7 +50,7 @@ public class TestLengthWindowViewFactory extends TestCase
     private void tryParameter(Object[] param, int size) throws Exception
     {
         LengthWindowViewFactory factory = new LengthWindowViewFactory();
-        factory.setViewParameters(null, TestViewSupport.toExprList(param));
+        factory.setViewParameters(SupportStatementContextFactory.makeViewContext(), TestViewSupport.toExprListBean(param));
         LengthWindowView view = (LengthWindowView) factory.makeView(SupportStatementContextFactory.makeContext());
         assertEquals(size, view.getSize());
     }

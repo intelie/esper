@@ -14,11 +14,13 @@ import com.espertech.esper.epl.agg.AggregationSupport;
 import com.espertech.esper.epl.core.EngineImportException;
 import com.espertech.esper.epl.core.EngineImportService;
 import com.espertech.esper.epl.core.EngineImportUndefinedException;
+import com.espertech.esper.epl.core.MethodResolutionService;
 import com.espertech.esper.epl.expression.*;
 import com.espertech.esper.epl.generated.EsperEPL2Ast;
 import com.espertech.esper.epl.spec.*;
 import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.pattern.*;
+import com.espertech.esper.schedule.TimeProvider;
 import com.espertech.esper.type.*;
 import com.espertech.esper.util.JavaClassHelper;
 import com.espertech.esper.util.PlaceholderParseException;
@@ -55,28 +57,32 @@ public class EPLTreeWalker extends EsperEPL2Ast
 
     private final EngineImportService engineImportService;
     private final VariableService variableService;
-    private final long engineTime;
+    private final TimeProvider timeProvider;
     private final SelectClauseStreamSelectorEnum defaultStreamSelector;
+    private final String engineURI;
 
     /**
      * Ctor.
      * @param engineImportService is required to resolve lib-calls into static methods or configured aggregation functions
      * @param variableService for variable access
      * @param input is the tree nodes to walk
-     * @param engineTime is the current engine time
+     * @param time provider is for providing the current engine time
      * @param defaultStreamSelector - the configuration for which insert or remove streams (or both) to produce
      */
     public EPLTreeWalker(TreeNodeStream input,
                          EngineImportService engineImportService,
                          VariableService variableService,
-                         long engineTime,
-                         SelectClauseStreamSelectorEnum defaultStreamSelector)
+                         TimeProvider timeProvider,
+                         SelectClauseStreamSelectorEnum defaultStreamSelector,
+                         String engineURI)
     {
         super(input);
         this.engineImportService = engineImportService;
         this.variableService = variableService;
-        this.engineTime = engineTime;
         this.defaultStreamSelector = defaultStreamSelector;
+        this.timeProvider = timeProvider;
+        this.engineURI = engineURI;
+
         if (defaultStreamSelector == null)
         {
             throw new IllegalArgumentException("Default stream selector is null");
@@ -377,6 +383,9 @@ public class EPLTreeWalker extends EsperEPL2Ast
                 break;
             case WEEKDAY_OPERATOR:
                 leaveWeekdayNumberSetOperator(node);
+                break;
+            case OBJECT_PARAM_ORDERED_EXPR:
+                leaveObjectParamOrderedExpression(node);
                 break;
             default:
                 throw new ASTWalkException("Unhandled node type encountered, type '" + node.getType() +
@@ -698,23 +707,23 @@ public class EPLTreeWalker extends EsperEPL2Ast
             Tree child = node.getChild(i);
             if (child.getType() == MILLISECOND_PART)
             {
-                nodes[4] = handleTimePeriod(child);
+                nodes[4] = astExprNodeMap.remove(child.getChild(0));
             }
             if (child.getType() == SECOND_PART)
             {
-                nodes[3] = handleTimePeriod(child);
+                nodes[3] = astExprNodeMap.remove(child.getChild(0));
             }
             if (child.getType() == MINUTE_PART)
             {
-                nodes[2] = handleTimePeriod(child);
+                nodes[2] = astExprNodeMap.remove(child.getChild(0));
             }
             if (child.getType() == HOUR_PART)
             {
-                nodes[1] = handleTimePeriod(child);
+                nodes[1] = astExprNodeMap.remove(child.getChild(0));
             }
             if (child.getType() == DAY_PART)
             {
-                nodes[0] = handleTimePeriod(child);
+                nodes[0] = astExprNodeMap.remove(child.getChild(0));
             }
         }
         ExprTimePeriod timeNode = new ExprTimePeriod(nodes[0], nodes[1], nodes[2], nodes[3], nodes[4]);
@@ -770,13 +779,17 @@ public class EPLTreeWalker extends EsperEPL2Ast
         astExprNodeMap.put(node, exprNode);
     }
 
-    private ExprNode handleTimePeriod(Tree parent)
+    private void leaveObjectParamOrderedExpression(Tree node)
     {
-        if (parent.getChild(0).getType() == IDENT)
+        log.debug(".leaveObjectParamOrderedExpression");
+
+        boolean isDescending = false;
+        if ((node.getChildCount() > 1) && (node.getChild(1).getText().toUpperCase().equals("DESC")))
         {
-            return new ExprVariableNode(parent.getChild(0).getText());
+            isDescending = true;
         }
-        return new ExprConstantNode(ASTParameterHelper.makeParameter(parent.getChild(0), engineTime));
+        ExprOrderedExpr exprNode = new ExprOrderedExpr(isDescending);
+        astExprNodeMap.put(node, exprNode);
     }
 
     private void leaveArray(Tree node)
@@ -1414,7 +1427,7 @@ public class EPLTreeWalker extends EsperEPL2Ast
     {
         log.debug(".leaveOutputLimit");
 
-        OutputLimitSpec spec = ASTOutputLimitHelper.buildOutputLimitSpec(node, engineTime, astExprNodeMap);
+        OutputLimitSpec spec = ASTOutputLimitHelper.buildOutputLimitSpec(node, astExprNodeMap, variableService, engineURI, timeProvider);
         statementSpec.setOutputLimitSpec(spec);
 
         if (spec.getVariableName() != null)
@@ -1878,16 +1891,6 @@ public class EPLTreeWalker extends EsperEPL2Ast
             astExprNodeMap.remove(currentNode);
         }
         return exprNodes;
-    }
-
-    private ExprNode getExprNode(Tree node)
-    {
-        ExprNode exprNode = astExprNodeMap.get(node);
-        if (exprNode == null)
-        {
-            throw new IllegalStateException("Expression node for AST node not found for type " + node.getType() + " text " + node.getText());
-        }
-        return astExprNodeMap.remove(node);
     }
 
     private static final Log log = LogFactory.getLog(EPLTreeWalker.class);

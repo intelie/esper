@@ -23,13 +23,13 @@ public class TestTimeWindowViewFactory extends TestCase
         tryParameter(3.3d, 3300);
         tryParameter(new Float(1.1f), 1100);
 
-        tryInvalidParameter("price");
+        tryInvalidParameter("string");
         tryInvalidParameter(true);
     }
 
     public void testCanReuse() throws Exception
     {
-        factory.setViewParameters(null, TestViewSupport.toExprList(new Object[] {1000}));
+        factory.setViewParameters(SupportStatementContextFactory.makeViewContext(), TestViewSupport.toExprListBean(new Object[] {1000}));
         assertFalse(factory.canReuse(new SizeView(SupportStatementContextFactory.makeContext())));
         assertFalse(factory.canReuse(new TimeBatchView(null, SupportStatementContextFactory.makeContext(), 1000, null, false, false, null)));
         assertTrue(factory.canReuse(new TimeWindowView(SupportStatementContextFactory.makeContext(), factory, 1000000, null, false)));
@@ -40,7 +40,7 @@ public class TestTimeWindowViewFactory extends TestCase
         try
         {
             TimeWindowViewFactory factory = new TimeWindowViewFactory();
-            factory.setViewParameters(null, TestViewSupport.toExprList(new Object[] {param}));
+            factory.setViewParameters(SupportStatementContextFactory.makeViewContext(), TestViewSupport.toExprListBean(new Object[] {param}));
             fail();
         }
         catch (ViewParameterException ex)
@@ -52,7 +52,7 @@ public class TestTimeWindowViewFactory extends TestCase
     private void tryParameter(Object param, long msec) throws Exception
     {
         TimeWindowViewFactory factory = new TimeWindowViewFactory();
-        factory.setViewParameters(null, TestViewSupport.toExprList(new Object[] {param}));
+        factory.setViewParameters(SupportStatementContextFactory.makeViewContext(), TestViewSupport.toExprListBean(new Object[] {param}));
         TimeWindowView view = (TimeWindowView) factory.makeView(SupportStatementContextFactory.makeContext());
         assertEquals(msec, view.getMillisecondsBeforeExpiry());
     }

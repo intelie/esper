@@ -4,6 +4,7 @@ import junit.framework.TestCase;
 import com.espertech.esper.epl.expression.ExprValidationException;
 import com.espertech.esper.event.EventBean;
 import com.espertech.esper.support.bean.SupportBean;
+import com.espertech.esper.support.bean.SupportMarketDataBean;
 import com.espertech.esper.support.epl.SupportStreamTypeSvc3Stream;
 import com.espertech.esper.support.event.SupportEventAdapterService;
 

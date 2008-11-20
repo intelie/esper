@@ -11,6 +11,7 @@ package com.espertech.esper.view.ext;
 import com.espertech.esper.core.StatementContext;
 import com.espertech.esper.epl.core.ViewResourceCallback;
 import com.espertech.esper.epl.expression.ExprNode;
+import com.espertech.esper.epl.expression.ExprOrderedExpr;
 import com.espertech.esper.epl.named.RemoveStreamViewCapability;
 import com.espertech.esper.event.EventType;
 import com.espertech.esper.view.*;
@@ -64,7 +65,10 @@ public class SortWindowViewFactory implements DataWindowViewFactory
         }
 
         ExprNode[] validated = ViewFactorySupport.validate(NAME, parentEventType, statementContext, viewParameters, true);
-        ViewFactorySupport.validateReturnsNonConstant(NAME, validated, 1); 
+        for (int i = 1; i < validated.length; i++)
+        {
+            ViewFactorySupport.validateReturnsNonConstant(NAME, validated[i], i);
+        }
 
         Object sortSize = ViewFactorySupport.evaluateNoProperties(NAME, validated[0], 0);
         if ((sortSize == null) || (!(sortSize instanceof Number)))
@@ -78,8 +82,15 @@ public class SortWindowViewFactory implements DataWindowViewFactory
 
         for (int i = 1; i < validated.length; i++)
         {
-            sortCriteriaExpressions[i - 1] = validated[i];
-            isDescendingValues[i - 1] = true;
+            if (validated[i] instanceof ExprOrderedExpr)
+            {
+                isDescendingValues[i - 1] = ((ExprOrderedExpr) validated[i]).isDescending();
+                sortCriteriaExpressions[i - 1] = validated[i].getChildNodes().get(0);                
+            }
+            else
+            {
+                sortCriteriaExpressions[i - 1] = validated[i];
+            }
         }
     }
 
@@ -155,7 +166,7 @@ public class SortWindowViewFactory implements DataWindowViewFactory
         SortWindowView other = (SortWindowView) view;
         if ((other.getSortWindowSize() != sortWindowSize) ||
             (!compare(other.getIsDescendingValues(), isDescendingValues)) ||
-            (!ViewFactorySupport.deepEqualsExpr(other.getSortCriteriaExpressions(), sortCriteriaExpressions)) )
+            (!ExprNode.deepEquals(other.getSortCriteriaExpressions(), sortCriteriaExpressions)) )
         {
             return false;
         }

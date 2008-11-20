@@ -32,6 +32,13 @@ public class ExprTimePeriod extends ExprNode
         this.minute = minute;
         this.second = second;
         this.millisecond = millisecond;
+
+        // adding the child nodes so they are official and validate bottom-up
+        addChildNotNull(millisecond);
+        addChildNotNull(second);
+        addChildNotNull(minute);
+        addChildNotNull(hour);
+        addChildNotNull(day);
     }
 
     public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService) throws ExprValidationException
@@ -213,4 +220,12 @@ public class ExprTimePeriod extends ExprNode
     {
         return day;
     }
+
+    private void addChildNotNull(ExprNode child)
+    {
+        if (child != null)
+        {
+            this.getChildNodes().add(child);
+        }
+    }    
 }

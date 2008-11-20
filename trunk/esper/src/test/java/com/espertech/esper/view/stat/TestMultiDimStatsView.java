@@ -31,7 +31,7 @@ public class TestMultiDimStatsView extends TestCase
 
     public void testOneDim() throws Exception
     {
-        MultiDimStatsView olapView = new MultiDimStatsView(SupportStatementContextFactory.makeContext(), derivedFields, SupportExprNodeFactory.makeIdentNode("intPrimitive"), SupportExprNodeFactory.makeIdentNode("enumValue"), null, null);
+        MultiDimStatsView olapView = new MultiDimStatsView(SupportStatementContextFactory.makeContext(), derivedFields, SupportExprNodeFactory.makeIdentNodeBean("intPrimitive"), SupportExprNodeFactory.makeIdentNodeBean("enumValue"), null, null);
         parentStream.addView(olapView);
         olapView.addView(childView);
 
@@ -57,7 +57,7 @@ public class TestMultiDimStatsView extends TestCase
 
     public void testTwoDim() throws Exception
     {
-        MultiDimStatsView olapView = new MultiDimStatsView(SupportStatementContextFactory.makeContext(), derivedFields, SupportExprNodeFactory.makeIdentNode("intPrimitive"), SupportExprNodeFactory.makeIdentNode("string"), SupportExprNodeFactory.makeIdentNode("enumValue"), null);
+        MultiDimStatsView olapView = new MultiDimStatsView(SupportStatementContextFactory.makeContext(), derivedFields, SupportExprNodeFactory.makeIdentNodeBean("intPrimitive"), SupportExprNodeFactory.makeIdentNodeBean("string"), SupportExprNodeFactory.makeIdentNodeBean("enumValue"), null);
         parentStream.addView(olapView);
         olapView.addView(childView);
 
@@ -81,7 +81,7 @@ public class TestMultiDimStatsView extends TestCase
 
     public void testThreeDim() throws Exception
     {
-        MultiDimStatsView olapView = new MultiDimStatsView(SupportStatementContextFactory.makeContext(), derivedFields, SupportExprNodeFactory.makeIdentNode("intPrimitive"), SupportExprNodeFactory.makeIdentNode("boolBoxed"), SupportExprNodeFactory.makeIdentNode("string"), SupportExprNodeFactory.makeIdentNode("enumValue"));
+        MultiDimStatsView olapView = new MultiDimStatsView(SupportStatementContextFactory.makeContext(), derivedFields, SupportExprNodeFactory.makeIdentNodeBean("intPrimitive"), SupportExprNodeFactory.makeIdentNodeBean("boolBoxed"), SupportExprNodeFactory.makeIdentNodeBean("string"), SupportExprNodeFactory.makeIdentNodeBean("enumValue"));
         parentStream.addView(olapView);
         olapView.addView(childView);
 

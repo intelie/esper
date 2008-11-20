@@ -8,6 +8,7 @@ import com.espertech.esper.support.util.DoubleValueAssertionUtil;
 import com.espertech.esper.support.view.SupportBeanClassView;
 import com.espertech.esper.support.view.SupportStreamImpl;
 import com.espertech.esper.support.view.SupportStatementContextFactory;
+import com.espertech.esper.support.epl.SupportExprNodeFactory;
 import com.espertech.esper.view.ViewFieldEnum;
 
 import java.util.Iterator;
@@ -17,10 +18,10 @@ public class TestUnivariateStatisticsView extends TestCase
     UnivariateStatisticsView myView;
     SupportBeanClassView childView;
 
-    public void setUp()
+    public void setUp() throws Exception
     {
         // Set up sum view and a test child view
-        myView = new UnivariateStatisticsView(SupportStatementContextFactory.makeContext(), "price");
+        myView = new UnivariateStatisticsView(SupportStatementContextFactory.makeContext(), SupportExprNodeFactory.makeIdentNodeMD("price"));
 
         childView = new SupportBeanClassView(SupportMarketDataBean.class);
         myView.addView(childView);
@@ -74,7 +75,7 @@ public class TestUnivariateStatisticsView extends TestCase
     public void testCopyView() throws Exception
     {
         UnivariateStatisticsView copied = (UnivariateStatisticsView) myView.cloneView(SupportStatementContextFactory.makeContext());
-        assertTrue(myView.getFieldName().equals(copied.getFieldName()));
+        assertTrue(myView.getFieldExpression().equals(copied.getFieldExpression()));
     }
 
     private void checkNew(long countE, double sumE, double avgE, double stdevpaE, double stdevE, double varianceE)

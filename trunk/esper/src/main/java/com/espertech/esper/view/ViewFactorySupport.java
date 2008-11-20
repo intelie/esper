@@ -56,22 +56,6 @@ public abstract class ViewFactorySupport implements ViewFactory
         return validateAndEvaluateExpr(statementContext, expression, new StreamTypeServiceImpl(statementContext.getEngineURI()), 0);
     }
 
-    public static boolean deepEqualsExpr(ExprNode[] one, ExprNode[] two)
-    {
-        if (one.length != two.length)
-        {
-            return false;
-        }
-        for (int i = 0; i < one.length; i++)
-        {
-            if (!ExprNode.deepEquals(one[i], two[i]))
-            {
-                return false;
-            }
-        }
-        return true;
-    }
-
     public static List<Object> validateAndEvaluate(String viewName, StatementContext statementContext, List<ExprNode> viewParameters)
             throws ViewParameterException
     {
@@ -116,16 +100,13 @@ public abstract class ViewFactorySupport implements ViewFactory
         return results.toArray(new ExprNode[results.size()]);
     }
 
-    public static void validateReturnsNonConstant(String viewName, ExprNode[] expressions, int startIndex) throws ViewParameterException
+    public static void validateReturnsNonConstant(String viewName, ExprNode expression, int index) throws ViewParameterException
     {
-        for (int i = startIndex; i < expressions.length; i++)
+        if (expression.isConstantResult())
         {
-            if (expressions[i].isConstantResult())
-            {
-                String message = "Invalid view parameter expression " + i + ", the expression returns a constant result value, are you sure?";
-                log.error(message);
-                throw new ViewParameterException(message);
-            }
+            String message = "Invalid view parameter expression " + index + ", the expression returns a constant result value, are you sure?";
+            log.error(message);
+            throw new ViewParameterException(message);
         }
     }
 

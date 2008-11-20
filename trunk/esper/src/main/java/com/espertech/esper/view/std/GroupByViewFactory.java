@@ -16,7 +16,6 @@ import com.espertech.esper.core.StatementContext;
 
 import java.util.List;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 /**
  * Factory for {@link GroupByView} instances.
@@ -142,7 +141,7 @@ public class GroupByViewFactory implements ViewFactory
         }
 
         GroupByView myView = (GroupByView) view;
-        if (!ViewFactorySupport.deepEqualsExpr(myView.getCriteriaExpressions(), criteriaExpressions))
+        if (!ExprNode.deepEquals(myView.getCriteriaExpressions(), criteriaExpressions))
         {
             return false;
         }

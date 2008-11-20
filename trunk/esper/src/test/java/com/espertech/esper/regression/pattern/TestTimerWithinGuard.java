@@ -1,9 +1,6 @@
 package com.espertech.esper.regression.pattern;
 
-import com.espertech.esper.client.EPRuntime;
-import com.espertech.esper.client.EPServiceProvider;
-import com.espertech.esper.client.EPServiceProviderManager;
-import com.espertech.esper.client.EPStatement;
+import com.espertech.esper.client.*;
 import com.espertech.esper.client.soda.*;
 import com.espertech.esper.client.time.CurrentTimeEvent;
 import com.espertech.esper.client.time.TimerControlEvent;
@@ -185,7 +182,7 @@ public class TestTimerWithinGuard extends TestCase implements SupportBeanConstan
         util.runTest();
     }
 
-    public void testInterval()
+    public void testInterval10Min()
     {
         EPServiceProvider epService = EPServiceProviderManager.getDefaultProvider(SupportConfigFactory.getConfiguration());
         epService.initialize();
@@ -202,6 +199,54 @@ public class TestTimerWithinGuard extends TestCase implements SupportBeanConstan
         SupportUpdateListener testListener = new SupportUpdateListener();
         statement.addListener(testListener);
 
+        runAssertion(epService, testListener);
+    }
+
+    public void testInterval10MinVariable()
+    {
+        EPServiceProvider epService = EPServiceProviderManager.getDefaultProvider(SupportConfigFactory.getConfiguration());
+        epService.initialize();
+        epService.getEPAdministrator().getConfiguration().addVariable("TIMERVAR", double.class, 10);
+
+        // External clocking
+        epService.getEPRuntime().sendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
+        sendTimer(0, epService);
+
+        // Set up a timer:within
+        EPStatement statement = epService.getEPAdministrator().createEPL(
+                "select * from pattern [(every " + SupportBean.class.getName() +
+                ") where timer:within(TIMERVAR min)]");
+
+        SupportUpdateListener testListener = new SupportUpdateListener();
+        statement.addListener(testListener);
+
+        runAssertion(epService, testListener);
+    }
+
+    public void testIntervalPrepared()
+    {
+        EPServiceProvider epService = EPServiceProviderManager.getDefaultProvider(SupportConfigFactory.getConfiguration());
+        epService.initialize();
+
+        // External clocking
+        epService.getEPRuntime().sendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
+        sendTimer(0, epService);
+
+        // Set up a timer:within
+        EPPreparedStatement prepared = epService.getEPAdministrator().prepareEPL(
+                "select * from pattern [(every " + SupportBean.class.getName() +
+                ") where timer:within(? minutes)]");
+        prepared.setObject(1, 10);
+        EPStatement statement = epService.getEPAdministrator().create(prepared);
+
+        SupportUpdateListener testListener = new SupportUpdateListener();
+        statement.addListener(testListener);
+
+        runAssertion(epService, testListener);
+    }
+
+    private void runAssertion(EPServiceProvider epService, SupportUpdateListener testListener)
+    {
         sendEvent(epService);
         testListener.assertOneGetNewAndReset();
 

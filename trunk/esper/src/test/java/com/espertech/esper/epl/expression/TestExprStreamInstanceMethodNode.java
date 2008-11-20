@@ -46,7 +46,7 @@ public class TestExprStreamInstanceMethodNode extends TestCase
 
     public void testValidate() throws Exception
     {
-        SupportExprNodeFactory.validate(node);
+        SupportExprNodeFactory.validate3Stream(node);
         assertEquals(0, node.getStreamId());
         assertEquals(int.class, node.getType());
 
@@ -59,15 +59,15 @@ public class TestExprStreamInstanceMethodNode extends TestCase
         EventBean event = makeEvent(10);
         EventBean[] events = new EventBean[] {event};
 
-        SupportExprNodeFactory.validate(node);
+        SupportExprNodeFactory.validate3Stream(node);
         assertEquals(10, node.evaluate(events, false));
     }
 
     public void testEqualsNode() throws Exception
     {
-        SupportExprNodeFactory.validate(node);
+        SupportExprNodeFactory.validate3Stream(node);
         ExprNode other = new ExprStreamInstanceMethodNode("s0", "getIntPrimitive");
-        SupportExprNodeFactory.validate(other);
+        SupportExprNodeFactory.validate3Stream(other);
         
         assertTrue(node.equalsNode(other));
         assertFalse(node.equalsNode(new ExprStreamInstanceMethodNode("s1", "getIntPrimitive")));

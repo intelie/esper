@@ -8,16 +8,13 @@
  **************************************************************************************/
 package com.espertech.esper.view.std;
 
-import com.espertech.esper.view.*;
-import com.espertech.esper.event.EventType;
+import com.espertech.esper.core.StatementContext;
 import com.espertech.esper.epl.core.ViewResourceCallback;
 import com.espertech.esper.epl.expression.ExprNode;
-import com.espertech.esper.epl.expression.ExprValidationException;
-import com.espertech.esper.core.StatementContext;
-import com.espertech.esper.client.EPException;
+import com.espertech.esper.event.EventType;
+import com.espertech.esper.view.*;
 
 import java.util.List;
-import java.util.Arrays;
 
 /**
  * Factory for {@link MergeView} instances.
@@ -37,10 +34,9 @@ public class MergeViewFactory implements ViewFactory
 
     public void attach(EventType parentEventType, StatementContext statementContext, ViewFactory optionalParentFactory, List<ViewFactory> parentViewFactories) throws ViewParameterException
     {
-        criteriaExpressions = ViewFactorySupport.validate("Merge view", parentEventType, statementContext, viewParameters, false);
-
         // Find the group by view matching the merge view
-        ViewFactory groupByViewFactory = null;
+        GroupByViewFactory groupByViewFactory = null;
+        ExprNode[] unvalidated = viewParameters.toArray(new ExprNode[viewParameters.size()]);
         for (ViewFactory parentView : parentViewFactories)
         {
             if (!(parentView instanceof GroupByViewFactory))
@@ -48,7 +44,7 @@ public class MergeViewFactory implements ViewFactory
                 continue;
             }
             GroupByViewFactory candidateGroupByView = (GroupByViewFactory) parentView;
-            if (ViewFactorySupport.deepEqualsExpr(candidateGroupByView.getCriteriaExpressions(), criteriaExpressions))
+            if (ExprNode.deepEquals(candidateGroupByView.getCriteriaExpressions(), unvalidated))
             {
                 groupByViewFactory = candidateGroupByView;
             }
@@ -58,6 +54,7 @@ public class MergeViewFactory implements ViewFactory
         {
             throw new ViewParameterException("Group by view for this merge view could not be found among parent views");
         }
+        criteriaExpressions = groupByViewFactory.getCriteriaExpressions(); 
 
         // determine types of fields
         Class[] fieldTypes = new Class[criteriaExpressions.length];
@@ -126,7 +123,7 @@ public class MergeViewFactory implements ViewFactory
         }
 
         MergeView myView = (MergeView) view;
-        if (!Arrays.deepEquals(myView.getGroupFieldNames(), fieldNames))
+        if (!ExprNode.deepEquals(myView.getGroupFieldNames(), criteriaExpressions))
         {
             return false;
         }

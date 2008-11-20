@@ -2,8 +2,9 @@ package com.espertech.esper.view;
 
 import junit.framework.TestCase;
 import com.espertech.esper.collection.Pair;
-import com.espertech.esper.support.bean.SupportMarketDataBean;
+import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.view.*;
+import com.espertech.esper.support.epl.SupportExprNodeFactory;
 import com.espertech.esper.view.stat.UnivariateStatisticsView;
 import com.espertech.esper.view.std.LastElementView;
 import com.espertech.esper.view.std.SizeView;
@@ -16,7 +17,7 @@ import java.util.List;
 
 public class TestViewServiceHelper extends TestCase
 {
-    private final static Class TEST_CLASS = SupportMarketDataBean.class;
+    private final static Class TEST_CLASS = SupportBean.class;
 
     private SupportSchemaNeutralView top;
     private SupportSchemaNeutralView child_1;
@@ -111,7 +112,7 @@ public class TestViewServiceHelper extends TestCase
         // One child view under the top view that does not match
         testView = new SupportBeanClassView(TEST_CLASS);
         viewFactories = SupportViewSpecFactory.makeFactoryListOne(stream.getEventType());
-        myLengthWindowView.addView(new UnivariateStatisticsView(SupportStatementContextFactory.makeContext(), "volume"));
+        myLengthWindowView.addView(new UnivariateStatisticsView(SupportStatementContextFactory.makeContext(), SupportExprNodeFactory.makeIdentNodeBean("longBoxed")));
         result = ViewServiceHelper.matchExistingViews(stream, viewFactories);
         assertEquals(1, result.getSecond().size());
         assertEquals(myLengthWindowView, result.getSecond().get(0));
@@ -120,7 +121,7 @@ public class TestViewServiceHelper extends TestCase
 
         // Add child view under the top view that does match
         viewFactories = SupportViewSpecFactory.makeFactoryListOne(stream.getEventType());
-        UnivariateStatisticsView myUnivarView = new UnivariateStatisticsView(SupportStatementContextFactory.makeContext(), "price");
+        UnivariateStatisticsView myUnivarView = new UnivariateStatisticsView(SupportStatementContextFactory.makeContext(), SupportExprNodeFactory.makeIdentNodeBean("intPrimitive"));
         myLengthWindowView.addView(myUnivarView);
         result = ViewServiceHelper.matchExistingViews(stream, viewFactories);
 

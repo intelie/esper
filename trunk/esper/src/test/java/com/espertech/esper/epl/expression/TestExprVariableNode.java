@@ -14,13 +14,13 @@ public class TestExprVariableNode extends TestCase
 
     public void testGetType()  throws Exception
     {
-        SupportExprNodeFactory.validate(varNode);
+        SupportExprNodeFactory.validate3Stream(varNode);
         assertEquals(String.class, varNode.getType());
     }
 
     public void testEvaluate() throws Exception
     {
-        SupportExprNodeFactory.validate(varNode);
+        SupportExprNodeFactory.validate3Stream(varNode);
         assertEquals("my_variable_value", varNode.evaluate(null, true));
     }
 
@@ -53,7 +53,7 @@ public class TestExprVariableNode extends TestCase
     private void tryInvalidValidate(ExprVariableNode varNode) throws Exception
     {
         try {
-            SupportExprNodeFactory.validate(varNode);
+            SupportExprNodeFactory.validate3Stream(varNode);
             fail();
         }
         catch (ExprValidationException ex)

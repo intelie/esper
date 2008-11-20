@@ -30,7 +30,7 @@ public class TestExprMedianNode extends TestExprAggregateNodeAdapter
     {
         ExprMedianNode medianNode = new ExprMedianNode(false);
         medianNode.addChildNode(new SupportExprNode(value, type));
-        SupportExprNodeFactory.validate(medianNode);
+        SupportExprNodeFactory.validate3Stream(medianNode);
         return medianNode;
     }
 }

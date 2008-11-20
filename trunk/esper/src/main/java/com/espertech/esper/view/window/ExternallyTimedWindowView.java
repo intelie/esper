@@ -18,6 +18,7 @@ import com.espertech.esper.collection.TimeWindow;
 import com.espertech.esper.collection.ViewUpdatedCollection;
 import com.espertech.esper.collection.ArrayDequeJDK6Backport;
 import com.espertech.esper.core.StatementContext;
+import com.espertech.esper.epl.expression.ExprNode;
 
 /**
  * View for a moving window extending the specified amount of time into the past, driven entirely by external timing
@@ -40,17 +41,17 @@ import com.espertech.esper.core.StatementContext;
 public final class ExternallyTimedWindowView extends ViewSupport implements DataWindowView, CloneableView
 {
     private final ExternallyTimedWindowViewFactory externallyTimedWindowViewFactory;
-    private final String timestampFieldName;
+    private final ExprNode timestampExpression;
     private final long millisecondsBeforeExpiry;
-    private EventPropertyGetter timestampFieldGetter;
 
+    private final EventBean[] eventsPerStream = new EventBean[1];
     private final TimeWindow timeWindow;
     private ViewUpdatedCollection viewUpdatedCollection;
     private boolean isRemoveStreamHandling;
 
     /**
      * Constructor.
-     * @param timestampFieldName is the field name containing a long timestamp value
+     * @param timestampExpression is the field name containing a long timestamp value
      * that should be in ascending order for the natural order of events and is intended to reflect
      * System.currentTimeInMillis but does not necessarily have to.
      * @param msecBeforeExpiry is the number of milliseconds before events gets pushed
@@ -62,11 +63,11 @@ public final class ExternallyTimedWindowView extends ViewSupport implements Data
      * @param isRemoveStreamHandling flag to indicate that the view must handle the removed events from a parent view
      */
     public ExternallyTimedWindowView(ExternallyTimedWindowViewFactory externallyTimedWindowViewFactory,
-                                     String timestampFieldName, long msecBeforeExpiry, ViewUpdatedCollection viewUpdatedCollection,
+                                     ExprNode timestampExpression, long msecBeforeExpiry, ViewUpdatedCollection viewUpdatedCollection,
                                      boolean isRemoveStreamHandling)
     {
         this.externallyTimedWindowViewFactory = externallyTimedWindowViewFactory;
-        this.timestampFieldName = timestampFieldName;
+        this.timestampExpression = timestampExpression;
         this.millisecondsBeforeExpiry = msecBeforeExpiry;
         this.viewUpdatedCollection = viewUpdatedCollection;
         this.isRemoveStreamHandling = isRemoveStreamHandling;
@@ -82,18 +83,9 @@ public final class ExternallyTimedWindowView extends ViewSupport implements Data
      * Returns the field name to get timestamp values from.
      * @return field name for timestamp values
      */
-    public final String getTimestampFieldName()
+    public final ExprNode getTimestampExpression()
     {
-        return timestampFieldName;
-    }
-
-    public void setParent(Viewable parent)
-    {
-        super.setParent(parent);
-        if (parent != null)
-        {
-            timestampFieldGetter = parent.getEventType().getGetter(timestampFieldName);
-        }
+        return timestampExpression;
     }
 
     /**
@@ -185,13 +177,14 @@ public final class ExternallyTimedWindowView extends ViewSupport implements Data
     public final String toString()
     {
         return this.getClass().getName() +
-                " timestampFieldName=" + timestampFieldName +
+                " timestampExpression=" + timestampExpression +
                 " millisecondsBeforeExpiry=" + millisecondsBeforeExpiry;
     }
 
     private long getLongValue(EventBean obj)
     {
-        Number num = (Number) timestampFieldGetter.get(obj);
+        eventsPerStream[0] = obj;
+        Number num = (Number) timestampExpression.evaluate(eventsPerStream, true);
         return num.longValue();
     }
 

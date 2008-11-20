@@ -7,6 +7,7 @@ import com.espertech.esper.support.event.SupportEventAdapterService;
 import com.espertech.esper.support.schedule.SupportSchedulingServiceImpl;
 import com.espertech.esper.view.ViewResolutionServiceImpl;
 import com.espertech.esper.view.ViewEnumHelper;
+import com.espertech.esper.view.ViewFactoryContext;
 import com.espertech.esper.pattern.PatternObjectResolutionServiceImpl;
 import com.espertech.esper.epl.view.OutputConditionFactoryDefault;
 import com.espertech.esper.epl.core.MethodResolutionServiceImpl;
@@ -18,6 +19,12 @@ public class SupportStatementContextFactory
     {
         SupportSchedulingServiceImpl sched = new SupportSchedulingServiceImpl();
         return makeContext(sched);                
+    }
+
+    public static ViewFactoryContext makeViewContext()
+    {
+        StatementContext stmtContext = makeContext();
+        return new ViewFactoryContext(stmtContext, 1, 1, "somenamespacetest", "somenametest");
     }
 
     public static StatementContext makeContext(SchedulingService stub)

@@ -115,7 +115,7 @@ public class TestPriorFunction extends TestCase
         String viewExpr = "select irstream symbol as currSymbol, " +
                           " prior(2, symbol) as priorSymbol, " +
                           " prior(3, price) as priorPrice " +
-                          "from " + SupportMarketDataBean.class.getName() + ".win:ext_timed('volume', 1 min) ";
+                          "from " + SupportMarketDataBean.class.getName() + ".win:ext_timed(volume, 1 min) ";
 
         EPStatement selectTestView = epService.getEPAdministrator().createEPL(viewExpr);
         selectTestView.addListener(testListener);
@@ -271,7 +271,7 @@ public class TestPriorFunction extends TestCase
     {
         String viewExpr = "select symbol as currSymbol, " +
                           " prior(3, symbol) as prior0Symbol " +
-                          "from " + SupportMarketDataBean.class.getName() + ".ext:sort(symbol, false, 3)";
+                          "from " + SupportMarketDataBean.class.getName() + ".ext:sort(3, symbol)";
 
         EPStatement selectTestView = epService.getEPAdministrator().createEPL(viewExpr);
         selectTestView.addListener(testListener);
@@ -332,7 +332,7 @@ public class TestPriorFunction extends TestCase
                           " prior(1, price) as prior1Price, " +
                           " prior(2, price) as prior2Price, " +
                           " prior(3, price) as prior3Price " +
-                          "from " + SupportMarketDataBean.class.getName() + ".ext:sort(symbol, false, 3)";
+                          "from " + SupportMarketDataBean.class.getName() + ".ext:sort(3, symbol)";
 
         EPStatement selectTestView = epService.getEPAdministrator().createEPL(viewExpr);
         selectTestView.addListener(testListener);
@@ -439,7 +439,7 @@ public class TestPriorFunction extends TestCase
                           " prior(1, price) as prior1Price, " +
                           " prior(2, price) as prior2Price, " +
                           " prior(3, price) as prior3Price " +
-                          "from " + SupportMarketDataBean.class.getName() + ".ext:sort(symbol, false, 3)";
+                          "from " + SupportMarketDataBean.class.getName() + ".ext:sort(3, symbol)";
         tryPriorSortWindow(viewExpr);
 
         viewExpr = "select irstream symbol as currSymbol, " +
@@ -451,7 +451,7 @@ public class TestPriorFunction extends TestCase
                           " prior(1, price) as prior1Price, " +
                           " prior(0, price) as prior0Price, " +
                           " prior(3, price) as prior3Price " +
-                          "from " + SupportMarketDataBean.class.getName() + ".ext:sort(symbol, false, 3)";
+                          "from " + SupportMarketDataBean.class.getName() + ".ext:sort(3, symbol)";
         tryPriorSortWindow(viewExpr);
     }
 

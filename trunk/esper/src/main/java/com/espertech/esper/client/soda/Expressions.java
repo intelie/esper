@@ -1420,6 +1420,16 @@ public class Expressions implements Serializable
         return new CrontabParameterExpression(CrontabParameterExpression.ScheduleItemType.WILDCARD);
     }
 
+    public static CrontabParameterExpression crontabScheduleItem(Integer parameter, CrontabParameterExpression.ScheduleItemType type)
+    {
+        CrontabParameterExpression param = new CrontabParameterExpression(type);
+        if (parameter != null)
+        {
+            param.addChild(Expressions.constant(parameter));
+        }
+        return param;
+    }
+
     public static CrontabFrequencyExpression crontabScheduleFrequency(int frequency)
     {
         return new CrontabFrequencyExpression(constant(frequency));
@@ -1455,7 +1465,6 @@ public class Expressions implements Serializable
         return new PropertyValueExpression(propertyName);
     }
 
-    // TODO test
     private static Expression convertVariableNumeric(Object object)
     {
         if (object == null)

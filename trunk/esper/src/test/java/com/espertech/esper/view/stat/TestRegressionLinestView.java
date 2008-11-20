@@ -21,7 +21,7 @@ public class TestRegressionLinestView extends TestCase
     public void setUp() throws Exception
     {
         // Set up sum view and a test child view
-        myView = new RegressionLinestView(SupportStatementContextFactory.makeContext(), SupportExprNodeFactory.makeIdentNode("price"), SupportExprNodeFactory.makeIdentNode("volume"));
+        myView = new RegressionLinestView(SupportStatementContextFactory.makeContext(), SupportExprNodeFactory.makeIdentNodeMD("price"), SupportExprNodeFactory.makeIdentNodeMD("volume"));
 
         childView = new SupportBeanClassView(SupportMarketDataBean.class);
         myView.addView(childView);

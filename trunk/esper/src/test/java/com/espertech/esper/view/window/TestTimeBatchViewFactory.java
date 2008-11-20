@@ -24,19 +24,19 @@ public class TestTimeBatchViewFactory extends TestCase
         tryParameter(new Object[] {new Float(1.1f)}, 1100, null);
         tryParameter(new Object[] {99.9d, 364466464L}, 99900, 364466464L);
 
-        tryInvalidParameter("price");
+        tryInvalidParameter("string");
         tryInvalidParameter(true);
         tryInvalidParameter(0);
     }
 
     public void testCanReuse() throws Exception
     {
-        factory.setViewParameters(null, TestViewSupport.toExprList(new Object[] {1000}));
+        factory.setViewParameters(SupportStatementContextFactory.makeViewContext(), TestViewSupport.toExprListBean(new Object[] {1000}));
         assertFalse(factory.canReuse(new SizeView(SupportStatementContextFactory.makeContext())));
         assertFalse(factory.canReuse(new TimeBatchView(factory, SupportStatementContextFactory.makeContext(), 1, null, false, false, null)));
         assertTrue(factory.canReuse(new TimeBatchView(factory, SupportStatementContextFactory.makeContext(), 1000000, null, false, false, null)));
 
-        factory.setViewParameters(null, TestViewSupport.toExprList(new Object[] {1000, 2000L}));
+        factory.setViewParameters(SupportStatementContextFactory.makeViewContext(), TestViewSupport.toExprListBean(new Object[] {1000, 2000L}));
         assertFalse(factory.canReuse(new TimeBatchView(factory, SupportStatementContextFactory.makeContext(), 1, null, false, false, null)));
         assertTrue(factory.canReuse(new TimeBatchView(factory, SupportStatementContextFactory.makeContext(), 1000000, 2000L, false, false, null)));
     }
@@ -46,7 +46,7 @@ public class TestTimeBatchViewFactory extends TestCase
         try
         {
             TimeBatchViewFactory factory = new TimeBatchViewFactory();
-            factory.setViewParameters(null, TestViewSupport.toExprList(new Object[] {param}));
+            factory.setViewParameters(SupportStatementContextFactory.makeViewContext(), TestViewSupport.toExprListBean(new Object[] {param}));
             fail();
         }
         catch (ViewParameterException ex)
@@ -58,7 +58,7 @@ public class TestTimeBatchViewFactory extends TestCase
     private void tryParameter(Object[] param, long msec, Long referencePoint) throws Exception
     {
         TimeBatchViewFactory factory = new TimeBatchViewFactory();
-        factory.setViewParameters(null, TestViewSupport.toExprList(param));
+        factory.setViewParameters(SupportStatementContextFactory.makeViewContext(), TestViewSupport.toExprListBean(param));
         TimeBatchView view = (TimeBatchView) factory.makeView(SupportStatementContextFactory.makeContext());
         assertEquals(msec, view.getMsecIntervalSize());
         assertEquals(referencePoint, view.getInitialReferencePoint());

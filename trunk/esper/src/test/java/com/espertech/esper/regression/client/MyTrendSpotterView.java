@@ -1,15 +1,16 @@
 package com.espertech.esper.regression.client;
 
-import com.espertech.esper.view.*;
-import com.espertech.esper.event.EventType;
-import com.espertech.esper.event.EventBean;
-import com.espertech.esper.event.EventPropertyGetter;
 import com.espertech.esper.collection.SingleEventIterator;
 import com.espertech.esper.core.StatementContext;
+import com.espertech.esper.epl.expression.ExprNode;
+import com.espertech.esper.event.EventBean;
+import com.espertech.esper.event.EventType;
+import com.espertech.esper.view.View;
+import com.espertech.esper.view.ViewSupport;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.HashMap;
 
 public class MyTrendSpotterView extends ViewSupport
 {
@@ -17,8 +18,8 @@ public class MyTrendSpotterView extends ViewSupport
 
     private final StatementContext statementContext;
     private final EventType eventType;
-    private final String fieldName;
-    private EventPropertyGetter fieldGetter;
+    private final ExprNode expression;
+    private final EventBean[] eventsPerStream = new EventBean[1];
 
     private Long trendcount;
     private Double lastDataPoint;
@@ -28,37 +29,28 @@ public class MyTrendSpotterView extends ViewSupport
 
     /**
      * Constructor requires the name of the field to use in the parent view to compute a trend.
-     * @param fieldName is the name of the field within the parent view to use to get numeric data points for this view
+     * @param expression is the name of the field within the parent view to use to get numeric data points for this view
      * @param statementContext contains required view services
      */
-    public MyTrendSpotterView(StatementContext statementContext, String fieldName)
+    public MyTrendSpotterView(StatementContext statementContext, ExprNode expression)
     {
         this.statementContext = statementContext;
-        this.fieldName = fieldName;
+        this.expression = expression;
         eventType = createEventType(statementContext);
-    }
-
-    public void setParent(Viewable parent)
-    {
-        super.setParent(parent);
-        if (parent != null)
-        {
-            fieldGetter = parent.getEventType().getGetter(fieldName);
-        }
     }
 
     public View cloneView(StatementContext statementContext)
     {
-        return new MyTrendSpotterView(statementContext, fieldName);
+        return new MyTrendSpotterView(statementContext, expression);
     }
 
     /**
-     * Returns field name of the field to report statistics on.
-     * @return field name
+     * Returns expression to report statistics on.
+     * @return expression providing values
      */
-    public final String getFieldName()
+    public final ExprNode getExpression()
     {
-        return fieldName;
+        return expression;
     }
 
     public final void update(EventBean[] newData, EventBean[] oldData)
@@ -79,7 +71,8 @@ public class MyTrendSpotterView extends ViewSupport
         {
             for (EventBean aNewData : newData)
             {
-                double dataPoint = ((Number) fieldGetter.get(aNewData)).doubleValue();
+                eventsPerStream[0] = aNewData;
+                double dataPoint = ((Number) expression.evaluate(eventsPerStream, true)).doubleValue();
 
                 if (lastDataPoint == null)
                 {
@@ -118,7 +111,7 @@ public class MyTrendSpotterView extends ViewSupport
 
     public final String toString()
     {
-        return this.getClass().getName() + " fieldName=" + fieldName;
+        return this.getClass().getName() + " expression=" + expression;
     }
 
     private EventBean populateMap(Long trendcount)

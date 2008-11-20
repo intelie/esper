@@ -582,5 +582,21 @@ public abstract class ExprNode implements ExprValidator, ExprEvaluator, MetaDefI
         }
     }
 
+    public static boolean deepEquals(ExprNode[] one, ExprNode[] two)
+    {
+        if (one.length != two.length)
+        {
+            return false;
+        }
+        for (int i = 0; i < one.length; i++)
+        {
+            if (!ExprNode.deepEquals(one[i], two[i]))
+            {
+                return false;
+            }
+        }
+        return true;
+    }    
+
     private static final Log log = LogFactory.getLog(ExprNode.class);
 }

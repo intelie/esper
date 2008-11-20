@@ -11,6 +11,7 @@ package com.espertech.esper.view.ext;
 import com.espertech.esper.core.EPStatementHandleCallback;
 import com.espertech.esper.core.ExtensionServicesContext;
 import com.espertech.esper.core.StatementContext;
+import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.event.EventBean;
 import com.espertech.esper.event.EventPropertyGetter;
 import com.espertech.esper.event.EventType;
@@ -18,10 +19,9 @@ import com.espertech.esper.schedule.ScheduleHandleCallback;
 import com.espertech.esper.schedule.ScheduleSlot;
 import com.espertech.esper.util.ExecutionPathDebugLog;
 import com.espertech.esper.view.CloneableView;
+import com.espertech.esper.view.DataWindowView;
 import com.espertech.esper.view.View;
 import com.espertech.esper.view.ViewSupport;
-import com.espertech.esper.view.Viewable;
-import com.espertech.esper.view.DataWindowView;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -45,13 +45,13 @@ public final class TimeOrderView extends ViewSupport implements DataWindowView, 
 {
     private final StatementContext statementContext;
     private final TimeOrderViewFactory timeOrderViewFactory;
-    private final String timestampFieldName;
+    private final ExprNode timestampExpression;
     private final long intervalSize;
     private final IStreamTimeOrderRandomAccess optionalSortedRandomAccess;
     private final ScheduleSlot scheduleSlot;
     private final EPStatementHandleCallback handle;
 
-    private EventPropertyGetter timestampFieldGetters;
+    private EventBean[] eventsPerStream = new EventBean[1];
     private TreeMap<Long, ArrayList<EventBean>> sortedEvents;
     private boolean isCallbackScheduled;
     private int eventCount;
@@ -63,20 +63,20 @@ public final class TimeOrderView extends ViewSupport implements DataWindowView, 
      * expressions
      * @param timeOrderViewFactory for copying this view in a group-by
      * @param statementContext the statement context
-     * @param timestampFieldName the property name of the event supplying timestamp values
+     * @param timestampExpr the property name of the event supplying timestamp values
      * @param intervalSize the interval time length
      * @param isRemoveStreamHandling if the view must handle the remove stream of parent views
      */
     public TimeOrderView( StatementContext statementContext,
                           TimeOrderViewFactory timeOrderViewFactory,
-                          String timestampFieldName,
+                          ExprNode timestampExpr,
                           long intervalSize,
                           IStreamTimeOrderRandomAccess optionalSortedRandomAccess,
                           boolean isRemoveStreamHandling)
     {
         this.statementContext = statementContext;
         this.timeOrderViewFactory = timeOrderViewFactory;
-        this.timestampFieldName = timestampFieldName;
+        this.timestampExpression = timestampExpr;
         this.intervalSize = intervalSize;
         this.optionalSortedRandomAccess = optionalSortedRandomAccess;
         this.scheduleSlot = statementContext.getScheduleBucket().allocateSlot();
@@ -96,22 +96,13 @@ public final class TimeOrderView extends ViewSupport implements DataWindowView, 
         handle = new EPStatementHandleCallback(statementContext.getEpStatementHandle(), callback);
     }
 
-    public void setParent(Viewable parent)
-    {
-        super.setParent(parent);
-        if (parent != null)
-        {
-        	timestampFieldGetters = parent.getEventType().getGetter(timestampFieldName);
-        }
-    }
-
     /**
      * Returns the timestamp property name.
      * @return property name supplying timestamp values
      */
-    public String getTimestampFieldName()
+    public ExprNode getTimestampExpression()
     {
-        return timestampFieldName;
+        return timestampExpression;
     }
 
     /**
@@ -172,7 +163,8 @@ public final class TimeOrderView extends ViewSupport implements DataWindowView, 
             {
                 // get timestamp of event
                 EventBean newEvent = newData[i];
-                Long timestamp = (Long) timestampFieldGetters.get(newEvent);
+                eventsPerStream[0] = newEvent;
+                Long timestamp = (Long) timestampExpression.evaluate(eventsPerStream, true);
 
                 // if the event timestamp indicates its older then the tail of the window, release it
                 if (timestamp < windowTailTime)
@@ -301,7 +293,7 @@ public final class TimeOrderView extends ViewSupport implements DataWindowView, 
     public final String toString()
     {
         return this.getClass().getName() +
-                " timestampFieldName=" + timestampFieldName +
+                " timestampExpression=" + timestampExpression +
                 " intervalSize=" + intervalSize;
     }
 

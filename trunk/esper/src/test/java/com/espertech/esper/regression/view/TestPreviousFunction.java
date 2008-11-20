@@ -110,7 +110,7 @@ public class TestPreviousFunction extends TestCase
     {
         // descending sort
         String viewExpr = "select symbol, prev(1, price) as prevPrice, prev(2, price) as prevPrevPrice " +
-                          "from " + SupportMarketDataBean.class.getName() + ".std:groupby(symbol).ext:sort(price, false, 10) ";
+                          "from " + SupportMarketDataBean.class.getName() + ".std:groupby(symbol).ext:sort(10, price asc) ";
 
         EPStatement selectTestView = epService.getEPAdministrator().createEPL(viewExpr);
         selectTestView.addListener(testListener);
@@ -625,7 +625,7 @@ public class TestPreviousFunction extends TestCase
                           " prev(0, price) as prev0Price, " +
                           " prev(1, price) as prev1Price, " +
                           " prev(2, price) as prev2Price " +
-                          "from " + SupportMarketDataBean.class.getName() + ".ext:sort(symbol, false, 100)";
+                          "from " + SupportMarketDataBean.class.getName() + ".ext:sort(100, symbol asc)";
 
         EPStatement selectTestView = epService.getEPAdministrator().createEPL(viewExpr);
         selectTestView.addListener(testListener);

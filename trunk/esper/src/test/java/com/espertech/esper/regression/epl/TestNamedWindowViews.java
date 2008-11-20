@@ -896,7 +896,7 @@ public class TestNamedWindowViews extends TestCase
         String[] fields = new String[] {"key", "value"};
 
         // create window
-        String stmtTextCreate = "create window MyWindow.ext:sort(value, false, 3) as MyMap";
+        String stmtTextCreate = "create window MyWindow.ext:sort(3, value asc) as MyMap";
         EPStatement stmtCreate = epService.getEPAdministrator().createEPL(stmtTextCreate);
         stmtCreate.addListener(listenerWindow);
 

@@ -12,7 +12,7 @@ public class TestExprCountNode extends TestExprAggregateNodeAdapter
         super.validatedNodeToTest = makeNode(5, Integer.class);
 
         wildcardCount = new ExprCountNode(false);
-        SupportExprNodeFactory.validate(wildcardCount);
+        SupportExprNodeFactory.validate3Stream(wildcardCount);
     }
 
     public void testGetType() throws Exception
@@ -38,7 +38,7 @@ public class TestExprCountNode extends TestExprAggregateNodeAdapter
     {
         ExprCountNode countNode = new ExprCountNode(false);
         countNode.addChildNode(new SupportExprNode(value, type));
-        SupportExprNodeFactory.validate(countNode);
+        SupportExprNodeFactory.validate3Stream(countNode);
         return countNode;
     }
 }

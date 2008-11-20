@@ -35,7 +35,6 @@ public class View extends EPBaseNamedObject
      * @param parameters is a list of view parameters, or empty if there are no parameters for the view
      * @return view
      */
-    // TODO: make all other number parameters available as expressions
     public static View create(String namespace, String name, List<Expression> parameters)
     {
         return new View(namespace, name, parameters);

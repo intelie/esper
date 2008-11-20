@@ -23,11 +23,11 @@ public class TestGroupByView extends TestCase
     public void setUp() throws Exception
     {
         statementContext = SupportStatementContextFactory.makeContext();
-        myGroupByView = new GroupByView(statementContext, SupportExprNodeFactory.makeIdentNodes("symbol"));
+        myGroupByView = new GroupByView(statementContext, SupportExprNodeFactory.makeIdentNodesMD("symbol"));
 
         SupportBeanClassView childView = new SupportBeanClassView(SupportMarketDataBean.class);
 
-        MergeView myMergeView = new MergeView(statementContext, SupportExprNodeFactory.makeIdentNodes("symbol"), SupportEventTypeFactory.createBeanType(SupportMarketDataBean.class));
+        MergeView myMergeView = new MergeView(statementContext, SupportExprNodeFactory.makeIdentNodesMD("symbol"), SupportEventTypeFactory.createBeanType(SupportMarketDataBean.class));
 
         ultimateChildView = new SupportBeanClassView(SupportMarketDataBean.class);
 
@@ -111,7 +111,7 @@ public class TestGroupByView extends TestCase
     public void testMakeSubviews() throws Exception
     {
         EventStream eventStream = new SupportStreamImpl(SupportMarketDataBean.class, 4);
-        GroupByView groupView = new GroupByView(statementContext, SupportExprNodeFactory.makeIdentNodes("symbol"));
+        GroupByView groupView = new GroupByView(statementContext, SupportExprNodeFactory.makeIdentNodesMD("symbol"));
         eventStream.addView(groupView);
 
         Object[] groupByValue = new Object[] {"IBM"};
@@ -128,7 +128,7 @@ public class TestGroupByView extends TestCase
         }
 
         // Invalid for child node is a merge node - doesn't make sense to group and merge only
-        MergeView mergeViewOne = new MergeView(statementContext, SupportExprNodeFactory.makeIdentNodes("symbol"), null);
+        MergeView mergeViewOne = new MergeView(statementContext, SupportExprNodeFactory.makeIdentNodesMD("symbol"), null);
         groupView.addView(mergeViewOne);
         try
         {
@@ -141,12 +141,12 @@ public class TestGroupByView extends TestCase
         }
 
         // Add a size view parent of merge view
-        groupView = new GroupByView(statementContext, SupportExprNodeFactory.makeIdentNodes("symbol"));
+        groupView = new GroupByView(statementContext, SupportExprNodeFactory.makeIdentNodesMD("symbol"));
 
         SizeView sizeView_1 = new SizeView(statementContext);
 
         groupView.addView(sizeView_1);
-        mergeViewOne = new MergeView(statementContext, SupportExprNodeFactory.makeIdentNodes("symbol"), null);
+        mergeViewOne = new MergeView(statementContext, SupportExprNodeFactory.makeIdentNodesMD("symbol"), null);
         sizeView_1.addView(mergeViewOne);
 
         List<View> subViews = GroupByView.makeSubViews(groupView, "symbol".split(","), groupByValue, statementContext);

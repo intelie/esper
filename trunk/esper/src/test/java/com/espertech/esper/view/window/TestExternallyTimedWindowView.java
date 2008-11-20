@@ -1,32 +1,33 @@
 package com.espertech.esper.view.window;
 
-import junit.framework.TestCase;
 import com.espertech.esper.event.EventBean;
-import com.espertech.esper.support.bean.SupportBeanTimestamp;
+import com.espertech.esper.support.bean.SupportBean;
+import com.espertech.esper.support.epl.SupportExprNodeFactory;
 import com.espertech.esper.support.event.SupportEventBeanFactory;
 import com.espertech.esper.support.util.ArrayAssertionUtil;
 import com.espertech.esper.support.view.SupportBeanClassView;
 import com.espertech.esper.support.view.SupportStreamImpl;
 import com.espertech.esper.support.view.SupportViewDataChecker;
+import junit.framework.TestCase;
 
 public class TestExternallyTimedWindowView extends TestCase
 {
     private ExternallyTimedWindowView myView;
     private SupportBeanClassView childView;
 
-    public void setUp()
+    public void setUp() throws Exception
     {
         // Set up timed window view and a test child view, set the time window size to 1 second
-        myView = new ExternallyTimedWindowView(null, "timestamp", 1000, null, false);
-        childView = new SupportBeanClassView(SupportBeanTimestamp.class);
+        myView = new ExternallyTimedWindowView(null, SupportExprNodeFactory.makeIdentNodeBean("longPrimitive"), 1000, null, false);
+        childView = new SupportBeanClassView(SupportBean.class);
         myView.addView(childView);
     }
 
-    public void testIncorrectUse()
+    public void testIncorrectUse() throws Exception
     {
         try
         {
-            myView = new ExternallyTimedWindowView(null, "goodie", 0, null, false);
+            myView = new ExternallyTimedWindowView(null, SupportExprNodeFactory.makeIdentNodeBean("string"), 0, null, false);
         }
         catch (IllegalArgumentException ex)
         {
@@ -37,7 +38,7 @@ public class TestExternallyTimedWindowView extends TestCase
     public void testViewPush()
     {
         // Set up a feed for the view under test - it will have a depth of 3 trades
-        SupportStreamImpl stream = new SupportStreamImpl(SupportBeanTimestamp.class, 3);
+        SupportStreamImpl stream = new SupportStreamImpl(SupportBean.class, 3);
         stream.addView(myView);
 
         EventBean[] a = makeBeans("a", 10000, 1);
@@ -100,7 +101,9 @@ public class TestExternallyTimedWindowView extends TestCase
         EventBean[] beans = new EventBean[numBeans];
         for (int i = 0; i < numBeans; i++)
         {
-            SupportBeanTimestamp bean = new SupportBeanTimestamp(id + i, timestamp);
+            SupportBean bean = new SupportBean();
+            bean.setLongPrimitive(timestamp);
+            bean.setString(id + 1);
             beans[i] = SupportEventBeanFactory.createObject(bean);
         }
         return beans;

@@ -539,7 +539,7 @@ public class TestOutputLimitAggregateAll extends TestCase
         sendTimer(0);
 
         String viewExpr = "select irstream volume, max(price) as maxVol" +
-                          " from " + SupportMarketDataBean.class.getName() + ".ext:sort(volume, true, 1) as s0," +
+                          " from " + SupportMarketDataBean.class.getName() + ".ext:sort(1, volume desc) as s0," +
                           SupportBean.class.getName() + " as s1 " +
                           "output every 1 seconds";
         EPStatement stmt = epService.getEPAdministrator().createEPL(viewExpr);

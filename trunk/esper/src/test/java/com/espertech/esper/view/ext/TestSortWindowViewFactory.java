@@ -1,16 +1,15 @@
 package com.espertech.esper.view.ext;
 
-import junit.framework.TestCase;
-import com.espertech.esper.view.ViewParameterException;
-import com.espertech.esper.view.TestViewSupport;
 import com.espertech.esper.core.StatementContext;
-import com.espertech.esper.view.std.SizeView;
 import com.espertech.esper.event.EventType;
-import com.espertech.esper.support.event.SupportEventTypeFactory;
 import com.espertech.esper.support.bean.SupportMarketDataBean;
-import com.espertech.esper.support.view.SupportStatementContextFactory;
-import com.espertech.esper.support.util.ArrayAssertionUtil;
 import com.espertech.esper.support.epl.SupportExprNodeFactory;
+import com.espertech.esper.support.event.SupportEventTypeFactory;
+import com.espertech.esper.support.view.SupportStatementContextFactory;
+import com.espertech.esper.view.TestViewSupport;
+import com.espertech.esper.view.ViewParameterException;
+import com.espertech.esper.view.std.SizeView;
+import junit.framework.TestCase;
 
 public class TestSortWindowViewFactory extends TestCase
 {
@@ -23,17 +22,14 @@ public class TestSortWindowViewFactory extends TestCase
 
     public void testSetParameters() throws Exception
     {
-        tryParameter(new Object[] {"price", true, 100},
-                     new String[] {"price"}, new boolean[] {true}, 100);
+        tryParameter(new Object[] {100, "price", "volume"},
+                     new String[] {"price", "volume"}, 100);
 
-        tryParameter(new Object[] {new Object[] {"price", true, "volume", false}, 100},
-                     new String[] {"price", "volume"}, new boolean[] {true, false}, 100);
-
-        tryInvalidParameter(new Object[] {new Object[] {"price", "a", "volume", false}, 100});
+        tryInvalidParameter(new Object[] {"price", "symbol", "volume"});
         tryInvalidParameter(new Object[] {});
-        tryInvalidParameter(new Object[] {"price", "x", 100});
-        tryInvalidParameter(new Object[] {1.1, "x", 100});
-        tryInvalidParameter(new Object[] {"price", true, "x"});
+        tryInvalidParameter(new Object[] {100, "price", 100});
+        tryInvalidParameter(new Object[] {100, 100});
+        tryInvalidParameter(new Object[] {100, "price", true});
     }
 
     public void testAttaches() throws Exception
@@ -41,13 +37,13 @@ public class TestSortWindowViewFactory extends TestCase
         // Should attach to anything as long as the fields exists
         EventType parentType = SupportEventTypeFactory.createBeanType(SupportMarketDataBean.class);
 
-        factory.setViewParameters(null, TestViewSupport.toExprList(new Object[] {"price", true, 100}));
+        factory.setViewParameters(null, TestViewSupport.toExprListMD(new Object[] {100, "price"}));
         factory.attach(parentType, SupportStatementContextFactory.makeContext(), null, null);
 
         try
         {
-            factory.setViewParameters(null, TestViewSupport.toExprList(new Object[] {"xxx", true, 100}));
-            factory.attach(parentType, null, null, null);
+            factory.setViewParameters(null, TestViewSupport.toExprListMD(new Object[] {true, "price"}));
+            factory.attach(parentType, SupportStatementContextFactory.makeContext(), null, null);
             fail();
         }
         catch (ViewParameterException ex)
@@ -60,23 +56,26 @@ public class TestSortWindowViewFactory extends TestCase
     {
         StatementContext context = SupportStatementContextFactory.makeContext();
 
-        factory.setViewParameters(null, TestViewSupport.toExprList(new Object[] {"price", true, 100}));
+        factory.setViewParameters(null, TestViewSupport.toExprListMD(new Object[] {100, "price"}));
+        factory.attach(SupportEventTypeFactory.createBeanType(SupportMarketDataBean.class), SupportStatementContextFactory.makeContext(), null, null);
         assertFalse(factory.canReuse(new SizeView(context)));
-        assertTrue(factory.canReuse(new SortWindowView(factory, SupportExprNodeFactory.makeIdentNodes("price"), new boolean[] {true}, 100, null, false)));
-        assertFalse(factory.canReuse(new SortWindowView(factory, SupportExprNodeFactory.makeIdentNodes("volume"), new boolean[] {true}, 100, null, false)));
-        assertFalse(factory.canReuse(new SortWindowView(factory, SupportExprNodeFactory.makeIdentNodes("price"), new boolean[] {false}, 100, null, false)));
-        assertFalse(factory.canReuse(new SortWindowView(factory, SupportExprNodeFactory.makeIdentNodes("price"), new boolean[] {true}, 99, null, false)));
+        assertTrue(factory.canReuse(new SortWindowView(factory, SupportExprNodeFactory.makeIdentNodesMD("price"), new boolean[] {false}, 100, null, false)));
+        assertFalse(factory.canReuse(new SortWindowView(factory, SupportExprNodeFactory.makeIdentNodesMD("volume"), new boolean[] {true}, 100, null, false)));
+        assertFalse(factory.canReuse(new SortWindowView(factory, SupportExprNodeFactory.makeIdentNodesMD("price"), new boolean[] {false}, 99, null, false)));
+        assertFalse(factory.canReuse(new SortWindowView(factory, SupportExprNodeFactory.makeIdentNodesMD("symbol"), new boolean[] {false}, 100, null, false)));
 
-        factory.setViewParameters(null, TestViewSupport.toExprList(new Object[] {new Object[] {"price", true, "volume", false}, 100}));
-        assertTrue(factory.canReuse(new SortWindowView(factory, SupportExprNodeFactory.makeIdentNodes("price", "volume"), new boolean[] {true, false}, 100, null, false)));
-        assertFalse(factory.canReuse(new SortWindowView(factory, SupportExprNodeFactory.makeIdentNodes("price", "xxx"), new boolean[] {true, false}, 100, null, false)));
+        factory.setViewParameters(null, TestViewSupport.toExprListMD(new Object[] {100, "price", "volume"}));
+        factory.attach(SupportEventTypeFactory.createBeanType(SupportMarketDataBean.class), SupportStatementContextFactory.makeContext(), null, null);
+        assertTrue(factory.canReuse(new SortWindowView(factory, SupportExprNodeFactory.makeIdentNodesMD("price", "volume"), new boolean[] {false, false}, 100, null, false)));
+        assertFalse(factory.canReuse(new SortWindowView(factory, SupportExprNodeFactory.makeIdentNodesMD("price", "symbol"), new boolean[] {true, false}, 100, null, false)));
     }
 
     private void tryInvalidParameter(Object[] params) throws Exception
     {
         try
         {
-            factory.setViewParameters(null, TestViewSupport.toExprList(params));
+            factory.setViewParameters(null, TestViewSupport.toExprListMD(params));
+            factory.attach(SupportEventTypeFactory.createBeanType(SupportMarketDataBean.class), SupportStatementContextFactory.makeContext(), null, null);
             fail();
         }
         catch (ViewParameterException ex)
@@ -85,12 +84,16 @@ public class TestSortWindowViewFactory extends TestCase
         }
     }
 
-    private void tryParameter(Object[] params, String[] fieldNames, boolean[] ascInd, int size) throws Exception
+    private void tryParameter(Object[] params, String[] fieldNames, int size) throws Exception
     {
-        factory.setViewParameters(null, TestViewSupport.toExprList(params));
+        factory.setViewParameters(null, TestViewSupport.toExprListMD(params));
+        factory.attach(SupportEventTypeFactory.createBeanType(SupportMarketDataBean.class), SupportStatementContextFactory.makeContext(), null, null);
         SortWindowView view = (SortWindowView) factory.makeView(SupportStatementContextFactory.makeContext());
         assertEquals(size, view.getSortWindowSize());
-        ArrayAssertionUtil.assertEqualsExactOrder(fieldNames, view.getSortCriteriaExpressions());
-        ArrayAssertionUtil.assertEqualsExactOrder(ascInd, view.getIsDescendingValues());
+        assertEquals(fieldNames[0], view.getSortCriteriaExpressions()[0].toExpressionString());
+        if (fieldNames.length > 0)
+        {
+            assertEquals(fieldNames[1], view.getSortCriteriaExpressions()[1].toExpressionString());
+        }
     }
 }

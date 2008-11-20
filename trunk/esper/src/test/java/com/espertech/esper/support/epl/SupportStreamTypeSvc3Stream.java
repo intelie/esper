@@ -42,7 +42,7 @@ public class SupportStreamTypeSvc3Stream implements StreamTypeService
         EventType[] eventTypes = new EventType[] {
             SupportEventTypeFactory.createBeanType(SupportBean.class),
             SupportEventTypeFactory.createBeanType(SupportBean.class),
-            SupportEventTypeFactory.createBeanType(SupportBeanComplexProps.class)
+            SupportEventTypeFactory.createBeanType(SupportBeanComplexProps.class),
         };
         return eventTypes;
     }

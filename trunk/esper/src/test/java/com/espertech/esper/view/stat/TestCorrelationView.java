@@ -22,7 +22,7 @@ public class TestCorrelationView extends TestCase
     {
         // Set up sum view and a test child view
         myView = new CorrelationView(SupportStatementContextFactory.makeContext(),
-                SupportExprNodeFactory.makeIdentNode("price"), SupportExprNodeFactory.makeIdentNode("volume"));
+                SupportExprNodeFactory.makeIdentNodeMD("price"), SupportExprNodeFactory.makeIdentNodeMD("volume"));
 
         childView = new SupportBeanClassView(SupportMarketDataBean.class);
         myView.addView(childView);

@@ -200,6 +200,8 @@ public interface ConfigurationOperations
 
     /**
      * Add a variable.
+     * <p>
+     * Use the runtime API to set variable values or EPL statements to change variable values. 
      * @param variableName name of the variable to add
      * @param type the type of the variable must be a primitive or boxed Java-builtin scalar type.
      * @param initializationValue is the first assigned value

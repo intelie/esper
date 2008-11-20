@@ -565,8 +565,8 @@ public class TestSubselectFiltered extends TestCase
     {
         String stmtTextOne =
                      "select " +
-                     " (select * from Sensor.ext:sort(measurement,true,1)) as high, " +
-                     " (select * from Sensor.ext:sort(measurement,false,1)) as low " +
+                     " (select * from Sensor.ext:sort(1, measurement desc)) as high, " +
+                     " (select * from Sensor.ext:sort(1, measurement asc)) as low " +
                      " from Sensor";
         EPStatement stmt = epService.getEPAdministrator().createEPL(stmtTextOne);
         stmt.addListener(listener);

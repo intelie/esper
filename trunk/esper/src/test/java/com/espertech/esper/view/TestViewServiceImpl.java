@@ -1,12 +1,12 @@
 package com.espertech.esper.view;
 
-import junit.framework.TestCase;
+import com.espertech.esper.core.StatementContext;
+import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.bean.SupportBean_A;
-import com.espertech.esper.support.bean.SupportMarketDataBean;
+import com.espertech.esper.support.view.SupportStatementContextFactory;
 import com.espertech.esper.support.view.SupportStreamImpl;
 import com.espertech.esper.support.view.SupportViewSpecFactory;
-import com.espertech.esper.support.view.SupportStatementContextFactory;
-import com.espertech.esper.core.StatementContext;
+import junit.framework.TestCase;
 
 public class TestViewServiceImpl extends TestCase
 {
@@ -23,7 +23,7 @@ public class TestViewServiceImpl extends TestCase
 
     public void setUp() throws Exception
     {
-        streamOne = new SupportStreamImpl(SupportMarketDataBean.class, 1);
+        streamOne = new SupportStreamImpl(SupportBean.class, 1);
         streamTwo = new SupportStreamImpl(SupportBean_A.class, 1);
 
         viewService = new ViewServiceImpl();

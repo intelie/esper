@@ -8,6 +8,7 @@ import com.espertech.esper.support.util.DoubleValueAssertionUtil;
 import com.espertech.esper.support.view.SupportBeanClassView;
 import com.espertech.esper.support.view.SupportStreamImpl;
 import com.espertech.esper.support.view.SupportStatementContextFactory;
+import com.espertech.esper.support.epl.SupportExprNodeFactory;
 import com.espertech.esper.view.ViewFieldEnum;
 
 import java.util.Iterator;
@@ -17,10 +18,10 @@ public class TestWeightedAverageView extends TestCase
     private WeightedAverageView myView;
     private SupportBeanClassView childView;
 
-    public void setUp()
+    public void setUp() throws Exception
     {
         // Set up sum view and a test child view
-        myView = new WeightedAverageView(SupportStatementContextFactory.makeContext(), "price", "volume");
+        myView = new WeightedAverageView(SupportStatementContextFactory.makeContext(), SupportExprNodeFactory.makeIdentNodeMD("price"), SupportExprNodeFactory.makeIdentNodeMD("volume"));
         
         childView = new SupportBeanClassView(SupportMarketDataBean.class);
         myView.addView(childView);

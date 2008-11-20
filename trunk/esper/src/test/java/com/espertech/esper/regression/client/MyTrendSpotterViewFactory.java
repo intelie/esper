@@ -9,39 +9,37 @@ import java.util.List;
 
 public class MyTrendSpotterViewFactory extends ViewFactorySupport
 {
-    private String fieldName;
+    private List<ExprNode> viewParameters;
+
+    private ExprNode expression;
     private EventType eventType;
 
-    public void setViewParameters(ViewFactoryContext viewFactoryContext, List<ExprNode> expressionParameters) throws ViewParameterException
+    public void setViewParameters(ViewFactoryContext viewFactoryContext, List<ExprNode> viewParameters) throws ViewParameterException
     {
-        List<Object> viewParameters = ViewFactorySupport.validateAndEvaluate("'Trend spotter' view", viewFactoryContext, expressionParameters);
-        String errorMessage = "'Trend spotter' view require a single field name as a parameter";
-        if (viewParameters.size() != 1)
-        {
-            throw new ViewParameterException(errorMessage);
-        }
-
-        if (!(viewParameters.get(0) instanceof String))
-        {
-            throw new ViewParameterException(errorMessage);
-        }
-
-        fieldName = (String) viewParameters.get(0);
+        this.viewParameters = viewParameters;
     }
 
     public void attach(EventType parentEventType, StatementContext statementContext, ViewFactory optionalParentFactory, List<ViewFactory> parentViewFactories) throws ViewParameterException
     {
-        String result = PropertyCheckHelper.checkNumeric(parentEventType, fieldName);
-        if (result != null)
+        ExprNode[] validated = ViewFactorySupport.validate("Trend spotter view", parentEventType, statementContext, viewParameters, false);
+        String message = "Trend spotter view accepts a single integer or double value";
+        if (validated.length != 1)
         {
-            throw new ViewParameterException(result);
+            throw new ViewParameterException(message);
         }
+        Class resultType = validated[0].getType();
+        if ((resultType != Integer.class) && (resultType != int.class) &&
+            (resultType != Double.class) && (resultType != double.class))
+        {
+            throw new ViewParameterException(message);
+        }
+        expression = validated[0];
         eventType = MyTrendSpotterView.createEventType(statementContext);
     }
 
     public View makeView(StatementContext statementContext)
     {
-        return new MyTrendSpotterView(statementContext, fieldName);
+        return new MyTrendSpotterView(statementContext, expression);
     }
 
     public EventType getEventType()

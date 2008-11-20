@@ -51,13 +51,13 @@ public class CorrelationViewFactory implements ViewFactory
             throw new ViewParameterException(errorMessage);
         }
 
-        if ((!JavaClassHelper.isNumeric(validated[1].getType())) || (!JavaClassHelper.isNumeric(validated[1].getType())))
+        if ((!JavaClassHelper.isNumeric(validated[0].getType())) || (!JavaClassHelper.isNumeric(validated[1].getType())))
         {
             throw new ViewParameterException(errorMessage);
         }
 
         expressionX = validated[0];
-        expressionX = validated[1];
+        expressionY = validated[1];
 
         eventType = CorrelationView.createEventType(statementContext);
     }

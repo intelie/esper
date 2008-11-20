@@ -278,6 +278,7 @@ valueExprWithTime
 	:	l=LAST { leaveNode($l); }
 	|	lw=LW { leaveNode($lw); }
 	|	valueExpr
+	|	^(ordered=OBJECT_PARAM_ORDERED_EXPR valueExpr (DESC|ASC) { leaveNode($ordered); })
 	| 	rangeOperator
 	| 	frequencyOperator
 	|	lastOperator
@@ -492,23 +493,23 @@ timePeriodDef
 	;
 	
 dayPart
-	:	^( DAY_PART number)
+	:	^( DAY_PART (constant[true]|eventPropertyExpr) )
 	;
 
 hourPart
-	:	^( HOUR_PART number)
+	:	^( HOUR_PART (constant[true]|eventPropertyExpr) )
 	;
 
 minutePart
-	:	^( MINUTE_PART number)
+	:	^( MINUTE_PART (constant[true]|eventPropertyExpr) )
 	;
 
 secondPart
-	:	^( SECOND_PART number)
+	:	^( SECOND_PART (constant[true]|eventPropertyExpr) )
 	;
 
 millisecondPart
-	:	^( MILLISECOND_PART number)
+	:	^( MILLISECOND_PART (constant[true]|eventPropertyExpr) )
 	;
 
 substitution

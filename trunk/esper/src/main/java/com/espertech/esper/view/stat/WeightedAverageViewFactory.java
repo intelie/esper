@@ -8,14 +8,12 @@
  **************************************************************************************/
 package com.espertech.esper.view.stat;
 
-import com.espertech.esper.view.ViewFactory;
-import com.espertech.esper.view.ViewParameterException;
-import com.espertech.esper.view.ViewParameterException;
-import com.espertech.esper.view.*;
-import com.espertech.esper.event.EventType;
+import com.espertech.esper.core.StatementContext;
 import com.espertech.esper.epl.core.ViewResourceCallback;
 import com.espertech.esper.epl.expression.ExprNode;
-import com.espertech.esper.core.StatementContext;
+import com.espertech.esper.event.EventType;
+import com.espertech.esper.util.JavaClassHelper;
+import com.espertech.esper.view.*;
 
 import java.util.List;
 
@@ -27,44 +25,37 @@ public class WeightedAverageViewFactory implements ViewFactory
     private List<ExprNode> viewParameters;
 
     /**
-     * Property name of X field.
+     * Expression of X field.
      */
-    protected String fieldNameX;
+    protected ExprNode fieldNameX;
     /**
-     * Property name of weight field.
+     * Expression of weight field.
      */
-    protected String fieldNameWeight;
+    protected ExprNode fieldNameWeight;
 
     private EventType eventType;
 
     public void setViewParameters(ViewFactoryContext viewFactoryContext, List<ExprNode> expressionParameters) throws ViewParameterException
     {
         this.viewParameters = expressionParameters;
-
-        List<Object> viewParameters = ViewFactorySupport.validateAndEvaluate("'Weighted average' view", viewFactoryContext, expressionParameters);
-        String errorMessage = "'Weighted average' view requires two field names as parameters";
-        if (viewParameters.size() != 2)
-        {
-            throw new ViewParameterException(errorMessage);
-        }
-
-        if ( (!(viewParameters.get(0) instanceof String)) ||
-             (!(viewParameters.get(1) instanceof String)) )
-        {
-            throw new ViewParameterException(errorMessage);
-        }
-
-        fieldNameX = (String) viewParameters.get(0);
-        fieldNameWeight = (String) viewParameters.get(1);
     }
 
     public void attach(EventType parentEventType, StatementContext statementContext, ViewFactory optionalParentFactory, List<ViewFactory> parentViewFactories) throws ViewParameterException
     {
-        String result = PropertyCheckHelper.checkNumeric(parentEventType, fieldNameX, fieldNameWeight);
-        if (result != null)
+        ExprNode[] validated = ViewFactorySupport.validate("Correlation view", parentEventType, statementContext, viewParameters, false);
+
+        String errorMessage = "Weighted average view requires two expressions returning numeric values as parameters";
+        if (viewParameters.size() != 2)
         {
-            throw new ViewParameterException(result);
+            throw new ViewParameterException(errorMessage);
         }
+        if ((!JavaClassHelper.isNumeric(validated[0].getType())) || (!JavaClassHelper.isNumeric(validated[1].getType())))
+        {
+            throw new ViewParameterException(errorMessage);
+        }
+
+        fieldNameX = validated[0];
+        fieldNameWeight = validated[1];
         eventType = WeightedAverageView.createEventType(statementContext);
     }
 
@@ -96,8 +87,8 @@ public class WeightedAverageViewFactory implements ViewFactory
         }
 
         WeightedAverageView myView = (WeightedAverageView) view;
-        if ((!myView.getFieldNameWeight().equals(fieldNameWeight)) ||
-            (!myView.getFieldNameX().equals(fieldNameX)) )
+        if ((!ExprNode.deepEquals(fieldNameWeight, myView.getFieldNameWeight())) ||
+            (!ExprNode.deepEquals(fieldNameX, myView.getFieldNameX())) )
         {
             return false;
         }

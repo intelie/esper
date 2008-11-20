@@ -20,7 +20,7 @@ public class TestLengthBatchViewFactory extends TestCase
         tryParameter(new Object[] {Short.parseShort("10")}, 10);
         tryParameter(new Object[] {100}, 100);
 
-        tryInvalidParameter("price");
+        tryInvalidParameter("string");
         tryInvalidParameter(true);
         tryInvalidParameter(1.1d);
         tryInvalidParameter(0);
@@ -29,7 +29,7 @@ public class TestLengthBatchViewFactory extends TestCase
 
     public void testCanReuse() throws Exception
     {
-        factory.setViewParameters(null, TestViewSupport.toExprList(new Object[] {1000}));
+        factory.setViewParameters(SupportStatementContextFactory.makeViewContext(), TestViewSupport.toExprListBean(new Object[] {1000}));
         assertFalse(factory.canReuse(new SizeView(SupportStatementContextFactory.makeContext())));
         assertFalse(factory.canReuse(new LengthBatchView(factory, 1, null)));
         assertTrue(factory.canReuse(new LengthBatchView(factory, 1000, null)));
@@ -39,7 +39,7 @@ public class TestLengthBatchViewFactory extends TestCase
     {
         try
         {
-            factory.setViewParameters(null, TestViewSupport.toExprList(new Object[] {param}));
+            factory.setViewParameters(SupportStatementContextFactory.makeViewContext(), TestViewSupport.toExprListBean(new Object[] {param}));
             fail();
         }
         catch (ViewParameterException ex)
@@ -51,7 +51,7 @@ public class TestLengthBatchViewFactory extends TestCase
     private void tryParameter(Object[] param, int size) throws Exception
     {
         LengthBatchViewFactory factory = new LengthBatchViewFactory();
-        factory.setViewParameters(null, TestViewSupport.toExprList(param));
+        factory.setViewParameters(SupportStatementContextFactory.makeViewContext(), TestViewSupport.toExprListBean(param));
         LengthBatchView view = (LengthBatchView) factory.makeView(SupportStatementContextFactory.makeContext());
         assertEquals(size, view.getSize());
     }

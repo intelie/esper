@@ -19,17 +19,17 @@ public class TestExprSumNode extends TestExprAggregateNodeAdapter
     public void testGetType() throws Exception
     {
         sumNode.addChildNode(new SupportExprNode(Integer.class));
-        SupportExprNodeFactory.validate(sumNode);
+        SupportExprNodeFactory.validate3Stream(sumNode);
         assertEquals(Integer.class, sumNode.getType());
 
         sumNode = new ExprSumNode(false);
         sumNode.addChildNode(new SupportExprNode(Float.class));
-        SupportExprNodeFactory.validate(sumNode);
+        SupportExprNodeFactory.validate3Stream(sumNode);
         assertEquals(Float.class, sumNode.getType());
 
         sumNode = new ExprSumNode(false);
         sumNode.addChildNode(new SupportExprNode(Short.class));
-        SupportExprNodeFactory.validate(sumNode);
+        SupportExprNodeFactory.validate3Stream(sumNode);
         assertEquals(Integer.class, sumNode.getType());
     }
 
@@ -92,7 +92,7 @@ public class TestExprSumNode extends TestExprAggregateNodeAdapter
     {
         ExprSumNode sumNode = new ExprSumNode(false);
         sumNode.addChildNode(new SupportExprNode(value, type));
-        SupportExprNodeFactory.validate(sumNode);
+        SupportExprNodeFactory.validate3Stream(sumNode);
         return sumNode;
     }
 }

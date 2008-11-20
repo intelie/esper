@@ -9,7 +9,7 @@ import com.espertech.esper.epl.spec.ViewSpec;
 
 public class TestViewSpec extends TestCase
 {
-    public void testEquals()
+    public void testEquals() throws Exception
     {
         final Class[] c_0 = new Class[] { String.class} ;
         final String[] s_0_0 = new String[] { "\"symbol\"" };
@@ -65,14 +65,15 @@ public class TestViewSpec extends TestCase
                 }
 
 
+                String message = "Comparing " + entryIn.getKey() + "=" + entryIn.getValue() + "   and   " + entryOut.getKey() + "=" + entryOut.getValue();
                 if ( (matches.containsKey(entryOut.getKey())) &&
                      (matches.get(entryOut.getKey()) == entryIn.getKey()) )
                 {
-                    assertTrue(result);
+                    assertTrue(message, result);
                 }
                 else
                 {
-                    assertFalse(result);
+                    assertFalse(message, result);
                 }
             }
         }

@@ -24,7 +24,6 @@ import org.apache.commons.logging.LogFactory;
 
 import java.util.List;
 
-// TODO: test time period with variables and invalid variables, view an pattern and guard parameters
 public class TestEPLTreeWalker extends TestCase
 {
     private static String CLASSNAME = SupportBean.class.getName();

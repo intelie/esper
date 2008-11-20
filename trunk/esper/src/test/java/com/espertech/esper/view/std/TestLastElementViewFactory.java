@@ -2,8 +2,6 @@ package com.espertech.esper.view.std;
 
 import junit.framework.TestCase;
 
-import java.util.Arrays;
-
 import com.espertech.esper.view.ViewParameterException;
 import com.espertech.esper.view.TestViewSupport;
 import com.espertech.esper.support.view.SupportStatementContextFactory;
@@ -34,7 +32,7 @@ public class TestLastElementViewFactory extends TestCase
         try
         {
             LastElementViewFactory factory = new LastElementViewFactory();
-            factory.setViewParameters(null, TestViewSupport.toExprList(new Object[] {param}));
+            factory.setViewParameters(SupportStatementContextFactory.makeViewContext(), TestViewSupport.toExprListBean(new Object[] {param}));
             fail();
         }
         catch (ViewParameterException ex)
@@ -46,7 +44,7 @@ public class TestLastElementViewFactory extends TestCase
     private void tryParameter(Object[] param) throws Exception
     {
         LastElementViewFactory factory = new LastElementViewFactory();
-        factory.setViewParameters(null, TestViewSupport.toExprList(param));
+        factory.setViewParameters(SupportStatementContextFactory.makeViewContext(), TestViewSupport.toExprListBean(param));
         assertTrue(factory.makeView(SupportStatementContextFactory.makeContext()) instanceof LastElementView);
     }
 }
