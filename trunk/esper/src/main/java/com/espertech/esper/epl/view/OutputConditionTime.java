@@ -11,9 +11,10 @@ package com.espertech.esper.epl.view;
 import com.espertech.esper.core.EPStatementHandleCallback;
 import com.espertech.esper.core.ExtensionServicesContext;
 import com.espertech.esper.core.StatementContext;
-import com.espertech.esper.epl.variable.VariableReader;
+import com.espertech.esper.epl.expression.ExprTimePeriod;
 import com.espertech.esper.schedule.ScheduleHandleCallback;
 import com.espertech.esper.schedule.ScheduleSlot;
+import com.espertech.esper.type.TimePeriodParameter;
 import com.espertech.esper.util.ExecutionPathDebugLog;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -27,6 +28,7 @@ public final class OutputConditionTime implements OutputCondition
     private static final boolean DO_OUTPUT = true;
 	private static final boolean FORCE_UPDATE = true;
 
+    private ExprTimePeriod timePeriod;
     private long msecIntervalSize;
     private final OutputCallback outputCallback;
     private final ScheduleSlot scheduleSlot;
@@ -34,21 +36,15 @@ public final class OutputConditionTime implements OutputCondition
     private Long currentReferencePoint;
     private StatementContext context;
     private boolean isCallbackScheduled;
-    private final VariableReader reader;
     private EPStatementHandleCallback handle;
-    private boolean isMinutesUnit;
 
     /**
      * Constructor.
-     * @param intervalSize is the number of minutes or seconds to batch events for.
+     * @param timePeriod is the number of minutes or seconds to batch events for, may include variables
      * @param context is the view context for time scheduling
      * @param outputCallback is the callback to make once the condition is satisfied
-     * @param reader is for reading the variable value, if a variable was supplied, else null
-     * @param isMinutesUnit is true to indicate the unit is minutes, or false for the unit as seconds
      */
-    public OutputConditionTime(Double intervalSize,
-                               boolean isMinutesUnit,
-                               VariableReader reader,
+    public OutputConditionTime(ExprTimePeriod timePeriod,
                                StatementContext context,
     						   OutputCallback outputCallback)
     {
@@ -56,34 +52,23 @@ public final class OutputConditionTime implements OutputCondition
 		{
 			throw new NullPointerException("Output condition by count requires a non-null callback");
 		}
-        if (!isMinutesUnit)
-        {
-            if ((intervalSize < 0.001) && (reader == null))
-            {
-                throw new IllegalArgumentException("Output condition by time requires a millisecond interval size of at least 1 msec or a variable");
-            }
-        }
         if (context == null)
         {
             String message = "OutputConditionTime requires a non-null view context";
             throw new NullPointerException(message);
         }
 
-        this.reader = reader;
         this.context = context;
         this.outputCallback = outputCallback;
         this.scheduleSlot = context.getScheduleBucket().allocateSlot();
-        this.isMinutesUnit = isMinutesUnit;
+        this.timePeriod = timePeriod;
 
-        if (reader != null)
+        TimePeriodParameter param = (TimePeriodParameter) timePeriod.evaluate(null, true);
+        if ((param.getNumSeconds() < 0.001) && (!timePeriod.hasVariable()))
         {
-            intervalSize = ((Number)reader.getValue()).doubleValue();
+            throw new IllegalArgumentException("Output condition by time requires a millisecond interval size of at least 1 msec or a variable");
         }
-        if (isMinutesUnit)
-        {
-            intervalSize = intervalSize * 60d;
-        }
-        this.msecIntervalSize = Math.round(1000 * intervalSize);
+        this.msecIntervalSize = Math.round(1000 * param.getNumSeconds());
     }
 
     /**
@@ -110,19 +95,12 @@ public final class OutputConditionTime implements OutputCondition
         }
 
         // If we pull the interval from a variable, then we may need to reschedule
-        if (reader != null)
+        if (timePeriod.hasVariable())
         {
-            Object value = reader.getValue();
-            if (value != null)
+            TimePeriodParameter param = (TimePeriodParameter) timePeriod.evaluate(null, true);
+            if (param != null)
             {
-                // Check if the variable changed
-                double intervalSize = ((Number)reader.getValue()).doubleValue();
-                if (isMinutesUnit)
-                {
-                    intervalSize = intervalSize * 60d;
-                }
-
-                long newMsecIntervalSize = Math.round(1000 * intervalSize);
+                long newMsecIntervalSize = Math.round(1000 * param.getNumSeconds());
 
                 // reschedule if the interval changed
                 if (newMsecIntervalSize != msecIntervalSize)
@@ -153,18 +131,12 @@ public final class OutputConditionTime implements OutputCondition
     private void scheduleCallback()
     {
         // If we pull the interval from a variable, get the current interval length
-        if (reader != null)
+        if (timePeriod.hasVariable())
         {
-            Object value = reader.getValue();
-            if (value != null)
+            TimePeriodParameter param = (TimePeriodParameter) timePeriod.evaluate(null, true);
+            if (param != null)
             {
-                // Check if the variable changed
-                double intervalSize = ((Number)reader.getValue()).doubleValue();
-                if (isMinutesUnit)
-                {
-                    intervalSize = intervalSize * 60d;
-                }
-                msecIntervalSize = Math.round(1000 * intervalSize);
+                msecIntervalSize = Math.round(1000 * param.getNumSeconds());
             }
         }
 

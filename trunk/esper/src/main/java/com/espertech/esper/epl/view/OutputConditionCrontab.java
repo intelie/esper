@@ -143,5 +143,5 @@ public final class OutputConditionCrontab implements OutputCondition
         return results;
     }
 
-    private static final Log log = LogFactory.getLog(OutputConditionTime.class);
+    private static final Log log = LogFactory.getLog(OutputConditionCrontab.class);
 }

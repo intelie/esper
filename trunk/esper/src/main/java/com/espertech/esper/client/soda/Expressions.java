@@ -1469,7 +1469,7 @@ public class Expressions implements Serializable
     {
         if (object == null)
         {
-            throw new IllegalArgumentException("Invalid null value");
+            return null;
         }
         if (object instanceof String)
         {

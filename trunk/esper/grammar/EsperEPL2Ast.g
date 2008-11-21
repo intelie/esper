@@ -223,8 +223,6 @@ havingClause
 
 outputLimitExpr
 	:	^(e=EVENT_LIMIT_EXPR (ALL|FIRST|LAST|SNAPSHOT)? (number|IDENT) { leaveNode($e); } ) 
-	|   	^(sec=SEC_LIMIT_EXPR (ALL|FIRST|LAST|SNAPSHOT)? (number|IDENT) { leaveNode($sec); } )
-	|   	^(min=MIN_LIMIT_EXPR (ALL|FIRST|LAST|SNAPSHOT)? (number|IDENT) { leaveNode($min); } )
 	|   	^(tp=TIMEPERIOD_LIMIT_EXPR (ALL|FIRST|LAST|SNAPSHOT)? time_period { leaveNode($tp); } )
 	|   	^(cron=CRONTAB_LIMIT_EXPR (ALL|FIRST|LAST|SNAPSHOT)? crontabLimitParameterSet { leaveNode($cron); } )
 	|   	^(when=WHEN_LIMIT_EXPR (ALL|FIRST|LAST|SNAPSHOT)? valueExpr onSetExpr? { leaveNode($when); } )

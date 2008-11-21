@@ -14,14 +14,9 @@ package com.espertech.esper.client.soda;
 public enum OutputLimitUnit
 {
     /**
-     * The minutes unit.
+     * The time period unit.
      */
-    MINUTES ("minutes"),
-
-    /**
-     * The seconds unit.
-     */
-    SECONDS ("seconds"),
+    TIME_PERIOD ("timeperiod"),
 
     /**
      * The number of events unit.

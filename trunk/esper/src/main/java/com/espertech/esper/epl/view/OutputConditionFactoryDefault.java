@@ -102,8 +102,7 @@ public class OutputConditionFactoryDefault implements OutputConditionFactory
                 throw new IllegalArgumentException("Variable named '" + outputLimitSpec.getVariableName() + "' must be of numeric type");
             }
 
-            boolean isMinutesUnit = outputLimitSpec.getRateType() == OutputLimitRateType.TIME_MIN;
-            return new OutputConditionTime(outputLimitSpec.getRate(), isMinutesUnit, reader, statementContext, outputCallback);
+            return new OutputConditionTime(outputLimitSpec.getTimePeriodExpr(), statementContext, outputCallback);
 		}
 	}
 }

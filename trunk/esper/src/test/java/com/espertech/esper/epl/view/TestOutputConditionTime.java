@@ -5,6 +5,8 @@ import com.espertech.esper.support.schedule.SupportSchedulingServiceImpl;
 import com.espertech.esper.support.view.SupportStatementContextFactory;
 import com.espertech.esper.core.StatementContext;
 import com.espertech.esper.core.EPStatementHandleCallback;
+import com.espertech.esper.epl.expression.ExprTimePeriod;
+import com.espertech.esper.epl.expression.ExprConstantNode;
 
 
 public class TestOutputConditionTime extends TestCase
@@ -24,10 +26,12 @@ public class TestOutputConditionTime extends TestCase
     		{
     		}
     	};
-    	
-    	schedulingServiceStub = new SupportSchedulingServiceImpl();
+
+        ExprTimePeriod timePeriod = new ExprTimePeriod(null, null, null, new ExprConstantNode(TEST_INTERVAL_MSEC / 1000d), null);
+
+        schedulingServiceStub = new SupportSchedulingServiceImpl();
     	context = SupportStatementContextFactory.makeContext(schedulingServiceStub);
-		condition = new OutputConditionTime(TEST_INTERVAL_MSEC / 1000d, false, null, context, callback);
+		condition = new OutputConditionTime(timePeriod, context, callback);
     }
 
     public void testUpdateCondtion()
@@ -70,9 +74,12 @@ public class TestOutputConditionTime extends TestCase
     
     public void testIncorrectUse()
     {
+        ExprTimePeriod timePeriodValid = new ExprTimePeriod(null, null, null, null, new ExprConstantNode(1000));
+        ExprTimePeriod timePeriodInvalid = new ExprTimePeriod(null, null, null, null, new ExprConstantNode(0));
+
 	    try
 	    {
-	        condition = new OutputConditionTime(0d, false, null, context, callback);
+            condition = new OutputConditionTime(timePeriodInvalid, context, callback);
 	        fail();
 	    }
 	    catch (IllegalArgumentException ex)
@@ -81,7 +88,7 @@ public class TestOutputConditionTime extends TestCase
 	    }
 	    try
 	    {
-	    	condition = new OutputConditionTime(1d, false, null, context, null);
+	    	condition = new OutputConditionTime(timePeriodValid, context, null);
 	    	fail();
 	    }
 	    catch (NullPointerException ex)
@@ -90,7 +97,7 @@ public class TestOutputConditionTime extends TestCase
 	    }
 	    try
 	    {
-	    	condition = new OutputConditionTime(1d, false, null, null, callback);
+	    	condition = new OutputConditionTime(timePeriodValid, null, callback);
 	    	fail();
 	    }
 	    catch (NullPointerException ex)

@@ -30,51 +30,69 @@ public class OutputLimitClause implements Serializable
     private Expression whenExpression;
     private List<Pair<String, Expression>> thenAssignments;
     private Expression[] crontabAtParameters;
+    private TimePeriodExpression timePeriodExpression;
 
     /**
      * Creates an output limit clause.
-     * @param selector is the events to select
-     * @param frequency a frequency to output at
-     * @param unit the unit for the frequency
+     * @param timePeriodExpression a frequency to output at
      * @return clause
      */
-    public static OutputLimitClause create(OutputLimitSelector selector, double frequency, OutputLimitUnit unit)
+    public static OutputLimitClause create(TimePeriodExpression timePeriodExpression)
     {
-        return new OutputLimitClause(selector, frequency, unit);
+        return new OutputLimitClause(OutputLimitSelector.DEFAULT, timePeriodExpression);
     }
 
     /**
      * Creates an output limit clause.
      * @param selector is the events to select
-     * @param unit the unit for the frequency
+     * @param timePeriodExpression a frequency to output at
+     * @return clause
+     */
+    public static OutputLimitClause create(OutputLimitSelector selector, TimePeriodExpression timePeriodExpression)
+    {
+        return new OutputLimitClause(selector, timePeriodExpression);
+    }
+
+    /**
+     * Creates an output limit clause.
+     * @param selector is the events to select
+     * @param frequency a frequency to output at
+     * @return clause
+     */
+    public static OutputLimitClause create(OutputLimitSelector selector, double frequency)
+    {
+        return new OutputLimitClause(selector, frequency);
+    }
+
+    /**
+     * Creates an output limit clause.
+     * @param selector is the events to select
      * @param frequencyVariable is the variable providing the output limit frequency
      * @return clause
      */
-    public static OutputLimitClause create(OutputLimitSelector selector, String frequencyVariable, OutputLimitUnit unit)
+    public static OutputLimitClause create(OutputLimitSelector selector, String frequencyVariable)
     {
-        return new OutputLimitClause(selector, frequencyVariable, unit);
+        return new OutputLimitClause(selector, frequencyVariable);
     }
 
     /**
      * Creates an output limit clause.
      * @param frequency a frequency to output at
-     * @param unit the unit for the frequency
      * @return clause
      */
-    public static OutputLimitClause create(double frequency, OutputLimitUnit unit)
+    public static OutputLimitClause create(double frequency)
     {
-        return new OutputLimitClause(OutputLimitSelector.DEFAULT, frequency, unit);
+        return new OutputLimitClause(OutputLimitSelector.DEFAULT, frequency);
     }
 
     /**
      * Creates an output limit clause.
      * @param frequencyVariable is the variable name providing output rate frequency values
-     * @param unit the unit for the frequency
      * @return clause
      */
-    public static OutputLimitClause create(String frequencyVariable, OutputLimitUnit unit)
+    public static OutputLimitClause create(String frequencyVariable)
     {
-        return new OutputLimitClause(OutputLimitSelector.DEFAULT, frequencyVariable, unit);
+        return new OutputLimitClause(OutputLimitSelector.DEFAULT, frequencyVariable);
     }
 
     /**
@@ -101,26 +119,36 @@ public class OutputLimitClause implements Serializable
      * Ctor.
      * @param selector is the events to select
      * @param frequency a frequency to output at
-     * @param unit the unit for the frequency
      */
-    public OutputLimitClause(OutputLimitSelector selector, Double frequency, OutputLimitUnit unit)
+    public OutputLimitClause(OutputLimitSelector selector, Double frequency)
     {
         this.selector = selector;
         this.frequency = frequency;
-        this.unit = unit;
+        this.unit = OutputLimitUnit.EVENTS;
     }
 
     /**
      * Ctor.
      * @param selector is the events to select
-     * @param unit the unit for the frequency
+     * @param timePeriodExpression the unit for the frequency
+     */
+    public OutputLimitClause(OutputLimitSelector selector, TimePeriodExpression timePeriodExpression)
+    {
+        this.selector = selector;
+        this.timePeriodExpression = timePeriodExpression;
+        this.unit = OutputLimitUnit.TIME_PERIOD;
+    }
+
+    /**
+     * Ctor.
+     * @param selector is the events to select
      * @param frequencyVariable is the variable name providing output rate frequency values
      */
-    public OutputLimitClause(OutputLimitSelector selector, String frequencyVariable, OutputLimitUnit unit)
+    public OutputLimitClause(OutputLimitSelector selector, String frequencyVariable)
     {
         this.selector = selector;
         this.frequencyVariable = frequencyVariable;
-        this.unit = unit;
+        this.unit = OutputLimitUnit.EVENTS;
     }
 
     /**
@@ -245,6 +273,11 @@ public class OutputLimitClause implements Serializable
         return whenExpression;
     }
 
+    public TimePeriodExpression getTimePeriodExpression()
+    {
+        return timePeriodExpression;
+    }
+
     /**
      * Returns the list of optional then-keyword variable assignments, if any
      * @return list of variable assignments or null if none
@@ -318,33 +351,23 @@ public class OutputLimitClause implements Serializable
             }
             writer.write(")");
         }
+        else if (unit == OutputLimitUnit.TIME_PERIOD)
+        {
+            writer.write("every ");
+            timePeriodExpression.toEPL(writer);
+        }
         else
         {
             writer.write("every ");
-            if (unit != OutputLimitUnit.EVENTS)
+            if (frequencyVariable == null)
             {
-                if (frequencyVariable == null)
-                {
-                    writer.write(Double.toString(frequency));
-                }
-                else
-                {
-                    writer.write(frequencyVariable);
-                }
+                writer.write(Integer.toString(frequency.intValue()));
             }
             else
             {
-                if (frequencyVariable == null)
-                {
-                    writer.write(Integer.toString(frequency.intValue()));
-                }
-                else
-                {
-                    writer.write(frequencyVariable);
-                }
+                writer.write(frequencyVariable);
             }
-            writer.write(' ');
-            writer.write(unit.getText());
+            writer.write(" events");
         }
     }
 }

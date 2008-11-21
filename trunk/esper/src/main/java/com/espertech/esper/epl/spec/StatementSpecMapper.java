@@ -200,15 +200,11 @@ public class StatementSpecMapper
 
         OutputLimitClause clause;
         OutputLimitUnit unit = OutputLimitUnit.EVENTS;
-        if (outputLimitSpec.getRateType() == OutputLimitRateType.TIME_MIN)
+        if (outputLimitSpec.getRateType() == OutputLimitRateType.TIME_PERIOD)
         {
-            unit = OutputLimitUnit.MINUTES;
-            clause = new OutputLimitClause(selector, outputLimitSpec.getRate(), outputLimitSpec.getVariableName(), unit);
-        }
-        else if (outputLimitSpec.getRateType() == OutputLimitRateType.TIME_SEC)
-        {
-            unit = OutputLimitUnit.SECONDS;
-            clause = new OutputLimitClause(selector, outputLimitSpec.getRate(), outputLimitSpec.getVariableName(), unit);
+            unit = OutputLimitUnit.TIME_PERIOD;
+            TimePeriodExpression timePeriod = (TimePeriodExpression) unmapExpressionDeep(outputLimitSpec.getTimePeriodExpr(), unmapContext);
+            clause = new OutputLimitClause(selector, timePeriod);
         }
         else if (outputLimitSpec.getRateType() == OutputLimitRateType.WHEN_EXPRESSION)
         {
@@ -274,18 +270,14 @@ public class StatementSpecMapper
 
         OutputLimitLimitType displayLimit = OutputLimitLimitType.valueOf(outputLimitClause.getSelector().toString().toUpperCase());
 
-        OutputLimitRateType rateType = OutputLimitRateType.TIME_SEC;
+        OutputLimitRateType rateType;
         if (outputLimitClause.getUnit() == OutputLimitUnit.EVENTS)
         {
             rateType = OutputLimitRateType.EVENTS;
         }
-        else if (outputLimitClause.getUnit() == OutputLimitUnit.MINUTES)
+        else if (outputLimitClause.getUnit() == OutputLimitUnit.TIME_PERIOD)
         {
-            rateType = OutputLimitRateType.TIME_MIN;
-        }
-        else if (outputLimitClause.getUnit() == OutputLimitUnit.SECONDS)
-        {
-            rateType = OutputLimitRateType.TIME_SEC;
+            rateType = OutputLimitRateType.TIME_PERIOD;
         }
         else if (outputLimitClause.getUnit() == OutputLimitUnit.CRONTAB_EXPRESSION)
         {
@@ -294,6 +286,10 @@ public class StatementSpecMapper
         else if (outputLimitClause.getUnit() == OutputLimitUnit.WHEN_EXPRESSION)
         {
             rateType = OutputLimitRateType.WHEN_EXPRESSION;
+        }
+        else
+        {
+            throw new IllegalArgumentException("Unknown output limit unit " + outputLimitClause.getUnit());
         }
 
         Double frequency = outputLimitClause.getFrequency();
@@ -324,7 +320,13 @@ public class StatementSpecMapper
             timerAtExprList = mapExpressionDeep(Arrays.asList(outputLimitClause.getCrontabAtParameters()), mapContext);
         }
 
-        OutputLimitSpec spec = new OutputLimitSpec(frequency, frequencyVariable, rateType, displayLimit, whenExpression, assignments, timerAtExprList);
+        ExprTimePeriod timePeriod = null;
+        if (outputLimitClause.getTimePeriodExpression() != null)
+        {
+            timePeriod = (ExprTimePeriod) mapExpressionDeep(outputLimitClause.getTimePeriodExpression(), mapContext);
+        }
+
+        OutputLimitSpec spec = new OutputLimitSpec(frequency, frequencyVariable, rateType, displayLimit, whenExpression, assignments, timerAtExprList, timePeriod);
         raw.setOutputLimitSpec(spec);
     }
 

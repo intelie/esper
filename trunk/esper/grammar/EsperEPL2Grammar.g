@@ -151,8 +151,6 @@ tokens
    	EVENT_PROP_DYNAMIC_INDEXED;
    	EVENT_PROP_DYNAMIC_MAPPED;
    	EVENT_LIMIT_EXPR;
-	SEC_LIMIT_EXPR;
-	MIN_LIMIT_EXPR;
 	TIMEPERIOD_LIMIT_EXPR;
 	CRONTAB_LIMIT_EXPR;
 	CRONTAB_LIMIT_EXPR_PARAM;
@@ -726,7 +724,7 @@ outputLimit
 	        ( ev=EVERY_EXPR 
 		  ( 
 		    (time_period) => time_period
-		  | (number | i=IDENT) (e=EVENTS|sec=TIMEPERIOD_SECONDS|min=TIMEPERIOD_MINUTES)
+		  | (number | i=IDENT) (e=EVENTS)
 		  )
 		)
 		|
@@ -735,8 +733,6 @@ outputLimit
 		( wh=WHEN expression (THEN onSetExpr)? )
 	      )
 	    -> {$ev != null && $e != null}? ^(EVENT_LIMIT_EXPR $k? number? $i?)
-	    -> {$ev != null && $sec != null}? ^(SEC_LIMIT_EXPR $k? number? $i?)
-	    -> {$ev != null && $min != null}? ^(MIN_LIMIT_EXPR $k? number? $i?)
 	    -> {$ev != null}? ^(TIMEPERIOD_LIMIT_EXPR $k? time_period)		
 	    -> {$at != null}? ^(CRONTAB_LIMIT_EXPR $k? crontabLimitParameterSet)		
 	    -> ^(WHEN_LIMIT_EXPR $k? expression onSetExpr?)		

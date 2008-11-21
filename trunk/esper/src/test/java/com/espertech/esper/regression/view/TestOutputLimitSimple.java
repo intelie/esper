@@ -219,7 +219,7 @@ public class TestOutputLimitSimple extends TestCase
         epService.getEPAdministrator().getConfiguration().addVariable("S", int.class, 4);
         epService.getEPAdministrator().getConfiguration().addVariable("MS", int.class, 5);
 
-        String stmtText = "select symbol from MarketData.win:keepall() output snapshot every D day H hours M minutes S seconds MS milliseconds";
+        String stmtText = "select symbol from MarketData.win:keepall() output snapshot every D days H hours M minutes S seconds MS milliseconds";
         EPStatement stmt = epService.getEPAdministrator().createEPL(stmtText);
         stmt.addListener(listener);
         sendMDEvent("E1", 0);

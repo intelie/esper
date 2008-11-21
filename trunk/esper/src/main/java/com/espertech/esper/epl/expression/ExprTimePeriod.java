@@ -17,8 +17,9 @@ import java.math.BigInteger;
 
 public class ExprTimePeriod extends ExprNode
 {
-    private static final Log log = LogFactory.getLog(EPLTreeWalker.class);
+    private static final Log log = LogFactory.getLog(ExprTimePeriod.class);
 
+    private boolean hasVariable;
     private ExprNode day;
     private ExprNode hour;
     private ExprNode minute;
@@ -39,6 +40,11 @@ public class ExprTimePeriod extends ExprNode
         addChildNotNull(minute);
         addChildNotNull(hour);
         addChildNotNull(day);
+    }
+
+    public boolean hasVariable()
+    {
+        return hasVariable;
     }
 
     public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService) throws ExprValidationException
@@ -68,7 +74,11 @@ public class ExprTimePeriod extends ExprNode
         double seconds = 0;
         if (millisecond != null)
         {
-            double value = eval(millisecond);
+            Double value = eval(millisecond);
+            if (value == null)
+            {
+                return null;
+            }
             if (value != 0)
             {
                 seconds += eval(millisecond) / 1000d;
@@ -76,19 +86,39 @@ public class ExprTimePeriod extends ExprNode
         }
         if (second != null)
         {
-            seconds += eval(second);
+            Double result = eval(second);
+            if (result == null)
+            {
+                return null;
+            }
+            seconds += result;
         }
         if (minute != null)
         {
-            seconds += eval(minute) * 60;
+            Double result = eval(minute);
+            if (result == null)
+            {
+                return null;
+            }
+            seconds += result * 60;
         }
         if (hour != null)
         {
-            seconds += eval(hour) * 60 * 60;
+            Double result = eval(hour);
+            if (result == null)
+            {
+                return null;
+            }
+            seconds += result * 60 * 60;
         }
         if (day != null)
         {
-            seconds += eval(day) * 24 * 60 * 60;
+            Double result = eval(day);
+            if (result == null)
+            {
+                return null;
+            }
+            seconds += result * 24 * 60 * 60;
         }
         return new TimePeriodParameter(seconds);
     }
@@ -173,17 +203,17 @@ public class ExprTimePeriod extends ExprNode
         return false;
     }
 
-    private double eval(ExprNode expr)
+    private Double eval(ExprNode expr)
     {
         if (expr == null)
         {
-            return 0;
+            return 0d;
         }
         Object value = expr.evaluate(null, true);
         if (value == null)
         {
             log.warn("Time period expression returned a null value for expression '" + expr.toExpressionString() + "'");
-            return 0;
+            return null;
         }
         if (value instanceof BigDecimal)
         {
@@ -226,6 +256,11 @@ public class ExprTimePeriod extends ExprNode
         if (child != null)
         {
             this.getChildNodes().add(child);
+
+            if (child instanceof ExprVariableNode)
+            {
+                hasVariable = true;
+            }
         }
     }    
 }

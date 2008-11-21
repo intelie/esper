@@ -71,35 +71,40 @@ public class TimePeriodExpression extends ExpressionBase
 
     public void toEPL(StringWriter writer)
     {
+        String delimiter = "";
         if (days != null)
         {
-            writer.write(" ");
             days.toEPL(writer);
             writer.append(" days");
+            delimiter = " ";
         }
         if (hours != null)
         {
-            writer.write(" ");
+            writer.write(delimiter);
             hours.toEPL(writer);
             writer.append(" hours");
+            delimiter = " ";
         }
         if (minutes != null)
         {
-            writer.write(" ");
+            writer.write(delimiter);
             minutes.toEPL(writer);
             writer.append(" minutes");
+            delimiter = " ";
         }
         if (seconds != null)
         {
-            writer.write(" ");
+            writer.write(delimiter);
             seconds.toEPL(writer);
             writer.append(" seconds");
+            delimiter = " ";
         }
         if (milliseconds != null)
         {
-            writer.write(" ");
+            writer.write(delimiter);
             milliseconds.toEPL(writer);
             writer.append(" milliseconds");
+            delimiter = " ";
         }
     }
 }

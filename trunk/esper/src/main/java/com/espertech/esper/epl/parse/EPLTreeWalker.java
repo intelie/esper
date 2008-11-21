@@ -66,7 +66,7 @@ public class EPLTreeWalker extends EsperEPL2Ast
      * @param engineImportService is required to resolve lib-calls into static methods or configured aggregation functions
      * @param variableService for variable access
      * @param input is the tree nodes to walk
-     * @param time provider is for providing the current engine time
+     * @param variableService providing the current engine time
      * @param defaultStreamSelector - the configuration for which insert or remove streams (or both) to produce
      */
     public EPLTreeWalker(TreeNodeStream input,
@@ -250,8 +250,6 @@ public class EPLTreeWalker extends EsperEPL2Ast
             	leaveOrderByElement(node);
             	break;
             case EVENT_LIMIT_EXPR:
-            case SEC_LIMIT_EXPR:
-            case MIN_LIMIT_EXPR:
             case TIMEPERIOD_LIMIT_EXPR:
             case CRONTAB_LIMIT_EXPR:
             case WHEN_LIMIT_EXPR:

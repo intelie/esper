@@ -3,6 +3,7 @@ package com.espertech.esper.regression.view;
 import com.espertech.esper.client.EPServiceProvider;
 import com.espertech.esper.client.EPStatement;
 import com.espertech.esper.client.EPServiceProviderManager;
+import com.espertech.esper.client.Configuration;
 import com.espertech.esper.client.time.TimerControlEvent;
 import com.espertech.esper.client.time.CurrentTimeEvent;
 import com.espertech.esper.support.util.SupportUpdateListener;
@@ -26,7 +27,9 @@ public class TestSumWinTime extends TestCase
     public void setUp()
     {
         testListener = new SupportUpdateListener();
-        epService = EPServiceProviderManager.getDefaultProvider(SupportConfigFactory.getConfiguration());
+        Configuration config = SupportConfigFactory.getConfiguration();
+        config.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
+        epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();
     }
 
@@ -38,8 +41,6 @@ public class TestSumWinTime extends TestCase
 
         selectTestView = epService.getEPAdministrator().createEPL(sumTimeExpr);
         selectTestView.addListener(testListener);
-
-        epService.getEPRuntime().sendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
 
         runAssertion();
     }
@@ -54,8 +55,6 @@ public class TestSumWinTime extends TestCase
         selectTestView = epService.getEPAdministrator().createEPL(sumTimeUniExpr);
         selectTestView.addListener(testListener);
 
-        epService.getEPRuntime().sendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
-
         runGroupByAssertions();
     }
 
@@ -68,8 +67,6 @@ public class TestSumWinTime extends TestCase
 
         selectTestView = epService.getEPAdministrator().createEPL(sumTimeUniExpr);
         selectTestView.addListener(testListener);
-
-        epService.getEPRuntime().sendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
 
         runSingleAssertion();
     }

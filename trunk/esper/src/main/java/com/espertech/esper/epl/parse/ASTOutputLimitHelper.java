@@ -8,16 +8,15 @@
  **************************************************************************************/
 package com.espertech.esper.epl.parse;
 
+import com.espertech.esper.epl.core.StreamTypeServiceImpl;
 import com.espertech.esper.epl.expression.ExprNode;
+import com.espertech.esper.epl.expression.ExprTimePeriod;
 import com.espertech.esper.epl.expression.ExprValidationException;
 import com.espertech.esper.epl.generated.EsperEPL2GrammarParser;
 import com.espertech.esper.epl.spec.*;
-import com.espertech.esper.epl.core.StreamTypeService;
-import com.espertech.esper.epl.core.StreamTypeServiceImpl;
 import com.espertech.esper.epl.variable.VariableService;
-import com.espertech.esper.type.IntValue;
-import com.espertech.esper.type.TimePeriodParameter;
 import com.espertech.esper.schedule.TimeProvider;
+import com.espertech.esper.type.IntValue;
 import org.antlr.runtime.tree.Tree;
 
 import java.util.ArrayList;
@@ -71,6 +70,7 @@ public class ASTOutputLimitHelper
         ExprNode whenExpression = null;
         List<ExprNode> crontabScheduleSpec = null;
         List<OnTriggerSetAssignment> thenExpressions = null;
+        ExprTimePeriod timePeriodExpr = null;
 
         if (node.getType() == EsperEPL2GrammarParser.WHEN_LIMIT_EXPR)
         {
@@ -104,16 +104,14 @@ public class ASTOutputLimitHelper
             else if (child.getType() == EsperEPL2GrammarParser.TIME_PERIOD)
             {
                 ExprNode expression = astExprNodeMap.remove(child);
-                
+
                 try {
-                    expression.validate(new StreamTypeServiceImpl(engineURI), null, null, null, null);
+                    timePeriodExpr = (ExprTimePeriod) expression.getValidatedSubtree(new StreamTypeServiceImpl(engineURI), null, null, timeProvider, variableService);
                 }
                 catch (ExprValidationException ex)
                 {
-                    // TODO
+                    throw new ASTWalkException("Invalid time period expresion: " + ex.getMessage(), ex);
                 }
-                TimePeriodParameter param = (TimePeriodParameter) expression.evaluate(null, true);
-                rate = param.getNumSeconds();
             }
             else
             {
@@ -124,16 +122,13 @@ public class ASTOutputLimitHelper
         switch (node.getType())
         {
             case EsperEPL2GrammarParser.EVENT_LIMIT_EXPR:
-                return new OutputLimitSpec(rate, variableName, OutputLimitRateType.EVENTS, displayLimit, null, null, null);
-            case EsperEPL2GrammarParser.SEC_LIMIT_EXPR:
+                return new OutputLimitSpec(rate, variableName, OutputLimitRateType.EVENTS, displayLimit, null, null, null, null);
             case EsperEPL2GrammarParser.TIMEPERIOD_LIMIT_EXPR:
-                return new OutputLimitSpec(rate, variableName, OutputLimitRateType.TIME_SEC, displayLimit, null, null, null);
-            case EsperEPL2GrammarParser.MIN_LIMIT_EXPR:
-                return new OutputLimitSpec(rate, variableName, OutputLimitRateType.TIME_MIN, displayLimit, null, null, null);
+                return new OutputLimitSpec(null, null, OutputLimitRateType.TIME_PERIOD, displayLimit, null, null, null, timePeriodExpr);
             case EsperEPL2GrammarParser.CRONTAB_LIMIT_EXPR:
-                return new OutputLimitSpec(null, null, OutputLimitRateType.CRONTAB, displayLimit, null, null, crontabScheduleSpec);
+                return new OutputLimitSpec(null, null, OutputLimitRateType.CRONTAB, displayLimit, null, null, crontabScheduleSpec, null);
             case EsperEPL2GrammarParser.WHEN_LIMIT_EXPR:
-                return new OutputLimitSpec(null, null, OutputLimitRateType.WHEN_EXPRESSION, displayLimit, whenExpression, thenExpressions, null);
+                return new OutputLimitSpec(null, null, OutputLimitRateType.WHEN_EXPRESSION, displayLimit, whenExpression, thenExpressions, null, null);
             default:
                 throw new IllegalArgumentException("Node type " + node.getType() + " not a recognized output limit type");
 		 }

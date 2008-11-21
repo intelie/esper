@@ -26,6 +26,7 @@ public class OutputLimitSpec implements MetaDefItem
     private ExprNode whenExpressionNode;
     private final List<OnTriggerSetAssignment> thenExpressions;    
     private final List<ExprNode> crontabAtSchedule;
+    private final ExprTimePeriod timePeriodExpr;
 
     /**
 	 * Ctor.
@@ -38,7 +39,7 @@ public class OutputLimitSpec implements MetaDefItem
      * @param thenExpressions variable assignments, if null if none
      * @param crontabAtSchedule - crontab parameters
      */
-    public OutputLimitSpec(Double rate, String variableForRate, OutputLimitRateType rateType, OutputLimitLimitType displayLimit, ExprNode whenExpressionNode, List<OnTriggerSetAssignment> thenExpressions, List<ExprNode> crontabAtSchedule)
+    public OutputLimitSpec(Double rate, String variableForRate, OutputLimitRateType rateType, OutputLimitLimitType displayLimit, ExprNode whenExpressionNode, List<OnTriggerSetAssignment> thenExpressions, List<ExprNode> crontabAtSchedule, ExprTimePeriod timePeriodExpr)
 	{
 		this.rate = rate;
 		this.displayLimit = displayLimit;
@@ -47,6 +48,7 @@ public class OutputLimitSpec implements MetaDefItem
         this.crontabAtSchedule = crontabAtSchedule;
         this.whenExpressionNode = whenExpressionNode;
         this.thenExpressions = thenExpressions;
+        this.timePeriodExpr = timePeriodExpr;
     }
 
     /**
@@ -119,5 +121,10 @@ public class OutputLimitSpec implements MetaDefItem
     public List<OnTriggerSetAssignment> getThenExpressions()
     {
         return thenExpressions;
+    }
+
+    public ExprTimePeriod getTimePeriodExpr()
+    {
+        return timePeriodExpr;
     }
 }

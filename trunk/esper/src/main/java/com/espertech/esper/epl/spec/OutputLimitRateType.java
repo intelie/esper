@@ -14,19 +14,9 @@ package com.espertech.esper.epl.spec;
 public enum OutputLimitRateType
 {
     /**
-     * Output by events.
+     * Output by number of events.
      */
     EVENTS,
-
-    /**
-     * Output by seconds.
-     */
-    TIME_SEC,
-
-    /**
-     * Output by minutes.
-     */
-    TIME_MIN,
 
     /**
      * Output following a crontab-like schedule.
@@ -36,5 +26,10 @@ public enum OutputLimitRateType
     /**
      * Output when an expression turns true.
      */
-    WHEN_EXPRESSION
+    WHEN_EXPRESSION,
+
+    /**
+     * Output based on a time period passing.
+     */
+    TIME_PERIOD
 }
