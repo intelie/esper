@@ -195,12 +195,47 @@ public class TestTimerAtObserver extends TestCase implements SupportBeanConstant
         epService.initialize();
 
         Calendar cal = GregorianCalendar.getInstance();
+        cal.set(Calendar.MILLISECOND, 0);
         cal.set(2008, 7, 3, 10, 0, 0);      // start on a Sunday at 6am, August 3 2008
         sendTimer(cal.getTimeInMillis(), epService);
 
         EPStatement statement = epService.getEPAdministrator().createEPL(expression);
         SupportUpdateListener listener = new SupportUpdateListener();
         statement.addListener(listener);
+
+        runAssertion(epService, listener);
+    }
+
+    public void testAtWeekdaysPrepared()
+    {
+        String expression = "select * from pattern [every timer:at(?,?,*,*,[1,2,3,4,5])]";
+
+        Configuration config = SupportConfigFactory.getConfiguration();
+        config.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
+        EPServiceProvider epService = EPServiceProviderManager.getDefaultProvider(config);
+        epService.initialize();
+
+        Calendar cal = GregorianCalendar.getInstance();
+        cal.set(Calendar.MILLISECOND, 0);
+        cal.set(2008, 7, 3, 10, 0, 0);      // start on a Sunday at 6am, August 3 2008
+        sendTimer(cal.getTimeInMillis(), epService);
+
+        EPPreparedStatement prepared = epService.getEPAdministrator().prepareEPL(expression);
+        prepared.setObject(1, 0);
+        prepared.setObject(2, 8);
+        EPStatement statement = epService.getEPAdministrator().create(prepared);
+
+        SupportUpdateListener listener = new SupportUpdateListener();
+        statement.addListener(listener);
+
+        runAssertion(epService, listener);
+    }
+
+    private void runAssertion(EPServiceProvider epService, SupportUpdateListener listener)
+    {
+        Calendar cal = GregorianCalendar.getInstance();
+        cal.set(Calendar.MILLISECOND, 0);
+        cal.set(2008, 7, 3, 10, 0, 0);      // start on a Sunday at 6am, August 3 2008
 
         List<String> invocations = new ArrayList<String>();
         for (int i = 0; i < 24*60*7; i++)   // run for 1 week

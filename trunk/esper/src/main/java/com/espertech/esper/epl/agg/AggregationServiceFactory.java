@@ -131,10 +131,10 @@ public class AggregationServiceFactory
         return service;
     }
 
-    private static ExprEvaluator getMultiNodeEvaluator(LinkedList<ExprNode> childNodes)
+    private static ExprEvaluator getMultiNodeEvaluator(List<ExprNode> childNodes)
     {
         final int size = childNodes.size();
-        final LinkedList<ExprNode> exprNodes = childNodes;
+        final List<ExprNode> exprNodes = childNodes;
         final boolean[] isConstant = new boolean[size];
         final Object[] prototype = new Object[size];
 

@@ -42,7 +42,7 @@ public class LengthWindowViewFactory implements DataWindowViewFactory
 
     public void setViewParameters(ViewFactoryContext viewFactoryContext, List<ExprNode> expressionParameters) throws ViewParameterException
     {
-        List<Object> viewParameters = ViewFactorySupport.validateAndEvaluate("Length window view", viewFactoryContext, expressionParameters);
+        List<Object> viewParameters = ViewFactorySupport.validateAndEvaluate("Length window view", viewFactoryContext.getStatementContext(), expressionParameters);
         String errorMessage = "Length window view requires a single integer-type parameter";
         if (viewParameters.size() != 1)
         {

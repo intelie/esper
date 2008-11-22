@@ -29,6 +29,10 @@ public class ListParameter implements NumberSetParameter
         this.parameters = new LinkedList<NumberSetParameter>();
     }
 
+    /**
+     * Ctor.
+     * @param parameters parameters in list
+     */
     public ListParameter(List<NumberSetParameter> parameters)
     {
         this.parameters = parameters;

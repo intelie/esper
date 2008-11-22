@@ -37,7 +37,7 @@ public class FirstLengthWindowViewFactory implements DataWindowViewFactory
 
     public void setViewParameters(ViewFactoryContext viewFactoryContext, List<ExprNode> expressionParameters) throws ViewParameterException
     {
-        List<Object> viewParameters = ViewFactorySupport.validateAndEvaluate("Length first window view", viewFactoryContext, expressionParameters);
+        List<Object> viewParameters = ViewFactorySupport.validateAndEvaluate("Length first window view", viewFactoryContext.getStatementContext(), expressionParameters);
         String errorMessage = "Length first window view requires an integer-type size parameter";
         if (viewParameters.size() != 1)
         {

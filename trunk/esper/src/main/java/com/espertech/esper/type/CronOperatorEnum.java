@@ -35,6 +35,10 @@ public enum CronOperatorEnum
         syntax = s;        
     }
 
+    /**
+     * Returns the syntax string for the operator.
+     * @return syntax string
+     */
     public String getSyntax()
     {
         return syntax;

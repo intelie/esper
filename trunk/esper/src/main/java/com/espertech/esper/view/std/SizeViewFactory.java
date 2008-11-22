@@ -25,7 +25,7 @@ public class SizeViewFactory implements ViewFactory
 
     public void setViewParameters(ViewFactoryContext viewFactoryContext, List<ExprNode> expressionParameters) throws ViewParameterException
     {
-        List<Object> viewParameters = ViewFactorySupport.validateAndEvaluate("'Size' view", viewFactoryContext, expressionParameters);
+        List<Object> viewParameters = ViewFactorySupport.validateAndEvaluate("'Size' view", viewFactoryContext.getStatementContext(), expressionParameters);
         String errorMessage = "'Size' view does not take any parameters";
         if (!viewParameters.isEmpty())
         {

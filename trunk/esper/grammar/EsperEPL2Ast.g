@@ -491,23 +491,23 @@ timePeriodDef
 	;
 	
 dayPart
-	:	^( DAY_PART (constant[true]|eventPropertyExpr) )
+	:	^( DAY_PART (constant[true]|eventPropertyExpr|substitution) )
 	;
 
 hourPart
-	:	^( HOUR_PART (constant[true]|eventPropertyExpr) )
+	:	^( HOUR_PART (constant[true]|eventPropertyExpr|substitution) )
 	;
 
 minutePart
-	:	^( MINUTE_PART (constant[true]|eventPropertyExpr) )
+	:	^( MINUTE_PART (constant[true]|eventPropertyExpr|substitution) )
 	;
 
 secondPart
-	:	^( SECOND_PART (constant[true]|eventPropertyExpr) )
+	:	^( SECOND_PART (constant[true]|eventPropertyExpr|substitution) )
 	;
 
 millisecondPart
-	:	^( MILLISECOND_PART (constant[true]|eventPropertyExpr) )
+	:	^( MILLISECOND_PART (constant[true]|eventPropertyExpr|substitution) )
 	;
 
 substitution

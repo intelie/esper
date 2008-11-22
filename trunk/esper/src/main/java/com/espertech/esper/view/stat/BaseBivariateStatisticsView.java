@@ -42,7 +42,7 @@ public abstract class BaseBivariateStatisticsView extends ViewSupport
      * Constructor requires the name of the two fields to use in the parent view to compute the statistics.
      * @param statisticsBean is the base class prodiving sum of X and Y and squares for use by subclasses
      * @param expressionX is the expression to get the X values from
-     * @param expressionX is the expression to get the Y values from
+     * @param expressionY is the expression to get the Y values from
      * @param statementContext contains required view services
      */
     public BaseBivariateStatisticsView(StatementContext statementContext,

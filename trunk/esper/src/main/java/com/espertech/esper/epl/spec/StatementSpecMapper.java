@@ -910,12 +910,7 @@ public class StatementSpecMapper
         else if (expr instanceof TimePeriodExpression)
         {
             TimePeriodExpression tpe = (TimePeriodExpression) expr;
-            ExprNode day = mapExpressionDeepOptional(tpe.getDays(), mapContext);
-            ExprNode hour = mapExpressionDeepOptional(tpe.getHours(), mapContext);
-            ExprNode minute = mapExpressionDeepOptional(tpe.getMinutes(), mapContext);
-            ExprNode second = mapExpressionDeepOptional(tpe.getSeconds(), mapContext);
-            ExprNode milli = mapExpressionDeepOptional(tpe.getMilliseconds(), mapContext);
-            return new ExprTimePeriod(day, hour, minute, second, milli);
+            return new ExprTimePeriod(tpe.isHasDays(), tpe.isHasHours(), tpe.isHasMinutes(), tpe.isHasSeconds(), tpe.isHasMilliseconds());
         }
         else if (expr instanceof SubstitutionParameterExpression)
         {
@@ -1223,12 +1218,7 @@ public class StatementSpecMapper
         else if (expr instanceof ExprTimePeriod)
         {
             ExprTimePeriod node = (ExprTimePeriod) expr;
-            Expression day = unmapExpressionDeepOptional(node.getDay(), unmapContext);
-            Expression hour = unmapExpressionDeepOptional(node.getHour(), unmapContext);
-            Expression minute = unmapExpressionDeepOptional(node.getMinute(), unmapContext);
-            Expression second = unmapExpressionDeepOptional(node.getSecond(), unmapContext);
-            Expression millisecond = unmapExpressionDeepOptional(node.getMillisecond(), unmapContext);
-            return new TimePeriodExpression(day, hour, minute, second, millisecond);
+            return new TimePeriodExpression(node.isHasDay(), node.isHasHour(), node.isHasMinute(), node.isHasSecond(), node.isHasMillisecond());
         }
         else if (expr instanceof ExprNumberSetWildcard)
         {

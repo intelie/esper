@@ -27,7 +27,8 @@ public class TestOutputConditionTime extends TestCase
     		}
     	};
 
-        ExprTimePeriod timePeriod = new ExprTimePeriod(null, null, null, new ExprConstantNode(TEST_INTERVAL_MSEC / 1000d), null);
+        ExprTimePeriod timePeriod = new ExprTimePeriod(false, false, false, true, false);
+        timePeriod.addChildNode(new ExprConstantNode(TEST_INTERVAL_MSEC / 1000d));
 
         schedulingServiceStub = new SupportSchedulingServiceImpl();
     	context = SupportStatementContextFactory.makeContext(schedulingServiceStub);
@@ -74,8 +75,11 @@ public class TestOutputConditionTime extends TestCase
     
     public void testIncorrectUse()
     {
-        ExprTimePeriod timePeriodValid = new ExprTimePeriod(null, null, null, null, new ExprConstantNode(1000));
-        ExprTimePeriod timePeriodInvalid = new ExprTimePeriod(null, null, null, null, new ExprConstantNode(0));
+        ExprTimePeriod timePeriodValid = new ExprTimePeriod(false, false, false, false, true);
+        timePeriodValid.addChildNode(new ExprConstantNode(1000));
+
+        ExprTimePeriod timePeriodInvalid = new ExprTimePeriod(false, false, false, false, true);
+        timePeriodValid.addChildNode(new ExprConstantNode(0));
 
 	    try
 	    {

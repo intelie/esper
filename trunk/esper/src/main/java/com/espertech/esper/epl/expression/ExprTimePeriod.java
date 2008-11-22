@@ -3,7 +3,6 @@ package com.espertech.esper.epl.expression;
 import com.espertech.esper.epl.core.MethodResolutionService;
 import com.espertech.esper.epl.core.StreamTypeService;
 import com.espertech.esper.epl.core.ViewResourceDelegate;
-import com.espertech.esper.epl.parse.EPLTreeWalker;
 import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.event.EventBean;
 import com.espertech.esper.schedule.TimeProvider;
@@ -19,27 +18,45 @@ public class ExprTimePeriod extends ExprNode
 {
     private static final Log log = LogFactory.getLog(ExprTimePeriod.class);
 
+    private final boolean hasDay;
+    private final boolean hasHour;
+    private final boolean hasMinute;
+    private final boolean hasSecond;
+    private final boolean hasMillisecond;
     private boolean hasVariable;
-    private ExprNode day;
-    private ExprNode hour;
-    private ExprNode minute;
-    private ExprNode second;
-    private ExprNode millisecond;
 
-    public ExprTimePeriod(ExprNode day, ExprNode hour, ExprNode minute, ExprNode second, ExprNode millisecond)
+    public ExprTimePeriod(boolean hasDay, boolean hasHour, boolean hasMinute, boolean hasSecond, boolean hasMillisecond)
     {
-        this.day = day;
-        this.hour = hour;
-        this.minute = minute;
-        this.second = second;
-        this.millisecond = millisecond;
+        this.hasDay = hasDay;
+        this.hasHour = hasHour;
+        this.hasMinute = hasMinute;
+        this.hasSecond = hasSecond;
+        this.hasMillisecond = hasMillisecond;
+    }
 
-        // adding the child nodes so they are official and validate bottom-up
-        addChildNotNull(millisecond);
-        addChildNotNull(second);
-        addChildNotNull(minute);
-        addChildNotNull(hour);
-        addChildNotNull(day);
+    public boolean isHasDay()
+    {
+        return hasDay;
+    }
+
+    public boolean isHasHour()
+    {
+        return hasHour;
+    }
+
+    public boolean isHasMinute()
+    {
+        return hasMinute;
+    }
+
+    public boolean isHasSecond()
+    {
+        return hasSecond;
+    }
+
+    public boolean isHasMillisecond()
+    {
+        return hasMillisecond;
     }
 
     public boolean hasVariable()
@@ -49,11 +66,10 @@ public class ExprTimePeriod extends ExprNode
 
     public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService) throws ExprValidationException
     {
-        validate(millisecond);
-        validate(second);
-        validate(minute);
-        validate(hour);
-        validate(day);
+        for (ExprNode childNode : this.getChildNodes())
+        {
+            validate(childNode);
+        }
     }
 
     private void validate(ExprNode expression) throws ExprValidationException
@@ -67,58 +83,64 @@ public class ExprTimePeriod extends ExprNode
         {
             throw new ExprValidationException("Time period expression requires a numeric parameter type");
         }
+        if (expression instanceof ExprVariableNode)
+        {
+            hasVariable = true;
+        }
     }
 
     public Object evaluate(EventBean[] eventsPerStream, boolean isNewData)
     {
         double seconds = 0;
-        if (millisecond != null)
+        int exprCtr = 0;
+
+        if (hasDay)
         {
-            Double value = eval(millisecond);
-            if (value == null)
-            {
-                return null;
-            }
-            if (value != 0)
-            {
-                seconds += eval(millisecond) / 1000d;
-            }
-        }
-        if (second != null)
-        {
-            Double result = eval(second);
+            Double result = eval(this.getChildNodes().get(exprCtr++));
             if (result == null)
             {
                 return null;
             }
-            seconds += result;
+            seconds += result * 24 * 60 * 60;
         }
-        if (minute != null)
+        if (hasHour)
         {
-            Double result = eval(minute);
-            if (result == null)
-            {
-                return null;
-            }
-            seconds += result * 60;
-        }
-        if (hour != null)
-        {
-            Double result = eval(hour);
+            Double result = eval(this.getChildNodes().get(exprCtr++));
             if (result == null)
             {
                 return null;
             }
             seconds += result * 60 * 60;
         }
-        if (day != null)
+        if (hasMinute)
         {
-            Double result = eval(day);
+            Double result = eval(this.getChildNodes().get(exprCtr++));
             if (result == null)
             {
                 return null;
             }
-            seconds += result * 24 * 60 * 60;
+            seconds += result * 60;
+        }
+        if (hasSecond)
+        {
+            Double result = eval(this.getChildNodes().get(exprCtr++));
+            if (result == null)
+            {
+                return null;
+            }
+            seconds += result;
+        }
+        if (hasMillisecond)
+        {
+            Double result = eval(this.getChildNodes().get(exprCtr));
+            if (result == null)
+            {
+                return null;
+            }
+            if (result != 0)
+            {
+                seconds += result / 1000d;
+            }
         }
         return new TimePeriodParameter(seconds);
     }
@@ -131,45 +153,48 @@ public class ExprTimePeriod extends ExprNode
     public boolean isConstantResult()
     {
         boolean result = true;
-        result &= ((millisecond != null) ? millisecond.isConstantResult() : true);
-        result &= ((second != null) ? second.isConstantResult() : true);
-        result &= ((minute != null) ? minute.isConstantResult() : true);
-        result &= ((hour != null) ? hour.isConstantResult() : true);
-        result &= ((day != null) ? day.isConstantResult() : true);
-        return result;
+        for (ExprNode child : getChildNodes())
+        {
+            if (!child.isConstantResult())
+            {
+                return false;
+            }
+        }
+        return true;
     }
 
     public String toExpressionString()
     {
         StringBuffer buf = new StringBuffer();
-        if (day != null)
+        int exprCtr = 0;
+        if (hasDay)
         {
-            buf.append(day.toExpressionString());
+            buf.append(getChildNodes().get(exprCtr++).toExpressionString());
             buf.append(" days ");
         }
-        if (hour != null)
+        if (hasHour)
         {
-            buf.append(hour.toExpressionString());
+            buf.append(getChildNodes().get(exprCtr++).toExpressionString());
             buf.append(" hours ");
         }
-        if (minute != null)
+        if (hasMinute)
         {
-            buf.append(minute.toExpressionString());
+            buf.append(getChildNodes().get(exprCtr++).toExpressionString());
             buf.append(" minutes ");
         }
-        if (second != null)
+        if (hasSecond)
         {
-            buf.append(second.toExpressionString());
+            buf.append(getChildNodes().get(exprCtr++).toExpressionString());
             buf.append(" seconds ");
         }
-        if (millisecond != null)
+        if (hasMillisecond)
         {
-            buf.append(millisecond.toExpressionString());
+            buf.append(getChildNodes().get(exprCtr).toExpressionString());
             buf.append(" milliseconds ");
         }
         return buf.toString();
     }
-
+    
     public boolean equalsNode(ExprNode node)
     {
         if (!(node instanceof ExprTimePeriod))
@@ -177,38 +202,28 @@ public class ExprTimePeriod extends ExprNode
             return false;
         }
         ExprTimePeriod other = (ExprTimePeriod) node;
-        boolean result = true;
-        result &= compare(millisecond, other.millisecond);
-        result &= compare(second, other.second);
-        result &= compare(minute, other.minute);
-        result &= compare(hour, other.hour);
-        result &= compare(day, other.day);
-        return result;
-    }
 
-    private boolean compare(ExprNode one, ExprNode two)
-    {
-        if ((one == null) && (two == null))
-        {
-            return true;
-        }
-        if ((one != null) && (two == null))
+        if (hasDay != other.hasDay)
         {
             return false;
         }
-        if (one != null)
+        if (hasHour != other.hasHour)
         {
-            return one.equalsNode(two);
+            return false;
         }
-        return false;
+        if (hasMinute != other.hasMinute)
+        {
+            return false;
+        }
+        if (hasSecond != other.hasSecond)
+        {
+            return false;
+        }
+        return (hasMillisecond == other.hasMillisecond);
     }
 
     private Double eval(ExprNode expr)
     {
-        if (expr == null)
-        {
-            return 0d;
-        }
         Object value = expr.evaluate(null, true);
         if (value == null)
         {
@@ -225,42 +240,4 @@ public class ExprTimePeriod extends ExprNode
         }
         return ((Number) value).doubleValue();
     }
-
-    public ExprNode getMillisecond()
-    {
-        return millisecond;
-    }
-
-    public ExprNode getSecond()
-    {
-        return second;
-    }
-
-    public ExprNode getMinute()
-    {
-        return minute;
-    }
-
-    public ExprNode getHour()
-    {
-        return hour;
-    }
-
-    public ExprNode getDay()
-    {
-        return day;
-    }
-
-    private void addChildNotNull(ExprNode child)
-    {
-        if (child != null)
-        {
-            this.getChildNodes().add(child);
-
-            if (child instanceof ExprVariableNode)
-            {
-                hasVariable = true;
-            }
-        }
-    }    
 }

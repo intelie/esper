@@ -131,7 +131,7 @@ public class ExprCaseNode extends ExprNode
         if (isCase2)
         {
             buffer.append(' ');
-            buffer.append(this.getChildNodes().getFirst().toExpressionString());
+            buffer.append(this.getChildNodes().get(0).toExpressionString());
         }
         for (UniformPair<ExprNode> p : whenThenNodeList)
         {

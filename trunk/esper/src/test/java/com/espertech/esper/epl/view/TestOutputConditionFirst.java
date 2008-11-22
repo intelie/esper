@@ -36,7 +36,9 @@ public class TestOutputConditionFirst extends TestCase
 	
 	public void testUpdateTime() throws Exception
 	{
-        ExprTimePeriod timePeriodValid = new ExprTimePeriod(null, null, null, new ExprConstantNode(TEST_INTERVAL_MSEC/1000d), null);
+        ExprTimePeriod timePeriodValid = new ExprTimePeriod(false, false, false, true, false);
+        timePeriodValid.addChildNode(new ExprConstantNode(TEST_INTERVAL_MSEC/1000d));
+
 		OutputLimitSpec outputConditionSpec = new OutputLimitSpec(null, null, OutputLimitRateType.TIME_PERIOD, OutputLimitLimitType.FIRST, null, null, null, timePeriodValid);
 		SupportSchedulingServiceImpl schedulingServiceStub = new SupportSchedulingServiceImpl();
 		StatementContext statementContext = SupportStatementContextFactory.makeContext(schedulingServiceStub);

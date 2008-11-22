@@ -26,7 +26,7 @@ public class FirstElementViewFactory implements DataWindowViewFactory
 
     public void setViewParameters(ViewFactoryContext viewFactoryContext, List<ExprNode> expressionParameters) throws ViewParameterException
     {
-        List<Object> viewParameters = ViewFactorySupport.validateAndEvaluate("'First element' view", viewFactoryContext, expressionParameters);
+        List<Object> viewParameters = ViewFactorySupport.validateAndEvaluate("'First element' view", viewFactoryContext.getStatementContext(), expressionParameters);
         String errorMessage = "'First element' view does not take any parameters";
         if (!viewParameters.isEmpty())
         {

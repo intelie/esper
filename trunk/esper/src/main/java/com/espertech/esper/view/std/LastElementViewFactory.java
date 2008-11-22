@@ -26,7 +26,7 @@ public class LastElementViewFactory implements DataWindowViewFactory
 
     public void setViewParameters(ViewFactoryContext viewFactoryContext, List<ExprNode> expressionParameters) throws ViewParameterException
     {
-        List<Object> viewParameters = ViewFactorySupport.validateAndEvaluate("'Last element' view", viewFactoryContext, expressionParameters);
+        List<Object> viewParameters = ViewFactorySupport.validateAndEvaluate("'Last element' view", viewFactoryContext.getStatementContext(), expressionParameters);
         String errorMessage = "'Last element' view does not take any parameters";
         if (!viewParameters.isEmpty())
         {

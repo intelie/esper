@@ -18,6 +18,7 @@ import org.apache.commons.logging.LogFactory;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.ArrayList;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 
@@ -29,7 +30,7 @@ public abstract class ExprNode implements ExprValidator, ExprEvaluator, MetaDefI
 {
     private static final long serialVersionUID = 0L;
 
-    private final LinkedList<ExprNode> childNodes;
+    private final ArrayList<ExprNode> childNodes;
 
     /**
      * Returns the expression node rendered as a string.
@@ -59,7 +60,7 @@ public abstract class ExprNode implements ExprValidator, ExprEvaluator, MetaDefI
      */
     public ExprNode()
     {
-        childNodes = new LinkedList<ExprNode>();
+        childNodes = new ArrayList<ExprNode>();
     }
 
     /**
@@ -205,7 +206,7 @@ public abstract class ExprNode implements ExprValidator, ExprEvaluator, MetaDefI
      * Returns list of child nodes.
      * @return list of child nodes
      */
-    public final LinkedList<ExprNode> getChildNodes()
+    public final ArrayList<ExprNode> getChildNodes()
     {
         return childNodes;
     }

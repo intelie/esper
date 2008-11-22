@@ -33,7 +33,7 @@ public class FirstTimeViewFactory implements DataWindowViewFactory
 
     public void setViewParameters(ViewFactoryContext viewFactoryContext, List<ExprNode> expressionParameters) throws ViewParameterException
     {
-        List<Object> viewParameters = ViewFactorySupport.validateAndEvaluate("Time first view", viewFactoryContext, expressionParameters);
+        List<Object> viewParameters = ViewFactorySupport.validateAndEvaluate("Time first view", viewFactoryContext.getStatementContext(), expressionParameters);
         String errorMessage = "Time first view requires a single numeric or time period parameter";
         if (viewParameters.size() != 1)
         {

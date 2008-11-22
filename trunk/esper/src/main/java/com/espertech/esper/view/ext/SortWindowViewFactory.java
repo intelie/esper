@@ -67,10 +67,10 @@ public class SortWindowViewFactory implements DataWindowViewFactory
         ExprNode[] validated = ViewFactorySupport.validate(NAME, parentEventType, statementContext, viewParameters, true);
         for (int i = 1; i < validated.length; i++)
         {
-            ViewFactorySupport.validateReturnsNonConstant(NAME, validated[i], i);
+            ViewFactorySupport.assertReturnsNonConstant(NAME, validated[i], i);
         }
 
-        Object sortSize = ViewFactorySupport.evaluateNoProperties(NAME, validated[0], 0);
+        Object sortSize = ViewFactorySupport.assertNoProperties(NAME, validated[0], 0);
         if ((sortSize == null) || (!(sortSize instanceof Number)))
         {
             throw new ViewParameterException(message);

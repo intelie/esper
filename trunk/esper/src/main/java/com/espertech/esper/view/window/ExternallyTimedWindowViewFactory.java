@@ -68,8 +68,8 @@ public class ExternallyTimedWindowViewFactory implements DataWindowViewFactory
         }
         timestampExpression = validated[0];
 
-        ViewFactorySupport.validateReturnsNonConstant("Externally-timed window", validated[0], 0);
-        Object parameter = ViewFactorySupport.evaluateNoProperties("Externally-timed window", validated[1], 1);
+        ViewFactorySupport.assertReturnsNonConstant("Externally-timed window", validated[0], 0);
+        Object parameter = ViewFactorySupport.assertNoProperties("Externally-timed window", validated[1], 1);
         if (parameter instanceof TimePeriodParameter)
         {
             TimePeriodParameter param = (TimePeriodParameter) parameter;

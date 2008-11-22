@@ -70,7 +70,7 @@ public class TimeOrderViewFactory implements DataWindowViewFactory
         }
         timestampExpression = validated[0];
 
-        Object parameter = ViewFactorySupport.evaluateNoProperties("Externally-timed window", validated[1], 1);
+        Object parameter = ViewFactorySupport.assertNoProperties("Externally-timed window", validated[1], 1);
         if (parameter instanceof TimePeriodParameter)
         {
             TimePeriodParameter param = (TimePeriodParameter) parameter;

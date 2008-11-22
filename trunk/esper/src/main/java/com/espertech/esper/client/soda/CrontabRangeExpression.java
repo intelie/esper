@@ -2,12 +2,23 @@ package com.espertech.esper.client.soda;
 
 import java.io.StringWriter;
 
+/**
+ * Parameter expression for use in crontab expressions and representing a range.
+ */
 public class CrontabRangeExpression extends ExpressionBase
 {
+    /**
+     * Ctor.
+     */
     public CrontabRangeExpression()
     {
     }
 
+    /**
+     * Ctor.
+     * @param lowerBounds provides lower bounds
+     * @param upperBounds provides upper bounds
+     */
     public CrontabRangeExpression(Expression lowerBounds, Expression upperBounds)
     {
         this.getChildren().add(lowerBounds);

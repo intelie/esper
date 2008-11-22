@@ -213,6 +213,7 @@ public final class GroupByView extends ViewSupport implements CloneableView
      * @param groupView is the parent view for which to copy subviews for
      * @param groupByValues is the key values to group-by
      * @param statementContext is the view services that sub-views may need
+     * @param propertyNames names of expressions or properties
      * @return a list of views that are copies of the original list, with copied children, with
      * data merge views added to the copied child leaf views.
      */

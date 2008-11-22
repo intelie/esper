@@ -66,8 +66,9 @@ public class EPLTreeWalker extends EsperEPL2Ast
      * @param engineImportService is required to resolve lib-calls into static methods or configured aggregation functions
      * @param variableService for variable access
      * @param input is the tree nodes to walk
-     * @param variableService providing the current engine time
+     * @param timeProvider providing the current engine time
      * @param defaultStreamSelector - the configuration for which insert or remove streams (or both) to produce
+     * @param engineURI engine URI
      */
     public EPLTreeWalker(TreeNodeStream input,
                          EngineImportService engineImportService,
@@ -724,7 +725,12 @@ public class EPLTreeWalker extends EsperEPL2Ast
                 nodes[0] = astExprNodeMap.remove(child.getChild(0));
             }
         }
-        ExprTimePeriod timeNode = new ExprTimePeriod(nodes[0], nodes[1], nodes[2], nodes[3], nodes[4]);
+        ExprTimePeriod timeNode = new ExprTimePeriod(nodes[0] != null, nodes[1]!= null, nodes[2]!= null, nodes[3]!= null, nodes[4]!= null);
+        if (nodes[0] != null) timeNode.addChildNode(nodes[0]);
+        if (nodes[1] != null) timeNode.addChildNode(nodes[1]);
+        if (nodes[2] != null) timeNode.addChildNode(nodes[2]);
+        if (nodes[3] != null) timeNode.addChildNode(nodes[3]);
+        if (nodes[4] != null) timeNode.addChildNode(nodes[4]);
         astExprNodeMap.put(node, timeNode);
     }
 

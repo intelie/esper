@@ -31,7 +31,7 @@ public class KeepAllViewFactory implements DataWindowViewFactory
 
     public void setViewParameters(ViewFactoryContext viewFactoryContext, List<ExprNode> expressionParameters) throws ViewParameterException
     {
-        List<Object> viewParameters = ViewFactorySupport.validateAndEvaluate("Keep-all data window view", viewFactoryContext, expressionParameters);
+        List<Object> viewParameters = ViewFactorySupport.validateAndEvaluate("Keep-all data window view", viewFactoryContext.getStatementContext(), expressionParameters);
         String errorMessage = "Keep-all data window view requires an empty parameter list";
         if (viewParameters.size() != 0)
         {

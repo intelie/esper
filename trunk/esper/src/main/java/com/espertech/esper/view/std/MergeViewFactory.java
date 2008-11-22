@@ -20,8 +20,8 @@ import java.util.List;
  * Factory for {@link MergeView} instances.
  */
 public class MergeViewFactory implements ViewFactory
-{
-    protected List<ExprNode> viewParameters;
+{  
+    private List<ExprNode> viewParameters;
 
     private ExprNode[] criteriaExpressions;
     private String[] fieldNames;

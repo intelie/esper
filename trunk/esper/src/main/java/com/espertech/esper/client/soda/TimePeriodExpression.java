@@ -4,107 +4,140 @@ import java.io.StringWriter;
 
 public class TimePeriodExpression extends ExpressionBase
 {
-    private Expression days;
-    private Expression hours;
-    private Expression minutes;
-    private Expression seconds;
-    private Expression milliseconds;
+    private boolean hasDays;
+    private boolean hasHours;
+    private boolean hasMinutes;
+    private boolean hasSeconds;
+    private boolean hasMilliseconds;
 
-    public TimePeriodExpression(Expression days, Expression hours, Expression minutes, Expression seconds, Expression milliseconds)
+    public TimePeriodExpression(boolean hasDays, boolean hasHours, boolean hasMinutes, boolean hasSeconds, boolean hasMilliseconds)
     {
-        this.days = days;
-        this.hours = hours;
-        this.minutes = minutes;
-        this.seconds = seconds;
-        this.milliseconds = milliseconds;
+        this.hasDays = hasDays;
+        this.hasHours = hasHours;
+        this.hasMinutes = hasMinutes;
+        this.hasSeconds = hasSeconds;
+        this.hasMilliseconds = hasMilliseconds;
     }
 
-    public Expression getMilliseconds()
+    public TimePeriodExpression(Expression daysExpr, Expression hoursExpr, Expression minutesExpr, Expression secondsExpr, Expression millisecondsExpr)
     {
-        return milliseconds;
+        if (daysExpr != null)
+        {
+            hasDays = true;
+            this.addChild(daysExpr);
+        }
+        if (hoursExpr != null)
+        {
+            hasHours = true;
+            this.addChild(hoursExpr);
+        }
+        if (minutesExpr != null)
+        {
+            hasMinutes = true;
+            this.addChild(minutesExpr);
+        }
+        if (secondsExpr != null)
+        {
+            hasSeconds = true;
+            this.addChild(secondsExpr);
+        }
+        if (millisecondsExpr != null)
+        {
+            hasMilliseconds = true;
+            this.addChild(millisecondsExpr);
+        }
     }
 
-    public void setMilliseconds(Expression milliseconds)
+    public boolean isHasDays()
     {
-        this.milliseconds = milliseconds;
+        return hasDays;
     }
 
-    public Expression getSeconds()
+    public void setHasDays(boolean hasDays)
     {
-        return seconds;
+        this.hasDays = hasDays;
     }
 
-    public void setSeconds(Expression seconds)
+    public boolean isHasHours()
     {
-        this.seconds = seconds;
+        return hasHours;
     }
 
-    public Expression getMinutes()
+    public void setHasHours(boolean hasHours)
     {
-        return minutes;
+        this.hasHours = hasHours;
     }
 
-    public void setMinutes(Expression minutes)
+    public boolean isHasMinutes()
     {
-        this.minutes = minutes;
+        return hasMinutes;
     }
 
-    public Expression getHours()
+    public void setHasMinutes(boolean hasMinutes)
     {
-        return hours;
+        this.hasMinutes = hasMinutes;
     }
 
-    public void setHours(Expression hours)
+    public boolean isHasSeconds()
     {
-        this.hours = hours;
+        return hasSeconds;
     }
 
-    public Expression getDays()
+    public void setHasSeconds(boolean hasSeconds)
     {
-        return days;
+        this.hasSeconds = hasSeconds;
     }
 
-    public void setDays(Expression days)
+    public boolean isHasMilliseconds()
     {
-        this.days = days;
+        return hasMilliseconds;
+    }
+
+    public void setHasMilliseconds(boolean hasMilliseconds)
+    {
+        this.hasMilliseconds = hasMilliseconds;
     }
 
     public void toEPL(StringWriter writer)
     {
         String delimiter = "";
-        if (days != null)
+        int countExpr = 0;
+        if (hasDays)
         {
-            days.toEPL(writer);
+            this.getChildren().get(countExpr).toEPL(writer);
             writer.append(" days");
             delimiter = " ";
+            countExpr++;
         }
-        if (hours != null)
+        if (hasHours)
         {
             writer.write(delimiter);
-            hours.toEPL(writer);
+            this.getChildren().get(countExpr).toEPL(writer);
             writer.append(" hours");
             delimiter = " ";
+            countExpr++;
         }
-        if (minutes != null)
+        if (hasMinutes)
         {
             writer.write(delimiter);
-            minutes.toEPL(writer);
+            this.getChildren().get(countExpr).toEPL(writer);
             writer.append(" minutes");
             delimiter = " ";
+            countExpr++;
         }
-        if (seconds != null)
+        if (hasSeconds)
         {
             writer.write(delimiter);
-            seconds.toEPL(writer);
+            this.getChildren().get(countExpr).toEPL(writer);
             writer.append(" seconds");
             delimiter = " ";
+            countExpr++;
         }
-        if (milliseconds != null)
+        if (hasMilliseconds)
         {
             writer.write(delimiter);
-            milliseconds.toEPL(writer);
+            this.getChildren().get(countExpr).toEPL(writer);
             writer.append(" milliseconds");
-            delimiter = " ";
         }
     }
 }

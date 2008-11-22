@@ -68,10 +68,4 @@ public class FrequencyParameter implements NumberSetParameter
 
         return values;
     }
-
-    public void toEPL(StringWriter writer)
-    {
-        writer.write("*/");
-        writer.write(Integer.toString(frequency));
-    }
 }

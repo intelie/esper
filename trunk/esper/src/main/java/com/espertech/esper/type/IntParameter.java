@@ -57,9 +57,4 @@ public class IntParameter implements NumberSetParameter
 
         return values;
     }
-
-    public void toEPL(StringWriter writer)
-    {
-        writer.write(Integer.toString(intValue));
-    }
 }
