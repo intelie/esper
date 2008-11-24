@@ -292,19 +292,19 @@ numericParameterList
 	;
 	
 rangeOperator
-	:	^( r=NUMERIC_PARAM_RANGE constant[true] constant[true] { leaveNode($r); })
+	:	^( r=NUMERIC_PARAM_RANGE (constant[true]|eventPropertyExpr|substitution) (constant[true]|eventPropertyExpr|substitution) { leaveNode($r); })
 	;
 		
 frequencyOperator
-	:	^( f=NUMERIC_PARAM_FREQUENCY constant[true] { leaveNode($f); })
+	:	^( f=NUMERIC_PARAM_FREQUENCY (constant[true]|eventPropertyExpr|substitution) { leaveNode($f); })
 	;
 
 lastOperator
-	:	^( l=LAST_OPERATOR constant[true] { leaveNode($l); })
+	:	^( l=LAST_OPERATOR (constant[true]|eventPropertyExpr|substitution) { leaveNode($l); })
 	;
 
 weekDayOperator
-	:	^( w=WEEKDAY_OPERATOR constant[true] { leaveNode($w); })
+	:	^( w=WEEKDAY_OPERATOR (constant[true]|eventPropertyExpr|substitution) { leaveNode($w); })
 	;
 	
 subSelectRowExpr

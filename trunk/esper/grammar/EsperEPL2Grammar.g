@@ -1128,19 +1128,29 @@ lastOperand
 	;
 
 frequencyOperand
-	:	STAR DIV numberconstant -> ^(NUMERIC_PARAM_FREQUENCY numberconstant)
+	:	STAR DIV (number|i=IDENT|substitution) 
+		-> {i!= null}? ^(NUMERIC_PARAM_FREQUENCY ^(EVENT_PROP_EXPR ^(EVENT_PROP_SIMPLE $i)))
+		-> ^(NUMERIC_PARAM_FREQUENCY number? substitution?)
 	;
 
 rangeOperand
-	:	numberconstant COLON numberconstant -> ^(NUMERIC_PARAM_RANGE numberconstant numberconstant)
+	:	(number|i1=IDENT|substitution) COLON (number|i2=IDENT|substitution) 
+		-> {i1 != null && i2 != null}? ^(NUMERIC_PARAM_RANGE ^(EVENT_PROP_EXPR ^(EVENT_PROP_SIMPLE $i1)) ^(EVENT_PROP_EXPR ^(EVENT_PROP_SIMPLE $i2)))
+		-> {i1 != null && i2 == null}? ^(NUMERIC_PARAM_RANGE ^(EVENT_PROP_EXPR ^(EVENT_PROP_SIMPLE $i1)) number? substitution?)
+		-> {i1 == null && i2 != null}? ^(NUMERIC_PARAM_RANGE number? substitution? ^(EVENT_PROP_EXPR ^(EVENT_PROP_SIMPLE $i2)))
+		-> ^(NUMERIC_PARAM_RANGE number* substitution*)
 	;
 
 lastOperator
-	:	numberconstant LAST -> ^(LAST_OPERATOR numberconstant)
+	:	(number|i=IDENT|substitution) LAST 
+		-> {i!= null}? ^(LAST_OPERATOR ^(EVENT_PROP_EXPR ^(EVENT_PROP_SIMPLE $i)))
+		-> ^(LAST_OPERATOR number? substitution?)
 	;
 
 weekDayOperator
-	:	numberconstant WEEKDAY -> ^(WEEKDAY_OPERATOR numberconstant)
+	:	(number|i=IDENT|substitution) WEEKDAY 
+		-> {i!= null}? ^(WEEKDAY_OPERATOR ^(EVENT_PROP_EXPR ^(EVENT_PROP_SIMPLE $i)))
+		-> ^(WEEKDAY_OPERATOR number? substitution?)
 	;
 
 numericParameterList

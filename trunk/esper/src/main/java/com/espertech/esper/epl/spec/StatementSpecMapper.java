@@ -951,6 +951,10 @@ public class StatementSpecMapper
         {
             return new ExprNumberSetRange();
         }
+        else if (expr instanceof CrontabParameterSetExpression)
+        {
+            return new ExprNumberSetList();
+        }
         else if (expr instanceof CrontabParameterExpression)
         {
             CrontabParameterExpression cronParam = (CrontabParameterExpression) expr;
@@ -1231,6 +1235,10 @@ public class StatementSpecMapper
         else if (expr instanceof ExprNumberSetRange)
         {
             return new CrontabRangeExpression();
+        }
+        else if (expr instanceof ExprNumberSetList)
+        {
+            return new CrontabParameterSetExpression();
         }
         else if (expr instanceof ExprOrderedExpr)
         {

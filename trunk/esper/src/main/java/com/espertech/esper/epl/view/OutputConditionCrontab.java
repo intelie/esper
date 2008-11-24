@@ -12,6 +12,8 @@ import com.espertech.esper.core.EPStatementHandleCallback;
 import com.espertech.esper.core.ExtensionServicesContext;
 import com.espertech.esper.core.StatementContext;
 import com.espertech.esper.epl.expression.ExprNode;
+import com.espertech.esper.epl.expression.ExprValidationException;
+import com.espertech.esper.epl.core.StreamTypeServiceImpl;
 import com.espertech.esper.schedule.*;
 import com.espertech.esper.util.ExecutionPathDebugLog;
 import org.apache.commons.logging.Log;
@@ -44,6 +46,7 @@ public final class OutputConditionCrontab implements OutputCondition
     public OutputConditionCrontab(List<ExprNode> scheduleSpecExpressionList,
                                    StatementContext context,
                                    OutputCallback outputCallback)
+            throws ExprValidationException
     {
 		if(outputCallback ==  null)
 		{
@@ -59,9 +62,18 @@ public final class OutputConditionCrontab implements OutputCondition
         this.outputCallback = outputCallback;
         this.scheduleSlot = context.getScheduleBucket().allocateSlot();
 
+        // Validate the expression
+        ExprNode[] expressions = new ExprNode[scheduleSpecExpressionList.size()];
+        int count = 0;
+        for (ExprNode parameters : scheduleSpecExpressionList)
+        {
+            ExprNode node = parameters.getValidatedSubtree(new StreamTypeServiceImpl(context.getEngineURI()), context.getMethodResolutionService(), null, context.getSchedulingService(), context.getVariableService());
+            expressions[count++] = node;
+        }
+
         try
         {
-            Object[] scheduleSpecParameterList = evaluate(scheduleSpecExpressionList);
+            Object[] scheduleSpecParameterList = evaluate(expressions);
             scheduleSpec = ScheduleSpecUtil.computeValues(scheduleSpecParameterList);
         }
         catch (ScheduleParameterException e)
@@ -122,9 +134,9 @@ public final class OutputConditionCrontab implements OutputCondition
         context.getSchedulingService().add(scheduleSpec, handle, scheduleSlot);
     }
 
-    public static Object[] evaluate(List<ExprNode> parameters)
+    public static Object[] evaluate(ExprNode[] parameters)
     {
-        Object[] results = new Object[parameters.size()];
+        Object[] results = new Object[parameters.length];
         int count = 0;
         for (ExprNode expr : parameters)
         {

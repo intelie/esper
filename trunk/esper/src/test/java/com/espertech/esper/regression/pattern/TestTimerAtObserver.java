@@ -231,6 +231,68 @@ public class TestTimerAtObserver extends TestCase implements SupportBeanConstant
         runAssertion(epService, listener);
     }
 
+    public void testAtWeekdaysVariable()
+    {
+        String expression = "select * from pattern [every timer:at(VMIN,VHOUR,*,*,[1,2,3,4,5])]";
+
+        Configuration config = SupportConfigFactory.getConfiguration();
+        config.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
+        config.addVariable("VMIN", int.class, 0);
+        config.addVariable("VHOUR", int.class, 8);
+        EPServiceProvider epService = EPServiceProviderManager.getDefaultProvider(config);
+        epService.initialize();
+
+        Calendar cal = GregorianCalendar.getInstance();
+        cal.set(Calendar.MILLISECOND, 0);
+        cal.set(2008, 7, 3, 10, 0, 0);      // start on a Sunday at 6am, August 3 2008
+        sendTimer(cal.getTimeInMillis(), epService);
+
+        EPPreparedStatement prepared = epService.getEPAdministrator().prepareEPL(expression);
+        EPStatement statement = epService.getEPAdministrator().create(prepared);
+
+        SupportUpdateListener listener = new SupportUpdateListener();
+        statement.addListener(listener);
+
+        runAssertion(epService, listener);
+    }
+
+    public void testExpression()
+    {
+        String expression = "select * from pattern [every timer:at(7+1-8,4+4,*,*,[1,2,3,4,5])]";
+
+        Configuration config = SupportConfigFactory.getConfiguration();
+        config.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
+        config.addVariable("VMIN", int.class, 0);
+        config.addVariable("VHOUR", int.class, 8);
+        EPServiceProvider epService = EPServiceProviderManager.getDefaultProvider(config);
+        epService.initialize();
+
+        Calendar cal = GregorianCalendar.getInstance();
+        cal.set(Calendar.MILLISECOND, 0);
+        cal.set(2008, 7, 3, 10, 0, 0);      // start on a Sunday at 6am, August 3 2008
+        sendTimer(cal.getTimeInMillis(), epService);
+
+        EPPreparedStatement prepared = epService.getEPAdministrator().prepareEPL(expression);
+        EPStatement statement = epService.getEPAdministrator().create(prepared);
+
+        SupportUpdateListener listener = new SupportUpdateListener();
+        statement.addListener(listener);
+
+        runAssertion(epService, listener);
+    }
+
+    public void testCrontabParameters()
+    {
+        String expression = "select * from pattern [every (timer:at(*/VFREQ, VMIN:VMAX, 1 last, *, [8, 2:VMAX, */VREQ]))]";
+        Configuration config = SupportConfigFactory.getConfiguration();
+        config.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
+        EPServiceProvider epService = EPServiceProviderManager.getDefaultProvider(config);
+        epService.initialize();
+
+        EPStatementObjectModel model = epService.getEPAdministrator().compileEPL(expression);
+        assertEquals(expression, model.toEPL());
+    }
+
     private void runAssertion(EPServiceProvider epService, SupportUpdateListener listener)
     {
         Calendar cal = GregorianCalendar.getInstance();

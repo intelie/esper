@@ -30,6 +30,19 @@ public class TestOutputLimitCrontabWhen extends TestCase
         listener = new SupportUpdateListener();
     }
 
+    public void testOutputCrontabAtVariable() {
+
+        // every 15 minutes 8am to 5pm
+        sendTimeEvent(1, 17, 10, 0, 0);
+        epService.getEPAdministrator().createEPL("create variable int VFREQ = 15");
+        epService.getEPAdministrator().createEPL("create variable int VMIN = 8");
+        epService.getEPAdministrator().createEPL("create variable int VMAX = 17");
+        String expression = "select * from MarketData.std:lastevent() output at (*/VFREQ, VMIN:VMAX, *, *, *)";
+        EPStatement stmt = epService.getEPAdministrator().createEPL(expression);
+        stmt.addListener(listener);
+        runAssertionCrontab(1, stmt);
+    }
+
     public void testOutputCrontabAt() {
 
         // every 15 minutes 8am to 5pm
