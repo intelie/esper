@@ -8,12 +8,15 @@
  **************************************************************************************/
 package com.espertech.esper.pattern.observer;
 
-import com.espertech.esper.type.TimePeriodParameter;
 import com.espertech.esper.pattern.MatchedEventMap;
 import com.espertech.esper.pattern.PatternContext;
+import com.espertech.esper.pattern.MatchedEventConvertor;
 import com.espertech.esper.util.MetaDefItem;
 import com.espertech.esper.util.JavaClassHelper;
 import com.espertech.esper.epl.expression.ExprNode;
+import com.espertech.esper.epl.core.StreamTypeService;
+import com.espertech.esper.core.StatementContext;
+import com.espertech.esper.client.EPException;
 
 import java.util.List;
 
@@ -22,47 +25,49 @@ import java.util.List;
  */
 public class TimerIntervalObserverFactory implements ObserverFactory, MetaDefItem
 {
+    protected ExprNode parameter;
+    protected MatchedEventConvertor convertor;
+
     /**
      * Number of milliseconds after which the interval should fire.
      */
     protected long milliseconds;
 
-    public void setObserverParameters(List<ExprNode> params) throws ObserverParameterException
+    public void setObserverParameters(List<ExprNode> params, MatchedEventConvertor convertor) throws ObserverParameterException
     {
-        List<Object> observerParameters = EventObserverSupport.evaluate("Timer-interval observer", params);
-
         String errorMessage = "Timer-interval observer requires a single numeric or time period parameter";
-        if (observerParameters.size() != 1)
+        if (params.size() != 1)
         {
             throw new ObserverParameterException(errorMessage);
         }
 
-        Object parameter = observerParameters.get(0);
-        if (parameter instanceof TimePeriodParameter)
-        {
-            TimePeriodParameter param = (TimePeriodParameter) parameter;
-            milliseconds = Math.round(1000d * param.getNumSeconds());
-        }
-        else if (!(parameter instanceof Number))
+        Class returnType = params.get(0).getType();
+        if (!(JavaClassHelper.isNumeric(returnType)))
         {
             throw new ObserverParameterException(errorMessage);
         }
-        else
-        {
-            Number param = (Number) parameter;
-            if (JavaClassHelper.isFloatingPointNumber(param))
-            {
-                milliseconds = Math.round(1000d * param.doubleValue());
-            }
-            else
-            {
-                milliseconds = 1000 * param.longValue();
-            }
-        }
+        
+        parameter = params.get(0);
+        this.convertor = convertor;
     }
 
     public EventObserver makeObserver(PatternContext context, MatchedEventMap beginState, ObserverEventEvaluator observerEventEvaluator, Object stateNodeId, Object observerState)
     {
+        Object result = parameter.evaluate(convertor.convert(beginState), true);
+        if (result == null)
+        {
+            throw new EPException("Null value returned for guard expression");
+        }
+
+        Number param = (Number) result;
+        if (JavaClassHelper.isFloatingPointNumber(param))
+        {
+            milliseconds = Math.round(1000d * param.doubleValue());
+        }
+        else
+        {
+            milliseconds = 1000 * param.longValue();
+        }
         return new TimerIntervalObserver(milliseconds, context, beginState, observerEventEvaluator);
     }
 }

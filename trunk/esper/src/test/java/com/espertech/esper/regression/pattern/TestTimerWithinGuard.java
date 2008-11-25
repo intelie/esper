@@ -256,6 +256,37 @@ public class TestTimerWithinGuard extends TestCase implements SupportBeanConstan
         runAssertion(epService, testListener);
     }
 
+    public void testWithinFromExpression()
+    {
+        EPServiceProvider epService = EPServiceProviderManager.getDefaultProvider(SupportConfigFactory.getConfiguration());
+        epService.initialize();
+        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("SupportBean", SupportBean.class);
+
+        // External clocking
+        epService.getEPRuntime().sendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
+        sendTimer(0, epService);
+
+        // Set up a timer:within
+        EPStatement statement = epService.getEPAdministrator().createEPL("select b.string as id from pattern[a=SupportBean -> (every b=SupportBean) where timer:within(a.intPrimitive seconds)]");
+
+        SupportUpdateListener testListener = new SupportUpdateListener();
+        statement.addListener(testListener);
+
+        // seed
+        epService.getEPRuntime().sendEvent(new SupportBean("E1", 3));
+
+        sendTimer(2000, epService);
+        epService.getEPRuntime().sendEvent(new SupportBean("E2", -1));
+        assertEquals("E2", testListener.assertOneGetNewAndReset().get("id"));
+
+        sendTimer(2999, epService);
+        epService.getEPRuntime().sendEvent(new SupportBean("E3", -1));
+        assertEquals("E3", testListener.assertOneGetNewAndReset().get("id"));
+
+        sendTimer(3000, epService);
+        assertFalse(testListener.isInvoked());
+    }
+
     private void runAssertion(EPServiceProvider epService, SupportUpdateListener testListener)
     {
         sendEvent(epService);

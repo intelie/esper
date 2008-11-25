@@ -1,7 +1,6 @@
 package com.espertech.esper.view.window;
 
 import com.espertech.esper.support.view.SupportStatementContextFactory;
-import com.espertech.esper.type.TimePeriodParameter;
 import com.espertech.esper.view.TestViewSupport;
 import com.espertech.esper.view.ViewParameterException;
 import com.espertech.esper.view.std.SizeView;
@@ -18,7 +17,7 @@ public class TestTimeBatchViewFactory extends TestCase
 
     public void testSetParameters() throws Exception
     {
-        tryParameter(new Object[] {new TimePeriodParameter(2d)}, 2000, null);
+        tryParameter(new Object[] {2d}, 2000, null);
         tryParameter(new Object[] {4}, 4000, null);
         tryParameter(new Object[] {3.3d}, 3300, null);
         tryParameter(new Object[] {new Float(1.1f)}, 1100, null);

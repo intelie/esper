@@ -6,15 +6,11 @@
  * The software in this package is published under the terms of the GPL license       *
  * a copy of which has been included with this distribution in the license.txt file.  *
  **************************************************************************************/
-package com.espertech.esper.pattern.guard;
+package com.espertech.esper.pattern;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import com.espertech.esper.event.EventBean;
 
-/**
- * Abstract class for applications to extend to implement pattern guard objects.
- */
-public abstract class GuardFactorySupport implements GuardFactory
+public interface MatchedEventConvertor
 {
-    private static Log log = LogFactory.getLog(GuardFactorySupport.class);
+    public EventBean[] convert(MatchedEventMap events);
 }

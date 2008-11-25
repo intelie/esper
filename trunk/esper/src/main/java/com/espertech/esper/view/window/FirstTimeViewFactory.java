@@ -11,7 +11,6 @@ package com.espertech.esper.view.window;
 import com.espertech.esper.epl.core.ViewResourceCallback;
 import com.espertech.esper.epl.named.RemoveStreamViewCapability;
 import com.espertech.esper.epl.expression.ExprNode;
-import com.espertech.esper.type.TimePeriodParameter;
 import com.espertech.esper.event.EventType;
 import com.espertech.esper.util.JavaClassHelper;
 import com.espertech.esper.view.*;
@@ -41,12 +40,7 @@ public class FirstTimeViewFactory implements DataWindowViewFactory
         }
 
         Object parameter = viewParameters.get(0);
-        if (parameter instanceof TimePeriodParameter)
-        {
-            TimePeriodParameter param = (TimePeriodParameter) parameter;
-            millisecondsBeforeExpiry = Math.round(1000d * param.getNumSeconds());
-        }
-        else if (!(parameter instanceof Number))
+        if (!(parameter instanceof Number))
         {
             throw new ViewParameterException(errorMessage);
         }

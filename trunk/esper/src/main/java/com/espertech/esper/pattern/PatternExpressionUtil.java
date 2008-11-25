@@ -6,27 +6,22 @@
  * The software in this package is published under the terms of the GPL license       *
  * a copy of which has been included with this distribution in the license.txt file.  *
  **************************************************************************************/
-package com.espertech.esper.pattern.observer;
+package com.espertech.esper.pattern;
 
 import com.espertech.esper.client.EPException;
 import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.event.EventBean;
-import com.espertech.esper.pattern.MatchedEventConvertor;
-import com.espertech.esper.pattern.MatchedEventMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Abstract class for applications to extend to implement a pattern observer.
- */
-public abstract class EventObserverSupport implements EventObserver
+public class PatternExpressionUtil
 {
-    private static Log log = LogFactory.getLog(EventObserverSupport.class);
+    private static Log log = LogFactory.getLog(PatternExpressionUtil.class);
 
-    public static List<Object> evaluate(String observerName, MatchedEventMap beginState, List<ExprNode> parameters, MatchedEventConvertor convertor)
+    public static List<Object> evaluate(String objectName, MatchedEventMap beginState, List<ExprNode> parameters, MatchedEventConvertor convertor)
             throws EPException
     {
         List<Object> results = new ArrayList<Object>();
@@ -36,12 +31,13 @@ public abstract class EventObserverSupport implements EventObserver
         {
             try
             {
-                results.add(expr.evaluate(eventsPerStream, true));
+                Object result = evaluate(objectName, expr, eventsPerStream);
+                results.add(result);
                 count++;
             }
             catch (RuntimeException ex)
             {
-                String message = observerName + " invalid parameter in expression " + count;
+                String message = objectName + " invalid parameter in expression " + count;
                 if (ex.getMessage() != null)
                 {
                     message += ": " + ex.getMessage();
@@ -53,17 +49,22 @@ public abstract class EventObserverSupport implements EventObserver
         return results;
     }
 
-    public static Object evaluate(String observerName, MatchedEventMap beginState, ExprNode parameter, MatchedEventConvertor convertor)
+    public static Object evaluate(String objectName, MatchedEventMap beginState, ExprNode parameter, MatchedEventConvertor convertor)
             throws EPException
     {
         EventBean[] eventsPerStream = convertor.convert(beginState);
+        return evaluate(objectName, parameter, eventsPerStream);
+    }
+
+    private static Object evaluate(String objectName, ExprNode expression, EventBean[] eventsPerStream) throws EPException
+    {
         try
         {
-            return parameter.evaluate(eventsPerStream, true);
+            return expression.evaluate(eventsPerStream, true);
         }
         catch (RuntimeException ex)
         {
-            String message = observerName + " failed to evaluate expression";
+            String message = objectName + " failed to evaluate expression";
             if (ex.getMessage() != null)
             {
                 message += ": " + ex.getMessage();

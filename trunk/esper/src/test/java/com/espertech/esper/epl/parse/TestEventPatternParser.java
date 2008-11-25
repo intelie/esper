@@ -130,7 +130,6 @@ public class TestEventPatternParser extends TestCase
         assertIsInvalid("timer:at(*,*,:2,*,*)");
         assertIsInvalid("timer:at(*,*,2:,*,*)");
         assertIsInvalid("timer:at(*,*,:,*,*)");
-        assertIsInvalid("timer:at(*,*,*/a,*,*)");
         assertIsInvalid("timer:at(*,*,0/*,*,*)");
         assertIsInvalid("timer:at(*,*,*/*,*,*)");
         assertIsInvalid("timer:at([2:2x],*,*,*,*)");

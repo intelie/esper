@@ -5,7 +5,6 @@ import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.event.SupportEventTypeFactory;
 import com.espertech.esper.support.view.SupportStatementContextFactory;
 import com.espertech.esper.support.epl.SupportExprNodeFactory;
-import com.espertech.esper.type.TimePeriodParameter;
 import com.espertech.esper.view.TestViewSupport;
 import com.espertech.esper.view.ViewParameterException;
 import com.espertech.esper.view.std.SizeView;
@@ -22,12 +21,11 @@ public class TestExternallyTimedWindowViewFactory extends TestCase
 
     public void testSetParameters() throws Exception
     {
-        tryParameter(new Object[] {"longPrimitive", new TimePeriodParameter(2d)}, "longPrimitive", 2000);
+        tryParameter(new Object[] {"longPrimitive", 2d}, "longPrimitive", 2000);
         tryParameter(new Object[] {"longPrimitive", 10L}, "longPrimitive", 10000);
         tryParameter(new Object[] {"longPrimitive", 11}, "longPrimitive", 11000);
         tryParameter(new Object[] {"longPrimitive", 2.2}, "longPrimitive", 2200);
 
-        tryInvalidParameter(new Object[] {new TimePeriodParameter(2d)});
         tryInvalidParameter(new Object[] {"a"});
     }
 

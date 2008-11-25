@@ -1,6 +1,5 @@
 package com.espertech.esper.epl.parse;
 
-import junit.framework.TestCase;
 import com.espertech.esper.epl.core.EngineImportService;
 import com.espertech.esper.epl.core.EngineImportServiceImpl;
 import com.espertech.esper.epl.expression.*;
@@ -15,9 +14,9 @@ import com.espertech.esper.support.epl.SupportPluginAggregationMethodOne;
 import com.espertech.esper.support.epl.parse.SupportEPLTreeWalkerFactory;
 import com.espertech.esper.support.epl.parse.SupportParserHelper;
 import com.espertech.esper.support.event.SupportEventAdapterService;
-import com.espertech.esper.type.OuterJoinType;
-import com.espertech.esper.type.TimePeriodParameter;
 import com.espertech.esper.timer.TimeSourceService;
+import com.espertech.esper.type.OuterJoinType;
+import junit.framework.TestCase;
 import org.antlr.runtime.tree.Tree;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -1076,8 +1075,7 @@ public class TestEPLTreeWalker extends TestCase
         assertEquals(1, viewSpec.getObjectParameters().size());
         ExprTimePeriod exprNode = (ExprTimePeriod) viewSpec.getObjectParameters().get(0);
         exprNode.validate(null, null, null, null, null);
-        TimePeriodParameter timePeriodParameter = (TimePeriodParameter) exprNode.evaluate(null, true);
-        return timePeriodParameter.getNumSeconds();
+        return ((Double) exprNode.evaluate(null, true)).doubleValue();
     }
 
     private String tryWalkGetPropertyPattern(String stmt) throws Exception

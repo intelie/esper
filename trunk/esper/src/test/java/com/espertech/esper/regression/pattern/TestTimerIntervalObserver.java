@@ -1,15 +1,17 @@
 package com.espertech.esper.regression.pattern;
 
-import junit.framework.*;
-import com.espertech.esper.regression.support.*;
-import com.espertech.esper.support.bean.SupportBeanConstants;
-import com.espertech.esper.support.util.SupportUpdateListener;
-import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.client.*;
 import com.espertech.esper.client.soda.*;
-import com.espertech.esper.client.time.TimerControlEvent;
 import com.espertech.esper.client.time.CurrentTimeEvent;
+import com.espertech.esper.client.time.TimerControlEvent;
+import com.espertech.esper.regression.support.*;
+import com.espertech.esper.support.bean.SupportBean;
+import com.espertech.esper.support.bean.SupportBeanConstants;
+import com.espertech.esper.support.client.SupportConfigFactory;
+import com.espertech.esper.support.util.SupportUpdateListener;
+import com.espertech.esper.support.util.ArrayAssertionUtil;
 import com.espertech.esper.util.SerializableObjectCopier;
+import junit.framework.TestCase;
 
 public class TestTimerIntervalObserver extends TestCase implements SupportBeanConstants
 {
@@ -222,6 +224,89 @@ public class TestTimerIntervalObserver extends TestCase implements SupportBeanCo
 
         sendTimer(62*1000, epService);
         assertTrue(testListener.isInvoked());
+    }
+
+    public void testIntervalSpecExpression()
+    {
+        EPServiceProvider epService = EPServiceProviderManager.getDefaultProvider(SupportConfigFactory.getConfiguration());
+        epService.initialize();
+
+        // External clocking
+        epService.getEPRuntime().sendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
+        sendTimer(0, epService);
+
+        // Set up a timer:within
+        epService.getEPAdministrator().createEPL("create variable double M=1");
+        epService.getEPAdministrator().createEPL("create variable double S=2");
+        EPStatement statement = epService.getEPAdministrator().createEPL("select * from pattern [timer:interval(M*60+S seconds)]");
+
+        SupportUpdateListener testListener = new SupportUpdateListener();
+        statement.addListener(testListener);
+
+        sendTimer(62*1000 - 1, epService);
+        assertFalse(testListener.isInvoked());
+
+        sendTimer(62*1000, epService);
+        assertTrue(testListener.isInvoked());
+    }
+
+    public void testIntervalSpecExpressionWithProperty()
+    {
+        EPServiceProvider epService = EPServiceProviderManager.getDefaultProvider(SupportConfigFactory.getConfiguration());
+        epService.initialize();
+        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("SupportBean", SupportBean.class);
+
+        // External clocking
+        epService.getEPRuntime().sendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
+        sendTimer(0, epService);
+
+        // Set up a timer:within
+        EPStatement statement = epService.getEPAdministrator().createEPL("select a.string as id from pattern [a=SupportBean -> timer:interval(intPrimitive seconds)]");
+
+        SupportUpdateListener testListener = new SupportUpdateListener();
+        statement.addListener(testListener);
+
+        sendTimer(10000, epService);
+        epService.getEPRuntime().sendEvent(new SupportBean("E1", 3));
+
+        sendTimer(10000, epService);
+        epService.getEPRuntime().sendEvent(new SupportBean("E2", 2));
+
+        sendTimer(11999, epService);
+        assertFalse(testListener.isInvoked());
+        sendTimer(12000, epService);
+        assertEquals("E2", testListener.assertOneGetNewAndReset().get("id"));
+
+        sendTimer(12999, epService);
+        assertFalse(testListener.isInvoked());
+        sendTimer(13000, epService);
+        assertEquals("E1", testListener.assertOneGetNewAndReset().get("id"));
+    }
+
+    public void testIntervalSpecExpressionWithPropertyArray()
+    {
+        EPServiceProvider epService = EPServiceProviderManager.getDefaultProvider(SupportConfigFactory.getConfiguration());
+        epService.initialize();
+        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("SupportBean", SupportBean.class);
+
+        // External clocking
+        epService.getEPRuntime().sendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
+        sendTimer(0, epService);
+
+        // Set up a timer:within
+        EPStatement statement = epService.getEPAdministrator().createEPL("select a[0].string as a0id, a[1].string as a1id from pattern [ [2] a=SupportBean -> timer:interval(a[0].intPrimitive+a[1].intPrimitive seconds)]");
+
+        SupportUpdateListener testListener = new SupportUpdateListener();
+        statement.addListener(testListener);
+
+        sendTimer(10000, epService);
+        epService.getEPRuntime().sendEvent(new SupportBean("E1", 3));
+        epService.getEPRuntime().sendEvent(new SupportBean("E2", 2));
+
+        sendTimer(14999, epService);
+        assertFalse(testListener.isInvoked());
+        sendTimer(15000, epService);
+        ArrayAssertionUtil.assertProps(testListener.assertOneGetNewAndReset(), "a0id,a1id".split(","), "E1,E2".split(","));
     }
 
     public void testIntervalSpecPreparedStmt()

@@ -163,7 +163,7 @@ public class TestGroupByTimeBatch extends TestCase
     public void testTimeBatchRowPerGroupNoJoin()
     {
         sendTimer(0);
-        String stmtText = "select irstream symbol, sum(price) as sumPrice from MarketData.win:time_batch(1 sec) group by symbol";
+        String stmtText = "select irstream symbol, sum(price) as sumPrice from MarketData.win:time_batch(1 sec) group by symbol order by symbol asc";
         EPStatement stmt = epService.getEPAdministrator().createEPL(stmtText);
         stmt.addListener(listener);
 

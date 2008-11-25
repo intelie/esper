@@ -11,7 +11,6 @@ package com.espertech.esper.view.window;
 import com.espertech.esper.epl.core.ViewResourceCallback;
 import com.espertech.esper.epl.named.RemoveStreamViewCapability;
 import com.espertech.esper.epl.expression.ExprNode;
-import com.espertech.esper.type.TimePeriodParameter;
 import com.espertech.esper.event.EventType;
 import com.espertech.esper.util.JavaClassHelper;
 import com.espertech.esper.view.*;
@@ -70,12 +69,7 @@ public class ExternallyTimedWindowViewFactory implements DataWindowViewFactory
 
         ViewFactorySupport.assertReturnsNonConstant("Externally-timed window", validated[0], 0);
         Object parameter = ViewFactorySupport.assertNoProperties("Externally-timed window", validated[1], 1);
-        if (parameter instanceof TimePeriodParameter)
-        {
-            TimePeriodParameter param = (TimePeriodParameter) parameter;
-            millisecondsBeforeExpiry = Math.round(1000d * param.getNumSeconds());
-        }
-        else if (!(parameter instanceof Number))
+        if (!(parameter instanceof Number))
         {
             throw new ViewParameterException(errorMessage);
         }

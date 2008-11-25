@@ -9,6 +9,8 @@
 package com.espertech.esper.pattern.guard;
 
 import com.espertech.esper.pattern.PatternContext;
+import com.espertech.esper.pattern.MatchedEventConvertor;
+import com.espertech.esper.pattern.MatchedEventMap;
 import com.espertech.esper.epl.expression.ExprNode;
 
 import java.util.List;
@@ -23,7 +25,7 @@ public interface GuardFactory
      * @param guardParameters is a list of parameters
      * @throws GuardParameterException thrown to indicate a parameter problem
      */
-    public void setGuardParameters(List<ExprNode> guardParameters) throws GuardParameterException;
+    public void setGuardParameters(List<ExprNode> guardParameters, MatchedEventConvertor convertor) throws GuardParameterException;
 
     /**
      * Constructs a guard instance.
@@ -33,5 +35,9 @@ public interface GuardFactory
      * @param guardState - state node for guard
      * @return guard instance
      */
-    public Guard makeGuard(PatternContext context, Quitable quitable, Object stateNodeId, Object guardState);
+    public Guard makeGuard(PatternContext context,
+                           MatchedEventMap beginState,
+                           Quitable quitable,
+                           Object stateNodeId,
+                           Object guardState);
 }

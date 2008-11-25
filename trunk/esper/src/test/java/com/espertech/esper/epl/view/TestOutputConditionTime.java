@@ -79,7 +79,7 @@ public class TestOutputConditionTime extends TestCase
         timePeriodValid.addChildNode(new ExprConstantNode(1000));
 
         ExprTimePeriod timePeriodInvalid = new ExprTimePeriod(false, false, false, false, true);
-        timePeriodValid.addChildNode(new ExprConstantNode(0));
+        timePeriodInvalid.addChildNode(new ExprConstantNode(0));
 
 	    try
 	    {

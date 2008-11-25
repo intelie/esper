@@ -9,8 +9,8 @@ Changes in version 3.0.0
   Variables may be used in such expressions.
   Pattern objects may be parameterized by prior events.
   namespace.name('b') or namespace.name({'a', 'b'})  not supported, 
-
-
+  seconds and minutes not a keyword allowed for event property names
+  
 
 Changes in version 2.3
 ------------------------

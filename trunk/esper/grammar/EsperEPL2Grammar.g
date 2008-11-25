@@ -723,7 +723,7 @@ outputLimit
 	      (
 	        ( ev=EVERY_EXPR 
 		  ( 
-		    (time_period) => time_period
+		    (timePeriod) => timePeriod
 		  | (number | i=IDENT) (e=EVENTS)
 		  )
 		)
@@ -733,7 +733,7 @@ outputLimit
 		( wh=WHEN expression (THEN onSetExpr)? )
 	      )
 	    -> {$ev != null && $e != null}? ^(EVENT_LIMIT_EXPR $k? number? $i?)
-	    -> {$ev != null}? ^(TIMEPERIOD_LIMIT_EXPR $k? time_period)		
+	    -> {$ev != null}? ^(TIMEPERIOD_LIMIT_EXPR $k? timePeriod)		
 	    -> {$at != null}? ^(CRONTAB_LIMIT_EXPR $k? crontabLimitParameterSet)		
 	    -> ^(WHEN_LIMIT_EXPR $k? expression onSetExpr?)		
 	;	
@@ -876,7 +876,6 @@ unaryExpression
 	| arrayExpression
 	| subSelectExpression
 	| existsSubSelectExpression
-	| time_period
 	;
 	    
 subSelectExpression 
@@ -1098,18 +1097,20 @@ expressionWithTimeList
 expressionWithTime
 	:   	(lastOperand) => lastOperand
 	|	(lastWeekdayOperand) => lastWeekdayOperand
-	|	expressionSortable
+	|	(expressionQualifyable) => expressionQualifyable
 	|	(rangeOperand) => rangeOperand
 	| 	(frequencyOperand) => frequencyOperand
 	|	(lastOperator) => lastOperator
 	|	(weekDayOperator) =>  weekDayOperator
 	| 	(numericParameterList) => numericParameterList
 	|	numberSetStar
+	|	timePeriod
 	;
 
-expressionSortable
-	:	expression (a=ASC|d=DESC)?
+expressionQualifyable
+	:	expression (a=ASC|d=DESC|s=TIMEPERIOD_SECONDS)?
 		-> {d != null || a != null}? ^(OBJECT_PARAM_ORDERED_EXPR expression $a? $d?)
+		-> {s != null}? ^(TIME_PERIOD ^(SECOND_PART expression))
 		-> expression
 	;
 	
@@ -1211,8 +1212,6 @@ keywordAllowedIdent
 		|STDDEV { identifier = "stddev"; }
 		|AVEDEV { identifier = "avedev"; }
 		|EVENTS { identifier = "events"; }
-		|TIMEPERIOD_SECONDS { identifier = "seconds"; }
-		|TIMEPERIOD_MINUTES { identifier = "minutes"; }
 		|FIRST { identifier = "first"; }
 		|LAST { identifier = "last"; }
 		|UNIDIRECTIONAL { identifier = "unidirectional"; }
@@ -1237,7 +1236,7 @@ keywordAllowedIdent
 	-> ^(IDENT[identifier])
 	;
 		
-time_period 	
+timePeriod 	
 	:	
 	(	
 		dayPart hourPart? minutePart? secondPart? millisecondPart?

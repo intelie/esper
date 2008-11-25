@@ -748,12 +748,13 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
         }
         catch (ExprValidationException ex)
         {
+            log.error("Failed to compile statement: " + ex.getMessage(), ex);
             throw new EPStatementException(ex.getMessage(), eplStatement);
         }
         catch (RuntimeException ex)
         {
             String text = "Unexpected error compiling statement";
-            log.error(".compile " + text, ex);
+            log.error(text, ex);
             throw new EPStatementException(text + ":" + ex.getClass().getName() + ":" + ex.getMessage(), eplStatement);
         }
 

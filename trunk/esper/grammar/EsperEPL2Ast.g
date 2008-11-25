@@ -223,7 +223,7 @@ havingClause
 
 outputLimitExpr
 	:	^(e=EVENT_LIMIT_EXPR (ALL|FIRST|LAST|SNAPSHOT)? (number|IDENT) { leaveNode($e); } ) 
-	|   	^(tp=TIMEPERIOD_LIMIT_EXPR (ALL|FIRST|LAST|SNAPSHOT)? time_period { leaveNode($tp); } )
+	|   	^(tp=TIMEPERIOD_LIMIT_EXPR (ALL|FIRST|LAST|SNAPSHOT)? timePeriod { leaveNode($tp); } )
 	|   	^(cron=CRONTAB_LIMIT_EXPR (ALL|FIRST|LAST|SNAPSHOT)? crontabLimitParameterSet { leaveNode($cron); } )
 	|   	^(when=WHEN_LIMIT_EXPR (ALL|FIRST|LAST|SNAPSHOT)? valueExpr onSetExpr? { leaveNode($when); } )
 	;
@@ -269,7 +269,6 @@ valueExpr
 	|	subSelectInExpr
 	| 	subSelectRowExpr 
 	| 	subSelectExistsExpr
-	|	time_period
 	;
 
 valueExprWithTime
@@ -283,6 +282,7 @@ valueExprWithTime
 	|	weekDayOperator
 	| 	^( l=NUMERIC_PARAM_LIST numericParameterList+ { leaveNode($l); })
 	|	s=NUMBERSETSTAR { leaveNode($s); }
+	|	timePeriod
 	;
 	
 numericParameterList
@@ -478,7 +478,7 @@ eventPropertyAtomic
 	|	^(EVENT_PROP_DYNAMIC_MAPPED IDENT (STRING_LITERAL | QUOTED_STRING_LITERAL))
 	;	
 	
-time_period
+timePeriod
 	: 	^( t=TIME_PERIOD timePeriodDef { leaveNode($t); })
 	;
 	
@@ -491,23 +491,23 @@ timePeriodDef
 	;
 	
 dayPart
-	:	^( DAY_PART (constant[true]|eventPropertyExpr|substitution) )
+	:	^( DAY_PART valueExpr )
 	;
 
 hourPart
-	:	^( HOUR_PART (constant[true]|eventPropertyExpr|substitution) )
+	:	^( HOUR_PART valueExpr )
 	;
 
 minutePart
-	:	^( MINUTE_PART (constant[true]|eventPropertyExpr|substitution) )
+	:	^( MINUTE_PART valueExpr )
 	;
 
 secondPart
-	:	^( SECOND_PART (constant[true]|eventPropertyExpr|substitution) )
+	:	^( SECOND_PART valueExpr )
 	;
 
 millisecondPart
-	:	^( MILLISECOND_PART (constant[true]|eventPropertyExpr|substitution) )
+	:	^( MILLISECOND_PART valueExpr )
 	;
 
 substitution

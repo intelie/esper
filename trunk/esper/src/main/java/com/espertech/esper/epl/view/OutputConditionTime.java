@@ -14,7 +14,6 @@ import com.espertech.esper.core.StatementContext;
 import com.espertech.esper.epl.expression.ExprTimePeriod;
 import com.espertech.esper.schedule.ScheduleHandleCallback;
 import com.espertech.esper.schedule.ScheduleSlot;
-import com.espertech.esper.type.TimePeriodParameter;
 import com.espertech.esper.util.ExecutionPathDebugLog;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -63,12 +62,16 @@ public final class OutputConditionTime implements OutputCondition
         this.scheduleSlot = context.getScheduleBucket().allocateSlot();
         this.timePeriod = timePeriod;
 
-        TimePeriodParameter param = (TimePeriodParameter) timePeriod.evaluate(null, true);
-        if ((param.getNumSeconds() < 0.001) && (!timePeriod.hasVariable()))
+        Double numSeconds = (Double) timePeriod.evaluate(null, true);
+        if (numSeconds == null)
         {
-            throw new IllegalArgumentException("Output condition by time requires a millisecond interval size of at least 1 msec or a variable");
+            throw new IllegalArgumentException("Output condition by time returned a null value for the interval size");
         }
-        this.msecIntervalSize = Math.round(1000 * param.getNumSeconds());
+        if ((numSeconds < 0.001) && (!timePeriod.hasVariable()))
+        {
+            throw new IllegalArgumentException("Output condition by time requires a interval size of at least 1 msec or a variable");
+        }
+        this.msecIntervalSize = Math.round(1000 * numSeconds);
     }
 
     /**
@@ -97,10 +100,10 @@ public final class OutputConditionTime implements OutputCondition
         // If we pull the interval from a variable, then we may need to reschedule
         if (timePeriod.hasVariable())
         {
-            TimePeriodParameter param = (TimePeriodParameter) timePeriod.evaluate(null, true);
-            if (param != null)
+            Double numSeconds = (Double) timePeriod.evaluate(null, true);
+            if (numSeconds != null)
             {
-                long newMsecIntervalSize = Math.round(1000 * param.getNumSeconds());
+                long newMsecIntervalSize = Math.round(1000 * numSeconds);
 
                 // reschedule if the interval changed
                 if (newMsecIntervalSize != msecIntervalSize)
@@ -133,10 +136,10 @@ public final class OutputConditionTime implements OutputCondition
         // If we pull the interval from a variable, get the current interval length
         if (timePeriod.hasVariable())
         {
-            TimePeriodParameter param = (TimePeriodParameter) timePeriod.evaluate(null, true);
+            Double param = (Double) timePeriod.evaluate(null, true);
             if (param != null)
             {
-                msecIntervalSize = Math.round(1000 * param.getNumSeconds());
+                msecIntervalSize = Math.round(1000 * param);
             }
         }
 

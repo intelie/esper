@@ -6,13 +6,16 @@ import com.espertech.esper.pattern.observer.ObserverEventEvaluator;
 import com.espertech.esper.pattern.observer.ObserverParameterException;
 import com.espertech.esper.pattern.PatternContext;
 import com.espertech.esper.pattern.MatchedEventMap;
+import com.espertech.esper.pattern.MatchedEventConvertor;
 import com.espertech.esper.epl.expression.ExprNode;
+import com.espertech.esper.epl.core.StreamTypeService;
+import com.espertech.esper.core.StatementContext;
 
 import java.util.List;
 
 public class SupportObserverFactory implements ObserverFactory
 {
-    public void setObserverParameters(List<ExprNode> observerParameters) throws ObserverParameterException
+    public void setObserverParameters(List<ExprNode> observerParameters, MatchedEventConvertor convertor) throws ObserverParameterException
     {
         //To change body of implemented methods use File | Settings | File Templates.
     }

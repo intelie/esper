@@ -6,7 +6,6 @@ import com.espertech.esper.epl.core.ViewResourceDelegate;
 import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.event.EventBean;
 import com.espertech.esper.schedule.TimeProvider;
-import com.espertech.esper.type.TimePeriodParameter;
 import com.espertech.esper.util.JavaClassHelper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -96,7 +95,7 @@ public class ExprTimePeriod extends ExprNode
 
         if (hasDay)
         {
-            Double result = eval(this.getChildNodes().get(exprCtr++));
+            Double result = eval(this.getChildNodes().get(exprCtr++), eventsPerStream);
             if (result == null)
             {
                 return null;
@@ -105,7 +104,7 @@ public class ExprTimePeriod extends ExprNode
         }
         if (hasHour)
         {
-            Double result = eval(this.getChildNodes().get(exprCtr++));
+            Double result = eval(this.getChildNodes().get(exprCtr++), eventsPerStream);
             if (result == null)
             {
                 return null;
@@ -114,7 +113,7 @@ public class ExprTimePeriod extends ExprNode
         }
         if (hasMinute)
         {
-            Double result = eval(this.getChildNodes().get(exprCtr++));
+            Double result = eval(this.getChildNodes().get(exprCtr++), eventsPerStream);
             if (result == null)
             {
                 return null;
@@ -123,7 +122,7 @@ public class ExprTimePeriod extends ExprNode
         }
         if (hasSecond)
         {
-            Double result = eval(this.getChildNodes().get(exprCtr++));
+            Double result = eval(this.getChildNodes().get(exprCtr++), eventsPerStream);
             if (result == null)
             {
                 return null;
@@ -132,7 +131,7 @@ public class ExprTimePeriod extends ExprNode
         }
         if (hasMillisecond)
         {
-            Double result = eval(this.getChildNodes().get(exprCtr));
+            Double result = eval(this.getChildNodes().get(exprCtr), eventsPerStream);
             if (result == null)
             {
                 return null;
@@ -142,17 +141,16 @@ public class ExprTimePeriod extends ExprNode
                 seconds += result / 1000d;
             }
         }
-        return new TimePeriodParameter(seconds);
+        return seconds;
     }
 
     public Class getType()
     {
-        return TimePeriodParameter.class;
+        return Double.class;
     }
 
     public boolean isConstantResult()
     {
-        boolean result = true;
         for (ExprNode child : getChildNodes())
         {
             if (!child.isConstantResult())
@@ -222,9 +220,9 @@ public class ExprTimePeriod extends ExprNode
         return (hasMillisecond == other.hasMillisecond);
     }
 
-    private Double eval(ExprNode expr)
+    private Double eval(ExprNode expr, EventBean[] events)
     {
-        Object value = expr.evaluate(null, true);
+        Object value = expr.evaluate(events, true);
         if (value == null)
         {
             log.warn("Time period expression returned a null value for expression '" + expr.toExpressionString() + "'");

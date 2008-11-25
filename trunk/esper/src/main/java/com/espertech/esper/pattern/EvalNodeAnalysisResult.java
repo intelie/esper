@@ -16,43 +16,16 @@ import java.util.ArrayList;
  */
 public class EvalNodeAnalysisResult
 {
-    private List<EvalFilterNode> filterNodes = new ArrayList<EvalFilterNode>();
-    private List<EvalGuardNode> guardNodes = new ArrayList<EvalGuardNode>();
-    private List<EvalObserverNode> observerNodes = new ArrayList<EvalObserverNode>();
-    private List<EvalMatchUntilNode> repeatNodes = new ArrayList<EvalMatchUntilNode>();
+    private List<EvalNode> activeNodes = new ArrayList<EvalNode>();
 
-    /**
-     * Adds a filter node.
-     * @param filterNode filter node to add
-     */
-    public void add(EvalFilterNode filterNode)
+    public void addNode(EvalNode node)
     {
-        filterNodes.add(filterNode);
-    }
-    /**
-     * Adds a guard node.
-     * @param guardNode node to add
-     */
-    public void add(EvalGuardNode guardNode)
-    {
-        guardNodes.add(guardNode);
-    }
-    /**
-     * Adds an observer node.
-     * @param observerNode node to add
-     */
-    public void add(EvalObserverNode observerNode)
-    {
-        observerNodes.add(observerNode);
+        activeNodes.add(node);
     }
 
-    /**
-     * Adds an match-until node.
-     * @param untilNode node to add
-     */
-    public void add(EvalMatchUntilNode untilNode)
+    public List<EvalNode> getActiveNodes()
     {
-        repeatNodes.add(untilNode);
+        return activeNodes;
     }
 
     /**
@@ -61,25 +34,15 @@ public class EvalNodeAnalysisResult
      */
     public List<EvalFilterNode> getFilterNodes()
     {
+        List<EvalFilterNode> filterNodes = new ArrayList<EvalFilterNode>();
+        for (EvalNode node : activeNodes)
+        {
+            if (node instanceof EvalFilterNode)
+            {
+                filterNodes.add((EvalFilterNode) node);
+            }
+        }
         return filterNodes;
-    }
-
-    /**
-     * Returns guard nodes.
-     * @return guard nodes
-     */
-    public List<EvalGuardNode> getGuardNodes()
-    {
-        return guardNodes;
-    }
-
-    /**
-     * Returns observer nodes.
-     * @return observer nodes
-     */
-    public List<EvalObserverNode> getObserverNodes()
-    {
-        return observerNodes;
     }
 
     /**
@@ -88,6 +51,14 @@ public class EvalNodeAnalysisResult
      */
     public List<EvalMatchUntilNode> getRepeatNodes()
     {
-        return repeatNodes;
+        List<EvalMatchUntilNode> filterNodes = new ArrayList<EvalMatchUntilNode>();
+        for (EvalNode node : activeNodes)
+        {
+            if (node instanceof EvalMatchUntilNode)
+            {
+                filterNodes.add((EvalMatchUntilNode) node);
+            }
+        }
+        return filterNodes;
     }
 }

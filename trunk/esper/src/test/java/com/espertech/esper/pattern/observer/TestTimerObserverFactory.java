@@ -1,10 +1,9 @@
 package com.espertech.esper.pattern.observer;
 
-import com.espertech.esper.pattern.observer.TimerIntervalObserver;
-import com.espertech.esper.pattern.observer.EventObserver;
-import com.espertech.esper.pattern.observer.TimerIntervalObserverFactory;
+import com.espertech.esper.epl.core.StreamTypeServiceImpl;
 import com.espertech.esper.pattern.PatternContext;
 import com.espertech.esper.support.pattern.SupportPatternContextFactory;
+import com.espertech.esper.support.view.SupportStatementContextFactory;
 import com.espertech.esper.view.TestViewSupport;
 import junit.framework.TestCase;
 
@@ -20,7 +19,7 @@ public class TestTimerObserverFactory extends TestCase
     public void testIntervalWait() throws Exception
     {
         TimerIntervalObserverFactory factory = new TimerIntervalObserverFactory();
-        factory.setObserverParameters(TestViewSupport.toExprListBean(new Object[] {1}));
+        factory.setObserverParameters(TestViewSupport.toExprListBean(new Object[] {1}), null);
         EventObserver eventObserver = factory.makeObserver(patternContext, null, null, null, null);
 
         assertTrue(eventObserver instanceof TimerIntervalObserver);

@@ -1,79 +1,54 @@
 package com.espertech.esper.regression.client;
 
-import com.espertech.esper.pattern.guard.*;
-import com.espertech.esper.pattern.PatternContext;
-import com.espertech.esper.epl.variable.VariableReader;
-import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.client.EPException;
-
-import java.util.List;
-
+import com.espertech.esper.epl.expression.ExprNode;
+import com.espertech.esper.pattern.MatchedEventConvertor;
+import com.espertech.esper.pattern.MatchedEventMap;
+import com.espertech.esper.pattern.PatternContext;
+import com.espertech.esper.pattern.PatternExpressionUtil;
+import com.espertech.esper.pattern.guard.Guard;
+import com.espertech.esper.pattern.guard.GuardFactorySupport;
+import com.espertech.esper.pattern.guard.GuardParameterException;
+import com.espertech.esper.pattern.guard.Quitable;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import java.util.List;
 
 public class MyCountToPatternGuardFactory extends GuardFactorySupport
 {
     private static final Log log = LogFactory.getLog(MyCountToPatternGuardFactory.class);
 
-    private String variableName;
-    private VariableReader variableReader;
-    private int numCountTo;
+    private ExprNode numCountToExpr;
+    private MatchedEventConvertor convertor;
 
-    public void setGuardParameters(List<ExprNode> expressionParameters) throws GuardParameterException
+    public void setGuardParameters(List<ExprNode> guardParameters, MatchedEventConvertor convertor) throws GuardParameterException
     {
-        List<Object> guardParameters = GuardFactorySupport.evaluate("Count-to guard", expressionParameters);
-        String message = "Count-to guard takes a single integer parameter or variable name of an integer variable";
-
+        String message = "Count-to guard takes a single integer-value expression as parameter";
         if (guardParameters.size() != 1)
         {
             throw new GuardParameterException(message);
         }
 
-        if (guardParameters.get(0) instanceof Integer)
-        {
-            numCountTo = (Integer) guardParameters.get(0);
-        }
-        /*
-        else if (guardParameters.get(0) instanceof VariableParameter)
-        {
-            Object param = guardParameters.get(0);
-            variableName = ((VariableParameter) param).getVariableName();
-        }
-        */
-        else
+        if (guardParameters.get(0).getType() != Integer.class)
         {
             throw new GuardParameterException(message);
         }
+
+        this.numCountToExpr = guardParameters.get(0);
+        this.convertor = convertor;
+
     }
 
-    public Guard makeGuard(PatternContext context, Quitable quitable, Object stateNodeId, Object guardState)
+    public Guard makeGuard(PatternContext context, MatchedEventMap beginState, Quitable quitable, Object stateNodeId, Object guardState)
     {
-        if (variableName != null)
+        Object parameter = PatternExpressionUtil.evaluate("Count-to guard", beginState, numCountToExpr, convertor);
+        if (parameter == null)
         {
-            if (variableReader == null)
-            {
-                variableReader = context.getVariableService().getReader(variableName);
-                if (variableReader == null)
-                {
-                    throw new EPException("Variable by name " + variableName + " was not found");
-                }
-            }
+            throw new EPException("Count-to guard parameter evaluated to a null value");
+        }
 
-            Integer value = (Integer) variableReader.getValue();
-            int numCountTo = 0;
-            if (value == null)
-            {
-                log.error("Invalid null value for variable " + variableName + ", using 0 as default");
-            }
-            else
-            {
-                numCountTo = value;
-            }
-            return new MyCountToPatternGuard(numCountTo, quitable);
-        }
-        else
-        {
-            return new MyCountToPatternGuard(numCountTo, quitable);
-        }
+        Integer numCountTo = (Integer) parameter;
+        return new MyCountToPatternGuard(numCountTo, quitable);
     }
 }

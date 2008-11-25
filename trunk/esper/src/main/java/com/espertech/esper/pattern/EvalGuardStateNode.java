@@ -45,7 +45,7 @@ public final class EvalGuardStateNode extends EvalStateNode implements Evaluator
             log.debug(".constructor");
         }
 
-        guard = evalGuardNode.getGuardFactory().makeGuard(context, this, stateObjectId, null);
+        guard = evalGuardNode.getGuardFactory().makeGuard(context, beginState, this, stateObjectId, null);
 
         this.activeChildNode = evalGuardNode.getChildNodes().get(0).newState(this, beginState, context, null);
     }

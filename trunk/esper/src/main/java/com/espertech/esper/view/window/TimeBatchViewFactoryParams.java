@@ -9,7 +9,6 @@
 package com.espertech.esper.view.window;
 
 import com.espertech.esper.event.EventType;
-import com.espertech.esper.type.TimePeriodParameter;
 import com.espertech.esper.util.JavaClassHelper;
 import com.espertech.esper.view.ViewParameterException;
 
@@ -56,12 +55,7 @@ public class TimeBatchViewFactoryParams {
      * @throws ViewParameterException if validation failed
      */
 	protected void processExpiry(Object parameter, String errorMessage, String errorMessage2) throws ViewParameterException {
-		if (parameter instanceof TimePeriodParameter)
-        {
-            TimePeriodParameter param = (TimePeriodParameter) parameter;
-            millisecondsBeforeExpiry = Math.round(1000d * param.getNumSeconds());
-        }
-        else if (!(parameter instanceof Number))
+        if (!(parameter instanceof Number))
         {
             throw new ViewParameterException(errorMessage);
         }

@@ -115,22 +115,14 @@ public abstract class EvalNode implements MetaDefItem
 
     private static void recursiveAnalyzeChildNodes(EvalNodeAnalysisResult evalNodeAnalysisResult, EvalNode currentNode)
     {
-        if (currentNode instanceof EvalFilterNode)
+        if ((currentNode instanceof EvalFilterNode) ||
+            (currentNode instanceof EvalGuardNode) ||
+            (currentNode instanceof EvalObserverNode) ||
+            (currentNode instanceof EvalMatchUntilNode))
         {
-            evalNodeAnalysisResult.add((EvalFilterNode) currentNode);
+            evalNodeAnalysisResult.addNode(currentNode);
         }
-        if (currentNode instanceof EvalGuardNode)
-        {
-            evalNodeAnalysisResult.add((EvalGuardNode) currentNode);
-        }
-        if (currentNode instanceof EvalObserverNode)
-        {
-            evalNodeAnalysisResult.add((EvalObserverNode) currentNode);
-        }
-        if (currentNode instanceof EvalMatchUntilNode)
-        {
-            evalNodeAnalysisResult.add((EvalMatchUntilNode) currentNode);
-        }
+
         for (EvalNode node : currentNode.getChildNodes())
         {
             recursiveAnalyzeChildNodes(evalNodeAnalysisResult, node);
