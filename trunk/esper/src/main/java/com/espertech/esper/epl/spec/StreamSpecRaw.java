@@ -16,6 +16,7 @@ import com.espertech.esper.event.EventAdapterService;
 import com.espertech.esper.event.vaevent.ValueAddEventService;
 import com.espertech.esper.pattern.PatternObjectResolutionService;
 import com.espertech.esper.schedule.TimeProvider;
+import com.espertech.esper.core.StatementContext;
 
 import java.net.URI;
 import java.util.Set;
@@ -28,28 +29,11 @@ public interface StreamSpecRaw extends StreamSpec
     /**
      * Compiles a raw stream specification consisting event type information and filter expressions
      * to an validated, optimized form for use with filter service
-     * @param eventAdapterService supplies type information
-     * @param methodResolutionService for resolving imports
-     * @param patternObjectResolutionService for resolving pattern objects
-     * @param timeProvider - provides engine current time
-     * @param namedWindowService is the service managing named windows
-     * @param variableService provides variable values
-     * @param engineURI the engine URI
-     * @param optionalPlugInTypeResolutionURIS is URIs for resolving the event name against plug-inn event representations, if any  
-     * @param valueAddEventService service that handles update events
      * @param eventTypeReferences event type names used by the statement 
      * @return compiled stream
      * @throws ExprValidationException to indicate validation errors
      */
-    public StreamSpecCompiled compile(EventAdapterService eventAdapterService,
-                                      MethodResolutionService methodResolutionService,
-                                      PatternObjectResolutionService patternObjectResolutionService,
-                                      TimeProvider timeProvider,
-                                      NamedWindowService namedWindowService,
-                                      ValueAddEventService valueAddEventService,
-                                      VariableService variableService,
-                                      String engineURI,
-                                      URI[] optionalPlugInTypeResolutionURIS,
+    public StreamSpecCompiled compile(StatementContext statementContext,
                                       Set<String> eventTypeReferences)
         throws ExprValidationException;
 

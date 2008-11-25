@@ -8,31 +8,25 @@
  **************************************************************************************/
 package com.espertech.esper.epl.spec;
 
-import com.espertech.esper.epl.core.MethodResolutionService;
+import com.espertech.esper.core.EPServiceProviderSPI;
+import com.espertech.esper.core.StatementContext;
 import com.espertech.esper.epl.core.StreamTypeService;
 import com.espertech.esper.epl.core.StreamTypeServiceImpl;
-import com.espertech.esper.epl.named.NamedWindowService;
-import com.espertech.esper.epl.expression.ExprValidationException;
 import com.espertech.esper.epl.expression.ExprNode;
-import com.espertech.esper.epl.variable.VariableService;
+import com.espertech.esper.epl.expression.ExprValidationException;
 import com.espertech.esper.event.EventAdapterException;
 import com.espertech.esper.event.EventAdapterService;
 import com.espertech.esper.event.EventType;
 import com.espertech.esper.event.EventTypeSPI;
-import com.espertech.esper.event.vaevent.ValueAddEventService;
 import com.espertech.esper.filter.FilterSpecCompiled;
 import com.espertech.esper.filter.FilterSpecCompiler;
-import com.espertech.esper.pattern.PatternObjectResolutionService;
-import com.espertech.esper.schedule.TimeProvider;
 import com.espertech.esper.util.MetaDefItem;
-import com.espertech.esper.core.EPServiceProviderSPI;
-
-import java.util.List;
-import java.util.Set;
-import java.net.URI;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import java.net.URI;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Unvalided filter-based stream specification.
@@ -72,29 +66,20 @@ public class FilterStreamSpecRaw extends StreamSpecBase implements StreamSpecRaw
         return rawFilterSpec;
     }
 
-    public StreamSpecCompiled compile(EventAdapterService eventAdapterService,
-                                      MethodResolutionService methodResolutionService,
-                                      PatternObjectResolutionService patternObjectResolutionService,
-                                      TimeProvider timeProvider,
-                                      NamedWindowService namedWindowService,
-                                      ValueAddEventService valueAddEventService,
-                                      VariableService variableService,
-                                      String engineURI,
-                                      URI[] optionalPlugInTypeResolutionURIS,
-                                      Set<String> eventTypeReferences)
+    public StreamSpecCompiled compile(StatementContext context, Set<String> eventTypeReferences)
             throws ExprValidationException
     {
         // Determine the event type
         String eventName = rawFilterSpec.getEventTypeAlias();
 
         // Could be a named window
-        if (namedWindowService.isNamedWindow(eventName))
+        if (context.getNamedWindowService().isNamedWindow(eventName))
         {
-            EventType namedWindowType = namedWindowService.getProcessor(eventName).getTailView().getEventType();
-            StreamTypeService streamTypeService = new StreamTypeServiceImpl(new EventType[] {namedWindowType}, new String[] {"s0"}, engineURI, new String[] {eventName});
+            EventType namedWindowType = context.getNamedWindowService().getProcessor(eventName).getTailView().getEventType();
+            StreamTypeService streamTypeService = new StreamTypeServiceImpl(new EventType[] {namedWindowType}, new String[] {"s0"}, context.getEngineURI(), new String[] {eventName});
 
             List<ExprNode> validatedNodes = FilterSpecCompiler.validateDisallowSubquery(rawFilterSpec.getFilterExpressions(),
-                streamTypeService, methodResolutionService, timeProvider, variableService);
+                streamTypeService, context.getMethodResolutionService(), context.getSchedulingService(), context.getVariableService());
 
             eventTypeReferences.add(((EventTypeSPI) namedWindowType).getMetadata().getPrimaryName());
             return new NamedWindowConsumerStreamSpec(eventName, this.getOptionalStreamName(), this.getViewSpecs(), validatedNodes, this.isUnidirectional());
@@ -102,15 +87,15 @@ public class FilterStreamSpecRaw extends StreamSpecBase implements StreamSpecRaw
 
         EventType eventType = null;
 
-        if (valueAddEventService.isRevisionTypeAlias(eventName))
+        if (context.getValueAddEventService().isRevisionTypeAlias(eventName))
         {
-            eventType = valueAddEventService.getValueAddUnderlyingType(eventName);
+            eventType = context.getValueAddEventService().getValueAddUnderlyingType(eventName);
             eventTypeReferences.add(((EventTypeSPI) eventType).getMetadata().getPrimaryName());
         }
 
         if (eventType == null)
         {
-            eventType = resolveType(engineURI, eventName, eventAdapterService, optionalPlugInTypeResolutionURIS);
+            eventType = resolveType(context.getEngineURI(), eventName, context.getEventAdapterService(), context.getPlugInTypeResolutionURIs());
             if (eventType instanceof EventTypeSPI) {
                 eventTypeReferences.add(((EventTypeSPI) eventType).getMetadata().getPrimaryName());                
             }
@@ -118,11 +103,11 @@ public class FilterStreamSpecRaw extends StreamSpecBase implements StreamSpecRaw
 
         // Validate all nodes, make sure each returns a boolean and types are good;
         // Also decompose all AND super nodes into individual expressions
-        StreamTypeService streamTypeService = new StreamTypeServiceImpl(new EventType[] {eventType}, new String[] {"s0"}, engineURI, new String[] {eventName});
+        StreamTypeService streamTypeService = new StreamTypeServiceImpl(new EventType[] {eventType}, new String[] {"s0"}, context.getEngineURI(), new String[] {eventName});
 
         FilterSpecCompiled spec = FilterSpecCompiler.makeFilterSpec(eventType, eventName, rawFilterSpec.getFilterExpressions(),
                 null, null,  // no tags
-                streamTypeService, methodResolutionService, timeProvider, variableService, eventAdapterService);
+                streamTypeService, context.getMethodResolutionService(), context.getSchedulingService(), context.getVariableService(), context.getEventAdapterService());
 
         return new FilterStreamSpecCompiled(spec, this.getViewSpecs(), this.getOptionalStreamName(), this.isUnidirectional());
     }

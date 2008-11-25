@@ -14,6 +14,7 @@ import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.epl.parse.SupportParserHelper;
 import com.espertech.esper.support.epl.parse.SupportEPLTreeWalkerFactory;
 import com.espertech.esper.support.event.SupportEventAdapterService;
+import com.espertech.esper.support.view.SupportStatementContextFactory;
 
 import java.util.List;
 import java.util.HashSet;
@@ -203,7 +204,7 @@ public class TestPatternStreamSpecRaw extends TestCase
 
     private PatternStreamSpecCompiled compile(PatternStreamSpecRaw raw) throws Exception
     {
-        PatternStreamSpecCompiled compiled = (PatternStreamSpecCompiled) raw.compile(SupportEventAdapterService.getService(), new MethodResolutionServiceImpl(new EngineImportServiceImpl()), null, null, new NamedWindowServiceImpl(null, null), null, null, "default", null, new HashSet<String>());
+        PatternStreamSpecCompiled compiled = (PatternStreamSpecCompiled) raw.compile(SupportStatementContextFactory.makeContext(), new HashSet<String>());
         return compiled;
     }
 

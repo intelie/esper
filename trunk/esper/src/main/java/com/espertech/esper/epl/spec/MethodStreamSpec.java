@@ -8,20 +8,13 @@
  **************************************************************************************/
 package com.espertech.esper.epl.spec;
 
-import com.espertech.esper.util.MetaDefItem;
-import com.espertech.esper.event.EventAdapterService;
-import com.espertech.esper.event.vaevent.ValueAddEventService;
-import com.espertech.esper.epl.core.MethodResolutionService;
-import com.espertech.esper.epl.named.NamedWindowService;
-import com.espertech.esper.epl.variable.VariableService;
+import com.espertech.esper.core.StatementContext;
 import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.epl.expression.ExprValidationException;
-import com.espertech.esper.pattern.PatternObjectResolutionService;
-import com.espertech.esper.schedule.TimeProvider;
+import com.espertech.esper.util.MetaDefItem;
 
 import java.util.List;
 import java.util.Set;
-import java.net.URI;
 
 /**
  * Specification object for historical data poll via database SQL statement.
@@ -87,7 +80,7 @@ public class MethodStreamSpec extends StreamSpecBase implements StreamSpecRaw, S
         return expressions;
     }
 
-    public StreamSpecCompiled compile(EventAdapterService eventAdapterService, MethodResolutionService methodResolutionService, PatternObjectResolutionService patternObjectResolutionService, TimeProvider timeProvider, NamedWindowService namedWindowService, ValueAddEventService valueAddEventService, VariableService variableService, String engineURI, URI[] plugInTypeResolutionURIs, Set<String> eventTypeReferences) throws ExprValidationException
+    public StreamSpecCompiled compile(StatementContext context, Set<String> eventTypeReferences) throws ExprValidationException
     {
         if (!ident.equals("method"))
         {

@@ -13,6 +13,7 @@ import com.espertech.esper.support.epl.parse.SupportEPLTreeWalkerFactory;
 import com.espertech.esper.support.epl.parse.SupportParserHelper;
 import com.espertech.esper.support.event.SupportEventAdapterService;
 import com.espertech.esper.support.event.SupportValueAddEventService;
+import com.espertech.esper.support.view.SupportStatementContextFactory;
 
 import java.util.HashMap;
 import java.util.List;
@@ -252,7 +253,7 @@ public class TestFilterStreamSpecRaw extends TestCase
 
     private FilterSpecCompiled compile(FilterStreamSpecRaw raw) throws Exception
     {
-        FilterStreamSpecCompiled compiled = (FilterStreamSpecCompiled) raw.compile(SupportEventAdapterService.getService(), new MethodResolutionServiceImpl(new EngineImportServiceImpl()), null, null, new NamedWindowServiceImpl(null, null), new SupportValueAddEventService(), null, "default", null, new HashSet<String>());
+        FilterStreamSpecCompiled compiled = (FilterStreamSpecCompiled) raw.compile(SupportStatementContextFactory.makeContext(), new HashSet<String>());
         return compiled.getFilterSpec();
     }
 

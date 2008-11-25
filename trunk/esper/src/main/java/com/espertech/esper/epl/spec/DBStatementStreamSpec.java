@@ -16,6 +16,7 @@ import com.espertech.esper.event.vaevent.ValueAddEventService;
 import com.espertech.esper.pattern.PatternObjectResolutionService;
 import com.espertech.esper.schedule.TimeProvider;
 import com.espertech.esper.util.MetaDefItem;
+import com.espertech.esper.core.StatementContext;
 
 import java.util.List;
 import java.util.Set;
@@ -74,15 +75,7 @@ public class DBStatementStreamSpec extends StreamSpecBase implements StreamSpecR
         return metadataSQL;
     }
 
-    public StreamSpecCompiled compile(EventAdapterService eventAdapterService,
-                                      MethodResolutionService methodResolutionService,
-                                      PatternObjectResolutionService patternObjectResolutionService,
-                                      TimeProvider timeProvider,
-                                      NamedWindowService namedWindowService,
-                                      ValueAddEventService valueAddEventService,
-                                      VariableService variableService,
-                                      String engineURI,
-                                      URI[] plugInTypeResolutionURIs,
+    public StreamSpecCompiled compile(StatementContext statementContext,
                                       Set<String> eventTypeReferences)
     {
         return this;

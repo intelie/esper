@@ -9,18 +9,17 @@
 package com.espertech.esper.epl.spec;
 
 import com.espertech.esper.collection.Pair;
+import com.espertech.esper.core.StatementContext;
 import com.espertech.esper.epl.core.MethodResolutionService;
 import com.espertech.esper.epl.core.StreamTypeService;
 import com.espertech.esper.epl.core.StreamTypeServiceImpl;
 import com.espertech.esper.epl.core.ViewResourceDelegate;
 import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.epl.expression.ExprValidationException;
-import com.espertech.esper.epl.named.NamedWindowService;
 import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.event.EventAdapterService;
 import com.espertech.esper.event.EventType;
 import com.espertech.esper.event.EventTypeSPI;
-import com.espertech.esper.event.vaevent.ValueAddEventService;
 import com.espertech.esper.filter.FilterSpecCompiled;
 import com.espertech.esper.filter.FilterSpecCompiler;
 import com.espertech.esper.pattern.*;
@@ -31,7 +30,6 @@ import com.espertech.esper.pattern.observer.ObserverParameterException;
 import com.espertech.esper.schedule.TimeProvider;
 import com.espertech.esper.util.UuidGenerator;
 
-import java.net.URI;
 import java.util.*;
 
 /**
@@ -63,15 +61,7 @@ public class PatternStreamSpecRaw extends StreamSpecBase implements StreamSpecRa
         return evalNode;
     }
 
-    public StreamSpecCompiled compile(EventAdapterService eventAdapterService,
-                                      MethodResolutionService methodResolutionService,
-                                      PatternObjectResolutionService patternObjectResolutionService,
-                                      TimeProvider timeProvider,
-                                      NamedWindowService namedWindowService,
-                                      ValueAddEventService valueAddEventService,
-                                      VariableService variableService,
-                                      String engineURI,
-                                      URI[] plugInTypeResolutionURIs,
+    public StreamSpecCompiled compile(StatementContext context,
                                       Set<String> eventTypeReferences)
             throws ExprValidationException
     {
@@ -110,28 +100,12 @@ public class PatternStreamSpecRaw extends StreamSpecBase implements StreamSpecRa
         {
             if (activeNode instanceof EvalFilterNode)
             {
-                handleFilterNode((EvalFilterNode) activeNode, eventAdapterService,
-                                      methodResolutionService,
-                                      timeProvider,
-                                      variableService,
-                                      engineURI,
-                                      plugInTypeResolutionURIs,
-                                      eventTypeReferences,
-                                      matchUntilArrayTags,
-                                      taggedEventTypes,
-                                      arrayEventTypes);
+                handleFilterNode((EvalFilterNode) activeNode, context, eventTypeReferences, matchUntilArrayTags, taggedEventTypes, arrayEventTypes);
             }
 
             if (activeNode instanceof EvalObserverNode)
             {
-                handleObserverNode((EvalObserverNode) activeNode, eventAdapterService,
-                                      methodResolutionService,
-                                      timeProvider,
-                                      variableService,
-                                      engineURI,
-                                      plugInTypeResolutionURIs,
-                                      patternObjectResolutionService,
-                                      eventTypeReferences,
+                handleObserverNode((EvalObserverNode) activeNode, context,
                                       matchUntilArrayTags,
                                       taggedEventTypes,
                                       arrayEventTypes);
@@ -139,14 +113,7 @@ public class PatternStreamSpecRaw extends StreamSpecBase implements StreamSpecRa
 
             if (activeNode instanceof EvalGuardNode)
             {
-                handleGuardNode((EvalGuardNode) activeNode, eventAdapterService,
-                                      methodResolutionService,
-                                      timeProvider,
-                                      variableService,
-                                      engineURI,
-                                      plugInTypeResolutionURIs,
-                                      patternObjectResolutionService,
-                                      eventTypeReferences,
+                handleGuardNode((EvalGuardNode) activeNode, context,
                                       matchUntilArrayTags,
                                       taggedEventTypes,
                                       arrayEventTypes);
@@ -156,18 +123,18 @@ public class PatternStreamSpecRaw extends StreamSpecBase implements StreamSpecRa
         return new PatternStreamSpecCompiled(evalNode, taggedEventTypes, arrayEventTypes, this.getViewSpecs(), this.getOptionalStreamName(), this.isUnidirectional());
     }
 
-    private void handleGuardNode(EvalGuardNode guardNode, EventAdapterService eventAdapterService, MethodResolutionService methodResolutionService, TimeProvider timeProvider, VariableService variableService, String engineURI, URI[] plugInTypeResolutionURIs, PatternObjectResolutionService patternObjectResolutionService, Set<String> eventTypeReferences, Set<String> matchUntilArrayTags, LinkedHashMap<String, Pair<EventType, String>> taggedEventTypes, LinkedHashMap<String, Pair<EventType, String>> arrayEventTypes)
+    private void handleGuardNode(EvalGuardNode guardNode, StatementContext context, Set<String> matchUntilArrayTags, LinkedHashMap<String, Pair<EventType, String>> taggedEventTypes, LinkedHashMap<String, Pair<EventType, String>> arrayEventTypes)
             throws ExprValidationException
     {
         try
         {
-            GuardFactory guardFactory = patternObjectResolutionService.create(guardNode.getPatternGuardSpec());
+            GuardFactory guardFactory = context.getPatternResolutionService().create(guardNode.getPatternGuardSpec());
 
-            StreamTypeService streamTypeService = getStreamTypeService(engineURI, eventAdapterService, taggedEventTypes, arrayEventTypes);
+            StreamTypeService streamTypeService = getStreamTypeService(context.getEngineURI(), context.getEventAdapterService(), taggedEventTypes, arrayEventTypes);
             List<ExprNode> validated = validateExpressions(guardNode.getPatternGuardSpec().getObjectParameters(),
-                    streamTypeService, methodResolutionService, null, timeProvider, variableService);
+                    streamTypeService, context.getMethodResolutionService(), null, context.getSchedulingService(), context.getVariableService());
 
-            MatchedEventConvertor convertor = new MatchedEventConvertorImpl(taggedEventTypes, arrayEventTypes, eventAdapterService);
+            MatchedEventConvertor convertor = new MatchedEventConvertorImpl(taggedEventTypes, arrayEventTypes, context.getEventAdapterService());
 
             guardNode.setGuardFactory(guardFactory);
             guardFactory.setGuardParameters(validated, convertor);
@@ -182,18 +149,18 @@ public class PatternStreamSpecRaw extends StreamSpecBase implements StreamSpecRa
         }
     }
 
-    private void handleObserverNode(EvalObserverNode observerNode, EventAdapterService eventAdapterService, MethodResolutionService methodResolutionService, TimeProvider timeProvider, VariableService variableService, String engineURI, URI[] plugInTypeResolutionURIs, PatternObjectResolutionService patternObjectResolutionService, Set<String> eventTypeReferences, Set<String> matchUntilArrayTags, LinkedHashMap<String, Pair<EventType, String>> taggedEventTypes, LinkedHashMap<String, Pair<EventType, String>> arrayEventTypes)
+    private void handleObserverNode(EvalObserverNode observerNode, StatementContext context, Set<String> matchUntilArrayTags, LinkedHashMap<String, Pair<EventType, String>> taggedEventTypes, LinkedHashMap<String, Pair<EventType, String>> arrayEventTypes)
             throws ExprValidationException
     {
         try
         {
-            ObserverFactory observerFactory = patternObjectResolutionService.create(observerNode.getPatternObserverSpec());
+            ObserverFactory observerFactory = context.getPatternResolutionService().create(observerNode.getPatternObserverSpec());
 
-            StreamTypeService streamTypeService = getStreamTypeService(engineURI, eventAdapterService, taggedEventTypes, arrayEventTypes);
+            StreamTypeService streamTypeService = getStreamTypeService(context.getEngineURI(), context.getEventAdapterService(), taggedEventTypes, arrayEventTypes);
             List<ExprNode> validated = validateExpressions(observerNode.getPatternObserverSpec().getObjectParameters(),
-                    streamTypeService, methodResolutionService, null, timeProvider, variableService);
+                    streamTypeService, context.getMethodResolutionService(), null, context.getSchedulingService(), context.getVariableService());
 
-            MatchedEventConvertor convertor = new MatchedEventConvertorImpl(taggedEventTypes, arrayEventTypes, eventAdapterService);
+            MatchedEventConvertor convertor = new MatchedEventConvertorImpl(taggedEventTypes, arrayEventTypes, context.getEventAdapterService());
 
             observerNode.setObserverFactory(observerFactory);
             observerFactory.setObserverParameters(validated, convertor);
@@ -206,39 +173,10 @@ public class PatternStreamSpecRaw extends StreamSpecBase implements StreamSpecRa
         {
             throw new ExprValidationException("Failed to resolve pattern observer: " + e.getMessage(), e);
         }
-
-        /*
-        /* TODO
-        // Resolve guard and observers factories
-        try
-        {
-            StreamTypeService streamTypes = new StreamTypeServiceImpl(engineURI);
-            for (EvalGuardNode guardNode : evalNodeAnalysisResult.getGuardNodes())
-            {
-                GuardFactory guardFactory = patternObjectResolutionService.create(guardNode.getPatternGuardSpec());
-                List<ExprNode> validated = validateExpressions(guardNode.getPatternGuardSpec().getObjectParameters(),
-                        streamTypes, methodResolutionService, null, timeProvider, variableService);
-                guardFactory.setGuardParameters(validated);
-                guardNode.setGuardFactory(guardFactory);
-            }
-            for (EvalObserverNode observerNode : evalNodeAnalysisResult.getObserverNodes())
-            {
-                ObserverFactory observerFactory = patternObjectResolutionService.create(observerNode.getPatternObserverSpec());
-                // List<ExprNode> validated = validateExpressions(observerNode.getPatternObserverSpec().getObjectParameters(),
-                //        streamTypes, methodResolutionService, null, timeProvider, variableService);
-                //observerFactory.setObserverParameters(validated);
-                observerNode.setObserverFactory(observerFactory);
-            }
-            */
     }
 
     private void handleFilterNode(EvalFilterNode filterNode,
-                                  EventAdapterService eventAdapterService,
-                                  MethodResolutionService methodResolutionService,
-                                  TimeProvider timeProvider,
-                                  VariableService variableService,
-                                  String engineURI,
-                                  URI[] plugInTypeResolutionURIs,
+                                  StatementContext context,
                                   Set<String> eventTypeReferences,
                                   Set<String> matchUntilArrayTags,
                                   LinkedHashMap<String, Pair<EventType, String>> taggedEventTypes,
@@ -246,7 +184,7 @@ public class PatternStreamSpecRaw extends StreamSpecBase implements StreamSpecRa
             throws ExprValidationException
     {
         String eventName = filterNode.getRawFilterSpec().getEventTypeAlias();
-        EventType eventType = FilterStreamSpecRaw.resolveType(engineURI, eventName, eventAdapterService, plugInTypeResolutionURIs);
+        EventType eventType = FilterStreamSpecRaw.resolveType(context.getEngineURI(), eventName, context.getEventAdapterService(), context.getPlugInTypeResolutionURIs());
         String optionalTag = filterNode.getEventAsName();
         if (eventType instanceof EventTypeSPI)
         {
@@ -312,7 +250,7 @@ public class PatternStreamSpecRaw extends StreamSpecBase implements StreamSpecRa
         if (arrayEventTypes != null)
         {
             arrayCompositeEventTypes = new LinkedHashMap<String, Pair<EventType, String>>();
-            EventType arrayTagCompositeEventType = eventAdapterService.createAnonymousCompositeType(new HashMap(), arrayEventTypes);
+            EventType arrayTagCompositeEventType = context.getEventAdapterService().createAnonymousCompositeType(new HashMap(), arrayEventTypes);
             for (Map.Entry<String, Pair<EventType, String>> entry : arrayEventTypes.entrySet())
             {
                 String tag = entry.getKey();
@@ -325,9 +263,9 @@ public class PatternStreamSpecRaw extends StreamSpecBase implements StreamSpecRa
             }
         }
 
-        StreamTypeService streamTypeService = new StreamTypeServiceImpl(filterTypes, engineURI, true, false);
+        StreamTypeService streamTypeService = new StreamTypeServiceImpl(filterTypes, context.getEngineURI(), true, false);
         List<ExprNode> exprNodes = filterNode.getRawFilterSpec().getFilterExpressions();
-        FilterSpecCompiled spec = FilterSpecCompiler.makeFilterSpec(eventType, eventName, exprNodes, filterTaggedEventTypes, arrayCompositeEventTypes, streamTypeService, methodResolutionService, timeProvider, variableService, eventAdapterService);
+        FilterSpecCompiled spec = FilterSpecCompiler.makeFilterSpec(eventType, eventName, exprNodes, filterTaggedEventTypes, arrayCompositeEventTypes, streamTypeService, context.getMethodResolutionService(), context.getSchedulingService(), context.getVariableService(), context.getEventAdapterService());
         filterNode.setFilterSpec(spec);
     }
 
