@@ -5,6 +5,7 @@ import com.espertech.esper.client.soda.*;
 import com.espertech.esper.client.time.CurrentTimeEvent;
 import com.espertech.esper.regression.support.*;
 import com.espertech.esper.support.bean.SupportBeanConstants;
+import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.support.util.ArrayAssertionUtil;
 import com.espertech.esper.support.util.SupportUpdateListener;
@@ -279,6 +280,37 @@ public class TestTimerAtObserver extends TestCase implements SupportBeanConstant
         statement.addListener(listener);
 
         runAssertion(epService, listener);
+    }
+
+    public void testExpressionWithProperty()
+    {
+        String expression = "select * from pattern [a=SupportBean -> every timer:at(2*a.intPrimitive,*,*,*,*)]";
+
+        Configuration config = SupportConfigFactory.getConfiguration();
+        config.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
+        config.addEventTypeAlias("SupportBean", SupportBean.class.getName());
+        EPServiceProvider epService = EPServiceProviderManager.getDefaultProvider(config);
+        epService.initialize();
+
+        Calendar cal = GregorianCalendar.getInstance();
+        cal.set(Calendar.MILLISECOND, 0);
+        cal.set(2008, 7, 3, 6, 0, 0);      // start on a Sunday at 6am, August 3 2008
+        sendTimer(cal.getTimeInMillis(), epService);
+
+        EPStatement statement = epService.getEPAdministrator().createEPL(expression);
+
+        SupportUpdateListener listener = new SupportUpdateListener();
+        statement.addListener(listener);
+
+        epService.getEPRuntime().sendEvent(new SupportBean("E1", 20));
+        
+        cal.set(2008, 7, 3, 6, 39, 59);
+        sendTimer(cal.getTimeInMillis(), epService);
+        assertFalse(listener.isInvoked());
+
+        cal.set(2008, 7, 3, 6, 40, 00);
+        sendTimer(cal.getTimeInMillis(), epService);
+        assertTrue(listener.isInvoked());
     }
 
     public void testCrontabParameters()

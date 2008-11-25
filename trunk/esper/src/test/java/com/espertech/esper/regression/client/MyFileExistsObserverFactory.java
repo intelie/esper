@@ -4,6 +4,7 @@ import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.pattern.MatchedEventMap;
 import com.espertech.esper.pattern.PatternContext;
 import com.espertech.esper.pattern.MatchedEventConvertor;
+import com.espertech.esper.pattern.PatternExpressionUtil;
 import com.espertech.esper.pattern.observer.*;
 import com.espertech.esper.client.EPException;
 
@@ -32,7 +33,7 @@ public class MyFileExistsObserverFactory extends ObserverFactorySupport
 
     public EventObserver makeObserver(PatternContext context, MatchedEventMap beginState, ObserverEventEvaluator observerEventEvaluator, Object stateNodeId, Object observerState)
     {
-        Object filename = EventObserverSupport.evaluate("File-exists observer ", beginState, filenameExpression, convertor);
+        Object filename = PatternExpressionUtil.evaluate("File-exists observer ", beginState, filenameExpression, convertor);
         if (filename == null)
         {
             throw new EPException("Filename evaluated to null");

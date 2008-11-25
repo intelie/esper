@@ -8,8 +8,8 @@ import com.espertech.esper.regression.support.*;
 import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.bean.SupportBeanConstants;
 import com.espertech.esper.support.client.SupportConfigFactory;
-import com.espertech.esper.support.util.SupportUpdateListener;
 import com.espertech.esper.support.util.ArrayAssertionUtil;
+import com.espertech.esper.support.util.SupportUpdateListener;
 import com.espertech.esper.util.SerializableObjectCopier;
 import junit.framework.TestCase;
 
@@ -261,15 +261,13 @@ public class TestTimerIntervalObserver extends TestCase implements SupportBeanCo
         sendTimer(0, epService);
 
         // Set up a timer:within
-        EPStatement statement = epService.getEPAdministrator().createEPL("select a.string as id from pattern [a=SupportBean -> timer:interval(intPrimitive seconds)]");
+        EPStatement statement = epService.getEPAdministrator().createEPL("select a.string as id from pattern [every a=SupportBean -> timer:interval(intPrimitive seconds)]");
 
         SupportUpdateListener testListener = new SupportUpdateListener();
         statement.addListener(testListener);
 
         sendTimer(10000, epService);
         epService.getEPRuntime().sendEvent(new SupportBean("E1", 3));
-
-        sendTimer(10000, epService);
         epService.getEPRuntime().sendEvent(new SupportBean("E2", 2));
 
         sendTimer(11999, epService);

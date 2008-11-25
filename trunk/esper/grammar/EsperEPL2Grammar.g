@@ -1097,6 +1097,7 @@ expressionWithTimeList
 expressionWithTime
 	:   	(lastOperand) => lastOperand
 	|	(lastWeekdayOperand) => lastWeekdayOperand
+	|	(timePeriod) => timePeriod
 	|	(expressionQualifyable) => expressionQualifyable
 	|	(rangeOperand) => rangeOperand
 	| 	(frequencyOperand) => frequencyOperand
@@ -1104,7 +1105,6 @@ expressionWithTime
 	|	(weekDayOperator) =>  weekDayOperator
 	| 	(numericParameterList) => numericParameterList
 	|	numberSetStar
-	|	timePeriod
 	;
 
 expressionQualifyable

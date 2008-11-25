@@ -37,7 +37,7 @@ public class TestInvalidPattern extends TestCase
     {
         String exceptionText = null;
 
-        exceptionText = getStatementExceptionPattern(SupportBean.class.getName() + " -> timer:at(2,3,4,4,4)");
+        exceptionText = getStatementExceptionPattern("timer:at(2,3,4,4,4)");
         assertEquals("Invalid parameter for pattern observer: Error computing observer schedule specification: Invalid combination between days of week and days of month fields for timer:at [com.espertech.esper.support.bean.SupportBean -> timer:at(2,3,4,4,4)]", exceptionText);
 
         exceptionText = getStatementExceptionPattern(EVENT_ALLTYPES + " -> timer:within()");

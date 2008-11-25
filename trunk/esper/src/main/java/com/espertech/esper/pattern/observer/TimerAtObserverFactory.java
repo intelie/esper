@@ -12,6 +12,7 @@ import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.pattern.MatchedEventConvertor;
 import com.espertech.esper.pattern.MatchedEventMap;
 import com.espertech.esper.pattern.PatternContext;
+import com.espertech.esper.pattern.PatternExpressionUtil;
 import com.espertech.esper.schedule.ScheduleParameterException;
 import com.espertech.esper.schedule.ScheduleSpec;
 import com.espertech.esper.schedule.ScheduleSpecUtil;
@@ -46,12 +47,15 @@ public class TimerAtObserverFactory implements ObserverFactory, MetaDefItem
         {
             throw new ObserverParameterException("Invalid number of parameters for timer:at");
         }
+
+        this.params = params;
+        this.convertor = convertor; 
     }
 
     public EventObserver makeObserver(PatternContext context, MatchedEventMap beginState, ObserverEventEvaluator observerEventEvaluator,
                                       Object stateNodeId, Object observerState)
     {
-        List<Object> observerParameters = EventObserverSupport.evaluate("Timer-at observer", beginState, params, convertor);
+        List<Object> observerParameters = PatternExpressionUtil.evaluate("Timer-at observer", beginState, params, convertor);
 
         try
         {

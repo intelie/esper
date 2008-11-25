@@ -48,7 +48,7 @@ public class TestSelectExpr extends TestCase
 
     public void testKeywordsAllowed()
     {
-        String fields = "count,escape,every,sum,avg,max,min,coalesce,median,stddev,avedev,events,seconds,minutes,first,last,unidirectional,pattern,sql,metadatasql,prev,prior,weekday,lastweekday,cast,snapshot,variable,window,left,right,full,outer,join";
+        String fields = "count,escape,every,sum,avg,max,min,coalesce,median,stddev,avedev,events,first,last,unidirectional,pattern,sql,metadatasql,prev,prior,weekday,lastweekday,cast,snapshot,variable,window,left,right,full,outer,join";
         epService.getEPAdministrator().getConfiguration().addEventTypeAlias("Keywords", SupportBeanKeywords.class);
         EPStatement stmt = epService.getEPAdministrator().createEPL("select " + fields + " from Keywords");
         stmt.addListener(testListener);
