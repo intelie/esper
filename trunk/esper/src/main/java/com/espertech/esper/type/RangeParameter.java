@@ -73,11 +73,4 @@ public class RangeParameter implements NumberSetParameter
 
         return values;
     }
-
-    public void toEPL(StringWriter writer)
-    {
-        writer.write(Integer.toString(low));
-        writer.write(':');
-        writer.write(Integer.toString(high));
-    }
 }

@@ -22,6 +22,9 @@ import java.util.ArrayList;
  */
 public class GroupByViewFactory implements ViewFactory
 {
+    /**
+     * View parameters.
+     */
     protected List<ExprNode> viewParameters;
 
     /**

@@ -18,11 +18,19 @@ public class EvalNodeAnalysisResult
 {
     private List<EvalNode> activeNodes = new ArrayList<EvalNode>();
 
+    /**
+     * Add a node found.
+     * @param node found
+     */
     public void addNode(EvalNode node)
     {
         activeNodes.add(node);
     }
 
+    /**
+     * Returns all nodes found.
+     * @return pattern nodes
+     */
     public List<EvalNode> getActiveNodes()
     {
         return activeNodes;

@@ -1254,10 +1254,14 @@ a=A -> (B(id = a.id) and C(id = a.id))]]></programlisting>
 				<indexterm><primary>pattern guard</primary><secondary>timer-within</secondary></indexterm>
 				<para>
 					The <literal>timer:within</literal> guard acts like a stopwatch. 
-					If the associated pattern expression does not turn true within the specified time period it is stopped and permanently false.
-					The <literal>timer:within</literal> guard takes a time period (see <xref linkend="epl-syntax-time-periods"/>) or a number of seconds as a parameter.
+					If the associated pattern expression does not turn true within the specified time period it is stopped and permanently false.					
 				</para>
 				
+				<para>
+					The <literal>timer:within</literal> guard takes a time period (see <xref linkend="epl-syntax-time-periods"/>) or an expression providing a number of seconds as a parameter. The seconds interval expression may
+					contain references to properties of prior events in the same pattern as well as variables and substitution parameters.
+				</para>
+
 				<para>
 					This pattern fires if an A event arrives within 5 seconds after statement creation.
 				</para>
@@ -1291,6 +1295,32 @@ a=A -> (B(id = a.id) and C(id = a.id))]]></programlisting>
 timer:within(125 sec)
 timer:within(125)</programlisting>
 
+				<sect4 id="pattern-timer-within-parameterized" >
+				   <title>Time interval expressions</title>
+					<para>
+						The <literal>timer:within</literal> guard may be parameterized by an expression that contains one or more references to properties of prior events in the same pattern.
+					</para>
+					
+					<para>
+						As a simple example, this pattern matches every A event followed by a B event that arrives within <literal>delta</literal> seconds after the A event: 
+					</para>
+					<programlisting><![CDATA[every a=A -> b=B where timer:within (a.delta seconds)]]></programlisting>
+
+					<para>
+						Herein A event is assumed to have a <literal>delta</literal> property that provides the number of seconds to wait for B events. Each arriving A event may have a different value for <literal>delta</literal>
+						and the guard is therefore parameterized dynamically based on the prior A event received.
+					</para>
+
+					<para>
+						When multiple events accumulate, for example when using the match-until or repeat pattern elements, an index must be provided:
+					</para>
+					<programlisting><![CDATA[[2] a=A -> b=B where timer:within (a[0].delta + a[1].delta)]]></programlisting>
+
+					<para>
+						The above pattern matches after 2 A events arrive followed by a B event within a time interval after the A event that is defined by the sum of the <literal>delta</literal> properties of both A events.
+					</para>
+				</sect4>
+				
 			</sect3>
 	   </sect2>	
     </sect1>
@@ -1322,9 +1352,14 @@ timer:within(125)</programlisting>
 				<indexterm><primary>pattern observer</primary><secondary>timer-interval</secondary></indexterm>
 				<para>
 					The <literal>timer:interval</literal> observer waits for the defined time before the truth value of the observer turns true.
-					The observer takes a time period (see <xref linkend="epl-syntax-time-periods"/>) or a number of seconds as a parameter.
+					The observer takes a time period (see <xref linkend="epl-syntax-time-periods"/>) as a parameter, or an expression that returns the number of seconds.
 				</para>
 	
+				<para>
+					The observer may be parameterized by an expression that contains one or more references to properties of prior events in the same pattern, or may also reference variables, substitution parameters or any other expression returning 
+					a numeric value.
+				</para>
+				
 				<para>
 					After an A event arrived wait 10 seconds then indicate that the pattern matches.
 				</para>
@@ -1340,6 +1375,15 @@ timer:within(125)</programlisting>
 					value as the A event.
 				</para>
 				<programlisting><![CDATA[every a=A -> (timer:interval(60 sec) and not B(id=a.id)) ]]></programlisting>
+
+				<para>
+					Consider the next example, which assumes that the A event has a property <literal>waittime</literal>:
+				</para>
+				<programlisting><![CDATA[every a=A -> (timer:interval(a.waittime + 2) and not B(id=a.id))]]></programlisting>
+
+				<para>
+					In the above pattern the logic waits for 2 seconds plus the number of seconds provided by the value of the <literal>waittime</literal> property of the A event.
+				</para>
 			</sect3>
 
 			<sect3 id="pattern-timer-at" >
@@ -1361,6 +1405,10 @@ timer:within(125)</programlisting>
 					The value for seconds is optional. Each element allows wildcard <literal>*</literal> values. Ranges can be specified 
 					by means of lower bounds then a colon ‘:’ then the upper bound. The division operator <literal>*/x</literal> can be used to 
 					specify that every x<subscript>th</subscript> value is valid. Combinations of these operators can be used by placing these into square brackets([]).
+				</para>
+				
+				<para>
+					The <literal>timer:at</literal> observer may also be parameterized by an expression that contains one or more references to properties of prior events in the same pattern, or may also reference variables, substitution parameters or any other expression returning a numeric value. The frequency division operator <literal>*/x</literal> and parameters lists within brackets([]) are an exception: they may only contain variables, substitution parameters or numeric values.
 				</para>
 				
 				<para>

@@ -2,6 +2,9 @@ package com.espertech.esper.client.soda;
 
 import java.io.StringWriter;
 
+/**
+ * Represent an expression 
+ */
 public class TimePeriodExpression extends ExpressionBase
 {
     private boolean hasDays;

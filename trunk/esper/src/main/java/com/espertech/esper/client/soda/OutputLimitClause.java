@@ -273,6 +273,10 @@ public class OutputLimitClause implements Serializable
         return whenExpression;
     }
 
+    /**
+     * Returns the time period, or null if none provided.
+     * @return time period
+     */
     public TimePeriodExpression getTimePeriodExpression()
     {
         return timePeriodExpression;

@@ -1395,6 +1395,17 @@ public class Expressions implements Serializable
         return new SubqueryInExpression(expression, model, true);
     }
 
+    /**
+     * Returns a time period expression for the specified parts.
+     * <p>
+     * Each part can be a null value in which case the part is left out.
+     * @param days day part
+     * @param hours hour part
+     * @param minutes minute part
+     * @param seconds seconds part
+     * @param milliseconds milliseconds part
+     * @return time period expression
+     */
     public static TimePeriodExpression timePeriod(Double days, Double hours, Double minutes, Double seconds, Double milliseconds)
     {
         Expression daysExpr = (days != null) ? constant(days) : null;
@@ -1405,6 +1416,19 @@ public class Expressions implements Serializable
         return new TimePeriodExpression(daysExpr, hoursExpr, minutesExpr, secondsExpr, millisecondsExpr);
     }
 
+    /**
+     * Returns a time period expression for the specified parts.
+     * <p>
+     * Each part can be a null value in which case the part is left out.
+     * <p>
+     * Each object value may be a String value for an event property, or a number for a constant.
+     * @param days day part
+     * @param hours hour part
+     * @param minutes minute part
+     * @param seconds seconds part
+     * @param milliseconds milliseconds part
+     * @return time period expression
+     */
     public static TimePeriodExpression timePeriod(Object days, Object hours, Object minutes, Object seconds, Object milliseconds)
     {
         Expression daysExpr = convertVariableNumeric(days);
@@ -1415,11 +1439,21 @@ public class Expressions implements Serializable
         return new TimePeriodExpression(daysExpr, hoursExpr, minutesExpr, secondsExpr, millisecondsExpr);
     }
 
+    /**
+     * Creates a wildcard parameter.
+     * @return parameter
+     */
     public static CrontabParameterExpression crontabScheduleWildcard()
     {
         return new CrontabParameterExpression(CrontabParameterExpression.ScheduleItemType.WILDCARD);
     }
 
+    /**
+     * Creates a parameter of the given type and parameterized by a number.
+     * @param parameter the constant parameter for the type
+     * @param type the type of crontab parameter
+     * @return crontab parameter
+     */
     public static CrontabParameterExpression crontabScheduleItem(Integer parameter, CrontabParameterExpression.ScheduleItemType type)
     {
         CrontabParameterExpression param = new CrontabParameterExpression(type);
@@ -1430,11 +1464,22 @@ public class Expressions implements Serializable
         return param;
     }
 
+    /**
+     * Creates a frequency cron parameter.
+     * @param frequency the constant for the frequency
+     * @return cron parameter
+     */
     public static CrontabFrequencyExpression crontabScheduleFrequency(int frequency)
     {
         return new CrontabFrequencyExpression(constant(frequency));
     }
 
+    /**
+     * Creates a range cron parameter.
+     * @param lowerBounds the lower bounds
+     * @param upperBounds the upper bounds
+     * @return crontab parameter
+     */
     public static CrontabRangeExpression crontabScheduleRange(int lowerBounds, int upperBounds)
     {
         return new CrontabRangeExpression(constant(lowerBounds), constant(upperBounds));

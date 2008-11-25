@@ -13,6 +13,11 @@ import org.apache.commons.logging.LogFactory;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 
+/**
+ * Expression representing a time period.
+ * <p>
+ * Child nodes to this expression carry the actual parts and must return a numeric value.
+ */
 public class ExprTimePeriod extends ExprNode
 {
     private static final Log log = LogFactory.getLog(ExprTimePeriod.class);
@@ -24,6 +29,14 @@ public class ExprTimePeriod extends ExprNode
     private final boolean hasMillisecond;
     private boolean hasVariable;
 
+    /**
+     * Ctor.
+     * @param hasDay true if the expression has that part, false if not
+     * @param hasHour true if the expression has that part, false if not
+     * @param hasMinute true if the expression has that part, false if not
+     * @param hasSecond true if the expression has that part, false if not
+     * @param hasMillisecond true if the expression has that part, false if not
+     */
     public ExprTimePeriod(boolean hasDay, boolean hasHour, boolean hasMinute, boolean hasSecond, boolean hasMillisecond)
     {
         this.hasDay = hasDay;
@@ -33,31 +46,55 @@ public class ExprTimePeriod extends ExprNode
         this.hasMillisecond = hasMillisecond;
     }
 
+    /**
+     * Indicator whether the time period has a day part child expression.
+     * @return true for part present, false for not present
+     */
     public boolean isHasDay()
     {
         return hasDay;
     }
 
+    /**
+     * Indicator whether the time period has a hour part child expression.
+     * @return true for part present, false for not present
+     */
     public boolean isHasHour()
     {
         return hasHour;
     }
 
+    /**
+     * Indicator whether the time period has a minute part child expression.
+     * @return true for part present, false for not present
+     */
     public boolean isHasMinute()
     {
         return hasMinute;
     }
 
+    /**
+     * Indicator whether the time period has a second part child expression.
+     * @return true for part present, false for not present
+     */
     public boolean isHasSecond()
     {
         return hasSecond;
     }
 
+    /**
+     * Indicator whether the time period has a millisecond part child expression.
+     * @return true for part present, false for not present
+     */
     public boolean isHasMillisecond()
     {
         return hasMillisecond;
     }
 
+    /**
+     * Indicator whether the time period has a variable in any of the child expressions.
+     * @return true for variable present, false for not present
+     */
     public boolean hasVariable()
     {
         return hasVariable;

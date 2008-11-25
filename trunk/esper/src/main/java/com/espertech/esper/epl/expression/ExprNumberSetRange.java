@@ -11,6 +11,11 @@ import com.espertech.esper.util.JavaClassHelper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+/**
+ * Expression for use within crontab to specify a range.
+ * <p>
+ * Differs from the between-expression since the value returned by evaluating is a cron-value object.
+ */
 public class ExprNumberSetRange extends ExprNode
 {
     private static final Log log = LogFactory.getLog(ExprNumberSetRange.class);

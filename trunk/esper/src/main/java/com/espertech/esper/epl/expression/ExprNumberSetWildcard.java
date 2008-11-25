@@ -8,6 +8,9 @@ import com.espertech.esper.schedule.TimeProvider;
 import com.espertech.esper.event.EventBean;
 import com.espertech.esper.type.WildcardParameter;
 
+/**
+ * Expression for use within crontab to specify a wildcard.
+ */
 public class ExprNumberSetWildcard extends ExprNode
 {
     private static WildcardParameter wildcardParameter = new WildcardParameter();

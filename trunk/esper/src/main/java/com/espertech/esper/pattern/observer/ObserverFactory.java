@@ -23,6 +23,7 @@ public interface ObserverFactory
     /**
      * Sets the observer object parameters.
      * @param observerParameters is a list of parameters
+     * @param convertor for converting partial pattern matches to event-per-stream for expressions
      * @throws ObserverParameterException thrown to indicate a parameter problem
      */
     public void setObserverParameters(List<ExprNode> observerParameters, MatchedEventConvertor convertor) throws ObserverParameterException;

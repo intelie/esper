@@ -42,7 +42,7 @@ public class WeightedAverageViewFactory implements ViewFactory
 
     public void attach(EventType parentEventType, StatementContext statementContext, ViewFactory optionalParentFactory, List<ViewFactory> parentViewFactories) throws ViewParameterException
     {
-        ExprNode[] validated = ViewFactorySupport.validate("Correlation view", parentEventType, statementContext, viewParameters, false);
+        ExprNode[] validated = ViewFactorySupport.validate("Weighted average view", parentEventType, statementContext, viewParameters, false);
 
         String errorMessage = "Weighted average view requires two expressions returning numeric values as parameters";
         if (viewParameters.size() != 2)

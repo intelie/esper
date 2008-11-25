@@ -42,6 +42,7 @@ public final class OutputConditionCrontab implements OutputCondition
      * @param context is the view context for time scheduling
      * @param outputCallback is the callback to make once the condition is satisfied
      * @param scheduleSpecExpressionList list of schedule parameters
+     * @throws ExprValidationException if the crontab expression failed to validate
      */
     public OutputConditionCrontab(List<ExprNode> scheduleSpecExpressionList,
                                    StatementContext context,
@@ -134,7 +135,7 @@ public final class OutputConditionCrontab implements OutputCondition
         context.getSchedulingService().add(scheduleSpec, handle, scheduleSlot);
     }
 
-    public static Object[] evaluate(ExprNode[] parameters)
+    private static Object[] evaluate(ExprNode[] parameters)
     {
         Object[] results = new Object[parameters.length];
         int count = 0;

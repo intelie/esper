@@ -17,6 +17,9 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.HashMap;
 
+/**
+ * Implements a convertor for pattern partial results to events per stream.  
+ */
 public class MatchedEventConvertorImpl implements MatchedEventConvertor
 {
     private final EventBean[] eventsPerStream;
@@ -24,6 +27,12 @@ public class MatchedEventConvertorImpl implements MatchedEventConvertor
     private final LinkedHashMap<String, Pair<EventType, String>> arrayEventTypes;
     private final EventAdapterService eventAdapterService;
 
+    /**
+     * Ctor.
+     * @param filterTypes the filter one-event types
+     * @param arrayEventTypes the filter many-event types
+     * @param eventAdapterService for creating wrappers if required
+     */
     public MatchedEventConvertorImpl(LinkedHashMap<String, Pair<EventType, String>> filterTypes, LinkedHashMap<String, Pair<EventType, String>> arrayEventTypes, EventAdapterService eventAdapterService)
     {
         int size = filterTypes.size();

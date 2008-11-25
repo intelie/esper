@@ -86,11 +86,11 @@ from <emphasis>stream_def</emphasis> [as name] [, <emphasis>stream_def</emphasis
 		
 			<synopsis>time-period : [<emphasis>day-part</emphasis>] [<emphasis>hour-part</emphasis>] [<emphasis>minute-part</emphasis>] [<emphasis>seconds-part</emphasis>] [<emphasis>milliseconds-part</emphasis>]
 
-day-part : <emphasis>number</emphasis> ("days" | "day")
-hour-part : <emphasis>number</emphasis> ("hours" | "hour")
-minute-part : <emphasis>number</emphasis> ("minutes" | "minute" | "min")
-seconds-part : <emphasis>number</emphasis> ("seconds" | "second" | "sec")
-milliseconds-part : <emphasis>number</emphasis> ("milliseconds" | "millisecond" | "msec")</synopsis>
+day-part : <emphasis>(number|variable_name)</emphasis> ("days" | "day")
+hour-part : <emphasis>(number|variable_name)</emphasis> ("hours" | "hour")
+minute-part : <emphasis>(number|variable_name)</emphasis> ("minutes" | "minute" | "min")
+seconds-part : <emphasis>(number|variable_name)</emphasis> ("seconds" | "second" | "sec")
+milliseconds-part : <emphasis>(number|variable_name)</emphasis> ("milliseconds" | "millisecond" | "msec")</synopsis>
                 
 			<para>
 					Some examples of time periods are:
@@ -100,6 +100,10 @@ milliseconds-part : <emphasis>number</emphasis> ("milliseconds" | "millisecond" 
 20 sec 100 msec
 1 day 2 hours 20 minutes 15 seconds 110 milliseconds
 0.5 minutes</programlisting>
+
+			<para>
+					Variable names and substitution parameters '<literal>?</literal>' for prepared statements are also allowed as part of a time period expression.
+			</para>
 		</sect2>
 		
 		<sect2 id="epl-syntax-comments">

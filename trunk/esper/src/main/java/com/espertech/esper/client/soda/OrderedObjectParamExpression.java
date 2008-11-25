@@ -2,6 +2,10 @@ package com.espertech.esper.client.soda;
 
 import java.io.StringWriter;
 
+/**
+ * For use in view parameter lists, this is a wrapper expression
+ * that adds an ascending or descending sort indicator to its single child expression.
+ */
 public class OrderedObjectParamExpression extends ExpressionBase
 {
     private boolean isDescending;

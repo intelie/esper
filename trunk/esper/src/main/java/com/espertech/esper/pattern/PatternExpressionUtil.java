@@ -17,6 +17,9 @@ import org.apache.commons.logging.LogFactory;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Utility for evaluating pattern expressions.
+ */
 public class PatternExpressionUtil
 {
     private static Log log = LogFactory.getLog(PatternExpressionUtil.class);

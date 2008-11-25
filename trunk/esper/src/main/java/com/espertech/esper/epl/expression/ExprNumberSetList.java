@@ -17,6 +17,9 @@ import java.util.ArrayList;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+/**
+ * Expression for use within crontab to specify a list of values.
+ */
 public class ExprNumberSetList extends ExprNode
 {
     private static final Log log = LogFactory.getLog(ExprNumberSetList.class);

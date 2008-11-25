@@ -13,6 +13,11 @@ import com.espertech.esper.util.JavaClassHelper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+/**
+ * Expression for a parameter within a crontab.
+ * <p>
+ * May have one subnode depending on the cron parameter type.
+ */
 public class ExprNumberSetCronParam extends ExprNode
 {
     private static final Log log = LogFactory.getLog(ExprNumberSetCronParam.class);
@@ -20,11 +25,19 @@ public class ExprNumberSetCronParam extends ExprNode
     private final CronOperatorEnum cronOperator;
     private TimeProvider timeProvider;
 
+    /**
+     * Ctor.
+     * @param cronOperator type of cron parameter
+     */
     public ExprNumberSetCronParam(CronOperatorEnum cronOperator)
     {
         this.cronOperator = cronOperator;
     }
 
+    /**
+     * Returns the cron parameter type.
+     * @return type of cron parameter
+     */
     public CronOperatorEnum getCronOperator()
     {
         return cronOperator;

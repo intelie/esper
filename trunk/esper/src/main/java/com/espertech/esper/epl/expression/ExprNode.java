@@ -583,6 +583,13 @@ public abstract class ExprNode implements ExprValidator, ExprEvaluator, MetaDefI
         }
     }
 
+    /**
+     * Compares two expression nodes via deep comparison, considering all
+     * child nodes of either side.
+     * @param one array of expressions
+     * @param two array of expressions
+     * @return true if the expressions are equal, false if not
+     */
     public static boolean deepEquals(ExprNode[] one, ExprNode[] two)
     {
         if (one.length != two.length)

@@ -38,6 +38,7 @@ public class OutputLimitSpec implements MetaDefItem
      * @param whenExpressionNode - for controlling output by a boolean expression
      * @param thenExpressions variable assignments, if null if none
      * @param crontabAtSchedule - crontab parameters
+     * @param timePeriodExpr - the time period, or null if none
      */
     public OutputLimitSpec(Double rate, String variableForRate, OutputLimitRateType rateType, OutputLimitLimitType displayLimit, ExprNode whenExpressionNode, List<OnTriggerSetAssignment> thenExpressions, List<ExprNode> crontabAtSchedule, ExprTimePeriod timePeriodExpr)
 	{

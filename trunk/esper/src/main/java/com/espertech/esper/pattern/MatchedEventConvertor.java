@@ -10,7 +10,15 @@ package com.espertech.esper.pattern;
 
 import com.espertech.esper.event.EventBean;
 
+/**
+ * Converts from a map of prior matching events to a events per stream for resultion by expressions.
+ */
 public interface MatchedEventConvertor
 {
+    /**
+     * Converts pattern matching events to events per stream.
+     * @param events pattern partial matches
+     * @return events per stream
+     */
     public EventBean[] convert(MatchedEventMap events);
 }

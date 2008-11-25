@@ -7,10 +7,18 @@ import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.schedule.TimeProvider;
 import com.espertech.esper.event.EventBean;
 
+/**
+ * A placeholder expression for view/pattern object parameters that allow
+ * sorting expression values ascending or descending.
+ */
 public class ExprOrderedExpr extends ExprNode
 {
     private final boolean isDescending;
 
+    /**
+     * Ctor.
+     * @param descending is true for descending sorts
+     */
     public ExprOrderedExpr(boolean descending)
     {
         isDescending = descending;
@@ -56,6 +64,10 @@ public class ExprOrderedExpr extends ExprNode
         return getChildNodes().get(0).evaluate(eventsPerStream, isNewData);
     }
 
+    /**
+     * Returns true for descending sort.
+     * @return indicator for ascending or descending sort
+     */
     public boolean isDescending()
     {
         return isDescending;

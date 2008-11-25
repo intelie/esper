@@ -11,6 +11,9 @@ import com.espertech.esper.type.FrequencyParameter;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+/**
+ * Expression for use within crontab to specify a frequency.
+ */
 public class ExprNumberSetFrequency extends ExprNode
 {
     private static final Log log = LogFactory.getLog(ExprNumberSetFrequency.class);

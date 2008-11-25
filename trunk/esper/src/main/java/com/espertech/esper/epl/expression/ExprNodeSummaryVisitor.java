@@ -1,10 +1,8 @@
 package com.espertech.esper.epl.expression;
 
-import com.espertech.esper.collection.Pair;
-
-import java.util.List;
-import java.util.LinkedList;
-
+/**
+ * Visitor for compiling usage informaton of special expressions within an expression tree.
+ */
 public class ExprNodeSummaryVisitor implements ExprNodeVisitor
 {
     private boolean hasProperties;
@@ -12,10 +10,6 @@ public class ExprNodeSummaryVisitor implements ExprNodeVisitor
     private boolean hasSubselect;
     private boolean hasStreamSelect;
     private boolean hasPreviousPrior;
-
-    public ExprNodeSummaryVisitor()
-    {
-    }
 
     public boolean isVisit(ExprNode exprNode)
     {
@@ -46,11 +40,20 @@ public class ExprNodeSummaryVisitor implements ExprNodeVisitor
         }
     }
 
+    /**
+     * Returns true if the expression is a plain-value expression, without any of the following:
+     * properties, aggregation, subselect, stream select, previous or prior
+     * @return true for plain
+     */
     public boolean isPlain()
     {
         return !(hasProperties | hasAggregation | hasSubselect | hasStreamSelect | hasPreviousPrior);
     }
 
+    /**
+     * Returns a message if the expression contains special-instruction expressions.
+     * @return message
+     */
     public String getMessage()
     {
         if (hasProperties)
