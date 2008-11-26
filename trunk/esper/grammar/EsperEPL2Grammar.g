@@ -1108,7 +1108,7 @@ expressionWithTime
 	;
 
 expressionQualifyable
-	:	expression (a=ASC|d=DESC|s=TIMEPERIOD_SECONDS)?
+	:	expression (a=ASC|d=DESC|s=TIMEPERIOD_SECONDS|s=TIMEPERIOD_SECOND|s=TIMEPERIOD_SEC)?
 		-> {d != null || a != null}? ^(OBJECT_PARAM_ORDERED_EXPR expression $a? $d?)
 		-> {s != null}? ^(TIME_PERIOD ^(SECOND_PART expression))
 		-> expression

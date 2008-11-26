@@ -83,12 +83,16 @@ public class ExprRegexpNode extends ExprNode
         if (pattern == null)
         {
             String patternText = (String) this.getChildNodes().get(1).evaluate(eventsPerStream, isNewData);
+            // TODO
+            byte[] bytes = patternText.getBytes(); 
             if (patternText == null)
             {
                 return null;
             }
             try
             {
+                // todo
+                byte[] val = patternText.getBytes();
                 pattern = Pattern.compile(patternText);
             }
             catch (PatternSyntaxException ex)

@@ -138,6 +138,19 @@ public class ASTUtil
             printer.print(" [");
             printer.print(node.getType());
             printer.print("]");
+
+            if (node.getText().contains("\\"))
+            {
+                int count = 0;
+                for (int i = 0; i < node.getText().length(); i++)
+                {
+                    if (node.getText().charAt(i) == '\\')
+                    {
+                        count++;
+                    }
+                }
+                printer.print(" (" + count + " backlashes)");
+            }
         }
         printer.println();
     }

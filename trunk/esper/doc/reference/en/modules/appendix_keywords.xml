@@ -111,9 +111,9 @@ select insert from MyEvent]]></programlisting>
 				<row><entry>regexp</entry><entry>-</entry></row>
 				<row><entry>right</entry><entry>yes</entry></row>
 				<row><entry>rstream</entry><entry>-</entry></row>
-				<row><entry>sec</entry><entry>yes</entry></row>
-				<row><entry>second</entry><entry>yes</entry></row>
-				<row><entry>seconds</entry><entry>yes</entry></row>
+				<row><entry>sec</entry><entry>-</entry></row>
+				<row><entry>second</entry><entry>-</entry></row>
+				<row><entry>seconds</entry><entry>-</entry></row>
 				<row><entry>select</entry><entry>-</entry></row>
 				<row><entry>set</entry><entry>-</entry></row>
 				<row><entry>snapshot</entry><entry>yes</entry></row>

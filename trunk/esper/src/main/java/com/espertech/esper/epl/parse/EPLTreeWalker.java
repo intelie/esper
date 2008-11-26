@@ -1202,7 +1202,7 @@ public class EPLTreeWalker extends EsperEPL2Ast
 
     private void leaveConstant(Tree node)
     {
-        log.debug(".leaveConstant");
+        log.debug(".leaveConstant value '" + node.getText() + "'");
         ExprConstantNode constantNode = new ExprConstantNode(ASTConstantHelper.parse(node));
         astExprNodeMap.put(node, constantNode);
     }
