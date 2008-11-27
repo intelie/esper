@@ -104,7 +104,7 @@ public class TestSubselectUnfiltered extends TestCase {
 
     public void testJoinUnfiltered()
     {
-        String stmtText = "select (select id from S3.win:length(1000)) as idS3, (select id from S4.win:length(1000)) as idS4 from S0 as s0, S1 as s1 where s0.id = s1.id";
+        String stmtText = "select (select id from S3.win:length(1000)) as idS3, (select id from S4.win:length(1000)) as idS4 from S0.win:keepall() as s0, S1.win:keepall() as s1 where s0.id = s1.id";
 
         EPStatement stmt = epService.getEPAdministrator().createEPL(stmtText);
         stmt.addListener(listener);

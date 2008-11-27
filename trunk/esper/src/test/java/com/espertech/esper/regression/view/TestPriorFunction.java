@@ -460,7 +460,7 @@ public class TestPriorFunction extends TestCase
         String viewExpr = "select string as currSymbol, " +
                           "prior(2, symbol) as priorSymbol, " +
                           "prior(1, price) as priorPrice " +
-                          "from " + SupportBean.class.getName() + ", " +
+                          "from " + SupportBean.class.getName() + ".win:keepall(), " +
                           SupportMarketDataBean.class.getName() + ".win:time_batch(1 min)";
 
         EPStatement selectTestView = epService.getEPAdministrator().createEPL(viewExpr);

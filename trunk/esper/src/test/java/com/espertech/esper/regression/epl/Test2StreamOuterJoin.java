@@ -200,13 +200,13 @@ public class Test2StreamOuterJoin extends TestCase
         EPStatementObjectModel model = new EPStatementObjectModel();
         model.setSelectClause(SelectClause.create("s0.id, s0.p00, s0.p01, s1.id, s1.p10, s1.p11".split(",")));
         FromClause fromClause = FromClause.create(
-                FilterStream.create(SupportBean_S0.class.getName(), "s0"),
-                FilterStream.create(SupportBean_S1.class.getName(), "s1"));
+                FilterStream.create(SupportBean_S0.class.getName(), "s0").addView("win", "keepall"),
+                FilterStream.create(SupportBean_S1.class.getName(), "s1").addView("win", "keepall"));
         fromClause.add(OuterJoinQualifier.create("s0.p00", OuterJoinType.LEFT, "s1.p10").add("s1.p11", "s0.p01"));
         model.setFromClause(fromClause);
         model = (EPStatementObjectModel) SerializableObjectCopier.copy(model);
 
-        String stmtText = "select s0.id, s0.p00, s0.p01, s1.id, s1.p10, s1.p11 from com.espertech.esper.support.bean.SupportBean_S0 as s0 left outer join com.espertech.esper.support.bean.SupportBean_S1 as s1 on s0.p00 = s1.p10 and s1.p11 = s0.p01";
+        String stmtText = "select s0.id, s0.p00, s0.p01, s1.id, s1.p10, s1.p11 from com.espertech.esper.support.bean.SupportBean_S0.win:keepall() as s0 left outer join com.espertech.esper.support.bean.SupportBean_S1.win:keepall() as s1 on s0.p00 = s1.p10 and s1.p11 = s0.p01";
         assertEquals(stmtText, model.toEPL());
         outerJoinView = epService.getEPAdministrator().create(model);
         outerJoinView.addListener(updateListener);

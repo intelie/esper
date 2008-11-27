@@ -10,7 +10,8 @@ Changes in version 3.0.0
   Pattern objects may be parameterized by prior events.
   namespace.name('b') or namespace.name({'a', 'b'}) no longer supported, 
   Seconds and minutes not a keyword allowed for event property names
-  
+- joins require at least one view for filter and pattern event streams
+- 
 
 Changes in version 2.3
 ------------------------
@@ -454,6 +455,7 @@ This enabled event patterns and EQL to use short event names not requiring makin
 version 0.7.0
 -------------
 Initial alpha version
+
 
 
 

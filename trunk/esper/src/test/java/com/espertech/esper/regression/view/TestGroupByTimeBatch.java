@@ -59,7 +59,7 @@ public class TestGroupByTimeBatch extends TestCase
     public void testTimeBatchRowForAllJoin()
     {
         sendTimer(0);
-        String stmtText = "select irstream sum(price) as sumPrice from MarketData.win:time_batch(1 sec) as S0, SupportBean as S1 where S0.symbol = S1.string";
+        String stmtText = "select irstream sum(price) as sumPrice from MarketData.win:time_batch(1 sec) as S0, SupportBean.win:keepall() as S1 where S0.symbol = S1.string";
         EPStatement stmt = epService.getEPAdministrator().createEPL(stmtText);
         stmt.addListener(listener);
 
@@ -126,7 +126,7 @@ public class TestGroupByTimeBatch extends TestCase
     public void testTimeBatchAggregateAllJoin()
     {
         sendTimer(0);
-        String stmtText = "select irstream symbol, sum(price) as sumPrice from MarketData.win:time_batch(1 sec) as S0, SupportBean as S1 where S0.symbol = S1.string";
+        String stmtText = "select irstream symbol, sum(price) as sumPrice from MarketData.win:time_batch(1 sec) as S0, SupportBean.win:keepall() as S1 where S0.symbol = S1.string";
         EPStatement stmt = epService.getEPAdministrator().createEPL(stmtText);
         stmt.addListener(listener);
 
@@ -197,7 +197,7 @@ public class TestGroupByTimeBatch extends TestCase
     {
         sendTimer(0);
         String stmtText = "select irstream symbol, sum(price) as sumPrice " +
-                         " from MarketData.win:time_batch(1 sec) as S0, SupportBean as S1" +
+                         " from MarketData.win:time_batch(1 sec) as S0, SupportBean.win:keepall() as S1" +
                          " where S0.symbol = S1.string " +
                          " group by symbol";
         EPStatement stmt = epService.getEPAdministrator().createEPL(stmtText);
@@ -266,7 +266,7 @@ public class TestGroupByTimeBatch extends TestCase
     {
         sendTimer(0);
         String stmtText = "select irstream symbol, sum(price) as sumPrice, volume " +
-                          "from MarketData.win:time_batch(1 sec) as S0, SupportBean as S1" +
+                          "from MarketData.win:time_batch(1 sec) as S0, SupportBean.win:keepall() as S1" +
                           " where S0.symbol = S1.string " +
                           " group by symbol";
         EPStatement stmt = epService.getEPAdministrator().createEPL(stmtText);

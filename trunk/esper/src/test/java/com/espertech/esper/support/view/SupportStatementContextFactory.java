@@ -12,6 +12,9 @@ import com.espertech.esper.pattern.PatternObjectResolutionServiceImpl;
 import com.espertech.esper.epl.view.OutputConditionFactoryDefault;
 import com.espertech.esper.epl.core.MethodResolutionServiceImpl;
 import com.espertech.esper.epl.core.EngineImportServiceImpl;
+import com.espertech.esper.epl.named.NamedWindowServiceImpl;
+import com.espertech.esper.epl.variable.VariableServiceImpl;
+import com.espertech.esper.event.vaevent.ValueAddEventServiceImpl;
 
 public class SupportStatementContextFactory
 {
@@ -29,6 +32,7 @@ public class SupportStatementContextFactory
 
     public static StatementContext makeContext(SchedulingService stub)
     {
+        VariableServiceImpl variableService = new VariableServiceImpl(1000, null, null);
         return new StatementContext("engURI",
                 "engInstId",
                 "stmtId",
@@ -47,11 +51,11 @@ public class SupportStatementContextFactory
                 null,
                 null,
                 new OutputConditionFactoryDefault(),
-                null,
+                new NamedWindowServiceImpl(null, variableService),
                 null,
                 new StatementResultServiceImpl(null, null), // statement result svc
                 null, // resolution URIs
-                null, // revison svc
+                new ValueAddEventServiceImpl(), // revison svc
                 null);
     }
 }

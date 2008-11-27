@@ -243,7 +243,7 @@ public class TestSubselectFiltered extends TestCase
 
     public void testSelectWhereJoined2Streams()
     {
-        String stmtText = "select (select id from S0.win:length(1000) where p00=s1.p10 and p00=s2.p20) as ids0 from S1 as s1, S2 as s2 where s1.id = s2.id";
+        String stmtText = "select (select id from S0.win:length(1000) where p00=s1.p10 and p00=s2.p20) as ids0 from S1.win:keepall() as s1, S2.win:keepall() as s2 where s1.id = s2.id";
 
         EPStatement stmt = epService.getEPAdministrator().createEPL(stmtText);
         stmt.addListener(listener);
@@ -261,7 +261,7 @@ public class TestSubselectFiltered extends TestCase
     public void testSelectWhereJoined3Streams()
     {
         String stmtText = "select (select id from S0.win:length(1000) where p00=s1.p10 and p00=s3.p30) as ids0 " +
-                            "from S1 as s1, S2 as s2, S3 as s3 where s1.id = s2.id and s2.id = s3.id";
+                            "from S1.win:keepall() as s1, S2.win:keepall() as s2, S3.win:keepall() as s3 where s1.id = s2.id and s2.id = s3.id";
 
         EPStatement stmt = epService.getEPAdministrator().createEPL(stmtText);
         stmt.addListener(listener);
@@ -297,7 +297,7 @@ public class TestSubselectFiltered extends TestCase
     public void testSelectWhereJoined3SceneTwo()
     {
         String stmtText = "select (select id from S0.win:length(1000) where p00=s1.p10 and p00=s3.p30 and p00=s2.p20) as ids0 " +
-                            "from S1 as s1, S2 as s2, S3 as s3 where s1.id = s2.id and s2.id = s3.id";
+                            "from S1.win:keepall() as s1, S2.win:keepall() as s2, S3.win:keepall() as s3 where s1.id = s2.id and s2.id = s3.id";
 
         EPStatement stmt = epService.getEPAdministrator().createEPL(stmtText);
         stmt.addListener(listener);
@@ -338,9 +338,9 @@ public class TestSubselectFiltered extends TestCase
                    "intBoxed=s2.doubleBoxed and " +
                    "doubleBoxed=s3.intBoxed" +
           ") as ids0 from " +
-          "MyEvent(string='A') as s1, " +
-          "MyEvent(string='B') as s2, " +
-          "MyEvent(string='C') as s3 " +
+          "MyEvent(string='A').win:keepall() as s1, " +
+          "MyEvent(string='B').win:keepall() as s2, " +
+          "MyEvent(string='C').win:keepall() as s3 " +
           "where s1.intPrimitive = s2.intPrimitive and s2.intPrimitive = s3.intPrimitive";
         trySelectWhereJoined4Coercion(stmtText);
 
@@ -350,9 +350,9 @@ public class TestSubselectFiltered extends TestCase
                    "intBoxed=s2.doubleBoxed and " +
                    "intBoxed=s1.longBoxed" +
           ") as ids0 from " +
-          "MyEvent(string='A') as s1, " +
-          "MyEvent(string='B') as s2, " +
-          "MyEvent(string='C') as s3 " +
+          "MyEvent(string='A').win:keepall() as s1, " +
+          "MyEvent(string='B').win:keepall() as s2, " +
+          "MyEvent(string='C').win:keepall() as s3 " +
           "where s1.intPrimitive = s2.intPrimitive and s2.intPrimitive = s3.intPrimitive";
         trySelectWhereJoined4Coercion(stmtText);
 
@@ -362,9 +362,9 @@ public class TestSubselectFiltered extends TestCase
                    "intBoxed=s1.longBoxed and " +
                    "intBoxed=s2.doubleBoxed" +
           ") as ids0 from " +
-          "MyEvent(string='A') as s1, " +
-          "MyEvent(string='B') as s2, " +
-          "MyEvent(string='C') as s3 " +
+          "MyEvent(string='A').win:keepall() as s1, " +
+          "MyEvent(string='B').win:keepall() as s2, " +
+          "MyEvent(string='C').win:keepall() as s3 " +
           "where s1.intPrimitive = s2.intPrimitive and s2.intPrimitive = s3.intPrimitive";
         trySelectWhereJoined4Coercion(stmtText);
     }
@@ -377,9 +377,9 @@ public class TestSubselectFiltered extends TestCase
                    "longBoxed=s2.doubleBoxed and " +
                    "intBoxed=s3.longBoxed" +
           ") as ids0 from " +
-          "MyEvent(string='A') as s1, " +
-          "MyEvent(string='B') as s2, " +
-          "MyEvent(string='C') as s3 " +
+          "MyEvent(string='A').win:keepall() as s1, " +
+          "MyEvent(string='B').win:keepall() as s2, " +
+          "MyEvent(string='C').win:keepall() as s3 " +
           "where s1.intPrimitive = s2.intPrimitive and s2.intPrimitive = s3.intPrimitive";
         trySelectWhereJoined4CoercionBack(stmtText);
 
@@ -389,9 +389,9 @@ public class TestSubselectFiltered extends TestCase
                    "intBoxed=s3.longBoxed and " +
                    "longBoxed=s1.intBoxed " +
           ") as ids0 from " +
-          "MyEvent(string='A') as s1, " +
-          "MyEvent(string='B') as s2, " +
-          "MyEvent(string='C') as s3 " +
+          "MyEvent(string='A').win:keepall() as s1, " +
+          "MyEvent(string='B').win:keepall() as s2, " +
+          "MyEvent(string='C').win:keepall() as s3 " +
           "where s1.intPrimitive = s2.intPrimitive and s2.intPrimitive = s3.intPrimitive";
         trySelectWhereJoined4CoercionBack(stmtText);
     }
@@ -503,7 +503,7 @@ public class TestSubselectFiltered extends TestCase
                           "(select p20 from S2.win:length(1000) where id=s0.id) as s2p20, " +
                           "(select prior(1, p20) from S2.win:length(1000) where id=s0.id) as s2p20Prior, " +
                           "(select prev(1, p20) from S2.win:length(10) where id=s0.id) as s2p20Prev " +
-                          "from S0 as s0, S1 as s1 " +
+                          "from S0.win:keepall() as s0, S1.win:keepall() as s1 " +
                           "where s0.id = s1.id and p00||p10 = (select p20 from S2.win:length(1000) where id=s0.id)";
         tryJoinFiltered(stmtText);
     }
@@ -514,7 +514,7 @@ public class TestSubselectFiltered extends TestCase
                           "(select p20 from S2.win:length(1000) where id=s0.id) as s2p20, " +
                           "(select prior(1, p20) from S2.win:length(1000) where id=s0.id) as s2p20Prior, " +
                           "(select prev(1, p20) from S2.win:length(10) where id=s0.id) as s2p20Prev " +
-                          "from S0 as s0, S1 as s1 " +
+                          "from S0.win:keepall() as s0, S1.win:keepall() as s1 " +
                           "where s0.id = s1.id and (select s0.p00||s1.p10 = p20 from S2.win:length(1000) where id=s0.id)";
         tryJoinFiltered(stmtText);
     }

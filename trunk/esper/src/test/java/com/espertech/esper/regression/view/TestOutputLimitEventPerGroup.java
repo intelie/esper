@@ -427,7 +427,7 @@ public class TestOutputLimitEventPerGroup extends TestCase
         String fields[] = "symbol,maxVol".split(",");
         String viewExpr = "select irstream symbol, max(price) as maxVol" +
                           " from " + SupportMarketDataBean.class.getName() + ".ext:sort(1, volume desc) as s0," +
-                          SupportBean.class.getName() + " as s1 " +
+                          SupportBean.class.getName() + ".win:keepall() as s1 " +
                           "group by symbol output every 1 seconds";
         EPStatement stmt = epService.getEPAdministrator().createEPL(viewExpr);
         stmt.addListener(listener);

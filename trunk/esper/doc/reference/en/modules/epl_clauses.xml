@@ -1765,7 +1765,7 @@ select A.customerId, A.timestamp - B.timestamp
 		<para>
 			The <literal>rstream</literal> keyword can be useful to indicate to the engine to generate only remove stream events. This can be useful if we want to trigger 
 			actions when events leave a window rather then when events enter a window. The statement below generates <literal>CombinedEvent</literal> events when
-			EventA and EventB leave the window after 30 minutes (1800 seconds).
+			EventA and EventB leave the window after 30 minutes.
 		</para>
 
 		<programlisting>insert rstream into CombinedEvent
@@ -1957,7 +1957,7 @@ from PurchaseOrder.std:lastevent() as order, ServiceEvent:std:lastevent() as ser
 		</para>
 
 		<para>
-			This example joins 2 event streams. The first event stream consists of fraud warning events for which we keep the last 30 minutes (1800 seconds). The second stream is withdrawal events for which we consider the last 30 seconds. The streams are joined on account number.
+			This example joins 2 event streams. The first event stream consists of fraud warning events for which we keep the last 30 minutes. The second stream is withdrawal events for which we consider the last 30 seconds. The streams are joined on account number.
 		</para>
 <programlisting><![CDATA[select fraud.accountNumber as accntNum, fraud.warning as warn, withdraw.amount as amount,
        max(fraud.timestamp, withdraw.timestamp) as timestamp, 'withdrawlFraud' as desc
@@ -1969,22 +1969,26 @@ from PurchaseOrder.std:lastevent() as order, ServiceEvent:std:lastevent() as ser
 			Joins can also include one or more pattern statements as the next example shows:
 		</para>
 <programlisting><![CDATA[select * from FraudWarningEvent.win:time(30 min) as fraud,
-       pattern [every w=WithdrawalEvent -> PINChangeEvent(acct=w.acct)] as withdraw
+    pattern [every w=WithdrawalEvent -> PINChangeEvent(acct=w.acct)].std:lastevent() as withdraw
  where fraud.accountNumber = withdraw.w.accountNumber]]></programlisting>
 
 		<para>
-			The statement above joins the last 30 minutes of fraud warnings with a pattern. The pattern consists of every withdrawal event that is followed by a PIN change event for the same account number. It joins the two event streams on account number.
+			The statement above joins the last 30 minutes of fraud warnings with a pattern. The pattern consists of every withdrawal event that is followed by a PIN change event for the same account number. It joins the two event streams on account number. The last-event view instucts the join to only consider the last pattern match.
 		</para>
 
 		<para>
-			In a join and outer join, if your statement does not declare a data window view or other view onto a stream, then the engine retains all events for the stream equivalent to the keep-all data window.
+			In a join and outer join, your statement must declare a data window view or other view onto each stream. Streams that are marked as unidirectional and named windows as well as database or methods in a join are an exception and do not require a view to be specified.
 		</para>
 
 		<para>
 			The next example joins all FraudWarningEvent events that arrived since the statement was started, with the last 20 seconds of PINChangeEvent events:
 		</para>
-<programlisting><![CDATA[select * from FraudWarningEvent as fraud, PINChangeEvent.win:time(20 sec) as pin
+<programlisting><![CDATA[select * from FraudWarningEvent.win:keepall() as fraud, PINChangeEvent.win:time(20 sec) as pin
  where fraud.accountNumber = pin.accountNumber]]></programlisting>
+
+		<para>
+			The above example employed the special keep-all view that retains all events.
+		</para>
     </sect1>
 
     <sect1 id="epl-outerjoin">

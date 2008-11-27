@@ -478,6 +478,9 @@ public class EPStatementStartMethod
         int numStreams = streamNames.length;
         final List<StopCallback> stopCallbacks = new LinkedList<StopCallback>();
 
+        // verify for joins that required views are present
+        verifyJoinViews(statementSpec.getStreamSpecs());
+
         // Create streams and views
         Viewable[] eventStreamParentViewable = new Viewable[numStreams];
         ViewFactoryChain[] unmaterializedViewChain = new ViewFactoryChain[numStreams];
@@ -485,6 +488,7 @@ public class EPStatementStartMethod
         boolean[] hasChildViews = new boolean[numStreams];
         boolean[] isNamedWindow = new boolean[numStreams];
         String[] eventTypeAliases = new String[numStreams];
+
         for (int i = 0; i < statementSpec.getStreamSpecs().size(); i++)
         {
             StreamSpecCompiled streamSpec = statementSpec.getStreamSpecs().get(i);
@@ -741,6 +745,63 @@ public class EPStatementStartMethod
         log.debug(".start Statement start completed");
 
         return new Pair<Viewable, EPStatementStopMethod>(finalView, stopMethod);
+    }
+
+    private void verifyJoinViews(List<StreamSpecCompiled> streamSpecs)
+            throws ViewProcessingException
+    {
+        if (streamSpecs.size() < 2)
+        {
+            return;
+        }
+
+        // count streams that provide data, excluding streams that poll data (DB and method)
+        int countProviderNonpolling = 0;
+        for (int i = 0; i < statementSpec.getStreamSpecs().size(); i++)
+        {
+            StreamSpecCompiled streamSpec = statementSpec.getStreamSpecs().get(i);
+            if ((streamSpec instanceof MethodStreamSpec) ||
+                (streamSpec instanceof DBStatementStreamSpec))
+            {
+                continue;
+            }
+            countProviderNonpolling++;
+        }
+
+        // allow no data window when a stream is alone in providing new data
+        if (countProviderNonpolling == 1)
+        {
+            return;
+        }
+
+        // weed out filter and pattern streams that don't have a view in a join
+        for (int i = 0; i < statementSpec.getStreamSpecs().size(); i++)
+        {
+            StreamSpecCompiled streamSpec = statementSpec.getStreamSpecs().get(i);
+            if (!streamSpec.getViewSpecs().isEmpty())
+            {
+                continue;
+            }
+
+            String name = streamSpec.getOptionalStreamName();
+            if ((name == null) && (streamSpec instanceof FilterStreamSpecCompiled))
+            {
+                name = ((FilterStreamSpecCompiled) streamSpec).getFilterSpec().getEventTypeAlias();
+            }
+            if ((name == null) && (streamSpec instanceof PatternStreamSpecCompiled))
+            {
+                name = "pattern event stream";
+            }
+            if (streamSpec.isUnidirectional())
+            {
+                continue;
+            }
+            if ((streamSpec instanceof FilterStreamSpecCompiled) ||
+                (streamSpec instanceof PatternStreamSpecCompiled))
+            {
+                throw new ViewProcessingException("Joins require that at least one view is specified for each stream, no view was specified for " + name);                
+            }
+        }
     }
 
     private Pair<Viewable, JoinPreloadMethod> handleJoin(String[] streamNames,

@@ -37,7 +37,7 @@ public class TestInsertIntoTransposeStream extends TestCase
         epService.getEPAdministrator().getConfiguration().addEventTypeAliasNestable("AEvent", metadata);
         epService.getEPAdministrator().getConfiguration().addEventTypeAliasNestable("BEvent", metadata);
 
-        String stmtTextOne = "insert into MyStream select a, b from AEvent as a, BEvent as b";
+        String stmtTextOne = "insert into MyStream select a, b from AEvent.win:keepall() as a, BEvent.win:keepall() as b";
         epService.getEPAdministrator().createEPL(stmtTextOne);
 
         String stmtTextTwo = "select a.id, b.id from MyStream";
@@ -57,7 +57,7 @@ public class TestInsertIntoTransposeStream extends TestCase
         epService.getEPAdministrator().getConfiguration().addEventTypeAlias("AEvent", SupportBean_A.class);
         epService.getEPAdministrator().getConfiguration().addEventTypeAlias("BEvent", SupportBean_B.class);
 
-        String stmtTextOne = "insert into MyStream select a.* as a, b.* as b from AEvent as a, BEvent as b";
+        String stmtTextOne = "insert into MyStream select a.* as a, b.* as b from AEvent.win:keepall() as a, BEvent.win:keepall() as b";
         epService.getEPAdministrator().createEPL(stmtTextOne);
 
         String stmtTextTwo = "select a.id, b.id from MyStream";

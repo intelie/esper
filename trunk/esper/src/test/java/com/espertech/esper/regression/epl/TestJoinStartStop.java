@@ -4,7 +4,10 @@ import junit.framework.TestCase;
 import com.espertech.esper.client.EPServiceProvider;
 import com.espertech.esper.client.EPServiceProviderManager;
 import com.espertech.esper.client.EPStatement;
+import com.espertech.esper.client.EPStatementException;
 import com.espertech.esper.support.bean.SupportMarketDataBean;
+import com.espertech.esper.support.bean.SupportBean_A;
+import com.espertech.esper.support.bean.SupportBean_B;
 import com.espertech.esper.support.util.SupportUpdateListener;
 import com.espertech.esper.support.util.ArrayAssertionUtil;
 import com.espertech.esper.support.client.SupportConfigFactory;
@@ -86,6 +89,37 @@ public class TestJoinStartStop extends TestCase
         stmtNames = spi.getStatementEventTypeRef().getStatementNamesForType(SupportMarketDataBean.class.getName());
         ArrayAssertionUtil.assertEqualsAnyOrder(null, stmtNames.toArray());
         assertFalse(stmtNames.contains("MyJoin"));
+    }
+
+    public void testInvalidJoin()
+    {
+        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("A", SupportBean_A.class);
+        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("B", SupportBean_B.class);
+
+        String invalidJoin = "select * from A, B";
+        tryInvalid(invalidJoin,
+                "Error starting view: Joins require that at least one view is specified for each stream, no view was specified for A [select * from A, B]");
+
+        invalidJoin = "select * from A.win:time(5 min), B";
+        tryInvalid(invalidJoin,
+                "Error starting view: Joins require that at least one view is specified for each stream, no view was specified for B [select * from A.win:time(5 min), B]");
+
+        invalidJoin = "select * from A.win:time(5 min), pattern[A->B]";
+        tryInvalid(invalidJoin,
+                "Error starting view: Joins require that at least one view is specified for each stream, no view was specified for pattern event stream [select * from A.win:time(5 min), pattern[A->B]]");
+    }
+
+    private void tryInvalid(String invalidJoin, String message)
+    {
+        try
+        {
+            epService.getEPAdministrator().createEPL(invalidJoin);
+            fail();
+        }
+        catch (EPStatementException ex)
+        {
+            assertEquals(message, ex.getMessage());
+        }
     }
 
     private void sendEvent(Object event)

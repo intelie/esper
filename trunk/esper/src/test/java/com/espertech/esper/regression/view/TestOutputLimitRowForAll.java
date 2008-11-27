@@ -408,7 +408,7 @@ public class TestOutputLimitRowForAll extends TestCase
 
         String viewExpr = "select irstream max(price) as maxVol" +
                           " from " + SupportMarketDataBean.class.getName() + ".ext:sort(1, volume desc) as s0, " +
-                          SupportBean.class.getName() + " as s1 where (s1.string = s0.symbol) " +
+                          SupportBean.class.getName() + ".win:keepall() as s1 where (s1.string = s0.symbol) " +
                           "output every 1.0 seconds";
         EPStatement stmt = epService.getEPAdministrator().createEPL(viewExpr);
         stmt.addListener(listener);
@@ -591,7 +591,7 @@ public class TestOutputLimitRowForAll extends TestCase
         sendTimer(0);
         String selectStmt = "select count(*) as cnt from " +
                 SupportBean.class.getName() + ".win:time(10 seconds) as s, " +
-                SupportMarketDataBean.class.getName() + " as m where m.symbol = s.string and intPrimitive > 0 output snapshot every 1 seconds";
+                SupportMarketDataBean.class.getName() + ".win:keepall() as m where m.symbol = s.string and intPrimitive > 0 output snapshot every 1 seconds";
 
         EPStatement stmt = epService.getEPAdministrator().createEPL(selectStmt);
         stmt.addListener(listener);
@@ -686,6 +686,7 @@ public class TestOutputLimitRowForAll extends TestCase
 
     private static Log log = LogFactory.getLog(TestOutputLimitRowForAll.class);
 }
+
 
 
 

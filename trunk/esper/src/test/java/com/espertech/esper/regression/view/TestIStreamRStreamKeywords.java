@@ -208,7 +208,7 @@ public class TestIStreamRStreamKeywords extends TestCase
         EPStatement statement = epService.getEPAdministrator().createEPL(
                 "select rstream s1.intPrimitive as aID, s2.intPrimitive as bID " +
                 "from " + SupportBean.class.getName() + "(string='a').win:length(2) as s1, "
-                        + SupportBean.class.getName() + "(string='b') as s2" +
+                        + SupportBean.class.getName() + "(string='b').win:keepall() as s2" +
                 " where s1.intPrimitive = s2.intPrimitive");
         statement.addListener(testListener);
 
@@ -276,7 +276,7 @@ public class TestIStreamRStreamKeywords extends TestCase
         EPStatement statement = epService.getEPAdministrator().createEPL(
                 "select istream s1.intPrimitive as aID, s2.intPrimitive as bID " +
                 "from " + SupportBean.class.getName() + "(string='a').win:length(2) as s1, "
-                        + SupportBean.class.getName() + "(string='b') as s2" +
+                        + SupportBean.class.getName() + "(string='b').win:keepall() as s2" +
                 " where s1.intPrimitive = s2.intPrimitive");
         statement.addListener(testListener);
 
