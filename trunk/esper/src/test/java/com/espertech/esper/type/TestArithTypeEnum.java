@@ -9,7 +9,7 @@ public class TestArithTypeEnum extends TestCase
 {
     public void testAddDouble()
     {
-        MathArithTypeEnum.Computer computer = MathArithTypeEnum.ADD.getComputer(Double.class, Double.class, Double.class);
+        MathArithTypeEnum.Computer computer = MathArithTypeEnum.ADD.getComputer(Double.class, Double.class, Double.class, false, false);
         assertEquals(12.1d, computer.compute(5.5,6.6));
     }
 
@@ -31,7 +31,7 @@ public class TestArithTypeEnum extends TestCase
         {
             for (MathArithTypeEnum type : MathArithTypeEnum.values())
             {
-                MathArithTypeEnum.Computer computer = type.getComputer(clazz,clazz,clazz);
+                MathArithTypeEnum.Computer computer = type.getComputer(clazz,clazz,clazz, false, false);
                 Number result = computer.compute(3, 4);
                 assertEquals(clazz, result.getClass());
 
@@ -108,11 +108,11 @@ public class TestArithTypeEnum extends TestCase
             MathArithTypeEnum.Computer computer;
             if (isBigDec)
             {
-                computer = e.getComputer(BigDecimal.class, lhs.getClass(), rhs.getClass());
+                computer = e.getComputer(BigDecimal.class, lhs.getClass(), rhs.getClass(), false, false);
             }
             else
             {
-                computer = e.getComputer(BigInteger.class, lhs.getClass(), rhs.getClass());
+                computer = e.getComputer(BigInteger.class, lhs.getClass(), rhs.getClass(), false, false);
             }
 
             Object result = null;
@@ -132,7 +132,7 @@ public class TestArithTypeEnum extends TestCase
     {
         try
         {
-            MathArithTypeEnum.ADD.getComputer(clazz, clazz, clazz);
+            MathArithTypeEnum.ADD.getComputer(clazz, clazz, clazz, false, false);
             fail();
         }
         catch (IllegalArgumentException ex)

@@ -178,10 +178,6 @@ select insert from MyEvent]]></programlisting>
 			</para>
 
 			<para>
-				EPL follows Java rules for integer arithmetic: When dividing an integer numerator by an integer denominator, the result is an integer number. Thus the expression <literal>1 / 4</literal> results in an integer zero. Convert at least one of the numbers to a double value before the division, for example by specifying <literal>1.0 / 4</literal> or by using <literal>cast(myint, double)</literal>.
-			</para>
-
-			<para>
 				EPL also follows Java standards in terms of widening, performing widening automatically in cases where widening type conversion is allowed without loss of precision, for both boxed and primitive types and including <literal>BigInteger</literal> and <literal>BigDecimal</literal>:
 			</para>
 			<orderedlist spacing="compact">
@@ -228,6 +224,14 @@ select insert from MyEvent]]></programlisting>
 
 			<para>
 				EPL supports casting via the <literal>cast</literal> function.
+			</para>
+
+			<para>
+				EPL returns double-type values for division regardless of operand type. EPL can also be configured to follow Java rules for integer arithmetic instead as described in <xref linkend="config-engine-expression"/>.
+			</para>
+
+			<para>
+				Division by zero returns positive or negative infinity. Division by zero can be configured to return null instead.
 			</para>
 
 			<sect3 id="epl-syntax-datatype-constants">

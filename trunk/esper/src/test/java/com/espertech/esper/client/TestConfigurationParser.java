@@ -55,6 +55,8 @@ public class TestConfigurationParser extends TestCase
 
         assertEquals(StreamSelector.ISTREAM_ONLY, config.getEngineDefaults().getStreamSelection().getDefaultStreamSelector());
         assertFalse(config.getEngineDefaults().getLanguage().isSortUsingCollator());
+        assertFalse(config.getEngineDefaults().getExpression().isIntegerDivision());
+        assertFalse(config.getEngineDefaults().getExpression().isDivisionByZeroReturnsNull());
     }
 
     protected static void assertFileConfig(Configuration config) throws Exception
@@ -278,6 +280,8 @@ public class TestConfigurationParser extends TestCase
         assertFalse(def.isReportInactive());
         assertEquals(0, def.getPatterns().size());
         assertTrue(config.getEngineDefaults().getLanguage().isSortUsingCollator());
+        assertTrue(config.getEngineDefaults().getExpression().isIntegerDivision());
+        assertTrue(config.getEngineDefaults().getExpression().isDivisionByZeroReturnsNull());
 
         // variables
         assertEquals(2, config.getVariables().size());

@@ -1517,7 +1517,7 @@ config.getEngineDefaults().getTimeSource().
 			<title>Engine Settings related to Language and Locale</title>
 			
 			<para>
-				Locale-dependence in Esper is limited to the sort order of string values by the <literal>order by</literal> clause and by the sort view.
+				Locale-dependence in Esper can be present in the sort order of string values by the <literal>order by</literal> clause and by the sort view.
 			</para>
 
 			<para>
@@ -1540,6 +1540,41 @@ config.getEngineDefaults().getTimeSource().
 
 			<programlisting><![CDATA[Configuration config = new Configuration();
 config.getEngineDefaults().getLanguage().setSortUsingCollator(true);]]></programlisting>
+
+		</sect2>
+
+		<sect2 id="config-engine-expression" revision="1">
+			<title>Engine Settings related to Expression Evaluation</title>
+			
+			<para>
+				By default Esper returns double-typed values for divisions regardless of operand types. Division by zero returns positive or negative double infinity.
+			</para>
+
+			<para>
+				To have Esper use Java-standard integer division instead, use this setting as described here. In Java integer division, when dividing integer types, the result is an integer type. This means that if you divide an integer unevenly by another integer, it returns the whole number part of the result, does not perform any rounding and the fraction part is dropped. If Java-standard integer division is enabled, when dividing an integer numerator by an integer denominator, the result is an integer number. Thus the expression <literal>1 / 4</literal> results in an integer zero. Your EPL must then convert at least one of the numbers to a double value before the division, for example by specifying <literal>1.0 / 4</literal> or by using <literal>cast(myint, double)</literal>.
+			</para>
+			
+			<para>
+				When using Java integer division, division by zero for integer-typed operands always returns null. However division by zero for double-type operands still returns positive or negative double infinity. To also return null upon division by zero for double-type operands, set the flag to true as below (default is false).
+			</para>
+
+			<para>
+			 The XML configuration is as follows:
+			</para>
+
+			<programlisting><![CDATA[<engine-settings>
+  <defaults>
+    <expression integer-division="false" division-by-zero-is-null="false"/>
+  </defaults>
+</engine-settings>]]></programlisting>
+			
+			<para>
+			 The API to change the setting:
+			</para>
+
+			<programlisting><![CDATA[Configuration config = new Configuration();
+config.getEngineDefaults().getExpression().setIntegerDivision(true);
+config.getEngineDefaults().getExpression().setDivisionByZeroReturnsNull(true);]]></programlisting>
 
 		</sect2>
 

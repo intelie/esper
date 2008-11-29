@@ -11,7 +11,11 @@ Changes in version 3.0.0
   namespace.name('b') or namespace.name({'a', 'b'}) no longer supported, 
   Seconds and minutes not a keyword allowed for event property names
 - joins require at least one view for filter and pattern event streams
-- 
+- Esper 2 performed integer division if both operands to a division were non-fp types. Esper 2 thus followed
+integer division in Java that results in only the whole number part of the result, any fractional part is dropped.
+Thus Esper 2 returns zero for "select 1.0/2 from MyEvent" and Esper 3 returns "0.5d"
+With Esper 3 integer division returns Double values, and Integer division can be enabled through configuration.
+
 
 Changes in version 2.3
 ------------------------

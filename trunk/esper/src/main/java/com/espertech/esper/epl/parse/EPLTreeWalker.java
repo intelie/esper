@@ -9,12 +9,12 @@
 package com.espertech.esper.epl.parse;
 
 import com.espertech.esper.antlr.ASTUtil;
+import com.espertech.esper.client.ConfigurationInformation;
 import com.espertech.esper.collection.UniformPair;
 import com.espertech.esper.epl.agg.AggregationSupport;
 import com.espertech.esper.epl.core.EngineImportException;
 import com.espertech.esper.epl.core.EngineImportService;
 import com.espertech.esper.epl.core.EngineImportUndefinedException;
-import com.espertech.esper.epl.core.MethodResolutionService;
 import com.espertech.esper.epl.expression.*;
 import com.espertech.esper.epl.generated.EsperEPL2Ast;
 import com.espertech.esper.epl.spec.*;
@@ -60,6 +60,7 @@ public class EPLTreeWalker extends EsperEPL2Ast
     private final TimeProvider timeProvider;
     private final SelectClauseStreamSelectorEnum defaultStreamSelector;
     private final String engineURI;
+    private final ConfigurationInformation configurationInformation;
 
     /**
      * Ctor.
@@ -75,7 +76,8 @@ public class EPLTreeWalker extends EsperEPL2Ast
                          VariableService variableService,
                          TimeProvider timeProvider,
                          SelectClauseStreamSelectorEnum defaultStreamSelector,
-                         String engineURI)
+                         String engineURI,
+                         ConfigurationInformation configurationInformation)
     {
         super(input);
         this.engineImportService = engineImportService;
@@ -83,6 +85,7 @@ public class EPLTreeWalker extends EsperEPL2Ast
         this.defaultStreamSelector = defaultStreamSelector;
         this.timeProvider = timeProvider;
         this.engineURI = engineURI;
+        this.configurationInformation = configurationInformation;
 
         if (defaultStreamSelector == null)
         {
@@ -1246,7 +1249,9 @@ public class EPLTreeWalker extends EsperEPL2Ast
                 throw new IllegalArgumentException("Node type " + node.getType() + " not a recognized math node type");
         }
 
-        ExprMathNode mathNode = new ExprMathNode(mathArithTypeEnum);
+        ExprMathNode mathNode = new ExprMathNode(mathArithTypeEnum,
+                configurationInformation.getEngineDefaults().getExpression().isIntegerDivision(),
+                configurationInformation.getEngineDefaults().getExpression().isDivisionByZeroReturnsNull());
         astExprNodeMap.put(node, mathNode);
     }
 

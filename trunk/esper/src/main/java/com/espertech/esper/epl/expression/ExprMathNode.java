@@ -8,14 +8,14 @@
  **************************************************************************************/
 package com.espertech.esper.epl.expression;
 
-import com.espertech.esper.event.EventBean;
-import com.espertech.esper.util.JavaClassHelper;
-import com.espertech.esper.type.MathArithTypeEnum;
 import com.espertech.esper.epl.core.MethodResolutionService;
 import com.espertech.esper.epl.core.StreamTypeService;
 import com.espertech.esper.epl.core.ViewResourceDelegate;
 import com.espertech.esper.epl.variable.VariableService;
+import com.espertech.esper.event.EventBean;
 import com.espertech.esper.schedule.TimeProvider;
+import com.espertech.esper.type.MathArithTypeEnum;
+import com.espertech.esper.util.JavaClassHelper;
 
 /**
  * Represents a simple Math (+/-/divide/*) in a filter expression tree.
@@ -23,6 +23,8 @@ import com.espertech.esper.schedule.TimeProvider;
 public class ExprMathNode extends ExprNode
 {
     private final MathArithTypeEnum mathArithTypeEnum;
+    private final boolean isIntegerDivision;
+    private final boolean isDivisionByZeroReturnsNull;
 
     private MathArithTypeEnum.Computer arithTypeEnumComputer;
     private Class resultType;
@@ -31,9 +33,11 @@ public class ExprMathNode extends ExprNode
      * Ctor.
      * @param mathArithTypeEnum - type of math
      */
-    public ExprMathNode(MathArithTypeEnum mathArithTypeEnum)
+    public ExprMathNode(MathArithTypeEnum mathArithTypeEnum, boolean isIntegerDivision, boolean isDivisionByZeroReturnsNull)
     {
         this.mathArithTypeEnum = mathArithTypeEnum;
+        this.isIntegerDivision = isIntegerDivision;
+        this.isDivisionByZeroReturnsNull = isDivisionByZeroReturnsNull;
     }
 
     public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService) throws ExprValidationException
@@ -66,7 +70,13 @@ public class ExprMathNode extends ExprNode
         {
             resultType = JavaClassHelper.getArithmaticCoercionType(childTypeOne, childTypeTwo);
         }
-        arithTypeEnumComputer = mathArithTypeEnum.getComputer(resultType, childTypeOne, childTypeTwo);
+
+        if ((mathArithTypeEnum == MathArithTypeEnum.DIVIDE) && (!isIntegerDivision))
+        {
+            resultType = Double.class;
+        }
+
+        arithTypeEnumComputer = mathArithTypeEnum.getComputer(resultType, childTypeOne, childTypeTwo, isIntegerDivision, isDivisionByZeroReturnsNull);
     }
 
     public Class getType()

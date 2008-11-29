@@ -309,6 +309,41 @@ output every 5 seconds</pre></div>
       </answer>
     </faq>    
 
+    <faq id="throughput-4">
+      <question>How do I delay data? How do I compare against previous events?</question>
+      <answer>
+        <p>
+          Your application may need to delay events for a certain time. A simple way to delay data is to enter the data into a time window
+          and select the remove stream which is the data leaving the window:
+        </p>
+	<div class="source"><pre>insert into DelayedStream select rstream task, measurement, rate from CurrentStream.win:time(10 min)</pre></div>      
+        <p>
+          In order to compare current data with delayed data, one possible way is to join delayed data and current data.
+          For example:
+        </p>
+	<div class="source"><pre>select d.task, d.measurement, d.rate - c.rate as delta
+from CurrentStream as c unidirectional, DelayedStream.std:lastevent() as d
+where d.task = c.task and d.measurement = c.measurement</pre></div>      
+        <p>
+          This example uses the "unidirectional" keyword. The keyword is useful to indicate that results are only output when events 
+          of one stream arrive, and not the other. In this example, when events of the DelayedStream there is no output.
+        </p>
+        <p>
+          Here is an alternative way using the "output snapshot" keywords instead. This example executes a join and post results only every 1 minute:
+        </p>
+	<div class="source"><pre>select d.task, d.measurement, d.rate - c.rate as delta
+from CurrentStream.std:lastevent() as c, DelayedStream.std:lastevent() as d
+where d.task = c.task and d.measurement = c.measurement
+output snapshot every 1 minute</pre></div>      
+        <p>
+          Instead of the join, the "prev" previous-event function could be used to fetch and compare data from previous rows. This is useful if the arrival intervals
+          of the stream are known:
+        </p>
+	<div class="source"><pre>select task, measurement, rate - prev(4, rate) as delta
+from CurrentStream.win:time(5 min)</pre></div>      
+      </answer>
+    </faq>    
+
     <faq id="absence-1">
       <question>How do I detect the absence of an event?</question>
       <answer>

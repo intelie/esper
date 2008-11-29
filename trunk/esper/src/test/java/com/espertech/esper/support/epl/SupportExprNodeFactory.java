@@ -169,7 +169,7 @@ public class SupportExprNodeFactory
     {
         ExprIdentNode node1 = new ExprIdentNode("intBoxed", "s0");
         ExprIdentNode node2 = new ExprIdentNode("intPrimitive", "s0");
-        ExprMathNode mathNode = new ExprMathNode(MathArithTypeEnum.MULTIPLY);
+        ExprMathNode mathNode = new ExprMathNode(MathArithTypeEnum.MULTIPLY, false, false);
         mathNode.addChildNode(node1);
         mathNode.addChildNode(node2);
 
@@ -180,7 +180,7 @@ public class SupportExprNodeFactory
 
     public static ExprNode makeMathNode(MathArithTypeEnum operator_, Object valueLeft_, Object valueRight_) throws Exception
     {
-        ExprMathNode mathNode = new ExprMathNode(operator_);
+        ExprMathNode mathNode = new ExprMathNode(operator_, false, false);
         mathNode.addChildNode(new SupportExprNode(valueLeft_));
         mathNode.addChildNode(new SupportExprNode(valueRight_));
         validate3Stream(mathNode);
@@ -195,7 +195,7 @@ public class SupportExprNodeFactory
         sum.addChildNode(ident);
 
         ExprIdentNode node = new ExprIdentNode("intBoxed", "s0");
-        ExprMathNode mathNode = new ExprMathNode(MathArithTypeEnum.MULTIPLY);
+        ExprMathNode mathNode = new ExprMathNode(MathArithTypeEnum.MULTIPLY, false, false);
         mathNode.addChildNode(node);
         mathNode.addChildNode(sum);
 

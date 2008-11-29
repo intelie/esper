@@ -8,6 +8,7 @@ import com.espertech.esper.epl.variable.VariableServiceImpl;
 import com.espertech.esper.epl.spec.SelectClauseStreamSelectorEnum;
 import com.espertech.esper.schedule.SchedulingServiceImpl;
 import com.espertech.esper.support.schedule.SupportSchedulingServiceImpl;
+import com.espertech.esper.client.Configuration;
 import org.antlr.runtime.tree.Tree;
 import org.antlr.runtime.tree.CommonTreeNodeStream;
 
@@ -15,7 +16,7 @@ public class SupportEPLTreeWalkerFactory
 {
     public static EPLTreeWalker makeWalker(Tree tree, EngineImportService engineImportService, VariableService variableService)
     {
-        return new EPLTreeWalker(new CommonTreeNodeStream(tree), engineImportService, variableService, new SupportSchedulingServiceImpl(), SelectClauseStreamSelectorEnum.ISTREAM_ONLY, "uri");
+        return new EPLTreeWalker(new CommonTreeNodeStream(tree), engineImportService, variableService, new SupportSchedulingServiceImpl(), SelectClauseStreamSelectorEnum.ISTREAM_ONLY, "uri", new Configuration());
     }
 
     public static EPLTreeWalker makeWalker(Tree tree)

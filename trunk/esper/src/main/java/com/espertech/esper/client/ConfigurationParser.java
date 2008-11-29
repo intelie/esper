@@ -837,6 +837,10 @@ class ConfigurationParser {
             {
                 handleLanguage(configuration, subElement);
             }
+            if (subElement.getNodeName().equals("expression"))
+            {
+                handleExpression(configuration, subElement);
+            }
         }
     }
 
@@ -1079,9 +1083,28 @@ class ConfigurationParser {
 
     private static void handleLanguage(Configuration configuration, Element parentElement)
     {
-        String sortUsingCollator = getRequiredAttribute(parentElement, "sort-using-collator");
-        boolean isSortUsingCollator = Boolean.parseBoolean(sortUsingCollator);
-        configuration.getEngineDefaults().getLanguage().setSortUsingCollator(isSortUsingCollator);
+        String sortUsingCollator = getOptionalAttribute(parentElement, "sort-using-collator");
+        if (sortUsingCollator != null)
+        {
+            boolean isSortUsingCollator = Boolean.parseBoolean(sortUsingCollator);
+            configuration.getEngineDefaults().getLanguage().setSortUsingCollator(isSortUsingCollator);
+        }
+    }
+
+    private static void handleExpression(Configuration configuration, Element parentElement)
+    {
+        String integerDivision = getOptionalAttribute(parentElement, "integer-division");
+        if (integerDivision != null)
+        {
+            boolean isIntegerDivision = Boolean.parseBoolean(integerDivision);
+            configuration.getEngineDefaults().getExpression().setIntegerDivision(isIntegerDivision);
+        }
+        String divZero = getOptionalAttribute(parentElement, "division-by-zero-is-null");
+        if (divZero != null)
+        {
+            boolean isDivZero = Boolean.parseBoolean(divZero);
+            configuration.getEngineDefaults().getExpression().setDivisionByZeroReturnsNull(isDivZero);
+        }
     }
 
     private static void handleMetricsReportingPatterns(ConfigurationMetricsReporting.StmtGroupMetrics groupDef, Element parentElement)

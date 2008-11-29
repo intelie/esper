@@ -9,9 +9,9 @@
 package com.espertech.esper.type;
 
 import com.espertech.esper.collection.MultiKey;
+import com.espertech.esper.util.SimpleNumberBigDecimalCoercer;
 import com.espertech.esper.util.SimpleNumberBigIntegerCoercer;
 import com.espertech.esper.util.SimpleNumberCoercerFactory;
-import com.espertech.esper.util.SimpleNumberBigDecimalCoercer;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -65,12 +65,6 @@ public enum MathArithTypeEnum
         computers.put(new MultiKey<Object>(new Object[] {Integer.class, SUBTRACT}), new SubtractInt());
         computers.put(new MultiKey<Object>(new Object[] {BigDecimal.class, SUBTRACT}), new SubtractBigDec());
         computers.put(new MultiKey<Object>(new Object[] {BigInteger.class, SUBTRACT}), new SubtractBigInt());
-        computers.put(new MultiKey<Object>(new Object[] {Double.class, DIVIDE}), new DivideDouble());
-        computers.put(new MultiKey<Object>(new Object[] {Float.class, DIVIDE}), new DivideFloat());
-        computers.put(new MultiKey<Object>(new Object[] {Long.class, DIVIDE}), new DivideLong());
-        computers.put(new MultiKey<Object>(new Object[] {Integer.class, DIVIDE}), new DivideInt());
-        computers.put(new MultiKey<Object>(new Object[] {BigDecimal.class, DIVIDE}), new DivideBigDec());
-        computers.put(new MultiKey<Object>(new Object[] {BigInteger.class, DIVIDE}), new DivideBigInt());
         computers.put(new MultiKey<Object>(new Object[] {Double.class, MULTIPLY}), new MultiplyDouble());
         computers.put(new MultiKey<Object>(new Object[] {Float.class, MULTIPLY}), new MultiplyFloat());
         computers.put(new MultiKey<Object>(new Object[] {Long.class, MULTIPLY}), new MultiplyLong());
@@ -113,7 +107,7 @@ public enum MathArithTypeEnum
      * @param typeTwo - the RHS type
      * @return number cruncher
      */
-    public Computer getComputer(Class coercedType, Class typeOne, Class typeTwo)
+    public Computer getComputer(Class coercedType, Class typeOne, Class typeTwo, boolean isIntegerDivision, boolean isDivisionByZeroReturnsNull)
     {
         if ( (coercedType != Double.class) &&
              (coercedType != Float.class) &&
@@ -127,24 +121,40 @@ public enum MathArithTypeEnum
 
         if (coercedType == BigDecimal.class)
         {
-            return makeBigDecimalComputer(typeOne, typeTwo);
+            return makeBigDecimalComputer(typeOne, typeTwo, isDivisionByZeroReturnsNull);
         }
         if (coercedType == BigInteger.class)
         {
             return makeBigIntegerComputer(typeOne, typeTwo);
         }
 
-        MultiKey<Object> key = new MultiKey<Object>(new Object[] {coercedType, this});
-        Computer computer = computers.get(key);
-
-        if (computer == null)
+        if (this != DIVIDE)
         {
-            throw new IllegalArgumentException("Could not determine process or type " + this + " type " + coercedType);
+            MultiKey<Object> key = new MultiKey<Object>(new Object[] {coercedType, this});
+            Computer computer = computers.get(key);
+            if (computer == null)
+            {
+                throw new IllegalArgumentException("Could not determine process or type " + this + " type " + coercedType);
+            }
+            return computer;
         }
-        return computer;
+
+        if (!isIntegerDivision)
+        {
+            return new DivideDouble(isDivisionByZeroReturnsNull);
+        }
+
+        if (coercedType == Double.class) return new DivideDouble(isDivisionByZeroReturnsNull);
+        if (coercedType == Float.class) return new DivideFloat();
+        if (coercedType == Long.class) return new DivideLong();
+        if (coercedType == Integer.class) return new DivideInt();
+        if (coercedType == BigDecimal.class) return new DivideBigDec(isDivisionByZeroReturnsNull);
+        if (coercedType == BigInteger.class) return new DivideBigInt();
+
+        throw new IllegalArgumentException("Could not determine process or type " + this + " type " + coercedType);
     }
 
-    private Computer makeBigDecimalComputer(Class typeOne, Class typeTwo)
+    private Computer makeBigDecimalComputer(Class typeOne, Class typeTwo, boolean divisionByZeroReturnsNull)
     {
         if ((typeOne == BigDecimal.class) && (typeTwo == BigDecimal.class))
         {
@@ -166,7 +176,7 @@ public enum MathArithTypeEnum
         }
         if (this == DIVIDE)
         {
-            return new DivideBigDecConvComputer(convertorOne, convertorTwo);
+            return new DivideBigDecConvComputer(convertorOne, convertorTwo, divisionByZeroReturnsNull);
         }
         return new ModuloDouble();
     }
@@ -335,9 +345,21 @@ public enum MathArithTypeEnum
      */
     public static class DivideDouble implements Computer
     {
+        private final boolean divisionByZeroReturnsNull;
+
+        public DivideDouble(boolean divisionByZeroReturnsNull)
+        {
+            this.divisionByZeroReturnsNull = divisionByZeroReturnsNull;
+        }
+
         public Number compute(Number d1, Number d2)
         {
-            return d1.doubleValue() / d2.doubleValue();
+            double d2Double = d2.doubleValue();
+            if ((divisionByZeroReturnsNull) && (d2Double == 0))
+            {
+                return null;
+            }
+            return d1.doubleValue() / d2Double;
         }
     }
     /**
@@ -347,7 +369,12 @@ public enum MathArithTypeEnum
     {
         public Number compute(Number d1, Number d2)
         {
-            return d1.floatValue() / d2.floatValue();
+            float d2Float = d2.floatValue();
+            if (d2Float == 0)
+            {
+                return null;
+            }
+            return d1.floatValue() / d2Float;
         }
     }
     /**
@@ -357,7 +384,12 @@ public enum MathArithTypeEnum
     {
         public Number compute(Number d1, Number d2)
         {
-            return d1.longValue() / d2.longValue();
+            long d2Long = d2.longValue();
+            if (d2Long == 0)
+            {
+                return null;
+            }
+            return d1.longValue() / d2Long;
         }
     }
     /**
@@ -367,7 +399,12 @@ public enum MathArithTypeEnum
     {
         public Number compute(Number d1, Number d2)
         {
-            return d1.intValue() / d2.intValue();
+            int d2Int = d2.intValue();
+            if (d2Int == 0)
+            {
+                return null;
+            }
+            return d1.intValue() / d2Int;
         }
     }
 
@@ -380,6 +417,10 @@ public enum MathArithTypeEnum
         {
             BigInteger b1 = (BigInteger) d1;
             BigInteger b2 = (BigInteger) d2;
+            if (b2.doubleValue() == 0)
+            {
+                return null;
+            }
             return b1.divide(b2);
         }
     }
@@ -388,10 +429,29 @@ public enum MathArithTypeEnum
      */
     public static class DivideBigDec implements Computer
     {
+        private final boolean divisionByZeroReturnsNull;
+
+        public DivideBigDec(boolean divisionByZeroReturnsNull)
+        {
+            this.divisionByZeroReturnsNull = divisionByZeroReturnsNull;
+        }
+
         public Number compute(Number d1, Number d2)
         {
             BigDecimal b1 = (BigDecimal) d1;
             BigDecimal b2 = (BigDecimal) d2;
+            if (b2.doubleValue() == 0)
+            {
+                if (divisionByZeroReturnsNull)
+                {
+                    return null;
+                }
+                else
+                {
+                    double result = b1.doubleValue() / 0;       // serves to create the right sign for infinity
+                    return new BigDecimal(result);
+                }
+            }
             return b1.divide(b2);
         }
     }
@@ -591,22 +651,37 @@ public enum MathArithTypeEnum
     {
         private final SimpleNumberBigDecimalCoercer convOne;
         private final SimpleNumberBigDecimalCoercer convTwo;
+        private final boolean divisionByZeroReturnsNull;
 
         /**
          * Ctor.
          * @param convOne convertor for LHS
          * @param convTwo convertor for RHS
+         * @param divisionByZeroReturnsNull
          */
-        public DivideBigDecConvComputer(SimpleNumberBigDecimalCoercer convOne, SimpleNumberBigDecimalCoercer convTwo)
+        public DivideBigDecConvComputer(SimpleNumberBigDecimalCoercer convOne, SimpleNumberBigDecimalCoercer convTwo, boolean divisionByZeroReturnsNull)
         {
             this.convOne = convOne;
             this.convTwo = convTwo;
+            this.divisionByZeroReturnsNull = divisionByZeroReturnsNull;
         }
 
         public Number compute(Number d1, Number d2)
         {
             BigDecimal s1 = convOne.coerceBoxedBigDec(d1);
             BigDecimal s2 = convTwo.coerceBoxedBigDec(d2);
+            if (s2.doubleValue() == 0)
+            {
+                if (divisionByZeroReturnsNull)
+                {
+                    return null;
+                }
+                else
+                {
+                    double result = s1.doubleValue() / 0;
+                    return new BigDecimal(result);
+                }
+            }
             return s1.divide(s2);
         }
     }
@@ -715,6 +790,10 @@ public enum MathArithTypeEnum
         {
             BigInteger s1 = convOne.coerceBoxedBigInt(d1);
             BigInteger s2 = convTwo.coerceBoxedBigInt(d2);
+            if (s2.doubleValue() == 0)
+            {
+                return null;
+            }
             return s1.divide(s2);
         }
     }

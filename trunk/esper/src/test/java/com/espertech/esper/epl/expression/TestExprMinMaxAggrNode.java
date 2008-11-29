@@ -38,7 +38,7 @@ public class TestExprMinMaxAggrNode extends TestExprAggregateNodeAdapter
     public void testToExpressionString() throws Exception
     {
         // Build sum(4-2)
-        ExprMathNode arithNodeChild = new ExprMathNode(MathArithTypeEnum.SUBTRACT);
+        ExprMathNode arithNodeChild = new ExprMathNode(MathArithTypeEnum.SUBTRACT, false, false);
         arithNodeChild.addChildNode(new SupportExprNode(4));
         arithNodeChild.addChildNode(new SupportExprNode(2));
 

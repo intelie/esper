@@ -69,6 +69,6 @@ public class TestExprConcatNode extends TestCase
     public void testEqualsNode() throws Exception
     {
         assertTrue(concatNode.equalsNode(concatNode));
-        assertFalse(concatNode.equalsNode(new ExprMathNode(MathArithTypeEnum.DIVIDE)));
+        assertFalse(concatNode.equalsNode(new ExprMathNode(MathArithTypeEnum.DIVIDE, false, false)));
     }
 }

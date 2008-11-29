@@ -343,6 +343,7 @@
 				<xs:element ref="esper:time-source" minOccurs="0"/>
 				<xs:element ref="esper:metrics-reporting" minOccurs="0"/>
 				<xs:element ref="esper:language" minOccurs="0"/>
+				<xs:element ref="esper:expression" minOccurs="0"/>
 			</xs:sequence>
 		</xs:complexType>
 	</xs:element>
@@ -603,7 +604,13 @@
 	</xs:element>
 	<xs:element name="language">
 		<xs:complexType>
-			<xs:attribute name="sort-using-collator" type="xs:boolean" use="required"/>
+			<xs:attribute name="sort-using-collator" type="xs:boolean" use="optional"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="expression">
+		<xs:complexType>
+			<xs:attribute name="integer-division" type="xs:boolean" use="optional"/>
+			<xs:attribute name="division-by-zero-is-null" type="xs:boolean" use="optional"/>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="stmtgroup">

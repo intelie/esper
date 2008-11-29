@@ -10,6 +10,7 @@ package com.espertech.esper.epl.spec;
 
 import com.espertech.esper.epl.core.EngineImportService;
 import com.espertech.esper.epl.variable.VariableService;
+import com.espertech.esper.client.ConfigurationInformation;
 
 /**
  * Context for mapping a SODA statement to a statement specification, or multiple for subqueries,
@@ -19,6 +20,7 @@ public class StatementSpecMapContext
 {
     private final EngineImportService engineImportService;
     private final VariableService variableService;
+    private final ConfigurationInformation configuration;
 
     private boolean hasVariables;
 
@@ -27,10 +29,11 @@ public class StatementSpecMapContext
      * @param engineImportService engine imports
      * @param variableService variable names
      */
-    public StatementSpecMapContext(EngineImportService engineImportService, VariableService variableService)
+    public StatementSpecMapContext(EngineImportService engineImportService, VariableService variableService, ConfigurationInformation configuration)
     {
         this.engineImportService = engineImportService;
         this.variableService = variableService;
+        this.configuration = configuration;
     }
 
     /**
@@ -67,5 +70,10 @@ public class StatementSpecMapContext
     public void setHasVariables(boolean hasVariables)
     {
         this.hasVariables = hasVariables;
+    }
+
+    public ConfigurationInformation getConfiguration()
+    {
+        return configuration;
     }
 }

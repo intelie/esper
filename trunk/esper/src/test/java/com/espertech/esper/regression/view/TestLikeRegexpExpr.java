@@ -37,23 +37,6 @@ public class TestLikeRegexpExpr extends TestCase
         selectTestCase.addListener(testListener);
 
         runLikeRegexStringAndNull();
-        selectTestCase.destroy();
-
-        /*
-        TODO ESPER 305
-        String inId = "FB440670-166";
-        String outId = "TBT-FB440670-166";
-        Pattern p = Pattern.compile("\\w*-" + inId);
-        Matcher m = p.matcher(outId);
-        assertTrue(m.matches());
-
-        String pattern = "\\\\w*-" + inId;
-        String regexpExpr = "select * from " + SupportBean_S0.class.getName() + " where p00 regexp " + pattern;
-        selectTestCase = epService.getEPAdministrator().createEPL(regexpExpr);
-        selectTestCase.addListener(testListener);
-        epService.getEPRuntime().sendEvent(new SupportBean_S0(1, outId));
-        assertTrue()
-         */
     }
 
     public void testLikeRegexStringAndNull_OM() throws Exception

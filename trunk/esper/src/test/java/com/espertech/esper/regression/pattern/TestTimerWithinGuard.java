@@ -184,7 +184,9 @@ public class TestTimerWithinGuard extends TestCase implements SupportBeanConstan
 
     public void testInterval10Min()
     {
-        EPServiceProvider epService = EPServiceProviderManager.getDefaultProvider(SupportConfigFactory.getConfiguration());
+        Configuration config = SupportConfigFactory.getConfiguration();
+        config.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
+        EPServiceProvider epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();
 
         // External clocking
@@ -204,7 +206,9 @@ public class TestTimerWithinGuard extends TestCase implements SupportBeanConstan
 
     public void testInterval10MinVariable()
     {
-        EPServiceProvider epService = EPServiceProviderManager.getDefaultProvider(SupportConfigFactory.getConfiguration());
+        Configuration config = SupportConfigFactory.getConfiguration();
+        config.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
+        EPServiceProvider epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();
         epService.getEPAdministrator().getConfiguration().addVariable("D", double.class, 1);
         epService.getEPAdministrator().getConfiguration().addVariable("H", double.class, 2);
@@ -232,7 +236,9 @@ public class TestTimerWithinGuard extends TestCase implements SupportBeanConstan
 
     public void testIntervalPrepared()
     {
-        EPServiceProvider epService = EPServiceProviderManager.getDefaultProvider(SupportConfigFactory.getConfiguration());
+        Configuration config = SupportConfigFactory.getConfiguration();
+        config.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
+        EPServiceProvider epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();
 
         // External clocking
@@ -258,7 +264,9 @@ public class TestTimerWithinGuard extends TestCase implements SupportBeanConstan
 
     public void testWithinFromExpression()
     {
-        EPServiceProvider epService = EPServiceProviderManager.getDefaultProvider(SupportConfigFactory.getConfiguration());
+        Configuration config = SupportConfigFactory.getConfiguration();
+        config.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
+        EPServiceProvider epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();
         epService.getEPAdministrator().getConfiguration().addEventTypeAlias("SupportBean", SupportBean.class);
 

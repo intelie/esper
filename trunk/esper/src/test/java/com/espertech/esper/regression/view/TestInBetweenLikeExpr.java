@@ -228,7 +228,7 @@ public class TestInBetweenLikeExpr extends TestCase
     {
         Double[] input = new Double[] {1d, null, 1.1d, 1.0d, 1.0999999999, 2d, 4d};
         boolean[] result = new boolean[] {false, false, true, false, false, true, true};
-        tryNumeric("doubleBoxed in (1.1d, 7/3, 2*7/3, 0)", input, result);
+        tryNumeric("doubleBoxed in (1.1d, 7/3.5, 2*6/3, 0)", input, result);
 
         tryNumeric("doubleBoxed in (7/3d, null)",
                     new Double[] {2d, 7/3d, null},
@@ -238,7 +238,7 @@ public class TestInBetweenLikeExpr extends TestCase
                     new Double[] {5.0, 5d, 0d, null, -1d},
                     new boolean[] {true, true, false, false, true});
 
-        tryNumeric("doubleBoxed not in (1.1d, 7/3, 2*7/3, 0)",
+        tryNumeric("doubleBoxed not in (1.1d, 7/3.5, 2*6/3, 0)",
                     new Double[] {1d, null, 1.1d, 1.0d, 1.0999999999, 2d, 4d},
                     new boolean[] {true, true, false, true, true, false, false});
     }

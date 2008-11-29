@@ -25,6 +25,7 @@ public class ConfigurationEngineDefaults implements Serializable
     private StreamSelection streamSelection;
     private TimeSource timeSource;
     private Language language;
+    private Expression expression;
     private ConfigurationMetricsReporting metricsReporting;
 
     /**
@@ -41,6 +42,7 @@ public class ConfigurationEngineDefaults implements Serializable
         timeSource = new TimeSource();
         metricsReporting = new ConfigurationMetricsReporting();
         language = new Language();
+        expression = new Expression();
     }
 
     /**
@@ -122,6 +124,15 @@ public class ConfigurationEngineDefaults implements Serializable
     public Language getLanguage()
     {
         return language;
+    }
+
+    /**
+     * Returns the expression-related settings for the engine.
+     * @return expression-related settings
+     */
+    public Expression getExpression()
+    {
+        return expression;
     }
 
     /**
@@ -642,6 +653,73 @@ public class ConfigurationEngineDefaults implements Serializable
         public void setSortUsingCollator(boolean sortUsingCollator)
         {
             this.sortUsingCollator = sortUsingCollator;
+        }
+    }
+
+    /**
+     * Expression evaluation settings in the engine are for results of expressions.
+     */
+    public static class Expression implements Serializable
+    {
+        private boolean integerDivision;
+        private boolean divisionByZeroReturnsNull;
+
+        /**
+         * Ctor.
+         */
+        public Expression()
+        {
+            integerDivision = false;
+            divisionByZeroReturnsNull = false;
+        }
+
+        /**
+         * Returns false (the default) for integer division returning double values.
+         * <p>
+         * Returns true to signal that Java-convention integer division semantics
+         * are used for divisions, whereas the division between two non-FP numbers
+         * returns only the whole number part of the result and any fractional part is dropped.
+         * @return indicator
+         */
+        public boolean isIntegerDivision()
+        {
+            return integerDivision;
+        }
+
+        /**
+         * Set to false (default) for integer division returning double values.
+         * Set to true to signal the Java-convention integer division semantics
+         * are used for divisions, whereas the division between two non-FP numbers
+         * returns only the whole number part of the result and any fractional part is dropped.
+         * @param integerDivision true for integer division returning integer, false (default) for
+         */
+        public void setIntegerDivision(boolean integerDivision)
+        {
+            this.integerDivision = integerDivision;
+        }
+
+        /**
+         * Returns false (default) when division by zero returns Double.Infinity.
+         * Returns true when division by zero return null.
+         * <p>
+         * If integer devision is set, then division by zero for non-FP operands also returns null. 
+         * @return indicator for division-by-zero results
+         */
+        public boolean isDivisionByZeroReturnsNull()
+        {
+            return divisionByZeroReturnsNull;
+        }
+
+        /**
+         * Set to false (default) to have division by zero return Double.Infinity.
+         * Set to true to have division by zero return null.
+         * <p>
+         * If integer devision is set, then division by zero for non-FP operands also returns null.
+         * @param divisionByZeroReturnsNull indicator for division-by-zero results
+         */
+        public void setDivisionByZeroReturnsNull(boolean divisionByZeroReturnsNull)
+        {
+            this.divisionByZeroReturnsNull = divisionByZeroReturnsNull;
         }
     }
 

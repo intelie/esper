@@ -96,7 +96,7 @@ public class SupportSelectExprFactory
                   c1_1 (5)
         */
 
-        ExprNode top = new ExprMathNode(MathArithTypeEnum.MULTIPLY);
+        ExprNode top = new ExprMathNode(MathArithTypeEnum.MULTIPLY, false, false);
         ExprNode c1 = new ExprSumNode(false);
         ExprNode c1_1 = new SupportExprNode(5);
         ExprNode c2 = new SupportExprNode(10);

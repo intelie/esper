@@ -1,20 +1,18 @@
 package com.espertech.esper.regression.view;
 
 import com.espertech.esper.client.*;
-import com.espertech.esper.client.time.TimerControlEvent;
 import com.espertech.esper.client.time.CurrentTimeEvent;
-import com.espertech.esper.support.util.SupportUpdateListener;
-import com.espertech.esper.support.util.ArrayAssertionUtil;
+import com.espertech.esper.event.EventBean;
 import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.bean.SupportBeanString;
 import com.espertech.esper.support.bean.SupportMarketDataBean;
 import com.espertech.esper.support.bean.SupportPriceEvent;
 import com.espertech.esper.support.client.SupportConfigFactory;
-import com.espertech.esper.event.EventBean;
-
+import com.espertech.esper.support.util.ArrayAssertionUtil;
+import com.espertech.esper.support.util.SupportUpdateListener;
+import junit.framework.TestCase;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import junit.framework.TestCase;
 
 public class TestAggregateRowForAll extends TestCase
 {
@@ -27,9 +25,10 @@ public class TestAggregateRowForAll extends TestCase
     public void setUp()
     {
         listener = new SupportUpdateListener();
-        epService = EPServiceProviderManager.getDefaultProvider(SupportConfigFactory.getConfiguration());
+        Configuration config = SupportConfigFactory.getConfiguration();
+        config.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
+        epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();
-        epService.getEPRuntime().sendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
     }
 
     public void testSumOneView()
@@ -93,31 +92,6 @@ public class TestAggregateRowForAll extends TestCase
         assertEquals(-5L, listener.getLastOldData()[0].get("mySum"));
         assertNull(listener.getAndResetLastNewData()[0].get("mySum"));
         ArrayAssertionUtil.assertEqualsAnyOrder(selectTestView.iterator(), new String[] {"mySum"}, new Object[][] {{null}});
-    }
-
-    public void testSumDivideZero()
-    {
-        String eventName = SupportBean.class.getName();
-        String stmt;
-
-        stmt = "select ((sum(floatBoxed) - floatBoxed) / (count(*) - 1)) as laggingAvg  from " + eventName + " .win:time(60) as a";
-        selectTestView = epService.getEPAdministrator().createEPL(stmt);
-        selectTestView.addListener(listener);
-        sendEventFloat(1.1f);
-
-        stmt = "select ((sum(intBoxed) - intBoxed) / (count(*) - 1)) as laggingAvg  from " + eventName + " .win:time(60) as a";
-        selectTestView = epService.getEPAdministrator().createEPL(stmt);
-        selectTestView.addListener(listener);
-
-        try
-        {
-            sendEventInt(10);
-            fail();
-        }
-        catch (EPException ex)
-        {
-            // expected
-        }
     }
 
     public void testAvgPerSym() throws Throwable

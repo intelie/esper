@@ -8,6 +8,7 @@
  **************************************************************************************/
 package com.espertech.esper.epl.spec;
 
+import com.espertech.esper.client.ConfigurationInformation;
 import com.espertech.esper.client.EPException;
 import com.espertech.esper.client.soda.*;
 import com.espertech.esper.collection.Pair;
@@ -19,10 +20,10 @@ import com.espertech.esper.epl.expression.*;
 import com.espertech.esper.epl.parse.ASTFilterSpecHelper;
 import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.pattern.*;
+import com.espertech.esper.type.CronOperatorEnum;
 import com.espertech.esper.type.MathArithTypeEnum;
 import com.espertech.esper.type.MinMaxTypeEnum;
 import com.espertech.esper.type.RelationalOpEnum;
-import com.espertech.esper.type.CronOperatorEnum;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -40,9 +41,9 @@ public class StatementSpecMapper
      * @param variableService provides variable values
      * @return statement specification, and internal representation of a statement
      */
-    public static StatementSpecRaw map(EPStatementObjectModel sodaStatement, EngineImportService engineImportService, VariableService variableService)
+    public static StatementSpecRaw map(EPStatementObjectModel sodaStatement, EngineImportService engineImportService, VariableService variableService, ConfigurationInformation configuration)
     {
-        StatementSpecMapContext mapContext = new StatementSpecMapContext(engineImportService, variableService);
+        StatementSpecMapContext mapContext = new StatementSpecMapContext(engineImportService, variableService, configuration);
 
         StatementSpecRaw raw = map(sodaStatement, mapContext);
         if (mapContext.isHasVariables())
@@ -706,7 +707,9 @@ public class StatementSpecMapper
         if (expr instanceof ArithmaticExpression)
         {
             ArithmaticExpression arith = (ArithmaticExpression) expr;
-            return new ExprMathNode(MathArithTypeEnum.parseOperator(arith.getOperator()));
+            return new ExprMathNode(MathArithTypeEnum.parseOperator(arith.getOperator()),
+                    mapContext.getConfiguration().getEngineDefaults().getExpression().isIntegerDivision(),
+                    mapContext.getConfiguration().getEngineDefaults().getExpression().isDivisionByZeroReturnsNull());
         }
         else if (expr instanceof PropertyValueExpression)
         {
