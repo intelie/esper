@@ -36,6 +36,20 @@ public class TestLikeRegexpExpr extends TestCase
         runLikeRegexStringAndNull();
     }
 
+    public void testLikeRegexEscapedChar()
+    {
+        String caseExpr = "select p00 regexp '\\w*-ABC' as result from " + SupportBean_S0.class.getName();
+
+        EPStatement selectTestCase = epService.getEPAdministrator().createEPL(caseExpr);
+        selectTestCase.addListener(testListener);
+
+        epService.getEPRuntime().sendEvent(new SupportBean_S0(-1, "TBT-ABC"));
+        assertTrue((Boolean) testListener.assertOneGetNewAndReset().get("result"));
+
+        epService.getEPRuntime().sendEvent(new SupportBean_S0(-1, "TBT-BC"));
+        assertFalse((Boolean) testListener.assertOneGetNewAndReset().get("result"));
+    }
+
     public void testLikeRegexStringAndNull_OM() throws Exception
     {
         String stmtText = "select (p00 like p01) as r1, " +

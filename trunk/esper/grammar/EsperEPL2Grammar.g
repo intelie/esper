@@ -1374,26 +1374,16 @@ ML_COMMENT
     :   '/*' ( options {greedy=false;} : . )* '*/' {$channel=HIDDEN;}
     ;
 
-// string literals
-STRING_LITERAL
-	:	'"' (ESC|~('"'|'\\'|'\n'|'\r'))* '"'
-	;
-
 QUOTED_STRING_LITERAL
-	:	'\'' (ESC|~('\''|'\\'|'\n'|'\r'))* '\''
-	;
+    :   '\'' ( EscapeSequence | ~('\''|'\\') )* '\''
+    ;
 
-// escape sequence -- note that this is protected; it can only be called
-//   from another lexer rule -- it will not ever directly return a token to
-//   the parser
-// There are various ambiguities hushed in this rule.  The optional
-// '0'...'9' digit matches should be matched here rather than letting
-// them go back to STRING_LITERAL to be matched.  ANTLR does the
-// right thing by matching immediately; hence, it's ok to shut off
-// the FOLLOW ambig warnings.
+STRING_LITERAL
+    :  '"' ( EscapeSequence | ~('\\'|'"') )* '"'
+    ;
+
 fragment
-ESC
-	:	'\\'
+EscapeSequence	:	'\\'
 		(	'n'
 		|	'r'
 		|	't'
@@ -1402,28 +1392,26 @@ ESC
 		|	'"'
 		|	'\''
 		|	'\\'
-		|	('u')+ HEX_DIGIT HEX_DIGIT HEX_DIGIT HEX_DIGIT
-		|	'0'..'3'
-			(
-				'0'..'7'
-				(
-					'0'..'7'
-				)?
-			)?
-		|	'4'..'7'
-			(
-				'0'..'7'
-			)?
+		|	UnicodeEscape
+		|	OctalEscape
+		|	. // unknown, leave as it is
 		)
-	;
+    ;    
 
-
-// hexadecimal digit (again, note it's protected!)
 fragment
-HEX_DIGIT
-	:	('0'..'9'|'a'..'f')
-	;
+OctalEscape
+    :   '\\' ('0'..'3') ('0'..'7') ('0'..'7')
+    |   '\\' ('0'..'7') ('0'..'7')
+    |   '\\' ('0'..'7')
+    ;
 
+fragment
+HexDigit : ('0'..'9'|'a'..'f'|'A'..'F') ;
+
+fragment
+UnicodeEscape
+    :   '\\' 'u' HexDigit HexDigit HexDigit HexDigit
+    ;
 
 // an identifier.  Note that testLiterals is set to true!  This means
 // that after we match the rule, we look in the literals table to see
@@ -1456,7 +1444,7 @@ NUM_INT
 					// know when to stop: ambig.  ANTLR resolves
 					// it correctly by matching immediately.  It
 					// is therefor ok to hush warning.
-					HEX_DIGIT
+					HexDigit
 				)+
 
 			|	//float or double with leading zero

@@ -147,8 +147,7 @@ public class DatabasePollingViewable implements HistoricalEventViewable
     public EventTable[] poll(EventBean[][] lookupEventsPerStream, PollResultIndexingStrategy indexingStrategy)
     {
         DataCache localDataCache = dataCacheThreadLocal.get();
-
-        pollExecStrategy.start();
+        boolean strategyStarted = false;
 
         EventTable[] resultPerInputRow = new EventTable[lookupEventsPerStream.length];
 
@@ -193,6 +192,12 @@ public class DatabasePollingViewable implements HistoricalEventViewable
             {
                 try
                 {
+                    if (!strategyStarted)
+                    {
+                        pollExecStrategy.start();
+                        strategyStarted = true;
+                    }
+
                     // Poll using the polling execution strategy and lookup values
                     List<EventBean> pollResult = pollExecStrategy.poll(lookupValues);
 
@@ -212,13 +217,19 @@ public class DatabasePollingViewable implements HistoricalEventViewable
                 }
                 catch (EPException ex)
                 {
-                    pollExecStrategy.done();
+                    if (strategyStarted)
+                    {
+                        pollExecStrategy.done();
+                    }
                     throw ex;
                 }
             }
         }
 
-        pollExecStrategy.done();
+        if (strategyStarted)
+        {
+            pollExecStrategy.done();
+        }
 
         return resultPerInputRow;
     }

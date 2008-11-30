@@ -2,6 +2,7 @@ package com.espertech.esper.regression.db;
 
 import com.espertech.esper.client.*;
 import com.espertech.esper.support.bean.SupportBean;
+import com.espertech.esper.support.bean.SupportBean_S0;
 import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.support.epl.SupportDataSourceFactory;
 import com.espertech.esper.support.epl.SupportDatabaseService;
@@ -11,8 +12,12 @@ import junit.framework.TestCase;
 
 import java.util.Properties;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 public class TestDatabaseDataSourceFactory extends TestCase
 {
+    private static final Log log = LogFactory.getLog(TestDatabaseDataSourceFactory.class);
     private EPServiceProvider epService;
     private SupportUpdateListener listener;
 
@@ -28,6 +33,7 @@ public class TestDatabaseDataSourceFactory extends TestCase
         // for DBCP, use setDataSourceFactoryDBCP
         configDB.setDataSourceFactory(props, SupportDataSourceFactory.class.getName());
         configDB.setConnectionLifecycleEnum(ConfigurationDBRef.ConnectionLifecycleEnum.POOLED);
+        configDB.setLRUCache(100);
 
         Configuration configuration = SupportConfigFactory.getConfiguration();
         configuration.addDatabaseReference("MyDB", configDB);
@@ -55,6 +61,17 @@ public class TestDatabaseDataSourceFactory extends TestCase
 
         sendSupportBeanEvent(6);
         ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {60});
+
+        long startTime = System.currentTimeMillis();
+        // Send 100 events which all fireStatementStopped a join
+        for (int i = 0; i < 100; i++)
+        {
+            sendSupportBeanEvent(10);
+            ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {100});
+        }
+        long endTime = System.currentTimeMillis();
+        log.info("delta=" + (endTime - startTime));
+        assertTrue(endTime - startTime < 5000);
     }
 
     private void sendSupportBeanEvent(int intPrimitive)
