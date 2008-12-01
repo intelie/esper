@@ -1,6 +1,11 @@
 Esper Changelog
 ===================
 
+Fixed issue ESPER-304 impossible to get properties of events when a listener and a subscriber are added to a statement
+Fixed issue ESPER-305 escape char parsing
+Fixed issue ESPER-303 Pooled DB connection obtained and returned even on cache hit
+
+
 Changes in version 2.3
 ------------------------
 
