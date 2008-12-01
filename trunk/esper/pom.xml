@@ -8,7 +8,6 @@ mvn site
 mvn site-deploy
 
 Use these plugin goals (plugin:goal or pluginGroupId:pluginArtifactId:pluginVersion:goal)
-mvn antlr3:antlr
 mvn jar:jar
 mvn install:install
 mvn javadoc:javadoc
@@ -75,7 +74,7 @@ mvn javadoc:javadoc
 		<dependency>
 			<groupId>org.antlr</groupId>
 			<artifactId>antlr-runtime</artifactId>
-			<version>3.0.1</version>
+			<version>3.1.1</version>
 		</dependency>
 		<dependency>
 			<groupId>cglib</groupId>
@@ -111,22 +110,6 @@ mvn javadoc:javadoc
 					<source>1.5</source>
 					<target>1.5</target>
           				<skip>false</skip>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>antlr3-maven-plugin</artifactId>
-				<executions>
-					<execution>
-						<goals>
-							<goal>antlr</goal>
-						</goals>
-					</execution>
-				</executions>
-				<configuration>
-					<sourceDirectory>grammar</sourceDirectory>
-					<outputDirectory>target/generated-sources/antlr/com/espertech/esper/epl/generated</outputDirectory>
-					<libDirectory>target/generated-sources/antlr/com/espertech/esper/epl/generated</libDirectory>
 				</configuration>
 			</plugin>
 			<plugin>

@@ -34,7 +34,7 @@ options
     throw recognitionException;
   }
 
-  public void recoverFromMismatchedSet(IntStream intStream, RecognitionException recognitionException, BitSet bitSet) throws RecognitionException {
+  public Object recoverFromMismatchedSet(IntStream intStream, RecognitionException recognitionException, BitSet bitSet) throws RecognitionException {
     throw recognitionException;
   }
 

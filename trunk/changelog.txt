@@ -15,7 +15,7 @@ Changes in version 3.0.0
 integer division in Java that results in only the whole number part of the result, any fractional part is dropped.
 Thus Esper 2 returns zero for "select 1.0/2 from MyEvent" and Esper 3 returns "0.5d"
 With Esper 3 integer division returns Double values, and Integer division can be enabled through configuration.
-
+- Upgrade to ANTLR 3.1.1; Maven no longer compiles the grammar
 
 Changes in version 2.3
 ------------------------

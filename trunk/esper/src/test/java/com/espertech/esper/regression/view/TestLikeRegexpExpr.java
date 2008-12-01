@@ -1,18 +1,16 @@
 package com.espertech.esper.regression.view;
 
-import junit.framework.TestCase;
 import com.espertech.esper.client.*;
 import com.espertech.esper.client.soda.*;
-import com.espertech.esper.support.util.SupportUpdateListener;
-import com.espertech.esper.support.bean.*;
-import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.event.EventBean;
+import com.espertech.esper.support.bean.SupportBean;
+import com.espertech.esper.support.bean.SupportBean_S0;
+import com.espertech.esper.support.client.SupportConfigFactory;
+import com.espertech.esper.support.util.SupportUpdateListener;
 import com.espertech.esper.util.SerializableObjectCopier;
+import junit.framework.TestCase;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class TestLikeRegexpExpr extends TestCase
 {
@@ -24,6 +22,18 @@ public class TestLikeRegexpExpr extends TestCase
         testListener = new SupportUpdateListener();
         epService = EPServiceProviderManager.getDefaultProvider(SupportConfigFactory.getConfiguration());
         epService.initialize();
+    }
+
+    public void testLikeRegexEscapedChar()
+    {
+        // TODO: ESPER-305
+        String caseExpr = "select p00 regexp '\\w*-ABC' as result from " + SupportBean_S0.class.getName();
+
+        EPStatement selectTestCase = epService.getEPAdministrator().createEPL(caseExpr);
+        selectTestCase.addListener(testListener);
+
+        epService.getEPRuntime().sendEvent(new SupportBean_S0(-1, "TBT-ABC"));
+        assertTrue((Boolean) testListener.assertOneGetNewAndReset().get("result"));
     }
 
     public void testLikeRegexStringAndNull()
