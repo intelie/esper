@@ -696,9 +696,9 @@ public class EventAdapterServiceImpl implements EventAdapterService
 
 	public final EventBean createWrapper(EventBean event, Map<String, Object> properties, EventType eventType)
 	{
-        if (event instanceof WrapperEventBean)
+        if (event instanceof WrappedEventBean)
         {
-            WrapperEventBean wrapper = (WrapperEventBean) event;
+            WrappedEventBean wrapper = (WrappedEventBean) event;
             properties.putAll(wrapper.getDecoratingProperties());
             return new WrapperEventBean(wrapper.getUnderlyingEvent(), properties, eventType);
         }

@@ -316,7 +316,7 @@ public class SelectExprEvalProcessorStreams implements SelectExprProcessor
         	// wrapper bean, we also need to add the map properties
         	if(singleStreamWrapper)
         	{
-        		DecoratingEventBean wrapper = (DecoratingEventBean)eventsPerStream[0];
+        		WrappedEventBean wrapper = (WrappedEventBean)eventsPerStream[0];
         		if(wrapper != null)
         		{
         			Map<String, Object> map = wrapper.getDecoratingProperties();

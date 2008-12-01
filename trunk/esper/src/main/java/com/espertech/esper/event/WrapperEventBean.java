@@ -20,8 +20,8 @@ import java.util.Map;
  * The event type of such events is always {@link WrapperEventType}. Additional properties are stored in a
  * Map.
  */
-public class WrapperEventBean implements EventBean, DecoratingEventBean {
-
+public class WrapperEventBean implements EventBean, WrappedEventBean
+{
 	private final EventBean event;
 	private final Map<String, Object> map;
 	private final EventType eventType;
@@ -81,10 +81,6 @@ public class WrapperEventBean implements EventBean, DecoratingEventBean {
         return map;
     }
 
-    /**
-     * Returns the wrapped event.
-     * @return wrapped event
-     */
     public EventBean getUnderlyingEvent()
     {
         return event;

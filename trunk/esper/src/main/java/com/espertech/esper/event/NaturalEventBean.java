@@ -8,13 +8,15 @@
  **************************************************************************************/
 package com.espertech.esper.event;
 
+import java.util.Map;
+
 /**
  * An event that is carries multiple representations of event properties:
  * A synthetic representation that is designed for delivery as {@link EventBean} to client {@link com.espertech.esper.client.UpdateListener} code,
  * and a natural representation as a bunch of Object-type properties for fast delivery to client
  * subscriber objects via method call.
  */
-public class NaturalEventBean implements EventBean
+public class NaturalEventBean implements EventBean, WrappedEventBean
 {
     private final EventType eventBeanType;
     private final Object[] natural;
@@ -46,6 +48,16 @@ public class NaturalEventBean implements EventBean
 
     public Object getUnderlying() {
         return Object[].class;
+    }
+
+    public EventBean getUnderlyingEvent()
+    {
+        return ((WrappedEventBean) optionalSynthetic).getUnderlyingEvent();
+    }
+
+    public Map<String, Object> getDecoratingProperties()
+    {
+        return ((WrappedEventBean) optionalSynthetic).getDecoratingProperties();
     }
 
     /**

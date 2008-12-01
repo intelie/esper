@@ -9,6 +9,9 @@ import com.espertech.esper.collection.UniformPair;
 import com.espertech.esper.support.bean.*;
 import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.support.util.ArrayAssertionUtil;
+import com.espertech.esper.support.util.SupportUpdateListener;
+import com.espertech.esper.event.EventBean;
+import com.espertech.esper.event.EventPropertyGetter;
 
 import java.util.Map;
 
@@ -25,6 +28,30 @@ public class TestSubscriberBind extends TestCase
         config.addEventTypeAutoAlias(pkg);
         epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();
+    }
+
+    public void testSubscriberandListener()
+    {
+        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("SupportBean", SupportBean.class);
+        epService.getEPAdministrator().createEPL("insert into A1 select s.*, 1 as a from SupportBean as s");
+        EPStatement stmt = epService.getEPAdministrator().createEPL("select a1.* from A1 as a1");
+
+        SupportUpdateListener listener = new SupportUpdateListener();
+        MySubscriberRowByRowObjectArr subscriber = new MySubscriberRowByRowObjectArr();
+
+        stmt.addListener(listener);
+        stmt.setSubscriber(subscriber);
+        epService.getEPRuntime().sendEvent(new SupportBean("E1", 1));
+
+        EventBean event = listener.assertOneGetNewAndReset();
+        assertEquals("E1", event.get("string"));
+        assertEquals(1, event.get("intPrimitive"));
+
+        for (String property : stmt.getEventType().getPropertyNames())
+        {
+            EventPropertyGetter getter = stmt.getEventType().getGetter(property);
+            getter.get(event);
+        }
     }
 
     public void testOutputLimitNoJoin()
