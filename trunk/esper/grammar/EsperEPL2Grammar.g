@@ -434,6 +434,10 @@ tokens
   protected boolean recoverFromMismatchedElement(IntStream intStream, RecognitionException recognitionException, BitSet bitSet) {
     throw new RuntimeException("Error recovering from mismatched element: " + recognitionException.getMessage(), recognitionException);
   }
+  public void displayRecognitionError(String[] tokenNames,
+                                        RecognitionException e) {
+    throw new RuntimeException(e);
+  }
 }
 @rulecatch {
   catch (RecognitionException rex) {

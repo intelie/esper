@@ -158,6 +158,10 @@ public enum MathArithTypeEnum
     {
         if ((typeOne == BigDecimal.class) && (typeTwo == BigDecimal.class))
         {
+            if (this == DIVIDE)
+            {
+                return new DivideBigDec(divisionByZeroReturnsNull);
+            }
             return computers.get(new MultiKey<Object>(new Object[] {BigDecimal.class, this}));
         }
         SimpleNumberBigDecimalCoercer convertorOne = SimpleNumberCoercerFactory.getCoercerBigDecimal(typeOne);

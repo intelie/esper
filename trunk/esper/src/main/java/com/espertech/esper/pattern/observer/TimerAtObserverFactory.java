@@ -49,7 +49,30 @@ public class TimerAtObserverFactory implements ObserverFactory, MetaDefItem
         }
 
         this.params = params;
-        this.convertor = convertor; 
+        this.convertor = convertor;
+
+        // if all parameters are constants, lets try to evaluate and build a schedule for early validation
+        boolean allConstantResult = true;
+        for (ExprNode param : params)
+        {
+            if (!param.isConstantResult())
+            {
+                allConstantResult = false;
+            }
+        }
+
+        if (allConstantResult)
+        {
+            try
+            {
+                List<Object> observerParameters = PatternExpressionUtil.evaluate("Timer-at observer", null, params, convertor);
+                spec = ScheduleSpecUtil.computeValues(observerParameters.toArray());
+            }
+            catch (ScheduleParameterException e)
+            {
+                throw new ObserverParameterException("Error computing crontab schedule specification: " + e.getMessage(), e);
+            }
+        }
     }
 
     public EventObserver makeObserver(PatternContext context, MatchedEventMap beginState, ObserverEventEvaluator observerEventEvaluator,

@@ -405,15 +405,15 @@ public class TestEPLTreeWalker extends TestCase
 
     public void testWalkMath() throws Exception
     {
-        assertEquals(32, tryExpression("5*6-3+15/3"));
+        assertEquals(32.0, tryExpression("5*6-3+15/3"));
         assertEquals(-5, tryExpression("1-1-1-2-1-1"));
         assertEquals(2.8d, tryExpression("1.4 + 1.4"));
         assertEquals(1d, tryExpression("55.5/5/11.1"));
-        assertEquals(0, tryExpression("2/3"));
+        assertEquals(2/3d, tryExpression("2/3"));
         assertEquals(2/3d, tryExpression("2.0/3"));
         assertEquals(10, tryExpression("(1+4)*2"));
         assertEquals(12, tryExpression("(3*(6-4))*2"));
-        assertEquals(8, tryExpression("(1+(4*3)+2)/2+1"));
+        assertEquals(8.5, tryExpression("(1+(4*3)+2)/2+1"));
         assertEquals(1, tryExpression("10%3"));
         assertEquals(10.1 % 3, tryExpression("10.1%3"));
     }
@@ -421,7 +421,7 @@ public class TestEPLTreeWalker extends TestCase
     public void testWalkRelationalOp() throws Exception
     {
         assertEquals(true, tryRelationalOp("3>2"));
-        assertEquals(false, tryRelationalOp("3*5/2 >= 7.5"));
+        assertEquals(true, tryRelationalOp("3*5/2 >= 7.5"));
         assertEquals(true, tryRelationalOp("3*5/2.0 >= 7.5"));
         assertEquals(false, tryRelationalOp("1.1 + 2.2 < 3.2"));
         assertEquals(false, tryRelationalOp("3<=2"));

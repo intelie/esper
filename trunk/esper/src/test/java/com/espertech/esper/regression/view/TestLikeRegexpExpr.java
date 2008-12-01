@@ -26,7 +26,6 @@ public class TestLikeRegexpExpr extends TestCase
 
     public void testLikeRegexEscapedChar()
     {
-        // TODO: ESPER-305
         String caseExpr = "select p00 regexp '\\w*-ABC' as result from " + SupportBean_S0.class.getName();
 
         EPStatement selectTestCase = epService.getEPAdministrator().createEPL(caseExpr);

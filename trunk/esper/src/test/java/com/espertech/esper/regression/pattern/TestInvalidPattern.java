@@ -38,13 +38,13 @@ public class TestInvalidPattern extends TestCase
         String exceptionText = null;
 
         exceptionText = getStatementExceptionPattern("timer:at(2,3,4,4,4)");
-        assertEquals("Invalid parameter for pattern observer: Error computing observer schedule specification: Invalid combination between days of week and days of month fields for timer:at [com.espertech.esper.support.bean.SupportBean -> timer:at(2,3,4,4,4)]", exceptionText);
+        assertEquals("Invalid parameter for pattern observer: Error computing crontab schedule specification: Invalid combination between days of week and days of month fields for timer:at [timer:at(2,3,4,4,4)]", exceptionText);
 
         exceptionText = getStatementExceptionPattern(EVENT_ALLTYPES + " -> timer:within()");
-        assertEquals("Failed to resolve pattern object: Pattern guard function 'within' cannot be used as a pattern observer [com.espertech.esper.support.bean.SupportBean -> timer:within()]", exceptionText);
+        assertEquals("Failed to resolve pattern observer: Pattern guard function 'within' cannot be used as a pattern observer [com.espertech.esper.support.bean.SupportBean -> timer:within()]", exceptionText);
 
         exceptionText = getStatementExceptionPattern(EVENT_ALLTYPES + " where timer:interval(100)");
-        assertEquals("Failed to resolve pattern object: Pattern observer function 'interval' cannot be used as a pattern guard [com.espertech.esper.support.bean.SupportBean where timer:interval(100)]", exceptionText);
+        assertEquals("Failed to resolve pattern guard: Pattern observer function 'interval' cannot be used as a pattern guard [com.espertech.esper.support.bean.SupportBean where timer:interval(100)]", exceptionText);
 
         exceptionText = getStatementExceptionPattern(EVENT_ALLTYPES + " -> timer:interval()");
         assertEquals("Invalid parameter for pattern observer: Timer-interval observer requires a single numeric or time period parameter [com.espertech.esper.support.bean.SupportBean -> timer:interval()]", exceptionText);
