@@ -30,6 +30,11 @@ public class FlushedEventBuffer
         }
     }
 
+    public boolean isEmpty()
+    {
+        return remainEvents.isEmpty();
+    }
+
     /**
      * Get the events currently buffered. Returns null if the buffer is empty. Flushes the buffer.
      * @return array of events in buffer or null if empty

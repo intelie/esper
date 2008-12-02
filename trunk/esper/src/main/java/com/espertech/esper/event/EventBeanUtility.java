@@ -361,4 +361,23 @@ public class EventBeanUtility
         newArray[newArray.length - 1] = eventToAdd;
         return newArray;
     }
+
+    /**
+     * Expand the array passed in by the multiple elements to add.
+     * @param array to expand
+     * @param eventsToAdd elements to add
+     * @return resized array
+     */
+    public static EventBean[] addToArray(EventBean[] array, List<EventBean> eventsToAdd)
+    {
+        EventBean[] newArray = new EventBean[array.length + eventsToAdd.size()];
+        System.arraycopy(array, 0, newArray, 0, array.length);
+
+        int counter = array.length;
+        for (EventBean eventToAdd : eventsToAdd)
+        {
+            newArray[counter++] = eventToAdd;
+        }
+        return newArray;
+    }
 }

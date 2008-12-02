@@ -9,10 +9,7 @@ import com.espertech.esper.support.event.SupportEventTypeFactory;
 import com.espertech.esper.support.util.ArrayAssertionUtil;
 import junit.framework.TestCase;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class TestEventBeanUtility extends TestCase
 {
@@ -28,6 +25,20 @@ public class TestEventBeanUtility extends TestCase
 
         ArrayAssertionUtil.assertEqualsAnyOrder(new Object[] {testEvent[0], testEvent[1], testEvent[2]},
                 EventBeanUtility.addToArray(new EventBean[] {testEvent[0], testEvent[1]}, testEvent[2]));
+    }
+
+    public void testArrayOpAdd()
+    {
+        EventBean[] testEvent = makeEventArray(new String[] {"a1", "a2", "a3"});
+
+        ArrayAssertionUtil.assertEqualsAnyOrder(new Object[] {testEvent[0], testEvent[1], testEvent[2]},
+                EventBeanUtility.addToArray(new EventBean[] {testEvent[0]}, Arrays.asList(new EventBean[] {testEvent[1], testEvent[2]})));
+
+        ArrayAssertionUtil.assertEqualsAnyOrder(new Object[] {testEvent[1], testEvent[2]},
+                EventBeanUtility.addToArray(new EventBean[] {}, Arrays.asList(new EventBean[] {testEvent[1], testEvent[2]})));
+
+        ArrayAssertionUtil.assertEqualsAnyOrder(new Object[] {testEvent[0]},
+                EventBeanUtility.addToArray(new EventBean[] {testEvent[0]}, Arrays.asList(new EventBean[0])));
     }
 
     public void testFlattenList()

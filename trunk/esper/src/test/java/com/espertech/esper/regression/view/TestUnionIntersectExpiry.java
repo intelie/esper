@@ -47,19 +47,20 @@ public class TestUnionIntersectExpiry extends TestCase
         stmt.addListener(listener);
         
         sendEvent("E1", 1, 10);
-        ArrayAssertionUtil.assertEqualsExactOrder(stmt.iterator(), fields, toArr("E1"));
+        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, toArr("E1"));
         ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E1"});
 
         sendEvent("E2", 2, 10);
-        ArrayAssertionUtil.assertEqualsExactOrder(stmt.iterator(), fields, toArr("E1", "E2"));
+        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, toArr("E1", "E2"));
         ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E2"});
 
         sendEvent("E3", 1, 20);
-        ArrayAssertionUtil.assertEqualsExactOrder(stmt.iterator(), fields, toArr("E1", "E2", "E3"));
+        Object result = ArrayAssertionUtil.iteratorToArray(stmt.iterator());
+        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, toArr("E1", "E2", "E3"));
         ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E3"});
 
         sendEvent("E4", 1, 10);
-        ArrayAssertionUtil.assertEqualsExactOrder(stmt.iterator(), fields, toArr("E2", "E3", "E4"));
+        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, toArr("E2", "E3", "E4"));
         ArrayAssertionUtil.assertProps(listener.getLastOldData()[0], fields, new Object[] {"E1"});
         ArrayAssertionUtil.assertProps(listener.getLastNewData()[0], fields, new Object[] {"E4"});
         listener.reset();
