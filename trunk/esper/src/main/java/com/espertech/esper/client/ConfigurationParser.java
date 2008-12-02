@@ -914,6 +914,12 @@ class ConfigurationParser {
                 Boolean value = Boolean.parseBoolean(valueText);
                 configuration.getEngineDefaults().getViewResources().setShareViews(value);
             }
+            if (subElement.getNodeName().equals("allow-multiple-expiry-policy"))
+            {
+                String valueText = subElement.getAttributes().getNamedItem("enabled").getTextContent();
+                Boolean value = Boolean.parseBoolean(valueText);
+                configuration.getEngineDefaults().getViewResources().setAllowMultipleExpiryPolicies(value);
+            }
         }
     }
 

@@ -67,6 +67,8 @@ tokens
 	ISTREAM='istream';
 	IRSTREAM='irstream';
 	UNIDIRECTIONAL='unidirectional';
+	RETAINUNION='retain-union';
+	RETAININTERSECTION='retain-intersection';
 	PATTERN='pattern';
 	SQL='sql';
 	METADATASQL='metadatasql';
@@ -379,6 +381,8 @@ tokens
 	parserTokenParaphases.put(ISTREAM, "'istream'");
 	parserTokenParaphases.put(IRSTREAM, "'irstream'");
 	parserTokenParaphases.put(UNIDIRECTIONAL, "'unidirectional'");
+	parserTokenParaphases.put(RETAINUNION, "'retain-union'");
+	parserTokenParaphases.put(RETAININTERSECTION, "'retain-intersection'");
 	parserTokenParaphases.put(PATTERN, "'pattern'");
 	parserTokenParaphases.put(SQL, "'sql'");
 	parserTokenParaphases.put(METADATASQL, "'metadatasql'");
@@ -658,9 +662,9 @@ streamSelector
 	
 streamExpression
 	:	(eventFilterExpression | patternInclusionExpression | databaseJoinExpression | methodJoinExpression)
-		(DOT viewExpression (DOT viewExpression)*)? (AS i=IDENT | i=IDENT)? (u=UNIDIRECTIONAL)?
+		(DOT viewExpression (DOT viewExpression)*)? (AS i=IDENT | i=IDENT)? (u=UNIDIRECTIONAL)? (ru=RETAINUNION|ri=RETAININTERSECTION)?
 		-> ^(STREAM_EXPR eventFilterExpression? patternInclusionExpression? databaseJoinExpression? methodJoinExpression?
-		viewExpression* $i? $u?)
+		viewExpression* $i? $u? $ru? $ri?)
 	;
 			
 patternInclusionExpression
@@ -1214,6 +1218,8 @@ keywordAllowedIdent
 		|FIRST { identifier = "first"; }
 		|LAST { identifier = "last"; }
 		|UNIDIRECTIONAL { identifier = "unidirectional"; }
+		|RETAINUNION { identifier = "retain-union"; }
+		|RETAININTERSECTION { identifier = "retain-intersection"; }
 		|UNTIL { identifier = "until"; }
 		|PATTERN { identifier = "pattern"; }
 		|SQL { identifier = "sql"; }

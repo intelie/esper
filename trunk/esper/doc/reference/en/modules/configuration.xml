@@ -1291,6 +1291,29 @@ config.getEngineDefaults().getEventMeta().setClassPropertyResolutionStyle(
 				<programlisting><![CDATA[Configuration config = new Configuration();
 config.getEngineDefaults().getViewResources().setShareViews(false);]]></programlisting>
 			</sect3>
+
+			<sect3 id="config-engine-viewresources-multipolicy" revision="1">
+				<title>Allowing Multiple Expiry Policies</title>
+
+				<para>
+				   By default Esper disallows combining multiple data window views and therefore combining expiry policies, unless one of the retain-keywords is specified for the stream and views.
+				</para>
+								
+				<para>
+				   This is a sample statement that specifies multiple expiry policies by specifying two different time windows:
+				</para>
+				<programlisting><![CDATA[select * from MyEvent.win:time(10).win:time(30);]]></programlisting>
+
+				<para>
+				   The above statement would not compile unless this setting is set to true.
+				</para>
+				
+				<para>
+				   The next code snippet outlines the API to allow multiple expiry policies without retain keyword::
+				</para>
+				<programlisting><![CDATA[Configuration config = new Configuration();
+config.getEngineDefaults().getViewResources().setAllowMultipleExpiryPolicies(true);]]></programlisting>
+			</sect3>
 		</sect2>
 
 		<sect2 id="config-engine-logging" revision="1">

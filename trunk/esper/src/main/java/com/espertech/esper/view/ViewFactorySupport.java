@@ -20,7 +20,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -93,27 +92,7 @@ public abstract class ViewFactorySupport implements ViewFactory
      * @param expressions view expression parameter to validate
      * @param allowConstantResult true to indicate whether expressions that return a constant
      * result should be allowed; false to indicate that if an expression is known to return a constant result
-     * the expression is considered invalid 
-     * @return object result value of parameter expressions
-     * @throws ViewParameterException if the expressions fail to validate
-     */
-    public static ExprNode[] validate(String viewName, EventType eventType, StatementContext statementContext, ExprNode[] expressions, boolean allowConstantResult)
-            throws ViewParameterException
-    {
-        return validate(viewName, eventType, statementContext, Arrays.asList(expressions), allowConstantResult);
-    }
-
-    /**
-     * Validate the view parameter expressions and return the validated expression for later execution.
-     * <p>
-     * Does not evaluate the expression.
-     * @param viewName textual name of view
-     * @param eventType is the event type of the parent view or stream attached.
-     * @param statementContext context with statement services
-     * @param expressions view expression parameter to validate
-     * @param allowConstantResult true to indicate whether expressions that return a constant
-     * result should be allowed; false to indicate that if an expression is known to return a constant result
-     * the expression is considered invalid 
+     * the expression is considered invalid
      * @return object result value of parameter expressions
      * @throws ViewParameterException if the expressions fail to validate
      */

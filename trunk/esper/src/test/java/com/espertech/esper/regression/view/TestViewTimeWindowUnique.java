@@ -18,6 +18,7 @@ public class TestViewTimeWindowUnique extends TestCase
         listener = new SupportUpdateListener();
         Configuration config = SupportConfigFactory.getConfiguration();
         config.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
+        config.getEngineDefaults().getViewResources().setAllowMultipleExpiryPolicies(true);
         epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();
     }

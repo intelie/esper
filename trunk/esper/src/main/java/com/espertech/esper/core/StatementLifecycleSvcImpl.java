@@ -806,7 +806,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
                 // use the filter specification of the newly created event type and the views for the named window
                 compiledStreams.clear();
                 List<ViewSpec> views = new ArrayList<ViewSpec>(spec.getCreateWindowDesc().getViewSpecs());
-                compiledStreams.add(new FilterStreamSpecCompiled(newFilter.getFirst(), views, null, false));
+                compiledStreams.add(new FilterStreamSpecCompiled(newFilter.getFirst(), views, null, new StreamSpecOptions()));
                 spec.setSelectClauseSpec(newFilter.getSecond());
             }
             catch (ExprValidationException e)

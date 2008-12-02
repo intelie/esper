@@ -42,11 +42,11 @@ public class FilterStreamSpecRaw extends StreamSpecBase implements StreamSpecRaw
      * @param rawFilterSpec is unvalidated filter specification
      * @param viewSpecs is the view definition
      * @param optionalStreamName is the stream name if supplied, or null if not supplied
-     * @param isUnidirectional - true to indicate a unidirectional stream in a join, applicable for joins
+     * @param streamSpecOptions - additional options, such as unidirectional stream in a join
      */
-    public FilterStreamSpecRaw(FilterSpecRaw rawFilterSpec, List<ViewSpec> viewSpecs, String optionalStreamName, boolean isUnidirectional)
+    public FilterStreamSpecRaw(FilterSpecRaw rawFilterSpec, List<ViewSpec> viewSpecs, String optionalStreamName, StreamSpecOptions streamSpecOptions)
     {
-        super(optionalStreamName, viewSpecs, isUnidirectional);
+        super(optionalStreamName, viewSpecs, streamSpecOptions);
         this.rawFilterSpec = rawFilterSpec;
     }
 
@@ -82,7 +82,7 @@ public class FilterStreamSpecRaw extends StreamSpecBase implements StreamSpecRaw
                 streamTypeService, context.getMethodResolutionService(), context.getSchedulingService(), context.getVariableService());
 
             eventTypeReferences.add(((EventTypeSPI) namedWindowType).getMetadata().getPrimaryName());
-            return new NamedWindowConsumerStreamSpec(eventName, this.getOptionalStreamName(), this.getViewSpecs(), validatedNodes, this.isUnidirectional());
+            return new NamedWindowConsumerStreamSpec(eventName, this.getOptionalStreamName(), this.getViewSpecs(), validatedNodes, this.getOptions());
         }
 
         EventType eventType = null;
@@ -109,7 +109,7 @@ public class FilterStreamSpecRaw extends StreamSpecBase implements StreamSpecRaw
                 null, null,  // no tags
                 streamTypeService, context.getMethodResolutionService(), context.getSchedulingService(), context.getVariableService(), context.getEventAdapterService());
 
-        return new FilterStreamSpecCompiled(spec, this.getViewSpecs(), this.getOptionalStreamName(), this.isUnidirectional());
+        return new FilterStreamSpecCompiled(spec, this.getViewSpecs(), this.getOptionalStreamName(), this.getOptions());
     }
 
     /**

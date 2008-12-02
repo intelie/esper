@@ -33,6 +33,7 @@ public class TestCarSegmentCount extends TestCase
         // This code runs as part of the automated regression test suite; Therefore disable internal timer theading to safe resources
         Configuration config = new Configuration();
         config.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
+        config.getEngineDefaults().getViewResources().setAllowMultipleExpiryPolicies(true);
         epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();
 

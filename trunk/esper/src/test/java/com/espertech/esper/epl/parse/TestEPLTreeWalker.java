@@ -50,7 +50,9 @@ public class TestEPLTreeWalker extends TestCase
         EPLTreeWalker walker = parseAndWalkEPL(expression);
         StatementSpecRaw statementSpec = walker.getStatementSpec();
         assertEquals(2, statementSpec.getStreamSpecs().size());
-        assertTrue(statementSpec.getStreamSpecs().get(0).isUnidirectional());
+        assertTrue(statementSpec.getStreamSpecs().get(0).getOptions().isUnidirectional());
+        assertFalse(statementSpec.getStreamSpecs().get(0).getOptions().isRetainUnion());
+        assertFalse(statementSpec.getStreamSpecs().get(0).getOptions().isRetainIntersection());
 
         MethodStreamSpec methodSpec = (MethodStreamSpec) statementSpec.getStreamSpecs().get(1);
         assertEquals("method", methodSpec.getIdent());
@@ -59,6 +61,26 @@ public class TestEPLTreeWalker extends TestCase
         assertEquals(2, methodSpec.getExpressions().size());
         assertTrue(methodSpec.getExpressions().get(0) instanceof ExprIdentNode);
         assertTrue(methodSpec.getExpressions().get(1) instanceof ExprMathNode);
+    }
+
+    public void testWalkRetainKeywords() throws Exception
+    {
+        String className = SupportBean.class.getName();
+        String expression = "select * from " + className + " retain-union";
+
+        EPLTreeWalker walker = parseAndWalkEPL(expression);
+        StatementSpecRaw statementSpec = walker.getStatementSpec();
+        assertEquals(1, statementSpec.getStreamSpecs().size());
+        assertTrue(statementSpec.getStreamSpecs().get(0).getOptions().isRetainUnion());
+        assertFalse(statementSpec.getStreamSpecs().get(0).getOptions().isRetainIntersection());
+
+        expression = "select * from " + className + " retain-intersection";
+
+        walker = parseAndWalkEPL(expression);
+        statementSpec = walker.getStatementSpec();
+        assertEquals(1, statementSpec.getStreamSpecs().size());
+        assertFalse(statementSpec.getStreamSpecs().get(0).getOptions().isRetainUnion());
+        assertTrue(statementSpec.getStreamSpecs().get(0).getOptions().isRetainIntersection());
     }
 
     public void testWalkCreateVariable() throws Exception

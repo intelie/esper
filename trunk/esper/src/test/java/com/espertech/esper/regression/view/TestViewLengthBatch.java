@@ -4,6 +4,7 @@ import junit.framework.TestCase;
 import com.espertech.esper.client.EPServiceProvider;
 import com.espertech.esper.client.EPStatement;
 import com.espertech.esper.client.EPServiceProviderManager;
+import com.espertech.esper.client.Configuration;
 import com.espertech.esper.support.util.SupportUpdateListener;
 import com.espertech.esper.support.util.ArrayAssertionUtil;
 import com.espertech.esper.support.bean.SupportMarketDataBean;
@@ -19,7 +20,9 @@ public class TestViewLengthBatch extends TestCase
     public void setUp()
     {
         listener = new SupportUpdateListener();
-        epService = EPServiceProviderManager.getDefaultProvider(SupportConfigFactory.getConfiguration());
+        Configuration config = SupportConfigFactory.getConfiguration();
+        config.getEngineDefaults().getViewResources().setAllowMultipleExpiryPolicies(true);
+        epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();
 
         events = new SupportBean[100];

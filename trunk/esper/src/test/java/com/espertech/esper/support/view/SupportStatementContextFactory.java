@@ -15,6 +15,7 @@ import com.espertech.esper.epl.core.EngineImportServiceImpl;
 import com.espertech.esper.epl.named.NamedWindowServiceImpl;
 import com.espertech.esper.epl.variable.VariableServiceImpl;
 import com.espertech.esper.event.vaevent.ValueAddEventServiceImpl;
+import com.espertech.esper.client.Configuration;
 
 public class SupportStatementContextFactory
 {
@@ -33,6 +34,9 @@ public class SupportStatementContextFactory
     public static StatementContext makeContext(SchedulingService stub)
     {
         VariableServiceImpl variableService = new VariableServiceImpl(1000, null, null);
+        Configuration config = new Configuration();
+        config.getEngineDefaults().getViewResources().setAllowMultipleExpiryPolicies(true);
+
         return new StatementContext("engURI",
                 "engInstId",
                 "stmtId",
@@ -56,6 +60,6 @@ public class SupportStatementContextFactory
                 new StatementResultServiceImpl(null, null), // statement result svc
                 null, // resolution URIs
                 new ValueAddEventServiceImpl(), // revison svc
-                null);
+                config);
     }
 }

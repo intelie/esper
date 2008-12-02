@@ -27,19 +27,19 @@ public abstract class StreamSpecBase implements MetaDefItem
 
     private String optionalStreamName;
     private List<ViewSpec> viewSpecs = new LinkedList<ViewSpec>();
-    private boolean isUnidirectional;
+    private StreamSpecOptions streamSpecOptions;
 
     /**
      * Ctor.
      * @param optionalStreamName - stream name, or null if none supplied
      * @param viewSpecs - specifies what view to use to derive data
-     * @param isUnidirectional - true to indicate a unidirectional stream in a join, applicable for joins
+     * @param streamSpecOptions - indicates additional options such as unidirectional stream or retain-union or retain-intersection
      */
-    public StreamSpecBase(String optionalStreamName, List<ViewSpec> viewSpecs, boolean isUnidirectional)
+    public StreamSpecBase(String optionalStreamName, List<ViewSpec> viewSpecs, StreamSpecOptions streamSpecOptions)
     {
         this.optionalStreamName = optionalStreamName;
         this.viewSpecs.addAll(viewSpecs);
-        this.isUnidirectional = isUnidirectional;
+        this.streamSpecOptions = streamSpecOptions;
     }
 
     /**
@@ -67,12 +67,8 @@ public abstract class StreamSpecBase implements MetaDefItem
         return viewSpecs;
     }
 
-    /**
-     * Returns true to indicate a unidirectional stream in a join, applicable for joins.
-     * @return indicator whether the stream is unidirectional in a join
-     */
-    public boolean isUnidirectional()
+    public StreamSpecOptions getOptions()
     {
-        return isUnidirectional;
+        return streamSpecOptions;
     }
 }

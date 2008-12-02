@@ -302,7 +302,7 @@ public class EPStatementStartMethod
         }
 
         // Create data window view factories
-        unmaterializedViewChain = services.getViewService().createFactories(0, eventStreamParentViewable.getEventType(), filterStreamSpec.getViewSpecs(), statementContext);
+        unmaterializedViewChain = services.getViewService().createFactories(0, eventStreamParentViewable.getEventType(), filterStreamSpec.getViewSpecs(), filterStreamSpec.getOptions(), statementContext);
 
         // The root view of the named window
         NamedWindowProcessor processor = services.getNamedWindowService().getProcessor(statementSpec.getCreateWindowDesc().getWindowName());
@@ -492,7 +492,7 @@ public class EPStatementStartMethod
         for (int i = 0; i < statementSpec.getStreamSpecs().size(); i++)
         {
             StreamSpecCompiled streamSpec = statementSpec.getStreamSpecs().get(i);
-            isUnidirectional[i] = streamSpec.isUnidirectional();
+            isUnidirectional[i] = streamSpec.getOptions().isUnidirectional();
             hasChildViews[i] = !streamSpec.getViewSpecs().isEmpty();
 
             // Create view factories and parent view based on a filter specification
@@ -512,7 +512,7 @@ public class EPStatementStartMethod
                     statementContext.getEpStatementHandle().setStatementLock(streamLockPair.getSecond());
                 }
 
-                unmaterializedViewChain[i] = services.getViewService().createFactories(i, eventStreamParentViewable[i].getEventType(), streamSpec.getViewSpecs(), statementContext);
+                unmaterializedViewChain[i] = services.getViewService().createFactories(i, eventStreamParentViewable[i].getEventType(), streamSpec.getViewSpecs(), streamSpec.getOptions(), statementContext);
             }
             // Create view factories and parent view based on a pattern expression
             else if (streamSpec instanceof PatternStreamSpecCompiled)
@@ -521,7 +521,7 @@ public class EPStatementStartMethod
                 final EventType eventType = services.getEventAdapterService().createAnonymousCompositeType(patternStreamSpec.getTaggedEventTypes(), patternStreamSpec.getArrayEventTypes());
                 final EventStream sourceEventStream = new ZeroDepthStream(eventType);
                 eventStreamParentViewable[i] = sourceEventStream;
-                unmaterializedViewChain[i] = services.getViewService().createFactories(i, sourceEventStream.getEventType(), streamSpec.getViewSpecs(), statementContext);
+                unmaterializedViewChain[i] = services.getViewService().createFactories(i, sourceEventStream.getEventType(), streamSpec.getViewSpecs(), streamSpec.getOptions(), statementContext);
 
                 EvalRootNode rootNode = new EvalRootNode();
                 rootNode.addChildNode(patternStreamSpec.getEvalNode());
@@ -574,7 +574,7 @@ public class EPStatementStartMethod
                 NamedWindowProcessor processor = services.getNamedWindowService().getProcessor(namedSpec.getWindowName());
                 NamedWindowConsumerView consumerView = processor.addConsumer(namedSpec.getFilterExpressions(), statementContext.getEpStatementHandle(), statementContext.getStatementStopService());
                 eventStreamParentViewable[i] = consumerView;
-                unmaterializedViewChain[i] = services.getViewService().createFactories(i, consumerView.getEventType(), namedSpec.getViewSpecs(), statementContext);
+                unmaterializedViewChain[i] = services.getViewService().createFactories(i, consumerView.getEventType(), namedSpec.getViewSpecs(), namedSpec.getOptions(), statementContext);
                 isNamedWindow[i] = true;
                 eventTypeAliases[i] = namedSpec.getWindowName();
 
@@ -792,7 +792,7 @@ public class EPStatementStartMethod
             {
                 name = "pattern event stream";
             }
-            if (streamSpec.isUnidirectional())
+            if (streamSpec.getOptions().isUnidirectional())
             {
                 continue;
             }
@@ -1103,7 +1103,7 @@ public class EPStatementStartMethod
                 Pair<EventStream, ManagedLock> streamLockPair = services.getStreamService().createStream(filterStreamSpec.getFilterSpec(),
                         services.getFilterService(), statementContext.getEpStatementHandle(), isJoin);
                 Viewable viewable = streamLockPair.getFirst();
-                ViewFactoryChain viewFactoryChain = services.getViewService().createFactories(subselectStreamNumber, viewable.getEventType(), filterStreamSpec.getViewSpecs(), statementContext);
+                ViewFactoryChain viewFactoryChain = services.getViewService().createFactories(subselectStreamNumber, viewable.getEventType(), filterStreamSpec.getViewSpecs(), filterStreamSpec.getOptions(), statementContext);
                 subselect.setRawEventType(viewFactoryChain.getEventType());
 
                 // Add lookup to list, for later starts
@@ -1114,7 +1114,7 @@ public class EPStatementStartMethod
                 NamedWindowConsumerStreamSpec namedSpec = (NamedWindowConsumerStreamSpec) statementSpec.getStreamSpecs().get(0);
                 NamedWindowProcessor processor = services.getNamedWindowService().getProcessor(namedSpec.getWindowName());
                 NamedWindowConsumerView consumerView = processor.addConsumer(namedSpec.getFilterExpressions(), statementContext.getEpStatementHandle(), statementContext.getStatementStopService());
-                ViewFactoryChain viewFactoryChain = services.getViewService().createFactories(0, consumerView.getEventType(), namedSpec.getViewSpecs(), statementContext);
+                ViewFactoryChain viewFactoryChain = services.getViewService().createFactories(0, consumerView.getEventType(), namedSpec.getViewSpecs(), namedSpec.getOptions(), statementContext);
                 subSelectStreamDesc.add(subselect, subselectStreamNumber, consumerView, viewFactoryChain);
             }
         }

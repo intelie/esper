@@ -31,7 +31,9 @@ public class TestViewUniqueSorted extends TestCase
     public void setUp()
     {
         testListener = new SupportUpdateListener();
-        epService = EPServiceProviderManager.getDefaultProvider(SupportConfigFactory.getConfiguration());
+        Configuration config = SupportConfigFactory.getConfiguration();
+        config.getEngineDefaults().getViewResources().setAllowMultipleExpiryPolicies(true);
+        epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();
         epService.getEPAdministrator().getConfiguration().addEventTypeAlias("SupportBean", SupportBean.class);
     }

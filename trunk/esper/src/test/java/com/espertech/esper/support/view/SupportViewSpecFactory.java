@@ -3,6 +3,7 @@ package com.espertech.esper.support.view;
 import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.epl.expression.ExprConstantNode;
 import com.espertech.esper.epl.spec.ViewSpec;
+import com.espertech.esper.epl.spec.StreamSpecOptions;
 import com.espertech.esper.event.EventType;
 import static com.espertech.esper.support.epl.SupportExprNodeFactory.makeIdentNode;
 import com.espertech.esper.support.epl.SupportExprNodeFactory;
@@ -164,7 +165,7 @@ public class SupportViewSpecFactory
     private static List<ViewFactory> makeFactories(EventType parentEventType, List<ViewSpec> viewSpecs) throws Exception
     {
         ViewServiceImpl svc = new ViewServiceImpl();
-        ViewFactoryChain viewFactories = svc.createFactories(1, parentEventType, viewSpecs, SupportStatementContextFactory.makeContext());
+        ViewFactoryChain viewFactories = svc.createFactories(1, parentEventType, viewSpecs, new StreamSpecOptions(), SupportStatementContextFactory.makeContext());
         return viewFactories.getViewFactoryChain();
     }
 }

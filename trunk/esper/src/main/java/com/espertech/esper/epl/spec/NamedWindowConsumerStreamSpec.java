@@ -26,11 +26,11 @@ public class NamedWindowConsumerStreamSpec extends StreamSpecBase implements Str
      * @param optionalAsName - an alias or null if none defined
      * @param viewSpecs - is the view specifications
      * @param filterExpressions - the named window filters
-     * @param isUnidirectional - true to indicate a unidirectional stream in a join, applicable for joins
+     * @param streamSpecOptions - additional options such as unidirectional stream in a join
      */
-    public NamedWindowConsumerStreamSpec(String windowName, String optionalAsName, List<ViewSpec> viewSpecs, List<ExprNode> filterExpressions, boolean isUnidirectional)
+    public NamedWindowConsumerStreamSpec(String windowName, String optionalAsName, List<ViewSpec> viewSpecs, List<ExprNode> filterExpressions, StreamSpecOptions streamSpecOptions)
     {
-        super(optionalAsName, viewSpecs, isUnidirectional);
+        super(optionalAsName, viewSpecs, streamSpecOptions);
         this.windowName = windowName;
         this.filterExpressions = filterExpressions;
     }

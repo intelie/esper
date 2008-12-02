@@ -474,7 +474,7 @@ public class EPLTreeWalker extends EsperEPL2Ast
         statementSpec.setCreateWindowDesc(desc);
 
         FilterSpecRaw rawFilterSpec = new FilterSpecRaw(eventName, new LinkedList<ExprNode>());
-        FilterStreamSpecRaw streamSpec = new FilterStreamSpecRaw(rawFilterSpec, new LinkedList<ViewSpec>(), null, false);
+        FilterStreamSpecRaw streamSpec = new FilterStreamSpecRaw(rawFilterSpec, new LinkedList<ViewSpec>(), null, new StreamSpecOptions());
         statementSpec.getStreamSpecs().add(streamSpec);
     }
 
@@ -549,7 +549,7 @@ public class EPLTreeWalker extends EsperEPL2Ast
         StreamSpecRaw streamSpec;
         if (node.getChild(0).getType() == EVENT_FILTER_EXPR)
         {
-            streamSpec = new FilterStreamSpecRaw(filterSpec, new ArrayList<ViewSpec>(), streamAsName, false);
+            streamSpec = new FilterStreamSpecRaw(filterSpec, new ArrayList<ViewSpec>(), streamAsName, new StreamSpecOptions());
         }
         else if (node.getChild(0).getType() == PATTERN_INCL_EXPR)
         {
@@ -559,7 +559,7 @@ public class EPLTreeWalker extends EsperEPL2Ast
             }
             // Get expression node sub-tree from the AST nodes placed so far
             EvalNode evalNode = astPatternNodeMap.values().iterator().next();
-            streamSpec = new PatternStreamSpecRaw(evalNode, viewSpecs, streamAsName, false);
+            streamSpec = new PatternStreamSpecRaw(evalNode, viewSpecs, streamAsName, new StreamSpecOptions());
             astPatternNodeMap.clear();
         }
         else
@@ -885,7 +885,7 @@ public class EPLTreeWalker extends EsperEPL2Ast
         // Get expression node sub-tree from the AST nodes placed so far
         EvalNode evalNode = astPatternNodeMap.values().iterator().next();
 
-        PatternStreamSpecRaw streamSpec = new PatternStreamSpecRaw(evalNode, new LinkedList<ViewSpec>(), null, false);
+        PatternStreamSpecRaw streamSpec = new PatternStreamSpecRaw(evalNode, new LinkedList<ViewSpec>(), null, new StreamSpecOptions());
         statementSpec.getStreamSpecs().add(streamSpec);
         statementSpec.setExistsSubstitutionParameters(substitutionParamNodes.size() > 0);
 
@@ -994,6 +994,8 @@ public class EPLTreeWalker extends EsperEPL2Ast
 
         // The first child node may be a "stream" keyword
         boolean isUnidirectional = false;
+        boolean isRetainUnion = false;
+        boolean isRetainIntersection = false;
         for (int i = 0; i < node.getChildCount(); i++)
         {
             if (node.getChild(i).getType() == UNIDIRECTIONAL)
@@ -1001,15 +1003,26 @@ public class EPLTreeWalker extends EsperEPL2Ast
                 isUnidirectional = true;
                 break;
             }
+            if (node.getChild(i).getType() == RETAINUNION)
+            {
+                isRetainUnion = true;
+                break;
+            }
+            if (node.getChild(i).getType() == RETAININTERSECTION)
+            {
+                isRetainIntersection = true;
+                break;
+            }
         }
 
         // Convert to a stream specification instance
         StreamSpecRaw streamSpec;
+        StreamSpecOptions options = new StreamSpecOptions(isUnidirectional, isRetainUnion, isRetainIntersection);
 
         // If the first subnode is a filter node, we have a filter stream specification
         if (node.getChild(0).getType() == EVENT_FILTER_EXPR)
         {
-            streamSpec = new FilterStreamSpecRaw(filterSpec, viewSpecs, streamName, isUnidirectional);
+            streamSpec = new FilterStreamSpecRaw(filterSpec, viewSpecs, streamName, options);
         }
         else if (node.getChild(0).getType() == PATTERN_INCL_EXPR)
         {
@@ -1021,7 +1034,7 @@ public class EPLTreeWalker extends EsperEPL2Ast
             // Get expression node sub-tree from the AST nodes placed so far
             EvalNode evalNode = astPatternNodeMap.values().iterator().next();
 
-            streamSpec = new PatternStreamSpecRaw(evalNode, viewSpecs, streamName, isUnidirectional);
+            streamSpec = new PatternStreamSpecRaw(evalNode, viewSpecs, streamName, options);
             astPatternNodeMap.clear();
         }
         else if (node.getChild(0).getType() == DATABASE_JOIN_EXPR)

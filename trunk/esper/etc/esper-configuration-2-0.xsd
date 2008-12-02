@@ -397,11 +397,17 @@
 			<xs:choice>
 				<xs:sequence>
 					<xs:element ref="esper:share-views" minOccurs="0"/>
+					<xs:element ref="esper:allow-multiple-expiry-policy" minOccurs="0"/>
 				</xs:sequence>
 			</xs:choice>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="share-views">
+		<xs:complexType>
+			<xs:attribute name="enabled" type="xs:boolean" use="required"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="allow-multiple-expiry-policy">
 		<xs:complexType>
 			<xs:attribute name="enabled" type="xs:boolean" use="required"/>
 		</xs:complexType>

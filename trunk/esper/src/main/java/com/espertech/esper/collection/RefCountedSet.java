@@ -109,12 +109,29 @@ public class RefCountedSet<K>
     }
 
     /**
+     * Remove a key from the set regardless of the number of references.
+     * @param key to add
+     * @return true if the key is removed, false if the key was not found
+     * @throws IllegalStateException if a key is removed that wasn't added to the map
+     */
+    public boolean removeAll(K key)
+    {
+        Integer value = refSet.remove(key);
+        return (value != null);
+    }
+
+    /**
      * Returns an iterator over the entry set.
      * @return entry set iterator
      */
     public Iterator<Map.Entry<K, Integer>> entryIterator()
     {
         return refSet.entrySet().iterator();
+    }
+
+    public Iterator<K> keyIterator()
+    {
+        return refSet.keySet().iterator();
     }
 
     /**

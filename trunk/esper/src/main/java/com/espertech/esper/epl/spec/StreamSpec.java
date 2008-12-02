@@ -32,9 +32,5 @@ public interface StreamSpec
      */
     public List<ViewSpec> getViewSpecs();
 
-    /**
-     * Returns true to indicate a unidirectional stream in a join, applicable for joins.
-     * @return indicator whether the stream is unidirectional in a join
-     */
-    public boolean isUnidirectional();    
+    public StreamSpecOptions getOptions();
 }

@@ -17,6 +17,8 @@ import com.espertech.esper.collection.Pair;
 import com.espertech.esper.event.EventType;
 import com.espertech.esper.core.StatementContext;
 import com.espertech.esper.epl.spec.ViewSpec;
+import com.espertech.esper.epl.spec.StreamSpecOptions;
+import com.espertech.esper.view.internal.UnionViewFactory;
 
 /**
  * Implementation of the view evaluation service business interface.
@@ -33,6 +35,7 @@ public final class ViewServiceImpl implements ViewService
     public ViewFactoryChain createFactories(int streamNum,
                                             EventType parentEventType,
                                             List<ViewSpec> viewSpecDefinitions,
+                                            StreamSpecOptions options,
                                             StatementContext context)
             throws ViewProcessingException
     {
@@ -65,6 +68,31 @@ public final class ViewServiceImpl implements ViewService
                 }
                 throw new ViewProcessingException(text + ": " + ex.getMessage(), ex);
             }
+        }
+
+        // validate combination of views
+        if (!context.getConfigSnapshot().getEngineDefaults().getViewResources().isAllowMultipleExpiryPolicies() &&
+             !options.isRetainUnion() && !options.isRetainIntersection())
+        {
+            boolean hasDataWindowView = false;
+            for (ViewFactory factory : viewFactories)
+            {
+                if (factory instanceof DataWindowViewFactory)
+                {
+                    if (hasDataWindowView)
+                    {
+                        throw new ViewProcessingException("Multiple data window views are not allowed by default configuration, please use one of the retain keywords or the change configuration");
+                    }
+                    hasDataWindowView = true;
+                }
+            }
+        }
+
+        if (options.isRetainUnion())
+        {
+            UnionViewFactory unionViewFactory = new UnionViewFactory(parentEventType, viewFactories);
+            viewFactories.clear();
+            viewFactories.add(unionViewFactory);
         }
 
         return new ViewFactoryChain(parentEventType, viewFactories);

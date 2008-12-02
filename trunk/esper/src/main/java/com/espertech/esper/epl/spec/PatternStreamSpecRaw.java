@@ -44,11 +44,11 @@ public class PatternStreamSpecRaw extends StreamSpecBase implements StreamSpecRa
      * @param evalNode - pattern evaluation node representing pattern statement
      * @param viewSpecs - specifies what view to use to derive data
      * @param optionalStreamName - stream name, or null if none supplied
-     * @param isUnidirectional - true to indicate a unidirectional stream in a join, applicable for joins
+     * @param streamSpecOptions - additional options, such as unidirectional stream in a join
      */
-    public PatternStreamSpecRaw(EvalNode evalNode, List<ViewSpec> viewSpecs, String optionalStreamName, boolean isUnidirectional)
+    public PatternStreamSpecRaw(EvalNode evalNode, List<ViewSpec> viewSpecs, String optionalStreamName, StreamSpecOptions streamSpecOptions)
     {
-        super(optionalStreamName, viewSpecs, isUnidirectional);
+        super(optionalStreamName, viewSpecs, streamSpecOptions);
         this.evalNode = evalNode;
     }
 
@@ -120,7 +120,7 @@ public class PatternStreamSpecRaw extends StreamSpecBase implements StreamSpecRa
             }
         }
 
-        return new PatternStreamSpecCompiled(evalNode, taggedEventTypes, arrayEventTypes, this.getViewSpecs(), this.getOptionalStreamName(), this.isUnidirectional());
+        return new PatternStreamSpecCompiled(evalNode, taggedEventTypes, arrayEventTypes, this.getViewSpecs(), this.getOptionalStreamName(), this.getOptions());
     }
 
     private void handleGuardNode(EvalGuardNode guardNode, StatementContext context, Set<String> matchUntilArrayTags, LinkedHashMap<String, Pair<EventType, String>> taggedEventTypes, LinkedHashMap<String, Pair<EventType, String>> arrayEventTypes)

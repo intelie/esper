@@ -48,6 +48,7 @@ public class TestConfigurationParser extends TestCase
         assertEquals(Configuration.PropertyResolutionStyle.CASE_SENSITIVE, config.getEngineDefaults().getEventMeta().getClassPropertyResolutionStyle());
 
         assertTrue(config.getEngineDefaults().getViewResources().isShareViews());
+        assertFalse(config.getEngineDefaults().getViewResources().isAllowMultipleExpiryPolicies());
         assertFalse(config.getEngineDefaults().getLogging().isEnableExecutionDebug());
         assertTrue(config.getEngineDefaults().getLogging().isEnableTimerDebug());
         assertEquals(15000, config.getEngineDefaults().getVariables().getMsecVersionRelease());
@@ -248,6 +249,7 @@ public class TestConfigurationParser extends TestCase
         assertFalse(config.getEngineDefaults().getThreading().isInternalTimerEnabled());
         assertEquals(1234567, config.getEngineDefaults().getThreading().getInternalTimerMsecResolution());
         assertFalse(config.getEngineDefaults().getViewResources().isShareViews());
+        assertTrue(config.getEngineDefaults().getViewResources().isAllowMultipleExpiryPolicies());
         assertEquals(Configuration.PropertyResolutionStyle.DISTINCT_CASE_INSENSITIVE, config.getEngineDefaults().getEventMeta().getClassPropertyResolutionStyle());
         assertTrue(config.getEngineDefaults().getLogging().isEnableExecutionDebug());
         assertFalse(config.getEngineDefaults().getLogging().isEnableTimerDebug());

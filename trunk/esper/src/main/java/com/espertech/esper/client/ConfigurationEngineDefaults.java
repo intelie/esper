@@ -360,6 +360,7 @@ public class ConfigurationEngineDefaults implements Serializable
     public static class ViewResources implements Serializable
     {
         private boolean shareViews;
+        private boolean allowMultipleExpiryPolicies;
 
         /**
          * Ctor - sets up defaults.
@@ -367,6 +368,7 @@ public class ConfigurationEngineDefaults implements Serializable
         protected ViewResources()
         {
             shareViews = true;
+            allowMultipleExpiryPolicies = false;
         }
 
         /**
@@ -389,6 +391,32 @@ public class ConfigurationEngineDefaults implements Serializable
         public void setShareViews(boolean shareViews)
         {
             this.shareViews = shareViews;
+        }
+
+        /**
+         * By default this setting is false and thereby multiple expiry policies
+         * provided by views can only be combined if any of the retain-keywords is also specified for the stream.
+         * <p>
+         * If set to true then multiple expiry policies are allowed and the following statement compiles without exception:
+         * "select * from MyEvent.win:time(10).win:time(10)".
+         * @return allowMultipleExpiryPolicies indicator whether to allow combining expiry policies provided by views
+         */
+        public boolean isAllowMultipleExpiryPolicies()
+        {
+            return allowMultipleExpiryPolicies;
+        }
+
+        /**
+         * Set to false (the default) and thereby disallow multiple expiry policies
+         * provided by views and only allow if any of the retain-keywords are also specified for the stream.
+         * <p>
+         * If set to true then multiple expiry policies are allowed and the following statement compiles without exception:
+         * "select * from MyEvent.win:time(10).win:time(10)".
+         * @param allowMultipleExpiryPolicies indicator whether to allow combining expiry policies provided by views
+         */
+        public void setAllowMultipleExpiryPolicies(boolean allowMultipleExpiryPolicies)
+        {
+            this.allowMultipleExpiryPolicies = allowMultipleExpiryPolicies;
         }
     }
 

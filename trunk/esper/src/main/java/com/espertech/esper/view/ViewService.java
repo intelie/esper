@@ -11,6 +11,7 @@ package com.espertech.esper.view;
 import com.espertech.esper.event.EventType;
 import com.espertech.esper.core.StatementContext;
 import com.espertech.esper.epl.spec.ViewSpec;
+import com.espertech.esper.epl.spec.StreamSpecOptions;
 
 import java.util.List;
 
@@ -35,7 +36,9 @@ public interface ViewService
      * or cannot hook onto it's parent view or event stream
      */
     public ViewFactoryChain createFactories(int streamNum,
-                                            EventType parentEventType, List<ViewSpec> viewSpecList,
+                                            EventType parentEventType,
+                                            List<ViewSpec> viewSpecList,
+                                            StreamSpecOptions options,
                                             StatementContext context)
             throws ViewProcessingException;
 
