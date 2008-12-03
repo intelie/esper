@@ -43,6 +43,11 @@ public interface Viewable extends EventCollection
     public boolean removeView(View view);
 
     /**
+     * Remove all views.
+     */
+    public void removeAllViews();
+
+    /**
      * Test is there are any views to the Viewable.
      * @return true indicating there are child views, false indicating there are no child views
      */

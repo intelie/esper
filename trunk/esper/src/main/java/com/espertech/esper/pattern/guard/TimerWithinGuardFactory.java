@@ -28,6 +28,10 @@ public class TimerWithinGuardFactory implements GuardFactory, MetaDefItem
      * Number of milliseconds.
      */
     protected ExprNode millisecondsExpr;
+
+    /**
+     * For converting matched-events maps to events-per-stream.
+     */
     protected MatchedEventConvertor convertor;
 
     public void setGuardParameters(List<ExprNode> params, MatchedEventConvertor convertor) throws GuardParameterException

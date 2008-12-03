@@ -23,6 +23,7 @@ public class CreateWindowDesc implements MetaDefItem
     private boolean isInsert;
     private String insertFromWindow;
     private ExprNode insertFilter;
+    private StreamSpecOptions streamSpecOptions;
 
     /**
      * Ctor.
@@ -30,13 +31,15 @@ public class CreateWindowDesc implements MetaDefItem
      * @param viewSpecs the view definitions
      * @param insert true for insert-info
      * @param insertFilter optional filter expression
+     * @param streamSpecOptions options such as retain-union etc
      */
-    public CreateWindowDesc(String windowName, List<ViewSpec> viewSpecs, boolean insert, ExprNode insertFilter)
+    public CreateWindowDesc(String windowName, List<ViewSpec> viewSpecs, StreamSpecOptions streamSpecOptions, boolean insert, ExprNode insertFilter)
     {
         this.windowName = windowName;
         this.viewSpecs = viewSpecs;
         this.isInsert = insert;
         this.insertFilter = insertFilter;
+        this.streamSpecOptions = streamSpecOptions;
     }
 
     /**
@@ -100,5 +103,14 @@ public class CreateWindowDesc implements MetaDefItem
     public void setInsertFromWindow(String insertFromWindow)
     {
         this.insertFromWindow = insertFromWindow;
+    }
+
+    /**
+     * Returns the options for the stream such as unidirectional, retain-union etc.
+     * @return stream options
+     */
+    public StreamSpecOptions getStreamSpecOptions()
+    {
+        return streamSpecOptions;
     }
 }

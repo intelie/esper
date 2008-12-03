@@ -69,7 +69,7 @@ public class MultiDimStatsViewFactory implements ViewFactory
         {
             throw new ViewParameterException(errorMessage);
         }
-        derivedMeasures = (String[]) ViewFactorySupport.assertNoProperties("Multi-dimensional stats view", validated[0], 0);
+        derivedMeasures = (String[]) ViewFactorySupport.evaluateAssertNoProperties("Multi-dimensional stats view", validated[0], 0);
         measureExpression = validated[1];
         columnExpression = validated[2];
 

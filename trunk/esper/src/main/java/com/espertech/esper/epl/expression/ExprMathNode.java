@@ -32,6 +32,8 @@ public class ExprMathNode extends ExprNode
     /**
      * Ctor.
      * @param mathArithTypeEnum - type of math
+     * @param isIntegerDivision - false for division returns double, true for using Java-standard integer division
+     * @param isDivisionByZeroReturnsNull - false for division-by-zero returns infinity, true for null
      */
     public ExprMathNode(MathArithTypeEnum mathArithTypeEnum, boolean isIntegerDivision, boolean isDivisionByZeroReturnsNull)
     {

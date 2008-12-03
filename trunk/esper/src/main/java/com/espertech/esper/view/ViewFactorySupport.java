@@ -141,9 +141,10 @@ public abstract class ViewFactorySupport implements ViewFactory
      * @param viewName textual name of view
      * @param expression expression to check
      * @param index number offset of expression in view parameters
+     * @return expression evaluation value
      * @throws ViewParameterException if assertion fails
      */
-    public static Object assertNoProperties(String viewName, ExprNode expression, int index) throws ViewParameterException
+    public static Object evaluateAssertNoProperties(String viewName, ExprNode expression, int index) throws ViewParameterException
     {
         ExprNodeSummaryVisitor visitor = new ExprNodeSummaryVisitor();
         expression.accept(visitor);

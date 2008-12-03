@@ -124,6 +124,10 @@ public class OutputLimitSpec implements MetaDefItem
         return thenExpressions;
     }
 
+    /**
+     * Returns time period expression or null if none used.
+     * @return time period
+     */
     public ExprTimePeriod getTimePeriodExpr()
     {
         return timePeriodExpr;

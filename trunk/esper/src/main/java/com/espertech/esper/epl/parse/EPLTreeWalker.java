@@ -444,6 +444,23 @@ public class EPLTreeWalker extends EsperEPL2Ast
             eventName = "java.lang.Object";
         }
 
+        boolean isRetainUnion = false;
+        boolean isRetainIntersection = false;
+        for (int i = 0; i < node.getChildCount(); i++)
+        {
+            if (node.getChild(i).getType() == RETAINUNION)
+            {
+                isRetainUnion = true;
+                break;
+            }
+            if (node.getChild(i).getType() == RETAININTERSECTION)
+            {
+                isRetainIntersection = true;
+                break;
+            }
+        }
+        StreamSpecOptions streamSpecOptions = new StreamSpecOptions(false,isRetainUnion,isRetainIntersection);
+
         // handle table-create clause, i.e. (col1 type, col2 type)
         if ((node.getChildCount() > 2) && node.getChild(2).getType() == CREATE_WINDOW_COL_TYPE_LIST)
         {
@@ -470,11 +487,11 @@ public class EPLTreeWalker extends EsperEPL2Ast
             }
         }
 
-        CreateWindowDesc desc = new CreateWindowDesc(windowName, viewSpecs, isInsert, insertWhereExpr);
+        CreateWindowDesc desc = new CreateWindowDesc(windowName, viewSpecs, streamSpecOptions, isInsert, insertWhereExpr);
         statementSpec.setCreateWindowDesc(desc);
 
         FilterSpecRaw rawFilterSpec = new FilterSpecRaw(eventName, new LinkedList<ExprNode>());
-        FilterStreamSpecRaw streamSpec = new FilterStreamSpecRaw(rawFilterSpec, new LinkedList<ViewSpec>(), null, new StreamSpecOptions());
+        FilterStreamSpecRaw streamSpec = new FilterStreamSpecRaw(rawFilterSpec, new LinkedList<ViewSpec>(), null, streamSpecOptions);
         statementSpec.getStreamSpecs().add(streamSpec);
     }
 

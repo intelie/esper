@@ -90,7 +90,7 @@ onExprFrom
 	;
 
 createWindowExpr
-	:	^(i=CREATE_WINDOW_EXPR IDENT (viewListExpr)? 
+	:	^(i=CREATE_WINDOW_EXPR IDENT (viewListExpr)? RETAINUNION? RETAININTERSECTION? 
 			(
 				(createSelectionList? CLASS_IDENT) 
 			       | 
@@ -325,11 +325,11 @@ subSelectInQueryExpr
 	;
 	
 subQueryExpr 
-	:	selectionListElement subSelectFilterExpr (viewExpr)* (IDENT)? (whereClause)?
+	:	selectionListElement subSelectFilterExpr (whereClause)?
 	;
 	
 subSelectFilterExpr
-	:	^(v=STREAM_EXPR eventFilterExpr (viewListExpr)? (IDENT)? { leaveNode($v); } )
+	:	^(v=STREAM_EXPR eventFilterExpr (viewListExpr)? (IDENT)? RETAINUNION? RETAININTERSECTION? { leaveNode($v); } )
 	;
 	
 caseExpr

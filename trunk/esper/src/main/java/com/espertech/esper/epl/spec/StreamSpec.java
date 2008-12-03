@@ -32,5 +32,9 @@ public interface StreamSpec
      */
     public List<ViewSpec> getViewSpecs();
 
+    /**
+     * Returns the options for the stream such as unidirectional, retain-union etc.
+     * @return stream options
+     */    
     public StreamSpecOptions getOptions();
 }

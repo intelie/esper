@@ -25,7 +25,14 @@ import java.util.List;
  */
 public class TimerIntervalObserverFactory implements ObserverFactory, MetaDefItem
 {
+    /**
+     * Parameters.
+     */
     protected ExprNode parameter;
+
+    /**
+     * Convertor to events-per-stream.
+     */
     protected MatchedEventConvertor convertor;
 
     /**

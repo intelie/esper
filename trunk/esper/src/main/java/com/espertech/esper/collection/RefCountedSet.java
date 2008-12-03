@@ -129,6 +129,10 @@ public class RefCountedSet<K>
         return refSet.entrySet().iterator();
     }
 
+    /**
+     * Returns a key iterator.
+     * @return key iterator
+     */
     public Iterator<K> keyIterator()
     {
         return refSet.keySet().iterator();

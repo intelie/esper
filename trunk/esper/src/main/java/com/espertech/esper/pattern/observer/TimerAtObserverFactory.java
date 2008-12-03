@@ -28,7 +28,14 @@ import java.util.List;
  */
 public class TimerAtObserverFactory implements ObserverFactory, MetaDefItem
 {
+    /**
+     * Parameters.
+     */
     protected List<ExprNode> params;
+
+    /**
+     * Convertor.
+     */
     protected MatchedEventConvertor convertor;
 
     /**

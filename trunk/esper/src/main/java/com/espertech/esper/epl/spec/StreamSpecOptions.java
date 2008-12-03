@@ -38,6 +38,8 @@ public class StreamSpecOptions implements MetaDefItem
     /**
      * Ctor.
      * @param isUnidirectional - true to indicate a unidirectional stream in a join, applicable for joins
+     * @param isRetainUnion - for retaining the union of multiple data windows
+     * @param isRetainIntersection - for retaining the intersection of multiple data windows
      */
     public StreamSpecOptions(boolean isUnidirectional, boolean isRetainUnion, boolean isRetainIntersection)
     {
@@ -50,11 +52,19 @@ public class StreamSpecOptions implements MetaDefItem
         this.isRetainIntersection = isRetainIntersection;
     }
 
+    /**
+     * Indicator for retaining the union of multiple expiry policies.
+     * @return true for retain union
+     */
     public boolean isRetainUnion()
     {
         return isRetainUnion;
     }
 
+    /**
+     * Indicator for retaining the intersection of multiple expiry policies.
+     * @return true for retain intersection
+     */
     public boolean isRetainIntersection()
     {
         return isRetainIntersection;

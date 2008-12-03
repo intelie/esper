@@ -31,6 +31,7 @@ public interface ViewService
      * @param parentEventType - is the event type of the event stream that originates the raw events
      * @param viewSpecList - the specification for each view factory in the chain to be created
      * @param context - dependent services
+     * @param options - stream options such as unidirectional, retain-union etc
      * @return chain of view factories
      * @throws ViewProcessingException thrown if a view factory doesn't take parameters as supplied,
      * or cannot hook onto it's parent view or event stream

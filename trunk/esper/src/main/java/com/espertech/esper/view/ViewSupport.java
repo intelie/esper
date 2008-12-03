@@ -70,6 +70,11 @@ public abstract class ViewSupport implements View
         return isRemoved;
     }
 
+    public void removeAllViews()
+    {
+        children.clear();
+    }
+
     public final List<View> getViews()
     {
         return children;

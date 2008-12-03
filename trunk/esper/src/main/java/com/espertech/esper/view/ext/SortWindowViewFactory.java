@@ -70,7 +70,7 @@ public class SortWindowViewFactory implements DataWindowViewFactory
             ViewFactorySupport.assertReturnsNonConstant(NAME, validated[i], i);
         }
 
-        Object sortSize = ViewFactorySupport.assertNoProperties(NAME, validated[0], 0);
+        Object sortSize = ViewFactorySupport.evaluateAssertNoProperties(NAME, validated[0], 0);
         if ((sortSize == null) || (!(sortSize instanceof Number)))
         {
             throw new ViewParameterException(message);

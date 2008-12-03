@@ -107,6 +107,11 @@ public abstract class OutputProcessView implements View, JoinSetIndicator
         return views;
     }
 
+    public void removeAllViews()
+    {
+        childView = null;
+    }
+
     public boolean removeView(View view) {
         if (view != childView)
         {

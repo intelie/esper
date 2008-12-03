@@ -67,6 +67,10 @@ public abstract class StreamSpecBase implements MetaDefItem
         return viewSpecs;
     }
 
+    /**
+     * Returns the options for the stream such as unidirectional, retain-union etc.
+     * @return stream options
+     */
     public StreamSpecOptions getOptions()
     {
         return streamSpecOptions;

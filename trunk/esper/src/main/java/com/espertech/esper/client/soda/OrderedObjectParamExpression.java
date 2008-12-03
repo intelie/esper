@@ -10,6 +10,10 @@ public class OrderedObjectParamExpression extends ExpressionBase
 {
     private boolean isDescending;
 
+    /**
+     * Ctor.
+     * @param descending to indicate a descending sort, or false for ascending
+     */
     public OrderedObjectParamExpression(boolean descending)
     {
         isDescending = descending;

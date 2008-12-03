@@ -22,6 +22,9 @@ import java.util.List;
  */
 public class UniqueByPropertyViewFactory implements DataWindowViewFactory
 {
+    /**
+     * View parameters.
+     */
     protected List<ExprNode> viewParameters;
 
     /**

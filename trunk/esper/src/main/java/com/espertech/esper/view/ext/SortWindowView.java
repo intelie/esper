@@ -72,12 +72,8 @@ public final class SortWindowView extends ViewSupport implements DataWindowView,
         this.sortWindowSize = sortWindowSize;
         this.optionalSortedRandomAccess = optionalSortedRandomAccess;
         this.isSortUsingCollator = isSortUsingCollator;
-    }
 
-    public void setParent(Viewable parent)
-    {
-        super.setParent(parent);
-
+        // determine string-type sorting
         boolean hasStringTypes = false;
         boolean stringTypes[] = new boolean[sortCriteriaExpressions.length];
 
@@ -104,7 +100,6 @@ public final class SortWindowView extends ViewSupport implements DataWindowView,
         {
             comparator = new MultiKeyCollatingComparator(isDescendingValues, stringTypes);
         }
-
         sortedEvents = new TreeMap<MultiKeyUntyped, LinkedList<EventBean>>(comparator);
     }
 

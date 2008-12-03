@@ -24,6 +24,15 @@ public class PatternExpressionUtil
 {
     private static Log log = LogFactory.getLog(PatternExpressionUtil.class);
 
+    /**
+     * Ctor.
+     * @param objectName is the pattern object name
+     * @param beginState the pattern begin state
+     * @param parameters object parameters
+     * @param convertor for converting to a event-per-stream view for use to evaluate expressions
+     * @return expression results
+     * @throws EPException if the evaluate failed
+     */
     public static List<Object> evaluate(String objectName, MatchedEventMap beginState, List<ExprNode> parameters, MatchedEventConvertor convertor)
             throws EPException
     {

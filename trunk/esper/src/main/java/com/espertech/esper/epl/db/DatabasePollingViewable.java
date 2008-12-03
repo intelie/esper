@@ -269,4 +269,9 @@ public class DatabasePollingViewable implements HistoricalEventViewable
     {
         return dataCacheThreadLocal;
     }
+
+    public void removeAllViews()
+    {
+        throw new UnsupportedOperationException("Subviews not supported");
+    }
 }

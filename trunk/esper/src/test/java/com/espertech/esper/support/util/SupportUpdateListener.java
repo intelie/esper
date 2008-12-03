@@ -77,6 +77,28 @@ public class SupportUpdateListener implements UpdateListener
         return lastNew;
     }
 
+    public EventBean assertOneGetNew()
+    {
+        Assert.assertTrue(isInvoked);
+
+        Assert.assertEquals(1, newDataList.size());
+        Assert.assertEquals(1, oldDataList.size());
+
+        Assert.assertEquals(1, lastNewData.length);
+        return lastNewData[0];
+    }
+
+    public EventBean assertOneGetOld()
+    {
+        Assert.assertTrue(isInvoked);
+
+        Assert.assertEquals(1, newDataList.size());
+        Assert.assertEquals(1, oldDataList.size());
+
+        Assert.assertEquals(1, lastOldData.length);
+        return lastOldData[0];
+    }
+
     public EventBean assertOneGetOldAndReset()
     {
         Assert.assertTrue(isInvoked);

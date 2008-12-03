@@ -228,6 +228,11 @@ public class MethodPollingViewable implements HistoricalEventViewable
         throw new UnsupportedOperationException("Subviews not supported");
     }
 
+    public void removeAllViews()
+    {
+        throw new UnsupportedOperationException("Subviews not supported");
+    }
+
     public boolean hasViews()
     {
         return false;

@@ -28,6 +28,7 @@ public class StatementSpecMapContext
      * Ctor.
      * @param engineImportService engine imports
      * @param variableService variable names
+     * @param configuration the configuration
      */
     public StatementSpecMapContext(EngineImportService engineImportService, VariableService variableService, ConfigurationInformation configuration)
     {
@@ -72,6 +73,10 @@ public class StatementSpecMapContext
         this.hasVariables = hasVariables;
     }
 
+    /**
+     * Returns the configuration.
+     * @return config
+     */
     public ConfigurationInformation getConfiguration()
     {
         return configuration;

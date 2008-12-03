@@ -105,6 +105,8 @@ public enum MathArithTypeEnum
      * @param coercedType - target type
      * @param typeOne - the LHS type
      * @param typeTwo - the RHS type
+     * @param isIntegerDivision - false for division returns double, true for using Java-standard integer division
+     * @param isDivisionByZeroReturnsNull - false for division-by-zero returns infinity, true for null
      * @return number cruncher
      */
     public Computer getComputer(Class coercedType, Class typeOne, Class typeTwo, boolean isIntegerDivision, boolean isDivisionByZeroReturnsNull)
@@ -351,6 +353,10 @@ public enum MathArithTypeEnum
     {
         private final boolean divisionByZeroReturnsNull;
 
+        /**
+         * Ctor.
+         * @param divisionByZeroReturnsNull false for division-by-zero returns infinity, true for null
+         */
         public DivideDouble(boolean divisionByZeroReturnsNull)
         {
             this.divisionByZeroReturnsNull = divisionByZeroReturnsNull;
@@ -435,6 +441,10 @@ public enum MathArithTypeEnum
     {
         private final boolean divisionByZeroReturnsNull;
 
+        /**
+         * Ctor.
+         * @param divisionByZeroReturnsNull false for division-by-zero returns infinity, true for null
+         */
         public DivideBigDec(boolean divisionByZeroReturnsNull)
         {
             this.divisionByZeroReturnsNull = divisionByZeroReturnsNull;
@@ -661,7 +671,7 @@ public enum MathArithTypeEnum
          * Ctor.
          * @param convOne convertor for LHS
          * @param convTwo convertor for RHS
-         * @param divisionByZeroReturnsNull
+         * @param divisionByZeroReturnsNull false for division-by-zero returns infinity, true for null  
          */
         public DivideBigDecConvComputer(SimpleNumberBigDecimalCoercer convOne, SimpleNumberBigDecimalCoercer convTwo, boolean divisionByZeroReturnsNull)
         {

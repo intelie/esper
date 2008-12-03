@@ -124,6 +124,11 @@ public class SupportStreamImpl implements EventStream
         return isRemoved;
     }
 
+    public void removeAllViews()
+    {
+        childViews.clear();
+    }
+
     public boolean hasViews()
     {
         return (childViews.size() > 0);

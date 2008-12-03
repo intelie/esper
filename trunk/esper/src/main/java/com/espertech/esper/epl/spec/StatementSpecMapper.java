@@ -39,6 +39,7 @@ public class StatementSpecMapper
      * @param sodaStatement is the object model to map
      * @param engineImportService for resolving imports such as plug-in aggregations
      * @param variableService provides variable values
+     * @param configuration supplies config values
      * @return statement specification, and internal representation of a statement
      */
     public static StatementSpecRaw map(EPStatementObjectModel sodaStatement, EngineImportService engineImportService, VariableService variableService, ConfigurationInformation configuration)
@@ -463,7 +464,7 @@ public class StatementSpecMapper
                 FilterStreamSpecRaw filterStreamSpec = (FilterStreamSpecRaw) stream;
                 Filter filter = unmapFilter(filterStreamSpec.getRawFilterSpec(), unmapContext);
                 FilterStream filterStream = new FilterStream(filter, filterStreamSpec.getOptionalStreamName());
-                filterStream.setUnidirectional(stream.getOptions().isUnidirectional());
+                unmapStreamOpts(stream.getOptions(), filterStream);
                 targetStream = filterStream;
             }
             else if (stream instanceof DBStatementStreamSpec)
@@ -476,7 +477,7 @@ public class StatementSpecMapper
                 PatternStreamSpecRaw pattern = (PatternStreamSpecRaw) stream;
                 PatternExpr patternExpr = unmapPatternEvalDeep(pattern.getEvalNode(), unmapContext);
                 PatternStream patternStream = new PatternStream(patternExpr, pattern.getOptionalStreamName());
-                patternStream.setUnidirectional(stream.getOptions().isUnidirectional());
+                unmapStreamOpts(stream.getOptions(), patternStream);
                 targetStream = patternStream;
             }
             else if (stream instanceof MethodStreamSpec)
@@ -526,6 +527,18 @@ public class StatementSpecMapper
             }
             from.add(new OuterJoinQualifier(desc.getOuterJoinType(), left, right, additionalProperties));
         }
+    }
+
+    private static void unmapStreamOpts(StreamSpecOptions options, ProjectedStream stream)
+    {
+        stream.setUnidirectional(options.isUnidirectional());
+        stream.setRetainUnion(options.isRetainUnion());
+        stream.setRetainIntersection(options.isRetainIntersection());
+    }
+
+    private static StreamSpecOptions mapStreamOpts(ProjectedStream stream)
+    {
+        return new StreamSpecOptions(stream.isUnidirectional(), stream.isRetainUnion(), stream.isRetainIntersection());
     }
 
     private static void unmapSelect(SelectClauseSpecRaw selectClauseSpec, SelectClauseStreamSelectorEnum selectStreamSelectorEnum, EPStatementObjectModel model, StatementSpecUnMapContext unmapContext)
@@ -585,7 +598,7 @@ public class StatementSpecMapper
         {
             insertFromWhereExpr = mapExpressionDeep(createWindow.getInsertWhereClause(), mapContext);
         }
-        raw.setCreateWindowDesc(new CreateWindowDesc(createWindow.getWindowName(), mapViews(createWindow.getViews(), mapContext), createWindow.isInsert(), insertFromWhereExpr));
+        raw.setCreateWindowDesc(new CreateWindowDesc(createWindow.getWindowName(), mapViews(createWindow.getViews(), mapContext), new StreamSpecOptions(), createWindow.isInsert(), insertFromWhereExpr));
     }
 
     private static void mapCreateVariable(CreateVariableClause createVariable, StatementSpecRaw raw, StatementSpecMapContext mapContext)
@@ -1307,7 +1320,7 @@ public class StatementSpecMapper
             {
                 FilterStream filterStream = (FilterStream) stream;
                 FilterSpecRaw filterSpecRaw = mapFilter(filterStream.getFilter(), mapContext);
-                StreamSpecOptions options = new StreamSpecOptions(filterStream.isUnidirectional(), false, false);
+                StreamSpecOptions options = mapStreamOpts(filterStream);
                 spec = new FilterStreamSpecRaw(filterSpecRaw, new ArrayList<ViewSpec>(), filterStream.getStreamName(), options);
             }
             else if (stream instanceof SQLStream)
@@ -1320,7 +1333,7 @@ public class StatementSpecMapper
             {
                 PatternStream patternStream = (PatternStream) stream;
                 EvalNode child = mapPatternEvalDeep(patternStream.getExpression(), mapContext);
-                StreamSpecOptions options = new StreamSpecOptions(patternStream.isUnidirectional(), false, false);
+                StreamSpecOptions options = mapStreamOpts(patternStream);
                 spec = new PatternStreamSpecRaw(child, new ArrayList<ViewSpec>(), patternStream.getStreamName(), options);
             }
             else if (stream instanceof MethodInvocationStream)

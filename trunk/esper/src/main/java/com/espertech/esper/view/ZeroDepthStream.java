@@ -90,6 +90,12 @@ public final class ZeroDepthStream implements EventStream
         return (!children.isEmpty());
     }
 
+    public void removeAllViews()
+    {
+        children.clear();
+    }
+
     private static final Log log = LogFactory.getLog(ZeroDepthStream.class);
 }
+
 

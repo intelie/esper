@@ -532,15 +532,15 @@ onExprFrom
 	;
 
 createWindowExpr
-	:	CREATE WINDOW i=IDENT (DOT viewExpression (DOT viewExpression)*)? AS? 
+	:	CREATE WINDOW i=IDENT (DOT viewExpression (DOT viewExpression)*)? (ru=RETAINUNION|ri=RETAININTERSECTION)? AS? 
 		  (
 		  	createWindowExprModelAfter		  
 		  |   	LPAREN createWindowColumnList RPAREN
 		  )		
 		  (i1=INSERT (WHERE expression)? )?
-		-> {i1 != null}? ^(CREATE_WINDOW_EXPR $i viewExpression* createWindowExprModelAfter? createWindowColumnList? 
+		-> {i1 != null}? ^(CREATE_WINDOW_EXPR $i viewExpression* $ru? $ri? createWindowExprModelAfter? createWindowColumnList? 
 				^(INSERT expression?))
-		-> ^(CREATE_WINDOW_EXPR $i viewExpression* createWindowExprModelAfter? createWindowColumnList?)
+		-> ^(CREATE_WINDOW_EXPR $i viewExpression* $ru? $ri? createWindowExprModelAfter? createWindowColumnList?)
 	;
 
 createWindowExprModelAfter
@@ -905,8 +905,8 @@ subSelectFilterExpr
 @init  { paraphrases.push("subquery filter specification"); }
 @after { paraphrases.pop(); }
 	:	eventFilterExpression
-		(DOT viewExpression (DOT viewExpression)*)? (AS i=IDENT | i=IDENT)?
-		-> ^(STREAM_EXPR eventFilterExpression viewExpression* $i?)
+		(DOT viewExpression (DOT viewExpression)*)? (AS i=IDENT | i=IDENT)? (ru=RETAINUNION|ri=RETAININTERSECTION)?
+		-> ^(STREAM_EXPR eventFilterExpression viewExpression* $i? $ru? $ri?)
 	;
 		
 arrayExpression

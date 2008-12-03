@@ -68,7 +68,7 @@ public class ExternallyTimedWindowViewFactory implements DataWindowViewFactory
         timestampExpression = validated[0];
 
         ViewFactorySupport.assertReturnsNonConstant("Externally-timed window", validated[0], 0);
-        Object parameter = ViewFactorySupport.assertNoProperties("Externally-timed window", validated[1], 1);
+        Object parameter = ViewFactorySupport.evaluateAssertNoProperties("Externally-timed window", validated[1], 1);
         if (!(parameter instanceof Number))
         {
             throw new ViewParameterException(errorMessage);
