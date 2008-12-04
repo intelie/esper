@@ -8,7 +8,7 @@ import com.espertech.esper.support.epl.SupportExprNodeFactory;
 import com.espertech.esper.view.TestViewSupport;
 import com.espertech.esper.view.ViewParameterException;
 import com.espertech.esper.view.ViewFieldEnum;
-import com.espertech.esper.view.std.SizeView;
+import com.espertech.esper.view.std.FirstElementView;
 import com.espertech.esper.epl.expression.ExprNode;
 import junit.framework.TestCase;
 
@@ -38,7 +38,7 @@ public class TestRegressionLinestViewFactory extends TestCase
     {
         factory.setViewParameters(null, TestViewSupport.toExprListMD(new Object[] {"price", "volume"}));
         factory.attach(SupportEventTypeFactory.createBeanType(SupportMarketDataBean.class), SupportStatementContextFactory.makeContext(), null, null);
-        assertFalse(factory.canReuse(new SizeView(SupportStatementContextFactory.makeContext())));
+        assertFalse(factory.canReuse(new FirstElementView()));
         assertFalse(factory.canReuse(new RegressionLinestView(SupportStatementContextFactory.makeContext(), SupportExprNodeFactory.makeIdentNodeMD("price"), SupportExprNodeFactory.makeIdentNodeMD("price"))));
         assertFalse(factory.canReuse(new RegressionLinestView(SupportStatementContextFactory.makeContext(), SupportExprNodeFactory.makeIdentNodeMD("volume"), SupportExprNodeFactory.makeIdentNodeMD("price"))));
         assertTrue(factory.canReuse(new RegressionLinestView(SupportStatementContextFactory.makeContext(), SupportExprNodeFactory.makeIdentNodeMD("price"), SupportExprNodeFactory.makeIdentNodeMD("volume"))));

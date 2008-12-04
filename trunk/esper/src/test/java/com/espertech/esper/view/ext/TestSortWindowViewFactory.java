@@ -8,7 +8,7 @@ import com.espertech.esper.support.event.SupportEventTypeFactory;
 import com.espertech.esper.support.view.SupportStatementContextFactory;
 import com.espertech.esper.view.TestViewSupport;
 import com.espertech.esper.view.ViewParameterException;
-import com.espertech.esper.view.std.SizeView;
+import com.espertech.esper.view.std.FirstElementView;
 import junit.framework.TestCase;
 
 public class TestSortWindowViewFactory extends TestCase
@@ -58,7 +58,7 @@ public class TestSortWindowViewFactory extends TestCase
 
         factory.setViewParameters(null, TestViewSupport.toExprListMD(new Object[] {100, "price"}));
         factory.attach(SupportEventTypeFactory.createBeanType(SupportMarketDataBean.class), SupportStatementContextFactory.makeContext(), null, null);
-        assertFalse(factory.canReuse(new SizeView(context)));
+        assertFalse(factory.canReuse(new FirstElementView()));
         assertTrue(factory.canReuse(new SortWindowView(factory, SupportExprNodeFactory.makeIdentNodesMD("price"), new boolean[] {false}, 100, null, false)));
         assertFalse(factory.canReuse(new SortWindowView(factory, SupportExprNodeFactory.makeIdentNodesMD("volume"), new boolean[] {true}, 100, null, false)));
         assertFalse(factory.canReuse(new SortWindowView(factory, SupportExprNodeFactory.makeIdentNodesMD("price"), new boolean[] {false}, 99, null, false)));

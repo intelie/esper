@@ -177,11 +177,6 @@
 						<entry>stat:weighted_avg(<emphasis>value expression, value expression</emphasis>)</entry>
 						<entry>Calculates weighted average given a weight expression and an expression to compute the average for.</entry>
 					</row>
-					<row>
-						<entry>Multi-dimensional statistics</entry>
-						<entry>stat:cube(<emphasis>values to derive, datapoint expr, column, row, page</emphasis>)</entry>
-						<entry>Groups and calculates statistics by values returned from datapoint, column, row and page expressions.</entry>
-					</row>
 				</tbody>
 			</tgroup>
 		</table> 
@@ -983,59 +978,6 @@ select * from Market.std:groupby(ticker).win:length(1000000).std:merge(ticker)
 from StockTickEvent(symbol='GE').win:time(3 seconds).stat:weighted_avg(price, volume)]]></programlisting>            
 			</sect2> 
 			
-			<sect2 id="view-stat-multidim" >
-			   <title>Multi-dimensional statistics (<literal>stat:cube</literal>)</title>
-		
-				<indexterm><primary>multi-dimensional statistics view</primary></indexterm>
-				<indexterm><primary>views</primary><secondary>multi-dimensional statistics</secondary></indexterm>
-				<indexterm><primary>derived-value views</primary><secondary>multi-dimensional statistics</secondary></indexterm>
-
-				<para>
-					This view works similar to the <literal>std:groupby</literal> views in that it groups information by return by one or more expressions. 
-					The view accepts 3 or more parameters: The first parameter to the view defines the univariate statistics values to derive.
-					The second parameter is the expression to derive data from.
-					The remaining parameters supply the expressions to use to derive dimensions.
-				</para>
-				<synopsis>stat:cube(<emphasis>values_to_derive</emphasis>, <emphasis>expression_datapoint</emphasis>, <emphasis>expression_column</emphasis>)</synopsis>
-				<synopsis>stat:cube(<emphasis>values_to_derive</emphasis>, <emphasis>expression_datapoint</emphasis>, <emphasis>expression_column</emphasis>, 
-    <emphasis>expression_row</emphasis>)</synopsis>
-				<synopsis>stat:cube(<emphasis>values_to_derive</emphasis>, <emphasis>expression_datapoint</emphasis>, <emphasis>expression_column</emphasis>, 
-    <emphasis>expression_row</emphasis>, <emphasis>expression_page</emphasis>)</synopsis>
-				
-				<table frame="topbot" id="view-stat-multidim-table" revision="2">
-					<title>Multi-dim derived properties</title>
-					<tgroup cols="2">
-						<colspec colwidth="1*"/>
-						<colspec colwidth="2.5*"/>
-						<thead>
-							<row>
-								<entry>Property Name</entry>
-								<entry>Description</entry>
-							</row>
-						</thead>
-						<tbody>
-							<row>
-								<entry><literal>cube</literal></entry>
-								<entry>The cube following the <literal>com.espertech.esper.view.stat.olap.Cube</literal> interface</entry>
-							</row>
-						</tbody>
-					</tgroup>
-				</table>
-	
-				<para>
-					The example below derives the count, average and standard deviation latency of service measurement events per customer.
-				</para>	
-				<programlisting><![CDATA[select cube from ServiceMeasurement.stat:cube({‘datapoints’, ‘average’, ‘stdev’}, 
-    latency, customer)]]></programlisting>            
-
-				<para>
-					This example derives the average latency of service measurement events per customer, service and error status for events in
-					the last 30 seconds.
-				</para>	
-				<programlisting><![CDATA[select * from ServiceMeasurement.win:length(30000).stat:cube({‘average’}, 
-	latency, customer, service, status)]]></programlisting>            
-			</sect2> 
-
 		</sect1>
 
         <sect1 id="ext-views" >

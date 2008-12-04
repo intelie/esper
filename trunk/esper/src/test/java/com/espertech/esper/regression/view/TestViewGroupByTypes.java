@@ -18,12 +18,12 @@ public class TestViewGroupByTypes extends TestCase
     public void testType()
     {
         String viewStmt = "select * from " + SupportBean.class.getName() +
-                ".std:groupby(intPrimitive).win:length(4).std:groupby(longBoxed).std:size()";
+                ".std:groupby(intPrimitive).win:length(4).std:groupby(longBoxed).stat:uni(doubleBoxed)";
         EPStatement stmt = epService.getEPAdministrator().createEPL(viewStmt);
 
         assertEquals(int.class, stmt.getEventType().getPropertyType("intPrimitive"));
         assertEquals(Long.class, stmt.getEventType().getPropertyType("longBoxed"));
-        assertEquals(long.class, stmt.getEventType().getPropertyType("size"));
-        assertEquals(3, stmt.getEventType().getPropertyNames().length);
+        assertEquals(double.class, stmt.getEventType().getPropertyType("stddev"));
+        assertEquals(8, stmt.getEventType().getPropertyNames().length);
     }
 }

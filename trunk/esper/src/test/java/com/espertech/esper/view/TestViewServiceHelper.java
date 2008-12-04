@@ -7,7 +7,7 @@ import com.espertech.esper.support.view.*;
 import com.espertech.esper.support.epl.SupportExprNodeFactory;
 import com.espertech.esper.view.stat.UnivariateStatisticsView;
 import com.espertech.esper.view.std.LastElementView;
-import com.espertech.esper.view.std.SizeView;
+import com.espertech.esper.view.std.FirstElementView;
 import com.espertech.esper.view.window.LengthWindowView;
 import com.espertech.esper.view.window.TimeWindowView;
 import com.espertech.esper.core.StatementContext;
@@ -83,7 +83,7 @@ public class TestViewServiceHelper extends TestCase
 
         // One top view under the stream that doesn't match
         SupportBeanClassView testView = new SupportBeanClassView(TEST_CLASS);
-        stream.addView(new SizeView(SupportStatementContextFactory.makeContext()));
+        stream.addView(new FirstElementView());
         result = ViewServiceHelper.matchExistingViews(stream, viewFactories);
 
         assertEquals(stream, result.getFirst());

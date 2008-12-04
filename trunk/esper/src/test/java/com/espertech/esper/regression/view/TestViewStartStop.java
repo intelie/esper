@@ -20,7 +20,7 @@ public class TestViewStartStop extends TestCase
         epService = EPServiceProviderManager.getDefaultProvider(SupportConfigFactory.getConfiguration());
         epService.initialize();
 
-        String viewExpr = "select * from " + SupportBean.class.getName() + ".std:size()";
+        String viewExpr = "select count(*) as size from " + SupportBean.class.getName();
 
         sizeView = epService.getEPAdministrator().createEPL(viewExpr);
     }

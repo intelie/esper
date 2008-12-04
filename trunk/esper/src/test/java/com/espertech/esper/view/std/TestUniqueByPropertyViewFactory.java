@@ -27,7 +27,7 @@ public class TestUniqueByPropertyViewFactory extends TestCase
     {
         factory.setViewParameters(null, TestViewSupport.toExprListBean(new Object[] {"intPrimitive"}));
         factory.attach(SupportEventTypeFactory.createBeanType(SupportBean.class), SupportStatementContextFactory.makeContext(), null, null);
-        assertFalse(factory.canReuse(new SizeView(SupportStatementContextFactory.makeContext())));
+        assertFalse(factory.canReuse(new FirstElementView()));
         assertTrue(factory.canReuse(new UniqueByPropertyView(SupportExprNodeFactory.makeIdentNodesBean("intPrimitive"))));
         assertFalse(factory.canReuse(new UniqueByPropertyView(SupportExprNodeFactory.makeIdentNodesBean("intBoxed"))));
     }

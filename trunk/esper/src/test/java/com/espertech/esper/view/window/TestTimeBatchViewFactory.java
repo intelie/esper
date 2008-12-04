@@ -3,7 +3,7 @@ package com.espertech.esper.view.window;
 import com.espertech.esper.support.view.SupportStatementContextFactory;
 import com.espertech.esper.view.TestViewSupport;
 import com.espertech.esper.view.ViewParameterException;
-import com.espertech.esper.view.std.SizeView;
+import com.espertech.esper.view.std.FirstElementView;
 import junit.framework.TestCase;
 
 public class TestTimeBatchViewFactory extends TestCase
@@ -31,7 +31,7 @@ public class TestTimeBatchViewFactory extends TestCase
     public void testCanReuse() throws Exception
     {
         factory.setViewParameters(SupportStatementContextFactory.makeViewContext(), TestViewSupport.toExprListBean(new Object[] {1000}));
-        assertFalse(factory.canReuse(new SizeView(SupportStatementContextFactory.makeContext())));
+        assertFalse(factory.canReuse(new FirstElementView()));
         assertFalse(factory.canReuse(new TimeBatchView(factory, SupportStatementContextFactory.makeContext(), 1, null, false, false, null)));
         assertTrue(factory.canReuse(new TimeBatchView(factory, SupportStatementContextFactory.makeContext(), 1000000, null, false, false, null)));
 

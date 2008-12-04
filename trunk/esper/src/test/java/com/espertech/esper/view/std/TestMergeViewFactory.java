@@ -42,7 +42,7 @@ public class TestMergeViewFactory extends TestCase
     {
         factory.setViewParameters(null, TestViewSupport.toExprListMD(new Object[] {"symbol", "feed"}));
         factory.attach(SupportEventTypeFactory.createBeanType(SupportMarketDataBean.class), SupportStatementContextFactory.makeContext(), null, parents);
-        assertFalse(factory.canReuse(new SizeView(SupportStatementContextFactory.makeContext())));
+        assertFalse(factory.canReuse(new FirstElementView()));
         assertFalse(factory.canReuse(new MergeView(SupportStatementContextFactory.makeContext(), SupportExprNodeFactory.makeIdentNodesMD("symbol"), null)));
         assertTrue(factory.canReuse(new MergeView(SupportStatementContextFactory.makeContext(), SupportExprNodeFactory.makeIdentNodesMD("symbol", "feed"), null)));
     }

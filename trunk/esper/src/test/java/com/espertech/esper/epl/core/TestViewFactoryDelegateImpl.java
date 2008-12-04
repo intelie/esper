@@ -1,7 +1,7 @@
 package com.espertech.esper.epl.core;
 
 import com.espertech.esper.view.*;
-import com.espertech.esper.view.std.SizeViewFactory;
+import com.espertech.esper.view.std.FirstElementViewFactory;
 import com.espertech.esper.view.window.TimeWindowViewFactory;
 import com.espertech.esper.support.event.SupportEventTypeFactory;
 import com.espertech.esper.support.bean.SupportBean;
@@ -21,7 +21,7 @@ public class TestViewFactoryDelegateImpl extends TestCase
         ViewFactoryChain[] factories = new ViewFactoryChain[2];
 
         ViewFactory factory1 = new TimeWindowViewFactory();
-        ViewFactory factory2 = new SizeViewFactory();
+        ViewFactory factory2 = new FirstElementViewFactory();
         factories[0] = new ViewFactoryChain(SupportEventTypeFactory.createBeanType(SupportBean.class),
                 Arrays.asList(new ViewFactory[] {factory1, factory2}));
         factories[1] = new ViewFactoryChain(SupportEventTypeFactory.createBeanType(SupportBean.class),

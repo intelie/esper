@@ -9,7 +9,7 @@ import com.espertech.esper.support.epl.SupportExprNodeFactory;
 import com.espertech.esper.view.ViewFieldEnum;
 import com.espertech.esper.view.ViewParameterException;
 import com.espertech.esper.view.TestViewSupport;
-import com.espertech.esper.view.std.SizeView;
+import com.espertech.esper.view.std.FirstElementView;
 
 public class TestUnivariateStatisticsViewFactory extends TestCase
 {
@@ -34,7 +34,7 @@ public class TestUnivariateStatisticsViewFactory extends TestCase
     {
         factory.setViewParameters(null, TestViewSupport.toExprListMD(new Object[] {"price"}));
         factory.attach(SupportEventTypeFactory.createBeanType(SupportMarketDataBean.class), SupportStatementContextFactory.makeContext(), null, null);
-        assertFalse(factory.canReuse(new SizeView(SupportStatementContextFactory.makeContext())));
+        assertFalse(factory.canReuse(new FirstElementView()));
         assertFalse(factory.canReuse(new UnivariateStatisticsView(SupportStatementContextFactory.makeContext(), SupportExprNodeFactory.makeIdentNodeMD("symbol"))));
         assertTrue(factory.canReuse(new UnivariateStatisticsView(SupportStatementContextFactory.makeContext(), SupportExprNodeFactory.makeIdentNodeMD("price"))));
     }

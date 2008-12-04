@@ -143,23 +143,23 @@ public class TestGroupByView extends TestCase
         // Add a size view parent of merge view
         groupView = new GroupByView(statementContext, SupportExprNodeFactory.makeIdentNodesMD("symbol"));
 
-        SizeView sizeView_1 = new SizeView(statementContext);
+        FirstElementView firstElementView_1 = new FirstElementView();
 
-        groupView.addView(sizeView_1);
+        groupView.addView(firstElementView_1);
         mergeViewOne = new MergeView(statementContext, SupportExprNodeFactory.makeIdentNodesMD("symbol"), null);
-        sizeView_1.addView(mergeViewOne);
+        firstElementView_1.addView(mergeViewOne);
 
         List<View> subViews = GroupByView.makeSubViews(groupView, "symbol".split(","), groupByValue, statementContext);
 
         assertTrue(subViews.size() == 1);
-        assertTrue(subViews.get(0) instanceof SizeView);
-        assertTrue(subViews.get(0) != sizeView_1);
+        assertTrue(subViews.get(0) instanceof FirstElementView);
+        assertTrue(subViews.get(0) != firstElementView_1);
 
-        SizeView sv = (SizeView) subViews.get(0);
-        assertEquals(1, sv.getViews().size());
-        assertTrue(sv.getViews().get(0) instanceof AddPropertyValueView);
+        FirstElementView firstEleView = (FirstElementView) subViews.get(0);
+        assertEquals(1, firstEleView.getViews().size());
+        assertTrue(firstEleView.getViews().get(0) instanceof AddPropertyValueView);
 
-        AddPropertyValueView md = (AddPropertyValueView) sv.getViews().get(0);
+        AddPropertyValueView md = (AddPropertyValueView) firstEleView.getViews().get(0);
         assertEquals(1, md.getViews().size());
         assertTrue(md.getViews().get(0) == mergeViewOne);
     }

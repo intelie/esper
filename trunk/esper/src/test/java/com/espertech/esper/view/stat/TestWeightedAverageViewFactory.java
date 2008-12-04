@@ -8,7 +8,7 @@ import com.espertech.esper.support.view.SupportStatementContextFactory;
 import com.espertech.esper.view.TestViewSupport;
 import com.espertech.esper.view.ViewFieldEnum;
 import com.espertech.esper.view.ViewParameterException;
-import com.espertech.esper.view.std.SizeView;
+import com.espertech.esper.view.std.FirstElementView;
 import junit.framework.TestCase;
 
 public class TestWeightedAverageViewFactory extends TestCase
@@ -56,7 +56,7 @@ public class TestWeightedAverageViewFactory extends TestCase
     {
         factory.setViewParameters(null, TestViewSupport.toExprListMD(new Object[] {"price", "volume"}));
         factory.attach(SupportEventTypeFactory.createBeanType(SupportMarketDataBean.class), SupportStatementContextFactory.makeContext(), null, null);
-        assertFalse(factory.canReuse(new SizeView(SupportStatementContextFactory.makeContext())));
+        assertFalse(factory.canReuse(new FirstElementView()));
         assertFalse(factory.canReuse(new WeightedAverageView(SupportStatementContextFactory.makeContext(), SupportExprNodeFactory.makeIdentNodeMD("price"), SupportExprNodeFactory.makeIdentNodeMD("price"))));
         assertFalse(factory.canReuse(new WeightedAverageView(SupportStatementContextFactory.makeContext(), SupportExprNodeFactory.makeIdentNodeMD("price"), SupportExprNodeFactory.makeIdentNodeMD("symbol"))));
         assertTrue(factory.canReuse(new WeightedAverageView(SupportStatementContextFactory.makeContext(), SupportExprNodeFactory.makeIdentNodeMD("price"), SupportExprNodeFactory.makeIdentNodeMD("volume"))));

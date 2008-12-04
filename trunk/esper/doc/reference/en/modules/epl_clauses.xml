@@ -30,7 +30,7 @@
 			</listitem>
 			<listitem>
 				<para>
-					Views that derive statistics: <literal>std:size</literal>, <literal>stat:uni</literal>, <literal>stat:linest</literal>, <literal>stat:correl</literal>, <literal>stat:weighted_avg</literal>, <literal>stat:cube</literal>.
+					Views that derive statistics: <literal>std:size</literal>, <literal>stat:uni</literal>, <literal>stat:linest</literal>, <literal>stat:correl</literal>, <literal>stat:weighted_avg</literal>.
 				</para>
 			</listitem>
 		</orderedlist>

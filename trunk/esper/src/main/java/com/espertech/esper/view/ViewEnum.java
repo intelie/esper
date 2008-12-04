@@ -125,11 +125,6 @@ public enum ViewEnum
     REGRESSION_LINEST("stat", "linest", RegressionLinestViewFactory.class, null),
 
     /**
-     * Cubes.
-     */
-    MULTIDIM_VIEW("stat", "cube", MultiDimStatsViewFactory.class, null),
-
-    /**
      * Sorted window.
      */
     SORT_WINDOW("ext", "sort", SortWindowViewFactory.class, null),

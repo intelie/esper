@@ -7,7 +7,7 @@ import com.espertech.esper.support.view.SupportStatementContextFactory;
 import com.espertech.esper.support.epl.SupportExprNodeFactory;
 import com.espertech.esper.view.TestViewSupport;
 import com.espertech.esper.view.ViewParameterException;
-import com.espertech.esper.view.std.SizeView;
+import com.espertech.esper.view.std.FirstElementView;
 import junit.framework.TestCase;
 
 public class TestExternallyTimedWindowViewFactory extends TestCase
@@ -35,7 +35,7 @@ public class TestExternallyTimedWindowViewFactory extends TestCase
 
         factory.setViewParameters(SupportStatementContextFactory.makeViewContext(), TestViewSupport.toExprListBean(new Object[] {"longBoxed", 1000}));
         factory.attach(parentType, SupportStatementContextFactory.makeContext(), null, null);
-        assertFalse(factory.canReuse(new SizeView(SupportStatementContextFactory.makeContext())));
+        assertFalse(factory.canReuse(new FirstElementView()));
         assertFalse(factory.canReuse(new ExternallyTimedWindowView(factory, SupportExprNodeFactory.makeIdentNodeBean("longPrimitive"), 1000, null, false)));
         assertFalse(factory.canReuse(new ExternallyTimedWindowView(factory, SupportExprNodeFactory.makeIdentNodeBean("longBoxed"), 999, null, false)));
         assertTrue(factory.canReuse(new ExternallyTimedWindowView(factory, SupportExprNodeFactory.makeIdentNodeBean("longBoxed"), 1000000, null, false)));

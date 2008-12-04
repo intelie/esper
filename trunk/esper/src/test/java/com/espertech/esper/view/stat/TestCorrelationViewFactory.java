@@ -9,7 +9,7 @@ import com.espertech.esper.support.epl.SupportExprNodeFactory;
 import com.espertech.esper.view.ViewFieldEnum;
 import com.espertech.esper.view.ViewParameterException;
 import com.espertech.esper.view.TestViewSupport;
-import com.espertech.esper.view.std.SizeView;
+import com.espertech.esper.view.std.FirstElementView;
 
 public class TestCorrelationViewFactory extends TestCase
 {
@@ -35,7 +35,7 @@ public class TestCorrelationViewFactory extends TestCase
     {
         factory.setViewParameters(null, TestViewSupport.toExprListMD(new Object[] {"price", "volume"}));
         factory.attach(SupportEventTypeFactory.createBeanType(SupportMarketDataBean.class), SupportStatementContextFactory.makeContext(), null, null);
-        assertFalse(factory.canReuse(new SizeView(SupportStatementContextFactory.makeContext())));
+        assertFalse(factory.canReuse(new FirstElementView()));
         assertFalse(factory.canReuse(new CorrelationView(SupportStatementContextFactory.makeContext(), SupportExprNodeFactory.makeIdentNodeMD("volume"), SupportExprNodeFactory.makeIdentNodeMD("price"))));
         assertFalse(factory.canReuse(new CorrelationView(SupportStatementContextFactory.makeContext(), SupportExprNodeFactory.makeIdentNodeMD("feed"), SupportExprNodeFactory.makeIdentNodeMD("volume"))));
         assertTrue(factory.canReuse(new CorrelationView(SupportStatementContextFactory.makeContext(), SupportExprNodeFactory.makeIdentNodeMD("price"), SupportExprNodeFactory.makeIdentNodeMD("volume"))));
