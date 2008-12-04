@@ -3,7 +3,7 @@ package com.espertech.esper.core;
 import com.espertech.esper.client.UpdateListener;
 import com.espertech.esper.support.util.SupportUpdateListener;
 import com.espertech.esper.support.event.SupportEventBeanFactory;
-import com.espertech.esper.event.EventBean;
+import com.espertech.esper.client.EventBean;
 
 import java.util.Set;
 import java.util.HashSet;

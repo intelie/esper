@@ -10,7 +10,7 @@ package com.espertech.esper.epl.variable;
 
 import com.espertech.esper.epl.spec.OnTriggerSetAssignment;
 import com.espertech.esper.epl.expression.ExprValidationException;
-import com.espertech.esper.event.EventBean;
+import com.espertech.esper.client.EventBean;
 import com.espertech.esper.util.JavaClassHelper;
 
 import java.util.List;

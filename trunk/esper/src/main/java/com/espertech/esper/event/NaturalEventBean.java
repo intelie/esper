@@ -8,6 +8,9 @@
  **************************************************************************************/
 package com.espertech.esper.event;
 
+import com.espertech.esper.client.EventBean;
+import com.espertech.esper.client.EventType;
+
 /**
  * An event that is carries multiple representations of event properties:
  * A synthetic representation that is designed for delivery as {@link EventBean} to client {@link com.espertech.esper.client.UpdateListener} code,

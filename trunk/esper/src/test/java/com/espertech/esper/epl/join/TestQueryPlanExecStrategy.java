@@ -3,7 +3,7 @@ package com.espertech.esper.epl.join;
 import com.espertech.esper.support.epl.SupportQueryExecNode;
 import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.event.SupportEventBeanFactory;
-import com.espertech.esper.event.EventBean;
+import com.espertech.esper.client.EventBean;
 import junit.framework.TestCase;
 
 public class TestQueryPlanExecStrategy extends TestCase

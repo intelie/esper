@@ -10,7 +10,7 @@ package com.espertech.esper.epl.view;
 
 import com.espertech.esper.collection.UniformPair;
 import com.espertech.esper.core.UpdateDispatchView;
-import com.espertech.esper.event.EventBean;
+import com.espertech.esper.client.EventBean;
 
 /**
  * An output strategy that outputs if there are results of if

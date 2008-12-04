@@ -2,7 +2,7 @@ package com.espertech.esper.support.core;
 
 import com.espertech.esper.core.InternalEventRouter;
 import com.espertech.esper.core.EPStatementHandle;
-import com.espertech.esper.event.EventBean;
+import com.espertech.esper.client.EventBean;
 
 import java.util.List;
 import java.util.LinkedList;

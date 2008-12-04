@@ -1,9 +1,8 @@
 package com.espertech.esper.collection;
 
 import junit.framework.TestCase;
-import com.espertech.esper.event.EventBean;
+import com.espertech.esper.client.EventBean;
 import com.espertech.esper.support.event.SupportEventBeanFactory;
-import com.espertech.esper.util.ManagedReadWriteLock;
 
 public class TestFlushedEventBuffer extends TestCase
 {

@@ -15,7 +15,7 @@ import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.bean.SupportMarketDataBean;
 import com.espertech.esper.schedule.SchedulingServiceImpl;
 import com.espertech.esper.timer.TimeSourceService;
-import com.espertech.esper.event.EventType;
+import com.espertech.esper.client.EventType;
 
 import java.util.List;
 import java.util.LinkedList;

@@ -9,9 +9,9 @@
 package com.espertech.esper.epl.lookup;
 
 import com.espertech.esper.epl.join.table.PropertyIndexedEventTable;
-import com.espertech.esper.event.EventBean;
-import com.espertech.esper.event.EventPropertyGetter;
-import com.espertech.esper.event.EventType;
+import com.espertech.esper.client.EventBean;
+import com.espertech.esper.client.EventType;
+import com.espertech.esper.client.EventPropertyGetter;
 
 import java.util.Arrays;
 import java.util.Set;

@@ -11,7 +11,7 @@ package com.espertech.esper.epl.join.plan;
 import com.espertech.esper.epl.expression.ExprValidationException;
 import com.espertech.esper.epl.spec.OuterJoinDesc;
 import com.espertech.esper.epl.join.table.HistoricalStreamIndexList;
-import com.espertech.esper.event.EventType;
+import com.espertech.esper.client.EventType;
 import com.espertech.esper.type.OuterJoinType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

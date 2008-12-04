@@ -3,7 +3,7 @@ package com.espertech.esper.epl.view;
 import com.espertech.esper.support.epl.SupportExprEvaluator;
 import com.espertech.esper.support.event.SupportEventBeanFactory;
 import com.espertech.esper.support.view.SupportMapView;
-import com.espertech.esper.event.EventBean;
+import com.espertech.esper.client.EventBean;
 import com.espertech.esper.epl.view.FilterExprView;
 import junit.framework.TestCase;
 

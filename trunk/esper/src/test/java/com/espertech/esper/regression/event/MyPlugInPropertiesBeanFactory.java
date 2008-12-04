@@ -1,6 +1,6 @@
 package com.espertech.esper.regression.event;
 
-import com.espertech.esper.event.EventBean;
+import com.espertech.esper.client.EventBean;
 import com.espertech.esper.plugin.PlugInEventBeanFactory;
 
 import java.net.URI;

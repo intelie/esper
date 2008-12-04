@@ -13,8 +13,8 @@ import junit.framework.TestCase;
 import java.util.Map;
 import java.util.LinkedHashMap;
 
-import com.espertech.esper.event.EventBean;
-import com.espertech.esper.event.EventType;
+import com.espertech.esper.client.EventBean;
+import com.espertech.esper.client.EventType;
 import com.espertech.esper.event.MapEventType;
 import com.espertech.esper.event.MapEventBean;
 

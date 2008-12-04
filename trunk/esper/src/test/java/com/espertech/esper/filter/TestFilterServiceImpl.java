@@ -6,8 +6,8 @@ import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.bean.SupportBeanSimple;
 import com.espertech.esper.support.event.SupportEventBeanFactory;
 import com.espertech.esper.support.event.SupportEventTypeFactory;
-import com.espertech.esper.event.EventType;
-import com.espertech.esper.event.EventBean;
+import com.espertech.esper.client.EventType;
+import com.espertech.esper.client.EventBean;
 
 import java.util.Vector;
 import java.util.List;

@@ -8,7 +8,7 @@
  **************************************************************************************/
 package com.espertech.esper.view.window;
 
-import com.espertech.esper.event.EventType;
+import com.espertech.esper.client.EventType;
 import com.espertech.esper.util.JavaClassHelper;
 import com.espertech.esper.view.ViewParameterException;
 

@@ -11,7 +11,7 @@ package com.espertech.esper.epl.expression;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.espertech.esper.event.EventBean;
+import com.espertech.esper.client.EventBean;
 import com.espertech.esper.type.BitWiseOpEnum;
 import com.espertech.esper.util.JavaClassHelper;
 import com.espertech.esper.epl.core.MethodResolutionService;

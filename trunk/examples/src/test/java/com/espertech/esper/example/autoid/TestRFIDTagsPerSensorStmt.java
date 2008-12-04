@@ -13,7 +13,7 @@ import com.espertech.esper.client.EPServiceProvider;
 import com.espertech.esper.client.Configuration;
 import com.espertech.esper.client.EPServiceProviderManager;
 import com.espertech.esper.example.support.SupportUpdateListener;
-import com.espertech.esper.event.EventBean;
+import com.espertech.esper.client.EventBean;
 
 import java.net.URL;
 

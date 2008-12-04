@@ -11,7 +11,7 @@ package com.espertech.esperio.regression.adapter;
 import com.espertech.esper.client.*;
 import com.espertech.esper.client.time.CurrentTimeEvent;
 import com.espertech.esper.client.time.TimerControlEvent;
-import com.espertech.esper.event.EventBean;
+import com.espertech.esper.client.EventBean;
 import com.espertech.esperio.AdapterInputSource;
 import com.espertech.esperio.AdapterState;
 import com.espertech.esperio.InputAdapter;

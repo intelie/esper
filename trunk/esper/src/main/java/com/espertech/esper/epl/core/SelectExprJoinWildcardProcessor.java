@@ -11,6 +11,8 @@ package com.espertech.esper.epl.core;
 import com.espertech.esper.epl.expression.ExprValidationException;
 import com.espertech.esper.epl.spec.InsertIntoDesc;
 import com.espertech.esper.event.*;
+import com.espertech.esper.client.EventBean;
+import com.espertech.esper.client.EventType;
 
 import java.util.*;
 

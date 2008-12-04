@@ -1,13 +1,11 @@
 package com.espertech.esper.event.property;
 
-import com.espertech.esper.event.EventPropertyGetter;
-import com.espertech.esper.event.EventBean;
+import com.espertech.esper.client.EventPropertyGetter;
+import com.espertech.esper.client.EventBean;
 import com.espertech.esper.event.BeanEventType;
 import com.espertech.esper.support.bean.SupportBeanComplexProps;
 import com.espertech.esper.support.event.SupportEventBeanFactory;
 import junit.framework.TestCase;
-
-import java.util.Map;
 
 public class TestMappedProperty extends TestCase
 {

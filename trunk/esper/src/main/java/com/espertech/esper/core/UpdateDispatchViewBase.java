@@ -10,8 +10,8 @@ package com.espertech.esper.core;
 
 import com.espertech.esper.dispatch.DispatchService;
 import com.espertech.esper.dispatch.Dispatchable;
-import com.espertech.esper.event.EventBean;
-import com.espertech.esper.event.EventType;
+import com.espertech.esper.client.EventBean;
+import com.espertech.esper.client.EventType;
 import com.espertech.esper.view.ViewSupport;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

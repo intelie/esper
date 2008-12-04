@@ -5,12 +5,11 @@ import com.espertech.esper.client.*;
 import com.espertech.esper.support.util.SupportUpdateListener;
 import com.espertech.esper.support.util.ArrayAssertionUtil;
 import com.espertech.esper.support.client.SupportConfigFactory;
-import com.espertech.esper.event.EventBean;
+import com.espertech.esper.client.EventBean;
 
 import javax.xml.xpath.XPathConstants;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.StringReader;
-import java.util.Properties;
 
 import org.xml.sax.InputSource;
 import org.w3c.dom.Document;

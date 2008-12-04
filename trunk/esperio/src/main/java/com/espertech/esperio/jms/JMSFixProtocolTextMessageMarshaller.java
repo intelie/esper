@@ -9,7 +9,7 @@
 package com.espertech.esperio.jms;
 
 import com.espertech.esper.client.EPException;
-import com.espertech.esper.event.EventBean;
+import com.espertech.esper.client.EventBean;
 import com.espertech.esperio.message.fix.FixMsgMarshaller;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

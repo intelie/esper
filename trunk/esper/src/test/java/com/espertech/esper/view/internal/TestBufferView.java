@@ -1,7 +1,7 @@
 package com.espertech.esper.view.internal;
 
 import junit.framework.TestCase;
-import com.espertech.esper.event.EventBean;
+import com.espertech.esper.client.EventBean;
 import com.espertech.esper.support.bean.SupportBean_A;
 import com.espertech.esper.support.view.SupportBufferObserver;
 import com.espertech.esper.support.event.SupportEventBeanFactory;

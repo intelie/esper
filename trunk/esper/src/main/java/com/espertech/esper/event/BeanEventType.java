@@ -8,9 +8,7 @@
  **************************************************************************************/
 package com.espertech.esper.event;
 
-import com.espertech.esper.client.Configuration;
-import com.espertech.esper.client.ConfigurationEventTypeLegacy;
-import com.espertech.esper.client.EPException;
+import com.espertech.esper.client.*;
 import com.espertech.esper.event.property.*;
 import net.sf.cglib.reflect.FastClass;
 import org.apache.commons.logging.Log;

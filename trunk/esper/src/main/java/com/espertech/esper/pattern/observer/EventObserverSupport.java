@@ -8,16 +8,8 @@
  **************************************************************************************/
 package com.espertech.esper.pattern.observer;
 
-import com.espertech.esper.client.EPException;
-import com.espertech.esper.epl.expression.ExprNode;
-import com.espertech.esper.event.EventBean;
-import com.espertech.esper.pattern.MatchedEventConvertor;
-import com.espertech.esper.pattern.MatchedEventMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Abstract class for applications to extend to implement a pattern observer.

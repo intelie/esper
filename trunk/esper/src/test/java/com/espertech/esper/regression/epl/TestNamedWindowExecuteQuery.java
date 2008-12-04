@@ -6,7 +6,7 @@ import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.bean.SupportBean_A;
 import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.support.util.ArrayAssertionUtil;
-import com.espertech.esper.event.EventBean;
+import com.espertech.esper.client.EventBean;
 import junit.framework.TestCase;
 
 public class TestNamedWindowExecuteQuery extends TestCase

@@ -16,6 +16,8 @@ import com.espertech.esper.event.*;
 import com.espertech.esper.event.vaevent.ValueAddEventProcessor;
 import com.espertech.esper.event.vaevent.ValueAddEventService;
 import com.espertech.esper.util.ExecutionPathDebugLog;
+import com.espertech.esper.client.EventBean;
+import com.espertech.esper.client.EventType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 

@@ -8,7 +8,7 @@
  **************************************************************************************/
 package com.espertech.esper.view.internal;
 
-import com.espertech.esper.event.EventBean;
+import com.espertech.esper.client.EventBean;
 
 /**
  * Observer interface to a stream publishing new and old events.

@@ -5,6 +5,8 @@ import com.espertech.esper.support.bean.SupportBean_A;
 import com.espertech.esper.support.bean.SupportBeanComplexProps;
 import com.espertech.esper.support.event.SupportEventBeanFactory;
 import com.espertech.esper.support.event.SupportEventAdapterService;
+import com.espertech.esper.client.EventBean;
+import com.espertech.esper.client.EventType;
 import junit.framework.TestCase;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

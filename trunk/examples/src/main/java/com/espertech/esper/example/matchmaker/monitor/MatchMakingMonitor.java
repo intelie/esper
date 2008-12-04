@@ -13,7 +13,7 @@ import java.util.HashSet;
 import com.espertech.esper.client.*;
 import com.espertech.esper.example.matchmaker.eventbean.MobileUserBean;
 import com.espertech.esper.example.matchmaker.eventbean.MatchAlertBean;
-import com.espertech.esper.event.EventBean;
+import com.espertech.esper.client.EventBean;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.logging.Log;
 

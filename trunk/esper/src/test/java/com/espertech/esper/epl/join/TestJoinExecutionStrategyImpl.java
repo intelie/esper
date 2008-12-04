@@ -3,7 +3,7 @@ package com.espertech.esper.epl.join;
 import junit.framework.TestCase;
 import com.espertech.esper.support.epl.SupportJoinSetComposer;
 import com.espertech.esper.support.epl.SupportJoinSetProcessor;
-import com.espertech.esper.event.EventBean;
+import com.espertech.esper.client.EventBean;
 import com.espertech.esper.collection.MultiKey;
 import com.espertech.esper.collection.UniformPair;
 

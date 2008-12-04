@@ -12,9 +12,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.LinkedList;
 
-import com.espertech.esper.event.EventType;
-import com.espertech.esper.event.EventBean;
-import com.espertech.esper.collection.NullIterator;
+import com.espertech.esper.client.EventType;
+import com.espertech.esper.client.EventBean;
 import com.espertech.esper.collection.SingleEventIterator;
 import com.espertech.esper.util.ExecutionPathDebugLog;
 import org.apache.commons.logging.LogFactory;

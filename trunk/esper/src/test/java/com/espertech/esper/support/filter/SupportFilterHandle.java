@@ -1,7 +1,7 @@
 package com.espertech.esper.support.filter;
 
 import com.espertech.esper.filter.FilterHandleCallback;
-import com.espertech.esper.event.EventBean;
+import com.espertech.esper.client.EventBean;
 
 public class SupportFilterHandle implements FilterHandleCallback
 {

@@ -1,12 +1,7 @@
 package com.espertech.esper.regression.event;
 
-import com.espertech.esper.event.EventPropertyGetter;
-import com.espertech.esper.event.EventType;
-import com.espertech.esper.event.EventBean;
-import com.espertech.esper.client.UpdateListener;
-import com.espertech.esper.client.StatementAwareUpdateListener;
-import com.espertech.esper.client.EPStatement;
-import com.espertech.esper.client.EPServiceProvider;
+import com.espertech.esper.client.EventPropertyGetter;
+import com.espertech.esper.client.*;
 
 public class MyGetterUpdateListener implements StatementAwareUpdateListener
 {

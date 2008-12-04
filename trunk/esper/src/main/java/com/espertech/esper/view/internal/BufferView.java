@@ -11,8 +11,8 @@ package com.espertech.esper.view.internal;
 import java.util.Iterator;
 
 import com.espertech.esper.view.ViewSupport;
-import com.espertech.esper.event.EventType;
-import com.espertech.esper.event.EventBean;
+import com.espertech.esper.client.EventType;
+import com.espertech.esper.client.EventBean;
 import com.espertech.esper.collection.FlushedEventBuffer;
 
 /**

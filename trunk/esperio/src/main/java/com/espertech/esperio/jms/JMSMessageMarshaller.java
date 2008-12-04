@@ -8,7 +8,7 @@
  **************************************************************************************/
 package com.espertech.esperio.jms;
 
-import com.espertech.esper.event.*;
+import com.espertech.esper.client.EventBean;
 
 import javax.jms.*;
 

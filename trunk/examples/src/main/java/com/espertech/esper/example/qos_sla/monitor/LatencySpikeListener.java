@@ -9,7 +9,7 @@
 package com.espertech.esper.example.qos_sla.monitor;
 
 import com.espertech.esper.client.UpdateListener;
-import com.espertech.esper.event.EventBean;
+import com.espertech.esper.client.EventBean;
 import com.espertech.esper.example.qos_sla.eventbean.OperationMeasurement;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

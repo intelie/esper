@@ -11,7 +11,7 @@ package com.espertech.esper.core;
 import com.espertech.esper.client.EPOnDemandQueryResult;
 import com.espertech.esper.client.EPStatementException;
 import com.espertech.esper.client.EPOnDemandPreparedQuery;
-import com.espertech.esper.event.EventType;
+import com.espertech.esper.client.EventType;
 
 /**
  * Provides prepared query functionality.

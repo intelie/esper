@@ -8,7 +8,7 @@
  **************************************************************************************/
 package com.espertech.esper.pattern;
 
-import com.espertech.esper.event.EventBean;
+import com.espertech.esper.client.EventBean;
 
 /**
  * Converts from a map of prior matching events to a events per stream for resultion by expressions.

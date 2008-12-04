@@ -1,7 +1,7 @@
 package com.espertech.esper.support.epl;
 
 import com.espertech.esper.epl.join.exec.ExecNode;
-import com.espertech.esper.event.EventBean;
+import com.espertech.esper.client.EventBean;
 import com.espertech.esper.util.IndentWriter;
 
 import java.util.List;

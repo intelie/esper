@@ -8,15 +8,12 @@
  **************************************************************************************/
 package com.espertech.esper.core;
 
-import com.espertech.esper.client.EPStatementState;
-import com.espertech.esper.client.SafeIterator;
-import com.espertech.esper.client.StatementAwareUpdateListener;
-import com.espertech.esper.client.UpdateListener;
+import com.espertech.esper.client.*;
 import com.espertech.esper.collection.SafeIteratorImpl;
 import com.espertech.esper.collection.SingleEventIterator;
 import com.espertech.esper.dispatch.DispatchService;
 import com.espertech.esper.epl.variable.VariableService;
-import com.espertech.esper.event.EventBean;
+import com.espertech.esper.client.EventBean;
 import com.espertech.esper.timer.TimeSourceService;
 import com.espertech.esper.view.Viewable;
 
@@ -39,7 +36,7 @@ public class EPStatementImpl implements EPStatementSPI
     private long timeLastStateChange;
     private Viewable parentView;
     private EPStatementState currentState;
-    private com.espertech.esper.event.EventType eventType;
+    private EventType eventType;
     private EPStatementHandle epStatementHandle;
     private StatementResultService statementResultService;
     private StatementMetadata statementMetadata;
@@ -233,7 +230,7 @@ public class EPStatementImpl implements EPStatementSPI
         }
     }
 
-    public com.espertech.esper.event.EventType getEventType()
+    public EventType getEventType()
     {
         return eventType;
     }

@@ -8,10 +8,7 @@
  **************************************************************************************/
 package com.espertech.esper.filter;
 
-import com.espertech.esper.event.EventType;
 import com.espertech.esper.pattern.MatchedEventMap;
-
-import java.util.Map;
 
 /**
  * A Double-typed value as a filter parameter representing a range.

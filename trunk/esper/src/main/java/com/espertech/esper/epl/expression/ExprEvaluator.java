@@ -8,7 +8,7 @@
  **************************************************************************************/
 package com.espertech.esper.epl.expression;
 
-import com.espertech.esper.event.EventBean;
+import com.espertech.esper.client.EventBean;
 
 /**
  * Interface for evaluating of an event tuple.

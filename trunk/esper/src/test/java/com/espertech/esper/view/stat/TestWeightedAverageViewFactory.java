@@ -1,6 +1,6 @@
 package com.espertech.esper.view.stat;
 
-import com.espertech.esper.event.EventType;
+import com.espertech.esper.client.EventType;
 import com.espertech.esper.support.bean.SupportMarketDataBean;
 import com.espertech.esper.support.epl.SupportExprNodeFactory;
 import com.espertech.esper.support.event.SupportEventTypeFactory;

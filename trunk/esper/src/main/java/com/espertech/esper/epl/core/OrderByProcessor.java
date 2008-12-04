@@ -9,7 +9,7 @@
 package com.espertech.esper.epl.core;
 
 import com.espertech.esper.collection.MultiKeyUntyped;
-import com.espertech.esper.event.EventBean;
+import com.espertech.esper.client.EventBean;
 
 /**
  * A processor for ordering output events according to the order specified in the order-by clause.

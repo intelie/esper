@@ -3,7 +3,7 @@ package com.espertech.esper.collection;
 import junit.framework.TestCase;
 import com.espertech.esper.support.event.SupportEventBeanFactory;
 import com.espertech.esper.support.util.ArrayAssertionUtil;
-import com.espertech.esper.event.EventBean;
+import com.espertech.esper.client.EventBean;
 
 public class TestOneEventCollection extends TestCase
 {

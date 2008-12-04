@@ -5,7 +5,7 @@ import junit.framework.TestCase;
 import java.util.Set;
 import java.util.HashSet;
 
-import com.espertech.esper.event.EventBean;
+import com.espertech.esper.client.EventBean;
 import com.espertech.esper.support.event.SupportEventBeanFactory;
 
 public class TestMultiKey extends TestCase

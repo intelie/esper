@@ -9,7 +9,8 @@
 package com.espertech.esper.epl.view;
 
 import com.espertech.esper.epl.expression.ExprEvaluator;
-import com.espertech.esper.event.EventBean;
+import com.espertech.esper.client.EventBean;
+
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 

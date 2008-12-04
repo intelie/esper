@@ -8,9 +8,9 @@
  **************************************************************************************/
 package com.espertech.esper.epl.expression;
 
-import com.espertech.esper.event.EventBean;
+import com.espertech.esper.client.EventBean;
 import com.espertech.esper.event.PropertyAccessException;
-import com.espertech.esper.event.EventPropertyGetter;
+import com.espertech.esper.client.EventPropertyGetter;
 import com.espertech.esper.collection.Pair;
 import com.espertech.esper.epl.core.*;
 import com.espertech.esper.epl.variable.VariableService;

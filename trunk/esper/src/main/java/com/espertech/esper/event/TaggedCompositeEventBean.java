@@ -8,6 +8,8 @@
  **************************************************************************************/
 package com.espertech.esper.event;
 
+import com.espertech.esper.client.EventBean;
+
 /**
  * Interface for composite events in which a property is itself an event.
  * <p>

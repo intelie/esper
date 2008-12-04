@@ -8,9 +8,9 @@
  **************************************************************************************/
 package com.espertech.esper.epl.join;
 
-import com.espertech.esper.event.EventBean;
-import com.espertech.esper.event.EventType;
-import com.espertech.esper.event.EventPropertyGetter;
+import com.espertech.esper.client.EventBean;
+import com.espertech.esper.client.EventType;
+import com.espertech.esper.client.EventPropertyGetter;
 import com.espertech.esper.event.EventBeanUtility;
 import com.espertech.esper.epl.join.table.EventTable;
 import com.espertech.esper.epl.join.table.PropertyIndexedEventTable;

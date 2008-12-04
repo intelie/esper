@@ -8,6 +8,10 @@
  **************************************************************************************/
 package com.espertech.esper.event;
 
+import com.espertech.esper.client.EventBean;
+import com.espertech.esper.client.EventType;
+import com.espertech.esper.client.EventPropertyGetter;
+
 /**
  * Wrapper for Java bean (POJO or regular) Java objects the represent events.
  * Allows access to event properties, which is done through the getter supplied by the event type.

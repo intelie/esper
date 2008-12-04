@@ -3,7 +3,7 @@ package com.espertech.esper.filter;
 import junit.framework.TestCase;
 import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.event.SupportEventTypeFactory;
-import com.espertech.esper.event.EventType;
+import com.espertech.esper.client.EventType;
 
 public class TestIndexFactory extends TestCase
 {

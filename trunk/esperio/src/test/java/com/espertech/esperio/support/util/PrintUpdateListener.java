@@ -1,7 +1,7 @@
 package com.espertech.esperio.support.util;
 
 import com.espertech.esper.client.UpdateListener;
-import com.espertech.esper.event.EventBean;
+import com.espertech.esper.client.EventBean;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 

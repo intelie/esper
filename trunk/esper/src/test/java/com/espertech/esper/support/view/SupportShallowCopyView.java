@@ -2,10 +2,9 @@ package com.espertech.esper.support.view;
 
 import java.util.Iterator;
 
-import com.espertech.esper.event.EventBean;
-import com.espertech.esper.event.EventType;
+import com.espertech.esper.client.EventBean;
+import com.espertech.esper.client.EventType;
 import com.espertech.esper.view.ViewSupport;
-import com.espertech.esper.view.Viewable;
 
 public class SupportShallowCopyView extends ViewSupport
 {

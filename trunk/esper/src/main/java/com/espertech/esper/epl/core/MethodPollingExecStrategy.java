@@ -9,10 +9,10 @@
 package com.espertech.esper.epl.core;
 
 import com.espertech.esper.client.EPException;
+import com.espertech.esper.client.EventBean;
+import com.espertech.esper.client.EventType;
 import com.espertech.esper.epl.db.PollExecStrategy;
 import com.espertech.esper.event.EventAdapterService;
-import com.espertech.esper.event.EventBean;
-import com.espertech.esper.event.EventType;
 import net.sf.cglib.reflect.FastMethod;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

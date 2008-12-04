@@ -9,8 +9,8 @@
 package com.espertech.esper.pattern;
 
 import com.espertech.esper.client.EPException;
+import com.espertech.esper.client.EventBean;
 import com.espertech.esper.epl.expression.ExprNode;
-import com.espertech.esper.event.EventBean;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 

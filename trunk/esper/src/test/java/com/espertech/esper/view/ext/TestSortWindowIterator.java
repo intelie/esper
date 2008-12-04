@@ -4,7 +4,7 @@ import junit.framework.TestCase;
 import java.util.*;
 
 import com.espertech.esper.collection.MultiKeyUntyped;
-import com.espertech.esper.event.EventBean;
+import com.espertech.esper.client.EventBean;
 import com.espertech.esper.support.event.EventFactoryHelper;
 import com.espertech.esper.support.util.ArrayAssertionUtil;
 import com.espertech.esper.util.MultiKeyComparator;

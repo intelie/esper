@@ -11,6 +11,9 @@ package com.espertech.esper.event;
 import net.sf.cglib.reflect.FastMethod;
 import java.lang.reflect.InvocationTargetException;
 
+import com.espertech.esper.client.EventBean;
+import com.espertech.esper.client.EventPropertyGetter;
+
 /**
  * Property getter using CGLib's FastMethod instance.
  */

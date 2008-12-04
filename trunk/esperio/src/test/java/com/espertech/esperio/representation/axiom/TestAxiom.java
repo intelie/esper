@@ -10,7 +10,7 @@ package com.espertech.esperio.representation.axiom;
 
 import com.espertech.esper.client.*;
 import com.espertech.esper.client.time.TimerControlEvent;
-import com.espertech.esper.event.EventBean;
+import com.espertech.esper.client.EventBean;
 import com.espertech.esperio.support.util.SupportUpdateListener;
 import junit.framework.TestCase;
 import org.apache.axiom.om.OMElement;

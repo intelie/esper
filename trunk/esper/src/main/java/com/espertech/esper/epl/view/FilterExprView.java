@@ -9,9 +9,10 @@
 package com.espertech.esper.epl.view;
 
 import com.espertech.esper.epl.expression.ExprEvaluator;
-import com.espertech.esper.event.EventType;
-import com.espertech.esper.event.EventBean;
+import com.espertech.esper.client.EventType;
+import com.espertech.esper.client.EventBean;
 import com.espertech.esper.view.ViewSupport;
+
 import java.util.Iterator;
 
 /**

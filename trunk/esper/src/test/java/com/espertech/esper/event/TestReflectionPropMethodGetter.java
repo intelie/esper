@@ -5,6 +5,7 @@ import java.lang.reflect.Method;
 import junit.framework.TestCase;
 import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.event.SupportEventBeanFactory;
+import com.espertech.esper.client.EventBean;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.logging.Log;
 

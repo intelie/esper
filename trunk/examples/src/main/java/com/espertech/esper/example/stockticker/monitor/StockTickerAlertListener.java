@@ -10,10 +10,10 @@ package com.espertech.esper.example.stockticker.monitor;
 
 import com.espertech.esper.client.UpdateListener;
 import com.espertech.esper.client.EPServiceProvider;
+import com.espertech.esper.client.EventBean;
 import com.espertech.esper.example.stockticker.eventbean.PriceLimit;
 import com.espertech.esper.example.stockticker.eventbean.StockTick;
 import com.espertech.esper.example.stockticker.eventbean.LimitAlert;
-import com.espertech.esper.event.EventBean;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.logging.Log;
 

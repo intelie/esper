@@ -8,7 +8,7 @@
  **************************************************************************************/
 package com.espertech.esper.epl.join;
 
-import com.espertech.esper.event.EventBean;
+import com.espertech.esper.client.EventBean;
 import com.espertech.esper.collection.MultiKey;
 import com.espertech.esper.collection.UniformPair;
 

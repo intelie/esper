@@ -11,7 +11,7 @@ package com.espertech.esper.core;
 import com.espertech.esper.client.EPServiceProvider;
 import com.espertech.esper.collection.UniformPair;
 import com.espertech.esper.epl.metric.StatementMetricHandle;
-import com.espertech.esper.event.EventBean;
+import com.espertech.esper.client.EventBean;
 
 /**
  * Interface for a statement-level service for coordinating the insert/remove stream generation,

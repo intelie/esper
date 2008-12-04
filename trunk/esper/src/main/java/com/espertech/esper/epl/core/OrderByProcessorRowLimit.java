@@ -13,7 +13,7 @@ import com.espertech.esper.epl.spec.RowLimitSpec;
 import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.epl.variable.VariableReader;
 import com.espertech.esper.epl.expression.ExprValidationException;
-import com.espertech.esper.event.EventBean;
+import com.espertech.esper.client.EventBean;
 import com.espertech.esper.util.JavaClassHelper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

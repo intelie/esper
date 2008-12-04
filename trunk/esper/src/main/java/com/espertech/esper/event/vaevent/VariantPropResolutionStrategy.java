@@ -8,7 +8,7 @@
  **************************************************************************************/
 package com.espertech.esper.event.vaevent;
 
-import com.espertech.esper.event.EventType;
+import com.espertech.esper.client.EventType;
 
 /**
  * Strategy for resolving a property against any of the variant types.

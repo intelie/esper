@@ -11,7 +11,7 @@ package com.espertech.esper.example.stockticker.monitor;
 import com.espertech.esper.example.stockticker.eventbean.PriceLimit;
 import com.espertech.esper.example.stockticker.eventbean.StockTick;
 import com.espertech.esper.client.*;
-import com.espertech.esper.event.EventBean;
+import com.espertech.esper.client.EventBean;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 

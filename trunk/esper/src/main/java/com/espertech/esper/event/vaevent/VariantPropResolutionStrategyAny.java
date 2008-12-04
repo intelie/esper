@@ -9,6 +9,9 @@
 package com.espertech.esper.event.vaevent;
 
 import com.espertech.esper.event.*;
+import com.espertech.esper.client.EventBean;
+import com.espertech.esper.client.EventType;
+import com.espertech.esper.client.EventPropertyGetter;
 
 /**
  * A property resolution strategy that allows any type, wherein all properties are Object type.

@@ -10,7 +10,7 @@ package com.espertech.esper.epl.core;
 
 import com.espertech.esper.collection.TransformEventMethod;
 import com.espertech.esper.collection.UniformPair;
-import com.espertech.esper.event.EventBean;
+import com.espertech.esper.client.EventBean;
 
 /**
  * Method to transform an event based on the select expression.

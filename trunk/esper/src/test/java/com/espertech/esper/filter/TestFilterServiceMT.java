@@ -1,12 +1,12 @@
 package com.espertech.esper.filter;
 
 import junit.framework.TestCase;
-import com.espertech.esper.event.*;
 import com.espertech.esper.support.bean.*;
 import com.espertech.esper.support.util.ArrayAssertionUtil;
 import com.espertech.esper.support.event.SupportEventTypeFactory;
 import com.espertech.esper.support.filter.SupportFilterSpecBuilder;
 import com.espertech.esper.support.filter.SupportFilterHandle;
+import com.espertech.esper.client.EventType;
 
 import java.util.concurrent.*;
 

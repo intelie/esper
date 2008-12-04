@@ -8,7 +8,7 @@
  **************************************************************************************/
 package com.espertech.esper.epl.join.rep;
 
-import com.espertech.esper.event.EventBean;
+import com.espertech.esper.client.EventBean;
 
 /**
  * This class supplies position information for {@link com.espertech.esper.epl.join.exec.LookupInstructionExec}

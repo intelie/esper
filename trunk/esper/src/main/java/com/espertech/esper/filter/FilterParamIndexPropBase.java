@@ -8,8 +8,8 @@
  **************************************************************************************/
 package com.espertech.esper.filter;
 
-import com.espertech.esper.event.EventPropertyGetter;
-import com.espertech.esper.event.EventType;
+import com.espertech.esper.client.EventPropertyGetter;
+import com.espertech.esper.client.EventType;
 import com.espertech.esper.util.JavaClassHelper;
 
 import java.util.concurrent.locks.ReadWriteLock;

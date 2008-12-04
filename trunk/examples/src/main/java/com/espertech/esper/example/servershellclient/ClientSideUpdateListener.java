@@ -9,7 +9,7 @@
 package com.espertech.esper.example.servershellclient;
 
 import com.espertech.esper.client.UpdateListener;
-import com.espertech.esper.event.EventBean;
+import com.espertech.esper.client.EventBean;
 
 import java.io.Serializable;
 

@@ -2,6 +2,8 @@ package com.espertech.esper.event;
 
 import junit.framework.TestCase;
 import com.espertech.esper.client.ConfigurationEventTypeXMLDOM;
+import com.espertech.esper.client.EventBean;
+import com.espertech.esper.client.EventType;
 import com.espertech.esper.support.bean.*;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;

@@ -8,10 +8,7 @@
  **************************************************************************************/
 package com.espertech.esper.event;
 
-import com.espertech.esper.client.Configuration;
-import com.espertech.esper.client.ConfigurationEventTypeLegacy;
-import com.espertech.esper.client.ConfigurationEventTypeXMLDOM;
-import com.espertech.esper.client.EventSender;
+import com.espertech.esper.client.*;
 import com.espertech.esper.collection.Pair;
 import com.espertech.esper.core.EPRuntimeEventSender;
 import com.espertech.esper.plugin.PlugInEventRepresentation;

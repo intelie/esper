@@ -8,8 +8,8 @@
  **************************************************************************************/
 package com.espertech.esper.event.vaevent;
 
-import com.espertech.esper.event.EventType;
-import com.espertech.esper.event.EventBean;
+import com.espertech.esper.client.EventType;
+import com.espertech.esper.client.EventBean;
 import com.espertech.esper.event.EventTypeMetadata;
 import com.espertech.esper.epl.named.NamedWindowRootView;
 import com.espertech.esper.epl.named.NamedWindowIndexRepository;

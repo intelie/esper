@@ -2,7 +2,7 @@ package com.espertech.esper.regression.db;
 
 import junit.framework.Assert;
 import com.espertech.esper.client.*;
-import com.espertech.esper.event.EventBean;
+import com.espertech.esper.client.EventBean;
 import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.support.util.SupportUpdateListener;

@@ -1,7 +1,7 @@
 package com.espertech.esper.view.stat;
 
 import junit.framework.TestCase;
-import com.espertech.esper.event.EventType;
+import com.espertech.esper.client.EventType;
 import com.espertech.esper.support.event.SupportEventTypeFactory;
 import com.espertech.esper.support.bean.SupportMarketDataBean;
 import com.espertech.esper.support.view.SupportStatementContextFactory;

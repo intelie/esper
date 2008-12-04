@@ -5,8 +5,8 @@ import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.filter.SupportFilterSpecBuilder;
 import com.espertech.esper.support.filter.SupportFilterHandle;
 import com.espertech.esper.support.event.SupportEventBeanFactory;
-import com.espertech.esper.event.EventType;
-import com.espertech.esper.event.EventBean;
+import com.espertech.esper.client.EventType;
+import com.espertech.esper.client.EventBean;
 
 import java.util.LinkedList;
 import java.util.List;

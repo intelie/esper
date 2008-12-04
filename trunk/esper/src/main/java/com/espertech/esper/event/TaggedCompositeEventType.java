@@ -9,6 +9,7 @@
 package com.espertech.esper.event;
 
 import com.espertech.esper.collection.Pair;
+import com.espertech.esper.client.EventType;
 
 import java.util.Map;
 

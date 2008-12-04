@@ -1,6 +1,6 @@
 package com.espertech.esper.support.filter;
 
-import com.espertech.esper.event.EventType;
+import com.espertech.esper.client.EventType;
 import com.espertech.esper.filter.*;
 
 import java.util.LinkedList;

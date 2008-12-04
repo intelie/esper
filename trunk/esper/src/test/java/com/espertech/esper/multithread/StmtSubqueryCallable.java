@@ -1,17 +1,11 @@
 package com.espertech.esper.multithread;
 
 import com.espertech.esper.client.EPServiceProvider;
-import com.espertech.esper.client.EPStatement;
-import com.espertech.esper.support.util.SupportMTUpdateListener;
-import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.bean.SupportBean_S0;
 import com.espertech.esper.support.bean.SupportBean_S1;
-import com.espertech.esper.util.ThreadLogUtil;
-import com.espertech.esper.event.EventBean;
 
 import java.util.concurrent.Callable;
 
-import junit.framework.Assert;
 import junit.framework.AssertionFailedError;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

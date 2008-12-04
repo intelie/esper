@@ -1,7 +1,7 @@
 package com.espertech.esper.view.window;
 
 import junit.framework.TestCase;
-import com.espertech.esper.event.EventBean;
+import com.espertech.esper.client.EventBean;
 import com.espertech.esper.support.bean.SupportMarketDataBean;
 import com.espertech.esper.support.event.EventFactoryHelper;
 import com.espertech.esper.support.schedule.SupportSchedulingServiceImpl;

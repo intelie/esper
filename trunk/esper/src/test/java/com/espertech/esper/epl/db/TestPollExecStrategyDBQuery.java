@@ -10,8 +10,8 @@ import java.sql.Types;
 
 import com.espertech.esper.support.epl.SupportDatabaseService;
 import com.espertech.esper.support.event.SupportEventAdapterService;
-import com.espertech.esper.event.EventBean;
-import com.espertech.esper.event.EventType;
+import com.espertech.esper.client.EventBean;
+import com.espertech.esper.client.EventType;
 
 public class TestPollExecStrategyDBQuery extends TestCase
 {

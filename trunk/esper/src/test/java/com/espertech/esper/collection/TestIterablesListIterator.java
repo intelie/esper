@@ -8,7 +8,7 @@ import java.util.Map;
 
 import com.espertech.esper.support.util.ArrayAssertionUtil;
 import com.espertech.esper.support.event.EventFactoryHelper;
-import com.espertech.esper.event.EventBean;
+import com.espertech.esper.client.EventBean;
 
 public class TestIterablesListIterator extends TestCase
 {

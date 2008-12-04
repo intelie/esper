@@ -12,7 +12,7 @@ import com.espertech.esper.client.*;
 import com.espertech.esper.client.time.TimerControlEvent;
 import com.espertech.esper.client.time.CurrentTimeEvent;
 import com.espertech.esper.example.support.SupportUpdateListener;
-import com.espertech.esper.event.EventBean;
+import com.espertech.esper.client.EventBean;
 import junit.framework.TestCase;
 
 public class TestAssetZoneMoveStmt extends TestCase

@@ -8,7 +8,7 @@
  **************************************************************************************/
 package com.espertech.esper.view.window;
 
-import com.espertech.esper.event.EventBean;
+import com.espertech.esper.client.EventBean;
 
 /**
  * Random access interface to insert stream and remove stream data based on an index.

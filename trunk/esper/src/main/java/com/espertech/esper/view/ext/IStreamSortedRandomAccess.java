@@ -9,7 +9,7 @@
 package com.espertech.esper.view.ext;
 
 import com.espertech.esper.collection.MultiKeyUntyped;
-import com.espertech.esper.event.EventBean;
+import com.espertech.esper.client.EventBean;
 import com.espertech.esper.view.window.RandomAccessByIndex;
 import com.espertech.esper.view.window.RandomAccessByIndexObserver;
 

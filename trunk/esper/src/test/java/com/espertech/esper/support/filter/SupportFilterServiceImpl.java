@@ -3,7 +3,7 @@ package com.espertech.esper.support.filter;
 import com.espertech.esper.filter.FilterService;
 import com.espertech.esper.filter.FilterHandle;
 import com.espertech.esper.filter.FilterValueSet;
-import com.espertech.esper.event.EventBean;
+import com.espertech.esper.client.EventBean;
 import com.espertech.esper.collection.Pair;
 
 import java.util.List;

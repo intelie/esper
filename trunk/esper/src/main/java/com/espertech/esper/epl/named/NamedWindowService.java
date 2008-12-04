@@ -8,11 +8,10 @@
  **************************************************************************************/
 package com.espertech.esper.epl.named;
 
-import com.espertech.esper.event.EventType;
+import com.espertech.esper.client.EventType;
 import com.espertech.esper.event.vaevent.ValueAddEventProcessor;
 import com.espertech.esper.core.EPStatementHandle;
 import com.espertech.esper.core.StatementResultService;
-import com.espertech.esper.core.StatementLifecycleObserver;
 import com.espertech.esper.view.ViewProcessingException;
 import com.espertech.esper.util.ManagedLock;
 

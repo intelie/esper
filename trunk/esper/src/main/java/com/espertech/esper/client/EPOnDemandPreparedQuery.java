@@ -8,7 +8,7 @@
  **************************************************************************************/
 package com.espertech.esper.client;
 
-import com.espertech.esper.event.EventType;
+import com.espertech.esper.client.EventType;
 
 /**
  * Interface for a prepared on-demand query that can be executed multiple times.

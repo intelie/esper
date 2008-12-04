@@ -14,8 +14,8 @@ import org.apache.commons.logging.Log;
 import java.util.*;
 import java.util.concurrent.locks.*;
 
-import com.espertech.esper.event.EventBean;
-import com.espertech.esper.event.EventType;
+import com.espertech.esper.client.EventBean;
+import com.espertech.esper.client.EventType;
 import com.espertech.esper.util.ExecutionPathDebugLog;
 
 /**

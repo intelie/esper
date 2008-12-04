@@ -8,9 +8,8 @@
  **************************************************************************************/
 package com.espertech.esper.epl.join.exec;
 
-import com.espertech.esper.event.EventBean;
+import com.espertech.esper.client.EventBean;
 import com.espertech.esper.util.IndentWriter;
-import com.espertech.esper.epl.join.rep.Cursor;
 
 import java.util.Set;
 import java.util.List;

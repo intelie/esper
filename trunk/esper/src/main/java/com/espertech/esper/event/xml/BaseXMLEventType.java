@@ -16,6 +16,7 @@ import com.espertech.esper.event.*;
 import com.espertech.esper.client.ConfigurationEventTypeXMLDOM;
 import com.espertech.esper.client.EPException;
 import com.espertech.esper.client.ConfigurationException;
+import com.espertech.esper.client.EventType;
 import com.espertech.esper.util.JavaClassHelper;
 import com.espertech.esper.util.ClassInstantiationException;
 

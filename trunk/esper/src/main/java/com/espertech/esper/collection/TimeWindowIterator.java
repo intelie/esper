@@ -9,7 +9,7 @@
 package com.espertech.esper.collection;
 
 import java.util.*;
-import com.espertech.esper.event.EventBean;
+import com.espertech.esper.client.EventBean;
 
 /**
  * Iterator for {@link TimeWindow} to iterate over a timestamp slots that hold events.

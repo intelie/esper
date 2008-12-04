@@ -8,7 +8,7 @@
  **************************************************************************************/
 package com.espertech.esper.core;
 
-import com.espertech.esper.event.EventBean;
+import com.espertech.esper.client.EventBean;
 
 /**
  * Interface for a service that routes events within the engine for further processing.

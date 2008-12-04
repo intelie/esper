@@ -8,12 +8,11 @@
  **************************************************************************************/
 package com.espertech.esper.epl.join.exec;
 
-import com.espertech.esper.event.EventBean;
+import com.espertech.esper.client.EventBean;
 import com.espertech.esper.util.IndentWriter;
 import com.espertech.esper.epl.join.table.EventTable;
 import com.espertech.esper.epl.join.PollResultIndexingStrategy;
 import com.espertech.esper.epl.join.HistoricalIndexLookupStrategy;
-import com.espertech.esper.collection.MultiKey;
 import com.espertech.esper.view.HistoricalEventViewable;
 
 import java.util.List;

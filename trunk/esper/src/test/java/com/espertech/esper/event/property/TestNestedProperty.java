@@ -3,6 +3,8 @@ package com.espertech.esper.event.property;
 import com.espertech.esper.event.*;
 import com.espertech.esper.support.bean.SupportBeanComplexProps;
 import com.espertech.esper.support.event.SupportEventBeanFactory;
+import com.espertech.esper.client.EventBean;
+import com.espertech.esper.client.EventPropertyGetter;
 
 import java.util.List;
 import java.util.LinkedList;

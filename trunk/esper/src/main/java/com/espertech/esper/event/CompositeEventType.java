@@ -14,6 +14,9 @@ import com.espertech.esper.event.property.IndexedProperty;
 import com.espertech.esper.event.property.NestedProperty;
 import com.espertech.esper.event.property.Property;
 import com.espertech.esper.event.property.PropertyParser;
+import com.espertech.esper.client.EventBean;
+import com.espertech.esper.client.EventType;
+import com.espertech.esper.client.EventPropertyGetter;
 
 import java.lang.reflect.Array;
 import java.util.Iterator;

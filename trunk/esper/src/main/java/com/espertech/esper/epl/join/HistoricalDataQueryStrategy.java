@@ -11,7 +11,7 @@ package com.espertech.esper.epl.join;
 import com.espertech.esper.collection.MultiKey;
 import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.epl.join.table.EventTable;
-import com.espertech.esper.event.EventBean;
+import com.espertech.esper.client.EventBean;
 import com.espertech.esper.view.HistoricalEventViewable;
 
 import java.util.Iterator;

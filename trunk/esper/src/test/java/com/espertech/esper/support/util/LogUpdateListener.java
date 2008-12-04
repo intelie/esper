@@ -1,7 +1,7 @@
 package com.espertech.esper.support.util;
 
 import com.espertech.esper.client.UpdateListener;
-import com.espertech.esper.event.EventBean;
+import com.espertech.esper.client.EventBean;
 import com.espertech.esper.util.ThreadLogUtil;
 
 public class LogUpdateListener implements UpdateListener

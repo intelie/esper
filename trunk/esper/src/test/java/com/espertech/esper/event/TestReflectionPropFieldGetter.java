@@ -1,11 +1,10 @@
 package com.espertech.esper.event;
 
 import junit.framework.TestCase;
-import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.bean.SupportLegacyBean;
 import com.espertech.esper.support.event.SupportEventBeanFactory;
+import com.espertech.esper.client.EventBean;
 
-import java.lang.reflect.Method;
 import java.lang.reflect.Field;
 
 import org.apache.commons.logging.Log;

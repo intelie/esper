@@ -9,8 +9,7 @@
 package com.espertech.esper.core;
 
 import com.espertech.esper.view.View;
-import com.espertech.esper.event.EventBean;
-import com.espertech.esper.collection.Pair;
+import com.espertech.esper.client.EventBean;
 import com.espertech.esper.collection.UniformPair;
 
 /**

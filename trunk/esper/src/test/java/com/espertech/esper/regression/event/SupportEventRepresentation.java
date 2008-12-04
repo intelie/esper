@@ -1,8 +1,8 @@
 package com.espertech.esper.regression.event;
 
 import com.espertech.esper.plugin.*;
-import com.espertech.esper.event.EventType;
-import com.espertech.esper.event.EventBean;
+import com.espertech.esper.client.EventType;
+import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventSender;
 import com.espertech.esper.core.EPRuntimeEventSender;
 

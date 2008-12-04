@@ -8,7 +8,7 @@
  **************************************************************************************/
 package com.espertech.esper.example.support;
 
-import com.espertech.esper.event.EventBean;
+import com.espertech.esper.client.EventBean;
 
 public class ArrayCompareUtil
 {

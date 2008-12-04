@@ -8,11 +8,8 @@
  **************************************************************************************/
 package com.espertech.esper.filter;
 
-import com.espertech.esper.event.EventType;
 import com.espertech.esper.pattern.MatchedEventMap;
 import com.espertech.esper.util.MetaDefItem;
-
-import java.util.Map;
 
 /**
  * Interface for range-type filter parameters for type checking and to obtain the filter values for endpoints based

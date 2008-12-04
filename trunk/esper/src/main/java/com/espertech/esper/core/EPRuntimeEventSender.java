@@ -8,7 +8,7 @@
  **************************************************************************************/
 package com.espertech.esper.core;
 
-import com.espertech.esper.event.EventBean;
+import com.espertech.esper.client.EventBean;
 
 /**
  * For use by {@link com.espertech.esper.client.EventSender} for direct feed of wrapped events for processing.

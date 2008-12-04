@@ -8,7 +8,7 @@
  **************************************************************************************/
 package com.espertech.esper.type;
 
-import com.espertech.esper.event.EventBean;
+import com.espertech.esper.client.EventBean;
 import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.util.SimpleNumberBigIntegerCoercer;
 import com.espertech.esper.util.SimpleNumberBigDecimalCoercer;

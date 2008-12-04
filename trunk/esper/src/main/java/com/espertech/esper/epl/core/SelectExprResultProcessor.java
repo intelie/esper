@@ -9,8 +9,8 @@
 package com.espertech.esper.epl.core;
 
 import com.espertech.esper.epl.expression.ExprValidationException;
-import com.espertech.esper.event.EventType;
-import com.espertech.esper.event.EventBean;
+import com.espertech.esper.client.EventType;
+import com.espertech.esper.client.EventBean;
 import com.espertech.esper.event.NaturalEventBean;
 import com.espertech.esper.core.StatementResultService;
 

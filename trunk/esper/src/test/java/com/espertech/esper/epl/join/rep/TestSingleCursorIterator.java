@@ -3,7 +3,7 @@ package com.espertech.esper.epl.join.rep;
 import junit.framework.*;
 import java.util.NoSuchElementException;
 
-import com.espertech.esper.event.EventBean;
+import com.espertech.esper.client.EventBean;
 
 public class TestSingleCursorIterator extends TestCase
 {

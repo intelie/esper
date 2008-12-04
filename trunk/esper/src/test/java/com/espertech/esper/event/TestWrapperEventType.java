@@ -6,6 +6,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import junit.framework.TestCase;
 import com.espertech.esper.client.EPException;
+import com.espertech.esper.client.EventType;
 import com.espertech.esper.support.bean.SupportBeanSimple;
 import com.espertech.esper.support.bean.SupportBean_A;
 import com.espertech.esper.support.event.SupportEventAdapterService;

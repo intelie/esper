@@ -8,7 +8,7 @@
  **************************************************************************************/
 package com.espertech.esper.epl.core;
 
-import com.espertech.esper.event.EventType;
+import com.espertech.esper.client.EventType;
 import com.espertech.esper.epl.core.DuplicatePropertyException;
 import com.espertech.esper.epl.core.PropertyNotFoundException;
 import com.espertech.esper.epl.core.PropertyResolutionDescriptor;

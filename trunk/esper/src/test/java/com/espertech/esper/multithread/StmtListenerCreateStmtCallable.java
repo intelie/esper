@@ -3,9 +3,9 @@ package com.espertech.esper.multithread;
 import com.espertech.esper.client.EPServiceProvider;
 import com.espertech.esper.client.EPStatement;
 import com.espertech.esper.client.UpdateListener;
+import com.espertech.esper.client.EventBean;
 import com.espertech.esper.support.bean.SupportMarketDataBean;
 import com.espertech.esper.support.bean.SupportBean;
-import com.espertech.esper.event.EventBean;
 
 import java.util.concurrent.Callable;
 import java.util.Set;

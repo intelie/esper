@@ -12,9 +12,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import net.sf.cglib.reflect.FastMethod;
 import net.sf.cglib.reflect.FastClass;
-import com.espertech.esper.event.EventBean;
+import com.espertech.esper.client.EventBean;
 import com.espertech.esper.event.NaturalEventBean;
-import com.espertech.esper.collection.Pair;
 import com.espertech.esper.collection.UniformPair;
 
 import java.lang.reflect.Method;

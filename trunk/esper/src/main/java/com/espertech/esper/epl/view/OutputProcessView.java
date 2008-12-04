@@ -14,8 +14,8 @@ import com.espertech.esper.core.StatementResultService;
 import com.espertech.esper.epl.core.ResultSetProcessor;
 import com.espertech.esper.epl.join.JoinExecutionStrategy;
 import com.espertech.esper.epl.join.JoinSetIndicator;
-import com.espertech.esper.event.EventBean;
-import com.espertech.esper.event.EventType;
+import com.espertech.esper.client.EventBean;
+import com.espertech.esper.client.EventType;
 import com.espertech.esper.view.View;
 import com.espertech.esper.view.Viewable;
 

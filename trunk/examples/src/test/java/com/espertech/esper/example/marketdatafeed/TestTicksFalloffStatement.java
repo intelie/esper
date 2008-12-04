@@ -12,10 +12,10 @@ import junit.framework.TestCase;
 import com.espertech.esper.client.EPServiceProvider;
 import com.espertech.esper.client.Configuration;
 import com.espertech.esper.client.EPServiceProviderManager;
+import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.time.TimerControlEvent;
 import com.espertech.esper.client.time.CurrentTimeEvent;
 import com.espertech.esper.example.support.SupportUpdateListener;
-import com.espertech.esper.event.EventBean;
 
 public class TestTicksFalloffStatement extends TestCase {
 

@@ -9,9 +9,9 @@
 package com.espertech.esperio.jms;
 
 import com.espertech.esper.client.EPException;
+import com.espertech.esper.client.EventBean;
+import com.espertech.esper.client.EventType;
 import com.espertech.esper.event.EventAdapterService;
-import com.espertech.esper.event.EventBean;
-import com.espertech.esper.event.EventType;
 import com.espertech.esperio.message.fix.FixMsgParser;
 import com.espertech.esperio.message.fix.FixMsgParserException;
 import org.apache.commons.logging.Log;

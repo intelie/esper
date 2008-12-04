@@ -12,7 +12,7 @@ import com.espertech.esper.epl.join.exec.FullTableScanLookupStrategy;
 import com.espertech.esper.epl.join.exec.TableLookupStrategy;
 import com.espertech.esper.epl.join.table.EventTable;
 import com.espertech.esper.epl.join.table.UnindexedEventTable;
-import com.espertech.esper.event.EventType;
+import com.espertech.esper.client.EventType;
 
 /**
  * Plan for a full table scan.

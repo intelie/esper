@@ -6,6 +6,8 @@ import com.espertech.esper.support.bean.ISupportDImpl;
 import com.espertech.esper.support.bean.SupportBeanComplexProps;
 import com.espertech.esper.support.bean.SupportBeanSimple;
 import com.espertech.esper.support.util.ArrayAssertionUtil;
+import com.espertech.esper.client.EventBean;
+import com.espertech.esper.client.EventType;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;

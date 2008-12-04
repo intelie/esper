@@ -3,8 +3,7 @@ package com.espertech.esper.multithread;
 import junit.framework.Assert;
 import com.espertech.esper.client.EPServiceProvider;
 import com.espertech.esper.client.EPStatement;
-import com.espertech.esper.event.EventBean;
-import com.espertech.esper.support.bean.SupportBean;
+import com.espertech.esper.client.EventBean;
 import com.espertech.esper.support.bean.SupportTradeEvent;
 import com.espertech.esper.support.util.SupportStmtAwareUpdateListener;
 

@@ -1,7 +1,7 @@
 package com.espertech.esper.support.epl;
 
 import com.espertech.esper.epl.agg.AggregationService;
-import com.espertech.esper.event.EventBean;
+import com.espertech.esper.client.EventBean;
 import com.espertech.esper.collection.Pair;
 import com.espertech.esper.collection.MultiKeyUntyped;
 

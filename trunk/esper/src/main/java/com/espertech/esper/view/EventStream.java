@@ -8,7 +8,7 @@
  **************************************************************************************/
 package com.espertech.esper.view;
 
-import com.espertech.esper.event.EventBean;
+import com.espertech.esper.client.EventBean;
 
 /**
  * A streams is a conduct for incoming events. Incoming data is placed into streams for consumption by queries.

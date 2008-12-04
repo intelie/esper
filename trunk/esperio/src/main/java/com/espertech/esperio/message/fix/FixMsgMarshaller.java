@@ -8,7 +8,7 @@
  **************************************************************************************/
 package com.espertech.esperio.message.fix;
 
-import com.espertech.esper.event.EventBean;
+import com.espertech.esper.client.EventBean;
 
 import java.io.StringWriter;
 import java.text.DecimalFormat;

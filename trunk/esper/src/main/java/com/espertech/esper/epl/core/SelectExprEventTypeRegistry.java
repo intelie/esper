@@ -1,6 +1,6 @@
 package com.espertech.esper.epl.core;
 
-import com.espertech.esper.event.EventType;
+import com.espertech.esper.client.EventType;
 import com.espertech.esper.event.EventTypeSPI;
 
 import java.util.HashSet;

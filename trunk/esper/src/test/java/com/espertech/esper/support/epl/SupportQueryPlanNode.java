@@ -4,7 +4,7 @@ import com.espertech.esper.epl.join.exec.ExecNode;
 import com.espertech.esper.epl.join.plan.QueryPlanNode;
 import com.espertech.esper.epl.join.table.EventTable;
 import com.espertech.esper.epl.join.table.HistoricalStreamIndexList;
-import com.espertech.esper.event.EventType;
+import com.espertech.esper.client.EventType;
 import com.espertech.esper.util.IndentWriter;
 import com.espertech.esper.view.Viewable;
 

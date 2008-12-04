@@ -10,7 +10,7 @@ package com.espertech.esper.epl.named;
 
 import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.epl.lookup.TableLookupStrategy;
-import com.espertech.esper.event.EventBean;
+import com.espertech.esper.client.EventBean;
 
 import java.util.Set;
 import java.util.Iterator;

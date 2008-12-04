@@ -14,7 +14,7 @@ import com.espertech.esper.client.EPServiceProviderManager;
 import com.espertech.esper.client.Configuration;
 import com.espertech.esper.client.time.TimerControlEvent;
 import com.espertech.esper.example.support.SupportUpdateListener;
-import com.espertech.esper.event.EventBean;
+import com.espertech.esper.client.EventBean;
 
 public class FraudMonitorTest extends TestCase
 {

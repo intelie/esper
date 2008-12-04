@@ -9,7 +9,7 @@
 package com.espertech.esper.epl.join;
 
 import com.espertech.esper.epl.join.table.EventTable;
-import com.espertech.esper.event.EventBean;
+import com.espertech.esper.client.EventBean;
 
 import java.util.List;
 

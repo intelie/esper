@@ -9,6 +9,8 @@
 package com.espertech.esper.event.property;
 
 import com.espertech.esper.event.*;
+import com.espertech.esper.client.EventType;
+import com.espertech.esper.client.EventPropertyGetter;
 import net.sf.cglib.reflect.FastMethod;
 import net.sf.cglib.reflect.FastClass;
 

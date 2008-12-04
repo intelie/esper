@@ -9,7 +9,7 @@
 package com.espertech.esper.core;
 
 import com.espertech.esper.collection.UniformPair;
-import com.espertech.esper.event.EventBean;
+import com.espertech.esper.client.EventBean;
 import com.espertech.esper.event.NaturalEventBean;
 import net.sf.cglib.reflect.FastClass;
 import net.sf.cglib.reflect.FastMethod;

@@ -15,7 +15,7 @@ import com.espertech.esper.epl.core.ViewResourceCallback;
 import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.epl.expression.ExprNodeSummaryVisitor;
 import com.espertech.esper.epl.expression.ExprValidationException;
-import com.espertech.esper.event.EventType;
+import com.espertech.esper.client.EventType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 

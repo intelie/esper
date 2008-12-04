@@ -10,7 +10,7 @@ package com.espertech.esper.epl.view;
 
 import com.espertech.esper.collection.UniformPair;
 import com.espertech.esper.core.UpdateDispatchView;
-import com.espertech.esper.event.EventBean;
+import com.espertech.esper.client.EventBean;
 
 /**
  * Strategy for performing an output via dispatch view.

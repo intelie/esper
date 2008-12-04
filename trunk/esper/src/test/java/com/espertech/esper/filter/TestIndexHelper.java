@@ -7,7 +7,7 @@ import java.util.TreeSet;
 
 import junit.framework.TestCase;
 import com.espertech.esper.collection.Pair;
-import com.espertech.esper.event.EventType;
+import com.espertech.esper.client.EventType;
 import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.event.SupportEventTypeFactory;
 

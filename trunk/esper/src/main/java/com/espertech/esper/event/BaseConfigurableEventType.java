@@ -8,6 +8,8 @@
  **************************************************************************************/
 package com.espertech.esper.event;
 
+import com.espertech.esper.client.EventPropertyGetter;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;

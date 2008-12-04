@@ -15,7 +15,7 @@ import com.sun.org.apache.xerces.internal.xs.XSImplementation;
 import com.sun.org.apache.xerces.internal.xs.XSLoader;
 import com.sun.org.apache.xerces.internal.dom.DOMXSImplementationSourceImpl;
 
-import com.espertech.esper.event.EventPropertyGetter;
+import com.espertech.esper.client.EventPropertyGetter;
 import com.espertech.esper.event.TypedEventPropertyGetter;
 import com.espertech.esper.event.EventTypeMetadata;
 import com.espertech.esper.client.ConfigurationEventTypeXMLDOM;

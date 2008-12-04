@@ -8,7 +8,7 @@
  **************************************************************************************/
 package com.espertech.esper.view.internal;
 
-import com.espertech.esper.event.EventBean;
+import com.espertech.esper.client.EventBean;
 import com.espertech.esper.collection.ViewUpdatedCollection;
 import com.espertech.esper.view.window.RelativeAccessByEventNIndex;
 import com.espertech.esper.collection.RollingEventBuffer;

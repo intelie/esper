@@ -13,9 +13,8 @@ import java.util.Iterator;
 import com.espertech.esper.view.ViewSupport;
 import com.espertech.esper.view.CloneableView;
 import com.espertech.esper.view.View;
-import com.espertech.esper.event.EventType;
-import com.espertech.esper.event.EventBean;
-import com.espertech.esper.collection.FlushedEventBuffer;
+import com.espertech.esper.client.EventType;
+import com.espertech.esper.client.EventBean;
 import com.espertech.esper.core.StatementContext;
 
 /**

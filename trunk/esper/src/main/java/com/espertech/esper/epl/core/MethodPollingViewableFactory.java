@@ -10,6 +10,7 @@ package com.espertech.esper.epl.core;
 
 import com.espertech.esper.client.ConfigurationMethodRef;
 import com.espertech.esper.client.ConfigurationDataCache;
+import com.espertech.esper.client.EventType;
 import com.espertech.esper.core.EPStatementHandle;
 import com.espertech.esper.epl.db.DataCache;
 import com.espertech.esper.epl.db.DataCacheFactory;
@@ -17,7 +18,6 @@ import com.espertech.esper.epl.db.PollExecStrategy;
 import com.espertech.esper.epl.expression.ExprValidationException;
 import com.espertech.esper.epl.spec.MethodStreamSpec;
 import com.espertech.esper.event.EventAdapterService;
-import com.espertech.esper.event.EventType;
 import com.espertech.esper.schedule.ScheduleBucket;
 import com.espertech.esper.schedule.SchedulingService;
 import com.espertech.esper.util.JavaClassHelper;

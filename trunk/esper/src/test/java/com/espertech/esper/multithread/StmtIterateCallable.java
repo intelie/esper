@@ -3,11 +3,10 @@ package com.espertech.esper.multithread;
 import com.espertech.esper.client.EPServiceProvider;
 import com.espertech.esper.client.EPStatement;
 import com.espertech.esper.client.SafeIterator;
+import com.espertech.esper.client.EventBean;
 import com.espertech.esper.support.bean.SupportBean;
-import com.espertech.esper.event.EventBean;
 
 import java.util.concurrent.Callable;
-import java.util.Iterator;
 
 import junit.framework.Assert;
 import junit.framework.AssertionFailedError;

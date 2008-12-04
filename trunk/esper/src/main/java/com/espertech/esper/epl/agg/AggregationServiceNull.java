@@ -9,7 +9,7 @@
 package com.espertech.esper.epl.agg;
 
 import com.espertech.esper.collection.MultiKeyUntyped;
-import com.espertech.esper.event.EventBean;
+import com.espertech.esper.client.EventBean;
 import com.espertech.esper.epl.agg.AggregationService;
 
 /**

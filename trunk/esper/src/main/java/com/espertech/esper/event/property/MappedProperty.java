@@ -8,7 +8,7 @@
  **************************************************************************************/
 package com.espertech.esper.event.property;
 
-import com.espertech.esper.event.EventPropertyGetter;
+import com.espertech.esper.client.EventPropertyGetter;
 import com.espertech.esper.event.BeanEventType;
 import com.espertech.esper.event.EventPropertyDescriptor;
 import com.espertech.esper.event.EventAdapterService;

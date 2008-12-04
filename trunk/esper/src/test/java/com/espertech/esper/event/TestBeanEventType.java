@@ -3,6 +3,9 @@ package com.espertech.esper.event;
 import junit.framework.*;
 import com.espertech.esper.support.bean.*;
 import com.espertech.esper.support.util.ArrayAssertionUtil;
+import com.espertech.esper.client.EventBean;
+import com.espertech.esper.client.EventType;
+import com.espertech.esper.client.EventPropertyGetter;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;

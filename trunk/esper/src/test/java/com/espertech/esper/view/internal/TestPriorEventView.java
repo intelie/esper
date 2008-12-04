@@ -5,7 +5,7 @@ import com.espertech.esper.support.view.SupportBeanClassView;
 import com.espertech.esper.support.bean.SupportBean_A;
 import com.espertech.esper.support.bean.SupportMarketDataBean;
 import com.espertech.esper.support.event.SupportEventBeanFactory;
-import com.espertech.esper.event.EventBean;
+import com.espertech.esper.client.EventBean;
 import com.espertech.esper.view.internal.PriorEventBufferSingle;
 
 public class TestPriorEventView extends TestCase

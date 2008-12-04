@@ -8,7 +8,7 @@
  **************************************************************************************/
 package com.espertech.esper.epl.named;
 
-import com.espertech.esper.event.EventBean;
+import com.espertech.esper.client.EventBean;
 
 /**
  * A deletion strategy is for use with named window in on-delete statements and encapsulates

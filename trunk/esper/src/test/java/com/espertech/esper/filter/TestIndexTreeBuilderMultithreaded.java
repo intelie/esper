@@ -14,8 +14,8 @@ import com.espertech.esper.support.filter.SupportFilterHandle;
 import com.espertech.esper.support.filter.IndexTreeBuilderRunnable;
 import com.espertech.esper.support.event.SupportEventTypeFactory;
 import com.espertech.esper.support.event.SupportEventBeanFactory;
-import com.espertech.esper.event.EventBean;
-import com.espertech.esper.event.EventType;
+import com.espertech.esper.client.EventBean;
+import com.espertech.esper.client.EventType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 

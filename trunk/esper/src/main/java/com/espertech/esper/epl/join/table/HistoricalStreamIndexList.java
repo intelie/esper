@@ -13,8 +13,8 @@ import com.espertech.esper.epl.join.HistoricalIndexLookupStrategy;
 import com.espertech.esper.epl.join.JoinSetComposerFactoryImpl;
 import com.espertech.esper.epl.join.PollResultIndexingStrategy;
 import com.espertech.esper.epl.join.plan.QueryGraph;
-import com.espertech.esper.event.EventType;
-import com.espertech.esper.event.EventBean;
+import com.espertech.esper.client.EventType;
+import com.espertech.esper.client.EventBean;
 import com.espertech.esper.util.JavaClassHelper;
 
 import java.util.*;

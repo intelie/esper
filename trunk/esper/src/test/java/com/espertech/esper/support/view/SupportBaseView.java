@@ -1,9 +1,8 @@
 package com.espertech.esper.support.view;
 
 import com.espertech.esper.view.ViewSupport;
-import com.espertech.esper.view.Viewable;
-import com.espertech.esper.event.EventType;
-import com.espertech.esper.event.EventBean;
+import com.espertech.esper.client.EventType;
+import com.espertech.esper.client.EventBean;
 
 import java.util.Iterator;
 

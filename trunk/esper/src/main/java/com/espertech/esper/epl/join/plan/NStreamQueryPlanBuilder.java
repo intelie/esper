@@ -13,7 +13,7 @@ import java.util.SortedSet;
 import java.util.Map;
 
 import com.espertech.esper.collection.NumberSetPermutationEnumeration;
-import com.espertech.esper.event.EventType;
+import com.espertech.esper.client.EventType;
 import com.espertech.esper.util.JavaClassHelper;
 import com.espertech.esper.epl.join.table.HistoricalStreamIndexList;
 

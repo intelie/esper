@@ -8,7 +8,7 @@
  **************************************************************************************/
 package com.espertech.esper.event.vaevent;
 
-import com.espertech.esper.event.EventType;
+import com.espertech.esper.client.EventType;
 
 import java.util.Arrays;
 import java.util.Map;

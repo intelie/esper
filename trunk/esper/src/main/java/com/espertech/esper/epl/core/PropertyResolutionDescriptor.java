@@ -8,7 +8,7 @@
  **************************************************************************************/
 package com.espertech.esper.epl.core;
 
-import com.espertech.esper.event.EventType;
+import com.espertech.esper.client.EventType;
 
 /**
  * Encapsulates the result of resolving a property and optional stream name against a supplied list of streams

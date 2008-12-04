@@ -10,8 +10,8 @@ package com.espertech.esper.epl.named;
 
 import com.espertech.esper.collection.OneEventCollection;
 import com.espertech.esper.epl.expression.ExprNode;
-import com.espertech.esper.event.EventBean;
-import com.espertech.esper.event.EventType;
+import com.espertech.esper.client.EventBean;
+import com.espertech.esper.client.EventType;
 import com.espertech.esper.util.ExecutionPathDebugLog;
 import com.espertech.esper.view.StatementStopCallback;
 import com.espertech.esper.view.StatementStopService;

@@ -1,7 +1,7 @@
 package com.espertech.esper.multithread;
 
 import com.espertech.esper.client.UpdateListener;
-import com.espertech.esper.event.EventBean;
+import com.espertech.esper.client.EventBean;
 
 import java.util.List;
 import java.util.LinkedList;

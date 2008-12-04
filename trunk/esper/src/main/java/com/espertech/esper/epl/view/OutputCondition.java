@@ -8,11 +8,6 @@
  **************************************************************************************/
 package com.espertech.esper.epl.view;
 
-import com.espertech.esper.event.EventBean;
-import com.espertech.esper.collection.MultiKey;
-
-import java.util.Set;
-
 
 /**
  * A condition that must be satisfied before output processing

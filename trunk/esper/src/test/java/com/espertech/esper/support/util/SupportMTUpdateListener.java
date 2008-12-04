@@ -2,7 +2,7 @@ package com.espertech.esper.support.util;
 
 import junit.framework.Assert;
 import com.espertech.esper.client.UpdateListener;
-import com.espertech.esper.event.EventBean;
+import com.espertech.esper.client.EventBean;
 
 import java.util.LinkedList;
 import java.util.List;

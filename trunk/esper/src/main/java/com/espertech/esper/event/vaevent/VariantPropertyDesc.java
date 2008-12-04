@@ -8,7 +8,7 @@
  **************************************************************************************/
 package com.espertech.esper.event.vaevent;
 
-import com.espertech.esper.event.EventPropertyGetter;
+import com.espertech.esper.client.EventPropertyGetter;
 
 /**
  * Descriptor for a variant stream property.

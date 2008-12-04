@@ -9,8 +9,8 @@
 package com.espertech.esper.filter;
 
 import com.espertech.esper.collection.MultiKeyUntyped;
-import com.espertech.esper.event.EventType;
-import com.espertech.esper.event.EventBean;
+import com.espertech.esper.client.EventType;
+import com.espertech.esper.client.EventBean;
 import com.espertech.esper.util.ExecutionPathDebugLog;
 
 import java.util.*;

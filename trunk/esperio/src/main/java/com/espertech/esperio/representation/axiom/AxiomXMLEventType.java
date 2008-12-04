@@ -9,6 +9,8 @@
 package com.espertech.esperio.representation.axiom;
 
 import com.espertech.esper.client.EPException;
+import com.espertech.esper.client.EventType;
+import com.espertech.esper.client.EventPropertyGetter;
 import com.espertech.esper.event.*;
 import com.espertech.esper.event.xml.SimpleXMLPropertyParser;
 import org.apache.axiom.om.OMNode;

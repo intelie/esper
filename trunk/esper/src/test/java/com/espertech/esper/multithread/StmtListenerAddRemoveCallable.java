@@ -6,7 +6,7 @@ import com.espertech.esper.util.ThreadLogUtil;
 import com.espertech.esper.support.util.SupportMTUpdateListener;
 import com.espertech.esper.support.util.LogUpdateListener;
 import com.espertech.esper.support.bean.SupportMarketDataBean;
-import com.espertech.esper.event.EventBean;
+import com.espertech.esper.client.EventBean;
 
 import java.util.concurrent.Callable;
 

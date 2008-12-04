@@ -11,9 +11,8 @@ package com.espertech.esper.view.window;
 import java.util.*;
 
 import com.espertech.esper.view.*;
-import com.espertech.esper.event.EventPropertyGetter;
-import com.espertech.esper.event.EventType;
-import com.espertech.esper.event.EventBean;
+import com.espertech.esper.client.EventType;
+import com.espertech.esper.client.EventBean;
 import com.espertech.esper.collection.TimeWindow;
 import com.espertech.esper.collection.ViewUpdatedCollection;
 import com.espertech.esper.collection.ArrayDequeJDK6Backport;

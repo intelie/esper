@@ -1,7 +1,7 @@
 package com.espertech.esper.epl.join.plan;
 
 import junit.framework.TestCase;
-import com.espertech.esper.event.EventType;
+import com.espertech.esper.client.EventType;
 import com.espertech.esper.support.bean.*;
 import com.espertech.esper.support.event.SupportEventAdapterService;
 import org.apache.commons.logging.Log;

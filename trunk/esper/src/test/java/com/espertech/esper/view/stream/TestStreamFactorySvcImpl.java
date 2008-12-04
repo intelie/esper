@@ -1,7 +1,7 @@
 package com.espertech.esper.view.stream;
 
 import junit.framework.TestCase;
-import com.espertech.esper.event.EventType;
+import com.espertech.esper.client.EventType;
 import com.espertech.esper.filter.FilterOperator;
 import com.espertech.esper.filter.FilterSpecCompiled;
 import com.espertech.esper.support.bean.SupportBean;

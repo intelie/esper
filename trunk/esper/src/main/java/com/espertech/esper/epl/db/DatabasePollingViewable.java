@@ -10,9 +10,9 @@ package com.espertech.esper.epl.db;
 
 import com.espertech.esper.view.View;
 import com.espertech.esper.view.HistoricalEventViewable;
-import com.espertech.esper.event.EventType;
-import com.espertech.esper.event.EventPropertyGetter;
-import com.espertech.esper.event.EventBean;
+import com.espertech.esper.client.EventType;
+import com.espertech.esper.client.EventPropertyGetter;
+import com.espertech.esper.client.EventBean;
 import com.espertech.esper.event.PropertyAccessException;
 import com.espertech.esper.epl.core.StreamTypeService;
 import com.espertech.esper.epl.core.PropertyResolutionDescriptor;

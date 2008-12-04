@@ -7,6 +7,8 @@ import junit.framework.TestCase;
 import com.espertech.esper.support.bean.SupportBeanCombinedProps;
 import com.espertech.esper.support.bean.SupportBeanSimple;
 import com.espertech.esper.support.event.SupportEventAdapterService;
+import com.espertech.esper.client.EventBean;
+import com.espertech.esper.client.EventType;
 
 public class TestWrapperEventBean extends TestCase 
 {

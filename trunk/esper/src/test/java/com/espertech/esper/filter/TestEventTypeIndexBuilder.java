@@ -1,6 +1,6 @@
 package com.espertech.esper.filter;
 
-import com.espertech.esper.event.EventType;
+import com.espertech.esper.client.EventType;
 import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.bean.SupportBeanSimple;
 import com.espertech.esper.support.filter.SupportFilterHandle;

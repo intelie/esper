@@ -8,7 +8,7 @@
  **************************************************************************************/
 package com.espertech.esper.epl.join.plan;
 
-import com.espertech.esper.event.EventType;
+import com.espertech.esper.client.EventType;
 import com.espertech.esper.epl.join.exec.ExecNode;
 import com.espertech.esper.epl.join.exec.TableLookupExecNode;
 import com.espertech.esper.epl.join.exec.TableLookupStrategy;

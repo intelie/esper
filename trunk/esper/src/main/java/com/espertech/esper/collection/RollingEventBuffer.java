@@ -8,7 +8,7 @@
  **************************************************************************************/
 package com.espertech.esper.collection;
 
-import com.espertech.esper.event.EventBean;
+import com.espertech.esper.client.EventBean;
 
 /**
  * Event buffer of a given size provides a random access API into the most current event to prior events

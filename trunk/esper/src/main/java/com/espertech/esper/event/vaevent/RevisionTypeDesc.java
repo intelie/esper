@@ -8,7 +8,7 @@
  **************************************************************************************/
 package com.espertech.esper.event.vaevent;
 
-import com.espertech.esper.event.EventPropertyGetter;
+import com.espertech.esper.client.EventPropertyGetter;
 
 /**
  * Per-event-type descriptor for fast access to getters for key values and changes properties.

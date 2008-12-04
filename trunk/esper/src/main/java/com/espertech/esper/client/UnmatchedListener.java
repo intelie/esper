@@ -8,7 +8,7 @@
  **************************************************************************************/
 package com.espertech.esper.client;
 
-import com.espertech.esper.event.EventBean;
+import com.espertech.esper.client.EventBean;
 
 /**
  * Interface to receive notification from an engine that an event that has been sent into the engine or that

@@ -9,7 +9,7 @@
 package com.espertech.esper.epl.lookup;
 
 import com.espertech.esper.epl.join.table.UnindexedEventTable;
-import com.espertech.esper.event.EventBean;
+import com.espertech.esper.client.EventBean;
 
 import java.util.Set;
 

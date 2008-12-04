@@ -12,7 +12,7 @@ import com.espertech.esper.epl.join.rep.RepositoryImpl;
 import com.espertech.esper.epl.join.rep.Node;
 import com.espertech.esper.epl.join.assemble.BaseAssemblyNode;
 import com.espertech.esper.epl.join.assemble.ResultAssembler;
-import com.espertech.esper.event.EventBean;
+import com.espertech.esper.client.EventBean;
 import com.espertech.esper.util.IndentWriter;
 
 import java.util.List;

@@ -9,8 +9,8 @@
 package com.espertech.esper.epl.db;
 
 import com.espertech.esper.event.EventAdapterService;
-import com.espertech.esper.event.EventType;
-import com.espertech.esper.event.EventBean;
+import com.espertech.esper.client.EventType;
+import com.espertech.esper.client.EventBean;
 import com.espertech.esper.collection.Pair;
 import com.espertech.esper.client.EPException;
 import com.espertech.esper.util.ExecutionPathDebugLog;

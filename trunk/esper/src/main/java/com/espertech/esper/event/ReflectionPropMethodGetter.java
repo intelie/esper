@@ -8,6 +8,9 @@
  **************************************************************************************/
 package com.espertech.esper.event;
 
+import com.espertech.esper.client.EventBean;
+import com.espertech.esper.client.EventPropertyGetter;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 

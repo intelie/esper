@@ -20,6 +20,9 @@ import com.espertech.esper.epl.named.NamedWindowRootView;
 import com.espertech.esper.epl.named.NamedWindowIndexRepository;
 import com.espertech.esper.epl.join.table.EventTable;
 import com.espertech.esper.core.EPStatementHandle;
+import com.espertech.esper.client.EventBean;
+import com.espertech.esper.client.EventType;
+import com.espertech.esper.client.EventPropertyGetter;
 
 import java.util.*;
 

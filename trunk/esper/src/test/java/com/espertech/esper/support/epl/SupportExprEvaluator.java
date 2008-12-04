@@ -1,7 +1,7 @@
 package com.espertech.esper.support.epl;
 
 import com.espertech.esper.epl.expression.ExprEvaluator;
-import com.espertech.esper.event.EventBean;
+import com.espertech.esper.client.EventBean;
 
 public class SupportExprEvaluator implements ExprEvaluator
 {

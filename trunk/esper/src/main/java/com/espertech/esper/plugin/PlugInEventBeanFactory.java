@@ -8,14 +8,14 @@
  **************************************************************************************/
 package com.espertech.esper.plugin;
 
-import com.espertech.esper.event.EventBean;
+import com.espertech.esper.client.EventBean;
 
 import java.net.URI;
 
 /**
  * Factory for creating {@link EventBean} event object wrapper for a plug-in event representation.
  * <p>
- * Implementations typically reflect on the event object to be processed and decides on the proper {@link com.espertech.esper.event.EventType}
+ * Implementations typically reflect on the event object to be processed and decides on the proper {@link com.espertech.esper.client.EventType}
  * to assign. If the implementation finds that it cannot handle the event object, it should return null.
  * Returning null gives another instance of this class as specified by the list of URI to handle the event object.
  */

@@ -8,7 +8,7 @@
  **************************************************************************************/
 package com.espertech.esper.filter;
 
-import com.espertech.esper.event.EventBean;
+import com.espertech.esper.client.EventBean;
 import com.espertech.esper.pattern.MatchedEventMap;
 import com.espertech.esper.util.SimpleNumberCoercer;
 

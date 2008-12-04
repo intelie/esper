@@ -2,7 +2,7 @@ package com.espertech.esper.support.filter;
 
 import com.espertech.esper.filter.EventEvaluator;
 import com.espertech.esper.filter.FilterHandle;
-import com.espertech.esper.event.EventBean;
+import com.espertech.esper.client.EventBean;
 
 import java.util.List;
 import java.util.Collection;

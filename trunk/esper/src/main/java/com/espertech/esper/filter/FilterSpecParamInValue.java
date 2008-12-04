@@ -8,11 +8,8 @@
  **************************************************************************************/
 package com.espertech.esper.filter;
 
-import com.espertech.esper.event.EventType;
 import com.espertech.esper.pattern.MatchedEventMap;
 import com.espertech.esper.util.MetaDefItem;
-
-import java.util.Map;
 
 /**
  * Denotes a value for use by the in-keyword within a list of values

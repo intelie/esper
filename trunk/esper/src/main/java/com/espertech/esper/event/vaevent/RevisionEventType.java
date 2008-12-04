@@ -11,6 +11,8 @@ package com.espertech.esper.event.vaevent;
 import com.espertech.esper.epl.parse.ASTFilterSpecHelper;
 import com.espertech.esper.event.*;
 import com.espertech.esper.event.property.*;
+import com.espertech.esper.client.EventType;
+import com.espertech.esper.client.EventPropertyGetter;
 
 import java.util.Iterator;
 import java.util.Map;

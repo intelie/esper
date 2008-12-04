@@ -1,12 +1,16 @@
 package com.espertech.esper.event;
 
+import com.espertech.esper.client.EventBean;
+import com.espertech.esper.client.EventPropertyGetter;
+
 import java.util.Map;
 import java.lang.reflect.Array;
 
 /**
  * A getter that works on arrays residing within a Map as an event property.
  */
-public class MapArrayPOJOEntryIndexedPropertyGetter implements EventPropertyGetter {
+public class MapArrayPOJOEntryIndexedPropertyGetter implements EventPropertyGetter
+{
 
     private final String propertyMap;
     private final int index;

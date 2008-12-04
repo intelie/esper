@@ -4,9 +4,8 @@ import junit.framework.TestCase;
 import com.espertech.esper.client.*;
 import com.espertech.esper.client.soda.EPStatementObjectModel;
 import com.espertech.esper.client.time.CurrentTimeEvent;
-import com.espertech.esper.client.time.TimerControlEvent;
 import com.espertech.esper.client.time.TimerEvent;
-import com.espertech.esper.event.EventBean;
+import com.espertech.esper.client.EventBean;
 import com.espertech.esper.event.EventBeanUtility;
 import com.espertech.esper.regression.support.EventCollection;
 import com.espertech.esper.regression.support.EventDescriptor;
@@ -18,7 +17,6 @@ import com.espertech.esper.support.client.SupportConfigFactory;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class TestCronParameter extends TestCase implements SupportBeanConstants

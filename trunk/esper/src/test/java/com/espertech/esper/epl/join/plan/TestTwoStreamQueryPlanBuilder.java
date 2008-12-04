@@ -1,6 +1,6 @@
 package com.espertech.esper.epl.join.plan;
 
-import com.espertech.esper.event.EventType;
+import com.espertech.esper.client.EventType;
 import com.espertech.esper.support.bean.SupportBean_S0;
 import com.espertech.esper.support.bean.SupportBean_S1;
 import com.espertech.esper.support.event.SupportEventAdapterService;

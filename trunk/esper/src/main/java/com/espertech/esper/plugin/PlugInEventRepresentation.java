@@ -77,7 +77,7 @@ public interface PlugInEventRepresentation
 
     /**
      * For use with {@link com.espertech.esper.client.EPRuntime#getEventSender(java.net.URI[])},
-     * returns the factory that can inspect event objects and provide an event {@link com.espertech.esper.event.EventBean}
+     * returns the factory that can inspect event objects and provide an event {@link com.espertech.esper.client.EventBean}
      * wrapper.
      * @param eventBeanContext provides the URI specified for resolving the event object reflection
      * @return true to accept the requested URI, false such that another event representation may handle the request

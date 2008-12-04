@@ -8,8 +8,8 @@
  **************************************************************************************/
 package com.espertech.esper.event.vaevent;
 
-import com.espertech.esper.event.EventBean;
-import com.espertech.esper.event.EventPropertyGetter;
+import com.espertech.esper.client.EventBean;
+import com.espertech.esper.client.EventPropertyGetter;
 
 /**
  * Holds revisions for property groups in an overlay strategy.

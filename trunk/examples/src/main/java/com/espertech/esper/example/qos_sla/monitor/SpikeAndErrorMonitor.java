@@ -13,7 +13,7 @@ import org.apache.commons.logging.LogFactory;
 
 import com.espertech.esper.client.*;
 import com.espertech.esper.example.qos_sla.eventbean.OperationMeasurement;
-import com.espertech.esper.event.EventBean;
+import com.espertech.esper.client.EventBean;
 
 public class SpikeAndErrorMonitor
 {

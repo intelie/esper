@@ -7,6 +7,7 @@ import com.espertech.esper.support.bean.SupportBean_D;
 import com.espertech.esper.support.util.ArrayAssertionUtil;
 import com.espertech.esper.support.event.SupportEventAdapterService;
 import com.espertech.esper.collection.Pair;
+import com.espertech.esper.client.EventType;
 
 import java.util.Map;
 import java.util.HashMap;

@@ -8,8 +8,8 @@
  **************************************************************************************/
 package com.espertech.esper.event.vaevent;
 
-import com.espertech.esper.event.EventType;
-import com.espertech.esper.event.EventPropertyGetter;
+import com.espertech.esper.client.EventType;
+import com.espertech.esper.client.EventPropertyGetter;
 
 import java.util.HashMap;
 import java.util.Map;

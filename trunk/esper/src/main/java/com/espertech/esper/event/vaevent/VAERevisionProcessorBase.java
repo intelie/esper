@@ -10,6 +10,7 @@ package com.espertech.esper.event.vaevent;
 
 import com.espertech.esper.event.*;
 import com.espertech.esper.epl.expression.ExprValidationException;
+import com.espertech.esper.client.EventType;
 
 import java.util.*;
 

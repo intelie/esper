@@ -9,7 +9,7 @@
 package com.espertech.esper.example.rsi;
 
 import com.espertech.esper.client.UpdateListener;
-import com.espertech.esper.event.EventBean;
+import com.espertech.esper.client.EventBean;
 import com.espertech.esper.example.stockticker.eventbean.StockTick;
 
 import org.apache.commons.logging.LogFactory;

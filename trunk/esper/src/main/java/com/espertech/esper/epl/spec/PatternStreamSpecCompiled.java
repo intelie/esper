@@ -9,7 +9,7 @@
 package com.espertech.esper.epl.spec;
 
 import com.espertech.esper.collection.Pair;
-import com.espertech.esper.event.EventType;
+import com.espertech.esper.client.EventType;
 import com.espertech.esper.pattern.EvalNode;
 
 import java.util.HashMap;

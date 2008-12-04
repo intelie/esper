@@ -8,7 +8,7 @@
  **************************************************************************************/
 package com.espertech.esper.epl.named;
 
-import com.espertech.esper.event.EventBean;
+import com.espertech.esper.client.EventBean;
 
 /**
  * A holder for events posted by a named window as an insert and remove stream.

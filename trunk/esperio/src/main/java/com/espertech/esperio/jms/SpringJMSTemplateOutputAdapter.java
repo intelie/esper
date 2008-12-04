@@ -9,7 +9,6 @@
 package com.espertech.esperio.jms;
 
 import com.espertech.esper.client.*;
-import com.espertech.esper.event.*;
 import com.espertech.esper.util.ExecutionPathDebugLog;
 import org.apache.commons.logging.*;
 import org.springframework.jms.core.*;

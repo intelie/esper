@@ -8,7 +8,7 @@
  **************************************************************************************/
 package com.espertech.esper.view;
 
-import com.espertech.esper.event.EventBean;
+import com.espertech.esper.client.EventBean;
 
 /**
  * The View interface provides a way for a stream, data provider, or another view,

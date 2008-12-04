@@ -5,6 +5,8 @@ import com.espertech.esper.support.bean.SupportBeanComplexProps;
 import com.espertech.esper.support.bean.SupportBean_C;
 import com.espertech.esper.support.event.SupportEventAdapterService;
 import com.espertech.esper.collection.Pair;
+import com.espertech.esper.client.EventBean;
+import com.espertech.esper.client.EventType;
 
 import java.util.Map;
 import java.util.HashMap;

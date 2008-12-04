@@ -4,8 +4,8 @@ import junit.framework.Assert;
 import com.espertech.esper.client.EPServiceProvider;
 import com.espertech.esper.client.EPStatement;
 import com.espertech.esper.client.StatementAwareUpdateListener;
+import com.espertech.esper.client.EventBean;
 import com.espertech.esper.collection.UniformPair;
-import com.espertech.esper.event.EventBean;
 
 import java.util.ArrayList;
 import java.util.LinkedList;

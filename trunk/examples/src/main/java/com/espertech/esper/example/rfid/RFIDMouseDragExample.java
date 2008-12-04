@@ -8,11 +8,8 @@
  **************************************************************************************/
 package com.espertech.esper.example.rfid;
 
-import com.espertech.esper.client.Configuration;
-import com.espertech.esper.client.EPServiceProviderManager;
-import com.espertech.esper.client.EPServiceProvider;
-import com.espertech.esper.client.UpdateListener;
-import com.espertech.esper.event.EventBean;
+import com.espertech.esper.client.*;
+import com.espertech.esper.client.EventBean;
 
 import java.awt.Container;
 import java.awt.event.WindowAdapter;

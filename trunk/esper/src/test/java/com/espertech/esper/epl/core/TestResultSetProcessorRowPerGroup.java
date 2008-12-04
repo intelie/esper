@@ -2,7 +2,7 @@ package com.espertech.esper.epl.core;
 
 import com.espertech.esper.collection.UniformPair;
 import com.espertech.esper.epl.expression.ExprNode;
-import com.espertech.esper.event.EventBean;
+import com.espertech.esper.client.EventBean;
 import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.epl.SupportAggregationService;
 import com.espertech.esper.support.epl.SupportExprNodeFactory;

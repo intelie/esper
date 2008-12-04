@@ -8,8 +8,8 @@
  **************************************************************************************/
 package com.espertech.esper.epl.core;
 
-import com.espertech.esper.event.EventBean;
-import com.espertech.esper.event.EventType;
+import com.espertech.esper.client.EventBean;
+import com.espertech.esper.client.EventType;
 
 /**
  * Interface for processors of select-clause items, implementors are computing results based on matching events.

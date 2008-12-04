@@ -9,7 +9,7 @@
 package com.espertech.esper.event;
 
 /**
- * This exception is thrown to indicate a problem with a accessing a property of an {@link EventBean}.
+ * This exception is thrown to indicate a problem with a accessing a property of an {@link com.espertech.esper.client.EventBean}.
  */
 public final class PropertyAccessException extends RuntimeException
 {

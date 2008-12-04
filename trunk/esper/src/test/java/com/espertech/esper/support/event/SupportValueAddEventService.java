@@ -3,7 +3,7 @@ package com.espertech.esper.support.event;
 import com.espertech.esper.event.vaevent.ValueAddEventService;
 import com.espertech.esper.event.vaevent.ValueAddEventProcessor;
 import com.espertech.esper.event.EventAdapterService;
-import com.espertech.esper.event.EventType;
+import com.espertech.esper.client.EventType;
 import com.espertech.esper.client.ConfigurationRevisionEventType;
 import com.espertech.esper.client.ConfigurationVariantStream;
 import com.espertech.esper.client.ConfigurationException;
@@ -50,6 +50,6 @@ public class SupportValueAddEventService implements ValueAddEventService
 
     public EventType[] getValueAddedTypes()
     {
-        return new EventType[0];  
+        return new EventType[0];
     }
 }

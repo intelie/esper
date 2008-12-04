@@ -8,7 +8,6 @@
  **************************************************************************************/
 package com.espertech.esper.pattern;
 
-import com.espertech.esper.event.EventBean;
 import java.util.Map;
 
 /**

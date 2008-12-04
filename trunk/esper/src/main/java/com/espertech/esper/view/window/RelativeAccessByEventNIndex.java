@@ -8,7 +8,7 @@
  **************************************************************************************/
 package com.espertech.esper.view.window;
 
-import com.espertech.esper.event.EventBean;
+import com.espertech.esper.client.EventBean;
 
 /**
  * Provides access to prior events given an event from which to count back, and an index to look at.

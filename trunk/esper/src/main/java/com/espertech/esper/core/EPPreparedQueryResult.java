@@ -8,8 +8,8 @@
  **************************************************************************************/
 package com.espertech.esper.core;
 
-import com.espertech.esper.event.EventType;
-import com.espertech.esper.event.EventBean;
+import com.espertech.esper.client.EventType;
+import com.espertech.esper.client.EventBean;
 
 /**
  * The result of executing a prepared query.

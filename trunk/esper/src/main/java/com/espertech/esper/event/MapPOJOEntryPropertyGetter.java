@@ -8,12 +8,16 @@
  **************************************************************************************/
 package com.espertech.esper.event;
 
+import com.espertech.esper.client.EventBean;
+import com.espertech.esper.client.EventPropertyGetter;
+
 import java.util.Map;
 
 /**
  * A getter that works on POJO events residing within a Map as an event property.
  */
-public class MapPOJOEntryPropertyGetter implements EventPropertyGetter {
+public class MapPOJOEntryPropertyGetter implements EventPropertyGetter
+{
 
     private final String propertyMap;
     private final EventPropertyGetter mapEntryGetter;

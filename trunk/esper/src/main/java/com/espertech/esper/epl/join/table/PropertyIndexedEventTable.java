@@ -11,10 +11,10 @@ package com.espertech.esper.epl.join.table;
 import java.util.*;
 
 import com.espertech.esper.collection.MultiKeyUntyped;
-import com.espertech.esper.event.EventBean;
+import com.espertech.esper.client.EventBean;
+import com.espertech.esper.client.EventType;
 import com.espertech.esper.event.EventBeanUtility;
-import com.espertech.esper.event.EventPropertyGetter;
-import com.espertech.esper.event.EventType;
+import com.espertech.esper.client.EventPropertyGetter;
 import com.espertech.esper.util.ExecutionPathDebugLog;
 
 import org.apache.commons.logging.Log;

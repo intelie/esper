@@ -4,8 +4,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 import junit.framework.TestCase;
-import com.espertech.esper.event.EventBean;
-import com.espertech.esper.event.EventType;
+import com.espertech.esper.client.EventBean;
+import com.espertech.esper.client.EventType;
 import com.espertech.esper.support.bean.ISupportA;
 import com.espertech.esper.support.bean.ISupportABCImpl;
 import com.espertech.esper.support.bean.ISupportAImplSuperGImplPlus;

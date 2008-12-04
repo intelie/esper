@@ -2,7 +2,7 @@ package com.espertech.esper.example.transaction;
 
 import com.espertech.esper.client.time.CurrentTimeEvent;
 import com.espertech.esper.client.time.TimerControlEvent;
-import com.espertech.esper.event.EventBean;
+import com.espertech.esper.client.EventBean;
 import com.espertech.esper.example.support.SupportUpdateListener;
 
 public class TestFindMissingEventStmt extends TestStmtBase

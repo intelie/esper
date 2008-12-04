@@ -8,7 +8,7 @@
  **************************************************************************************/
 package com.espertech.esper.collection;
 
-import com.espertech.esper.event.EventBean;
+import com.espertech.esper.client.EventBean;
 
 /**
  * Interface that transforms one event into another event, for use with {@link TransformEventIterator}.

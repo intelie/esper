@@ -1,7 +1,7 @@
 package com.espertech.esper.event.vaevent;
 
 import com.espertech.esper.event.EventAdapterService;
-import com.espertech.esper.event.EventType;
+import com.espertech.esper.client.EventType;
 import com.espertech.esper.event.vaevent.PropertyUtility;
 import com.espertech.esper.event.vaevent.PropertyGroupDesc;
 import com.espertech.esper.support.event.SupportEventAdapterService;

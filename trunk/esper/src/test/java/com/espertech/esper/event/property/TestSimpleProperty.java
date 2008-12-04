@@ -4,6 +4,8 @@ import junit.framework.TestCase;
 import com.espertech.esper.support.bean.SupportBeanComplexProps;
 import com.espertech.esper.support.event.SupportEventBeanFactory;
 import com.espertech.esper.event.*;
+import com.espertech.esper.client.EventBean;
+import com.espertech.esper.client.EventPropertyGetter;
 
 public class TestSimpleProperty extends TestCase
 {

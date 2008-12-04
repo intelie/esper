@@ -9,8 +9,8 @@
 package com.espertech.esper.view;
 
 import java.util.Iterator;
-import com.espertech.esper.event.EventType;
-import com.espertech.esper.event.EventBean;
+import com.espertech.esper.client.EventType;
+import com.espertech.esper.client.EventBean;
 
 /**
  * Interface that marks an event collection.

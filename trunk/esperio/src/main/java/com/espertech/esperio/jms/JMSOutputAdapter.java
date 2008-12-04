@@ -12,7 +12,6 @@ import com.espertech.esperio.*;
 import com.espertech.esperio.subscription.*;
 import com.espertech.esper.client.*;
 import com.espertech.esper.core.*;
-import com.espertech.esper.event.*;
 import com.espertech.esper.util.ExecutionPathDebugLog;
 import org.apache.commons.logging.*;
 

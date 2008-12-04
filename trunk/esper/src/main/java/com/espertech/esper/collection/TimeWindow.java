@@ -9,7 +9,7 @@
 package com.espertech.esper.collection;
 
 import java.util.*;
-import com.espertech.esper.event.EventBean;
+import com.espertech.esper.client.EventBean;
 
 /**
  * Container for events per time slot. The time is provided as long milliseconds by client classes.

@@ -11,8 +11,8 @@ package com.espertech.esper.event.vaevent;
 import com.espertech.esper.client.ConfigurationRevisionEventType;
 import com.espertech.esper.client.ConfigurationVariantStream;
 import com.espertech.esper.client.ConfigurationException;
+import com.espertech.esper.client.EventType;
 import com.espertech.esper.event.EventAdapterService;
-import com.espertech.esper.event.EventType;
 import com.espertech.esper.view.StatementStopService;
 
 import java.util.Map;

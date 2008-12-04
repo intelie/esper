@@ -14,7 +14,7 @@ import org.apache.commons.logging.LogFactory;
 
 import java.util.*;
 
-import com.espertech.esper.event.EventBean;
+import com.espertech.esper.client.EventBean;
 
 public class ArrayAssertionUtil
 {

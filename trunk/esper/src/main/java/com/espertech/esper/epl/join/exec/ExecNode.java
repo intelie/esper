@@ -12,7 +12,7 @@ import java.util.List;
 import java.io.StringWriter;
 import java.io.PrintWriter;
 
-import com.espertech.esper.event.EventBean;
+import com.espertech.esper.client.EventBean;
 import com.espertech.esper.util.IndentWriter;
 
 /**

@@ -8,11 +8,12 @@
  **************************************************************************************/
 package com.espertech.esper.view.stat;
 
-import com.espertech.esper.event.*;
 import com.espertech.esper.view.*;
 import com.espertech.esper.collection.SingleEventIterator;
 import com.espertech.esper.core.StatementContext;
 import com.espertech.esper.epl.expression.ExprNode;
+import com.espertech.esper.client.EventBean;
+import com.espertech.esper.client.EventType;
 
 import java.util.Iterator;
 import java.util.Map;

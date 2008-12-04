@@ -3,7 +3,7 @@ package com.espertech.esper.support.epl.join;
 import com.espertech.esper.epl.join.rep.Repository;
 import com.espertech.esper.epl.join.rep.Cursor;
 import com.espertech.esper.epl.join.rep.SingleCursorIterator;
-import com.espertech.esper.event.EventBean;
+import com.espertech.esper.client.EventBean;
 
 import java.util.Iterator;
 import java.util.Set;

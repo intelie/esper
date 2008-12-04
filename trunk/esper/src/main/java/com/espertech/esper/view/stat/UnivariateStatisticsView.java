@@ -19,6 +19,8 @@ import com.espertech.esper.view.*;
 import com.espertech.esper.collection.SingleEventIterator;
 import com.espertech.esper.core.StatementContext;
 import com.espertech.esper.epl.expression.ExprNode;
+import com.espertech.esper.client.EventBean;
+import com.espertech.esper.client.EventType;
 
 /**
  * View for computing statistics, which the view exposes via fields representing the sum, count, standard deviation

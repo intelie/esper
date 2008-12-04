@@ -1,7 +1,6 @@
 package com.espertech.esper.support.util;
 
-import com.espertech.esper.event.EventBean;
-import junit.framework.TestCase;
+import com.espertech.esper.client.EventBean;
 
 public class ArrayCompareUtil
 {

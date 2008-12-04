@@ -12,8 +12,8 @@ import com.espertech.esper.core.EPStatementHandle;
 import com.espertech.esper.epl.named.NamedWindowIndexRepository;
 import com.espertech.esper.epl.named.NamedWindowRootView;
 import com.espertech.esper.epl.expression.ExprValidationException;
-import com.espertech.esper.event.EventBean;
-import com.espertech.esper.event.EventType;
+import com.espertech.esper.client.EventBean;
+import com.espertech.esper.client.EventType;
 import com.espertech.esper.view.Viewable;
 
 import java.util.Collection;

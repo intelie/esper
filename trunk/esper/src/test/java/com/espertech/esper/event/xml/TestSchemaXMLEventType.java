@@ -3,7 +3,7 @@ package com.espertech.esper.event.xml;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.xpath.XPathConstants;
 
-import com.espertech.esper.event.EventBean;
+import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.ConfigurationEventTypeXMLDOM;
 
 import org.w3c.dom.Document;

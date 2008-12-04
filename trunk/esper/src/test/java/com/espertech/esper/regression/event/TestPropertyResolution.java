@@ -2,8 +2,8 @@ package com.espertech.esper.regression.event;
 
 import junit.framework.TestCase;
 import com.espertech.esper.client.*;
-import com.espertech.esper.event.EventBean;
-import com.espertech.esper.event.EventType;
+import com.espertech.esper.client.EventBean;
+import com.espertech.esper.client.EventType;
 import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.bean.SupportBeanDupProperty;
 import com.espertech.esper.support.bean.SupportBeanComplexProps;

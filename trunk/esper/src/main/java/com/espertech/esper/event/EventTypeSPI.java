@@ -8,8 +8,7 @@
  **************************************************************************************/
 package com.espertech.esper.event;
 
-import java.util.Iterator;
-import java.util.Map;
+import com.espertech.esper.client.EventType;
 
 /**
  * Service provider interface for internal use for event types.

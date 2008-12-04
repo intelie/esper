@@ -9,8 +9,8 @@
 package com.espertech.esper.epl.core;
 
 import com.espertech.esper.epl.expression.ExprValidationException;
-import com.espertech.esper.event.EventBean;
-import com.espertech.esper.event.EventType;
+import com.espertech.esper.client.EventBean;
+import com.espertech.esper.client.EventType;
 
 /**
  * Processor for select-clause expressions that handles wildcards for single streams with no insert-into.
