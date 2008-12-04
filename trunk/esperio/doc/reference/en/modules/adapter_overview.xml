@@ -33,7 +33,7 @@
 					<entry>Spring JMS Input and Output Adapter</entry>
 					<entry>
 						<para>
-							JMS adapters based on the JmsTemplate offered by Spring 2. Provides unmarshalling of JMS <literal>javax.jms.Message</literal> messages for sending into an engine instance, and marshaling of <literal>com.espertech.esper.EventBean</literal> events into JMS messages.
+							JMS adapters based on the JmsTemplate offered by Spring 2. Provides unmarshalling of JMS <literal>javax.jms.Message</literal> messages for sending into an engine instance, and marshaling of <literal>com.espertech.esper.client.EventBean</literal> events into JMS messages.
 						</para>
 					</entry>
 				</row>

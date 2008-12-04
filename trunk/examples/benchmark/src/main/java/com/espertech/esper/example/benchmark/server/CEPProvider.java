@@ -8,7 +8,6 @@
 package com.espertech.esper.example.benchmark.server;
 
 import com.espertech.esper.client.*;
-import com.espertech.esper.event.EventBean;
 
 import com.espertech.esper.example.benchmark.MarketData;
 
@@ -57,7 +56,7 @@ public class CEPProvider {
         public void init(final int _sleepListenerMillis) {
             sleepListenerMillis = _sleepListenerMillis;
             Configuration configuration;
-            
+
             // EsperHA enablement - if available
             try {
                 Class configurationHAClass = Class.forName("com.espertech.esperha.client.ConfigurationHA");
@@ -71,8 +70,8 @@ public class CEPProvider {
                 configuration = new Configuration();
             }
             configuration.addEventTypeAlias("Market", MarketData.class);
-			
-            
+
+
             // EsperJMX enablement - if available
 			try {
 				Class.forName("com.espertech.esper.jmx.client.EsperJMXPlugin");
@@ -85,7 +84,7 @@ public class CEPProvider {
 				;
 			}
 
-			
+
             EPServiceProvider epService = EPServiceProviderManager.getProvider("benchmark", configuration);
             epAdministrator = epService.getEPAdministrator();
             updateListener = new MyUpdateListener();

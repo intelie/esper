@@ -8,11 +8,7 @@
  **************************************************************************************/
 package com.espertech.esper.example.terminal.jse.simulate;
 
-import com.espertech.esper.client.Configuration;
-import com.espertech.esper.client.EPServiceProvider;
-import com.espertech.esper.client.EPServiceProviderManager;
-import com.espertech.esper.client.EPStatement;
-import com.espertech.esper.event.EventBean;
+import com.espertech.esper.client.*;
 import com.espertech.esper.example.terminal.jse.event.*;
 import com.espertech.esper.example.terminal.jse.listener.*;
 

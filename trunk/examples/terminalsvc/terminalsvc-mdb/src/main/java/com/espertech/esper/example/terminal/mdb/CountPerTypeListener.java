@@ -9,7 +9,7 @@
 package com.espertech.esper.example.terminal.mdb;
 
 import com.espertech.esper.client.UpdateListener;
-import com.espertech.esper.event.EventBean;
+import com.espertech.esper.client.EventBean;
 
 public class CountPerTypeListener implements UpdateListener
 {

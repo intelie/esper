@@ -58,10 +58,7 @@ Bundle-Version: 2.3.0
 Bundle-ManifestVersion: 2
 Bundle-SymbolicName: com.espertech.esper
 Eclipse-BuddyPolicy: dependent
-Import-Package: com.sun.org.apache.xerces.internal.dom,
- com.sun.org.apache.xerces.internal.impl.dv.xs,
- com.sun.org.apache.xerces.internal.xs,
- javax.management,
+Import-Package: javax.management,
  javax.management.openmbean,
  javax.naming,
  javax.sql,

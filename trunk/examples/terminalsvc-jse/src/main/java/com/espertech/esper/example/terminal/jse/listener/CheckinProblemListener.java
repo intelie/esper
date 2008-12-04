@@ -8,7 +8,7 @@
  **************************************************************************************/
 package com.espertech.esper.example.terminal.jse.listener;
 
-import com.espertech.esper.event.EventBean;
+import com.espertech.esper.client.EventBean;
 
 public class CheckinProblemListener extends BaseTerminalListener {
 

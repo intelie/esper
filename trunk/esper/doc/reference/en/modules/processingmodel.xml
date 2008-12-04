@@ -29,7 +29,7 @@ results via method invocation. The subscriber class need not implement an interf
 
 		<indexterm><primary>EventBean interface</primary></indexterm>
         <para>
-			The engine provides statement results to update listeners by placing results in <literal>com.espertech.esper.event.EventBean</literal> instances. A typical listener implementation queries the <literal>EventBean</literal> instances via getter methods to obtain the statement-generated results. 
+			The engine provides statement results to update listeners by placing results in <literal>com.espertech.esper.client.EventBean</literal> instances. A typical listener implementation queries the <literal>EventBean</literal> instances via getter methods to obtain the statement-generated results. 
         </para>
 
 		<mediaobject>
@@ -503,7 +503,7 @@ group by account]]></programlisting>
         
 		<indexterm><primary>EventBean interface</primary></indexterm>
         <para>
-			The engine posts events to <literal>UpdateListener</literal> implementations as <literal>com.espertech.esper.event.EventBean</literal> instances. The <literal>EventBean</literal> represents a row (event) in your continuous query's result set.  
+			The engine posts events to <literal>UpdateListener</literal> implementations as <literal>com.espertech.esper.client.EventBean</literal> instances. The <literal>EventBean</literal> represents a row (event) in your continuous query's result set.  
         </para>
 			
         <para>

@@ -61,7 +61,7 @@
 			</packageset>
 
 			<group title="Core API"
-				packages="com.espertech.esper.client,com.espertech.esper.client.time,com.espertech.esper.client.soda,com.espertech.esper.event"/>
+				packages="com.espertech.esper.client,com.espertech.esper.client.time,com.espertech.esper.client.soda"/>
 						
 		</javadoc>
 		<copy file="${doc.api.dir}/package.html" todir="${dist.api.dir}"/>
