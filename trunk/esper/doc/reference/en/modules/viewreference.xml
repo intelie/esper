@@ -18,6 +18,10 @@
         </para>
                 
         <para>
+            Two or more data window views can be combined. This allows a sets of events retained by one data window to be placed into a union or an intersection with the set of events retained by one or more other data windows. Please see <xref linkend="epl-from-clause-view-multidatawindow"/> for more detail.
+        </para>
+
+        <para>
 			The keep-all data window counts as a data window but has no expiry policy: it retains all events received. The group-by data window allocates a new data window per group and thereby counts as a data window, but cannot appear alone.
         </para>
 
@@ -216,6 +220,10 @@
         <sect1 id="win-views" >
            <title>Window views</title>
 
+			<para>
+				All the views explained below are data window views, as are <literal>std:unique</literal>, <literal>std:firstunique</literal>, <literal>std:lastevent</literal> and <literal>std:firstevent</literal>.
+			</para>
+			
 			<sect2 id="view-win-length" >
 			   <title>Length window (<literal>win:length</literal>)</title>
 		

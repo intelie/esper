@@ -14,6 +14,7 @@ import com.espertech.esper.epl.spec.StreamSpecOptions;
 import com.espertech.esper.epl.spec.ViewSpec;
 import com.espertech.esper.event.EventType;
 import com.espertech.esper.view.internal.UnionViewFactory;
+import com.espertech.esper.view.internal.IntersectViewFactory;
 import com.espertech.esper.view.std.GroupByViewFactory;
 import com.espertech.esper.view.std.MergeViewFactory;
 import org.apache.commons.logging.Log;
@@ -102,19 +103,19 @@ public final class ViewServiceImpl implements ViewService
 
         // handle multiple data windows with retain union.
         // wrap view factories into the union view factory and handle a group-by, if present
-        if (options.isRetainUnion() && nonDataWindowCount > 0)
+        if ((options.isRetainUnion() || options.isRetainIntersection()) && nonDataWindowCount > 0)
         {
             throw new ViewProcessingException("Retain keywords require that only data windows views are specified");
         }
-        if (options.isRetainUnion() && dataWindowCount > 1)
+        if ((options.isRetainUnion() || options.isRetainIntersection()) && dataWindowCount > 1)
         {
-            viewFactories = mergeUnionViewFactories(parentEventType, viewFactories);
+            viewFactories = getRetainViewFactories(parentEventType, viewFactories, options.isRetainUnion());
         }
 
         return new ViewFactoryChain(parentEventType, viewFactories);
     }
 
-    private List<ViewFactory> mergeUnionViewFactories(EventType parentEventType, List<ViewFactory> viewFactories)
+    private List<ViewFactory> getRetainViewFactories(EventType parentEventType, List<ViewFactory> viewFactories, boolean isUnion)
             throws ViewProcessingException
     {
         Set<Integer> groupByFactory = new HashSet<Integer>();
@@ -153,18 +154,27 @@ public final class ViewServiceImpl implements ViewService
             mergeViewFactory = (MergeViewFactory) viewFactories.remove(viewFactories.size() - 1);
         }
 
-        List<ViewFactory> unionViewFactories = new ArrayList<ViewFactory>(viewFactories);
-        UnionViewFactory unionViewFactory = new UnionViewFactory(parentEventType, unionViewFactories);
+        List<ViewFactory> retainViewFactories = new ArrayList<ViewFactory>(viewFactories);
 
-        List<ViewFactory> nonUnionViewFactories = new ArrayList<ViewFactory>();
-        nonUnionViewFactories.add(unionViewFactory);
-        if (groupByViewFactory != null)
+        ViewFactory retainPolicy = null;
+        if (isUnion)
         {
-            nonUnionViewFactories.add(0, groupByViewFactory);
-            nonUnionViewFactories.add(mergeViewFactory);
+            retainPolicy = new UnionViewFactory(parentEventType, retainViewFactories);
+        }
+        else
+        {
+            retainPolicy = new IntersectViewFactory(parentEventType, retainViewFactories);
         }
 
-        return nonUnionViewFactories;
+        List<ViewFactory> nonRetainViewFactories = new ArrayList<ViewFactory>();
+        nonRetainViewFactories.add(retainPolicy);
+        if (groupByViewFactory != null)
+        {
+            nonRetainViewFactories.add(0, groupByViewFactory);
+            nonRetainViewFactories.add(mergeViewFactory);
+        }
+
+        return nonRetainViewFactories;
     }
 
     public Viewable createViews(Viewable eventStreamViewable,

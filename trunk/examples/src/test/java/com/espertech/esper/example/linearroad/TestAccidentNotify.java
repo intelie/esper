@@ -28,7 +28,8 @@ public class TestAccidentNotify extends TestCase
         config.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
         config.getEngineDefaults().getViewResources().setAllowMultipleExpiryPolicies(true);
         epService = EPServiceProviderManager.getDefaultProvider(config);
-
+        epService.initialize();
+        
         String carLocEvent = CarLocEvent.class.getName();
 
         /**

@@ -16,7 +16,10 @@ import com.espertech.esper.event.EventType;
 import com.espertech.esper.util.ExecutionPathDebugLog;
 import com.espertech.esper.util.MultiKeyCollatingComparator;
 import com.espertech.esper.util.MultiKeyComparator;
-import com.espertech.esper.view.*;
+import com.espertech.esper.view.CloneableView;
+import com.espertech.esper.view.DataWindowView;
+import com.espertech.esper.view.View;
+import com.espertech.esper.view.ViewSupport;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -77,18 +80,15 @@ public final class SortWindowView extends ViewSupport implements DataWindowView,
         boolean hasStringTypes = false;
         boolean stringTypes[] = new boolean[sortCriteriaExpressions.length];
 
-        if (parent != null)
+        int count = 0;
+        for(ExprNode node : sortCriteriaExpressions)
         {
-        	int count = 0;
-        	for(ExprNode node : sortCriteriaExpressions)
-        	{
-                if (node.getType() == String.class)
-                {
-                    hasStringTypes = true;
-                    stringTypes[count] = true;
-                }
-                count++;
+            if (node.getType() == String.class)
+            {
+                hasStringTypes = true;
+                stringTypes[count] = true;
             }
+            count++;
         }
 
         Comparator<MultiKeyUntyped> comparator;

@@ -646,14 +646,15 @@ select default.MyEvent.myProperty from MyEvent</programlisting>
 		<para>
 			The <literal>from</literal> clause is required in all EPL statements. It specifies one or more event streams or named windows. Each event stream or named window can optionally be given a name by means of the <literal>as</literal> syntax.
 		</para>
-		<synopsis>from <emphasis>stream_def</emphasis> [as <emphasis>name</emphasis>] [, <emphasis>stream_def</emphasis> [as <emphasis>stream_name</emphasis>]] [, ...]</synopsis>
+		<synopsis>from <emphasis>stream_def</emphasis> [as <emphasis>name</emphasis>] [unidirectional] [retain-union | retain-intersection] 
+    [, <emphasis>stream_def</emphasis> [as <emphasis>stream_name</emphasis>]] [, ...]</synopsis>
 
 		<para>
 			The event stream definition <emphasis>stream_def</emphasis> as shown in the syntax above can consists of either a filter-based event stream definition or a pattern-based event stream definition. 
 		</para>
 
 		<para>
-			For joins and outer joins, specify two or more event streams. Joins between pattern-based and filter-based event streams are also supported. Joins are described in more detail in <xref linkend="epl-join"/>.
+			For joins and outer joins, specify two or more event streams. Joins between pattern-based and filter-based event streams are also supported. Joins and the <literal>unidirectional</literal> keyword are described in more detail in <xref linkend="epl-join"/>.
 		</para>
 
 		<para>
@@ -662,6 +663,10 @@ select default.MyEvent.myProperty from MyEvent</programlisting>
 
 		<para>
 			The <emphasis>stream_name</emphasis> is an optional identifier assigned to the stream. The stream name can itself occur in any expression and provides access to the event itself from the named stream. Also, a stream name may be combined with a method name to invoke instance methods on events of that stream.
+		</para>
+
+		<para>
+			For all streams with the exception of historical sources your query may employ data window views as outlined below. The <literal>retain-union</literal> and <literal>retain-intersection</literal> keywords build a union or intersection of two or more data windows as described in <xref linkend="epl-from-clause-view-multidatawindow"/>.
 		</para>
 
         <sect2 id="epl-from-clause-filter" >
@@ -906,7 +911,7 @@ select * from RfidEvent(zone=1 and category=10)]]></programlisting>
 			</para>
 						
 			<para>
-				Views can optionally take one or more parameters. These parameters can consist of primitive constants such as String, boolean or numeric types. Arrays are also supported as a view parameter types.
+				Views can optionally take one or more parameters. These parameters are expressions themselves that may consists of any combination of variables, arithmatics, user-define function or substituion parameters for prepared statements, as example.
 			</para>
 
 			<para>
@@ -927,21 +932,54 @@ select * from RfidEvent(zone=1 and category=10)]]></programlisting>
 			<para>
 				The special keep-all view keeps all events: It does not provide a remove stream, i.e. events are not removed from the keep-all view unless by means of the <literal>on-delete</literal> syntax or by revision events.
 			</para>
+		</sect2>
 
-  			<sect3 id="epl-from-clause-view-spec-staggering" >
-			   <title>For Advanced Users: Staggered Data Window Views</title>
-			   <para>
-				   Data window views provide an expiry policy that indicates when to remove events from the data window, with the exception of the keep-all data window which has no expiry policy and the group-by view for allocating a new data window per group.
-			   </para>
-			   
-			   <para>
-				   EPL allows the freedom to use multiple data window views onto a stream, i.e. to stagger data windows and thus combine expiry policies. This is an advanced feature that must be used with care. For example, combining a keep-all data window with a unique data window via <literal>win:keepall().std:unique(id)</literal> keeps all arriving events in memory, however when queried will only return the last event by id. In this example, use the <literal>std:unique</literal> view alone to retain the last event per id.
-			   </para>
+		<sect2 id="epl-from-clause-view-multidatawindow" >
+		   <title>Multiple Data Window Views</title>
+		   <para>
+			   Data window views provide an expiry policy that indicates when to remove events from the data window, with the exception of the keep-all data window which has no expiry policy and the group-by view for allocating a new data window per group.
+		   </para>
+		   
+		   <para>
+			   EPL allows the freedom to use multiple data window views onto a stream and thus combine expiry policies. Combining data windows into a union or intersection can achieve a useful strategy for retaining events and expiring events
+			   that are no longer of interest. Named windows and the <literal>on-delete</literal> syntax provide an additional degree of freedom.
+		   </para>
 
-			   <para>
-				   Combining data windows with different expiry policies may not produce the expected result unless you have a good understanding of the expiry policies and their interaction. This feature is therefore for advanced users that may also utilize custom plug-in application-provided views to implement new expiry policies or refine existing expiry policies.
-			   </para>
-			</sect3>
+		   <para>
+			   In order to combine two or more data window views, EPL requires that either the <emphasis>retain-union</emphasis> or <emphasis>retain-intersection</emphasis> keyword be specified for a stream.
+		   </para>
+
+			<para>
+				The concept of union and intersection come from Set mathematics. In the language of Set mathematics, two sets A and B can be "added" together: The union of A and B is the set of all things which are members of either A or B. The intersection of A and B is the set of all things which are members of both A and B, i.e. the members two sets have "in common".
+			</para>
+
+		   <para>
+			   Use the <emphasis>retain-union</emphasis> keyword to retain a union of all events as defined by two or more data windows. Only events removed from all data windows are entered into the remove stream.
+		   </para>
+
+		   <para>
+			   Use the <emphasis>retain-intersection</emphasis> keyword to retain an intersection of all events as defined by two or more data windows. All events removed from any of the intersected data windows are entered into the remove stream.
+		   </para>
+
+		   <para>
+			   The next example statement totals the price of OrderEvent events in a union of the last 30 seconds and unique by product name:
+		   </para>
+            <programlisting><![CDATA[select sum(price) from OrderEvent.win:time(30 sec).std:unique(productName) retain-union]]></programlisting>		   
+		   <para>
+			   In the above statement, all OrderEvent events that are either less then 30 seconds old or that are the last event for the product name are considered.
+		   </para>		   
+
+		   <para>
+			   Here is an example statement totals the price of OrderEvent events in an intersection of the last 30 seconds and unique by product name:
+		   </para>
+            <programlisting><![CDATA[select sum(price) from OrderEvent.win:time(30 sec).std:unique(productName) retain-intersection]]></programlisting>		   
+		   <para>
+			   In the above statement, only those OrderEvent events that are both less then 30 seconds old and are the last event for the product name are considered.
+		   </para>		   
+
+		   <para>
+			   For advanced users and for backward compatibility, it is possible to configure Esper to allow multiple data window views without either of the <literal>retain</literal> keywords, as described in <xref linkend="config-engine-viewresources-multipolicy"/>.
+		   </para>
 		</sect2>
 		
         <sect2 id="epl-from-clause-stream-name" >

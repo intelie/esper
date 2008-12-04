@@ -109,6 +109,8 @@ select insert from MyEvent]]></programlisting>
 				<row><entry>prev</entry><entry>yes</entry></row>
 				<row><entry>prior</entry><entry>yes</entry></row>
 				<row><entry>regexp</entry><entry>-</entry></row>
+				<row><entry>retain-union</entry><entry>yes</entry></row>
+				<row><entry>retain-intersection</entry><entry>yes</entry></row>
 				<row><entry>right</entry><entry>yes</entry></row>
 				<row><entry>rstream</entry><entry>-</entry></row>
 				<row><entry>sec</entry><entry>-</entry></row>

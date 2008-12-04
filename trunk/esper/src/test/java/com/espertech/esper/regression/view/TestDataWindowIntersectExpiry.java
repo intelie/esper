@@ -16,12 +16,12 @@ public class TestDataWindowIntersectExpiry extends TestCase
     private EPServiceProvider epService;
     private SupportUpdateListener listener;
 
-    public void testUnionGroupBy()
+    public void testIntersectGroupBy()
     {
         init(false);
         String[] fields = new String[] {"string"};
 
-        String text = "select irstream string from SupportBean.std:groupby(intPrimitive).win:length(2).std:unique(intBoxed) retain-union";
+        String text = "select irstream string from SupportBean.std:groupby(intPrimitive).win:length(2).std:unique(intBoxed) retain-intersection";
         EPStatement stmt = epService.getEPAdministrator().createEPL(text);
         stmt.addListener(listener);
 
@@ -38,45 +38,49 @@ public class TestDataWindowIntersectExpiry extends TestCase
         ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E3"});
 
         sendEvent("E4", 1, 30);
-        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, toArr("E1", "E2", "E3", "E4"));
-        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E4"});
+        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, toArr("E2", "E3", "E4"));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetOld(), fields, new Object[] {"E1"});
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNew(), fields, new Object[] {"E4"});
+        listener.reset();
 
         sendEvent("E5", 2, 10);
-        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, toArr("E1", "E2", "E3", "E4", "E5"));
-        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E5"});
+        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, toArr("E3", "E4", "E5"));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetOld(), fields, new Object[] {"E2"});
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNew(), fields, new Object[] {"E5"});
+        listener.reset();
 
         sendEvent("E6", 1, 20);
-        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, toArr("E1", "E2", "E4", "E5", "E6"));
+        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, toArr("E4", "E5", "E6"));
         ArrayAssertionUtil.assertProps(listener.assertOneGetOld(), fields, new Object[] {"E3"});
         ArrayAssertionUtil.assertProps(listener.assertOneGetNew(), fields, new Object[] {"E6"});
         listener.reset();
 
         sendEvent("E7", 1, 10);
-        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, toArr("E2", "E4", "E5", "E6", "E7"));
-        ArrayAssertionUtil.assertProps(listener.assertOneGetOld(), fields, new Object[] {"E1"});
+        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, toArr("E5", "E6", "E7"));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetOld(), fields, new Object[] {"E4"});
         ArrayAssertionUtil.assertProps(listener.assertOneGetNew(), fields, new Object[] {"E7"});
         listener.reset();
 
         sendEvent("E8", 2, 10);
-        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, toArr("E4", "E5", "E6", "E7", "E8"));
-        ArrayAssertionUtil.assertProps(listener.assertOneGetOld(), fields, new Object[] {"E2"});
+        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, toArr("E6", "E7", "E8"));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetOld(), fields, new Object[] {"E5"});
         ArrayAssertionUtil.assertProps(listener.assertOneGetNew(), fields, new Object[] {"E8"});
         listener.reset();
     }
 
-    public void testUnionSubselect()
+    public void testIntersectSubselect()
     {
         init(false);
 
-        String text = "select * from SupportBean_S0 where p00 in (select string from SupportBean.win:length(2).std:unique(intPrimitive) retain-union)";
+        String text = "select * from SupportBean_S0 where p00 in (select string from SupportBean.win:length(2).std:unique(intPrimitive) retain-intersection)";
         EPStatement stmt = epService.getEPAdministrator().createEPL(text);
         stmt.addListener(listener);
 
         sendEvent("E1", 1);
         sendEvent("E2", 2);
-        sendEvent("E3", 3);
-        sendEvent("E4", 2); // throws out E1
-        sendEvent("E5", 1); // retains E3
+        sendEvent("E3", 3); // throws out E1
+        sendEvent("E4", 2); // throws out E2
+        sendEvent("E5", 1); // throws out E3
 
         epService.getEPRuntime().sendEvent(new SupportBean_S0(1, "E1"));
         assertFalse(listener.getAndClearIsInvoked());
@@ -85,7 +89,7 @@ public class TestDataWindowIntersectExpiry extends TestCase
         assertFalse(listener.getAndClearIsInvoked());
 
         epService.getEPRuntime().sendEvent(new SupportBean_S0(1, "E3"));
-        assertTrue(listener.getAndClearIsInvoked());
+        assertFalse(listener.getAndClearIsInvoked());
 
         epService.getEPRuntime().sendEvent(new SupportBean_S0(1, "E4"));
         assertTrue(listener.getAndClearIsInvoked());
@@ -94,12 +98,12 @@ public class TestDataWindowIntersectExpiry extends TestCase
         assertTrue(listener.getAndClearIsInvoked());
     }
 
-    public void testUnionThreeUnique()
+    public void testIntersectThreeUnique()
     {
         init(false);
         String[] fields = new String[] {"string"};
 
-        EPStatement stmt = epService.getEPAdministrator().createEPL("select irstream string from SupportBean.std:unique(intPrimitive).std:unique(intBoxed).std:unique(doublePrimitive) retain-union");
+        EPStatement stmt = epService.getEPAdministrator().createEPL("select irstream string from SupportBean.std:unique(intPrimitive).std:unique(intBoxed).std:unique(doublePrimitive) retain-intersection");
         stmt.addListener(listener);
 
         sendEvent("E1", 1, 10, 100d);
@@ -107,26 +111,39 @@ public class TestDataWindowIntersectExpiry extends TestCase
         ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E1"});
 
         sendEvent("E2", 2, 10, 200d);
-        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, toArr("E1", "E2"));
-        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E2"});
+        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, toArr("E2"));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetOld(), fields, new Object[] {"E1"});
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNew(), fields, new Object[] {"E2"});
+        listener.reset();
 
         sendEvent("E3", 2, 20, 100d);
-        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, toArr("E1", "E2", "E3"));
-        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E3"});
+        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, toArr("E3"));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetOld(), fields, new Object[] {"E2"});
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNew(), fields, new Object[] {"E3"});
+        listener.reset();
 
         sendEvent("E4", 1, 30, 300d);
-        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, toArr("E2", "E3", "E4"));
-        ArrayAssertionUtil.assertProps(listener.assertOneGetOld(), fields, new Object[] {"E1"});
-        ArrayAssertionUtil.assertProps(listener.assertOneGetNew(), fields, new Object[] {"E4"});
+        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, toArr("E3", "E4"));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E4"});
+
+        sendEvent("E5", 3, 40, 400d);
+        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, toArr("E3", "E4", "E5"));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E5"});
+
+        sendEvent("E6", 3, 40, 300d);
+        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, toArr("E3", "E6"));
+        Object[] result = {listener.getLastOldData()[0].get("string"), listener.getLastOldData()[1].get("string")};
+        ArrayAssertionUtil.assertEqualsAnyOrder(result, new String[] {"E4", "E5"});
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNew(), fields, new Object[] {"E6"});
         listener.reset();
     }
 
-    public void testUnionPattern()
+    public void testIntersectPattern()
     {
         init(false);
         String[] fields = new String[] {"string"};
 
-        String text = "select irstream a.p00||b.p10 as string from pattern [every a=SupportBean_S0 -> b=SupportBean_S1].std:unique(a.id).std:unique(b.id) retain-union";
+        String text = "select irstream a.p00||b.p10 as string from pattern [every a=SupportBean_S0 -> b=SupportBean_S1].std:unique(a.id).std:unique(b.id) retain-intersection";
         EPStatement stmt = epService.getEPAdministrator().createEPL(text);
         stmt.addListener(listener);
 
@@ -147,12 +164,12 @@ public class TestDataWindowIntersectExpiry extends TestCase
         ArrayAssertionUtil.assertProps(listener.assertOneGetNew(), fields, new Object[] {"E5E6"});
     }
 
-    public void testUnionTwoUnique()
+    public void testIntersectTwoUnique()
     {
         init(false);
         String[] fields = new String[] {"string"};
 
-        EPStatement stmt = epService.getEPAdministrator().createEPL("select irstream string from SupportBean.std:unique(intPrimitive).std:unique(intBoxed) retain-union");
+        EPStatement stmt = epService.getEPAdministrator().createEPL("select irstream string from SupportBean.std:unique(intPrimitive).std:unique(intBoxed) retain-intersection");
         stmt.addListener(listener);
 
         sendEvent("E1", 1, 10);
@@ -160,60 +177,64 @@ public class TestDataWindowIntersectExpiry extends TestCase
         ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E1"});
 
         sendEvent("E2", 2, 10);
-        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, toArr("E1", "E2"));
-        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E2"});
+        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, toArr("E2"));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetOld(), fields, new Object[] {"E1"});
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNew(), fields, new Object[] {"E2"});
+        listener.reset();
 
         sendEvent("E3", 1, 20);
         ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, toArr("E2", "E3"));
-        ArrayAssertionUtil.assertProps(listener.assertOneGetOld(), fields, new Object[] {"E1"});
-        ArrayAssertionUtil.assertProps(listener.assertOneGetNew(), fields, new Object[] {"E3"});
-        listener.reset();
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E3"});
 
-        sendEvent("E4", 1, 20);
+        sendEvent("E4", 3, 20);
         ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, toArr("E2", "E4"));
         ArrayAssertionUtil.assertProps(listener.assertOneGetOld(), fields, new Object[] {"E3"});
         ArrayAssertionUtil.assertProps(listener.assertOneGetNew(), fields, new Object[] {"E4"});
         listener.reset();
 
         sendEvent("E5", 2, 30);
-        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, toArr("E2", "E4", "E5"));
-        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E5"});
+        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, toArr("E4", "E5"));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetOld(), fields, new Object[] {"E2"});
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNew(), fields, new Object[] {"E5"});
+        listener.reset();
 
         sendEvent("E6", 3, 10);
-        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, toArr("E4", "E5", "E6"));
-        ArrayAssertionUtil.assertProps(listener.assertOneGetOld(), fields, new Object[] {"E2"});
+        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, toArr("E5", "E6"));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetOld(), fields, new Object[] {"E4"});
         ArrayAssertionUtil.assertProps(listener.assertOneGetNew(), fields, new Object[] {"E6"});
         listener.reset();
 
         sendEvent("E7", 3, 30);
-        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, toArr("E4", "E5", "E6", "E7"));
-        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E7"});
-
-        sendEvent("E8", 4, 10);
-        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, toArr("E4", "E5", "E7", "E8"));
-        ArrayAssertionUtil.assertProps(listener.assertOneGetOld(), fields, new Object[] {"E6"});
-        ArrayAssertionUtil.assertProps(listener.assertOneGetNew(), fields, new Object[] {"E8"});
+        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, toArr("E7"));
+        assertEquals(2, listener.getLastOldData().length);
+        Object[] result = {listener.getLastOldData()[0].get("string"), listener.getLastOldData()[1].get("string")};
+        ArrayAssertionUtil.assertEqualsAnyOrder(result, new String[] {"E5", "E6"});
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNew(), fields, new Object[] {"E7"});
         listener.reset();
 
-        sendEvent("E9", 3, 50);
-        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, toArr("E4", "E5", "E7", "E8", "E9"));
-        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E9"});
+        sendEvent("E8", 4, 10);
+        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, toArr("E7", "E8"));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E8"});
 
-        sendEvent("E10", 2, 30);
-        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, toArr("E4", "E8", "E9", "E10"));
-        assertEquals(2, listener.getLastOldData().length);
-        ArrayAssertionUtil.assertProps(listener.getLastOldData()[0], fields, new Object[] {"E5"});
-        ArrayAssertionUtil.assertProps(listener.getLastOldData()[1], fields, new Object[] {"E7"});
+        sendEvent("E9", 3, 50);
+        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, toArr("E8", "E9"));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetOld(), fields, new Object[] {"E7"});
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNew(), fields, new Object[] {"E9"});
+        listener.reset();
+
+        sendEvent("E10", 2, 50);
+        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, toArr("E8", "E10"));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetOld(), fields, new Object[] {"E9"});
         ArrayAssertionUtil.assertProps(listener.assertOneGetNew(), fields, new Object[] {"E10"});
         listener.reset();
     }
 
-    public void testUnionSorted()
+    public void testIntersectSorted()
     {
         init(false);
         String[] fields = new String[] {"string"};
 
-        EPStatement stmt = epService.getEPAdministrator().createEPL("select irstream string from SupportBean.ext:sort(2, intPrimitive).ext:sort(2, intBoxed) retain-union");
+        EPStatement stmt = epService.getEPAdministrator().createEPL("select irstream string from SupportBean.ext:sort(2, intPrimitive).ext:sort(2, intBoxed) retain-intersection");
         stmt.addListener(listener);
 
         sendEvent("E1", 1, 10);
@@ -225,16 +246,15 @@ public class TestDataWindowIntersectExpiry extends TestCase
         ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E2"});
 
         sendEvent("E3", 0, 0);
-        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, toArr("E1", "E2", "E3"));
-        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E3"});
+        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, toArr("E3"));
+        Object[] result = {listener.getLastOldData()[0].get("string"), listener.getLastOldData()[1].get("string")};
+        ArrayAssertionUtil.assertEqualsAnyOrder(result, new String[] {"E1", "E2"});
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNew(), fields, new Object[] {"E3"});
+        listener.reset();
 
         sendEvent("E4", -1, -1);
         ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, toArr("E3", "E4"));
-        assertEquals(2, listener.getLastOldData().length);
-        Object[] result = {listener.getLastOldData()[0].get("string"), listener.getLastOldData()[1].get("string")};
-        ArrayAssertionUtil.assertEqualsAnyOrder(result, new String[] {"E1", "E2"});
-        ArrayAssertionUtil.assertProps(listener.assertOneGetNew(), fields, new Object[] {"E4"});
-        listener.reset();
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E4"});
 
         sendEvent("E5", 1, 1);
         ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, toArr("E3", "E4"));
@@ -273,7 +293,7 @@ public class TestDataWindowIntersectExpiry extends TestCase
         runAssertionTimeWinUnique(stmt);
     }
 
-    public void testUnionTimeWinSODA()
+    public void testIntersectTimeWinSODA()
     {
         init(false);
 
@@ -287,7 +307,7 @@ public class TestDataWindowIntersectExpiry extends TestCase
         runAssertionTimeWinUnique(stmt);
     }
 
-    public void testUnionTimeWinNamedWindow()
+    public void testIntersectTimeWinNamedWindow()
     {
         init(false);
 
@@ -300,12 +320,12 @@ public class TestDataWindowIntersectExpiry extends TestCase
         runAssertionTimeWinUnique(stmtWindow);
     }
 
-    public void testUnionTimeWinNamedWindowDelete()
+    public void testIntersectTimeWinNamedWindowDelete()
     {
         init(false);
 
         sendTimer(0);
-        EPStatement stmt = epService.getEPAdministrator().createEPL("create window MyWindow.win:time(10 sec).std:unique(intPrimitive) retain-union as select * from SupportBean");
+        EPStatement stmt = epService.getEPAdministrator().createEPL("create window MyWindow.win:time(10 sec).std:unique(intPrimitive) retain-intersection as select * from SupportBean");
         epService.getEPAdministrator().createEPL("insert into MyWindow select * from SupportBean");
         epService.getEPAdministrator().createEPL("on SupportBean_S0 delete from MyWindow where intBoxed = id");
         stmt.addListener(listener);
@@ -331,34 +351,40 @@ public class TestDataWindowIntersectExpiry extends TestCase
         ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, toArr("E1", "E3"));
         ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E3"});
         sendEvent("E4", 3, 40);
-        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, toArr("E1", "E3", "E4"));
-        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E4"});
+        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, toArr("E1", "E4"));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetOld(), fields, new Object[] {"E3"});
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNew(), fields, new Object[] {"E4"});
+        listener.reset();
 
         sendTimer(4000);
         sendEvent("E5", 4, 50);
-        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, toArr("E1", "E3", "E4", "E5"));
+        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, toArr("E1", "E4", "E5"));
         ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E5"});
         sendEvent("E6", 4, 50);
-        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, toArr("E1", "E3", "E4", "E5", "E6"));
-        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {"E6"});
+        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, toArr("E1", "E4", "E6"));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetOld(), fields, new Object[] {"E5"});
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNew(), fields, new Object[] {"E6"});
+        listener.reset();
 
         epService.getEPRuntime().sendEvent(new SupportBean_S0(20));
-        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, toArr("E1", "E3", "E4", "E5", "E6"));
+        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, toArr("E1", "E4", "E6"));
         assertFalse(listener.isInvoked());
 
         epService.getEPRuntime().sendEvent(new SupportBean_S0(50));
-        assertEquals(2, listener.getLastOldData().length);
-        Object[] result = {listener.getLastOldData()[0].get("string"), listener.getLastOldData()[1].get("string")};
-        ArrayAssertionUtil.assertEqualsAnyOrder(result, new String[] {"E5", "E6"});
-        listener.reset();
-        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, toArr("E1", "E3", "E4"));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetOldAndReset(), fields, new Object[] {"E6"});
+        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, toArr("E1", "E4"));
+
+        sendTimer(10999);
+        assertFalse(listener.isInvoked());
+        sendTimer(11000);
+        ArrayAssertionUtil.assertProps(listener.assertOneGetOldAndReset(), fields, new Object[] {"E1"});
+        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, toArr("E4"));
 
         sendTimer(12999);
         assertFalse(listener.isInvoked());
-
         sendTimer(13000);
-        ArrayAssertionUtil.assertProps(listener.assertOneGetOldAndReset(), fields, new Object[] {"E3"});
-        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, toArr("E1", "E4"));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetOldAndReset(), fields, new Object[] {"E4"});
+        ArrayAssertionUtil.assertEqualsAnyOrder(stmt.iterator(), fields, toArr());
 
         sendTimer(10000000);
         assertFalse(listener.isInvoked());

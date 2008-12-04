@@ -1293,26 +1293,36 @@ config.getEngineDefaults().getViewResources().setShareViews(false);]]></programl
 			</sect3>
 
 			<sect3 id="config-engine-viewresources-multipolicy" revision="1">
-				<title>Allowing Multiple Expiry Policies</title>
+				<title>Configuring Multi-Expiry Policy Defaults</title>
 
 				<para>
-				   By default Esper disallows combining multiple data window views and therefore combining expiry policies, unless one of the retain-keywords is specified for the stream and views.
+				   By default Esper requires the use of either the <literal>retain-union</literal> or the <literal>retain-intersection</literal> keyword when combining multiple data window views. This setting may be used when a retain keyword 
+				   is not desired and for backward compatibility.
 				</para>
 								
 				<para>
-				   This is a sample statement that specifies multiple expiry policies by specifying two different time windows:
+				   This is a sample statement that specifies multiple expiry policies:
 				</para>
-				<programlisting><![CDATA[select * from MyEvent.win:time(10).win:time(30);]]></programlisting>
+				<programlisting><![CDATA[select * from MyEvent.std:unique(price).std:unique(quantity)]]></programlisting>
 
 				<para>
-				   The above statement would not compile unless this setting is set to true.
+				   The above statement would not compile as it does not use a retain keyword. If the setting herein is set to true, it does compile.
 				</para>
 				
 				<para>
-				   The next code snippet outlines the API to allow multiple expiry policies without retain keyword::
+				   The next code snippet outlines the API to allow multiple expiry policies without retain keyword:
 				</para>
 				<programlisting><![CDATA[Configuration config = new Configuration();
 config.getEngineDefaults().getViewResources().setAllowMultipleExpiryPolicies(true);]]></programlisting>
+
+				<para>
+				   When setting this option to true, and when using multiple data window views for a given stream, the behavior is as follows: The top-most data window receives an insert stream of events. It passes each insert stream event to each further data window view in the chain. Each data window view may remove events according to its expiry policy. Such remove stream events are only passed to data window views further in the chain, and are not made available to data window views earlier in the chain.
+				</para>
+
+				<para>
+				   It is recommended to leave the default setting at false and use one of the <literal>retain</literal> keywords.
+				</para>
+
 			</sect3>
 		</sect2>
 
