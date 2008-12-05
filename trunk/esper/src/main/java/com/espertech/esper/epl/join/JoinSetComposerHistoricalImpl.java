@@ -57,7 +57,7 @@ public class JoinSetComposerHistoricalImpl implements JoinSetComposer
 
         for (int i = 0; i < eventsPerStream.length; i++)
         {
-            if (eventsPerStream[i] != null)
+            if ((eventsPerStream[i] != null) && (repositories[i] != null))
             {
                 for (int j = 0; j < repositories[i].length; j++)
                 {

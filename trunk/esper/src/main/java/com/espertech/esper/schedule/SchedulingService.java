@@ -96,6 +96,8 @@ public interface SchedulingService extends TimeProvider
      * @return count
      */
     public int getScheduleHandleCount();
+
+    public boolean isScheduled(ScheduleHandle handle);
 }
 
 

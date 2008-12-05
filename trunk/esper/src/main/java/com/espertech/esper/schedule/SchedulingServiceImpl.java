@@ -187,5 +187,10 @@ public final class SchedulingServiceImpl implements SchedulingService
         return handleSetMap.size();
     }
 
+    public boolean isScheduled(ScheduleHandle handle)
+    {
+        return handleSetMap.containsKey(handle);
+    }
+
     private static final Log log = LogFactory.getLog(SchedulingServiceImpl.class);
 }

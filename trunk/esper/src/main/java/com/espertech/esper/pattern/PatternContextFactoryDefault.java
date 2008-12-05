@@ -17,7 +17,8 @@ public class PatternContextFactoryDefault implements PatternContextFactory
 {
     public PatternContext createContext(StatementContext statementContext,
                                         int streamId,
-                                        EvalRootNode rootNode)
+                                        EvalRootNode rootNode,
+                                        boolean hasArrayProperties)
     {
         PatternStateFactory patternStateFactory = new PatternStateFactoryImpl();
 

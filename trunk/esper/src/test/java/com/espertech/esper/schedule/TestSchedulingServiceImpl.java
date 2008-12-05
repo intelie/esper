@@ -43,6 +43,7 @@ public class TestSchedulingServiceImpl extends TestCase
     public void testAddTwice()
     {
         service.add(100, callbacks[0], slots[0][0]);
+        assertTrue(service.isScheduled(callbacks[0]));
         try
         {
             service.add(100, callbacks[0], slots[0][0]);
@@ -76,24 +77,29 @@ public class TestSchedulingServiceImpl extends TestCase
         service.add(20, callbacks[2], slots[1][0]);
         service.add(20, callbacks[1], slots[0][1]);
         service.add(21, callbacks[0], slots[0][0]);
+        assertTrue(service.isScheduled(callbacks[3]));
+        assertTrue(service.isScheduled(callbacks[0]));
 
         // Evaluate before the within time, expect not results
         startTime += 19;
         service.setTime(startTime);
         evaluateSchedule();
         checkCallbacks(callbacks, new Integer[] {0, 0, 0, 0, 0});
+        assertTrue(service.isScheduled(callbacks[3]));
 
         // Evaluate exactly on the within time, expect a result
         startTime += 1;
         service.setTime(startTime);
         evaluateSchedule();
         checkCallbacks(callbacks, new Integer[] {0, 1, 2, 3, 0});
+        assertFalse(service.isScheduled(callbacks[3]));
 
         // Evaluate after already evaluated once, no result
         startTime += 1;
         service.setTime(startTime);
         evaluateSchedule();
         checkCallbacks(callbacks, new Integer[] {4, 0, 0, 0, 0});
+        assertFalse(service.isScheduled(callbacks[3]));
 
         startTime += 1;
         service.setTime(startTime);
