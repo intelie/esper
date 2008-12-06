@@ -166,6 +166,15 @@ public class TestVariantStreamDefault extends TestCase
             assertNotNull(eventType.getGetter(expectedProp));
             assertTrue(eventType.isProperty(expectedProp));
         }
+
+        ArrayAssertionUtil.assertEqualsAnyOrder(new Object[] {
+            new EventPropertyDescriptor("string", String.class, false, false, false, false, false),
+            new EventPropertyDescriptor("boolBoxed", Boolean.class, false, false, false, false, false),
+            new EventPropertyDescriptor("intPrimitive", Integer.class, false, false, false, false, false),
+            new EventPropertyDescriptor("longPrimitive", Long.class, false, false, false, false, false),
+            new EventPropertyDescriptor("doublePrimitive", Double.class, false, false, false, false, false),
+            new EventPropertyDescriptor("enumValue", SupportEnum.class, false, false, false, false, true),
+           }, eventType.getPropertyDescriptors());
     }
 
     public void testNamedWin()

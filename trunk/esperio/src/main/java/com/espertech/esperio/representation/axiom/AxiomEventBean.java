@@ -56,4 +56,9 @@ public class AxiomEventBean implements EventBean {
 	public Object getUnderlying() {
 		return event;
 	}
+
+    public EventBean getFragment(String property)
+    {
+        return null; // TODO;
+    }
 }

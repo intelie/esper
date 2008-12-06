@@ -67,7 +67,7 @@ public class PropertyHelper
      * @param clazz is the Class to introspect
      * @return list of properties
      */
-    public static List<EventPropertyDescriptor> getProperties(Class clazz)
+    public static List<InternalEventPropDescriptor> getProperties(Class clazz)
     {
         // Determine all interfaces implemented and the interface's parent interfaces if any
         Set<Class> propertyOrigClasses = new HashSet<Class>();
@@ -96,9 +96,9 @@ public class PropertyHelper
         }
     }
 
-    private static List<EventPropertyDescriptor> getPropertiesForClasses(Set<Class> propertyClasses)
+    private static List<InternalEventPropDescriptor> getPropertiesForClasses(Set<Class> propertyClasses)
     {
-    	List<EventPropertyDescriptor> result = new LinkedList<EventPropertyDescriptor>();
+    	List<InternalEventPropDescriptor> result = new LinkedList<InternalEventPropDescriptor>();
 
         for (Class clazz : propertyClasses)
         {
@@ -116,12 +116,12 @@ public class PropertyHelper
      * Remove Java language specific properties from the given list of property descriptors.
      * @param properties is the list of property descriptors
      */
-    protected static void removeJavaProperties(List<EventPropertyDescriptor> properties)
+    protected static void removeJavaProperties(List<InternalEventPropDescriptor> properties)
     {
-        List<EventPropertyDescriptor> toRemove = new LinkedList<EventPropertyDescriptor>();
+        List<InternalEventPropDescriptor> toRemove = new LinkedList<InternalEventPropDescriptor>();
 
         // add removed entries to separate list
-        for (EventPropertyDescriptor desc : properties)
+        for (InternalEventPropDescriptor desc : properties)
         {
             if ((desc.getPropertyName().equals("class")) ||
                 (desc.getPropertyName().equals("getClass")) ||
@@ -133,7 +133,7 @@ public class PropertyHelper
         }
 
         // remove
-        for (EventPropertyDescriptor desc : toRemove)
+        for (InternalEventPropDescriptor desc : toRemove)
         {
             properties.remove(desc);
         }
@@ -143,13 +143,13 @@ public class PropertyHelper
      * Removed duplicate properties using the property name to find unique properties.
      * @param properties is a list of property descriptors
      */
-    protected static void removeDuplicateProperties(List<EventPropertyDescriptor> properties)
+    protected static void removeDuplicateProperties(List<InternalEventPropDescriptor> properties)
     {
-        LinkedHashMap<String, EventPropertyDescriptor> set = new LinkedHashMap<String, EventPropertyDescriptor>();
-        List<EventPropertyDescriptor> toRemove = new LinkedList<EventPropertyDescriptor>();
+        LinkedHashMap<String, InternalEventPropDescriptor> set = new LinkedHashMap<String, InternalEventPropDescriptor>();
+        List<InternalEventPropDescriptor> toRemove = new LinkedList<InternalEventPropDescriptor>();
 
         // add duplicates to separate list
-        for (EventPropertyDescriptor desc : properties)
+        for (InternalEventPropDescriptor desc : properties)
         {
             if (set.containsKey(desc.getPropertyName()))
             {
@@ -160,7 +160,7 @@ public class PropertyHelper
         }
 
         // remove duplicates
-        for (EventPropertyDescriptor desc : toRemove)
+        for (InternalEventPropDescriptor desc : toRemove)
         {
             properties.remove(desc);
         }
@@ -172,7 +172,7 @@ public class PropertyHelper
      * @param clazz to introspect
      * @param result is the list to add to
      */
-    protected static void addIntrospectProperties(Class clazz, List<EventPropertyDescriptor> result)
+    protected static void addIntrospectProperties(Class clazz, List<InternalEventPropDescriptor> result)
     {
         PropertyDescriptor properties[] = introspect(clazz);
         for (int i = 0; i < properties.length; i++)
@@ -195,7 +195,7 @@ public class PropertyHelper
                 continue;
             }
 
-            result.add(new EventPropertyDescriptor(propertyName, listedName, readMethod, type));
+            result.add(new InternalEventPropDescriptor(propertyName, listedName, readMethod, type));
         }
     }
 
@@ -205,7 +205,7 @@ public class PropertyHelper
      * @param clazz to introspect
      * @param result is the list to add to
      */
-    protected static void addMappedProperties(Class clazz, List<EventPropertyDescriptor> result)
+    protected static void addMappedProperties(Class clazz, List<InternalEventPropDescriptor> result)
     {
         Set<String> uniquePropertyNames = new HashSet<String>();
     	Method[] methods = clazz.getMethods();
@@ -264,7 +264,7 @@ public class PropertyHelper
 
             String listedName = inferredName + "()";    // mapped proerties add () to name
 
-    		result.add(new EventPropertyDescriptor(inferredName, listedName, methods[i], EventPropertyType.MAPPED));
+    		result.add(new InternalEventPropDescriptor(inferredName, listedName, methods[i], EventPropertyType.MAPPED));
             uniquePropertyNames.add(inferredName);
     	}
     }

@@ -19,6 +19,10 @@ public class OrderedObjectParamExpression extends ExpressionBase
         isDescending = descending;
     }
 
+    /**
+     * Returns true for descending, false for ascending.
+     * @return indicator for descending sort
+     */
     public boolean isDescending()
     {
         return isDescending;

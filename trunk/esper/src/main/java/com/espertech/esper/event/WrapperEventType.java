@@ -8,10 +8,7 @@
  **************************************************************************************/
 package com.espertech.esper.event;
 
-import com.espertech.esper.client.EPException;
-import com.espertech.esper.client.EventBean;
-import com.espertech.esper.client.EventType;
-import com.espertech.esper.client.EventPropertyGetter;
+import com.espertech.esper.client.*;
 import com.espertech.esper.collection.Pair;
 
 import java.util.*;
@@ -46,6 +43,7 @@ public class WrapperEventType implements EventTypeSPI
     protected final MapEventType underlyingMapType;
 
     private final String[] propertyNames;
+    private final EventPropertyDescriptor[] propertyDesc;
     private final int hashCode;
     private final boolean isNoMapProperties;
     private final String typeName;
@@ -81,6 +79,18 @@ public class WrapperEventType implements EventTypeSPI
 			propertyNames.add(mapProperty);
 		}
 		this.propertyNames = propertyNames.toArray(new String[0]);
+
+        List<EventPropertyDescriptor> propertyDesc = new ArrayList<EventPropertyDescriptor>();
+		for(EventPropertyDescriptor eventProperty : underlyingEventType.getPropertyDescriptors())
+		{
+			propertyDesc.add(eventProperty);
+		}
+		for(EventPropertyDescriptor mapProperty : underlyingMapType.getPropertyDescriptors())
+		{
+			propertyDesc.add(mapProperty);
+		}
+		this.propertyDesc = propertyDesc.toArray(new EventPropertyDescriptor[propertyDesc.size()]);
+
         this.typeName = typeName;
     }
 
@@ -265,6 +275,16 @@ public class WrapperEventType implements EventTypeSPI
     public EventTypeMetadata getMetadata()
     {
         return metadata;
+    }
+
+    public EventPropertyDescriptor[] getPropertyDescriptors()
+    {
+        return propertyDesc;
+    }
+
+    public EventType getFragmentType(String property)
+    {
+        return null;  // TODO
     }
 
     private void checkForRepeatedPropertyNames(EventType eventType, Map<String, Object> properties)

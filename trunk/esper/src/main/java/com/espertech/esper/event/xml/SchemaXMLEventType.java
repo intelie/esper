@@ -20,6 +20,7 @@ import com.espertech.esper.event.TypedEventPropertyGetter;
 import com.espertech.esper.event.EventTypeMetadata;
 import com.espertech.esper.client.ConfigurationEventTypeXMLDOM;
 import com.espertech.esper.client.EPException;
+import com.espertech.esper.client.EventType;
 import com.espertech.esper.util.ResourceLoader;
 import org.w3c.dom.bootstrap.DOMImplementationRegistry;
 
@@ -140,7 +141,8 @@ public class SchemaXMLEventType extends BaseXMLEventType {
         }
     }
 
-    protected String[] doListPropertyNames() {
-        return null;
+    public EventType getFragmentType(String property)
+    {
+        return null;  // TODO
     }
 }

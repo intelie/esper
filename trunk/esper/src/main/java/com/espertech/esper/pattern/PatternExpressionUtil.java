@@ -61,6 +61,15 @@ public class PatternExpressionUtil
         return results;
     }
 
+    /**
+     * Evaluate the pattern expression.
+     * @param objectName pattern object name
+     * @param beginState pattern state
+     * @param parameter expression node
+     * @param convertor to converting from pattern match to event-per-stream
+     * @return evaluation result
+     * @throws EPException if the evaluation failed
+     */
     public static Object evaluate(String objectName, MatchedEventMap beginState, ExprNode parameter, MatchedEventConvertor convertor)
             throws EPException
     {

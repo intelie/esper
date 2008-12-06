@@ -8,8 +8,6 @@
  **************************************************************************************/
 package com.espertech.esper.client;
 
-import com.espertech.esper.client.EventPropertyGetter;
-
 import java.util.Iterator;
 
 /**
@@ -20,13 +18,11 @@ import java.util.Iterator;
  * event type. A simple example is a Java bean: the names can be property names, and those properties can have still
  * more properties beneath them. Another example is a Map structure. Here string names can refer to data objects.
  * <p>
- * The event type behaves somewhat similar to the DynaClass and DynaBean interfaces in the Jakarta commons beanutils
- * package. The Jakarta beanutils were not used for the reason that they don't provide a Getter interface
- * for fast retrieval of event property values for a given property name and given Java object or Map. Also,
- * events are immutable which contradicts the DynaBean interface.
+ * The interface presents an immutable view of events. There are no methods to change property values.
+ * Events by definition are an observation of a past occurrance or state change and may not be modified. 
  * <p>
- * Information on the super-types (superclass and interfaces implemented by JavaBean events) is also available. Supertypes
- * generally exclude Java language interfaces and types.
+ * Information on the super-types (superclass and interfaces implemented by JavaBean events) is also available,
+ * for Java POJO events as well as for Map event types that has supertypes.
  */
 public interface EventType
 {
@@ -55,10 +51,30 @@ public interface EventType
     public EventPropertyGetter getGetter(String property);
 
     /**
-     * Get all valid property names for the event type.
+     * Get property names for the event type, with suffixed property names for indexed and mapped properties.
+     * <p>
+     * This method returns property names of indexed properties that require an index for access to the property value
+     * as suffixed by "[]".
+     * <p>
+     * This method returns property names of mapped properties that require a map key for access to the property value
+     * as suffixed by "()".
+     * <p>
+     * Properties that return an array and properties that return a Map are not suffixed.
+     * <p>
+     * Note that properties do not have a defined order. Your application should not rely on the order
+     * of properties returned by this method.
      * @return A string array containing the property names of this typed event data object.
      */
     public String[] getPropertyNames();
+
+    /**
+     * Get property descriptors for the event type.
+     * <p>
+     * Note that properties do not have a defined order. Your application should not rely on the order
+     * of properties returned by this method.
+     * @return descriptors for all known properties of the event type.
+     */
+    public EventPropertyDescriptor[] getPropertyDescriptors();
 
     /**
      * Check that the given property name is valid for this event type, ie. that is exists in the event type.
@@ -93,4 +109,6 @@ public interface EventType
      * @return type name or null if none assigned
      */
     public String getName();
+    
+    public EventType getFragmentType(String property);
 }

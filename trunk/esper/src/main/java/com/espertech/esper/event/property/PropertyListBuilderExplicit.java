@@ -8,7 +8,7 @@
  **************************************************************************************/
 package com.espertech.esper.event.property;
 
-import com.espertech.esper.event.EventPropertyDescriptor;
+import com.espertech.esper.event.InternalEventPropDescriptor;
 import com.espertech.esper.event.EventPropertyType;
 import com.espertech.esper.client.ConfigurationEventTypeLegacy;
 import com.espertech.esper.client.ConfigurationException;
@@ -39,9 +39,9 @@ public class PropertyListBuilderExplicit implements PropertyListBuilder
         this.legacyConfig = legacyConfig;
     }
 
-    public List<EventPropertyDescriptor> assessProperties(Class clazz)
+    public List<InternalEventPropDescriptor> assessProperties(Class clazz)
     {
-        List<EventPropertyDescriptor> result = new LinkedList<EventPropertyDescriptor>();
+        List<InternalEventPropDescriptor> result = new LinkedList<InternalEventPropDescriptor>();
         getExplicitProperties(result, clazz, legacyConfig);
         return result;
     }
@@ -52,7 +52,7 @@ public class PropertyListBuilderExplicit implements PropertyListBuilder
      * @param clazz is the class to introspect
      * @param legacyConfig supplies specification of explicit methods and fields to expose
      */
-    protected static void getExplicitProperties(List<EventPropertyDescriptor> result,
+    protected static void getExplicitProperties(List<InternalEventPropDescriptor> result,
                                                                          Class clazz,
                                                                          ConfigurationEventTypeLegacy legacyConfig)
     {
@@ -66,7 +66,7 @@ public class PropertyListBuilderExplicit implements PropertyListBuilder
         }
     }
 
-    private static EventPropertyDescriptor makeDesc(Class clazz, ConfigurationEventTypeLegacy.LegacyMethodPropDesc methodDesc)
+    private static InternalEventPropDescriptor makeDesc(Class clazz, ConfigurationEventTypeLegacy.LegacyMethodPropDesc methodDesc)
     {
         Method[] methods = clazz.getMethods();
         Method method = null;
@@ -110,7 +110,7 @@ public class PropertyListBuilderExplicit implements PropertyListBuilder
         return makeMethodDesc(method, methodDesc.getName());
     }
 
-    private static EventPropertyDescriptor makeDesc(Class clazz, ConfigurationEventTypeLegacy.LegacyFieldPropDesc fieldDesc)
+    private static InternalEventPropDescriptor makeDesc(Class clazz, ConfigurationEventTypeLegacy.LegacyFieldPropDesc fieldDesc)
     {
         Field field = null;
         try
@@ -131,9 +131,9 @@ public class PropertyListBuilderExplicit implements PropertyListBuilder
      * @param name is the name of the event property
      * @return property descriptor
      */
-    protected static EventPropertyDescriptor makeFieldDesc(Field field, String name)
+    protected static InternalEventPropDescriptor makeFieldDesc(Field field, String name)
     {
-        return new EventPropertyDescriptor(name, name, field, EventPropertyType.SIMPLE);
+        return new InternalEventPropDescriptor(name, name, field, EventPropertyType.SIMPLE);
     }
 
     /**
@@ -143,7 +143,7 @@ public class PropertyListBuilderExplicit implements PropertyListBuilder
      * @param name is the name of the event property
      * @return property descriptor
      */
-    protected static EventPropertyDescriptor makeMethodDesc(Method method, String name)
+    protected static InternalEventPropDescriptor makeMethodDesc(Method method, String name)
     {
         EventPropertyType propertyType = null;
 
@@ -164,6 +164,6 @@ public class PropertyListBuilderExplicit implements PropertyListBuilder
             propertyType = EventPropertyType.SIMPLE;
         }
 
-        return new EventPropertyDescriptor(name, name, method, propertyType);
+        return new InternalEventPropDescriptor(name, name, method, propertyType);
     }
 }

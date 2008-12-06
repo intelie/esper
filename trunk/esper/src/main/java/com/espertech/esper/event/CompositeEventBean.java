@@ -59,4 +59,9 @@ public class CompositeEventBean implements EventBean, TaggedCompositeEventBean
     {
         return (EventBean) wrappedEvents.get(property);
     }
+
+    public EventBean getFragment(String property)
+    {
+        return null;  // TODO
+    }
 }

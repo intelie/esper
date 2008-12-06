@@ -62,4 +62,8 @@ public class VariantEventBean implements EventBean, VariantEvent
         return underlyingEventBean;
     }
 
+    public EventBean getFragment(String property)
+    {
+        return null;  // TODO
+    }
 }

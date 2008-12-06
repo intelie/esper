@@ -15,7 +15,7 @@ import java.lang.reflect.Field;
  * Encapsulates the event property information available after introspecting an event's class members
  * for getter methods.
  */
-public class EventPropertyDescriptor
+public class InternalEventPropDescriptor
 {
     private String propertyName;
     private String listedName;
@@ -30,7 +30,7 @@ public class EventPropertyDescriptor
      * @param readMethod - read method to get value
      * @param propertyType - type of property
      */
-    public EventPropertyDescriptor(String propertyName, String listedName, Method readMethod, EventPropertyType propertyType)
+    public InternalEventPropDescriptor(String propertyName, String listedName, Method readMethod, EventPropertyType propertyType)
     {
         this.propertyName = propertyName;
         this.listedName = listedName;
@@ -45,7 +45,7 @@ public class EventPropertyDescriptor
      * @param accessorField - field to get value from
      * @param propertyType - type of property
      */
-    public EventPropertyDescriptor(String propertyName, String listedName, Field accessorField, EventPropertyType propertyType)
+    public InternalEventPropDescriptor(String propertyName, String listedName, Field accessorField, EventPropertyType propertyType)
     {
         this.propertyName = propertyName;
         this.listedName = listedName;
@@ -129,11 +129,11 @@ public class EventPropertyDescriptor
 
     public boolean equals(Object other)
     {
-        if (!(other instanceof EventPropertyDescriptor))
+        if (!(other instanceof InternalEventPropDescriptor))
         {
             return false;
         }
-        EventPropertyDescriptor otherDesc = (EventPropertyDescriptor) other;
+        InternalEventPropDescriptor otherDesc = (InternalEventPropDescriptor) other;
         if (!otherDesc.propertyName.equals(propertyName))
         {
             return false;

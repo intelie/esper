@@ -70,6 +70,7 @@ public class EPLTreeWalker extends EsperEPL2Ast
      * @param timeProvider providing the current engine time
      * @param defaultStreamSelector - the configuration for which insert or remove streams (or both) to produce
      * @param engineURI engine URI
+     * @param configurationInformation configuration info
      */
     public EPLTreeWalker(TreeNodeStream input,
                          EngineImportService engineImportService,

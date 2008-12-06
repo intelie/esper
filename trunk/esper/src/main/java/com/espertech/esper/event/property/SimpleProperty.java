@@ -32,7 +32,7 @@ public class SimpleProperty extends PropertyBase
 
     public EventPropertyGetter getGetter(BeanEventType eventType)
     {
-        EventPropertyDescriptor propertyDesc = eventType.getSimpleProperty(propertyNameAtomic);
+        InternalEventPropDescriptor propertyDesc = eventType.getSimpleProperty(propertyNameAtomic);
         if (propertyDesc == null)
         {
             return null;
@@ -46,7 +46,7 @@ public class SimpleProperty extends PropertyBase
 
     public Class getPropertyType(BeanEventType eventType)
     {
-        EventPropertyDescriptor propertyDesc = eventType.getSimpleProperty(propertyNameAtomic);
+        InternalEventPropDescriptor propertyDesc = eventType.getSimpleProperty(propertyNameAtomic);
         if (propertyDesc == null)
         {
             return null;

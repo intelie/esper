@@ -9,14 +9,10 @@
 package com.espertech.esper.event.property;
 
 import com.espertech.esper.client.ConfigurationEventTypeLegacy;
-import com.espertech.esper.client.ConfigurationException;
-import com.espertech.esper.event.EventPropertyDescriptor;
-import com.espertech.esper.event.EventPropertyType;
+import com.espertech.esper.event.InternalEventPropDescriptor;
 
 import java.util.List;
 import java.util.LinkedList;
-import java.util.Map;
-import java.util.Arrays;
 import java.lang.reflect.Method;
 import java.lang.reflect.Field;
 
@@ -41,16 +37,16 @@ public class PropertyListBuilderPublic implements PropertyListBuilder
         this.legacyConfig = legacyConfig;
     }
 
-    public List<EventPropertyDescriptor> assessProperties(Class clazz)
+    public List<InternalEventPropDescriptor> assessProperties(Class clazz)
     {
-        List<EventPropertyDescriptor> result = new LinkedList<EventPropertyDescriptor>();
+        List<InternalEventPropDescriptor> result = new LinkedList<InternalEventPropDescriptor>();
         PropertyListBuilderExplicit.getExplicitProperties(result, clazz, legacyConfig);
         addPublicFields(result, clazz);
         addPublicMethods(result, clazz);
         return result;
     }
 
-    private static void addPublicMethods(List<EventPropertyDescriptor> result, Class clazz)
+    private static void addPublicMethods(List<InternalEventPropDescriptor> result, Class clazz)
     {
         Method[] methods = clazz.getMethods();
         for (int i = 0; i < methods.length; i++)
@@ -73,19 +69,19 @@ public class PropertyListBuilderPublic implements PropertyListBuilder
                 }
             }
 
-            EventPropertyDescriptor desc = PropertyListBuilderExplicit.makeMethodDesc(methods[i], methods[i].getName());
+            InternalEventPropDescriptor desc = PropertyListBuilderExplicit.makeMethodDesc(methods[i], methods[i].getName());
             result.add(desc);
         }
 
         PropertyHelper.removeJavaProperties(result);
     }
 
-    private static void addPublicFields(List<EventPropertyDescriptor> result, Class clazz)
+    private static void addPublicFields(List<InternalEventPropDescriptor> result, Class clazz)
     {
         Field[] fields = clazz.getFields();
         for (int i = 0; i < fields.length; i++)
         {
-            EventPropertyDescriptor desc = PropertyListBuilderExplicit.makeFieldDesc(fields[i], fields[i].getName());
+            InternalEventPropDescriptor desc = PropertyListBuilderExplicit.makeFieldDesc(fields[i], fields[i].getName());
             result.add(desc);
         }
     }

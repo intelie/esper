@@ -45,7 +45,10 @@ public class TestVariantStreamAny extends TestCase
 
         EventType[] valueAddTypes = ((EPServiceProviderSPI)epService).getValueAddEventService().getValueAddedTypes();
         assertEquals(1, valueAddTypes.length);
-        assertSame(type, valueAddTypes[0]);        
+        assertSame(type, valueAddTypes[0]);
+
+        assertEquals(0, type.getPropertyNames().length);
+        assertEquals(0, type.getPropertyDescriptors().length);
     }
 
     public void testAnyType()

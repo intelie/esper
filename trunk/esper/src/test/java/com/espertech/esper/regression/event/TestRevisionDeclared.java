@@ -79,6 +79,16 @@ public class TestRevisionDeclared extends TestCase
         EventType[] valueAddTypes = ((EPServiceProviderSPI)epService).getValueAddEventService().getValueAddedTypes();
         assertEquals(1, valueAddTypes.length);
         assertSame(type, valueAddTypes[0]);
+
+        ArrayAssertionUtil.assertEqualsAnyOrder(new Object[] {
+            new EventPropertyDescriptor("k0", String.class, false, false, false, false, false),
+            new EventPropertyDescriptor("p0", String.class, false, false, false, false, false),
+            new EventPropertyDescriptor("p1", String.class, false, false, false, false, false),
+            new EventPropertyDescriptor("p2", String.class, false, false, false, false, false),
+            new EventPropertyDescriptor("p3", String.class, false, false, false, false, false),
+            new EventPropertyDescriptor("p4", String.class, false, false, false, false, false),
+            new EventPropertyDescriptor("p5", String.class, false, false, false, false, false)
+           }, type.getPropertyDescriptors());
     }
 
     public void testRevision()

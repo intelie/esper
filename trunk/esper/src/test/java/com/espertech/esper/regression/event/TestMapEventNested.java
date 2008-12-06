@@ -7,6 +7,8 @@ import com.espertech.esper.support.bean.*;
 import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.support.util.ArrayAssertionUtil;
 import com.espertech.esper.support.util.SupportUpdateListener;
+import com.espertech.esper.core.EPRuntimeSPI;
+import com.espertech.esper.core.EPServiceProviderSPI;
 import junit.framework.TestCase;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -69,7 +71,13 @@ public class TestMapEventNested extends TestCase
         // assert event type
         assertEquals("[base1, base2, base3]", Arrays.toString(statementOneSelectAll.getEventType().getPropertyNames()));
         assertEquals("[base1, base2, base3]", Arrays.toString(statementTwoSelectAll.getEventType().getPropertyNames()));
-        
+
+        ArrayAssertionUtil.assertEqualsAnyOrder(new Object[] {
+            new EventPropertyDescriptor("base3", Long.class, false, false, false, false, false),
+            new EventPropertyDescriptor("base2", Map.class, false, false, false, true, false),
+            new EventPropertyDescriptor("base1", String.class, false, false, false, false, false),
+           }, statementTwoSelectAll.getEventType().getPropertyDescriptors());
+
         try
         {
             epService.getEPAdministrator().getConfiguration().updateMapEventType("dummy", typeNew);
@@ -116,6 +124,12 @@ public class TestMapEventNested extends TestCase
 
         EPServiceProvider epService = EPServiceProviderManager.getDefaultProvider(configuration);
         epService.initialize();
+
+        ArrayAssertionUtil.assertEqualsAnyOrder(new Object[] {
+            new EventPropertyDescriptor("base", String.class, false, false, false, false, false),
+            new EventPropertyDescriptor("sub1", String.class, false, false, false, false, false),
+            new EventPropertyDescriptor("suba", String.class, false, false, false, false, false),
+           }, ((EPServiceProviderSPI) epService).getEventAdapterService().getExistsTypeByAlias("SubAEvent").getPropertyDescriptors());
 
         runMapInheritanceInitTime(epService);
     }

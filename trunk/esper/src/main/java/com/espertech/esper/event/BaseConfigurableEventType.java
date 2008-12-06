@@ -8,11 +8,9 @@
  **************************************************************************************/
 package com.espertech.esper.event;
 
+import com.espertech.esper.client.EventPropertyDescriptor;
 import com.espertech.esper.client.EventPropertyGetter;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
 import java.util.Map;
 
 /**
@@ -24,6 +22,8 @@ public abstract class BaseConfigurableEventType implements EventTypeSPI {
     private final EventTypeMetadata metadata;
     private Class underlyngType;
 	private Map<String,TypedEventPropertyGetter> explicitProperties;
+    private EventPropertyDescriptor[] propertyDescriptors;
+    private String[] propertyNames;
 
     /**
      * Ctor.
@@ -48,6 +48,17 @@ public abstract class BaseConfigurableEventType implements EventTypeSPI {
     protected void setExplicitProperties(Map<String, TypedEventPropertyGetter> explicitProperties)
     {
         this.explicitProperties = explicitProperties;
+
+        propertyDescriptors = new EventPropertyDescriptor[explicitProperties.size()];
+        propertyNames = new String[explicitProperties.size()];
+
+        int count = 0;
+        for (Map.Entry<String, TypedEventPropertyGetter> entry : explicitProperties.entrySet())
+        {
+            propertyNames[count] = entry.getKey();
+            propertyDescriptors[count] = new EventPropertyDescriptor(entry.getKey(), entry.getValue().getResultClass(), false,false,false,false,false);
+            count++;
+        }
     }
 
     public Class getPropertyType(String property) {
@@ -69,22 +80,13 @@ public abstract class BaseConfigurableEventType implements EventTypeSPI {
 		return doResolvePropertyGetter(property);
 	}
 
-
 	public String[] getPropertyNames() {
-		Collection<String> propNames = new LinkedList<String>(explicitProperties.keySet());
-		Collections.addAll(propNames,doListPropertyNames());
-		return propNames.toArray(new String[propNames.size()]);
+		return propertyNames;
 	}
 
 	public boolean isProperty(String property) {
 		return (getGetter(property) != null);
 	}
-
-	/**
-	 * Subclasses must implement this to supply a list of valid property names.
-	 * @return list of properties
-	 */
-	protected abstract String[] doListPropertyNames();
 
 	/**
 	 * Subclasses must implement this and supply a getter to a given property.
@@ -100,11 +102,13 @@ public abstract class BaseConfigurableEventType implements EventTypeSPI {
 	 */
 	protected abstract Class doResolvePropertyType(String property);
 
+    public EventPropertyDescriptor[] getPropertyDescriptors()
+    {
+        return propertyDescriptors;
+    }
+
     public EventTypeMetadata getMetadata()
     {
         return metadata;
     }
 }
-
-
-

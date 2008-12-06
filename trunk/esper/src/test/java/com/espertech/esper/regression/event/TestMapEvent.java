@@ -56,6 +56,12 @@ public class TestMapEvent extends TestCase
         
         EventType[] types = ((EPServiceProviderSPI)epService).getEventAdapterService().getAllTypes();
         assertEquals(1, types.length);
+
+        ArrayAssertionUtil.assertEqualsAnyOrder(new Object[] {
+            new EventPropertyDescriptor("myInt", Integer.class, false, false, false, false, false),
+            new EventPropertyDescriptor("myString", String.class, false, false, false, false, false),
+            new EventPropertyDescriptor("beanA", SupportBeanComplexProps.class, false, false, false, false, true),
+           }, type.getPropertyDescriptors());        
     }
 
     public void testAddRemoveType()

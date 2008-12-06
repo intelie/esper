@@ -13,6 +13,8 @@ import com.espertech.esper.event.*;
 import com.espertech.esper.event.property.*;
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.client.EventPropertyGetter;
+import com.espertech.esper.client.EventPropertyDescriptor;
+import com.espertech.esper.util.JavaClassHelper;
 
 import java.util.Iterator;
 import java.util.Map;
@@ -25,6 +27,7 @@ public class RevisionEventType implements EventTypeSPI
 {
     private final EventTypeMetadata metadata;
     private String[] propertyNames;
+    private EventPropertyDescriptor[] propertyDescriptors;
     private Map<String, RevisionPropertyTypeDesc> propertyDesc;
     private EventAdapterService eventAdapterService;
 
@@ -41,6 +44,14 @@ public class RevisionEventType implements EventTypeSPI
         Set<String> keys = propertyDesc.keySet();
         propertyNames = keys.toArray(new String[keys.size()]);
         this.eventAdapterService = eventAdapterService;
+
+        propertyDescriptors = new EventPropertyDescriptor[propertyDesc.size()];
+        int count = 0;
+        for (Map.Entry<String, RevisionPropertyTypeDesc> desc : propertyDesc.entrySet())
+        {
+            Class type = (Class) desc.getValue().getPropertyType();
+            propertyDescriptors[count++] = new EventPropertyDescriptor(desc.getKey(), type, false, false, false, false, !JavaClassHelper.isJavaBuiltinDataType(type));
+        }
     }
 
     public EventPropertyGetter getGetter(String propertyName)
@@ -211,5 +222,15 @@ public class RevisionEventType implements EventTypeSPI
     public EventTypeMetadata getMetadata()
     {
         return metadata;
-    }    
+    }
+
+    public EventPropertyDescriptor[] getPropertyDescriptors()
+    {
+        return propertyDescriptors;
+    }
+
+    public EventType getFragmentType(String property)
+    {
+        return null;  // TODO
+    }
 }

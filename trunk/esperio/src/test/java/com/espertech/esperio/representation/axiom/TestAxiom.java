@@ -11,6 +11,7 @@ package com.espertech.esperio.representation.axiom;
 import com.espertech.esper.client.*;
 import com.espertech.esper.client.time.TimerControlEvent;
 import com.espertech.esper.client.EventBean;
+import com.espertech.esper.core.EPServiceProviderSPI;
 import com.espertech.esperio.support.util.SupportUpdateListener;
 import junit.framework.TestCase;
 import org.apache.axiom.om.OMElement;
@@ -78,6 +79,20 @@ public class TestAxiom extends TestCase
 
         sendEvent(epService, "TestXMLNoSchemaType", "EventB");
         assertData("EventB");
+
+        EventType eventType = ((EPServiceProviderSPI)epService).getEventAdapterService().getExistsTypeByAlias("TestXMLNoSchemaType");
+        assertEquals(5, eventType.getPropertyDescriptors().length);
+        assertEquals(5, eventType.getPropertyNames().length);
+        /*
+        ArrayAssertionUtil.assertEqualsAnyOrder(new Object[] {
+            new EventPropertyDescriptor("string", String.class, false, false, false, false, false),
+            new EventPropertyDescriptor("boolBoxed", Boolean.class, false, false, false, false, false),
+            new EventPropertyDescriptor("intPrimitive", Integer.class, false, false, false, false, false),
+            new EventPropertyDescriptor("longPrimitive", Long.class, false, false, false, false, false),
+            new EventPropertyDescriptor("doublePrimitive", Double.class, false, false, false, false, false),
+            new EventPropertyDescriptor("enumValue", SupportEnum.class, false, false, false, false, true),
+           }, eventType.getPropertyDescriptors());
+                   */
     }
 
     public void testConfigurationXML() throws Exception

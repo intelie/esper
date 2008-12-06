@@ -67,4 +67,9 @@ public class NaturalEventBean implements EventBean
     public EventBean getOptionalSynthetic() {
         return optionalSynthetic;
     }
+
+    public EventBean getFragment(String property)
+    {
+        return null;  // TODO
+    }    
 }

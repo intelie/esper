@@ -20,10 +20,10 @@ public class TestPropertyHelper extends TestCase
 {
     public void testAddMappedProperties()
     {
-    	List<EventPropertyDescriptor> result = new LinkedList<EventPropertyDescriptor>();
+    	List<InternalEventPropDescriptor> result = new LinkedList<InternalEventPropDescriptor>();
         PropertyHelper.addMappedProperties(SupportBeanPropertyNames.class, result);
 
-        for (EventPropertyDescriptor desc : result)
+        for (InternalEventPropDescriptor desc : result)
         {
             log.debug("desc=" + desc.getPropertyName());
         }
@@ -39,10 +39,10 @@ public class TestPropertyHelper extends TestCase
 
     public void testAddIntrospectProperties() throws Exception
     {
-    	List<EventPropertyDescriptor> result = new LinkedList<EventPropertyDescriptor>();
+    	List<InternalEventPropDescriptor> result = new LinkedList<InternalEventPropDescriptor>();
         PropertyHelper.addIntrospectProperties(SupportBeanPropertyNames.class, result);
 
-        for (EventPropertyDescriptor desc : result)
+        for (InternalEventPropDescriptor desc : result)
         {
             log.debug("desc=" + desc.getPropertyName());
         }
@@ -54,10 +54,10 @@ public class TestPropertyHelper extends TestCase
 
     public void testRemoveDuplicateProperties()
     {
-        List<EventPropertyDescriptor> result = new LinkedList<EventPropertyDescriptor>();
-        result.add(new EventPropertyDescriptor("x", "x", (Method) null, null));
-        result.add(new EventPropertyDescriptor("x", "x", (Method) null, null));
-        result.add(new EventPropertyDescriptor("y", "y", (Method) null, null));
+        List<InternalEventPropDescriptor> result = new LinkedList<InternalEventPropDescriptor>();
+        result.add(new InternalEventPropDescriptor("x", "x", (Method) null, null));
+        result.add(new InternalEventPropDescriptor("x", "x", (Method) null, null));
+        result.add(new InternalEventPropDescriptor("y", "y", (Method) null, null));
 
         PropertyHelper.removeDuplicateProperties(result);
 
@@ -68,12 +68,12 @@ public class TestPropertyHelper extends TestCase
 
     public void testRemoveJavaProperties()
     {
-        List<EventPropertyDescriptor> result = new LinkedList<EventPropertyDescriptor>();
-        result.add(new EventPropertyDescriptor("x", "x", (Method) null, null));
-        result.add(new EventPropertyDescriptor("class", "class", (Method) null, null));
-        result.add(new EventPropertyDescriptor("hashCode", "hashCode", (Method) null, null));
-        result.add(new EventPropertyDescriptor("toString", "toString", (Method) null, null));
-        result.add(new EventPropertyDescriptor("getClass", "getClass", (Method) null, null));
+        List<InternalEventPropDescriptor> result = new LinkedList<InternalEventPropDescriptor>();
+        result.add(new InternalEventPropDescriptor("x", "x", (Method) null, null));
+        result.add(new InternalEventPropDescriptor("class", "class", (Method) null, null));
+        result.add(new InternalEventPropDescriptor("hashCode", "hashCode", (Method) null, null));
+        result.add(new InternalEventPropDescriptor("toString", "toString", (Method) null, null));
+        result.add(new InternalEventPropDescriptor("getClass", "getClass", (Method) null, null));
 
         PropertyHelper.removeJavaProperties(result);
 

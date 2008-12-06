@@ -2,7 +2,7 @@ package com.espertech.esper.event.property;
 
 import junit.framework.TestCase;
 import com.espertech.esper.client.ConfigurationEventTypeLegacy;
-import com.espertech.esper.event.EventPropertyDescriptor;
+import com.espertech.esper.event.InternalEventPropDescriptor;
 import com.espertech.esper.event.EventPropertyType;
 import com.espertech.esper.support.bean.SupportLegacyBean;
 import com.espertech.esper.support.util.ArrayAssertionUtil;
@@ -30,11 +30,11 @@ public class TestPropertyListBuilderJavaBean extends TestCase
 
     public void testBuildPropList() throws Exception
     {
-        List<EventPropertyDescriptor> descList = builder.assessProperties(SupportLegacyBean.class);
+        List<InternalEventPropDescriptor> descList = builder.assessProperties(SupportLegacyBean.class);
 
-        List<EventPropertyDescriptor> expected = new LinkedList<EventPropertyDescriptor>();
-        expected.add(new EventPropertyDescriptor("x", "x", SupportLegacyBean.class.getField("fieldNested"), EventPropertyType.SIMPLE));
-        expected.add(new EventPropertyDescriptor("y", "y", SupportLegacyBean.class.getMethod("readLegacyBeanVal"), EventPropertyType.SIMPLE));
+        List<InternalEventPropDescriptor> expected = new LinkedList<InternalEventPropDescriptor>();
+        expected.add(new InternalEventPropDescriptor("x", "x", SupportLegacyBean.class.getField("fieldNested"), EventPropertyType.SIMPLE));
+        expected.add(new InternalEventPropDescriptor("y", "y", SupportLegacyBean.class.getMethod("readLegacyBeanVal"), EventPropertyType.SIMPLE));
         ArrayAssertionUtil.assertEqualsAnyOrder(expected.toArray(), descList.toArray());
     }
 

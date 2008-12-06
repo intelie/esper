@@ -50,7 +50,7 @@ public class IndexedProperty extends PropertyBase
     public EventPropertyGetter getGetter(BeanEventType eventType)
     {
         FastClass fastClass = eventType.getFastClass();
-        EventPropertyDescriptor propertyDesc = eventType.getIndexedProperty(propertyNameAtomic);
+        InternalEventPropDescriptor propertyDesc = eventType.getIndexedProperty(propertyNameAtomic);
         if (propertyDesc != null)
         {
             if (fastClass != null)
@@ -100,7 +100,7 @@ public class IndexedProperty extends PropertyBase
 
     public Class getPropertyType(BeanEventType eventType)
     {
-        EventPropertyDescriptor descriptor = eventType.getIndexedProperty(propertyNameAtomic);
+        InternalEventPropDescriptor descriptor = eventType.getIndexedProperty(propertyNameAtomic);
         if (descriptor != null)
         {
             return descriptor.getReturnType();

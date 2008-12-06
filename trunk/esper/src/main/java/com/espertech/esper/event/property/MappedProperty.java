@@ -10,7 +10,7 @@ package com.espertech.esper.event.property;
 
 import com.espertech.esper.client.EventPropertyGetter;
 import com.espertech.esper.event.BeanEventType;
-import com.espertech.esper.event.EventPropertyDescriptor;
+import com.espertech.esper.event.InternalEventPropDescriptor;
 import com.espertech.esper.event.EventAdapterService;
 import net.sf.cglib.reflect.FastClass;
 import net.sf.cglib.reflect.FastMethod;
@@ -49,7 +49,7 @@ public class MappedProperty extends PropertyBase
 
     public EventPropertyGetter getGetter(BeanEventType eventType)
     {
-        EventPropertyDescriptor propertyDesc = eventType.getMappedProperty(propertyNameAtomic);
+        InternalEventPropDescriptor propertyDesc = eventType.getMappedProperty(propertyNameAtomic);
         if (propertyDesc == null)
         {
             // property not found, is not a property
@@ -71,7 +71,7 @@ public class MappedProperty extends PropertyBase
 
     public Class getPropertyType(BeanEventType eventType)
     {
-        EventPropertyDescriptor propertyDesc = eventType.getMappedProperty(propertyNameAtomic);
+        InternalEventPropDescriptor propertyDesc = eventType.getMappedProperty(propertyNameAtomic);
         if (propertyDesc == null)
         {
             // property not found, is not a property

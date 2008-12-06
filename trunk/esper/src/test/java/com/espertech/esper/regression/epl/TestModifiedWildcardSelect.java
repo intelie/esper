@@ -12,6 +12,7 @@ import com.espertech.esper.support.bean.SupportBean_A;
 import com.espertech.esper.support.bean.SupportBean_B;
 import com.espertech.esper.support.bean.SupportMarketDataBean;
 import com.espertech.esper.support.util.SupportUpdateListener;
+import com.espertech.esper.support.util.ArrayAssertionUtil;
 import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.collection.Pair;
 import com.espertech.esper.util.SerializableObjectCopier;
@@ -48,6 +49,12 @@ public class TestModifiedWildcardSelect extends TestCase
         EPStatement statement = epService.getEPAdministrator().create(model);
         statement.addListener(listener);
         assertSimple();
+
+        ArrayAssertionUtil.assertEqualsAnyOrder(new Object[] {
+            new EventPropertyDescriptor("myString", String.class, false, false, false, false, false),
+            new EventPropertyDescriptor("myInt", int.class, false, false, false, false, false),
+            new EventPropertyDescriptor("concat", String.class, false, false, false, false, false),
+           }, statement.getEventType().getPropertyDescriptors());
     }
 
 	public void testSingle() throws Exception

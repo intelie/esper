@@ -7,6 +7,7 @@ import com.espertech.esper.client.EventBean;
 import com.espertech.esper.event.EventTypeSPI;
 import com.espertech.esper.event.EventTypeMetadata;
 import com.espertech.esper.support.util.SupportUpdateListener;
+import com.espertech.esper.support.util.ArrayAssertionUtil;
 import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.support.xml.SupportXPathFunctionResolver;
 import com.espertech.esper.support.xml.SupportXPathVariableResolver;
@@ -73,6 +74,17 @@ public class TestNoSchemaXMLEvent extends TestCase
         assertEquals("TestXMLNoSchemaType", type.getName());
         assertEquals(EventTypeMetadata.TypeClass.APPLICATION, type.getMetadata().getTypeClass());
         assertEquals(true, type.getMetadata().isApplicationConfigured());
+        
+        ArrayAssertionUtil.assertEqualsAnyOrder(new Object[] {
+            new EventPropertyDescriptor("xpathElement1", String.class, false, false, false, false, false),
+            new EventPropertyDescriptor("xpathCountE21", Double.class, false, false, false, false, false),
+            new EventPropertyDescriptor("xpathAttrString", String.class, false, false, false, false, false),
+            new EventPropertyDescriptor("xpathAttrNum", Double.class, false, false, false, false, false),
+            new EventPropertyDescriptor("xpathAttrBool", Boolean.class, false, false, false, false, false),
+            new EventPropertyDescriptor("stringCastLong", Long.class, false, false, false, false, false),
+            new EventPropertyDescriptor("stringCastDouble", Double.class, false, false, false, false, false),
+            new EventPropertyDescriptor("numCastInt", Integer.class, false, false, false, false, false),
+           }, type.getPropertyDescriptors());
 
         String stmt =
                 "select element1," +

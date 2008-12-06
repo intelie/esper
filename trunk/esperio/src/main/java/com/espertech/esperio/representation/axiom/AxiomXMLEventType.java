@@ -9,9 +9,12 @@
 package com.espertech.esperio.representation.axiom;
 
 import com.espertech.esper.client.EPException;
-import com.espertech.esper.client.EventType;
+import com.espertech.esper.client.EventPropertyDescriptor;
 import com.espertech.esper.client.EventPropertyGetter;
-import com.espertech.esper.event.*;
+import com.espertech.esper.client.EventType;
+import com.espertech.esper.event.EventTypeMetadata;
+import com.espertech.esper.event.EventTypeSPI;
+import com.espertech.esper.event.TypedEventPropertyGetter;
 import com.espertech.esper.event.xml.SimpleXMLPropertyParser;
 import org.apache.axiom.om.OMNode;
 import org.apache.axiom.om.xpath.AXIOMXPath;
@@ -23,7 +26,6 @@ import javax.xml.xpath.XPathExpressionException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Apache Axiom event type provides event metadata for Axiom OMDocument events.
@@ -42,6 +44,8 @@ public class AxiomXMLEventType implements EventTypeSPI
     private ConfigurationEventTypeAxiom config;
     private AxiomXPathNamespaceContext namespaceContext;
     private Map<String, TypedEventPropertyGetter> propertyGetterCache;
+    private String[] propertyNames;
+    private EventPropertyDescriptor[] propertyDescriptors;
 
     /**
      * Ctor.
@@ -92,6 +96,16 @@ public class AxiomXMLEventType implements EventTypeSPI
         {
             throw new EPException("XPath expression could not be compiled for expression '" + xpathExpression + '\'', ex);
         }
+
+        propertyNames = new String[propertyGetterCache.size()];
+        propertyDescriptors = new EventPropertyDescriptor[propertyGetterCache.size()];
+        int count = 0;
+        for (Map.Entry<String, TypedEventPropertyGetter> entry : propertyGetterCache.entrySet())
+        {
+            propertyNames[count] = entry.getKey();
+            propertyDescriptors[count] = new EventPropertyDescriptor(entry.getKey(), entry.getValue().getResultClass(), false, false, false, false, false);
+            count++;
+        }
     }
 
     public Class getPropertyType(String property) {
@@ -120,8 +134,7 @@ public class AxiomXMLEventType implements EventTypeSPI
     }
 
 	public String[] getPropertyNames() {
-		Set<String> properties = propertyGetterCache.keySet();
-		return properties.toArray(new String[properties.size()]);
+		return propertyNames;
 	}
 
 	public boolean isProperty(String property) {
@@ -176,5 +189,15 @@ public class AxiomXMLEventType implements EventTypeSPI
     public String getName()
     {
         return metadata.getPublicName();
+    }
+
+    public EventPropertyDescriptor[] getPropertyDescriptors()
+    {
+        return propertyDescriptors;
+    }
+
+    public EventType getFragmentType(String property)
+    {
+        return null;   // TODO
     }
 }

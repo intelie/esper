@@ -6,6 +6,7 @@ import com.espertech.esper.support.util.ArrayAssertionUtil;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.client.EventPropertyGetter;
+import com.espertech.esper.client.EventPropertyDescriptor;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -49,9 +50,22 @@ public class TestBeanEventType extends TestCase
         assertTrue(properties.length == 2);
         assertTrue(properties[0].equals("myInt"));
         assertTrue(properties[1].equals("myString"));
+        ArrayAssertionUtil.assertEqualsAnyOrder(new Object[] {
+            new EventPropertyDescriptor("myInt", int.class, false, false, false, false, false), 
+            new EventPropertyDescriptor("myString", String.class, false, false, false, false, false)
+           }, eventTypeSimple.getPropertyDescriptors());
 
         properties = eventTypeComplex.getPropertyNames();
         ArrayAssertionUtil.assertEqualsAnyOrder(SupportBeanComplexProps.PROPERTIES, properties);
+
+        ArrayAssertionUtil.assertEqualsAnyOrder(new Object[] {
+            new EventPropertyDescriptor("simpleProperty", String.class, false, false, false, false, false),
+            new EventPropertyDescriptor("mapProperty", Map.class, false, false, false, true, false),
+            new EventPropertyDescriptor("mapped", String.class, false, true, false, true, false),
+            new EventPropertyDescriptor("indexed", int.class, true, false, true, false, false),
+            new EventPropertyDescriptor("nested", SupportBeanComplexProps.SupportBeanSpecialGetterNested.class, false, false, false, false, true),
+            new EventPropertyDescriptor("arrayProperty", int[].class, false, false, true, false, false),
+           }, eventTypeComplex.getPropertyDescriptors());
 
         properties = eventTypeNested.getPropertyNames();
         ArrayAssertionUtil.assertEqualsAnyOrder(SupportBeanCombinedProps.PROPERTIES, properties);

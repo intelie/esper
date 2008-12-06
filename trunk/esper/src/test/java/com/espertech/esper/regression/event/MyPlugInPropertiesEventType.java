@@ -3,6 +3,7 @@ package com.espertech.esper.regression.event;
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.client.EventPropertyGetter;
 import com.espertech.esper.client.EventBean;
+import com.espertech.esper.client.EventPropertyDescriptor;
 import com.espertech.esper.event.PropertyAccessException;
 
 import java.util.Properties;
@@ -76,5 +77,15 @@ public class MyPlugInPropertiesEventType implements EventType
     public String getName()
     {
         return name;
+    }
+
+    public EventPropertyDescriptor[] getPropertyDescriptors()
+    {
+        return new EventPropertyDescriptor[0];  // TODO
+    }
+
+    public EventType getFragmentType(String property)
+    {
+        return null;  // TODO
     }
 }

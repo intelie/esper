@@ -10,6 +10,7 @@ package com.espertech.esper.event;
 
 import com.espertech.esper.client.*;
 import com.espertech.esper.event.property.*;
+import com.espertech.esper.util.JavaClassHelper;
 import net.sf.cglib.reflect.FastClass;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -29,8 +30,8 @@ public class BeanEventType implements EventTypeSPI
 
     private String[] propertyNames;
     private Map<String, SimplePropertyInfo> simpleProperties;
-    private Map<String, EventPropertyDescriptor> mappedPropertyDescriptors;
-    private Map<String, EventPropertyDescriptor> indexedPropertyDescriptors;
+    private Map<String, InternalEventPropDescriptor> mappedPropertyDescriptors;
+    private Map<String, InternalEventPropDescriptor> indexedPropertyDescriptors;
     private EventType[] superTypes;
     private FastClass fastClass;
     private Set<EventType> deepSuperTypes;
@@ -41,6 +42,7 @@ public class BeanEventType implements EventTypeSPI
     private Map<String, List<SimplePropertyInfo>> mappedSmartPropertyTable;
 
     private final Map<String, EventPropertyGetter> propertyGetterCache;
+    private EventPropertyDescriptor[] propertyDescriptors;
 
     /**
      * Constructor takes a java bean class as an argument.
@@ -152,7 +154,7 @@ public class BeanEventType implements EventTypeSPI
      * @param propertyName to look up
      * @return property descriptor
      */
-    public final EventPropertyDescriptor getSimpleProperty(String propertyName)
+    public final InternalEventPropDescriptor getSimpleProperty(String propertyName)
     {
         SimplePropertyInfo simpleProp = getSimplePropertyInfo(propertyName);
         if (simpleProp != null)
@@ -167,7 +169,7 @@ public class BeanEventType implements EventTypeSPI
      * @param propertyName to look up
      * @return property descriptor
      */
-    public final EventPropertyDescriptor getMappedProperty(String propertyName)
+    public final InternalEventPropDescriptor getMappedProperty(String propertyName)
     {
         if (this.getPropertyResolutionStyle().equals(Configuration.PropertyResolutionStyle.CASE_SENSITIVE))
         {
@@ -201,7 +203,7 @@ public class BeanEventType implements EventTypeSPI
      * @param propertyName to look up
      * @return property descriptor
      */
-    public final EventPropertyDescriptor getIndexedProperty(String propertyName)
+    public final InternalEventPropDescriptor getIndexedProperty(String propertyName)
     {
         if (this.getPropertyResolutionStyle().equals(Configuration.PropertyResolutionStyle.CASE_SENSITIVE))
         {
@@ -274,12 +276,13 @@ public class BeanEventType implements EventTypeSPI
     private void initialize(boolean isConfigured)
     {
         PropertyListBuilder propertyListBuilder = PropertyListBuilderFactory.createBuilder(optionalLegacyDef);
-        List<EventPropertyDescriptor> properties = propertyListBuilder.assessProperties(clazz);
+        List<InternalEventPropDescriptor> properties = propertyListBuilder.assessProperties(clazz);
 
+        this.propertyDescriptors = new EventPropertyDescriptor[properties.size()];
         this.propertyNames = new String[properties.size()];
         this.simpleProperties = new HashMap<String, SimplePropertyInfo>();
-        this.mappedPropertyDescriptors = new HashMap<String, EventPropertyDescriptor>();
-        this.indexedPropertyDescriptors = new HashMap<String, EventPropertyDescriptor>();
+        this.mappedPropertyDescriptors = new HashMap<String, InternalEventPropDescriptor>();
+        this.indexedPropertyDescriptors = new HashMap<String, InternalEventPropDescriptor>();
 
         if (usesSmartResolutionStyle())
         {
@@ -306,10 +309,15 @@ public class BeanEventType implements EventTypeSPI
         }
 
         int count = 0;
-        for (EventPropertyDescriptor desc : properties)
+        for (InternalEventPropDescriptor desc : properties)
         {
             String propertyName = desc.getPropertyName();
-            propertyNames[count++] = desc.getListedName();
+            Class underlyingType;
+            boolean isRequiresIndex;
+            boolean isRequiresMapkey;
+            boolean isIndexed;
+            boolean isMapped;
+            boolean isFragment;
 
             if (desc.getPropertyType().equals(EventPropertyType.SIMPLE))
             {
@@ -331,6 +339,26 @@ public class BeanEventType implements EventTypeSPI
                     type = desc.getAccessorField().getType();
                 }
 
+                underlyingType = type;
+                isRequiresIndex = false;
+                isRequiresMapkey = false;
+                isIndexed = false;
+                isMapped = false;
+                if (JavaClassHelper.isImplementsInterface(type, Map.class))
+                {
+                    isMapped = true;
+                    isFragment = false;
+                }
+                else if (type.isArray())
+                {
+                    isIndexed = true;
+                    isFragment = !JavaClassHelper.isJavaBuiltinDataType(type.getComponentType());
+                }
+                else
+                {
+                    isMapped = false;
+                    isFragment = !JavaClassHelper.isJavaBuiltinDataType(type);                    
+                }
                 simpleProperties.put(propertyName, new SimplePropertyInfo(type, getter, desc));
 
                 // Recognize that there may be properties with overlapping case-insentitive names
@@ -354,6 +382,13 @@ public class BeanEventType implements EventTypeSPI
             {
                 mappedPropertyDescriptors.put(propertyName, desc);
 
+                underlyingType = desc.getReturnType();
+                isRequiresIndex = false;
+                isRequiresMapkey = desc.getReadMethod().getParameterTypes().length > 0;
+                isIndexed = false;
+                isMapped = true;
+                isFragment = false;
+
                 // Recognize that there may be properties with overlapping case-insentitive names
                 if (usesSmartResolutionStyle())
                 {
@@ -375,6 +410,13 @@ public class BeanEventType implements EventTypeSPI
             {
                 indexedPropertyDescriptors.put(propertyName, desc);
 
+                underlyingType = desc.getReturnType();
+                isRequiresIndex = desc.getReadMethod().getParameterTypes().length > 0;
+                isRequiresMapkey = false;
+                isIndexed = true;
+                isMapped = false;
+                isFragment = !JavaClassHelper.isJavaBuiltinDataType(desc.getReturnType());
+
                 if (usesSmartResolutionStyle())
                 {
                     // Find the property in the smart property table
@@ -391,6 +433,14 @@ public class BeanEventType implements EventTypeSPI
                     propertyInfoList.add(propertyInfo);
                 }
             }
+            else
+            {
+                continue;
+            }
+
+            propertyNames[count] = desc.getListedName();
+            propertyDescriptors[count++] = new EventPropertyDescriptor(desc.getPropertyName(),
+                underlyingType, isRequiresIndex, isRequiresMapkey, isIndexed, isMapped, isFragment);
         }
 
         // Determine event type super types
@@ -554,7 +604,7 @@ public class BeanEventType implements EventTypeSPI
     {
         private Class clazz;
         private EventPropertyGetter getter;
-        private EventPropertyDescriptor descriptor;
+        private InternalEventPropDescriptor descriptor;
 
         /**
          * Ctor.
@@ -562,7 +612,7 @@ public class BeanEventType implements EventTypeSPI
          * @param getter is the getter
          * @param descriptor is the property info
          */
-        public SimplePropertyInfo(Class clazz, EventPropertyGetter getter, EventPropertyDescriptor descriptor)
+        public SimplePropertyInfo(Class clazz, EventPropertyGetter getter, InternalEventPropDescriptor descriptor)
         {
             this.clazz = clazz;
             this.getter = getter;
@@ -591,7 +641,7 @@ public class BeanEventType implements EventTypeSPI
          * Returns the property info.
          * @return property info
          */
-        public EventPropertyDescriptor getDescriptor()
+        public InternalEventPropDescriptor getDescriptor()
         {
             return descriptor;
         }
@@ -600,6 +650,16 @@ public class BeanEventType implements EventTypeSPI
     public EventTypeMetadata getMetadata()
     {
         return metadata;
+    }
+
+    public EventPropertyDescriptor[] getPropertyDescriptors()
+    {
+        return propertyDescriptors;
+    }
+
+    public EventType getFragmentType(String property)
+    {
+        return null;  // TODO
     }
 
     private static final Log log = LogFactory.getLog(BeanEventType.class);

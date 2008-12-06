@@ -37,4 +37,12 @@ public interface EventBean
      * @return underlying data object, usually either a Map or a Java bean instance.
      */
     public Object getUnderlying();
+
+    public EventBean getFragment(String property);
+
+    //
+    // TODO
+    // public int getFragmentSize(String property);
+    // public EventBean getFragmentAt(String property);
+    // public EventBean[] getFragmentArray(String property);
 }

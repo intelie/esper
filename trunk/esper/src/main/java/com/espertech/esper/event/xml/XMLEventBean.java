@@ -24,7 +24,6 @@ import org.w3c.dom.Node;
  */
 public class XMLEventBean implements EventBean
 {
-
 	private EventType eventType;
 	private Node event;
 
@@ -53,4 +52,8 @@ public class XMLEventBean implements EventBean
 		return event;
 	}
 
+    public EventBean getFragment(String property)
+    {
+        return null;  // TODO
+    }
 }

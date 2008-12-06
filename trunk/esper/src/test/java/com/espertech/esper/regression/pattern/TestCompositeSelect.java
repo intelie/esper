@@ -6,8 +6,11 @@ import com.espertech.esper.client.EventBean;
 import com.espertech.esper.support.bean.*;
 import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.support.util.SupportUpdateListener;
+import com.espertech.esper.support.util.ArrayAssertionUtil;
+import com.espertech.esper.core.EPServiceProviderSPI;
 
 import java.util.Arrays;
+import java.util.Map;
 
 public class TestCompositeSelect extends TestCase
 {
@@ -32,59 +35,31 @@ public class TestCompositeSelect extends TestCase
         epService.getEPRuntime().sendEvent(new SupportBean_B("B1"));
         EventBean event = listener.assertOneGetNewAndReset();
 
-        System.out.println(Arrays.toString(stmtTwo.getEventType().getPropertyNames()));
         Object[] values = new Object[stmtTwo.getEventType().getPropertyNames().length];
         int count = 0;
         for (String name : stmtTwo.getEventType().getPropertyNames())
         {
             values[count++] = event.get(name);
         }
-        System.out.println(Arrays.toString(values));
-    }
 
-    private class MyUpdateListener implements UpdateListener
-    {
-        private int badMatchCount;
-        private int goodMatchCount;
+        ArrayAssertionUtil.assertEqualsAnyOrder(new Object[] {
+            new EventPropertyDescriptor("a", SupportBean_A.class, false, false, false, false, true),
+            new EventPropertyDescriptor("b", SupportBean_B.class, false, false, false, false, true)
+           }, ((EPServiceProviderSPI) epService).getEventAdapterService().getExistsTypeByAlias("StreamOne").getPropertyDescriptors());
 
-        public void update(EventBean[] newEvents, EventBean[]
-                oldEvents)
-        {
-            if (newEvents != null)
-            {
-                for (EventBean eventBean : newEvents)
-                {
-                    handleEvent(eventBean);
-                }
-            }
-        }
+        stmtTwo.destroy();
+        stmtTxtOne = "select * from pattern [[2] a=A -> b=B]";
+        EPStatement stmt = epService.getEPAdministrator().createEPL(stmtTxtOne);
+        stmt.addListener(listener);
+        ArrayAssertionUtil.assertEqualsAnyOrder(new Object[] {
+            new EventPropertyDescriptor("a", SupportBean_A.class, false, false, true, false, true),
+            new EventPropertyDescriptor("b", SupportBean_B.class, false, false, false, false, true)
+           }, stmt.getEventType().getPropertyDescriptors());
 
-        private void handleEvent(EventBean eventBean)
-        {
-            SupportTradeEvent tradeevent1 = (SupportTradeEvent)
-                    eventBean.get("tradeevent1");
-            SupportTradeEvent tradeevent2 = (SupportTradeEvent)
-                    eventBean.get("tradeevent2");
-            SupportTradeEvent tradeevent3 = (SupportTradeEvent)
-                    eventBean.get("tradeevent3");
-
-            if ((
-                    tradeevent1.getUserId().equals(tradeevent2.getUserId()) ||
-                            tradeevent1.getUserId().equals(tradeevent3.getUserId()) ||
-                            tradeevent2.getUserId().equals(tradeevent3.getUserId())))
-            {
-                /*
-                System.out.println("Bad Match : ");
-                System.out.println(tradeevent1);
-                System.out.println(tradeevent2);
-                System.out.println(tradeevent3 + "\n");
-                */
-                badMatchCount++;
-            }
-            else
-            {
-                goodMatchCount++;
-            }
-        }
+        epService.getEPRuntime().sendEvent(new SupportBean_A("A1"));
+        epService.getEPRuntime().sendEvent(new SupportBean_A("A2"));
+        epService.getEPRuntime().sendEvent(new SupportBean_B("B1"));
+        event = listener.assertOneGetNewAndReset();
+        assertTrue(event.getUnderlying() instanceof Map);
     }
 }

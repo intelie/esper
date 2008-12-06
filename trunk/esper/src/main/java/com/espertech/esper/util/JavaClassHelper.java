@@ -586,6 +586,10 @@ public class JavaClassHelper
      */
     public static boolean isJavaBuiltinDataType(Class clazz)
     {
+        if (clazz == null)
+        {
+            return true;
+        }
         Class clazzBoxed = getBoxedType(clazz);
         if (isNumeric(clazzBoxed))
         {

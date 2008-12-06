@@ -61,4 +61,9 @@ public class BeanEventBean implements EventBean
                " eventType=" + eventType +
                " bean=" + event;
     }
+
+    public EventBean getFragment(String property)
+    {
+        return null;  // TODO
+    }    
 }

@@ -97,6 +97,11 @@ public interface SchedulingService extends TimeProvider
      */
     public int getScheduleHandleCount();
 
+    /**
+     * Returns true if the handle has been scheduled already.
+     * @param handle to check
+     * @return indicator whether the handle is in use
+     */
     public boolean isScheduled(ScheduleHandle handle);
 }
 

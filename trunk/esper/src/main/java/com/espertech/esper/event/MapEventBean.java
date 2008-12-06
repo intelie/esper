@@ -98,4 +98,9 @@ public class MapEventBean implements EventBean
         return "MapEventBean " +
                 "eventType=" + eventType;
     }
+
+    public EventBean getFragment(String property)
+    {
+        return null;  // TODO
+    }
 }

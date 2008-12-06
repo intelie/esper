@@ -594,6 +594,7 @@ public class TestJavaClassHelper extends TestCase
         {
             assertFalse(JavaClassHelper.isJavaBuiltinDataType(classesNotDataType[i]));
         }
+        assertTrue(JavaClassHelper.isJavaBuiltinDataType(null));
     }
 
     private void tryInvalidGetRelational(Class classOne, Class classTwo)

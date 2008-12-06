@@ -99,4 +99,9 @@ public class WrapperEventBean implements EventBean, DecoratingEventBean {
         "[event=" + event + "] " +
         "[properties=" + map + "]";
 	}
+
+    public EventBean getFragment(String property)
+    {
+        return null;  // TODO
+    }    
 }

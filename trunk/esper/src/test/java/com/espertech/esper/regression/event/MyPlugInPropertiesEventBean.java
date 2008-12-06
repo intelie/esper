@@ -37,5 +37,10 @@ public class MyPlugInPropertiesEventBean implements EventBean
     protected Properties getProperties()
     {
         return properties;
-    }    
+    }
+
+    public EventBean getFragment(String property)
+    {
+        return null;  // TODO
+    }
 }

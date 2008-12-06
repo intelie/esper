@@ -9,7 +9,8 @@
 package com.espertech.esper.event.property;
 
 import com.espertech.esper.client.ConfigurationEventTypeLegacy;
-import com.espertech.esper.event.EventPropertyDescriptor;
+import com.espertech.esper.event.InternalEventPropDescriptor;
+
 import java.util.List;
 
 /**
@@ -30,9 +31,9 @@ public class PropertyListBuilderJavaBean implements PropertyListBuilder
         this.optionalLegacyConfig = optionalLegacyConfig;
     }
 
-    public List<EventPropertyDescriptor> assessProperties(Class clazz)
+    public List<InternalEventPropDescriptor> assessProperties(Class clazz)
     {
-        List<EventPropertyDescriptor> result = PropertyHelper.getProperties(clazz);
+        List<InternalEventPropDescriptor> result = PropertyHelper.getProperties(clazz);
         if (optionalLegacyConfig != null)
         {
             PropertyListBuilderExplicit.getExplicitProperties(result, clazz, optionalLegacyConfig);

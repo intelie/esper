@@ -17,6 +17,7 @@ import com.espertech.esper.event.property.PropertyParser;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.client.EventPropertyGetter;
+import com.espertech.esper.client.EventPropertyDescriptor;
 
 import java.lang.reflect.Array;
 import java.util.Iterator;
@@ -47,6 +48,7 @@ public class CompositeEventType implements EventTypeSPI, TaggedCompositeEventTyp
 
     private String alias;
     private String[] propertyNames;
+    private EventPropertyDescriptor[] propertyDescriptors;
     private final Map<String, EventPropertyGetter> propertyGetterCache;
 
     /**
@@ -80,6 +82,17 @@ public class CompositeEventType implements EventTypeSPI, TaggedCompositeEventTyp
             propertySet.add(arrayProperty + "[]");
         }
         this.propertyNames = propertySet.toArray(new String[0]);
+
+        propertyDescriptors = new EventPropertyDescriptor[taggedEventTypes.size() + arrayEventTypes.size()];
+        int count = 0;
+        for (Map.Entry<String, Pair<EventType, String>> item : taggedEventTypes.entrySet())
+        {
+            propertyDescriptors[count++] = new EventPropertyDescriptor(item.getKey(), item.getValue().getFirst().getUnderlyingType(), false, false, false, false, true);
+        }
+        for (Map.Entry<String, Pair<EventType, String>> item : arrayEventTypes.entrySet())
+        {
+            propertyDescriptors[count++] = new EventPropertyDescriptor(item.getKey(), item.getValue().getFirst().getUnderlyingType(), false, false, true, false, true);     
+        }
     }
 
     public String getName()
@@ -161,6 +174,11 @@ public class CompositeEventType implements EventTypeSPI, TaggedCompositeEventTyp
     public Class getUnderlyingType()
     {
         return java.util.Map.class;
+    }
+
+    public EventPropertyDescriptor[] getPropertyDescriptors()
+    {
+        return propertyDescriptors;
     }
 
     public EventPropertyGetter getGetter(String propertyName)
@@ -498,5 +516,10 @@ public class CompositeEventType implements EventTypeSPI, TaggedCompositeEventTyp
     public EventTypeMetadata getMetadata()
     {
         return metadata;
-    }    
+    }
+
+    public EventType getFragmentType(String property)
+    {
+        return null;  // TODO
+    }
 }

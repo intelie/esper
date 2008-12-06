@@ -8,7 +8,7 @@
  **************************************************************************************/
 package com.espertech.esper.event.property;
 
-import com.espertech.esper.event.EventPropertyDescriptor;
+import com.espertech.esper.event.InternalEventPropDescriptor;
 
 import java.util.List;
 
@@ -23,5 +23,5 @@ public interface PropertyListBuilder
      * @param clazz to introspect
      * @return list of event property descriptors
      */
-    public List<EventPropertyDescriptor> assessProperties(Class clazz);
+    public List<InternalEventPropDescriptor> assessProperties(Class clazz);
 }

@@ -139,6 +139,11 @@ public class RevisionEventBeanDeclared implements EventBean
         return RevisionEventBeanDeclared.class;
     }
 
+    public EventBean getFragment(String property)
+    {
+        return null; // TODO
+    }
+
     /**
      * Returns a versioned value.
      * @param params getter parameters

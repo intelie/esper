@@ -13,10 +13,7 @@ import javax.xml.xpath.*;
 import org.w3c.dom.Node;
 
 import com.espertech.esper.event.*;
-import com.espertech.esper.client.ConfigurationEventTypeXMLDOM;
-import com.espertech.esper.client.EPException;
-import com.espertech.esper.client.ConfigurationException;
-import com.espertech.esper.client.EventType;
+import com.espertech.esper.client.*;
 import com.espertech.esper.util.JavaClassHelper;
 import com.espertech.esper.util.ClassInstantiationException;
 
@@ -34,7 +31,6 @@ import java.util.*;
  * @author pablo
  */
 public abstract class BaseXMLEventType extends BaseConfigurableEventType {
-    private static final String[] EMPTY_STRING_ARRAY = new String[0];
 
     private final XPathFactory xPathFactory;
     private final String rootElementName;
@@ -150,10 +146,6 @@ public abstract class BaseXMLEventType extends BaseConfigurableEventType {
     public Iterator<EventType> getDeepSuperTypes()
     {
         return null;
-    }
-
-    protected String[] doListPropertyNames() {
-        return EMPTY_STRING_ARRAY;
     }
 
     /**
