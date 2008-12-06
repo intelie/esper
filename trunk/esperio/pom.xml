@@ -3,7 +3,7 @@
 	<name>Esper IO</name>
 	<groupId>com.espertech</groupId>
 	<artifactId>esperio</artifactId>
-	<version>2.3.0</version>
+	<version>3.0.0</version>
 	<packaging>jar</packaging>
 	<description>Esper CEP engine for Java - Input Output Adapters</description>
 	<inceptionYear>2005</inceptionYear>
@@ -11,12 +11,12 @@
 		<dependency>
 			<groupId>com.espertech</groupId>
 			<artifactId>esper</artifactId>
-			<version>2.3.0</version>
+			<version>3.0.0</version>
 		</dependency>
 		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
-			<version>1.2.14</version>
+			<version>1.2.15</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-logging</groupId>
@@ -31,12 +31,12 @@
 		<dependency>
 			<groupId>org.antlr</groupId>
 			<artifactId>antlr-runtime</artifactId>
-			<version>3.0.1</version>
+			<version>3.1.1</version>
 		</dependency>
 		<dependency>
 			<groupId>cglib</groupId>
 			<artifactId>cglib-nodep</artifactId>
-			<version>2.1_3</version>
+			<version>2.2</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>

@@ -146,6 +146,7 @@ public class TestGroupByView extends TestCase
         FirstElementView firstElementView_1 = new FirstElementView();
 
         groupView.addView(firstElementView_1);
+        groupView.setParent(eventStream);
         mergeViewOne = new MergeView(statementContext, SupportExprNodeFactory.makeIdentNodesMD("symbol"), null);
         firstElementView_1.addView(mergeViewOne);
 

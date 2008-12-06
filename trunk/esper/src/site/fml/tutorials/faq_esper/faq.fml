@@ -461,7 +461,7 @@
       <answer>
         <p>
 			Esper does not have an internal event queue. The threading is completely driven by the application that embeds Esper. The relevant doc chapter is 
-<a href="http://esper.codehaus.org/esper-2.3.0/doc/reference/en/html_single/index.html#api-threading">here</a>.
+<a href="http://esper.codehaus.org/esper-3.0.0/doc/reference/en/html_single/index.html#api-threading">here</a>.
 		</p>	  
 			
         <p>

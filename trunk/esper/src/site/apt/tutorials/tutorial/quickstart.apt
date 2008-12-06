@@ -11,7 +11,7 @@ Quick Start
 	Esper consists of a jar file named "esper-version.jar" that can be found in the root directory of the distribution. 
 	
 	Dependent libraries to Esper are in the "lib" folder and include the following:
- 	antlr-runtime-3.0.1.jar (ANTLR parser runtime), commons-logging-1.1.1.jar (Logging) and cglib-nodep-2.1_3.jar (bytecode generator).
+ 	antlr-runtime-3.1.1.jar (ANTLR parser runtime), commons-logging-1.1.1.jar (Logging) and cglib-nodep-2.2.jar (bytecode generator).
 
 	Esper includes several examples and a benchmark kit that are documented in the reference manual. These can be run from the command line.
 	Esper does not include a GUI or a server middleware itself, other then the benchmark client and server components.

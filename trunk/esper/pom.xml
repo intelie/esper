@@ -17,7 +17,7 @@ mvn javadoc:javadoc
 	<name>Esper</name>
 	<groupId>com.espertech</groupId>
 	<artifactId>esper</artifactId>
-	<version>2.3.1</version>
+	<version>3.0.0</version>
 	<packaging>jar</packaging>
 	<inceptionYear>2005</inceptionYear>
 	<url>http://esper.codehaus.org</url>
@@ -64,7 +64,7 @@ mvn javadoc:javadoc
 		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
-			<version>1.2.14</version>
+			<version>1.2.15</version>
 		</dependency>
 		<dependency>
 			<groupId>commons-logging</groupId>
@@ -79,7 +79,7 @@ mvn javadoc:javadoc
 		<dependency>
 			<groupId>cglib</groupId>
 			<artifactId>cglib-nodep</artifactId>
-			<version>2.1_3</version>
+			<version>2.2</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
