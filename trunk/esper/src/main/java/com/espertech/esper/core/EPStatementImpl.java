@@ -220,16 +220,24 @@ public class EPStatementImpl implements EPStatementSPI
 
         // Set variable version and acquire the lock first
         epStatementHandle.getStatementLock().acquireLock(null);
-        variableService.setLocalVersion();
+        try
+        {
+            variableService.setLocalVersion();
 
-        // Provide iterator - that iterator MUST be closed else the lock is not released
-        if (isPattern)
-        {
-            return new SafeIteratorImpl<EventBean>(epStatementHandle.getStatementLock(), dispatchChildView.iterator());
+            // Provide iterator - that iterator MUST be closed else the lock is not released
+            if (isPattern)
+            {
+                return new SafeIteratorImpl<EventBean>(epStatementHandle.getStatementLock(), dispatchChildView.iterator());
+            }
+            else
+            {
+                return new SafeIteratorImpl<EventBean>(epStatementHandle.getStatementLock(), parentView.iterator());
+            }
         }
-        else
+        catch (RuntimeException ex)
         {
-            return new SafeIteratorImpl<EventBean>(epStatementHandle.getStatementLock(), parentView.iterator());
+            epStatementHandle.getStatementLock().releaseLock(null);
+            throw ex;
         }
     }
 

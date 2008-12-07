@@ -1,9 +1,12 @@
 Esper Changelog
 ===================
 
-Fixed issue ESPER-304 impossible to get properties of events when a listener and a subscriber are added to a statement
+Fixed issue ESPER-310 Safe iterator on unidirectional join not releasing lock
+Fixed issue ESPER-309 Named window model-after for Map-event types incompatible with insert of Map type
 Fixed issue ESPER-305 escape char parsing
+Fixed issue ESPER-304 impossible to get properties of events when a listener and a subscriber are added to a statement
 Fixed issue ESPER-303 Pooled DB connection obtained and returned even on cache hit
+Fixed issue ESPER-276 NullPointerException reported when enabling metrics reporting but still working
 
 
 Changes in version 2.3

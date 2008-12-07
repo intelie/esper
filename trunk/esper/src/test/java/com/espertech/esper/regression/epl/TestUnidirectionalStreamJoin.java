@@ -56,6 +56,17 @@ public class TestUnidirectionalStreamJoin extends TestCase
         ArrayAssertionUtil.assertProps(listener.getLastOldData()[0], fields, new Object[] {"E1", 0L});
         listener.reset();
 
+        try
+        {
+            stmt.safeIterator();
+            fail();
+        }
+        catch (UnsupportedOperationException ex)
+        {
+            assertEquals("Iteration over a unidirectional join is not supported", ex.getMessage());
+        }
+        // assure lock given up by sending more events
+
         sendEvent("E2", 40);
         sendEventMD("E2", 4L);
         ArrayAssertionUtil.assertProps(listener.getLastNewData()[0], fields, new Object[] {"E2", 1L});

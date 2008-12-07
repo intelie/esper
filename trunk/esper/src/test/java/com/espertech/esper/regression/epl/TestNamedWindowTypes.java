@@ -219,6 +219,21 @@ public class TestNamedWindowTypes extends TestCase
         ArrayAssertionUtil.assertProps(listenerStmtOne.assertOneGetNewAndReset(), fields, new Object[] {"E1"});
     }
 
+    public void testModelAfterMap()
+    {
+        // create window
+        String stmtTextCreate = "create window MyWindow.win:keepall() select * from MyMap";
+        epService.getEPAdministrator().createEPL(stmtTextCreate);
+
+        // create insert into
+        String stmtTextInsertOne = "insert into MyWindow select * from MyMap";
+        EPStatement stmt = epService.getEPAdministrator().createEPL(stmtTextInsertOne);
+        stmt.addListener(listenerWindow);
+
+        sendMap("k1", 100L, 200L);
+        ArrayAssertionUtil.assertProps(listenerWindow.assertOneGetNewAndReset(), "key,primitive".split(","), new Object[] {"k1", 100L});
+    }
+
     public void testWildcardInheritance()
     {
         // create window

@@ -53,9 +53,10 @@ public class TestMTStmtNamedWindowFAF extends TestCase
         threadPool.shutdown();
         threadPool.awaitTermination(10, TimeUnit.SECONDS);
 
+        Thread.sleep(100);
         for (int i = 0; i < numThreads; i++)
         {
-            assertTrue(future[i].get());
+            assertTrue(future[i].get(10, TimeUnit.SECONDS));
         }
     }
 }

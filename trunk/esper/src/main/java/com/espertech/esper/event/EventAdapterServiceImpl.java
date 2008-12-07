@@ -768,15 +768,19 @@ public class EventAdapterServiceImpl implements EventAdapterService
         for (EventBean event : events)
         {
             EventBean converted;
-            if (event instanceof WrapperEventBean)
+            if (event.getEventType() instanceof WrapperEventType)
             {
-                WrapperEventBean wrapper = (WrapperEventBean) event;
+                WrappedEventBean wrapper = (WrappedEventBean) event;
                 converted = createWrapper(wrapper.getUnderlyingEvent(), wrapper.getDecoratingProperties(), targetType);
             }
-            else if (event instanceof MapEventBean)
+            else if ((event.getEventType() instanceof MapEventType) && (targetType instanceof MapEventType))
             {
-                MapEventBean mapEvent = (MapEventBean) event;
+                MappedEventBean mapEvent = (MappedEventBean) event;
                 converted = this.createMapFromValues(mapEvent.getProperties(), targetType);
+            }
+            else if ((event.getEventType() instanceof MapEventType) && (targetType instanceof WrapperEventType))
+            {
+                converted = createWrapper(event, new HashMap<String, Object>(), targetType);
             }
             else
             {

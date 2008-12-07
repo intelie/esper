@@ -34,7 +34,7 @@ public class MetricReportingServiceImpl implements MetricReportingService, Metri
     private final ConfigurationMetricsReporting specification;
     private final String engineUri;
 
-    private MetricExecutionContext executionContext;
+    private volatile MetricExecutionContext executionContext;
 
     private boolean isScheduled;
     private final MetricScheduleService schedule;
@@ -78,7 +78,7 @@ public class MetricReportingServiceImpl implements MetricReportingService, Metri
 
     public void setContext(EPRuntime runtime, EPServicesContext servicesContext)
     {
-        executionContext = new MetricExecutionContext(servicesContext, runtime, stmtMetricRepository);
+        MetricExecutionContext metricsExecutionContext = new MetricExecutionContext(servicesContext, runtime, stmtMetricRepository);
 
         // create all engine and statement executions
         metricExecEngine = new MetricExecEngine(this, engineUri, schedule, specification.getEngineInterval());
@@ -92,6 +92,9 @@ public class MetricReportingServiceImpl implements MetricReportingService, Metri
             this.statementGroupExecutions.put(entry.getKey(), metricsExecution);
             countGroups++;
         }
+
+        // last assign this volatile variable so the time event processing may schedule callbacks 
+        executionContext = metricsExecutionContext;
     }
 
     public void processTimeEvent(long timeEventTime)
