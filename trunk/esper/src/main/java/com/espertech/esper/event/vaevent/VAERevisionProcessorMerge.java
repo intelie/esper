@@ -81,6 +81,16 @@ public class VAERevisionProcessorMerge extends VAERevisionProcessorBase implemen
                     {
                         return true;
                     }
+
+                    public EventBean getFragment(EventBean eventBean)
+                    {
+                        return null; // TODO
+                    }
+
+                    public Integer getIndexSize(EventBean eventBean)
+                    {
+                        return null; // TODO
+                    }                
                 };
 
             Class type = spec.getBaseEventType().getPropertyType(property);
@@ -117,6 +127,16 @@ public class VAERevisionProcessorMerge extends VAERevisionProcessorBase implemen
                 {
                     return true;
                 }
+
+                public EventBean getFragment(EventBean eventBean)
+                {
+                    return null; // TODO
+                }
+
+                public Integer getIndexSize(EventBean eventBean)
+                {
+                    return null; // TODO
+                }                
             };
 
             Class type = spec.getBaseEventType().getPropertyType(property);

@@ -127,6 +127,16 @@ public class SimpleProperty extends PropertyBase
                 Map map = (Map) eventBean.getUnderlying();
                 return map.containsKey(propertyName);
             }
+
+            public EventBean getFragment(EventBean eventBean)
+            {
+                return null; // TODO
+            }
+
+            public Integer getIndexSize(EventBean eventBean)
+            {
+                return null; // TODO
+            }            
         };
     }
 

@@ -68,8 +68,21 @@ public class NaturalEventBean implements EventBean
         return optionalSynthetic;
     }
 
-    public EventBean getFragment(String property)
+    public EventBean getFragment(String propertyExpression)
     {
-        return null;  // TODO
-    }    
+        if (optionalSynthetic != null)
+        {
+            return optionalSynthetic.getFragment(propertyExpression);
+        }
+        throw new PropertyAccessException("Property access not allowed for natural events without the synthetic event present");
+    }
+
+    public Integer getIndexSize(String propertyExpression)
+    {
+        if (optionalSynthetic != null)
+        {
+            return optionalSynthetic.getIndexSize(propertyExpression);
+        }
+        throw new PropertyAccessException("Property access not allowed for natural events without the synthetic event present");
+    }
 }

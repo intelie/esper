@@ -11,6 +11,8 @@ package com.espertech.esper.client;
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.event.PropertyAccessException;
 
+import java.util.Map;
+
 /**
  * Interface for event representation. All events have an {@link EventType}. Events also
  * usually have one or more event properties. This interface allows the querying of event type,
@@ -25,12 +27,22 @@ public interface EventBean
     public EventType getEventType();
 
     /**
-     * Returns the value of an event property.
-     * @param property - name of the property whose value is to be retrieved
-     * @return the value of a simple property with the specified name.
-     * @throws com.espertech.esper.event.PropertyAccessException - if there is no property of the specified name, or the property cannot be accessed
+     * Returns the value of an event property for the given property name or property expression.
+     * <p>
+     * Returns null if the property value is null. Throws an exception if the expression is not valid
+     * against the event type.
+     * <p>
+     * The method takes a property name or property expression as a parameter.
+     * Property expressions may include
+     * indexed properties via the syntax "name[index]",
+     * mapped properties via the syntax "name('key')",
+     * nested properties via the syntax "outer.inner"
+     * or combinations thereof.
+     * @param propertyExpression - name or expression of the property whose value is to be retrieved
+     * @return the value of a property with the specified name.
+     * @throws PropertyAccessException - if there is no property of the specified name, or the property cannot be accessed
      */
-    public Object get(String property) throws PropertyAccessException;
+    public Object get(String propertyExpression) throws PropertyAccessException;
 
     /**
      * Get the underlying data object to this event wrapper.
@@ -38,11 +50,6 @@ public interface EventBean
      */
     public Object getUnderlying();
 
-    public EventBean getFragment(String property);
-
-    //
-    // TODO
-    // public int getFragmentSize(String property);
-    // public EventBean getFragmentAt(String property);
-    // public EventBean[] getFragmentArray(String property);
+    public Integer getIndexSize(String propertyExpression);
+    public EventBean getFragment(String propertyExpression);
 }

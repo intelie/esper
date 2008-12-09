@@ -9,16 +9,16 @@
 package com.espertech.esper.event;
 
 import com.espertech.esper.client.*;
-import com.espertech.esper.collection.Pair;
 import com.espertech.esper.core.EPRuntimeEventSender;
 import com.espertech.esper.plugin.PlugInEventRepresentation;
+import com.espertech.esper.collection.Pair;
 import org.w3c.dom.Node;
 
 import java.io.Serializable;
 import java.net.URI;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.List;
 
 /**
  * Interface for a service to resolve event names to event type.
@@ -197,25 +197,6 @@ public interface EventAdapterService
     public EventBean adapterForDOM(Node node);
 
     /**
-     * Creates an unnamed composite event type with event properties that are name-value pairs
-     * with values being other event types. Pattern statement generate events of such type.
-     * @param taggedEventTypes is a map of name keys and event type values
-     * @param arrayEventTypes is a map of name tags and event type per tag for repeat-expressions that generate an array of events
-     * @return event type representing a composite event
-     */
-    public EventType createAnonymousCompositeType(Map<String, Pair<EventType, String>> taggedEventTypes,
-                                                  Map<String, Pair<EventType, String>> arrayEventTypes);
-
-    /**
-     * Creates a wrapper for a composite event type. The wrapper wraps an event that
-     * consists of name-value pairs in which the values are other already-wrapped events.
-     * @param eventType is the composite event type
-     * @param taggedEvents is the name-event map
-     * @return wrapper for composite event
-     */
-    public EventBean adapterForCompositeEvent(EventType eventType, Map<String, Object> taggedEvents);
-
-    /**
      * Create a new anonymous event type with the given underlying event type,
      * as well as the additional given properties.
      * @param underlyingEventType is the event type for the event type that this wrapper wraps
@@ -316,4 +297,6 @@ public interface EventAdapterService
      * @return true if found and removed, false if not found
      */
     public boolean removeType(String alias);
+
+    public EventType createAnonymousMapType(Map<String, Pair<EventType, String>> taggedEventTypes, Map<String, Pair<EventType, String>> arrayEventTypes);
 }

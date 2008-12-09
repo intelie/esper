@@ -1,15 +1,14 @@
 package com.espertech.esper.regression.pattern;
 
-import junit.framework.TestCase;
 import com.espertech.esper.client.*;
-import com.espertech.esper.client.EventBean;
-import com.espertech.esper.support.bean.*;
-import com.espertech.esper.support.client.SupportConfigFactory;
-import com.espertech.esper.support.util.SupportUpdateListener;
-import com.espertech.esper.support.util.ArrayAssertionUtil;
 import com.espertech.esper.core.EPServiceProviderSPI;
+import com.espertech.esper.support.bean.SupportBean_A;
+import com.espertech.esper.support.bean.SupportBean_B;
+import com.espertech.esper.support.client.SupportConfigFactory;
+import com.espertech.esper.support.util.ArrayAssertionUtil;
+import com.espertech.esper.support.util.SupportUpdateListener;
+import junit.framework.TestCase;
 
-import java.util.Arrays;
 import java.util.Map;
 
 public class TestCompositeSelect extends TestCase
@@ -46,11 +45,23 @@ public class TestCompositeSelect extends TestCase
             new EventPropertyDescriptor("a", SupportBean_A.class, false, false, false, false, true),
             new EventPropertyDescriptor("b", SupportBean_B.class, false, false, false, false, true)
            }, ((EPServiceProviderSPI) epService).getEventAdapterService().getExistsTypeByAlias("StreamOne").getPropertyDescriptors());
+    }
 
-        stmtTwo.destroy();
-        stmtTxtOne = "select * from pattern [[2] a=A -> b=B]";
+    public void testFragment()
+    {
+        Configuration config = SupportConfigFactory.getConfiguration();
+        config.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
+        config.addEventTypeAlias("A", SupportBean_A.class.getName());
+        config.addEventTypeAlias("B", SupportBean_B.class.getName());
+
+        EPServiceProvider epService = EPServiceProviderManager.getDefaultProvider(config);
+        epService.initialize();
+
+        String stmtTxtOne = "select * from pattern [[2] a=A -> b=B]";
         EPStatement stmt = epService.getEPAdministrator().createEPL(stmtTxtOne);
+        SupportUpdateListener listener = new SupportUpdateListener();
         stmt.addListener(listener);
+        
         ArrayAssertionUtil.assertEqualsAnyOrder(new Object[] {
             new EventPropertyDescriptor("a", SupportBean_A.class, false, false, true, false, true),
             new EventPropertyDescriptor("b", SupportBean_B.class, false, false, false, false, true)
@@ -59,7 +70,31 @@ public class TestCompositeSelect extends TestCase
         epService.getEPRuntime().sendEvent(new SupportBean_A("A1"));
         epService.getEPRuntime().sendEvent(new SupportBean_A("A2"));
         epService.getEPRuntime().sendEvent(new SupportBean_B("B1"));
-        event = listener.assertOneGetNewAndReset();
+        
+        EventBean event = listener.assertOneGetNewAndReset();
         assertTrue(event.getUnderlying() instanceof Map);
+
+        // test fragment B type and event
+        EventType typeFragB = event.getEventType().getFragmentType("b");
+        assertEquals("B", typeFragB.getName());
+        assertEquals(String.class, typeFragB.getPropertyType("id"));
+
+        assertNull(event.getIndexSize("b"));
+        EventBean eventFragB = event.getFragment("b");
+        assertEquals("B", eventFragB.getEventType().getName());
+
+        // test fragment A type and event
+        EventType typeFragA = event.getEventType().getFragmentType("a");
+        assertEquals("A", typeFragA.getName());
+        assertEquals(String.class, typeFragA.getPropertyType("id"));
+
+        assertEquals(2, (int) event.getIndexSize("a"));
+        assertNull(event.getFragment("a"));
+        EventBean eventFragA1 = event.getFragment("a[0]");
+        assertEquals("A", eventFragA1.getEventType().getName());
+        assertEquals("A1", eventFragA1.get("id"));
+        EventBean eventFragA2 = event.getFragment("a[1]");
+        assertEquals("A", eventFragA2.getEventType().getName());
+        assertEquals("A2", eventFragA2.get("id"));
     }
 }

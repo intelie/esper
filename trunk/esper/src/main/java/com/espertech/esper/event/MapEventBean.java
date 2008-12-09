@@ -85,7 +85,7 @@ public class MapEventBean implements EventBean
         {
             throw new IllegalArgumentException("Property named '" + property + "' is not a valid property name for this type");
         }
-        return eventType.getGetter(property).get(this);
+        return getter.get(this);
     }
 
     public Object getUnderlying()
@@ -99,8 +99,23 @@ public class MapEventBean implements EventBean
                 "eventType=" + eventType;
     }
 
-    public EventBean getFragment(String property)
+    public EventBean getFragment(String propertyExpression)
     {
-        return null;  // TODO
+        EventPropertyGetter getter = eventType.getGetter(propertyExpression);
+        if (getter == null)
+        {
+            throw new IllegalArgumentException("Property named '" + propertyExpression + "' is not a valid property name for this type");
+        }
+        return getter.getFragment(this);
+    }
+
+    public Integer getIndexSize(String propertyExpression)
+    {
+        EventPropertyGetter getter = eventType.getGetter(propertyExpression);
+        if (getter == null)
+        {
+            throw new IllegalArgumentException("Property named '" + propertyExpression + "' is not a valid property name for this type");
+        }
+        return getter.getIndexSize(this);
     }
 }

@@ -9,10 +9,7 @@
 package com.espertech.esper.pattern.observer;
 
 import com.espertech.esper.epl.expression.ExprNode;
-import com.espertech.esper.pattern.MatchedEventConvertor;
-import com.espertech.esper.pattern.MatchedEventMap;
-import com.espertech.esper.pattern.PatternContext;
-import com.espertech.esper.pattern.PatternExpressionUtil;
+import com.espertech.esper.pattern.*;
 import com.espertech.esper.schedule.ScheduleParameterException;
 import com.espertech.esper.schedule.ScheduleSpec;
 import com.espertech.esper.schedule.ScheduleSpecUtil;
@@ -72,7 +69,7 @@ public class TimerAtObserverFactory implements ObserverFactory, MetaDefItem
         {
             try
             {
-                List<Object> observerParameters = PatternExpressionUtil.evaluate("Timer-at observer", null, params, convertor);
+                List<Object> observerParameters = PatternExpressionUtil.evaluate("Timer-at observer", new MatchedEventMapImpl(), params, convertor);
                 spec = ScheduleSpecUtil.computeValues(observerParameters.toArray());
             }
             catch (ScheduleParameterException e)

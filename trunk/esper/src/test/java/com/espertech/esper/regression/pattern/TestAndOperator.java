@@ -3,7 +3,14 @@ package com.espertech.esper.regression.pattern;
 import junit.framework.*;
 import com.espertech.esper.regression.support.*;
 import com.espertech.esper.support.bean.SupportBeanConstants;
+import com.espertech.esper.support.bean.SupportBean;
+import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.client.soda.*;
+import com.espertech.esper.client.Configuration;
+import com.espertech.esper.client.EPServiceProvider;
+import com.espertech.esper.client.EPServiceProviderManager;
+import com.espertech.esper.client.EPStatement;
+import com.espertech.esper.client.time.CurrentTimeEvent;
 import com.espertech.esper.util.SerializableObjectCopier;
 
 public class TestAndOperator extends TestCase implements SupportBeanConstants

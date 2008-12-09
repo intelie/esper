@@ -139,9 +139,24 @@ public class RevisionEventBeanDeclared implements EventBean
         return RevisionEventBeanDeclared.class;
     }
 
-    public EventBean getFragment(String property)
+    public EventBean getFragment(String propertyExpression)
     {
-        return null; // TODO
+        EventPropertyGetter getter = revisionEventType.getGetter(propertyExpression);
+        if (getter == null)
+        {
+            throw new IllegalArgumentException("Property named '" + propertyExpression + "' is not a valid property name for this type");
+        }
+        return getter.getFragment(this);
+    }
+
+    public Integer getIndexSize(String propertyExpression)
+    {
+        EventPropertyGetter getter = revisionEventType.getGetter(propertyExpression);
+        if (getter == null)
+        {
+            throw new IllegalArgumentException("Property named '" + propertyExpression + "' is not a valid property name for this type");
+        }
+        return getter.getIndexSize(this);
     }
 
     /**

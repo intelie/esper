@@ -62,6 +62,16 @@ public class DynamicSimpleProperty extends PropertyBase implements DynamicProper
                 Map map = (Map) eventBean.getUnderlying();
                 return map.containsKey(propertyName);
             }
+
+            public EventBean getFragment(EventBean eventBean)
+            {
+                return null; // TODO
+            }
+
+            public Integer getIndexSize(EventBean eventBean)
+            {
+                return null; // TODO
+            }            
         };
     }
 

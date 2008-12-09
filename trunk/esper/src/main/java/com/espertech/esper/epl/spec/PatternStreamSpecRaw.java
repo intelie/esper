@@ -106,7 +106,6 @@ public class PatternStreamSpecRaw extends StreamSpecBase implements StreamSpecRa
             if (activeNode instanceof EvalObserverNode)
             {
                 handleObserverNode((EvalObserverNode) activeNode, context,
-                                      matchUntilArrayTags,
                                       taggedEventTypes,
                                       arrayEventTypes);
             }
@@ -114,7 +113,6 @@ public class PatternStreamSpecRaw extends StreamSpecBase implements StreamSpecRa
             if (activeNode instanceof EvalGuardNode)
             {
                 handleGuardNode((EvalGuardNode) activeNode, context,
-                                      matchUntilArrayTags,
                                       taggedEventTypes,
                                       arrayEventTypes);
             }
@@ -123,7 +121,7 @@ public class PatternStreamSpecRaw extends StreamSpecBase implements StreamSpecRa
         return new PatternStreamSpecCompiled(evalNode, taggedEventTypes, arrayEventTypes, this.getViewSpecs(), this.getOptionalStreamName(), this.getOptions());
     }
 
-    private void handleGuardNode(EvalGuardNode guardNode, StatementContext context, Set<String> matchUntilArrayTags, LinkedHashMap<String, Pair<EventType, String>> taggedEventTypes, LinkedHashMap<String, Pair<EventType, String>> arrayEventTypes)
+    private void handleGuardNode(EvalGuardNode guardNode, StatementContext context, LinkedHashMap<String, Pair<EventType, String>> taggedEventTypes, LinkedHashMap<String, Pair<EventType, String>> arrayEventTypes)
             throws ExprValidationException
     {
         try
@@ -149,7 +147,7 @@ public class PatternStreamSpecRaw extends StreamSpecBase implements StreamSpecRa
         }
     }
 
-    private void handleObserverNode(EvalObserverNode observerNode, StatementContext context, Set<String> matchUntilArrayTags, LinkedHashMap<String, Pair<EventType, String>> taggedEventTypes, LinkedHashMap<String, Pair<EventType, String>> arrayEventTypes)
+    private void handleObserverNode(EvalObserverNode observerNode, StatementContext context, LinkedHashMap<String, Pair<EventType, String>> taggedEventTypes, LinkedHashMap<String, Pair<EventType, String>> arrayEventTypes)
             throws ExprValidationException
     {
         try
@@ -250,7 +248,7 @@ public class PatternStreamSpecRaw extends StreamSpecBase implements StreamSpecRa
         if (arrayEventTypes != null)
         {
             arrayCompositeEventTypes = new LinkedHashMap<String, Pair<EventType, String>>();
-            EventType arrayTagCompositeEventType = context.getEventAdapterService().createAnonymousCompositeType(new HashMap(), arrayEventTypes);
+            EventType arrayTagCompositeEventType = context.getEventAdapterService().createAnonymousMapType(new HashMap(), arrayEventTypes);
             for (Map.Entry<String, Pair<EventType, String>> entry : arrayEventTypes.entrySet())
             {
                 String tag = entry.getKey();
@@ -296,7 +294,7 @@ public class PatternStreamSpecRaw extends StreamSpecBase implements StreamSpecRa
         // handle array tags (match-until clause)
         if (arrayEventTypes != null)
         {
-            EventType arrayTagCompositeEventType = eventAdapterService.createAnonymousCompositeType(new HashMap(), arrayEventTypes);
+            EventType arrayTagCompositeEventType = eventAdapterService.createAnonymousMapType(new HashMap(), arrayEventTypes);
             for (Map.Entry<String, Pair<EventType, String>> entry : arrayEventTypes.entrySet())
             {
                 String tag = entry.getKey();

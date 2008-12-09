@@ -330,6 +330,16 @@ public class VAERevisionProcessorDeclared extends VAERevisionProcessorBase imple
                     {
                         return true;
                     }
+
+                    public EventBean getFragment(EventBean eventBean)
+                    {
+                        return null; // TODO
+                    }
+
+                    public Integer getIndexSize(EventBean eventBean)
+                    {
+                        return null; // TODO
+                    }
                 };
 
             Class type = spec.getBaseEventType().getPropertyType(property);
@@ -354,6 +364,16 @@ public class VAERevisionProcessorDeclared extends VAERevisionProcessorBase imple
                 {
                     return true;
                 }
+
+                public EventBean getFragment(EventBean eventBean)
+                {
+                    return null; // TODO
+                }
+
+                public Integer getIndexSize(EventBean eventBean)
+                {
+                    return null; // TODO
+                }
             };
 
             Class type = spec.getBaseEventType().getPropertyType(property);
@@ -377,6 +397,15 @@ public class VAERevisionProcessorDeclared extends VAERevisionProcessorBase imple
                 public boolean isExistsProperty(EventBean eventBean)
                 {
                     return true;
+                }
+                public EventBean getFragment(EventBean eventBean)
+                {
+                    return null; // TODO
+                }
+
+                public Integer getIndexSize(EventBean eventBean)
+                {
+                    return null; // TODO
                 }
             };
 

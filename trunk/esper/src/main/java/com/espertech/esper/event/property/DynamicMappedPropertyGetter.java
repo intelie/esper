@@ -9,6 +9,7 @@
 package com.espertech.esper.event.property;
 
 import com.espertech.esper.client.EventPropertyGetter;
+import com.espertech.esper.client.EventBean;
 import com.espertech.esper.event.PropertyAccessException;
 
 import java.io.StringWriter;
@@ -60,6 +61,16 @@ public class DynamicMappedPropertyGetter extends DynamicPropertyGetterBase imple
             return method;
         }
     }
+
+    public EventBean getFragment(EventBean eventBean)
+    {
+        return null; // TODO
+    }
+
+    public Integer getIndexSize(EventBean eventBean)
+    {
+        return null; // TODO
+    }    
 
     protected Object call(DynamicPropertyDescriptor descriptor, Object underlying)
     {

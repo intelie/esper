@@ -645,6 +645,20 @@ public class EventAdapterServiceImpl implements EventAdapterService
         return new MapEventType(metadata, alias, this, propertyTypes, null, null);
     }
 
+    public EventType createAnonymousMapType(Map<String, Pair<EventType, String>> taggedEventTypes, Map<String, Pair<EventType, String>> arrayEventTypes)
+    {
+        Map<String, Object> mapProperties = new LinkedHashMap<String, Object>();
+        for (Map.Entry<String, Pair<EventType, String>> entry : taggedEventTypes.entrySet())
+        {
+            mapProperties.put(entry.getKey(), entry.getValue().getFirst());
+        }
+        for (Map.Entry<String, Pair<EventType, String>> entry : arrayEventTypes.entrySet())
+        {
+            mapProperties.put(entry.getKey(), new EventType[] {entry.getValue().getFirst()});
+        }
+        return createAnonymousMapType(mapProperties);
+    }
+
     public final EventType createAnonymousWrapperType(EventType underlyingEventType, Map<String, Object> propertyTypes) throws EventAdapterException
     {
         String alias = UuidGenerator.generate();
@@ -686,14 +700,6 @@ public class EventAdapterServiceImpl implements EventAdapterService
         return createAnonymousMapType(types);
     }
 
-    public final EventType createAnonymousCompositeType(Map<String, Pair<EventType, String>> taggedEventTypes,
-                                                        Map<String, Pair<EventType, String>> arrayEventTypes)
-    {
-        String alias = UuidGenerator.generate();
-        EventTypeMetadata metadata = EventTypeMetadata.createAnonymous(alias);
-        return new CompositeEventType(metadata, alias, taggedEventTypes, arrayEventTypes);
-    }
-
 	public final EventBean createWrapper(EventBean event, Map<String, Object> properties, EventType eventType)
 	{
         if (event instanceof WrapperEventBean)
@@ -706,12 +712,6 @@ public class EventAdapterServiceImpl implements EventAdapterService
         {
             return new WrapperEventBean(event, properties, eventType);
         }
-    }
-
-    public final EventBean adapterForCompositeEvent(EventType eventType,
-                                                    Map<String, Object> taggedEvents)
-    {
-        return new CompositeEventBean(taggedEvents, eventType);
     }
 
     public void addAutoAliasPackage(String javaPackageName)

@@ -81,4 +81,14 @@ public class MapPropertyGetter implements EventPropertyGetter
         EventBean event = new MapEventBean(valueTop, null);
         return getter.isExistsProperty(event);
     }
+
+    public EventBean getFragment(EventBean eventBean)
+    {
+        return null; // TODO
+    }
+
+    public Integer getIndexSize(EventBean eventBean)
+    {
+        return null; // TODO
+    }    
 }

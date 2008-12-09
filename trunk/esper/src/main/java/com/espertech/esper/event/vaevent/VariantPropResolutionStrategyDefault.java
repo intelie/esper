@@ -180,6 +180,16 @@ public class VariantPropResolutionStrategyDefault implements VariantPropResoluti
                     }
                     return getter.isExistsProperty(variant.getUnderlyingEventBean());
                 }
+
+                public EventBean getFragment(EventBean eventBean)
+                {
+                    return null; // TODO
+                }
+
+                public Integer getIndexSize(EventBean eventBean)
+                {
+                    return null; // TODO
+                }                
             };
         }
         else
@@ -207,6 +217,16 @@ public class VariantPropResolutionStrategyDefault implements VariantPropResoluti
                     }
                     return getter.isExistsProperty(variant.getUnderlyingEventBean());
                 }
+
+                public EventBean getFragment(EventBean eventBean)
+                {
+                    return null; // TODO
+                }
+
+                public Integer getIndexSize(EventBean eventBean)
+                {
+                    return null; // TODO
+                }                
             };
         }
 

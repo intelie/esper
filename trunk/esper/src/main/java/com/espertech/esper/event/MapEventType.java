@@ -251,6 +251,12 @@ public class MapEventType implements EventTypeSPI
                 }
                 return innerType.getPropertyType(propertyNested);
             }
+            // handle eventtype[] in map
+            else if (type instanceof EventType[])
+            {
+                EventType innerType = ((EventType[]) type)[0];
+                return innerType.getPropertyType(propertyNested);
+            }
             // handle array class in map case
             else
             {
@@ -511,6 +517,13 @@ public class MapEventType implements EventTypeSPI
             propertyGetterCache.put(propertyName, getter);
             return getter;
         }
+        // TODO
+        /*
+        else if (nestedType instanceof EventType[])
+        {
+            // TODO
+        }
+        */
         else if (nestedType instanceof String)
         {
             String nestedName = nestedType.toString();
@@ -955,6 +968,16 @@ public class MapEventType implements EventTypeSPI
                 EventPropertyGetter getter = new MapEventBeanPropertyGetter(name);
                 propertyGetters.put(name, getter);
                 propertyDescriptors.add(new EventPropertyDescriptor(name, eventType.getUnderlyingType(), false, false, false, false, true));
+                continue;
+            }
+
+            if (entry.getValue() instanceof EventType[])
+            {
+                // Add EventType array itself as a property, type is expected to be first array element
+                EventType eventType = ((EventType[]) entry.getValue())[0];
+                simplePropertyTypes.put(name, eventType.getUnderlyingType());
+                propertyNameList.add(name);
+                propertyDescriptors.add(new EventPropertyDescriptor(name, eventType.getUnderlyingType(), true, false, true, false, true));
                 continue;
             }
 

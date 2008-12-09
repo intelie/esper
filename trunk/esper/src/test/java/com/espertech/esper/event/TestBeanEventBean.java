@@ -64,6 +64,8 @@ public class TestBeanEventBean extends TestCase
         EventBean eventBean = SupportEventBeanFactory.createObject(event);
 
         assertEquals("0ma0", eventBean.get("indexed[0].mapped('0ma').value"));
+        assertEquals(String.class, eventBean.getEventType().getPropertyType("indexed[0].mapped('0ma').value"));
+        assertNotNull(eventBean.getEventType().getGetter("indexed[0].mapped('0ma').value"));
         assertEquals("0ma1", eventBean.get("indexed[0].mapped('0mb').value"));
         assertEquals("1ma0", eventBean.get("indexed[1].mapped('1ma').value"));
         assertEquals("1ma1", eventBean.get("indexed[1].mapped('1mb').value"));
@@ -89,6 +91,9 @@ public class TestBeanEventBean extends TestCase
         {
             // expected
         }
+
+        assertNull(eventBean.getEventType().getPropertyType(propName));
+        assertNull(eventBean.getEventType().getGetter(propName));
     }
 
     private static final Log log = LogFactory.getLog(TestBeanEventBean.class);

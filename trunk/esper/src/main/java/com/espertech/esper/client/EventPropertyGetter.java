@@ -42,6 +42,10 @@ public interface EventPropertyGetter
      * @return indictor whether the property exists, always true for non-dynamic (default) properties
      */
     public boolean isExistsProperty(EventBean eventBean);
+
+    public EventBean getFragment(EventBean eventBean);
+    public Integer getIndexSize(EventBean eventBean);
 }
+
 
 

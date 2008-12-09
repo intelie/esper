@@ -62,8 +62,23 @@ public class VariantEventBean implements EventBean, VariantEvent
         return underlyingEventBean;
     }
 
-    public EventBean getFragment(String property)
+    public EventBean getFragment(String propertyExpression)
     {
-        return null;  // TODO
+        EventPropertyGetter getter = variantEventType.getGetter(propertyExpression);
+        if (getter == null)
+        {
+            throw new IllegalArgumentException("Property named '" + propertyExpression + "' is not a valid property name for this type");
+        }
+        return getter.getFragment(this);
+    }
+
+    public Integer getIndexSize(String propertyExpression)
+    {
+        EventPropertyGetter getter = variantEventType.getGetter(propertyExpression);
+        if (getter == null)
+        {
+            throw new IllegalArgumentException("Property named '" + propertyExpression + "' is not a valid property name for this type");
+        }
+        return getter.getIndexSize(this);
     }
 }

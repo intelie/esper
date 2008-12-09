@@ -36,9 +36,9 @@ import com.espertech.esper.epl.variable.OnSetVariableView;
 import com.espertech.esper.epl.variable.VariableDeclarationException;
 import com.espertech.esper.epl.variable.VariableExistsException;
 import com.espertech.esper.epl.view.FilterExprView;
+import com.espertech.esper.epl.view.OutputConditionExpression;
 import com.espertech.esper.epl.view.OutputProcessView;
 import com.espertech.esper.epl.view.OutputProcessViewFactory;
-import com.espertech.esper.epl.view.OutputConditionExpression;
 import com.espertech.esper.event.vaevent.ValueAddEventProcessor;
 import com.espertech.esper.pattern.EvalRootNode;
 import com.espertech.esper.pattern.PatternContext;
@@ -140,7 +140,7 @@ public class EPStatementStartMethod
         else if (streamSpec instanceof PatternStreamSpecCompiled)
         {
             PatternStreamSpecCompiled patternStreamSpec = (PatternStreamSpecCompiled) streamSpec;
-            final EventType eventType = services.getEventAdapterService().createAnonymousCompositeType(patternStreamSpec.getTaggedEventTypes(), patternStreamSpec.getArrayEventTypes());
+            final EventType eventType = services.getEventAdapterService().createAnonymousMapType(patternStreamSpec.getTaggedEventTypes(), patternStreamSpec.getArrayEventTypes());
             final EventStream sourceEventStream = new ZeroDepthStream(eventType);
             eventStreamParentViewable = sourceEventStream;
 
@@ -150,7 +150,7 @@ public class EPStatementStartMethod
             PatternMatchCallback callback = new PatternMatchCallback() {
                 public void matchFound(Map<String, Object> matchEvent)
                 {
-                    EventBean compositeEvent = statementContext.getEventAdapterService().adapterForCompositeEvent(eventType, matchEvent);
+                    EventBean compositeEvent = statementContext.getEventAdapterService().createMapFromValues(matchEvent, eventType);
                     sourceEventStream.insert(compositeEvent);
                 }
             };
@@ -519,7 +519,7 @@ public class EPStatementStartMethod
             else if (streamSpec instanceof PatternStreamSpecCompiled)
             {
                 PatternStreamSpecCompiled patternStreamSpec = (PatternStreamSpecCompiled) streamSpec;
-                final EventType eventType = services.getEventAdapterService().createAnonymousCompositeType(patternStreamSpec.getTaggedEventTypes(), patternStreamSpec.getArrayEventTypes());
+                final EventType eventType = services.getEventAdapterService().createAnonymousMapType(patternStreamSpec.getTaggedEventTypes(), patternStreamSpec.getArrayEventTypes());
                 final EventStream sourceEventStream = new ZeroDepthStream(eventType);
                 eventStreamParentViewable[i] = sourceEventStream;
                 unmaterializedViewChain[i] = services.getViewService().createFactories(i, sourceEventStream.getEventType(), streamSpec.getViewSpecs(), streamSpec.getOptions(), statementContext);
@@ -530,7 +530,7 @@ public class EPStatementStartMethod
                 PatternMatchCallback callback = new PatternMatchCallback() {
                     public void matchFound(Map<String, Object> matchEvent)
                     {
-                        EventBean compositeEvent = statementContext.getEventAdapterService().adapterForCompositeEvent(eventType, matchEvent);
+                        EventBean compositeEvent = statementContext.getEventAdapterService().createMapFromValues(matchEvent, eventType);
                         sourceEventStream.insert(compositeEvent);
                     }
                 };

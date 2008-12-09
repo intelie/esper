@@ -141,6 +141,16 @@ public class WrapperEventType implements EventTypeSPI
                 {
                     return true; // Property exists as the property is not dynamic (unchecked)
                 }
+
+                public EventBean getFragment(EventBean eventBean)
+                {
+                    return null; // TODO
+                }
+
+                public Integer getIndexSize(EventBean eventBean)
+                {
+                    return null; // TODO
+                }                
             };
             propertyGetterCache.put(property, getter);
             return getter;
@@ -164,6 +174,16 @@ public class WrapperEventType implements EventTypeSPI
                 {
                     return true; // Property exists as the property is not dynamic (unchecked)
                 }
+
+                public EventBean getFragment(EventBean eventBean)
+                {
+                    return null; // TODO
+                }
+
+                public Integer getIndexSize(EventBean eventBean)
+                {
+                    return null; // TODO
+                }                
             };
             propertyGetterCache.put(property, getter);
             return getter;

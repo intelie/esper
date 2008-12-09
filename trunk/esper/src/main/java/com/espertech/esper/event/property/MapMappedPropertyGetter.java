@@ -74,4 +74,14 @@ public class MapMappedPropertyGetter implements EventPropertyGetter
         Map innerMap = (Map) value;
         return innerMap.containsKey(key);
     }
+
+    public EventBean getFragment(EventBean eventBean)
+    {
+        return null; // TODO
+    }
+
+    public Integer getIndexSize(EventBean eventBean)
+    {
+        return null; // TODO
+    }    
 }

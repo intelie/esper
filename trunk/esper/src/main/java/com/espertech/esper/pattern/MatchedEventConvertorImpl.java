@@ -11,6 +11,7 @@ package com.espertech.esper.pattern;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.event.EventAdapterService;
+import com.espertech.esper.event.MapEventBean;
 import com.espertech.esper.collection.Pair;
 
 import java.util.LinkedHashMap;
@@ -62,7 +63,7 @@ public class MatchedEventConvertorImpl implements MatchedEventConvertor
                 EventBean[] eventArray = (EventBean[]) events.getMatchingEventAsObject(entry.getKey());
                 HashMap map = new HashMap();
                 map.put(entry.getKey(), eventArray);
-                EventBean event = eventAdapterService.adapterForCompositeEvent(null, map);
+                EventBean event = new MapEventBean(map, null);
                 eventsPerStream[count++] = event;
             }
         }

@@ -11,7 +11,6 @@ import java.lang.reflect.Array;
  */
 public class MapArrayPOJOEntryIndexedPropertyGetter implements EventPropertyGetter
 {
-
     private final String propertyMap;
     private final int index;
 
@@ -71,4 +70,14 @@ public class MapArrayPOJOEntryIndexedPropertyGetter implements EventPropertyGett
         Map map = (Map) underlying;
         return map.containsKey(propertyMap);
     }
+
+    public EventBean getFragment(EventBean eventBean)
+    {
+        return null; // TODO
+    }
+
+    public Integer getIndexSize(EventBean eventBean)
+    {
+        return null; // TODO
+    }    
 }

@@ -109,4 +109,14 @@ public abstract class DynamicPropertyGetterBase implements EventPropertyGetter
             return propertyDescriptor;
         }
     }
+
+    public EventBean getFragment(EventBean eventBean)
+    {
+        return null; // TODO
+    }
+
+    public Integer getIndexSize(EventBean eventBean)
+    {
+        return null; // TODO
+    }    
 }

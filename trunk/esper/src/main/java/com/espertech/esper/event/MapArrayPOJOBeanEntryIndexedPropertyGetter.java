@@ -73,4 +73,14 @@ public class MapArrayPOJOBeanEntryIndexedPropertyGetter implements EventProperty
     {
         return true; // Property exists as the property is not dynamic (unchecked)
     }
+
+    public EventBean getFragment(EventBean eventBean)
+    {
+        return null; // TODO
+    }
+
+    public Integer getIndexSize(EventBean eventBean)
+    {
+        return null; // TODO
+    }    
 }

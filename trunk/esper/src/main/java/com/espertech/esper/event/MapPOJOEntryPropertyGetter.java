@@ -18,7 +18,6 @@ import java.util.Map;
  */
 public class MapPOJOEntryPropertyGetter implements EventPropertyGetter
 {
-
     private final String propertyMap;
     private final EventPropertyGetter mapEntryGetter;
     private final EventAdapterService eventAdapterService;
@@ -65,4 +64,14 @@ public class MapPOJOEntryPropertyGetter implements EventPropertyGetter
     {
         return true; // Property exists as the property is not dynamic (unchecked)
     }
+
+    public EventBean getFragment(EventBean eventBean)
+    {
+        return null; // TODO
+    }
+
+    public Integer getIndexSize(EventBean eventBean)
+    {
+        return null; // TODO
+    }    
 }

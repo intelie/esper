@@ -26,7 +26,11 @@ public class MyPlugInPropertiesEventBean implements EventBean
     public Object get(String property) throws PropertyAccessException
     {
         EventPropertyGetter getter = eventType.getGetter(property);
-        return getter.get(this);
+        if (getter != null)
+        {
+            return getter.get(this);
+        }
+        return null;
     }
 
     public Object getUnderlying()
@@ -41,6 +45,21 @@ public class MyPlugInPropertiesEventBean implements EventBean
 
     public EventBean getFragment(String property)
     {
-        return null;  // TODO
+        EventPropertyGetter getter = eventType.getGetter(property);
+        if (getter != null)
+        {
+            return getter.getFragment(this);
+        }
+        return null;
+    }
+
+    public Integer getIndexSize(String property)
+    {
+        EventPropertyGetter getter = eventType.getGetter(property);
+        if (getter != null)
+        {
+            return getter.getIndexSize(this);
+        }
+        return null;
     }
 }

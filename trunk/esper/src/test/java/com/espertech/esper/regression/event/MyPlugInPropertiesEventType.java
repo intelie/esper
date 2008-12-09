@@ -51,6 +51,17 @@ public class MyPlugInPropertiesEventType implements EventType
                 MyPlugInPropertiesEventBean propBean = (MyPlugInPropertiesEventBean) eventBean;
                 return propBean.getProperties().getProperty(propertyName) != null;
             }
+
+            public EventBean getFragment(EventBean eventBean)
+            {
+                return null; // TODO
+            }
+
+            public Integer getIndexSize(EventBean eventBean)
+            {
+                return null; // TODO
+            }
+
         };
     }
 
