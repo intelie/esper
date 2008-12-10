@@ -80,22 +80,20 @@ public class TestCompositeSelect extends TestCase
         assertEquals("B", typeFragB.getFragmentType().getName());
         assertEquals(String.class, typeFragB.getFragmentType().getPropertyType("id"));
 
-        assertNull(event.getIndexSize("b"));
-        EventBean eventFragB = event.getFragment("b");
+        EventBean eventFragB = (EventBean) event.getFragment("b");
         assertEquals("B", eventFragB.getEventType().getName());
 
         // test fragment A type and event
         EventTypeFragment typeFragA = event.getEventType().getFragmentType("a");
-        assertTrue(typeFragB.isIndexed());
+        assertTrue(typeFragA.isIndexed());
         assertEquals("A", typeFragA.getFragmentType().getName());
         assertEquals(String.class, typeFragA.getFragmentType().getPropertyType("id"));
 
-        assertEquals(2, (int) event.getIndexSize("a"));
-        assertNull(event.getFragment("a"));
-        EventBean eventFragA1 = event.getFragment("a[0]");
+        assertTrue(event.getFragment("a") instanceof EventBean[]);
+        EventBean eventFragA1 = (EventBean) event.getFragment("a[0]");
         assertEquals("A", eventFragA1.getEventType().getName());
         assertEquals("A1", eventFragA1.get("id"));
-        EventBean eventFragA2 = event.getFragment("a[1]");
+        EventBean eventFragA2 = (EventBean) event.getFragment("a[1]");
         assertEquals("A", eventFragA2.getEventType().getName());
         assertEquals("A2", eventFragA2.get("id"));
     }

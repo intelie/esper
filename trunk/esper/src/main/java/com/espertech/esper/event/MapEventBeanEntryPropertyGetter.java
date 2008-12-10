@@ -63,18 +63,8 @@ public class MapEventBeanEntryPropertyGetter implements EventPropertyGetter {
         return true; // Property exists as the property is not dynamic (unchecked)
     }
 
-    public EventBean getFragment(EventBean eventBean)
+    public Object getFragment(EventBean eventBean)
     {
         return null;  // TODO
     }
-
-    public Integer getIndexSize(EventBean eventBean)
-    {
-        return null;  // TODO
-    }
-
-    public EventBean[] getFragmentArray(EventBean eventBean)
-    {
-        return null; // TODO
-    }    
 }

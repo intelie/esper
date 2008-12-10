@@ -141,18 +141,8 @@ public class AxiomXPathPropertyGetter implements TypedEventPropertyGetter
         return true; // Property always exists as the property is not dynamic
     }
 
-    public EventBean getFragment(EventBean eventBean)
+    public Object getFragment(EventBean eventBean)
     {
         return null; // TODO
     }
-
-    public Integer getIndexSize(EventBean eventBean)
-    {
-        return null; // TODO
-    }
-
-    public EventBean[] getFragmentArray(EventBean eventBean)
-    {
-        return null; // TODO
-    }    
 }

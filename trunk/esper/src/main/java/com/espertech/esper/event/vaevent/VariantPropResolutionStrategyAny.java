@@ -61,20 +61,10 @@ public class VariantPropResolutionStrategyAny implements VariantPropResolutionSt
                 return getter.isExistsProperty(variant.getUnderlyingEventBean());
             }
 
-            public EventBean getFragment(EventBean eventBean)
+            public Object getFragment(EventBean eventBean)
             {
                 return null; // TODO
             }
-
-            public EventBean[] getFragmentArray(EventBean eventBean)
-            {
-                return null; // TODO
-            }
-
-            public Integer getIndexSize(EventBean eventBean)
-            {
-                return null; // TODO
-            }            
         };
 
         return new VariantPropertyDesc(Object.class, getter, true);

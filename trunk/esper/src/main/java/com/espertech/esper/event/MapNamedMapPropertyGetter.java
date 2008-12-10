@@ -52,18 +52,8 @@ public class MapNamedMapPropertyGetter implements EventPropertyGetter
         return true;
     }
 
-    public EventBean getFragment(EventBean eventBean)
+    public Object getFragment(EventBean eventBean)
     {
         return null; // TODO
     }
-
-    public EventBean[] getFragmentArray(EventBean eventBean)
-    {
-        return null; // TODO
-    }
-
-    public Integer getIndexSize(EventBean eventBean)
-    {
-        return null; // TODO
-    }    
 }

@@ -43,9 +43,7 @@ public interface EventPropertyGetter
      */
     public boolean isExistsProperty(EventBean eventBean);
 
-    public EventBean getFragment(EventBean eventBean) throws PropertyAccessException;
-    public EventBean[] getFragmentArray(EventBean eventBean) throws PropertyAccessException;
-    public Integer getIndexSize(EventBean eventBean) throws PropertyAccessException;
+    public Object getFragment(EventBean eventBean) throws PropertyAccessException;
 }
 
 

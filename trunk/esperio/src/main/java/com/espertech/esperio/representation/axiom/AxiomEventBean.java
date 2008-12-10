@@ -57,7 +57,7 @@ public class AxiomEventBean implements EventBean {
 		return event;
 	}
 
-    public EventBean getFragment(String property)
+    public Object getFragment(String property)
     {
         EventPropertyGetter getter = eventType.getGetter(property);
         if (getter == null) {
@@ -65,25 +65,5 @@ public class AxiomEventBean implements EventBean {
                     + "' is not a valid property name for this type");
         }
         return getter.getFragment(this);
-    }
-
-    public EventBean[] getFragmentArray(String property)
-    {
-        EventPropertyGetter getter = eventType.getGetter(property);
-        if (getter == null) {
-            throw new PropertyAccessException("Property named '" + property
-                    + "' is not a valid property name for this type");
-        }
-        return getter.getFragmentArray(this);
-    }
-
-    public Integer getIndexSize(String property)
-    {
-        EventPropertyGetter getter = eventType.getGetter(property);
-        if (getter == null) {
-            throw new PropertyAccessException("Property named '" + property
-                    + "' is not a valid property name for this type");
-        }
-        return getter.getIndexSize(this);
     }
 }

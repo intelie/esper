@@ -332,17 +332,7 @@ public class VAERevisionProcessorDeclared extends VAERevisionProcessorBase imple
                         return true;
                     }
 
-                    public EventBean getFragment(EventBean eventBean)
-                    {
-                        return null; // TODO
-                    }
-
-                    public EventBean[] getFragmentArray(EventBean eventBean)
-                    {
-                        return null; // TODO
-                    }
-
-                    public Integer getIndexSize(EventBean eventBean)
+                    public Object getFragment(EventBean eventBean)
                     {
                         return null; // TODO
                     }
@@ -371,17 +361,7 @@ public class VAERevisionProcessorDeclared extends VAERevisionProcessorBase imple
                     return true;
                 }
 
-                public EventBean getFragment(EventBean eventBean)
-                {
-                    return null; // TODO
-                }
-
-                public EventBean[] getFragmentArray(EventBean eventBean)
-                {
-                    return null; // TODO
-                }
-
-                public Integer getIndexSize(EventBean eventBean)
+                public Object getFragment(EventBean eventBean)
                 {
                     return null; // TODO
                 }
@@ -410,17 +390,7 @@ public class VAERevisionProcessorDeclared extends VAERevisionProcessorBase imple
                     return true;
                 }
 
-                public EventBean getFragment(EventBean eventBean)
-                {
-                    return null; // TODO
-                }
-
-                public EventBean[] getFragmentArray(EventBean eventBean)
-                {
-                    return null; // TODO
-                }
-
-                public Integer getIndexSize(EventBean eventBean)
+                public Object getFragment(EventBean eventBean)
                 {
                     return null; // TODO
                 }

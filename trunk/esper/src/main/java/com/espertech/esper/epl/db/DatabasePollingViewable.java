@@ -134,9 +134,7 @@ public class DatabasePollingViewable implements HistoricalEventViewable
                         return reader.getValue();
                     }
                     public boolean isExistsProperty(EventBean eventBean) {return true;}
-                    public EventBean getFragment(EventBean eventBean) {return null;}
-                    public EventBean[] getFragmentArray(EventBean eventBean) {return null;}
-                    public Integer getIndexSize(EventBean eventBean) {return null;}
+                    public Object getFragment(EventBean eventBean) {return null;}
                 };
             }
 

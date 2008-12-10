@@ -43,32 +43,12 @@ public class MyPlugInPropertiesEventBean implements EventBean
         return properties;
     }
 
-    public EventBean getFragment(String property)
+    public Object getFragment(String property)
     {
         EventPropertyGetter getter = eventType.getGetter(property);
         if (getter != null)
         {
             return getter.getFragment(this);
-        }
-        return null;
-    }
-
-    public EventBean[] getFragmentArray(String property)
-    {
-        EventPropertyGetter getter = eventType.getGetter(property);
-        if (getter != null)
-        {
-            return getter.getFragmentArray(this);
-        }
-        return null;
-    }
-
-    public Integer getIndexSize(String property)
-    {
-        EventPropertyGetter getter = eventType.getGetter(property);
-        if (getter != null)
-        {
-            return getter.getIndexSize(this);
         }
         return null;
     }

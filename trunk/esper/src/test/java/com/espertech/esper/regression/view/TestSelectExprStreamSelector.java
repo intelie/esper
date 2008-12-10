@@ -37,13 +37,13 @@ public class TestSelectExprStreamSelector extends TestCase
     {
         try
         {
-            String stmtOneText = "select nested.* as a from " + SupportBeanComplexProps.class.getName() + " as s0";
+            String stmtOneText = "select simpleProperty.* as a from " + SupportBeanComplexProps.class.getName() + " as s0";
             epService.getEPAdministrator().createEPL(stmtOneText);
             fail();
         }
         catch (Exception ex)
         {
-            assertEquals("Error starting view: The property wildcard syntax must be used without alias [select nested.* as a from com.espertech.esper.support.bean.SupportBeanComplexProps as s0]", ex.getMessage());
+            assertEquals("Error starting view: The property wildcard syntax must be used without alias [select simpleProperty.* as a from com.espertech.esper.support.bean.SupportBeanComplexProps as s0]", ex.getMessage());
         }
     }
 

@@ -173,41 +173,29 @@ public class SelectExprEvalProcessor implements SelectExprProcessor
             final String fragmentPropertyName = propertyName;
             ExprEvaluator evaluatorFragment;
 
+            // A match was found, we replace the expression
+            evaluatorFragment = new ExprEvaluator() {
+
+                public Object evaluate(EventBean[] eventsPerStream, boolean isNewData)
+                {
+                    EventBean streamEvent = eventsPerStream[streamNum];
+                    if (streamEvent == null)
+                    {
+                        return null;
+                    }
+                    return streamEvent.getFragment(fragmentPropertyName);
+                }
+            };
+
+            expressionNodes[i] = evaluatorFragment;
             if (!fragmentType.isIndexed())
             {
-                // A match was found, we replace the expression
-                evaluatorFragment = new ExprEvaluator() {
-
-                    public Object evaluate(EventBean[] eventsPerStream, boolean isNewData)
-                    {
-                        EventBean streamEvent = eventsPerStream[streamNum];
-                        if (streamEvent == null)
-                        {
-                            return null;
-                        }
-                        return streamEvent.getFragment(fragmentPropertyName);
-                    }
-                };
+                expressionReturnTypes[i] = fragmentType.getFragmentType();
             }
             else
             {
-                // A match was found, we replace the expression
-                evaluatorFragment = new ExprEvaluator() {
-
-                    public Object evaluate(EventBean[] eventsPerStream, boolean isNewData)
-                    {
-                        EventBean streamEvent = eventsPerStream[streamNum];
-                        if (streamEvent == null)
-                        {
-                            return null;
-                        }
-                        return streamEvent.getFragmentArray(fragmentPropertyName);
-                    }
-                };                
+                expressionReturnTypes[i] = new EventType[] {fragmentType.getFragmentType()};
             }
-
-            expressionNodes[i] = evaluatorFragment;
-            expressionReturnTypes[i] = fragmentType;
         }
 
         // Find if there is any stream expression (ExprStreamNode) :

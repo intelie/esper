@@ -48,7 +48,7 @@ public class MapEventBeanArrayIndexedPropertyGetter implements EventPropertyGett
         return true; // Property exists as the property is not dynamic (unchecked)
     }
 
-    public EventBean getFragment(EventBean obj)
+    public Object getFragment(EventBean obj)
     {
         // The underlying is expected to be a map
         if (!(obj.getUnderlying() instanceof Map))
@@ -73,14 +73,4 @@ public class MapEventBeanArrayIndexedPropertyGetter implements EventPropertyGett
 
         return wrapper[index];
     }
-
-    public Integer getIndexSize(EventBean eventBean)
-    {
-        return null;
-    }
-
-    public EventBean[] getFragmentArray(EventBean eventBean)
-    {
-        return null; // TODO
-    }    
 }

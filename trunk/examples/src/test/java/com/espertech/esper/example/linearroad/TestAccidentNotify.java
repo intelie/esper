@@ -29,7 +29,7 @@ public class TestAccidentNotify extends TestCase
         config.getEngineDefaults().getViewResources().setAllowMultipleExpiryPolicies(true);
         epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();
-        
+
         String carLocEvent = CarLocEvent.class.getName();
 
         /**
@@ -40,8 +40,8 @@ public class TestAccidentNotify extends TestCase
          * TODO: How does the accident get cleared?
          * TODO: If 2 cars report the same loc 4 times, then this joins twice
          */
-        String joinStatement = "select count(*) as size from " +
-            carLocEvent + ".std:groupby(carId).win:length(4).std:groupby(expressway, direction, segment) as accSeg," +
+        String joinStatement = "select * from " +
+            carLocEvent + ".std:groupby(carId).win:length(4).std:groupby(expressway, direction, segment).std:size() as accSeg," +
             carLocEvent + ".win:time(30 sec).std:unique(carId) as curCarSeg" +
                 " where accSeg.size >= 4" +
                 "   and accSeg.expressway = curCarSeg.expressway" +

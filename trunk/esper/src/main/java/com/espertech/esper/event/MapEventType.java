@@ -1068,7 +1068,7 @@ public class MapEventType implements EventTypeSPI
         }
         else if (entry instanceof EventType[])
         {
-            return new EventTypeFragment((EventType) entry, true);
+            return new EventTypeFragment(((EventType[]) entry)[0], true);
         }
 
         // TODO - test me

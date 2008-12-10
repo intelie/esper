@@ -49,17 +49,7 @@ public class MapEventBeanArrayPropertyGetter implements EventPropertyGetter
         return true; // Property exists as the property is not dynamic (unchecked)
     }
 
-    public EventBean getFragment(EventBean eventBean)
-    {
-        return null;  // TODO
-    }
-
-    public EventBean[] getFragmentArray(EventBean eventBean)
-    {
-        return null; // TODO
-    }
-
-    public Integer getIndexSize(EventBean obj)
+    public Object getFragment(EventBean obj)
     {
         // The underlying is expected to be a map
         if (!(obj.getUnderlying() instanceof Map))
@@ -71,12 +61,6 @@ public class MapEventBeanArrayPropertyGetter implements EventPropertyGetter
         Map map = (Map) obj.getUnderlying();
 
         // If the map does not contain the key, this is allowed and represented as null
-        EventBean[] wrapper = (EventBean[]) map.get(propertyName);
-        if (wrapper !=  null)
-        {
-            return wrapper.length;
-        }
-
-        return null;
+        return map.get(propertyName);
     }
 }

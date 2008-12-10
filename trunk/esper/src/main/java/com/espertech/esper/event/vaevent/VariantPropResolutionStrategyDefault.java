@@ -181,17 +181,7 @@ public class VariantPropResolutionStrategyDefault implements VariantPropResoluti
                     return getter.isExistsProperty(variant.getUnderlyingEventBean());
                 }
 
-                public EventBean getFragment(EventBean eventBean)
-                {
-                    return null; // TODO
-                }
-
-                public Integer getIndexSize(EventBean eventBean)
-                {
-                    return null; // TODO
-                }
-
-                public EventBean[] getFragmentArray(EventBean eventBean)
+                public Object getFragment(EventBean eventBean)
                 {
                     return null; // TODO
                 }
@@ -223,20 +213,10 @@ public class VariantPropResolutionStrategyDefault implements VariantPropResoluti
                     return getter.isExistsProperty(variant.getUnderlyingEventBean());
                 }
 
-                public EventBean getFragment(EventBean eventBean)
+                public Object getFragment(EventBean eventBean)
                 {
                     return null; // TODO
                 }
-
-                public Integer getIndexSize(EventBean eventBean)
-                {
-                    return null; // TODO
-                }
-
-                public EventBean[] getFragmentArray(EventBean eventBean)
-                {
-                    return null; // TODO
-                }                
             };
         }
 

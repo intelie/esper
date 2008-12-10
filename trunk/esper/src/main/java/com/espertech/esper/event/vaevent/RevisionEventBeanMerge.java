@@ -186,7 +186,7 @@ public class RevisionEventBeanMerge implements EventBean
         return getter.get(lastBaseEvent);
     }
 
-    public EventBean getFragment(String propertyExpression)
+    public Object getFragment(String propertyExpression)
     {
         EventPropertyGetter getter = revisionEventType.getGetter(propertyExpression);
         if (getter == null)
@@ -194,25 +194,5 @@ public class RevisionEventBeanMerge implements EventBean
             return null;
         }
         return getter.getFragment(this);
-    }
-
-    public EventBean[] getFragmentArray(String propertyExpression)
-    {
-        EventPropertyGetter getter = revisionEventType.getGetter(propertyExpression);
-        if (getter == null)
-        {
-            return null;
-        }
-        return getter.getFragmentArray(this);
-    }
-
-    public Integer getIndexSize(String propertyExpression)
-    {
-        EventPropertyGetter getter = revisionEventType.getGetter(propertyExpression);
-        if (getter == null)
-        {
-            return null;
-        }
-        return getter.getIndexSize(this);
     }
 }

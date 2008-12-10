@@ -15,6 +15,7 @@ import com.espertech.esper.epl.agg.AggregationService;
 import com.espertech.esper.epl.agg.AggregationServiceFactory;
 import com.espertech.esper.epl.expression.*;
 import com.espertech.esper.epl.spec.*;
+import com.espertech.esper.event.NativeEventType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -139,7 +140,8 @@ public class ResultSetProcessorFactory
 
                 // see if the stream name is known as a nested event type
                 EventType candidateProviderOfFragments = typeService.getEventTypes()[i];
-                if (candidateProviderOfFragments.getFragmentType(streamAlias) != null)
+                // for the native event type we don't need to fragment, we simply use the property itself since all wrappers understand Java objects
+                if (!(candidateProviderOfFragments instanceof NativeEventType) && (candidateProviderOfFragments.getFragmentType(streamAlias) != null))
                 {
                     streamNum = i;
                     isFragmentEvent = true;

@@ -332,7 +332,7 @@ public class SelectExprEvalProcessorStreams implements SelectExprProcessor
             if (underlyingIsFragmentEvent)
             {
                 EventBean eventBean = eventsPerStream[underlyingStreamNumber];
-                event = eventBean.getFragment(unaliasedStreams.get(0).getStreamAliasName());
+                event = (EventBean) eventBean.getFragment(unaliasedStreams.get(0).getStreamAliasName());
             }
             else if (underlyingPropertyEventGetter != null)
             {

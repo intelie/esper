@@ -18,6 +18,7 @@ public class TestInvalidEPL extends TestCase
     public void setUp()
     {
         epService = EPServiceProviderManager.getDefaultProvider(SupportConfigFactory.getConfiguration());
+        epService.initialize();
         listener = new SupportUpdateListener();
     }
 

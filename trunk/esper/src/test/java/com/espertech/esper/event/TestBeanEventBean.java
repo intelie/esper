@@ -81,8 +81,7 @@ public class TestBeanEventBean extends TestCase
         tryInvalidGet(eventBean, "dummy.dummy1");
 
         tryInvalidGetFragment(eventBean, "indexed");
-        tryInvalidGetIndex(eventBean, "indexed");
-        assertEquals(SupportBeanCombinedProps.NestedLevOne.class, eventBean.getFragment("indexed[0]").getEventType().getUnderlyingType());
+        assertEquals(SupportBeanCombinedProps.NestedLevOne.class, ((EventBean) eventBean.getFragment("indexed[0]")).getEventType().getUnderlyingType());
     }
 
     private static void tryInvalidGet(EventBean eventBean, String propName)
@@ -106,19 +105,6 @@ public class TestBeanEventBean extends TestCase
         try
         {
             eventBean.getFragment(propName);
-            fail();
-        }
-        catch (PropertyAccessException ex)
-        {
-            // expected
-        }
-    }
-
-    private static void tryInvalidGetIndex(EventBean eventBean, String propName)
-    {
-        try
-        {
-            eventBean.getIndexSize(propName);
             fail();
         }
         catch (PropertyAccessException ex)

@@ -62,7 +62,7 @@ public class VariantEventBean implements EventBean, VariantEvent
         return underlyingEventBean;
     }
 
-    public EventBean getFragment(String propertyExpression)
+    public Object getFragment(String propertyExpression)
     {
         EventPropertyGetter getter = variantEventType.getGetter(propertyExpression);
         if (getter == null)
@@ -70,25 +70,5 @@ public class VariantEventBean implements EventBean, VariantEvent
             throw new PropertyAccessException("Property named '" + propertyExpression + "' is not a valid property name for this type");
         }
         return getter.getFragment(this);
-    }
-
-    public EventBean[] getFragmentArray(String propertyExpression)
-    {
-        EventPropertyGetter getter = variantEventType.getGetter(propertyExpression);
-        if (getter == null)
-        {
-            throw new PropertyAccessException("Property named '" + propertyExpression + "' is not a valid property name for this type");
-        }
-        return getter.getFragmentArray(this);
-    }
-
-    public Integer getIndexSize(String propertyExpression)
-    {
-        EventPropertyGetter getter = variantEventType.getGetter(propertyExpression);
-        if (getter == null)
-        {
-            throw new PropertyAccessException("Property named '" + propertyExpression + "' is not a valid property name for this type");
-        }
-        return getter.getIndexSize(this);
     }
 }

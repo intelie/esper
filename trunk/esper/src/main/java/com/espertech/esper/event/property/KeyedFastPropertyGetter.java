@@ -87,14 +87,4 @@ public class KeyedFastPropertyGetter implements EventPropertyGetter
         }
         return eventAdapterService.adapterForBean(object, fragmentEventType);
     }
-
-    public Integer getIndexSize(EventBean eventBean)
-    {
-        return null;
-    }
-
-    public EventBean[] getFragmentArray(EventBean eventBean)
-    {
-        return null; // TODO
-    }    
 }

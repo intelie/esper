@@ -48,7 +48,5 @@ public interface EventBean
      */
     public Object getUnderlying();
 
-    public Integer getIndexSize(String propertyExpression) throws PropertyAccessException;
-    public EventBean getFragment(String propertyExpression) throws PropertyAccessException;
-    public EventBean[] getFragmentArray(String propertyExpression) throws PropertyAccessException;
+    public Object getFragment(String propertyExpression) throws PropertyAccessException;
 }

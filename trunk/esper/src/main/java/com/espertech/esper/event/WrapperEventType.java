@@ -133,6 +133,11 @@ public class WrapperEventType implements EventTypeSPI
                     }
                     WrapperEventBean wrapperEvent = (WrapperEventBean) event;
                     EventBean wrappedEvent = wrapperEvent.getUnderlyingEvent();
+                    if (wrappedEvent == null)
+                    {
+                        return null;
+                    }
+
                     EventPropertyGetter underlyingGetter = underlyingEventType.getGetter(property);
                     return underlyingGetter.get(wrappedEvent);
                 }
@@ -142,20 +147,10 @@ public class WrapperEventType implements EventTypeSPI
                     return true; // Property exists as the property is not dynamic (unchecked)
                 }
 
-                public EventBean getFragment(EventBean eventBean)
+                public Object getFragment(EventBean eventBean)
                 {
                     return null; // TODO
                 }
-
-                public EventBean[] getFragmentArray(EventBean eventBean)
-                {
-                    return null; // TODO
-                }
-
-                public Integer getIndexSize(EventBean eventBean)
-                {
-                    return null; // TODO
-                }                
             };
             propertyGetterCache.put(property, getter);
             return getter;
@@ -180,17 +175,7 @@ public class WrapperEventType implements EventTypeSPI
                     return true; // Property exists as the property is not dynamic (unchecked)
                 }
 
-                public EventBean getFragment(EventBean eventBean)
-                {
-                    return null; // TODO
-                }
-
-                public Integer getIndexSize(EventBean eventBean)
-                {
-                    return null; // TODO
-                }                
-
-                public EventBean[] getFragmentArray(EventBean eventBean)
+                public Object getFragment(EventBean eventBean)
                 {
                     return null; // TODO
                 }

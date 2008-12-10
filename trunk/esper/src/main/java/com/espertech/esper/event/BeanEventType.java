@@ -667,8 +667,14 @@ public class BeanEventType implements EventTypeSPI, NativeEventType
         {
             return null;
         }
-        return null; // TODO
-        //return eventAdapterService.getBeanEventTypeFactory().createBeanType(propertyType.getName(), propertyType, false);
+
+        boolean isIndexed = false;
+        if (indexedPropertyDescriptors.containsKey(property))
+        {
+            isIndexed = true;
+        }
+        EventType type = eventAdapterService.getBeanEventTypeFactory().createBeanType(propertyType.getName(), propertyType, false);
+        return new EventTypeFragment(type, isIndexed);
     }
 
     private static final Log log = LogFactory.getLog(BeanEventType.class);
