@@ -9,7 +9,7 @@
 package com.espertech.esper.event.property;
 
 import com.espertech.esper.client.EventPropertyGetter;
-import com.espertech.esper.event.PropertyAccessException;
+import com.espertech.esper.client.PropertyAccessException;
 
 import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;

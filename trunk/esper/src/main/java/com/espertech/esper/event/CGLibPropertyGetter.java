@@ -13,6 +13,7 @@ import java.lang.reflect.InvocationTargetException;
 
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventPropertyGetter;
+import com.espertech.esper.client.PropertyAccessException;
 
 /**
  * Property getter using CGLib's FastMethod instance.
@@ -65,6 +66,11 @@ public class CGLibPropertyGetter implements EventPropertyGetter
     }
 
     public Integer getIndexSize(EventBean eventBean)
+    {
+        return null; // TODO
+    }
+
+    public EventBean[] getFragmentArray(EventBean eventBean)
     {
         return null; // TODO
     }    

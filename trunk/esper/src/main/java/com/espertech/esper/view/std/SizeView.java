@@ -70,7 +70,7 @@ public final class SizeView extends ViewSupport implements CloneableView
         {
             Map<String, Object> postNewData = new HashMap<String, Object>();
             postNewData.put(ViewFieldEnum.SIZE_VIEW__SIZE.getName(), size);
-            EventBean newEvent = statementContext.getEventAdapterService().createMapFromValues(postNewData, eventType);
+            EventBean newEvent = statementContext.getEventAdapterService().adaptorForMap(postNewData, eventType);
 
             if (lastSizeEvent != null)
             {
@@ -80,7 +80,7 @@ public final class SizeView extends ViewSupport implements CloneableView
             {
                 Map<String, Object> postOldData = new HashMap<String, Object>();
                 postOldData.put(ViewFieldEnum.SIZE_VIEW__SIZE.getName(), priorSize);
-                EventBean oldEvent = statementContext.getEventAdapterService().createMapFromValues(postOldData, eventType);
+                EventBean oldEvent = statementContext.getEventAdapterService().adaptorForMap(postOldData, eventType);
 
                 updateChildren(new EventBean[] {newEvent}, new EventBean[] {oldEvent});
             }
@@ -93,7 +93,7 @@ public final class SizeView extends ViewSupport implements CloneableView
     {
         HashMap<String, Object> current = new HashMap<String, Object>();
         current.put(ViewFieldEnum.SIZE_VIEW__SIZE.getName(), size);
-        return new SingleEventIterator(statementContext.getEventAdapterService().createMapFromValues(current, eventType));
+        return new SingleEventIterator(statementContext.getEventAdapterService().adaptorForMap(current, eventType));
     }
 
     public final String toString()

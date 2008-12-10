@@ -1,16 +1,15 @@
 package com.espertech.esper.event;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
-import junit.framework.TestCase;
 import com.espertech.esper.client.EPException;
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.support.bean.SupportBeanSimple;
 import com.espertech.esper.support.bean.SupportBean_A;
 import com.espertech.esper.support.event.SupportEventAdapterService;
 import com.espertech.esper.support.util.ArrayAssertionUtil;
+import junit.framework.TestCase;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class TestWrapperEventType extends TestCase 
 {
@@ -22,8 +21,8 @@ public class TestWrapperEventType extends TestCase
 	
 	protected void setUp()
 	{
-        underlyingEventTypeOne = new BeanEventType(null, SupportBeanSimple.class, new BeanEventAdapter(new ConcurrentHashMap<Class, BeanEventType>()), null, "abc");
-        underlyingEventTypeTwo = new BeanEventType(null, SupportBean_A.class, new BeanEventAdapter(new ConcurrentHashMap<Class, BeanEventType>()), null, "abc");
+        underlyingEventTypeOne = new BeanEventType(null, SupportBeanSimple.class, SupportEventAdapterService.getService(), null, "abc");
+        underlyingEventTypeTwo = new BeanEventType(null, SupportBean_A.class, SupportEventAdapterService.getService(), null, "abc");
         properties = new HashMap<String, Object>();
         properties.put("additionalString", String.class);
         properties.put("additionalInt", Integer.class);

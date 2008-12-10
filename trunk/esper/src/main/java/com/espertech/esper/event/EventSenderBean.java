@@ -9,8 +9,8 @@
 package com.espertech.esper.event;
 
 import com.espertech.esper.client.EPException;
-import com.espertech.esper.client.EventSender;
 import com.espertech.esper.client.EventBean;
+import com.espertech.esper.client.EventSender;
 import com.espertech.esper.core.EPRuntimeEventSender;
 import com.espertech.esper.util.JavaClassHelper;
 
@@ -27,6 +27,7 @@ public class EventSenderBean implements EventSender
 {
     private final EPRuntimeEventSender runtime;
     private final BeanEventType beanEventType;
+    private final BeanEventBeanFactory beanEventBeanFactory;
     private final Set<Class> compatibleClasses;
 
     /**
@@ -34,10 +35,11 @@ public class EventSenderBean implements EventSender
      * @param runtime for processing events
      * @param beanEventType the event type
      */
-    public EventSenderBean(EPRuntimeEventSender runtime, BeanEventType beanEventType)
+    public EventSenderBean(EPRuntimeEventSender runtime, BeanEventType beanEventType, BeanEventBeanFactory beanEventBeanFactory)
     {
         this.runtime = runtime;
         this.beanEventType = beanEventType;
+        this.beanEventBeanFactory = beanEventBeanFactory;
         compatibleClasses = new HashSet<Class>();
     }
 
@@ -76,6 +78,6 @@ public class EventSenderBean implements EventSender
             }
         }
 
-        return new BeanEventBean(event, beanEventType);        
+        return beanEventBeanFactory.adapterForBean(event, beanEventType);
     }
 }

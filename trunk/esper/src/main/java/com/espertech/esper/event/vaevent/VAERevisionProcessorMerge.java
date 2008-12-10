@@ -18,10 +18,7 @@ import com.espertech.esper.event.*;
 import com.espertech.esper.view.StatementStopCallback;
 import com.espertech.esper.view.StatementStopService;
 import com.espertech.esper.view.Viewable;
-import com.espertech.esper.client.ConfigurationRevisionEventType;
-import com.espertech.esper.client.EventBean;
-import com.espertech.esper.client.EventType;
-import com.espertech.esper.client.EventPropertyGetter;
+import com.espertech.esper.client.*;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -90,7 +87,13 @@ public class VAERevisionProcessorMerge extends VAERevisionProcessorBase implemen
                     public Integer getIndexSize(EventBean eventBean)
                     {
                         return null; // TODO
-                    }                
+                    }
+
+                    public EventBean[] getFragmentArray(EventBean eventBean)
+                    {
+                        return null; // TODO
+                    }
+
                 };
 
             Class type = spec.getBaseEventType().getPropertyType(property);
@@ -129,6 +132,11 @@ public class VAERevisionProcessorMerge extends VAERevisionProcessorBase implemen
                 }
 
                 public EventBean getFragment(EventBean eventBean)
+                {
+                    return null; // TODO
+                }
+
+                public EventBean[] getFragmentArray(EventBean eventBean)
                 {
                     return null; // TODO
                 }

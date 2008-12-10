@@ -8,9 +8,12 @@
  **************************************************************************************/
 package com.espertech.esper.event.property;
 
-import com.espertech.esper.client.EventPropertyGetter;
 import com.espertech.esper.client.EventBean;
-import com.espertech.esper.event.PropertyAccessException;
+import com.espertech.esper.client.EventPropertyGetter;
+import com.espertech.esper.client.PropertyAccessException;
+import com.espertech.esper.event.BeanEventType;
+import com.espertech.esper.event.EventAdapterService;
+import com.espertech.esper.util.JavaClassHelper;
 import net.sf.cglib.reflect.FastMethod;
 
 import java.lang.reflect.InvocationTargetException;
@@ -22,16 +25,27 @@ public class KeyedFastPropertyGetter implements EventPropertyGetter
 {
     private final FastMethod fastMethod;
     private final Object key;
+    private final EventAdapterService eventAdapterService;
+    private final BeanEventType fragmentEventType;
 
     /**
      * Constructor.
      * @param fastMethod is the method to use to retrieve a value from the object.
      * @param key is the key to supply as parameter to the mapped property getter
      */
-    public KeyedFastPropertyGetter(FastMethod fastMethod, Object key)
+    public KeyedFastPropertyGetter(FastMethod fastMethod, Object key, EventAdapterService eventAdapterService)
     {
         this.key = key;
         this.fastMethod = fastMethod;
+        this.eventAdapterService = eventAdapterService;
+        if (!JavaClassHelper.isJavaBuiltinDataType(fastMethod.getReturnType()))
+        {
+            fragmentEventType = eventAdapterService.getBeanEventTypeFactory().createBeanTypeNoAlias(fastMethod.getReturnType());
+        }
+        else
+        {
+            fragmentEventType = null;
+        }
     }
 
     public final Object get(EventBean obj) throws PropertyAccessException
@@ -66,10 +80,20 @@ public class KeyedFastPropertyGetter implements EventPropertyGetter
 
     public EventBean getFragment(EventBean eventBean)
     {
-        return null; // TODO
+        Object object = get(eventBean);
+        if (object == null)
+        {
+            return null;
+        }
+        return eventAdapterService.adapterForBean(object, fragmentEventType);
     }
 
     public Integer getIndexSize(EventBean eventBean)
+    {
+        return null;
+    }
+
+    public EventBean[] getFragmentArray(EventBean eventBean)
     {
         return null; // TODO
     }    

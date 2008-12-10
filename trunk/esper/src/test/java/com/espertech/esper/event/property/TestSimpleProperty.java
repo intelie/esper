@@ -1,11 +1,12 @@
 package com.espertech.esper.event.property;
 
-import junit.framework.TestCase;
-import com.espertech.esper.support.bean.SupportBeanComplexProps;
-import com.espertech.esper.support.event.SupportEventBeanFactory;
-import com.espertech.esper.event.*;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventPropertyGetter;
+import com.espertech.esper.event.BeanEventType;
+import com.espertech.esper.support.bean.SupportBeanComplexProps;
+import com.espertech.esper.support.event.SupportEventAdapterService;
+import com.espertech.esper.support.event.SupportEventBeanFactory;
+import junit.framework.TestCase;
 
 public class TestSimpleProperty extends TestCase
 {
@@ -28,46 +29,20 @@ public class TestSimpleProperty extends TestCase
 
     public void testGetGetter()
     {
-        EventPropertyGetter getter = prop.getGetter(eventType);
+        EventPropertyGetter getter = prop.getGetter(eventType, SupportEventAdapterService.getService());
         assertEquals("simple", getter.get(event));
 
-        assertNull(invalidDummy.getGetter(eventType));
-        assertNull(invalidPropMap.getGetter(eventType));
-        assertNull(invalidPropIndexed.getGetter(eventType));
+        assertNull(invalidDummy.getGetter(eventType, SupportEventAdapterService.getService()));
+        assertNull(invalidPropMap.getGetter(eventType, SupportEventAdapterService.getService()));
+        assertNull(invalidPropIndexed.getGetter(eventType, SupportEventAdapterService.getService()));
     }
 
     public void testGetPropertyType()
     {
         assertEquals(String.class, prop.getPropertyType(eventType));
 
-        assertNull(invalidDummy.getGetter(eventType));
-        assertNull(invalidPropMap.getGetter(eventType));
-        assertNull(invalidPropIndexed.getGetter(eventType));
-    }
-
-    private void tryInvalidGetGetter(SimpleProperty property)
-    {
-        try
-        {
-            property.getGetter(eventType);
-            fail();
-        }
-        catch (PropertyAccessException ex)
-        {
-            // expected
-        }
-    }
-
-    private void tryInvalidGetPropertyType(SimpleProperty property)
-    {
-        try
-        {
-            property.getPropertyType(eventType);
-            fail();
-        }
-        catch (PropertyAccessException ex)
-        {
-            // expected
-        }
+        assertNull(invalidDummy.getGetter(eventType, SupportEventAdapterService.getService()));
+        assertNull(invalidPropMap.getGetter(eventType, SupportEventAdapterService.getService()));
+        assertNull(invalidPropIndexed.getGetter(eventType, SupportEventAdapterService.getService()));
     }
 }

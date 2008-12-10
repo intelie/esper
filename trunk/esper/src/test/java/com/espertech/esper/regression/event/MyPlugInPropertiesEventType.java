@@ -1,10 +1,7 @@
 package com.espertech.esper.regression.event;
 
-import com.espertech.esper.client.EventType;
-import com.espertech.esper.client.EventPropertyGetter;
-import com.espertech.esper.client.EventBean;
-import com.espertech.esper.client.EventPropertyDescriptor;
-import com.espertech.esper.event.PropertyAccessException;
+import com.espertech.esper.client.*;
+import com.espertech.esper.client.PropertyAccessException;
 
 import java.util.Properties;
 import java.util.Iterator;
@@ -62,6 +59,10 @@ public class MyPlugInPropertiesEventType implements EventType
                 return null; // TODO
             }
 
+            public EventBean[] getFragmentArray(EventBean eventBean)
+            {
+                return null; // TODO
+            }            
         };
     }
 
@@ -95,7 +96,7 @@ public class MyPlugInPropertiesEventType implements EventType
         return new EventPropertyDescriptor[0];  // TODO
     }
 
-    public EventType getFragmentType(String property)
+    public EventTypeFragment getFragmentType(String property)
     {
         return null;  // TODO
     }

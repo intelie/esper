@@ -3,7 +3,7 @@ package com.espertech.esper.regression.event;
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.client.EventPropertyGetter;
 import com.espertech.esper.client.EventBean;
-import com.espertech.esper.event.PropertyAccessException;
+import com.espertech.esper.client.PropertyAccessException;
 
 import java.util.Properties;
 
@@ -49,6 +49,16 @@ public class MyPlugInPropertiesEventBean implements EventBean
         if (getter != null)
         {
             return getter.getFragment(this);
+        }
+        return null;
+    }
+
+    public EventBean[] getFragmentArray(String property)
+    {
+        EventPropertyGetter getter = eventType.getGetter(property);
+        if (getter != null)
+        {
+            return getter.getFragmentArray(this);
         }
         return null;
     }

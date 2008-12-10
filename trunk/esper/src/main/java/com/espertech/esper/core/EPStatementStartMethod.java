@@ -150,7 +150,7 @@ public class EPStatementStartMethod
             PatternMatchCallback callback = new PatternMatchCallback() {
                 public void matchFound(Map<String, Object> matchEvent)
                 {
-                    EventBean compositeEvent = statementContext.getEventAdapterService().createMapFromValues(matchEvent, eventType);
+                    EventBean compositeEvent = statementContext.getEventAdapterService().adaptorForMap(matchEvent, eventType);
                     sourceEventStream.insert(compositeEvent);
                 }
             };
@@ -530,7 +530,7 @@ public class EPStatementStartMethod
                 PatternMatchCallback callback = new PatternMatchCallback() {
                     public void matchFound(Map<String, Object> matchEvent)
                     {
-                        EventBean compositeEvent = statementContext.getEventAdapterService().createMapFromValues(matchEvent, eventType);
+                        EventBean compositeEvent = statementContext.getEventAdapterService().adaptorForMap(matchEvent, eventType);
                         sourceEventStream.insert(compositeEvent);
                     }
                 };

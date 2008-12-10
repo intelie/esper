@@ -9,7 +9,7 @@
 package com.espertech.esperio.representation.axiom;
 
 import com.espertech.esper.client.EventBean;
-import com.espertech.esper.event.PropertyAccessException;
+import com.espertech.esper.client.PropertyAccessException;
 import com.espertech.esper.event.TypedEventPropertyGetter;
 import com.espertech.esper.util.SimpleTypeParser;
 import com.espertech.esper.util.SimpleTypeParserFactory;
@@ -147,6 +147,11 @@ public class AxiomXPathPropertyGetter implements TypedEventPropertyGetter
     }
 
     public Integer getIndexSize(EventBean eventBean)
+    {
+        return null; // TODO
+    }
+
+    public EventBean[] getFragmentArray(EventBean eventBean)
     {
         return null; // TODO
     }    

@@ -12,7 +12,7 @@ import com.espertech.esper.collection.MultiKeyUntyped;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventPropertyGetter;
 import com.espertech.esper.client.EventType;
-import com.espertech.esper.event.PropertyAccessException;
+import com.espertech.esper.client.PropertyAccessException;
 import com.espertech.esper.util.NullableObject;
 
 /**
@@ -194,6 +194,16 @@ public class RevisionEventBeanMerge implements EventBean
             return null;
         }
         return getter.getFragment(this);
+    }
+
+    public EventBean[] getFragmentArray(String propertyExpression)
+    {
+        EventPropertyGetter getter = revisionEventType.getGetter(propertyExpression);
+        if (getter == null)
+        {
+            return null;
+        }
+        return getter.getFragmentArray(this);
     }
 
     public Integer getIndexSize(String propertyExpression)

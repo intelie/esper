@@ -2,7 +2,7 @@ package com.espertech.esper.filter;
 
 import junit.framework.TestCase;
 import com.espertech.esper.client.EventBean;
-import com.espertech.esper.event.PropertyAccessException;
+import com.espertech.esper.client.PropertyAccessException;
 import com.espertech.esper.pattern.MatchedEventMap;
 import com.espertech.esper.pattern.MatchedEventMapImpl;
 import com.espertech.esper.support.bean.SupportBean;

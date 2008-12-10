@@ -118,7 +118,7 @@ public class MyTrendSpotterView extends ViewSupport
     {
         Map<String, Object> result = new HashMap<String, Object>();
         result.put(PROPERTY_NAME, trendcount);
-        return statementContext.getEventAdapterService().createMapFromValues(result, eventType);
+        return statementContext.getEventAdapterService().adaptorForMap(result, eventType);
     }
 
     /**

@@ -16,7 +16,7 @@ public class SelectClauseStreamCompiledSpec implements SelectClauseElementCompil
     private final String streamAliasName;
     private final String optionalAliasName;
     private int streamNumber = -1;
-    private boolean isTaggedEvent = false;
+    private boolean isFragmentEvent = false;
     private boolean isProperty = false;
     private Class propertyType;
 
@@ -67,13 +67,13 @@ public class SelectClauseStreamCompiledSpec implements SelectClauseElementCompil
      * selecting an event from a stream.
      * @return true for tagged event in pattern, false for stream
      */
-    public boolean isTaggedEvent()
+    public boolean isFragmentEvent()
     {
         if (streamNumber == -1)
         {
             throw new IllegalStateException("Not initialized for stream number and tagged event");
         }
-        return isTaggedEvent;
+        return isFragmentEvent;
     }
 
     /**
@@ -88,8 +88,8 @@ public class SelectClauseStreamCompiledSpec implements SelectClauseElementCompil
      * Sets a flag indicating whether the stream wildcard is for a tagged event in a pattern.
      * @param taggedEvent in pattern
      */
-    public void setTaggedEvent(boolean taggedEvent) {
-        isTaggedEvent = taggedEvent;
+    public void setFragmentEvent(boolean taggedEvent) {
+        isFragmentEvent = taggedEvent;
     }
 
     /**

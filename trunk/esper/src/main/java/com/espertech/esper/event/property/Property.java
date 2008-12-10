@@ -33,7 +33,7 @@ public interface Property
      * @param eventType is the type of event to make a getter for
      * @return fast property value getter for property
      */
-    public EventPropertyGetter getGetter(BeanEventType eventType);
+    public EventPropertyGetter getGetter(BeanEventType eventType, EventAdapterService eventAdapterService);
 
     /**
      * Returns the property type for use with Map event representations.

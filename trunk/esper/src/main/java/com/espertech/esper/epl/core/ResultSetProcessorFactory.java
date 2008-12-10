@@ -8,13 +8,13 @@
  **************************************************************************************/
 package com.espertech.esper.epl.core;
 
+import com.espertech.esper.client.EventType;
 import com.espertech.esper.collection.Pair;
 import com.espertech.esper.core.StatementContext;
 import com.espertech.esper.epl.agg.AggregationService;
 import com.espertech.esper.epl.agg.AggregationServiceFactory;
 import com.espertech.esper.epl.expression.*;
 import com.espertech.esper.epl.spec.*;
-import com.espertech.esper.event.TaggedCompositeEventType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -125,7 +125,7 @@ public class ResultSetProcessorFactory
             }
             SelectClauseStreamCompiledSpec streamSelectSpec = (SelectClauseStreamCompiledSpec) compiled;
             int streamNum = Integer.MIN_VALUE;
-            boolean isTaggedEvent = false;
+            boolean isFragmentEvent = false;
             boolean isProperty = false;
             Class propertyType = null;
             for (int i = 0; i < typeService.getStreamNames().length; i++)
@@ -137,15 +137,13 @@ public class ResultSetProcessorFactory
                     break;
                 }
 
-                if (typeService.getEventTypes()[i] instanceof TaggedCompositeEventType)
+                // see if the stream name is known as a nested event type
+                EventType candidateProviderOfFragments = typeService.getEventTypes()[i];
+                if (candidateProviderOfFragments.getFragmentType(streamAlias) != null)
                 {
-                    TaggedCompositeEventType compositeType = (TaggedCompositeEventType) typeService.getEventTypes()[i];
-                    if (compositeType.getTaggedEventTypes().get(streamAlias) != null)
-                    {
-                        streamNum = i;
-                        isTaggedEvent = true;
-                        break;
-                    }
+                    streamNum = i;
+                    isFragmentEvent = true;
+                    break;
                 }
             }
 
@@ -173,7 +171,7 @@ public class ResultSetProcessorFactory
             }
 
             streamSelectSpec.setStreamNumber(streamNum);
-            streamSelectSpec.setTaggedEvent(isTaggedEvent);
+            streamSelectSpec.setFragmentEvent(isFragmentEvent);
             streamSelectSpec.setProperty(isProperty, propertyType);
         }
 

@@ -5,6 +5,7 @@ import com.espertech.esper.client.EventBean;
 import com.espertech.esper.event.BeanEventType;
 import com.espertech.esper.support.bean.SupportBeanComplexProps;
 import com.espertech.esper.support.event.SupportEventBeanFactory;
+import com.espertech.esper.support.event.SupportEventAdapterService;
 import junit.framework.TestCase;
 
 public class TestIndexedProperty extends TestCase
@@ -30,13 +31,13 @@ public class TestIndexedProperty extends TestCase
         int[] expected = new int[] {1, 2, 10, 20};
         for (int i = 0; i < indexed.length; i++)
         {
-            EventPropertyGetter getter = indexed[i].getGetter(eventType);
+            EventPropertyGetter getter = indexed[i].getGetter(eventType, SupportEventAdapterService.getService());
             assertEquals(expected[i], getter.get(event));
         }
 
         // try invalid case
         IndexedProperty ind = new IndexedProperty("dummy", 0);
-        assertNull(ind.getGetter(eventType));
+        assertNull(ind.getGetter(eventType, SupportEventAdapterService.getService()));
     }
 
     public void testGetPropertyType()

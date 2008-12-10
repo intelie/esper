@@ -90,7 +90,7 @@ public class SelectExprJoinWildcardProcessor implements SelectExprProcessor
             }
         }
 
-        return eventAdapterService.createMapFromValues(tuple, resultEventType);
+        return eventAdapterService.adaptorForMap(tuple, resultEventType);
     }
 
     public EventType getResultEventType()

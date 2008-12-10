@@ -10,7 +10,7 @@ package com.espertech.esper.event.property;
 
 import com.espertech.esper.client.EventPropertyGetter;
 import com.espertech.esper.client.EventBean;
-import com.espertech.esper.event.PropertyAccessException;
+import com.espertech.esper.client.PropertyAccessException;
 import net.sf.cglib.reflect.FastClass;
 import net.sf.cglib.reflect.FastMethod;
 
@@ -118,5 +118,10 @@ public abstract class DynamicPropertyGetterBase implements EventPropertyGetter
     public Integer getIndexSize(EventBean eventBean)
     {
         return null; // TODO
-    }    
+    }
+
+    public EventBean[] getFragmentArray(EventBean eventBean)
+    {
+        return null; // TODO
+    }
 }

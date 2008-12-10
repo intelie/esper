@@ -10,6 +10,7 @@ package com.espertech.esper.event;
 
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventType;
+import com.espertech.esper.client.PropertyAccessException;
 
 /**
  * An event that is carries multiple representations of event properties:
@@ -73,6 +74,15 @@ public class NaturalEventBean implements EventBean
         if (optionalSynthetic != null)
         {
             return optionalSynthetic.getFragment(propertyExpression);
+        }
+        throw new PropertyAccessException("Property access not allowed for natural events without the synthetic event present");
+    }
+
+    public EventBean[] getFragmentArray(String propertyExpression)
+    {
+        if (optionalSynthetic != null)
+        {
+            return optionalSynthetic.getFragmentArray(propertyExpression);
         }
         throw new PropertyAccessException("Property access not allowed for natural events without the synthetic event present");
     }

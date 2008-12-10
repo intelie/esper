@@ -13,7 +13,7 @@ import com.espertech.esper.client.EPServiceProvider;
 import com.espertech.esper.core.EPServiceProviderSPI;
 import com.espertech.esper.event.EventAdapterService;
 import com.espertech.esper.client.EventType;
-import com.espertech.esper.event.PropertyAccessException;
+import com.espertech.esper.client.PropertyAccessException;
 import com.espertech.esperio.*;
 import com.espertech.esper.util.JavaClassHelper;
 import com.espertech.esper.util.ExecutionPathDebugLog;

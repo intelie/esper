@@ -23,7 +23,7 @@ import java.util.Set;
 /**
  * Interface for a service to resolve event names to event type.
  */
-public interface EventAdapterService
+public interface EventAdapterService extends BeanEventBeanFactory
 {
     /**
      * Adds an event type to the registery available for use, and originating outside as a non-adapter.
@@ -116,7 +116,7 @@ public interface EventAdapterService
      * @param eventType is the type metadata for any maps of that type
      * @return EventBean instance
      */
-    public EventBean createMapFromValues(Map<String, Object> properties, EventType eventType);
+    public EventBean adaptorForMap(Map<String, Object> properties, EventType eventType);
 
     /**
      * Creata a wrapper around an event and some additional properties
@@ -125,7 +125,7 @@ public interface EventAdapterService
      * @param eventType os the type metadata for any wrappers of this type
      * @return wrapper event bean
      */
-    public EventBean createWrapper(EventBean event, Map<String, Object> properties, EventType eventType);
+    public EventBean adaptorForWrapper(EventBean event, Map<String, Object> properties, EventType eventType);
 
     /**
      * Add an event type with the given alias and Java fully-qualified class name.

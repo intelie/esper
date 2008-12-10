@@ -36,10 +36,10 @@ public class TestWrapperEventBean extends TestCase
 		properties.put("int", 11);
 
         EventBean wrappedSimple = eventService.adapterForBean(new SupportBeanSimple("eventString", 0));
-        eventBeanSimple = eventService.createWrapper(wrappedSimple, properties, eventTypeSimple);
+        eventBeanSimple = eventService.adaptorForWrapper(wrappedSimple, properties, eventTypeSimple);
 
         EventBean wrappedCombined = eventService.adapterForBean(SupportBeanCombinedProps.makeDefaultBean());
-        eventBeanCombined = eventService.createWrapper(wrappedCombined, properties, eventTypeCombined);
+        eventBeanCombined = eventService.adaptorForWrapper(wrappedCombined, properties, eventTypeCombined);
 	}
 	
 	public void testGetSimple()

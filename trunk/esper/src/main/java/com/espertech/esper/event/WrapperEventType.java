@@ -147,6 +147,11 @@ public class WrapperEventType implements EventTypeSPI
                     return null; // TODO
                 }
 
+                public EventBean[] getFragmentArray(EventBean eventBean)
+                {
+                    return null; // TODO
+                }
+
                 public Integer getIndexSize(EventBean eventBean)
                 {
                     return null; // TODO
@@ -184,6 +189,11 @@ public class WrapperEventType implements EventTypeSPI
                 {
                     return null; // TODO
                 }                
+
+                public EventBean[] getFragmentArray(EventBean eventBean)
+                {
+                    return null; // TODO
+                }
             };
             propertyGetterCache.put(property, getter);
             return getter;
@@ -302,7 +312,7 @@ public class WrapperEventType implements EventTypeSPI
         return propertyDesc;
     }
 
-    public EventType getFragmentType(String property)
+    public EventTypeFragment getFragmentType(String property)
     {
         return null;  // TODO
     }

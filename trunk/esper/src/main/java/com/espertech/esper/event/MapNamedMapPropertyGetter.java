@@ -2,6 +2,7 @@ package com.espertech.esper.event;
 
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventPropertyGetter;
+import com.espertech.esper.client.PropertyAccessException;
 
 import java.util.Map;
 
@@ -52,6 +53,11 @@ public class MapNamedMapPropertyGetter implements EventPropertyGetter
     }
 
     public EventBean getFragment(EventBean eventBean)
+    {
+        return null; // TODO
+    }
+
+    public EventBean[] getFragmentArray(EventBean eventBean)
     {
         return null; // TODO
     }

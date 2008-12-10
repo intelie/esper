@@ -8,14 +8,14 @@
  **************************************************************************************/
 package com.espertech.esper.event;
 
-import com.espertech.esper.client.ConfigurationEventTypeLegacy;
 import com.espertech.esper.client.Configuration;
+import com.espertech.esper.client.ConfigurationEventTypeLegacy;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.Map;
-import java.util.HashMap;
 
 /**
  * A fcatory for {@link BeanEventType} instances based on Java class information and using configured
@@ -25,6 +25,7 @@ public class BeanEventAdapter implements BeanEventTypeFactory
 {
     private final ConcurrentHashMap<Class, BeanEventType> typesPerJavaBean;
     private final Lock typesPerJavaBeanLock;
+    private final EventAdapterService eventAdapterService;
 
     private Map<String, ConfigurationEventTypeLegacy> classToLegacyConfigs;
     private Configuration.PropertyResolutionStyle defaultPropertyResolutionStyle;
@@ -34,12 +35,13 @@ public class BeanEventAdapter implements BeanEventTypeFactory
      * @param typesPerJavaBean shareable collection that this adapter writes to
      * for caching bean types per class
      */
-    public BeanEventAdapter(ConcurrentHashMap<Class, BeanEventType> typesPerJavaBean)
+    public BeanEventAdapter(ConcurrentHashMap<Class, BeanEventType> typesPerJavaBean, EventAdapterService eventAdapterService)
     {
         this.typesPerJavaBean = typesPerJavaBean;
         typesPerJavaBeanLock = new ReentrantLock();
         classToLegacyConfigs = new HashMap<String, ConfigurationEventTypeLegacy>();
         this.defaultPropertyResolutionStyle = Configuration.PropertyResolutionStyle.getDefault();
+        this.eventAdapterService = eventAdapterService;
     }
 
     /**
@@ -75,6 +77,17 @@ public class BeanEventAdapter implements BeanEventTypeFactory
      * @param clazz is the class of the Java bean.
      * @return EventType implementation for bean class
      */
+    public final BeanEventType createBeanTypeNoAlias(Class clazz)
+    {
+        return createBeanType(clazz.getName(), clazz, false);
+    }
+
+    /**
+     * Creates a new EventType object for a java bean of the specified class if this is the first time
+     * the class has been seen. Else uses a cached EventType instance, i.e. client classes do not need to cache.
+     * @param clazz is the class of the Java bean.
+     * @return EventType implementation for bean class
+     */
     public final BeanEventType createBeanType(String alias, Class clazz, boolean isConfigured)
     {
         if (clazz == null)
@@ -98,7 +111,7 @@ public class BeanEventAdapter implements BeanEventTypeFactory
             ConfigurationEventTypeLegacy legacyDef = classToLegacyConfigs.get(clazz.getName());
 
             EventTypeMetadata metadata = EventTypeMetadata.createBeanType(alias, clazz, isConfigured); 
-            eventType = new BeanEventType(metadata, clazz, this, legacyDef, alias);
+            eventType = new BeanEventType(metadata, clazz, eventAdapterService, legacyDef, alias);
             typesPerJavaBean.put(clazz, eventType);
         }
         catch (RuntimeException ex)

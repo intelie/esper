@@ -12,6 +12,7 @@ import com.espertech.esper.collection.Pair;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.client.EventPropertyGetter;
+import com.espertech.esper.client.PropertyAccessException;
 
 import java.util.Map;
 
@@ -47,7 +48,7 @@ public class WrapperEventBean implements EventBean, DecoratingEventBean {
         EventPropertyGetter getter = eventType.getGetter(property);
         if (getter == null)
         {
-            throw new IllegalArgumentException("Property named '" + property + "' is not a valid property name for this type");
+            throw new PropertyAccessException("Property named '" + property + "' is not a valid property name for this type");
         }
         return eventType.getGetter(property).get(this);
 	}
@@ -105,9 +106,19 @@ public class WrapperEventBean implements EventBean, DecoratingEventBean {
         EventPropertyGetter getter = eventType.getGetter(propertyExpression);
         if (getter == null)
         {
-            throw new IllegalArgumentException("Property named '" + propertyExpression + "' is not a valid property name for this type");
+            throw new PropertyAccessException("Property named '" + propertyExpression + "' is not a valid property name for this type");
         }
         return getter.getFragment(this);
+    }
+
+    public EventBean[] getFragmentArray(String propertyExpression)
+    {
+        EventPropertyGetter getter = eventType.getGetter(propertyExpression);
+        if (getter == null)
+        {
+            throw new PropertyAccessException("Property named '" + propertyExpression + "' is not a valid property name for this type");
+        }
+        return getter.getFragmentArray(this);
     }
 
     public Integer getIndexSize(String propertyExpression)
@@ -115,7 +126,7 @@ public class WrapperEventBean implements EventBean, DecoratingEventBean {
         EventPropertyGetter getter = eventType.getGetter(propertyExpression);
         if (getter == null)
         {
-            throw new IllegalArgumentException("Property named '" + propertyExpression + "' is not a valid property name for this type");
+            throw new PropertyAccessException("Property named '" + propertyExpression + "' is not a valid property name for this type");
         }
         return getter.getIndexSize(this);
     }

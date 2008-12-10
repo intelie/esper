@@ -13,7 +13,7 @@ import org.apache.axiom.om.OMNode;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventPropertyGetter;
 import com.espertech.esper.client.EventType;
-import com.espertech.esper.event.PropertyAccessException;
+import com.espertech.esper.client.PropertyAccessException;
 
 /**
  * EventBean wrapper for XML documents. Currently only instances of OMNode can
@@ -65,6 +65,16 @@ public class AxiomEventBean implements EventBean {
                     + "' is not a valid property name for this type");
         }
         return getter.getFragment(this);
+    }
+
+    public EventBean[] getFragmentArray(String property)
+    {
+        EventPropertyGetter getter = eventType.getGetter(property);
+        if (getter == null) {
+            throw new PropertyAccessException("Property named '" + property
+                    + "' is not a valid property name for this type");
+        }
+        return getter.getFragmentArray(this);
     }
 
     public Integer getIndexSize(String property)

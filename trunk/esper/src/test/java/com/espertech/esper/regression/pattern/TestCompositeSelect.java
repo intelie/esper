@@ -75,18 +75,20 @@ public class TestCompositeSelect extends TestCase
         assertTrue(event.getUnderlying() instanceof Map);
 
         // test fragment B type and event
-        EventType typeFragB = event.getEventType().getFragmentType("b");
-        assertEquals("B", typeFragB.getName());
-        assertEquals(String.class, typeFragB.getPropertyType("id"));
+        EventTypeFragment typeFragB = event.getEventType().getFragmentType("b");
+        assertFalse(typeFragB.isIndexed());
+        assertEquals("B", typeFragB.getFragmentType().getName());
+        assertEquals(String.class, typeFragB.getFragmentType().getPropertyType("id"));
 
         assertNull(event.getIndexSize("b"));
         EventBean eventFragB = event.getFragment("b");
         assertEquals("B", eventFragB.getEventType().getName());
 
         // test fragment A type and event
-        EventType typeFragA = event.getEventType().getFragmentType("a");
-        assertEquals("A", typeFragA.getName());
-        assertEquals(String.class, typeFragA.getPropertyType("id"));
+        EventTypeFragment typeFragA = event.getEventType().getFragmentType("a");
+        assertTrue(typeFragB.isIndexed());
+        assertEquals("A", typeFragA.getFragmentType().getName());
+        assertEquals(String.class, typeFragA.getFragmentType().getPropertyType("id"));
 
         assertEquals(2, (int) event.getIndexSize("a"));
         assertNull(event.getFragment("a"));

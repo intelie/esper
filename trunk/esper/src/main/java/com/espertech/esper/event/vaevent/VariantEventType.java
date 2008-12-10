@@ -11,6 +11,7 @@ package com.espertech.esper.event.vaevent;
 import com.espertech.esper.client.EventPropertyGetter;
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.client.EventPropertyDescriptor;
+import com.espertech.esper.client.EventTypeFragment;
 import com.espertech.esper.event.EventTypeSPI;
 import com.espertech.esper.event.EventTypeMetadata;
 import com.espertech.esper.util.JavaClassHelper;
@@ -161,7 +162,7 @@ public class VariantEventType implements EventTypeSPI
         return propertyDescriptors; 
     }
 
-    public EventType getFragmentType(String property)
+    public EventTypeFragment getFragmentType(String property)
     {
         return null;  // TODO
     }

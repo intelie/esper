@@ -4,6 +4,7 @@ import junit.framework.TestCase;
 import com.espertech.esper.support.bean.SupportLegacyBean;
 import com.espertech.esper.support.event.SupportEventBeanFactory;
 import com.espertech.esper.client.EventBean;
+import com.espertech.esper.client.PropertyAccessException;
 
 import java.lang.reflect.Field;
 

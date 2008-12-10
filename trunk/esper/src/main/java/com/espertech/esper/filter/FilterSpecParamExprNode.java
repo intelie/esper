@@ -8,13 +8,14 @@
  **************************************************************************************/
 package com.espertech.esper.filter;
 
-import com.espertech.esper.client.EventBean;
-import com.espertech.esper.client.EventType;
 import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.epl.expression.ExprNodeVariableVisitor;
 import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.event.EventAdapterService;
 import com.espertech.esper.pattern.MatchedEventMap;
+import com.espertech.esper.collection.Pair;
+import com.espertech.esper.client.EventType;
+import com.espertech.esper.client.EventBean;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -25,8 +26,8 @@ import java.util.Map;
 public final class FilterSpecParamExprNode extends FilterSpecParam
 {
     private final ExprNode exprNode;
-    private final LinkedHashMap<String, EventType> taggedEventTypes;
-    private final LinkedHashMap<String, EventType> arrayEventTypes;
+    private final LinkedHashMap<String, Pair<EventType, String>> taggedEventTypes;
+    private final LinkedHashMap<String, Pair<EventType, String>> arrayEventTypes;
     private final EventAdapterService eventAdapterService;
     private final VariableService variableService;
     private final boolean hasVariable;
@@ -45,8 +46,8 @@ public final class FilterSpecParamExprNode extends FilterSpecParam
     public FilterSpecParamExprNode(String propertyName,
                              FilterOperator filterOperator,
                              ExprNode exprNode,
-                             LinkedHashMap<String, EventType> taggedEventTypes,
-                             LinkedHashMap<String, EventType> arrayEventTypes,
+                             LinkedHashMap<String, Pair<EventType, String>> taggedEventTypes,
+                             LinkedHashMap<String, Pair<EventType, String>> arrayEventTypes,
                              VariableService variableService,
                              EventAdapterService eventAdapterService)
         throws IllegalArgumentException
@@ -80,7 +81,7 @@ public final class FilterSpecParamExprNode extends FilterSpecParam
      * Returns the map of tag/stream names to event types that the filter expressions map use (for patterns)
      * @return map
      */
-    public LinkedHashMap<String, EventType> getTaggedEventTypes()
+    public LinkedHashMap<String, Pair<EventType, String>> getTaggedEventTypes()
     {
         return taggedEventTypes;
     }
@@ -108,9 +109,10 @@ public final class FilterSpecParamExprNode extends FilterSpecParam
 
             if (arrayEventTypes != null)
             {
-                for (Map.Entry<String, EventType> entry : arrayEventTypes.entrySet())
+                for (Map.Entry<String, Pair<EventType, String>> entry : arrayEventTypes.entrySet())
                 {
-                    events[count] = eventAdapterService.createMapFromValues(matchedEvents.getMatchingEvents(),entry.getValue());
+                    EventType compositeEventType = entry.getValue().getFirst();
+                    events[count] = eventAdapterService.adaptorForMap(matchedEvents.getMatchingEvents(), compositeEventType);
                     count++;
                 }
             }

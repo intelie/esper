@@ -32,6 +32,13 @@ public interface BeanEventTypeFactory
     public BeanEventType createBeanType(String alias, Class clazz, boolean isConfigured);
 
     /**
+     * Returns the bean event type for a given class assigning the given alias.
+     * @param clazz is the class for which to generate an event type
+     * @return is the event type for the class
+     */
+    public BeanEventType createBeanTypeNoAlias(Class clazz);
+
+    /**
      * Returns the default property resolution style.
      * @return property resolution style
      */

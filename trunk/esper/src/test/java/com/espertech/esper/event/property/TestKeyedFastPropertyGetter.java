@@ -5,8 +5,9 @@ import net.sf.cglib.reflect.FastClass;
 import net.sf.cglib.reflect.FastMethod;
 import com.espertech.esper.support.bean.SupportBeanComplexProps;
 import com.espertech.esper.support.event.SupportEventBeanFactory;
+import com.espertech.esper.support.event.SupportEventAdapterService;
 import com.espertech.esper.client.EventBean;
-import com.espertech.esper.event.PropertyAccessException;
+import com.espertech.esper.client.PropertyAccessException;
 
 public class TestKeyedFastPropertyGetter extends TestCase
 {
@@ -20,7 +21,7 @@ public class TestKeyedFastPropertyGetter extends TestCase
         event = SupportEventBeanFactory.createObject(bean);
         FastClass fastClass = FastClass.create(Thread.currentThread().getContextClassLoader(), SupportBeanComplexProps.class);
         FastMethod method = fastClass.getMethod("getIndexed", new Class[] {int.class});
-        getter = new KeyedFastPropertyGetter(method, 1);
+        getter = new KeyedFastPropertyGetter(method, 1, SupportEventAdapterService.getService());
     }
 
     public void testGet()

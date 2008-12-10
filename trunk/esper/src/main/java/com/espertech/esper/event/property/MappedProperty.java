@@ -47,7 +47,7 @@ public class MappedProperty extends PropertyBase
         return key;
     }
 
-    public EventPropertyGetter getGetter(BeanEventType eventType)
+    public EventPropertyGetter getGetter(BeanEventType eventType, EventAdapterService eventAdapterService)
     {
         InternalEventPropDescriptor propertyDesc = eventType.getMappedProperty(propertyNameAtomic);
         if (propertyDesc == null)
@@ -61,7 +61,7 @@ public class MappedProperty extends PropertyBase
         if (fastClass != null)
         {
             FastMethod fastMethod = fastClass.getMethod(method);
-            return new KeyedFastPropertyGetter(fastMethod, key);
+            return new KeyedFastPropertyGetter(fastMethod, key, eventAdapterService);
         }
         else
         {

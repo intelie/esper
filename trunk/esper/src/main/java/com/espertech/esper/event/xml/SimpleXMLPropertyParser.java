@@ -11,7 +11,7 @@ package com.espertech.esper.event.xml;
 import com.espertech.esper.antlr.NoCaseSensitiveStream;
 import com.espertech.esper.epl.generated.EsperEPL2GrammarLexer;
 import com.espertech.esper.epl.generated.EsperEPL2GrammarParser;
-import com.espertech.esper.event.PropertyAccessException;
+import com.espertech.esper.client.PropertyAccessException;
 import com.espertech.esper.type.IntValue;
 import com.espertech.esper.type.StringValue;
 import com.espertech.esper.util.ExecutionPathDebugLog;

@@ -9,9 +9,7 @@
 package com.espertech.esper.client;
 
 import com.espertech.esper.client.EventType;
-import com.espertech.esper.event.PropertyAccessException;
-
-import java.util.Map;
+import com.espertech.esper.client.PropertyAccessException;
 
 /**
  * Interface for event representation. All events have an {@link EventType}. Events also
@@ -50,6 +48,7 @@ public interface EventBean
      */
     public Object getUnderlying();
 
-    public Integer getIndexSize(String propertyExpression);
-    public EventBean getFragment(String propertyExpression);
+    public Integer getIndexSize(String propertyExpression) throws PropertyAccessException;
+    public EventBean getFragment(String propertyExpression) throws PropertyAccessException;
+    public EventBean[] getFragmentArray(String propertyExpression) throws PropertyAccessException;
 }

@@ -10,7 +10,7 @@ package com.espertech.esper.event.property;
 
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventPropertyGetter;
-import com.espertech.esper.event.PropertyAccessException;
+import com.espertech.esper.client.PropertyAccessException;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
@@ -89,6 +89,11 @@ public class ArrayMethodPropertyGetter implements EventPropertyGetter
     }
 
     public Integer getIndexSize(EventBean eventBean)
+    {
+        return null; // TODO
+    }
+
+    public EventBean[] getFragmentArray(EventBean eventBean)
     {
         return null; // TODO
     }    

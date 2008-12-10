@@ -47,7 +47,7 @@ public class IndexedProperty extends PropertyBase
         return index;
     }
 
-    public EventPropertyGetter getGetter(BeanEventType eventType)
+    public EventPropertyGetter getGetter(BeanEventType eventType, EventAdapterService eventAdapterService)
     {
         FastClass fastClass = eventType.getFastClass();
         InternalEventPropDescriptor propertyDesc = eventType.getIndexedProperty(propertyNameAtomic);
@@ -57,7 +57,7 @@ public class IndexedProperty extends PropertyBase
             {
                 Method method = propertyDesc.getReadMethod();
                 FastMethod fastMethod = fastClass.getMethod(method);
-                return new KeyedFastPropertyGetter(fastMethod, index);
+                return new KeyedFastPropertyGetter(fastMethod, index, eventAdapterService);
             }
             else
             {

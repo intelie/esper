@@ -5,9 +5,11 @@ import net.sf.cglib.reflect.FastClass;
 import net.sf.cglib.reflect.FastMethod;
 import com.espertech.esper.support.bean.SupportBeanCombinedProps;
 import com.espertech.esper.support.event.SupportEventBeanFactory;
+import com.espertech.esper.support.event.SupportEventAdapterService;
 import com.espertech.esper.event.*;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventPropertyGetter;
+import com.espertech.esper.client.PropertyAccessException;
 
 import java.util.List;
 import java.util.LinkedList;
@@ -23,19 +25,19 @@ public class TestNestedPropertyGetter extends TestCase
 
     public void setUp() throws Exception
     {
-        beanEventTypeFactory = new BeanEventAdapter(new ConcurrentHashMap<Class, BeanEventType>());
+        beanEventTypeFactory = new BeanEventAdapter(new ConcurrentHashMap<Class, BeanEventType>(), SupportEventAdapterService.getService());
         bean = SupportBeanCombinedProps.makeDefaultBean();
         event = SupportEventBeanFactory.createObject(bean);
 
         List<EventPropertyGetter> getters = new LinkedList<EventPropertyGetter>();
         getters.add(makeGetterOne(0));
         getters.add(makeGetterTwo("0ma"));
-        getter = new NestedPropertyGetter(getters, beanEventTypeFactory);
+        getter = new NestedPropertyGetter(getters, SupportEventAdapterService.getService());
 
         getters = new LinkedList<EventPropertyGetter>();
         getters.add(makeGetterOne(2));
         getters.add(makeGetterTwo("0ma"));
-        getterNull = new NestedPropertyGetter(getters, beanEventTypeFactory);
+        getterNull = new NestedPropertyGetter(getters, SupportEventAdapterService.getService());
     }
 
     public void testGet()
@@ -60,13 +62,13 @@ public class TestNestedPropertyGetter extends TestCase
     {
         FastClass fastClassOne = FastClass.create(Thread.currentThread().getContextClassLoader(), SupportBeanCombinedProps.class);
         FastMethod methodOne = fastClassOne.getMethod("getIndexed", new Class[] {int.class});
-        return new KeyedFastPropertyGetter(methodOne, index);
+        return new KeyedFastPropertyGetter(methodOne, index, SupportEventAdapterService.getService());
     }
 
     private KeyedFastPropertyGetter makeGetterTwo(String key)
     {
         FastClass fastClassTwo = FastClass.create(Thread.currentThread().getContextClassLoader(), SupportBeanCombinedProps.NestedLevOne.class);
         FastMethod methodTwo = fastClassTwo.getMethod("getMapped", new Class[] {String.class});
-        return new KeyedFastPropertyGetter(methodTwo, key);
+        return new KeyedFastPropertyGetter(methodTwo, key, SupportEventAdapterService.getService());
     }
 }

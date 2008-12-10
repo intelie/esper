@@ -11,6 +11,7 @@ package com.espertech.esper.event.property;
 import com.espertech.esper.event.*;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventPropertyGetter;
+import com.espertech.esper.client.PropertyAccessException;
 
 import java.util.List;
 import java.util.Map;
@@ -21,20 +22,20 @@ import java.util.Map;
 public class MapNestedPropertyGetter implements EventPropertyGetter
 {
     private final EventPropertyGetter[] getterChain;
-    private final BeanEventTypeFactory beanEventTypeFactory;
+    private final EventAdapterService eventAdaperService;
     private final int lastElementIndex;
 
     /**
      * Ctor.
      * @param getterChain is the chain of getters to retrieve each nested property
-     * @param beanEventTypeFactory is a factory for POJO bean event types
+     * @param eventAdaperService is a factory for POJO bean event types
      */
     public MapNestedPropertyGetter(List<EventPropertyGetter> getterChain,
-                                   BeanEventTypeFactory beanEventTypeFactory)
+                                   EventAdapterService eventAdaperService)
     {
         this.getterChain = getterChain.toArray(new EventPropertyGetter[getterChain.size()]);
         lastElementIndex = this.getterChain.length - 1;
-        this.beanEventTypeFactory = beanEventTypeFactory;
+        this.eventAdaperService = eventAdaperService;
     }
 
     public Object get(EventBean eventBean) throws PropertyAccessException
@@ -59,8 +60,8 @@ public class MapNestedPropertyGetter implements EventPropertyGetter
                 }
                 else
                 {
-                    BeanEventType type = beanEventTypeFactory.createBeanType(result.getClass().getName(), result.getClass(), false);
-                    eventBean = new BeanEventBean(result, type);
+                    BeanEventType type = eventAdaperService.getBeanEventTypeFactory().createBeanType(result.getClass().getName(), result.getClass(), false);
+                    eventBean = eventAdaperService.adapterForBean(result, type);
                 }
             }
             else
@@ -93,7 +94,7 @@ public class MapNestedPropertyGetter implements EventPropertyGetter
                 }
                 else
                 {
-                    BeanEventType type = beanEventTypeFactory.createBeanType(result.getClass().getName(), result.getClass(), false);
+                    BeanEventType type = eventAdaperService.getBeanEventTypeFactory().createBeanType(result.getClass().getName(), result.getClass(), false);
                     eventBean = new BeanEventBean(result, type);
                 }
             }
@@ -111,4 +112,9 @@ public class MapNestedPropertyGetter implements EventPropertyGetter
     {
         return null; // TODO
     }
+
+    public EventBean[] getFragmentArray(EventBean eventBean)
+    {
+        return null; // TODO
+    }    
 }

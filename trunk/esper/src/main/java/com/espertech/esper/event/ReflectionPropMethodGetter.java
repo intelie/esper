@@ -10,6 +10,7 @@ package com.espertech.esper.event;
 
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventPropertyGetter;
+import com.espertech.esper.client.PropertyAccessException;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -64,6 +65,11 @@ public final class ReflectionPropMethodGetter implements EventPropertyGetter
     }
 
     public EventBean getFragment(EventBean eventBean)
+    {
+        return null; // TODO
+    }
+
+    public EventBean[] getFragmentArray(EventBean eventBean)
     {
         return null; // TODO
     }

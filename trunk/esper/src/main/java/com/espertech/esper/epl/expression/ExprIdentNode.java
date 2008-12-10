@@ -9,7 +9,7 @@
 package com.espertech.esper.epl.expression;
 
 import com.espertech.esper.client.EventBean;
-import com.espertech.esper.event.PropertyAccessException;
+import com.espertech.esper.client.PropertyAccessException;
 import com.espertech.esper.client.EventPropertyGetter;
 import com.espertech.esper.collection.Pair;
 import com.espertech.esper.epl.core.*;
@@ -112,6 +112,11 @@ public class ExprIdentNode extends ExprNode
         propertyType = propertyInfoPair.getFirst().getPropertyType();
         resolvedPropertyName = propertyInfoPair.getFirst().getPropertyName();
         propertyGetter = propertyInfoPair.getFirst().getStreamEventType().getGetter(resolvedPropertyName);
+
+        if (propertyGetter == null)
+        {
+            throw new ExprValidationException("Property getter returned was invalid for property '" + unresolvedPropertyName + "'");
+        }
     }
 
     public Class getType()

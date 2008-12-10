@@ -10,6 +10,7 @@ package com.espertech.esper.event;
 
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventPropertyGetter;
+import com.espertech.esper.client.PropertyAccessException;
 
 import java.util.Map;
 
@@ -57,12 +58,33 @@ public class MapEventBeanPropertyGetter implements EventPropertyGetter
         return true; // Property exists as the property is not dynamic (unchecked)
     }
 
-    public EventBean getFragment(EventBean eventBean)
+    public EventBean getFragment(EventBean obj)
+    {
+        // The underlying is expected to be a map
+        if (!(obj.getUnderlying() instanceof Map))
+        {
+            throw new PropertyAccessException("Mismatched property getter to event bean type, " +
+                    "the underlying data object is not of type java.lang.Map");
+        }
+
+        Map map = (Map) obj.getUnderlying();
+
+        Object eventBean = map.get(propertyName);
+
+        if (eventBean == null)
+        {
+            return null;
+        }
+
+        return (EventBean) eventBean;
+    }
+
+    public Integer getIndexSize(EventBean eventBean)
     {
         return null; // TODO
     }
 
-    public Integer getIndexSize(EventBean eventBean)
+    public EventBean[] getFragmentArray(EventBean eventBean)
     {
         return null; // TODO
     }    

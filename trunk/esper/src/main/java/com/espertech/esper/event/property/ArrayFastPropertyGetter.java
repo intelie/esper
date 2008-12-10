@@ -10,7 +10,7 @@ package com.espertech.esper.event.property;
 
 import com.espertech.esper.client.EventPropertyGetter;
 import com.espertech.esper.client.EventBean;
-import com.espertech.esper.event.PropertyAccessException;
+import com.espertech.esper.client.PropertyAccessException;
 import net.sf.cglib.reflect.FastMethod;
 
 import java.lang.reflect.InvocationTargetException;
@@ -76,6 +76,11 @@ public class ArrayFastPropertyGetter implements EventPropertyGetter
     }
 
     public EventBean getFragment(EventBean eventBean)
+    {
+        return null; // TODO
+    }
+
+    public EventBean[] getFragmentArray(EventBean eventBean)
     {
         return null; // TODO
     }

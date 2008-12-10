@@ -12,6 +12,7 @@ import com.espertech.esper.support.bean.*;
 import com.espertech.esper.support.util.ArrayAssertionUtil;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventPropertyGetter;
+import com.espertech.esper.client.PropertyAccessException;
 
 public class TestMapEventType extends TestCase
 {

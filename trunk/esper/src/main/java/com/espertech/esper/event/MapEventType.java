@@ -15,6 +15,7 @@ import com.espertech.esper.util.GraphUtil;
 import com.espertech.esper.util.JavaClassHelper;
 
 import java.util.*;
+import java.lang.reflect.Array;
 
 /**
  * Implementation of the {@link EventType} interface for handling plain Maps containing name value pairs.
@@ -31,6 +32,7 @@ public class MapEventType implements EventTypeSPI
     private String[] propertyNames;       // Cache an array of property names so not to construct one frequently
     private EventPropertyDescriptor[] propertyDescriptors;
     private final Map<String, Class> simplePropertyTypes;     // Mapping of property name (simple-only) and type
+    private final Map<String, EventTypeFragment> fragmentPropertyTypes;     // Mapping of property name (simple-only) and fragment type
     private final Map<String, EventPropertyGetter> propertyGetters;   // Mapping of simple property name and getters
     private final Map<String, EventPropertyGetter> propertyGetterCache; // Mapping of all property names and getters
 
@@ -82,6 +84,7 @@ public class MapEventType implements EventTypeSPI
         propertyDescriptors = new EventPropertyDescriptor[simplePropertyTypes.size()];
         propertyGetters = new HashMap<String, EventPropertyGetter>();
         propertyGetterCache = new HashMap<String, EventPropertyGetter>();
+        fragmentPropertyTypes = new HashMap<String, EventTypeFragment>(); // TODO
 
         // Initialize getters and names array
         int index = 0;
@@ -147,6 +150,7 @@ public class MapEventType implements EventTypeSPI
         propertyGetterCache = new HashMap<String, EventPropertyGetter>();
         simplePropertyTypes = propertySet.getSimplePropertyTypes();
         propertyDescriptors = propertySet.getPropertyDescriptors().toArray(new EventPropertyDescriptor[propertySet.getPropertyDescriptors().size()]);
+        fragmentPropertyTypes = new HashMap<String, EventTypeFragment>(); // TODO
 
         hashCode = typeName.hashCode();
         for (Map.Entry<String, Class> entry : simplePropertyTypes.entrySet())
@@ -182,7 +186,7 @@ public class MapEventType implements EventTypeSPI
             }
 
             // parse, can be an indexed property
-            Property property = PropertyParser.parse(propertyName, eventAdapterService.getBeanEventTypeFactory(), false);
+            Property property = PropertyParser.parse(propertyName, eventAdapterService, false);
             if (!(property instanceof IndexedProperty))
             {
                 return null;
@@ -192,6 +196,10 @@ public class MapEventType implements EventTypeSPI
             if (type == null)
             {
                 return null;
+            }
+            else if (type instanceof EventType[])
+            {
+                return ((EventType[]) type)[0].getUnderlyingType(); 
             }
             if (!(type instanceof Class))
             {
@@ -226,7 +234,7 @@ public class MapEventType implements EventTypeSPI
         if (nestedType == null)
         {
             // parse, can be an indexed property
-            Property property = PropertyParser.parse(propertyMap, eventAdapterService.getBeanEventTypeFactory(), false);
+            Property property = PropertyParser.parse(propertyMap, eventAdapterService, false);
             if (!(property instanceof IndexedProperty))
             {
                 return null;
@@ -277,12 +285,12 @@ public class MapEventType implements EventTypeSPI
         // If there is a map value in the map, return the Object value if this is a dynamic property
         if (nestedType == Map.class)
         {
-            Property prop = PropertyParser.parse(propertyNested, eventAdapterService.getBeanEventTypeFactory(), isRootedDynamic);
+            Property prop = PropertyParser.parse(propertyNested, eventAdapterService, isRootedDynamic);
             return prop.getPropertyTypeMap(null, eventAdapterService);   // we don't have a definition of the nested props
         }
         else if (nestedType instanceof Map)
         {
-            Property prop = PropertyParser.parse(propertyNested, eventAdapterService.getBeanEventTypeFactory(), isRootedDynamic);
+            Property prop = PropertyParser.parse(propertyNested, eventAdapterService, isRootedDynamic);
             Map nestedTypes = (Map) nestedType;
             return prop.getPropertyTypeMap(nestedTypes, eventAdapterService);
         }
@@ -351,7 +359,7 @@ public class MapEventType implements EventTypeSPI
                 beanFactory = eventAdapterService.getBeanEventTypeFactory();
             }
 
-            Property prop = PropertyParser.parse(propertyName, beanFactory, false);
+            Property prop = PropertyParser.parse(propertyName, eventAdapterService, false);
             if (prop instanceof DynamicProperty)
             {
                 EventPropertyGetter getterDyn = prop.getGetterMap(null, eventAdapterService);
@@ -367,6 +375,12 @@ public class MapEventType implements EventTypeSPI
             if (type == null)
             {
                 return null;
+            }
+            if (type instanceof EventType[])
+            {
+                EventPropertyGetter getterArr = new MapEventBeanArrayIndexedPropertyGetter(indexedProp.getPropertyNameAtomic(), indexedProp.getIndex());
+                propertyGetterCache.put(propertyName, getterArr);
+                return getterArr;
             }
             // handle map type name in map
             if (!(type instanceof Class))
@@ -400,7 +414,7 @@ public class MapEventType implements EventTypeSPI
         if (nestedType == null)
         {
             // parse, can be an indexed property
-            Property property = PropertyParser.parse(propertyMap, eventAdapterService.getBeanEventTypeFactory(), false);
+            Property property = PropertyParser.parse(propertyMap, eventAdapterService, false);
             if (!(property instanceof IndexedProperty))
             {
                 return null;
@@ -435,6 +449,18 @@ public class MapEventType implements EventTypeSPI
                 propertyGetterCache.put(propertyName, typeGetter);
                 return typeGetter;
             }
+            else if (type instanceof EventType[])
+            {
+                EventType componentType = ((EventType[]) type)[0];
+                final EventPropertyGetter nestedGetter = componentType.getGetter(propertyNested);
+                if (nestedGetter == null)
+                {
+                    return null;
+                }
+                EventPropertyGetter typeGetter = new MapEventBeanArrayIndexedElementPropertyGetter(indexedProp.getPropertyNameAtomic(), indexedProp.getIndex(), nestedGetter);
+                propertyGetterCache.put(propertyName, typeGetter);
+                return typeGetter;
+            }
             else
             {
                 if (!(type instanceof Class))
@@ -463,7 +489,7 @@ public class MapEventType implements EventTypeSPI
         // The map contains another map, we resolve the property dynamically
         if (nestedType == Map.class)
         {
-            Property prop = PropertyParser.parse(propertyNested, eventAdapterService.getBeanEventTypeFactory(), isRootedDynamic);
+            Property prop = PropertyParser.parse(propertyNested, eventAdapterService, isRootedDynamic);
             EventPropertyGetter getterNestedMap = prop.getGetterMap(null, eventAdapterService);
             if (getterNestedMap == null)
             {
@@ -475,7 +501,7 @@ public class MapEventType implements EventTypeSPI
         }
         else if (nestedType instanceof Map)
         {
-            Property prop = PropertyParser.parse(propertyNested, eventAdapterService.getBeanEventTypeFactory(), isRootedDynamic);
+            Property prop = PropertyParser.parse(propertyNested, eventAdapterService, isRootedDynamic);
             Map nestedTypes = (Map) nestedType;
             EventPropertyGetter getterNestedMap = prop.getGetterMap(nestedTypes, eventAdapterService);
             if (getterNestedMap == null)
@@ -517,13 +543,14 @@ public class MapEventType implements EventTypeSPI
             propertyGetterCache.put(propertyName, getter);
             return getter;
         }
-        // TODO
-        /*
         else if (nestedType instanceof EventType[])
         {
-            // TODO
+            EventType[] typeArray = (EventType[]) nestedType;
+            Class underlying = typeArray[0].getUnderlyingType();
+            EventPropertyGetter beanArrGetter = new MapEventBeanArrayPropertyGetter(propertyMap, underlying);
+            propertyGetterCache.put(propertyName, beanArrGetter);
+            return beanArrGetter;            
         }
-        */
         else if (nestedType instanceof String)
         {
             String nestedName = nestedType.toString();
@@ -975,9 +1002,12 @@ public class MapEventType implements EventTypeSPI
             {
                 // Add EventType array itself as a property, type is expected to be first array element
                 EventType eventType = ((EventType[]) entry.getValue())[0];
-                simplePropertyTypes.put(name, eventType.getUnderlyingType());
+                Object prototypeArray = Array.newInstance(eventType.getUnderlyingType(), 0);
+                simplePropertyTypes.put(name, prototypeArray.getClass());
                 propertyNameList.add(name);
-                propertyDescriptors.add(new EventPropertyDescriptor(name, eventType.getUnderlyingType(), true, false, true, false, true));
+                EventPropertyGetter getter = new MapEventBeanArrayPropertyGetter(name, eventType.getUnderlyingType());
+                propertyGetters.put(name, getter);
+                propertyDescriptors.add(new EventPropertyDescriptor(name, eventType.getUnderlyingType(), false, false, true, false, true));
                 continue;
             }
 
@@ -1023,9 +1053,26 @@ public class MapEventType implements EventTypeSPI
         return metadata;
     }
 
-    public EventType getFragmentType(String property)
+    public EventTypeFragment getFragmentType(String propertyName)
     {
-        return null;  // TODO
+        EventTypeFragment type = fragmentPropertyTypes.get(propertyName);
+        if (type != null)
+        {
+            return type;
+        }
+
+        Object entry = nestableTypes.get(propertyName);
+        if (entry instanceof EventType)
+        {
+            return new EventTypeFragment((EventType) entry, false);
+        }
+        else if (entry instanceof EventType[])
+        {
+            return new EventTypeFragment((EventType) entry, true);
+        }
+
+        // TODO - test me
+        return null;
     }
 
     /**
@@ -1063,7 +1110,7 @@ public class MapEventType implements EventTypeSPI
 
         MapEventType other = (MapEventType) otherType;
 
-        if (!other.typeName.equals(this.typeName))
+        if ((metadata.getTypeClass() != EventTypeMetadata.TypeClass.ANONYMOUS) && (!other.typeName.equals(this.typeName)))
         {
             return "Type by name '" + otherType.getName() + "' is not the same name";
         }

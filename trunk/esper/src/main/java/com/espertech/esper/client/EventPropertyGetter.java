@@ -9,7 +9,7 @@
 package com.espertech.esper.client;
 
 import com.espertech.esper.client.EventBean;
-import com.espertech.esper.event.PropertyAccessException;
+import com.espertech.esper.client.PropertyAccessException;
 
 /**
  * Get property values from an event instance for a given event property.
@@ -24,7 +24,7 @@ public interface EventPropertyGetter
      * doesn't match the EventType it was obtained from, and to indicate other property access problems.
      * @param eventBean is the event to get the value of a property from
      * @return value of property in event
-     * @throws com.espertech.esper.event.PropertyAccessException to indicate that property access failed
+     * @throws PropertyAccessException to indicate that property access failed
      */
     public Object get(EventBean eventBean) throws PropertyAccessException;
 
@@ -43,8 +43,9 @@ public interface EventPropertyGetter
      */
     public boolean isExistsProperty(EventBean eventBean);
 
-    public EventBean getFragment(EventBean eventBean);
-    public Integer getIndexSize(EventBean eventBean);
+    public EventBean getFragment(EventBean eventBean) throws PropertyAccessException;
+    public EventBean[] getFragmentArray(EventBean eventBean) throws PropertyAccessException;
+    public Integer getIndexSize(EventBean eventBean) throws PropertyAccessException;
 }
 
 

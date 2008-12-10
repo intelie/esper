@@ -8,10 +8,7 @@
  **************************************************************************************/
 package com.espertech.esperio.representation.axiom;
 
-import com.espertech.esper.client.EPException;
-import com.espertech.esper.client.EventPropertyDescriptor;
-import com.espertech.esper.client.EventPropertyGetter;
-import com.espertech.esper.client.EventType;
+import com.espertech.esper.client.*;
 import com.espertech.esper.event.EventTypeMetadata;
 import com.espertech.esper.event.EventTypeSPI;
 import com.espertech.esper.event.TypedEventPropertyGetter;
@@ -196,7 +193,7 @@ public class AxiomXMLEventType implements EventTypeSPI
         return propertyDescriptors;
     }
 
-    public EventType getFragmentType(String property)
+    public EventTypeFragment getFragmentType(String property)
     {
         return null;   // TODO
     }

@@ -146,7 +146,7 @@ public interface EventType
      * Returns the event type for the given property name; Property expressions are not supported by this method.
      * This is useful for navigating nested properties that are itself objects or nested events
      * that are part of a result.
-     * TODO: add expression stanza
+     * TODO: is actually expression, include Javadoc expression stanza
      * <p>
      * Mapped, indexed or nested properties may not be queried via property expressions, however
      * the method does return the type of such properties if passed the property name only. The nested property
@@ -160,8 +160,8 @@ public interface EventType
      * <p>
      * Use the {@link #getPropertyDescriptors} method to obtain a list of properties for which a fragment event type
      * may be retrieved by this method.
-     * @param propertyExpression is the name of the property to return the event type
+     * @param propertyName is the name of the property to return the fragment event type
      * @return event type of the property
      */
-    public EventType getFragmentType(String propertyExpression);
+    public EventTypeFragment getFragmentType(String propertyName);
 }

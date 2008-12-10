@@ -8,13 +8,13 @@
  **************************************************************************************/
 package com.espertech.esper.event.vaevent;
 
-import com.espertech.esper.event.*;
 import com.espertech.esper.util.JavaClassHelper;
 import com.espertech.esper.util.SimpleTypeCaster;
 import com.espertech.esper.util.SimpleTypeCasterFactory;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.client.EventPropertyGetter;
+import com.espertech.esper.client.PropertyAccessException;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -189,7 +189,12 @@ public class VariantPropResolutionStrategyDefault implements VariantPropResoluti
                 public Integer getIndexSize(EventBean eventBean)
                 {
                     return null; // TODO
-                }                
+                }
+
+                public EventBean[] getFragmentArray(EventBean eventBean)
+                {
+                    return null; // TODO
+                }
             };
         }
         else
@@ -224,6 +229,11 @@ public class VariantPropResolutionStrategyDefault implements VariantPropResoluti
                 }
 
                 public Integer getIndexSize(EventBean eventBean)
+                {
+                    return null; // TODO
+                }
+
+                public EventBean[] getFragmentArray(EventBean eventBean)
                 {
                     return null; // TODO
                 }                

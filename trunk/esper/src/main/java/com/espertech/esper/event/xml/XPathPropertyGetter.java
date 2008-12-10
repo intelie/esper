@@ -14,8 +14,8 @@ import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 
 import com.espertech.esper.client.EventBean;
+import com.espertech.esper.client.PropertyAccessException;
 
-import com.espertech.esper.event.PropertyAccessException;
 import com.espertech.esper.event.TypedEventPropertyGetter;
 import com.espertech.esper.util.SimpleTypeParser;
 import com.espertech.esper.util.JavaClassHelper;
@@ -159,5 +159,10 @@ public class XPathPropertyGetter implements TypedEventPropertyGetter {
     public Integer getIndexSize(EventBean eventBean)
     {
         return null; // TODO
-    }    
+    }
+
+    public EventBean[] getFragmentArray(EventBean eventBean)
+    {
+        return null; // TODO
+    }
 }

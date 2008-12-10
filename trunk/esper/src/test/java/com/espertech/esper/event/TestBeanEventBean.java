@@ -7,6 +7,7 @@ import com.espertech.esper.support.event.SupportEventTypeFactory;
 import com.espertech.esper.support.event.SupportEventBeanFactory;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventType;
+import com.espertech.esper.client.PropertyAccessException;
 import junit.framework.TestCase;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -73,14 +74,18 @@ public class TestBeanEventBean extends TestCase
         assertEquals("0ma0", eventBean.get("array[0].mapped('0ma').value"));
         assertEquals("1ma1", eventBean.get("array[1].mapped('1mb').value"));
 
-        tryInvalid(eventBean, "array[0].mapprop('0ma').value");
-        tryInvalid(eventBean, "dummy");
-        tryInvalid(eventBean, "dummy[1]");
-        tryInvalid(eventBean, "dummy('dd')");
-        tryInvalid(eventBean, "dummy.dummy1");
+        tryInvalidGet(eventBean, "array[0].mapprop('0ma').value");
+        tryInvalidGet(eventBean, "dummy");
+        tryInvalidGet(eventBean, "dummy[1]");
+        tryInvalidGet(eventBean, "dummy('dd')");
+        tryInvalidGet(eventBean, "dummy.dummy1");
+
+        tryInvalidGetFragment(eventBean, "indexed");
+        tryInvalidGetIndex(eventBean, "indexed");
+        assertEquals(SupportBeanCombinedProps.NestedLevOne.class, eventBean.getFragment("indexed[0]").getEventType().getUnderlyingType());
     }
 
-    private static void tryInvalid(EventBean eventBean, String propName)
+    private static void tryInvalidGet(EventBean eventBean, String propName)
     {
         try
         {
@@ -94,6 +99,32 @@ public class TestBeanEventBean extends TestCase
 
         assertNull(eventBean.getEventType().getPropertyType(propName));
         assertNull(eventBean.getEventType().getGetter(propName));
+    }
+
+    private static void tryInvalidGetFragment(EventBean eventBean, String propName)
+    {
+        try
+        {
+            eventBean.getFragment(propName);
+            fail();
+        }
+        catch (PropertyAccessException ex)
+        {
+            // expected
+        }
+    }
+
+    private static void tryInvalidGetIndex(EventBean eventBean, String propName)
+    {
+        try
+        {
+            eventBean.getIndexSize(propName);
+            fail();
+        }
+        catch (PropertyAccessException ex)
+        {
+            // expected
+        }
     }
 
     private static final Log log = LogFactory.getLog(TestBeanEventBean.class);

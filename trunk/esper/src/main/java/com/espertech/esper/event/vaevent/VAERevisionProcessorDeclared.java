@@ -23,6 +23,7 @@ import com.espertech.esper.core.EPStatementHandle;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.client.EventPropertyGetter;
+import com.espertech.esper.client.PropertyAccessException;
 
 import java.util.*;
 
@@ -336,6 +337,11 @@ public class VAERevisionProcessorDeclared extends VAERevisionProcessorBase imple
                         return null; // TODO
                     }
 
+                    public EventBean[] getFragmentArray(EventBean eventBean)
+                    {
+                        return null; // TODO
+                    }
+
                     public Integer getIndexSize(EventBean eventBean)
                     {
                         return null; // TODO
@@ -370,6 +376,11 @@ public class VAERevisionProcessorDeclared extends VAERevisionProcessorBase imple
                     return null; // TODO
                 }
 
+                public EventBean[] getFragmentArray(EventBean eventBean)
+                {
+                    return null; // TODO
+                }
+
                 public Integer getIndexSize(EventBean eventBean)
                 {
                     return null; // TODO
@@ -398,7 +409,13 @@ public class VAERevisionProcessorDeclared extends VAERevisionProcessorBase imple
                 {
                     return true;
                 }
+
                 public EventBean getFragment(EventBean eventBean)
+                {
+                    return null; // TODO
+                }
+
+                public EventBean[] getFragmentArray(EventBean eventBean)
                 {
                     return null; // TODO
                 }

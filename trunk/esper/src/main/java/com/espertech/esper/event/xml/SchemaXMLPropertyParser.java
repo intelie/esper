@@ -23,7 +23,7 @@ import com.sun.org.apache.xerces.internal.xs.XSTypeDefinition;
 
 import com.espertech.esper.collection.Pair;
 import com.espertech.esper.epl.generated.EsperEPL2GrammarParser;
-import com.espertech.esper.event.PropertyAccessException;
+import com.espertech.esper.client.PropertyAccessException;
 import com.espertech.esper.event.TypedEventPropertyGetter;
 import com.espertech.esper.type.IntValue;
 import com.espertech.esper.type.StringValue;

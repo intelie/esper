@@ -1,20 +1,17 @@
 package com.espertech.esper.event;
 
-import junit.framework.*;
+import com.espertech.esper.client.*;
 import com.espertech.esper.support.bean.*;
+import com.espertech.esper.support.event.SupportEventAdapterService;
+import com.espertech.esper.support.event.EventTypeAssertionUtil;
 import com.espertech.esper.support.util.ArrayAssertionUtil;
-import com.espertech.esper.client.EventBean;
-import com.espertech.esper.client.EventType;
-import com.espertech.esper.client.EventPropertyGetter;
-import com.espertech.esper.client.EventPropertyDescriptor;
+import junit.framework.TestCase;
 
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 import java.io.Serializable;
+import java.util.*;
 
 public class TestBeanEventType extends TestCase
 {
-    private BeanEventTypeFactory beanEventTypeFactory;
     private BeanEventType eventTypeSimple;
     private BeanEventType eventTypeComplex;
     private BeanEventType eventTypeNested;
@@ -29,11 +26,9 @@ public class TestBeanEventType extends TestCase
 
     public void setUp()
     {
-        beanEventTypeFactory = new BeanEventAdapter(new ConcurrentHashMap<Class, BeanEventType>());
-
-        eventTypeSimple = new BeanEventType(null, SupportBeanSimple.class, beanEventTypeFactory, null, "1");
-        eventTypeComplex = new BeanEventType(null, SupportBeanComplexProps.class, beanEventTypeFactory, null, "2");
-        eventTypeNested = new BeanEventType(null, SupportBeanCombinedProps.class, beanEventTypeFactory, null, "3");
+        eventTypeSimple = new BeanEventType(null, SupportBeanSimple.class, SupportEventAdapterService.getService(), null, "1");
+        eventTypeComplex = new BeanEventType(null, SupportBeanComplexProps.class, SupportEventAdapterService.getService(), null, "2");
+        eventTypeNested = new BeanEventType(null, SupportBeanCombinedProps.class, SupportEventAdapterService.getService(), null, "3");
 
         objSimple = new SupportBeanSimple("a", 20);
         objComplex = SupportBeanComplexProps.makeDefaultBean();
@@ -42,6 +37,26 @@ public class TestBeanEventType extends TestCase
         eventSimple = new BeanEventBean(objSimple, eventTypeSimple);
         eventComplex = new BeanEventBean(objComplex, eventTypeComplex);
         eventNested = new BeanEventBean(objCombined, eventTypeNested);
+    }
+
+    public void testFragments()
+    {
+        EventTypeFragment nestedTypeFragment = eventTypeComplex.getFragmentType("nested");
+        EventType nestedType = nestedTypeFragment.getFragmentType();
+        assertEquals(SupportBeanComplexProps.SupportBeanSpecialGetterNested.class.getName(), nestedType.getName());
+        assertEquals(SupportBeanComplexProps.SupportBeanSpecialGetterNested.class, nestedType.getUnderlyingType());
+        assertEquals(String.class, nestedType.getPropertyType("nestedValue"));
+        assertNull(eventTypeComplex.getFragmentType("indexed[0]"));
+
+        assertNull(eventTypeNested.getFragmentType("indexed"));
+        nestedTypeFragment = eventTypeNested.getFragmentType("indexed[0]");
+        nestedType = nestedTypeFragment.getFragmentType();
+        assertEquals(SupportBeanCombinedProps.NestedLevOne.class.getName(), nestedType.getName());
+        assertEquals(SupportBeanCombinedProps.NestedLevOne.class, nestedType.getUnderlyingType());
+        assertEquals(Map.class, nestedType.getPropertyType("mapprop"));
+        
+        EventTypeAssertionUtil.assertConsistency(eventTypeComplex);
+        EventTypeAssertionUtil.assertConsistency(eventTypeNested);
     }
 
     public void testGetPropertyNames()
@@ -100,7 +115,7 @@ public class TestBeanEventType extends TestCase
         try
         {
             // test mismatch between bean and object
-            EventType type = beanEventTypeFactory.createBeanType(Object.class.getName(), Object.class, false);
+            EventType type = SupportEventAdapterService.getService().getBeanEventTypeFactory().createBeanType(Object.class.getName(), Object.class, false);
             EventBean eventBean = new BeanEventBean(new Object(), type);
             getter.get(eventBean);
             fail();
@@ -184,7 +199,7 @@ public class TestBeanEventType extends TestCase
 
     public void testGetDeepSuperTypes()
     {
-        BeanEventType type = new BeanEventType(null, ISupportAImplSuperGImplPlus.class, beanEventTypeFactory, null, "1");
+        BeanEventType type = new BeanEventType(null, ISupportAImplSuperGImplPlus.class, SupportEventAdapterService.getService(), null, "1");
 
         List<EventType> deepSuperTypes = new LinkedList<EventType>();
         for (Iterator<EventType> it = type.getDeepSuperTypes(); it.hasNext();)
@@ -192,6 +207,7 @@ public class TestBeanEventType extends TestCase
             deepSuperTypes.add(it.next());
         }
 
+        BeanEventTypeFactory beanEventTypeFactory = SupportEventAdapterService.getService().getBeanEventTypeFactory();
 
         assertEquals(5, deepSuperTypes.size());
         ArrayAssertionUtil.assertEqualsAnyOrder(
@@ -227,7 +243,7 @@ public class TestBeanEventType extends TestCase
 
     public void testGetSuperTypes()
     {
-        eventTypeSimple = new BeanEventType(null, ISupportAImplSuperGImplPlus.class, beanEventTypeFactory, null, "1");
+        eventTypeSimple = new BeanEventType(null, ISupportAImplSuperGImplPlus.class, SupportEventAdapterService.getService(), null, "1");
 
         EventType[] superTypes = eventTypeSimple.getSuperTypes();
         assertEquals(3, superTypes.length);
@@ -235,11 +251,11 @@ public class TestBeanEventType extends TestCase
         assertEquals(ISupportB.class, superTypes[1].getUnderlyingType());
         assertEquals(ISupportC.class, superTypes[2].getUnderlyingType());
 
-        eventTypeSimple = new BeanEventType(null, Object.class, beanEventTypeFactory, null, "2");
+        eventTypeSimple = new BeanEventType(null, Object.class, SupportEventAdapterService.getService(), null, "2");
         superTypes = eventTypeSimple.getSuperTypes();
         assertEquals(0, superTypes.length);
 
-        BeanEventType type = new BeanEventType(null, ISupportD.class, beanEventTypeFactory, null, "3");
+        BeanEventType type = new BeanEventType(null, ISupportD.class, SupportEventAdapterService.getService(), null, "3");
         assertEquals(3, type.getPropertyNames().length);
         ArrayAssertionUtil.assertEqualsAnyOrder(
                 type.getPropertyNames(),

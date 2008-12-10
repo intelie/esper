@@ -8,20 +8,20 @@
  **************************************************************************************/
 package com.espertech.esper.epl.core;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import com.espertech.esper.client.EventBean;
+import com.espertech.esper.client.EventPropertyGetter;
+import com.espertech.esper.client.EventType;
+import com.espertech.esper.client.EventTypeFragment;
 import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.epl.expression.ExprValidationException;
-import com.espertech.esper.epl.spec.SelectClauseExprCompiledSpec;
 import com.espertech.esper.epl.spec.InsertIntoDesc;
+import com.espertech.esper.epl.spec.SelectClauseExprCompiledSpec;
 import com.espertech.esper.epl.spec.SelectClauseStreamCompiledSpec;
 import com.espertech.esper.event.*;
 import com.espertech.esper.util.ExecutionPathDebugLog;
 import com.espertech.esper.util.JavaClassHelper;
-import com.espertech.esper.collection.Pair;
-import com.espertech.esper.client.EventBean;
-import com.espertech.esper.client.EventType;
-import com.espertech.esper.client.EventPropertyGetter;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import java.util.*;
 
@@ -44,7 +44,7 @@ public class SelectExprEvalProcessorStreams implements SelectExprProcessor
     private EventType resultEventType;
     private EventType underlyingEventType;
     private int underlyingStreamNumber;
-    private boolean underlyingIsTaggedEvent;
+    private boolean underlyingIsFragmentEvent;
     private EventPropertyGetter underlyingPropertyEventGetter;
 
     /**
@@ -109,15 +109,12 @@ public class SelectExprEvalProcessorStreams implements SelectExprProcessor
             {
                 // the tag.* syntax for :  select tag.* from pattern [tag = A]
                 underlyingStreamNumber = unaliasedStreams.get(0).getStreamNumber();
-                if (unaliasedStreams.get(0).isTaggedEvent())
+                if (unaliasedStreams.get(0).isFragmentEvent())
                 {
-                    TaggedCompositeEventType comp = (TaggedCompositeEventType) typeService.getEventTypes()[underlyingStreamNumber];
-                    Pair<EventType, String> pair = comp.getTaggedEventTypes().get(unaliasedStreams.get(0).getStreamAliasName());
-                    if (pair != null)
-                    {
-                        underlyingEventType = pair.getFirst();
-                    }
-                    underlyingIsTaggedEvent = true;
+                    EventType compositeMap = typeService.getEventTypes()[underlyingStreamNumber];
+                    EventTypeFragment fragment = compositeMap.getFragmentType(unaliasedStreams.get(0).getStreamAliasName());
+                    underlyingEventType = fragment.getFragmentType();
+                    underlyingIsFragmentEvent = true;
                 }
                 // the property.* syntax for :  select property.* from A
                 else if (unaliasedStreams.get(0).isProperty())
@@ -332,10 +329,10 @@ public class SelectExprEvalProcessorStreams implements SelectExprProcessor
         	}
 
             EventBean event = null;
-            if (underlyingIsTaggedEvent)
+            if (underlyingIsFragmentEvent)
             {
-                TaggedCompositeEventBean eventBean = (TaggedCompositeEventBean) eventsPerStream[underlyingStreamNumber];
-                event = eventBean.getEventBean(unaliasedStreams.get(0).getStreamAliasName());
+                EventBean eventBean = eventsPerStream[underlyingStreamNumber];
+                event = eventBean.getFragment(unaliasedStreams.get(0).getStreamAliasName());
             }
             else if (underlyingPropertyEventGetter != null)
             {
@@ -352,11 +349,11 @@ public class SelectExprEvalProcessorStreams implements SelectExprProcessor
 
             // Using a wrapper bean since we cannot use the same event type else same-type filters match.
             // Wrapping it even when not adding properties is very inexpensive.
-            return eventAdapterService.createWrapper(event, props, resultEventType);
+            return eventAdapterService.adaptorForWrapper(event, props, resultEventType);
         }
         else
         {
-        	return eventAdapterService.createMapFromValues(props, resultEventType);
+        	return eventAdapterService.adaptorForMap(props, resultEventType);
         }
     }
 

@@ -9,10 +9,7 @@
 package com.espertech.esper.event.xml;
 
 
-import com.espertech.esper.client.ConfigurationEventTypeXMLDOM;
-import com.espertech.esper.client.EPException;
-import com.espertech.esper.client.EventPropertyGetter;
-import com.espertech.esper.client.EventType;
+import com.espertech.esper.client.*;
 import com.espertech.esper.event.TypedEventPropertyGetter;
 import com.espertech.esper.event.EventTypeMetadata;
 
@@ -108,7 +105,7 @@ public class SimpleXMLEventType extends BaseXMLEventType {
         return getter;
     }
 
-    public EventType getFragmentType(String property)
+    public EventTypeFragment getFragmentType(String property)
     {
         return null;  // TODO
     }

@@ -64,11 +64,11 @@ public class CreateVariableView extends ViewSupport implements VariableChangeCal
         {
             Map<String, Object> valuesOld = new HashMap<String, Object>();
             valuesOld.put(variableName, oldValue);
-            EventBean eventOld = eventAdapterService.createMapFromValues(valuesOld, eventType);
+            EventBean eventOld = eventAdapterService.adaptorForMap(valuesOld, eventType);
 
             Map<String, Object> valuesNew = new HashMap<String, Object>();
             valuesNew.put(variableName, newValue);
-            EventBean eventNew = eventAdapterService.createMapFromValues(valuesNew, eventType);
+            EventBean eventNew = eventAdapterService.adaptorForMap(valuesNew, eventType);
 
             this.updateChildren(new EventBean[] {eventNew}, new EventBean[] {eventOld});
         }
@@ -89,7 +89,7 @@ public class CreateVariableView extends ViewSupport implements VariableChangeCal
         Object value = reader.getValue();
         Map<String, Object> values = new HashMap<String, Object>();
         values.put(variableName, value);
-        EventBean event = eventAdapterService.createMapFromValues(values, eventType);
+        EventBean event = eventAdapterService.adaptorForMap(values, eventType);
         return new SingleEventIterator(event);
     }
 }

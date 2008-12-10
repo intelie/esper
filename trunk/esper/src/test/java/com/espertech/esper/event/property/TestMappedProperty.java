@@ -5,6 +5,7 @@ import com.espertech.esper.client.EventBean;
 import com.espertech.esper.event.BeanEventType;
 import com.espertech.esper.support.bean.SupportBeanComplexProps;
 import com.espertech.esper.support.event.SupportEventBeanFactory;
+import com.espertech.esper.support.event.SupportEventAdapterService;
 import junit.framework.TestCase;
 
 public class TestMappedProperty extends TestCase
@@ -28,13 +29,13 @@ public class TestMappedProperty extends TestCase
         Object[] expected = new String[] {"valueOne", "valueTwo"};
         for (int i = 0; i < mapped.length; i++)
         {
-            EventPropertyGetter getter = mapped[i].getGetter(eventType);
+            EventPropertyGetter getter = mapped[i].getGetter(eventType, SupportEventAdapterService.getService());
             assertEquals(expected[i], getter.get(event));
         }
 
         // try invalid case
         MappedProperty mpd = new MappedProperty("dummy", "dummy");
-        assertNull(mpd.getGetter(eventType));
+        assertNull(mpd.getGetter(eventType, SupportEventAdapterService.getService()));
     }
 
     public void testGetPropertyType()

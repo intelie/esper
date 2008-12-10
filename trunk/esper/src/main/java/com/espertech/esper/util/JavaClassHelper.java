@@ -580,7 +580,7 @@ public class JavaClassHelper
     }
 
     /**
-     * Returns true if the class passed in is a Java built-in data type (primitive or wrapper) including String.
+     * Returns true if the class passed in is a Java built-in data type (primitive or wrapper) including String and 'null'.
      * @param clazz to check
      * @return true if built-in data type, or false if not
      */

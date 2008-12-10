@@ -147,7 +147,7 @@ public final class UnivariateStatisticsView extends ViewSupport implements Clone
         result.put(ViewFieldEnum.UNIVARIATE_STATISTICS__STDDEVPA.getName(), baseStatisticsBean.getXStandardDeviationPop());
         result.put(ViewFieldEnum.UNIVARIATE_STATISTICS__VARIANCE.getName(), baseStatisticsBean.getXVariance());
         result.put(ViewFieldEnum.UNIVARIATE_STATISTICS__AVERAGE.getName(), baseStatisticsBean.getXAverage());
-        return eventAdapterService.createMapFromValues(result, eventType);
+        return eventAdapterService.adaptorForMap(result, eventType);
     }
 
     /**

@@ -6,6 +6,7 @@ import junit.framework.TestCase;
 import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.event.SupportEventBeanFactory;
 import com.espertech.esper.client.EventBean;
+import com.espertech.esper.client.PropertyAccessException;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.logging.Log;
 

@@ -10,10 +10,7 @@ package com.espertech.esper.epl.db;
 
 import com.espertech.esper.view.View;
 import com.espertech.esper.view.HistoricalEventViewable;
-import com.espertech.esper.client.EventType;
-import com.espertech.esper.client.EventPropertyGetter;
-import com.espertech.esper.client.EventBean;
-import com.espertech.esper.event.PropertyAccessException;
+import com.espertech.esper.client.PropertyAccessException;
 import com.espertech.esper.epl.core.StreamTypeService;
 import com.espertech.esper.epl.core.PropertyResolutionDescriptor;
 import com.espertech.esper.epl.core.StreamTypesException;
@@ -24,7 +21,7 @@ import com.espertech.esper.epl.join.table.UnindexedEventTableList;
 import com.espertech.esper.epl.join.PollResultIndexingStrategy;
 import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.epl.variable.VariableReader;
-import com.espertech.esper.client.EPException;
+import com.espertech.esper.client.*;
 import com.espertech.esper.schedule.TimeProvider;
 import com.espertech.esper.collection.IterablesArrayIterator;
 
@@ -137,16 +134,9 @@ public class DatabasePollingViewable implements HistoricalEventViewable
                         return reader.getValue();
                     }
                     public boolean isExistsProperty(EventBean eventBean) {return true;}
-
-                    public EventBean getFragment(EventBean eventBean)
-                    {
-                        return null; // TODO
-                    }
-
-                    public Integer getIndexSize(EventBean eventBean)
-                    {
-                        return null; // TODO
-                    }                    
+                    public EventBean getFragment(EventBean eventBean) {return null;}
+                    public EventBean[] getFragmentArray(EventBean eventBean) {return null;}
+                    public Integer getIndexSize(EventBean eventBean) {return null;}
                 };
             }
 

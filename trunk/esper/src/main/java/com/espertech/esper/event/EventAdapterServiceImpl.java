@@ -66,7 +66,7 @@ public class EventAdapterServiceImpl implements EventAdapterService
 
         // Share the mapping of class to type with the type creation for thread safety
         typesPerJavaBean = new ConcurrentHashMap<Class, BeanEventType>();
-        beanEventAdapter = new BeanEventAdapter(typesPerJavaBean);
+        beanEventAdapter = new BeanEventAdapter(typesPerJavaBean, this);
         plugInRepresentations = new HashMap<URI, PlugInEventRepresentation>();
     }
 
@@ -173,7 +173,7 @@ public class EventAdapterServiceImpl implements EventAdapterService
         // handle built-in types
         if (eventType instanceof BeanEventType)
         {
-            return new EventSenderBean(runtimeEventSender, (BeanEventType) eventType);
+            return new EventSenderBean(runtimeEventSender, (BeanEventType) eventType, this);
         }
         if (eventType instanceof MapEventType)
         {
@@ -468,7 +468,7 @@ public class EventAdapterServiceImpl implements EventAdapterService
             throw new EventAdapterException("Event type alias '" + eventTypeAlias + "' has not been defined");
         }
 
-        return createMapFromValues(event, existingType);
+        return adaptorForMap(event, existingType);
     }
 
     public EventBean adapterForDOM(Node node)
@@ -550,7 +550,7 @@ public class EventAdapterServiceImpl implements EventAdapterService
         return type;
     }
 
-    public final EventBean createMapFromValues(Map<String, Object> properties, EventType eventType)
+    public final EventBean adaptorForMap(Map<String, Object> properties, EventType eventType)
     {
         return new MapEventBean(properties, eventType);
     }
@@ -700,7 +700,7 @@ public class EventAdapterServiceImpl implements EventAdapterService
         return createAnonymousMapType(types);
     }
 
-	public final EventBean createWrapper(EventBean event, Map<String, Object> properties, EventType eventType)
+	public final EventBean adaptorForWrapper(EventBean event, Map<String, Object> properties, EventType eventType)
 	{
         if (event instanceof WrapperEventBean)
         {
@@ -712,6 +712,11 @@ public class EventAdapterServiceImpl implements EventAdapterService
         {
             return new WrapperEventBean(event, properties, eventType);
         }
+    }
+
+    public final EventBean adapterForBean(Object bean, BeanEventType eventType)
+    {
+        return new BeanEventBean(bean, eventType);
     }
 
     public void addAutoAliasPackage(String javaPackageName)
@@ -771,12 +776,12 @@ public class EventAdapterServiceImpl implements EventAdapterService
             if (event instanceof WrapperEventBean)
             {
                 WrapperEventBean wrapper = (WrapperEventBean) event;
-                converted = createWrapper(wrapper.getUnderlyingEvent(), wrapper.getDecoratingProperties(), targetType);
+                converted = adaptorForWrapper(wrapper.getUnderlyingEvent(), wrapper.getDecoratingProperties(), targetType);
             }
             else if (event instanceof MapEventBean)
             {
                 MapEventBean mapEvent = (MapEventBean) event;
-                converted = this.createMapFromValues(mapEvent.getProperties(), targetType);
+                converted = this.adaptorForMap(mapEvent.getProperties(), targetType);
             }
             else
             {

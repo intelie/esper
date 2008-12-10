@@ -8,14 +8,14 @@
  **************************************************************************************/
 package com.espertech.esper.event.property;
 
-import com.espertech.esper.antlr.NoCaseSensitiveStream;
 import com.espertech.esper.antlr.ASTUtil;
-import com.espertech.esper.event.BeanEventTypeFactory;
-import com.espertech.esper.event.PropertyAccessException;
-import com.espertech.esper.type.IntValue;
-import com.espertech.esper.type.StringValue;
+import com.espertech.esper.antlr.NoCaseSensitiveStream;
+import com.espertech.esper.client.PropertyAccessException;
 import com.espertech.esper.epl.generated.EsperEPL2GrammarLexer;
 import com.espertech.esper.epl.generated.EsperEPL2GrammarParser;
+import com.espertech.esper.event.EventAdapterService;
+import com.espertech.esper.type.IntValue;
+import com.espertech.esper.type.StringValue;
 import com.espertech.esper.util.ExecutionPathDebugLog;
 import org.antlr.runtime.CharStream;
 import org.antlr.runtime.CommonTokenStream;
@@ -40,12 +40,12 @@ public class PropertyParser
     /**
      * Parse the given property name returning a Property instance for the property.
      * @param propertyName is the property name to parse
-     * @param beanEventTypeFactory is the chache and factory for event bean types and event wrappers
+     * @param eventAdapterService is the chache and factory for event bean types and event wrappers
      * @param isRootedDynamic is true to indicate that the property is already rooted in a dynamic
      * property and therefore all child properties should be dynamic properties as well
      * @return Property instance for property
      */
-    public static Property parse(String propertyName, BeanEventTypeFactory beanEventTypeFactory, boolean isRootedDynamic)
+    public static Property parse(String propertyName, EventAdapterService eventAdapterService, boolean isRootedDynamic)
     {
         CharStream input;
         try
@@ -97,7 +97,7 @@ public class PropertyParser
             properties.add(property);
         }
 
-        return new NestedProperty(properties, beanEventTypeFactory);
+        return new NestedProperty(properties, eventAdapterService);
     }
 
     private static Property makeProperty(Tree child, boolean isRootedInDynamic)

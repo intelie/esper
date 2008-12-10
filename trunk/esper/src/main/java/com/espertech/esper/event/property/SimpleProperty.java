@@ -12,6 +12,7 @@ import com.espertech.esper.event.*;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.client.EventPropertyGetter;
+import com.espertech.esper.client.PropertyAccessException;
 
 import java.util.Map;
 import java.io.StringWriter;
@@ -30,7 +31,7 @@ public class SimpleProperty extends PropertyBase
         super(propertyName);
     }
 
-    public EventPropertyGetter getGetter(BeanEventType eventType)
+    public EventPropertyGetter getGetter(BeanEventType eventType, EventAdapterService eventAdapterService)
     {
         InternalEventPropDescriptor propertyDesc = eventType.getSimpleProperty(propertyNameAtomic);
         if (propertyDesc == null)
@@ -136,7 +137,12 @@ public class SimpleProperty extends PropertyBase
             public Integer getIndexSize(EventBean eventBean)
             {
                 return null; // TODO
-            }            
+            }
+
+            public EventBean[] getFragmentArray(EventBean eventBean)
+            {
+                return null; // TODO
+            }
         };
     }
 

@@ -14,6 +14,7 @@ import com.espertech.esper.event.property.*;
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.client.EventPropertyGetter;
 import com.espertech.esper.client.EventPropertyDescriptor;
+import com.espertech.esper.client.EventTypeFragment;
 import com.espertech.esper.util.JavaClassHelper;
 
 import java.util.Iterator;
@@ -72,7 +73,7 @@ public class RevisionEventType implements EventTypeSPI
         int index = ASTFilterSpecHelper.unescapedIndexOfDot(propertyName);
         if (index == -1)
         {
-            Property prop = PropertyParser.parse(propertyName, eventAdapterService.getBeanEventTypeFactory(), false);
+            Property prop = PropertyParser.parse(propertyName, eventAdapterService, false);
             if (prop instanceof SimpleProperty)
             {
                 // there is no such property since it wasn't found earlier
@@ -100,7 +101,7 @@ public class RevisionEventType implements EventTypeSPI
             }
             Class nestedClass = (Class) desc.getPropertyType();
             BeanEventType complexProperty = (BeanEventType) eventAdapterService.addBeanType(nestedClass.getName(), nestedClass, false);
-            return prop.getGetter(complexProperty);
+            return prop.getGetter(complexProperty, eventAdapterService);
         }
 
         // Map event types allow 2 types of properties inside:
@@ -229,7 +230,7 @@ public class RevisionEventType implements EventTypeSPI
         return propertyDescriptors;
     }
 
-    public EventType getFragmentType(String property)
+    public EventTypeFragment getFragmentType(String property)
     {
         return null;  // TODO
     }

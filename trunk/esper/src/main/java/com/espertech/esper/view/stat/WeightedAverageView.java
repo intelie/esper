@@ -132,13 +132,13 @@ public final class WeightedAverageView extends ViewSupport implements CloneableV
         {
             Map<String, Object> newDataMap = new HashMap<String, Object>();
             newDataMap.put(ViewFieldEnum.WEIGHTED_AVERAGE__AVERAGE.getName(), currentValue);
-            EventBean newDataEvent = statementContext.getEventAdapterService().createMapFromValues(newDataMap, eventType);
+            EventBean newDataEvent = statementContext.getEventAdapterService().adaptorForMap(newDataMap, eventType);
 
             if (lastNewEvent == null)
             {
                 Map<String, Object> oldDataMap = new HashMap<String, Object>();
                 oldDataMap.put(ViewFieldEnum.WEIGHTED_AVERAGE__AVERAGE.getName(), oldValue);
-                EventBean oldDataEvent = statementContext.getEventAdapterService().createMapFromValues(oldDataMap, eventType);
+                EventBean oldDataEvent = statementContext.getEventAdapterService().adaptorForMap(oldDataMap, eventType);
 
                 updateChildren(new EventBean[] {newDataEvent}, new EventBean[] {oldDataEvent});
             }
@@ -159,7 +159,7 @@ public final class WeightedAverageView extends ViewSupport implements CloneableV
     {
         Map<String, Object> newDataMap = new HashMap<String, Object>();
         newDataMap.put(ViewFieldEnum.WEIGHTED_AVERAGE__AVERAGE.getName(), currentValue);
-        return new SingleEventIterator(statementContext.getEventAdapterService().createMapFromValues(newDataMap, eventType));
+        return new SingleEventIterator(statementContext.getEventAdapterService().adaptorForMap(newDataMap, eventType));
     }
 
     public final String toString()

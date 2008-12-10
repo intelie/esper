@@ -12,7 +12,7 @@ import com.espertech.esper.collection.MultiKeyUntyped;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.client.EventPropertyGetter;
-import com.espertech.esper.event.PropertyAccessException;
+import com.espertech.esper.client.PropertyAccessException;
 
 /**
  * Revision event bean for the overlayed scheme.
@@ -144,9 +144,19 @@ public class RevisionEventBeanDeclared implements EventBean
         EventPropertyGetter getter = revisionEventType.getGetter(propertyExpression);
         if (getter == null)
         {
-            throw new IllegalArgumentException("Property named '" + propertyExpression + "' is not a valid property name for this type");
+            throw new PropertyAccessException("Property named '" + propertyExpression + "' is not a valid property name for this type");
         }
         return getter.getFragment(this);
+    }
+
+    public EventBean[] getFragmentArray(String propertyExpression)
+    {
+        EventPropertyGetter getter = revisionEventType.getGetter(propertyExpression);
+        if (getter == null)
+        {
+            throw new PropertyAccessException("Property named '" + propertyExpression + "' is not a valid property name for this type");
+        }
+        return getter.getFragmentArray(this);
     }
 
     public Integer getIndexSize(String propertyExpression)
@@ -154,7 +164,7 @@ public class RevisionEventBeanDeclared implements EventBean
         EventPropertyGetter getter = revisionEventType.getGetter(propertyExpression);
         if (getter == null)
         {
-            throw new IllegalArgumentException("Property named '" + propertyExpression + "' is not a valid property name for this type");
+            throw new PropertyAccessException("Property named '" + propertyExpression + "' is not a valid property name for this type");
         }
         return getter.getIndexSize(this);
     }
