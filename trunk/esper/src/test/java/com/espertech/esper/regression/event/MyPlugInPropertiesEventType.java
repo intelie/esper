@@ -86,6 +86,11 @@ public class MyPlugInPropertiesEventType implements EventType
         return new EventPropertyDescriptor[0];  // TODO
     }
 
+    public EventPropertyDescriptor getPropertyDescriptor(String propertyName)
+    {
+        return null;  // TODO
+    }
+
     public EventTypeFragment getFragmentType(String property)
     {
         return null;  // TODO

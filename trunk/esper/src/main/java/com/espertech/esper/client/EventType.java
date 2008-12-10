@@ -102,6 +102,19 @@ public interface EventType
     public EventPropertyDescriptor[] getPropertyDescriptors();
 
     /**
+     * Get the property descriptor for a given property of the event, or null
+     * if a property by that name was not found.
+     * <p>
+     * The property name parameter does accept a property expression. It therefore does not allow the indexed, mapped or nested property expression syntax
+     * and only returns the descriptor for the event type's known properties.  
+     * <p>
+     * The method does not return property names of inner or nested types.
+     * @param propertyName property name
+     * @return descriptor for the named property
+     */
+    public EventPropertyDescriptor getPropertyDescriptor(String propertyName);
+
+    /**
      * Check that the given property name is valid for this event type, ie. that is exists in the event type.
      * <p>
      * The method takes a property name or property expression as a parameter.

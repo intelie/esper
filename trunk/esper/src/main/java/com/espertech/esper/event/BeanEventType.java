@@ -43,6 +43,7 @@ public class BeanEventType implements EventTypeSPI, NativeEventType
 
     private final Map<String, EventPropertyGetter> propertyGetterCache;
     private EventPropertyDescriptor[] propertyDescriptors;
+    private Map<String, EventPropertyDescriptor> propertyDescriptorMap;
 
     /**
      * Constructor takes a java bean class as an argument.
@@ -79,6 +80,11 @@ public class BeanEventType implements EventTypeSPI, NativeEventType
     {
         return metadata.getPublicName();
     }
+
+    public EventPropertyDescriptor getPropertyDescriptor(String propertyName)
+    {
+        return propertyDescriptorMap.get(propertyName);
+    }    
 
     public final Class getPropertyType(String propertyName)
     {
@@ -278,6 +284,7 @@ public class BeanEventType implements EventTypeSPI, NativeEventType
         List<InternalEventPropDescriptor> properties = propertyListBuilder.assessProperties(clazz);
 
         this.propertyDescriptors = new EventPropertyDescriptor[properties.size()];
+        this.propertyDescriptorMap = new HashMap<String, EventPropertyDescriptor>();
         this.propertyNames = new String[properties.size()];
         this.simpleProperties = new HashMap<String, SimplePropertyInfo>();
         this.mappedPropertyDescriptors = new HashMap<String, InternalEventPropDescriptor>();
@@ -438,8 +445,10 @@ public class BeanEventType implements EventTypeSPI, NativeEventType
             }
 
             propertyNames[count] = desc.getListedName();
-            propertyDescriptors[count++] = new EventPropertyDescriptor(desc.getPropertyName(),
+            EventPropertyDescriptor descriptor = new EventPropertyDescriptor(desc.getPropertyName(),
                 underlyingType, isRequiresIndex, isRequiresMapkey, isIndexed, isMapped, isFragment);
+            propertyDescriptors[count++] = descriptor; 
+            propertyDescriptorMap.put(descriptor.getPropertyName(), descriptor);                    
         }
 
         // Determine event type super types

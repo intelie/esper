@@ -37,27 +37,34 @@ public class EventTypeAssertionUtil
         {
             // assert property name expansion
             String propertyName = properties[i].getPropertyName();
-            if (properties[i].isRequiresIndex())
-            {
-                propertyNames.add(propertyName + "[]");
-            }
-            if (properties[i].isRequiresMapkey())
-            {
-                propertyNames.add(propertyName + "()");
-            }
+            propertyNames.add(propertyName);
+            String failedMessage = "failed assertion for property '" + propertyName + "' ";
 
-            // assert type
-            Assert.assertSame("failed assertion for property '" + propertyName + "' ", eventType.getPropertyType(propertyName), properties[i].getPropertyType());
+            // assert presence and type
+            Assert.assertTrue(failedMessage, eventType.isProperty(propertyName));
+            Assert.assertNotNull(failedMessage, eventType.getGetter(propertyName));
+            Assert.assertSame(failedMessage, eventType.getPropertyType(propertyName), properties[i].getPropertyType());
 
             // test indexed property
             if (properties[i].isIndexed())
             {
-                Assert.assertNotNull(eventType.getPropertyType(propertyName));
-                Assert.assertNotNull(eventType.getPropertyType(propertyName + "[0]"));
+                String propertyNameIndexed = propertyName + "[0]";
+                Assert.assertNotNull(failedMessage, eventType.getPropertyType(propertyNameIndexed));
+                Assert.assertNotNull(failedMessage, eventType.getGetter(propertyNameIndexed));
+                Assert.assertTrue(failedMessage, eventType.isProperty(propertyName));
+            }
+
+            // test mapped property
+            if (properties[i].isMapped())
+            {
+                String propertyNameMapped = propertyName + "('a')";
+                Assert.assertNotNull(failedMessage, eventType.getPropertyType(propertyNameMapped));
+                Assert.assertNotNull(failedMessage, eventType.getGetter(propertyNameMapped));
+                Assert.assertTrue(failedMessage, eventType.isProperty(propertyName));
             }
         }
 
-        // assert same names
+        // assert same property names
         ArrayAssertionUtil.assertEqualsAnyOrder(eventType.getPropertyNames(), propertyNames.toArray());
     }
 

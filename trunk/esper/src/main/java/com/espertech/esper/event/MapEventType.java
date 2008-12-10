@@ -14,8 +14,8 @@ import com.espertech.esper.event.property.*;
 import com.espertech.esper.util.GraphUtil;
 import com.espertech.esper.util.JavaClassHelper;
 
-import java.util.*;
 import java.lang.reflect.Array;
+import java.util.*;
 
 /**
  * Implementation of the {@link EventType} interface for handling plain Maps containing name value pairs.
@@ -31,6 +31,8 @@ public class MapEventType implements EventTypeSPI
     // Simple (not-nested) properties are stored here
     private String[] propertyNames;       // Cache an array of property names so not to construct one frequently
     private EventPropertyDescriptor[] propertyDescriptors;
+    private Map<String, EventPropertyDescriptor> propertyDescriptorMap;
+
     private final Map<String, Class> simplePropertyTypes;     // Mapping of property name (simple-only) and type
     private final Map<String, EventTypeFragment> fragmentPropertyTypes;     // Mapping of property name (simple-only) and fragment type
     private final Map<String, EventPropertyGetter> propertyGetters;   // Mapping of simple property name and getters
@@ -82,6 +84,7 @@ public class MapEventType implements EventTypeSPI
         hashCode = typeName.hashCode();
         propertyNames = new String[simplePropertyTypes.size()];
         propertyDescriptors = new EventPropertyDescriptor[simplePropertyTypes.size()];
+        propertyDescriptorMap = new HashMap<String, EventPropertyDescriptor>();
         propertyGetters = new HashMap<String, EventPropertyGetter>();
         propertyGetterCache = new HashMap<String, EventPropertyGetter>();
         fragmentPropertyTypes = new HashMap<String, EventTypeFragment>(); // TODO
@@ -99,6 +102,7 @@ public class MapEventType implements EventTypeSPI
             propertyGetters.put(name, getter);
             propertyNames[index] = name;
             propertyDescriptors[index] = new EventPropertyDescriptor(name, underlyingType, false, false, false, false, isFragment);
+            propertyDescriptorMap.put(name, propertyDescriptors[index]);
             index++;
         }
 
@@ -150,6 +154,11 @@ public class MapEventType implements EventTypeSPI
         propertyGetterCache = new HashMap<String, EventPropertyGetter>();
         simplePropertyTypes = propertySet.getSimplePropertyTypes();
         propertyDescriptors = propertySet.getPropertyDescriptors().toArray(new EventPropertyDescriptor[propertySet.getPropertyDescriptors().size()]);
+        propertyDescriptorMap = new HashMap<String, EventPropertyDescriptor>();
+        for (EventPropertyDescriptor desc : propertyDescriptors)
+        {
+            propertyDescriptorMap.put(desc.getPropertyName(), desc);                                
+        }
         fragmentPropertyTypes = new HashMap<String, EventTypeFragment>(); // TODO
 
         hashCode = typeName.hashCode();
@@ -930,7 +939,11 @@ public class MapEventType implements EventTypeSPI
             }
             propertyNames = allProperties.toArray(new String[allProperties.size()]);
             Collection<EventPropertyDescriptor> descs = allDescriptors.values();
-            propertyDescriptors =  descs.toArray(new EventPropertyDescriptor[descs.size()]);
+            propertyDescriptors = descs.toArray(new EventPropertyDescriptor[descs.size()]);
+            for (EventPropertyDescriptor desc : propertyDescriptors)
+            {
+                propertyDescriptorMap.put(desc.getPropertyName(), desc);
+            }            
         }
     }
 
@@ -1047,6 +1060,11 @@ public class MapEventType implements EventTypeSPI
 
         return new PropertySetDescriptor(propertyNameList, propertyDescriptors, simplePropertyTypes, propertyGetters);
     }
+
+    public EventPropertyDescriptor getPropertyDescriptor(String propertyName)
+    {
+        return propertyDescriptorMap.get(propertyName);
+    }    
 
     public EventTypeMetadata getMetadata()
     {

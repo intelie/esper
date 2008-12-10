@@ -43,6 +43,7 @@ public class AxiomXMLEventType implements EventTypeSPI
     private Map<String, TypedEventPropertyGetter> propertyGetterCache;
     private String[] propertyNames;
     private EventPropertyDescriptor[] propertyDescriptors;
+    private Map<String, EventPropertyDescriptor> propertyDescriptorMap;
 
     /**
      * Ctor.
@@ -96,11 +97,14 @@ public class AxiomXMLEventType implements EventTypeSPI
 
         propertyNames = new String[propertyGetterCache.size()];
         propertyDescriptors = new EventPropertyDescriptor[propertyGetterCache.size()];
+        propertyDescriptorMap = new HashMap<String, EventPropertyDescriptor>();
         int count = 0;
         for (Map.Entry<String, TypedEventPropertyGetter> entry : propertyGetterCache.entrySet())
         {
             propertyNames[count] = entry.getKey();
-            propertyDescriptors[count] = new EventPropertyDescriptor(entry.getKey(), entry.getValue().getResultClass(), false, false, false, false, false);
+            EventPropertyDescriptor desc = new EventPropertyDescriptor(entry.getKey(), entry.getValue().getResultClass(), false, false, false, false, false);
+            propertyDescriptors[count] = desc;
+            propertyDescriptorMap.put(desc.getPropertyName(), desc);
             count++;
         }
     }
@@ -197,4 +201,9 @@ public class AxiomXMLEventType implements EventTypeSPI
     {
         return null;   // TODO
     }
+
+    public EventPropertyDescriptor getPropertyDescriptor(String propertyName)
+    {
+        return propertyDescriptorMap.get(propertyName);
+    }    
 }

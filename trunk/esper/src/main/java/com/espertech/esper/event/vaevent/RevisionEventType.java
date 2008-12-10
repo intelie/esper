@@ -8,15 +8,19 @@
  **************************************************************************************/
 package com.espertech.esper.event.vaevent;
 
-import com.espertech.esper.epl.parse.ASTFilterSpecHelper;
-import com.espertech.esper.event.*;
-import com.espertech.esper.event.property.*;
-import com.espertech.esper.client.EventType;
-import com.espertech.esper.client.EventPropertyGetter;
 import com.espertech.esper.client.EventPropertyDescriptor;
+import com.espertech.esper.client.EventPropertyGetter;
+import com.espertech.esper.client.EventType;
 import com.espertech.esper.client.EventTypeFragment;
+import com.espertech.esper.epl.parse.ASTFilterSpecHelper;
+import com.espertech.esper.event.BeanEventType;
+import com.espertech.esper.event.EventAdapterService;
+import com.espertech.esper.event.EventTypeMetadata;
+import com.espertech.esper.event.EventTypeSPI;
+import com.espertech.esper.event.property.*;
 import com.espertech.esper.util.JavaClassHelper;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
@@ -29,6 +33,7 @@ public class RevisionEventType implements EventTypeSPI
     private final EventTypeMetadata metadata;
     private String[] propertyNames;
     private EventPropertyDescriptor[] propertyDescriptors;
+    private Map<String, EventPropertyDescriptor> propertyDescriptorMap;
     private Map<String, RevisionPropertyTypeDesc> propertyDesc;
     private EventAdapterService eventAdapterService;
 
@@ -47,11 +52,14 @@ public class RevisionEventType implements EventTypeSPI
         this.eventAdapterService = eventAdapterService;
 
         propertyDescriptors = new EventPropertyDescriptor[propertyDesc.size()];
+        propertyDescriptorMap = new HashMap<String, EventPropertyDescriptor>();
         int count = 0;
         for (Map.Entry<String, RevisionPropertyTypeDesc> desc : propertyDesc.entrySet())
         {
             Class type = (Class) desc.getValue().getPropertyType();
-            propertyDescriptors[count++] = new EventPropertyDescriptor(desc.getKey(), type, false, false, false, false, !JavaClassHelper.isJavaBuiltinDataType(type));
+            EventPropertyDescriptor descriptor = new EventPropertyDescriptor(desc.getKey(), type, false, false, false, false, !JavaClassHelper.isJavaBuiltinDataType(type));
+            propertyDescriptors[count] = descriptor;
+            propertyDescriptorMap.put(desc.getKey(), descriptor);                    
         }
     }
 
@@ -233,5 +241,10 @@ public class RevisionEventType implements EventTypeSPI
     public EventTypeFragment getFragmentType(String property)
     {
         return null;  // TODO
+    }
+
+    public EventPropertyDescriptor getPropertyDescriptor(String propertyName)
+    {
+        return propertyDescriptorMap.get(propertyName);
     }
 }

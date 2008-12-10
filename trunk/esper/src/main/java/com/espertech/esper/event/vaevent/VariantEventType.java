@@ -31,6 +31,7 @@ public class VariantEventType implements EventTypeSPI
     private final Map<String, VariantPropertyDesc> propertyDesc;
     private final String[] propertyNames;
     private final EventPropertyDescriptor[] propertyDescriptors;
+    private final Map<String, EventPropertyDescriptor> propertyDescriptorMap;
 
     /**
      * Ctor.
@@ -64,11 +65,14 @@ public class VariantEventType implements EventTypeSPI
 
         // for each of the properties in each type, attempt to load the property to build a property list
         propertyDescriptors = new EventPropertyDescriptor[propertyDesc.size()];
+        propertyDescriptorMap = new HashMap<String, EventPropertyDescriptor>();
         int count = 0;
         for (Map.Entry<String, VariantPropertyDesc> desc : propertyDesc.entrySet())
         {
             Class type = desc.getValue().getPropertyType();
-            propertyDescriptors[count++] = new EventPropertyDescriptor(desc.getKey(), type, false, false, false, false, !JavaClassHelper.isJavaBuiltinDataType(desc.getValue().getPropertyType()));
+            EventPropertyDescriptor descriptor = new EventPropertyDescriptor(desc.getKey(), type, false, false, false, false, !JavaClassHelper.isJavaBuiltinDataType(desc.getValue().getPropertyType()));
+            propertyDescriptors[count++] = descriptor;
+            propertyDescriptorMap.put(desc.getKey(), descriptor);
         }
     }
 
@@ -161,6 +165,11 @@ public class VariantEventType implements EventTypeSPI
     {
         return propertyDescriptors; 
     }
+
+    public EventPropertyDescriptor getPropertyDescriptor(String propertyName)
+    {
+        return propertyDescriptorMap.get(propertyName);
+    }    
 
     public EventTypeFragment getFragmentType(String property)
     {

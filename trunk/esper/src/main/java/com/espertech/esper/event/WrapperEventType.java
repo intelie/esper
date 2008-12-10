@@ -44,6 +44,8 @@ public class WrapperEventType implements EventTypeSPI
 
     private final String[] propertyNames;
     private final EventPropertyDescriptor[] propertyDesc;
+    private final Map<String, EventPropertyDescriptor> propertyDescriptorMap;
+
     private final int hashCode;
     private final boolean isNoMapProperties;
     private final String typeName;
@@ -81,13 +83,16 @@ public class WrapperEventType implements EventTypeSPI
 		this.propertyNames = propertyNames.toArray(new String[0]);
 
         List<EventPropertyDescriptor> propertyDesc = new ArrayList<EventPropertyDescriptor>();
+        propertyDescriptorMap = new HashMap<String, EventPropertyDescriptor>();
 		for(EventPropertyDescriptor eventProperty : underlyingEventType.getPropertyDescriptors())
 		{
 			propertyDesc.add(eventProperty);
+            propertyDescriptorMap.put(eventProperty.getPropertyName(), eventProperty);
 		}
 		for(EventPropertyDescriptor mapProperty : underlyingMapType.getPropertyDescriptors())
 		{
 			propertyDesc.add(mapProperty);
+            propertyDescriptorMap.put(mapProperty.getPropertyName(), mapProperty);                    
 		}
 		this.propertyDesc = propertyDesc.toArray(new EventPropertyDescriptor[propertyDesc.size()]);
 
@@ -295,6 +300,11 @@ public class WrapperEventType implements EventTypeSPI
     public EventPropertyDescriptor[] getPropertyDescriptors()
     {
         return propertyDesc;
+    }
+
+    public EventPropertyDescriptor getPropertyDescriptor(String propertyName)
+    {
+        return propertyDescriptorMap.get(propertyName);
     }
 
     public EventTypeFragment getFragmentType(String property)

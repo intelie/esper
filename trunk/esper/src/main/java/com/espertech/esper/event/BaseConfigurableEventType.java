@@ -12,6 +12,7 @@ import com.espertech.esper.client.EventPropertyDescriptor;
 import com.espertech.esper.client.EventPropertyGetter;
 
 import java.util.Map;
+import java.util.HashMap;
 
 /**
  * EventType than can be supplied with a preconfigured list of properties getters (aka. explicit properties).
@@ -23,6 +24,7 @@ public abstract class BaseConfigurableEventType implements EventTypeSPI {
     private Class underlyngType;
 	private Map<String,TypedEventPropertyGetter> explicitProperties;
     private EventPropertyDescriptor[] propertyDescriptors;
+    private Map<String, EventPropertyDescriptor> propertyDescriptorMap;
     private String[] propertyNames;
 
     /**
@@ -51,12 +53,15 @@ public abstract class BaseConfigurableEventType implements EventTypeSPI {
 
         propertyDescriptors = new EventPropertyDescriptor[explicitProperties.size()];
         propertyNames = new String[explicitProperties.size()];
+        propertyDescriptorMap = new HashMap<String, EventPropertyDescriptor>();
 
         int count = 0;
         for (Map.Entry<String, TypedEventPropertyGetter> entry : explicitProperties.entrySet())
         {
             propertyNames[count] = entry.getKey();
-            propertyDescriptors[count] = new EventPropertyDescriptor(entry.getKey(), entry.getValue().getResultClass(), false,false,false,false,false);
+            EventPropertyDescriptor desc = new EventPropertyDescriptor(entry.getKey(), entry.getValue().getResultClass(), false,false,false,false,false);
+            propertyDescriptors[count] = desc;
+            propertyDescriptorMap.put(desc.getPropertyName(), desc);
             count++;
         }
     }
@@ -111,4 +116,9 @@ public abstract class BaseConfigurableEventType implements EventTypeSPI {
     {
         return metadata;
     }
+
+    public EventPropertyDescriptor getPropertyDescriptor(String propertyName)
+    {
+        return propertyDescriptorMap.get(propertyName);
+    }    
 }
