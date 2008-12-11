@@ -21,10 +21,8 @@ public class TestMTStmtNamedWindowIterate extends TestCase
     public void setUp()
     {
         Configuration configuration = SupportConfigFactory.getConfiguration();
-        configuration.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
         engine = EPServiceProviderManager.getDefaultProvider(configuration);
         engine.initialize();
-        engine.getEPRuntime().sendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
 
         engine.getEPAdministrator().createEPL(
                 "create window MyWindow.std:groupby(string).win:keepall() as select string, longPrimitive from " + SupportBean.class.getName());

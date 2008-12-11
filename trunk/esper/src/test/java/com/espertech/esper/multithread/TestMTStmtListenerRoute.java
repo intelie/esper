@@ -27,7 +27,6 @@ public class TestMTStmtListenerRoute extends TestCase
     public void setUp()
     {
         Configuration configuration = SupportConfigFactory.getConfiguration();
-        configuration.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
         engine = EPServiceProviderManager.getDefaultProvider(configuration);
     }
 

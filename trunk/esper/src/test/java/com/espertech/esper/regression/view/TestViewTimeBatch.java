@@ -18,7 +18,6 @@ public class TestViewTimeBatch extends TestCase
         listener = new SupportUpdateListener();
         Configuration config = SupportConfigFactory.getConfiguration();
         config.addEventTypeAlias("SupportBean", SupportBean.class);
-        config.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
         epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();
     }

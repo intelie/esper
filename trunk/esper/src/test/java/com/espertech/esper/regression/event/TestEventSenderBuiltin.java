@@ -33,7 +33,6 @@ public class TestEventSenderBuiltin extends TestCase
     public void testSenderPOJO() throws Exception
     {
         Configuration configuration = SupportConfigFactory.getConfiguration();
-        configuration.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
         configuration.addEventTypeAlias("SupportBean", SupportBean.class);
         configuration.addEventTypeAlias("Marker", SupportMarkerInterface.class);
 
@@ -79,7 +78,6 @@ public class TestEventSenderBuiltin extends TestCase
     public void testSenderMap() throws Exception
     {
         Configuration configuration = SupportConfigFactory.getConfiguration();
-        configuration.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
         Map<String, Object> myMapType = makeMap(new Object[][] {{"f1", Integer.class}});
         configuration.addNestableEventTypeAlias("MyMap", myMapType);
 
@@ -111,7 +109,6 @@ public class TestEventSenderBuiltin extends TestCase
     public void testXML() throws Exception
     {
         Configuration configuration = SupportConfigFactory.getConfiguration();
-        configuration.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
         ConfigurationEventTypeXMLDOM xmlDOMEventTypeDesc = new ConfigurationEventTypeXMLDOM();
         xmlDOMEventTypeDesc.setRootElementName("a");
         xmlDOMEventTypeDesc.addXPathProperty("element1", "/a/b/c", XPathConstants.STRING);
@@ -156,7 +153,6 @@ public class TestEventSenderBuiltin extends TestCase
     public void testInvalid()
     {
         Configuration configuration = SupportConfigFactory.getConfiguration();
-        configuration.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
         configuration.addEventTypeAlias("SupportBean", SupportBean.class);
         epService = EPServiceProviderManager.getDefaultProvider(configuration);
         epService.initialize();

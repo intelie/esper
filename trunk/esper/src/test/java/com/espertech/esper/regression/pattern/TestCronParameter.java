@@ -185,7 +185,6 @@ public class TestCronParameter extends TestCase implements SupportBeanConstants
         int totalEventsReceived = 0;
 
         Configuration config = SupportConfigFactory.getConfiguration();
-        config.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
         EPServiceProvider serviceProvider = EPServiceProviderManager.getDefaultProvider(config);
         serviceProvider.initialize();
 

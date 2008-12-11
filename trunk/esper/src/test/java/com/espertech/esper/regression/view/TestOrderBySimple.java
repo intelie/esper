@@ -33,7 +33,6 @@ public class TestOrderBySimple extends TestCase {
     public void setUp()
     {
         Configuration config = SupportConfigFactory.getConfiguration();
-        config.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
         epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();
         symbols = new LinkedList<String>();
@@ -71,7 +70,6 @@ public class TestOrderBySimple extends TestCase {
         */
 
         Configuration config = SupportConfigFactory.getConfiguration();
-        config.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
         config.getEngineDefaults().getLanguage().setSortUsingCollator(true);
         epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();
@@ -860,9 +858,6 @@ public class TestOrderBySimple extends TestCase {
 
 		epService.initialize();
 
-		// Set manual clocking
-		epService.getEPRuntime().sendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
-
 		// Set start time
 		sendTimeEvent(0);
 
@@ -895,9 +890,6 @@ public class TestOrderBySimple extends TestCase {
 		clearValues();
 
 		epService.initialize();
-
-		// Set manual clocking
-		epService.getEPRuntime().sendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
 
 		// Set start time
 		sendTimeEvent(0);

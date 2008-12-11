@@ -31,7 +31,6 @@ public class TestNamedWindowViews extends TestCase
 
         Configuration config = SupportConfigFactory.getConfiguration();
         config.addEventTypeAlias("MyMap", types);
-        config.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
 
         epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();

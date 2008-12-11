@@ -444,7 +444,7 @@ public class BeanEventType implements EventTypeSPI, NativeEventType
                 continue;
             }
 
-            propertyNames[count] = desc.getListedName();
+            propertyNames[count] = desc.getPropertyName();
             EventPropertyDescriptor descriptor = new EventPropertyDescriptor(desc.getPropertyName(),
                 underlyingType, isRequiresIndex, isRequiresMapkey, isIndexed, isMapped, isFragment);
             propertyDescriptors[count++] = descriptor; 
@@ -665,9 +665,9 @@ public class BeanEventType implements EventTypeSPI, NativeEventType
         return propertyDescriptors;
     }
 
-    public EventTypeFragment getFragmentType(String property)
+    public EventTypeFragment getFragmentType(String propertyExpression)
     {
-        Class propertyType = getPropertyType(property);
+        Class propertyType = getPropertyType(propertyExpression);
         if (propertyType == null)
         {
             return null;
@@ -676,12 +676,15 @@ public class BeanEventType implements EventTypeSPI, NativeEventType
         {
             return null;
         }
-
-        boolean isIndexed = false;
-        if (indexedPropertyDescriptors.containsKey(property))
+        if (propertyType.isArray() && JavaClassHelper.isJavaBuiltinDataType(propertyType.getComponentType()))
         {
-            isIndexed = true;
+            return null;
         }
+        if (JavaClassHelper.isImplementsInterface(propertyType, Map.class))
+        {
+            return null;
+        }
+        boolean isIndexed = propertyType.isArray();
         EventType type = eventAdapterService.getBeanEventTypeFactory().createBeanType(propertyType.getName(), propertyType, false);
         return new EventTypeFragment(type, isIndexed);
     }

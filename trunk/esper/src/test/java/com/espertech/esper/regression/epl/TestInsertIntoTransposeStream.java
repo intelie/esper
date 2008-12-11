@@ -19,16 +19,13 @@ public class TestInsertIntoTransposeStream extends TestCase
 {
     private EPServiceProvider epService;
     private SupportUpdateListener listener;
-    private SupportUpdateListener listenerInsertInto;
 
     public void setUp()
     {
         Configuration configuration = SupportConfigFactory.getConfiguration();
-        configuration.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
-        epService = EPServiceProviderManager.getDefaultProvider();
+        epService = EPServiceProviderManager.getDefaultProvider(configuration);
         epService.initialize();
         listener = new SupportUpdateListener();
-        listenerInsertInto = new SupportUpdateListener();
     }
 
     public void testTransposeEventJoinMap()

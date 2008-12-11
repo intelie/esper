@@ -18,7 +18,6 @@ public class TestRowLimit extends TestCase {
     public void setUp()
     {
         Configuration config = SupportConfigFactory.getConfiguration();
-        config.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
         config.addEventTypeAlias("SupportBean", SupportBean.class);
         config.addEventTypeAlias("SupportBeanNumeric", SupportBeanNumeric.class);
         epService = EPServiceProviderManager.getDefaultProvider(config);

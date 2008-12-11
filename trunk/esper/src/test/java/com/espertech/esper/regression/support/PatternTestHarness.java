@@ -62,7 +62,6 @@ public class PatternTestHarness implements SupportBeanConstants
         config.addEventTypeAlias("E", SupportBean_E.class);
         config.addEventTypeAlias("F", SupportBean_F.class);
         config.addEventTypeAlias("G", SupportBean_G.class);
-        config.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
         EPServiceProvider serviceProvider = EPServiceProviderManager.getDefaultProvider(config);
         serviceProvider.initialize();
 

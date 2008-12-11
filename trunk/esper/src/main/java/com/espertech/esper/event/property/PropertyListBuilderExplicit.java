@@ -133,7 +133,7 @@ public class PropertyListBuilderExplicit implements PropertyListBuilder
      */
     protected static InternalEventPropDescriptor makeFieldDesc(Field field, String name)
     {
-        return new InternalEventPropDescriptor(name, name, field, EventPropertyType.SIMPLE);
+        return new InternalEventPropDescriptor(name, field, EventPropertyType.SIMPLE);
     }
 
     /**
@@ -164,6 +164,6 @@ public class PropertyListBuilderExplicit implements PropertyListBuilder
             propertyType = EventPropertyType.SIMPLE;
         }
 
-        return new InternalEventPropDescriptor(name, name, method, propertyType);
+        return new InternalEventPropDescriptor(name, method, propertyType);
     }
 }

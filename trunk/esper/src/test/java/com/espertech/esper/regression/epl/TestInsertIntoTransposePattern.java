@@ -25,7 +25,6 @@ public class TestInsertIntoTransposePattern extends TestCase
     public void setUp()
     {
         Configuration configuration = SupportConfigFactory.getConfiguration();
-        configuration.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
         epService = EPServiceProviderManager.getDefaultProvider();
         epService.initialize();
         listener = new SupportUpdateListener();

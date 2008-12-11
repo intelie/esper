@@ -21,7 +21,6 @@ public class TestMathExpr extends TestCase
     public void testIntDivisionIntResultZeroDevision()
     {
         Configuration config = SupportConfigFactory.getConfiguration();
-        config.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
         config.getEngineDefaults().getExpression().setIntegerDivision(true);
         config.getEngineDefaults().getExpression().setDivisionByZeroReturnsNull(true);
         config.addEventTypeAlias("SupportBean", SupportBean.class);
@@ -47,7 +46,6 @@ public class TestMathExpr extends TestCase
     public void testIntDivisionDoubleResultZeroDevision()
     {
         Configuration config = SupportConfigFactory.getConfiguration();
-        config.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
         config.addEventTypeAlias("SupportBean", SupportBean.class);
 
         EPServiceProvider epService = EPServiceProviderManager.getDefaultProvider(config);

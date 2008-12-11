@@ -26,7 +26,6 @@ public class Test4StreamOuterJoinCart extends TestCase
     public void setUp()
     {
         epService = EPServiceProviderManager.getDefaultProvider(SupportConfigFactory.getConfiguration());
-        epService.getEPRuntime().sendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
         epService.initialize();
         updateListener = new SupportUpdateListener();
     }

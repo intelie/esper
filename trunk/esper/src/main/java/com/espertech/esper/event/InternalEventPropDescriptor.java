@@ -18,7 +18,6 @@ import java.lang.reflect.Field;
 public class InternalEventPropDescriptor
 {
     private String propertyName;
-    private String listedName;
     private Method readMethod;
     private Field accessorField;
     private EventPropertyType propertyType;
@@ -26,14 +25,12 @@ public class InternalEventPropDescriptor
     /**
      * Ctor.
      * @param propertyName - name of property, from getter method
-     * @param listedName - name the property may show up when listed as a valid property, such as indexed[], mapped()
      * @param readMethod - read method to get value
      * @param propertyType - type of property
      */
-    public InternalEventPropDescriptor(String propertyName, String listedName, Method readMethod, EventPropertyType propertyType)
+    public InternalEventPropDescriptor(String propertyName, Method readMethod, EventPropertyType propertyType)
     {
         this.propertyName = propertyName;
-        this.listedName = listedName;
         this.readMethod = readMethod;
         this.propertyType = propertyType;
     }
@@ -41,14 +38,12 @@ public class InternalEventPropDescriptor
     /**
      * Ctor.
      * @param propertyName - name of property, from getter method
-     * @param listedName - name the property may show up when listed as a valid property, such as indexed[], mapped()
      * @param accessorField - field to get value from
      * @param propertyType - type of property
      */
-    public InternalEventPropDescriptor(String propertyName, String listedName, Field accessorField, EventPropertyType propertyType)
+    public InternalEventPropDescriptor(String propertyName, Field accessorField, EventPropertyType propertyType)
     {
         this.propertyName = propertyName;
-        this.listedName = listedName;
         this.accessorField = accessorField;
         this.propertyType = propertyType;
     }
@@ -61,18 +56,6 @@ public class InternalEventPropDescriptor
     public String getPropertyName()
     {
         return propertyName;
-    }
-
-    /**
-     * Returns the listed name, which is the name the property would show up as when asking an
-     * event type for the set of valid properties. The listed name for indexed properties
-     * is "name[]" since an index is required for valid property access.
-     * The listed name for mapped properties is "name()".
-     * @return listed name
-     */
-    public String getListedName()
-    {
-        return listedName;
     }
 
     /**
@@ -121,7 +104,6 @@ public class InternalEventPropDescriptor
     public String toString()
     {
         return  "propertyName=" + propertyName +
-                " listedName=" + listedName +
                 " readMethod=" + readMethod +
                 " accessorField=" + accessorField +
                 " propertyType=" + propertyType;
@@ -135,10 +117,6 @@ public class InternalEventPropDescriptor
         }
         InternalEventPropDescriptor otherDesc = (InternalEventPropDescriptor) other;
         if (!otherDesc.propertyName.equals(propertyName))
-        {
-            return false;
-        }
-        if (!otherDesc.listedName.equals(listedName))
         {
             return false;
         }

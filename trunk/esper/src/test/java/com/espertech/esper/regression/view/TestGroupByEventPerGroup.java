@@ -27,7 +27,6 @@ public class TestGroupByEventPerGroup extends TestCase
         listener = new SupportUpdateListener();
         Configuration config = SupportConfigFactory.getConfiguration();
         config.getEngineDefaults().getViewResources().setAllowMultipleExpiryPolicies(true);
-        config.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
         epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();
     }

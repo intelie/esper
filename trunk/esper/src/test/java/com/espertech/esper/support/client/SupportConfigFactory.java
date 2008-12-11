@@ -30,6 +30,7 @@ public class SupportConfigFactory
         else
         {
             config = new Configuration();
+            config.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
         }
         return config;
     }

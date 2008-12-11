@@ -48,7 +48,6 @@ public class TestMTDeterminismListener extends TestCase
     private void trySend(int numThreads, int numEvents, boolean isPreserveOrder, ConfigurationEngineDefaults.Threading.Locking locking) throws Exception
     {
         Configuration config = SupportConfigFactory.getConfiguration();
-        config.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
         config.getEngineDefaults().getThreading().setListenerDispatchPreserveOrder(isPreserveOrder);
         config.getEngineDefaults().getThreading().setListenerDispatchLocking(locking);
 

@@ -32,7 +32,6 @@ public class TestRevisionDeclared extends TestCase
     public void setUp()
     {
         Configuration config = SupportConfigFactory.getConfiguration();
-        config.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
 
         config.addEventTypeAlias("SupportBean", SupportBean.class);
         config.addEventTypeAlias("FullEvent", SupportRevisionFull.class);

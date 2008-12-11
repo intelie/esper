@@ -30,8 +30,7 @@ public class TestLegacyBeanEvents extends TestCase
 
     public void testAddRemoveType()
     {
-        Configuration config = new Configuration();
-        config.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
+        Configuration config = SupportConfigFactory.getConfiguration();
         epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();
         ConfigurationOperations configOps = epService.getEPAdministrator().getConfiguration();
@@ -148,8 +147,6 @@ public class TestLegacyBeanEvents extends TestCase
     private void tryPublicAccessors(ConfigurationEventTypeLegacy.CodeGeneration codeGeneration)
     {
         Configuration config = SupportConfigFactory.getConfiguration();
-        config.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
-
         ConfigurationEventTypeLegacy legacyDef = new ConfigurationEventTypeLegacy();
         legacyDef.setAccessorStyle(ConfigurationEventTypeLegacy.AccessorStyle.PUBLIC);
         legacyDef.setCodeGeneration(codeGeneration);
@@ -266,7 +263,6 @@ public class TestLegacyBeanEvents extends TestCase
     private void tryExplicitOnlyAccessors(ConfigurationEventTypeLegacy.CodeGeneration codeGeneration)
     {
         Configuration config = SupportConfigFactory.getConfiguration();
-        config.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
 
         ConfigurationEventTypeLegacy legacyDef = new ConfigurationEventTypeLegacy();
         legacyDef.setAccessorStyle(ConfigurationEventTypeLegacy.AccessorStyle.EXPLICIT);
@@ -323,8 +319,6 @@ public class TestLegacyBeanEvents extends TestCase
     public void tryJavaBeanAccessor(ConfigurationEventTypeLegacy.CodeGeneration codeGeneration)
     {
         Configuration config = SupportConfigFactory.getConfiguration();
-        config.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
-
         ConfigurationEventTypeLegacy legacyDef = new ConfigurationEventTypeLegacy();
         legacyDef.setAccessorStyle(ConfigurationEventTypeLegacy.AccessorStyle.JAVABEAN);
         legacyDef.setCodeGeneration(codeGeneration);
@@ -357,7 +351,6 @@ public class TestLegacyBeanEvents extends TestCase
     private void tryFinalClass(ConfigurationEventTypeLegacy.CodeGeneration codeGeneration)
     {
         Configuration config = SupportConfigFactory.getConfiguration();
-        config.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
         ConfigurationEventTypeLegacy legacyDef = new ConfigurationEventTypeLegacy();
         legacyDef.setAccessorStyle(ConfigurationEventTypeLegacy.AccessorStyle.JAVABEAN);
         legacyDef.setCodeGeneration(codeGeneration);

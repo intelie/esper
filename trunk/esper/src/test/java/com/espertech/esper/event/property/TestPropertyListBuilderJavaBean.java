@@ -33,8 +33,8 @@ public class TestPropertyListBuilderJavaBean extends TestCase
         List<InternalEventPropDescriptor> descList = builder.assessProperties(SupportLegacyBean.class);
 
         List<InternalEventPropDescriptor> expected = new LinkedList<InternalEventPropDescriptor>();
-        expected.add(new InternalEventPropDescriptor("x", "x", SupportLegacyBean.class.getField("fieldNested"), EventPropertyType.SIMPLE));
-        expected.add(new InternalEventPropDescriptor("y", "y", SupportLegacyBean.class.getMethod("readLegacyBeanVal"), EventPropertyType.SIMPLE));
+        expected.add(new InternalEventPropDescriptor("x", SupportLegacyBean.class.getField("fieldNested"), EventPropertyType.SIMPLE));
+        expected.add(new InternalEventPropDescriptor("y", SupportLegacyBean.class.getMethod("readLegacyBeanVal"), EventPropertyType.SIMPLE));
         ArrayAssertionUtil.assertEqualsAnyOrder(expected.toArray(), descList.toArray());
     }
 

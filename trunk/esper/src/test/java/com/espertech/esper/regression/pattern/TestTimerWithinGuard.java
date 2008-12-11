@@ -185,12 +185,10 @@ public class TestTimerWithinGuard extends TestCase implements SupportBeanConstan
     public void testInterval10Min()
     {
         Configuration config = SupportConfigFactory.getConfiguration();
-        config.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
         EPServiceProvider epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();
 
         // External clocking
-        epService.getEPRuntime().sendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
         sendTimer(0, epService);
 
         // Set up a timer:within
@@ -207,7 +205,6 @@ public class TestTimerWithinGuard extends TestCase implements SupportBeanConstan
     public void testInterval10MinVariable()
     {
         Configuration config = SupportConfigFactory.getConfiguration();
-        config.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
         EPServiceProvider epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();
         epService.getEPAdministrator().getConfiguration().addVariable("D", double.class, 1);
@@ -217,7 +214,6 @@ public class TestTimerWithinGuard extends TestCase implements SupportBeanConstan
         epService.getEPAdministrator().getConfiguration().addVariable("MS", double.class, 5);
 
         // External clocking
-        epService.getEPRuntime().sendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
         sendTimer(0, epService);
 
         // Set up a timer:within
@@ -237,12 +233,10 @@ public class TestTimerWithinGuard extends TestCase implements SupportBeanConstan
     public void testIntervalPrepared()
     {
         Configuration config = SupportConfigFactory.getConfiguration();
-        config.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
         EPServiceProvider epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();
 
         // External clocking
-        epService.getEPRuntime().sendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
         sendTimer(0, epService);
 
         // Set up a timer:within
@@ -265,13 +259,11 @@ public class TestTimerWithinGuard extends TestCase implements SupportBeanConstan
     public void testWithinFromExpression()
     {
         Configuration config = SupportConfigFactory.getConfiguration();
-        config.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
         EPServiceProvider epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();
         epService.getEPAdministrator().getConfiguration().addEventTypeAlias("SupportBean", SupportBean.class);
 
         // External clocking
-        epService.getEPRuntime().sendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
         sendTimer(0, epService);
 
         // Set up a timer:within

@@ -23,9 +23,7 @@ public class TestEPServiceProvider extends TestCase
         listenerTwo = new SupportServiceStateListener();
 
         Configuration config = SupportConfigFactory.getConfiguration();
-        config.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
-        
-        epService = EPServiceProviderManager.getDefaultProvider();
+        epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();
     }
 

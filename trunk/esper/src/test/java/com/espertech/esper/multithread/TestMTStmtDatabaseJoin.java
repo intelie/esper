@@ -4,6 +4,7 @@ import junit.framework.TestCase;
 import com.espertech.esper.client.*;
 import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.epl.SupportDatabaseService;
+import com.espertech.esper.support.client.SupportConfigFactory;
 
 import java.util.concurrent.*;
 import java.util.Properties;
@@ -27,9 +28,8 @@ public class TestMTStmtDatabaseJoin extends TestCase
         configDB.setConnectionReadOnly(true);
         configDB.setConnectionTransactionIsolation(1);
         configDB.setConnectionAutoCommit(true);
-        Configuration configuration = new Configuration();
+        Configuration configuration = SupportConfigFactory.getConfiguration();
         configuration.addDatabaseReference("MyDB", configDB);
-        configuration.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
 
         engine = EPServiceProviderManager.getProvider("TestMTStmtDatabaseJoin", configuration);        
     }

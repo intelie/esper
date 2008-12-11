@@ -135,7 +135,6 @@ public class TestNotOperator extends TestCase implements SupportBeanConstants
     public void testNotTimeInterval()
     {
         Configuration config = SupportConfigFactory.getConfiguration();
-        config.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
         config.addEventTypeAlias("BBB", SupportBean.class);
         config.addEventTypeAlias("AAA", SupportMarketDataBean.class);
         EPServiceProvider epService = EPServiceProviderManager.getDefaultProvider(config);

@@ -18,7 +18,6 @@ public class TestSubscriberPerf extends TestCase
     public void setUp()
     {
         Configuration config = SupportConfigFactory.getConfiguration();
-        config.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
         String pkg = SupportBean.class.getPackage().getName();
         config.addEventTypeAutoAlias(pkg);
         epService = EPServiceProviderManager.getDefaultProvider(config);

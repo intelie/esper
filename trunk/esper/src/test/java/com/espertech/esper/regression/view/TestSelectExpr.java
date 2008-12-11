@@ -26,7 +26,6 @@ public class TestSelectExpr extends TestCase
         testListener = new SupportUpdateListener();
         Configuration config = SupportConfigFactory.getConfiguration();
         config.addEventTypeAlias("SupportBean", SupportBean.class);
-        config.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
         epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();
     }

@@ -28,7 +28,6 @@ public class TestOutputLimitSimple extends TestCase
     public void setUp()
     {
         Configuration config = SupportConfigFactory.getConfiguration();
-        config.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
         config.addEventTypeAlias("MarketData", SupportMarketDataBean.class);
         config.addEventTypeAlias("SupportBean", SupportBean.class);
         epService = EPServiceProviderManager.getDefaultProvider(config);
@@ -563,8 +562,6 @@ public class TestOutputLimitSimple extends TestCase
 
     public void testTimeBatchOutputEvents()
     {
-        epService.getEPRuntime().sendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
-
         String stmtText = "select * from " + SupportBean.class.getName() + ".win:time_batch(10 seconds) output every 10 seconds";
         EPStatement stmt = epService.getEPAdministrator().createEPL(stmtText);
         SupportUpdateListener listener = new SupportUpdateListener();
@@ -953,9 +950,6 @@ public class TestOutputLimitSimple extends TestCase
     private void timeCallback(String statementString, int timeToCallback) {
     	// clear any old events
         epService.initialize();
-
-    	// turn off external clocking
-    	epService.getEPRuntime().sendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
 
     	// set the clock to 0
     	currentTime = 0;

@@ -376,7 +376,6 @@ public class TestMetricsReporting extends TestCase
     {
         Configuration config = getConfig(1000, 1000);
         config.getEngineDefaults().getMetricsReporting().setThreading(true);
-        config.getEngineDefaults().getThreading().setInternalTimerEnabled(true);
 
         /*
         epService = EPServiceProviderManager.getProvider("MyURI", config);
@@ -404,10 +403,8 @@ public class TestMetricsReporting extends TestCase
     private Configuration getConfig(long engineMetricInterval, long stmtMetricInterval)
     {
         Configuration configuration = SupportConfigFactory.getConfiguration();
-        configuration.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
-
         configuration.getEngineDefaults().getMetricsReporting().setEnableMetricsReporting(true);
-        configuration.getEngineDefaults().getMetricsReporting().setThreading(false);  // use external timer thread
+        configuration.getEngineDefaults().getMetricsReporting().setThreading(false);
         configuration.getEngineDefaults().getMetricsReporting().setEngineInterval(engineMetricInterval);
         configuration.getEngineDefaults().getMetricsReporting().setStatementInterval(stmtMetricInterval);
 

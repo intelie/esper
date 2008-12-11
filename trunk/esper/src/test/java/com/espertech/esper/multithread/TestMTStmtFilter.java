@@ -6,6 +6,7 @@ import com.espertech.esper.client.EPServiceProviderManager;
 import com.espertech.esper.client.EPStatement;
 import com.espertech.esper.client.Configuration;
 import com.espertech.esper.support.bean.SupportBean;
+import com.espertech.esper.support.client.SupportConfigFactory;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -22,8 +23,7 @@ public class TestMTStmtFilter extends TestCase
 
     public void setUp()
     {
-        Configuration config = new Configuration();
-        config.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
+        Configuration config = SupportConfigFactory.getConfiguration();
         engine = EPServiceProviderManager.getProvider("TestMTStmtFilter", config);
     }
 

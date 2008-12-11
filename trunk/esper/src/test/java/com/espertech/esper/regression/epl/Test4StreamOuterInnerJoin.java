@@ -27,7 +27,6 @@ public class Test4StreamOuterInnerJoin extends TestCase
         config.addEventTypeAlias("S1", SupportBean_S1.class);
         config.addEventTypeAlias("S2", SupportBean_S2.class);
         config.addEventTypeAlias("S3", SupportBean_S3.class);
-        config.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
 
         epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();

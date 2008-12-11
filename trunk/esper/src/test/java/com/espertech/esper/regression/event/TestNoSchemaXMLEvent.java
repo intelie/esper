@@ -41,7 +41,6 @@ public class TestNoSchemaXMLEvent extends TestCase
     public void testSimpleXML() throws Exception
     {
         Configuration configuration = SupportConfigFactory.getConfiguration();
-        configuration.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
         ConfigurationEventTypeXMLDOM xmlDOMEventTypeDesc = new ConfigurationEventTypeXMLDOM();
         xmlDOMEventTypeDesc.setRootElementName("myevent");
         xmlDOMEventTypeDesc.addXPathProperty("xpathElement1", "/myevent/element1", XPathConstants.STRING);
@@ -63,7 +62,6 @@ public class TestNoSchemaXMLEvent extends TestCase
         epService = EPServiceProviderManager.getProvider("TestNoSchemaXML", configuration);
         epService.initialize();
         updateListener = new SupportUpdateListener();
-        epService.getEPRuntime().sendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
 
         // assert type metadata
         EventTypeSPI type = (EventTypeSPI) ((EPServiceProviderSPI)epService).getEventAdapterService().getExistsTypeByAlias("TestXMLNoSchemaType");

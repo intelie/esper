@@ -21,7 +21,6 @@ public class TestPerf2StreamSimpleJoin extends TestCase
     public void setUp()
     {
         Configuration configuration = SupportConfigFactory.getConfiguration();
-        configuration.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
         epService = EPServiceProviderManager.getProvider("TestPerf2StreamSimpleJoin", configuration);
         epService.initialize();
         updateListener = new SupportUpdateListener();

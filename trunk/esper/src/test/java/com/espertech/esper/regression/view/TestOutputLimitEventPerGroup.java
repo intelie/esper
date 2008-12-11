@@ -28,7 +28,6 @@ public class TestOutputLimitEventPerGroup extends TestCase
     public void setUp()
     {
         Configuration config = SupportConfigFactory.getConfiguration();
-        config.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
         config.addEventTypeAlias("MarketData", SupportMarketDataBean.class);
         config.addEventTypeAlias("SupportBean", SupportBean.class);
         epService = EPServiceProviderManager.getDefaultProvider(config);
@@ -421,7 +420,6 @@ public class TestOutputLimitEventPerGroup extends TestCase
 
     public void testJoinSortWindow()
     {
-        epService.getEPRuntime().sendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
         sendTimer(0);
 
         String fields[] = "symbol,maxVol".split(",");
@@ -448,7 +446,6 @@ public class TestOutputLimitEventPerGroup extends TestCase
 
     public void testLimitSnapshot()
     {
-        epService.getEPRuntime().sendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
         sendTimer(0);
         String selectStmt = "select symbol, min(price) as minprice from " + SupportMarketDataBean.class.getName() +
                 ".win:time(10 seconds) group by symbol output snapshot every 1 seconds order by symbol asc";
@@ -491,7 +488,6 @@ public class TestOutputLimitEventPerGroup extends TestCase
 
     public void testLimitSnapshotLimit()
     {
-        epService.getEPRuntime().sendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
         sendTimer(0);
         String selectStmt = "select symbol, min(price) as minprice from " + SupportMarketDataBean.class.getName() +
                 ".win:time(10 seconds) as m, " +
@@ -599,7 +595,6 @@ public class TestOutputLimitEventPerGroup extends TestCase
 
     public void testMaxTimeWindow()
     {
-        epService.getEPRuntime().sendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
         sendTimer(0);
 
         String fields[] = "symbol,maxVol".split(",");

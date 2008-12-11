@@ -22,12 +22,8 @@ public class TestMTStmtPattern extends TestCase
     public void setUp()
     {
         Configuration configuration = SupportConfigFactory.getConfiguration();
-        configuration.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
         engine = EPServiceProviderManager.getDefaultProvider(configuration);
         engine.initialize();
-        
-        // Less much debug output can be obtained by using external times
-        engine.getEPRuntime().sendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
     }
 
     public void testPattern() throws Exception

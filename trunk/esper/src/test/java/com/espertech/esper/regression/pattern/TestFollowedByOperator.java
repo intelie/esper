@@ -111,7 +111,6 @@ public class TestFollowedByOperator extends TestCase implements SupportBeanConst
 
         EPServiceProvider epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();
-        epService.getEPRuntime().sendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
 
         String stmt =
           "select * from pattern [" +
@@ -323,7 +322,6 @@ public class TestFollowedByOperator extends TestCase implements SupportBeanConst
                 " -> (timer:interval(1 seconds) and not " + SupportBean_A.class.getName() + ")]";
 
         Configuration config = SupportConfigFactory.getConfiguration();
-        config.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
         EPServiceProvider epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();
         epService.getEPRuntime().sendEvent(new CurrentTimeEvent(0));
@@ -352,7 +350,6 @@ public class TestFollowedByOperator extends TestCase implements SupportBeanConst
                 "]";
 
         Configuration config = SupportConfigFactory.getConfiguration();
-        config.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
         EPServiceProvider epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();
 

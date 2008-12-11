@@ -27,8 +27,6 @@ public class TestVariables extends TestCase
     public void setUp()
     {
         Configuration config = SupportConfigFactory.getConfiguration();
-        config.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
-
         epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();
         listener = new SupportUpdateListener();
@@ -506,7 +504,6 @@ public class TestVariables extends TestCase
     public void testEngineConfigAPI()
     {
         Configuration config = SupportConfigFactory.getConfiguration();
-        config.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
         config.addVariable("p_1", String.class, "begin");
         config.addVariable("p_2", boolean.class, true);
         config.addVariable("p_3", String.class, "value");
@@ -555,8 +552,6 @@ public class TestVariables extends TestCase
 
         Configuration config = SupportConfigFactory.getConfiguration();
         config.configure(configDoc);
-        config.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
-
         epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();
 

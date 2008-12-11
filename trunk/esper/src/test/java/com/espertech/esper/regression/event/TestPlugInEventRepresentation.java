@@ -169,7 +169,6 @@ public class TestPlugInEventRepresentation extends TestCase
     private Configuration getConfiguration() throws URISyntaxException
     {
         Configuration configuration = SupportConfigFactory.getConfiguration();
-        configuration.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
         configuration.addPlugInEventRepresentation(new URI("type://properties"), MyPlugInEventRepresentation.class.getName(), "r3");
         configuration.addPlugInEventRepresentation(new URI("type://properties/test1"), MyPlugInEventRepresentation.class.getName(), "r1");
         configuration.addPlugInEventRepresentation(new URI("type://properties/test2"), MyPlugInEventRepresentation.class.getName(), "r2");

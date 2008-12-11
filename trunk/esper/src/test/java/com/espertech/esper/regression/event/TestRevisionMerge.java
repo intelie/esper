@@ -21,7 +21,6 @@ public class TestRevisionMerge extends TestCase
     public void setUp()
     {
         Configuration config = SupportConfigFactory.getConfiguration();
-        config.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
 
         epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();

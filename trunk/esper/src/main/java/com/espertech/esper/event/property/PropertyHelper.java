@@ -8,17 +8,19 @@
  **************************************************************************************/
 package com.espertech.esper.event.property;
 
-import com.espertech.esper.event.*;
 import com.espertech.esper.client.EventPropertyGetter;
+import com.espertech.esper.event.CGLibPropertyGetter;
+import com.espertech.esper.event.EventPropertyType;
+import com.espertech.esper.event.InternalEventPropDescriptor;
+import com.espertech.esper.event.ReflectionPropMethodGetter;
 import net.sf.cglib.reflect.FastClass;
 import net.sf.cglib.reflect.FastMethod;
-
-import java.util.*;
-import java.beans.*;
-import java.lang.reflect.Method;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import java.beans.*;
+import java.lang.reflect.Method;
+import java.util.*;
 
 /**
  * This class offers utililty methods around introspection and CGLIB interaction.
@@ -179,7 +181,6 @@ public class PropertyHelper
         {
             PropertyDescriptor property = properties[i];
         	String propertyName = property.getName();
-            String listedName = propertyName;
         	Method readMethod = property.getReadMethod();
 
         	EventPropertyType type = EventPropertyType.SIMPLE;
@@ -187,7 +188,6 @@ public class PropertyHelper
         	{
                 readMethod = ((IndexedPropertyDescriptor) property).getIndexedReadMethod();
         		type = EventPropertyType.INDEXED;
-                listedName = propertyName + "[]";     // indexed properties add [] to name
         	}
 
             if (readMethod == null)
@@ -195,7 +195,7 @@ public class PropertyHelper
                 continue;
             }
 
-            result.add(new InternalEventPropDescriptor(propertyName, listedName, readMethod, type));
+            result.add(new InternalEventPropDescriptor(propertyName, readMethod, type));
         }
     }
 
@@ -262,9 +262,7 @@ public class PropertyHelper
                 continue;
             }
 
-            String listedName = inferredName + "()";    // mapped proerties add () to name
-
-    		result.add(new InternalEventPropDescriptor(inferredName, listedName, methods[i], EventPropertyType.MAPPED));
+    		result.add(new InternalEventPropDescriptor(inferredName, methods[i], EventPropertyType.MAPPED));
             uniquePropertyNames.add(inferredName);
     	}
     }

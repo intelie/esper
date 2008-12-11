@@ -37,7 +37,6 @@ public class TestMapEvent extends TestCase
 
         Configuration configuration = SupportConfigFactory.getConfiguration();
         configuration.addEventTypeAlias("myMapEvent", properties);
-        configuration.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
 
         epService = EPServiceProviderManager.getDefaultProvider(configuration);
         epService.initialize();
@@ -193,7 +192,6 @@ public class TestMapEvent extends TestCase
 
         Configuration configuration = SupportConfigFactory.getConfiguration();
         configuration.addEventTypeAlias("MyPrimMapEvent", properties);
-        configuration.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
 
         epService = EPServiceProviderManager.getProvider("testPrimitivesTypes", configuration);
     }
@@ -205,7 +203,6 @@ public class TestMapEvent extends TestCase
 
         Configuration configuration = SupportConfigFactory.getConfiguration();
         configuration.addEventTypeAlias("MyInvalidEvent", properties);
-        configuration.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
 
         try
         {

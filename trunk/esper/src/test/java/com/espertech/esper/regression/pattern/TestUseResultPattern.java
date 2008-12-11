@@ -165,7 +165,6 @@ public class TestUseResultPattern extends TestCase implements SupportBeanConstan
     {
         // Test for ESPER-121
         Configuration config = SupportConfigFactory.getConfiguration();
-        config.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
         config.addEventTypeAlias("FxTradeEvent", SupportTradeEvent.class
                 .getName());
         EPServiceProvider epService = EPServiceProviderManager.getProvider(

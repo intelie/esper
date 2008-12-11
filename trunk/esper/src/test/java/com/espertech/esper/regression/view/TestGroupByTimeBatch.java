@@ -22,7 +22,6 @@ public class TestGroupByTimeBatch extends TestCase
         config.addEventTypeAlias("SupportBean", SupportBean.class);
         epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();
-        epService.getEPRuntime().sendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
         listener = new SupportUpdateListener();
     }
 

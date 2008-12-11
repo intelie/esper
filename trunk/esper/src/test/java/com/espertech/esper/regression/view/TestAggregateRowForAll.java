@@ -26,7 +26,6 @@ public class TestAggregateRowForAll extends TestCase
     {
         listener = new SupportUpdateListener();
         Configuration config = SupportConfigFactory.getConfiguration();
-        config.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
         epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();
     }

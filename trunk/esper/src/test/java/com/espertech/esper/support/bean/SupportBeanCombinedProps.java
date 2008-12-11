@@ -10,7 +10,7 @@ import java.io.Serializable;
  */
 public class SupportBeanCombinedProps implements Serializable
 {
-    public static String[] PROPERTIES = { "indexed[]", "array"};
+    public static String[] PROPERTIES = { "indexed", "array"};
 
 	public static SupportBeanCombinedProps makeDefaultBean()
 	{

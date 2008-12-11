@@ -16,7 +16,6 @@ public class TestCompositeSelect extends TestCase
     public void testFollowedByFilter()
     {
         Configuration config = SupportConfigFactory.getConfiguration();
-        config.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
         config.addEventTypeAlias("A", SupportBean_A.class.getName());
         config.addEventTypeAlias("B", SupportBean_B.class.getName());
         EPServiceProvider epService = EPServiceProviderManager.getDefaultProvider(config);
@@ -50,7 +49,6 @@ public class TestCompositeSelect extends TestCase
     public void testFragment()
     {
         Configuration config = SupportConfigFactory.getConfiguration();
-        config.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
         config.addEventTypeAlias("A", SupportBean_A.class.getName());
         config.addEventTypeAlias("B", SupportBean_B.class.getName());
 

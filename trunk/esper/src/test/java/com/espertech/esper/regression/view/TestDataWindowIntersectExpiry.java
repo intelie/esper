@@ -502,7 +502,6 @@ public class TestDataWindowIntersectExpiry extends TestCase
         listener = new SupportUpdateListener();
 
         Configuration config = SupportConfigFactory.getConfiguration();
-        config.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
         config.getEngineDefaults().getViewResources().setAllowMultipleExpiryPolicies(isAllowMultipleDataWindows);
 
         epService = EPServiceProviderManager.getDefaultProvider(config);

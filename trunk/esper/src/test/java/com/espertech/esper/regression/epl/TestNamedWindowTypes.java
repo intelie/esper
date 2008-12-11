@@ -31,7 +31,6 @@ public class TestNamedWindowTypes extends TestCase
         types.put("boxed", Long.class);
 
         Configuration config = SupportConfigFactory.getConfiguration();
-        config.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
         config.addEventTypeAlias("MyMap", types);
         epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();

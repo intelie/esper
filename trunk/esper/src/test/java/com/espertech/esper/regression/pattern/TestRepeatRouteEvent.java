@@ -85,7 +85,6 @@ public class TestRepeatRouteEvent extends TestCase
 
     public void testRouteTimer()
     {
-        epService.getEPRuntime().sendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
         epService.getEPRuntime().sendEvent(new CurrentTimeEvent(0));
 
         // define time-based pattern and listener

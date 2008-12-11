@@ -1,30 +1,25 @@
 package com.espertech.esper.regression.event;
 
 import com.espertech.esper.client.*;
-import com.espertech.esper.client.EventBean;
-import com.espertech.esper.client.EventType;
+import com.espertech.esper.core.EPServiceProviderSPI;
 import com.espertech.esper.support.bean.*;
 import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.support.util.ArrayAssertionUtil;
 import com.espertech.esper.support.util.SupportUpdateListener;
-import com.espertech.esper.core.EPRuntimeSPI;
-import com.espertech.esper.core.EPServiceProviderSPI;
 import junit.framework.TestCase;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
-import java.util.Arrays;
 
 public class TestMapEventNested extends TestCase
 {
     public void testMapTypeUpdate()
     {
         Configuration configuration = SupportConfigFactory.getConfiguration();
-        configuration.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
-
         Map<String, Object> type = makeMap(new Object[][] {
                 {"base1", String.class},
                 {"base2", makeMap(new Object[][] {{"n1", int.class}})}
@@ -103,7 +98,6 @@ public class TestMapEventNested extends TestCase
     public void testMapInheritanceInitTime()
     {
         Configuration configuration = SupportConfigFactory.getConfiguration();
-        configuration.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
 
         Map<String, Object> root = makeMap(new Object[][] {{"base", String.class}});
         Map<String, Object> sub1 = makeMap(new Object[][] {{"sub1", String.class}});
@@ -137,7 +131,6 @@ public class TestMapEventNested extends TestCase
     public void testMapInheritanceRuntime()
     {
         Configuration configuration = SupportConfigFactory.getConfiguration();
-        configuration.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
 
         EPServiceProvider epService = EPServiceProviderManager.getDefaultProvider(configuration);
         epService.initialize();
@@ -771,7 +764,6 @@ public class TestMapEventNested extends TestCase
     private EPServiceProvider getEngineInitialized(String name, Map<String, Object> definition)
     {
         Configuration configuration = SupportConfigFactory.getConfiguration();
-        configuration.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
 
         if (name != null)
         {

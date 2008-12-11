@@ -183,7 +183,6 @@ public class TestSchemaXMLEvent extends TestCase
     private Configuration getConfig()
     {
         Configuration configuration = SupportConfigFactory.getConfiguration();
-        configuration.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
         configuration.addEventTypeAlias("TestXMLSchemaType", getConfigTestType(null));
         return configuration;
     }

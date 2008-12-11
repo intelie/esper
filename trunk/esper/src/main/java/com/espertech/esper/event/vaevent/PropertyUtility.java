@@ -26,29 +26,6 @@ public class PropertyUtility
     private static final Log log = LogFactory.getLog(PropertyUtility.class);
 
     /**
-     * Remove the postfixes for indexed and mapped properties that
-     * provide a clue that a property requires a index or map key parameter to return values,
-     * changing the array elements.
-     * @param propertyNames to remove prefix for
-     */
-    public static void removePropNamePostfixes(String[] propertyNames)
-    {
-        for (int i = 0; i < propertyNames.length; i++)
-        {
-            String property = propertyNames[i];
-            if (property.endsWith("[]"))
-            {
-                property = property.replace("[]", "");
-            }
-            if (property.endsWith("()"))
-            {
-                property = property.replace("()", "");
-            }
-            propertyNames[i] = property;
-        }
-    }
-
-    /**
      * Returns a multi-key for an event and key property getters
      * @param event to get keys for
      * @param keyPropertyGetters getters to use

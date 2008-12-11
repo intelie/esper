@@ -1,12 +1,11 @@
 package com.espertech.esper.multithread;
 
-import junit.framework.TestCase;
 import com.espertech.esper.client.*;
-import com.espertech.esper.client.time.TimerControlEvent;
-import com.espertech.esper.client.EventBean;
 import com.espertech.esper.support.bean.SupportBean_S0;
 import com.espertech.esper.support.bean.SupportBean_S1;
+import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.support.util.SupportMTUpdateListener;
+import junit.framework.TestCase;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -22,13 +21,10 @@ public class TestMTStmtSubquery extends TestCase
 
     public void setUp()
     {
-        Configuration config = new Configuration();
+        Configuration config = SupportConfigFactory.getConfiguration();
         config.addEventTypeAlias("S0", SupportBean_S0.class);
         config.addEventTypeAlias("S1", SupportBean_S1.class);
-        config.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
         engine = EPServiceProviderManager.getProvider("TestMTStmtSubquery", config);
-        // Use external time for this test, since time is not used here
-        engine.getEPRuntime().sendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
     }
 
     public void tearDown()

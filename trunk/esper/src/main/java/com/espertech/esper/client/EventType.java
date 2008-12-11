@@ -23,6 +23,8 @@ import java.util.Iterator;
  * <p>
  * Information on the super-types (superclass and interfaces implemented by JavaBean events) is also available,
  * for Java POJO events as well as for Map event types that has supertypes.
+ * <p>
+ * TODO: outline which methods take property expressions, and which take property name
  */
 public interface EventType
 {
@@ -46,12 +48,19 @@ public interface EventType
     public Class getPropertyType(String propertyExpression);
 
     /**
-     * Get the class that represents the Java type of the event type.
-     * Returns a Java bean event class if the schema represents a Java bean event type.
-     * Returns java.util.Map is the schema represents a collection of values in a Map.
-     * @return type of the event object
+     * Check that the given property name is valid for this event type, ie. that is exists in the event type.
+     * TODO is expression
+     * <p>
+     * The method takes a property name or property expression as a parameter.
+     * Property expressions may include
+     * indexed properties via the syntax "name[index]",
+     * mapped properties via the syntax "name('key')",
+     * nested properties via the syntax "outer.inner"
+     * or combinations thereof.
+     * @param propertyExpression is the property name or property expression to check
+     * @return true if exists, false if not
      */
-    public Class getUnderlyingType();
+    public boolean isProperty(String propertyExpression);
 
     /**
      * Get the getter of an event property: Getters are useful when an application
@@ -70,6 +79,14 @@ public interface EventType
      * @return a getter that can be used to obtain property values for event instances of the same event type
      */
     public EventPropertyGetter getGetter(String propertyExpression);
+
+    /**
+     * Get the class that represents the Java type of the event type.
+     * Returns a Java bean event class if the schema represents a Java bean event type.
+     * Returns java.util.Map is the schema represents a collection of values in a Map.
+     * @return type of the event object
+     */
+    public Class getUnderlyingType();
 
     /**
      * Get property names for the event type, with suffixed property names for indexed and mapped properties.
@@ -115,18 +132,27 @@ public interface EventType
     public EventPropertyDescriptor getPropertyDescriptor(String propertyName);
 
     /**
-     * Check that the given property name is valid for this event type, ie. that is exists in the event type.
+     * Returns the event type for the given property name; Property expressions are not supported by this method.
+     * This is useful for navigating nested properties that are itself objects or nested events
+     * that are part of a result.
+     * TODO: is actually expression, include Javadoc expression stanza
      * <p>
-     * The method takes a property name or property expression as a parameter.
-     * Property expressions may include
-     * indexed properties via the syntax "name[index]",
-     * mapped properties via the syntax "name('key')",
-     * nested properties via the syntax "outer.inner"
-     * or combinations thereof.
-     * @param propertyExpression is the property name or property expression to check
-     * @return true if exists, false if not
+     * Mapped, indexed or nested properties may not be queried via property expressions, however
+     * the method does return the type of such properties if passed the property name only. The nested property
+     * syntax for property expressions can also not be used.
+     * <p>
+     * Returns null if the property is not a fragment type. For example primitive property values
+     * such as String or integer-typed properties do not return an event type.
+     * <p>
+     * The underlying event representation may not support providing an event type for any or all properties,
+     * in which case the method returns null.
+     * <p>
+     * Use the {@link #getPropertyDescriptors} method to obtain a list of properties for which a fragment event type
+     * may be retrieved by this method.
+     * @param propertyName is the name of the property to return the fragment event type
+     * @return event type of the property
      */
-    public boolean isProperty(String propertyExpression);
+    public EventTypeFragment getFragmentType(String propertyName);
 
     /**
      * Returns an array of event types that are super to this event type, from which this event type inherited event properties.
@@ -154,27 +180,4 @@ public interface EventType
      * @return type name or null if none assigned
      */
     public String getName();
-
-    /**
-     * Returns the event type for the given property name; Property expressions are not supported by this method.
-     * This is useful for navigating nested properties that are itself objects or nested events
-     * that are part of a result.
-     * TODO: is actually expression, include Javadoc expression stanza
-     * <p>
-     * Mapped, indexed or nested properties may not be queried via property expressions, however
-     * the method does return the type of such properties if passed the property name only. The nested property
-     * syntax for property expressions can also not be used.
-     * <p>
-     * Returns null if the property is not a fragment type. For example primitive property values
-     * such as String or integer-typed properties do not return an event type.
-     * <p>
-     * The underlying event representation may not support providing an event type for any or all properties,
-     * in which case the method returns null.
-     * <p>
-     * Use the {@link #getPropertyDescriptors} method to obtain a list of properties for which a fragment event type
-     * may be retrieved by this method.
-     * @param propertyName is the name of the property to return the fragment event type
-     * @return event type of the property
-     */
-    public EventTypeFragment getFragmentType(String propertyName);
 }

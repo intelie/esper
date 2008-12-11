@@ -4,8 +4,8 @@ import com.espertech.esper.client.*;
 import com.espertech.esper.client.soda.*;
 import com.espertech.esper.client.time.CurrentTimeEvent;
 import com.espertech.esper.regression.support.*;
-import com.espertech.esper.support.bean.SupportBeanConstants;
 import com.espertech.esper.support.bean.SupportBean;
+import com.espertech.esper.support.bean.SupportBeanConstants;
 import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.support.util.ArrayAssertionUtil;
 import com.espertech.esper.support.util.SupportUpdateListener;
@@ -191,7 +191,6 @@ public class TestTimerAtObserver extends TestCase implements SupportBeanConstant
         String expression = "select * from pattern [every timer:at(0,8,*,*,[1,2,3,4,5])]";
 
         Configuration config = SupportConfigFactory.getConfiguration();
-        config.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
         EPServiceProvider epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();
 
@@ -212,7 +211,6 @@ public class TestTimerAtObserver extends TestCase implements SupportBeanConstant
         String expression = "select * from pattern [every timer:at(?,?,*,*,[1,2,3,4,5])]";
 
         Configuration config = SupportConfigFactory.getConfiguration();
-        config.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
         EPServiceProvider epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();
 
@@ -237,7 +235,6 @@ public class TestTimerAtObserver extends TestCase implements SupportBeanConstant
         String expression = "select * from pattern [every timer:at(VMIN,VHOUR,*,*,[1,2,3,4,5])]";
 
         Configuration config = SupportConfigFactory.getConfiguration();
-        config.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
         config.addVariable("VMIN", int.class, 0);
         config.addVariable("VHOUR", int.class, 8);
         EPServiceProvider epService = EPServiceProviderManager.getDefaultProvider(config);
@@ -262,7 +259,6 @@ public class TestTimerAtObserver extends TestCase implements SupportBeanConstant
         String expression = "select * from pattern [every timer:at(7+1-8,4+4,*,*,[1,2,3,4,5])]";
 
         Configuration config = SupportConfigFactory.getConfiguration();
-        config.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
         config.addVariable("VMIN", int.class, 0);
         config.addVariable("VHOUR", int.class, 8);
         EPServiceProvider epService = EPServiceProviderManager.getDefaultProvider(config);
@@ -287,7 +283,6 @@ public class TestTimerAtObserver extends TestCase implements SupportBeanConstant
         String expression = "select * from pattern [a=SupportBean -> every timer:at(2*a.intPrimitive,*,*,*,*)]";
 
         Configuration config = SupportConfigFactory.getConfiguration();
-        config.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
         config.addEventTypeAlias("SupportBean", SupportBean.class.getName());
         EPServiceProvider epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();
@@ -317,7 +312,6 @@ public class TestTimerAtObserver extends TestCase implements SupportBeanConstant
     {
         String expression = "select * from pattern [every (timer:at(*/VFREQ, VMIN:VMAX, 1 last, *, [8, 2:VMAX, */VREQ]))]";
         Configuration config = SupportConfigFactory.getConfiguration();
-        config.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
         EPServiceProvider epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();
 

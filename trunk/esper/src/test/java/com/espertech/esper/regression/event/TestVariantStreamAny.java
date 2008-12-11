@@ -22,8 +22,6 @@ public class TestVariantStreamAny extends TestCase
     public void setUp()
     {
         Configuration config = SupportConfigFactory.getConfiguration();
-        config.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
-
         ConfigurationVariantStream variant = new ConfigurationVariantStream();
         variant.setTypeVariance(ConfigurationVariantStream.TypeVariance.ANY);
         config.addVariantStream("MyVariantStream", variant);

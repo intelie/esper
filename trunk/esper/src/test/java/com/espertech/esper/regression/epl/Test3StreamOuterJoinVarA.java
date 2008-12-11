@@ -33,7 +33,6 @@ public class Test3StreamOuterJoinVarA extends TestCase
         config.addEventTypeAlias("P2", SupportBean_S2.class);
         config.addEventTypeAlias("P3", SupportBean_S3.class);
         epService = EPServiceProviderManager.getDefaultProvider(config);
-        epService.getEPRuntime().sendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
         epService.initialize();
         updateListener = new SupportUpdateListener();
     }

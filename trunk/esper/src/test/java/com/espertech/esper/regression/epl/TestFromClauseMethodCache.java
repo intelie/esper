@@ -17,7 +17,6 @@ public class TestFromClauseMethodCache extends TestCase
     public void testLRUCache()
     {
         Configuration config = SupportConfigFactory.getConfiguration();
-        config.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
         ConfigurationMethodRef methodConfig = new ConfigurationMethodRef();
         methodConfig.setLRUCache(3);
         config.addMethodRef(SupportStaticMethodInvocations.class.getName(), methodConfig);
@@ -72,7 +71,6 @@ public class TestFromClauseMethodCache extends TestCase
     public void testExpiryCache()
     {
         Configuration config = SupportConfigFactory.getConfiguration();
-        config.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
         ConfigurationMethodRef methodConfig = new ConfigurationMethodRef();
         methodConfig.setExpiryTimeCache(1, 10);
         config.addMethodRef(SupportStaticMethodInvocations.class.getName(), methodConfig);

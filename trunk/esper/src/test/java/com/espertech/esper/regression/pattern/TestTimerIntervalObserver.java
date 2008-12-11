@@ -184,7 +184,6 @@ public class TestTimerIntervalObserver extends TestCase implements SupportBeanCo
         epService.initialize();
 
         // External clocking
-        epService.getEPRuntime().sendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
         sendTimer(0, epService);
 
         // Set up a timer:within
@@ -207,7 +206,6 @@ public class TestTimerIntervalObserver extends TestCase implements SupportBeanCo
         epService.initialize();
 
         // External clocking
-        epService.getEPRuntime().sendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
         sendTimer(0, epService);
 
         // Set up a timer:within
@@ -232,7 +230,6 @@ public class TestTimerIntervalObserver extends TestCase implements SupportBeanCo
         epService.initialize();
 
         // External clocking
-        epService.getEPRuntime().sendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
         sendTimer(0, epService);
 
         // Set up a timer:within
@@ -257,7 +254,6 @@ public class TestTimerIntervalObserver extends TestCase implements SupportBeanCo
         epService.getEPAdministrator().getConfiguration().addEventTypeAlias("SupportBean", SupportBean.class);
 
         // External clocking
-        epService.getEPRuntime().sendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
         sendTimer(0, epService);
 
         // Set up a timer:within
@@ -288,7 +284,6 @@ public class TestTimerIntervalObserver extends TestCase implements SupportBeanCo
         epService.getEPAdministrator().getConfiguration().addEventTypeAlias("SupportBean", SupportBean.class);
 
         // External clocking
-        epService.getEPRuntime().sendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
         sendTimer(0, epService);
 
         // Set up a timer:within
@@ -313,7 +308,6 @@ public class TestTimerIntervalObserver extends TestCase implements SupportBeanCo
         epService.initialize();
 
         // External clocking
-        epService.getEPRuntime().sendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
         sendTimer(0, epService);
 
         // Set up a timer:within

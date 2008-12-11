@@ -193,7 +193,6 @@ public class TestManualDatabaseJoinOracle
     {
         Configuration configuration = SupportConfigFactory.getConfiguration();
         configuration.addDatabaseReference("MyDB", configOracle);
-        configuration.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
         configuration.getEngineDefaults().getLogging().setEnableExecutionDebug(true);
 
         return configuration;

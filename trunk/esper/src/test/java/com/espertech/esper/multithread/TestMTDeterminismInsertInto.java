@@ -50,7 +50,6 @@ public class TestMTDeterminismInsertInto extends TestCase
 
         EPServiceProvider engine = EPServiceProviderManager.getDefaultProvider(config);
         engine.initialize();
-        engine.getEPRuntime().sendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
 
         // setup statements
         EPStatement[] insertIntoStmts = new EPStatement[numStatements];
@@ -121,7 +120,6 @@ public class TestMTDeterminismInsertInto extends TestCase
 
         EPServiceProvider engine = EPServiceProviderManager.getDefaultProvider(config);
         engine.initialize();
-        engine.getEPRuntime().sendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
 
         // setup statements
         EPStatement stmtInsertOne = engine.getEPAdministrator().createEPL("insert into MyStreamOne select count(*) as cnt from " + SupportBean.class.getName());
@@ -176,7 +174,6 @@ public class TestMTDeterminismInsertInto extends TestCase
     private void trySendCountFollowedBy(int numThreads, int numEvents, ConfigurationEngineDefaults.Threading.Locking locking) throws Exception
     {
         Configuration config = SupportConfigFactory.getConfiguration();
-        config.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
         config.getEngineDefaults().getThreading().setInsertIntoDispatchLocking(locking);
         config.getEngineDefaults().getThreading().setInsertIntoDispatchTimeout(5000); // 5 second timeout
         // This should fail all test in this class

@@ -55,9 +55,9 @@ public class TestPropertyHelper extends TestCase
     public void testRemoveDuplicateProperties()
     {
         List<InternalEventPropDescriptor> result = new LinkedList<InternalEventPropDescriptor>();
-        result.add(new InternalEventPropDescriptor("x", "x", (Method) null, null));
-        result.add(new InternalEventPropDescriptor("x", "x", (Method) null, null));
-        result.add(new InternalEventPropDescriptor("y", "y", (Method) null, null));
+        result.add(new InternalEventPropDescriptor("x", (Method) null, null));
+        result.add(new InternalEventPropDescriptor("x", (Method) null, null));
+        result.add(new InternalEventPropDescriptor("y", (Method) null, null));
 
         PropertyHelper.removeDuplicateProperties(result);
 
@@ -69,11 +69,11 @@ public class TestPropertyHelper extends TestCase
     public void testRemoveJavaProperties()
     {
         List<InternalEventPropDescriptor> result = new LinkedList<InternalEventPropDescriptor>();
-        result.add(new InternalEventPropDescriptor("x", "x", (Method) null, null));
-        result.add(new InternalEventPropDescriptor("class", "class", (Method) null, null));
-        result.add(new InternalEventPropDescriptor("hashCode", "hashCode", (Method) null, null));
-        result.add(new InternalEventPropDescriptor("toString", "toString", (Method) null, null));
-        result.add(new InternalEventPropDescriptor("getClass", "getClass", (Method) null, null));
+        result.add(new InternalEventPropDescriptor("x", (Method) null, null));
+        result.add(new InternalEventPropDescriptor("class", (Method) null, null));
+        result.add(new InternalEventPropDescriptor("hashCode", (Method) null, null));
+        result.add(new InternalEventPropDescriptor("toString", (Method) null, null));
+        result.add(new InternalEventPropDescriptor("getClass", (Method) null, null));
 
         PropertyHelper.removeJavaProperties(result);
 

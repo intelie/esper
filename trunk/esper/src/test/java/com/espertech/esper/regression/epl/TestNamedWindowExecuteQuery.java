@@ -20,7 +20,6 @@ public class TestNamedWindowExecuteQuery extends TestCase
         Configuration config = SupportConfigFactory.getConfiguration();
         config.addEventTypeAlias("SupportBean", SupportBean.class.getName());
         config.addEventTypeAlias("SupportBean_A", SupportBean_A.class.getName());
-        config.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
         epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();
 

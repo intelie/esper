@@ -289,11 +289,6 @@ public class EventBeanUtility
         for (int i = 0; i < properties.length; i++)
         {
             String propName = properties[i];
-            if (propName.contains("[]"))
-            {
-                propName = propName.replace("[]", "");
-            }
-
             Object property = event.get(propName);
             String printProperty;
             if (property == null)

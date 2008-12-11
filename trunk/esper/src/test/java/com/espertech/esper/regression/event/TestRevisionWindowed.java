@@ -24,7 +24,6 @@ public class TestRevisionWindowed extends TestCase
     public void setUp()
     {
         Configuration config = SupportConfigFactory.getConfiguration();
-        config.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
 
         // first revision event type
         config.addEventTypeAlias("SupportBean", SupportBean.class);

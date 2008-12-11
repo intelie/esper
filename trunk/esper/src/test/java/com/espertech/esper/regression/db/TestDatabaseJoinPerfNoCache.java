@@ -28,7 +28,6 @@ public class TestDatabaseJoinPerfNoCache extends TestCase
         configDB.setConnectionLifecycleEnum(ConfigurationDBRef.ConnectionLifecycleEnum.RETAIN);
         Configuration configuration = SupportConfigFactory.getConfiguration();
         configuration.addDatabaseReference("MyDB", configDB);
-        configuration.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
 
         epServiceRetained = EPServiceProviderManager.getProvider("TestDatabaseJoinRetained", configuration);
         epServiceRetained.initialize();
@@ -38,7 +37,6 @@ public class TestDatabaseJoinPerfNoCache extends TestCase
         configDB.setConnectionLifecycleEnum(ConfigurationDBRef.ConnectionLifecycleEnum.POOLED);
         configuration = SupportConfigFactory.getConfiguration();
         configuration.addDatabaseReference("MyDB", configDB);
-        configuration.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
         epServicePooled = EPServiceProviderManager.getProvider("TestDatabaseJoinPooled", configuration);
         epServicePooled.initialize();
     }
@@ -92,7 +90,6 @@ public class TestDatabaseJoinPerfNoCache extends TestCase
     public void testSelectIStream()
     {
         // set time to zero
-        epServiceRetained.getEPRuntime().sendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
         epServiceRetained.getEPRuntime().sendEvent(new CurrentTimeEvent(0));
 
         String stmtText = "select istream myvarchar from " +

@@ -33,20 +33,20 @@ public class TestPropertyListBuilderPublic extends TestCase
         List<InternalEventPropDescriptor> descList = builder.assessProperties(SupportLegacyBean.class);
 
         List<InternalEventPropDescriptor> expected = new LinkedList<InternalEventPropDescriptor>();
-        expected.add(new InternalEventPropDescriptor("fieldLegacyVal", "fieldLegacyVal", SupportLegacyBean.class.getField("fieldLegacyVal"), EventPropertyType.SIMPLE));
-        expected.add(new InternalEventPropDescriptor("fieldStringArray", "fieldStringArray", SupportLegacyBean.class.getField("fieldStringArray"), EventPropertyType.SIMPLE));
-        expected.add(new InternalEventPropDescriptor("fieldMapped", "fieldMapped", SupportLegacyBean.class.getField("fieldMapped"), EventPropertyType.SIMPLE));
-        expected.add(new InternalEventPropDescriptor("fieldNested", "fieldNested", SupportLegacyBean.class.getField("fieldNested"), EventPropertyType.SIMPLE));
+        expected.add(new InternalEventPropDescriptor("fieldLegacyVal", SupportLegacyBean.class.getField("fieldLegacyVal"), EventPropertyType.SIMPLE));
+        expected.add(new InternalEventPropDescriptor("fieldStringArray", SupportLegacyBean.class.getField("fieldStringArray"), EventPropertyType.SIMPLE));
+        expected.add(new InternalEventPropDescriptor("fieldMapped", SupportLegacyBean.class.getField("fieldMapped"), EventPropertyType.SIMPLE));
+        expected.add(new InternalEventPropDescriptor("fieldNested", SupportLegacyBean.class.getField("fieldNested"), EventPropertyType.SIMPLE));
 
-        expected.add(new InternalEventPropDescriptor("readLegacyBeanVal", "readLegacyBeanVal", SupportLegacyBean.class.getMethod("readLegacyBeanVal"), EventPropertyType.SIMPLE));
-        expected.add(new InternalEventPropDescriptor("readStringArray", "readStringArray", SupportLegacyBean.class.getMethod("readStringArray"), EventPropertyType.SIMPLE));
-        expected.add(new InternalEventPropDescriptor("readStringIndexed", "readStringIndexed", SupportLegacyBean.class.getMethod("readStringIndexed", new Class[] {int.class}), EventPropertyType.INDEXED));
-        expected.add(new InternalEventPropDescriptor("readMapByKey", "readMapByKey", SupportLegacyBean.class.getMethod("readMapByKey", new Class[] {String.class}), EventPropertyType.MAPPED));
-        expected.add(new InternalEventPropDescriptor("readMap", "readMap", SupportLegacyBean.class.getMethod("readMap"), EventPropertyType.SIMPLE));
-        expected.add(new InternalEventPropDescriptor("readLegacyNested", "readLegacyNested", SupportLegacyBean.class.getMethod("readLegacyNested"), EventPropertyType.SIMPLE));
+        expected.add(new InternalEventPropDescriptor("readLegacyBeanVal", SupportLegacyBean.class.getMethod("readLegacyBeanVal"), EventPropertyType.SIMPLE));
+        expected.add(new InternalEventPropDescriptor("readStringArray", SupportLegacyBean.class.getMethod("readStringArray"), EventPropertyType.SIMPLE));
+        expected.add(new InternalEventPropDescriptor("readStringIndexed", SupportLegacyBean.class.getMethod("readStringIndexed", new Class[] {int.class}), EventPropertyType.INDEXED));
+        expected.add(new InternalEventPropDescriptor("readMapByKey", SupportLegacyBean.class.getMethod("readMapByKey", new Class[] {String.class}), EventPropertyType.MAPPED));
+        expected.add(new InternalEventPropDescriptor("readMap", SupportLegacyBean.class.getMethod("readMap"), EventPropertyType.SIMPLE));
+        expected.add(new InternalEventPropDescriptor("readLegacyNested", SupportLegacyBean.class.getMethod("readLegacyNested"), EventPropertyType.SIMPLE));
 
-        expected.add(new InternalEventPropDescriptor("x", "x", SupportLegacyBean.class.getField("fieldNested"), EventPropertyType.SIMPLE));
-        expected.add(new InternalEventPropDescriptor("y", "y", SupportLegacyBean.class.getMethod("readLegacyBeanVal"), EventPropertyType.SIMPLE));
+        expected.add(new InternalEventPropDescriptor("x", SupportLegacyBean.class.getField("fieldNested"), EventPropertyType.SIMPLE));
+        expected.add(new InternalEventPropDescriptor("y", SupportLegacyBean.class.getMethod("readLegacyBeanVal"), EventPropertyType.SIMPLE));
         ArrayAssertionUtil.assertEqualsAnyOrder(expected.toArray(), descList.toArray());
     }
 

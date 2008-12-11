@@ -48,16 +48,14 @@ public class TestBeanEventType extends TestCase
         assertEquals(String.class, nestedType.getPropertyType("nestedValue"));
         assertNull(eventTypeComplex.getFragmentType("indexed[0]"));
 
-        assertNull(eventTypeNested.getFragmentType("indexed"));
         nestedTypeFragment = eventTypeNested.getFragmentType("indexed[0]");
         nestedType = nestedTypeFragment.getFragmentType();
+        assertFalse(nestedTypeFragment.isIndexed());
         assertEquals(SupportBeanCombinedProps.NestedLevOne.class.getName(), nestedType.getName());
-        assertEquals(SupportBeanCombinedProps.NestedLevOne.class, nestedType.getUnderlyingType());
         assertEquals(Map.class, nestedType.getPropertyType("mapprop"));
 
-        // TODO
-        // EventTypeAssertionUtil.assertConsistency(eventTypeComplex);
-        // EventTypeAssertionUtil.assertConsistency(eventTypeNested);
+        EventTypeAssertionUtil.assertConsistency(eventTypeComplex);
+        EventTypeAssertionUtil.assertConsistency(eventTypeNested);
     }
 
     public void testGetPropertyNames()

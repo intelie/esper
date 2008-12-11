@@ -20,7 +20,6 @@ public class TestViewPlugin extends TestCase
         configuration.addPlugInView("mynamespace", "trendspotter", MyTrendSpotterViewFactory.class.getName());
         configuration.addPlugInView("mynamespace", "flushedsimple", MyFlushedSimpleViewFactory.class.getName());
         configuration.addPlugInView("mynamespace", "invalid", String.class.getName());
-        configuration.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
         epService = EPServiceProviderManager.getProvider("TestViewPlugin", configuration);
         epService.initialize();
     }

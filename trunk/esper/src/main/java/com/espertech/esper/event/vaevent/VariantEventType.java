@@ -50,7 +50,6 @@ public class VariantEventType implements EventTypeSPI
         {
             String[] properties = type.getPropertyNames();
             properties = PropertyUtility.copyAndSort(properties);
-            PropertyUtility.removePropNamePostfixes(properties);
             for (String property : properties)
             {
                 if (!propertyDesc.containsKey(property))

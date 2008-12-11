@@ -17,7 +17,6 @@ public class TestEPStatement extends TestCase
     {
         testListener = new SupportUpdateListener();
         Configuration config = SupportConfigFactory.getConfiguration();
-        config.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
         epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();
     }

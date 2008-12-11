@@ -5,6 +5,7 @@ import com.espertech.esper.support.bean.SupportBeanSimple;
 import com.espertech.esper.support.bean.SupportBeanCombinedProps;
 import com.espertech.esper.support.event.SupportEventTypeFactory;
 import com.espertech.esper.support.event.SupportEventBeanFactory;
+import com.espertech.esper.support.event.EventTypeAssertionUtil;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.client.PropertyAccessException;
@@ -80,8 +81,12 @@ public class TestBeanEventBean extends TestCase
         tryInvalidGet(eventBean, "dummy('dd')");
         tryInvalidGet(eventBean, "dummy.dummy1");
 
+        // indexed getter
         tryInvalidGetFragment(eventBean, "indexed");
         assertEquals(SupportBeanCombinedProps.NestedLevOne.class, ((EventBean) eventBean.getFragment("indexed[0]")).getEventType().getUnderlyingType());
+
+        String eventText = EventTypeAssertionUtil.print(eventBean);
+        //System.out.println(eventText);
     }
 
     private static void tryInvalidGet(EventBean eventBean, String propName)

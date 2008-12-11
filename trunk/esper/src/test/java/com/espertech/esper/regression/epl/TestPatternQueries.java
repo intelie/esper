@@ -149,7 +149,6 @@ public class TestPatternQueries extends TestCase
         EPStatement statement = epService.getEPAdministrator().createEPL(stmtText);
 
         statement.addListener(updateListener);
-        epService.getEPRuntime().sendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
         epService.getEPRuntime().sendEvent(new CurrentTimeEvent(0));
 
         sendEvent(1, "e1a");

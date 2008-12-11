@@ -27,9 +27,6 @@ public class TestSubselectUnfiltered extends TestCase {
         epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();
         listener = new SupportUpdateListener();
-
-        // Use external clocking for the test, reduces logging
-        epService.getEPRuntime().sendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
     }
 
     public void testSelfSubselect()

@@ -34,9 +34,6 @@ public class TestInsertInto extends TestCase
         feedListener = new SupportUpdateListener();
         resultListenerDelta = new SupportUpdateListener();
         resultListenerProduct = new SupportUpdateListener();
-
-        // Use external clocking for the test
-        epService.getEPRuntime().sendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
     }
 
     public void testVariantRStreamOMToStmt() throws Exception

@@ -15,6 +15,21 @@ public class TestPropertyResolution extends TestCase
 {
     private EPServiceProvider epService;
 
+    public void testFragment()
+    {
+        epService = EPServiceProviderManager.getDefaultProvider(SupportConfigFactory.getConfiguration());
+        epService.initialize();
+
+        EPStatement stmt = epService.getEPAdministrator().createEPL("select * from " + SupportBeanWriteOnly.class.getName());
+        SupportUpdateListener listener = new SupportUpdateListener();
+        stmt.addListener(listener);
+
+        Object event = new SupportBeanWriteOnly();
+        epService.getEPRuntime().sendEvent(event);
+        EventBean eventBean = listener.assertOneGetNewAndReset();
+
+    }
+
     public void testWriteOnly()
     {
         epService = EPServiceProviderManager.getDefaultProvider(SupportConfigFactory.getConfiguration());

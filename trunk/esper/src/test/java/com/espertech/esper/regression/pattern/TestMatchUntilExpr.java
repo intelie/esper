@@ -18,7 +18,6 @@ public class TestMatchUntilExpr extends TestCase implements SupportBeanConstants
     public void setUp()
     {
         config = SupportConfigFactory.getConfiguration();
-        config.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
         config.addEventTypeAlias("A", SupportBean_A.class.getName());
         config.addEventTypeAlias("B", SupportBean_B.class.getName());
         config.addEventTypeAlias("C", SupportBean_C.class.getName());

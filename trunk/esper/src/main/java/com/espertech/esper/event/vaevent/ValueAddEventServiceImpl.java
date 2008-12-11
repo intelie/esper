@@ -263,8 +263,6 @@ public class ValueAddEventServiceImpl implements ValueAddEventService
 
             String changesetProperties[] = changesetPropertyNames.toArray(new String[changesetPropertyNames.size()]);
             String baseEventOnlyPropertyNames[] = baseEventOnlyProperties.toArray(new String[baseEventOnlyProperties.size()]);
-            PropertyUtility.removePropNamePostfixes(changesetProperties);
-            PropertyUtility.removePropNamePostfixes(baseEventOnlyPropertyNames);
 
             // verify that all changeset properties match event type
             for (String changesetProperty : changesetProperties)
@@ -294,8 +292,6 @@ public class ValueAddEventServiceImpl implements ValueAddEventService
 
             String[] allPropertiesArr = allProperties.toArray(new String[allProperties.size()]);
             String[] changesetProperties = PropertyUtility.uniqueExclusiveSort(allPropertiesArr, keyPropertyNames);
-            PropertyUtility.removePropNamePostfixes(allPropertiesArr);
-            PropertyUtility.removePropNamePostfixes(changesetProperties);
 
             // All properties must have the same type, if a property exists for any given type
             boolean hasContributedByDelta = false;
@@ -303,15 +299,6 @@ public class ValueAddEventServiceImpl implements ValueAddEventService
             count = 0;
             for (String property : changesetProperties)
             {
-                if (property.endsWith("[]"))
-                {
-                    property = property.replace("[]", "");
-                }
-                if (property.endsWith("()"))
-                {
-                    property = property.replace("()", "");
-                }
-
                 Class basePropertyType = baseEventType.getPropertyType(property);
                 Class typeTemp = null;
                 if (basePropertyType != null)

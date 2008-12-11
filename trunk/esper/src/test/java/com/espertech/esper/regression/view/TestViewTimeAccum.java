@@ -19,7 +19,6 @@ public class TestViewTimeAccum extends TestCase
     {
         listener = new SupportUpdateListener();
         Configuration configuration = SupportConfigFactory.getConfiguration();
-        configuration.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
         epService = EPServiceProviderManager.getDefaultProvider(configuration);
         epService.initialize();
 
