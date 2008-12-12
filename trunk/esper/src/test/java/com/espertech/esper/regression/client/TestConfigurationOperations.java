@@ -128,9 +128,9 @@ public class TestConfigurationOperations extends TestCase
         tryInvalid("AddedMapOne");
 
         // First statement with new name
-        Map<String, Class> mapProps = new HashMap<String, Class>();
+        Map<String, Object> mapProps = new HashMap<String, Object>();
         mapProps.put("prop1", int.class);
-        configOps.addEventTypeAlias("AddedMapOne", mapProps);
+        configOps.addNestableEventTypeAlias("AddedMapOne", mapProps);
 
         EPStatement stmt = epService.getEPAdministrator().createEPL("select * from AddedMapOne");
         stmt.addListener(testListener);
@@ -143,7 +143,7 @@ public class TestConfigurationOperations extends TestCase
         tryInvalid("AddedMapNameSecond");
 
         // Second statement using a new alias to the same type, should only one receive
-        configOps.addEventTypeAlias("AddedMapNameSecond", mapProps);
+        configOps.addNestableEventTypeAlias("AddedMapNameSecond", mapProps);
         SupportUpdateListener testListenerTwo = new SupportUpdateListener();
         stmt = epService.getEPAdministrator().createEPL("select * from AddedMapNameSecond");
         stmt.addListener(testListenerTwo);
@@ -157,13 +157,13 @@ public class TestConfigurationOperations extends TestCase
         // Add the same alias and type again
         mapProps.clear();
         mapProps.put("prop1", int.class);
-        configOps.addEventTypeAlias("AddedNameSecond", mapProps);
+        configOps.addNestableEventTypeAlias("AddedNameSecond", mapProps);
 
         // Add the same alias and a different type
         try
         {
             mapProps.put("XX", int.class);
-            configOps.addEventTypeAlias("AddedNameSecond", mapProps);
+            configOps.addNestableEventTypeAlias("AddedNameSecond", mapProps);
             fail();
         }
         catch (ConfigurationException ex)

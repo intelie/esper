@@ -165,9 +165,9 @@ public class SelectExprEvalProcessor implements SelectExprProcessor
             }
             
             EventTypeFragment fragmentType = eventTypeStream.getFragmentType(propertyName);
-            if (fragmentType == null)
+            if ((fragmentType == null) || (fragmentType.isNative()))
             {
-                continue;
+                continue;   // we also ignore native Java classes as fragments for performance reasons
             }
 
             final String fragmentPropertyName = propertyName;

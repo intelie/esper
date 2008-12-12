@@ -57,7 +57,7 @@ public class RevisionEventType implements EventTypeSPI
         for (Map.Entry<String, RevisionPropertyTypeDesc> desc : propertyDesc.entrySet())
         {
             Class type = (Class) desc.getValue().getPropertyType();
-            EventPropertyDescriptor descriptor = new EventPropertyDescriptor(desc.getKey(), type, false, false, false, false, !JavaClassHelper.isJavaBuiltinDataType(type));
+            EventPropertyDescriptor descriptor = new EventPropertyDescriptor(desc.getKey(), type, false, false, false, false, JavaClassHelper.isFragmentableType(type));
             propertyDescriptors[count] = descriptor;
             propertyDescriptorMap.put(desc.getKey(), descriptor);
             count++;

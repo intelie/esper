@@ -1900,7 +1900,7 @@ public class TestNamedWindowViews extends TestCase
         stmtPattern.addListener(listenerStmtOne);
 
         String stmtTextInsert = "insert into MyWindow select string as key, longBoxed as value from " + SupportBean.class.getName();
-        EPStatement stmtInsert = epService.getEPAdministrator().createEPL(stmtTextInsert);
+        epService.getEPAdministrator().createEPL(stmtTextInsert);
 
         sendSupportBean("E1", 1L);
         assertFalse(listenerStmtOne.isInvoked());

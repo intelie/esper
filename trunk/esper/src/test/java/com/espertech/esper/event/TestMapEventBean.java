@@ -69,22 +69,19 @@ public class TestMapEventBean extends TestCase
         SupportBean beanOne = new SupportBean();
         SupportBean_A beanTwo = new SupportBean_A("a");
 
-        EventBean eventOne = SupportEventBeanFactory.createObject(beanOne);
-        EventBean eventTwo = SupportEventBeanFactory.createObject(beanTwo);
-
         // Set up event type
         testTypesMap.clear();
         testTypesMap.put("a", SupportBean.class);
         testTypesMap.put("b", SupportBean_A.class);
         EventType eventType = SupportEventAdapterService.getService().createAnonymousMapType(testTypesMap);
 
-        Map<String, EventBean> events = new HashMap<String, EventBean>();
-        events.put("a", eventOne);
-        events.put("b", eventTwo);
+        Map<String, Object> events = new HashMap<String, Object>();
+        events.put("a", beanOne);
+        events.put("b", beanTwo);
 
-        MapEventBean event = new MapEventBean(eventType, events);
-        assertTrue(event.get("a") == beanOne);
-        assertTrue(event.get("b") == beanTwo);
+        MapEventBean event = new MapEventBean(events, eventType);
+        assertSame(event.get("a"), beanOne);
+        assertSame(event.get("b"), beanTwo);
     }
 
     private static final Log log = LogFactory.getLog(TestMapEventBean.class);

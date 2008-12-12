@@ -13,15 +13,17 @@ public class MapMaptypedEntryPropertyGetter implements EventPropertyGetter {
 
     private final String propertyMap;
     private final EventPropertyGetter eventBeanEntryGetter;
+    private final MapEventType fragmentType;
 
     /**
      * Ctor.
      * @param propertyMap the property to look at
      * @param eventBeanEntryGetter the getter for the map entry
      */
-    public MapMaptypedEntryPropertyGetter(String propertyMap, EventPropertyGetter eventBeanEntryGetter) {
+    public MapMaptypedEntryPropertyGetter(String propertyMap, EventPropertyGetter eventBeanEntryGetter, MapEventType fragmentType) {
         this.propertyMap = propertyMap;
         this.eventBeanEntryGetter = eventBeanEntryGetter;
+        this.fragmentType = fragmentType;
     }
 
     public Object get(EventBean obj)
@@ -48,7 +50,7 @@ public class MapMaptypedEntryPropertyGetter implements EventPropertyGetter {
         }
 
         // If the map does not contain the key, this is allowed and represented as null
-        EventBean eventBean = new MapEventBean((Map) value, null);
+        EventBean eventBean = new MapEventBean((Map) value, fragmentType);
         return eventBeanEntryGetter.get(eventBean);
     }
 
@@ -57,8 +59,31 @@ public class MapMaptypedEntryPropertyGetter implements EventPropertyGetter {
         return true; // Property exists as the property is not dynamic (unchecked)
     }
 
-    public Object getFragment(EventBean eventBean)
+    public Object getFragment(EventBean obj)
     {
-        return null; // TODO
+        Object underlying = obj.getUnderlying();
+
+        // The underlying is expected to be a map
+        if (!(underlying instanceof Map))
+        {
+            throw new PropertyAccessException("Mismatched property getter to event bean type, " +
+                    "the underlying data object is not of type java.lang.Map");
+        }
+
+        Map map = (Map) underlying;
+
+        Object value = map.get(propertyMap);
+        if (value == null)
+        {
+            return null;
+        }
+        if (!(value instanceof Map))
+        {
+            return null;
+        }
+
+        // If the map does not contain the key, this is allowed and represented as null
+        EventBean eventBean = new MapEventBean((Map) value, fragmentType);
+        return eventBeanEntryGetter.get(eventBean);
     }
 }

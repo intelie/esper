@@ -45,11 +45,11 @@ public class TestAddPropertyValueView extends TestCase
 
         // Generate some events
         eventData.put("STDDEV", 100);
-        EventBean eventBeanOne = SupportEventBeanFactory.createMapFromValues(eventData, parentEventType);
+        EventBean eventBeanOne = SupportEventBeanFactory.createMapFromValues(new HashMap<String, Object>(eventData), parentEventType);
         eventData.put("STDDEV", 0);
-        EventBean eventBeanTwo = SupportEventBeanFactory.createMapFromValues(eventData, parentEventType);
+        EventBean eventBeanTwo = SupportEventBeanFactory.createMapFromValues(new HashMap<String, Object>(eventData), parentEventType);
         eventData.put("STDDEV", 99999);
-        EventBean eventBeanThree = SupportEventBeanFactory.createMapFromValues(eventData, parentEventType);
+        EventBean eventBeanThree = SupportEventBeanFactory.createMapFromValues(new HashMap<String, Object>(eventData), parentEventType);
 
         // Send events
         parentView.update(new EventBean[] { eventBeanOne, eventBeanTwo},

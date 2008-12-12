@@ -13,6 +13,26 @@ import java.util.*;
 
 public class TestJavaClassHelper extends TestCase
 {
+    public void testIsFragmentableType()
+    {
+        Class[] notFragmentables = new Class[] {
+            String.class, int.class, Character.class, long.class, Map.class, HashMap.class, SupportEnum.class,
+        };
+
+        Class[] yesFragmentables = new Class[] {
+            SupportBeanCombinedProps.class, SupportBeanCombinedProps.NestedLevOne.class, SupportBean.class
+        };
+
+        for (Class notFragmentable : notFragmentables)
+        {
+            assertFalse(JavaClassHelper.isFragmentableType(notFragmentable));
+        }
+        for (Class yesFragmentable : yesFragmentables)
+        {
+            assertTrue(JavaClassHelper.isFragmentableType(yesFragmentable));
+        }
+    }
+
     public void testGetParameterAsString()
     {
         Object[][] testCases = {

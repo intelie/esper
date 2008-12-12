@@ -28,9 +28,10 @@ public class MapEventBeanArrayPropertyGetter implements EventPropertyGetter
         }
 
         Map map = (Map) obj.getUnderlying();
+        Object mapValue = map.get(propertyName);
 
         // If the map does not contain the key, this is allowed and represented as null
-        EventBean[] wrapper = (EventBean[]) map.get(propertyName);
+        EventBean[] wrapper = (EventBean[]) mapValue;
         if (wrapper !=  null)
         {
             Object array = Array.newInstance(underlyingType, wrapper.length);

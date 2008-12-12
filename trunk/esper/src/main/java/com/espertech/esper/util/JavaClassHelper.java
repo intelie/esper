@@ -14,6 +14,7 @@ import com.espertech.esper.type.*;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.Map;
 import java.math.BigInteger;
 import java.math.BigDecimal;
 
@@ -1109,6 +1110,31 @@ public class JavaClassHelper
             return true;
         }
         return false;
+    }
+
+    public static boolean isFragmentableType(Class propertyType)
+    {
+        if (propertyType == null)
+        {
+            return false;
+        }
+        if (propertyType.isArray())
+        {
+            return isFragmentableType(propertyType.getComponentType());
+        }
+        if (JavaClassHelper.isJavaBuiltinDataType(propertyType))
+        {
+            return false;
+        }
+        if (propertyType.isEnum())
+        {
+            return false;
+        }
+        if (JavaClassHelper.isImplementsInterface(propertyType, Map.class))
+        {
+            return false;
+        }
+        return true;
     }
 
     private static void getSuperInterfaces(Class clazz, Set<Class> result)

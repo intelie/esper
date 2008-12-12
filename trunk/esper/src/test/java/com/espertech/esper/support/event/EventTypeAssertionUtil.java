@@ -8,18 +8,20 @@ import junit.framework.Assert;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.HashSet;
 import java.lang.reflect.Array;
 
 public class EventTypeAssertionUtil
 {
     public static void assertConsistency(EventBean eventBean)
     {
-        assertConsistencyRecusive(eventBean);
+        assertConsistencyRecusive(eventBean, new HashSet<EventType>());
     }
 
     public static void assertConsistency(EventType eventType)
     {
-        assertConsistencyRecursive(eventType);
+        assertConsistencyRecursive(eventType, new HashSet<EventType>());
     }
 
     public static String print(EventBean event)
@@ -238,9 +240,9 @@ public class EventTypeAssertionUtil
     }
     
 
-    private static void assertConsistencyRecusive(EventBean eventBean)
+    private static void assertConsistencyRecusive(EventBean eventBean, Set<EventType> alreadySeenTypes)
     {
-        assertConsistencyRecursive(eventBean.getEventType());
+        assertConsistencyRecursive(eventBean.getEventType(), alreadySeenTypes);
 
         EventPropertyDescriptor properties[] = eventBean.getEventType().getPropertyDescriptors();
         for (int i = 0; i < properties.length; i++)
@@ -278,7 +280,7 @@ public class EventTypeAssertionUtil
             {
                 Assert.assertTrue(failedMessage, fragment instanceof EventBean);
                 EventBean fragmentEvent = (EventBean) fragment;
-                assertConsistencyRecusive(fragmentEvent);
+                assertConsistencyRecusive(fragmentEvent, alreadySeenTypes);
             }
             else
             {
@@ -287,14 +289,20 @@ public class EventTypeAssertionUtil
                 Assert.assertTrue(failedMessage, events.length > 0);
                 for (EventBean event : events)
                 {
-                    assertConsistencyRecusive(event);
+                    assertConsistencyRecusive(event, alreadySeenTypes);
                 }
             }
         }
     }
 
-    private static void assertConsistencyRecursive(EventType eventType)
+    private static void assertConsistencyRecursive(EventType eventType, Set<EventType> alreadySeenTypes)
     {
+        if (alreadySeenTypes.contains(eventType))
+        {
+            return;
+        }
+        alreadySeenTypes.add(eventType);
+
         assertConsistencyProperties(eventType);
 
         // test fragments
@@ -315,14 +323,14 @@ public class EventTypeAssertionUtil
                 {
                     Assert.assertTrue(descriptor.isIndexed());
                 }
-                assertConsistencyRecursive(fragment.getFragmentType());
+                assertConsistencyRecursive(fragment.getFragmentType(), alreadySeenTypes);
             }
             else
             {
                 fragment = eventType.getFragmentType(descriptor.getPropertyName() + "[0]");
                 Assert.assertNotNull(failedMessage, fragment);
                 Assert.assertTrue(descriptor.isIndexed());
-                assertConsistencyRecursive(fragment.getFragmentType());
+                assertConsistencyRecursive(fragment.getFragmentType(), alreadySeenTypes);
             }
         }
     }

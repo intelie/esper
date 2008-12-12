@@ -141,7 +141,7 @@ public class ConfigurationOperationsImpl implements ConfigurationOperations
         Map<String, Object> types = createPropertyTypes(typeMap);
         try
         {
-            eventAdapterService.addNestableMapType(eventTypeAlias, types, null, false, false, false);
+            eventAdapterService.addNestableMapType(eventTypeAlias, types, null, true, false, false);
         }
         catch (EventAdapterException t)
         {

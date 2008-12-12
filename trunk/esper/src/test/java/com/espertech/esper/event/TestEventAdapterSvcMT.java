@@ -70,11 +70,11 @@ public class TestEventAdapterSvcMT extends TestCase
                     {
                         if (index == 0)
                         {
-                            return service.addNestableMapType("A", typeOne, null, false, false, false);
+                            return service.addNestableMapType("A", typeOne, null, true, false, false);
                         }
                         else
                         {
-                            return service.addNestableMapType("A", typeTwo, null, false, false, false);
+                            return service.addNestableMapType("A", typeTwo, null, true, false, false);
                         }
                     }
                     catch (EventAdapterException ex)

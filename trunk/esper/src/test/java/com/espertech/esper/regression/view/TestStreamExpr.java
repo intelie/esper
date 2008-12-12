@@ -223,11 +223,11 @@ public class TestStreamExpr extends TestCase
     public void testStreamSelectConversionFunctionMap()
     {
         // try the same with a map
-        Map<String, Class> types = new HashMap<String, Class>();
+        Map<String, Object> types = new HashMap<String, Object>();
         types.put("one", String.class);
         types.put("two", String.class);
-        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("MapOne", types);
-        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("MapTwo", types);
+        epService.getEPAdministrator().getConfiguration().addNestableEventTypeAlias("MapOne", types);
+        epService.getEPAdministrator().getConfiguration().addNestableEventTypeAlias("MapTwo", types);
 
         String textOne = "insert into Stream0 select * from MapOne";
         String textTwo = "insert into Stream0 select " + SupportStaticMethodLib.class.getName() + ".convertEventMap(s0) from MapTwo as s0";

@@ -45,12 +45,12 @@ public class Test3StreamOuterJoinVarA extends TestCase
                 " left outer join type3.win:keepall() as t3" +
                 " on t1.col1 = t3.col1";
 
-        Map<String, Class> mapType = new HashMap<String, Class>();
+        Map<String, Object> mapType = new HashMap<String, Object>();
         mapType.put("col1", String.class);
         mapType.put("col2", String.class);
-        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("type1", mapType);
-        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("type2", mapType);
-        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("type3", mapType);
+        epService.getEPAdministrator().getConfiguration().addNestableEventTypeAlias("type1", mapType);
+        epService.getEPAdministrator().getConfiguration().addNestableEventTypeAlias("type2", mapType);
+        epService.getEPAdministrator().getConfiguration().addNestableEventTypeAlias("type3", mapType);
 
         EPStatement stmt = epService.getEPAdministrator().createEPL(stmtText);
         stmt.addListener(updateListener);

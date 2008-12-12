@@ -108,8 +108,6 @@ public class TestPropertyResolution extends TestCase
 
         // assert simple fragment
         EventTypeAssertionUtil.assertConsistency(eventBean.getEventType());
-        
-
     }
 
     public void testWriteOnly()

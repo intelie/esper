@@ -21,6 +21,7 @@ public abstract class BaseNativePropertyGetter implements EventPropertyGetter
     private final EventAdapterService eventAdapterService;
     private volatile BeanEventType fragmentEventType;
     private final Class fragmentClassType;
+    private boolean isFragmentable;
     private final boolean isArray;
 
     /**
@@ -39,6 +40,7 @@ public abstract class BaseNativePropertyGetter implements EventPropertyGetter
             this.fragmentClassType = returnType;
             isArray = false;
         }
+        isFragmentable = true;
     }
 
     public static Object getFragmentDynamic(Object object, EventAdapterService eventAdapterService)
@@ -52,7 +54,7 @@ public abstract class BaseNativePropertyGetter implements EventPropertyGetter
         boolean isArray = false;
         if (object.getClass().isArray())
         {
-            if (!JavaClassHelper.isJavaBuiltinDataType(object.getClass().getComponentType()))
+            if (JavaClassHelper.isFragmentableType(object.getClass().getComponentType()))
             {
                 isArray = true;
                 fragmentEventType = eventAdapterService.getBeanEventTypeFactory().createBeanTypeNoAlias(object.getClass().getComponentType());
@@ -60,7 +62,7 @@ public abstract class BaseNativePropertyGetter implements EventPropertyGetter
         }
         else
         {
-            if (!JavaClassHelper.isJavaBuiltinDataType(object.getClass()))
+            if (JavaClassHelper.isFragmentableType(object.getClass()))
             {
                 fragmentEventType = eventAdapterService.getBeanEventTypeFactory().createBeanTypeNoAlias(object.getClass());
             }
@@ -117,14 +119,20 @@ public abstract class BaseNativePropertyGetter implements EventPropertyGetter
             return null;
         }
 
+        if (!isFragmentable)
+        {
+            return null;
+        }
+
         if (fragmentEventType == null)
         {
-            if (!JavaClassHelper.isJavaBuiltinDataType(fragmentClassType))
+            if (JavaClassHelper.isFragmentableType(fragmentClassType))
             {
                 fragmentEventType = eventAdapterService.getBeanEventTypeFactory().createBeanTypeNoAlias(fragmentClassType);
             }
             else
             {
+                isFragmentable = false;
                 return null;
             }
         }

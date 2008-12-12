@@ -34,24 +34,7 @@ public class MapEventBean implements EventBean
      */
     public MapEventBean(Map<String, Object> properties, EventType eventType)
     {
-        this.properties = new HashMap<String, Object>();
-        this.properties.putAll(properties);
-        this.eventType = eventType;
-    }
-
-    /**
-     * Constructor for initialization with existing values.
-     * Makes a shallow copy of the supplied values to not be surprised by changing property values.
-     * @param eventType is the type of the event, i.e. describes the map entries
-     * @param events are the event property constisting of events
-     */
-    public MapEventBean(EventType eventType, Map<String, EventBean> events)
-    {
-        this.properties = new HashMap<String, Object>();
-        for (Map.Entry<String, EventBean> entry : events.entrySet())
-        {
-            properties.put(entry.getKey(), entry.getValue().getUnderlying());
-        }
+        this.properties = properties;
         this.eventType = eventType;
     }
 

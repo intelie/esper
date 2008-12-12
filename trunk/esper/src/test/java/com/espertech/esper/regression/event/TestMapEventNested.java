@@ -499,6 +499,7 @@ public class TestMapEventNested extends TestCase
         Map<String, Object> eventDef = makeMap(new Object[][] {{"p0", "MyNamedMap"}, {"p1", "MyNamedMap[]"}});
         epService.getEPAdministrator().getConfiguration().addEventTypeAliasNestable("MyMapWithAMap", eventDef);
 
+        // TODO: should we perhaps transpose select expressions only if there is an insert-into
         EPStatement stmt = epService.getEPAdministrator().createEPL("select p0.n0 as a, p1[0].n0 as b, p1[1].n0 as c, p0 as d, p1 as e from MyMapWithAMap");
         SupportUpdateListener listener = new SupportUpdateListener();
         stmt.addListener(listener);
@@ -510,7 +511,12 @@ public class TestMapEventNested extends TestCase
         Map<String, Object> event = makeMap(new Object[][] {{"p0", n0_1}, {"p1", n0_2 }});
         epService.getEPRuntime().sendEvent(event, "MyMapWithAMap");
 
-        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), "a,b,c,d,e".split(","), new Object[] {1, 2, 3, n0_1, n0_2});
+        EventBean eventResult = listener.assertOneGetNewAndReset();
+        ArrayAssertionUtil.assertProps(eventResult, "a,b,c,d".split(","), new Object[] {1, 2, 3, n0_1});
+        Map[] valueE = (Map[]) eventResult.get("e");
+        assertSame(valueE[0], n0_2[0]);
+        assertSame(valueE[1], n0_2[1]);
+
         assertEquals(int.class, stmt.getEventType().getPropertyType("a"));
         assertEquals(int.class, stmt.getEventType().getPropertyType("b"));
         assertEquals(int.class, stmt.getEventType().getPropertyType("c"));

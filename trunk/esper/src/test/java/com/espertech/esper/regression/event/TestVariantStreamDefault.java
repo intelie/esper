@@ -171,7 +171,7 @@ public class TestVariantStreamDefault extends TestCase
             new EventPropertyDescriptor("intPrimitive", Integer.class, false, false, false, false, false),
             new EventPropertyDescriptor("longPrimitive", Long.class, false, false, false, false, false),
             new EventPropertyDescriptor("doublePrimitive", Double.class, false, false, false, false, false),
-            new EventPropertyDescriptor("enumValue", SupportEnum.class, false, false, false, false, true),
+            new EventPropertyDescriptor("enumValue", SupportEnum.class, false, false, false, false, false),
            }, eventType.getPropertyDescriptors());
     }
 
@@ -252,11 +252,11 @@ public class TestVariantStreamDefault extends TestCase
 
     public void testDynamicMapType()
     {
-        Map<String, Class> types = new HashMap<String, Class>();
+        Map<String, Object> types = new HashMap<String, Object>();
         types.put("someprop", String.class);
 
-        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("MyEvent", types);
-        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("MySecondEvent", types);
+        epService.getEPAdministrator().getConfiguration().addNestableEventTypeAlias("MyEvent", types);
+        epService.getEPAdministrator().getConfiguration().addNestableEventTypeAlias("MySecondEvent", types);
 
         ConfigurationVariantStream variant = new ConfigurationVariantStream();
         variant.addEventTypeAlias("MyEvent");

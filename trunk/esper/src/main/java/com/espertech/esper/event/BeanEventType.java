@@ -358,12 +358,12 @@ public class BeanEventType implements EventTypeSPI, NativeEventType
                 else if (type.isArray())
                 {
                     isIndexed = true;
-                    isFragment = !JavaClassHelper.isJavaBuiltinDataType(type.getComponentType());
+                    isFragment = JavaClassHelper.isFragmentableType(type.getComponentType());
                 }
                 else
                 {
                     isMapped = false;
-                    isFragment = !JavaClassHelper.isJavaBuiltinDataType(type);                    
+                    isFragment = JavaClassHelper.isFragmentableType(type);                    
                 }
                 simpleProperties.put(propertyName, new SimplePropertyInfo(type, getter, desc));
 
@@ -421,7 +421,7 @@ public class BeanEventType implements EventTypeSPI, NativeEventType
                 isRequiresMapkey = false;
                 isIndexed = true;
                 isMapped = false;
-                isFragment = !JavaClassHelper.isJavaBuiltinDataType(desc.getReturnType());
+                isFragment = JavaClassHelper.isFragmentableType(desc.getReturnType());
 
                 if (usesSmartResolutionStyle())
                 {

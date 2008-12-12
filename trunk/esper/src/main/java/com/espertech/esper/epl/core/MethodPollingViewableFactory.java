@@ -128,7 +128,7 @@ public class MethodPollingViewableFactory
         EventType eventType;
         if (mapType != null)
         {
-            eventType = eventAdapterService.addNestableMapType(mapTypeName, mapType, null, false, false, false);
+            eventType = eventAdapterService.addNestableMapType(mapTypeName, mapType, null, true, false, false);
         }
         else
         {
