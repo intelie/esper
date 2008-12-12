@@ -5,6 +5,7 @@ import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.PropertyAccessException;
 import com.espertech.esper.support.bean.SupportBeanComplexProps;
 import com.espertech.esper.support.event.SupportEventBeanFactory;
+import com.espertech.esper.support.event.SupportEventAdapterService;
 
 import java.lang.reflect.Method;
 
@@ -19,7 +20,7 @@ public class TestKeyedMethodPropertyGetter extends TestCase
         bean = SupportBeanComplexProps.makeDefaultBean();
         event = SupportEventBeanFactory.createObject(bean);
         Method method = SupportBeanComplexProps.class.getMethod("getIndexed", new Class[] {int.class});
-        getter = new KeyedMethodPropertyGetter(method, 1);
+        getter = new KeyedMethodPropertyGetter(method, 1, SupportEventAdapterService.getService());
     }
 
     public void testGet()

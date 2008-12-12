@@ -61,7 +61,7 @@ public class IndexedProperty extends PropertyBase
             }
             else
             {
-                return new KeyedMethodPropertyGetter(propertyDesc.getReadMethod(), index);
+                return new KeyedMethodPropertyGetter(propertyDesc.getReadMethod(), index, eventAdapterService);
             }
         }
 
@@ -81,17 +81,17 @@ public class IndexedProperty extends PropertyBase
                 if (fastClass != null)
                 {
                     FastMethod fastMethod = fastClass.getMethod(method);
-                    return new ArrayFastPropertyGetter(fastMethod, index);
+                    return new ArrayFastPropertyGetter(fastMethod, index, eventAdapterService);
                 }
                 else
                 {
-                    return new ArrayMethodPropertyGetter(method, index);
+                    return new ArrayMethodPropertyGetter(method, index, eventAdapterService);
                 }
             }
             else
             {
                 Field field = propertyDesc.getAccessorField();
-                return new ArrayFieldPropertyGetter(field, index);
+                return new ArrayFieldPropertyGetter(field, index, eventAdapterService);
             }
         }
 

@@ -8,9 +8,10 @@
  **************************************************************************************/
 package com.espertech.esper.event.property;
 
-import com.espertech.esper.client.EventPropertyGetter;
 import com.espertech.esper.client.EventBean;
+import com.espertech.esper.client.EventPropertyGetter;
 import com.espertech.esper.client.PropertyAccessException;
+import com.espertech.esper.event.EventAdapterService;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
@@ -18,7 +19,7 @@ import java.lang.reflect.Field;
 /**
  * Getter for an array property backed by a field, identified by a given index, using vanilla reflection.
  */
-public class ArrayFieldPropertyGetter implements EventPropertyGetter
+public class ArrayFieldPropertyGetter extends BaseNativePropertyGetter implements EventPropertyGetter
 {
     private final Field field;
     private final int index;
@@ -28,8 +29,9 @@ public class ArrayFieldPropertyGetter implements EventPropertyGetter
      * @param field is the field to use to retrieve a value from the object
      * @param index is tge index within the array to get the property from
      */
-    public ArrayFieldPropertyGetter(Field field, int index)
+    public ArrayFieldPropertyGetter(Field field, int index, EventAdapterService eventAdapterService)
     {
+        super(eventAdapterService, field.getType().getComponentType());
         this.index = index;
         this.field = field;
 
@@ -76,10 +78,5 @@ public class ArrayFieldPropertyGetter implements EventPropertyGetter
     public boolean isExistsProperty(EventBean eventBean)
     {
         return true; // Property exists as the property is not dynamic (unchecked)
-    }
-
-    public Object getFragment(EventBean eventBean)
-    {
-        return null; // TODO
     }
 }

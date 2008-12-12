@@ -309,7 +309,7 @@ public class BeanEventType implements EventTypeSPI, NativeEventType
             catch (Throwable ex)
             {
                 log.warn(".initialize Unable to obtain CGLib fast class and/or method implementation for class " +
-                        clazz.getName() + ", error msg is " + ex.getMessage());
+                        clazz.getName() + ", error msg is " + ex.getMessage(), ex);
                 fastClass = null;
             }
         }
@@ -331,7 +331,7 @@ public class BeanEventType implements EventTypeSPI, NativeEventType
                 Class type;
                 if (desc.getReadMethod() != null)
                 {
-                    getter = PropertyHelper.getGetter(desc.getReadMethod(), fastClass);
+                    getter = PropertyHelper.getGetter(desc.getReadMethod(), fastClass, eventAdapterService);
                     type = desc.getReadMethod().getReturnType();
                 }
                 else
@@ -667,26 +667,7 @@ public class BeanEventType implements EventTypeSPI, NativeEventType
 
     public EventTypeFragment getFragmentType(String propertyExpression)
     {
-        Class propertyType = getPropertyType(propertyExpression);
-        if (propertyType == null)
-        {
-            return null;
-        }
-        if (JavaClassHelper.isJavaBuiltinDataType(propertyType))
-        {
-            return null;
-        }
-        if (propertyType.isArray() && JavaClassHelper.isJavaBuiltinDataType(propertyType.getComponentType()))
-        {
-            return null;
-        }
-        if (JavaClassHelper.isImplementsInterface(propertyType, Map.class))
-        {
-            return null;
-        }
-        boolean isIndexed = propertyType.isArray();
-        EventType type = eventAdapterService.getBeanEventTypeFactory().createBeanType(propertyType.getName(), propertyType, false);
-        return new EventTypeFragment(type, isIndexed);
+        return EventBeanUtility.createNativeFragmentType(getPropertyType(propertyExpression), eventAdapterService);
     }
 
     private static final Log log = LogFactory.getLog(BeanEventType.class);

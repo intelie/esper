@@ -123,13 +123,14 @@ public interface ConfigurationOperations
      * This method is provided for convenience and is same in function to method
      * taking a Properties object that contain fully qualified class name as values.
      * <p>
+     * TODO: changed to Map<String, Object>, get rid of "nestable"
      * Allows a second alias to be added for the same type.
      * Does not allow the same alias to be used for different types.
      * @param eventTypeAlias is the alias for the event type
      * @param typeMap maps the name of each property in the Map event to the type of its value in the Map object
      * @throws ConfigurationException if the alias is already in used for a different type
      */
-    public void addEventTypeAlias(String eventTypeAlias, Map<String, Class> typeMap)
+    public void addEventTypeAlias(String eventTypeAlias, Map<String, Object> typeMap)
             throws ConfigurationException;
 
     /**

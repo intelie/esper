@@ -11,6 +11,9 @@ package com.espertech.esper.event;
 import com.espertech.esper.collection.*;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventPropertyGetter;
+import com.espertech.esper.client.EventTypeFragment;
+import com.espertech.esper.client.EventType;
+import com.espertech.esper.util.JavaClassHelper;
 
 import java.util.*;
 import java.io.PrintWriter;
@@ -21,6 +24,29 @@ import java.io.StringWriter;
  */
 public class EventBeanUtility
 {
+    public static EventTypeFragment createNativeFragmentType(Class propertyType, EventAdapterService eventAdapterService)
+    {
+        if (propertyType == null)
+        {
+            return null;
+        }
+        if (JavaClassHelper.isJavaBuiltinDataType(propertyType))
+        {
+            return null;
+        }
+        if (propertyType.isArray() && JavaClassHelper.isJavaBuiltinDataType(propertyType.getComponentType()))
+        {
+            return null;
+        }
+        if (JavaClassHelper.isImplementsInterface(propertyType, Map.class))
+        {
+            return null;
+        }
+        boolean isIndexed = propertyType.isArray();
+        EventType type = eventAdapterService.getBeanEventTypeFactory().createBeanType(propertyType.getName(), propertyType, false);
+        return new EventTypeFragment(type, isIndexed);
+    }
+
     /**
      * Flatten the vector of arrays to an array. Return null if an empty vector was passed, else
      * return an array containing all the events.

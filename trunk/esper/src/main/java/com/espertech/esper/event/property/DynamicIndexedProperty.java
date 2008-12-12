@@ -37,7 +37,7 @@ public class DynamicIndexedProperty extends PropertyBase implements DynamicPrope
 
     public EventPropertyGetter getGetter(BeanEventType eventType, EventAdapterService eventAdapterService)
     {
-        return new DynamicIndexedPropertyGetter(propertyNameAtomic, index);
+        return new DynamicIndexedPropertyGetter(propertyNameAtomic, index, eventAdapterService);
     }
 
     public Class getPropertyType(BeanEventType eventType)

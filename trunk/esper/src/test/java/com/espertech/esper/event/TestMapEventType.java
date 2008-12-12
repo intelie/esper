@@ -24,7 +24,7 @@ public class TestMapEventType extends TestCase
         eventAdapterService = SupportEventAdapterService.getService();
 
         EventTypeMetadata metadata = EventTypeMetadata.createMapType("typename", true, false, false);
-        Map<String, Class> testTypesMap = new HashMap<String, Class>();
+        Map<String, Object> testTypesMap = new HashMap<String, Object>();
         testTypesMap.put("myInt", int.class);
         testTypesMap.put("myString", String.class);
         testTypesMap.put("myNullableString", String.class);
@@ -32,7 +32,7 @@ public class TestMapEventType extends TestCase
         testTypesMap.put("myComplexBean", SupportBeanComplexProps.class);
         testTypesMap.put("myNullableSupportBean", SupportBean.class);
         testTypesMap.put("myNullType", null);
-        eventType = new MapEventType(metadata, "", testTypesMap, eventAdapterService, null, null);
+        eventType = new MapEventType(metadata, "", eventAdapterService, testTypesMap, null, null);
     }
 
     public void testGetPropertyNames()
@@ -140,38 +140,38 @@ public class TestMapEventType extends TestCase
     {
         EventTypeMetadata metadata = EventTypeMetadata.createMapType("", true, false, false);
 
-        Map<String, Class> mapTwo = new LinkedHashMap<String, Class>();
+        Map<String, Object> mapTwo = new LinkedHashMap<String, Object>();
         mapTwo.put("myInt", int.class);
         mapTwo.put("mySupportBean", SupportBean.class);
         mapTwo.put("myNullableSupportBean", SupportBean.class);
         mapTwo.put("myComplexBean", SupportBeanComplexProps.class);
-        assertFalse((new MapEventType(metadata, "", mapTwo, eventAdapterService, null, null)).equals(eventType));
+        assertFalse((new MapEventType(metadata, "", eventAdapterService, mapTwo, null, null)).equals(eventType));
         mapTwo.put("myString", String.class);
         mapTwo.put("myNullableString", String.class);
         mapTwo.put("myNullType", null);
 
         // compare, should equal
-        assertEquals(new MapEventType(metadata, "", mapTwo, eventAdapterService, null, null), eventType);
-        assertFalse((new MapEventType(metadata, "google", mapTwo, eventAdapterService, null, null)).equals(eventType));
+        assertEquals(new MapEventType(metadata, "", eventAdapterService, mapTwo, null, null), eventType);
+        assertFalse((new MapEventType(metadata, "google", eventAdapterService, mapTwo, null, null)).equals(eventType));
 
         mapTwo.put("xx", int.class);
-        assertFalse(eventType.equals(new MapEventType(metadata, "", mapTwo, eventAdapterService, null, null)));
+        assertFalse(eventType.equals(new MapEventType(metadata, "", eventAdapterService, mapTwo, null, null)));
         mapTwo.remove("xx");
-        assertTrue(eventType.equals(new MapEventType(metadata, "", mapTwo, eventAdapterService, null, null)));
+        assertTrue(eventType.equals(new MapEventType(metadata, "", eventAdapterService, mapTwo, null, null)));
 
         mapTwo.put("myInt", Integer.class);
-        assertTrue(eventType.equals(new MapEventType(metadata, "", mapTwo, eventAdapterService, null, null)));
+        assertTrue(eventType.equals(new MapEventType(metadata, "", eventAdapterService, mapTwo, null, null)));
         mapTwo.remove("myInt");
-        assertFalse(eventType.equals(new MapEventType(metadata, "", mapTwo, eventAdapterService, null, null)));
+        assertFalse(eventType.equals(new MapEventType(metadata, "", eventAdapterService, mapTwo, null, null)));
         mapTwo.put("myInt", int.class);
-        assertTrue(eventType.equals(new MapEventType(metadata, "", mapTwo, eventAdapterService, null, null)));
+        assertTrue(eventType.equals(new MapEventType(metadata, "", eventAdapterService, mapTwo, null, null)));
 
         // Test boxed and primitive compatible
-        Map<String, Class> mapOne = new LinkedHashMap<String, Class>();
+        Map<String, Object> mapOne = new LinkedHashMap<String, Object>();
         mapOne.put("myInt", int.class);
-        mapTwo = new LinkedHashMap<String, Class>();
+        mapTwo = new LinkedHashMap<String, Object>();
         mapTwo.put("myInt", Integer.class);
-        assertEquals(new MapEventType(metadata, "T1", mapOne, eventAdapterService, null, null), new MapEventType(metadata, "T1", mapTwo, eventAdapterService, null, null));
+        assertEquals(new MapEventType(metadata, "T1", eventAdapterService, mapOne, null, null), new MapEventType(metadata, "T1", eventAdapterService, mapTwo, null, null));
     }
 
     public void testGetFromMap()

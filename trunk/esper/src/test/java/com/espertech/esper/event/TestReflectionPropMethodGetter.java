@@ -5,6 +5,7 @@ import java.lang.reflect.Method;
 import junit.framework.TestCase;
 import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.event.SupportEventBeanFactory;
+import com.espertech.esper.support.event.SupportEventAdapterService;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.PropertyAccessException;
 import org.apache.commons.logging.LogFactory;
@@ -67,7 +68,7 @@ public class TestReflectionPropMethodGetter extends TestCase
     {
         Method method = clazz.getMethod(methodName, new Class[] {});
 
-        ReflectionPropMethodGetter getter = new ReflectionPropMethodGetter(method);
+        ReflectionPropMethodGetter getter = new ReflectionPropMethodGetter(method, SupportEventAdapterService.getService());
 
         return getter;
     }

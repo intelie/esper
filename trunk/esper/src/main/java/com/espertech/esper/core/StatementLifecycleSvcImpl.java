@@ -151,7 +151,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
         EPStatementDesc statementDesc;
         EPStatementStartMethod startMethod;
 
-        StatementContext statementContext =  services.getStatementContextFactory().makeContext(statementId, statementName, expression, statementSpec.isHasVariables(), services, optAdditionalContext, statementSpec.getOnTriggerDesc(), statementSpec.getCreateWindowDesc());
+        StatementContext statementContext =  services.getStatementContextFactory().makeContext(statementId, statementName, expression, statementSpec.isHasVariables(), services, optAdditionalContext, statementSpec.getOnTriggerDesc(), statementSpec.getCreateWindowDesc(), false);
         StatementSpecCompiled compiledSpec;
         try
         {

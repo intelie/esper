@@ -8,17 +8,18 @@
  **************************************************************************************/
 package com.espertech.esper.event;
 
-import net.sf.cglib.reflect.FastMethod;
-import java.lang.reflect.InvocationTargetException;
-
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventPropertyGetter;
 import com.espertech.esper.client.PropertyAccessException;
+import com.espertech.esper.event.property.BaseNativePropertyGetter;
+import net.sf.cglib.reflect.FastMethod;
+
+import java.lang.reflect.InvocationTargetException;
 
 /**
  * Property getter using CGLib's FastMethod instance.
  */
-public class CGLibPropertyGetter implements EventPropertyGetter
+public class CGLibPropertyGetter extends BaseNativePropertyGetter implements EventPropertyGetter
 {
     private final FastMethod fastMethod;
 
@@ -26,8 +27,9 @@ public class CGLibPropertyGetter implements EventPropertyGetter
      * Constructor.
      * @param fastMethod is the method to use to retrieve a value from the object.
      */
-    public CGLibPropertyGetter(FastMethod fastMethod)
+    public CGLibPropertyGetter(FastMethod fastMethod, EventAdapterService eventAdapterService)
     {
+        super(eventAdapterService, fastMethod.getReturnType());
         this.fastMethod = fastMethod;
     }
 
@@ -58,10 +60,5 @@ public class CGLibPropertyGetter implements EventPropertyGetter
     public boolean isExistsProperty(EventBean eventBean)
     {
         return true; // Property exists as the property is not dynamic (unchecked)
-    }
-
-    public Object getFragment(EventBean eventBean)
-    {
-        return null; // TODO
     }
 }

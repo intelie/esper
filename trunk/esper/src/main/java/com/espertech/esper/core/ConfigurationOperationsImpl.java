@@ -9,24 +9,23 @@
 package com.espertech.esper.core;
 
 import com.espertech.esper.client.*;
+import com.espertech.esper.epl.core.EngineImportException;
+import com.espertech.esper.epl.core.EngineImportService;
+import com.espertech.esper.epl.core.EngineSettingsService;
+import com.espertech.esper.epl.metric.MetricReportingService;
+import com.espertech.esper.epl.variable.VariableExistsException;
+import com.espertech.esper.epl.variable.VariableService;
+import com.espertech.esper.epl.variable.VariableTypeException;
 import com.espertech.esper.event.EventAdapterException;
 import com.espertech.esper.event.EventAdapterService;
-import com.espertech.esper.client.EventType;
+import com.espertech.esper.event.vaevent.ValueAddEventProcessor;
 import com.espertech.esper.event.vaevent.ValueAddEventService;
 import com.espertech.esper.event.vaevent.VariantEventType;
-import com.espertech.esper.event.vaevent.ValueAddEventProcessor;
 import com.espertech.esper.util.JavaClassHelper;
-import com.espertech.esper.epl.core.EngineImportService;
-import com.espertech.esper.epl.core.EngineImportException;
-import com.espertech.esper.epl.core.EngineSettingsService;
-import com.espertech.esper.epl.variable.VariableService;
-import com.espertech.esper.epl.variable.VariableExistsException;
-import com.espertech.esper.epl.variable.VariableTypeException;
-import com.espertech.esper.epl.metric.MetricReportingService;
 
-import java.util.*;
-import java.net.URI;
 import java.io.Serializable;
+import java.net.URI;
+import java.util.*;
 
 /**
  * Provides runtime engine configuration operations.
@@ -139,10 +138,10 @@ public class ConfigurationOperationsImpl implements ConfigurationOperations
 
     public void addEventTypeAlias(String eventTypeAlias, Properties typeMap)
     {
-        Map<String, Class> types = createPropertyTypes(typeMap);
+        Map<String, Object> types = createPropertyTypes(typeMap);
         try
         {
-            eventAdapterService.addMapType(eventTypeAlias, types, null);
+            eventAdapterService.addNestableMapType(eventTypeAlias, types, null, false, false, false);
         }
         catch (EventAdapterException t)
         {
@@ -150,11 +149,11 @@ public class ConfigurationOperationsImpl implements ConfigurationOperations
         }
     }
 
-    public void addEventTypeAlias(String eventTypeAlias, Map<String, Class> typeMap)
+    public void addEventTypeAlias(String eventTypeAlias, Map<String, Object> typeMap)
     {
         try
         {
-            eventAdapterService.addMapType(eventTypeAlias, typeMap, null);
+            eventAdapterService.addNestableMapType(eventTypeAlias, typeMap, null, true, false, false);
         }
         catch (EventAdapterException t)
         {
@@ -216,9 +215,9 @@ public class ConfigurationOperationsImpl implements ConfigurationOperations
         }
     }
 
-    private static Map<String, Class> createPropertyTypes(Properties properties)
+    private static Map<String, Object> createPropertyTypes(Properties properties)
     {
-        Map<String, Class> propertyTypes = new HashMap<String, Class>();
+        Map<String, Object> propertyTypes = new HashMap<String, Object>();
         for(Map.Entry<Object, Object> entry : properties.entrySet())
         {
             String className = (String) entry.getValue();

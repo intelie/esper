@@ -6,6 +6,7 @@ import junit.framework.TestCase;
 import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.bean.SupportBeanComplexProps;
 import com.espertech.esper.support.event.SupportEventBeanFactory;
+import com.espertech.esper.support.event.SupportEventAdapterService;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.PropertyAccessException;
 import net.sf.cglib.reflect.FastClass;
@@ -73,7 +74,7 @@ public class TestCGLibPropertyGetter extends TestCase
         Method method = clazz.getMethod(methodName, new Class[] {});
         FastMethod fastMethod = fastClass.getMethod(method);
 
-        CGLibPropertyGetter getter = new CGLibPropertyGetter(fastMethod);
+        CGLibPropertyGetter getter = new CGLibPropertyGetter(fastMethod, SupportEventAdapterService.getService());
 
         return getter;
     }

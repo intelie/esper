@@ -34,7 +34,7 @@ public class DynamicSimpleProperty extends PropertyBase implements DynamicProper
 
     public EventPropertyGetter getGetter(BeanEventType eventType, EventAdapterService eventAdapterService)
     {
-        return new DynamicSimplePropertyGetter(propertyNameAtomic);
+        return new DynamicSimplePropertyGetter(propertyNameAtomic, eventAdapterService);
     }
 
     public Class getPropertyType(BeanEventType eventType)

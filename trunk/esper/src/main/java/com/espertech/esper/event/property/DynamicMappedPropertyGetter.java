@@ -11,6 +11,7 @@ package com.espertech.esper.event.property;
 import com.espertech.esper.client.EventPropertyGetter;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.PropertyAccessException;
+import com.espertech.esper.event.EventAdapterService;
 
 import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
@@ -30,8 +31,9 @@ public class DynamicMappedPropertyGetter extends DynamicPropertyGetterBase imple
      * @param fieldName property name
      * @param key mapped access key
      */
-    public DynamicMappedPropertyGetter(String fieldName, String key)
+    public DynamicMappedPropertyGetter(String fieldName, String key, EventAdapterService eventAdapterService)
     {
+        super(eventAdapterService);
         getterMethodName = getGetterMethodName(fieldName);
         this.params = new Object[] {key};
     }
@@ -61,16 +63,6 @@ public class DynamicMappedPropertyGetter extends DynamicPropertyGetterBase imple
             return method;
         }
     }
-
-    public EventBean getFragment(EventBean eventBean)
-    {
-        return null; // TODO
-    }
-
-    public Integer getIndexSize(EventBean eventBean)
-    {
-        return null; // TODO
-    }    
 
     protected Object call(DynamicPropertyDescriptor descriptor, Object underlying)
     {

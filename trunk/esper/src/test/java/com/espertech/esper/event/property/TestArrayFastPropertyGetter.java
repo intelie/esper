@@ -5,6 +5,7 @@ import net.sf.cglib.reflect.FastClass;
 import net.sf.cglib.reflect.FastMethod;
 import com.espertech.esper.support.bean.SupportBeanComplexProps;
 import com.espertech.esper.support.event.SupportEventBeanFactory;
+import com.espertech.esper.support.event.SupportEventAdapterService;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.PropertyAccessException;
 
@@ -57,6 +58,6 @@ public class TestArrayFastPropertyGetter extends TestCase
     {
         FastClass fastClass = FastClass.create(Thread.currentThread().getContextClassLoader(), SupportBeanComplexProps.class);
         FastMethod method = fastClass.getMethod("getArrayProperty", new Class[0]);
-        return new ArrayFastPropertyGetter(method, index);
+        return new ArrayFastPropertyGetter(method, index, SupportEventAdapterService.getService());
     }
 }

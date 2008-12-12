@@ -58,7 +58,8 @@ public class StatementContextFactoryDefault implements StatementContextFactory
                                     EPServicesContext engineServices,
                                     Map<String, Object> optAdditionalContext,
                                     OnTriggerDesc optOnTriggerDesc,
-                                    CreateWindowDesc optCreateWindowDesc)
+                                    CreateWindowDesc optCreateWindowDesc,
+                                    boolean isFireAndForget)
     {
         // Allocate the statement's schedule bucket which stays constant over it's lifetime.
         // The bucket allows callbacks for the same time to be ordered (within and across statements) and thus deterministic.
@@ -92,7 +93,12 @@ public class StatementContextFactoryDefault implements StatementContextFactory
             statementResourceLock = engineServices.getStatementLockFactory().getStatementLock(statementName, expression);
         }
 
-        StatementMetricHandle stmtMetric = engineServices.getMetricsReportingService().getStatementHandle(statementId, statementName);
+        StatementMetricHandle stmtMetric = null;
+        if (!isFireAndForget)
+        {
+            stmtMetric = engineServices.getMetricsReportingService().getStatementHandle(statementId, statementName);
+        }
+        
         EPStatementHandle epStatementHandle = new EPStatementHandle(statementId, statementResourceLock, expression, hasVariables, stmtMetric);
 
         MethodResolutionService methodResolutionService = new MethodResolutionServiceImpl(engineServices.getEngineImportService());

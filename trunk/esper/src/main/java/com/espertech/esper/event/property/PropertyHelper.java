@@ -9,10 +9,7 @@
 package com.espertech.esper.event.property;
 
 import com.espertech.esper.client.EventPropertyGetter;
-import com.espertech.esper.event.CGLibPropertyGetter;
-import com.espertech.esper.event.EventPropertyType;
-import com.espertech.esper.event.InternalEventPropDescriptor;
-import com.espertech.esper.event.ReflectionPropMethodGetter;
+import com.espertech.esper.event.*;
 import net.sf.cglib.reflect.FastClass;
 import net.sf.cglib.reflect.FastMethod;
 import org.apache.commons.logging.Log;
@@ -33,7 +30,7 @@ public class PropertyHelper
      * @param fastClass is the CGLIB fast classs to make FastMethod for
      * @return property getter
      */
-    public static EventPropertyGetter getGetter(Method method, FastClass fastClass)
+    public static EventPropertyGetter getGetter(Method method, FastClass fastClass, EventAdapterService eventAdapterService)
     {
         // Get CGLib fast method handle
         FastMethod fastMethod = null;
@@ -53,11 +50,11 @@ public class PropertyHelper
         EventPropertyGetter getter;
         if (fastMethod != null)
         {
-            getter = new CGLibPropertyGetter(fastMethod);
+            getter = new CGLibPropertyGetter(fastMethod, eventAdapterService);
         }
         else
         {
-            getter = new ReflectionPropMethodGetter(method);
+            getter = new ReflectionPropMethodGetter(method, eventAdapterService);
         }
 
         return getter;

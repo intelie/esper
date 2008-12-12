@@ -13,6 +13,7 @@ import com.espertech.esper.client.PropertyAccessException;
 
 import java.util.List;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class TestNestedPropertyGetter extends TestCase
@@ -32,12 +33,12 @@ public class TestNestedPropertyGetter extends TestCase
         List<EventPropertyGetter> getters = new LinkedList<EventPropertyGetter>();
         getters.add(makeGetterOne(0));
         getters.add(makeGetterTwo("0ma"));
-        getter = new NestedPropertyGetter(getters, SupportEventAdapterService.getService());
+        getter = new NestedPropertyGetter(getters, SupportEventAdapterService.getService(),Map.class);
 
         getters = new LinkedList<EventPropertyGetter>();
         getters.add(makeGetterOne(2));
         getters.add(makeGetterTwo("0ma"));
-        getterNull = new NestedPropertyGetter(getters, SupportEventAdapterService.getService());
+        getterNull = new NestedPropertyGetter(getters, SupportEventAdapterService.getService(), Map.class);
     }
 
     public void testGet()

@@ -59,9 +59,11 @@ public class NestedProperty implements Property
     {
         List<EventPropertyGetter> getters = new LinkedList<EventPropertyGetter>();
 
+        Property lastProperty = null;
         for (Iterator<Property> it = properties.iterator(); it.hasNext();)
         {
             Property property = it.next();
+            lastProperty = property;
             EventPropertyGetter getter = property.getGetter(eventType, eventAdapterService);
             if (getter == null)
             {
@@ -90,7 +92,8 @@ public class NestedProperty implements Property
             getters.add(getter);
         }
 
-        return new NestedPropertyGetter(getters, eventAdapterService);
+        Class finalPropertyType = lastProperty.getPropertyType(eventType);
+        return new NestedPropertyGetter(getters, eventAdapterService,finalPropertyType);
     }
 
     public Class getPropertyType(BeanEventType eventType)

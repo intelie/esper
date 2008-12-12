@@ -244,8 +244,8 @@ public class EPServicesContextFactoryDefault implements EPServicesContextFactory
                 Properties propertiesUnnested = mapAliases.get(mapName);
                 if (propertiesUnnested != null)
                 {
-                    Map<String, Class> propertyTypes = createPropertyTypes(propertiesUnnested);
-                    eventAdapterService.addMapType(mapName, propertyTypes, superTypes);
+                    Map<String, Object> propertyTypes = createPropertyTypes(propertiesUnnested);
+                    eventAdapterService.addNestableMapType(mapName, propertyTypes, superTypes, true, false, false);
                 }
 
                 Map<String, Object> propertiesNestable = nestableMapAliases.get(mapName);
@@ -378,15 +378,15 @@ public class EPServicesContextFactoryDefault implements EPServicesContextFactory
         return databaseConfigService;
     }
 
-    private static Map<String, Class> createPropertyTypes(Properties properties)
+    private static Map<String, Object> createPropertyTypes(Properties properties)
     {
-        Map<String, Class> propertyTypes = new HashMap<String, Class>();
+        Map<String, Object> propertyTypes = new HashMap<String, Object>();
         for(Map.Entry entry : properties.entrySet())
         {
             String property = (String) entry.getKey();
             String className = (String) entry.getValue();
             Class clazz = JavaClassHelper.getClassForSimpleName(className);
-            propertyTypes.put((String) property, clazz);
+            propertyTypes.put(property, clazz);
         }
         return propertyTypes;
     }

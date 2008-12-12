@@ -8,6 +8,7 @@ import junit.framework.Assert;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
+import java.lang.reflect.Array;
 
 public class EventTypeAssertionUtil
 {
@@ -18,7 +19,7 @@ public class EventTypeAssertionUtil
 
     public static void assertConsistency(EventType eventType)
     {
-        assertConsistencyRecusive(eventType);
+        assertConsistencyRecursive(eventType);
     }
 
     public static String print(EventBean event)
@@ -33,6 +34,20 @@ public class EventTypeAssertionUtil
         writeIndent(writer, indent);
         writer.append("Properties : \n");
         printProperties(event, writer, indent + 2);
+
+        // count fragments
+        int countFragments = 0;
+        for (EventPropertyDescriptor desc : event.getEventType().getPropertyDescriptors())
+        {
+            if (desc.isFragment())
+            {
+                countFragments++;
+            }
+        }
+        if (countFragments == 0)
+        {
+            return;
+        }
 
         writeIndent(writer, indent);
         writer.append("Fragments : \n");
@@ -54,8 +69,8 @@ public class EventTypeAssertionUtil
                 while(true){
                     try
                     {
-                        writeIndent(writer, indent + 2);
-                        writer.append("#");
+                        writeIndent(writer, indent + 4);
+                        writer.append("bean #");
                         writer.append(Integer.toString(count));
                         EventBean result = (EventBean) event.getFragment(desc.getPropertyName() + "[" + count + "]");
                         if (result == null)
@@ -65,7 +80,7 @@ public class EventTypeAssertionUtil
                         else
                         {
                             writer.append("\n");
-                            print(result, writer, indent + 4);
+                            print(result, writer, indent + 6);
                         }
                         count++;
                     }
@@ -87,16 +102,30 @@ public class EventTypeAssertionUtil
 
                 if (fragment instanceof EventBean)
                 {
-                    writer.append("bean...\n");
-                    print((EventBean)fragment, writer, indent + 4);
+                    EventBean fragmentBean = (EventBean)fragment;
+                    writer.append("EventBean type ");
+                    writer.append(fragmentBean.getEventType().getName());
+                    writer.append("...\n");
+                    print(fragmentBean, writer, indent + 4);
                 }
                 else
                 {
-                    EventBean[] events = (EventBean[]) fragment;
-                    for (int i = 0; i < events.length; i++)
+                    EventBean[] fragmentBeans = (EventBean[])fragment;
+                    writer.append("EventBean[] type ");
+                    if (fragmentBeans.length == 0)
                     {
-                        writer.append("bean # " + i + "...\n");
-                        print(events[i], writer, indent + 4);
+                        writer.append("(empty array)\n");
+                    }
+                    else
+                    {
+                        writer.append(fragmentBeans[0].getEventType().getName());
+                        writer.append("...\n");
+                        for (int i = 0; i < fragmentBeans.length; i++)
+                        {
+                            writeIndent(writer, indent + 4);
+                            writer.append("bean #" + i + "...\n");
+                            print(fragmentBeans[i], writer, indent + 6);
+                        }
                     }
                 }
             }
@@ -211,7 +240,7 @@ public class EventTypeAssertionUtil
 
     private static void assertConsistencyRecusive(EventBean eventBean)
     {
-        assertConsistencyRecusive(eventBean.getEventType());
+        assertConsistencyRecursive(eventBean.getEventType());
 
         EventPropertyDescriptor properties[] = eventBean.getEventType().getPropertyDescriptors();
         for (int i = 0; i < properties.length; i++)
@@ -264,7 +293,7 @@ public class EventTypeAssertionUtil
         }
     }
 
-    private static void assertConsistencyRecusive(EventType eventType)
+    private static void assertConsistencyRecursive(EventType eventType)
     {
         assertConsistencyProperties(eventType);
 
@@ -286,14 +315,14 @@ public class EventTypeAssertionUtil
                 {
                     Assert.assertTrue(descriptor.isIndexed());
                 }
-                assertConsistencyRecusive(fragment.getFragmentType());
+                assertConsistencyRecursive(fragment.getFragmentType());
             }
             else
             {
                 fragment = eventType.getFragmentType(descriptor.getPropertyName() + "[0]");
                 Assert.assertNotNull(failedMessage, fragment);
                 Assert.assertTrue(descriptor.isIndexed());
-                assertConsistencyRecusive(fragment.getFragmentType());
+                assertConsistencyRecursive(fragment.getFragmentType());
             }
         }
     }
@@ -348,10 +377,6 @@ public class EventTypeAssertionUtil
             {
                 Assert.assertTrue(failedMessage, properties[i].isMapped());
             }
-
-            // fragments
-            if (properties[i].isFragment())
-            eventType.getFragmentType(propertyName);
         }
 
         // assert same property names
@@ -371,6 +396,22 @@ public class EventTypeAssertionUtil
         if (result == null)
         {
             writer.append("(null)");
+            return;
+        }
+
+        if (result.getClass().isArray())
+        {
+            writer.append("Array len=");
+            writer.append(Integer.toString(Array.getLength(result)));
+            writer.append("{");
+            String delimiter = "";
+            for (int i = 0; i < Array.getLength(result); i++)
+            {
+                writer.append(delimiter);
+                writeValue(writer, Array.get(result, i));
+                delimiter = ", ";
+            }
+            writer.append("}");
         }
         else
         {

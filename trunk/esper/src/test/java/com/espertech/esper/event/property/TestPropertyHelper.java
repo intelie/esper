@@ -3,6 +3,7 @@ package com.espertech.esper.event.property;
 import com.espertech.esper.event.*;
 import com.espertech.esper.support.bean.SupportBeanPropertyNames;
 import com.espertech.esper.support.event.SupportEventBeanFactory;
+import com.espertech.esper.support.event.SupportEventAdapterService;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventPropertyGetter;
 import net.sf.cglib.reflect.FastClass;
@@ -92,7 +93,7 @@ public class TestPropertyHelper extends TestCase
         FastClass fastClass = FastClass.create(Thread.currentThread().getContextClassLoader(), SupportBeanPropertyNames.class);
         EventBean bean = SupportEventBeanFactory.createObject(new SupportBeanPropertyNames());
         Method method = SupportBeanPropertyNames.class.getMethod("getA", new Class[0]);
-        EventPropertyGetter getter = PropertyHelper.getGetter(method, fastClass);
+        EventPropertyGetter getter = PropertyHelper.getGetter(method, fastClass, SupportEventAdapterService.getService());
         assertEquals("", getter.get(bean));
     }
 

@@ -11,6 +11,7 @@ package com.espertech.esper.event;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventPropertyGetter;
 import com.espertech.esper.client.PropertyAccessException;
+import com.espertech.esper.event.property.BaseNativePropertyGetter;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -18,7 +19,7 @@ import java.lang.reflect.Method;
 /**
  * Property getter for methods using Java's vanilla reflection.
  */
-public final class ReflectionPropMethodGetter implements EventPropertyGetter
+public final class ReflectionPropMethodGetter extends BaseNativePropertyGetter implements EventPropertyGetter
 {
     private final Method method;
 
@@ -26,8 +27,9 @@ public final class ReflectionPropMethodGetter implements EventPropertyGetter
      * Constructor.
      * @param method is the regular reflection method to use to obtain values for a field.
      */
-    public ReflectionPropMethodGetter(Method method)
+    public ReflectionPropMethodGetter(Method method, EventAdapterService eventAdapterService)
     {
+        super(eventAdapterService, method.getReturnType());
         this.method = method;
     }
 
@@ -62,10 +64,5 @@ public final class ReflectionPropMethodGetter implements EventPropertyGetter
     public boolean isExistsProperty(EventBean eventBean)
     {
         return true; // Property exists as the property is not dynamic (unchecked)
-    }
-
-    public Object getFragment(EventBean eventBean)
-    {
-        return null; // TODO
     }
 }

@@ -89,7 +89,7 @@ public class MethodPollingViewableFactory
         }
 
         // If the method returns a Map, look up the map type
-        Map<String, Class> mapType = null;
+        Map<String, Object> mapType = null;
         String mapTypeName = null;
         if ( (JavaClassHelper.isImplementsInterface(staticMethod.getReturnType(), Map.class)) ||
              (staticMethod.getReturnType().isArray() && JavaClassHelper.isImplementsInterface(staticMethod.getReturnType().getComponentType(), Map.class)) )
@@ -119,7 +119,7 @@ public class MethodPollingViewableFactory
                 if ((resultType != null) && (resultType instanceof Map))
                 {
                     mapTypeName = methodStreamSpec.getClassName() + "." + typeGetterMethod.getName();
-                    mapType = (Map<String, Class>) resultType;
+                    mapType = (Map<String, Object>) resultType;
                 }
             }
         }
@@ -128,7 +128,7 @@ public class MethodPollingViewableFactory
         EventType eventType;
         if (mapType != null)
         {
-            eventType = eventAdapterService.addMapType(mapTypeName, mapType, null);
+            eventType = eventAdapterService.addNestableMapType(mapTypeName, mapType, null, false, false, false);
         }
         else
         {

@@ -8,9 +8,10 @@
  **************************************************************************************/
 package com.espertech.esper.event.property;
 
-import com.espertech.esper.client.EventPropertyGetter;
 import com.espertech.esper.client.EventBean;
+import com.espertech.esper.client.EventPropertyGetter;
 import com.espertech.esper.client.PropertyAccessException;
+import com.espertech.esper.event.EventAdapterService;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -18,7 +19,7 @@ import java.lang.reflect.Method;
 /**
  * Getter for a key property identified by a given key value, using vanilla reflection.
  */
-public class KeyedMethodPropertyGetter implements EventPropertyGetter
+public class KeyedMethodPropertyGetter extends BaseNativePropertyGetter implements EventPropertyGetter
 {
     private final Method method;
     private final Object key;
@@ -28,8 +29,9 @@ public class KeyedMethodPropertyGetter implements EventPropertyGetter
      * @param method is the method to use to retrieve a value from the object.
      * @param key is the key to supply as parameter to the mapped property getter
      */
-    public KeyedMethodPropertyGetter(Method method, Object key)
+    public KeyedMethodPropertyGetter(Method method, Object key, EventAdapterService eventAdapterService)
     {
+        super(eventAdapterService, method.getReturnType());
         this.key = key;
         this.method = method;
     }
@@ -70,10 +72,5 @@ public class KeyedMethodPropertyGetter implements EventPropertyGetter
     public boolean isExistsProperty(EventBean eventBean)
     {
         return true; // Property exists as the property is not dynamic (unchecked)
-    }
-
-    public Object getFragment(EventBean eventBean)
-    {
-        return null; // TODO
     }
 }

@@ -65,7 +65,7 @@ public class MappedProperty extends PropertyBase
         }
         else
         {
-            return new KeyedMethodPropertyGetter(method, key);
+            return new KeyedMethodPropertyGetter(method, key, eventAdapterService);
         }
     }
 

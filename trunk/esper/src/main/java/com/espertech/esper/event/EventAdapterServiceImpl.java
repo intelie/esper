@@ -408,32 +408,6 @@ public class EventAdapterServiceImpl implements EventAdapterService
         return eventType;
     }
 
-    public synchronized EventType addMapType(String eventTypeAlias, Map<String, Class> propertyTypes, Set<String> optionalSuperType) throws EventAdapterException
-    {
-        Pair<EventType[], Set<EventType>> mapSuperTypes = getMapSuperTypes(optionalSuperType);
-        EventTypeMetadata metadata = EventTypeMetadata.createMapType(eventTypeAlias, true, false, false);
-        MapEventType newEventType = new MapEventType(metadata, eventTypeAlias, propertyTypes, this, mapSuperTypes.getFirst(), mapSuperTypes.getSecond());
-
-        EventType existingType = aliasToTypeMap.get(eventTypeAlias);
-        if (existingType != null)
-        {
-            // The existing type must be the same as the type createdStatement
-            if (!newEventType.equals(existingType))
-            {
-                String message = newEventType.getEqualsMessage(existingType);
-                throw new EventAdapterException("Event type named '" + eventTypeAlias +
-                        "' has already been declared with differing column name or type information: " + message);
-            }
-
-            // Since it's the same, return the existing type
-            return existingType;
-        }
-
-        aliasToTypeMap.put(eventTypeAlias, newEventType);
-
-        return newEventType;
-    }
-
     public synchronized EventType addNestableMapType(String eventTypeAlias, Map<String, Object> propertyTypes, Set<String> optionalSuperType, boolean isConfigured, boolean namedWindow, boolean insertInto) throws EventAdapterException
     {
         Pair<EventType[], Set<EventType>> mapSuperTypes = getMapSuperTypes(optionalSuperType);

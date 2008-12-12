@@ -47,23 +47,6 @@ public interface EventAdapterService extends BeanEventBeanFactory
     public EventType[] getAllTypes();
 
     /**
-     * Add an event type with the given alias and a given set of properties.
-     * <p>
-     * If the alias already exists with the same event property information, returns the
-     * existing EventType instance.
-     * <p>
-     * If the alias already exists with different event property information, throws an exception.
-     * <p>
-     * If the alias does not already exists, adds the alias and constructs a new {@link com.espertech.esper.event.MapEventType}.
-     * @param eventTypeAlias is the alias name for the event type
-     * @param propertyTypes is the names and types of event properties
-     * @param optionalSupertype an optional set of Map event type aliases that are supertypes to the type
-     * @return event type is the type added
-     * @throws EventAdapterException if alias already exists and doesn't match property type info
-     */
-    public EventType addMapType(String eventTypeAlias, Map<String, Class> propertyTypes, Set<String> optionalSupertype) throws EventAdapterException;
-
-    /**
      * Add an event type with the given alias and a given set of properties,
      * wherein properties may itself be Maps, nested and strongly-typed.
      * <p>

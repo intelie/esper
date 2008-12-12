@@ -53,9 +53,9 @@ public class TestEventAdapterSvcMT extends TestCase
 
     public void testAddMapType() throws Exception
     {
-        final Map<String, Class> typeOne = new HashMap<String, Class>();
+        final Map<String, Object> typeOne = new HashMap<String, Object>();
         typeOne.put("f1", Integer.class);
-        final Map<String, Class> typeTwo= new HashMap<String, Class>();
+        final Map<String, Object> typeTwo= new HashMap<String, Object>();
         typeTwo.put("f2", Integer.class);
 
         Callable callables[] = new Callable[2];
@@ -70,11 +70,11 @@ public class TestEventAdapterSvcMT extends TestCase
                     {
                         if (index == 0)
                         {
-                            return service.addMapType("A", typeOne, null);
+                            return service.addNestableMapType("A", typeOne, null, false, false, false);
                         }
                         else
                         {
-                            return service.addMapType("A", typeTwo, null);
+                            return service.addNestableMapType("A", typeTwo, null, false, false, false);
                         }
                     }
                     catch (EventAdapterException ex)

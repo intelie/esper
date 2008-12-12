@@ -21,12 +21,10 @@ import java.lang.reflect.InvocationTargetException;
 /**
  * Getter for a key property identified by a given key value, using the CGLIB fast method.
  */
-public class KeyedFastPropertyGetter implements EventPropertyGetter
+public class KeyedFastPropertyGetter extends BaseNativePropertyGetter implements EventPropertyGetter
 {
     private final FastMethod fastMethod;
     private final Object key;
-    private final EventAdapterService eventAdapterService;
-    private final BeanEventType fragmentEventType;
 
     /**
      * Constructor.
@@ -35,17 +33,9 @@ public class KeyedFastPropertyGetter implements EventPropertyGetter
      */
     public KeyedFastPropertyGetter(FastMethod fastMethod, Object key, EventAdapterService eventAdapterService)
     {
+        super(eventAdapterService, fastMethod.getReturnType());
         this.key = key;
         this.fastMethod = fastMethod;
-        this.eventAdapterService = eventAdapterService;
-        if (!JavaClassHelper.isJavaBuiltinDataType(fastMethod.getReturnType()))
-        {
-            fragmentEventType = eventAdapterService.getBeanEventTypeFactory().createBeanTypeNoAlias(fastMethod.getReturnType());
-        }
-        else
-        {
-            fragmentEventType = null;
-        }
     }
 
     public final Object get(EventBean obj) throws PropertyAccessException
@@ -76,15 +66,5 @@ public class KeyedFastPropertyGetter implements EventPropertyGetter
     public boolean isExistsProperty(EventBean eventBean)
     {
         return true; // Property exists as the property is not dynamic (unchecked)
-    }
-
-    public EventBean getFragment(EventBean eventBean)
-    {
-        Object object = get(eventBean);
-        if (object == null)
-        {
-            return null;
-        }
-        return eventAdapterService.adapterForBean(object, fragmentEventType);
     }
 }

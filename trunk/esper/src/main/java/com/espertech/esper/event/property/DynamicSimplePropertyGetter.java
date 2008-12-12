@@ -10,6 +10,7 @@ package com.espertech.esper.event.property;
 
 import com.espertech.esper.client.EventPropertyGetter;
 import com.espertech.esper.client.PropertyAccessException;
+import com.espertech.esper.event.EventAdapterService;
 
 import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
@@ -27,8 +28,9 @@ public class DynamicSimplePropertyGetter extends DynamicPropertyGetterBase imple
      * Ctor.
      * @param fieldName the property name
      */
-    public DynamicSimplePropertyGetter(String fieldName)
+    public DynamicSimplePropertyGetter(String fieldName, EventAdapterService eventAdapterService)
     {
+        super(eventAdapterService);
         getterMethodName = getGetterMethodName(fieldName);
         isMethodName = getIsMethodName(fieldName);
     }

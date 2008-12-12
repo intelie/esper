@@ -5,6 +5,8 @@ import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.PropertyAccessException;
 import com.espertech.esper.support.bean.SupportLegacyBean;
 import com.espertech.esper.support.event.SupportEventBeanFactory;
+import com.espertech.esper.support.event.SupportEventAdapterService;
+
 import java.lang.reflect.Field;
 
 public class TestArrayFieldPropertyGetter extends TestCase
@@ -56,6 +58,6 @@ public class TestArrayFieldPropertyGetter extends TestCase
     private ArrayFieldPropertyGetter makeGetter(int index) throws Exception
     {
         Field field = SupportLegacyBean.class.getField("fieldStringArray");
-        return new ArrayFieldPropertyGetter(field, index);
+        return new ArrayFieldPropertyGetter(field, index, SupportEventAdapterService.getService());
     }
 }

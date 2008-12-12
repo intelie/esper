@@ -29,6 +29,7 @@ public interface StatementContextFactory
      * @param optOnTriggerDesc the on-delete statement descriptor for named window context creation
      * @param optCreateWindowDesc the create-window statement descriptor for named window context creation
      * @param hasVariables indicator whether the statement uses variables anywhere in the statement
+     * @param isFireAndForget if the statement context is for a fire-and-forget statement
      * @return statement context
      */
     public StatementContext makeContext(String statementId,
@@ -38,5 +39,6 @@ public interface StatementContextFactory
                                         EPServicesContext engineServices,
                                         Map<String, Object> optAdditionalContext,
                                         OnTriggerDesc optOnTriggerDesc,
-                                        CreateWindowDesc optCreateWindowDesc);
+                                        CreateWindowDesc optCreateWindowDesc,
+                                        boolean isFireAndForget);
 }

@@ -11,6 +11,7 @@ package com.espertech.esper.event.property;
 import com.espertech.esper.client.EventPropertyGetter;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.PropertyAccessException;
+import com.espertech.esper.event.EventAdapterService;
 import net.sf.cglib.reflect.FastClass;
 import net.sf.cglib.reflect.FastMethod;
 
@@ -22,6 +23,7 @@ import java.lang.reflect.Method;
  */
 public abstract class DynamicPropertyGetterBase implements EventPropertyGetter
 {
+    private final EventAdapterService eventAdapterService;
     private final CopyOnWriteArrayList<DynamicPropertyDescriptor> cache;
 
     /**
@@ -42,9 +44,10 @@ public abstract class DynamicPropertyGetterBase implements EventPropertyGetter
     /**
      * Ctor.
      */
-    public DynamicPropertyGetterBase()
+    public DynamicPropertyGetterBase(EventAdapterService eventAdapterService)
     {
-        cache = new CopyOnWriteArrayList<DynamicPropertyDescriptor>();
+        this.cache = new CopyOnWriteArrayList<DynamicPropertyDescriptor>();
+        this.eventAdapterService = eventAdapterService;
     }
 
     public final Object get(EventBean obj) throws PropertyAccessException
@@ -112,6 +115,7 @@ public abstract class DynamicPropertyGetterBase implements EventPropertyGetter
 
     public Object getFragment(EventBean eventBean)
     {
-        return null; // TODO
+        Object result = get(eventBean);
+        return BaseNativePropertyGetter.getFragmentDynamic(result, eventAdapterService);
     }
 }

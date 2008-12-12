@@ -10,6 +10,7 @@ package com.espertech.esper.event.property;
 
 import com.espertech.esper.client.EventPropertyGetter;
 import com.espertech.esper.client.PropertyAccessException;
+import com.espertech.esper.event.EventAdapterService;
 
 import java.io.StringWriter;
 import java.lang.reflect.Array;
@@ -30,8 +31,9 @@ public class DynamicIndexedPropertyGetter extends DynamicPropertyGetterBase impl
      * @param fieldName property name
      * @param index index to get the element at
      */
-    public DynamicIndexedPropertyGetter(String fieldName, int index)
+    public DynamicIndexedPropertyGetter(String fieldName, int index, EventAdapterService eventAdapterService)
     {
+        super(eventAdapterService);
         getterMethodName = getGetterMethodName(fieldName);
         this.params = new Object[] {index};
         this.index = index;

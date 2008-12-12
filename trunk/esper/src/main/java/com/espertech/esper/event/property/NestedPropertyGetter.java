@@ -19,7 +19,7 @@ import java.util.List;
 /**
  * Getter for one or more levels deep nested properties.
  */
-public class NestedPropertyGetter implements EventPropertyGetter
+public class NestedPropertyGetter extends BaseNativePropertyGetter implements EventPropertyGetter
 {
     private final EventPropertyGetter[] getterChain;
     private final EventAdapterService eventAdapterService;
@@ -29,10 +29,11 @@ public class NestedPropertyGetter implements EventPropertyGetter
      * @param getterChain is the chain of getters to retrieve each nested property
      * @param eventAdapterService is the cache and factory for event bean types and event wrappers
      */
-    public NestedPropertyGetter(List<EventPropertyGetter> getterChain, EventAdapterService eventAdapterService)
+    public NestedPropertyGetter(List<EventPropertyGetter> getterChain, EventAdapterService eventAdapterService, Class finalPropertyType)
     {
-        this.getterChain = getterChain.toArray(new EventPropertyGetter[getterChain.size()]);
+        super(eventAdapterService, finalPropertyType); 
         this.eventAdapterService = eventAdapterService;
+        this.getterChain = getterChain.toArray(new EventPropertyGetter[getterChain.size()]);
     }
 
     public Object get(EventBean eventBean) throws PropertyAccessException
@@ -79,10 +80,5 @@ public class NestedPropertyGetter implements EventPropertyGetter
         }
 
         return getterChain[lastElementIndex].isExistsProperty(eventBean);
-    }
-
-    public Object getFragment(EventBean eventBean)
-    {
-        return null; // TODO
     }
 }
