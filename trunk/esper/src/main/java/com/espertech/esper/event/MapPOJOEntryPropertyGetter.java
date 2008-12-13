@@ -11,13 +11,14 @@ package com.espertech.esper.event;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventPropertyGetter;
 import com.espertech.esper.client.PropertyAccessException;
+import com.espertech.esper.event.property.BaseNativePropertyGetter;
 
 import java.util.Map;
 
 /**
  * A getter that works on POJO events residing within a Map as an event property.
  */
-public class MapPOJOEntryPropertyGetter implements EventPropertyGetter
+public class MapPOJOEntryPropertyGetter extends BaseNativePropertyGetter implements EventPropertyGetter
 {
     private final String propertyMap;
     private final EventPropertyGetter mapEntryGetter;
@@ -29,7 +30,8 @@ public class MapPOJOEntryPropertyGetter implements EventPropertyGetter
      * @param mapEntryGetter the getter for the map entry
      * @param eventAdapterService for producing wrappers to objects
      */
-    public MapPOJOEntryPropertyGetter(String propertyMap, EventPropertyGetter mapEntryGetter, EventAdapterService eventAdapterService) {
+    public MapPOJOEntryPropertyGetter(String propertyMap, EventPropertyGetter mapEntryGetter, EventAdapterService eventAdapterService, Class returnType) {
+        super(eventAdapterService, returnType);
         this.propertyMap = propertyMap;
         this.mapEntryGetter = mapEntryGetter;
         this.eventAdapterService = eventAdapterService;
@@ -64,10 +66,5 @@ public class MapPOJOEntryPropertyGetter implements EventPropertyGetter
     public boolean isExistsProperty(EventBean eventBean)
     {
         return true; // Property exists as the property is not dynamic (unchecked)
-    }
-
-    public Object getFragment(EventBean eventBean)
-    {
-        return null; // TODO
     }
 }

@@ -146,7 +146,6 @@ public class MapEventType implements EventTypeSPI
             }
             else if (type instanceof String)
             {
-                // TODO
                 String propTypeName = type.toString();
                 boolean isArray = isPropertyArray(propTypeName);
                 if (isArray) {
@@ -344,11 +343,11 @@ public class MapEventType implements EventTypeSPI
                 EventPropertyGetter typeGetter;
                 if (!isArray)
                 {
-                    typeGetter = new MapMaptypedUndPropertyGetter(indexedProp.getPropertyNameAtomic());
+                    typeGetter = new MapMaptypedUndPropertyGetter(indexedProp.getPropertyNameAtomic(), eventAdapterService, innerType);
                 }
                 else
                 {
-                    typeGetter = new MapArrayMaptypedUndPropertyGetter(indexedProp.getPropertyNameAtomic(), indexedProp.getIndex());
+                    typeGetter = new MapArrayMaptypedUndPropertyGetter(indexedProp.getPropertyNameAtomic(), indexedProp.getIndex(), eventAdapterService, innerType);
                 }
                 propertyGetterCache.put(propertyName, typeGetter);
                 return typeGetter;
@@ -364,7 +363,8 @@ public class MapEventType implements EventTypeSPI
             }
 
             // its an array
-            EventPropertyGetter indexedGetter = new MapArrayPOJOEntryIndexedPropertyGetter(indexedProp.getPropertyNameAtomic(), indexedProp.getIndex());
+            Class componentType = ((Class) type).getComponentType();
+            EventPropertyGetter indexedGetter = new MapArrayPOJOEntryIndexedPropertyGetter(indexedProp.getPropertyNameAtomic(), indexedProp.getIndex(), eventAdapterService, componentType);
             propertyGetterCache.put(propertyName, indexedGetter);
             return indexedGetter;
         }
@@ -411,11 +411,11 @@ public class MapEventType implements EventTypeSPI
                 EventPropertyGetter typeGetter;
                 if (!isArray)
                 {
-                    typeGetter = new MapMaptypedEntryPropertyGetter(propertyMap, innerType.getGetter(propertyNested), (MapEventType) innerType);
+                    typeGetter = new MapMaptypedEntryPropertyGetter(propertyMap, innerType.getGetter(propertyNested), (MapEventType) innerType, eventAdapterService);
                 }
                 else
                 {
-                    typeGetter = new MapArrayMaptypedEntryPropertyGetter(indexedProp.getPropertyNameAtomic(), indexedProp.getIndex(), innerType.getGetter(propertyNested));
+                    typeGetter = new MapArrayMaptypedEntryPropertyGetter(indexedProp.getPropertyNameAtomic(), indexedProp.getIndex(), innerType.getGetter(propertyNested), innerType, eventAdapterService);
                 }
                 propertyGetterCache.put(propertyName, typeGetter);
                 return typeGetter;
@@ -450,8 +450,9 @@ public class MapEventType implements EventTypeSPI
                 {
                     return null;
                 }
+                Class propertyTypeGetter = nestedEventType.getPropertyType(propertyNested);
                 // construct getter for nested property
-                EventPropertyGetter indexGetter = new MapArrayPOJOBeanEntryIndexedPropertyGetter(indexedProp.getPropertyNameAtomic(), indexedProp.getIndex(), nestedGetter, eventAdapterService);
+                EventPropertyGetter indexGetter = new MapArrayPOJOBeanEntryIndexedPropertyGetter(indexedProp.getPropertyNameAtomic(), indexedProp.getIndex(), nestedGetter, eventAdapterService, propertyTypeGetter);
                 propertyGetterCache.put(propertyName, indexGetter);
                 return indexGetter;
             }
@@ -493,9 +494,10 @@ public class MapEventType implements EventTypeSPI
             {
                 return null;
             }
+            Class nestedReturnType = nestedEventType.getPropertyType(propertyNested);
 
             // construct getter for nested property
-            getter = new MapPOJOEntryPropertyGetter(propertyMap, nestedGetter, eventAdapterService);
+            getter = new MapPOJOEntryPropertyGetter(propertyMap, nestedGetter, eventAdapterService, nestedReturnType);
             propertyGetterCache.put(propertyName, getter);
             return getter;
         }
@@ -534,14 +536,19 @@ public class MapEventType implements EventTypeSPI
             {
                 return null;
             }
+            EventPropertyGetter innerGetter = innerType.getGetter(propertyNested);
+            if (innerGetter == null)
+            {
+                return null;
+            }
             EventPropertyGetter maptypeGetter;
             if (!isArray)
             {
-                maptypeGetter = new MapMaptypedEntryPropertyGetter(propertyMap, innerType.getGetter(propertyNested), (MapEventType) innerType);
+                maptypeGetter = new MapMaptypedEntryPropertyGetter(propertyMap, innerGetter, (MapEventType) innerType, eventAdapterService);
             }
             else
             {
-                maptypeGetter = new MapArrayMaptypedEntryPropertyGetter(propertyMap, 0, innerType.getGetter(propertyNested));
+                maptypeGetter = new MapArrayMaptypedEntryPropertyGetter(propertyMap, 0, innerGetter, innerType, eventAdapterService);
             }
             propertyGetterCache.put(propertyName, maptypeGetter);
             return maptypeGetter;
@@ -933,18 +940,23 @@ public class MapEventType implements EventTypeSPI
                 Class classType = (Class) entry.getValue();
                 simplePropertyTypes.put(name, classType);
                 propertyNameList.add(name);
-                EventPropertyGetter getter = new MapEventPropertyGetter(name);
-                propertyGetters.put(name, getter);
+
                 boolean isFragment = JavaClassHelper.isFragmentableType(classType);
                 propertyDescriptors.add(new EventPropertyDescriptor(name, classType, false, false, false, false, isFragment));
+                BeanEventType nativeFragmentType = null;
                 if (isFragment)
                 {
-                    eventTypeFragments.put(name, EventBeanUtility.createNativeFragmentType(classType, eventAdapterService));
+                    EventTypeFragment fragmentType = EventBeanUtility.createNativeFragmentType(classType, eventAdapterService);
+                    nativeFragmentType = (BeanEventType) fragmentType.getFragmentType();
+                    eventTypeFragments.put(name, fragmentType);
                 }
                 else
                 {
                     eventTypeFragments.put(name, null);
                 }
+
+                EventPropertyGetter getter = new MapEntryPropertyGetter(name, nativeFragmentType, eventAdapterService);
+                propertyGetters.put(name, getter);
                 continue;
             }
 
@@ -953,7 +965,7 @@ public class MapEventType implements EventTypeSPI
             {
                 simplePropertyTypes.put(name, null);
                 propertyNameList.add(name);
-                EventPropertyGetter getter = new MapEventPropertyGetter(name);
+                EventPropertyGetter getter = new MapEntryPropertyGetter(name, null, null);
                 propertyGetters.put(name, getter);
                 propertyDescriptors.add(new EventPropertyDescriptor(name, null, false, false, false, false, false));
                 eventTypeFragments.put(name, null);
@@ -965,7 +977,7 @@ public class MapEventType implements EventTypeSPI
                 // Add Map itself as a property
                 simplePropertyTypes.put(name, Map.class);
                 propertyNameList.add(name);
-                EventPropertyGetter getter = new MapEventPropertyGetter(name);
+                EventPropertyGetter getter = new MapEntryPropertyGetter(name, null, null);
                 propertyGetters.put(name, getter);
                 propertyDescriptors.add(new EventPropertyDescriptor(name, Map.class, false, false, false, true, false));
                 eventTypeFragments.put(name, null);
@@ -994,7 +1006,7 @@ public class MapEventType implements EventTypeSPI
                 propertyNameList.add(name);
                 EventPropertyGetter getter = new MapEventBeanArrayPropertyGetter(name, eventType.getUnderlyingType());
                 propertyGetters.put(name, getter);
-                propertyDescriptors.add(new EventPropertyDescriptor(name, eventType.getUnderlyingType(), false, false, true, false, true));
+                propertyDescriptors.add(new EventPropertyDescriptor(name, prototypeArray.getClass(), false, false, true, false, true));
                 eventTypeFragments.put(name, new EventTypeFragment(eventType, true, false));
                 continue;
             }
@@ -1087,6 +1099,21 @@ public class MapEventType implements EventTypeSPI
             {
                 EventType eventType = ((EventType[]) type)[0];
                 return new EventTypeFragment(eventType, false, false);
+            }
+            else if (type instanceof String)
+            {
+                String propTypeName = type.toString();
+                boolean isArray = isPropertyArray(propTypeName);
+                if (!isArray) {
+                    return null;
+                }
+                propTypeName = getPropertyRemoveArray(propTypeName);
+                EventType innerType = eventAdapterService.getExistsTypeByAlias(propTypeName);
+                if (!(innerType instanceof MapEventType))
+                {
+                    return null;
+                }
+                return new EventTypeFragment(innerType, false, false);  // false since an index is present
             }
             if (!(type instanceof Class))
             {

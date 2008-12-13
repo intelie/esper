@@ -61,7 +61,7 @@ public class TestCompositeSelect extends TestCase
         stmt.addListener(listener);
         
         ArrayAssertionUtil.assertEqualsAnyOrder(new Object[] {
-            new EventPropertyDescriptor("a", SupportBean_A.class, false, false, true, false, true),
+            new EventPropertyDescriptor("a", SupportBean_A[].class, false, false, true, false, true),
             new EventPropertyDescriptor("b", SupportBean_B.class, false, false, false, false, true)
            }, stmt.getEventType().getPropertyDescriptors());
 

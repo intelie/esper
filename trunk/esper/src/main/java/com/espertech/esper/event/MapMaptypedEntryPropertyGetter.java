@@ -14,16 +14,18 @@ public class MapMaptypedEntryPropertyGetter implements EventPropertyGetter {
     private final String propertyMap;
     private final EventPropertyGetter eventBeanEntryGetter;
     private final MapEventType fragmentType;
+    private final EventAdapterService eventAdapterService;
 
     /**
      * Ctor.
      * @param propertyMap the property to look at
      * @param eventBeanEntryGetter the getter for the map entry
      */
-    public MapMaptypedEntryPropertyGetter(String propertyMap, EventPropertyGetter eventBeanEntryGetter, MapEventType fragmentType) {
+    public MapMaptypedEntryPropertyGetter(String propertyMap, EventPropertyGetter eventBeanEntryGetter, MapEventType fragmentType, EventAdapterService eventAdapterService) {
         this.propertyMap = propertyMap;
         this.eventBeanEntryGetter = eventBeanEntryGetter;
         this.fragmentType = fragmentType;
+        this.eventAdapterService = eventAdapterService;
     }
 
     public Object get(EventBean obj)
@@ -50,7 +52,7 @@ public class MapMaptypedEntryPropertyGetter implements EventPropertyGetter {
         }
 
         // If the map does not contain the key, this is allowed and represented as null
-        EventBean eventBean = new MapEventBean((Map) value, fragmentType);
+        EventBean eventBean = eventAdapterService.adaptorForMap((Map) value, fragmentType);
         return eventBeanEntryGetter.get(eventBean);
     }
 
@@ -83,7 +85,7 @@ public class MapMaptypedEntryPropertyGetter implements EventPropertyGetter {
         }
 
         // If the map does not contain the key, this is allowed and represented as null
-        EventBean eventBean = new MapEventBean((Map) value, fragmentType);
-        return eventBeanEntryGetter.get(eventBean);
+        EventBean eventBean = eventAdapterService.adaptorForMap((Map) value, fragmentType);
+        return eventBeanEntryGetter.getFragment(eventBean);
     }
 }

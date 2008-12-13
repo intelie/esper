@@ -17,16 +17,20 @@ import java.util.Map;
 /**
  * A getter for use with Map-based events simply returns the value for the key.
  */
-public class MapEventPropertyGetter implements EventPropertyGetter
+public class MapEntryPropertyGetter implements EventPropertyGetter
 {
     private final String propertyName;
+    private final EventAdapterService eventAdapterService;
+    private final BeanEventType eventType;
 
     /**
      * Ctor.
      * @param propertyName property to get
      */
-    public MapEventPropertyGetter(String propertyName) {
+    public MapEntryPropertyGetter(String propertyName, BeanEventType eventType, EventAdapterService eventAdapterService) {
         this.propertyName = propertyName;
+        this.eventAdapterService = eventAdapterService;
+        this.eventType = eventType;
     }
 
     public Object get(EventBean obj)
@@ -51,6 +55,20 @@ public class MapEventPropertyGetter implements EventPropertyGetter
 
     public Object getFragment(EventBean eventBean)
     {
-        return null; // TODO
+        if (eventType == null)
+        {
+            return null;
+        }
+
+        Object result = get(eventBean);
+        if (result == null)
+        {
+            return null;
+        }
+        if (result.getClass().isArray())
+        {
+            return null;
+        }
+        return eventAdapterService.adapterForBean(result, eventType);
     }
 }

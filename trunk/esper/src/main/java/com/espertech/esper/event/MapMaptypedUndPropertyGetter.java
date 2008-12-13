@@ -3,16 +3,21 @@ package com.espertech.esper.event;
 import com.espertech.esper.client.EventPropertyGetter;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.PropertyAccessException;
+import com.espertech.esper.client.EventType;
 
 import java.util.Map;
 
 public class MapMaptypedUndPropertyGetter implements EventPropertyGetter
 {
     private final String propertyName;
+    private final EventAdapterService eventAdapterService;
+    private final EventType fragmentType;
 
-    public MapMaptypedUndPropertyGetter(String propertyNameAtomic)
+    public MapMaptypedUndPropertyGetter(String propertyNameAtomic, EventAdapterService eventAdapterService, EventType fragmentType)
     {
         propertyName = propertyNameAtomic;
+        this.fragmentType = fragmentType;
+        this.eventAdapterService = eventAdapterService;
     }
 
     public Object get(EventBean obj) throws PropertyAccessException
@@ -28,17 +33,7 @@ public class MapMaptypedUndPropertyGetter implements EventPropertyGetter
 
         Map map = (Map) underlying;
 
-        Object value = map.get(propertyName);
-        if (value == null)
-        {
-            return null;
-        }
-        if (!(value instanceof EventBean))
-        {
-            return null;
-        }
-
-        return ((EventBean)value).getUnderlying();
+        return map.get(propertyName);
     }
 
     public boolean isExistsProperty(EventBean eventBean)
@@ -46,8 +41,15 @@ public class MapMaptypedUndPropertyGetter implements EventPropertyGetter
         return true;
     }
 
-    public Object getFragment(EventBean eventBean) throws PropertyAccessException
+    public Object getFragment(EventBean obj) throws PropertyAccessException
     {
-        return null;  //TODO
+        Map<String, Object> value = (Map<String, Object>) get(obj);
+
+        if (value == null)
+        {
+            return null;
+        }
+
+        return eventAdapterService.adaptorForMap(value, fragmentType);
     }
 }

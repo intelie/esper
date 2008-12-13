@@ -6,10 +6,7 @@ import com.espertech.esper.util.JavaClassHelper;
 import junit.framework.Assert;
 
 import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.HashSet;
+import java.util.*;
 import java.lang.reflect.Array;
 
 public class EventTypeAssertionUtil
@@ -27,15 +24,15 @@ public class EventTypeAssertionUtil
     public static String print(EventBean event)
     {
         StringWriter writer = new StringWriter();
-        print(event, writer, 0);
+        print(event, writer, 0, new Stack<String>());
         return writer.toString();
     }
 
-    private static void print(EventBean event, StringWriter writer, int indent)
+    private static void print(EventBean event, StringWriter writer, int indent, Stack<String> propertyStack)
     {
         writeIndent(writer, indent);
         writer.append("Properties : \n");
-        printProperties(event, writer, indent + 2);
+        printProperties(event, writer, indent + 2, propertyStack);
 
         // count fragments
         int countFragments = 0;
@@ -52,7 +49,7 @@ public class EventTypeAssertionUtil
         }
 
         writeIndent(writer, indent);
-        writer.append("Fragments : \n");
+        writer.append("Fragments : (" + countFragments + ") \n");
         for (EventPropertyDescriptor desc : event.getEventType().getPropertyDescriptors())
         {
             if (!desc.isFragment())
@@ -82,7 +79,9 @@ public class EventTypeAssertionUtil
                         else
                         {
                             writer.append("\n");
-                            print(result, writer, indent + 6);
+                            propertyStack.push(desc.getPropertyName());
+                            print(result, writer, indent + 6, propertyStack);
+                            propertyStack.pop();
                         }
                         count++;
                     }
@@ -108,7 +107,19 @@ public class EventTypeAssertionUtil
                     writer.append("EventBean type ");
                     writer.append(fragmentBean.getEventType().getName());
                     writer.append("...\n");
-                    print(fragmentBean, writer, indent + 4);
+
+                    // prevent getThis() loops
+                    if (fragmentBean.getEventType() == event.getEventType())
+                    {
+                        writeIndent(writer, indent + 2);
+                        writer.append("Skipping");
+                    }
+                    else
+                    {
+                        propertyStack.push(desc.getPropertyName());
+                        print(fragmentBean, writer, indent + 4, propertyStack);
+                        propertyStack.pop();
+                    }
                 }
                 else
                 {
@@ -126,7 +137,10 @@ public class EventTypeAssertionUtil
                         {
                             writeIndent(writer, indent + 4);
                             writer.append("bean #" + i + "...\n");
-                            print(fragmentBeans[i], writer, indent + 6);
+
+                            propertyStack.push(desc.getPropertyName());
+                            print(fragmentBeans[i], writer, indent + 6, propertyStack);
+                            propertyStack.pop();
                         }
                     }
                 }
@@ -134,7 +148,7 @@ public class EventTypeAssertionUtil
         }
     }
 
-    private static void printProperties(EventBean eventBean, StringWriter writer, int indent)
+    private static void printProperties(EventBean eventBean, StringWriter writer, int indent, Stack<String> propertyStack)
     {
         EventPropertyDescriptor properties[] = eventBean.getEventType().getPropertyDescriptors();
 

@@ -341,7 +341,7 @@ public class BeanEventType implements EventTypeSPI, NativeEventType
                         // Ignore property
                         continue;
                     }
-                    getter = new ReflectionPropFieldGetter(desc.getAccessorField());
+                    getter = new ReflectionPropFieldGetter(desc.getAccessorField(), eventAdapterService);
                     type = desc.getAccessorField().getType();
                 }
 

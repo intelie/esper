@@ -3,6 +3,7 @@ package com.espertech.esper.event;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventPropertyGetter;
 import com.espertech.esper.client.PropertyAccessException;
+import com.espertech.esper.event.property.BaseNativePropertyGetter;
 
 import java.util.Map;
 import java.lang.reflect.Array;
@@ -10,7 +11,7 @@ import java.lang.reflect.Array;
 /**
  * A getter that works on POJO events residing within a Map as an event property.
  */
-public class MapArrayPOJOBeanEntryIndexedPropertyGetter implements EventPropertyGetter {
+public class MapArrayPOJOBeanEntryIndexedPropertyGetter extends BaseNativePropertyGetter implements EventPropertyGetter {
 
     private final String propertyMap;
     private final int index;
@@ -24,7 +25,8 @@ public class MapArrayPOJOBeanEntryIndexedPropertyGetter implements EventProperty
      * @param eventAdapterService for producing wrappers to objects
      * @param index the index to fetch the array element for
      */
-    public MapArrayPOJOBeanEntryIndexedPropertyGetter(String propertyMap, int index, EventPropertyGetter mapEntryGetter, EventAdapterService eventAdapterService) {
+    public MapArrayPOJOBeanEntryIndexedPropertyGetter(String propertyMap, int index, EventPropertyGetter mapEntryGetter, EventAdapterService eventAdapterService, Class returnType) {
+        super(eventAdapterService, returnType);
         this.propertyMap = propertyMap;
         this.index = index;
         this.mapEntryGetter = mapEntryGetter;
@@ -73,10 +75,5 @@ public class MapArrayPOJOBeanEntryIndexedPropertyGetter implements EventProperty
     public boolean isExistsProperty(EventBean eventBean)
     {
         return true; // Property exists as the property is not dynamic (unchecked)
-    }
-
-    public Object getFragment(EventBean eventBean)
-    {
-        return null; // TODO
     }
 }

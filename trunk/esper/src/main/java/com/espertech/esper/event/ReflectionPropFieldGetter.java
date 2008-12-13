@@ -11,13 +11,14 @@ package com.espertech.esper.event;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventPropertyGetter;
 import com.espertech.esper.client.PropertyAccessException;
+import com.espertech.esper.event.property.BaseNativePropertyGetter;
 
 import java.lang.reflect.Field;
 
 /**
  * Property getter for fields using Java's vanilla reflection.
  */
-public final class ReflectionPropFieldGetter implements EventPropertyGetter
+public final class ReflectionPropFieldGetter extends BaseNativePropertyGetter implements EventPropertyGetter
 {
     private final Field field;
 
@@ -25,8 +26,9 @@ public final class ReflectionPropFieldGetter implements EventPropertyGetter
      * Constructor.
      * @param field is the regular reflection field to use to obtain values for a property
      */
-    public ReflectionPropFieldGetter(Field field)
+    public ReflectionPropFieldGetter(Field field, EventAdapterService eventAdapterService)
     {
+        super(eventAdapterService, field.getType());
         this.field = field;
     }
 
@@ -57,10 +59,5 @@ public final class ReflectionPropFieldGetter implements EventPropertyGetter
     public boolean isExistsProperty(EventBean eventBean)
     {
         return true; // Property exists as the property is not dynamic (unchecked)
-    }
-
-    public Object getFragment(EventBean eventBean)
-    {
-        return null; // TODO
     }
 }

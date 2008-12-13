@@ -3,6 +3,7 @@ package com.espertech.esper.event;
 import junit.framework.TestCase;
 import com.espertech.esper.support.bean.SupportLegacyBean;
 import com.espertech.esper.support.event.SupportEventBeanFactory;
+import com.espertech.esper.support.event.SupportEventAdapterService;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.PropertyAccessException;
 
@@ -42,7 +43,7 @@ public class TestReflectionPropFieldGetter extends TestCase
     private ReflectionPropFieldGetter makeGetter(Class clazz, String fieldName) throws Exception
     {
         Field field = clazz.getField(fieldName);
-        ReflectionPropFieldGetter getter = new ReflectionPropFieldGetter(field);
+        ReflectionPropFieldGetter getter = new ReflectionPropFieldGetter(field, SupportEventAdapterService.getService());
         return getter;
     }
 

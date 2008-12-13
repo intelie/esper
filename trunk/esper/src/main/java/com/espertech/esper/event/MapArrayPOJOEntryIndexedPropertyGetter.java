@@ -3,6 +3,7 @@ package com.espertech.esper.event;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventPropertyGetter;
 import com.espertech.esper.client.PropertyAccessException;
+import com.espertech.esper.event.property.BaseNativePropertyGetter;
 
 import java.util.Map;
 import java.lang.reflect.Array;
@@ -10,7 +11,7 @@ import java.lang.reflect.Array;
 /**
  * A getter that works on arrays residing within a Map as an event property.
  */
-public class MapArrayPOJOEntryIndexedPropertyGetter implements EventPropertyGetter
+public class MapArrayPOJOEntryIndexedPropertyGetter extends BaseNativePropertyGetter implements EventPropertyGetter
 {
     private final String propertyMap;
     private final int index;
@@ -20,8 +21,9 @@ public class MapArrayPOJOEntryIndexedPropertyGetter implements EventPropertyGett
      * @param propertyMap the property to use for the map lookup
      * @param index the index to fetch the array element for
      */
-    public MapArrayPOJOEntryIndexedPropertyGetter(String propertyMap, int index)
+    public MapArrayPOJOEntryIndexedPropertyGetter(String propertyMap, int index, EventAdapterService eventAdapterService, Class returnType)
     {
+        super(eventAdapterService, returnType);
         this.propertyMap = propertyMap;
         this.index = index;
     }
@@ -70,10 +72,5 @@ public class MapArrayPOJOEntryIndexedPropertyGetter implements EventPropertyGett
 
         Map map = (Map) underlying;
         return map.containsKey(propertyMap);
-    }
-
-    public Object getFragment(EventBean eventBean)
-    {
-        return null; // TODO
     }
 }

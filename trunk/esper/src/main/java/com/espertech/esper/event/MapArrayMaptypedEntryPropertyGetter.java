@@ -3,6 +3,7 @@ package com.espertech.esper.event;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventPropertyGetter;
 import com.espertech.esper.client.PropertyAccessException;
+import com.espertech.esper.client.EventType;
 
 import java.util.Map;
 import java.lang.reflect.Array;
@@ -15,6 +16,8 @@ public class MapArrayMaptypedEntryPropertyGetter implements EventPropertyGetter 
     private final String propertyMap;
     private final int index;
     private final EventPropertyGetter eventBeanEntryGetter;
+    private final EventType innerType;
+    private final EventAdapterService eventAdapterService;
 
     /**
      * Ctor.
@@ -22,10 +25,12 @@ public class MapArrayMaptypedEntryPropertyGetter implements EventPropertyGetter 
      * @param eventBeanEntryGetter the getter for the map entry
      * @param index the index to fetch the array element for
      */
-    public MapArrayMaptypedEntryPropertyGetter(String propertyMap, int index, EventPropertyGetter eventBeanEntryGetter) {
+    public MapArrayMaptypedEntryPropertyGetter(String propertyMap, int index, EventPropertyGetter eventBeanEntryGetter, EventType innerType, EventAdapterService eventAdapterService) {
         this.propertyMap = propertyMap;
         this.index = index;
         this.eventBeanEntryGetter = eventBeanEntryGetter;
+        this.innerType = innerType;
+        this.eventAdapterService = eventAdapterService;
     }
 
     public Object get(EventBean obj)
@@ -61,7 +66,7 @@ public class MapArrayMaptypedEntryPropertyGetter implements EventPropertyGetter 
         }
 
         // If the map does not contain the key, this is allowed and represented as null
-        EventBean eventBean = new MapEventBean((Map) valueMap, null);
+        EventBean eventBean = eventAdapterService.adaptorForMap((Map) valueMap, innerType);
         return eventBeanEntryGetter.get(eventBean);
     }
 
@@ -70,8 +75,40 @@ public class MapArrayMaptypedEntryPropertyGetter implements EventPropertyGetter 
         return true; // Property exists as the property is not dynamic (unchecked)
     }
 
-    public Object getFragment(EventBean eventBean)
+    public Object getFragment(EventBean obj)
     {
-        return null; // TODO
+        Object underlying = obj.getUnderlying();
+
+        // The underlying is expected to be a map
+        if (!(underlying instanceof Map))
+        {
+            throw new PropertyAccessException("Mismatched property getter to event bean type, " +
+                    "the underlying data object is not of type java.lang.Map");
+        }
+
+        Map map = (Map) underlying;
+
+        Object value = map.get(propertyMap);
+        if (value == null)
+        {
+            return null;
+        }
+        if (!value.getClass().isArray())
+        {
+            return null;
+        }
+        if (Array.getLength(value) <= index)
+        {
+            return null;
+        }
+        Object valueMap = Array.get(value, index);
+        if (!(valueMap instanceof Map))
+        {
+            return null;
+        }
+
+        // If the map does not contain the key, this is allowed and represented as null
+        EventBean eventBean = eventAdapterService.adaptorForMap((Map) valueMap, innerType);
+        return eventBeanEntryGetter.getFragment(eventBean);        
     }
 }

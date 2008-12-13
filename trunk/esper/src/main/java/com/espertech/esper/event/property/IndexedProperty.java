@@ -188,7 +188,7 @@ public class IndexedProperty extends PropertyBase
             }
             else
             {
-                return new MapNamedMapArrayIndexPropertyGetter(this.propertyNameAtomic, index);
+                return new MapArrayMaptypedUndPropertyGetter(this.propertyNameAtomic, index, eventAdapterService, innerType);
             }
         }
         else {
@@ -200,8 +200,9 @@ public class IndexedProperty extends PropertyBase
             {
                 return null;
             }
+            Class componentType = ((Class)type).getComponentType();
             // its an array
-            return new MapArrayPOJOEntryIndexedPropertyGetter(propertyNameAtomic, index);
+            return new MapArrayPOJOEntryIndexedPropertyGetter(propertyNameAtomic, index, eventAdapterService, componentType);
         }
     }
 
