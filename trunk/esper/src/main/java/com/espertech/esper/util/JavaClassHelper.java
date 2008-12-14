@@ -1112,6 +1112,12 @@ public class JavaClassHelper
         return false;
     }
 
+    /**
+     * Returns true if the Class is a fragmentable type, i.e. not a primitive or boxed type or
+     * any of the common built-in types or does not implement Map.
+     * @param propertyType type to check
+     * @return true if fragmentable
+     */
     public static boolean isFragmentableType(Class propertyType)
     {
         if (propertyType == null)

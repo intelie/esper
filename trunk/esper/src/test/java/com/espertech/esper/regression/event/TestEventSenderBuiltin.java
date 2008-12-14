@@ -1,7 +1,6 @@
 package com.espertech.esper.regression.event;
 
 import com.espertech.esper.client.*;
-import com.espertech.esper.client.EventBean;
 import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.bean.SupportBean_G;
 import com.espertech.esper.support.bean.SupportMarkerImplA;
@@ -79,7 +78,7 @@ public class TestEventSenderBuiltin extends TestCase
     {
         Configuration configuration = SupportConfigFactory.getConfiguration();
         Map<String, Object> myMapType = makeMap(new Object[][] {{"f1", Integer.class}});
-        configuration.addNestableEventTypeAlias("MyMap", myMapType);
+        configuration.addEventTypeAlias("MyMap", myMapType);
 
         epService = EPServiceProviderManager.getDefaultProvider(configuration);
         epService.initialize();

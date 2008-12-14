@@ -39,7 +39,7 @@ public class TestRevisionWindowed extends TestCase
         config.addRevisionEventType("RevisableQuote", configRev);
 
         // second revision event type
-        config.addNestableEventTypeAlias("MyMap", makeMap(
+        config.addEventTypeAlias("MyMap", makeMap(
                 new Object[][] { {"p5", String.class}, {"p1", String.class}, {"k0", String.class}, {"m0", String.class} }));
         configRev = new ConfigurationRevisionEventType();
         configRev.setKeyPropertyNames(new String[] {"p5", "p1"});

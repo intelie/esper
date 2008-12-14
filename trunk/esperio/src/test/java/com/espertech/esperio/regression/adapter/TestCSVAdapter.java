@@ -37,11 +37,11 @@ public class TestCSVAdapter extends TestCase
 	private InputAdapter adapter;
 	private String[] propertyOrderTimestamps;
 	private String[] propertyOrderNoTimestamps;
-	private Map<String, Class> propertyTypes;
+	private Map<String, Object> propertyTypes;
 
 	protected void setUp()
 	{
-		propertyTypes = new HashMap<String, Class>();
+		propertyTypes = new HashMap<String, Object>();
 		propertyTypes.put("myInt", Integer.class);
 		propertyTypes.put("myDouble", Double.class);
 		propertyTypes.put("myString", String.class);
@@ -219,7 +219,7 @@ public class TestCSVAdapter extends TestCase
 
 	public void testRuntimePropertyTypesInvalid()
 	{
-		Map<String, Class> propertyTypesInvalid = new HashMap<String, Class>(propertyTypes);
+		Map<String, Object> propertyTypesInvalid = new HashMap<String, Object>(propertyTypes);
 		propertyTypesInvalid.put("anotherProperty", String.class);
 		try
 		{
@@ -233,7 +233,7 @@ public class TestCSVAdapter extends TestCase
 			// Expected
 		}
 
-		propertyTypesInvalid = new HashMap<String, Class>(propertyTypes);
+		propertyTypesInvalid = new HashMap<String, Object>(propertyTypes);
 		propertyTypesInvalid.put("myInt", String.class);
 		try
 		{
@@ -247,7 +247,7 @@ public class TestCSVAdapter extends TestCase
 			// Expected
 		}
 
-		propertyTypesInvalid = new HashMap<String, Class>(propertyTypes);
+		propertyTypesInvalid = new HashMap<String, Object>(propertyTypes);
 		propertyTypesInvalid.remove("myInt");
 		propertyTypesInvalid.put("anotherInt", Integer.class);
 		try

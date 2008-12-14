@@ -138,8 +138,8 @@ public class SchemaXMLEventType extends BaseXMLEventType {
         }
     }
 
-    public EventTypeFragment getFragmentType(String property)
+    public FragmentEventType getFragmentType(String property)
     {
-        return null;  // TODO
+        return null;
     }
 }

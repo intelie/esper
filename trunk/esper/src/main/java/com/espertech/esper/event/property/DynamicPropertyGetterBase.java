@@ -43,6 +43,7 @@ public abstract class DynamicPropertyGetterBase implements EventPropertyGetter
 
     /**
      * Ctor.
+     * @param eventAdapterService factory for event beans and event types
      */
     public DynamicPropertyGetterBase(EventAdapterService eventAdapterService)
     {

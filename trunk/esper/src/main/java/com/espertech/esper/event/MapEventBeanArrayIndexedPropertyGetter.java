@@ -6,11 +6,19 @@ import com.espertech.esper.client.PropertyAccessException;
 
 import java.util.Map;
 
+/**
+ * Getter for array events.
+ */
 public class MapEventBeanArrayIndexedPropertyGetter implements EventPropertyGetter
 {
     private final String propertyName;
     private final int index;
 
+    /**
+     * Ctor.
+     * @param propertyName property name
+     * @param index array index
+     */
     public MapEventBeanArrayIndexedPropertyGetter(String propertyName, int index)
     {
         this.propertyName = propertyName;

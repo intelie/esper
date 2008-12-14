@@ -28,6 +28,7 @@ public class KeyedMethodPropertyGetter extends BaseNativePropertyGetter implemen
      * Constructor.
      * @param method is the method to use to retrieve a value from the object.
      * @param key is the key to supply as parameter to the mapped property getter
+     * @param eventAdapterService factory for event beans and event types
      */
     public KeyedMethodPropertyGetter(Method method, Object key, EventAdapterService eventAdapterService)
     {

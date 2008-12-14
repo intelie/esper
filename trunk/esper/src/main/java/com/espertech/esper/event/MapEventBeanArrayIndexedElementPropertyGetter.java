@@ -6,12 +6,21 @@ import com.espertech.esper.client.PropertyAccessException;
 
 import java.util.Map;
 
+/**
+ * Getter for an array of event bean using a nested getter.
+ */
 public class MapEventBeanArrayIndexedElementPropertyGetter implements EventPropertyGetter
 {
     private final String propertyName;
     private final int index;
     private final EventPropertyGetter nestedGetter;
 
+    /**
+     * Ctor.
+     * @param propertyName property name
+     * @param index array index
+     * @param nestedGetter nested getter
+     */
     public MapEventBeanArrayIndexedElementPropertyGetter(String propertyName, int index, EventPropertyGetter nestedGetter)
     {
         this.propertyName = propertyName;

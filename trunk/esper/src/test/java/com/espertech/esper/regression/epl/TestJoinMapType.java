@@ -17,7 +17,7 @@ public class TestJoinMapType extends TestCase
 
     public void setUp()
     {
-        Map<String, Class> typeInfo = new HashMap<String, Class>();
+        Map<String, Object> typeInfo = new HashMap<String, Object>();
         typeInfo.put("id", String.class);
         typeInfo.put("p00", int.class);
         

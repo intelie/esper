@@ -1,8 +1,8 @@
 package com.espertech.esper.regression.event;
 
+import com.espertech.esper.client.EventPropertyDescriptor;
 import com.espertech.esper.plugin.*;
 
-import java.net.URI;
 import java.util.*;
 
 public class MyPlugInEventRepresentation implements PlugInEventRepresentation
@@ -38,8 +38,15 @@ public class MyPlugInEventRepresentation implements PlugInEventRepresentation
         Set<String> typeProps = new HashSet<String>(Arrays.asList(propertyList));
         typeProps.addAll(baseProps);
 
+        Map<String, EventPropertyDescriptor> metadata = new LinkedHashMap<String, EventPropertyDescriptor>();
+        for (String prop : typeProps)
+        {
+            metadata.put(prop, new EventPropertyDescriptor(prop, String.class, false, false, false, false, false));
+        }
+
         // save type for testing dynamic event object reflection
-        MyPlugInPropertiesEventType eventType = new MyPlugInPropertiesEventType(null, typeProps);
+        MyPlugInPropertiesEventType eventType = new MyPlugInPropertiesEventType(null, typeProps, metadata);
+
         types.add(eventType);
         
         return new MyPlugInPropertiesEventTypeHandler(eventType);

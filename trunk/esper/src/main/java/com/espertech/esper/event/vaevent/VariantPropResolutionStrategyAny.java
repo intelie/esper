@@ -63,7 +63,7 @@ public class VariantPropResolutionStrategyAny implements VariantPropResolutionSt
 
             public Object getFragment(EventBean eventBean)
             {
-                return null; // TODO
+                return null; // no fragments provided as the type is not known in advance
             }
         };
 

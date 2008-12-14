@@ -241,6 +241,9 @@ public class Configuration implements ConfigurationOperations, ConfigurationInfo
 
     /**
      * Add an alias for an event type that represents java.util.Map events.
+     * <p>
+     * Each entry in the type map is the property name and the fully-qualified
+     * Java class name or primitive type name.
      * @param eventTypeAlias is the alias for the event type
      * @param typeMap maps the name of each property in the Map event to the type
      * (fully qualified classname) of its value in Map event instances.
@@ -250,30 +253,14 @@ public class Configuration implements ConfigurationOperations, ConfigurationInfo
     	mapAliases.put(eventTypeAlias, typeMap);
     }
 
-    /**
-     * Add an alias for an event type that represents java.util.Map events,
-     * and for which each property may itself be a Map of further properties,
-     * with unlimited nesting levels.
-     * <p>
-     * Each entry in the type mapping must contain the String property name
-     * and either a Class or further Map<String, Object> value. 
-     * @param eventTypeAlias is the alias for the event type
-     * @param typeMap maps the name of each property in the Map event to the type
-     * (fully qualified classname) of its value in Map event instances.
-     */
-    public void addNestableEventTypeAlias(String eventTypeAlias, Map<String, Object> typeMap)
+    public void addEventTypeAlias(String eventTypeAlias, Map<String, Object> typeMap)
     {
-    	nestableMapAliases.put(eventTypeAlias, typeMap);
+        nestableMapAliases.put(eventTypeAlias, typeMap);
     }
 
-    public void addEventTypeAliasNestable(String eventTypeAlias, Map<String, Object> typeMap)
+    public void addEventTypeAlias(String eventTypeAlias, Map<String, Object> typeMap, String[] superTypes)
     {
-    	addNestableEventTypeAlias(eventTypeAlias, typeMap);
-    }
-
-    public void addEventTypeAliasNestable(String eventTypeAlias, Map<String, Object> typeMap, String[] superTypes)
-    {
-        addNestableEventTypeAlias(eventTypeAlias, typeMap);
+        nestableMapAliases.put(eventTypeAlias, typeMap);
         if (superTypes != null)
         {
             for (int i = 0; i < superTypes.length; i++)
@@ -281,25 +268,6 @@ public class Configuration implements ConfigurationOperations, ConfigurationInfo
                 this.addMapSuperType(eventTypeAlias, superTypes[i]);
             }
         }
-    }
-
-    /**
-     * Add an alias for an event type that represents java.util.Map events, taking a Map of
-     * event property and class name as a parameter.
-     * <p>
-     * This method is provided for convenience and is same in function to method
-     * taking a Properties object that contain fully qualified class name as values.
-     * @param eventTypeAlias is the alias for the event type
-     * @param typeMap maps the name of each property in the Map event to the type of its value in the Map object
-     */
-    public void addEventTypeAlias(String eventTypeAlias, Map<String, Class> typeMap)
-    {
-        Properties properties = new Properties();
-        for (Map.Entry<String, Class> entry : typeMap.entrySet())
-        {
-            properties.put(entry.getKey(), entry.getValue().getName());
-        }
-        addEventTypeAlias(eventTypeAlias, properties);
     }
 
     /**

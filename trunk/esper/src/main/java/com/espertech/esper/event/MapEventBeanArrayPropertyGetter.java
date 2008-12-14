@@ -7,11 +7,19 @@ import com.espertech.esper.client.PropertyAccessException;
 import java.util.Map;
 import java.lang.reflect.Array;
 
+/**
+ * Returns the event bean or the underlying array.
+ */
 public class MapEventBeanArrayPropertyGetter implements EventPropertyGetter
 {
     private final String propertyName;
     private final Class underlyingType;
 
+    /**
+     * Ctor.
+     * @param propertyName property to get
+     * @param underlyingType type of property
+     */
     public MapEventBeanArrayPropertyGetter(String propertyName, Class underlyingType)
     {
         this.propertyName = propertyName;

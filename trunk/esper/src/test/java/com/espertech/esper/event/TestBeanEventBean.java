@@ -3,6 +3,7 @@ package com.espertech.esper.event;
 import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.bean.SupportBeanSimple;
 import com.espertech.esper.support.bean.SupportBeanCombinedProps;
+import com.espertech.esper.support.bean.SupportBeanComplexProps;
 import com.espertech.esper.support.event.SupportEventTypeFactory;
 import com.espertech.esper.support.event.SupportEventBeanFactory;
 import com.espertech.esper.support.event.EventTypeAssertionUtil;
@@ -62,8 +63,8 @@ public class TestBeanEventBean extends TestCase
 
     public void testGetComplexProperty()
     {
-        SupportBeanCombinedProps event = SupportBeanCombinedProps.makeDefaultBean();
-        EventBean eventBean = SupportEventBeanFactory.createObject(event);
+        SupportBeanCombinedProps eventCombined = SupportBeanCombinedProps.makeDefaultBean();
+        EventBean eventBean = SupportEventBeanFactory.createObject(eventCombined);
 
         assertEquals("0ma0", eventBean.get("indexed[0].mapped('0ma').value"));
         assertEquals(String.class, eventBean.getEventType().getPropertyType("indexed[0].mapped('0ma').value"));
@@ -84,9 +85,18 @@ public class TestBeanEventBean extends TestCase
         // indexed getter
         tryInvalidGetFragment(eventBean, "indexed");
         assertEquals(SupportBeanCombinedProps.NestedLevOne.class, ((EventBean) eventBean.getFragment("indexed[0]")).getEventType().getUnderlyingType());
+        assertEquals("abc", ((EventBean)eventBean.getFragment("array[0]")).get("nestLevOneVal"));
+        assertEquals("abc", ((EventBean)eventBean.getFragment("array[2]?")).get("nestLevOneVal"));
+        assertNull(eventBean.getFragment("array[3]?"));
+        assertNull(eventBean.getFragment("array[4]?"));
+        assertNull(eventBean.getFragment("array[5]?"));
 
         String eventText = EventTypeAssertionUtil.print(eventBean);
         //System.out.println(eventText);
+
+        SupportBeanComplexProps eventComplex = SupportBeanComplexProps.makeDefaultBean();
+        eventBean = SupportEventBeanFactory.createObject(eventComplex);
+        assertEquals("nestedValue", ((EventBean)eventBean.getFragment("nested")).get("nestedValue"));
     }
 
     private static void tryInvalidGet(EventBean eventBean, String propName)

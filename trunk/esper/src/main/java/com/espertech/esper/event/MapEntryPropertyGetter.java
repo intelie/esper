@@ -26,6 +26,8 @@ public class MapEntryPropertyGetter implements EventPropertyGetter
     /**
      * Ctor.
      * @param propertyName property to get
+     * @param eventAdapterService factory for event beans and event types
+     * @param eventType type of the entry returned
      */
     public MapEntryPropertyGetter(String propertyName, BeanEventType eventType, EventAdapterService eventAdapterService) {
         this.propertyName = propertyName;

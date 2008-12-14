@@ -66,7 +66,7 @@ public class DynamicSimpleProperty extends PropertyBase implements DynamicProper
 
             public Object getFragment(EventBean eventBean)
             {
-                return null; // TODO
+                return null;
             }
         };
     }

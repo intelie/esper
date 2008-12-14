@@ -29,6 +29,7 @@ public class ArrayMethodPropertyGetter extends BaseNativePropertyGetter implemen
      * Constructor.
      * @param method is the method to use to retrieve a value from the object
      * @param index is tge index within the array to get the property from
+     * @param eventAdapterService factory for event beans and event types
      */
     public ArrayMethodPropertyGetter(Method method, int index, EventAdapterService eventAdapterService)
     {

@@ -130,7 +130,7 @@ public class TestConfigurationOperations extends TestCase
         // First statement with new name
         Map<String, Object> mapProps = new HashMap<String, Object>();
         mapProps.put("prop1", int.class);
-        configOps.addNestableEventTypeAlias("AddedMapOne", mapProps);
+        configOps.addEventTypeAlias("AddedMapOne", mapProps);
 
         EPStatement stmt = epService.getEPAdministrator().createEPL("select * from AddedMapOne");
         stmt.addListener(testListener);
@@ -143,7 +143,7 @@ public class TestConfigurationOperations extends TestCase
         tryInvalid("AddedMapNameSecond");
 
         // Second statement using a new alias to the same type, should only one receive
-        configOps.addNestableEventTypeAlias("AddedMapNameSecond", mapProps);
+        configOps.addEventTypeAlias("AddedMapNameSecond", mapProps);
         SupportUpdateListener testListenerTwo = new SupportUpdateListener();
         stmt = epService.getEPAdministrator().createEPL("select * from AddedMapNameSecond");
         stmt.addListener(testListenerTwo);
@@ -157,13 +157,13 @@ public class TestConfigurationOperations extends TestCase
         // Add the same alias and type again
         mapProps.clear();
         mapProps.put("prop1", int.class);
-        configOps.addNestableEventTypeAlias("AddedNameSecond", mapProps);
+        configOps.addEventTypeAlias("AddedNameSecond", mapProps);
 
         // Add the same alias and a different type
         try
         {
             mapProps.put("XX", int.class);
-            configOps.addNestableEventTypeAlias("AddedNameSecond", mapProps);
+            configOps.addEventTypeAlias("AddedNameSecond", mapProps);
             fail();
         }
         catch (ConfigurationException ex)
@@ -177,7 +177,7 @@ public class TestConfigurationOperations extends TestCase
         tryInvalid("AddedMapOne");
 
         // First statement with new name
-        Properties mapProps = new Properties();
+        Map<String, Object> mapProps = new HashMap<String,Object>();
         mapProps.put("prop1", int.class.getName());
         configOps.addEventTypeAlias("AddedMapOne", mapProps);
 

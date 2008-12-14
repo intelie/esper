@@ -34,7 +34,7 @@ public class CSVPropertyOrderHelper
 	 * @param propertyTypes - describes the event to send into the EPRuntime
 	 * @return the property names in the order in which they occur in the file
 	 */
-	public static String[] resolvePropertyOrder(String[] firstRow, Map<String, Class> propertyTypes)
+	public static String[] resolvePropertyOrder(String[] firstRow, Map<String, Object> propertyTypes)
 	{
 		log.debug(".resolvePropertyOrder firstRow==" + Arrays.asList(firstRow));
 		String[] result = null;
@@ -52,7 +52,7 @@ public class CSVPropertyOrderHelper
 		return result;
 	}
 
-	private static boolean isValidTitleRow(String[] row, Map<String, Class> propertyTypes)
+	private static boolean isValidTitleRow(String[] row, Map<String, Object> propertyTypes)
 	{
 		if(propertyTypes == null)
 		{
@@ -64,13 +64,13 @@ public class CSVPropertyOrderHelper
 		}
 	}
 
-	private static boolean eachPropertyNameRepresented(String[] row, Map<String, Class> propertyTypes)
+	private static boolean eachPropertyNameRepresented(String[] row, Map<String, Object> propertyTypes)
 	{
 		Set<String> rowSet = new HashSet<String>(Arrays.asList(row));
 		return rowSet.containsAll(propertyTypes.keySet());
 	}
 
-	private static boolean isValidRowLength(String[] row, Map<String, Class> propertyTypes)
+	private static boolean isValidRowLength(String[] row, Map<String, Object> propertyTypes)
 	{
 		log.debug(".isValidRowLength");
 		if(row == null)

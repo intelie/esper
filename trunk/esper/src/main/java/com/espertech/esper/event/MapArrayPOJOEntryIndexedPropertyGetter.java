@@ -20,6 +20,8 @@ public class MapArrayPOJOEntryIndexedPropertyGetter extends BaseNativePropertyGe
      * Ctor.
      * @param propertyMap the property to use for the map lookup
      * @param index the index to fetch the array element for
+     * @param eventAdapterService factory for event beans and event types
+     * @param returnType type of the entry returned
      */
     public MapArrayPOJOEntryIndexedPropertyGetter(String propertyMap, int index, EventAdapterService eventAdapterService, Class returnType)
     {

@@ -10,7 +10,7 @@ package com.espertech.esper.epl.core;
 
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventType;
-import com.espertech.esper.client.EventTypeFragment;
+import com.espertech.esper.client.FragmentEventType;
 import com.espertech.esper.epl.expression.*;
 import com.espertech.esper.epl.spec.InsertIntoDesc;
 import com.espertech.esper.epl.spec.SelectClauseExprCompiledSpec;
@@ -164,7 +164,7 @@ public class SelectExprEvalProcessor implements SelectExprProcessor
                 continue;   // we do not transpose the native type for performance reasons
             }
             
-            EventTypeFragment fragmentType = eventTypeStream.getFragmentType(propertyName);
+            FragmentEventType fragmentType = eventTypeStream.getFragmentType(propertyName);
             if ((fragmentType == null) || (fragmentType.isNative()))
             {
                 continue;   // we also ignore native Java classes as fragments for performance reasons

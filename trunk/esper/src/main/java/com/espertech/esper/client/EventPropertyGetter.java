@@ -43,6 +43,22 @@ public interface EventPropertyGetter
      */
     public boolean isExistsProperty(EventBean eventBean);
 
+    /**
+     * Returns {@link EventBean} or array of {@link EventBean} for a property name or property expression.
+     * <p>
+     * For use with properties whose value is itself an event or whose value can be represented as
+     * an event by the underlying event representation.
+     * <p>
+     * The {@link EventType} of the {@link EventBean} instance(s) returned by this method can be determined by
+     * {@link EventType#getFragmentType(String)}. Use {@link EventPropertyDescriptor} to
+     * obtain a list of properties that return fragments from an event type.
+     * <p>
+     * Returns null if the property value is null or the property value cannot be represented as a fragment
+     * by the underlying representation.
+     * @param eventBean is the event to get the fragment value of a property 
+     * @return the value of a property as an EventBean or array of EventBean
+     * @throws PropertyAccessException - if there is no property of the specified name, or the property cannot be accessed
+     */
     public Object getFragment(EventBean eventBean) throws PropertyAccessException;
 }
 

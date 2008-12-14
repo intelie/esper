@@ -30,6 +30,7 @@ public class DynamicIndexedPropertyGetter extends DynamicPropertyGetterBase impl
      * Ctor.
      * @param fieldName property name
      * @param index index to get the element at
+     * @param eventAdapterService factory for event beans and event types
      */
     public DynamicIndexedPropertyGetter(String fieldName, int index, EventAdapterService eventAdapterService)
     {
@@ -77,6 +78,10 @@ public class DynamicIndexedPropertyGetter extends DynamicPropertyGetterBase impl
             {
                 Object array = descriptor.getMethod().invoke(underlying, null);
                 if (array == null)
+                {
+                    return null;
+                }
+                if (Array.getLength(array) <= index)
                 {
                     return null;
                 }

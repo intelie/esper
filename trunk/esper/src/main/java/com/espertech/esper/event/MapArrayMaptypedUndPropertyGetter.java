@@ -8,6 +8,9 @@ import com.espertech.esper.client.EventType;
 import java.util.Map;
 import java.lang.reflect.Array;
 
+/**
+ * Getter for Map-entries with well-defined fragment type.
+ */
 public class MapArrayMaptypedUndPropertyGetter implements EventPropertyGetter
 {
     private final String propertyName;
@@ -15,6 +18,13 @@ public class MapArrayMaptypedUndPropertyGetter implements EventPropertyGetter
     private final EventAdapterService eventAdapterService;
     private final EventType fragmentType;
 
+    /**
+     * Ctor.
+     * @param propertyNameAtomic property name
+     * @param index array index
+     * @param eventAdapterService factory for event beans and event types
+     * @param fragmentType type of the entry returned
+     */
     public MapArrayMaptypedUndPropertyGetter(String propertyNameAtomic, int index, EventAdapterService eventAdapterService, EventType fragmentType)
     {
         this.propertyName = propertyNameAtomic;

@@ -53,6 +53,6 @@ public class RevisionNestedPropertyGetter implements EventPropertyGetter
 
     public Object getFragment(EventBean eventBean)
     {
-        return null; // TODO
+        return null; // no fragments provided by revision events
     }
 }

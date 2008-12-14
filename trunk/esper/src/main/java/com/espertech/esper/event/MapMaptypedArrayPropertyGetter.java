@@ -7,12 +7,21 @@ import com.espertech.esper.client.PropertyAccessException;
 
 import java.util.Map;
 
+/**
+ * Getter for map array.
+ */
 public class MapMaptypedArrayPropertyGetter implements EventPropertyGetter
 {
     private final String propertyName;
     private final EventType fragmentEventType;
     private final EventAdapterService eventAdapterService;
 
+    /**
+     * Ctor.
+     * @param propertyNameAtomic property type
+     * @param fragmentEventType event type of fragment
+     * @param eventAdapterService for creating event instances
+     */
     public MapMaptypedArrayPropertyGetter(String propertyNameAtomic, EventType fragmentEventType, EventAdapterService eventAdapterService)
     {
         this.propertyName = propertyNameAtomic;

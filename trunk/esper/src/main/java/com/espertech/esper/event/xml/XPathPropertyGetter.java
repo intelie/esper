@@ -153,6 +153,6 @@ public class XPathPropertyGetter implements TypedEventPropertyGetter {
 
     public Object getFragment(EventBean eventBean)
     {
-        return null; // TODO
+        return null;
     }
 }

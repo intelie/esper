@@ -24,7 +24,7 @@ public class TestMapEventNested extends TestCase
                 {"base1", String.class},
                 {"base2", makeMap(new Object[][] {{"n1", int.class}})}
                 });
-        configuration.addEventTypeAliasNestable("MyEvent", type);
+        configuration.addEventTypeAlias("MyEvent", type);
 
         EPServiceProvider epService = EPServiceProviderManager.getDefaultProvider(configuration);
         epService.initialize();
@@ -104,11 +104,11 @@ public class TestMapEventNested extends TestCase
         Map<String, Object> sub2 = makeMap(new Object[][] {{"sub2", String.class}});
         Properties suba = makeProperties(new Object[][] {{"suba", String.class}});
         Map<String, Object> subb = makeMap(new Object[][] {{"subb", String.class}});
-        configuration.addEventTypeAliasNestable("RootEvent", root);
-        configuration.addEventTypeAliasNestable("Sub1Event", sub1);
-        configuration.addEventTypeAliasNestable("Sub2Event", sub2);
+        configuration.addEventTypeAlias("RootEvent", root);
+        configuration.addEventTypeAlias("Sub1Event", sub1);
+        configuration.addEventTypeAlias("Sub2Event", sub2);
         configuration.addEventTypeAlias("SubAEvent", suba);
-        configuration.addEventTypeAliasNestable("SubBEvent", subb);
+        configuration.addEventTypeAlias("SubBEvent", subb);
 
         configuration.addMapSuperType("Sub1Event", "RootEvent");
         configuration.addMapSuperType("Sub2Event", "RootEvent");
@@ -141,11 +141,11 @@ public class TestMapEventNested extends TestCase
         Map<String, Object> suba = makeMap(new Object[][] {{"suba", String.class}});
         Map<String, Object> subb = makeMap(new Object[][] {{"subb", String.class}});
 
-        epService.getEPAdministrator().getConfiguration().addEventTypeAliasNestable("RootEvent", root);
-        epService.getEPAdministrator().getConfiguration().addEventTypeAliasNestable("Sub1Event", sub1, new String[] {"RootEvent"});
-        epService.getEPAdministrator().getConfiguration().addEventTypeAliasNestable("Sub2Event", sub2, new String[] {"RootEvent"});
-        epService.getEPAdministrator().getConfiguration().addEventTypeAliasNestable("SubAEvent", suba, new String[] {"Sub1Event"});
-        epService.getEPAdministrator().getConfiguration().addEventTypeAliasNestable("SubBEvent", subb, new String[] {"Sub1Event", "Sub2Event"});
+        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("RootEvent", root);
+        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("Sub1Event", sub1, new String[] {"RootEvent"});
+        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("Sub2Event", sub2, new String[] {"RootEvent"});
+        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("SubAEvent", suba, new String[] {"Sub1Event"});
+        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("SubBEvent", subb, new String[] {"Sub1Event", "Sub2Event"});
 
         runMapInheritanceInitTime(epService);
     }
@@ -219,7 +219,7 @@ public class TestMapEventNested extends TestCase
         // try supertype not exists
         try
         {
-            epService.getEPAdministrator().getConfiguration().addEventTypeAliasNestable("Sub1Event", makeMap(""), new String[] {"doodle"});
+            epService.getEPAdministrator().getConfiguration().addEventTypeAlias("Sub1Event", makeMap(""), new String[] {"doodle"});
             fail();
         }
         catch (ConfigurationException ex)
@@ -259,7 +259,7 @@ public class TestMapEventNested extends TestCase
     public void testNestedMapRuntime()
     {
         EPServiceProvider epService = getEngineInitialized(null, null);
-        epService.getEPAdministrator().getConfiguration().addNestableEventTypeAlias("NestedMap", getTestDefinition());
+        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("NestedMap", getTestDefinition());
         runAssertion(epService);
     }
 
@@ -302,12 +302,12 @@ public class TestMapEventNested extends TestCase
         Map<String, Object> levelZero_2 = makeMap(new Object[][] {{"map", levelOne_2}});
 
         // can add the same nested type twice
-        epService.getEPAdministrator().getConfiguration().addNestableEventTypeAlias("ABC", levelZero_1);
-        epService.getEPAdministrator().getConfiguration().addNestableEventTypeAlias("ABC", levelZero_1);
+        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("ABC", levelZero_1);
+        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("ABC", levelZero_1);
         try
         {
             // changing the definition however stops the compatibility
-            epService.getEPAdministrator().getConfiguration().addNestableEventTypeAlias("ABC", levelZero_2);
+            epService.getEPAdministrator().getConfiguration().addEventTypeAlias("ABC", levelZero_2);
             fail();
         }
         catch (ConfigurationException ex)
@@ -406,7 +406,7 @@ public class TestMapEventNested extends TestCase
 
         // test map containing first-level property that is an array of primitive or Class
         Map<String, Object> arrayDef = makeMap(new Object[][] {{"p0", int[].class}, {"p1", SupportBean[].class }});
-        epService.getEPAdministrator().getConfiguration().addEventTypeAliasNestable("MyArrayMap", arrayDef);
+        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("MyArrayMap", arrayDef);
 
         EPStatement stmt = epService.getEPAdministrator().createEPL("select p0[0] as a, p0[1] as b, p1[0].intPrimitive as c, p1[1] as d, p0 as e from MyArrayMap");
         SupportUpdateListener listener = new SupportUpdateListener();
@@ -427,7 +427,7 @@ public class TestMapEventNested extends TestCase
 
         // test map at the second level of a nested map that is an array of primitive or Class
         Map<String, Object> arrayDefOuter = makeMap(new Object[][] {{"outer", arrayDef}});
-        epService.getEPAdministrator().getConfiguration().addEventTypeAliasNestable("MyArrayMapOuter", arrayDefOuter);
+        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("MyArrayMapOuter", arrayDefOuter);
 
         stmt = epService.getEPAdministrator().createEPL("select outer.p0[0] as a, outer.p0[1] as b, outer.p1[0].intPrimitive as c, outer.p1[1] as d, outer.p0 as e from MyArrayMapOuter");
         stmt.addListener(listener);
@@ -449,15 +449,15 @@ public class TestMapEventNested extends TestCase
 
         // create a named map
         Map<String, Object> namedDef = makeMap(new Object[][] {{"n0", int.class}});
-        epService.getEPAdministrator().getConfiguration().addEventTypeAliasNestable("MyNamedMap", namedDef);
+        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("MyNamedMap", namedDef);
 
         // create a map using the name
         Map<String, Object> eventDef = makeMap(new Object[][] {{"p0", "MyNamedMap"}, {"p1", "MyNamedMap[]"}});
-        epService.getEPAdministrator().getConfiguration().addEventTypeAliasNestable("MyMapWithAMap", eventDef);
+        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("MyMapWithAMap", eventDef);
 
         // test named-map at the second level of a nested map
         Map<String, Object> arrayDefOuter = makeMap(new Object[][] {{"outer", eventDef}});
-        epService.getEPAdministrator().getConfiguration().addEventTypeAliasNestable("MyArrayMapOuter", arrayDefOuter);
+        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("MyArrayMapOuter", arrayDefOuter);
 
         SupportUpdateListener listener = new SupportUpdateListener();
         EPStatement stmt = epService.getEPAdministrator().createEPL("select outer.p0.n0 as a, outer.p1[0].n0 as b, outer.p1[1].n0 as c, outer.p0 as d, outer.p1 as e from MyArrayMapOuter");
@@ -493,13 +493,12 @@ public class TestMapEventNested extends TestCase
 
         // create a named map
         Map<String, Object> namedDef = makeMap(new Object[][] {{"n0", int.class}});
-        epService.getEPAdministrator().getConfiguration().addEventTypeAliasNestable("MyNamedMap", namedDef);
+        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("MyNamedMap", namedDef);
 
         // create a map using the name
         Map<String, Object> eventDef = makeMap(new Object[][] {{"p0", "MyNamedMap"}, {"p1", "MyNamedMap[]"}});
-        epService.getEPAdministrator().getConfiguration().addEventTypeAliasNestable("MyMapWithAMap", eventDef);
+        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("MyMapWithAMap", eventDef);
 
-        // TODO: should we perhaps transpose select expressions only if there is an insert-into
         EPStatement stmt = epService.getEPAdministrator().createEPL("select p0.n0 as a, p1[0].n0 as b, p1[1].n0 as c, p0 as d, p1 as e from MyMapWithAMap");
         SupportUpdateListener listener = new SupportUpdateListener();
         stmt.addListener(listener);
@@ -585,7 +584,7 @@ public class TestMapEventNested extends TestCase
     {
         try
         {
-            epService.getEPAdministrator().getConfiguration().addNestableEventTypeAlias("NestedMap", config);
+            epService.getEPAdministrator().getConfiguration().addEventTypeAlias("NestedMap", config);
             fail();
         }
         catch (Exception ex)
@@ -773,7 +772,7 @@ public class TestMapEventNested extends TestCase
 
         if (name != null)
         {
-            configuration.addNestableEventTypeAlias(name, definition);
+            configuration.addEventTypeAlias(name, definition);
         }
         
         EPServiceProvider epService = EPServiceProviderManager.getDefaultProvider(configuration);

@@ -15,10 +15,10 @@ import junit.framework.TestCase;
 
 public class TestPropertyOrderHelper extends TestCase
 {
-	private Map<String, Class> propertyTypes;
+	private Map<String, Object> propertyTypes;
 	protected void setUp() throws ClassNotFoundException
 	{
-		propertyTypes = new LinkedHashMap<String, Class>();
+		propertyTypes = new LinkedHashMap<String, Object>();
 		propertyTypes.put("myInt", Integer.class);
 		propertyTypes.put("myDouble", Double.class);
 		propertyTypes.put("myString", String.class);

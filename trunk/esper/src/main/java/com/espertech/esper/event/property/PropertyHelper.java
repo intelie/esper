@@ -28,6 +28,7 @@ public class PropertyHelper
      * Return getter for the given method and CGLIB FastClass.
      * @param method to return getter for
      * @param fastClass is the CGLIB fast classs to make FastMethod for
+     * @param eventAdapterService factory for event beans and event types
      * @return property getter
      */
     public static EventPropertyGetter getGetter(Method method, FastClass fastClass, EventAdapterService eventAdapterService)

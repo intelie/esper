@@ -105,8 +105,8 @@ public class SimpleXMLEventType extends BaseXMLEventType {
         return getter;
     }
 
-    public EventTypeFragment getFragmentType(String property)
+    public FragmentEventType getFragmentType(String property)
     {
-        return null;  // TODO
+        return null;
     }
 }

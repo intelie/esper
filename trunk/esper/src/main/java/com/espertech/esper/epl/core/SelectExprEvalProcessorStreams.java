@@ -11,7 +11,7 @@ package com.espertech.esper.epl.core;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventPropertyGetter;
 import com.espertech.esper.client.EventType;
-import com.espertech.esper.client.EventTypeFragment;
+import com.espertech.esper.client.FragmentEventType;
 import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.epl.expression.ExprValidationException;
 import com.espertech.esper.epl.spec.InsertIntoDesc;
@@ -112,7 +112,7 @@ public class SelectExprEvalProcessorStreams implements SelectExprProcessor
                 if (unaliasedStreams.get(0).isFragmentEvent())
                 {
                     EventType compositeMap = typeService.getEventTypes()[underlyingStreamNumber];
-                    EventTypeFragment fragment = compositeMap.getFragmentType(unaliasedStreams.get(0).getStreamAliasName());
+                    FragmentEventType fragment = compositeMap.getFragmentType(unaliasedStreams.get(0).getStreamAliasName());
                     underlyingEventType = fragment.getFragmentType();
                     underlyingIsFragmentEvent = true;
                 }

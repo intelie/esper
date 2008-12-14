@@ -3,7 +3,6 @@ package com.espertech.esper.regression.epl;
 import junit.framework.TestCase;
 import com.espertech.esper.client.*;
 import com.espertech.esper.client.soda.*;
-import com.espertech.esper.client.time.TimerControlEvent;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.support.bean.*;
 import com.espertech.esper.support.client.SupportConfigFactory;
@@ -48,9 +47,9 @@ public class Test3StreamOuterJoinVarA extends TestCase
         Map<String, Object> mapType = new HashMap<String, Object>();
         mapType.put("col1", String.class);
         mapType.put("col2", String.class);
-        epService.getEPAdministrator().getConfiguration().addNestableEventTypeAlias("type1", mapType);
-        epService.getEPAdministrator().getConfiguration().addNestableEventTypeAlias("type2", mapType);
-        epService.getEPAdministrator().getConfiguration().addNestableEventTypeAlias("type3", mapType);
+        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("type1", mapType);
+        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("type2", mapType);
+        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("type3", mapType);
 
         EPStatement stmt = epService.getEPAdministrator().createEPL(stmtText);
         stmt.addListener(updateListener);

@@ -37,7 +37,7 @@ public class CSVInputAdapter extends AbstractCoordinatedAdapter implements Input
 	private AbstractTypeCoercer coercer = new BasicTypeCoercer();
 	private String[] propertyOrder;
 	private CSVInputAdapterSpec adapterSpec;
-	private Map<String, Class> propertyTypes;
+	private Map<String, Object> propertyTypes;
 	private String eventTypeAlias;
 	private long lastTimestamp = 0;
 	private long totalDelay;
@@ -215,7 +215,7 @@ public class CSVInputAdapter extends AbstractCoordinatedAdapter implements Input
 
 		String[] firstRow = getFirstRow();
 
-		Map<String, Class> givenPropertyTypes = constructPropertyTypes(spec.getEventTypeAlias(), spec.getPropertyTypes(), spi.getEventAdapterService());
+		Map<String, Object> givenPropertyTypes = constructPropertyTypes(spec.getEventTypeAlias(), spec.getPropertyTypes(), spi.getEventAdapterService());
 
 		propertyOrder = spec.getPropertyOrder() != null ?
 				spec.getPropertyOrder() :
@@ -276,9 +276,9 @@ public class CSVInputAdapter extends AbstractCoordinatedAdapter implements Input
 		return map;
 	}
 
-	private Map<String, Class> constructPropertyTypes(String eventTypeAlias, Map<String, Class> propertyTypesGiven, EventAdapterService eventAdapterService)
+	private Map<String, Object> constructPropertyTypes(String eventTypeAlias, Map<String, Object> propertyTypesGiven, EventAdapterService eventAdapterService)
 	{
-		Map<String, Class> propertyTypes = new HashMap<String, Class>();
+		Map<String, Object> propertyTypes = new HashMap<String, Object>();
 		EventType eventType = eventAdapterService.getExistsTypeByAlias(eventTypeAlias);
 		if(eventType == null)
 		{
@@ -392,14 +392,14 @@ public class CSVInputAdapter extends AbstractCoordinatedAdapter implements Input
 		}
 	}
 
-	private Map<String, Class> resolvePropertyTypes(Map<String, Class> propertyTypes)
+	private Map<String, Object> resolvePropertyTypes(Map<String, Object> propertyTypes)
 	{
 		if(propertyTypes != null)
 		{
 			return propertyTypes;
 		}
 
-		Map<String, Class> result = new HashMap<String, Class>();
+		Map<String, Object> result = new HashMap<String, Object>();
 		for(int i = 0; i < propertyOrder.length; i++)
 		{
             String name = propertyOrder[i];

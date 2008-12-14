@@ -16,6 +16,9 @@ import com.espertech.esper.util.JavaClassHelper;
 
 import java.lang.reflect.Array;
 
+/**
+ * Base getter for native fragments.
+ */
 public abstract class BaseNativePropertyGetter implements EventPropertyGetter
 {
     private final EventAdapterService eventAdapterService;
@@ -26,6 +29,8 @@ public abstract class BaseNativePropertyGetter implements EventPropertyGetter
 
     /**
      * Constructor.
+     * @param eventAdapterService factory for event beans and event types
+     * @param returnType type of the entry returned
      */
     public BaseNativePropertyGetter(EventAdapterService eventAdapterService, Class returnType)
     {
@@ -43,6 +48,12 @@ public abstract class BaseNativePropertyGetter implements EventPropertyGetter
         isFragmentable = true;
     }
 
+    /**
+     * Returns the fragment for dynamic properties.
+     * @param object to inspect
+     * @param eventAdapterService factory for event beans and event types
+     * @return fragment
+     */
     public static Object getFragmentDynamic(Object object, EventAdapterService eventAdapterService)
     {
         if (object == null)

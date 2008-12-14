@@ -30,6 +30,7 @@ public class DynamicMappedPropertyGetter extends DynamicPropertyGetterBase imple
      * Ctor.
      * @param fieldName property name
      * @param key mapped access key
+     * @param eventAdapterService factory for event beans and event types
      */
     public DynamicMappedPropertyGetter(String fieldName, String key, EventAdapterService eventAdapterService)
     {

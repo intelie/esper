@@ -29,6 +29,7 @@ public class MapPOJOEntryPropertyGetter extends BaseNativePropertyGetter impleme
      * @param propertyMap the property to look at
      * @param mapEntryGetter the getter for the map entry
      * @param eventAdapterService for producing wrappers to objects
+     * @param returnType type of the entry returned
      */
     public MapPOJOEntryPropertyGetter(String propertyMap, EventPropertyGetter mapEntryGetter, EventAdapterService eventAdapterService, Class returnType) {
         super(eventAdapterService, returnType);

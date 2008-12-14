@@ -287,7 +287,7 @@ public class EventTypeAssertionUtil
             Object fragment = eventBean.get(propertyName);
             Assert.assertNotNull(failedMessage, fragment);
 
-            EventTypeFragment fragmentType = eventBean.getEventType().getFragmentType(propertyName);
+            FragmentEventType fragmentType = eventBean.getEventType().getFragmentType(propertyName);
             Assert.assertNotNull(failedMessage, fragmentType);
 
             if (fragmentType.isIndexed())
@@ -329,7 +329,7 @@ public class EventTypeAssertionUtil
                 continue;
             }
 
-            EventTypeFragment fragment = eventType.getFragmentType(descriptor.getPropertyName());
+            FragmentEventType fragment = eventType.getFragmentType(descriptor.getPropertyName());
             if (!descriptor.isRequiresIndex())
             {
                 Assert.assertNotNull(failedMessage, fragment);

@@ -11,7 +11,7 @@ package com.espertech.esper.event;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventPropertyGetter;
 import com.espertech.esper.client.EventType;
-import com.espertech.esper.client.EventTypeFragment;
+import com.espertech.esper.client.FragmentEventType;
 import com.espertech.esper.collection.ArrayDequeJDK6Backport;
 import com.espertech.esper.collection.MultiKey;
 import com.espertech.esper.collection.MultiKeyUntyped;
@@ -27,7 +27,13 @@ import java.util.*;
  */
 public class EventBeanUtility
 {
-    public static EventTypeFragment createNativeFragmentType(Class propertyType, EventAdapterService eventAdapterService)
+    /**
+     * Creates a fragment event type for the class.
+     * @param propertyType type of property
+     * @param eventAdapterService factory for event beans and event types
+     * @return fragment event type
+     */
+    public static FragmentEventType createNativeFragmentType(Class propertyType, EventAdapterService eventAdapterService)
     {
         if (!JavaClassHelper.isFragmentableType(propertyType))
         {
@@ -39,7 +45,7 @@ public class EventBeanUtility
         }
         boolean isIndexed = propertyType.isArray();
         EventType type = eventAdapterService.getBeanEventTypeFactory().createBeanType(propertyType.getName(), propertyType, false);
-        return new EventTypeFragment(type, isIndexed, true);
+        return new FragmentEventType(type, isIndexed, true);
     }
 
     /**

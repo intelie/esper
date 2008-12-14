@@ -41,7 +41,7 @@ public class TestBeanEventType extends TestCase
 
     public void testFragments()
     {
-        EventTypeFragment nestedTypeFragment = eventTypeComplex.getFragmentType("nested");
+        FragmentEventType nestedTypeFragment = eventTypeComplex.getFragmentType("nested");
         EventType nestedType = nestedTypeFragment.getFragmentType();
         assertEquals(SupportBeanComplexProps.SupportBeanSpecialGetterNested.class.getName(), nestedType.getName());
         assertEquals(SupportBeanComplexProps.SupportBeanSpecialGetterNested.class, nestedType.getUnderlyingType());

@@ -143,6 +143,6 @@ public class AxiomXPathPropertyGetter implements TypedEventPropertyGetter
 
     public Object getFragment(EventBean eventBean)
     {
-        return null; // TODO
+        return null; // no providing fragmentable types yet
     }
 }

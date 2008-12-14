@@ -25,7 +25,7 @@ public class TestNamedWindowTypes extends TestCase
 
     public void setUp()
     {
-        Map<String, Class> types = new HashMap<String, Class>();
+        Map<String, Object> types = new HashMap<String, Object>();
         types.put("key", String.class);
         types.put("primitive", long.class);
         types.put("boxed", Long.class);

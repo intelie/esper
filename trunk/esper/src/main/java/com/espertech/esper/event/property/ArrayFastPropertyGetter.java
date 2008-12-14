@@ -29,6 +29,7 @@ public class ArrayFastPropertyGetter extends BaseNativePropertyGetter implements
      * Constructor.
      * @param fastMethod is the method to use to retrieve a value from the object
      * @param index is tge index within the array to get the property from
+     * @param eventAdapterService factory for event beans and event types
      */
     public ArrayFastPropertyGetter(FastMethod fastMethod, int index, EventAdapterService eventAdapterService)
     {

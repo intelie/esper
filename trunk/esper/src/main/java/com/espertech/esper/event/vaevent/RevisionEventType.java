@@ -11,7 +11,7 @@ package com.espertech.esper.event.vaevent;
 import com.espertech.esper.client.EventPropertyDescriptor;
 import com.espertech.esper.client.EventPropertyGetter;
 import com.espertech.esper.client.EventType;
-import com.espertech.esper.client.EventTypeFragment;
+import com.espertech.esper.client.FragmentEventType;
 import com.espertech.esper.epl.parse.ASTFilterSpecHelper;
 import com.espertech.esper.event.BeanEventType;
 import com.espertech.esper.event.EventAdapterService;
@@ -239,9 +239,9 @@ public class RevisionEventType implements EventTypeSPI
         return propertyDescriptors;
     }
 
-    public EventTypeFragment getFragmentType(String property)
+    public FragmentEventType getFragmentType(String property)
     {
-        return null;  // TODO
+        return null;
     }
 
     public EventPropertyDescriptor getPropertyDescriptor(String propertyName)

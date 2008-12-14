@@ -25,6 +25,7 @@ public final class ReflectionPropFieldGetter extends BaseNativePropertyGetter im
     /**
      * Constructor.
      * @param field is the regular reflection field to use to obtain values for a property
+     * @param eventAdapterService factory for event beans and event types
      */
     public ReflectionPropFieldGetter(Field field, EventAdapterService eventAdapterService)
     {

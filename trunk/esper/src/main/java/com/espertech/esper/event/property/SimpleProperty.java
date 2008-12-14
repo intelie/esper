@@ -131,7 +131,7 @@ public class SimpleProperty extends PropertyBase
 
             public Object getFragment(EventBean eventBean)
             {
-                return null; // TODO
+                return null;
             }
         };
     }

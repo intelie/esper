@@ -32,11 +32,19 @@
 					</row>
 					<row>
 						<entry><literal>java.util.Map</literal></entry>
-						<entry>Map events are key-values pairs</entry>
+						<entry>Map events are key-values pairs.</entry>
 					</row>
 					<row>
 						<entry><literal>org.w3c.dom.Node</literal></entry>
-						<entry>XML document object model (DOM)</entry>
+						<entry>XML document object model (DOM).</entry>
+					</row>
+					<row>
+						<entry><literal>org.apache.axiom.om.OMDocument or OMElement</literal></entry>
+						<entry>XML - Streaming API for XML (StAX) - Apache Axiom (provided by EsperIO package).</entry>
+					</row>
+					<row>
+						<entry>Application classes</entry>
+						<entry>Plug-in event representation via the extension API.</entry>
 					</row>
 				</tbody>
 			</tgroup>

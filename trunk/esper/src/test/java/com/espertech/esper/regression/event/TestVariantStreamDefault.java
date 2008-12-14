@@ -1,7 +1,6 @@
 package com.espertech.esper.regression.event;
 
 import com.espertech.esper.client.*;
-import com.espertech.esper.client.EventType;
 import com.espertech.esper.support.bean.*;
 import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.support.util.ArrayAssertionUtil;
@@ -255,8 +254,8 @@ public class TestVariantStreamDefault extends TestCase
         Map<String, Object> types = new HashMap<String, Object>();
         types.put("someprop", String.class);
 
-        epService.getEPAdministrator().getConfiguration().addNestableEventTypeAlias("MyEvent", types);
-        epService.getEPAdministrator().getConfiguration().addNestableEventTypeAlias("MySecondEvent", types);
+        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("MyEvent", types);
+        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("MySecondEvent", types);
 
         ConfigurationVariantStream variant = new ConfigurationVariantStream();
         variant.addEventTypeAlias("MyEvent");

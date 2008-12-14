@@ -23,8 +23,16 @@ import java.util.Set;
 /**
  * Interface for a service to resolve event names to event type.
  */
-public interface EventAdapterService extends BeanEventBeanFactory
+public interface EventAdapterService
 {
+    /**
+     * Creates a thin adaper for an event object given an event type.
+     * @param bean event object
+     * @param eventType event type
+     * @return event
+     */
+    public EventBean adapterForBean(Object bean, BeanEventType eventType);
+
     /**
      * Adds an event type to the registery available for use, and originating outside as a non-adapter.
      * @param alias to add an event type under
@@ -281,5 +289,11 @@ public interface EventAdapterService extends BeanEventBeanFactory
      */
     public boolean removeType(String alias);
 
+    /**
+     * Creates an anonymous map that has no alias.
+     * @param taggedEventTypes simple type per property name
+     * @param arrayEventTypes array type per property name
+     * @return event type
+     */
     public EventType createAnonymousMapType(Map<String, Pair<EventType, String>> taggedEventTypes, Map<String, Pair<EventType, String>> arrayEventTypes);
 }

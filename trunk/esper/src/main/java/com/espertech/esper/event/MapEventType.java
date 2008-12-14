@@ -33,7 +33,7 @@ public class MapEventType implements EventTypeSPI
     private EventPropertyDescriptor[] propertyDescriptors;
     private Map<String, EventPropertyDescriptor> propertyDescriptorMap;
 
-    private final Map<String, EventTypeFragment> simpleFragmentTypes;     // Mapping of property name (fragment-only) and type
+    private final Map<String, FragmentEventType> simpleFragmentTypes;     // Mapping of property name (fragment-only) and type
     private final Map<String, Class> simplePropertyTypes;     // Mapping of property name (simple-only) and type
     private final Map<String, EventPropertyGetter> propertyGetters;   // Mapping of simple property name and getters
     private final Map<String, EventPropertyGetter> propertyGetterCache; // Mapping of all property names and getters
@@ -923,7 +923,7 @@ public class MapEventType implements EventTypeSPI
         List<EventPropertyDescriptor> propertyDescriptors = new ArrayList<EventPropertyDescriptor>();
         Map<String, Class> simplePropertyTypes = new HashMap<String, Class>();
         Map<String, EventPropertyGetter> propertyGetters = new HashMap<String, EventPropertyGetter>();
-        Map<String, EventTypeFragment> eventTypeFragments = new HashMap<String, EventTypeFragment>();
+        Map<String, FragmentEventType> eventTypeFragments = new HashMap<String, FragmentEventType>();
 
         // Initialize getters and names array: at this time we do not care about nested types,
         // these are handled at the time someone is asking for them
@@ -946,7 +946,7 @@ public class MapEventType implements EventTypeSPI
                 BeanEventType nativeFragmentType = null;
                 if (isFragment)
                 {
-                    EventTypeFragment fragmentType = EventBeanUtility.createNativeFragmentType(classType, eventAdapterService);
+                    FragmentEventType fragmentType = EventBeanUtility.createNativeFragmentType(classType, eventAdapterService);
                     nativeFragmentType = (BeanEventType) fragmentType.getFragmentType();
                     eventTypeFragments.put(name, fragmentType);
                 }
@@ -993,7 +993,7 @@ public class MapEventType implements EventTypeSPI
                 EventPropertyGetter getter = new MapEventBeanPropertyGetter(name);
                 propertyGetters.put(name, getter);
                 propertyDescriptors.add(new EventPropertyDescriptor(name, eventType.getUnderlyingType(), false, false, false, false, true));
-                eventTypeFragments.put(name, new EventTypeFragment(eventType, false, false));
+                eventTypeFragments.put(name, new FragmentEventType(eventType, false, false));
                 continue;
             }
 
@@ -1007,7 +1007,7 @@ public class MapEventType implements EventTypeSPI
                 EventPropertyGetter getter = new MapEventBeanArrayPropertyGetter(name, eventType.getUnderlyingType());
                 propertyGetters.put(name, getter);
                 propertyDescriptors.add(new EventPropertyDescriptor(name, prototypeArray.getClass(), false, false, true, false, true));
-                eventTypeFragments.put(name, new EventTypeFragment(eventType, true, false));
+                eventTypeFragments.put(name, new FragmentEventType(eventType, true, false));
                 continue;
             }
 
@@ -1046,7 +1046,7 @@ public class MapEventType implements EventTypeSPI
                 }
                 propertyGetters.put(name, getter);
                 propertyDescriptors.add(new EventPropertyDescriptor(name, underlyingType, false, false, isArray, false, true));
-                eventTypeFragments.put(name, new EventTypeFragment(eventType, isArray, false));
+                eventTypeFragments.put(name, new FragmentEventType(eventType, isArray, false));
                 continue;
             }
 
@@ -1066,7 +1066,7 @@ public class MapEventType implements EventTypeSPI
         return metadata;
     }
 
-    public EventTypeFragment getFragmentType(String propertyName)
+    public FragmentEventType getFragmentType(String propertyName)
     {
         if (simpleFragmentTypes.containsKey(propertyName))  // may contain null values
         {
@@ -1098,7 +1098,7 @@ public class MapEventType implements EventTypeSPI
             else if (type instanceof EventType[])
             {
                 EventType eventType = ((EventType[]) type)[0];
-                return new EventTypeFragment(eventType, false, false);
+                return new FragmentEventType(eventType, false, false);
             }
             else if (type instanceof String)
             {
@@ -1113,7 +1113,7 @@ public class MapEventType implements EventTypeSPI
                 {
                     return null;
                 }
-                return new EventTypeFragment(innerType, false, false);  // false since an index is present
+                return new FragmentEventType(innerType, false, false);  // false since an index is present
             }
             if (!(type instanceof Class))
             {
@@ -1188,7 +1188,7 @@ public class MapEventType implements EventTypeSPI
                 {
                     return null;
                 }
-                EventTypeFragment fragmentParent = EventBeanUtility.createNativeFragmentType((Class) type, eventAdapterService);
+                FragmentEventType fragmentParent = EventBeanUtility.createNativeFragmentType((Class) type, eventAdapterService);
                 if (fragmentParent == null)
                 {
                     return null;
@@ -1300,7 +1300,7 @@ public class MapEventType implements EventTypeSPI
         private final List<EventPropertyDescriptor> propertyDescriptors;
         private final Map<String, Class> simplePropertyTypes;
         private final Map<String, EventPropertyGetter> propertyGetters;
-        private final Map<String, EventTypeFragment> simpleFragmentTypes;
+        private final Map<String, FragmentEventType> simpleFragmentTypes;
 
         /**
          * Ctor.
@@ -1308,8 +1308,9 @@ public class MapEventType implements EventTypeSPI
          * @param simplePropertyTypes property types
          * @param propertyDescriptors property descriptors
          * @param propertyGetters property getters
+         * @param simpleFragmentTypes fragment types per property 
          */
-        public PropertySetDescriptor(List<String> propertyNameList, List<EventPropertyDescriptor> propertyDescriptors, Map<String, Class> simplePropertyTypes, Map<String, EventPropertyGetter> propertyGetters, Map<String, EventTypeFragment> simpleFragmentTypes)
+        public PropertySetDescriptor(List<String> propertyNameList, List<EventPropertyDescriptor> propertyDescriptors, Map<String, Class> simplePropertyTypes, Map<String, EventPropertyGetter> propertyGetters, Map<String, FragmentEventType> simpleFragmentTypes)
         {
             this.propertyNameList = propertyNameList;
             this.propertyDescriptors = propertyDescriptors;
@@ -1354,7 +1355,11 @@ public class MapEventType implements EventTypeSPI
             return propertyDescriptors;
         }
 
-        public Map<String, EventTypeFragment> getSimpleFragmentTypes()
+        /**
+         * Returns the property fragment types.
+         * @return fragment types.
+         */
+        public Map<String, FragmentEventType> getSimpleFragmentTypes()
         {
             return simpleFragmentTypes;
         }

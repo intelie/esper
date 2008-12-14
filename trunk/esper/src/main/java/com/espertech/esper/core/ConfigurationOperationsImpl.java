@@ -161,19 +161,7 @@ public class ConfigurationOperationsImpl implements ConfigurationOperations
         }
     }
 
-    public void addEventTypeAliasNestable(String eventTypeAlias, Map<String, Object> typeMap) throws ConfigurationException
-    {
-        try
-        {
-            eventAdapterService.addNestableMapType(eventTypeAlias, typeMap, null, true, false, false);
-        }
-        catch (EventAdapterException t)
-        {
-            throw new ConfigurationException(t.getMessage(), t);
-        }
-    }
-
-    public void addEventTypeAliasNestable(String eventTypeAlias, Map<String, Object> typeMap, String[] superTypes) throws ConfigurationException
+    public void addEventTypeAlias(String eventTypeAlias, Map<String, Object> typeMap, String[] superTypes) throws ConfigurationException
     {
         Set<String> superTypeAliases = null;
         if ((superTypes != null) && (superTypes.length > 0))
@@ -184,18 +172,6 @@ public class ConfigurationOperationsImpl implements ConfigurationOperations
         try
         {
             eventAdapterService.addNestableMapType(eventTypeAlias, typeMap, superTypeAliases, true, false, false);
-        }
-        catch (EventAdapterException t)
-        {
-            throw new ConfigurationException(t.getMessage(), t);
-        }
-    }
-
-    public void addNestableEventTypeAlias(String eventTypeAlias, Map<String, Object> typeMap)
-    {
-        try
-        {
-            eventAdapterService.addNestableMapType(eventTypeAlias, typeMap, null, true, false, false);
         }
         catch (EventAdapterException t)
         {

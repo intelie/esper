@@ -50,6 +50,7 @@ public class BeanEventType implements EventTypeSPI, NativeEventType
      * @param clazz is the class of a java bean or other POJO
      * @param optionalLegacyDef optional configuration supplying legacy event type information
      * @param alias is the event type alias for the class
+     * @param eventAdapterService factory for event beans and event types
      * @param metadata event type metadata
      */
     public BeanEventType(EventTypeMetadata metadata,
@@ -665,7 +666,7 @@ public class BeanEventType implements EventTypeSPI, NativeEventType
         return propertyDescriptors;
     }
 
-    public EventTypeFragment getFragmentType(String propertyExpression)
+    public FragmentEventType getFragmentType(String propertyExpression)
     {
         return EventBeanUtility.createNativeFragmentType(getPropertyType(propertyExpression), eventAdapterService);
     }

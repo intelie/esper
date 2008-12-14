@@ -30,6 +30,7 @@ public class KeyedFastPropertyGetter extends BaseNativePropertyGetter implements
      * Constructor.
      * @param fastMethod is the method to use to retrieve a value from the object.
      * @param key is the key to supply as parameter to the mapped property getter
+     * @param eventAdapterService factory for event beans and event types
      */
     public KeyedFastPropertyGetter(FastMethod fastMethod, Object key, EventAdapterService eventAdapterService)
     {

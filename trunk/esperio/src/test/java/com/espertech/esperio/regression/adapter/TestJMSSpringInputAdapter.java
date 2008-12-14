@@ -79,7 +79,7 @@ public class TestJMSSpringInputAdapter extends TestCase
         config.addPluginLoader("MyLoader", SpringContextLoader.class.getName(), props);
 
         // define type
-        Map<String, Class> typeProps = new HashMap<String, Class>();
+        Map<String, Object> typeProps = new HashMap<String, Object>();
         typeProps.put("prop1", String.class);
         typeProps.put("prop2", int.class);
         config.addEventTypeAlias("MyMapType", typeProps);

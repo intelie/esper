@@ -26,6 +26,7 @@ public class CGLibPropertyGetter extends BaseNativePropertyGetter implements Eve
     /**
      * Constructor.
      * @param fastMethod is the method to use to retrieve a value from the object.
+     * @param eventAdapterService factory for event beans and event types
      */
     public CGLibPropertyGetter(FastMethod fastMethod, EventAdapterService eventAdapterService)
     {

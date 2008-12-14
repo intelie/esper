@@ -79,8 +79,8 @@ public class TestInsertIntoTransposePattern extends TestCase
     {
         Map<String, Object> type = makeMap(new Object[][] {{"id", String.class}});
 
-        epService.getEPAdministrator().getConfiguration().addEventTypeAliasNestable("AEvent", type);
-        epService.getEPAdministrator().getConfiguration().addEventTypeAliasNestable("BEvent", type);
+        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("AEvent", type);
+        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("BEvent", type);
 
         String stmtTextOne = "insert into MyStream select a, b from pattern [a=AEvent -> b=BEvent]";
         EPStatement stmtOne = epService.getEPAdministrator().createEPL(stmtTextOne);

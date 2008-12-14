@@ -84,6 +84,6 @@ public class MapPropertyGetter implements EventPropertyGetter
 
     public Object getFragment(EventBean eventBean)
     {
-        return null; // TODO
+        return null;
     }
 }

@@ -105,6 +105,6 @@ public class MapNestedPropertyGetter implements EventPropertyGetter
 
     public Object getFragment(EventBean eventBean)
     {
-        return null; // TODO
+        return null;
     }
 }

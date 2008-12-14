@@ -183,7 +183,7 @@ public class VariantPropResolutionStrategyDefault implements VariantPropResoluti
 
                 public Object getFragment(EventBean eventBean)
                 {
-                    return null; // TODO
+                    return null;
                 }
             };
         }
@@ -215,7 +215,7 @@ public class VariantPropResolutionStrategyDefault implements VariantPropResoluti
 
                 public Object getFragment(EventBean eventBean)
                 {
-                    return null; // TODO
+                    return null;
                 }
             };
         }

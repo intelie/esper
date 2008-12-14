@@ -3,19 +3,19 @@ package com.espertech.esper.regression.event;
 import com.espertech.esper.client.*;
 import com.espertech.esper.client.PropertyAccessException;
 
-import java.util.Properties;
-import java.util.Iterator;
-import java.util.Set;
+import java.util.*;
 
 public class MyPlugInPropertiesEventType implements EventType
 {
     private final String name;
     private final Set<String> properties;
+    private final Map<String, EventPropertyDescriptor> descriptors;
 
-    public MyPlugInPropertiesEventType(String name, Set<String> properties)
+    public MyPlugInPropertiesEventType(String name, Set<String> properties, Map<String, EventPropertyDescriptor> descriptors)
     {
         this.name = name;
         this.properties = properties;
+        this.descriptors = descriptors;
     }
 
     public Class getPropertyType(String property)
@@ -51,7 +51,7 @@ public class MyPlugInPropertiesEventType implements EventType
 
             public Object getFragment(EventBean eventBean)
             {
-                return null; // TODO
+                return null;
             }
         };
     }
@@ -83,16 +83,17 @@ public class MyPlugInPropertiesEventType implements EventType
 
     public EventPropertyDescriptor[] getPropertyDescriptors()
     {
-        return new EventPropertyDescriptor[0];  // TODO
+        Collection<EventPropertyDescriptor> descriptorColl = descriptors.values();
+        return descriptorColl.toArray(new EventPropertyDescriptor[descriptors.size()]);
     }
 
     public EventPropertyDescriptor getPropertyDescriptor(String propertyName)
     {
-        return null;  // TODO
+        return descriptors.get(propertyName);
     }
 
-    public EventTypeFragment getFragmentType(String property)
+    public FragmentEventType getFragmentType(String property)
     {
-        return null;  // TODO
+        return null;  // sample does not provide any fragments
     }
 }

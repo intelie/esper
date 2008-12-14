@@ -30,10 +30,10 @@ public class TestRevisionMerge extends TestCase
     public void testMergeDeclared()
     {
         Map<String, Object> fullType = makeMap(new Object[][] {{"p1", String.class}, {"p2", String.class}, {"p3", String.class}, {"pf", String.class}});
-        epService.getEPAdministrator().getConfiguration().addEventTypeAliasNestable("FullType", fullType);
+        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("FullType", fullType);
 
         Map<String, Object> deltaType = makeMap(new Object[][] {{"p1", String.class}, {"p2", String.class}, {"p3", String.class}, {"pd", String.class}});
-        epService.getEPAdministrator().getConfiguration().addEventTypeAliasNestable("DeltaType", deltaType);
+        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("DeltaType", deltaType);
 
         ConfigurationRevisionEventType revEvent = new ConfigurationRevisionEventType();
         revEvent.addAliasBaseEventType("FullType");
@@ -103,10 +103,10 @@ public class TestRevisionMerge extends TestCase
     public void testMergeNonNull()
     {
         Map<String, Object> fullType = makeMap(new Object[][] {{"p1", String.class}, {"p2", String.class}, {"p3", String.class}, {"pf", String.class}});
-        epService.getEPAdministrator().getConfiguration().addEventTypeAliasNestable("FullType", fullType);
+        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("FullType", fullType);
 
         Map<String, Object> deltaType = makeMap(new Object[][] {{"p1", String.class}, {"p2", String.class}, {"p3", String.class}, {"pd", String.class}});
-        epService.getEPAdministrator().getConfiguration().addEventTypeAliasNestable("DeltaType", deltaType);
+        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("DeltaType", deltaType);
 
         ConfigurationRevisionEventType revEvent = new ConfigurationRevisionEventType();
         revEvent.addAliasBaseEventType("FullType");
@@ -176,10 +176,10 @@ public class TestRevisionMerge extends TestCase
     public void testMergeExists()
     {
         Map<String, Object> fullType = makeMap(new Object[][] {{"p1", String.class}, {"p2", String.class}, {"p3", String.class}, {"pf", String.class}});
-        epService.getEPAdministrator().getConfiguration().addEventTypeAliasNestable("FullType", fullType);
+        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("FullType", fullType);
 
         Map<String, Object> deltaType = makeMap(new Object[][] {{"p1", String.class}, {"p2", String.class}, {"p3", String.class}, {"pd", String.class}});
-        epService.getEPAdministrator().getConfiguration().addEventTypeAliasNestable("DeltaType", deltaType);
+        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("DeltaType", deltaType);
 
         ConfigurationRevisionEventType revEvent = new ConfigurationRevisionEventType();
         revEvent.addAliasBaseEventType("FullType");

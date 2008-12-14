@@ -334,7 +334,7 @@ public class VAERevisionProcessorDeclared extends VAERevisionProcessorBase imple
 
                     public Object getFragment(EventBean eventBean)
                     {
-                        return null; // TODO
+                        return null; // fragments no provided by revision events
                     }
                 };
 
@@ -363,7 +363,7 @@ public class VAERevisionProcessorDeclared extends VAERevisionProcessorBase imple
 
                 public Object getFragment(EventBean eventBean)
                 {
-                    return null; // TODO
+                    return null; // fragments no provided by revision events
                 }
             };
 
@@ -392,7 +392,7 @@ public class VAERevisionProcessorDeclared extends VAERevisionProcessorBase imple
 
                 public Object getFragment(EventBean eventBean)
                 {
-                    return null; // TODO
+                    return null;
                 }
             };
 

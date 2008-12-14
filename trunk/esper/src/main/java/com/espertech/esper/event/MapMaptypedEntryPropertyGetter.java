@@ -20,6 +20,8 @@ public class MapMaptypedEntryPropertyGetter implements EventPropertyGetter {
      * Ctor.
      * @param propertyMap the property to look at
      * @param eventBeanEntryGetter the getter for the map entry
+     * @param eventAdapterService factory for event beans and event types
+     * @param fragmentType type of the entry returned
      */
     public MapMaptypedEntryPropertyGetter(String propertyMap, EventPropertyGetter eventBeanEntryGetter, MapEventType fragmentType, EventAdapterService eventAdapterService) {
         this.propertyMap = propertyMap;

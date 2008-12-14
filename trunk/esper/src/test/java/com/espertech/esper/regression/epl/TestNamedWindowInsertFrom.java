@@ -155,7 +155,7 @@ public class TestNamedWindowInsertFrom extends TestCase
     public void testInsertWhereOMStaggered()
     {
         Map<String, Object> dataType = makeMap(new Object[][] {{"a", String.class}, {"b", int.class}});
-        epService.getEPAdministrator().getConfiguration().addEventTypeAliasNestable("MyMap", dataType);
+        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("MyMap", dataType);
 
         String stmtTextCreateOne = "create window MyWindow.win:keepall() as select a, b from MyMap";
         EPStatement stmtCreateOne = epService.getEPAdministrator().createEPL(stmtTextCreateOne);

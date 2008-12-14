@@ -24,6 +24,8 @@ public class MapArrayMaptypedEntryPropertyGetter implements EventPropertyGetter 
      * @param propertyMap the property to look at
      * @param eventBeanEntryGetter the getter for the map entry
      * @param index the index to fetch the array element for
+     * @param innerType type of the entry returned
+     * @param eventAdapterService factory for event beans and event types
      */
     public MapArrayMaptypedEntryPropertyGetter(String propertyMap, int index, EventPropertyGetter eventBeanEntryGetter, EventType innerType, EventAdapterService eventAdapterService) {
         this.propertyMap = propertyMap;

@@ -12,7 +12,6 @@ package com.espertech.esperio.regression.adapter;
 import com.espertech.esper.client.*;
 import com.espertech.esper.client.time.CurrentTimeEvent;
 import com.espertech.esper.client.time.TimerControlEvent;
-import com.espertech.esper.client.EventBean;
 import com.espertech.esperio.AdapterCoordinator;
 import com.espertech.esperio.AdapterCoordinatorImpl;
 import com.espertech.esperio.AdapterInputSource;
@@ -44,7 +43,7 @@ public class TestAdapterCoordinator extends TestCase
 
 	protected void setUp()
 	{
-		Map<String, Class> propertyTypes = new LinkedHashMap<String, Class>();
+		Map<String, Object> propertyTypes = new LinkedHashMap<String, Object>();
 		propertyTypes.put("myInt", Integer.class);
 		propertyTypes.put("myDouble", Double.class);
 		propertyTypes.put("myString", String.class);

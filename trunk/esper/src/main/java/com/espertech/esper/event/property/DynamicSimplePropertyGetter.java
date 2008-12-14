@@ -27,6 +27,7 @@ public class DynamicSimplePropertyGetter extends DynamicPropertyGetterBase imple
     /**
      * Ctor.
      * @param fieldName the property name
+     * @param eventAdapterService factory for event beans and event types
      */
     public DynamicSimplePropertyGetter(String fieldName, EventAdapterService eventAdapterService)
     {

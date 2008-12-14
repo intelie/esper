@@ -168,7 +168,7 @@ public class TestModifiedWildcardSelect extends TestCase
 	public void testMapEvents()
 	{
 		Configuration configuration = SupportConfigFactory.getConfiguration();
-		Map<String, Class> typeMap = new HashMap<String, Class>();
+		Map<String, Object> typeMap = new HashMap<String, Object>();
 		typeMap.put("int", Integer.class);
 		typeMap.put("string", String.class);
 		configuration.addEventTypeAlias("mapEvent", typeMap);

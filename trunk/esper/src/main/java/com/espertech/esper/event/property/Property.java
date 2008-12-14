@@ -31,6 +31,7 @@ public interface Property
     /**
      * Returns value getter for the property of an event of the given event type.
      * @param eventType is the type of event to make a getter for
+     * @param eventAdapterService factory for event beans and event types
      * @return fast property value getter for property
      */
     public EventPropertyGetter getGetter(BeanEventType eventType, EventAdapterService eventAdapterService);

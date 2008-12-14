@@ -31,8 +31,8 @@ public class TestInsertIntoTransposeStream extends TestCase
     public void testTransposeEventJoinMap()
     {
         Map<String, Object> metadata = makeMap(new Object[][] {{"id", String.class}});
-        epService.getEPAdministrator().getConfiguration().addEventTypeAliasNestable("AEvent", metadata);
-        epService.getEPAdministrator().getConfiguration().addEventTypeAliasNestable("BEvent", metadata);
+        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("AEvent", metadata);
+        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("BEvent", metadata);
 
         String stmtTextOne = "insert into MyStream select a, b from AEvent.win:keepall() as a, BEvent.win:keepall() as b";
         epService.getEPAdministrator().createEPL(stmtTextOne);
@@ -86,7 +86,7 @@ public class TestInsertIntoTransposeStream extends TestCase
         Map<String, Object> metadata = makeMap(new Object[][] {
                 {"nested", makeMap(new Object[][] {{"nestedValue", String.class}}) }
         });
-        epService.getEPAdministrator().getConfiguration().addEventTypeAliasNestable("Complex", metadata);
+        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("Complex", metadata);
 
         String stmtTextOne = "insert into MyStream select nested as inneritem from Complex";
         epService.getEPAdministrator().createEPL(stmtTextOne);

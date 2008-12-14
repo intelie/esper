@@ -117,58 +117,36 @@ public interface ConfigurationOperations
             throws ConfigurationException;
 
     /**
-     * TODO: changed to Map<String, Object>, get rid of "nestable"
      * Add an alias for an event type that represents java.util.Map events,
      * and for which each property may itself be a Map of further properties,
      * with unlimited nesting levels.
      * <p>
-     * Each entry in the type mapping must contain the String property name
-     * and either a Class or further Map<String, Object> value.
+     * Each entry in the type mapping must contain the String property name as the key value,
+     * and either a Class, or a further Map<String, Object>, or the name
+     * of another previously-register Map event type (append [] for array of Map).
      * @param eventTypeAlias is the alias for the event type
      * @param typeMap maps the name of each property in the Map event to the type
      * (fully qualified classname) of its value in Map event instances.
      * @throws ConfigurationException if the alias is already in used for a different type
      */
-    public void addEventTypeAliasNestable(String eventTypeAlias, Map<String, Object> typeMap)
+    public void addEventTypeAlias(String eventTypeAlias, Map<String, Object> typeMap)
             throws ConfigurationException;
 
     /**
      * Add an alias for an event type that represents java.util.Map events,
      * and for which each property may itself be a Map of further properties,
-     * with unlimited nesting levels, and specify an optional list of super types
-     * to the new Map event type.
+     * with unlimited nesting levels.
      * <p>
-     * Each entry in the type mapping must contain the String property name
-     * and either a Class or further Map<String, Object> value.
+     * Each entry in the type mapping must contain the String property name as the key value,
+     * and either a Class, or a further Map<String, Object>, or the name
+     * of another previously-register Map event type (append [] for array of Map).
      * @param eventTypeAlias is the alias for the event type
      * @param typeMap maps the name of each property in the Map event to the type
      * (fully qualified classname) of its value in Map event instances.
      * @param superTypes is an array of event type alias of further Map types that this
-     * 
      * @throws ConfigurationException if the alias is already in used for a different type
      */
-    public void addEventTypeAliasNestable(String eventTypeAlias, Map<String, Object> typeMap, String[] superTypes)
-            throws ConfigurationException;
-
-    /**
-     * Add an alias for an event type that represents nestable strong-typed java.util.Map events, taking a Map of
-     * event property and class name as a parameter.
-     * <p>
-     * This method takes a Map of String property names and Object property type. Each Object property
-     * type can either be a java.lang.Class to denote a built-in type or POJO application object,
-     * or can itself also be a Map<String, Object> to describe a property that itself is a
-     * map of further properties. 
-     * <p>
-     * This method is provided for convenience and is same in function to method
-     * taking a Properties object that contain fully qualified class name as values.
-     * <p>
-     * Allows a second alias to be added for the same type.
-     * Does not allow the same alias to be used for different types.
-     * @param eventTypeAlias is the alias for the event type
-     * @param typeMap maps the name of each property in the Map event to the type of its value in the Map object
-     * @throws ConfigurationException if the alias is already in used for a different type
-     */
-    public void addNestableEventTypeAlias(String eventTypeAlias, Map<String, Object> typeMap)
+    public void addEventTypeAlias(String eventTypeAlias, Map<String, Object> typeMap, String[] superTypes)
             throws ConfigurationException;
 
     /**

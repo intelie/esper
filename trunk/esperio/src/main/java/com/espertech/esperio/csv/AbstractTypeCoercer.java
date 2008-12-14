@@ -38,7 +38,7 @@ public abstract class AbstractTypeCoercer {
      * Ctor.
      * @param propertyTypes the type conversion to be done
      */
-    public void setPropertyTypes(Map<String, Class> propertyTypes) {
+    public void setPropertyTypes(Map<String, Object> propertyTypes) {
 		this.propertyConstructors = createPropertyConstructors(propertyTypes);
 	}
 
@@ -51,7 +51,7 @@ public abstract class AbstractTypeCoercer {
      */
     abstract Object coerce(String property, String source) throws Exception;
 
-	private Map<String, FastConstructor> createPropertyConstructors(Map<String, Class> propertyTypes)
+	private Map<String, FastConstructor> createPropertyConstructors(Map<String, Object> propertyTypes)
 	{
 		Map<String, FastConstructor> constructors = new HashMap<String, FastConstructor>();
 
@@ -59,7 +59,7 @@ public abstract class AbstractTypeCoercer {
         for(String property : propertyTypes.keySet())
 		{
 			log.debug(".createPropertyConstructors property==" + property + ", type==" + propertyTypes.get(property	));
-			FastClass fastClass = FastClass.create(Thread.currentThread().getContextClassLoader(), JavaClassHelper.getBoxedType(propertyTypes.get(property)));
+			FastClass fastClass = FastClass.create(Thread.currentThread().getContextClassLoader(), JavaClassHelper.getBoxedType((Class) propertyTypes.get(property)));
 			FastConstructor constructor = fastClass.getConstructor(parameterTypes);
 			constructors.put(property, constructor);
 		}

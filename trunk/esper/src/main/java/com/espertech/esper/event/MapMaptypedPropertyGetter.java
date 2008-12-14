@@ -7,12 +7,21 @@ import com.espertech.esper.client.EventType;
 
 import java.util.Map;
 
+/**
+ * Getter for map entry.
+ */
 public class MapMaptypedPropertyGetter implements EventPropertyGetter
 {
     private final String propertyName;
     private final EventType fragmentEventType;
     private final EventAdapterService eventAdapterService;
 
+    /**
+     * Ctor.
+     * @param propertyNameAtomic property name
+     * @param fragmentEventType fragment type
+     * @param eventAdapterService factory for event beans and event types
+     */
     public MapMaptypedPropertyGetter(String propertyNameAtomic, EventType fragmentEventType, EventAdapterService eventAdapterService)
     {
         this.propertyName = propertyNameAtomic;

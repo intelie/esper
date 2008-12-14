@@ -197,9 +197,9 @@ public class AxiomXMLEventType implements EventTypeSPI
         return propertyDescriptors;
     }
 
-    public EventTypeFragment getFragmentType(String property)
+    public FragmentEventType getFragmentType(String property)
     {
-        return null;   // TODO
+        return null; // not providing the capability for fragments
     }
 
     public EventPropertyDescriptor getPropertyDescriptor(String propertyName)

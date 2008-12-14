@@ -27,19 +27,20 @@ public class EventSenderBean implements EventSender
 {
     private final EPRuntimeEventSender runtime;
     private final BeanEventType beanEventType;
-    private final BeanEventBeanFactory beanEventBeanFactory;
+    private final EventAdapterService eventAdapterService;
     private final Set<Class> compatibleClasses;
 
     /**
      * Ctor.
      * @param runtime for processing events
      * @param beanEventType the event type
+     * @param eventAdapterService factory for event beans and event types
      */
-    public EventSenderBean(EPRuntimeEventSender runtime, BeanEventType beanEventType, BeanEventBeanFactory beanEventBeanFactory)
+    public EventSenderBean(EPRuntimeEventSender runtime, BeanEventType beanEventType, EventAdapterService eventAdapterService)
     {
         this.runtime = runtime;
         this.beanEventType = beanEventType;
-        this.beanEventBeanFactory = beanEventBeanFactory;
+        this.eventAdapterService = eventAdapterService;
         compatibleClasses = new HashSet<Class>();
     }
 
@@ -78,6 +79,6 @@ public class EventSenderBean implements EventSender
             }
         }
 
-        return beanEventBeanFactory.adapterForBean(event, beanEventType);
+        return eventAdapterService.adapterForBean(event, beanEventType);
     }
 }

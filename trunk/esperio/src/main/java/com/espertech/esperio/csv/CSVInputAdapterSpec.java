@@ -24,7 +24,7 @@ public class CSVInputAdapterSpec
 	private Integer eventsPerSec;
 	private String[] propertyOrder;
 	private boolean looping;
-	private Map<String, Class> propertyTypes;
+	private Map<String, Object> propertyTypes;
 
 	/**
 	 * Ctor.
@@ -68,7 +68,7 @@ public class CSVInputAdapterSpec
 	 *  					  CSV file; this will also be the form of the Map event created
 	 *  					  from the data
 	 */
-	public void setPropertyTypes(Map<String, Class> propertyTypes)
+	public void setPropertyTypes(Map<String, Object> propertyTypes)
 	{
 		this.propertyTypes = propertyTypes;
 	}
@@ -183,7 +183,7 @@ public class CSVInputAdapterSpec
 	/**
 	 * @return the propertyTypes
 	 */
-	public Map<String, Class> getPropertyTypes()
+	public Map<String, Object> getPropertyTypes()
 	{
 		return propertyTypes;
 	}

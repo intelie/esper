@@ -60,7 +60,12 @@ public class SupportBeanCombinedProps implements Serializable
         {
             return map;
         }
-	}
+
+        public String getNestLevOneVal()
+        {
+            return "abc";
+        }
+    }
 
     public static class NestedLevTwo implements Serializable
     {

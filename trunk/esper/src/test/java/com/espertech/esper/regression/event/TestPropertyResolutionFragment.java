@@ -22,6 +22,81 @@ public class TestPropertyResolutionFragment extends TestCase
         listener = new SupportUpdateListener();        
     }
 
+    public void testMapSimpleTypes()
+    {
+        Map<String, Object> mapOuter = new HashMap<String, Object>();
+        mapOuter.put("p0int", int.class);
+        mapOuter.put("p0intarray", int[].class);
+        mapOuter.put("p0map", Map.class);
+        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("TypeRoot", mapOuter);
+
+        EPStatement stmt = epService.getEPAdministrator().createEPL("select * from TypeRoot");
+        stmt.addListener(listener);
+
+        Map<String, Object> dataInner = new HashMap<String, Object>();
+        dataInner.put("p1someval", "A");
+
+        Map<String, Object> dataRoot = new HashMap<String, Object>();
+        dataRoot.put("p0simple", 99);
+        dataRoot.put("p0array", new int[] {101, 102});
+        dataRoot.put("p0map", dataInner);
+
+        // send event
+        epService.getEPRuntime().sendEvent(dataRoot, "TypeRoot");
+        EventBean eventBean = listener.assertOneGetNewAndReset();
+        //System.out.println(EventTypeAssertionUtil.print(eventBean));    //comment me in
+        EventType eventType = eventBean.getEventType();
+        EventTypeAssertionUtil.assertConsistency(eventType);
+
+        // resolve property via fragment
+        assertNull(eventType.getFragmentType("p0int"));
+        assertNull(eventType.getFragmentType("p0intarray"));
+        assertNull(eventBean.getFragment("p0map?"));
+        assertNull(eventBean.getFragment("p0intarray[0]?"));
+        assertNull(eventBean.getFragment("p0map('a')?"));
+    }
+
+    public void testWrapperFragment()
+    {
+        Map<String, Object> typeLev0 = new HashMap<String, Object>();
+        typeLev0.put("p1id", int.class);
+        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("TypeLev0", typeLev0);
+
+        Map<String, Object> mapOuter = new HashMap<String, Object>();
+        mapOuter.put("p0simple", "TypeLev0");
+        mapOuter.put("p0bean", SupportBeanComplexProps.class);
+        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("TypeRoot", mapOuter);
+
+        EPStatement stmt = epService.getEPAdministrator().createEPL("select *, p0simple.p1id + 1 as plusone, p0bean as mybean from TypeRoot");
+        stmt.addListener(listener);
+
+        Map<String, Object> dataInner = new HashMap<String, Object>();
+        dataInner.put("p1id", 10);
+
+        Map<String, Object> dataRoot = new HashMap<String, Object>();
+        dataRoot.put("p0simple", dataInner);
+        dataRoot.put("p0bean", SupportBeanComplexProps.makeDefaultBean());
+
+        // send event
+        epService.getEPRuntime().sendEvent(dataRoot, "TypeRoot");
+        EventBean eventBean = listener.assertOneGetNewAndReset();
+        //  System.out.println(EventTypeAssertionUtil.print(eventBean));    comment me in
+        EventType eventType = eventBean.getEventType();
+        EventTypeAssertionUtil.assertConsistency(eventType);
+
+        // resolve property via fragment
+        assertTrue(eventType.getPropertyDescriptor("p0simple").isFragment());
+        assertEquals(11, eventBean.get("plusone"));
+        assertEquals(10, eventBean.get("p0simple.p1id"));
+
+        EventBean innerSimpleEvent = (EventBean) eventBean.getFragment("p0simple");
+        assertEquals(10, innerSimpleEvent.get("p1id"));
+
+        EventBean innerBeanEvent = (EventBean) eventBean.getFragment("mybean");
+        assertEquals("nestedNestedValue", innerBeanEvent.get("nested.nestedNested.nestedNestedValue"));
+        assertEquals("nestedNestedValue", ((EventBean)eventBean.getFragment("mybean.nested.nestedNested")).get("nestedNestedValue"));
+    }
+
     public void testNativeBeanFragment()
     {
         EPStatement stmt = epService.getEPAdministrator().createEPL("select * from " + SupportBeanComplexProps.class.getName());
@@ -66,16 +141,16 @@ public class TestPropertyResolutionFragment extends TestCase
         assertSame(eventObject.getArray()[0].getMapped("0ma"), ((EventBean)eventBean.getFragment("array[0]?")).get("mapped('0ma')"));
     }
 
-    public void testMapFragmentMapSimple()
+    public void testMapFragmentMapNested()
     {
         Map<String, Object> typeLev0 = new HashMap<String, Object>();
         typeLev0.put("p1id", int.class);
-        epService.getEPAdministrator().getConfiguration().addEventTypeAliasNestable("TypeLev0", typeLev0);
+        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("TypeLev0", typeLev0);
 
         Map<String, Object> mapOuter = new HashMap<String, Object>();
         mapOuter.put("p0simple", "TypeLev0");
         mapOuter.put("p0array", "TypeLev0[]");
-        epService.getEPAdministrator().getConfiguration().addEventTypeAliasNestable("TypeRoot", mapOuter);
+        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("TypeRoot", mapOuter);
 
         EPStatement stmt = epService.getEPAdministrator().createEPL("select * from TypeRoot");
         stmt.addListener(listener);
@@ -122,7 +197,7 @@ public class TestPropertyResolutionFragment extends TestCase
 
         Map<String, Object> mapOuter = new HashMap<String, Object>();
         mapOuter.put("p0simple", typeLev0);
-        epService.getEPAdministrator().getConfiguration().addEventTypeAliasNestable("TypeRoot", mapOuter);
+        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("TypeRoot", mapOuter);
 
         EPStatement stmt = epService.getEPAdministrator().createEPL("select * from TypeRoot");
         stmt.addListener(listener);
@@ -151,7 +226,7 @@ public class TestPropertyResolutionFragment extends TestCase
     {
         Map<String, Object> typeInner = new HashMap<String, Object>();
         typeInner.put("p2id", int.class);
-        epService.getEPAdministrator().getConfiguration().addEventTypeAliasNestable("TypeInner", typeInner);
+        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("TypeInner", typeInner);
 
         Map<String, Object> typeMap = new HashMap<String, Object>();
         typeMap.put("id", int.class);
@@ -162,8 +237,8 @@ public class TestPropertyResolutionFragment extends TestCase
         typeMap.put("map", "TypeInner");
         typeMap.put("maparray", "TypeInner[]");
 
-        epService.getEPAdministrator().getConfiguration().addEventTypeAliasNestable("TypeMapOne", typeMap);
-        epService.getEPAdministrator().getConfiguration().addEventTypeAliasNestable("TypeMapTwo", typeMap);
+        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("TypeMapOne", typeMap);
+        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("TypeMapTwo", typeMap);
 
         EPStatement stmt = epService.getEPAdministrator().createEPL("select * from pattern[one=TypeMapOne until two=TypeMapTwo]");
         stmt.addListener(listener);
@@ -191,7 +266,7 @@ public class TestPropertyResolutionFragment extends TestCase
         epService.getEPRuntime().sendEvent(dataMapThree, "TypeMapTwo");
 
         EventBean eventBean = listener.assertOneGetNewAndReset();
-        System.out.println(EventTypeAssertionUtil.print(eventBean));
+        // System.out.println(EventTypeAssertionUtil.print(eventBean));
         EventType eventType = eventBean.getEventType();
         EventTypeAssertionUtil.assertConsistency(eventType);
         
@@ -226,12 +301,12 @@ public class TestPropertyResolutionFragment extends TestCase
         typeLev0.put("p1array", SupportBean[].class);
         typeLev0.put("p1complex", SupportBeanComplexProps.class);
         typeLev0.put("p1complexarray", SupportBeanComplexProps[].class);
-        epService.getEPAdministrator().getConfiguration().addEventTypeAliasNestable("TypeLev0", typeLev0);
+        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("TypeLev0", typeLev0);
 
         Map<String, Object> mapOuter = new HashMap<String, Object>();
         mapOuter.put("p0simple", "TypeLev0");
         mapOuter.put("p0array", "TypeLev0[]");
-        epService.getEPAdministrator().getConfiguration().addEventTypeAliasNestable("TypeRoot", mapOuter);
+        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("TypeRoot", mapOuter);
 
         EPStatement stmt = epService.getEPAdministrator().createEPL("select * from TypeRoot");
         stmt.addListener(listener);
@@ -281,17 +356,17 @@ public class TestPropertyResolutionFragment extends TestCase
     {
         Map<String, Object> typeLev1 = new HashMap<String, Object>();
         typeLev1.put("p2id", int.class);
-        epService.getEPAdministrator().getConfiguration().addEventTypeAliasNestable("TypeLev1", typeLev1);
+        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("TypeLev1", typeLev1);
 
         Map<String, Object> typeLev0 = new HashMap<String, Object>();
         typeLev0.put("p1simple", "TypeLev1");
         typeLev0.put("p1array", "TypeLev1[]");
-        epService.getEPAdministrator().getConfiguration().addEventTypeAliasNestable("TypeLev0", typeLev0);
+        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("TypeLev0", typeLev0);
 
         Map<String, Object> mapOuter = new HashMap<String, Object>();
         mapOuter.put("p0simple", "TypeLev0");
         mapOuter.put("p0array", "TypeLev0[]");
-        epService.getEPAdministrator().getConfiguration().addEventTypeAliasNestable("TypeRoot", mapOuter);
+        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("TypeRoot", mapOuter);
 
         EPStatement stmt = epService.getEPAdministrator().createEPL("select * from TypeRoot");
         stmt.addListener(listener);
@@ -352,12 +427,12 @@ public class TestPropertyResolutionFragment extends TestCase
         mapInner.put("p1beanArray", SupportBean[].class);
         mapInner.put("p1innerId", int.class);
         mapInner.put("p1innerMap", mapInnerInner);
-        epService.getEPAdministrator().getConfiguration().addEventTypeAliasNestable("InnerMap", mapInner);
+        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("InnerMap", mapInner);
 
         Map<String, Object> mapOuter = new HashMap<String, Object>();
         mapOuter.put("p0simple", "InnerMap");
         mapOuter.put("p0array", "InnerMap[]");
-        epService.getEPAdministrator().getConfiguration().addEventTypeAliasNestable("OuterMap", mapOuter);
+        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("OuterMap", mapOuter);
 
         EPStatement stmt = epService.getEPAdministrator().createEPL("select * from OuterMap");
         stmt.addListener(listener);
