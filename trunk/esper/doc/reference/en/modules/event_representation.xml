@@ -1,5 +1,13 @@
 <chapter id="event_representation">
     <title>Event Representations</title>
+    
+    <para>
+		This section outlines the different means to model and represent events.
+    </para>
+
+    <para>
+		Please see the <xref linkend="api-event"/> section for APIs.
+    </para>
 
     <sect1 id="eventrep_intro">
         <title>Event Underlying Java Objects</title>
@@ -7,7 +15,6 @@
 		<indexterm><primary>event</primary><secondary>underlying representation</secondary></indexterm>
         <para>
 			An event is an immutable record of a past occurrence of an action or state change. Event properties capture the state information for an event.
-			An event is represented by either a POJO (plain-old Java object), a <literal>java.util.Map</literal> or a XML document via <literal>org.w3c.dom.Node</literal>.
         </para>
 
         <para>
@@ -32,7 +39,7 @@
 					</row>
 					<row>
 						<entry><literal>java.util.Map</literal></entry>
-						<entry>Map events are key-values pairs.</entry>
+						<entry>Map events are key-values pairs and can also contain objects, further Map, and arrays thereof.</entry>
 					</row>
 					<row>
 						<entry><literal>org.w3c.dom.Node</literal></entry>
@@ -226,6 +233,24 @@ select detail?.direction? from OrderEvent]]></programlisting>
 			Dynamic event properties work with all event representations outlined next: Java objects, Map-based and XML DOM-based events.
 		</para>
 
+	</sect1>
+
+	<sect1 id="eventrep-fragment">
+	   <title>Fragment and Fragment Type</title>
+		<para>
+			Sometimes an event can have properties that are itself events. Esper uses the term <emphasis>fragment</emphasis> and <emphasis>fragment type</emphasis> for such event pieces. The best example is a pattern
+			that matches two or more events and the output event contains the matching events as fragments. In other words, output events can be a composite event that consists or further events, the fragments.
+		</para>
+
+		<para>
+			Fragments have the same metadata available as their enclosing composite events. The metadata for enclosing composite events contains information about which properties are fragments, or have a property value that can be 
+			represented as a fragment and therefore as an event itself.
+		</para>
+
+		<para>
+			Fragments and type metadata can allow your application to navigate composite events without the need for using the Java reflection API and reducing the coupling to the underlying event representation.
+			The API is further described in <xref linkend="api-event"/>.
+		</para>		
 	</sect1>
 
 	<sect1 id="eventrep-javabean">
