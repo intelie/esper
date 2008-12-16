@@ -15,17 +15,23 @@ import java.util.ArrayList;
  */
 public class IntersectViewFactory implements ViewFactory, DataWindowViewFactory
 {
-    private final EventType parentEventType;
-    private final List<ViewFactory> viewFactories;
+    private EventType parentEventType;
+    private List<ViewFactory> viewFactories;
 
     /**
      * Ctor.
-     * @param parentEventType the event type
-     * @param viewFactories the view factories
      */
-    public IntersectViewFactory(EventType parentEventType, List<ViewFactory> viewFactories)
+    public IntersectViewFactory()
+    {
+    }
+
+    public void setParentEventType(EventType parentEventType)
     {
         this.parentEventType = parentEventType;
+    }
+
+    public void setViewFactories(List<ViewFactory> viewFactories)
+    {
         this.viewFactories = viewFactories;
     }
 

@@ -134,11 +134,11 @@ public class WrapperEventType implements EventTypeSPI
             {
                 public Object get(EventBean event)
                 {
-                    if(!(event instanceof WrapperEventBean))
+                    if(!(event instanceof DecoratingEventBean))
                     {
                         throw new PropertyAccessException("Mismatched property getter to EventBean type");
                     }
-                    WrapperEventBean wrapperEvent = (WrapperEventBean) event;
+                    DecoratingEventBean wrapperEvent = (DecoratingEventBean) event;
                     EventBean wrappedEvent = wrapperEvent.getUnderlyingEvent();
                     if (wrappedEvent == null)
                     {
@@ -156,11 +156,11 @@ public class WrapperEventType implements EventTypeSPI
 
                 public Object getFragment(EventBean event)
                 {
-                    if(!(event instanceof WrapperEventBean))
+                    if(!(event instanceof DecoratingEventBean))
                     {
                         throw new PropertyAccessException("Mismatched property getter to EventBean type");
                     }
-                    WrapperEventBean wrapperEvent = (WrapperEventBean) event;
+                    DecoratingEventBean wrapperEvent = (DecoratingEventBean) event;
                     EventBean wrappedEvent = wrapperEvent.getUnderlyingEvent();
                     if (wrappedEvent == null)
                     {
@@ -181,12 +181,12 @@ public class WrapperEventType implements EventTypeSPI
             {
                 public Object get(EventBean event)
                 {
-                    if(!(event instanceof WrapperEventBean))
+                    if(!(event instanceof DecoratingEventBean))
                     {
                         throw new PropertyAccessException("Mismatched property getter to EventBean type");
                     }
-                    WrapperEventBean wrapperEvent = (WrapperEventBean) event;
-                    Map map = wrapperEvent.getUnderlyingMap();
+                    DecoratingEventBean wrapperEvent = (DecoratingEventBean) event;
+                    Map map = wrapperEvent.getDecoratingProperties();
                     return underlyingMapType.getValue(property, map);
                 }
 
@@ -197,13 +197,13 @@ public class WrapperEventType implements EventTypeSPI
 
                 public Object getFragment(EventBean event)
                 {
-                    if(!(event instanceof WrapperEventBean))
+                    if(!(event instanceof DecoratingEventBean))
                     {
                         throw new PropertyAccessException("Mismatched property getter to EventBean type");
                     }
-                    WrapperEventBean wrapperEvent = (WrapperEventBean) event;
-                    Map map = wrapperEvent.getUnderlyingMap();
-                    return mapGetter.getFragment(eventAdapterService.adaptorForMap(map, underlyingMapType));
+                    DecoratingEventBean wrapperEvent = (DecoratingEventBean) event;
+                    Map map = wrapperEvent.getDecoratingProperties();
+                    return mapGetter.getFragment(eventAdapterService.adaptorForTypedMap(map, underlyingMapType));
                 }
             };
             propertyGetterCache.put(property, getter);

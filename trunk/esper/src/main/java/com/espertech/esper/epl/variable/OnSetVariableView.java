@@ -90,7 +90,7 @@ public class OnSetVariableView extends ViewSupport
         if (values != null)
         {
             EventBean newDataOut[] = new EventBean[1];
-            newDataOut[0] = eventAdapterService.adaptorForMap(values, eventType);
+            newDataOut[0] = eventAdapterService.adaptorForTypedMap(values, eventType);
             this.updateChildren(newDataOut, null);
         }
     }
@@ -112,7 +112,7 @@ public class OnSetVariableView extends ViewSupport
             count++;
         }
 
-        EventBean event = eventAdapterService.adaptorForMap(values, eventType);
+        EventBean event = eventAdapterService.adaptorForTypedMap(values, eventType);
         return new SingleEventIterator(event);
     }
 }

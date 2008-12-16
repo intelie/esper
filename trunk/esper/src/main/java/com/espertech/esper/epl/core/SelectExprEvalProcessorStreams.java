@@ -353,7 +353,7 @@ public class SelectExprEvalProcessorStreams implements SelectExprProcessor
         }
         else
         {
-        	return eventAdapterService.adaptorForMap(props, resultEventType);
+        	return eventAdapterService.adaptorForTypedMap(props, resultEventType);
         }
     }
 

@@ -377,7 +377,7 @@ public class SelectExprEvalProcessor implements SelectExprProcessor
                 EventBean wrappedEvent;
                 if (result instanceof Map)
                 {
-                    wrappedEvent = eventAdapterService.adaptorForMap((Map)result, resultEventType);
+                    wrappedEvent = eventAdapterService.adaptorForTypedMap((Map)result, resultEventType);
                 }
                 else
                 {
@@ -397,11 +397,11 @@ public class SelectExprEvalProcessor implements SelectExprProcessor
             {
                 if (!isRevisionEvent)
                 {
-                    return eventAdapterService.adaptorForMap(props, resultEventType);
+                    return eventAdapterService.adaptorForTypedMap(props, resultEventType);
                 }
                 else
                 {
-                    return vaeProcessor.getValueAddEventBean(eventAdapterService.adaptorForMap(props, vaeInnerEventType));
+                    return vaeProcessor.getValueAddEventBean(eventAdapterService.adaptorForTypedMap(props, vaeInnerEventType));
                 }
             }
         }

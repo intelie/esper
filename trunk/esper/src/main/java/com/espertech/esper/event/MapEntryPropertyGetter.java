@@ -71,6 +71,6 @@ public class MapEntryPropertyGetter implements EventPropertyGetter
         {
             return null;
         }
-        return eventAdapterService.adapterForBean(result, eventType);
+        return eventAdapterService.adapterForTypedBean(result, eventType);
     }
 }

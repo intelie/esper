@@ -161,7 +161,7 @@ public class OutputConditionExpression implements OutputCondition, VariableChang
             builtinProperties.put("count_insert", totalNewEventsCount);
             builtinProperties.put("count_remove", totalOldEventsCount);
             builtinProperties.put("last_output_timestamp", lastOutputTimestamp);
-            eventsPerStream[0] = context.getEventAdapterService().adaptorForMap(builtinProperties, builtinPropertiesEventType);
+            eventsPerStream[0] = context.getEventAdapterService().adaptorForTypedMap(builtinProperties, builtinPropertiesEventType);
         }
 
         boolean result = false;
@@ -205,7 +205,7 @@ public class OutputConditionExpression implements OutputCondition, VariableChang
                 builtinProperties.put("count_insert", totalNewEventsCount);
                 builtinProperties.put("count_remove", totalOldEventsCount);
                 builtinProperties.put("last_output_timestamp", lastOutputTimestamp);
-                eventsPerStream[0] = context.getEventAdapterService().adaptorForMap(builtinProperties, builtinPropertiesEventType);
+                eventsPerStream[0] = context.getEventAdapterService().adaptorForTypedMap(builtinProperties, builtinPropertiesEventType);
             }
 
             ignoreVariableCallbacks = true;

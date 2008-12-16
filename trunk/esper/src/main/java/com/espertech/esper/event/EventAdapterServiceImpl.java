@@ -434,7 +434,7 @@ public class EventAdapterServiceImpl implements EventAdapterService
         return newEventType;
     }
 
-    public EventBean adapterForMap(Map event, String eventTypeAlias) throws EventAdapterException
+    public EventBean adapterForMap(Map<String, Object> event, String eventTypeAlias) throws EventAdapterException
     {
         EventType existingType = aliasToTypeMap.get(eventTypeAlias);
         if (existingType == null)
@@ -442,7 +442,7 @@ public class EventAdapterServiceImpl implements EventAdapterService
             throw new EventAdapterException("Event type alias '" + eventTypeAlias + "' has not been defined");
         }
 
-        return adaptorForMap(event, existingType);
+        return adaptorForTypedMap(event, existingType);
     }
 
     public EventBean adapterForDOM(Node node)
@@ -524,7 +524,7 @@ public class EventAdapterServiceImpl implements EventAdapterService
         return type;
     }
 
-    public final EventBean adaptorForMap(Map<String, Object> properties, EventType eventType)
+    public final EventBean adaptorForTypedMap(Map<String, Object> properties, EventType eventType)
     {
         return new MapEventBean(properties, eventType);
     }
@@ -619,7 +619,7 @@ public class EventAdapterServiceImpl implements EventAdapterService
         return new MapEventType(metadata, alias, this, propertyTypes, null, null);
     }
 
-    public EventType createAnonymousMapType(Map<String, Pair<EventType, String>> taggedEventTypes, Map<String, Pair<EventType, String>> arrayEventTypes)
+    public EventType createSemiAnonymousMapType(Map<String, Pair<EventType, String>> taggedEventTypes, Map<String, Pair<EventType, String>> arrayEventTypes, boolean isUsedByChildViews)
     {
         Map<String, Object> mapProperties = new LinkedHashMap<String, Object>();
         for (Map.Entry<String, Pair<EventType, String>> entry : taggedEventTypes.entrySet())
@@ -688,7 +688,7 @@ public class EventAdapterServiceImpl implements EventAdapterService
         }
     }
 
-    public final EventBean adapterForBean(Object bean, BeanEventType eventType)
+    public final EventBean adapterForTypedBean(Object bean, BeanEventType eventType)
     {
         return new BeanEventBean(bean, eventType);
     }
@@ -747,15 +747,15 @@ public class EventAdapterServiceImpl implements EventAdapterService
         for (EventBean event : events)
         {
             EventBean converted;
-            if (event instanceof WrapperEventBean)
+            if (event instanceof DecoratingEventBean)
             {
-                WrapperEventBean wrapper = (WrapperEventBean) event;
+                DecoratingEventBean wrapper = (DecoratingEventBean) event;
                 converted = adaptorForWrapper(wrapper.getUnderlyingEvent(), wrapper.getDecoratingProperties(), targetType);
             }
-            else if (event instanceof MapEventBean)
+            else if (event instanceof MappedEventBean)
             {
-                MapEventBean mapEvent = (MapEventBean) event;
-                converted = this.adaptorForMap(mapEvent.getProperties(), targetType);
+                MappedEventBean mapEvent = (MappedEventBean) event;
+                converted = this.adaptorForTypedMap(mapEvent.getProperties(), targetType);
             }
             else
             {

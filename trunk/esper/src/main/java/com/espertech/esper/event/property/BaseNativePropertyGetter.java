@@ -98,7 +98,7 @@ public abstract class BaseNativePropertyGetter implements EventPropertyGetter
                     continue;
                 }
 
-                events[countFilled] = eventAdapterService.adapterForBean(element, fragmentEventType);
+                events[countFilled] = eventAdapterService.adapterForTypedBean(element, fragmentEventType);
                 countFilled++;
             }
 
@@ -118,7 +118,7 @@ public abstract class BaseNativePropertyGetter implements EventPropertyGetter
         }
         else
         {
-            return eventAdapterService.adapterForBean(object, fragmentEventType);
+            return eventAdapterService.adapterForTypedBean(object, fragmentEventType);
         }
     }
 
@@ -162,7 +162,7 @@ public abstract class BaseNativePropertyGetter implements EventPropertyGetter
                     continue;
                 }
                 
-                events[countFilled] = eventAdapterService.adapterForBean(element, fragmentEventType);
+                events[countFilled] = eventAdapterService.adapterForTypedBean(element, fragmentEventType);
                 countFilled++;
             }
 
@@ -182,7 +182,7 @@ public abstract class BaseNativePropertyGetter implements EventPropertyGetter
         }
         else
         {
-            return eventAdapterService.adapterForBean(object, fragmentEventType);
+            return eventAdapterService.adapterForTypedBean(object, fragmentEventType);
         }
     }
 }

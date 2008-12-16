@@ -112,7 +112,7 @@ public final class FilterSpecParamExprNode extends FilterSpecParam
                 for (Map.Entry<String, Pair<EventType, String>> entry : arrayEventTypes.entrySet())
                 {
                     EventType compositeEventType = entry.getValue().getFirst();
-                    events[count] = eventAdapterService.adaptorForMap(matchedEvents.getMatchingEvents(), compositeEventType);
+                    events[count] = eventAdapterService.adaptorForTypedMap(matchedEvents.getMatchingEvents(), compositeEventType);
                     count++;
                 }
             }

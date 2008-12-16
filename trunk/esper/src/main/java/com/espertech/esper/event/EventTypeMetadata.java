@@ -152,7 +152,7 @@ public class EventTypeMetadata
         }
         else
         {
-            throw new IllegalStateException("Unknown Map type, cannot create metadata");
+            typeClass = TypeClass.ANONYMOUS;
         }
         return new EventTypeMetadata(alias, null, typeClass, configured, applicationType);
     }

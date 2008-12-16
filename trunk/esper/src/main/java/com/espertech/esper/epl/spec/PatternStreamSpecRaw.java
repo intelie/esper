@@ -100,7 +100,7 @@ public class PatternStreamSpecRaw extends StreamSpecBase implements StreamSpecRa
         {
             if (activeNode instanceof EvalFilterNode)
             {
-                handleFilterNode((EvalFilterNode) activeNode, context, eventTypeReferences, matchUntilArrayTags, taggedEventTypes, arrayEventTypes);
+                handleFilterNode((EvalFilterNode) activeNode, context, eventTypeReferences, matchUntilArrayTags, taggedEventTypes, arrayEventTypes, !this.getViewSpecs().isEmpty());
             }
 
             if (activeNode instanceof EvalObserverNode)
@@ -178,7 +178,8 @@ public class PatternStreamSpecRaw extends StreamSpecBase implements StreamSpecRa
                                   Set<String> eventTypeReferences,
                                   Set<String> matchUntilArrayTags,
                                   LinkedHashMap<String, Pair<EventType, String>> taggedEventTypes,
-                                  LinkedHashMap<String, Pair<EventType, String>> arrayEventTypes)
+                                  LinkedHashMap<String, Pair<EventType, String>> arrayEventTypes,
+                                  boolean isHasChildView)
             throws ExprValidationException
     {
         String eventName = filterNode.getRawFilterSpec().getEventTypeAlias();
@@ -248,7 +249,7 @@ public class PatternStreamSpecRaw extends StreamSpecBase implements StreamSpecRa
         if (arrayEventTypes != null)
         {
             arrayCompositeEventTypes = new LinkedHashMap<String, Pair<EventType, String>>();
-            EventType arrayTagCompositeEventType = context.getEventAdapterService().createAnonymousMapType(new HashMap(), arrayEventTypes);
+            EventType arrayTagCompositeEventType = context.getEventAdapterService().createSemiAnonymousMapType(new HashMap(), arrayEventTypes, false);
             for (Map.Entry<String, Pair<EventType, String>> entry : arrayEventTypes.entrySet())
             {
                 String tag = entry.getKey();
@@ -294,7 +295,7 @@ public class PatternStreamSpecRaw extends StreamSpecBase implements StreamSpecRa
         // handle array tags (match-until clause)
         if (arrayEventTypes != null)
         {
-            EventType arrayTagCompositeEventType = eventAdapterService.createAnonymousMapType(new HashMap(), arrayEventTypes);
+            EventType arrayTagCompositeEventType = eventAdapterService.createSemiAnonymousMapType(new HashMap(), arrayEventTypes, false);
             for (Map.Entry<String, Pair<EventType, String>> entry : arrayEventTypes.entrySet())
             {
                 String tag = entry.getKey();

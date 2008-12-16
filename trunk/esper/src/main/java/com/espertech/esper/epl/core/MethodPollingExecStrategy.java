@@ -96,7 +96,7 @@ public class MethodPollingExecStrategy implements PollExecStrategy
                                     continue;
                                 }
                                 Map mapValues = (Map) value;
-                                event = eventAdapterService.adaptorForMap(mapValues, eventType);
+                                event = eventAdapterService.adaptorForTypedMap(mapValues, eventType);
                             }
                             else
                             {
@@ -121,7 +121,7 @@ public class MethodPollingExecStrategy implements PollExecStrategy
                         else
                         {
                             Map mapValues = (Map) invocationResult;
-                            event = eventAdapterService.adaptorForMap(mapValues, eventType);
+                            event = eventAdapterService.adaptorForTypedMap(mapValues, eventType);
                             rowResult.add(event);
                         }
                     }

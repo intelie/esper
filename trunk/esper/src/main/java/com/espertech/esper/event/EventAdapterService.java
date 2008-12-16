@@ -31,7 +31,7 @@ public interface EventAdapterService
      * @param eventType event type
      * @return event
      */
-    public EventBean adapterForBean(Object bean, BeanEventType eventType);
+    public EventBean adapterForTypedBean(Object bean, BeanEventType eventType);
 
     /**
      * Adds an event type to the registery available for use, and originating outside as a non-adapter.
@@ -102,14 +102,6 @@ public interface EventAdapterService
     public EventType createAnonymousMapType(Map<String, Object> propertyTypes);
 
     /**
-     * Create an event wrapper bean from a set of event properties (name and value objectes) stored in a Map.
-     * @param properties is key-value pairs for the event properties
-     * @param eventType is the type metadata for any maps of that type
-     * @return EventBean instance
-     */
-    public EventBean adaptorForMap(Map<String, Object> properties, EventType eventType);
-
-    /**
      * Creata a wrapper around an event and some additional properties
      * @param event is the wrapped event
      * @param properties are the additional properties
@@ -169,7 +161,15 @@ public interface EventAdapterService
      * @throws EventAdapterException if the alias has not been declared, or the event cannot be wrapped using that
      * alias's event type
      */
-    public EventBean adapterForMap(Map event, String eventTypeAlias) throws EventAdapterException;
+    public EventBean adapterForMap(Map<String, Object> event, String eventTypeAlias) throws EventAdapterException;
+
+    /**
+     * Create an event map bean from a set of event properties (name and value objectes) stored in a Map.
+     * @param properties is key-value pairs for the event properties
+     * @param eventType is the type metadata for any maps of that type
+     * @return EventBean instance
+     */
+    public EventBean adaptorForTypedMap(Map<String, Object> properties, EventType eventType);
 
     /**
      * Create an event type based on the original type passed in adding one or more properties.
@@ -290,10 +290,12 @@ public interface EventAdapterService
     public boolean removeType(String alias);
 
     /**
-     * Creates an anonymous map that has no alias.
+     * Creates an anonymous map that has no alias, however in a fail-over scenario
+     * events of this type may be recoverable and therefore the type is only semi-anonymous,
+     * identified by the tags and event type aliases used. 
      * @param taggedEventTypes simple type per property name
      * @param arrayEventTypes array type per property name
      * @return event type
      */
-    public EventType createAnonymousMapType(Map<String, Pair<EventType, String>> taggedEventTypes, Map<String, Pair<EventType, String>> arrayEventTypes);
+    public EventType createSemiAnonymousMapType(Map<String, Pair<EventType, String>> taggedEventTypes, Map<String, Pair<EventType, String>> arrayEventTypes, boolean isUsedByChildViews);
 }

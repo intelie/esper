@@ -140,7 +140,7 @@ public class EPStatementStartMethod
         else if (streamSpec instanceof PatternStreamSpecCompiled)
         {
             PatternStreamSpecCompiled patternStreamSpec = (PatternStreamSpecCompiled) streamSpec;
-            final EventType eventType = services.getEventAdapterService().createAnonymousMapType(patternStreamSpec.getTaggedEventTypes(), patternStreamSpec.getArrayEventTypes());
+            final EventType eventType = services.getEventAdapterService().createSemiAnonymousMapType(patternStreamSpec.getTaggedEventTypes(), patternStreamSpec.getArrayEventTypes(), !streamSpec.getViewSpecs().isEmpty());
             final EventStream sourceEventStream = new ZeroDepthStream(eventType);
             eventStreamParentViewable = sourceEventStream;
 
@@ -150,7 +150,7 @@ public class EPStatementStartMethod
             PatternMatchCallback callback = new PatternMatchCallback() {
                 public void matchFound(Map<String, Object> matchEvent)
                 {
-                    EventBean compositeEvent = statementContext.getEventAdapterService().adaptorForMap(matchEvent, eventType);
+                    EventBean compositeEvent = statementContext.getEventAdapterService().adaptorForTypedMap(matchEvent, eventType);
                     sourceEventStream.insert(compositeEvent);
                 }
             };
@@ -519,7 +519,7 @@ public class EPStatementStartMethod
             else if (streamSpec instanceof PatternStreamSpecCompiled)
             {
                 PatternStreamSpecCompiled patternStreamSpec = (PatternStreamSpecCompiled) streamSpec;
-                final EventType eventType = services.getEventAdapterService().createAnonymousMapType(patternStreamSpec.getTaggedEventTypes(), patternStreamSpec.getArrayEventTypes());
+                final EventType eventType = services.getEventAdapterService().createSemiAnonymousMapType(patternStreamSpec.getTaggedEventTypes(), patternStreamSpec.getArrayEventTypes(), !patternStreamSpec.getViewSpecs().isEmpty());
                 final EventStream sourceEventStream = new ZeroDepthStream(eventType);
                 eventStreamParentViewable[i] = sourceEventStream;
                 unmaterializedViewChain[i] = services.getViewService().createFactories(i, sourceEventStream.getEventType(), streamSpec.getViewSpecs(), streamSpec.getOptions(), statementContext);
@@ -530,7 +530,7 @@ public class EPStatementStartMethod
                 PatternMatchCallback callback = new PatternMatchCallback() {
                     public void matchFound(Map<String, Object> matchEvent)
                     {
-                        EventBean compositeEvent = statementContext.getEventAdapterService().adaptorForMap(matchEvent, eventType);
+                        EventBean compositeEvent = statementContext.getEventAdapterService().adaptorForTypedMap(matchEvent, eventType);
                         sourceEventStream.insert(compositeEvent);
                     }
                 };

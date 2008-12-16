@@ -68,7 +68,7 @@ public class MapArrayMaptypedEntryPropertyGetter implements EventPropertyGetter 
         }
 
         // If the map does not contain the key, this is allowed and represented as null
-        EventBean eventBean = eventAdapterService.adaptorForMap((Map) valueMap, innerType);
+        EventBean eventBean = eventAdapterService.adaptorForTypedMap((Map) valueMap, innerType);
         return eventBeanEntryGetter.get(eventBean);
     }
 
@@ -110,7 +110,7 @@ public class MapArrayMaptypedEntryPropertyGetter implements EventPropertyGetter 
         }
 
         // If the map does not contain the key, this is allowed and represented as null
-        EventBean eventBean = eventAdapterService.adaptorForMap((Map) valueMap, innerType);
+        EventBean eventBean = eventAdapterService.adaptorForTypedMap((Map) valueMap, innerType);
         return eventBeanEntryGetter.getFragment(eventBean);        
     }
 }

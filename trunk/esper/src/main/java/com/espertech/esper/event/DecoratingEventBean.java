@@ -9,6 +9,7 @@
 package com.espertech.esper.event;
 
 import com.espertech.esper.collection.Pair;
+import com.espertech.esper.client.EventBean;
 
 import java.util.Map;
 
@@ -22,4 +23,6 @@ public interface DecoratingEventBean
      * @return property name and values
      */
     public Map<String, Object> getDecoratingProperties();
+
+    public EventBean getUnderlyingEvent();   
 }

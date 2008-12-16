@@ -79,6 +79,6 @@ public class EventSenderBean implements EventSender
             }
         }
 
-        return eventAdapterService.adapterForBean(event, beanEventType);
+        return eventAdapterService.adapterForTypedBean(event, beanEventType);
     }
 }

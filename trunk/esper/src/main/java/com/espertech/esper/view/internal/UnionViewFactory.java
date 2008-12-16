@@ -15,17 +15,24 @@ import java.util.List;
  */
 public class UnionViewFactory implements ViewFactory, DataWindowViewFactory
 {
-    private final EventType parentEventType;
-    private final List<ViewFactory> viewFactories;
+    protected EventType parentEventType;
+    protected List<ViewFactory> viewFactories;
 
     /**
      * Ctor.
-     * @param parentEventType the event type
-     * @param viewFactories the view factories
+     * Dependencies injected after reflective instantiation.
      */
-    public UnionViewFactory(EventType parentEventType, List<ViewFactory> viewFactories)
+    public UnionViewFactory()
+    {
+    }
+
+    public void setParentEventType(EventType parentEventType)
     {
         this.parentEventType = parentEventType;
+    }
+
+    public void setViewFactories(List<ViewFactory> viewFactories)
+    {
         this.viewFactories = viewFactories;
     }
 

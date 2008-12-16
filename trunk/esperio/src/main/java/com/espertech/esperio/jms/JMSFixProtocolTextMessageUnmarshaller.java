@@ -76,6 +76,6 @@ public class JMSFixProtocolTextMessageUnmarshaller implements JMSMessageUnmarsha
             throw new EPException("Error unmarshalling message :" + ex.getMessage(), ex);
         }
 
-        return eventAdapterService.adaptorForMap(fixMsg, eventType);
+        return eventAdapterService.adaptorForTypedMap(fixMsg, eventType);
     }
 }

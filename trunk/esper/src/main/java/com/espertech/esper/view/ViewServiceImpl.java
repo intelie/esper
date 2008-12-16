@@ -109,13 +109,13 @@ public final class ViewServiceImpl implements ViewService
         }
         if ((options.isRetainUnion() || options.isRetainIntersection()) && dataWindowCount > 1)
         {
-            viewFactories = getRetainViewFactories(parentEventType, viewFactories, options.isRetainUnion());
+            viewFactories = getRetainViewFactories(parentEventType, viewFactories, options.isRetainUnion(),  context);
         }
 
         return new ViewFactoryChain(parentEventType, viewFactories);
     }
 
-    private List<ViewFactory> getRetainViewFactories(EventType parentEventType, List<ViewFactory> viewFactories, boolean isUnion)
+    private List<ViewFactory> getRetainViewFactories(EventType parentEventType, List<ViewFactory> viewFactories, boolean isUnion, StatementContext context)
             throws ViewProcessingException
     {
         Set<Integer> groupByFactory = new HashSet<Integer>();
@@ -159,11 +159,17 @@ public final class ViewServiceImpl implements ViewService
         ViewFactory retainPolicy = null;
         if (isUnion)
         {
-            retainPolicy = new UnionViewFactory(parentEventType, retainViewFactories);
+            UnionViewFactory viewFactory = (UnionViewFactory) context.getViewResolutionService().create("internal", "union");
+            viewFactory.setParentEventType(parentEventType);
+            viewFactory.setViewFactories(retainViewFactories);
+            retainPolicy = viewFactory;
         }
         else
         {
-            retainPolicy = new IntersectViewFactory(parentEventType, retainViewFactories);
+            IntersectViewFactory viewFactory = (IntersectViewFactory) context.getViewResolutionService().create("internal", "intersect");
+            viewFactory.setParentEventType(parentEventType);
+            viewFactory.setViewFactories(retainViewFactories);
+            retainPolicy = viewFactory;
         }
 
         List<ViewFactory> nonRetainViewFactories = new ArrayList<ViewFactory>();

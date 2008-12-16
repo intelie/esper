@@ -156,7 +156,7 @@ public class PollExecStrategyDBQuery implements PollExecStrategy
 
                     row.put(columnName, value);
                 }
-                EventBean eventBeanRow = eventAdapterService.adaptorForMap(row, eventType);
+                EventBean eventBeanRow = eventAdapterService.adaptorForTypedMap(row, eventType);
                 rows.add(eventBeanRow);
             }
         }
