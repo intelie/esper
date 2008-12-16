@@ -171,4 +171,9 @@ public abstract class BaseXMLEventType extends BaseConfigurableEventType {
     {
         return configurationEventTypeXMLDOM.hashCode();
     }
+
+    public FragmentEventType getFragmentType(String property)
+    {
+        return null;
+    }    
 }

@@ -137,9 +137,4 @@ public class SchemaXMLEventType extends BaseXMLEventType {
             throw new EPException("Error constructing XPath expression from property name '" + property + '\'', e);
         }
     }
-
-    public FragmentEventType getFragmentType(String property)
-    {
-        return null;
-    }
 }

@@ -104,9 +104,4 @@ public class SimpleXMLEventType extends BaseXMLEventType {
         propertyGetterCache.put(property, getter);
         return getter;
     }
-
-    public FragmentEventType getFragmentType(String property)
-    {
-        return null;
-    }
 }
