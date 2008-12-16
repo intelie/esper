@@ -72,9 +72,9 @@ public class ASTOutputLimitHelper
 
         if (node.getType() == EsperEPL2GrammarParser.WHEN_LIMIT_EXPR)
         {
-            Tree expressionNode = node.getChild(0);
+            Tree expressionNode = node.getChild(count);// was 0
             whenExpression = astExprNodeMap.remove(expressionNode);
-            if (node.getChildCount() > 1)
+            if (node.getChildCount() > count+1)//was 1
             {
                 thenExpressions = EPLTreeWalker.getOnTriggerSetAssignments(node.getChild(1), astExprNodeMap);
             }

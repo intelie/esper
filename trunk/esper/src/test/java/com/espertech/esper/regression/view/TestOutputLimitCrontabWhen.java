@@ -145,7 +145,11 @@ public class TestOutputLimitCrontabWhen extends TestCase
 
         model = epService.getEPAdministrator().compileEPL(expression);
         assertEquals(expression, model.toEPL());
-        runAssertion(3, epService.getEPAdministrator().create(model));        
+        runAssertion(3, epService.getEPAdministrator().create(model));
+
+        String outputLast = "select symbol from MarketData.win:length(2) output last when (myvar = 1) ";
+        model = epService.getEPAdministrator().compileEPL(outputLast);
+        assertEquals(outputLast.trim(), model.toEPL().trim());
     }
 
     private void runAssertion(int days, EPStatement stmt)

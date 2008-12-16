@@ -6,6 +6,7 @@ import com.espertech.esper.client.EPServiceProviderManager;
 import com.espertech.esper.support.util.SupportUpdateListener;
 import com.espertech.esper.support.bean.SupportMarketDataBean;
 import com.espertech.esper.support.bean.SupportBeanString;
+import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.event.EventBean;
 
@@ -27,6 +28,20 @@ public class TestGroupByEventPerGroupHaving extends TestCase
         testListener = new SupportUpdateListener();
         epService = EPServiceProviderManager.getDefaultProvider(SupportConfigFactory.getConfiguration());
         epService.initialize();
+    }
+
+    public void testHavingCount()
+    {
+        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("SupportBean", SupportBean.class);
+        String text = "select * from SupportBean(intPrimitive = 3).win:length(10) as e1 group by string having count(*) > 2";
+        selectTestView = epService.getEPAdministrator().createEPL(text);
+        selectTestView.addListener(testListener);
+
+        epService.getEPRuntime().sendEvent(new SupportBean("A1", 3));
+        epService.getEPRuntime().sendEvent(new SupportBean("A1", 3));
+        assertFalse(testListener.isInvoked());
+        epService.getEPRuntime().sendEvent(new SupportBean("A1", 3));
+        assertTrue(testListener.isInvoked());
     }
 
     public void testSumJoin()
@@ -106,49 +121,6 @@ public class TestGroupByEventPerGroupHaving extends TestCase
 
         assertEquals(newSum, oldData[0].get("mySum"));
         assertEquals(symbol, oldData[0].get("symbol"));
-
-        testListener.reset();
-        assertFalse(testListener.isInvoked());
-    }
-
-    private void assertEvents(String symbol, double oldSum, double newSum)
-    {
-        EventBean[] oldData = testListener.getLastOldData();
-        EventBean[] newData = testListener.getLastNewData();
-
-        assertEquals(1, oldData.length);
-        assertEquals(1, newData.length);
-
-        assertEquals(oldSum, oldData[0].get("mySum"));
-        assertEquals(symbol, oldData[0].get("symbol"));
-
-        assertEquals(newSum, newData[0].get("mySum"));
-        assertEquals(symbol, newData[0].get("symbol"));
-
-        testListener.reset();
-        assertFalse(testListener.isInvoked());
-    }
-
-    private void assertEvents(String symbolOne, double oldSumOne, double newSumOne,
-                              String symbolTwo, double oldSumTwo, double newSumTwo)
-    {
-        EventBean[] oldData = testListener.getLastOldData();
-        EventBean[] newData = testListener.getLastNewData();
-
-        assertEquals(2, oldData.length);
-        assertEquals(2, newData.length);
-
-        int indexOne = 0;
-        int indexTwo = 1;
-        if (oldData[0].get("symbol").equals(symbolTwo))
-        {
-            indexTwo = 0;
-            indexOne = 1;
-        }
-        assertEquals(newSumOne, newData[indexOne].get("mySum"));
-        assertEquals(newSumTwo, newData[indexTwo].get("mySum"));
-        assertEquals(oldSumOne, oldData[indexOne].get("mySum"));
-        assertEquals(oldSumTwo, oldData[indexTwo].get("mySum"));
 
         testListener.reset();
         assertFalse(testListener.isInvoked());

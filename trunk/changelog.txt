@@ -1,6 +1,8 @@
 Esper Changelog
 ===================
 
+Fixed issue ESPER-313 Using last | snapshot in output...when statement causes parsing error
+Fixed issue ESPER-312 NullPointerException in group-by query with only a count(*) in the having-clause and no other agg functions
 Fixed issue ESPER-310 Safe iterator on unidirectional join not releasing lock
 Fixed issue ESPER-309 Named window model-after for Map-event types incompatible with insert of Map type
 Fixed issue ESPER-305 escape char parsing

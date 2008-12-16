@@ -333,7 +333,7 @@ public class ResultSetProcessorFactory
 
         // (2)
         // A wildcard select-clause has been specified and the group-by is ignored since no aggregation functions are used, and no having clause
-        if ((namedSelectionList.isEmpty()) && (propertiesAggregatedHaving.isEmpty()))
+        if ((namedSelectionList.isEmpty()) && (propertiesAggregatedHaving.isEmpty()) && (havingAggregateExprNodes.isEmpty()))
         {
             log.debug(".getProcessor Using ResultSetProcessorSimple");
             return new ResultSetProcessorSimple(selectExprProcessor, orderByProcessor, optionalHavingNode, isSelectRStream);
