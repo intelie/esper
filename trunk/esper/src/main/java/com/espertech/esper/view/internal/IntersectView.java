@@ -55,8 +55,6 @@ public class IntersectView extends ViewSupport implements LastPostObserver, Clon
             views[i].addView(view);
             view.setObserver(this);
         }
-
-        isRetainObserverEvents = true;
     }
 
     public View cloneView(StatementContext statementContext)

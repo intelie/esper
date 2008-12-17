@@ -51,7 +51,6 @@ public class EPRuntimeUtil
             {
                 long numPerSec = (currNumEventsProcessed - lastNumEventsProcessed) / numSecThreadReport;
                 log.info(".awaitCompletion received=" + epRuntime.getNumEventsReceived() +
-                         "  emitted=" + epRuntime.getNumEventsEmitted() +
                          "  processed=" + currNumEventsProcessed +
                          "  perSec=" + numPerSec);
                 lastNumEventsProcessed = currNumEventsProcessed;
@@ -100,8 +99,7 @@ public class EPRuntimeUtil
 
         log.info(".awaitCompletion Runtime reports, numReceived=" + numReceived +
                  "  numProcessed=" + epRuntime.getNumEventsReceived() +
-                 "  perSec=" +  numReceivedPerSec +
-                 "  numEmitted=" + epRuntime.getNumEventsEmitted()
+                 "  perSec=" +  numReceivedPerSec
                  );
 
         return true;

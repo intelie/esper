@@ -21,7 +21,7 @@
 			</listitem>
 			<listitem>
 				<para>
-                    The runtime interface to send events into the engine, emit events and get statistics for an engine instance, is described in <xref linkend="api-runtime"/>.
+			        The runtime interface to send events into the engine, set and get variable values and execute on-demand queries, is described in <xref linkend="api-runtime"/>.
                 </para>
 			</listitem>
 		</itemizedlist>
@@ -670,7 +670,7 @@ finally {
 
 		<indexterm><primary>EPRuntime interface</primary></indexterm>
         <para>
-			The <literal>EPRuntime</literal> interface is used to send events for processing into an Esper engine, and to emit Events from an engine instance to the outside world.
+			The <literal>EPRuntime</literal> interface is used to send events for processing into an Esper engine, set and get variable values and execute on-demand queries.
         </para>
         
         <para>
@@ -844,18 +844,6 @@ EPOnDemandQueryResult result = prepared.execute();
 prepared.execute();	// execute a second time]]></programlisting>
 
 			</sect3>
-		</sect2>
-
-	    <sect2 id="api-runtime-emit">		
-			<title>Emit Facility for Publish-Subscribe</title>
-			<para>
-				The <literal>emit</literal> and <literal>addEmittedListener</literal> methods can be used to emit events from a runtime to a registered set of one or more emitted event listeners. 
-				This mechanism is available as a service to enable channel-based publish-subscribe of events emitted from an engine instance via the <literal>emit</literal> method. Emitting events is not integrated with EPL  and is available only via the <literal>EPRuntime</literal> interface.
-			</para>
-	
-			<para>
-				Events are emitted on an event channel identified by a name. Listeners are implementations of the <literal>EmittedListener</literal> interface. Via the <literal>addEmittedListener</literal> method a listener can be added to the specified event channel. The lister receives only those events posted to that channel. The channel parameter to <literal>addEmittedListener</literal> also allows null values. If a null channel value is specified, the listeners receives emitted events posted on any channel.
-			</para>
 		</sect2>
     </sect1>
 

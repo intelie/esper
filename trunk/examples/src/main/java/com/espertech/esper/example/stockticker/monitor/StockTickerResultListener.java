@@ -12,15 +12,15 @@ import java.util.List;
 import java.util.Collections;
 import java.util.LinkedList;
 
-import com.espertech.esper.client.EmittedListener;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.logging.Log;
+import com.espertech.esper.example.stockticker.eventbean.LimitAlert;
 
-public class StockTickerEmittedListener implements EmittedListener
+public class StockTickerResultListener
 {
     private List<Object> matchEvents = Collections.synchronizedList(new LinkedList<Object>());
 
-    public void emitted(Object object)
+    public void emitted(LimitAlert object)
     {
         log.info(".emitted Received emitted " + object);
         matchEvents.add(object);
@@ -41,5 +41,5 @@ public class StockTickerEmittedListener implements EmittedListener
         matchEvents.clear();
     }
 
-    private static final Log log = LogFactory.getLog(StockTickerEmittedListener.class);
+    private static final Log log = LogFactory.getLog(StockTickerResultListener.class);
 }

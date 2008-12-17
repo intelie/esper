@@ -15,8 +15,8 @@ import java.util.ArrayList;
  */
 public class IntersectViewFactory implements ViewFactory, DataWindowViewFactory
 {
-    private EventType parentEventType;
-    private List<ViewFactory> viewFactories;
+    protected EventType parentEventType;
+    protected List<ViewFactory> viewFactories;
 
     /**
      * Ctor.

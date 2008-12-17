@@ -22,12 +22,14 @@ public class StockTickerAlertListener implements UpdateListener
     private final EPServiceProvider epService;
     private final PriceLimit limit;
     private final StockTick initialPriceTick;
+    private final StockTickerResultListener stockTickerResultListener;
 
-    public StockTickerAlertListener(EPServiceProvider epService, PriceLimit limit, StockTick initialPriceTick)
+    public StockTickerAlertListener(EPServiceProvider epService, PriceLimit limit, StockTick initialPriceTick, StockTickerResultListener stockTickerResultListener)
     {
         this.epService = epService;
         this.limit = limit;
         this.initialPriceTick = initialPriceTick;
+        this.stockTickerResultListener = stockTickerResultListener;
     }
 
     public void update(EventBean[] newEvents, EventBean[] oldEvents)
@@ -41,7 +43,7 @@ public class StockTickerAlertListener implements UpdateListener
                   "  limt=" + limit.getLimitPct());
 
         LimitAlert alert = new LimitAlert(tick, limit, initialPriceTick.getPrice());
-        epService.getEPRuntime().emit(alert);
+        stockTickerResultListener.emitted(alert);
     }
 
     private static final Log log = LogFactory.getLog(StockTickerAlertListener.class);

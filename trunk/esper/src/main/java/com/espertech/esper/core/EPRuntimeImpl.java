@@ -210,14 +210,8 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
         return services.getFilterService().getNumEventsEvaluated();
     }
 
-    public long getNumEventsEmitted()
-    {
-        return services.getEmitService().getNumEventsEmitted();
-    }
-
     public void resetStats() {
         services.getFilterService().resetStats();
-        services.getEmitService().resetStats();
         routedInternal.set(0);
         routedExternal.set(0);
     }
@@ -248,26 +242,6 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
         {
             ThreadWorkQueue.add(event);
         }
-    }
-
-    public void emit(Object object)
-    {
-        services.getEmitService().emitEvent(object, null);
-    }
-
-    public void emit(Object object, String channel)
-    {
-        services.getEmitService().emitEvent(object, channel);
-    }
-
-    public void addEmittedListener(EmittedListener listener, String channel)
-    {
-        services.getEmitService().addListener(listener, channel);
-    }
-
-    public void clearEmittedListeners()
-    {
-        services.getEmitService().clearListeners();
     }
 
     private void processEvent(Object event)

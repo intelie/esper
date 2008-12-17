@@ -161,7 +161,6 @@ public class PropertyIndexedEventTable implements EventTable
             {
                 log.debug(".remove Event could not be located in index, event " + event);
             }
-            System.out.println("propertyIndex NOT FOUND size=" + propertyIndex.size());
             return;
         }
 

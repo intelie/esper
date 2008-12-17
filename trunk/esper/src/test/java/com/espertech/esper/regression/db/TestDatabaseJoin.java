@@ -47,7 +47,7 @@ public class TestDatabaseJoin extends TestCase
     public void testTimeBatchEPL()
     {
         String stmtText = "select " + ALL_FIELDS + " from " +
-                " sql:MyDB ['select " + ALL_FIELDS + " from mytesttable where ${intPrimitive} = mytesttable.mybigint'] as s0," +
+                " sql:MyDB ['select " + ALL_FIELDS + " from mytesttable \n\r where ${intPrimitive} = mytesttable.mybigint'] as s0," +
                 SupportBean.class.getName() + ".win:time_batch(10 sec) as s1";
         EPStatement stmt = epService.getEPAdministrator().createEPL(stmtText);
         runtestTimeBatch(stmt);

@@ -13,17 +13,16 @@ import java.util.LinkedList;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import com.espertech.esper.client.EmittedListener;
 import com.espertech.esper.example.matchmaker.eventbean.MatchAlertBean;
 
-public class MatchAlertListener implements EmittedListener
+public class MatchAlertListener
 {
     private List<MatchAlertBean> emittedList = new LinkedList<MatchAlertBean>();
 
-    public void emitted(Object object)
+    public void emitted(MatchAlertBean object)
     {
         log.info(".emitted Emitted object=" + object);
-        emittedList.add((MatchAlertBean) object);
+        emittedList.add(object);
     }
 
     public int getSize()

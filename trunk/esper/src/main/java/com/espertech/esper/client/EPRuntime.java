@@ -60,46 +60,9 @@ public interface EPRuntime
     public long getNumEventsReceived();
 
     /**
-     * Number of events emitted over the lifetime of the event stream processing runtime,
-     * or since the last resetStats() call
-     * @return number of events emitted
-     */
-    public long getNumEventsEmitted();
-
-    /**
      * Reset number of events received and emitted
      */
     public void resetStats();
-
-    /**
-     * Emit an event object to any registered EmittedListener instances listening to the default channel.
-     * @param object to be emitted to the default channel
-     */
-    public void emit(final Object object);
-
-    /**
-     * Emit an event object to any registered EmittedListener instances on the specified channel.
-     * Event listeners listening to all channels as well as those listening to the specific channel
-     * are called. Supplying a null value in the channel has the same result as the emit(Object object) method.
-     * @param object to be emitted
-     * @param channel channel to emit the object to, or null if emitting to the default channel
-     */
-    public void emit(final Object object, final String channel);
-
-    /**
-     * Register an object that listens for events emitted from the event stream processing runtime on the
-     * specified channel. A null value can be supplied for the channel in which case the
-     * emit listener will be invoked for events emitted an any channel.
-     * @param listener called when an event is emitted by the runtime.
-     * @param channel is the channel to add the listener to, a null value can be used to listen to events emitted
-     * on all channels
-     */
-    public void addEmittedListener(EmittedListener listener, String channel);
-
-    /**
-     * Deregister all emitted event listeners.
-     */
-    public void clearEmittedListeners();
 
     /**
      * Route the event object back to the event stream processing runtime for internal dispatching,

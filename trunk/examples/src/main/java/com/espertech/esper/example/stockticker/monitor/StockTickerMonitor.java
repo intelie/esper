@@ -8,16 +8,19 @@
  **************************************************************************************/
 package com.espertech.esper.example.stockticker.monitor;
 
+import com.espertech.esper.client.EPServiceProvider;
+import com.espertech.esper.client.EPStatement;
+import com.espertech.esper.client.EventBean;
+import com.espertech.esper.client.UpdateListener;
 import com.espertech.esper.example.stockticker.eventbean.PriceLimit;
 import com.espertech.esper.example.stockticker.eventbean.StockTick;
-import com.espertech.esper.client.*;
-import com.espertech.esper.client.EventBean;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 public class StockTickerMonitor
 {
     private final EPServiceProvider epService;
+    private final StockTickerResultListener stockTickerResultListener;
 
     private PriceLimit limit = null;
 
@@ -26,9 +29,10 @@ public class StockTickerMonitor
     private EPStatement lowPriceListener = null;
     private EPStatement highPriceListener = null;
 
-    public StockTickerMonitor(EPServiceProvider epService)
+    public StockTickerMonitor(EPServiceProvider epService, final StockTickerResultListener stockTickerResultListener)
     {
         this.epService = epService;
+        this.stockTickerResultListener = stockTickerResultListener;
 
         // Listen to all limits to be set
         String expressionText = "every pricelimit=PriceLimit()";
@@ -47,15 +51,16 @@ public class StockTickerMonitor
                           "  pct=" + limitBean.getLimitPct());
                 }
 
-                new StockTickerMonitor(StockTickerMonitor.this.epService, limitBean);
+                new StockTickerMonitor(StockTickerMonitor.this.epService, limitBean, stockTickerResultListener);
             }
 	    });
     }
 
-    public StockTickerMonitor(EPServiceProvider epService, PriceLimit limit)
+    public StockTickerMonitor(EPServiceProvider epService, PriceLimit limit, final StockTickerResultListener stockTickerResultListener)
     {
         this.epService = epService;
         this.limit = limit;
+        this.stockTickerResultListener = stockTickerResultListener;
 
         String expressionText = "every pricelimit=PriceLimit" +
                 "(userId='" + limit.getUserId() + "'," +
@@ -100,7 +105,7 @@ public class StockTickerMonitor
                           "  upperLimit=" + upperLimit);
                 }
 
-                StockTickerAlertListener listener = new StockTickerAlertListener(StockTickerMonitor.this.epService, limit, tick);
+                StockTickerAlertListener listener = new StockTickerAlertListener(StockTickerMonitor.this.epService, limit, tick, stockTickerResultListener);
 
                 String expressionText = "every tick=StockTick" +
                          "(stockSymbol='" + limit.getStockSymbol() + "', price < " + lowerLimit + ")";

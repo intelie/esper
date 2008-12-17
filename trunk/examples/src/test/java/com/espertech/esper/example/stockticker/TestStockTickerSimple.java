@@ -9,7 +9,7 @@
 package com.espertech.esper.example.stockticker;
 
 import junit.framework.*;
-import com.espertech.esper.example.stockticker.monitor.StockTickerEmittedListener;
+import com.espertech.esper.example.stockticker.monitor.StockTickerResultListener;
 import com.espertech.esper.example.stockticker.monitor.StockTickerMonitor;
 import com.espertech.esper.example.stockticker.eventbean.StockTick;
 import com.espertech.esper.example.stockticker.eventbean.PriceLimit;
@@ -23,19 +23,18 @@ import org.apache.commons.logging.Log;
 
 public class TestStockTickerSimple extends TestCase
 {
-    private StockTickerEmittedListener listener;
+    private StockTickerResultListener listener;
     private EPServiceProvider epService;
 
     protected void setUp() throws Exception
     {
-        listener = new StockTickerEmittedListener();
+        listener = new StockTickerResultListener();
 
         Configuration configuration = new Configuration();
         configuration.addEventTypeAlias("PriceLimit", PriceLimit.class.getName());
         configuration.addEventTypeAlias("StockTick", StockTick.class.getName());
 
         epService = EPServiceProviderManager.getProvider("TestStockTickerSimple", configuration);
-        epService.getEPRuntime().addEmittedListener(listener, null);
 
         // To reduce logging noise and get max performance
         epService.getEPRuntime().sendEvent(new TimerControlEvent(TimerControlEvent.ClockType.CLOCK_EXTERNAL));
@@ -45,7 +44,7 @@ public class TestStockTickerSimple extends TestCase
     {
         log.info(".testStockTicker");
 
-        new StockTickerMonitor(epService);
+        new StockTickerMonitor(epService, listener);
 
         performEventFlowTest();
         performBoundaryTest();

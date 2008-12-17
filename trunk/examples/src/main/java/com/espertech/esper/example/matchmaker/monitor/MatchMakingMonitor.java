@@ -26,9 +26,12 @@ public class MatchMakingMonitor
 
     private int mobileUserId;
     private EPStatement locateOther;
+    private MatchAlertListener matchAlertListener;
 
-    public MatchMakingMonitor()
+    public MatchMakingMonitor(final MatchAlertListener matchAlertListener)
     {
+        this.matchAlertListener = matchAlertListener;
+        
         // This code runs as part of the automated regression test suite; Therefore disable internal timer theading to safe resources
         Configuration config = new Configuration();
         config.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
@@ -53,13 +56,14 @@ public class MatchMakingMonitor
                 log.debug(".update New user encountered, user=" + user.getUserId());
 
                 existingUsers.add(user.getUserId());
-                new MatchMakingMonitor(user);
+                new MatchMakingMonitor(user, matchAlertListener);
             }
         });
     }
 
-    public MatchMakingMonitor(MobileUserBean mobileUser)
+    public MatchMakingMonitor(MobileUserBean mobileUser, MatchAlertListener matchAlertListener)
     {
+        this.matchAlertListener = matchAlertListener;
         this.mobileUserId = mobileUser.getUserId();
 
         // Create patterns that listen to other users
@@ -107,7 +111,7 @@ public class MatchMakingMonitor
             {
                 MobileUserBean other = (MobileUserBean) newEvents[0].get("other");
                 MatchAlertBean alert = new MatchAlertBean(other.getUserId(), MatchMakingMonitor.this.mobileUserId);
-                epService.getEPRuntime().emit(alert);
+                matchAlertListener.emitted(alert);
             }
         });
     }

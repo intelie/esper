@@ -33,9 +33,8 @@ public class TestMatchMakingMonitor extends TestCase
         listener = new MatchAlertListener();
         epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();
-        epService.getEPRuntime().addEmittedListener(listener, null);
 
-        new MatchMakingMonitor();
+        new MatchMakingMonitor(listener);
     }
 
     public void testLocationChanges()

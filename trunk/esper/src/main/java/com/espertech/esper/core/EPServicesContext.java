@@ -10,8 +10,6 @@ package com.espertech.esper.core;
 
 import com.espertech.esper.dispatch.DispatchService;
 import com.espertech.esper.dispatch.DispatchServiceProvider;
-import com.espertech.esper.emit.EmitService;
-import com.espertech.esper.emit.EmitServiceProvider;
 import com.espertech.esper.epl.core.EngineImportService;
 import com.espertech.esper.epl.core.EngineSettingsService;
 import com.espertech.esper.epl.db.DatabaseConfigService;
@@ -42,7 +40,6 @@ public final class EPServicesContext
     private FilterService filterService;
     private TimerService timerService;
     private SchedulingService schedulingService;
-    private EmitService emitService;
     private DispatchService dispatchService;
     private ViewService viewService;
     private StreamFactoryService streamFactoryService;
@@ -133,7 +130,6 @@ public final class EPServicesContext
         this.databaseConfigService = databaseConfigService;
         this.filterService = filterService;
         this.timerService = timerService;
-        this.emitService = EmitServiceProvider.newService();
         this.dispatchService = DispatchServiceProvider.newService();
         this.viewService = ViewServiceProvider.newService();
         this.streamFactoryService = streamFactoryService;
@@ -206,15 +202,6 @@ public final class EPServicesContext
     public final SchedulingService getSchedulingService()
     {
         return schedulingService;
-    }
-
-    /**
-     * Returns service for emitting events.
-     * @return emit event service
-     */
-    public final EmitService getEmitService()
-    {
-        return emitService;
     }
 
     /**
@@ -383,7 +370,6 @@ public final class EPServicesContext
         this.databaseConfigService = null;
         this.filterService = null;
         this.timerService = null;
-        this.emitService = null;
         this.dispatchService = null;
         this.viewService = null;
         this.streamFactoryService = null;
