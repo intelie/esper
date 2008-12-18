@@ -197,19 +197,12 @@ public final class AddPropertyValueView extends ViewSupport implements Cloneable
                                        EventAdapterService eventAdapterService)
     {
         Map<String, Object> values = new HashMap<String, Object>();
-
-        // Copy properties of original event, add property value
-        for (String property : originalEvent.getEventType().getPropertyNames())
-        {
-            values.put(property, originalEvent.get(property));
-        }
-
         for (int i = 0; i < propertyNames.length; i++)
         {
             values.put(propertyNames[i], propertyValues[i]);
         }
 
-        return eventAdapterService.adaptorForTypedMap(values, targetEventType);
+        return eventAdapterService.adaptorForWrapper(originalEvent, values, targetEventType);
     }
 
     public final String toString()

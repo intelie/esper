@@ -15,6 +15,8 @@ import com.espertech.esper.client.EventType;
 import com.espertech.esper.view.*;
 
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 
 /**
  * Factory for {@link MergeView} instances.
@@ -90,8 +92,12 @@ public class MergeViewFactory implements ViewFactory
         // grouped which simply provides a map of calculated values,
         // then we need to add in the merge field as an event property thus changing event types.
         {
-            eventType = statementContext.getEventAdapterService().createAddToEventType(
-                    parentEventType, fieldNames, fieldTypes);
+            Map<String, Object> additionalProps = new HashMap<String, Object>();
+            for (int i = 0; i < fieldNames.length; i++)
+            {
+                additionalProps.put(fieldNames[i], fieldTypes[i]);
+            }
+            eventType = statementContext.getEventAdapterService().createAnonymousWrapperType(parentEventType, additionalProps);
         }
     }
 

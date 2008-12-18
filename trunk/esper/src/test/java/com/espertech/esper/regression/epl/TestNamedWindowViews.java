@@ -72,7 +72,7 @@ public class TestNamedWindowViews extends TestCase
         stmtCreate.addListener(listenerWindow);
 
         assertEquals(String.class, stmtCreate.getEventType().getPropertyType("key"));
-        assertEquals(Long.class, stmtCreate.getEventType().getPropertyType("value"));
+        assertEquals(long.class, stmtCreate.getEventType().getPropertyType("value"));
 
         String stmtTextInsert = "insert into MyWindow select string as key, longBoxed as value from " + SupportBean.class.getName();
         EPStatement stmtInsert = epService.getEPAdministrator().createEPL(stmtTextInsert);
@@ -1745,7 +1745,7 @@ public class TestNamedWindowViews extends TestCase
         stmtCreate.addListener(listenerWindow);
 
         assertEquals(String.class, stmtCreate.getEventType().getPropertyType("key"));
-        assertEquals(Long.class, stmtCreate.getEventType().getPropertyType("value"));
+        assertEquals(long.class, stmtCreate.getEventType().getPropertyType("value"));
 
         String stmtTextInsert = "insert into MyWindow select string as key, longBoxed as value from " + SupportBean.class.getName();
         EPStatement stmtInsert = epService.getEPAdministrator().createEPL(stmtTextInsert);
@@ -1791,7 +1791,7 @@ public class TestNamedWindowViews extends TestCase
         stmtCreate.addListener(listenerWindow);
 
         assertEquals(String.class, stmtCreate.getEventType().getPropertyType("key"));
-        assertEquals(Long.class, stmtCreate.getEventType().getPropertyType("value"));
+        assertEquals(long.class, stmtCreate.getEventType().getPropertyType("value"));
 
         String stmtTextInsert = "insert into MyWindow select string as key, longBoxed as value from " + SupportBean.class.getName();
         EPStatement stmtInsert = epService.getEPAdministrator().createEPL(stmtTextInsert);
@@ -1842,7 +1842,7 @@ public class TestNamedWindowViews extends TestCase
         stmtCreate.addListener(listenerWindow);
 
         assertEquals(String.class, stmtCreate.getEventType().getPropertyType("key"));
-        assertEquals(Long.class, stmtCreate.getEventType().getPropertyType("value"));
+        assertEquals(long.class, stmtCreate.getEventType().getPropertyType("value"));
 
         String stmtTextInsert = "insert into MyWindow select string as key, longBoxed as value from " + SupportBean.class.getName();
         epService.getEPAdministrator().createEPL(stmtTextInsert);

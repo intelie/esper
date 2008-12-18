@@ -177,18 +177,6 @@ public class TestEventAdapterServiceImpl extends TestCase
         assertSame(event.getUnderlying(), bean);
     }
 
-    public void testCreateAddToEventType()
-    {
-        Map<String, Object> schema = new HashMap<String, Object>();
-        schema.put("STDDEV", Double.class);
-        EventType parentEventType = adapterService.createAnonymousMapType(schema);
-
-        EventType newEventType = adapterService.createAddToEventType(parentEventType, new String[] {"test"}, new Class[] {Integer.class});
-
-        assertTrue(newEventType.isProperty("test"));
-        assertEquals(Integer.class, newEventType.getPropertyType("test"));
-    }
-
     public void testAddXMLDOMType() throws Exception
     {
         adapterService.addXMLDOMType("XMLDOMTypeOne", getXMLDOMConfig());

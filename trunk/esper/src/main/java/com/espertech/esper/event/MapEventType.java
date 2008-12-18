@@ -935,6 +935,17 @@ public class MapEventType implements EventTypeSPI
             }
             String name = entry.getKey();
 
+            // handle types that are String values
+            if (entry.getValue() instanceof String)
+            {
+                String value = entry.getValue().toString().trim();
+                Class clazz = JavaClassHelper.getPrimitiveClassForName(value);
+                if (clazz != null)
+                {
+                    entry.setValue(clazz);
+                }
+            }
+
             if (entry.getValue() instanceof Class)
             {
                 Class classType = (Class) entry.getValue();

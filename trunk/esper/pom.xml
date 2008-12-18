@@ -120,9 +120,10 @@ mvn javadoc:javadoc
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<configuration>
+			 	<configuration>
 					<source>1.5</source>
 					<target>1.5</target>
+					<!-- <showDeprecation>true</showDeprecation> -->
           				<skip>false</skip>
 				</configuration>
 			</plugin>

@@ -26,8 +26,9 @@ public class TestAddPropertyValueView extends TestCase
         schema.put("STDDEV", Double.class);
         parentEventType = SupportEventTypeFactory.createMapType(schema);
 
-        EventType mergeEventType = SupportEventAdapterService.getService().createAddToEventType(parentEventType,
-                new String[] {"symbol"}, new Class[] {String.class});
+        Map<String, Object> addProps = new HashMap<String, Object>();
+        addProps.put("symbol", String.class);
+        EventType mergeEventType = SupportEventAdapterService.getService().createAnonymousWrapperType(parentEventType, addProps);
 
         // Set up length window view and a test child view
         myView = new AddPropertyValueView(SupportStatementContextFactory.makeContext(), new String[] {"symbol"}, new Object[] {"IBM"}, mergeEventType);
@@ -82,7 +83,9 @@ public class TestAddPropertyValueView extends TestCase
         eventData.put("STDDEV", 100);
         EventBean eventBean = SupportEventBeanFactory.createMapFromValues(eventData, parentEventType);
 
-        EventType newEventType = SupportEventAdapterService.getService().createAddToEventType(parentEventType, new String[] {"test"}, new Class[] {Integer.class});
+        Map<String, Object> addProps = new HashMap<String, Object>();
+        addProps.put("test", Integer.class);
+        EventType newEventType = SupportEventAdapterService.getService().createAnonymousWrapperType(parentEventType, addProps);
         EventBean newBean = AddPropertyValueView.addProperty(eventBean, new String[] {"test"}, new Object[] {2}, newEventType, SupportEventAdapterService.getService());
 
         assertEquals(2, newBean.get("test"));

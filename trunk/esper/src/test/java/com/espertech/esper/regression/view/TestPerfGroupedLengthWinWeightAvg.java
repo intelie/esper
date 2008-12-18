@@ -8,8 +8,10 @@ import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.support.util.SupportUpdateListener;
 import junit.framework.TestCase;
 
-// TODO : use this test class for further performance testing of group-by
-public class TestGroupedLengthWinWeightAvg extends TestCase
+import java.util.Map;
+import java.util.Collections;
+
+public class TestPerfGroupedLengthWinWeightAvg extends TestCase
 {
     public void testSensorQuery() throws Exception {
         Configuration config = SupportConfigFactory.getConfiguration();
@@ -20,16 +22,18 @@ public class TestGroupedLengthWinWeightAvg extends TestCase
         SupportUpdateListener listener = new SupportUpdateListener();
         if (useGroup)
         {
-            String stmtString = "select * from Sensor.std:groupby(type).win:length(1000000).stat:weighted_avg(measurement, confidence)";
+            // 0.69 sec for 100k
+            String stmtString = "select * from Sensor.std:groupby(type).win:length(10000000).stat:weighted_avg(measurement, confidence)";
             //String stmtString = "SELECT * FROM Sensor.std:groupby(type).win:length(1000).stat:weighted_avg('measurement','confidence')";
             EPStatement stmt = epService.getEPAdministrator().createEPL(stmtString);
             stmt.addListener(listener);
         }
         else
         {
+            // 0.53 sec for 100k
             for (int i = 0; i < 10; i++)
             {
-                String stmtString = "SELECT * FROM Sensor(type='A" + i + "').win:length(1000).stat:weighted_avg('measurement','confidence')";
+                String stmtString = "SELECT * FROM Sensor(type='A" + i + "').win:length(1000000).stat:weighted_avg(measurement,confidence)";
                 EPStatement stmt = epService.getEPAdministrator().createEPL(stmtString);
                 stmt.addListener(listener);
             }
@@ -41,7 +45,7 @@ public class TestGroupedLengthWinWeightAvg extends TestCase
         }
 
         // measure
-        long numEvents = 1;
+        long numEvents = 10000;
         long startTime = System.nanoTime();
         for (int i = 0; i < numEvents; i++) {
             //int modulo = i % 10;
@@ -51,12 +55,14 @@ public class TestGroupedLengthWinWeightAvg extends TestCase
 
             if (i % 1000 == 0)
             {
-                System.out.println("Send " + i + " events");
+                //System.out.println("Send " + i + " events");
                 listener.reset();
             }
         }
         long endTime = System.nanoTime();
-        System.out.println("delta=" + (endTime - startTime) / 1000d / 1000d / 1000d);
+        double delta = (endTime - startTime) / 1000d / 1000d / 1000d;
+        System.out.println("delta=" + delta);
+        assertTrue(delta < 1);
     }
 
     static public class Sensor {

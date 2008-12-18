@@ -172,15 +172,6 @@ public interface EventAdapterService
     public EventBean adaptorForTypedMap(Map<String, Object> properties, EventType eventType);
 
     /**
-     * Create an event type based on the original type passed in adding one or more properties.
-     * @param originalType - event type to add property to
-     * @param fieldNames - names of properties
-     * @param fieldTypes - types of properties
-     * @return new event type
-     */
-    public EventType createAddToEventType(EventType originalType, String[] fieldNames, Class[] fieldTypes);
-
-    /**
      * Returns an adapter for the XML DOM document that exposes it's data as event properties for use in statements.
      * @param node is the node to wrap
      * @return event wrapper for document

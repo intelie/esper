@@ -655,25 +655,6 @@ public class EventAdapterServiceImpl implements EventAdapterService
     	return new WrapperEventType(metadata, alias, underlyingEventType, propertyTypes, this);
     }
 
-    public final EventType createAddToEventType(EventType originalType, String[] fieldNames, Class[] fieldTypes)
-    {
-        Map<String, Object> types = new HashMap<String, Object>();
-
-        // Copy properties of original event, add property value
-        for (String property : originalType.getPropertyNames())
-        {
-            types.put(property, originalType.getPropertyType(property));
-        }
-
-        // Copy new properties
-        for (int i = 0; i < fieldNames.length; i++)
-        {
-            types.put(fieldNames[i], fieldTypes[i]);
-        }
-
-        return createAnonymousMapType(types);
-    }
-
 	public final EventBean adaptorForWrapper(EventBean event, Map<String, Object> properties, EventType eventType)
 	{
         if (event instanceof WrapperEventBean)

@@ -22,6 +22,7 @@ With Esper 3 integer division returns Double values, and Integer division can be
 - Public event interfaces moved to client package
 - Change to type system to simplify and support transposing from any type of stream to an event property
 - Removed "emit" and "EmittedListener"
+- Optimization for group-by now using wrapped event
 
 Changes in version 2.3
 ------------------------
