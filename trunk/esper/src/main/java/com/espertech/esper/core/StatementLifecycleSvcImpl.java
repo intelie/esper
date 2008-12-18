@@ -18,6 +18,7 @@ import com.espertech.esper.epl.spec.*;
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.event.MapEventType;
 import com.espertech.esper.event.EventTypeSPI;
+import com.espertech.esper.event.NativeEventType;
 import com.espertech.esper.filter.FilterSpecCompiled;
 import com.espertech.esper.filter.FilterSpecParam;
 import com.espertech.esper.pattern.EvalFilterNode;
@@ -870,16 +871,23 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
         EventType targetType;
 
         // Validate the select expressions which consists of properties only
-        List<SelectClauseExprCompiledSpec> select = compileLimitedSelect(spec.getSelectClauseSpec(), eplStatement, selectFromType, selectFromTypeAlias, statementContext.getEngineURI());
+        List<NamedWindowSelectedProps> select = compileLimitedSelect(spec.getSelectClauseSpec(), eplStatement, selectFromType, selectFromTypeAlias, statementContext.getEngineURI());
 
         // Create Map or Wrapper event type from the select clause of the window.
         // If no columns selected, simply create a wrapper type
         // Build a list of properties
         SelectClauseSpecRaw newSelectClauseSpecRaw = new SelectClauseSpecRaw();
         Map<String, Object> properties = new HashMap<String, Object>();
-        for (SelectClauseExprCompiledSpec selectElement : select)
+        for (NamedWindowSelectedProps selectElement : select)
         {
-            properties.put(selectElement.getAssignedName(), selectElement.getSelectExpression().getType());
+            if (selectElement.getFragmentType() != null)
+            {
+                properties.put(selectElement.getAssignedName(), selectElement.getFragmentType());
+            }
+            else
+            {
+                properties.put(selectElement.getAssignedName(), selectElement.getSelectExpressionType());
+            }
 
             // Add any properties to the new select clause for use by consumers to the statement itself
             newSelectClauseSpecRaw.add(new SelectClauseExprRawSpec(new ExprIdentNode(selectElement.getAssignedName()), null));
@@ -931,9 +939,9 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
         return new Pair<FilterSpecCompiled, SelectClauseSpecRaw>(filter, newSelectClauseSpecRaw);
     }
 
-    private static List<SelectClauseExprCompiledSpec> compileLimitedSelect(SelectClauseSpecRaw spec, String eplStatement, EventType singleType, String selectFromTypeAlias, String engineURI)
+    private static List<NamedWindowSelectedProps> compileLimitedSelect(SelectClauseSpecRaw spec, String eplStatement, EventType singleType, String selectFromTypeAlias, String engineURI)
     {
-        List<SelectClauseExprCompiledSpec> selectProps = new LinkedList<SelectClauseExprCompiledSpec>();
+        List<NamedWindowSelectedProps> selectProps = new LinkedList<NamedWindowSelectedProps>();
         StreamTypeService streams = new StreamTypeServiceImpl(new EventType[] {singleType}, new String[] {"stream_0"}, engineURI, new String[] {selectFromTypeAlias});
 
         for (SelectClauseElementRaw raw : spec.getSelectExprList())
@@ -960,7 +968,20 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
                 asName = validatedExpression.toExpressionString();
             }
 
-            SelectClauseExprCompiledSpec validatedElement = new SelectClauseExprCompiledSpec(validatedExpression, asName);
+            // check for fragments
+            EventType fragmentType = null;
+            if ((validatedExpression instanceof ExprIdentNode) && (!(singleType instanceof NativeEventType)))
+            {
+                ExprIdentNode identNode = (ExprIdentNode) validatedExpression;
+                String propertyName = identNode.getResolvedPropertyName();
+                FragmentEventType fragmentEventType = singleType.getFragmentType(identNode.getFullUnresolvedName());
+                if ((fragmentEventType != null) && (!fragmentEventType.isNative()))
+                {
+                    fragmentType = fragmentEventType.getFragmentType();
+                }
+            }
+
+            NamedWindowSelectedProps validatedElement = new NamedWindowSelectedProps(validatedExpression.getType(), asName, fragmentType);
             selectProps.add(validatedElement);
         }
 

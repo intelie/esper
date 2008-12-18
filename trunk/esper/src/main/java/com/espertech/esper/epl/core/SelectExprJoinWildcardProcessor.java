@@ -48,7 +48,7 @@ public class SelectExprJoinWildcardProcessor implements SelectExprProcessor
         Map<String, Object> eventTypeMap = new HashMap<String, Object>();
         for (int i = 0; i < streamTypes.length; i++)
         {
-            eventTypeMap.put(streamNames[i], streamTypes[i].getUnderlyingType());
+            eventTypeMap.put(streamNames[i], streamTypes[i]);
         }
 
         // If we have an alias for this type, add it
@@ -82,7 +82,7 @@ public class SelectExprJoinWildcardProcessor implements SelectExprProcessor
 
             if (eventsPerStream[i] != null)
             {
-                tuple.put(streamNames[i], eventsPerStream[i].getUnderlying());
+                tuple.put(streamNames[i], eventsPerStream[i]);
             }
             else
             {

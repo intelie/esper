@@ -286,6 +286,7 @@ public interface EventAdapterService
      * identified by the tags and event type aliases used. 
      * @param taggedEventTypes simple type per property name
      * @param arrayEventTypes array type per property name
+     * @param isUsedByChildViews if the type is going to be in used by child views
      * @return event type
      */
     public EventType createSemiAnonymousMapType(Map<String, Pair<EventType, String>> taggedEventTypes, Map<String, Pair<EventType, String>> arrayEventTypes, boolean isUsedByChildViews);

@@ -38,6 +38,18 @@ public class TestJoinMapType extends TestCase
         EPStatement stmt = epService.getEPAdministrator().createEPL(joinStatement);
         stmt.addListener(listener);
 
+        runAssertion();
+
+        stmt.destroy();
+        joinStatement = "select * from MapS0.win:keepall() as S0, MapS1.win:keepall() as S1 where S0.id = S1.id";
+        stmt = epService.getEPAdministrator().createEPL(joinStatement);
+        stmt.addListener(listener);
+
+        runAssertion();
+    }
+
+    private void runAssertion()
+    {
         sendMapEvent("MapS0", "a", 1);
         assertFalse(listener.isInvoked());
         

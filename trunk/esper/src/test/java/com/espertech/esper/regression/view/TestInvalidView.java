@@ -29,8 +29,12 @@ public class TestInvalidView extends TestCase
 
     public void testInvalidSyntax()
     {
+        // keyword in from clause
+        String exceptionText = getSyntaxExceptionView("select something from Outer");
+        assertEquals("Incorrect syntax near 'Outer' (a reserved keyword) at line 1 column 22, please check the from clause [select something from Outer]", exceptionText);
+
         // keyword used in package
-        String exceptionText = getSyntaxExceptionView("select * from com.true.mycompany.MyEvent");
+        exceptionText = getSyntaxExceptionView("select * from com.true.mycompany.MyEvent");
         assertEquals("Incorrect syntax near 'true' (a reserved keyword) expecting an identifier but found 'true' at line 1 column 18, please check the view specifications within the from clause [select * from com.true.mycompany.MyEvent]", exceptionText);
 
         // keyword as part of identifier

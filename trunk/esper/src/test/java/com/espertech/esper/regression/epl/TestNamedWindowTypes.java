@@ -1,10 +1,7 @@
 package com.espertech.esper.regression.epl;
 
 import junit.framework.TestCase;
-import com.espertech.esper.client.Configuration;
-import com.espertech.esper.client.EPServiceProvider;
-import com.espertech.esper.client.EPServiceProviderManager;
-import com.espertech.esper.client.EPStatement;
+import com.espertech.esper.client.*;
 import com.espertech.esper.support.bean.*;
 import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.support.util.ArrayAssertionUtil;
@@ -38,6 +35,44 @@ public class TestNamedWindowTypes extends TestCase
         listenerWindow = new SupportUpdateListener();
         listenerStmtOne = new SupportUpdateListener();
         listenerStmtDelete = new SupportUpdateListener();
+    }
+
+    public void testMapTranspose()
+    {
+        Map<String, Object> innerTypeOne = new HashMap<String, Object>();
+        innerTypeOne.put("i1", int.class);
+        Map<String, Object> innerTypeTwo = new HashMap<String, Object>();
+        innerTypeTwo.put("i2", int.class);
+        Map<String, Object> outerType = new HashMap<String, Object>();
+        outerType.put("one", "T1");
+        outerType.put("two", "T2");
+        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("T1", innerTypeOne);
+        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("T2", innerTypeTwo);
+        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("OuterType", outerType);
+
+        // create window
+        String stmtTextCreate = "create window MyWindow.win:keepall() as select one, two from OuterType";
+        EPStatement stmtCreate = epService.getEPAdministrator().createEPL(stmtTextCreate);
+        stmtCreate.addListener(listenerWindow);
+        ArrayAssertionUtil.assertEqualsAnyOrder(stmtCreate.getEventType().getPropertyNames(), new String[] {"one", "two"});
+        EventType eventType = stmtCreate.getEventType();
+        assertEquals("T1", eventType.getFragmentType("one").getFragmentType().getName());
+        assertEquals("T2", eventType.getFragmentType("two").getFragmentType().getName());
+
+        // create insert into
+        String stmtTextInsertOne = "insert into MyWindow select one, two from OuterType";
+        epService.getEPAdministrator().createEPL(stmtTextInsertOne);
+
+        Map<String, Object> innerDataOne = new HashMap<String, Object>();
+        innerDataOne.put("i1", 1);
+        Map<String, Object> innerDataTwo = new HashMap<String, Object>();
+        innerDataTwo.put("i2", 2);
+        Map<String, Object> outerData = new HashMap<String, Object>();
+        outerData.put("one", innerDataOne);
+        outerData.put("two", innerDataTwo);
+
+        epService.getEPRuntime().sendEvent(outerData, "OuterType");
+        ArrayAssertionUtil.assertProps(listenerWindow.assertOneGetNew(), "one.i1,two.i2".split(","),new Object[] {1,2});
     }
 
     public void testNoWildcardWithAs()

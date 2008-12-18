@@ -16,10 +16,15 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathFactory;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathExpression;
 import java.io.StringReader;
 
 public class TestNoSchemaXMLEvent extends TestCase
@@ -37,6 +42,50 @@ public class TestNoSchemaXMLEvent extends TestCase
         "  <element3 attrString=\"VAL3\" attrNum=\"5\" attrBool=\"true\"/>\n" +
         "  <element4><element41>VAL4-1</element41></element4>\n" +
         "</myevent>";
+
+    // TODO
+    public void testPerfXPath() throws Exception
+    {
+        StringReader reader = new StringReader(XML);
+        InputSource source = new InputSource(reader);
+        DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
+        builderFactory.setNamespaceAware(true);
+        Document simpleDoc = builderFactory.newDocumentBuilder().parse(source);
+
+        simpleDoc.getChildNodes();
+
+        XPath path = XPathFactory.newInstance().newXPath();
+        XPathExpression pathExpr = path.compile("myevent/element2/element21[2]");
+
+        // 0.67sec for 1000 evals
+        long start = System.nanoTime();
+        for (int i = 0; i < 1; i++)
+        {
+            //Object result = pathExpr.evaluate(simpleDoc);
+            find(simpleDoc);
+        }
+        long end = System.nanoTime();
+        double delta = (end - start) / 1000d / 1000d / 1000d;
+        System.out.println(delta);
+    }
+
+    private Object find(Document doc)
+    {
+        NodeList list = doc.getChildNodes();
+        for (int i = 0; i < list.getLength(); i++)
+        {
+            Node node = list.item(i);
+            System.out.println(node.getNodeName() + " " + node.getNodeType());
+
+            NodeList list2 = node.getChildNodes();
+            for (int j = 0; j < list2.getLength(); j++)
+            {
+                Node node2 = list2.item(j);
+                System.out.println(node2.getNodeName());
+            }
+        }
+        return null;
+    }
 
     public void testSimpleXML() throws Exception
     {

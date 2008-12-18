@@ -11,6 +11,7 @@ package com.espertech.esper.epl.core;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.client.FragmentEventType;
+import com.espertech.esper.client.EventPropertyGetter;
 import com.espertech.esper.epl.expression.*;
 import com.espertech.esper.epl.spec.InsertIntoDesc;
 import com.espertech.esper.epl.spec.SelectClauseExprCompiledSpec;
@@ -42,6 +43,7 @@ public class SelectExprEvalProcessor implements SelectExprProcessor
     private SelectExprJoinWildcardProcessor joinWildcardProcessor;
     private boolean isRevisionEvent;
     private ValueAddEventProcessor vaeProcessor;
+    private boolean isEmptyExpressionNodes;
 
     /**
      * Ctor.
@@ -144,6 +146,13 @@ public class SelectExprEvalProcessor implements SelectExprProcessor
             }
         }
 
+        // Find if there is any fragments selected
+        EventType targetType= null;
+        if (insertIntoDesc != null)
+        {
+            targetType = eventAdapterService.getExistsTypeByAlias(insertIntoDesc.getEventTypeAlias());
+        }
+
         // Find if there is any fragment event types:
         // This is a special case for fragments: select a, b from pattern [a=A -> b=B]
         // We'd like to maintain 'A' and 'B' EventType in the Map type, and 'a' and 'b' EventBeans in the event bean
@@ -170,31 +179,61 @@ public class SelectExprEvalProcessor implements SelectExprProcessor
                 continue;   // we also ignore native Java classes as fragments for performance reasons
             }
 
-            final String fragmentPropertyName = propertyName;
-            ExprEvaluator evaluatorFragment;
-
-            // A match was found, we replace the expression
-            evaluatorFragment = new ExprEvaluator() {
-
-                public Object evaluate(EventBean[] eventsPerStream, boolean isNewData)
-                {
-                    EventBean streamEvent = eventsPerStream[streamNum];
-                    if (streamEvent == null)
-                    {
-                        return null;
-                    }
-                    return streamEvent.getFragment(fragmentPropertyName);
-                }
-            };
-
-            expressionNodes[i] = evaluatorFragment;
-            if (!fragmentType.isIndexed())
+            // may need to unwrap the fragment if the target type has this underlying type
+            FragmentEventType targetFragment = null;
+            if (targetType != null)
             {
-                expressionReturnTypes[i] = fragmentType.getFragmentType();
+                targetFragment = targetType.getFragmentType(columnNames[i]);
+            }
+            if ((targetType != null) &&
+                (fragmentType.getFragmentType().getUnderlyingType() == expressionReturnTypes[i]) &&
+                ((targetFragment == null) || (targetFragment != null && targetFragment.isNative())) )
+            {
+                ExprEvaluator evaluatorFragment;
+
+                // A match was found, we replace the expression
+                final EventPropertyGetter getter = eventTypeStream.getGetter(propertyName);
+                evaluatorFragment = new ExprEvaluator() {
+                    public Object evaluate(EventBean[] eventsPerStream, boolean isNewData)
+                    {
+                        EventBean streamEvent = eventsPerStream[streamNum];
+                        if (streamEvent == null)
+                        {
+                            return null;
+                        }
+                        return getter.get(streamEvent);
+                    }
+                };
+                expressionNodes[i] = evaluatorFragment;
             }
             else
             {
-                expressionReturnTypes[i] = new EventType[] {fragmentType.getFragmentType()};
+                final String fragmentPropertyName = propertyName;
+                ExprEvaluator evaluatorFragment;
+
+                // A match was found, we replace the expression
+                evaluatorFragment = new ExprEvaluator() {
+
+                    public Object evaluate(EventBean[] eventsPerStream, boolean isNewData)
+                    {
+                        EventBean streamEvent = eventsPerStream[streamNum];
+                        if (streamEvent == null)
+                        {
+                            return null;
+                        }
+                        return streamEvent.getFragment(fragmentPropertyName);
+                    }
+                };
+
+                expressionNodes[i] = evaluatorFragment;
+                if (!fragmentType.isIndexed())
+                {
+                    expressionReturnTypes[i] = fragmentType.getFragmentType();
+                }
+                else
+                {
+                    expressionReturnTypes[i] = new EventType[] {fragmentType.getFragmentType()};
+                }
             }
         }
 
@@ -314,6 +353,8 @@ public class SelectExprEvalProcessor implements SelectExprProcessor
             }
         }
 
+        isEmptyExpressionNodes = expressionNodes.length == 0;
+
         if (log.isDebugEnabled())
         {
             log.debug(".init resultEventType=" + resultEventType);
@@ -323,11 +364,20 @@ public class SelectExprEvalProcessor implements SelectExprProcessor
     public EventBean process(EventBean[] eventsPerStream, boolean isNewData, boolean isSynthesize)
     {
         // Evaluate all expressions and build a map of name-value pairs
-        Map<String, Object> props = new HashMap<String, Object>();
-        for (int i = 0; i < expressionNodes.length; i++)
+        Map<String, Object> props;
+
+        if (isEmptyExpressionNodes)
         {
-            Object evalResult = expressionNodes[i].evaluate(eventsPerStream, isNewData);
-            props.put(columnNames[i], evalResult);
+            props = Collections.EMPTY_MAP;
+        }
+        else
+        {
+            props = new HashMap<String, Object>();
+            for (int i = 0; i < expressionNodes.length; i++)
+            {
+                Object evalResult = expressionNodes[i].evaluate(eventsPerStream, isNewData);
+                props.put(columnNames[i], evalResult);
+            }
         }
 
         if(isUsingWildcard)
@@ -344,8 +394,16 @@ public class SelectExprEvalProcessor implements SelectExprProcessor
                     {
         			    log.debug(".process additional properties=" + map);
                     }
-                    props.putAll(map);
-        		}
+
+                    if ((isEmptyExpressionNodes) && (!map.isEmpty()))
+                    {
+                        props = new HashMap<String, Object>(map);
+                    }
+                    else
+                    {
+                        props.putAll(map);
+                    }
+                }
         	}
 
             EventBean event;

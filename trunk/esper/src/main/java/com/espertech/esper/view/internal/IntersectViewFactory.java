@@ -15,7 +15,14 @@ import java.util.ArrayList;
  */
 public class IntersectViewFactory implements ViewFactory, DataWindowViewFactory
 {
+    /**
+     * The event type.
+     */
     protected EventType parentEventType;
+
+    /**
+     * The view factories.
+     */
     protected List<ViewFactory> viewFactories;
 
     /**
@@ -25,11 +32,19 @@ public class IntersectViewFactory implements ViewFactory, DataWindowViewFactory
     {
     }
 
+    /**
+     * Sets the parent event type.
+     * @param parentEventType type
+     */
     public void setParentEventType(EventType parentEventType)
     {
         this.parentEventType = parentEventType;
     }
 
+    /**
+     * Sets the view factories.
+     * @param viewFactories factories
+     */
     public void setViewFactories(List<ViewFactory> viewFactories)
     {
         this.viewFactories = viewFactories;

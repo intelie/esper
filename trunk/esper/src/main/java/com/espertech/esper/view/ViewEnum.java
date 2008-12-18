@@ -141,7 +141,14 @@ public enum ViewEnum
      */
     PRIOR_EVENT_VIEW("int", "prioreventinternal", PriorEventViewFactory.class, null),
 
+    /**
+     * For retain-union policy.
+     */
     INTERNAL_UNION("internal", "union", UnionViewFactory.class, null),
+
+    /**
+     * For retain-intersection policy.
+     */
     INTERNAL_INTERSECT("internal", "intersect", IntersectViewFactory.class, null);
 
     private final String namespace;

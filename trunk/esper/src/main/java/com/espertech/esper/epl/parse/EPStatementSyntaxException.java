@@ -76,7 +76,7 @@ public class EPStatementSyntaxException extends EPStatementException
 
         // check if token is a reserved keyword
         Set<String> keywords = parser.getKeywords();
-        if (keywords.contains(token))
+        if (keywords.contains(token.toLowerCase()))
         {
             token += " (a reserved keyword)";
         }

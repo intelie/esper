@@ -24,5 +24,9 @@ public interface DecoratingEventBean
      */
     public Map<String, Object> getDecoratingProperties();
 
+    /**
+     * Returns the underlying event to the decorated event.
+     * @return underlying
+     */
     public EventBean getUnderlyingEvent();   
 }

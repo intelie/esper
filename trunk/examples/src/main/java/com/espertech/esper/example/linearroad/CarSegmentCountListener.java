@@ -43,10 +43,10 @@ public class CarSegmentCountListener implements UpdateListener
         for (int i = 0; i < events.length; i++)
         {
             int expressway = (Integer) events[i].get("segVolView.expressway");
-            int direction = (Integer) events[i].get("direction");
-            int segment = (Integer) events[i].get("segment");
-            double avgSpeed = (Double) events[i].get("average");
-            long size = (Long) events[i].get("size");
+            int direction = (Integer) events[i].get("segVolView.direction");
+            int segment = (Integer) events[i].get("segVolView.segment");
+            double avgSpeed = (Double) events[i].get("segAvgSpeed.average");
+            long size = (Long) events[i].get("segVolView.size");
 
             /*
             int expressway = (Integer) events[i].get("segVolView.expressway");
