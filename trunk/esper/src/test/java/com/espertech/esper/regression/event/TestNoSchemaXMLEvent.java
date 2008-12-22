@@ -1,31 +1,31 @@
 package com.espertech.esper.regression.event;
 
-import junit.framework.TestCase;
 import com.espertech.esper.client.*;
-import com.espertech.esper.client.time.TimerControlEvent;
-import com.espertech.esper.client.EventBean;
-import com.espertech.esper.event.EventTypeSPI;
+import com.espertech.esper.core.EPServiceProviderSPI;
 import com.espertech.esper.event.EventTypeMetadata;
-import com.espertech.esper.support.util.SupportUpdateListener;
-import com.espertech.esper.support.util.ArrayAssertionUtil;
+import com.espertech.esper.event.EventTypeSPI;
 import com.espertech.esper.support.client.SupportConfigFactory;
+import com.espertech.esper.support.util.ArrayAssertionUtil;
+import com.espertech.esper.support.util.SupportUpdateListener;
 import com.espertech.esper.support.xml.SupportXPathFunctionResolver;
 import com.espertech.esper.support.xml.SupportXPathVariableResolver;
-import com.espertech.esper.core.EPServiceProviderSPI;
+import junit.framework.TestCase;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathFactory;
 import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathFactory;
 import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.List;
 
 public class TestNoSchemaXMLEvent extends TestCase
 {
@@ -58,11 +58,12 @@ public class TestNoSchemaXMLEvent extends TestCase
         XPathExpression pathExpr = path.compile("myevent/element2/element21[2]");
 
         // 0.67sec for 1000 evals
+        List<Object> result = new ArrayList<Object>();
         long start = System.nanoTime();
         for (int i = 0; i < 1; i++)
         {
-            //Object result = pathExpr.evaluate(simpleDoc);
-            find(simpleDoc);
+            result.add(pathExpr.evaluate(simpleDoc));
+            //result.add(find(simpleDoc));
         }
         long end = System.nanoTime();
         double delta = (end - start) / 1000d / 1000d / 1000d;
@@ -75,13 +76,42 @@ public class TestNoSchemaXMLEvent extends TestCase
         for (int i = 0; i < list.getLength(); i++)
         {
             Node node = list.item(i);
-            System.out.println(node.getNodeName() + " " + node.getNodeType());
-
-            NodeList list2 = node.getChildNodes();
-            for (int j = 0; j < list2.getLength(); j++)
+            if (node.getNodeType() != 1)
             {
-                Node node2 = list2.item(j);
-                System.out.println(node2.getNodeName());
+                continue;
+            }
+            if (node.getNodeName().equals("myevent"))
+            {
+                //System.out.println(node.getNodeName() + " " + node.getNodeType());
+
+                NodeList list2 = node.getChildNodes();
+                for (int j = 0; j < list2.getLength(); j++)
+                {
+                    Node node2 = list2.item(j);
+                    if (node2.getNodeType() != 1)
+                    {
+                        continue;
+                    }
+                    if (node2.getNodeName().equals("element2"))
+                    {
+                        //System.out.println(node2.getNodeName() + " " + node2.getNodeType());
+
+                        NodeList list3 = node2.getChildNodes();
+                        for (int k = 0; k < list3.getLength(); k++)
+                        {
+                            Node node3 = list3.item(k);
+                            if (node3.getNodeType() != 1)
+                            {
+                                continue;
+                            }
+                            if (node3.getNodeName().equals("element21"))
+                            {
+                                //System.out.println(node3.getNodeName() + " " + node3.getNodeType());
+                                return node3.getTextContent();
+                            }
+                        }
+                    }
+                }
             }
         }
         return null;

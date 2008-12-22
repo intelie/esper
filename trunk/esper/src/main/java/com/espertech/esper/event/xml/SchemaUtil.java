@@ -8,22 +8,12 @@
  **************************************************************************************/
 package com.espertech.esper.event.xml;
 
-import javax.xml.namespace.QName;
-import javax.xml.xpath.XPathConstants;
-
+import com.espertech.esper.client.EPException;
 import com.sun.org.apache.xerces.internal.impl.dv.XSSimpleType;
 import com.sun.org.apache.xerces.internal.impl.dv.xs.XSSimpleTypeDecl;
-import com.sun.org.apache.xerces.internal.xs.XSAttributeUse;
-import com.sun.org.apache.xerces.internal.xs.XSComplexTypeDefinition;
-import com.sun.org.apache.xerces.internal.xs.XSConstants;
-import com.sun.org.apache.xerces.internal.xs.XSElementDeclaration;
-import com.sun.org.apache.xerces.internal.xs.XSModel;
-import com.sun.org.apache.xerces.internal.xs.XSModelGroup;
-import com.sun.org.apache.xerces.internal.xs.XSNamedMap;
-import com.sun.org.apache.xerces.internal.xs.XSObject;
-import com.sun.org.apache.xerces.internal.xs.XSObjectList;
-import com.sun.org.apache.xerces.internal.xs.XSParticle;
-import com.espertech.esper.client.EPException;
+
+import javax.xml.namespace.QName;
+import javax.xml.xpath.XPathConstants;
 
 /**
  * Utility class for querying schema information via Xerces implementation classes.
@@ -33,12 +23,12 @@ public class SchemaUtil {
 
     /**
      * Returns the XPathConstants type for a given Xerces type definition.
-     * @param definition is the schema element definition
+     * @param type is the type
      * @return XPathConstants type
      */
-    public static QName simpleTypeToQName(XSSimpleTypeDecl definition)
+    public static QName simpleTypeToQName(short type)
     {
-        switch (definition.getPrimitiveKind())
+        switch (type)
         {
             case XSSimpleType.PRIMITIVE_BOOLEAN:
                 return XPathConstants.BOOLEAN;
@@ -48,8 +38,16 @@ public class SchemaUtil {
                 return XPathConstants.STRING;
             case XSSimpleType.PRIMITIVE_DECIMAL:
                 return XPathConstants.NUMBER;
+            case XSSimpleType.PRIMITIVE_FLOAT:
+                return XPathConstants.NUMBER;
+            case XSSimpleType.PRIMITIVE_DATETIME:
+                return XPathConstants.STRING;
+            case XSSimpleType.PRIMITIVE_DATE:
+                return XPathConstants.STRING;
+            case XSSimpleType.PRIMITIVE_TIME:
+                return XPathConstants.STRING;
             default:
-                throw new EPException("Unexpected schema simple type encountered '" + definition.getPrimitiveKind() + '\'');
+                throw new EPException("Unexpected schema simple type encountered '" + type + "'");
         }
     }
 
@@ -60,29 +58,26 @@ public class SchemaUtil {
      * @param elementName is the name of the root element
      * @return declaration of root element
      */
-    public static XSElementDeclaration findRootElement(XSModel schema, String namespace, String elementName)
+    public static SchemaElementComplex findRootElement(SchemaModel schema, String namespace, String elementName)
     {
-        XSNamedMap elements;
-
         if ((namespace != null) && namespace.length() != 0)
         {
-            elements = schema.getComponentsByNamespace(XSConstants.ELEMENT_DECLARATION,namespace);
-            if (elements == null)
+            for (SchemaElementComplex complexElement : schema.getComponents())
             {
-                throw new EPException("Empty element declaration list returned by schema for namespace '" + namespace + '\'');
+                if ((complexElement.getNamespace().equals(namespace)) && (complexElement.getName().equals(elementName)))
+                {
+                    return complexElement;
+                }
             }
         }
         else
         {
-            elements = schema.getComponents(XSConstants.ELEMENT_DECLARATION);
-        }
-
-        for (int i=0; i< elements.getLength(); i++)
-        {
-            XSElementDeclaration decl= (XSElementDeclaration) elements.item(i);
-            if (decl.getName().equals(elementName))
+            for (SchemaElementComplex complexElement : schema.getComponents())
             {
-                return decl;
+                if (complexElement.getName().equals(elementName))
+                {
+                    return complexElement;
+                }
             }
         }
 
@@ -96,46 +91,37 @@ public class SchemaUtil {
 
 
     /**
-     * Finds an apropiate definition for the given property, starting at the
-     * given definition.
-     * First look if the property es an attribute. If not, look at child element
+     * Finds an apropiate definition for the given property, starting at the * given definition.
+     * First look if the property es an attribute. If not, look at simple and then child element
      * definitions.
      *
      * @param def the definition to start looking
      * @param property the property to look for
-     * @return either an XSAttributeUse if the property is an attribute,XSParticle if is an element, or null if not found in schema
+     * @return schema element or null if not found
      */
-    public static XSObject findPropertyMapping(XSComplexTypeDefinition def, String property) {
+    public static SchemaItem findPropertyMapping(SchemaElementComplex def, String property) {
 
-        XSObjectList attrs = def.getAttributeUses();
-        for(int i=0;i<attrs.getLength();i++)
+        for (SchemaElementAttribute attribute : def.getAttributes())
         {
-            XSAttributeUse attr = (XSAttributeUse)attrs.item(i);
-            String name = attr.getAttrDeclaration().getName();
-            if (name.equals(property))
+            if (attribute.getName().equals(property))
             {
-                //is an attribute of the parent element
-                return attr;
+                return attribute;
             }
         }
 
-        if ((def.getContentType() == XSComplexTypeDefinition.CONTENTTYPE_ELEMENT) ||
-            (def.getContentType() == XSComplexTypeDefinition.CONTENTTYPE_MIXED))
+        for (SchemaElementSimple simple : def.getSimpleElements())
         {
-            // has children
-            XSParticle particle = def.getParticle();
-            if (particle.getTerm() instanceof XSModelGroup )
+            if (simple.getName().equals(property))
             {
-                XSModelGroup group = (XSModelGroup)particle.getTerm();
-                XSObjectList particles = group.getParticles();
-                for (int i=0;i<particles.getLength();i++)
-                {
-                    XSParticle childParticle = (XSParticle)particles.item(i);
-                    if (childParticle.getTerm().getName().equals(property)) {
-                        //is a child element of the parent node
-                        return childParticle;
-                    }
-                }
+                return simple;
+            }
+        }
+
+        for (SchemaElementComplex complex : def.getChildren())
+        {
+            if (complex.getName().equals(property))
+            {
+                return complex;
             }
         }
 

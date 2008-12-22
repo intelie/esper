@@ -58,6 +58,9 @@ public class TestConfigurationParser extends TestCase
         assertFalse(config.getEngineDefaults().getLanguage().isSortUsingCollator());
         assertFalse(config.getEngineDefaults().getExpression().isIntegerDivision());
         assertFalse(config.getEngineDefaults().getExpression().isDivisionByZeroReturnsNull());
+        
+        ConfigurationEventTypeXMLDOM domType = new ConfigurationEventTypeXMLDOM();
+        assertFalse(domType.isPropertyExprXPath());
     }
 
     protected static void assertFileConfig(Configuration config) throws Exception
@@ -87,6 +90,7 @@ public class TestConfigurationParser extends TestCase
         assertEquals(null, noSchemaDesc.getXPathProperties().get("element1").getOptionalCastToType());
         assertNull(noSchemaDesc.getXPathFunctionResolver());
         assertNull(noSchemaDesc.getXPathVariableResolver());
+        assertFalse(noSchemaDesc.isPropertyExprXPath());
 
         // assert XML DOM - with schema
         ConfigurationEventTypeXMLDOM schemaDesc = config.getEventTypesXMLDOM().get("MySchemaXMLEventAlias");
@@ -102,6 +106,7 @@ public class TestConfigurationParser extends TestCase
         assertFalse(schemaDesc.isResolvePropertiesAbsolute());
         assertEquals("com.mycompany.OptionalFunctionResolver", schemaDesc.getXPathFunctionResolver());
         assertEquals("com.mycompany.OptionalVariableResolver", schemaDesc.getXPathVariableResolver());
+        assertTrue(schemaDesc.isPropertyExprXPath());
 
         // assert mapped events
         assertEquals(1, config.getEventTypesMapEvents().size());

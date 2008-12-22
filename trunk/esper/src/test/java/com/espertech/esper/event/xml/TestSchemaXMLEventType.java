@@ -23,7 +23,8 @@ public class TestSchemaXMLEventType extends TestCase {
         configNoNS.setRootElementName("simpleEvent");
         configNoNS.addXPathProperty("customProp", "count(/ss:simpleEvent/ss:nested3/ss:nested4)", XPathConstants.NUMBER);
         configNoNS.addNamespacePrefix("ss", "samples:schemas:simpleSchema");
-        SchemaXMLEventType eventTypeNoNS = new SchemaXMLEventType(null, configNoNS);
+        SchemaModel model = XSDSchemaMapper.loadAndMap(schemaUrl.toString(), 2);
+        SchemaXMLEventType eventTypeNoNS = new SchemaXMLEventType(null, configNoNS, model);
 
         DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
         builderFactory.setNamespaceAware(true);

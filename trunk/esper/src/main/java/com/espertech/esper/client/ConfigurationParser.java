@@ -254,6 +254,7 @@ class ConfigurationParser {
         String schemaResource = getOptionalAttribute(xmldomElement, "schema-resource");
         String defaultNamespace = getOptionalAttribute(xmldomElement, "default-namespace");
         String resolvePropertiesAbsoluteStr = getOptionalAttribute(xmldomElement, "resolve-properties-absolute");
+        String propertyExprXPathStr = getOptionalAttribute(xmldomElement, "property-expr-xpath");
         String xpathFunctionResolverClass = getOptionalAttribute(xmldomElement, "xpath-function-resolver");
         String xpathVariableResolverClass = getOptionalAttribute(xmldomElement, "xpath-variable-resolver");
 
@@ -267,6 +268,10 @@ class ConfigurationParser {
         if (resolvePropertiesAbsoluteStr != null)
         {
             xmlDOMEventTypeDesc.setResolvePropertiesAbsolute(Boolean.parseBoolean(resolvePropertiesAbsoluteStr));
+        }
+        if (propertyExprXPathStr != null)
+        {
+            xmlDOMEventTypeDesc.setPropertyExprXPath(Boolean.parseBoolean(propertyExprXPathStr));
         }
         configuration.addEventTypeAlias(aliasName, xmlDOMEventTypeDesc);
 

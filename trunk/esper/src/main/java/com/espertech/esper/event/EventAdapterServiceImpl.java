@@ -11,10 +11,7 @@ package com.espertech.esper.event;
 import com.espertech.esper.client.*;
 import com.espertech.esper.collection.Pair;
 import com.espertech.esper.core.EPRuntimeEventSender;
-import com.espertech.esper.event.xml.BaseXMLEventType;
-import com.espertech.esper.event.xml.SchemaXMLEventType;
-import com.espertech.esper.event.xml.SimpleXMLEventType;
-import com.espertech.esper.event.xml.XMLEventBean;
+import com.espertech.esper.event.xml.*;
 import com.espertech.esper.plugin.*;
 import com.espertech.esper.util.URIUtil;
 import com.espertech.esper.util.UuidGenerator;
@@ -515,7 +512,8 @@ public class EventAdapterServiceImpl implements EventAdapterService
         }
         else
         {
-            type = new SchemaXMLEventType(metadata, configurationEventTypeXMLDOM);
+            SchemaModel schemaModel = XSDSchemaMapper.loadAndMap(configurationEventTypeXMLDOM.getSchemaResource(), 2);            
+            type = new SchemaXMLEventType(metadata, configurationEventTypeXMLDOM, schemaModel);
         }
 
         aliasToTypeMap.put(eventTypeAlias, type);

@@ -308,7 +308,7 @@ public class MapEventType implements EventTypeSPI
             Property prop = PropertyParser.parse(propertyName, eventAdapterService, false);
             if (prop instanceof DynamicProperty)
             {
-                EventPropertyGetter getterDyn = prop.getGetterMap(null, eventAdapterService);
+                EventPropertyGetter getterDyn = prop.getGetterMap((Map)null, eventAdapterService);
                 propertyGetterCache.put(propertyName, getterDyn);
                 return getterDyn;
             }
@@ -462,7 +462,7 @@ public class MapEventType implements EventTypeSPI
         if (nestedType == Map.class)
         {
             Property prop = PropertyParser.parse(propertyNested, eventAdapterService, isRootedDynamic);
-            EventPropertyGetter getterNestedMap = prop.getGetterMap(null, eventAdapterService);
+            EventPropertyGetter getterNestedMap = prop.getGetterMap((Map)null, eventAdapterService);
             if (getterNestedMap == null)
             {
                 return null;

@@ -9,6 +9,8 @@
 package com.espertech.esper.event.property;
 
 import com.espertech.esper.event.*;
+import com.espertech.esper.event.xml.SchemaElementComplex;
+import com.espertech.esper.event.xml.SchemaItem;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventPropertyGetter;
 import com.espertech.esper.client.PropertyAccessException;
@@ -75,4 +77,14 @@ public class DynamicSimpleProperty extends PropertyBase implements DynamicProper
     {
         writer.append(propertyNameAtomic);
     }
+
+    public EventPropertyGetter getGetterDOM(SchemaElementComplex complexProperty, EventAdapterService eventAdapterService)
+    {
+        return null;  // TODO
+    }
+
+    public SchemaItem getPropertyTypeSchema(SchemaElementComplex complexProperty, EventAdapterService eventAdapterService)
+    {
+        return null;  // TODO
+    }    
 }

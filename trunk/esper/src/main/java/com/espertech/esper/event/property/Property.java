@@ -9,6 +9,8 @@
 package com.espertech.esper.event.property;
 
 import com.espertech.esper.event.*;
+import com.espertech.esper.event.xml.SchemaItem;
+import com.espertech.esper.event.xml.SchemaElementComplex;
 import com.espertech.esper.client.EventPropertyGetter;
 
 import java.util.Map;
@@ -48,9 +50,25 @@ public interface Property
      * Returns the getter-method for use with Map event representations.
      * @param optionalMapPropTypes a map-within-map type definition, if supplied, or null if not supplied
      * @param eventAdapterService for resolving further map event types that are property types
-     * @return getter for maps @param optionalMapPropTypes
+     * @return getter for maps
      */
     public EventPropertyGetter getGetterMap(Map optionalMapPropTypes, EventAdapterService eventAdapterService);
+
+    /**
+     * Returns the property type for use with DOM event representations.
+     * @param complexProperty a element-within-element type definition
+     * @param eventAdapterService for resolving further element event types if defined
+     * @return property type @param optionalMapPropTypes
+     */
+    public SchemaItem getPropertyTypeSchema(SchemaElementComplex complexProperty, EventAdapterService eventAdapterService);
+
+    /**
+     * Returns the getter-method for use with Map event representations.
+     * @param complexProperty a element-within-element type definition
+     * @param eventAdapterService for resolving further map event types that are property types
+     * @return getter for maps @param optionalMapPropTypes
+     */
+    public EventPropertyGetter getGetterDOM(SchemaElementComplex complexProperty, EventAdapterService eventAdapterService);
 
     /**
      * Write the EPL-representation of the property.

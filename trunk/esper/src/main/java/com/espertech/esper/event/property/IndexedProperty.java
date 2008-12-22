@@ -9,6 +9,8 @@
 package com.espertech.esper.event.property;
 
 import com.espertech.esper.event.*;
+import com.espertech.esper.event.xml.SchemaElementComplex;
+import com.espertech.esper.event.xml.SchemaItem;
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.client.EventPropertyGetter;
 import net.sf.cglib.reflect.FastMethod;
@@ -213,4 +215,14 @@ public class IndexedProperty extends PropertyBase
         writer.append(Integer.toString(index));
         writer.append("]");
     }
+
+    public EventPropertyGetter getGetterDOM(SchemaElementComplex complexProperty, EventAdapterService eventAdapterService)
+    {
+        return null;  // TODO
+    }
+
+    public SchemaItem getPropertyTypeSchema(SchemaElementComplex complexProperty, EventAdapterService eventAdapterService)
+    {
+        return null;  // TODO
+    }    
 }

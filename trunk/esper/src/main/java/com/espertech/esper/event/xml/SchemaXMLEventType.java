@@ -8,23 +8,20 @@
  **************************************************************************************/
 package com.espertech.esper.event.xml;
 
-import javax.xml.xpath.XPathExpressionException;
-
-import com.sun.org.apache.xerces.internal.xs.XSModel;
-import com.sun.org.apache.xerces.internal.xs.XSImplementation;
-import com.sun.org.apache.xerces.internal.xs.XSLoader;
-import com.sun.org.apache.xerces.internal.dom.DOMXSImplementationSourceImpl;
-
-import com.espertech.esper.event.TypedEventPropertyGetter;
+import com.espertech.esper.client.ConfigurationEventTypeXMLDOM;
+import com.espertech.esper.client.EPException;
+import com.espertech.esper.client.EventPropertyGetter;
+import com.espertech.esper.client.FragmentEventType;
 import com.espertech.esper.event.EventTypeMetadata;
-import com.espertech.esper.client.*;
-import com.espertech.esper.util.ResourceLoader;
-import org.w3c.dom.bootstrap.DOMImplementationRegistry;
+import com.espertech.esper.event.TypedEventPropertyGetter;
+import com.espertech.esper.event.EventAdapterService;
+import com.espertech.esper.event.property.Property;
+import com.espertech.esper.event.property.PropertyParser;
+import com.espertech.esper.event.property.SimpleProperty;
 
-import java.util.Map;
+import javax.xml.xpath.XPathExpressionException;
 import java.util.HashMap;
-import java.net.URISyntaxException;
-import java.net.URL;
+import java.util.Map;
 
 /**
  * EventType for xml events that have a Schema.
@@ -38,37 +35,27 @@ import java.net.URL;
 public class SchemaXMLEventType extends BaseXMLEventType {
 
     // schema model
-    private XSModel xsModel;
+    private SchemaModel schemaModel;
 
     // rootElementNamespace of the root Element
     private String rootElementNamespace;
 
     private Map<String, TypedEventPropertyGetter> propertyGetterCache;
 
+    public boolean isPropertyExpressionXPath;
+
     /**
      * Ctor.
      * @param configurationEventTypeXMLDOM - configuration for type
      * @param eventTypeMetadata - event type metadata
+     * @param schemaModel - the schema representation
      */
-    public SchemaXMLEventType(EventTypeMetadata eventTypeMetadata, ConfigurationEventTypeXMLDOM configurationEventTypeXMLDOM)
+    public SchemaXMLEventType(EventTypeMetadata eventTypeMetadata, ConfigurationEventTypeXMLDOM configurationEventTypeXMLDOM, SchemaModel schemaModel, EventAdapterService eventAdapterService)
     {
-        super(eventTypeMetadata, configurationEventTypeXMLDOM);
-        propertyGetterCache = new HashMap<String, TypedEventPropertyGetter>();
-
-        // Load schema
-        String schemaResource = configurationEventTypeXMLDOM.getSchemaResource();
-        try
-        {
-            readSchema(schemaResource);
-        }
-        catch (EPException ex)
-        {
-            throw ex;
-        }
-        catch (Exception ex)
-        {
-            throw new EPException("Failed to read schema '" + schemaResource + '\'', ex);
-        }
+        super(eventTypeMetadata, configurationEventTypeXMLDOM, eventAdapterService);
+        this.propertyGetterCache = new HashMap<String, TypedEventPropertyGetter>();
+        this.schemaModel = schemaModel;
+        this.isPropertyExpressionXPath = configurationEventTypeXMLDOM.isPropertyExprXPath();
 
         // Use the root namespace for resolving the root element
         rootElementNamespace = configurationEventTypeXMLDOM.getRootElementNamespace();
@@ -89,23 +76,9 @@ public class SchemaXMLEventType extends BaseXMLEventType {
         super.setExplicitProperties(configurationEventTypeXMLDOM.getXPathProperties().values());
     }
 
-    private void readSchema(String schemaResource) throws IllegalAccessException, InstantiationException, ClassNotFoundException,
-            EPException, URISyntaxException
+    protected FragmentEventType doResolveFragmentType(String property)
     {
-        URL url = ResourceLoader.resolveClassPathOrURLResource("schema", schemaResource);
-        String uri = url.toURI().toString();
-
-        // Uses Xerxes internal classes
-        DOMImplementationRegistry registry = DOMImplementationRegistry.newInstance();
-        registry.addSource(new DOMXSImplementationSourceImpl());
-        XSImplementation impl =(XSImplementation) registry.getDOMImplementation("XS-Loader");
-        XSLoader schemaLoader = impl.createXSLoader(null);
-        xsModel = schemaLoader.loadURI(uri);
-
-        if (xsModel == null)
-        {
-            throw new EPException("Failed to read schema via URL '" + schemaResource + '\'');
-        }
+        return null;  // TODO
     }
 
     protected Class doResolvePropertyType(String property) {
@@ -127,14 +100,31 @@ public class SchemaXMLEventType extends BaseXMLEventType {
             return getter;
         }
 
-        try
+        if (!isPropertyExpressionXPath)
         {
-            getter = SchemaXMLPropertyParser.parse(property,getXPathFactory(),getRootElementName(),rootElementNamespace,xsModel);
-            propertyGetterCache.put(property, getter);
+            Property prop = PropertyParser.parse(property, this.getEventAdapterService(), false);
+            if (prop instanceof SimpleProperty)
+            {
+                // there is no such property since it wasn't in simplePropertyGetters
+                return null;
+            }
+
+            SchemaItem schemaItem = prop.getPropertyTypeSchema(schemaModel, this.getEventAdapterService());
+            EventPropertyGetter getterManufactured = prop.getGetterDOM(schemaModel, this.getEventAdapterService());
+            propertyGetterCache.put(property, getterManufactured);
             return getter;
         }
-        catch (XPathExpressionException e) {
-            throw new EPException("Error constructing XPath expression from property name '" + property + '\'', e);
+        else
+        {
+            try
+            {
+                getter = SchemaXMLPropertyParser.parse(property,getXPathFactory(),getRootElementName(),rootElementNamespace, schemaModel);
+                propertyGetterCache.put(property, getter);
+                return getter;
+            }
+            catch (XPathExpressionException e) {
+                throw new EPException("Error constructing XPath expression from property name '" + property + '\'', e);
+            }
         }
     }
 }

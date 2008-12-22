@@ -15,6 +15,7 @@ import javax.xml.xpath.XPathExpressionException;
 
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.PropertyAccessException;
+import com.espertech.esper.client.FragmentEventType;
 
 import com.espertech.esper.event.TypedEventPropertyGetter;
 import com.espertech.esper.util.SimpleTypeParser;
@@ -154,5 +155,10 @@ public class XPathPropertyGetter implements TypedEventPropertyGetter {
     public Object getFragment(EventBean eventBean)
     {
         return null;
+    }
+
+    public FragmentEventType getFragmentEventType()
+    {
+        return null;  // TODO
     }
 }

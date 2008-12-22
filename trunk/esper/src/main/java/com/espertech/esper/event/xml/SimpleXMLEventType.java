@@ -12,6 +12,7 @@ package com.espertech.esper.event.xml;
 import com.espertech.esper.client.*;
 import com.espertech.esper.event.TypedEventPropertyGetter;
 import com.espertech.esper.event.EventTypeMetadata;
+import com.espertech.esper.event.EventAdapterService;
 
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
@@ -44,9 +45,9 @@ public class SimpleXMLEventType extends BaseXMLEventType {
      * @param configurationEventTypeXMLDOM configures the event type
      * @param eventTypeMetadata event type metadata
      */
-    public SimpleXMLEventType(EventTypeMetadata eventTypeMetadata, ConfigurationEventTypeXMLDOM configurationEventTypeXMLDOM)
+    public SimpleXMLEventType(EventTypeMetadata eventTypeMetadata, ConfigurationEventTypeXMLDOM configurationEventTypeXMLDOM, EventAdapterService eventAdapterService)
     {
-        super(eventTypeMetadata, configurationEventTypeXMLDOM);
+        super(eventTypeMetadata, configurationEventTypeXMLDOM, eventAdapterService);
         isResolvePropertiesAbsolute = configurationEventTypeXMLDOM.isResolvePropertiesAbsolute();
 
         // Set of namespace context for XPath expressions
@@ -103,5 +104,10 @@ public class SimpleXMLEventType extends BaseXMLEventType {
         getter = new XPathPropertyGetter(property, xPathExpression, XPathConstants.STRING, null);
         propertyGetterCache.put(property, getter);
         return getter;
+    }
+
+    protected FragmentEventType doResolveFragmentType(String property)
+    {
+        return null;  // TODO
     }
 }

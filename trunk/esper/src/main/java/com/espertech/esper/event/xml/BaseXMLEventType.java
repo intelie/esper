@@ -35,6 +35,7 @@ public abstract class BaseXMLEventType extends BaseConfigurableEventType {
     private final XPathFactory xPathFactory;
     private final String rootElementName;
     private final ConfigurationEventTypeXMLDOM configurationEventTypeXMLDOM;
+    private final EventAdapterService eventAdapterService;
 
     /**
      * XPath namespace context.
@@ -46,11 +47,12 @@ public abstract class BaseXMLEventType extends BaseConfigurableEventType {
      * @param configurationEventTypeXMLDOM is the XML DOM configuration such as root element and schema names
      * @param metadata event type metadata
      */
-    public BaseXMLEventType(EventTypeMetadata metadata, ConfigurationEventTypeXMLDOM configurationEventTypeXMLDOM)
+    public BaseXMLEventType(EventTypeMetadata metadata, ConfigurationEventTypeXMLDOM configurationEventTypeXMLDOM, EventAdapterService eventAdapterService)
     {
         super(metadata, Node.class);
         this.rootElementName = configurationEventTypeXMLDOM.getRootElementName();
         this.configurationEventTypeXMLDOM = configurationEventTypeXMLDOM;
+        this.eventAdapterService = eventAdapterService;
         xPathFactory = XPathFactory.newInstance();
 
         if (configurationEventTypeXMLDOM.getXPathFunctionResolver() != null)
@@ -172,8 +174,8 @@ public abstract class BaseXMLEventType extends BaseConfigurableEventType {
         return configurationEventTypeXMLDOM.hashCode();
     }
 
-    public FragmentEventType getFragmentType(String property)
+    public EventAdapterService getEventAdapterService()
     {
-        return null;
-    }    
+        return eventAdapterService;
+    }
 }

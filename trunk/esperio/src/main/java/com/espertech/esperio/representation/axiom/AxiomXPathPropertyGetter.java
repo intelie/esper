@@ -10,6 +10,7 @@ package com.espertech.esperio.representation.axiom;
 
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.PropertyAccessException;
+import com.espertech.esper.client.FragmentEventType;
 import com.espertech.esper.event.TypedEventPropertyGetter;
 import com.espertech.esper.util.SimpleTypeParser;
 import com.espertech.esper.util.SimpleTypeParserFactory;
@@ -144,5 +145,10 @@ public class AxiomXPathPropertyGetter implements TypedEventPropertyGetter
     public Object getFragment(EventBean eventBean)
     {
         return null; // no providing fragmentable types yet
+    }
+
+    public FragmentEventType getFragmentEventType()
+    {
+        return null; // TODO
     }
 }

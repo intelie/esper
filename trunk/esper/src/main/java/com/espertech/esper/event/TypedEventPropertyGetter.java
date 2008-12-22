@@ -9,6 +9,7 @@
 package com.espertech.esper.event;
 
 import com.espertech.esper.client.EventPropertyGetter;
+import com.espertech.esper.client.FragmentEventType;
 
 /**
  * Interface for property getters also returning type information for the property.
@@ -16,10 +17,15 @@ import com.espertech.esper.client.EventPropertyGetter;
  */
 public interface TypedEventPropertyGetter extends EventPropertyGetter
 {
-
 	/**
 	 * Returns type of event property.
 	 * @return class of the objects returned by this getter
 	 */
 	public Class getResultClass();
+
+    /**
+     * Returns the fragment event type for the property if defined, or null if the property cannot be represented as a fragment.
+     * @return fragment event type
+     */
+    public FragmentEventType getFragmentEventType();
 }

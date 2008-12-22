@@ -10,6 +10,7 @@ package com.espertech.esper.event;
 
 import com.espertech.esper.client.EventPropertyDescriptor;
 import com.espertech.esper.client.EventPropertyGetter;
+import com.espertech.esper.client.FragmentEventType;
 
 import java.util.Map;
 import java.util.HashMap;
@@ -37,6 +38,27 @@ public abstract class BaseConfigurableEventType implements EventTypeSPI {
         this.metadata = metadata;
         this.underlyngType = underlyngType;
     }
+
+    /**
+     * Subclasses must implement this and supply a getter to a given property.
+     * @param property is the property expression
+     * @return getter for property
+     */
+    protected abstract EventPropertyGetter doResolvePropertyGetter(String property);
+
+    /**
+     * Subclasses must implement this and return a type for a property.
+     * @param property is the property expression
+     * @return property type
+     */
+    protected abstract Class doResolvePropertyType(String property);
+
+    /**
+     * Subclasses must implement this and return a fragment type for a property.
+     * @param property is the property expression
+     * @return fragment property type
+     */
+    protected abstract FragmentEventType doResolveFragmentType(String property);
 
     public String getName()
     {
@@ -85,27 +107,18 @@ public abstract class BaseConfigurableEventType implements EventTypeSPI {
 		return doResolvePropertyGetter(property);
 	}
 
-	public String[] getPropertyNames() {
+    public FragmentEventType getFragmentType(String property)
+    {
+        return doResolveFragmentType(property);
+    }
+
+    public String[] getPropertyNames() {
 		return propertyNames;
 	}
 
 	public boolean isProperty(String property) {
 		return (getGetter(property) != null);
 	}
-
-	/**
-	 * Subclasses must implement this and supply a getter to a given property.
-     * @param property is the property name
-	 * @return getter for property
-	 */
-	protected abstract EventPropertyGetter doResolvePropertyGetter(String property);
-
-	/**
-	 * Subclasses must implement this and return a type for a property.
-     * @param property is the property name
-	 * @return property type
-	 */
-	protected abstract Class doResolvePropertyType(String property);
 
     public EventPropertyDescriptor[] getPropertyDescriptors()
     {

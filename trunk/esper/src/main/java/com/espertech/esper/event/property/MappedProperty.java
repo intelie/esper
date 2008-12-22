@@ -12,6 +12,8 @@ import com.espertech.esper.client.EventPropertyGetter;
 import com.espertech.esper.event.BeanEventType;
 import com.espertech.esper.event.InternalEventPropDescriptor;
 import com.espertech.esper.event.EventAdapterService;
+import com.espertech.esper.event.xml.SchemaElementComplex;
+import com.espertech.esper.event.xml.SchemaItem;
 import net.sf.cglib.reflect.FastClass;
 import net.sf.cglib.reflect.FastMethod;
 
@@ -97,4 +99,14 @@ public class MappedProperty extends PropertyBase
         writer.append(key);
         writer.append("')");
     }
+
+    public EventPropertyGetter getGetterDOM(SchemaElementComplex complexProperty, EventAdapterService eventAdapterService)
+    {
+        return null;  // TODO
+    }
+
+    public SchemaItem getPropertyTypeSchema(SchemaElementComplex complexProperty, EventAdapterService eventAdapterService)
+    {
+        return null;  // TODO
+    }    
 }

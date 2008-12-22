@@ -8,14 +8,14 @@
  **************************************************************************************/
 package com.espertech.esper.client;
 
-import com.espertech.esper.util.MetaDefItem;
-import com.espertech.esper.util.JavaClassHelper;
 import com.espertech.esper.event.EventAdapterException;
+import com.espertech.esper.util.JavaClassHelper;
+import com.espertech.esper.util.MetaDefItem;
 
 import javax.xml.namespace.QName;
-import java.util.Map;
-import java.util.HashMap;
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Configuration object for enabling the engine to process events represented as XML DOM document nodes.
@@ -53,6 +53,7 @@ public class ConfigurationEventTypeXMLDOM implements MetaDefItem, Serializable
     private Map<String, XPathPropertyDesc> xPathProperties;
     private Map<String, String> namespacePrefixes;
 
+    private boolean isPropertyExprXPath;
     private boolean resolvePropertiesAbsolute;
 
     private String xPathFunctionResolver;
@@ -66,6 +67,7 @@ public class ConfigurationEventTypeXMLDOM implements MetaDefItem, Serializable
         xPathProperties = new HashMap<String, XPathPropertyDesc>();
         namespacePrefixes = new HashMap<String, String>();
         resolvePropertiesAbsolute = true;
+        isPropertyExprXPath = false;
     }
 
     /**
@@ -147,6 +149,16 @@ public class ConfigurationEventTypeXMLDOM implements MetaDefItem, Serializable
     public Map<String, XPathPropertyDesc> getXPathProperties()
     {
         return xPathProperties;
+    }
+
+    public boolean isPropertyExprXPath()
+    {
+        return isPropertyExprXPath;
+    }
+
+    public void setPropertyExprXPath(boolean propertyExprXPath)
+    {
+        isPropertyExprXPath = propertyExprXPath;
     }
 
     /**

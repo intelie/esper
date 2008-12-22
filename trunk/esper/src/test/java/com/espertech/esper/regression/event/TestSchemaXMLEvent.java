@@ -57,20 +57,6 @@ public class TestSchemaXMLEvent extends TestCase
         epService = EPServiceProviderManager.getProvider("TestSchemaXML", getConfig());
         epService.initialize();
         updateListener = new SupportUpdateListener();
-
-        String stmt =
-                "select nested1 as nodeProp," +
-                        "prop4 as nested1Prop," +
-                        "nested1.prop2 as nested2Prop," +
-                        "nested3.nested4('a').prop5[1] as complexProp," +
-                        "nested1.nested2.prop3[2] as indexedProp," +
-                        "customProp," +
-                        "prop4.attr2 as attrOneProp," +
-                        "nested3.nested4[2].id as attrTwoProp" +
-                " from TestXMLSchemaType.win:length(100)";
-
-        EPStatement joinView = epService.getEPAdministrator().createEPL(stmt);
-        joinView.addListener(updateListener);
     }
 
     public void testAddRemoveType()
@@ -148,8 +134,33 @@ public class TestSchemaXMLEvent extends TestCase
 
     public void testSimpleXML() throws Exception
     {
+        String stmt =
+                "select nested1 as nodeProp," +
+                        "prop4 as nested1Prop," +
+                        "nested1.prop2 as nested2Prop," +
+                        "nested3.nested4('a').prop5[1] as complexProp," +
+                        "nested1.nested2.prop3[2] as indexedProp," +
+                        "customProp," +
+                        "prop4.attr2 as attrOneProp," +
+                        "nested3.nested4[2].id as attrTwoProp" +
+                " from TestXMLSchemaType.win:length(100)";
+
+        EPStatement joinView = epService.getEPAdministrator().createEPL(stmt);
+        joinView.addListener(updateListener);
+
         sendEvent("test");
-        assertData();
+
+        assertNotNull(updateListener.getLastNewData());
+        EventBean event = updateListener.getLastNewData()[0];
+
+        assertTrue(event.get("nodeProp") instanceof Node);
+        assertEquals("SAMPLE_V6", event.get("nested1Prop"));
+        assertEquals(true, event.get("nested2Prop"));
+        assertEquals("SAMPLE_V8", event.get("complexProp"));
+        assertEquals(5.0, event.get("indexedProp"));
+        assertEquals(3.0, event.get("customProp"));
+        assertEquals(true, event.get("attrOneProp"));
+        assertEquals("c", event.get("attrTwoProp"));
     }
 
     public void testInvalid()
@@ -163,21 +174,6 @@ public class TestSchemaXMLEvent extends TestCase
         {
             assertEquals("Error starting view: Failed to locate property 'element1' in schema [select element1 from TestXMLSchemaType.win:length(100)]", ex.getMessage());
         }
-    }
-
-    private void assertData()
-    {
-        assertNotNull(updateListener.getLastNewData());
-        EventBean event = updateListener.getLastNewData()[0];
-
-        assertTrue(event.get("nodeProp") instanceof Node);
-        assertEquals("SAMPLE_V6", event.get("nested1Prop"));
-        assertEquals(true, event.get("nested2Prop"));
-        assertEquals("SAMPLE_V8", event.get("complexProp"));
-        assertEquals(5.0, event.get("indexedProp"));
-        assertEquals(3.0, event.get("customProp"));
-        assertEquals(true, event.get("attrOneProp"));
-        assertEquals("c", event.get("attrTwoProp"));
     }
 
     private Configuration getConfig()
