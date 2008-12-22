@@ -8,30 +8,27 @@
  **************************************************************************************/
 package com.espertech.esper.event.xml;
 
-import javax.xml.namespace.QName;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpression;
-import javax.xml.xpath.XPathExpressionException;
-
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.PropertyAccessException;
-import com.espertech.esper.client.FragmentEventType;
-
-import com.espertech.esper.event.TypedEventPropertyGetter;
-import com.espertech.esper.util.SimpleTypeParser;
+import com.espertech.esper.client.EventPropertyGetter;
 import com.espertech.esper.util.JavaClassHelper;
+import com.espertech.esper.util.SimpleTypeParser;
 import com.espertech.esper.util.SimpleTypeParserFactory;
-
-import org.w3c.dom.Node;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.w3c.dom.Node;
+
+import javax.xml.namespace.QName;
+import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathExpressionException;
 
 /**
  * Getter for properties of DOM xml events.
  *
  * @author pablo
  */
-public class XPathPropertyGetter implements TypedEventPropertyGetter {
+public class XPathPropertyGetter implements EventPropertyGetter
+{
     private static final Log log = LogFactory.getLog(XPathPropertyGetter.class);
 	private final XPathExpression expression;
 	private final String property;
@@ -121,6 +118,7 @@ public class XPathPropertyGetter implements TypedEventPropertyGetter {
                     log.warn("Error coercing XPath property named '" + property + "' expression result '" + result + " as type " + optionalCastToType.getName());
                     return null;
                 }
+                return result;
             }
 
             log.warn("Error processing XPath property named '" + property + "' expression result '" + result + ", not a known type");
@@ -131,22 +129,6 @@ public class XPathPropertyGetter implements TypedEventPropertyGetter {
 		}
 	}
 
-	public Class getResultClass() {
-        if (optionalCastToType != null)
-        {
-            return optionalCastToType;
-        }
-
-        if (resultType.equals(XPathConstants.BOOLEAN))
-			return Boolean.class;
-		if (resultType.equals(XPathConstants.NUMBER))
-			return Double.class;
-		if (resultType.equals(XPathConstants.STRING))
-			return String.class;
-
-		return String.class;
-	}
-
     public boolean isExistsProperty(EventBean eventBean)
     {
         return true; // Property exists as the property is not dynamic (unchecked)
@@ -155,10 +137,5 @@ public class XPathPropertyGetter implements TypedEventPropertyGetter {
     public Object getFragment(EventBean eventBean)
     {
         return null;
-    }
-
-    public FragmentEventType getFragmentEventType()
-    {
-        return null;  // TODO
     }
 }

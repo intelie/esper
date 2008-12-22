@@ -59,6 +59,59 @@ public class TestSchemaXMLEvent extends TestCase
         updateListener = new SupportUpdateListener();
     }
 
+    public void testSchemaXML() throws Exception
+    {
+        String stmtSelectWild = "select * from TestXMLSchemaType";
+        EPStatement wildStmt = epService.getEPAdministrator().createEPL(stmtSelectWild);
+        EventType type = wildStmt.getEventType();
+
+        ArrayAssertionUtil.assertEqualsAnyOrder(new Object[] {
+            new EventPropertyDescriptor("nested1", Node.class, false, false, false, false, true),
+            new EventPropertyDescriptor("prop4", String.class, false, false, false, false, false),
+            new EventPropertyDescriptor("nested3", Node.class, false, false, false, false, true),
+            new EventPropertyDescriptor("customProp", Double.class, false, false, false, false, false),
+           }, type.getPropertyDescriptors());
+
+        String stmt =
+                "select nested1 as nodeProp," +
+                        "prop4 as nested1Prop," +
+                        "nested1.prop2 as nested2Prop," +
+                        "nested3.nested4('a').prop5[1] as complexProp," +
+                        "nested1.nested2.prop3[2] as indexedProp," +
+                        "customProp," +
+                        "prop4.attr2 as attrOneProp," +
+                        "nested3.nested4[2].id as attrTwoProp" +
+                " from TestXMLSchemaType.win:length(100)";
+
+        EPStatement selectStmt = epService.getEPAdministrator().createEPL(stmt);
+        selectStmt.addListener(updateListener);
+        type = selectStmt.getEventType();
+        ArrayAssertionUtil.assertEqualsAnyOrder(new Object[] {
+            new EventPropertyDescriptor("nodeProp", Node.class, false, false, false, false, true),
+            new EventPropertyDescriptor("nested1Prop", String.class, false, false, false, false, false),
+            new EventPropertyDescriptor("nested2Prop", Boolean.class, false, false, false, false, false),
+            new EventPropertyDescriptor("complexProp", String.class, false, false, false, false, false),
+            new EventPropertyDescriptor("indexedProp", Integer.class, false, false, false, false, false),
+            new EventPropertyDescriptor("customProp", Double.class, false, false, false, false, false),
+            new EventPropertyDescriptor("attrOneProp", Boolean.class, false, false, false, false, false),
+            new EventPropertyDescriptor("attrTwoProp", String.class, false, false, false, false, false),
+           }, type.getPropertyDescriptors());
+
+        Document eventDoc = sendEvent("test");
+
+        assertNotNull(updateListener.getLastNewData());
+        EventBean event = updateListener.getLastNewData()[0];
+
+        assertSame(eventDoc.getDocumentElement().getChildNodes().item(1), event.get("nodeProp"));
+        assertEquals("SAMPLE_V6", event.get("nested1Prop"));
+        assertEquals(true, event.get("nested2Prop"));
+        assertEquals("SAMPLE_V8", event.get("complexProp"));
+        assertEquals(5, event.get("indexedProp"));
+        assertEquals(3.0, event.get("customProp"));
+        assertEquals(true, event.get("attrOneProp"));
+        assertEquals("c", event.get("attrTwoProp"));
+    }
+
     public void testAddRemoveType()
     {
         ConfigurationOperations configOps = epService.getEPAdministrator().getConfiguration();
@@ -132,37 +185,6 @@ public class TestSchemaXMLEvent extends TestCase
         }
     }
 
-    public void testSimpleXML() throws Exception
-    {
-        String stmt =
-                "select nested1 as nodeProp," +
-                        "prop4 as nested1Prop," +
-                        "nested1.prop2 as nested2Prop," +
-                        "nested3.nested4('a').prop5[1] as complexProp," +
-                        "nested1.nested2.prop3[2] as indexedProp," +
-                        "customProp," +
-                        "prop4.attr2 as attrOneProp," +
-                        "nested3.nested4[2].id as attrTwoProp" +
-                " from TestXMLSchemaType.win:length(100)";
-
-        EPStatement joinView = epService.getEPAdministrator().createEPL(stmt);
-        joinView.addListener(updateListener);
-
-        sendEvent("test");
-
-        assertNotNull(updateListener.getLastNewData());
-        EventBean event = updateListener.getLastNewData()[0];
-
-        assertTrue(event.get("nodeProp") instanceof Node);
-        assertEquals("SAMPLE_V6", event.get("nested1Prop"));
-        assertEquals(true, event.get("nested2Prop"));
-        assertEquals("SAMPLE_V8", event.get("complexProp"));
-        assertEquals(5.0, event.get("indexedProp"));
-        assertEquals(3.0, event.get("customProp"));
-        assertEquals(true, event.get("attrOneProp"));
-        assertEquals("c", event.get("attrTwoProp"));
-    }
-
     public void testInvalid()
     {
         try
@@ -183,7 +205,7 @@ public class TestSchemaXMLEvent extends TestCase
         return configuration;
     }
 
-    private void sendEvent(String value) throws Exception
+    private Document sendEvent(String value) throws Exception
     {
         String xml = TestSchemaXMLEvent.XML.replaceAll("VAL1", value);
         log.debug(".sendEvent value=" + value);
@@ -194,6 +216,8 @@ public class TestSchemaXMLEvent extends TestCase
         Document simpleDoc = builderFactory.newDocumentBuilder().parse(source);
 
         epService.getEPRuntime().sendEvent(simpleDoc);
+
+        return simpleDoc;
     }
 
     private ConfigurationEventTypeXMLDOM getConfigTestType(String additionalXPathProperty)

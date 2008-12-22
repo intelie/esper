@@ -42,9 +42,12 @@ public class TestXSDSchemaMapper extends TestCase
      * ==> Allow NODESET (NodeList) and NODE type XPath properties
      * ==> replace property access logic with non-xpath based
      * ==> Allow transposing properties (XPath property builder or DOM-access property builder both)
-     * ==> Look at QName result translation
+     * ==> Look at QName result translation, type from allTypes.xsd to Java translation
+     * ==> Make sure schema XML event exposes all properties of top-level schema elements
+     * ==> Document difference between XPath-based resoltion and Getter-resolution for Node/NodeList
+     * ==> Test simple elements that have attributes
+     * ==> Test namespaces for elements and attributes (i.e. getLocalName versus getNodeName)
      */
-
     public void testIt() throws Exception
     {
         URL url = ResourceLoader.resolveClassPathOrURLResource("schema", "regression/simpleSchema.xsd");

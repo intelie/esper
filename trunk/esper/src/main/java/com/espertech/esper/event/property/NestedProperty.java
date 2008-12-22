@@ -11,6 +11,9 @@ package com.espertech.esper.event.property;
 import com.espertech.esper.event.*;
 import com.espertech.esper.event.xml.SchemaElementComplex;
 import com.espertech.esper.event.xml.SchemaItem;
+import com.espertech.esper.event.xml.SchemaItemAttribute;
+import com.espertech.esper.event.xml.SchemaElementSimple;
+import com.espertech.esper.event.xml.getter.DOMNestedPropertyGetter;
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.client.EventPropertyGetter;
 import com.espertech.esper.client.PropertyAccessException;
@@ -333,15 +336,80 @@ public class NestedProperty implements Property
         }
     }
 
-    public EventPropertyGetter getGetterDOM(SchemaElementComplex complexProperty, EventAdapterService eventAdapterService)
+    public EventPropertyGetter getGetterDOM(SchemaElementComplex parentComplexProperty, EventAdapterService eventAdapterService)
     {
-        return null;  // TODO
+        List<EventPropertyGetter> getters = new LinkedList<EventPropertyGetter>();
+
+        SchemaElementComplex complexElement = parentComplexProperty;
+
+        for (Iterator<Property> it = properties.iterator(); it.hasNext();)
+        {
+            Property property = it.next();
+            EventPropertyGetter getter = property.getGetterDOM(complexElement, eventAdapterService);
+            if (getter == null)
+            {
+                return null;
+            }
+
+            if (it.hasNext())
+            {
+                SchemaItem childSchemaItem = property.getPropertyTypeSchema(complexElement, eventAdapterService);
+                if (childSchemaItem == null)
+                {
+                    // if the property is not valid, return null
+                    return null;
+                }
+
+                if ((childSchemaItem instanceof SchemaItemAttribute) || (childSchemaItem instanceof SchemaElementSimple))
+                {
+                    return null;
+                }
+
+                complexElement = (SchemaElementComplex) childSchemaItem;
+            }
+            
+            getters.add(getter);
+        }
+
+        return new DOMNestedPropertyGetter(getters);
     }
 
-    public SchemaItem getPropertyTypeSchema(SchemaElementComplex complexProperty, EventAdapterService eventAdapterService)
+    public SchemaItem getPropertyTypeSchema(SchemaElementComplex parentComplexProperty, EventAdapterService eventAdapterService)
     {
-        return null;  // TODO
-    }    
+        Property lastProperty = null;
+        SchemaElementComplex complexElement = parentComplexProperty;
+
+        for (Iterator<Property> it = properties.iterator(); it.hasNext();)
+        {
+            Property property = it.next();
+            lastProperty = property;
+            EventPropertyGetter getter = property.getGetterDOM(complexElement, eventAdapterService);
+            if (getter == null)
+            {
+                return null;
+            }
+
+            if (it.hasNext())
+            {
+                SchemaItem childSchemaItem = property.getPropertyTypeSchema(complexElement, eventAdapterService);
+                if (childSchemaItem == null)
+                {
+                    // if the property is not valid, return null
+                    return null;
+                }
+
+                if ((childSchemaItem instanceof SchemaItemAttribute) || (childSchemaItem instanceof SchemaElementSimple))
+                {
+                    return null;
+                }
+
+                complexElement = (SchemaElementComplex) childSchemaItem;
+            }
+        }
+
+        SchemaItem finalPropertyType = lastProperty.getPropertyTypeSchema(complexElement, eventAdapterService);
+        return finalPropertyType;
+    }
 
     private static String toPropertyEPL(List<Property> property, int startFromIndex)
     {

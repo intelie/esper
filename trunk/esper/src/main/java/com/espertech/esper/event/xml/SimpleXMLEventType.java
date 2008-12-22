@@ -10,7 +10,6 @@ package com.espertech.esper.event.xml;
 
 
 import com.espertech.esper.client.*;
-import com.espertech.esper.event.TypedEventPropertyGetter;
 import com.espertech.esper.event.EventTypeMetadata;
 import com.espertech.esper.event.EventAdapterService;
 
@@ -20,6 +19,7 @@ import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Collections;
 
 /**
  * Optimistic try to resolve the property string into an appropiate xPath,
@@ -36,7 +36,7 @@ import java.util.Map;
  */
 public class SimpleXMLEventType extends BaseXMLEventType {
 
-    private final Map<String, TypedEventPropertyGetter> propertyGetterCache;
+    private final Map<String, EventPropertyGetter> propertyGetterCache;
     private String defaultNamespacePrefix;
     private final boolean isResolvePropertiesAbsolute;
 
@@ -73,9 +73,9 @@ public class SimpleXMLEventType extends BaseXMLEventType {
             }
         }
         super.setNamespaceContext(xPathNamespaceContext);
-        super.setExplicitProperties(configurationEventTypeXMLDOM.getXPathProperties().values());
+        super.initialize(configurationEventTypeXMLDOM.getXPathProperties().values(), Collections.EMPTY_MAP);
 
-        propertyGetterCache = new HashMap<String, TypedEventPropertyGetter>();
+        propertyGetterCache = new HashMap<String, EventPropertyGetter>();
     }
 
     protected Class doResolvePropertyType(String property) {
@@ -83,7 +83,7 @@ public class SimpleXMLEventType extends BaseXMLEventType {
     }
 
     protected EventPropertyGetter doResolvePropertyGetter(String property) {
-        TypedEventPropertyGetter getter = propertyGetterCache.get(property);
+        EventPropertyGetter getter = propertyGetterCache.get(property);
         if (getter != null) {
             return getter;
         }

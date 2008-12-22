@@ -85,7 +85,7 @@ public class TestConfigurationOperations extends TestCase
 
         Document eventOne = makeDOMEvent("RootAddedDOMOne");
         epService.getEPRuntime().sendEvent(eventOne);
-        assertSame(eventOne, testListener.assertOneGetNewAndReset().getUnderlying());
+        assertSame(eventOne.getDocumentElement(), testListener.assertOneGetNewAndReset().getUnderlying());
 
         tryInvalid("AddedMapNameSecond");
 
@@ -102,7 +102,7 @@ public class TestConfigurationOperations extends TestCase
         Document eventTwo = makeDOMEvent("RootAddedDOMOne");
         epService.getEPRuntime().sendEvent(eventTwo);
         assertTrue(testListener.isInvoked());
-        assertEquals(eventTwo, testListenerTwo.assertOneGetNewAndReset().getUnderlying());
+        assertEquals(eventTwo.getDocumentElement(), testListenerTwo.assertOneGetNewAndReset().getUnderlying());
 
         // Add the same alias and type again
         domConfig = new ConfigurationEventTypeXMLDOM();

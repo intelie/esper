@@ -1,6 +1,6 @@
 package com.espertech.esper.event.xml;
 
-public class SchemaElementAttribute implements SchemaItem
+public class SchemaItemAttribute implements SchemaItem
 {
     private final String namespace;
     private final String name;
@@ -12,7 +12,7 @@ public class SchemaElementAttribute implements SchemaItem
      * @param name name
      * @param type attribute type
      */
-    public SchemaElementAttribute(String namespace, String name, short type)
+    public SchemaItemAttribute(String namespace, String name, short type)
     {
         this.name = name;
         this.namespace = namespace;

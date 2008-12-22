@@ -6,6 +6,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.xpath.XPathConstants;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.ConfigurationEventTypeXMLDOM;
+import com.espertech.esper.support.event.SupportEventAdapterService;
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 
@@ -52,7 +53,7 @@ public class TestSimpleXMLEventType extends TestCase {
         config.setRootElementName("simpleEvent");
         config.addXPathProperty("customProp", "count(/simpleEvent/nested3/nested4)", XPathConstants.NUMBER);
 
-        SimpleXMLEventType eventType = new SimpleXMLEventType(null, config);
+        SimpleXMLEventType eventType = new SimpleXMLEventType(null, config, SupportEventAdapterService.getService());
 		event = new XMLEventBean(simpleDoc, eventType);
 	}
 

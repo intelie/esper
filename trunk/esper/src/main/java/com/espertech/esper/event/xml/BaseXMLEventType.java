@@ -8,16 +8,20 @@
  **************************************************************************************/
 package com.espertech.esper.event.xml;
 
-import javax.xml.xpath.*;
-
+import com.espertech.esper.client.*;
+import com.espertech.esper.collection.Pair;
+import com.espertech.esper.event.BaseConfigurableEventType;
+import com.espertech.esper.event.EventAdapterService;
+import com.espertech.esper.event.EventTypeMetadata;
+import com.espertech.esper.util.ClassInstantiationException;
+import com.espertech.esper.util.JavaClassHelper;
 import org.w3c.dom.Node;
 
-import com.espertech.esper.event.*;
-import com.espertech.esper.client.*;
-import com.espertech.esper.util.JavaClassHelper;
-import com.espertech.esper.util.ClassInstantiationException;
-
-import java.util.*;
+import javax.xml.xpath.*;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * Base class for XMLEventTypes.
@@ -102,17 +106,17 @@ public abstract class BaseXMLEventType extends BaseConfigurableEventType {
 
     /**
      * Set the preconfigured event properties resolved by XPath expression.
-     * @param explicitProperties are preconfigured event properties
+     * @param explicitXPathProperties are preconfigured event properties
      */
-    protected void setExplicitProperties(Collection<ConfigurationEventTypeXMLDOM.XPathPropertyDesc> explicitProperties)
+    protected void initialize(Collection<ConfigurationEventTypeXMLDOM.XPathPropertyDesc> explicitXPathProperties,
+                              Map<String, Pair<EventPropertyGetter, EventPropertyDescriptor>> additionalSchemaProperties)
     {
-        // Convert explicit properties to XPath expressions
-        Map<String, TypedEventPropertyGetter> getters = new HashMap<String, TypedEventPropertyGetter>();
+        Map<String, Pair<EventPropertyGetter, EventPropertyDescriptor>> namedProperties = new LinkedHashMap<String, Pair<EventPropertyGetter, EventPropertyDescriptor>>(additionalSchemaProperties);
 
         String xpathExpression = null;
         try {
 
-            for (ConfigurationEventTypeXMLDOM.XPathPropertyDesc property : explicitProperties)
+            for (ConfigurationEventTypeXMLDOM.XPathPropertyDesc property : explicitXPathProperties)
             {
                 XPath xPath = xPathFactory.newXPath();
                 if (namespaceContext != null)
@@ -122,7 +126,10 @@ public abstract class BaseXMLEventType extends BaseConfigurableEventType {
 
                 xpathExpression = property.getXpath();
                 XPathExpression expression = xPath.compile(xpathExpression);
-                getters.put(property.getName(), new XPathPropertyGetter(property.getName(), expression, property.getType(), property.getOptionalCastToType()));
+                EventPropertyGetter getter = new XPathPropertyGetter(property.getName(), expression, property.getType(), property.getOptionalCastToType());
+                Class returnType = SchemaUtil.toReturnType(property.getType(), property.getOptionalCastToType());
+                EventPropertyDescriptor desc = new EventPropertyDescriptor(property.getName(), returnType, false,false,false,false,false);
+                namedProperties.put(property.getName(), new Pair<EventPropertyGetter, EventPropertyDescriptor>(getter, desc));
             }
         }
         catch (XPathExpressionException ex)
@@ -130,7 +137,7 @@ public abstract class BaseXMLEventType extends BaseConfigurableEventType {
             throw new EPException("XPath expression could not be compiled for expression '" + xpathExpression + '\'', ex);
         }
 
-        setExplicitProperties(getters);
+        super.initialize(namedProperties);
     }
 
     /**

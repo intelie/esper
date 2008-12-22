@@ -471,7 +471,7 @@ public class EventAdapterServiceImpl implements EventAdapterService
                     "' has not been configured");
         }
 
-        return new XMLEventBean(node, eventType);
+        return new XMLEventBean(namedNode, eventType);
     }
 
     /**
@@ -508,12 +508,12 @@ public class EventAdapterServiceImpl implements EventAdapterService
         EventType type;
         if (configurationEventTypeXMLDOM.getSchemaResource() == null)
         {
-            type = new SimpleXMLEventType(metadata, configurationEventTypeXMLDOM);
+            type = new SimpleXMLEventType(metadata, configurationEventTypeXMLDOM, this);
         }
         else
         {
             SchemaModel schemaModel = XSDSchemaMapper.loadAndMap(configurationEventTypeXMLDOM.getSchemaResource(), 2);            
-            type = new SchemaXMLEventType(metadata, configurationEventTypeXMLDOM, schemaModel);
+            type = new SchemaXMLEventType(metadata, configurationEventTypeXMLDOM, schemaModel, this);
         }
 
         aliasToTypeMap.put(eventTypeAlias, type);

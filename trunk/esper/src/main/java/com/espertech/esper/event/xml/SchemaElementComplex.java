@@ -10,7 +10,7 @@ public class SchemaElementComplex implements SchemaElement
 {
     private String name;
     private String namespace;
-    private List<SchemaElementAttribute> attributes;
+    private List<SchemaItemAttribute> attributes;
     private List<SchemaElementSimple> simpleElements;
     private List<SchemaElementComplex> children;
     private boolean isArray;
@@ -26,7 +26,7 @@ public class SchemaElementComplex implements SchemaElement
      * @param isArray if unbound or max>1
      * @param optionalSimpleType if the element does itself have a type
      */
-    public SchemaElementComplex(String name, String namespace, List<SchemaElementAttribute> attributes, List<SchemaElementComplex> children, List<SchemaElementSimple> simpleElements, boolean isArray, Short optionalSimpleType)
+    public SchemaElementComplex(String name, String namespace, List<SchemaItemAttribute> attributes, List<SchemaElementComplex> children, List<SchemaElementSimple> simpleElements, boolean isArray, Short optionalSimpleType)
     {
         this.name = name;
         this.namespace = namespace;
@@ -55,7 +55,7 @@ public class SchemaElementComplex implements SchemaElement
      * Returns attributes.
      * @return attributes
      */
-    public List<SchemaElementAttribute> getAttributes()
+    public List<SchemaItemAttribute> getAttributes()
     {
         return attributes;
     }

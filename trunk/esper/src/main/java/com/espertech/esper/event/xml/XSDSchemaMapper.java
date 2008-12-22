@@ -126,7 +126,7 @@ public class XSDSchemaMapper
             log.debug("Processing complex " + complexElementNamespace + " " + complexElementName + " stack " + nameNamespaceStack);
         }
 
-        List<SchemaElementAttribute> attributes = new ArrayList<SchemaElementAttribute>();
+        List<SchemaItemAttribute> attributes = new ArrayList<SchemaItemAttribute>();
         List<SchemaElementSimple> simpleElements = new ArrayList<SchemaElementSimple>();
         List<SchemaElementComplex> complexElements = new ArrayList<SchemaElementComplex>();
 
@@ -146,7 +146,7 @@ public class XSDSchemaMapper
             String namespace = attr.getAttrDeclaration().getNamespace();
             String name = attr.getAttrDeclaration().getName();
             XSSimpleTypeDecl simpleType = (XSSimpleTypeDecl) attr.getAttrDeclaration().getTypeDefinition();
-            attributes.add(new SchemaElementAttribute(namespace, name, simpleType.getPrimitiveKind()));
+            attributes.add(new SchemaItemAttribute(namespace, name, simpleType.getPrimitiveKind()));
         }
 
         if ((complexActualElement.getContentType() == XSComplexTypeDefinition.CONTENTTYPE_ELEMENT) ||

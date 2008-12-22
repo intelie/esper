@@ -5,6 +5,7 @@ import javax.xml.xpath.XPathConstants;
 
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.ConfigurationEventTypeXMLDOM;
+import com.espertech.esper.support.event.SupportEventAdapterService;
 
 import org.w3c.dom.Document;
 import junit.framework.TestCase;
@@ -19,18 +20,19 @@ public class TestSchemaXMLEventType extends TestCase {
 
         URL schemaUrl = TestSchemaXMLEventType.class.getClassLoader().getResource("regression/simpleSchema.xsd");
         ConfigurationEventTypeXMLDOM configNoNS = new ConfigurationEventTypeXMLDOM();
+        configNoNS.setPropertyExprXPath(true);
         configNoNS.setSchemaResource(schemaUrl.toString());
         configNoNS.setRootElementName("simpleEvent");
         configNoNS.addXPathProperty("customProp", "count(/ss:simpleEvent/ss:nested3/ss:nested4)", XPathConstants.NUMBER);
         configNoNS.addNamespacePrefix("ss", "samples:schemas:simpleSchema");
         SchemaModel model = XSDSchemaMapper.loadAndMap(schemaUrl.toString(), 2);
-        SchemaXMLEventType eventTypeNoNS = new SchemaXMLEventType(null, configNoNS, model);
+        SchemaXMLEventType eventTypeNoNS = new SchemaXMLEventType(null, configNoNS, model, SupportEventAdapterService.getService());
 
         DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
         builderFactory.setNamespaceAware(true);
 
         Document noNSDoc = builderFactory.newDocumentBuilder().parse(TestSchemaXMLEventType.class.getClassLoader().getResourceAsStream("regression/simpleWithSchema.xml"));
-        eventSchemaOne = new XMLEventBean(noNSDoc, eventTypeNoNS);
+        eventSchemaOne = new XMLEventBean(noNSDoc.getDocumentElement(), eventTypeNoNS);
     }
 
     public void testSimpleProperies() {
@@ -48,8 +50,8 @@ public class TestSchemaXMLEventType extends TestCase {
     }
 
     public void testIndexedProperties() {
-        assertEquals(5.0,eventSchemaOne.get("nested1.nested2.prop3[2]"));
-        assertEquals(Double.class,eventSchemaOne.getEventType().getPropertyType("nested1.nested2.prop3[2]"));
+        assertEquals(5,eventSchemaOne.get("nested1.nested2.prop3[2]"));
+        assertEquals(Integer.class,eventSchemaOne.getEventType().getPropertyType("nested1.nested2.prop3[2]"));
     }
 
     public void testCustomProperty() {
@@ -69,14 +71,14 @@ public class TestSchemaXMLEventType extends TestCase {
         try {
             String prop = "nested3.nested4.id";
             eventSchemaOne.getEventType().getGetter(prop);
-            fail("Invalid collection access: " + prop + " acepted");
+            fail("Invalid collection access: " + prop + " accepted");
         } catch (Exception e) {
             //Expected
         }
         try {
             String prop = "nested3.nested4.nested5";
             eventSchemaOne.getEventType().getGetter(prop);
-            fail("Invalid collection access: " + prop + " acepted");
+            fail("Invalid collection access: " + prop + " accepted");
         } catch (Exception e) {
             //Expected
         }

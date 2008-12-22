@@ -9,13 +9,15 @@
 package com.espertech.esper.event.xml;
 
 import com.espertech.esper.client.PropertyAccessException;
+import com.espertech.esper.client.EventPropertyGetter;
 import com.espertech.esper.collection.Pair;
 import com.espertech.esper.epl.generated.EsperEPL2GrammarParser;
-import com.espertech.esper.event.TypedEventPropertyGetter;
 import com.espertech.esper.type.IntValue;
 import com.espertech.esper.type.StringValue;
 import com.espertech.esper.util.ExecutionPathDebugLog;
-import com.sun.org.apache.xerces.internal.impl.dv.xs.XSSimpleTypeDecl;
+import com.espertech.esper.event.EventAdapterService;
+import com.espertech.esper.event.property.PropertyParser;
+import com.espertech.esper.event.property.Property;
 import org.antlr.runtime.tree.Tree;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -42,7 +44,7 @@ public class SchemaXMLPropertyParser
      * @return xpath expression
      * @throws XPathExpressionException when the XPath expression is invalid
      */
-    public static TypedEventPropertyGetter parse(String propertyName, XPathFactory xPathFactory, String rootElementName, String namespace, SchemaModel schemaModel) throws XPathExpressionException
+    public static PropertyResolutionResult getXPathResolution(String propertyName, XPathFactory xPathFactory, String rootElementName, String namespace, SchemaModel schemaModel, EventAdapterService eventAdapterService) throws XPathExpressionException
     {
         XPathNamespaceContext ctx = new XPathNamespaceContext();
         List<String> namespaces = schemaModel.getNamespaces();
@@ -53,6 +55,7 @@ public class SchemaXMLPropertyParser
         }
 
         Tree ast = SimpleXMLPropertyParser.parse(propertyName);
+        Property property = PropertyParser.parse(propertyName, eventAdapterService, false);
 
         SchemaElementComplex rootComplexElement = SchemaUtil.findRootElement(schemaModel, namespace, rootElementName);
         String prefix = ctx.getPrefix(rootComplexElement.getNamespace());
@@ -68,7 +71,9 @@ public class SchemaXMLPropertyParser
         xPathBuf.append(prefix);
         xPathBuf.append(rootElementName);
 
+        SchemaElementComplex parentComplexElement = rootComplexElement;
         Pair<String, QName> pair = null;
+
         if (ast.getChildCount() == 1)
         {
             pair = makeProperty(rootComplexElement, ast.getChild(0), ctx);
@@ -80,7 +85,6 @@ public class SchemaXMLPropertyParser
         }
         else
         {
-            SchemaElementComplex parentComplexElement = rootComplexElement;
             for (int i = 0; i < ast.getChildCount(); i++)
             {
                 Tree child = ast.getChild(i);
@@ -109,9 +113,23 @@ public class SchemaXMLPropertyParser
         // Compile assembled XPath expression
         XPath path = xPathFactory.newXPath();
         path.setNamespaceContext(ctx);
+
+        if (log.isDebugEnabled())
+        {
+            log.debug("Compiling XPath " + xPath);
+        }
         XPathExpression expr = path.compile(xPath);
 
-        return new XPathPropertyGetter(propertyName, expr, pair.getSecond(), null);
+        // get type
+        SchemaItem item = property.getPropertyTypeSchema(rootComplexElement, eventAdapterService);
+        if (item == null)
+        {
+            return null;
+        }
+
+        Class resultType = SchemaUtil.toReturnType(item);
+        EventPropertyGetter getter = new XPathPropertyGetter(propertyName, expr, pair.getSecond(), resultType);
+        return new PropertyResolutionResult(getter, resultType, parentComplexElement);
     }
 
     private static Pair<String, QName> makeProperty(SchemaElementComplex parent, Tree child, XPathNamespaceContext ctx)
@@ -122,7 +140,7 @@ public class SchemaXMLPropertyParser
             return makeElementProperty((SchemaElement) obj, child, ctx);
         }
         else if (obj != null) {
-            return makeAttributeProperty((SchemaElementAttribute) obj, child, ctx);
+            return makeAttributeProperty((SchemaItemAttribute) obj, child, ctx);
         }
         else
         {
@@ -130,7 +148,7 @@ public class SchemaXMLPropertyParser
         }
     }
 
-    private static Pair<String, QName> makeAttributeProperty(SchemaElementAttribute attribute, Tree child, XPathNamespaceContext ctx)
+    private static Pair<String, QName> makeAttributeProperty(SchemaItemAttribute attribute, Tree child, XPathNamespaceContext ctx)
     {
         String prefix = ctx.getPrefix(attribute.getNamespace());
         if (prefix == null)

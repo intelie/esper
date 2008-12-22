@@ -9,17 +9,85 @@
 package com.espertech.esper.event.xml;
 
 import com.espertech.esper.client.EPException;
+import com.espertech.esper.client.PropertyAccessException;
 import com.sun.org.apache.xerces.internal.impl.dv.XSSimpleType;
-import com.sun.org.apache.xerces.internal.impl.dv.xs.XSSimpleTypeDecl;
 
 import javax.xml.namespace.QName;
 import javax.xml.xpath.XPathConstants;
+
+import org.w3c.dom.NodeList;
+import org.w3c.dom.Node;
 
 /**
  * Utility class for querying schema information via Xerces implementation classes.
  * @author pablo
  */
 public class SchemaUtil {
+
+    public static Class toReturnType(SchemaItem item)
+    {
+        if (item instanceof SchemaItemAttribute)
+        {
+            return SchemaUtil.toReturnType(((SchemaItemAttribute)item).getType());
+        }
+        else if (item instanceof SchemaElementSimple)
+        {
+            return SchemaUtil.toReturnType(((SchemaElementSimple)item).getType());
+        }
+        else if (item instanceof SchemaElementComplex)
+        {
+            SchemaElementComplex complex = (SchemaElementComplex) item;
+            if (complex.getOptionalSimpleType() != null)
+            {
+                return SchemaUtil.toReturnType(complex.getOptionalSimpleType());
+            }
+            if (complex.isArray())
+            {
+                return NodeList.class;
+            }
+            return Node.class;
+        }
+        else
+        {
+            throw new PropertyAccessException("Invalid schema return type:" + item);
+        }
+    }
+
+    public static Class toReturnType(short xsType)
+    {
+        switch(xsType)
+        {
+            case XSSimpleType.PRIMITIVE_BOOLEAN :
+                    return Boolean.class;
+            case XSSimpleType.PRIMITIVE_STRING :
+                    return String.class;
+            case XSSimpleType.PRIMITIVE_DECIMAL :
+                    return Integer.class;
+            case XSSimpleType.PRIMITIVE_FLOAT :
+                    return Float.class;
+            case XSSimpleType.PRIMITIVE_DOUBLE :
+                    return Double.class;
+            default:
+                return String.class;
+        }
+    }
+
+    public static Class toReturnType(QName resultType, Class optionalCastToType)
+    {
+        if (optionalCastToType != null)
+        {
+            return optionalCastToType;
+        }
+
+        if (resultType.equals(XPathConstants.BOOLEAN))
+            return Boolean.class;
+        if (resultType.equals(XPathConstants.NUMBER))
+            return Double.class;
+        if (resultType.equals(XPathConstants.STRING))
+            return String.class;
+
+        return String.class;
+    }
 
     /**
      * Returns the XPathConstants type for a given Xerces type definition.
@@ -101,7 +169,7 @@ public class SchemaUtil {
      */
     public static SchemaItem findPropertyMapping(SchemaElementComplex def, String property) {
 
-        for (SchemaElementAttribute attribute : def.getAttributes())
+        for (SchemaItemAttribute attribute : def.getAttributes())
         {
             if (attribute.getName().equals(property))
             {

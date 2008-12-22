@@ -9,8 +9,9 @@
 package com.espertech.esper.event.property;
 
 import com.espertech.esper.event.*;
-import com.espertech.esper.event.xml.SchemaElementComplex;
-import com.espertech.esper.event.xml.SchemaItem;
+import com.espertech.esper.event.xml.*;
+import com.espertech.esper.event.xml.getter.DOMSimpleAttributeGetter;
+import com.espertech.esper.event.xml.getter.DOMSimpleElementGetter;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.client.EventPropertyGetter;
@@ -145,11 +146,35 @@ public class SimpleProperty extends PropertyBase
 
     public EventPropertyGetter getGetterDOM(SchemaElementComplex complexProperty, EventAdapterService eventAdapterService)
     {
-        return null;  // TODO
+        for (SchemaItemAttribute attribute : complexProperty.getAttributes())
+        {
+            if (attribute.getName().equals(propertyNameAtomic))
+            {
+                return new DOMSimpleAttributeGetter(propertyNameAtomic);
+            }
+        }
+
+        for (SchemaElementSimple simple : complexProperty.getSimpleElements())
+        {
+            if (simple.getName().equals(propertyNameAtomic))
+            {
+                return new DOMSimpleElementGetter(propertyNameAtomic);
+            }
+        }
+
+        for (SchemaElementComplex complex : complexProperty.getChildren())
+        {
+            if (complex.getName().equals(propertyNameAtomic))
+            {
+                return new DOMSimpleElementGetter(propertyNameAtomic);
+            }
+        }
+
+        return null;
     }
 
     public SchemaItem getPropertyTypeSchema(SchemaElementComplex complexProperty, EventAdapterService eventAdapterService)
     {
-        return null;  // TODO
+        return SchemaUtil.findPropertyMapping(complexProperty, propertyNameAtomic);
     }
 }

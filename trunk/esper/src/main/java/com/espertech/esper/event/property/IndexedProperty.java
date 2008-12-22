@@ -8,18 +8,20 @@
  **************************************************************************************/
 package com.espertech.esper.event.property;
 
+import com.espertech.esper.client.EventPropertyGetter;
+import com.espertech.esper.client.EventType;
 import com.espertech.esper.event.*;
 import com.espertech.esper.event.xml.SchemaElementComplex;
+import com.espertech.esper.event.xml.SchemaElementSimple;
 import com.espertech.esper.event.xml.SchemaItem;
-import com.espertech.esper.client.EventType;
-import com.espertech.esper.client.EventPropertyGetter;
-import net.sf.cglib.reflect.FastMethod;
+import com.espertech.esper.event.xml.getter.DOMIndexedGetter;
 import net.sf.cglib.reflect.FastClass;
+import net.sf.cglib.reflect.FastMethod;
 
-import java.lang.reflect.Method;
-import java.lang.reflect.Field;
-import java.util.Map;
 import java.io.StringWriter;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.Map;
 
 /**
  * Represents an indexed property or array property, ie. an 'value' property with read method getValue(int index)
@@ -218,11 +220,63 @@ public class IndexedProperty extends PropertyBase
 
     public EventPropertyGetter getGetterDOM(SchemaElementComplex complexProperty, EventAdapterService eventAdapterService)
     {
-        return null;  // TODO
+        for (SchemaElementSimple simple : complexProperty.getSimpleElements())
+        {
+            if (!simple.isArray())
+            {
+                continue;
+            }
+            if (!simple.getName().equals(propertyNameAtomic))
+            {
+                continue;
+            }
+            return new DOMIndexedGetter(propertyNameAtomic, index);
+        }
+
+        for (SchemaElementComplex complex : complexProperty.getChildren())
+        {
+            if (!complex.isArray())
+            {
+                continue;
+            }
+            if (!complex.getName().equals(propertyNameAtomic))
+            {
+                continue;
+            }
+            return new DOMIndexedGetter(propertyNameAtomic, index);
+        }
+
+        return null;
     }
 
     public SchemaItem getPropertyTypeSchema(SchemaElementComplex complexProperty, EventAdapterService eventAdapterService)
     {
-        return null;  // TODO
-    }    
+        for (SchemaElementSimple simple : complexProperty.getSimpleElements())
+        {
+            if (!simple.isArray())
+            {
+                continue;
+            }
+            if (!simple.getName().equals(propertyNameAtomic))
+            {
+                continue;
+            }
+            return simple;
+        }
+
+        for (SchemaElementComplex complex : complexProperty.getChildren())
+        {
+            if (!complex.isArray())
+            {
+                continue;
+            }
+            if (!complex.getName().equals(propertyNameAtomic))
+            {
+                continue;
+            }
+            return complex;
+        }
+
+        return null;
+    }
 }

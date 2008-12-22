@@ -11,6 +11,7 @@ package com.espertech.esper.event;
 import com.espertech.esper.client.EventPropertyDescriptor;
 import com.espertech.esper.client.EventPropertyGetter;
 import com.espertech.esper.client.FragmentEventType;
+import com.espertech.esper.collection.Pair;
 
 import java.util.Map;
 import java.util.HashMap;
@@ -23,7 +24,7 @@ public abstract class BaseConfigurableEventType implements EventTypeSPI {
 
     private final EventTypeMetadata metadata;
     private Class underlyngType;
-	private Map<String,TypedEventPropertyGetter> explicitProperties;
+	private Map<String,EventPropertyGetter> propertyGetters;
     private EventPropertyDescriptor[] propertyDescriptors;
     private Map<String, EventPropertyDescriptor> propertyDescriptorMap;
     private String[] propertyNames;
@@ -67,21 +68,21 @@ public abstract class BaseConfigurableEventType implements EventTypeSPI {
 
     /**
      * Sets explicit properties using a map of event property name and getter instance for each property.
-     * @param explicitProperties is the preconfigured properties not implicit in the event type
      */
-    protected void setExplicitProperties(Map<String, TypedEventPropertyGetter> explicitProperties)
+    protected void initialize(Map<String, Pair<EventPropertyGetter, EventPropertyDescriptor>> explicitProperties)
     {
-        this.explicitProperties = explicitProperties;
-
+        propertyGetters = new HashMap<String,EventPropertyGetter>();
         propertyDescriptors = new EventPropertyDescriptor[explicitProperties.size()];
         propertyNames = new String[explicitProperties.size()];
         propertyDescriptorMap = new HashMap<String, EventPropertyDescriptor>();
 
         int count = 0;
-        for (Map.Entry<String, TypedEventPropertyGetter> entry : explicitProperties.entrySet())
+        for (Map.Entry<String, Pair<EventPropertyGetter, EventPropertyDescriptor>> entry : explicitProperties.entrySet())
         {
             propertyNames[count] = entry.getKey();
-            EventPropertyDescriptor desc = new EventPropertyDescriptor(entry.getKey(), entry.getValue().getResultClass(), false,false,false,false,false);
+            EventPropertyGetter getter = entry.getValue().getFirst();
+            propertyGetters.put(entry.getKey(), getter);
+            EventPropertyDescriptor desc = entry.getValue().getSecond();
             propertyDescriptors[count] = desc;
             propertyDescriptorMap.put(desc.getPropertyName(), desc);
             count++;
@@ -89,10 +90,11 @@ public abstract class BaseConfigurableEventType implements EventTypeSPI {
     }
 
     public Class getPropertyType(String property) {
-		TypedEventPropertyGetter getter = explicitProperties.get(property);
-		if (getter != null)
-			return getter.getResultClass();
-		return doResolvePropertyType(property);
+		EventPropertyDescriptor desc = propertyDescriptorMap.get(property);
+		if (desc != null) {
+			return desc.getPropertyType();
+        }
+        return doResolvePropertyType(property);
 	}
 
 
@@ -101,7 +103,7 @@ public abstract class BaseConfigurableEventType implements EventTypeSPI {
 	}
 
 	public EventPropertyGetter getGetter(String property) {
-		EventPropertyGetter getter = explicitProperties.get(property);
+		EventPropertyGetter getter = propertyGetters.get(property);
 		if (getter != null)
 			return getter;
 		return doResolvePropertyGetter(property);

@@ -16,6 +16,7 @@ import javax.xml.namespace.QName;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.LinkedHashMap;
 
 /**
  * Configuration object for enabling the engine to process events represented as XML DOM document nodes.
@@ -64,7 +65,7 @@ public class ConfigurationEventTypeXMLDOM implements MetaDefItem, Serializable
      */
     public ConfigurationEventTypeXMLDOM()
     {
-        xPathProperties = new HashMap<String, XPathPropertyDesc>();
+        xPathProperties = new LinkedHashMap<String, XPathPropertyDesc>();
         namespacePrefixes = new HashMap<String, String>();
         resolvePropertiesAbsolute = true;
         isPropertyExprXPath = false;

@@ -10,16 +10,18 @@ package com.espertech.esper.event.property;
 
 import com.espertech.esper.client.EventPropertyGetter;
 import com.espertech.esper.event.BeanEventType;
-import com.espertech.esper.event.InternalEventPropDescriptor;
 import com.espertech.esper.event.EventAdapterService;
+import com.espertech.esper.event.InternalEventPropDescriptor;
 import com.espertech.esper.event.xml.SchemaElementComplex;
 import com.espertech.esper.event.xml.SchemaItem;
+import com.espertech.esper.event.xml.SchemaItemAttribute;
+import com.espertech.esper.event.xml.getter.DOMMapGetter;
 import net.sf.cglib.reflect.FastClass;
 import net.sf.cglib.reflect.FastMethod;
 
+import java.io.StringWriter;
 import java.lang.reflect.Method;
 import java.util.Map;
-import java.io.StringWriter;
 
 /**
  * Represents a mapped property or array property, ie. an 'value' property with read method getValue(int index)
@@ -102,11 +104,45 @@ public class MappedProperty extends PropertyBase
 
     public EventPropertyGetter getGetterDOM(SchemaElementComplex complexProperty, EventAdapterService eventAdapterService)
     {
-        return null;  // TODO
+        for (SchemaElementComplex complex : complexProperty.getChildren())
+        {
+            if (!complex.getName().equals(propertyNameAtomic))
+            {
+                continue;
+            }
+            for (SchemaItemAttribute attribute : complex.getAttributes())
+            {
+                if (!attribute.getName().toLowerCase().equals("id"))
+                {
+                    continue;
+                }
+            }
+
+            return new DOMMapGetter(propertyNameAtomic, key);
+        }
+
+        return null;
     }
 
     public SchemaItem getPropertyTypeSchema(SchemaElementComplex complexProperty, EventAdapterService eventAdapterService)
     {
-        return null;  // TODO
-    }    
+        for (SchemaElementComplex complex : complexProperty.getChildren())
+        {
+            if (!complex.getName().equals(propertyNameAtomic))
+            {
+                continue;
+            }
+            for (SchemaItemAttribute attribute : complex.getAttributes())
+            {
+                if (!attribute.getName().toLowerCase().equals("id"))
+                {
+                    continue;
+                }
+            }
+
+            return complex;
+        }
+
+        return null;
+    }
 }

@@ -11,7 +11,7 @@ package com.espertech.esperio.representation.axiom;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.PropertyAccessException;
 import com.espertech.esper.client.FragmentEventType;
-import com.espertech.esper.event.TypedEventPropertyGetter;
+import com.espertech.esper.client.EventPropertyGetter;
 import com.espertech.esper.util.SimpleTypeParser;
 import com.espertech.esper.util.SimpleTypeParserFactory;
 import org.apache.axiom.om.OMNode;
@@ -28,7 +28,7 @@ import javax.xml.xpath.XPathConstants;
  * <p>
  * See {@link AxiomEventRepresentation} for more details.
  */
-public class AxiomXPathPropertyGetter implements TypedEventPropertyGetter
+public class AxiomXPathPropertyGetter implements EventPropertyGetter
 {
     private static final Log log = LogFactory.getLog(AxiomXPathPropertyGetter.class);
     private final AXIOMXPath expression;
