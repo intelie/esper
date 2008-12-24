@@ -1,12 +1,10 @@
 package com.espertech.esper.regression.epl;
 
-import junit.framework.TestCase;
 import com.espertech.esper.client.Configuration;
 import com.espertech.esper.client.EPServiceProvider;
 import com.espertech.esper.client.EPServiceProviderManager;
 import com.espertech.esper.client.EPStatement;
 import com.espertech.esper.client.soda.*;
-import com.espertech.esper.client.time.TimerControlEvent;
 import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.bean.SupportBean_S0;
 import com.espertech.esper.support.bean.SupportBean_S1;
@@ -14,6 +12,7 @@ import com.espertech.esper.support.bean.SupportBean_S2;
 import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.support.util.SupportUpdateListener;
 import com.espertech.esper.util.SerializableObjectCopier;
+import junit.framework.TestCase;
 
 public class TestSubselectIn extends TestCase
 {
@@ -29,6 +28,52 @@ public class TestSubselectIn extends TestCase
         epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();
         listener = new SupportUpdateListener();
+    }
+
+    // TODO
+    public void testOrderOfEvaluation()
+    {
+        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("SupportBean", SupportBean.class);
+
+        String viewExpr = "insert into NewStream select * from SupportBean(intPrimitive<10) where intPrimitive not in (select intPrimitive from SupportBean.std:unique(intPrimitive))";
+        EPStatement stmtOne = epService.getEPAdministrator().createEPL(viewExpr);
+        stmtOne.addListener(listener);
+
+        epService.getEPRuntime().sendEvent(new SupportBean("E1", 5));
+        assertTrue(listener.getAndClearIsInvoked());
+
+        epService.getEPRuntime().sendEvent(new SupportBean("E2", 5));
+        assertFalse(listener.getAndClearIsInvoked());
+
+        epService.getEPRuntime().sendEvent(new SupportBean("E3", 6));
+        assertTrue(listener.getAndClearIsInvoked());
+
+        epService.getEPRuntime().sendEvent(new SupportBean("E4", 7));
+        assertTrue(listener.getAndClearIsInvoked());
+
+        epService.getEPRuntime().sendEvent(new SupportBean("E5", 6));
+        assertFalse(listener.getAndClearIsInvoked());
+
+        stmtOne.destroy();
+
+        String viewExprTwo = "insert into NewStream select * from SupportBean where intPrimitive not in (select intPrimitive from SupportBean(intPrimitive<10).std:unique(intPrimitive))";
+        EPStatement stmtTwo = epService.getEPAdministrator().createEPL(viewExprTwo);
+        stmtTwo.addListener(listener);
+
+        epService.getEPRuntime().sendEvent(new SupportBean("E1", 5));
+        assertTrue(listener.getAndClearIsInvoked());
+
+        epService.getEPRuntime().sendEvent(new SupportBean("E2", 5));
+        assertFalse(listener.getAndClearIsInvoked());
+
+        epService.getEPRuntime().sendEvent(new SupportBean("E3", 6));
+        assertTrue(listener.getAndClearIsInvoked());
+
+        epService.getEPRuntime().sendEvent(new SupportBean("E4", 7));
+        assertTrue(listener.getAndClearIsInvoked());
+
+        epService.getEPRuntime().sendEvent(new SupportBean("E5", 6));
+        assertFalse(listener.getAndClearIsInvoked());
     }
 
     public void testInSelect()

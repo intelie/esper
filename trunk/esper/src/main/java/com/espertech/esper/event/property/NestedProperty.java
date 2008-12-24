@@ -9,6 +9,10 @@
 package com.espertech.esper.event.property;
 
 import com.espertech.esper.event.*;
+import com.espertech.esper.event.map.MapEventType;
+import com.espertech.esper.event.map.MapNestedPropertyGetter;
+import com.espertech.esper.event.bean.NestedPropertyGetter;
+import com.espertech.esper.event.bean.BeanEventType;
 import com.espertech.esper.event.xml.SchemaElementComplex;
 import com.espertech.esper.event.xml.SchemaItem;
 import com.espertech.esper.event.xml.SchemaItemAttribute;

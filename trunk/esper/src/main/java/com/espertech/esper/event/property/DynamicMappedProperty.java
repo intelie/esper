@@ -9,8 +9,10 @@
 package com.espertech.esper.event.property;
 
 import com.espertech.esper.client.EventPropertyGetter;
-import com.espertech.esper.event.BeanEventType;
+import com.espertech.esper.event.bean.BeanEventType;
 import com.espertech.esper.event.EventAdapterService;
+import com.espertech.esper.event.map.MapMappedPropertyGetter;
+import com.espertech.esper.event.bean.DynamicMappedPropertyGetter;
 import com.espertech.esper.event.xml.SchemaElementComplex;
 import com.espertech.esper.event.xml.SchemaItem;
 

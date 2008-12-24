@@ -13,6 +13,8 @@ import com.espertech.esper.core.EPRuntimeEventSender;
 import com.espertech.esper.plugin.PlugInEventRepresentation;
 import com.espertech.esper.collection.Pair;
 import com.espertech.esper.event.xml.SchemaModel;
+import com.espertech.esper.event.bean.BeanEventTypeFactory;
+import com.espertech.esper.event.bean.BeanEventType;
 import org.w3c.dom.Node;
 
 import java.io.Serializable;
@@ -64,7 +66,7 @@ public interface EventAdapterService
      * <p>
      * If the alias already exists with different event property information, throws an exception.
      * <p>
-     * If the alias does not already exists, adds the alias and constructs a new {@link com.espertech.esper.event.MapEventType}.
+     * If the alias does not already exists, adds the alias and constructs a new {@link com.espertech.esper.event.map.MapEventType}.
      * @param eventTypeAlias is the alias name for the event type
      * @param propertyTypes is the names and types of event properties
      * @param optionalSupertype an optional set of Map event type aliases that are supertypes to the type
@@ -118,7 +120,7 @@ public interface EventAdapterService
      * <p>
      * If the alias already exists with different class name, throws an exception.
      * <p>
-     * If the alias does not already exists, adds the alias and constructs a new {@link com.espertech.esper.event.BeanEventType}.
+     * If the alias does not already exists, adds the alias and constructs a new {@link com.espertech.esper.event.bean.BeanEventType}.
      * <p>
      * Takes into account all event-type-auto-alias-package names supplied and
      * attempts to resolve the class name via the packages if the direct resolution failed.
@@ -137,7 +139,7 @@ public interface EventAdapterService
      * <p>
      * If the alias already exists with different Class name, throws an exception.
      * <p>
-     * If the alias does not already exists, adds the alias and constructs a new {@link com.espertech.esper.event.BeanEventType}.
+     * If the alias does not already exists, adds the alias and constructs a new {@link com.espertech.esper.event.bean.BeanEventType}.
      * @param eventTypeAlias is the alias name for the event type
      * @param clazz is the fully Java class
      * @param isConfigured if the class is application-configured

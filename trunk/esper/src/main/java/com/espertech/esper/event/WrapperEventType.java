@@ -10,6 +10,7 @@ package com.espertech.esper.event;
 
 import com.espertech.esper.client.*;
 import com.espertech.esper.collection.Pair;
+import com.espertech.esper.event.map.MapEventType;
 
 import java.util.*;
 
@@ -22,7 +23,7 @@ import java.util.*;
  * If this event type is to add information to another wrapper event type (wrapper to wrapper), then it is the
  * responsibility of the creating logic to use the existing event type and add to it.
  * <p>
- * Uses a the map event type {@link com.espertech.esper.event.MapEventType} to represent the mapped properties. This is because the additional properties
+ * Uses a the map event type {@link com.espertech.esper.event.map.MapEventType} to represent the mapped properties. This is because the additional properties
  * can also be beans or complex types and the Map event type handles these nicely.
  */
 public class WrapperEventType implements EventTypeSPI

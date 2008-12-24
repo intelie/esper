@@ -6,6 +6,7 @@ import com.espertech.esper.support.bean.SupportBeanSimple;
 import com.espertech.esper.support.bean.SupportBean_A;
 import com.espertech.esper.support.event.SupportEventAdapterService;
 import com.espertech.esper.support.util.ArrayAssertionUtil;
+import com.espertech.esper.event.bean.BeanEventType;
 import junit.framework.TestCase;
 
 import java.util.HashMap;

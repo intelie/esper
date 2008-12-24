@@ -9,6 +9,7 @@
 package com.espertech.esper.event.property;
 
 import com.espertech.esper.event.*;
+import com.espertech.esper.event.bean.BeanEventType;
 import com.espertech.esper.event.xml.SchemaItem;
 import com.espertech.esper.event.xml.SchemaElementComplex;
 import com.espertech.esper.client.EventPropertyGetter;

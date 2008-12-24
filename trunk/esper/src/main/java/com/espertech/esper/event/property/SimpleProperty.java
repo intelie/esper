@@ -9,6 +9,9 @@
 package com.espertech.esper.event.property;
 
 import com.espertech.esper.event.*;
+import com.espertech.esper.event.map.MapEventType;
+import com.espertech.esper.event.bean.BeanEventType;
+import com.espertech.esper.event.bean.InternalEventPropDescriptor;
 import com.espertech.esper.event.xml.*;
 import com.espertech.esper.event.xml.getter.DOMSimpleAttributeGetter;
 import com.espertech.esper.event.xml.getter.DOMSimpleElementGetter;

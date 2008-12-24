@@ -6,6 +6,8 @@ import com.espertech.esper.support.bean.SupportBean_S0;
 import com.espertech.esper.support.bean.SupportBean_S1;
 import com.espertech.esper.support.util.ArrayAssertionUtil;
 import com.espertech.esper.client.EventType;
+import com.espertech.esper.event.bean.BeanEventType;
+import com.espertech.esper.event.map.MapEventType;
 
 import java.util.concurrent.*;
 import java.util.Set;

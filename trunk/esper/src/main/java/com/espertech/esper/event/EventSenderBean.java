@@ -13,6 +13,7 @@ import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventSender;
 import com.espertech.esper.core.EPRuntimeEventSender;
 import com.espertech.esper.util.JavaClassHelper;
+import com.espertech.esper.event.bean.BeanEventType;
 
 import java.util.HashSet;
 import java.util.Set;

@@ -1,6 +1,8 @@
 package com.espertech.esper.event.property;
 
-import com.espertech.esper.event.*;
+import com.espertech.esper.event.bean.BeanEventAdapter;
+import com.espertech.esper.event.bean.BeanEventType;
+import com.espertech.esper.event.bean.BeanEventTypeFactory;
 import com.espertech.esper.support.bean.SupportBeanComplexProps;
 import com.espertech.esper.support.event.SupportEventBeanFactory;
 import com.espertech.esper.support.event.SupportEventAdapterService;

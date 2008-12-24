@@ -274,7 +274,7 @@ public class TestSchemaXMLEvent extends TestCase
     {
         Configuration configuration = SupportConfigFactory.getConfiguration();
         configuration.addEventTypeAlias("TestXMLSchemaType", getConfigTestType(null, isUseXPathPropertyExpression));
-        configuration.addEventTypeAlias("TestXMLSchemaType", getConfigNestedType(null, isUseXPathPropertyExpression));
+        configuration.addEventTypeAlias("TestXMLSchemaType", getConfigNestedType(isUseXPathPropertyExpression));
         return configuration;
     }
 

@@ -11,6 +11,8 @@ package com.espertech.esper.event;
 import com.espertech.esper.client.EventSender;
 import com.espertech.esper.client.EPException;
 import com.espertech.esper.core.EPRuntimeEventSender;
+import com.espertech.esper.event.map.MapEventBean;
+import com.espertech.esper.event.map.MapEventType;
 
 import java.util.Map;
 

@@ -15,8 +15,8 @@ import java.util.LinkedHashMap;
 
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventType;
-import com.espertech.esper.event.MapEventType;
-import com.espertech.esper.event.MapEventBean;
+import com.espertech.esper.event.map.MapEventType;
+import com.espertech.esper.event.map.MapEventBean;
 
 public class TestFixMsgMarshaller extends TestCase
 {
