@@ -221,6 +221,7 @@ public class SelectExprEvalProcessor implements SelectExprProcessor
                         {
                             return null;
                         }
+                        //TODO: use getter here
                         return streamEvent.getFragment(fragmentPropertyName);
                     }
                 };

@@ -11,6 +11,7 @@ package com.espertech.esper.event.property;
 import com.espertech.esper.client.EventPropertyGetter;
 import com.espertech.esper.client.PropertyAccessException;
 import com.espertech.esper.event.EventAdapterService;
+import com.espertech.esper.event.bean.BeanEventPropertyGetter;
 
 import java.io.StringWriter;
 import java.lang.reflect.InvocationTargetException;
@@ -19,7 +20,7 @@ import java.lang.reflect.Method;
 /**
  * Getter for a dynamic property (syntax field.inner?), using vanilla reflection.
  */
-public class DynamicSimplePropertyGetter extends DynamicPropertyGetterBase implements EventPropertyGetter
+public class DynamicSimplePropertyGetter extends DynamicPropertyGetterBase 
 {
     private final String getterMethodName;
     private final String isMethodName;

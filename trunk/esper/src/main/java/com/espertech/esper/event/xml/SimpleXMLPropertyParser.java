@@ -8,22 +8,14 @@
  **************************************************************************************/
 package com.espertech.esper.event.xml;
 
-import com.espertech.esper.antlr.NoCaseSensitiveStream;
-import com.espertech.esper.epl.generated.EsperEPL2GrammarLexer;
 import com.espertech.esper.epl.generated.EsperEPL2GrammarParser;
-import com.espertech.esper.client.PropertyAccessException;
+import com.espertech.esper.event.property.PropertyParser;
 import com.espertech.esper.type.IntValue;
 import com.espertech.esper.type.StringValue;
 import com.espertech.esper.util.ExecutionPathDebugLog;
-import org.antlr.runtime.CharStream;
-import org.antlr.runtime.CommonTokenStream;
-import org.antlr.runtime.RecognitionException;
 import org.antlr.runtime.tree.Tree;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-import java.io.IOException;
-import java.io.StringReader;
 
 /**
  * Parses event property names and transforms to XPath expressions. Supports
@@ -44,7 +36,7 @@ public class SimpleXMLPropertyParser
      */
     public static String parse(String propertyName, String rootElementName, String defaultNamespacePrefix, boolean isResolvePropertiesAbsolute)
     {
-        Tree ast = parse(propertyName);
+        Tree ast = PropertyParser.parse(propertyName);
 
         StringBuilder xPathBuf = new StringBuilder();
         xPathBuf.append('/');
@@ -103,40 +95,6 @@ public class SimpleXMLPropertyParser
             default:
                 throw new IllegalStateException("Event property AST node not recognized, type=" + child.getType());
         }
-    }
-
-    /**
-     * Parses a given property name returning an AST.
-     * @param propertyName to parse
-     * @return AST syntax tree
-     */
-    protected static Tree parse(String propertyName)
-    {
-        CharStream input;
-        try
-        {
-            input = new NoCaseSensitiveStream(new StringReader(propertyName));
-        }
-        catch (IOException ex)
-        {
-            throw new PropertyAccessException("IOException parsing property name '" + propertyName + '\'', ex);
-        }
-
-        EsperEPL2GrammarLexer lex = new EsperEPL2GrammarLexer(input);
-        CommonTokenStream tokens = new CommonTokenStream(lex);
-        EsperEPL2GrammarParser g = new EsperEPL2GrammarParser(tokens);
-        EsperEPL2GrammarParser.startEventPropertyRule_return r;
-
-        try
-        {
-             r = g.startEventPropertyRule();
-        }
-        catch (RecognitionException e)
-        {
-            throw new PropertyAccessException("Failed to parse property name '" + propertyName + '\'', e);
-        }
-
-        return (Tree) r.getTree();
     }
 
     private static final Log log = LogFactory.getLog(SimpleXMLPropertyParser.class);

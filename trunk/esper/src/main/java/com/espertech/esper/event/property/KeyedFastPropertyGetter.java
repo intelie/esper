@@ -9,11 +9,9 @@
 package com.espertech.esper.event.property;
 
 import com.espertech.esper.client.EventBean;
-import com.espertech.esper.client.EventPropertyGetter;
 import com.espertech.esper.client.PropertyAccessException;
-import com.espertech.esper.event.BeanEventType;
 import com.espertech.esper.event.EventAdapterService;
-import com.espertech.esper.util.JavaClassHelper;
+import com.espertech.esper.event.bean.BeanEventPropertyGetter;
 import net.sf.cglib.reflect.FastMethod;
 
 import java.lang.reflect.InvocationTargetException;
@@ -21,7 +19,7 @@ import java.lang.reflect.InvocationTargetException;
 /**
  * Getter for a key property identified by a given key value, using the CGLIB fast method.
  */
-public class KeyedFastPropertyGetter extends BaseNativePropertyGetter implements EventPropertyGetter
+public class KeyedFastPropertyGetter extends BaseNativePropertyGetter implements BeanEventPropertyGetter
 {
     private final FastMethod fastMethod;
     private final Object key;
@@ -37,6 +35,27 @@ public class KeyedFastPropertyGetter extends BaseNativePropertyGetter implements
         super(eventAdapterService, fastMethod.getReturnType());
         this.key = key;
         this.fastMethod = fastMethod;
+    }
+
+    public boolean isBeanExistsProperty(Object object)
+    {
+        return true; // Property exists as the property is not dynamic (unchecked)
+    }
+
+    public Object getBeanProp(Object object) throws PropertyAccessException
+    {
+        try
+        {
+            return fastMethod.invoke(object, new Object[] {key});
+        }
+        catch (ClassCastException e)
+        {
+            throw new PropertyAccessException("Mismatched getter instance to event bean type");
+        }
+        catch (InvocationTargetException e)
+        {
+            throw new PropertyAccessException(e);
+        }
     }
 
     public final Object get(EventBean obj) throws PropertyAccessException

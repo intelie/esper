@@ -179,7 +179,7 @@ public class TestEventAdapterServiceImpl extends TestCase
 
     public void testAddXMLDOMType() throws Exception
     {
-        adapterService.addXMLDOMType("XMLDOMTypeOne", getXMLDOMConfig());
+        adapterService.addXMLDOMType("XMLDOMTypeOne", getXMLDOMConfig(), null);
         EventType eventType = adapterService.getExistsTypeByAlias("XMLDOMTypeOne");
         assertEquals(Node.class, eventType.getUnderlyingType());
 
@@ -187,7 +187,7 @@ public class TestEventAdapterServiceImpl extends TestCase
         
         try
         {
-            adapterService.addXMLDOMType("a", new ConfigurationEventTypeXMLDOM());
+            adapterService.addXMLDOMType("a", new ConfigurationEventTypeXMLDOM(), null);
             fail();
         }
         catch (EventAdapterException ex)
@@ -198,7 +198,7 @@ public class TestEventAdapterServiceImpl extends TestCase
 
     public void testAdapterForDOM() throws Exception
     {
-        adapterService.addXMLDOMType("XMLDOMTypeOne", getXMLDOMConfig());
+        adapterService.addXMLDOMType("XMLDOMTypeOne", getXMLDOMConfig(), null);
 
         String xml =
                 "<simpleEvent>\n" +

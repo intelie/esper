@@ -67,6 +67,11 @@ public class EventAdapterServiceImpl implements EventAdapterService
         plugInRepresentations = new HashMap<URI, PlugInEventRepresentation>();
     }
 
+    public EventType getXMLDOMType(String rootElementPath)
+    {
+        return xmldomRootElementNames.get(rootElementPath);
+    }
+
     public EventType[] getAllTypes()
     {
         Collection<EventType> types = aliasToTypeMap.values();
@@ -480,7 +485,7 @@ public class EventAdapterServiceImpl implements EventAdapterService
      * @param configurationEventTypeXMLDOM configures the event type schema and namespace and XPath
      * property information.
      */
-    public synchronized EventType addXMLDOMType(String eventTypeAlias, ConfigurationEventTypeXMLDOM configurationEventTypeXMLDOM)
+    public synchronized EventType addXMLDOMType(String eventTypeAlias, ConfigurationEventTypeXMLDOM configurationEventTypeXMLDOM, SchemaModel optionalSchemaModel)
     {
         if (configurationEventTypeXMLDOM.getRootElementName() == null)
         {
@@ -512,8 +517,11 @@ public class EventAdapterServiceImpl implements EventAdapterService
         }
         else
         {
-            SchemaModel schemaModel = XSDSchemaMapper.loadAndMap(configurationEventTypeXMLDOM.getSchemaResource(), 2);            
-            type = new SchemaXMLEventType(metadata, configurationEventTypeXMLDOM, schemaModel, this);
+            if (optionalSchemaModel == null)
+            {
+                throw new EPException("Schema model has not been provided");
+            }
+            type = new SchemaXMLEventType(metadata, configurationEventTypeXMLDOM, optionalSchemaModel, this);
         }
 
         aliasToTypeMap.put(eventTypeAlias, type);

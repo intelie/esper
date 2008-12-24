@@ -60,7 +60,7 @@ public class TestNoSchemaXMLEvent extends TestCase
         // 0.67sec for 1000 evals
         List<Object> result = new ArrayList<Object>();
         long start = System.nanoTime();
-        for (int i = 0; i < 1; i++)
+        for (int i = 0; i < 1000; i++)
         {
             result.add(pathExpr.evaluate(simpleDoc));
             //result.add(find(simpleDoc));

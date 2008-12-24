@@ -12,6 +12,7 @@ import com.espertech.esper.client.*;
 import com.espertech.esper.core.EPRuntimeEventSender;
 import com.espertech.esper.plugin.PlugInEventRepresentation;
 import com.espertech.esper.collection.Pair;
+import com.espertech.esper.event.xml.SchemaModel;
 import org.w3c.dom.Node;
 
 import java.io.Serializable;
@@ -194,7 +195,7 @@ public interface EventAdapterService
      * @param configurationEventTypeXMLDOM is the XML DOM config info
      * @return event type
      */
-    public EventType addXMLDOMType(String eventTypeAlias, ConfigurationEventTypeXMLDOM configurationEventTypeXMLDOM);
+    public EventType addXMLDOMType(String eventTypeAlias, ConfigurationEventTypeXMLDOM configurationEventTypeXMLDOM, SchemaModel optionalSchemaModel);
 
     /**
      * Sets the configured legacy Java class information.
@@ -290,4 +291,6 @@ public interface EventAdapterService
      * @return event type
      */
     public EventType createSemiAnonymousMapType(Map<String, Pair<EventType, String>> taggedEventTypes, Map<String, Pair<EventType, String>> arrayEventTypes, boolean isUsedByChildViews);
+
+    public EventType getXMLDOMType(String rootElementPath);
 }

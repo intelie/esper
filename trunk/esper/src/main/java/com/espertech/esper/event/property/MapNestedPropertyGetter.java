@@ -95,7 +95,7 @@ public class MapNestedPropertyGetter implements EventPropertyGetter
                 else
                 {
                     BeanEventType type = eventAdaperService.getBeanEventTypeFactory().createBeanType(result.getClass().getName(), result.getClass(), false);
-                    eventBean = new BeanEventBean(result, type);
+                    eventBean = eventAdaperService.adapterForTypedBean(result, type);
                 }
             }
         }

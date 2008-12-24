@@ -42,6 +42,11 @@ public class IndexedProperty extends PropertyBase
         this.index = index;
     }
 
+    public String[] toPropertyArray()
+    {
+        return new String[] {this.getPropertyNameAtomic()};
+    }
+
     /**
      * Returns index for indexed access.
      * @return index value

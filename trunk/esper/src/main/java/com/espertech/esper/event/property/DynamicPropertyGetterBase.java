@@ -8,20 +8,20 @@
  **************************************************************************************/
 package com.espertech.esper.event.property;
 
-import com.espertech.esper.client.EventPropertyGetter;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.PropertyAccessException;
 import com.espertech.esper.event.EventAdapterService;
+import com.espertech.esper.event.bean.BeanEventPropertyGetter;
 import net.sf.cglib.reflect.FastClass;
 import net.sf.cglib.reflect.FastMethod;
 
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.lang.reflect.Method;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Base class for getters for a dynamic property (syntax field.inner?), caches methods to use for classes.
  */
-public abstract class DynamicPropertyGetterBase implements EventPropertyGetter
+public abstract class DynamicPropertyGetterBase implements BeanEventPropertyGetter
 {
     private final EventAdapterService eventAdapterService;
     private final CopyOnWriteArrayList<DynamicPropertyDescriptor> cache;
@@ -51,9 +51,29 @@ public abstract class DynamicPropertyGetterBase implements EventPropertyGetter
         this.eventAdapterService = eventAdapterService;
     }
 
+    public Object getBeanProp(Object object) throws PropertyAccessException
+    {
+        DynamicPropertyDescriptor desc = getPopulateCache(object);
+        if (desc.getMethod() == null)
+        {
+            return null;
+        }
+        return call(desc, object);
+    }
+
+    public boolean isBeanExistsProperty(Object object)
+    {
+        DynamicPropertyDescriptor desc = getPopulateCache(object);
+        if (desc.getMethod() == null)
+        {
+            return false;
+        }
+        return true;
+    }
+
     public final Object get(EventBean obj) throws PropertyAccessException
     {
-        DynamicPropertyDescriptor desc = getPopulateCache(obj);
+        DynamicPropertyDescriptor desc = getPopulateCache(obj.getUnderlying());
         if (desc.getMethod() == null)
         {
             return null;
@@ -63,7 +83,7 @@ public abstract class DynamicPropertyGetterBase implements EventPropertyGetter
 
     public boolean isExistsProperty(EventBean eventBean)
     {
-        DynamicPropertyDescriptor desc = getPopulateCache(eventBean);
+        DynamicPropertyDescriptor desc = getPopulateCache(eventBean.getUnderlying());
         if (desc.getMethod() == null)
         {
             return false;
@@ -71,10 +91,10 @@ public abstract class DynamicPropertyGetterBase implements EventPropertyGetter
         return true;
     }
 
-    private DynamicPropertyDescriptor getPopulateCache(EventBean obj)
+    private DynamicPropertyDescriptor getPopulateCache(Object obj)
     {
         // Check if the method is already there
-        Class target = obj.getUnderlying().getClass();
+        Class target = obj.getClass();
         for (DynamicPropertyDescriptor desc : cache)
         {
             if (desc.getClazz() == target)

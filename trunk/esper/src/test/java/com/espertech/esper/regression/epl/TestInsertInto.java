@@ -1,21 +1,19 @@
 package com.espertech.esper.regression.epl;
 
-import junit.framework.TestCase;
+import com.espertech.esper.client.*;
 import com.espertech.esper.client.soda.*;
 import com.espertech.esper.client.time.CurrentTimeEvent;
-import com.espertech.esper.client.time.TimerControlEvent;
-import com.espertech.esper.client.*;
-import com.espertech.esper.client.EventType;
-import com.espertech.esper.event.EventTypeSPI;
+import com.espertech.esper.core.EPServiceProviderSPI;
+import com.espertech.esper.core.EPStatementSPI;
+import com.espertech.esper.core.StatementType;
 import com.espertech.esper.event.EventTypeMetadata;
+import com.espertech.esper.event.EventTypeSPI;
 import com.espertech.esper.support.bean.*;
 import com.espertech.esper.support.client.SupportConfigFactory;
-import com.espertech.esper.support.util.SupportUpdateListener;
 import com.espertech.esper.support.util.ArrayAssertionUtil;
+import com.espertech.esper.support.util.SupportUpdateListener;
 import com.espertech.esper.util.SerializableObjectCopier;
-import com.espertech.esper.core.EPServiceProviderSPI;
-import com.espertech.esper.core.StatementType;
-import com.espertech.esper.core.EPStatementSPI;
+import junit.framework.TestCase;
 
 import java.util.Map;
 import java.util.Set;

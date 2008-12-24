@@ -18,6 +18,8 @@ import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.epl.variable.VariableTypeException;
 import com.espertech.esper.event.EventAdapterException;
 import com.espertech.esper.event.EventAdapterService;
+import com.espertech.esper.event.xml.SchemaModel;
+import com.espertech.esper.event.xml.XSDSchemaMapper;
 import com.espertech.esper.event.vaevent.ValueAddEventProcessor;
 import com.espertech.esper.event.vaevent.ValueAddEventService;
 import com.espertech.esper.event.vaevent.VariantEventType;
@@ -181,9 +183,23 @@ public class ConfigurationOperationsImpl implements ConfigurationOperations
 
     public void addEventTypeAlias(String eventTypeAlias, ConfigurationEventTypeXMLDOM xmlDOMEventTypeDesc)
     {
+        SchemaModel schemaModel = null;
+
+        if (xmlDOMEventTypeDesc.getSchemaResource() != null)
+        {
+            try
+            {
+                schemaModel = XSDSchemaMapper.loadAndMap(xmlDOMEventTypeDesc.getSchemaResource(), 2);
+            }
+            catch (Exception ex)
+            {
+                throw new ConfigurationException(ex.getMessage(), ex);
+            }
+        }
+
         try
         {
-            eventAdapterService.addXMLDOMType(eventTypeAlias, xmlDOMEventTypeDesc);
+            eventAdapterService.addXMLDOMType(eventTypeAlias, xmlDOMEventTypeDesc, schemaModel);
         }
         catch (EventAdapterException t)
         {

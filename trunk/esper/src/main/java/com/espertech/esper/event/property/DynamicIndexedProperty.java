@@ -37,6 +37,11 @@ public class DynamicIndexedProperty extends PropertyBase implements DynamicPrope
         this.index = index;
     }
 
+    public String[] toPropertyArray()
+    {
+        return new String[] {this.getPropertyNameAtomic()};
+    }
+
     public EventPropertyGetter getGetter(BeanEventType eventType, EventAdapterService eventAdapterService)
     {
         return new DynamicIndexedPropertyGetter(propertyNameAtomic, index, eventAdapterService);

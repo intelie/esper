@@ -8,19 +8,19 @@
  **************************************************************************************/
 package com.espertech.esper.event.property;
 
-import com.espertech.esper.client.EventPropertyGetter;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.PropertyAccessException;
 import com.espertech.esper.event.EventAdapterService;
+import com.espertech.esper.event.bean.BeanEventPropertyGetter;
 import net.sf.cglib.reflect.FastMethod;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Array;
+import java.lang.reflect.InvocationTargetException;
 
 /**
  * Getter for an array property identified by a given index, using the CGLIB fast method.
  */
-public class ArrayFastPropertyGetter extends BaseNativePropertyGetter implements EventPropertyGetter
+public class ArrayFastPropertyGetter extends BaseNativePropertyGetter implements BeanEventPropertyGetter
 {
     private final FastMethod fastMethod;
     private final int index;
@@ -41,6 +41,32 @@ public class ArrayFastPropertyGetter extends BaseNativePropertyGetter implements
         {
             throw new IllegalArgumentException("Invalid negative index value");
         }
+    }
+
+    public Object getBeanProp(Object object) throws PropertyAccessException
+    {
+        try
+        {
+            Object value = fastMethod.invoke(object, null);
+            if (Array.getLength(value) <= index)
+            {
+                return null;
+            }
+            return Array.get(value, index);
+        }
+        catch (ClassCastException e)
+        {
+            throw new PropertyAccessException("Mismatched getter instance to event bean type");
+        }
+        catch (InvocationTargetException e)
+        {
+            throw new PropertyAccessException(e);
+        }
+    }
+
+    public boolean isBeanExistsProperty(Object object)
+    {
+        return true; // Property exists as the property is not dynamic (unchecked)
     }
 
     public final Object get(EventBean obj) throws PropertyAccessException

@@ -44,7 +44,7 @@ public class SchemaXMLPropertyParser
      * @return xpath expression
      * @throws XPathExpressionException when the XPath expression is invalid
      */
-    public static PropertyResolutionResult getXPathResolution(String propertyName, XPathFactory xPathFactory, String rootElementName, String namespace, SchemaModel schemaModel, EventAdapterService eventAdapterService) throws XPathExpressionException
+    public static EventPropertyGetter getXPathResolution(String propertyName, XPathFactory xPathFactory, String rootElementName, String namespace, SchemaModel schemaModel, EventAdapterService eventAdapterService) throws XPathExpressionException
     {
         XPathNamespaceContext ctx = new XPathNamespaceContext();
         List<String> namespaces = schemaModel.getNamespaces();
@@ -54,7 +54,7 @@ public class SchemaXMLPropertyParser
             ctx.addPrefix("n" + i, namespaces.get(i));
         }
 
-        Tree ast = SimpleXMLPropertyParser.parse(propertyName);
+        Tree ast = PropertyParser.parse(propertyName);
         Property property = PropertyParser.parse(propertyName, eventAdapterService, false);
 
         SchemaElementComplex rootComplexElement = SchemaUtil.findRootElement(schemaModel, namespace, rootElementName);
@@ -76,7 +76,7 @@ public class SchemaXMLPropertyParser
 
         if (ast.getChildCount() == 1)
         {
-            pair = makeProperty(rootComplexElement, ast.getChild(0), ctx);
+            pair = makeProperty(rootComplexElement, ast.getChild(0), ctx, true);
             if (pair == null)
             {
                 throw new PropertyAccessException("Failed to locate property '" + propertyName + "' in schema");
@@ -88,7 +88,7 @@ public class SchemaXMLPropertyParser
             for (int i = 0; i < ast.getChildCount(); i++)
             {
                 Tree child = ast.getChild(i);
-                pair = makeProperty(parentComplexElement, child, ctx);
+                pair = makeProperty(parentComplexElement, child, ctx, false);
                 if (pair == null)
                 {
                     throw new PropertyAccessException("Failed to locate property '" + propertyName + "' nested property part '" + child.toString() + "' in schema");
@@ -126,18 +126,17 @@ public class SchemaXMLPropertyParser
         {
             return null;
         }
-
         Class resultType = SchemaUtil.toReturnType(item);
-        EventPropertyGetter getter = new XPathPropertyGetter(propertyName, expr, pair.getSecond(), resultType);
-        return new PropertyResolutionResult(getter, resultType, parentComplexElement);
+
+        return new XPathPropertyGetter(propertyName, expr, pair.getSecond(), resultType);
     }
 
-    private static Pair<String, QName> makeProperty(SchemaElementComplex parent, Tree child, XPathNamespaceContext ctx)
+    private static Pair<String, QName> makeProperty(SchemaElementComplex parent, Tree child, XPathNamespaceContext ctx, boolean isAlone)
     {
         String text = child.getChild(0).getText();
         SchemaItem obj = SchemaUtil.findPropertyMapping(parent, text);
         if ((obj instanceof SchemaElementSimple) || (obj instanceof SchemaElementComplex)){
-            return makeElementProperty((SchemaElement) obj, child, ctx);
+            return makeElementProperty((SchemaElement) obj, child, ctx, isAlone);
         }
         else if (obj != null) {
             return makeAttributeProperty((SchemaItemAttribute) obj, child, ctx);
@@ -173,7 +172,7 @@ public class SchemaXMLPropertyParser
         }
     }
 
-    private static Pair<String, QName> makeElementProperty(SchemaElement schemaElement, Tree child, XPathNamespaceContext ctx)
+    private static Pair<String, QName> makeElementProperty(SchemaElement schemaElement, Tree child, XPathNamespaceContext ctx, boolean isAlone)
     {
         QName type;
         if (schemaElement instanceof SchemaElementSimple) {
@@ -204,7 +203,7 @@ public class SchemaXMLPropertyParser
         switch (child.getType())
         {
             case EsperEPL2GrammarParser.EVENT_PROP_SIMPLE:
-                if (schemaElement.isArray()) {
+                if (schemaElement.isArray() && !isAlone) {
                     throw new PropertyAccessException("Simple property not allowed in repeating elements");
                 }
                 return new Pair<String, QName>('/' + prefix + child.getChild(0).getText(), type);

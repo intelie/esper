@@ -51,6 +51,11 @@ public class MappedProperty extends PropertyBase
         return key;
     }
 
+    public String[] toPropertyArray()
+    {
+        return new String[] {this.getPropertyNameAtomic()};
+    }
+
     public EventPropertyGetter getGetter(BeanEventType eventType, EventAdapterService eventAdapterService)
     {
         InternalEventPropDescriptor propertyDesc = eventType.getMappedProperty(propertyNameAtomic);

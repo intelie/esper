@@ -75,4 +75,9 @@ public interface Property
      * @param writer to write to
      */
     public void toPropertyEPL(StringWriter writer);
+
+    /**
+     * Return a String-array of atomic property names.
+     */
+    public String[] toPropertyArray();
 }

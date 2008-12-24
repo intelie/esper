@@ -31,11 +31,11 @@ public class DOMMapGetter implements EventPropertyGetter, DOMPropertyGetter
         for (int i = 0; i < list.getLength(); i++)
         {
             Node childNode = list.item(i);
-            if (childNode.getNodeType() != 1)
+            if (childNode.getNodeType() != Node.ELEMENT_NODE)
             {
                 continue;
             }
-            if (!(childNode.getNodeName().equals(propertyMap)))
+            if (!(childNode.getLocalName().equals(propertyMap)))
             {
                 continue;
             }
@@ -80,11 +80,11 @@ public class DOMMapGetter implements EventPropertyGetter, DOMPropertyGetter
         for (int i = 0; i < list.getLength(); i++)
         {
             Node childNode = list.item(i);
-            if (node.getNodeType() != 1)
+            if (childNode.getNodeType() != Node.ELEMENT_NODE)
             {
                 continue;
             }
-            if (!(childNode.getNodeName().equals(propertyMap)))
+            if (!(childNode.getLocalName().equals(propertyMap)))
             {
                 continue;
             }

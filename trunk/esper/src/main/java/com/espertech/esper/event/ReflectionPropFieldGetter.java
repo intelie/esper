@@ -9,8 +9,8 @@
 package com.espertech.esper.event;
 
 import com.espertech.esper.client.EventBean;
-import com.espertech.esper.client.EventPropertyGetter;
 import com.espertech.esper.client.PropertyAccessException;
+import com.espertech.esper.event.bean.BeanEventPropertyGetter;
 import com.espertech.esper.event.property.BaseNativePropertyGetter;
 
 import java.lang.reflect.Field;
@@ -18,7 +18,7 @@ import java.lang.reflect.Field;
 /**
  * Property getter for fields using Java's vanilla reflection.
  */
-public final class ReflectionPropFieldGetter extends BaseNativePropertyGetter implements EventPropertyGetter
+public final class ReflectionPropFieldGetter extends BaseNativePropertyGetter implements BeanEventPropertyGetter
 {
     private final Field field;
 
@@ -31,6 +31,27 @@ public final class ReflectionPropFieldGetter extends BaseNativePropertyGetter im
     {
         super(eventAdapterService, field.getType());
         this.field = field;
+    }
+
+    public Object getBeanProp(Object object) throws PropertyAccessException
+    {
+        try
+        {
+            return field.get(object);
+        }
+        catch (IllegalArgumentException e)
+        {
+            throw new PropertyAccessException("Mismatched getter instance to event bean type");
+        }
+        catch (IllegalAccessException e)
+        {
+            throw new PropertyAccessException(e);
+        }
+    }
+
+    public boolean isBeanExistsProperty(Object object)
+    {
+        return true; // Property exists as the property is not dynamic (unchecked)
     }
 
     public final Object get(EventBean obj) throws PropertyAccessException

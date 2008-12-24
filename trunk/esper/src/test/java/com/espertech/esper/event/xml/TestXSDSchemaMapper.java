@@ -40,13 +40,13 @@ public class TestXSDSchemaMapper extends TestCase
      * ==> Fix index issue [0] -> xpath[1]
      * ==> Esper-314 add documentation, fix empty property name
      * ==> Allow NODESET (NodeList) and NODE type XPath properties
-     * ==> replace property access logic with non-xpath based
+     * ==> replace property access logic with non-xpath based (but not namespace-aware?)
      * ==> Allow transposing properties (XPath property builder or DOM-access property builder both)
      * ==> Look at QName result translation, type from allTypes.xsd to Java translation
      * ==> Make sure schema XML event exposes all properties of top-level schema elements
-     * ==> Document difference between XPath-based resoltion and Getter-resolution for Node/NodeList
      * ==> Test simple elements that have attributes
-     * ==> Test namespaces for elements and attributes (i.e. getLocalName versus getNodeName)
+     * ==> Allow no-schema event type to use DOM accessors
+     * ==> Refactor bean-related and map-related into their own packages 
      */
     public void testIt() throws Exception
     {

@@ -12,6 +12,7 @@ import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventPropertyGetter;
 import com.espertech.esper.client.PropertyAccessException;
 import com.espertech.esper.event.property.BaseNativePropertyGetter;
+import com.espertech.esper.event.bean.BeanEventPropertyGetter;
 import net.sf.cglib.reflect.FastMethod;
 
 import java.lang.reflect.InvocationTargetException;
@@ -19,7 +20,7 @@ import java.lang.reflect.InvocationTargetException;
 /**
  * Property getter using CGLib's FastMethod instance.
  */
-public class CGLibPropertyGetter extends BaseNativePropertyGetter implements EventPropertyGetter
+public class CGLibPropertyGetter extends BaseNativePropertyGetter implements BeanEventPropertyGetter
 {
     private final FastMethod fastMethod;
 
@@ -32,6 +33,27 @@ public class CGLibPropertyGetter extends BaseNativePropertyGetter implements Eve
     {
         super(eventAdapterService, fastMethod.getReturnType());
         this.fastMethod = fastMethod;
+    }
+
+    public Object getBeanProp(Object object) throws PropertyAccessException
+    {
+        try
+        {
+            return fastMethod.invoke(object, null);
+        }
+        catch (ClassCastException e)
+        {
+            throw new PropertyAccessException("Mismatched getter instance to event bean type");
+        }
+        catch (InvocationTargetException e)
+        {
+            throw new PropertyAccessException(e);
+        }
+    }
+
+    public boolean isBeanExistsProperty(Object object)
+    {
+        return true; // Property exists as the property is not dynamic (unchecked)
     }
 
     public final Object get(EventBean obj) throws PropertyAccessException

@@ -28,6 +28,8 @@ import com.espertech.esper.epl.metric.MetricReportingServiceImpl;
 import com.espertech.esper.event.EventAdapterException;
 import com.espertech.esper.event.EventAdapterService;
 import com.espertech.esper.event.EventAdapterServiceImpl;
+import com.espertech.esper.event.xml.SchemaModel;
+import com.espertech.esper.event.xml.XSDSchemaMapper;
 import com.espertech.esper.event.vaevent.ValueAddEventServiceImpl;
 import com.espertech.esper.event.vaevent.ValueAddEventService;
 import com.espertech.esper.filter.FilterService;
@@ -210,10 +212,23 @@ public class EPServicesContextFactoryDefault implements EPServicesContextFactory
         Map<String, ConfigurationEventTypeXMLDOM> xmlDOMAliases = configSnapshot.getEventTypesXMLDOM();
         for (Map.Entry<String, ConfigurationEventTypeXMLDOM> entry : xmlDOMAliases.entrySet())
         {
-            // Add Java class alias
+            SchemaModel schemaModel = null;
+            if (entry.getValue().getSchemaResource() != null)
+            {
+                try
+                {
+                    schemaModel = XSDSchemaMapper.loadAndMap(entry.getValue().getSchemaResource(), 2);
+                }
+                catch (Exception ex)
+                {
+                    throw new ConfigurationException(ex.getMessage(), ex);
+                }
+            }
+
+            // Add XML DOM type
             try
             {
-                eventAdapterService.addXMLDOMType(entry.getKey(), entry.getValue());
+                eventAdapterService.addXMLDOMType(entry.getKey(), entry.getValue(), schemaModel);
             }
             catch (EventAdapterException ex)
             {

@@ -21,11 +21,11 @@ public class DOMSimpleElementGetter implements EventPropertyGetter, DOMPropertyG
         for (int i = 0; i < list.getLength(); i++)
         {
             Node childNode = list.item(i);
-            if (childNode.getNodeType() != 1)
+            if (childNode.getNodeType() != Node.ELEMENT_NODE)
             {
                 continue;
             }
-            if (childNode.getNodeName().equals(propertyName))
+            if (childNode.getLocalName().equals(propertyName))
             {
                 return childNode;
             }
@@ -53,6 +53,6 @@ public class DOMSimpleElementGetter implements EventPropertyGetter, DOMPropertyG
 
     public Object getFragment(EventBean eventBean) throws PropertyAccessException
     {
-        return null;  // TODO
+        return get(eventBean);
     }
 }

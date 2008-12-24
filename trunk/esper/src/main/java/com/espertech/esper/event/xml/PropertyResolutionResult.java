@@ -2,7 +2,6 @@ package com.espertech.esper.event.xml;
 
 import com.espertech.esper.client.EventPropertyGetter;
 
-// TODO - delete me
 public class PropertyResolutionResult
 {
     private EventPropertyGetter getter;

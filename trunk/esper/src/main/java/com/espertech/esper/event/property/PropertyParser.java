@@ -47,31 +47,7 @@ public class PropertyParser
      */
     public static Property parse(String propertyName, EventAdapterService eventAdapterService, boolean isRootedDynamic)
     {
-        CharStream input;
-        try
-        {
-            input = new NoCaseSensitiveStream(new StringReader(propertyName));
-        }
-        catch (IOException ex)
-        {
-            throw new PropertyAccessException("IOException parsing property name '" + propertyName + '\'', ex);
-        }
-
-        EsperEPL2GrammarLexer lex = new EsperEPL2GrammarLexer(input);
-        CommonTokenStream tokens = new CommonTokenStream(lex);
-        EsperEPL2GrammarParser g = new EsperEPL2GrammarParser(tokens);
-        EsperEPL2GrammarParser.startEventPropertyRule_return r;
-
-        try
-        {
-             r = g.startEventPropertyRule();
-        }
-        catch (RecognitionException e)
-        {
-            throw new PropertyAccessException("Failed to parse property name '" + propertyName + '\'', e);
-        }
-
-        Tree tree = (Tree) r.getTree();
+        Tree tree = parse(propertyName);
 
         if ((ExecutionPathDebugLog.isDebugEnabled) && (log.isDebugEnabled()))
         {
@@ -98,6 +74,40 @@ public class PropertyParser
         }
 
         return new NestedProperty(properties, eventAdapterService);
+    }
+
+    /**
+     * Parses a given property name returning an AST.
+     * @param propertyName to parse
+     * @return AST syntax tree
+     */
+    public static Tree parse(String propertyName)
+    {
+        CharStream input;
+        try
+        {
+            input = new NoCaseSensitiveStream(new StringReader(propertyName));
+        }
+        catch (IOException ex)
+        {
+            throw new PropertyAccessException("IOException parsing property name '" + propertyName + '\'', ex);
+        }
+
+        EsperEPL2GrammarLexer lex = new EsperEPL2GrammarLexer(input);
+        CommonTokenStream tokens = new CommonTokenStream(lex);
+        EsperEPL2GrammarParser g = new EsperEPL2GrammarParser(tokens);
+        EsperEPL2GrammarParser.startEventPropertyRule_return r;
+
+        try
+        {
+             r = g.startEventPropertyRule();
+        }
+        catch (RecognitionException e)
+        {
+            throw new PropertyAccessException("Failed to parse property name '" + propertyName + '\'', e);
+        }
+
+        return (Tree) r.getTree();
     }
 
     private static Property makeProperty(Tree child, boolean isRootedInDynamic)

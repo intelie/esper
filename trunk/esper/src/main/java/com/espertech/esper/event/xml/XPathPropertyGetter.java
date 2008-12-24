@@ -55,7 +55,14 @@ public class XPathPropertyGetter implements EventPropertyGetter
         {
             simpleTypeParser = null;
         }
-        this.optionalCastToType = optionalCastToType;
+        if (optionalCastToType == Node.class)
+        {
+            this.optionalCastToType = null;
+        }
+        else
+        {
+            this.optionalCastToType = optionalCastToType;
+        }
     }
 
 	public Object get(EventBean eventBean) throws PropertyAccessException {

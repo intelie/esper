@@ -9,8 +9,8 @@
 package com.espertech.esper.event;
 
 import com.espertech.esper.client.EventBean;
-import com.espertech.esper.client.EventPropertyGetter;
 import com.espertech.esper.client.PropertyAccessException;
+import com.espertech.esper.event.bean.BeanEventPropertyGetter;
 import com.espertech.esper.event.property.BaseNativePropertyGetter;
 
 import java.lang.reflect.InvocationTargetException;
@@ -19,7 +19,7 @@ import java.lang.reflect.Method;
 /**
  * Property getter for methods using Java's vanilla reflection.
  */
-public final class ReflectionPropMethodGetter extends BaseNativePropertyGetter implements EventPropertyGetter
+public final class ReflectionPropMethodGetter extends BaseNativePropertyGetter implements BeanEventPropertyGetter
 {
     private final Method method;
 
@@ -32,6 +32,31 @@ public final class ReflectionPropMethodGetter extends BaseNativePropertyGetter i
     {
         super(eventAdapterService, method.getReturnType());
         this.method = method;
+    }
+
+    public Object getBeanProp(Object object) throws PropertyAccessException
+    {
+        try
+        {
+            return method.invoke(object, (Object[]) null);
+        }
+        catch (IllegalArgumentException e)
+        {
+            throw new PropertyAccessException("Mismatched getter instance to event bean type");
+        }
+        catch (IllegalAccessException e)
+        {
+            throw new PropertyAccessException(e);
+        }
+        catch (InvocationTargetException e)
+        {
+            throw new PropertyAccessException(e);
+        }
+    }
+
+    public boolean isBeanExistsProperty(Object object)
+    {
+        return true;
     }
 
     public final Object get(EventBean obj) throws PropertyAccessException

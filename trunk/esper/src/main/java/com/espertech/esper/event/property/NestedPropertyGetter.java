@@ -8,11 +8,11 @@
  **************************************************************************************/
 package com.espertech.esper.event.property;
 
-import com.espertech.esper.event.*;
 import com.espertech.esper.client.EventBean;
-import com.espertech.esper.client.EventType;
 import com.espertech.esper.client.EventPropertyGetter;
 import com.espertech.esper.client.PropertyAccessException;
+import com.espertech.esper.event.EventAdapterService;
+import com.espertech.esper.event.bean.BeanEventPropertyGetter;
 
 import java.util.List;
 
@@ -21,8 +21,7 @@ import java.util.List;
  */
 public class NestedPropertyGetter extends BaseNativePropertyGetter implements EventPropertyGetter
 {
-    private final EventPropertyGetter[] getterChain;
-    private final EventAdapterService eventAdapterService;
+    private final BeanEventPropertyGetter[] getterChain;
 
     /**
      * Ctor.
@@ -33,27 +32,29 @@ public class NestedPropertyGetter extends BaseNativePropertyGetter implements Ev
     public NestedPropertyGetter(List<EventPropertyGetter> getterChain, EventAdapterService eventAdapterService, Class finalPropertyType)
     {
         super(eventAdapterService, finalPropertyType); 
-        this.eventAdapterService = eventAdapterService;
-        this.getterChain = getterChain.toArray(new EventPropertyGetter[getterChain.size()]);
+        this.getterChain = new BeanEventPropertyGetter[getterChain.size()];
+
+        for (int i = 0; i < getterChain.size(); i++)
+        {
+            this.getterChain[i] = (BeanEventPropertyGetter) getterChain.get(i);
+        }
     }
 
     public Object get(EventBean eventBean) throws PropertyAccessException
     {
-        Object value = null;
+        Object value = eventBean.getUnderlying();
+        if (value == null)
+        {
+            return value;
+        }
 
         for (int i = 0; i < getterChain.length; i++)
         {
-            value = getterChain[i].get(eventBean);
+            value = getterChain[i].getBeanProp(value);
 
             if (value == null)
             {
                 return null;
-            }
-
-            if (i < (getterChain.length - 1))
-            {
-                EventType type = eventAdapterService.getBeanEventTypeFactory().createBeanType(value.getClass().getName(), value.getClass(), false);
-                eventBean = new BeanEventBean(value, type);
             }
         }
         return value;
@@ -61,25 +62,26 @@ public class NestedPropertyGetter extends BaseNativePropertyGetter implements Ev
 
     public boolean isExistsProperty(EventBean eventBean)
     {
+        Object value = eventBean.getUnderlying();
+        if (value == null)
+        {
+            return false;
+        }
+
         int lastElementIndex = getterChain.length - 1;
 
         // walk the getter chain up to the previous-to-last element, returning its object value.
         // any null values in between mean the property does not exists
         for (int i = 0; i < getterChain.length - 1; i++)
         {
-            Object value = getterChain[i].get(eventBean);
+            value = getterChain[i].getBeanProp(value);
 
             if (value == null)
             {
                 return false;
             }
-            else
-            {
-                EventType type = eventAdapterService.getBeanEventTypeFactory().createBeanType(value.getClass().getName(), value.getClass(), false);
-                eventBean = new BeanEventBean(value, type);
-            }
         }
 
-        return getterChain[lastElementIndex].isExistsProperty(eventBean);
+        return getterChain[lastElementIndex].isBeanExistsProperty(value);
     }
 }

@@ -18,10 +18,7 @@ import com.espertech.esper.client.EventType;
 import com.espertech.esper.client.EventPropertyGetter;
 import com.espertech.esper.client.PropertyAccessException;
 
-import java.util.List;
-import java.util.LinkedList;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 import java.io.StringWriter;
 
 /**
@@ -334,6 +331,20 @@ public class NestedProperty implements Property
             property.toPropertyEPL(writer);
             delimiter = ".";
         }
+    }
+
+    public String[] toPropertyArray()
+    {
+        List<String> propertyNames = new ArrayList<String>();
+        for (Property property : properties)
+        {
+            String[] nested = property.toPropertyArray();
+            for (String aNested : nested)
+            {
+                propertyNames.add(aNested);
+            }
+        }
+        return propertyNames.toArray(new String[propertyNames.size()]);
     }
 
     public EventPropertyGetter getGetterDOM(SchemaElementComplex parentComplexProperty, EventAdapterService eventAdapterService)

@@ -1,21 +1,20 @@
 package com.espertech.esper.regression.event;
 
-import junit.framework.TestCase;
 import com.espertech.esper.client.*;
-import com.espertech.esper.support.util.SupportUpdateListener;
-import com.espertech.esper.support.util.ArrayAssertionUtil;
 import com.espertech.esper.support.client.SupportConfigFactory;
-import com.espertech.esper.client.EventBean;
-
-import javax.xml.xpath.XPathConstants;
-import javax.xml.parsers.DocumentBuilderFactory;
-import java.io.StringReader;
-
-import org.xml.sax.InputSource;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
+import com.espertech.esper.support.util.ArrayAssertionUtil;
+import com.espertech.esper.support.util.SupportUpdateListener;
+import com.espertech.esper.support.event.EventTypeAssertionUtil;
+import junit.framework.TestCase;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.xml.sax.InputSource;
+
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.xpath.XPathConstants;
+import java.io.StringReader;
 
 public class TestSchemaXMLEvent extends TestCase
 {
@@ -52,14 +51,69 @@ public class TestSchemaXMLEvent extends TestCase
             "\t</nested3>\n" +
             "</simpleEvent>";
 
-    public void setUp() throws Exception
+    public void testSchemaXMLQuery_XPathBacked() throws Exception
     {
-        epService = EPServiceProviderManager.getProvider("TestSchemaXML", getConfig());
+        epService = EPServiceProviderManager.getProvider("TestSchemaXML", getConfig(true));
         epService.initialize();
         updateListener = new SupportUpdateListener();
+
+        runAssertionQuery();
     }
 
-    public void testSchemaXML() throws Exception
+    public void testSchemaXMLQuery_DOMGetterBacked() throws Exception
+    {
+        epService = EPServiceProviderManager.getProvider("TestSchemaXML", getConfig(true));
+        epService.initialize();
+        updateListener = new SupportUpdateListener();
+
+        runAssertionQuery();
+    }
+
+    public void testSchemaXMLTranspose_DOMGetterBacked() throws Exception
+    {
+        epService = EPServiceProviderManager.getProvider("TestSchemaXML", getConfig(false));
+        epService.initialize();
+        updateListener = new SupportUpdateListener();
+        
+        EPStatement stmtInsert = epService.getEPAdministrator().createEPL("insert into MyNestedStream select nested1 from TestXMLSchemaType");
+        ArrayAssertionUtil.assertEqualsAnyOrder(new Object[] {
+            new EventPropertyDescriptor("nested1", Node.class, false, false, false, false, true),
+           }, stmtInsert.getEventType().getPropertyDescriptors());
+        EventTypeAssertionUtil.assertConsistency(stmtInsert.getEventType());
+
+        EPStatement stmtSelect = epService.getEPAdministrator().createEPL("select nested1.attr1 as attr1, nested1.prop1 as prop1, nested1.prop2 as prop2, nested1.nested2.prop3 as prop3, nested1.nested2 as nested2 from MyNestedStream");
+        ArrayAssertionUtil.assertEqualsAnyOrder(new Object[] {
+            new EventPropertyDescriptor("prop1", String.class, false, false, false, false, false),
+            new EventPropertyDescriptor("prop2", Boolean.class, false, false, false, false, false),
+            new EventPropertyDescriptor("attr1", String.class, false, false, false, false, false),
+            new EventPropertyDescriptor("prop3", Integer.class, false, false, false, false, false),
+            new EventPropertyDescriptor("nested2", Node.class, false, false, false, false, true),
+           }, stmtSelect.getEventType().getPropertyDescriptors());
+        EventTypeAssertionUtil.assertConsistency(stmtSelect.getEventType());
+
+        EPStatement stmtSelectWildcard = epService.getEPAdministrator().createEPL("select * from MyNestedStream");
+        ArrayAssertionUtil.assertEqualsAnyOrder(new Object[] {
+            new EventPropertyDescriptor("nested1", Node.class, false, false, false, false, true),
+           }, stmtSelectWildcard.getEventType().getPropertyDescriptors());
+        EventTypeAssertionUtil.assertConsistency(stmtSelectWildcard.getEventType());
+
+        EPStatement stmtInsertWildcard = epService.getEPAdministrator().createEPL("insert into MyNestedStreamTwo select nested1.* from TestXMLSchemaType");
+        ArrayAssertionUtil.assertEqualsAnyOrder(new Object[] {
+                new EventPropertyDescriptor("prop1", String.class, false, false, false, false, false),
+                new EventPropertyDescriptor("prop2", Boolean.class, false, false, false, false, false),
+                new EventPropertyDescriptor("attr1", String.class, false, false, false, false, false),
+                new EventPropertyDescriptor("nested2", Node.class, false, false, false, false, true),
+           }, stmtInsertWildcard.getEventType().getPropertyDescriptors());
+        EventTypeAssertionUtil.assertConsistency(stmtInsert.getEventType());
+
+        Document eventDoc = sendEvent("test");
+        ArrayAssertionUtil.assertProps(stmtSelect.iterator().next(), "prop1,prop2,attr1,prop3".split(","),
+                new Object[] {"SAMPLE_V1", "", true, ""});
+        EventTypeAssertionUtil.assertConsistency(stmtSelect.iterator().next());
+
+    }
+
+    private void runAssertionQuery() throws Exception
     {
         String stmtSelectWild = "select * from TestXMLSchemaType";
         EPStatement wildStmt = epService.getEPAdministrator().createEPL(stmtSelectWild);
@@ -110,14 +164,29 @@ public class TestSchemaXMLEvent extends TestCase
         assertEquals(3.0, event.get("customProp"));
         assertEquals(true, event.get("attrOneProp"));
         assertEquals("c", event.get("attrTwoProp"));
+
+        /**
+         * Comment-in for performance testing
+        long start = System.nanoTime();
+        for (int i = 0; i < 1000; i++)
+        {
+            sendEvent("test");
+        }
+        long end = System.nanoTime();
+        double delta = (end - start) / 1000d / 1000d / 1000d;
+        System.out.println(delta);
+         */
     }
 
     public void testAddRemoveType()
     {
+        epService = EPServiceProviderManager.getProvider("TestSchemaXML", getConfig(false));
+        epService.initialize();
+        updateListener = new SupportUpdateListener();
         ConfigurationOperations configOps = epService.getEPAdministrator().getConfiguration();
 
         // test remove type with statement used (no force)
-        configOps.addEventTypeAlias("MyXMLEvent", getConfigTestType("p01"));
+        configOps.addEventTypeAlias("MyXMLEvent", getConfigTestType("p01", false));
         EPStatement stmt = epService.getEPAdministrator().createEPL("select p01 from MyXMLEvent", "stmtOne");
         ArrayAssertionUtil.assertEqualsExactOrder(new String[] {"stmtOne"}, configOps.getEventTypeAliasUsedBy("MyXMLEvent").toArray());
 
@@ -144,7 +213,7 @@ public class TestSchemaXMLEvent extends TestCase
         }
 
         // add back the type
-        configOps.addEventTypeAlias("MyXMLEvent", getConfigTestType("p20"));
+        configOps.addEventTypeAlias("MyXMLEvent", getConfigTestType("p20", false));
         assertTrue(configOps.isEventTypeAliasExists("MyXMLEvent"));
         assertTrue(configOps.getEventTypeAliasUsedBy("MyXMLEvent").isEmpty());
 
@@ -171,7 +240,7 @@ public class TestSchemaXMLEvent extends TestCase
         assertTrue(configOps.getEventTypeAliasUsedBy("MyXMLEvent").isEmpty());
 
         // add back the type
-        configOps.addEventTypeAlias("MyXMLEvent", getConfigTestType("p03"));
+        configOps.addEventTypeAlias("MyXMLEvent", getConfigTestType("p03", false));
         assertTrue(configOps.isEventTypeAliasExists("MyXMLEvent"));
 
         // compile
@@ -187,6 +256,9 @@ public class TestSchemaXMLEvent extends TestCase
 
     public void testInvalid()
     {
+        epService = EPServiceProviderManager.getProvider("TestSchemaXML", getConfig(false));
+        epService.initialize();
+
         try
         {
             epService.getEPAdministrator().createEPL("select element1 from TestXMLSchemaType.win:length(100)");
@@ -198,10 +270,11 @@ public class TestSchemaXMLEvent extends TestCase
         }
     }
 
-    private Configuration getConfig()
+    private Configuration getConfig(boolean isUseXPathPropertyExpression)
     {
         Configuration configuration = SupportConfigFactory.getConfiguration();
-        configuration.addEventTypeAlias("TestXMLSchemaType", getConfigTestType(null));
+        configuration.addEventTypeAlias("TestXMLSchemaType", getConfigTestType(null, isUseXPathPropertyExpression));
+        configuration.addEventTypeAlias("TestXMLSchemaType", getConfigNestedType(null, isUseXPathPropertyExpression));
         return configuration;
     }
 
@@ -220,7 +293,7 @@ public class TestSchemaXMLEvent extends TestCase
         return simpleDoc;
     }
 
-    private ConfigurationEventTypeXMLDOM getConfigTestType(String additionalXPathProperty)
+    private ConfigurationEventTypeXMLDOM getConfigTestType(String additionalXPathProperty, boolean isUseXPathPropertyExpression)
     {
         ConfigurationEventTypeXMLDOM eventTypeMeta = new ConfigurationEventTypeXMLDOM();
         eventTypeMeta.setRootElementName("simpleEvent");
@@ -228,11 +301,24 @@ public class TestSchemaXMLEvent extends TestCase
         eventTypeMeta.setSchemaResource(schemaUri);
         eventTypeMeta.addNamespacePrefix("ss", "samples:schemas:simpleSchema");
         eventTypeMeta.addXPathProperty("customProp", "count(/ss:simpleEvent/ss:nested3/ss:nested4)", XPathConstants.NUMBER);
+        eventTypeMeta.setPropertyExprXPath(isUseXPathPropertyExpression);
         if (additionalXPathProperty != null)
         {
             eventTypeMeta.addXPathProperty(additionalXPathProperty, "count(/ss:simpleEvent/ss:nested3/ss:nested4)", XPathConstants.NUMBER);
         }
         return eventTypeMeta;        
+    }
+
+    private ConfigurationEventTypeXMLDOM getConfigNestedType(boolean isUseXPathPropertyExpression)
+    {
+        ConfigurationEventTypeXMLDOM eventTypeMeta = new ConfigurationEventTypeXMLDOM();
+        eventTypeMeta.setRootElementName("nested1");
+        String schemaUri = TestSchemaXMLEvent.class.getClassLoader().getResource(CLASSLOADER_SCHEMA_URI).toString();
+        eventTypeMeta.setSchemaResource(schemaUri);
+        eventTypeMeta.addNamespacePrefix("ss", "samples:schemas:simpleSchema");
+        eventTypeMeta.addXPathProperty("customProp", "count(ss:nested3/ss:nested4)", XPathConstants.NUMBER);
+        eventTypeMeta.setPropertyExprXPath(isUseXPathPropertyExpression);
+        return eventTypeMeta;
     }
 
     private static final Log log = LogFactory.getLog(TestSchemaXMLEvent.class);
