@@ -486,6 +486,11 @@ public class EventAdapterServiceImpl implements EventAdapterService
         return new XMLEventBean(namedNode, eventType);
     }
 
+    public EventBean adapterForTypedDOM(Node node, EventType eventType)
+    {
+        return new XMLEventBean(node, eventType);
+    }
+
     /**
      * Add a configured XML DOM event type.
      * @param eventTypeAlias is the alias name of the event type

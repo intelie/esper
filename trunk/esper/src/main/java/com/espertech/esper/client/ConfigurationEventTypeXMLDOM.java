@@ -13,6 +13,7 @@ import com.espertech.esper.util.JavaClassHelper;
 import com.espertech.esper.util.MetaDefItem;
 
 import javax.xml.namespace.QName;
+import javax.xml.xpath.XPathConstants;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
@@ -205,6 +206,16 @@ public class ConfigurationEventTypeXMLDOM implements MetaDefItem, Serializable
         xPathProperties.put(name, desc);
     }
 
+    public void addXPathPropertyFragment(String name, String xpath, QName type, String eventTypeAlias)
+    {
+        if ((type != XPathConstants.NODE) && (type != XPathConstants.NODESET))
+        {
+            throw new IllegalArgumentException("XPath property for fragments requires an Node or Nodeset (XPathConstants.NODE/NODESET) return value for property '" + name + "'");
+        }
+        XPathPropertyDesc desc = new XPathPropertyDesc(name, xpath, type, eventTypeAlias);
+        xPathProperties.put(name, desc);
+    }
+
     /**
      * Returns the namespace prefixes in a map of prefix as key and namespace name as value.
      * @return namespace prefixes
@@ -298,6 +309,7 @@ public class ConfigurationEventTypeXMLDOM implements MetaDefItem, Serializable
         private String xpath;
         private QName type;
         private Class optionalCastToType;
+        private String optionalEventTypeAlias;
 
         /**
          * Ctor.
@@ -325,6 +337,21 @@ public class ConfigurationEventTypeXMLDOM implements MetaDefItem, Serializable
             this.xpath = xpath;
             this.type = type;
             this.optionalCastToType = optionalCastToType;
+        }
+
+        /**
+         * Ctor.
+         * @param name is the event property name
+         * @param xpath is an arbitrary XPath expression
+         * @param type is a javax.xml.xpath.XPathConstants constant
+         * @param eventTypeAlias the name of an event type that represents the fragmented property value
+         */
+        public XPathPropertyDesc(String name, String xpath, QName type, String eventTypeAlias)
+        {
+            this.name = name;
+            this.xpath = xpath;
+            this.type = type;
+            this.optionalEventTypeAlias = eventTypeAlias;
         }
 
         /**
@@ -361,6 +388,11 @@ public class ConfigurationEventTypeXMLDOM implements MetaDefItem, Serializable
         public Class getOptionalCastToType()
         {
             return optionalCastToType;
+        }
+
+        public String getOptionalEventTypeAlias()
+        {
+            return optionalEventTypeAlias;
         }
     }
 

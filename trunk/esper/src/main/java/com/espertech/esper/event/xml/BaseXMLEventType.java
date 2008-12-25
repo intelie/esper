@@ -9,37 +9,28 @@
 package com.espertech.esper.event.xml;
 
 import com.espertech.esper.client.*;
-import com.espertech.esper.collection.Pair;
 import com.espertech.esper.event.BaseConfigurableEventType;
 import com.espertech.esper.event.EventAdapterService;
 import com.espertech.esper.event.EventTypeMetadata;
+import com.espertech.esper.event.ExplicitPropertyDescriptor;
 import com.espertech.esper.util.ClassInstantiationException;
 import com.espertech.esper.util.JavaClassHelper;
 import org.w3c.dom.Node;
 
 import javax.xml.xpath.*;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.List;
 
 /**
- * Base class for XMLEventTypes.
- * Using this class as EventType only allow preconfigured properties
- * (normally via {@link com.espertech.esper.event.xml.XPathPropertyGetter XPathPropertyGetter} ).
- *
- * For "on the fly" property resolvers, use either
- * {@link com.espertech.esper.event.xml.SimpleXMLEventType SimpleXMLEventType} or
- * {@link com.espertech.esper.event.xml.SchemaXMLEventType SchemaXMLEventType}
- *
- * @author pablo
+ * Base class for XML event types.
  */
 public abstract class BaseXMLEventType extends BaseConfigurableEventType {
 
     private final XPathFactory xPathFactory;
     private final String rootElementName;
     private final ConfigurationEventTypeXMLDOM configurationEventTypeXMLDOM;
-    private final EventAdapterService eventAdapterService;
 
     /**
      * XPath namespace context.
@@ -53,10 +44,9 @@ public abstract class BaseXMLEventType extends BaseConfigurableEventType {
      */
     public BaseXMLEventType(EventTypeMetadata metadata, ConfigurationEventTypeXMLDOM configurationEventTypeXMLDOM, EventAdapterService eventAdapterService)
     {
-        super(metadata, Node.class);
+        super(eventAdapterService, metadata, Node.class);
         this.rootElementName = configurationEventTypeXMLDOM.getRootElementName();
         this.configurationEventTypeXMLDOM = configurationEventTypeXMLDOM;
-        this.eventAdapterService = eventAdapterService;
         xPathFactory = XPathFactory.newInstance();
 
         if (configurationEventTypeXMLDOM.getXPathFunctionResolver() != null)
@@ -109,9 +99,9 @@ public abstract class BaseXMLEventType extends BaseConfigurableEventType {
      * @param explicitXPathProperties are preconfigured event properties
      */
     protected void initialize(Collection<ConfigurationEventTypeXMLDOM.XPathPropertyDesc> explicitXPathProperties,
-                              Map<String, Pair<EventPropertyGetter, EventPropertyDescriptor>> additionalSchemaProperties)
+                              List<ExplicitPropertyDescriptor> additionalSchemaProperties)
     {
-        Map<String, Pair<EventPropertyGetter, EventPropertyDescriptor>> namedProperties = new LinkedHashMap<String, Pair<EventPropertyGetter, EventPropertyDescriptor>>(additionalSchemaProperties);
+        List<ExplicitPropertyDescriptor> namedProperties = new ArrayList<ExplicitPropertyDescriptor>(additionalSchemaProperties);
 
         String xpathExpression = null;
         try {
@@ -126,10 +116,26 @@ public abstract class BaseXMLEventType extends BaseConfigurableEventType {
 
                 xpathExpression = property.getXpath();
                 XPathExpression expression = xPath.compile(xpathExpression);
-                EventPropertyGetter getter = new XPathPropertyGetter(property.getName(), expression, property.getType(), property.getOptionalCastToType());
+
+                FragmentFactoryXPathGetter fragmentFactory = null;
+                boolean isFragment = false;
+                if (property.getOptionalEventTypeAlias() != null)
+                {
+                    fragmentFactory = new FragmentFactoryXPathGetter(this.getEventAdapterService(), property.getOptionalEventTypeAlias(), property.getName());
+                    isFragment = true;
+                }
+                boolean isArray = false;
+                if (property.getType() == XPathConstants.NODESET)
+                {
+                    isArray = true;
+                }
+
+                EventPropertyGetter getter = new XPathPropertyGetter(property.getName(), expression, property.getType(), property.getOptionalCastToType(), fragmentFactory);
                 Class returnType = SchemaUtil.toReturnType(property.getType(), property.getOptionalCastToType());
-                EventPropertyDescriptor desc = new EventPropertyDescriptor(property.getName(), returnType, false,false,false,false,false);
-                namedProperties.put(property.getName(), new Pair<EventPropertyGetter, EventPropertyDescriptor>(getter, desc));
+                
+                EventPropertyDescriptor desc = new EventPropertyDescriptor(property.getName(), returnType, false,false,isArray,false,isFragment);
+                ExplicitPropertyDescriptor explicit = new ExplicitPropertyDescriptor(desc, getter, isArray, property.getOptionalEventTypeAlias());
+                namedProperties.add(explicit);
             }
         }
         catch (XPathExpressionException ex)
@@ -179,10 +185,5 @@ public abstract class BaseXMLEventType extends BaseConfigurableEventType {
     public int hashCode()
     {
         return configurationEventTypeXMLDOM.hashCode();
-    }
-
-    public EventAdapterService getEventAdapterService()
-    {
-        return eventAdapterService;
     }
 }

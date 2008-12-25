@@ -9,9 +9,9 @@
 package com.espertech.esper.event.xml;
 
 import com.espertech.esper.client.*;
-import com.espertech.esper.collection.Pair;
 import com.espertech.esper.event.EventAdapterService;
 import com.espertech.esper.event.EventTypeMetadata;
+import com.espertech.esper.event.ExplicitPropertyDescriptor;
 import com.espertech.esper.event.property.Property;
 import com.espertech.esper.event.property.PropertyParser;
 import com.espertech.esper.event.xml.getter.DOMConvertingGetter;
@@ -20,8 +20,9 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import javax.xml.xpath.XPathExpressionException;
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -70,14 +71,14 @@ public class SchemaXMLEventType extends BaseXMLEventType
         super.setNamespaceContext(ctx);
 
         // add properties for the root element
-        Map<String, Pair<EventPropertyGetter, EventPropertyDescriptor>> additionalSchemaProps = new LinkedHashMap<String, Pair<EventPropertyGetter, EventPropertyDescriptor>>();
+        List<ExplicitPropertyDescriptor> additionalSchemaProps = new ArrayList<ExplicitPropertyDescriptor>();
 
         // Add a property for each complex child element
         for (SchemaElementComplex complex : schemaModelRoot.getChildren())
         {
             String propertyName = complex.getName();
             Class returnType = Node.class;
-            boolean isFragment = true;
+            boolean isFragment = false;
 
             if (complex.getOptionalSimpleType() != null)
             {
@@ -91,7 +92,8 @@ public class SchemaXMLEventType extends BaseXMLEventType
 
             EventPropertyGetter getter = doResolvePropertyGetter(propertyName);
             EventPropertyDescriptor desc = new EventPropertyDescriptor(propertyName, returnType, false, false, complex.isArray(), false, isFragment);
-            additionalSchemaProps.put(propertyName, new Pair<EventPropertyGetter, EventPropertyDescriptor>(getter, desc));
+            ExplicitPropertyDescriptor explicit = new ExplicitPropertyDescriptor(desc, getter, false, null);
+            additionalSchemaProps.add(explicit);
         }
 
         // Add a property for each simple child element
@@ -101,7 +103,8 @@ public class SchemaXMLEventType extends BaseXMLEventType
             Class returnType = SchemaUtil.toReturnType(simple.getType());
             EventPropertyGetter getter = doResolvePropertyGetter(propertyName);
             EventPropertyDescriptor desc = new EventPropertyDescriptor(propertyName, returnType, false, false, simple.isArray(), false, false);
-            additionalSchemaProps.put(propertyName, new Pair<EventPropertyGetter, EventPropertyDescriptor>(getter, desc));
+            ExplicitPropertyDescriptor explicit = new ExplicitPropertyDescriptor(desc, getter, false, null);
+            additionalSchemaProps.add(explicit);
         }
 
         // Add a property for each attribute
@@ -111,7 +114,8 @@ public class SchemaXMLEventType extends BaseXMLEventType
             Class returnType = SchemaUtil.toReturnType(attribute.getType());
             EventPropertyGetter getter = doResolvePropertyGetter(propertyName);
             EventPropertyDescriptor desc = new EventPropertyDescriptor(propertyName, returnType, false, false, false, false, false);
-            additionalSchemaProps.put(propertyName, new Pair<EventPropertyGetter, EventPropertyDescriptor>(getter, desc));
+            ExplicitPropertyDescriptor explicit = new ExplicitPropertyDescriptor(desc, getter, false, null);
+            additionalSchemaProps.add(explicit);
         }
 
         // Finally add XPath properties as that may depend on the rootElementNamespace
@@ -120,6 +124,9 @@ public class SchemaXMLEventType extends BaseXMLEventType
 
     protected FragmentEventType doResolveFragmentType(String property)
     {
+        return null;
+        /*
+        TODO
         Property prop = PropertyParser.parse(property, this.getEventAdapterService(), false);
 
         SchemaItem item = prop.getPropertyTypeSchema(schemaModelRoot, this.getEventAdapterService());
@@ -138,7 +145,7 @@ public class SchemaXMLEventType extends BaseXMLEventType
         {
             return null;    // no transposal if the complex type also has a simple value else that is hidden
         }
-        
+
         String[] atomicProps = prop.toPropertyArray();
 
         String delimiter = "";
@@ -156,6 +163,7 @@ public class SchemaXMLEventType extends BaseXMLEventType
             return null;
         }
         return new FragmentEventType(existingType, complex.isArray(), false);
+        */
     }
 
     protected Class doResolvePropertyType(String property) {

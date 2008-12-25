@@ -182,6 +182,13 @@ public interface EventAdapterService
     public EventBean adapterForDOM(Node node);
 
     /**
+     * Returns an adapter for the XML DOM document that exposes it's data as event properties for use in statements.
+     * @param node is the node to wrap
+     * @return event wrapper for document
+     */
+    public EventBean adapterForTypedDOM(Node node, EventType eventType);
+
+    /**
      * Create a new anonymous event type with the given underlying event type,
      * as well as the additional given properties.
      * @param underlyingEventType is the event type for the event type that this wrapper wraps

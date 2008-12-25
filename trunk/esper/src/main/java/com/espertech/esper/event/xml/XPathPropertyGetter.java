@@ -17,6 +17,7 @@ import com.espertech.esper.util.SimpleTypeParserFactory;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 import javax.xml.namespace.QName;
 import javax.xml.xpath.XPathExpression;
@@ -35,6 +36,7 @@ public class XPathPropertyGetter implements EventPropertyGetter
 	private final QName resultType;
     private final SimpleTypeParser simpleTypeParser;
     private final Class optionalCastToType;
+    private final FragmentFactory fragmentFactory;
 
     /**
      * Ctor.
@@ -43,10 +45,11 @@ public class XPathPropertyGetter implements EventPropertyGetter
      * @param resultType is the resulting type
      * @param optionalCastToType if non-null then the return value of the xpath expression is cast to this value
      */
-    public XPathPropertyGetter(String propertyName, XPathExpression xPathExpression, QName resultType, Class optionalCastToType) {
+    public XPathPropertyGetter(String propertyName, XPathExpression xPathExpression, QName resultType, Class optionalCastToType, FragmentFactory fragmentTypeResolver) {
 		this.expression = xPathExpression;
 		this.property = propertyName;
 		this.resultType = resultType;
+        this.fragmentFactory = fragmentTypeResolver;
         if (optionalCastToType != null)
         {
             simpleTypeParser = SimpleTypeParserFactory.getParser(optionalCastToType);
@@ -143,6 +146,45 @@ public class XPathPropertyGetter implements EventPropertyGetter
 
     public Object getFragment(EventBean eventBean)
     {
-        return null;
+        if (fragmentFactory == null)
+        {
+            return null;
+        }
+        
+        Object und = eventBean.getUnderlying();
+        if (und == null)
+        {
+            throw new PropertyAccessException("Unexpected null underlying event encountered, expecting org.w3c.dom.Node instance as underlying");
+        }
+        if (!(und instanceof Node))
+        {
+            throw new PropertyAccessException("Unexpected underlying event of type '" + und.getClass() + "' encountered, expecting org.w3c.dom.Node as underlying");
+        }
+
+        try {
+            Object result = expression.evaluate(und,resultType);
+
+            if (result instanceof Node)
+            {
+                return fragmentFactory.getEvent((Node) result);
+            }
+
+            if (result instanceof NodeList)
+            {
+                NodeList nodeList = (NodeList) result;
+                EventBean[] events = new EventBean[nodeList.getLength()];
+                for (int i = 0; i < events.length; i++)
+                {
+                    events[i] = fragmentFactory.getEvent(nodeList.item(i));
+                }
+                return events;
+            }
+
+            log.warn("Error processing XPath property named '" + property + "' expression result is not of type Node or Nodeset");
+            return null;
+        }
+        catch (XPathExpressionException e) {
+            throw new PropertyAccessException("Error getting property " + property,e);
+        }
     }
 }

@@ -73,7 +73,7 @@ public class SimpleXMLEventType extends BaseXMLEventType {
             }
         }
         super.setNamespaceContext(xPathNamespaceContext);
-        super.initialize(configurationEventTypeXMLDOM.getXPathProperties().values(), Collections.EMPTY_MAP);
+        super.initialize(configurationEventTypeXMLDOM.getXPathProperties().values(), Collections.EMPTY_LIST);
 
         propertyGetterCache = new HashMap<String, EventPropertyGetter>();
     }
@@ -101,7 +101,8 @@ public class SimpleXMLEventType extends BaseXMLEventType {
             throw new EPException("Error constructing XPath expression from property name '" + property + '\'', e);
         }
 
-        getter = new XPathPropertyGetter(property, xPathExpression, XPathConstants.STRING, null);
+        // TODO - fragment factory
+        getter = new XPathPropertyGetter(property, xPathExpression, XPathConstants.STRING, null, null);
         propertyGetterCache.put(property, getter);
         return getter;
     }

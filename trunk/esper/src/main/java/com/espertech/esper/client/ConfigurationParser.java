@@ -304,6 +304,14 @@ class ConfigurationParser {
                 {
                     xpathConstantType = XPathConstants.BOOLEAN;
                 }
+                else if (propertyType.toUpperCase().equals("NODE"))
+                {
+                    xpathConstantType = XPathConstants.NODE;
+                }
+                else if (propertyType.toUpperCase().equals("NODESET"))
+                {
+                    xpathConstantType = XPathConstants.NODESET;
+                }
                 else
                 {
                     throw new IllegalArgumentException("Invalid xpath property type for property '" +
@@ -316,7 +324,20 @@ class ConfigurationParser {
                     castToClass = propertyElement.getAttributes().getNamedItem("cast").getTextContent();
                 }
 
-                xmlDOMEventTypeDesc.addXPathProperty(propertyName, xPath, xpathConstantType, castToClass);
+                String optionalEventTypeAlias = null;
+                if (propertyElement.getAttributes().getNamedItem("event-type-alias") != null)
+                {
+                    optionalEventTypeAlias = propertyElement.getAttributes().getNamedItem("event-type-alias").getTextContent();
+                }
+
+                if (optionalEventTypeAlias != null)
+                {
+                    xmlDOMEventTypeDesc.addXPathPropertyFragment(propertyName, xPath, xpathConstantType, optionalEventTypeAlias);
+                }
+                else
+                {
+                    xmlDOMEventTypeDesc.addXPathProperty(propertyName, xPath, xpathConstantType, castToClass);
+                }
             }
         }
     }

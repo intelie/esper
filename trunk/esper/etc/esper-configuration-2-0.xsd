@@ -76,6 +76,7 @@
 			<xs:attribute name="xpath" type="xs:string" use="required"/>
 			<xs:attribute name="type" type="esper:xpath-type" use="required"/>
 			<xs:attribute name="cast" type="xs:string" use="optional"/>
+			<xs:attribute name="event-type-alias" type="xs:string" use="optional"/>
 		</xs:complexType>
 	</xs:element>
 	<xs:simpleType name="xpath-type">
@@ -83,6 +84,8 @@
 			<xs:enumeration value="number"/>
 			<xs:enumeration value="string"/>
 			<xs:enumeration value="boolean"/>
+			<xs:enumeration value="node"/>
+			<xs:enumeration value="nodeset"/>
 		</xs:restriction>
 	</xs:simpleType>
 	<xs:element name="java-util-map">

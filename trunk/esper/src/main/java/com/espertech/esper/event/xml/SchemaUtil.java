@@ -74,6 +74,11 @@ public class SchemaUtil {
 
     public static Class toReturnType(QName resultType, Class optionalCastToType)
     {
+        if (resultType.equals(XPathConstants.NODESET))
+            return NodeList.class;
+        if (resultType.equals(XPathConstants.NODE))
+            return Node.class;
+
         if (optionalCastToType != null)
         {
             return optionalCastToType;
@@ -149,12 +154,60 @@ public class SchemaUtil {
             }
         }
 
-        String text = "Could not find root element declaration in schema using element name '" + elementName + '\'';
+        if (elementName.startsWith("//"))
+        {
+            elementName = elementName.substring(2);
+            for (SchemaElementComplex complexElement : schema.getComponents())
+            {
+                SchemaElementComplex match = recursiveDeepMatch(complexElement, namespace, elementName);
+                if (match != null)
+                {
+                    return match;
+                }
+            }
+        }
+
+        String text = "Could not find root element declaration in schema for element name '" + elementName + '\'';
         if (namespace != null)
         {
             text = text + " in namespace '" + namespace + '\'';
         }
         throw new EPException(text);
+    }
+
+    private static SchemaElementComplex recursiveDeepMatch(SchemaElementComplex parent, String namespace, String elementName)
+    {
+        if ((namespace != null) && namespace.length() != 0)
+        {
+            for (SchemaElementComplex complexElement : parent.getChildren())
+            {
+                if ((complexElement.getNamespace().equals(namespace)) && (complexElement.getName().equals(elementName)))
+                {
+                    return complexElement;
+                }
+            }
+        }
+        else
+        {
+            for (SchemaElementComplex complexElement : parent.getChildren())
+            {
+                if (complexElement.getName().equals(elementName))
+                {
+                    return complexElement;
+                }
+            }
+        }
+
+        for (SchemaElementComplex complexElement : parent.getChildren())
+        {
+            SchemaElementComplex found = recursiveDeepMatch(complexElement, namespace, elementName);
+            if (found != null)
+            {
+                return found;
+            }
+        }
+
+        return null;
     }
 
 

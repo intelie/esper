@@ -128,7 +128,8 @@ public class SchemaXMLPropertyParser
         }
         Class resultType = SchemaUtil.toReturnType(item);
 
-        return new XPathPropertyGetter(propertyName, expr, pair.getSecond(), resultType);
+        // TODO fragment factory
+        return new XPathPropertyGetter(propertyName, expr, pair.getSecond(), resultType, null);
     }
 
     private static Pair<String, QName> makeProperty(SchemaElementComplex parent, Tree child, XPathNamespaceContext ctx, boolean isAlone)

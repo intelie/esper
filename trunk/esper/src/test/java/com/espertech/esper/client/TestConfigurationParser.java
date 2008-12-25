@@ -101,6 +101,10 @@ public class TestConfigurationParser extends TestCase
         assertEquals("/myevent/element2", schemaDesc.getXPathProperties().get("element2").getXpath());
         assertEquals(XPathConstants.STRING, schemaDesc.getXPathProperties().get("element2").getType());
         assertEquals(Long.class, schemaDesc.getXPathProperties().get("element2").getOptionalCastToType());
+        assertEquals("/bookstore/book", schemaDesc.getXPathProperties().get("element3").getXpath());
+        assertEquals(XPathConstants.NODESET, schemaDesc.getXPathProperties().get("element3").getType());
+        assertEquals(null, schemaDesc.getXPathProperties().get("element3").getOptionalCastToType());
+        assertEquals("MyOtherXMLNodeEvent", schemaDesc.getXPathProperties().get("element3").getOptionalEventTypeAlias());
         assertEquals(1, schemaDesc.getNamespacePrefixes().size());
         assertEquals("samples:schemas:simpleSchema", schemaDesc.getNamespacePrefixes().get("ss"));
         assertFalse(schemaDesc.isResolvePropertiesAbsolute());
