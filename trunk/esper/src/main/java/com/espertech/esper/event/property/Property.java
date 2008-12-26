@@ -12,6 +12,7 @@ import com.espertech.esper.event.*;
 import com.espertech.esper.event.bean.BeanEventType;
 import com.espertech.esper.event.xml.SchemaItem;
 import com.espertech.esper.event.xml.SchemaElementComplex;
+import com.espertech.esper.event.xml.BaseXMLEventType;
 import com.espertech.esper.client.EventPropertyGetter;
 
 import java.util.Map;
@@ -59,17 +60,17 @@ public interface Property
      * Returns the property type for use with DOM event representations.
      * @param complexProperty a element-within-element type definition
      * @param eventAdapterService for resolving further element event types if defined
-     * @return property type @param optionalMapPropTypes
+     * @return property type
      */
     public SchemaItem getPropertyTypeSchema(SchemaElementComplex complexProperty, EventAdapterService eventAdapterService);
 
     /**
-     * Returns the getter-method for use with Map event representations.
+     * Returns the getter-method for use with XML DOM event representations.
      * @param complexProperty a element-within-element type definition
-     * @param eventAdapterService for resolving further map event types that are property types
-     * @return getter for maps @param optionalMapPropTypes
+     * @param eventAdapterService for resolving or creating further event types that are property types
+     * @return getter
      */
-    public EventPropertyGetter getGetterDOM(SchemaElementComplex complexProperty, EventAdapterService eventAdapterService);
+    public EventPropertyGetter getGetterDOM(SchemaElementComplex complexProperty, EventAdapterService eventAdapterService, BaseXMLEventType xmlEventType);
 
     /**
      * Write the EPL-representation of the property.

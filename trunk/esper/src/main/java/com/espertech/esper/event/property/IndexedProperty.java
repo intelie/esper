@@ -18,6 +18,7 @@ import com.espertech.esper.event.bean.*;
 import com.espertech.esper.event.xml.SchemaElementComplex;
 import com.espertech.esper.event.xml.SchemaElementSimple;
 import com.espertech.esper.event.xml.SchemaItem;
+import com.espertech.esper.event.xml.BaseXMLEventType;
 import com.espertech.esper.event.xml.getter.DOMIndexedGetter;
 import net.sf.cglib.reflect.FastClass;
 import net.sf.cglib.reflect.FastMethod;
@@ -227,7 +228,7 @@ public class IndexedProperty extends PropertyBase
         writer.append("]");
     }
 
-    public EventPropertyGetter getGetterDOM(SchemaElementComplex complexProperty, EventAdapterService eventAdapterService)
+    public EventPropertyGetter getGetterDOM(SchemaElementComplex complexProperty, EventAdapterService eventAdapterService, BaseXMLEventType eventType)
     {
         for (SchemaElementSimple simple : complexProperty.getSimpleElements())
         {

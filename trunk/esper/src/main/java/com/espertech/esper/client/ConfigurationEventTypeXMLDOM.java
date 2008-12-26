@@ -56,7 +56,9 @@ public class ConfigurationEventTypeXMLDOM implements MetaDefItem, Serializable
     private Map<String, String> namespacePrefixes;
 
     private boolean isPropertyExprXPath;
-    private boolean resolvePropertiesAbsolute;
+    private boolean isResolvePropertiesAbsolute;
+    private boolean isEventSenderValidatesRoot;
+    private boolean isAutoFragment;
 
     private String xPathFunctionResolver;
     private String xPathVariableResolver;
@@ -68,8 +70,10 @@ public class ConfigurationEventTypeXMLDOM implements MetaDefItem, Serializable
     {
         xPathProperties = new LinkedHashMap<String, XPathPropertyDesc>();
         namespacePrefixes = new HashMap<String, String>();
-        resolvePropertiesAbsolute = true;
+        isResolvePropertiesAbsolute = true;
         isPropertyExprXPath = false;
+        isEventSenderValidatesRoot = true;
+        isAutoFragment = true;
     }
 
     /**
@@ -163,6 +167,26 @@ public class ConfigurationEventTypeXMLDOM implements MetaDefItem, Serializable
         isPropertyExprXPath = propertyExprXPath;
     }
 
+    public boolean isEventSenderValidatesRoot()
+    {
+        return isEventSenderValidatesRoot;
+    }
+
+    public void setEventSenderValidatesRoot(boolean eventSenderValidatesRoot)
+    {
+        isEventSenderValidatesRoot = eventSenderValidatesRoot;
+    }
+
+    public boolean isAutoFragment()
+    {
+        return isAutoFragment;
+    }
+
+    public void setAutoFragment(boolean autoFragment)
+    {
+        isAutoFragment = autoFragment;
+    }
+
     /**
      * Adds an event property for which the engine uses the supplied XPath expression against
      * a DOM document node to resolve a property value.
@@ -241,7 +265,7 @@ public class ConfigurationEventTypeXMLDOM implements MetaDefItem, Serializable
      */
     public boolean isResolvePropertiesAbsolute()
     {
-        return resolvePropertiesAbsolute;
+        return isResolvePropertiesAbsolute;
     }
 
     /**
@@ -257,7 +281,7 @@ public class ConfigurationEventTypeXMLDOM implements MetaDefItem, Serializable
      */
     public void setResolvePropertiesAbsolute(boolean resolvePropertiesAbsolute)
     {
-        this.resolvePropertiesAbsolute = resolvePropertiesAbsolute;
+        this.isResolvePropertiesAbsolute = resolvePropertiesAbsolute;
     }
 
     /**

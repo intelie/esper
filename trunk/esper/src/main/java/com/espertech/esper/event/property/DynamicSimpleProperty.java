@@ -13,6 +13,7 @@ import com.espertech.esper.event.bean.DynamicSimplePropertyGetter;
 import com.espertech.esper.event.bean.BeanEventType;
 import com.espertech.esper.event.xml.SchemaElementComplex;
 import com.espertech.esper.event.xml.SchemaItem;
+import com.espertech.esper.event.xml.BaseXMLEventType;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventPropertyGetter;
 import com.espertech.esper.client.PropertyAccessException;
@@ -85,7 +86,7 @@ public class DynamicSimpleProperty extends PropertyBase implements DynamicProper
         writer.append(propertyNameAtomic);
     }
 
-    public EventPropertyGetter getGetterDOM(SchemaElementComplex complexProperty, EventAdapterService eventAdapterService)
+    public EventPropertyGetter getGetterDOM(SchemaElementComplex complexProperty, EventAdapterService eventAdapterService, BaseXMLEventType eventType)
     {
         return null;  // TODO
     }

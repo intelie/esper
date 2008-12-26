@@ -152,7 +152,7 @@ public class SimpleProperty extends PropertyBase
         writer.append(propertyNameAtomic);
     }
 
-    public EventPropertyGetter getGetterDOM(SchemaElementComplex complexProperty, EventAdapterService eventAdapterService)
+    public EventPropertyGetter getGetterDOM(SchemaElementComplex complexProperty, EventAdapterService eventAdapterService, BaseXMLEventType xmlEventType)
     {
         for (SchemaItemAttribute attribute : complexProperty.getAttributes())
         {
@@ -166,15 +166,16 @@ public class SimpleProperty extends PropertyBase
         {
             if (simple.getName().equals(propertyNameAtomic))
             {
-                return new DOMSimpleElementGetter(propertyNameAtomic);
+                return new DOMSimpleElementGetter(propertyNameAtomic, null);
             }
         }
 
         for (SchemaElementComplex complex : complexProperty.getChildren())
         {
+            FragmentFactorySchemaElementComplex complexFragmentFactory = new FragmentFactorySchemaElementComplex(complex, eventAdapterService, xmlEventType);
             if (complex.getName().equals(propertyNameAtomic))
             {
-                return new DOMSimpleElementGetter(propertyNameAtomic);
+                return new DOMSimpleElementGetter(propertyNameAtomic, complexFragmentFactory);
             }
         }
 

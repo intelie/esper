@@ -18,6 +18,8 @@ import com.espertech.esper.event.xml.getter.DOMConvertingGetter;
 import com.espertech.esper.event.xml.getter.DOMPropertyGetter;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import javax.xml.xpath.XPathExpressionException;
 import java.util.ArrayList;
@@ -36,6 +38,8 @@ import java.util.Map;
  */
 public class SchemaXMLEventType extends BaseXMLEventType
 {
+    private static final Log log = LogFactory.getLog(SchemaXMLEventType.class);
+
     private final SchemaModel schemaModel;
     private final SchemaElementComplex schemaModelRoot;
     private final String rootElementNamespace;
@@ -78,16 +82,20 @@ public class SchemaXMLEventType extends BaseXMLEventType
         {
             String propertyName = complex.getName();
             Class returnType = Node.class;
-            boolean isFragment = false;
 
             if (complex.getOptionalSimpleType() != null)
             {
                 returnType = SchemaUtil.toReturnType(complex.getOptionalSimpleType());
-                isFragment = false;
             }
             if (complex.isArray())
             {
                 returnType = NodeList.class;
+            }
+
+            boolean isFragment = false;
+            if (this.getConfigurationEventTypeXMLDOM().isAutoFragment())
+            {
+                isFragment = canFragment(complex);
             }
 
             EventPropertyGetter getter = doResolvePropertyGetter(propertyName);
@@ -124,46 +132,67 @@ public class SchemaXMLEventType extends BaseXMLEventType
 
     protected FragmentEventType doResolveFragmentType(String property)
     {
-        return null;
-        /*
-        TODO
+        if (!this.getConfigurationEventTypeXMLDOM().isAutoFragment())
+        {
+            return null;
+        }
+
         Property prop = PropertyParser.parse(property, this.getEventAdapterService(), false);
 
         SchemaItem item = prop.getPropertyTypeSchema(schemaModelRoot, this.getEventAdapterService());
-        if (item == null)
+        if ((item == null) || (!canFragment(item)))
         {
             return null;
         }
-
-        if (!(item instanceof SchemaElementComplex))
-        {
-            return null;
-        }
-
         SchemaElementComplex complex = (SchemaElementComplex) item;
-        if (complex.getOptionalSimpleType() != null)
-        {
-            return null;    // no transposal if the complex type also has a simple value else that is hidden
-        }
 
+        // build name of event type
         String[] atomicProps = prop.toPropertyArray();
-
-        String delimiter = "";
-        StringBuilder propertyNameXPath = new StringBuilder(this.getRootElementName());
+        String delimiterDot = ".";
+        String delimiterSlash = "/";
+        StringBuilder eventTypeNameBuilder = new StringBuilder(this.getName());
+        StringBuilder rootXPathnameBuilder = new StringBuilder(this.getRootElementName());
         for (String atomic : atomicProps)
         {
-            propertyNameXPath.append(delimiter);
-            propertyNameXPath.append(atomic);
-            delimiter = "/";
+            eventTypeNameBuilder.append(delimiterDot);
+            eventTypeNameBuilder.append(atomic);
+            rootXPathnameBuilder.append(delimiterSlash);
+            rootXPathnameBuilder.append(atomic);
+        }
+        String eventTypeName = eventTypeNameBuilder.toString();
+        String rootXPathName = rootXPathnameBuilder.toString();
+
+        // check if the type exists, use the existing type if found
+        EventType existingType = this.getEventAdapterService().getXMLDOMType(eventTypeName.toString());
+        if (existingType != null)
+        {
+            return new FragmentEventType(existingType, complex.isArray(), false);
         }
 
-        EventType existingType = this.getEventAdapterService().getXMLDOMType(propertyNameXPath.toString());
-        if (existingType == null)
+        // add a new type
+        ConfigurationEventTypeXMLDOM xmlDom = new ConfigurationEventTypeXMLDOM();
+        xmlDom.setRootElementName("//" + complex.getName());    // such the reload of the type can resolve it
+        xmlDom.setRootElementNamespace(complex.getNamespace());
+        xmlDom.setAutoFragment(this.getConfigurationEventTypeXMLDOM().isAutoFragment());
+        xmlDom.setDefaultNamespace(this.getConfigurationEventTypeXMLDOM().getDefaultNamespace());
+        xmlDom.setEventSenderValidatesRoot(this.getConfigurationEventTypeXMLDOM().isEventSenderValidatesRoot());
+        xmlDom.setPropertyExprXPath(this.getConfigurationEventTypeXMLDOM().isPropertyExprXPath());
+        xmlDom.setResolvePropertiesAbsolute(this.getConfigurationEventTypeXMLDOM().isResolvePropertiesAbsolute());
+        xmlDom.setSchemaResource(this.getConfigurationEventTypeXMLDOM().getSchemaResource());
+        xmlDom.setXPathFunctionResolver(this.getConfigurationEventTypeXMLDOM().getXPathFunctionResolver());
+        xmlDom.setXPathVariableResolver(this.getConfigurationEventTypeXMLDOM().getXPathVariableResolver());
+
+        EventType newType;
+        try
         {
+            newType = this.getEventAdapterService().addXMLDOMType(eventTypeName, xmlDom, schemaModel);
+        }
+        catch (Exception ex)
+        {
+            log.error("Failed to add dynamic event type for fragment of XML schema for property '" + property + "' :" + ex.getMessage(), ex);
             return null;
         }
-        return new FragmentEventType(existingType, complex.isArray(), false);
-        */
+        return new FragmentEventType(newType, complex.isArray(), false);
     }
 
     protected Class doResolvePropertyType(String property) {
@@ -194,7 +223,7 @@ public class SchemaXMLEventType extends BaseXMLEventType
                 throw new PropertyAccessException("Failed to locate property '" + property + "' in schema");
             }
 
-            getter = prop.getGetterDOM(schemaModelRoot, this.getEventAdapterService());
+            getter = prop.getGetterDOM(schemaModelRoot, this.getEventAdapterService(), this);
 
             Class returnType = SchemaUtil.toReturnType(item);
             if (returnType != Node.class)
@@ -222,5 +251,21 @@ public class SchemaXMLEventType extends BaseXMLEventType
         catch (XPathExpressionException e) {
             throw new EPException("Error constructing XPath expression from property name '" + property + '\'', e);
         }
+    }
+
+    private boolean canFragment(SchemaItem item)
+    {
+        if (!(item instanceof SchemaElementComplex))
+        {
+            return false;
+        }
+
+        SchemaElementComplex complex = (SchemaElementComplex) item;
+        if (complex.getOptionalSimpleType() != null)
+        {
+            return false;    // no transposing if the complex type also has a simple value else that is hidden
+        }
+
+        return true;
     }
 }

@@ -255,8 +255,10 @@ class ConfigurationParser {
         String defaultNamespace = getOptionalAttribute(xmldomElement, "default-namespace");
         String resolvePropertiesAbsoluteStr = getOptionalAttribute(xmldomElement, "resolve-properties-absolute");
         String propertyExprXPathStr = getOptionalAttribute(xmldomElement, "property-expr-xpath");
+        String eventSenderChecksRootStr = getOptionalAttribute(xmldomElement, "event-sender-validates-root");
         String xpathFunctionResolverClass = getOptionalAttribute(xmldomElement, "xpath-function-resolver");
         String xpathVariableResolverClass = getOptionalAttribute(xmldomElement, "xpath-variable-resolver");
+        String autoFragmentStr = getOptionalAttribute(xmldomElement, "auto-fragment");
 
         ConfigurationEventTypeXMLDOM xmlDOMEventTypeDesc = new ConfigurationEventTypeXMLDOM();
         xmlDOMEventTypeDesc.setRootElementName(rootElementName);
@@ -272,6 +274,14 @@ class ConfigurationParser {
         if (propertyExprXPathStr != null)
         {
             xmlDOMEventTypeDesc.setPropertyExprXPath(Boolean.parseBoolean(propertyExprXPathStr));
+        }
+        if (eventSenderChecksRootStr != null)
+        {
+            xmlDOMEventTypeDesc.setEventSenderValidatesRoot(Boolean.parseBoolean(eventSenderChecksRootStr));
+        }
+        if (autoFragmentStr != null)
+        {
+            xmlDOMEventTypeDesc.setAutoFragment(Boolean.parseBoolean(autoFragmentStr));            
         }
         configuration.addEventTypeAlias(aliasName, xmlDOMEventTypeDesc);
 

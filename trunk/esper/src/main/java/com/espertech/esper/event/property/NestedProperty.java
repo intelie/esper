@@ -8,22 +8,19 @@
  **************************************************************************************/
 package com.espertech.esper.event.property;
 
-import com.espertech.esper.event.*;
+import com.espertech.esper.client.EventPropertyGetter;
+import com.espertech.esper.client.EventType;
+import com.espertech.esper.client.PropertyAccessException;
+import com.espertech.esper.event.EventAdapterService;
+import com.espertech.esper.event.bean.BeanEventType;
+import com.espertech.esper.event.bean.NestedPropertyGetter;
 import com.espertech.esper.event.map.MapEventType;
 import com.espertech.esper.event.map.MapNestedPropertyGetter;
-import com.espertech.esper.event.bean.NestedPropertyGetter;
-import com.espertech.esper.event.bean.BeanEventType;
-import com.espertech.esper.event.xml.SchemaElementComplex;
-import com.espertech.esper.event.xml.SchemaItem;
-import com.espertech.esper.event.xml.SchemaItemAttribute;
-import com.espertech.esper.event.xml.SchemaElementSimple;
+import com.espertech.esper.event.xml.*;
 import com.espertech.esper.event.xml.getter.DOMNestedPropertyGetter;
-import com.espertech.esper.client.EventType;
-import com.espertech.esper.client.EventPropertyGetter;
-import com.espertech.esper.client.PropertyAccessException;
 
-import java.util.*;
 import java.io.StringWriter;
+import java.util.*;
 
 /**
  * This class represents a nested property, each nesting level made up of a property instance that
@@ -351,7 +348,7 @@ public class NestedProperty implements Property
         return propertyNames.toArray(new String[propertyNames.size()]);
     }
 
-    public EventPropertyGetter getGetterDOM(SchemaElementComplex parentComplexProperty, EventAdapterService eventAdapterService)
+    public EventPropertyGetter getGetterDOM(SchemaElementComplex parentComplexProperty, EventAdapterService eventAdapterService, BaseXMLEventType eventType)
     {
         List<EventPropertyGetter> getters = new LinkedList<EventPropertyGetter>();
 
@@ -360,7 +357,7 @@ public class NestedProperty implements Property
         for (Iterator<Property> it = properties.iterator(); it.hasNext();)
         {
             Property property = it.next();
-            EventPropertyGetter getter = property.getGetterDOM(complexElement, eventAdapterService);
+            EventPropertyGetter getter = property.getGetterDOM(complexElement, eventAdapterService, eventType);
             if (getter == null)
             {
                 return null;
@@ -398,11 +395,6 @@ public class NestedProperty implements Property
         {
             Property property = it.next();
             lastProperty = property;
-            EventPropertyGetter getter = property.getGetterDOM(complexElement, eventAdapterService);
-            if (getter == null)
-            {
-                return null;
-            }
 
             if (it.hasNext())
             {

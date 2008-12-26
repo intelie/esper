@@ -61,6 +61,9 @@ public class TestConfigurationParser extends TestCase
         
         ConfigurationEventTypeXMLDOM domType = new ConfigurationEventTypeXMLDOM();
         assertFalse(domType.isPropertyExprXPath());
+        assertTrue(domType.isResolvePropertiesAbsolute());
+        assertTrue(domType.isEventSenderValidatesRoot());
+        assertTrue(domType.isAutoFragment());
     }
 
     protected static void assertFileConfig(Configuration config) throws Exception
@@ -111,6 +114,8 @@ public class TestConfigurationParser extends TestCase
         assertEquals("com.mycompany.OptionalFunctionResolver", schemaDesc.getXPathFunctionResolver());
         assertEquals("com.mycompany.OptionalVariableResolver", schemaDesc.getXPathVariableResolver());
         assertTrue(schemaDesc.isPropertyExprXPath());
+        assertFalse(schemaDesc.isEventSenderValidatesRoot());
+        assertFalse(schemaDesc.isAutoFragment());
 
         // assert mapped events
         assertEquals(1, config.getEventTypesMapEvents().size());

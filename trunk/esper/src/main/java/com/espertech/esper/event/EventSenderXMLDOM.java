@@ -28,6 +28,7 @@ public class EventSenderXMLDOM implements EventSender
 {
     private final EPRuntimeEventSender runtimeEventSender;
     private final BaseXMLEventType baseXMLEventType;
+    private final boolean validateRootElement;
 
     /**
      * Ctor.
@@ -38,6 +39,7 @@ public class EventSenderXMLDOM implements EventSender
     {
         this.runtimeEventSender = runtimeEventSender;
         this.baseXMLEventType = baseXMLEventType;
+        this.validateRootElement = baseXMLEventType.getConfigurationEventTypeXMLDOM().isEventSenderValidatesRoot();
     }
 
     public void sendEvent(Object node) throws EPException
@@ -66,15 +68,18 @@ public class EventSenderXMLDOM implements EventSender
             throw new EPException("Unexpected event object type '" + node.getClass().getName() + "' encountered, please supply a org.w3c.dom.Document or Element node");
         }
 
-        String rootElementName = namedNode.getLocalName();
-        if (rootElementName == null)
+        if (validateRootElement)
         {
-            rootElementName = namedNode.getNodeName();
-        }
+            String rootElementName = namedNode.getLocalName();
+            if (rootElementName == null)
+            {
+                rootElementName = namedNode.getNodeName();
+            }
 
-        if (!rootElementName.equals(baseXMLEventType.getRootElementName()))
-        {
-            throw new EPException("Unexpected root element name '" + rootElementName + "' encountered, expected a root element name of '" + baseXMLEventType.getRootElementName() + "'");
+            if (!rootElementName.equals(baseXMLEventType.getRootElementName()))
+            {
+                throw new EPException("Unexpected root element name '" + rootElementName + "' encountered, expected a root element name of '" + baseXMLEventType.getRootElementName() + "'");
+            }
         }
 
         EventBean event = new XMLEventBean(namedNode, baseXMLEventType);

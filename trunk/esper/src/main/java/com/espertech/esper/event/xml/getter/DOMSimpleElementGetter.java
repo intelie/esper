@@ -3,16 +3,19 @@ package com.espertech.esper.event.xml.getter;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventPropertyGetter;
 import com.espertech.esper.client.PropertyAccessException;
+import com.espertech.esper.event.xml.FragmentFactory;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 public class DOMSimpleElementGetter implements EventPropertyGetter, DOMPropertyGetter
 {
     private final String propertyName;
+    private final FragmentFactory fragmentFactory;
 
-    public DOMSimpleElementGetter(String propertyName)
+    public DOMSimpleElementGetter(String propertyName, FragmentFactory fragmentFactory)
     {
         this.propertyName = propertyName;
+        this.fragmentFactory = fragmentFactory;
     }
 
     public Node getValueAsNode(Node node)
@@ -51,8 +54,22 @@ public class DOMSimpleElementGetter implements EventPropertyGetter, DOMPropertyG
         return true;
     }
 
-    public Object getFragment(EventBean eventBean) throws PropertyAccessException
+    public Object getFragment(EventBean obj) throws PropertyAccessException
     {
-        return get(eventBean);
+        // The underlying is expected to be a map
+        if (!(obj.getUnderlying() instanceof Node))
+        {
+            throw new PropertyAccessException("Mismatched property getter to event bean type, " +
+                    "the underlying data object is not of type Node");
+        }
+
+        Node node = (Node) obj.getUnderlying();
+        Node result = getValueAsNode(node);
+        if (result == null)
+        {
+            return result;
+        }
+
+        return fragmentFactory.getEvent(result);
     }
 }

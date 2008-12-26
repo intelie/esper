@@ -17,6 +17,7 @@ import com.espertech.esper.event.bean.KeyedFastPropertyGetter;
 import com.espertech.esper.event.xml.SchemaElementComplex;
 import com.espertech.esper.event.xml.SchemaItem;
 import com.espertech.esper.event.xml.SchemaItemAttribute;
+import com.espertech.esper.event.xml.BaseXMLEventType;
 import com.espertech.esper.event.xml.getter.DOMMapGetter;
 import net.sf.cglib.reflect.FastClass;
 import net.sf.cglib.reflect.FastMethod;
@@ -109,7 +110,7 @@ public class MappedProperty extends PropertyBase
         writer.append("')");
     }
 
-    public EventPropertyGetter getGetterDOM(SchemaElementComplex complexProperty, EventAdapterService eventAdapterService)
+    public EventPropertyGetter getGetterDOM(SchemaElementComplex complexProperty, EventAdapterService eventAdapterService, BaseXMLEventType eventType)
     {
         for (SchemaElementComplex complex : complexProperty.getChildren())
         {

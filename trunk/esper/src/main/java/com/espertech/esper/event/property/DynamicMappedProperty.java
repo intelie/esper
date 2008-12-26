@@ -15,6 +15,7 @@ import com.espertech.esper.event.map.MapMappedPropertyGetter;
 import com.espertech.esper.event.bean.DynamicMappedPropertyGetter;
 import com.espertech.esper.event.xml.SchemaElementComplex;
 import com.espertech.esper.event.xml.SchemaItem;
+import com.espertech.esper.event.xml.BaseXMLEventType;
 
 import java.util.Map;
 import java.io.StringWriter;
@@ -73,7 +74,7 @@ public class DynamicMappedProperty extends PropertyBase implements DynamicProper
         writer.append('?');
     }
 
-    public EventPropertyGetter getGetterDOM(SchemaElementComplex complexProperty, EventAdapterService eventAdapterService)
+    public EventPropertyGetter getGetterDOM(SchemaElementComplex complexProperty, EventAdapterService eventAdapterService, BaseXMLEventType eventType)
     {
         return null;  // TODO
     }

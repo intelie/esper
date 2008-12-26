@@ -62,6 +62,8 @@
 			<xs:attribute name="property-expr-xpath" type="xs:boolean" use="optional"/>
 			<xs:attribute name="xpath-function-resolver" type="xs:string" use="optional"/>
 			<xs:attribute name="xpath-variable-resolver" type="xs:string" use="optional"/>
+			<xs:attribute name="event-sender-validates-root" type="xs:boolean" use="optional"/>
+			<xs:attribute name="auto-fragment" type="xs:boolean" use="optional"/>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="namespace-prefix">

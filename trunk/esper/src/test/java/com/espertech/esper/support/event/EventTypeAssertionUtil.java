@@ -9,6 +9,8 @@ import java.io.StringWriter;
 import java.util.*;
 import java.lang.reflect.Array;
 
+import org.w3c.dom.NodeList;
+
 public class EventTypeAssertionUtil
 {
     public static void assertConsistency(EventBean eventBean)
@@ -253,7 +255,6 @@ public class EventTypeAssertionUtil
         }
     }
     
-
     private static void assertConsistencyRecusive(EventBean eventBean, Set<EventType> alreadySeenTypes)
     {
         assertConsistencyRecursive(eventBean.getEventType(), alreadySeenTypes);
@@ -272,7 +273,14 @@ public class EventTypeAssertionUtil
                 Assert.assertNotNull(failedMessage, resultGetter);         // expecting non-null values returned
 
                 Object resultGet = eventBean.get(propertyName);
-                Assert.assertSame(failedMessage, resultGet, resultGetter);
+                if (resultGet instanceof NodeList)
+                {
+                    Assert.assertEquals(failedMessage, ((NodeList)resultGet).getLength(), ((NodeList)resultGetter).getLength());
+                }
+                else
+                {
+                    Assert.assertEquals(failedMessage, resultGet, resultGetter);
+                }
 
                 Assert.assertTrue(failedMessage, JavaClassHelper.isSubclassOrImplementsInterface(resultGet.getClass(), properties[i].getPropertyType()));
             }
@@ -284,13 +292,13 @@ public class EventTypeAssertionUtil
                 continue;
             }
 
-            Object fragment = eventBean.get(propertyName);
+            Object fragment = eventBean.getFragment(propertyName);
             Assert.assertNotNull(failedMessage, fragment);
 
             FragmentEventType fragmentType = eventBean.getEventType().getFragmentType(propertyName);
             Assert.assertNotNull(failedMessage, fragmentType);
 
-            if (fragmentType.isIndexed())
+            if (!fragmentType.isIndexed())
             {
                 Assert.assertTrue(failedMessage, fragment instanceof EventBean);
                 EventBean fragmentEvent = (EventBean) fragment;
