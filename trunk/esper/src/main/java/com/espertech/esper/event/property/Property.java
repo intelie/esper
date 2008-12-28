@@ -70,7 +70,7 @@ public interface Property
      * @param eventAdapterService for resolving or creating further event types that are property types
      * @return getter
      */
-    public EventPropertyGetter getGetterDOM(SchemaElementComplex complexProperty, EventAdapterService eventAdapterService, BaseXMLEventType xmlEventType);
+    public EventPropertyGetter getGetterDOM(SchemaElementComplex complexProperty, EventAdapterService eventAdapterService, BaseXMLEventType xmlEventType, String propertyExpression);
 
     /**
      * Write the EPL-representation of the property.

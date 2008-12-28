@@ -3,6 +3,7 @@ package com.espertech.esper.event.xml.getter;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventPropertyGetter;
 import com.espertech.esper.client.PropertyAccessException;
+import com.espertech.esper.event.xml.FragmentFactory;
 import org.w3c.dom.Node;
 
 import java.util.List;
@@ -10,20 +11,49 @@ import java.util.List;
 public class DOMNestedPropertyGetter implements EventPropertyGetter, DOMPropertyGetter
 {
     private final DOMPropertyGetter[] domGetterChain;
+    private final FragmentFactory fragmentFactory;
 
     /**
      * Ctor.
      * @param getterChain is the chain of getters to retrieve each nested property
      */
-    public DOMNestedPropertyGetter(List<EventPropertyGetter> getterChain)
+    public DOMNestedPropertyGetter(List<EventPropertyGetter> getterChain, FragmentFactory fragmentFactory)
     {
         this.domGetterChain = new DOMPropertyGetter[getterChain.size()];
+        this.fragmentFactory = fragmentFactory;
 
         int count = 0;
         for (EventPropertyGetter getter : getterChain)
         {
             domGetterChain[count++] = (DOMPropertyGetter) getter;
         }        
+    }
+
+    public Object getValueAsFragment(Node node)
+    {
+        Node result = getValueAsNode(node);
+        if (result == null)
+        {
+            return null;
+        }
+        return fragmentFactory.getEvent(result);
+    }
+
+    public Node[] getValueAsNodeArray(Node node)
+    {
+        Node value = node;
+
+        for (int i = 0; i < domGetterChain.length - 1; i++)
+        {
+            value = domGetterChain[i].getValueAsNode(value);
+
+            if (value == null)
+            {
+                return null;
+            }
+        }
+
+        return domGetterChain[domGetterChain.length - 1].getValueAsNodeArray(value);
     }
 
     public Node getValueAsNode(Node node)
@@ -81,8 +111,28 @@ public class DOMNestedPropertyGetter implements EventPropertyGetter, DOMProperty
         return true;
     }
 
-    public Object getFragment(EventBean eventBean) throws PropertyAccessException
+    public Object getFragment(EventBean obj) throws PropertyAccessException
     {
-        return null;  // TODO
+        // The underlying is expected to be a map
+        if (!(obj.getUnderlying() instanceof Node))
+        {
+            throw new PropertyAccessException("Mismatched property getter to event bean type, " +
+                    "the underlying data object is not of type Node");
+        }
+
+        Node node = (Node) obj.getUnderlying();
+        Node value = node;
+
+        for (int i = 0; i < domGetterChain.length - 1; i++)
+        {
+            value = domGetterChain[i].getValueAsNode(node);
+
+            if (value == null)
+            {
+                return false;
+            }
+        }
+
+        return domGetterChain[domGetterChain.length - 1].getValueAsFragment(value);
     }
 }

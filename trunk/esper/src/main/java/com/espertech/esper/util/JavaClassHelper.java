@@ -18,6 +18,8 @@ import java.util.Map;
 import java.math.BigInteger;
 import java.math.BigDecimal;
 
+import org.w3c.dom.Node;
+
 /**
  * Helper for questions about Java classes such as
  * <p> what is the boxed type for a primitive type
@@ -1137,6 +1139,10 @@ public class JavaClassHelper
             return false;
         }
         if (JavaClassHelper.isImplementsInterface(propertyType, Map.class))
+        {
+            return false;
+        }
+        if (propertyType == Node.class)
         {
             return false;
         }

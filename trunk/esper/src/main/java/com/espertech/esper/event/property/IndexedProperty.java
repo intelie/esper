@@ -15,10 +15,7 @@ import com.espertech.esper.event.map.MapArrayMaptypedUndPropertyGetter;
 import com.espertech.esper.event.map.MapEventType;
 import com.espertech.esper.event.map.MapArrayPOJOEntryIndexedPropertyGetter;
 import com.espertech.esper.event.bean.*;
-import com.espertech.esper.event.xml.SchemaElementComplex;
-import com.espertech.esper.event.xml.SchemaElementSimple;
-import com.espertech.esper.event.xml.SchemaItem;
-import com.espertech.esper.event.xml.BaseXMLEventType;
+import com.espertech.esper.event.xml.*;
 import com.espertech.esper.event.xml.getter.DOMIndexedGetter;
 import net.sf.cglib.reflect.FastClass;
 import net.sf.cglib.reflect.FastMethod;
@@ -228,7 +225,7 @@ public class IndexedProperty extends PropertyBase
         writer.append("]");
     }
 
-    public EventPropertyGetter getGetterDOM(SchemaElementComplex complexProperty, EventAdapterService eventAdapterService, BaseXMLEventType eventType)
+    public EventPropertyGetter getGetterDOM(SchemaElementComplex complexProperty, EventAdapterService eventAdapterService, BaseXMLEventType eventType, String propertyExpression)
     {
         for (SchemaElementSimple simple : complexProperty.getSimpleElements())
         {
@@ -240,7 +237,7 @@ public class IndexedProperty extends PropertyBase
             {
                 continue;
             }
-            return new DOMIndexedGetter(propertyNameAtomic, index);
+            return new DOMIndexedGetter(propertyNameAtomic, index, null);
         }
 
         for (SchemaElementComplex complex : complexProperty.getChildren())
@@ -253,7 +250,7 @@ public class IndexedProperty extends PropertyBase
             {
                 continue;
             }
-            return new DOMIndexedGetter(propertyNameAtomic, index);
+            return new DOMIndexedGetter(propertyNameAtomic, index, new FragmentFactoryDOMGetter(eventAdapterService, eventType, propertyExpression));
         }
 
         return null;
@@ -271,7 +268,9 @@ public class IndexedProperty extends PropertyBase
             {
                 continue;
             }
-            return simple;
+
+            // return the simple as a non-array since an index is provided
+            return new SchemaElementSimple(simple.getName(), simple.getNamespace(), simple.getType(), false);
         }
 
         for (SchemaElementComplex complex : complexProperty.getChildren())
@@ -284,7 +283,9 @@ public class IndexedProperty extends PropertyBase
             {
                 continue;
             }
-            return complex;
+
+            // return the complex as a non-array since an index is provided
+            return new SchemaElementComplex(complex.getName(), complex.getNamespace(), complex.getAttributes(), complex.getChildren(), complex.getSimpleElements(), false, complex.getOptionalSimpleType());
         }
 
         return null;

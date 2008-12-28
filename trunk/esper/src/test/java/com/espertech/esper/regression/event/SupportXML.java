@@ -2,11 +2,14 @@ package com.espertech.esper.regression.event;
 
 import com.espertech.esper.client.EPRuntime;
 import junit.framework.TestCase;
-import org.w3c.dom.Document;
+import org.w3c.dom.*;
 import org.xml.sax.InputSource;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.StringReader;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.io.Writer;
 
 public class SupportXML extends TestCase
 {
@@ -50,5 +53,19 @@ public class SupportXML extends TestCase
         runtime.sendEvent(simpleDoc);
 
         return simpleDoc;
+    }
+
+    public static Document getDocument(String xml) throws Exception
+    {
+        StringReader reader = new StringReader(xml);
+        InputSource source = new InputSource(reader);
+        DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
+        builderFactory.setNamespaceAware(true);
+        return builderFactory.newDocumentBuilder().parse(source);
+    }
+
+    public static Document getDocument() throws Exception
+    {
+        return getDocument(XML);
     }
 }

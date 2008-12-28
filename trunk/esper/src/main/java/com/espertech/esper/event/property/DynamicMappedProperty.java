@@ -74,7 +74,7 @@ public class DynamicMappedProperty extends PropertyBase implements DynamicProper
         writer.append('?');
     }
 
-    public EventPropertyGetter getGetterDOM(SchemaElementComplex complexProperty, EventAdapterService eventAdapterService, BaseXMLEventType eventType)
+    public EventPropertyGetter getGetterDOM(SchemaElementComplex complexProperty, EventAdapterService eventAdapterService, BaseXMLEventType eventType, String propertyExpression)
     {
         return null;  // TODO
     }

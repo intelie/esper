@@ -14,7 +14,7 @@ import com.espertech.esper.event.bean.BeanEventType;
 import com.espertech.esper.event.bean.InternalEventPropDescriptor;
 import com.espertech.esper.event.xml.*;
 import com.espertech.esper.event.xml.getter.DOMSimpleAttributeGetter;
-import com.espertech.esper.event.xml.getter.DOMSimpleElementGetter;
+import com.espertech.esper.event.xml.getter.DOMComplexElementGetter;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.client.EventPropertyGetter;
@@ -152,7 +152,7 @@ public class SimpleProperty extends PropertyBase
         writer.append(propertyNameAtomic);
     }
 
-    public EventPropertyGetter getGetterDOM(SchemaElementComplex complexProperty, EventAdapterService eventAdapterService, BaseXMLEventType xmlEventType)
+    public EventPropertyGetter getGetterDOM(SchemaElementComplex complexProperty, EventAdapterService eventAdapterService, BaseXMLEventType xmlEventType, String propertyExpression)
     {
         for (SchemaItemAttribute attribute : complexProperty.getAttributes())
         {
@@ -166,16 +166,16 @@ public class SimpleProperty extends PropertyBase
         {
             if (simple.getName().equals(propertyNameAtomic))
             {
-                return new DOMSimpleElementGetter(propertyNameAtomic, null);
+                return new DOMComplexElementGetter(propertyNameAtomic, null, simple.isArray());
             }
         }
 
         for (SchemaElementComplex complex : complexProperty.getChildren())
         {
-            FragmentFactorySchemaElementComplex complexFragmentFactory = new FragmentFactorySchemaElementComplex(complex, eventAdapterService, xmlEventType);
+            FragmentFactoryDOMGetter complexFragmentFactory = new FragmentFactoryDOMGetter(eventAdapterService, xmlEventType, propertyExpression);
             if (complex.getName().equals(propertyNameAtomic))
             {
-                return new DOMSimpleElementGetter(propertyNameAtomic, complexFragmentFactory);
+                return new DOMComplexElementGetter(propertyNameAtomic, complexFragmentFactory, complex.isArray());
             }
         }
 

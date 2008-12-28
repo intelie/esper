@@ -14,18 +14,11 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpression;
-import javax.xml.xpath.XPathFactory;
 import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.List;
 
 public class TestNoSchemaXMLEvent extends TestCase
 {
@@ -43,83 +36,10 @@ public class TestNoSchemaXMLEvent extends TestCase
         "  <element4><element41>VAL4-1</element41></element4>\n" +
         "</myevent>";
 
-    // TODO
-    public void testPerfXPath() throws Exception
-    {
-        StringReader reader = new StringReader(XML);
-        InputSource source = new InputSource(reader);
-        DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
-        builderFactory.setNamespaceAware(true);
-        Document simpleDoc = builderFactory.newDocumentBuilder().parse(source);
-
-        simpleDoc.getChildNodes();
-
-        XPath path = XPathFactory.newInstance().newXPath();
-        XPathExpression pathExpr = path.compile("myevent/element2/element21[2]");
-
-        // 0.67sec for 1000 evals
-        List<Object> result = new ArrayList<Object>();
-        long start = System.nanoTime();
-        for (int i = 0; i < 1000; i++)
-        {
-            result.add(pathExpr.evaluate(simpleDoc));
-            //result.add(find(simpleDoc));
-        }
-        long end = System.nanoTime();
-        double delta = (end - start) / 1000d / 1000d / 1000d;
-        System.out.println(delta);
-    }
-
-    private Object find(Document doc)
-    {
-        NodeList list = doc.getChildNodes();
-        for (int i = 0; i < list.getLength(); i++)
-        {
-            Node node = list.item(i);
-            if (node.getNodeType() != 1)
-            {
-                continue;
-            }
-            if (node.getNodeName().equals("myevent"))
-            {
-                //System.out.println(node.getNodeName() + " " + node.getNodeType());
-
-                NodeList list2 = node.getChildNodes();
-                for (int j = 0; j < list2.getLength(); j++)
-                {
-                    Node node2 = list2.item(j);
-                    if (node2.getNodeType() != 1)
-                    {
-                        continue;
-                    }
-                    if (node2.getNodeName().equals("element2"))
-                    {
-                        //System.out.println(node2.getNodeName() + " " + node2.getNodeType());
-
-                        NodeList list3 = node2.getChildNodes();
-                        for (int k = 0; k < list3.getLength(); k++)
-                        {
-                            Node node3 = list3.item(k);
-                            if (node3.getNodeType() != 1)
-                            {
-                                continue;
-                            }
-                            if (node3.getNodeName().equals("element21"))
-                            {
-                                //System.out.println(node3.getNodeName() + " " + node3.getNodeType());
-                                return node3.getTextContent();
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        return null;
-    }
-
     public void testSimpleXML() throws Exception
     {
         Configuration configuration = SupportConfigFactory.getConfiguration();
+
         ConfigurationEventTypeXMLDOM xmlDOMEventTypeDesc = new ConfigurationEventTypeXMLDOM();
         xmlDOMEventTypeDesc.setRootElementName("myevent");
         xmlDOMEventTypeDesc.addXPathProperty("xpathElement1", "/myevent/element1", XPathConstants.STRING);

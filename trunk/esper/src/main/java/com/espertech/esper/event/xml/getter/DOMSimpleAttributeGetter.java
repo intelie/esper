@@ -15,6 +15,16 @@ public class DOMSimpleAttributeGetter implements EventPropertyGetter, DOMPropert
         this.propertyName = propertyName;
     }
 
+    public Object getValueAsFragment(Node node)
+    {
+        return null;
+    }
+
+    public Node[] getValueAsNodeArray(Node node)
+    {
+        return null;
+    }
+
     public Node getValueAsNode(Node node)
     {
         NamedNodeMap namedNodeMap = node.getAttributes();
@@ -49,6 +59,6 @@ public class DOMSimpleAttributeGetter implements EventPropertyGetter, DOMPropert
 
     public Object getFragment(EventBean eventBean) throws PropertyAccessException
     {
-        return null;  // TODO
+        return null;  // Never a fragment
     }
 }

@@ -260,6 +260,15 @@ public class ConfigurationEventTypeXMLDOM implements MetaDefItem, Serializable
     }
 
     /**
+     * Add prefixes and namespace names for use in XPath expressions refering to that prefix.
+     * @param prefixNamespaceMap map of prefixes and namespaces
+     */
+    public void addNamespacePrefixes(Map<String, String> prefixNamespaceMap)
+    {
+        namespacePrefixes.putAll(prefixNamespaceMap);
+    }
+
+    /**
      * Indicates whether properties are compiled into absolute or deep XPath expressions (see setter method for more detail).
      * @return true for absolute properties, false for deep properties
      */

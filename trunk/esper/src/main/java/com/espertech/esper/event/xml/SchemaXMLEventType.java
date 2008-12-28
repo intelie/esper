@@ -14,14 +14,15 @@ import com.espertech.esper.event.EventTypeMetadata;
 import com.espertech.esper.event.ExplicitPropertyDescriptor;
 import com.espertech.esper.event.property.Property;
 import com.espertech.esper.event.property.PropertyParser;
+import com.espertech.esper.event.xml.getter.DOMConvertingArrayGetter;
 import com.espertech.esper.event.xml.getter.DOMConvertingGetter;
 import com.espertech.esper.event.xml.getter.DOMPropertyGetter;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
-import javax.xml.xpath.XPathExpressionException;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -89,11 +90,11 @@ public class SchemaXMLEventType extends BaseXMLEventType
             }
             if (complex.isArray())
             {
-                returnType = NodeList.class;
+                returnType = Node[].class;      // We use Node[] for arrays and NodeList for XPath-Expressions returning Nodeset
             }
 
             boolean isFragment = false;
-            if (this.getConfigurationEventTypeXMLDOM().isAutoFragment())
+            if (this.getConfigurationEventTypeXMLDOM().isAutoFragment() && (!this.getConfigurationEventTypeXMLDOM().isPropertyExprXPath()))
             {
                 isFragment = canFragment(complex);
             }
@@ -109,6 +110,10 @@ public class SchemaXMLEventType extends BaseXMLEventType
         {
             String propertyName = simple.getName();
             Class returnType = SchemaUtil.toReturnType(simple.getType());
+            if (simple.isArray())
+            {
+                returnType = Array.newInstance(returnType, 0).getClass();
+            }
             EventPropertyGetter getter = doResolvePropertyGetter(propertyName);
             EventPropertyDescriptor desc = new EventPropertyDescriptor(propertyName, returnType, false, false, simple.isArray(), false, false);
             ExplicitPropertyDescriptor explicit = new ExplicitPropertyDescriptor(desc, getter, false, null);
@@ -132,7 +137,7 @@ public class SchemaXMLEventType extends BaseXMLEventType
 
     protected FragmentEventType doResolveFragmentType(String property)
     {
-        if (!this.getConfigurationEventTypeXMLDOM().isAutoFragment())
+        if ((!this.getConfigurationEventTypeXMLDOM().isAutoFragment()) || (this.getConfigurationEventTypeXMLDOM().isPropertyExprXPath()))
         {
             return null;
         }
@@ -174,13 +179,19 @@ public class SchemaXMLEventType extends BaseXMLEventType
         xmlDom.setRootElementName("//" + complex.getName());    // such the reload of the type can resolve it
         xmlDom.setRootElementNamespace(complex.getNamespace());
         xmlDom.setAutoFragment(this.getConfigurationEventTypeXMLDOM().isAutoFragment());
-        xmlDom.setDefaultNamespace(this.getConfigurationEventTypeXMLDOM().getDefaultNamespace());
         xmlDom.setEventSenderValidatesRoot(this.getConfigurationEventTypeXMLDOM().isEventSenderValidatesRoot());
         xmlDom.setPropertyExprXPath(this.getConfigurationEventTypeXMLDOM().isPropertyExprXPath());
         xmlDom.setResolvePropertiesAbsolute(this.getConfigurationEventTypeXMLDOM().isResolvePropertiesAbsolute());
         xmlDom.setSchemaResource(this.getConfigurationEventTypeXMLDOM().getSchemaResource());
         xmlDom.setXPathFunctionResolver(this.getConfigurationEventTypeXMLDOM().getXPathFunctionResolver());
         xmlDom.setXPathVariableResolver(this.getConfigurationEventTypeXMLDOM().getXPathVariableResolver());
+        xmlDom.setDefaultNamespace(this.getConfigurationEventTypeXMLDOM().getDefaultNamespace());
+        xmlDom.addNamespacePrefixes(this.getConfigurationEventTypeXMLDOM().getNamespacePrefixes());
+        // TODO
+        if (!this.getConfigurationEventTypeXMLDOM().isPropertyExprXPath())
+        {
+            // Not forwarding namespace and prefixes if using XPah resultion
+        }
 
         EventType newType;
         try
@@ -220,15 +231,22 @@ public class SchemaXMLEventType extends BaseXMLEventType
             SchemaItem item = prop.getPropertyTypeSchema(schemaModelRoot, this.getEventAdapterService());
             if (item == null)
             {
-                throw new PropertyAccessException("Failed to locate property '" + property + "' in schema");
+                return null;
             }
 
-            getter = prop.getGetterDOM(schemaModelRoot, this.getEventAdapterService(), this);
+            getter = prop.getGetterDOM(schemaModelRoot, this.getEventAdapterService(), this, property);
 
             Class returnType = SchemaUtil.toReturnType(item);
-            if (returnType != Node.class)
+            if ((returnType != Node.class) && (returnType != NodeList.class))
             {
-                getter = new DOMConvertingGetter((DOMPropertyGetter) getter, returnType);
+                if (!returnType.isArray())
+                {
+                    getter = new DOMConvertingGetter((DOMPropertyGetter) getter, returnType);
+                }
+                else
+                {
+                    getter = new DOMConvertingArrayGetter((DOMPropertyGetter) getter, returnType.getComponentType());
+                }
             }
             propertyGetterCache.put(property, getter);
             
@@ -236,20 +254,10 @@ public class SchemaXMLEventType extends BaseXMLEventType
         }
         else
         {
-            return resolvePropertyXPath(property);
-        }
-    }
-
-    private EventPropertyGetter resolvePropertyXPath(String property)
-    {
-        try
-        {
-            EventPropertyGetter resolved = SchemaXMLPropertyParser.getXPathResolution(property,getXPathFactory(),getRootElementName(),rootElementNamespace, schemaModel, this.getEventAdapterService());
+            boolean allowFragments = !this.getConfigurationEventTypeXMLDOM().isPropertyExprXPath();
+            EventPropertyGetter resolved = SchemaXMLPropertyParser.getXPathResolution(property,getXPathFactory(),getRootElementName(),rootElementNamespace, schemaModel, this.getEventAdapterService(), this, allowFragments);
             propertyGetterCache.put(property, resolved);
             return resolved;
-        }
-        catch (XPathExpressionException e) {
-            throw new EPException("Error constructing XPath expression from property name '" + property + '\'', e);
         }
     }
 

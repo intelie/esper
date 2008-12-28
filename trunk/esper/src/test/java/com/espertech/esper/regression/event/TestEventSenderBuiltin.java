@@ -213,6 +213,6 @@ public class TestEventSenderBuiltin extends TestCase
         InputSource source = new InputSource(reader);
         DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
         builderFactory.setNamespaceAware(true);
-        return builderFactory.newDocumentBuilder().parse(source);    }
-
+        return builderFactory.newDocumentBuilder().parse(source);
+    }
 }

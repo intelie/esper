@@ -89,9 +89,10 @@ public class SimpleXMLEventType extends BaseXMLEventType {
         }
 
         XPathExpression xPathExpression = null;
+        String xPathExpr;
         try
         {
-            String xPathExpr = SimpleXMLPropertyParser.parse(property,getRootElementName(), defaultNamespacePrefix, isResolvePropertiesAbsolute);
+            xPathExpr = SimpleXMLPropertyParser.parse(property,getRootElementName(), defaultNamespacePrefix, isResolvePropertiesAbsolute);
             XPath xpath = getXPathFactory().newXPath();
             xpath.setNamespaceContext(namespaceContext);
             xPathExpression = xpath.compile(xPathExpr);
@@ -102,7 +103,7 @@ public class SimpleXMLEventType extends BaseXMLEventType {
         }
 
         // TODO - fragment factory
-        getter = new XPathPropertyGetter(property, xPathExpression, XPathConstants.STRING, null, null);
+        getter = new XPathPropertyGetter(property, xPathExpr, xPathExpression, XPathConstants.STRING, null, null);
         propertyGetterCache.put(property, getter);
         return getter;
     }

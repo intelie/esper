@@ -110,7 +110,7 @@ public class MappedProperty extends PropertyBase
         writer.append("')");
     }
 
-    public EventPropertyGetter getGetterDOM(SchemaElementComplex complexProperty, EventAdapterService eventAdapterService, BaseXMLEventType eventType)
+    public EventPropertyGetter getGetterDOM(SchemaElementComplex complexProperty, EventAdapterService eventAdapterService, BaseXMLEventType eventType, String propertyExpression)
     {
         for (SchemaElementComplex complex : complexProperty.getChildren())
         {
@@ -126,7 +126,7 @@ public class MappedProperty extends PropertyBase
                 }
             }
 
-            return new DOMMapGetter(propertyNameAtomic, key);
+            return new DOMMapGetter(propertyNameAtomic, key, null);
         }
 
         return null;

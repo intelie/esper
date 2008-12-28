@@ -12,6 +12,12 @@ public interface SchemaElement extends SchemaItem
     public String getNamespace();
 
     /**
+     * Returns the name.
+     * @return name
+     */
+    public String getName();
+
+    /**
      * Returns true for unbounded or max>1
      * @return array indicator
      */

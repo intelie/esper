@@ -348,7 +348,7 @@ public class NestedProperty implements Property
         return propertyNames.toArray(new String[propertyNames.size()]);
     }
 
-    public EventPropertyGetter getGetterDOM(SchemaElementComplex parentComplexProperty, EventAdapterService eventAdapterService, BaseXMLEventType eventType)
+    public EventPropertyGetter getGetterDOM(SchemaElementComplex parentComplexProperty, EventAdapterService eventAdapterService, BaseXMLEventType eventType, String propertyExpression)
     {
         List<EventPropertyGetter> getters = new LinkedList<EventPropertyGetter>();
 
@@ -357,7 +357,7 @@ public class NestedProperty implements Property
         for (Iterator<Property> it = properties.iterator(); it.hasNext();)
         {
             Property property = it.next();
-            EventPropertyGetter getter = property.getGetterDOM(complexElement, eventAdapterService, eventType);
+            EventPropertyGetter getter = property.getGetterDOM(complexElement, eventAdapterService, eventType, propertyExpression);
             if (getter == null)
             {
                 return null;
@@ -383,7 +383,7 @@ public class NestedProperty implements Property
             getters.add(getter);
         }
 
-        return new DOMNestedPropertyGetter(getters);
+        return new DOMNestedPropertyGetter(getters, new FragmentFactoryDOMGetter(eventAdapterService, eventType, propertyExpression));
     }
 
     public SchemaItem getPropertyTypeSchema(SchemaElementComplex parentComplexProperty, EventAdapterService eventAdapterService)

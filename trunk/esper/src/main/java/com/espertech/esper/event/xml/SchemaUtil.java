@@ -15,8 +15,12 @@ import com.sun.org.apache.xerces.internal.impl.dv.XSSimpleType;
 import javax.xml.namespace.QName;
 import javax.xml.xpath.XPathConstants;
 
-import org.w3c.dom.NodeList;
-import org.w3c.dom.Node;
+import org.w3c.dom.*;
+
+import java.lang.reflect.Array;
+import java.io.StringWriter;
+import java.io.IOException;
+import java.io.Writer;
 
 /**
  * Utility class for querying schema information via Xerces implementation classes.
@@ -32,7 +36,13 @@ public class SchemaUtil {
         }
         else if (item instanceof SchemaElementSimple)
         {
-            return SchemaUtil.toReturnType(((SchemaElementSimple)item).getType());
+            SchemaElementSimple simple = (SchemaElementSimple) item;
+            Class returnType = SchemaUtil.toReturnType(simple.getType());
+            if (simple.isArray())
+            {
+                returnType = Array.newInstance(returnType, 0).getClass();
+            }
+            return returnType;
         }
         else if (item instanceof SchemaElementComplex)
         {
@@ -248,6 +258,155 @@ public class SchemaUtil {
 
         //property not found in schema
         return null;
+    }
+
+    public static String serialize(Node doc)
+    {
+        StringWriter writer = new StringWriter();
+        try
+        {
+            serializeNode(doc, "", writer);
+        }
+        catch (IOException e)
+        {
+            throw new RuntimeException(e);
+        }
+        writer.flush();
+        return writer.toString();
+    }
+
+    private static void serializeNode(Node node, String
+                    indentLevel, StringWriter writer) throws IOException
+    {
+        switch (node.getNodeType())
+        {
+            case Node.DOCUMENT_NODE:
+                Document doc = (Document) node;
+                writer.write("<?xml version=\"");
+                writer.write(doc.getXmlVersion());
+                writer.write("\" encoding=\"UTF-8\" standalone=\"");
+                if (doc.getXmlStandalone())
+                {
+                    writer.write("yes");
+                }
+                else
+                {
+                    writer.write("no");
+                }
+                writer.write("\"?>\n");
+
+                NodeList nodes = node.getChildNodes();
+                if (nodes != null)
+                {
+                    for (int i = 0; i < nodes.getLength(); i++)
+                    {
+                        serializeNode(nodes.item(i), "", writer);
+                    }
+                }
+                break;
+            case Node.ELEMENT_NODE:
+                String name = node.getNodeName();
+                writer.write(indentLevel + "<" + name);
+                NamedNodeMap attributes = node.getAttributes();
+                for (int i = 0; i < attributes.getLength(); i++)
+                {
+                    Node current = attributes.item(i);
+                    writer.write(" " + current.getNodeName() + "=\"");
+                    print(current.getNodeValue(), writer);
+                    writer.write("\"");
+                }
+                writer.write(">");
+
+                NodeList children = node.getChildNodes();
+                if (children != null)
+                {
+                    if ((children.item(0) != null) && (children.item(0).getNodeType() == Node.ELEMENT_NODE))
+                    {
+                        writer.write("\n");
+                    }
+
+                    for (int i = 0; i < children.getLength(); i++)
+                    {
+                        serializeNode(children.item(i), indentLevel, writer);
+                    }
+
+                    if ((children.item(0) != null)
+                            && (children.item(children.getLength() - 1).getNodeType() == Node.ELEMENT_NODE))
+                    {
+                        writer.write(indentLevel);
+                    }
+                }
+
+                writer.write("</" + name + ">\n");
+                break;
+            case Node.TEXT_NODE:
+                print(node.getNodeValue(), writer);
+                break;
+            case Node.CDATA_SECTION_NODE:
+                writer.write("CDATA");
+                print(node.getNodeValue(), writer);
+                writer.write("");
+                break;
+            case Node.COMMENT_NODE:
+                writer.write(indentLevel + "<!-- " + node.getNodeValue() + " -->\n");
+                break;
+            case Node.PROCESSING_INSTRUCTION_NODE:
+                writer.write("<?" + node.getNodeName() + " " + node.getNodeValue() + "?>\n");
+                break;
+            case Node.ENTITY_REFERENCE_NODE:
+                writer.write("&" + node.getNodeName() + ";");
+                break;
+            case Node.DOCUMENT_TYPE_NODE:
+                DocumentType docType = (DocumentType) node;
+                String publicId = docType.getPublicId();
+                String systemId = docType.getSystemId();
+                String internalSubset = docType.getInternalSubset();
+                writer.write("<!DOCTYPE " + docType.getName());
+                if (publicId != null)
+                {
+                    writer.write(" PUBLIC \"" + publicId + "\" ");
+                }
+                else
+                {
+                    writer.write(" SYSTEM ");
+                }
+                writer.write("\"" + systemId + "\"");
+                if (internalSubset != null)
+                {
+                    writer.write(" [" + internalSubset + "]");
+                }
+                writer.write(">\n");
+                break;
+        }
+    }
+
+    private static void print(String s, Writer writer) throws IOException
+    {
+        if (s == null)
+        {
+            return;
+        }
+        for (int i = 0, len = s.length(); i < len; i++)
+        {
+            char c = s.charAt(i);
+            switch (c)
+            {
+                case'<':
+                    writer.write("&lt;");
+                    break;
+                case'>':
+                    writer.write("&gt;");
+                    break;
+                case'&':
+                    writer.write("&amp;");
+                    break;
+                case'\r':
+                    writer.write("&#xD;");
+                    break;
+                default:
+                    writer.write(c);
+            }
+        }
     }
 
 }

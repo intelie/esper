@@ -277,6 +277,10 @@ public class EventTypeAssertionUtil
                 {
                     Assert.assertEquals(failedMessage, ((NodeList)resultGet).getLength(), ((NodeList)resultGetter).getLength());
                 }
+                else if (resultGet.getClass().isArray())
+                {
+                    Assert.assertEquals(failedMessage, Array.getLength(resultGet), Array.getLength(resultGetter));
+                }
                 else
                 {
                     Assert.assertEquals(failedMessage, resultGet, resultGetter);

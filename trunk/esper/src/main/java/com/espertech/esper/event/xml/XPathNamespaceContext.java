@@ -98,4 +98,20 @@ public class XPathNamespaceContext implements NamespaceContext {
 		namespaces.put(prefix,uri);
 		this.prefix.put(uri,prefix);
 	}
+
+    public String toString()
+    {
+        StringBuilder builder = new StringBuilder("XPathNamespaceContext default namespace '" + defaultNamespace + "' maps {");
+        String delimiter = "";
+        for (Map.Entry<String, String> entry : prefix.entrySet())
+        {
+            builder.append(delimiter);
+            builder.append(entry.getKey());
+            builder.append("=");
+            builder.append(entry.getValue());
+            delimiter = ",";
+        }
+        builder.append("}");
+        return builder.toString();
+    }
 }

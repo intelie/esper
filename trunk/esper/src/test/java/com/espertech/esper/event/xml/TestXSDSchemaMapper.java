@@ -39,16 +39,12 @@ public class TestXSDSchemaMapper extends TestCase
      * ==> add XPath built-in function
      * ==> Fix index issue [0] -> xpath[1]
      * ==> Esper-314 add documentation, fix empty property name
-     * ==> Allow NODESET (NodeList) and NODE type XPath properties
-     * ==> replace property access logic with non-xpath based (but not namespace-aware?)
-     * ==> Allow transposing properties (XPath property builder or DOM-access property builder both)
      * ==> Look at QName result translation, type from allTypes.xsd to Java translation
-     * ==> Make sure schema XML event exposes all properties of top-level schema elements
-     * ==> Test simple elements that have attributes
      * ==> Allow no-schema event type to use DOM accessors
-     * ==> Refactor bean-related and map-related into their own packages 
+     * ==> Test compatilibility of different XML-backed events (XMLEventType.equals)
+     * ==> Write JSON and XML event representers
      */
-    public void testIt() throws Exception
+    public void testMap() throws Exception
     {
         URL url = ResourceLoader.resolveClassPathOrURLResource("schema", "regression/simpleSchema.xsd");
         String schemaUri = url.toURI().toString();

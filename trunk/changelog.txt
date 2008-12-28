@@ -24,6 +24,9 @@ With Esper 3 integer division returns Double values, and Integer division can be
 - Removed "emit" and "EmittedListener"
 - Optimization for group-by now using wrapped event
 - Bug fix for ESPER-251 Named window with underlying event as a property and insert-into from pattern requires self-property in select clause
+- Reworked XML DOM events to support
+  - Transposing XPath expression results; including arrays 
+  - Transposing property expression values and arrays 
 
 Changes in version 2.3
 ------------------------

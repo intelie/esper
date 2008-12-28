@@ -10,12 +10,15 @@ package com.espertech.esper.event.map;
 
 import com.espertech.esper.client.*;
 import com.espertech.esper.epl.parse.ASTFilterSpecHelper;
-import com.espertech.esper.event.property.*;
-import com.espertech.esper.event.bean.BeanEventType;
-import com.espertech.esper.event.EventTypeSPI;
-import com.espertech.esper.event.EventTypeMetadata;
 import com.espertech.esper.event.EventAdapterService;
 import com.espertech.esper.event.EventBeanUtility;
+import com.espertech.esper.event.EventTypeMetadata;
+import com.espertech.esper.event.EventTypeSPI;
+import com.espertech.esper.event.bean.BeanEventType;
+import com.espertech.esper.event.property.DynamicProperty;
+import com.espertech.esper.event.property.IndexedProperty;
+import com.espertech.esper.event.property.Property;
+import com.espertech.esper.event.property.PropertyParser;
 import com.espertech.esper.util.GraphUtil;
 import com.espertech.esper.util.JavaClassHelper;
 

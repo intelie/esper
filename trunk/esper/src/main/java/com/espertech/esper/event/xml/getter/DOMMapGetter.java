@@ -11,6 +11,7 @@ package com.espertech.esper.event.xml.getter;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventPropertyGetter;
 import com.espertech.esper.client.PropertyAccessException;
+import com.espertech.esper.event.xml.FragmentFactory;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -18,11 +19,33 @@ public class DOMMapGetter implements EventPropertyGetter, DOMPropertyGetter
 {
     private final String propertyMap;
     private final String mapKey;
+    private final FragmentFactory fragmentFactory;
 
-    public DOMMapGetter(String propertyMap, String mapKey)
+    public DOMMapGetter(String propertyMap, String mapKey, FragmentFactory fragmentFactory)
     {
         this.propertyMap = propertyMap;
         this.mapKey = mapKey;
+        this.fragmentFactory = fragmentFactory;
+    }
+
+    public Node[] getValueAsNodeArray(Node node)
+    {
+        return null;
+    }
+
+    public Object getValueAsFragment(Node node)
+    {
+        if (fragmentFactory == null)
+        {
+            return null;
+        }
+        
+        Node result = getValueAsNode(node);
+        if (result == null)
+        {
+            return null;
+        }
+        return fragmentFactory.getEvent(result);
     }
 
     public Node getValueAsNode(Node node)

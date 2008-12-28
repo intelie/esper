@@ -8,16 +8,17 @@
  **************************************************************************************/
 package com.espertech.esper.event.xml;
 
-import com.espertech.esper.client.PropertyAccessException;
+import com.espertech.esper.client.EPException;
 import com.espertech.esper.client.EventPropertyGetter;
+import com.espertech.esper.client.PropertyAccessException;
 import com.espertech.esper.collection.Pair;
 import com.espertech.esper.epl.generated.EsperEPL2GrammarParser;
+import com.espertech.esper.event.EventAdapterService;
+import com.espertech.esper.event.property.Property;
+import com.espertech.esper.event.property.PropertyParser;
 import com.espertech.esper.type.IntValue;
 import com.espertech.esper.type.StringValue;
 import com.espertech.esper.util.ExecutionPathDebugLog;
-import com.espertech.esper.event.EventAdapterService;
-import com.espertech.esper.event.property.PropertyParser;
-import com.espertech.esper.event.property.Property;
 import org.antlr.runtime.tree.Tree;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -44,8 +45,13 @@ public class SchemaXMLPropertyParser
      * @return xpath expression
      * @throws XPathExpressionException when the XPath expression is invalid
      */
-    public static EventPropertyGetter getXPathResolution(String propertyName, XPathFactory xPathFactory, String rootElementName, String namespace, SchemaModel schemaModel, EventAdapterService eventAdapterService) throws XPathExpressionException
+    public static EventPropertyGetter getXPathResolution(String propertyName, XPathFactory xPathFactory, String rootElementName, String namespace, SchemaModel schemaModel, EventAdapterService eventAdapterService, BaseXMLEventType xmlEventType, boolean isAllowFragment) throws EPException
     {
+        if (log.isDebugEnabled())
+        {
+            log.debug("Determining XPath expression for property '" + propertyName + "'");
+        }
+
         XPathNamespaceContext ctx = new XPathNamespaceContext();
         List<String> namespaces = schemaModel.getNamespaces();
 
@@ -69,7 +75,14 @@ public class SchemaXMLPropertyParser
         StringBuilder xPathBuf = new StringBuilder();
         xPathBuf.append('/');
         xPathBuf.append(prefix);
-        xPathBuf.append(rootElementName);
+        if (rootElementName.startsWith("//"))
+        {
+            xPathBuf.append(rootElementName.substring(2));    
+        }
+        else
+        {
+            xPathBuf.append(rootElementName);
+        }
 
         SchemaElementComplex parentComplexElement = rootComplexElement;
         Pair<String, QName> pair = null;
@@ -87,8 +100,9 @@ public class SchemaXMLPropertyParser
         {
             for (int i = 0; i < ast.getChildCount(); i++)
             {
+                boolean isLast = (i == ast.getChildCount() - 1);
                 Tree child = ast.getChild(i);
-                pair = makeProperty(parentComplexElement, child, ctx, false);
+                pair = makeProperty(parentComplexElement, child, ctx, isLast);
                 if (pair == null)
                 {
                     throw new PropertyAccessException("Failed to locate property '" + propertyName + "' nested property part '" + child.toString() + "' in schema");
@@ -116,9 +130,17 @@ public class SchemaXMLPropertyParser
 
         if (log.isDebugEnabled())
         {
-            log.debug("Compiling XPath " + xPath);
+            log.debug("Compiling XPath expression '" + xPath + "' for property '" + propertyName + "' using namespace context :" + ctx);
         }
-        XPathExpression expr = path.compile(xPath);
+
+        XPathExpression expr;
+        try
+        {
+            expr = path.compile(xPath);
+        }
+        catch (XPathExpressionException e) {
+            throw new EPException("Error constructing XPath expression from property expression '" + propertyName + "' expression '" + xPath + "':" + e.getMessage(), e);
+        }
 
         // get type
         SchemaItem item = property.getPropertyTypeSchema(rootComplexElement, eventAdapterService);
@@ -128,16 +150,20 @@ public class SchemaXMLPropertyParser
         }
         Class resultType = SchemaUtil.toReturnType(item);
 
-        // TODO fragment factory
-        return new XPathPropertyGetter(propertyName, expr, pair.getSecond(), resultType, null);
+        FragmentFactory fragmentFactory = null;
+        if (isAllowFragment)
+        {
+            fragmentFactory = new FragmentFactoryDOMGetter(eventAdapterService, xmlEventType, propertyName);
+        }
+        return new XPathPropertyGetter(propertyName, xPath, expr, pair.getSecond(), resultType, fragmentFactory);
     }
 
-    private static Pair<String, QName> makeProperty(SchemaElementComplex parent, Tree child, XPathNamespaceContext ctx, boolean isAlone)
+    private static Pair<String, QName> makeProperty(SchemaElementComplex parent, Tree child, XPathNamespaceContext ctx, boolean isLast)
     {
         String text = child.getChild(0).getText();
         SchemaItem obj = SchemaUtil.findPropertyMapping(parent, text);
         if ((obj instanceof SchemaElementSimple) || (obj instanceof SchemaElementComplex)){
-            return makeElementProperty((SchemaElement) obj, child, ctx, isAlone);
+            return makeElementProperty((SchemaElement) obj, child, ctx, isLast);
         }
         else if (obj != null) {
             return makeAttributeProperty((SchemaItemAttribute) obj, child, ctx);
@@ -205,7 +231,7 @@ public class SchemaXMLPropertyParser
         {
             case EsperEPL2GrammarParser.EVENT_PROP_SIMPLE:
                 if (schemaElement.isArray() && !isAlone) {
-                    throw new PropertyAccessException("Simple property not allowed in repeating elements");
+                    throw new PropertyAccessException("Simple property not allowed in repeating elements at '" + schemaElement.getName() + "'");
                 }
                 return new Pair<String, QName>('/' + prefix + child.getChild(0).getText(), type);
 

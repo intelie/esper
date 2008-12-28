@@ -32,7 +32,8 @@ public class XPathPropertyGetter implements EventPropertyGetter
 {
     private static final Log log = LogFactory.getLog(XPathPropertyGetter.class);
 	private final XPathExpression expression;
-	private final String property;
+    private final String expressionText;
+    private final String property;
 	private final QName resultType;
     private final SimpleTypeParser simpleTypeParser;
     private final Class optionalCastToType;
@@ -45,11 +46,12 @@ public class XPathPropertyGetter implements EventPropertyGetter
      * @param resultType is the resulting type
      * @param optionalCastToType if non-null then the return value of the xpath expression is cast to this value
      */
-    public XPathPropertyGetter(String propertyName, XPathExpression xPathExpression, QName resultType, Class optionalCastToType, FragmentFactory fragmentTypeResolver) {
+    public XPathPropertyGetter(String propertyName, String expressionText, XPathExpression xPathExpression, QName resultType, Class optionalCastToType, FragmentFactory fragmentFactory) {
 		this.expression = xPathExpression;
-		this.property = propertyName;
+        this.expressionText = expressionText;
+        this.property = propertyName;
 		this.resultType = resultType;
-        this.fragmentFactory = fragmentTypeResolver;
+        this.fragmentFactory = fragmentFactory;
         if (optionalCastToType != null)
         {
             simpleTypeParser = SimpleTypeParserFactory.getParser(optionalCastToType);
@@ -79,6 +81,12 @@ public class XPathPropertyGetter implements EventPropertyGetter
             throw new PropertyAccessException("Unexpected underlying event of type '" + und.getClass() + "' encountered, expecting org.w3c.dom.Node as underlying");
         }
         try {
+
+            if (log.isDebugEnabled())
+            {
+                log.debug("Running XPath '" + expressionText + "' for property '" + property + "' against Node XML :" + SchemaUtil.serialize((Node) und));
+            }
+
             // if there is no parser, return xpath expression type
             if (optionalCastToType == null)
             {
@@ -162,6 +170,11 @@ public class XPathPropertyGetter implements EventPropertyGetter
         }
 
         try {
+            if (log.isDebugEnabled())
+            {
+                log.debug("Running XPath '" + expressionText + "' for property '" + property + "' against Node XML :" + SchemaUtil.serialize((Node) und));
+            }
+
             Object result = expression.evaluate(und,resultType);
 
             if (result instanceof Node)

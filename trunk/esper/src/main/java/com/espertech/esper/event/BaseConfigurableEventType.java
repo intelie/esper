@@ -142,7 +142,6 @@ public abstract class BaseConfigurableEventType implements EventTypeSPI {
         return doResolvePropertyType(propertyExpression);
 	}
 
-
 	public Class getUnderlyingType() {
 		return underlyngType;
 	}
@@ -154,45 +153,10 @@ public abstract class BaseConfigurableEventType implements EventTypeSPI {
 			return getter;
         }
 
-        // see if this is an indexed property
-        int index = ASTFilterSpecHelper.unescapedIndexOfDot(propertyExpression);
-        if (index == -1)
-        {
-            // parse, can be an indexed property
-            Property property = PropertyParser.parse(propertyExpression, eventAdapterService, false);
-            if (!(property instanceof IndexedProperty))
-            {
-                return null;
-            }
-            IndexedProperty indexedProp = (IndexedProperty) property;
-            getter = propertyGetters.get(indexedProp.getPropertyNameAtomic());
-            if (null == getter)
-            {
-                return null;
-            }
-            EventPropertyDescriptor descriptor = propertyDescriptorMap.get(indexedProp.getPropertyNameAtomic());
-            if (descriptor == null)
-            {
-                return null;
-            }
-            if (!descriptor.isIndexed())
-            {
-                return null;
-            }
-            if (descriptor.getPropertyType() == NodeList.class)
-            {
-                return new XPathPropertyArrayItemGetter(getter, indexedProp.getIndex());
-            }
-            else
-            {
-                return doResolvePropertyGetter(propertyExpression);
-            }
-        }
-
         return doResolvePropertyGetter(propertyExpression);
     }
 
-    public FragmentEventType getFragmentType(String property)
+    public synchronized FragmentEventType getFragmentType(String property)
     {
         Pair<ExplicitPropertyDescriptor, FragmentEventType> pair = propertyFragmentTypes.get(property);
         if (pair == null)
