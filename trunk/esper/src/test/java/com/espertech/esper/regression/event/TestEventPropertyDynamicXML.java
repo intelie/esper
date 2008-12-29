@@ -29,6 +29,7 @@ public class TestEventPropertyDynamicXML extends TestCase
         Configuration configuration = SupportConfigFactory.getConfiguration();
         ConfigurationEventTypeXMLDOM desc = new ConfigurationEventTypeXMLDOM();
         desc.setRootElementName("event");
+        desc.setPropertyExprXPath(true);
         configuration.addEventTypeAlias("MyEvent", desc);
 
         epService = EPServiceProviderManager.getDefaultProvider(configuration);

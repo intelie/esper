@@ -13,8 +13,9 @@ import com.espertech.esper.event.map.MapEventType;
 import com.espertech.esper.event.bean.BeanEventType;
 import com.espertech.esper.event.bean.InternalEventPropDescriptor;
 import com.espertech.esper.event.xml.*;
-import com.espertech.esper.event.xml.getter.DOMSimpleAttributeGetter;
-import com.espertech.esper.event.xml.getter.DOMComplexElementGetter;
+import com.espertech.esper.event.xml.DOMSimpleAttributeGetter;
+import com.espertech.esper.event.xml.DOMComplexElementGetter;
+import com.espertech.esper.event.xml.DOMAttributeAndElementGetter;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.client.EventPropertyGetter;
@@ -150,6 +151,11 @@ public class SimpleProperty extends PropertyBase
     public void toPropertyEPL(StringWriter writer)
     {
         writer.append(propertyNameAtomic);
+    }
+
+    public EventPropertyGetter getGetterDOM()
+    {
+        return new DOMAttributeAndElementGetter(propertyNameAtomic);
     }
 
     public EventPropertyGetter getGetterDOM(SchemaElementComplex complexProperty, EventAdapterService eventAdapterService, BaseXMLEventType xmlEventType, String propertyExpression)

@@ -82,5 +82,10 @@ public class DynamicIndexedProperty extends PropertyBase implements DynamicPrope
     public SchemaItem getPropertyTypeSchema(SchemaElementComplex complexProperty, EventAdapterService eventAdapterService)
     {
         return null;  // TODO
-    }    
+    }
+
+    public EventPropertyGetter getGetterDOM()
+    {
+        return null;  // TODO
+    }
 }

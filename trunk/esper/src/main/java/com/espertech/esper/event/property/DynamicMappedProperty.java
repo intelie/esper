@@ -82,5 +82,10 @@ public class DynamicMappedProperty extends PropertyBase implements DynamicProper
     public SchemaItem getPropertyTypeSchema(SchemaElementComplex complexProperty, EventAdapterService eventAdapterService)
     {
         return null;  // TODO
-    }    
+    }
+
+    public EventPropertyGetter getGetterDOM()
+    {
+        return null;  // TODO
+    }
 }

@@ -4,6 +4,7 @@ import com.espertech.esper.client.*;
 import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.support.util.ArrayAssertionUtil;
 import com.espertech.esper.support.util.SupportUpdateListener;
+import com.espertech.esper.support.event.EventTypeAssertionUtil;
 import junit.framework.TestCase;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -25,23 +26,81 @@ public class TestSchemaXMLEvent extends TestCase
         epService.initialize();
         updateListener = new SupportUpdateListener();
 
-        runAssertionQuery();
+        String stmtSelectWild = "select * from TestXMLSchemaType";
+        EPStatement wildStmt = epService.getEPAdministrator().createEPL(stmtSelectWild);
+        EventType type = wildStmt.getEventType();
+        EventTypeAssertionUtil.assertConsistency(type);
+
+        ArrayAssertionUtil.assertEqualsAnyOrder(new Object[] {
+            new EventPropertyDescriptor("nested1", Node.class, false, false, false, false, false),
+            new EventPropertyDescriptor("prop4", String.class, false, false, false, false, false),
+            new EventPropertyDescriptor("nested3", Node.class, false, false, false, false, false),
+            new EventPropertyDescriptor("customProp", Double.class, false, false, false, false, false),
+           }, type.getPropertyDescriptors());
+
+        String stmt =
+                "select nested1 as nodeProp," +
+                        "prop4 as nested1Prop," +
+                        "nested1.prop2 as nested2Prop," +
+                        "nested3.nested4('a').prop5[1] as complexProp," +
+                        "nested1.nested2.prop3[2] as indexedProp," +
+                        "customProp," +
+                        "prop4.attr2 as attrOneProp," +
+                        "nested3.nested4[2].id as attrTwoProp" +
+                " from TestXMLSchemaType.win:length(100)";
+
+        EPStatement selectStmt = epService.getEPAdministrator().createEPL(stmt);
+        selectStmt.addListener(updateListener);
+        type = selectStmt.getEventType();
+        EventTypeAssertionUtil.assertConsistency(type);
+        ArrayAssertionUtil.assertEqualsAnyOrder(new Object[] {
+            new EventPropertyDescriptor("nodeProp", Node.class, false, false, false, false, false),
+            new EventPropertyDescriptor("nested1Prop", String.class, false, false, false, false, false),
+            new EventPropertyDescriptor("nested2Prop", Boolean.class, false, false, false, false, false),
+            new EventPropertyDescriptor("complexProp", String.class, false, false, false, false, false),
+            new EventPropertyDescriptor("indexedProp", Integer.class, false, false, false, false, false),
+            new EventPropertyDescriptor("customProp", Double.class, false, false, false, false, false),
+            new EventPropertyDescriptor("attrOneProp", Boolean.class, false, false, false, false, false),
+            new EventPropertyDescriptor("attrTwoProp", String.class, false, false, false, false, false),
+           }, type.getPropertyDescriptors());
+
+        Document eventDoc = SupportXML.sendEvent(epService.getEPRuntime(), "test");
+
+        assertNotNull(updateListener.getLastNewData());
+        EventBean event = updateListener.getLastNewData()[0];
+
+        assertSame(eventDoc.getDocumentElement().getChildNodes().item(1), event.get("nodeProp"));
+        assertEquals("SAMPLE_V6", event.get("nested1Prop"));
+        assertEquals(true, event.get("nested2Prop"));
+        assertEquals("SAMPLE_V8", event.get("complexProp"));
+        assertEquals(5, event.get("indexedProp"));
+        assertEquals(3.0, event.get("customProp"));
+        assertEquals(true, event.get("attrOneProp"));
+        assertEquals("c", event.get("attrTwoProp"));
+
+        /**
+         * Comment-in for performance testing
+        long start = System.nanoTime();
+        for (int i = 0; i < 1000; i++)
+        {
+            sendEvent("test");
+        }
+        long end = System.nanoTime();
+        double delta = (end - start) / 1000d / 1000d / 1000d;
+        System.out.println(delta);
+         */
     }
 
     public void testSchemaXMLQuery_DOMGetterBacked() throws Exception
     {
-        epService = EPServiceProviderManager.getProvider("TestSchemaXML", getConfig(true));
+        epService = EPServiceProviderManager.getProvider("TestSchemaXML", getConfig(false));
         epService.initialize();
         updateListener = new SupportUpdateListener();
 
-        runAssertionQuery();
-    }
-
-    private void runAssertionQuery() throws Exception
-    {
         String stmtSelectWild = "select * from TestXMLSchemaType";
         EPStatement wildStmt = epService.getEPAdministrator().createEPL(stmtSelectWild);
         EventType type = wildStmt.getEventType();
+        EventTypeAssertionUtil.assertConsistency(type);
 
         ArrayAssertionUtil.assertEqualsAnyOrder(new Object[] {
             new EventPropertyDescriptor("nested1", Node.class, false, false, false, false, true),
@@ -64,6 +123,7 @@ public class TestSchemaXMLEvent extends TestCase
         EPStatement selectStmt = epService.getEPAdministrator().createEPL(stmt);
         selectStmt.addListener(updateListener);
         type = selectStmt.getEventType();
+        EventTypeAssertionUtil.assertConsistency(type);
         ArrayAssertionUtil.assertEqualsAnyOrder(new Object[] {
             new EventPropertyDescriptor("nodeProp", Node.class, false, false, false, false, true),
             new EventPropertyDescriptor("nested1Prop", String.class, false, false, false, false, false),
@@ -190,7 +250,7 @@ public class TestSchemaXMLEvent extends TestCase
         }
         catch (EPStatementException ex)
         {
-            assertEquals("Error starting view: Failed to locate property 'element1' in schema [select element1 from TestXMLSchemaType.win:length(100)]", ex.getMessage());
+            assertEquals("Error starting view: Property named 'element1' is not valid in any stream [select element1 from TestXMLSchemaType.win:length(100)]", ex.getMessage());
         }
     }
 

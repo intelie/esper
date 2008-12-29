@@ -91,6 +91,11 @@ public class DynamicSimpleProperty extends PropertyBase implements DynamicProper
         return null;  // TODO
     }
 
+    public EventPropertyGetter getGetterDOM()
+    {
+        return null;  // TODO
+    }
+
     public SchemaItem getPropertyTypeSchema(SchemaElementComplex complexProperty, EventAdapterService eventAdapterService)
     {
         return null;  // TODO

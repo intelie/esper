@@ -12,6 +12,10 @@ package com.espertech.esper.event.xml;
 import com.espertech.esper.client.*;
 import com.espertech.esper.event.EventTypeMetadata;
 import com.espertech.esper.event.EventAdapterService;
+import com.espertech.esper.event.xml.DOMConvertingGetter;
+import com.espertech.esper.event.xml.DOMPropertyGetter;
+import com.espertech.esper.event.property.Property;
+import com.espertech.esper.event.property.PropertyParser;
 
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
@@ -82,34 +86,44 @@ public class SimpleXMLEventType extends BaseXMLEventType {
         return String.class;
     }
 
-    protected EventPropertyGetter doResolvePropertyGetter(String property) {
-        EventPropertyGetter getter = propertyGetterCache.get(property);
+    protected EventPropertyGetter doResolvePropertyGetter(String propertyExpression) {
+        EventPropertyGetter getter = propertyGetterCache.get(propertyExpression);
         if (getter != null) {
             return getter;
         }
 
-        XPathExpression xPathExpression = null;
-        String xPathExpr;
-        try
+        if (!this.getConfigurationEventTypeXMLDOM().isPropertyExprXPath())
         {
-            xPathExpr = SimpleXMLPropertyParser.parse(property,getRootElementName(), defaultNamespacePrefix, isResolvePropertiesAbsolute);
-            XPath xpath = getXPathFactory().newXPath();
-            xpath.setNamespaceContext(namespaceContext);
-            xPathExpression = xpath.compile(xPathExpr);
+            Property prop = PropertyParser.parse(propertyExpression, this.getEventAdapterService(), false);
+            getter = prop.getGetterDOM();
+            getter = new DOMConvertingGetter((DOMPropertyGetter) getter, String.class);
         }
-        catch (XPathExpressionException e)
+        else
         {
-            throw new EPException("Error constructing XPath expression from property name '" + property + '\'', e);
+            XPathExpression xPathExpression;
+            String xPathExpr;
+            try
+            {
+                xPathExpr = SimpleXMLPropertyParser.parse(propertyExpression,getRootElementName(), defaultNamespacePrefix, isResolvePropertiesAbsolute);
+                XPath xpath = getXPathFactory().newXPath();
+                xpath.setNamespaceContext(namespaceContext);
+                xPathExpression = xpath.compile(xPathExpr);
+            }
+            catch (XPathExpressionException e)
+            {
+                throw new EPException("Error constructing XPath expression from property name '" + propertyExpression + '\'', e);
+            }
+
+            getter = new XPathPropertyGetter(propertyExpression, xPathExpr, xPathExpression, XPathConstants.STRING, null, null);
         }
 
-        // TODO - fragment factory
-        getter = new XPathPropertyGetter(property, xPathExpr, xPathExpression, XPathConstants.STRING, null, null);
-        propertyGetterCache.put(property, getter);
+        // no fragment factory, fragments not allowed
+        propertyGetterCache.put(propertyExpression, getter);
         return getter;
     }
 
     protected FragmentEventType doResolveFragmentType(String property)
     {
-        return null;  // TODO
+        return null;  // Since we have no type information, the fragments are not allowed unless explicitly configured via XPath getter
     }
 }

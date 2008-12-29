@@ -1,4 +1,4 @@
-package com.espertech.esper.event.xml.getter;
+package com.espertech.esper.event.xml;
 
 import org.w3c.dom.Node;
 import com.espertech.esper.client.EventPropertyGetter;

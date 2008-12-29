@@ -1,4 +1,4 @@
-package com.espertech.esper.event.xml.getter;
+package com.espertech.esper.event.xml;
 
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventPropertyGetter;

@@ -17,10 +17,8 @@ import com.espertech.esper.epl.parse.ASTFilterSpecHelper;
 import com.espertech.esper.event.property.IndexedProperty;
 import com.espertech.esper.event.property.Property;
 import com.espertech.esper.event.property.PropertyParser;
-import com.espertech.esper.event.xml.XPathPropertyArrayItemGetter;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.w3c.dom.NodeList;
 
 import java.util.HashMap;
 import java.util.List;
@@ -37,9 +35,9 @@ public abstract class BaseConfigurableEventType implements EventTypeSPI {
     private EventAdapterService eventAdapterService;
     private final EventTypeMetadata metadata;
     private Class underlyngType;
-	private Map<String,EventPropertyGetter> propertyGetters;
+	protected Map<String,EventPropertyGetter> propertyGetters;
     private EventPropertyDescriptor[] propertyDescriptors;
-    private Map<String, EventPropertyDescriptor> propertyDescriptorMap;
+    protected Map<String, EventPropertyDescriptor> propertyDescriptorMap;
     private String[] propertyNames;
     private Map<String, Pair<ExplicitPropertyDescriptor, FragmentEventType>> propertyFragmentTypes;
 
@@ -120,25 +118,6 @@ public abstract class BaseConfigurableEventType implements EventTypeSPI {
 			return desc.getPropertyType();
         }
 
-        // see if this is an indexed property
-        int index = ASTFilterSpecHelper.unescapedIndexOfDot(propertyExpression);
-        if (index == -1)
-        {
-            // parse, can be an indexed property
-            Property property = PropertyParser.parse(propertyExpression, eventAdapterService, false);
-            if (!(property instanceof IndexedProperty))
-            {
-                return null;
-            }
-            IndexedProperty indexedProp = (IndexedProperty) property;
-            EventPropertyDescriptor descriptor = propertyDescriptorMap.get(indexedProp.getPropertyNameAtomic());
-            if (descriptor == null)
-            {
-                return null;
-            }
-            return descriptor.getPropertyType();
-        }
-
         return doResolvePropertyType(propertyExpression);
 	}
 
@@ -151,41 +130,6 @@ public abstract class BaseConfigurableEventType implements EventTypeSPI {
 		if (getter != null)
         {
 			return getter;
-        }
-
-        // see if this is an indexed property
-        int index = ASTFilterSpecHelper.unescapedIndexOfDot(propertyExpression);
-        if (index == -1)
-        {
-            // parse, can be an indexed property
-            Property property = PropertyParser.parse(propertyExpression, eventAdapterService, false);
-            if (!(property instanceof IndexedProperty))
-            {
-                return null;
-            }
-            IndexedProperty indexedProp = (IndexedProperty) property;
-            getter = propertyGetters.get(indexedProp.getPropertyNameAtomic());
-            if (null == getter)
-            {
-                return null;
-            }
-            EventPropertyDescriptor descriptor = propertyDescriptorMap.get(indexedProp.getPropertyNameAtomic());
-            if (descriptor == null)
-            {
-                return null;
-            }
-            if (!descriptor.isIndexed())
-            {
-                return null;
-            }
-            if (descriptor.getPropertyType() == NodeList.class)
-            {
-                return new XPathPropertyArrayItemGetter(getter, indexedProp.getIndex());
-            }
-            else
-            {
-                return doResolvePropertyGetter(propertyExpression);
-            }
         }
 
         return doResolvePropertyGetter(propertyExpression);

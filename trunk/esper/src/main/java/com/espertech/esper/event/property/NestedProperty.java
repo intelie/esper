@@ -17,7 +17,7 @@ import com.espertech.esper.event.bean.NestedPropertyGetter;
 import com.espertech.esper.event.map.MapEventType;
 import com.espertech.esper.event.map.MapNestedPropertyGetter;
 import com.espertech.esper.event.xml.*;
-import com.espertech.esper.event.xml.getter.DOMNestedPropertyGetter;
+import com.espertech.esper.event.xml.DOMNestedPropertyGetter;
 
 import java.io.StringWriter;
 import java.util.*;
@@ -346,6 +346,25 @@ public class NestedProperty implements Property
             }
         }
         return propertyNames.toArray(new String[propertyNames.size()]);
+    }
+
+    public EventPropertyGetter getGetterDOM()
+    {
+        List<EventPropertyGetter> getters = new LinkedList<EventPropertyGetter>();
+
+        for (Iterator<Property> it = properties.iterator(); it.hasNext();)
+        {
+            Property property = it.next();
+            EventPropertyGetter getter = property.getGetterDOM();
+            if (getter == null)
+            {
+                return null;
+            }
+
+            getters.add(getter);
+        }
+
+        return new DOMNestedPropertyGetter(getters, null);
     }
 
     public EventPropertyGetter getGetterDOM(SchemaElementComplex parentComplexProperty, EventAdapterService eventAdapterService, BaseXMLEventType eventType, String propertyExpression)

@@ -73,6 +73,12 @@ public interface Property
     public EventPropertyGetter getGetterDOM(SchemaElementComplex complexProperty, EventAdapterService eventAdapterService, BaseXMLEventType xmlEventType, String propertyExpression);
 
     /**
+     * Returns the getter-method for use with XML DOM event representations.
+     * @return getter
+     */
+    public EventPropertyGetter getGetterDOM();
+
+    /**
      * Write the EPL-representation of the property.
      * @param writer to write to
      */

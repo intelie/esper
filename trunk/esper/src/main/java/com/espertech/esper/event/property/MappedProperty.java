@@ -14,11 +14,8 @@ import com.espertech.esper.event.EventAdapterService;
 import com.espertech.esper.event.bean.InternalEventPropDescriptor;
 import com.espertech.esper.event.bean.KeyedMethodPropertyGetter;
 import com.espertech.esper.event.bean.KeyedFastPropertyGetter;
-import com.espertech.esper.event.xml.SchemaElementComplex;
-import com.espertech.esper.event.xml.SchemaItem;
-import com.espertech.esper.event.xml.SchemaItemAttribute;
-import com.espertech.esper.event.xml.BaseXMLEventType;
-import com.espertech.esper.event.xml.getter.DOMMapGetter;
+import com.espertech.esper.event.xml.*;
+import com.espertech.esper.event.xml.DOMMapGetter;
 import net.sf.cglib.reflect.FastClass;
 import net.sf.cglib.reflect.FastMethod;
 
@@ -130,6 +127,11 @@ public class MappedProperty extends PropertyBase
         }
 
         return null;
+    }
+
+    public EventPropertyGetter getGetterDOM()
+    {
+        return new DOMMapGetter(propertyNameAtomic, key, null);
     }
 
     public SchemaItem getPropertyTypeSchema(SchemaElementComplex complexProperty, EventAdapterService eventAdapterService)

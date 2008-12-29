@@ -1,24 +1,20 @@
-package com.espertech.esper.event.xml.getter;
+package com.espertech.esper.event.xml;
 
 import com.espertech.esper.client.EventPropertyGetter;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.PropertyAccessException;
-import com.espertech.esper.util.SimpleTypeParser;
 import com.espertech.esper.util.SimpleTypeParserFactory;
+import com.espertech.esper.util.SimpleTypeParser;
 import org.w3c.dom.Node;
 
-import java.lang.reflect.Array;
-
-public class DOMConvertingArrayGetter implements EventPropertyGetter
+public class DOMConvertingGetter implements EventPropertyGetter
 {
     private final DOMPropertyGetter getter;
-    private final Class componentType;
     private final SimpleTypeParser parser;
 
-    public DOMConvertingArrayGetter(DOMPropertyGetter domPropertyGetter, Class returnType)
+    public DOMConvertingGetter(DOMPropertyGetter domPropertyGetter, Class returnType)
     {
         this.getter = domPropertyGetter;
-        this.componentType = returnType;
         this.parser = SimpleTypeParserFactory.getParser(returnType);
     }
 
@@ -33,26 +29,19 @@ public class DOMConvertingArrayGetter implements EventPropertyGetter
 
         Node node = (Node) obj.getUnderlying();
 
-        Node[] result = getter.getValueAsNodeArray(node);
+        Node result = getter.getValueAsNode(node);
         if (result == null)
         {
             return null;
         }
 
-        Object array = Array.newInstance(componentType, result.length);
-        for (int i = 0; i < result.length; i++)
+        String text = result.getTextContent();
+        if (text == null)
         {
-            String text = result[i].getTextContent();
-            if ((text == null) || (text.length() == 0))
-            {
-                continue;
-            }
-
-            Object parseResult = parser.parse(text);
-            Array.set(array, i, parseResult);
+            return null;
         }
-
-        return array;
+        
+        return parser.parse(text);
     }
 
     public boolean isExistsProperty(EventBean eventBean)

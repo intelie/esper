@@ -16,7 +16,7 @@ import com.espertech.esper.event.map.MapEventType;
 import com.espertech.esper.event.map.MapArrayPOJOEntryIndexedPropertyGetter;
 import com.espertech.esper.event.bean.*;
 import com.espertech.esper.event.xml.*;
-import com.espertech.esper.event.xml.getter.DOMIndexedGetter;
+import com.espertech.esper.event.xml.DOMIndexedGetter;
 import net.sf.cglib.reflect.FastClass;
 import net.sf.cglib.reflect.FastMethod;
 
@@ -223,6 +223,11 @@ public class IndexedProperty extends PropertyBase
         writer.append("[");
         writer.append(Integer.toString(index));
         writer.append("]");
+    }
+
+    public EventPropertyGetter getGetterDOM()
+    {
+        return new DOMIndexedGetter(propertyNameAtomic, index, null);
     }
 
     public EventPropertyGetter getGetterDOM(SchemaElementComplex complexProperty, EventAdapterService eventAdapterService, BaseXMLEventType eventType, String propertyExpression)

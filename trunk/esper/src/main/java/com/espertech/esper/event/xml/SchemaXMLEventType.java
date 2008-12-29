@@ -9,14 +9,13 @@
 package com.espertech.esper.event.xml;
 
 import com.espertech.esper.client.*;
+import com.espertech.esper.epl.parse.ASTFilterSpecHelper;
 import com.espertech.esper.event.EventAdapterService;
 import com.espertech.esper.event.EventTypeMetadata;
 import com.espertech.esper.event.ExplicitPropertyDescriptor;
+import com.espertech.esper.event.property.IndexedProperty;
 import com.espertech.esper.event.property.Property;
 import com.espertech.esper.event.property.PropertyParser;
-import com.espertech.esper.event.xml.getter.DOMConvertingArrayGetter;
-import com.espertech.esper.event.xml.getter.DOMConvertingGetter;
-import com.espertech.esper.event.xml.getter.DOMPropertyGetter;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.w3c.dom.Node;
@@ -99,7 +98,7 @@ public class SchemaXMLEventType extends BaseXMLEventType
                 isFragment = canFragment(complex);
             }
 
-            EventPropertyGetter getter = doResolvePropertyGetter(propertyName);
+            EventPropertyGetter getter = doResolvePropertyGetter(propertyName, true);
             EventPropertyDescriptor desc = new EventPropertyDescriptor(propertyName, returnType, false, false, complex.isArray(), false, isFragment);
             ExplicitPropertyDescriptor explicit = new ExplicitPropertyDescriptor(desc, getter, false, null);
             additionalSchemaProps.add(explicit);
@@ -114,7 +113,7 @@ public class SchemaXMLEventType extends BaseXMLEventType
             {
                 returnType = Array.newInstance(returnType, 0).getClass();
             }
-            EventPropertyGetter getter = doResolvePropertyGetter(propertyName);
+            EventPropertyGetter getter = doResolvePropertyGetter(propertyName, true);
             EventPropertyDescriptor desc = new EventPropertyDescriptor(propertyName, returnType, false, false, simple.isArray(), false, false);
             ExplicitPropertyDescriptor explicit = new ExplicitPropertyDescriptor(desc, getter, false, null);
             additionalSchemaProps.add(explicit);
@@ -125,7 +124,7 @@ public class SchemaXMLEventType extends BaseXMLEventType
         {
             String propertyName = attribute.getName();
             Class returnType = SchemaUtil.toReturnType(attribute.getType());
-            EventPropertyGetter getter = doResolvePropertyGetter(propertyName);
+            EventPropertyGetter getter = doResolvePropertyGetter(propertyName, true);
             EventPropertyDescriptor desc = new EventPropertyDescriptor(propertyName, returnType, false, false, false, false, false);
             ExplicitPropertyDescriptor explicit = new ExplicitPropertyDescriptor(desc, getter, false, null);
             additionalSchemaProps.add(explicit);
@@ -187,11 +186,6 @@ public class SchemaXMLEventType extends BaseXMLEventType
         xmlDom.setXPathVariableResolver(this.getConfigurationEventTypeXMLDOM().getXPathVariableResolver());
         xmlDom.setDefaultNamespace(this.getConfigurationEventTypeXMLDOM().getDefaultNamespace());
         xmlDom.addNamespacePrefixes(this.getConfigurationEventTypeXMLDOM().getNamespacePrefixes());
-        // TODO
-        if (!this.getConfigurationEventTypeXMLDOM().isPropertyExprXPath())
-        {
-            // Not forwarding namespace and prefixes if using XPah resultion
-        }
 
         EventType newType;
         try
@@ -206,27 +200,93 @@ public class SchemaXMLEventType extends BaseXMLEventType
         return new FragmentEventType(newType, complex.isArray(), false);
     }
 
-    protected Class doResolvePropertyType(String property) {
-        Property prop = PropertyParser.parse(property, this.getEventAdapterService(), false);
+    protected Class doResolvePropertyType(String propertyExpression) {
+        return doResolvePropertyType(propertyExpression, false);
+    }
+
+    protected Class doResolvePropertyType(String propertyExpression, boolean allowSimpleProperties) {
+
+        // see if this is an indexed property
+        int index = ASTFilterSpecHelper.unescapedIndexOfDot(propertyExpression);
+        if ((!allowSimpleProperties) && (index == -1))
+        {
+            // parse, can be an indexed property
+            Property property = PropertyParser.parse(propertyExpression, this.getEventAdapterService(), false);
+            if (!(property instanceof IndexedProperty))
+            {
+                return null;
+            }
+            IndexedProperty indexedProp = (IndexedProperty) property;
+            EventPropertyDescriptor descriptor = propertyDescriptorMap.get(indexedProp.getPropertyNameAtomic());
+            if (descriptor == null)
+            {
+                return null;
+            }
+            return descriptor.getPropertyType();
+        }
+
+        Property prop = PropertyParser.parse(propertyExpression, this.getEventAdapterService(), false);
         SchemaItem item = prop.getPropertyTypeSchema(schemaModelRoot, this.getEventAdapterService());
         if (item == null)
         {
-            throw new PropertyAccessException("Failed to locate property '" + property + "' in schema");
+            throw new PropertyAccessException("Failed to locate property '" + propertyExpression + "' in schema");
         }
 
         return SchemaUtil.toReturnType(item);
     }
 
     protected EventPropertyGetter doResolvePropertyGetter(String property) {
-        EventPropertyGetter getter = propertyGetterCache.get(property);
+        return doResolvePropertyGetter(property, false);
+    }
+
+    private EventPropertyGetter doResolvePropertyGetter(String propertyExpression, boolean allowSimpleProperties) {
+        EventPropertyGetter getter = propertyGetterCache.get(propertyExpression);
         if (getter != null)
         {
             return getter;
         }
-        
+
+        if (!allowSimpleProperties)
+        {
+            // see if this is an indexed property
+            int index = ASTFilterSpecHelper.unescapedIndexOfDot(propertyExpression);
+            if (index == -1)
+            {
+                // parse, can be an indexed property
+                Property property = PropertyParser.parse(propertyExpression, this.getEventAdapterService(), false);
+                if (!(property instanceof IndexedProperty))
+                {
+                    return null;
+                }
+                IndexedProperty indexedProp = (IndexedProperty) property;
+                getter = this.propertyGetters.get(indexedProp.getPropertyNameAtomic());
+                if (null == getter)
+                {
+                    return null;
+                }
+                EventPropertyDescriptor descriptor = this.propertyDescriptorMap.get(indexedProp.getPropertyNameAtomic());
+                if (descriptor == null)
+                {
+                    return null;
+                }
+                if (!descriptor.isIndexed())
+                {
+                    return null;
+                }
+                if (descriptor.getPropertyType() == NodeList.class)
+                {
+                    return new XPathPropertyArrayItemGetter(getter, indexedProp.getIndex());
+                }
+                else
+                {
+                    return doResolvePropertyGetter(propertyExpression, true);
+                }
+            }
+        }
+
         if (!isPropertyExpressionXPath)
         {
-            Property prop = PropertyParser.parse(property, this.getEventAdapterService(), false);
+            Property prop = PropertyParser.parse(propertyExpression, this.getEventAdapterService(), false);
 
             SchemaItem item = prop.getPropertyTypeSchema(schemaModelRoot, this.getEventAdapterService());
             if (item == null)
@@ -234,7 +294,7 @@ public class SchemaXMLEventType extends BaseXMLEventType
                 return null;
             }
 
-            getter = prop.getGetterDOM(schemaModelRoot, this.getEventAdapterService(), this, property);
+            getter = prop.getGetterDOM(schemaModelRoot, this.getEventAdapterService(), this, propertyExpression);
 
             Class returnType = SchemaUtil.toReturnType(item);
             if ((returnType != Node.class) && (returnType != NodeList.class))
@@ -248,17 +308,15 @@ public class SchemaXMLEventType extends BaseXMLEventType
                     getter = new DOMConvertingArrayGetter((DOMPropertyGetter) getter, returnType.getComponentType());
                 }
             }
-            propertyGetterCache.put(property, getter);
-            
-            return getter;
         }
         else
         {
             boolean allowFragments = !this.getConfigurationEventTypeXMLDOM().isPropertyExprXPath();
-            EventPropertyGetter resolved = SchemaXMLPropertyParser.getXPathResolution(property,getXPathFactory(),getRootElementName(),rootElementNamespace, schemaModel, this.getEventAdapterService(), this, allowFragments);
-            propertyGetterCache.put(property, resolved);
-            return resolved;
+            getter = SchemaXMLPropertyParser.getXPathResolution(propertyExpression,getXPathFactory(),getRootElementName(),rootElementNamespace, schemaModel, this.getEventAdapterService(), this, allowFragments);
         }
+
+        propertyGetterCache.put(propertyExpression, getter);
+        return getter;
     }
 
     private boolean canFragment(SchemaItem item)
