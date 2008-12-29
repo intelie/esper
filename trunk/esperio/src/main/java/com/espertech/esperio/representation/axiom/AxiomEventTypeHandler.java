@@ -9,8 +9,8 @@
 package com.espertech.esperio.representation.axiom;
 
 import com.espertech.esper.client.EventSender;
-import com.espertech.esper.core.EPRuntimeEventSender;
 import com.espertech.esper.client.EventType;
+import com.espertech.esper.core.EPRuntimeEventSender;
 import com.espertech.esper.plugin.PlugInEventTypeHandler;
 
 /**

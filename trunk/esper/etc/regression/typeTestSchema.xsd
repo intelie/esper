@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- edited with XMLSpy v2005 rel. 3 U (http://www.altova.com) by Pablo Polvorin (ACHA) -->
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:ss="samples:schemas:simpleSchema" targetNamespace="samples:schemas:simpleSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
-	<xs:element name="simpleEvent">
+	<xs:element name="typesEvent">
 		<xs:complexType>
 			<xs:attribute name="attrNonPositiveInteger" type="xs:nonPositiveInteger" use="required"/>
 			<xs:attribute name="attrNonNegativeInteger" type="xs:nonNegativeInteger" use="required"/>

@@ -54,7 +54,7 @@ public class TestSimpleXMLEventType extends TestCase {
         config.addXPathProperty("customProp", "count(/simpleEvent/nested3/nested4)", XPathConstants.NUMBER);
 
         SimpleXMLEventType eventType = new SimpleXMLEventType(null, config, SupportEventAdapterService.getService());
-		event = new XMLEventBean(simpleDoc, eventType);
+		event = new XMLEventBean(simpleDoc.getDocumentElement(), eventType);
 	}
 
 	public void testSimpleProperies() {
@@ -66,12 +66,12 @@ public class TestSimpleXMLEventType extends TestCase {
 	}
 	
 	public void testMappedProperties() {
-		assertEquals("SAMPLE_V7",event.get("nested3.nested4('a').prop5[1]")); 
-		assertEquals("SAMPLE_V11",event.get("nested3.nested4('c').prop5[2]"));
+		assertEquals("SAMPLE_V8",event.get("nested3.nested4('a').prop5[1]"));
+		assertEquals("SAMPLE_V10",event.get("nested3.nested4('c').prop5[0]"));
 	}
 	
 	public void testIndexedProperties() {
-		assertEquals("4",event.get("nested1.nested2.prop3[2]"));
+		assertEquals("5",event.get("nested1.nested2.prop3[2]"));
 		assertEquals(String.class,event.getEventType().getPropertyType("nested1.nested2.prop3[2]"));
 	}
 	

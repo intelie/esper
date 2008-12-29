@@ -15,6 +15,7 @@ public class SchemaElementComplex implements SchemaElement
     private List<SchemaElementComplex> children;
     private boolean isArray;
     private Short optionalSimpleType;     // If not null then the complex element itself has a type defined for it.
+    private String optionalSimpleTypeName;     // If not null then the complex element itself has a type defined for it.
 
     /**
      * Ctor.
@@ -26,7 +27,7 @@ public class SchemaElementComplex implements SchemaElement
      * @param isArray if unbound or max>1
      * @param optionalSimpleType if the element does itself have a type
      */
-    public SchemaElementComplex(String name, String namespace, List<SchemaItemAttribute> attributes, List<SchemaElementComplex> children, List<SchemaElementSimple> simpleElements, boolean isArray, Short optionalSimpleType)
+    public SchemaElementComplex(String name, String namespace, List<SchemaItemAttribute> attributes, List<SchemaElementComplex> children, List<SchemaElementSimple> simpleElements, boolean isArray, Short optionalSimpleType, String optionalSimpleTypeName)
     {
         this.name = name;
         this.namespace = namespace;
@@ -35,6 +36,7 @@ public class SchemaElementComplex implements SchemaElement
         this.simpleElements = simpleElements;
         this.isArray = isArray;
         this.optionalSimpleType = optionalSimpleType;
+        this.optionalSimpleTypeName = optionalSimpleTypeName;
     }
 
     /**
@@ -94,6 +96,11 @@ public class SchemaElementComplex implements SchemaElement
     public Short getOptionalSimpleType()
     {
         return optionalSimpleType;
+    }
+
+    public String getOptionalSimpleTypeName()
+    {
+        return optionalSimpleTypeName;
     }
 
     public String toString()

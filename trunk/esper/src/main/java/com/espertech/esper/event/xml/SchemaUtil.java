@@ -21,6 +21,8 @@ import java.lang.reflect.Array;
 import java.io.StringWriter;
 import java.io.IOException;
 import java.io.Writer;
+import java.util.Map;
+import java.util.HashMap;
 
 /**
  * Utility class for querying schema information via Xerces implementation classes.
@@ -28,16 +30,50 @@ import java.io.Writer;
  */
 public class SchemaUtil {
 
+    private static Map<String, Class> typeMap;
+
+    static
+    {
+        typeMap = new HashMap<String, Class>();
+        Object[][] types = new Object[][] {
+                {"nonPositiveInteger", Integer.class},
+                {"nonNegativeInteger", Integer.class},
+                {"negativeInteger", Integer.class},
+                {"positiveInteger", Integer.class},
+                {"long", Long.class},
+                {"unsignedLong", Long.class},
+                {"int", Integer.class},
+                {"unsignedInt", Integer.class},
+                {"decimal", Double.class},
+                {"integer", Integer.class},
+                {"float", Float.class},
+                {"double", Double.class},
+                {"string", String.class},
+                {"short", Short.class},
+                {"unsignedShort", Short.class},
+                {"byte", Byte.class},
+                {"unsignedByte", Byte.class},
+                {"boolean", Boolean.class},
+                {"dateTime", String.class},
+                {"date", String.class},
+                {"time", String.class}};
+        for (int i = 0; i < types.length; i++)
+        {
+            typeMap.put(types[i][0].toString(), (Class) types[i][1]);
+        }        
+    }
+
     public static Class toReturnType(SchemaItem item)
     {
         if (item instanceof SchemaItemAttribute)
         {
-            return SchemaUtil.toReturnType(((SchemaItemAttribute)item).getType());
+            SchemaItemAttribute att = (SchemaItemAttribute) item;
+            return SchemaUtil.toReturnType(att.getXsSimpleType(), att.getTypeName());
         }
         else if (item instanceof SchemaElementSimple)
         {
             SchemaElementSimple simple = (SchemaElementSimple) item;
-            Class returnType = SchemaUtil.toReturnType(simple.getType());
+            Class returnType = SchemaUtil.toReturnType(simple.getXsSimpleType(), simple.getTypeName());
             if (simple.isArray())
             {
                 returnType = Array.newInstance(returnType, 0).getClass();
@@ -49,7 +85,7 @@ public class SchemaUtil {
             SchemaElementComplex complex = (SchemaElementComplex) item;
             if (complex.getOptionalSimpleType() != null)
             {
-                return SchemaUtil.toReturnType(complex.getOptionalSimpleType());
+                return SchemaUtil.toReturnType(complex.getOptionalSimpleType(), complex.getOptionalSimpleTypeName());
             }
             if (complex.isArray())
             {
@@ -63,8 +99,17 @@ public class SchemaUtil {
         }
     }
 
-    public static Class toReturnType(short xsType)
+    public static Class toReturnType(short xsType, String typeName)
     {
+        if (typeName != null)
+        {
+            Class result = typeMap.get(typeName);
+            if (result != null)
+            {
+                return result;
+            }
+        }
+
         switch(xsType)
         {
             case XSSimpleType.PRIMITIVE_BOOLEAN :

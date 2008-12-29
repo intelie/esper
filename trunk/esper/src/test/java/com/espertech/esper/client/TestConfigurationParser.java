@@ -60,8 +60,8 @@ public class TestConfigurationParser extends TestCase
         assertFalse(config.getEngineDefaults().getExpression().isDivisionByZeroReturnsNull());
         
         ConfigurationEventTypeXMLDOM domType = new ConfigurationEventTypeXMLDOM();
-        assertFalse(domType.isPropertyExprXPath());
-        assertTrue(domType.isResolvePropertiesAbsolute());
+        assertFalse(domType.isXPathPropertyExpr());
+        assertTrue(domType.isXPathResolvePropertiesAbsolute());
         assertTrue(domType.isEventSenderValidatesRoot());
         assertTrue(domType.isAutoFragment());
     }
@@ -93,7 +93,7 @@ public class TestConfigurationParser extends TestCase
         assertEquals(null, noSchemaDesc.getXPathProperties().get("element1").getOptionalCastToType());
         assertNull(noSchemaDesc.getXPathFunctionResolver());
         assertNull(noSchemaDesc.getXPathVariableResolver());
-        assertFalse(noSchemaDesc.isPropertyExprXPath());
+        assertFalse(noSchemaDesc.isXPathPropertyExpr());
 
         // assert XML DOM - with schema
         ConfigurationEventTypeXMLDOM schemaDesc = config.getEventTypesXMLDOM().get("MySchemaXMLEventAlias");
@@ -110,10 +110,10 @@ public class TestConfigurationParser extends TestCase
         assertEquals("MyOtherXMLNodeEvent", schemaDesc.getXPathProperties().get("element3").getOptionalEventTypeAlias());
         assertEquals(1, schemaDesc.getNamespacePrefixes().size());
         assertEquals("samples:schemas:simpleSchema", schemaDesc.getNamespacePrefixes().get("ss"));
-        assertFalse(schemaDesc.isResolvePropertiesAbsolute());
+        assertFalse(schemaDesc.isXPathResolvePropertiesAbsolute());
         assertEquals("com.mycompany.OptionalFunctionResolver", schemaDesc.getXPathFunctionResolver());
         assertEquals("com.mycompany.OptionalVariableResolver", schemaDesc.getXPathVariableResolver());
-        assertTrue(schemaDesc.isPropertyExprXPath());
+        assertTrue(schemaDesc.isXPathPropertyExpr());
         assertFalse(schemaDesc.isEventSenderValidatesRoot());
         assertFalse(schemaDesc.isAutoFragment());
 

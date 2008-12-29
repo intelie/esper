@@ -58,6 +58,18 @@ public class NestedProperty implements Property
         return properties;
     }
 
+    public boolean isDynamic()
+    {
+        for (Property property : properties)
+        {
+            if (property.isDynamic())
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public EventPropertyGetter getGetter(BeanEventType eventType, EventAdapterService eventAdapterService)
     {
         List<EventPropertyGetter> getters = new LinkedList<EventPropertyGetter>();

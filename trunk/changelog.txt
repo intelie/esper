@@ -27,7 +27,9 @@ With Esper 3 integer division returns Double values, and Integer division can be
 - Reworked XML DOM events to support
   - Transposing XPath expression results; including arrays 
   - Transposing property expression values and arrays 
-
+  - Correct problem in index[1] being index 0 array element
+  - dynamic properties return Node
+  
 Changes in version 2.3
 ------------------------
 

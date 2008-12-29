@@ -253,8 +253,8 @@ class ConfigurationParser {
         String rootElementNamespace = getOptionalAttribute(xmldomElement, "root-element-namespace");
         String schemaResource = getOptionalAttribute(xmldomElement, "schema-resource");
         String defaultNamespace = getOptionalAttribute(xmldomElement, "default-namespace");
-        String resolvePropertiesAbsoluteStr = getOptionalAttribute(xmldomElement, "resolve-properties-absolute");
-        String propertyExprXPathStr = getOptionalAttribute(xmldomElement, "property-expr-xpath");
+        String resolvePropertiesAbsoluteStr = getOptionalAttribute(xmldomElement, "xpath-resolve-properties-absolute");
+        String propertyExprXPathStr = getOptionalAttribute(xmldomElement, "xpath-property-expr");
         String eventSenderChecksRootStr = getOptionalAttribute(xmldomElement, "event-sender-validates-root");
         String xpathFunctionResolverClass = getOptionalAttribute(xmldomElement, "xpath-function-resolver");
         String xpathVariableResolverClass = getOptionalAttribute(xmldomElement, "xpath-variable-resolver");
@@ -269,11 +269,11 @@ class ConfigurationParser {
         xmlDOMEventTypeDesc.setXPathVariableResolver(xpathVariableResolverClass);
         if (resolvePropertiesAbsoluteStr != null)
         {
-            xmlDOMEventTypeDesc.setResolvePropertiesAbsolute(Boolean.parseBoolean(resolvePropertiesAbsoluteStr));
+            xmlDOMEventTypeDesc.setXPathResolvePropertiesAbsolute(Boolean.parseBoolean(resolvePropertiesAbsoluteStr));
         }
         if (propertyExprXPathStr != null)
         {
-            xmlDOMEventTypeDesc.setPropertyExprXPath(Boolean.parseBoolean(propertyExprXPathStr));
+            xmlDOMEventTypeDesc.setXPathPropertyExpr(Boolean.parseBoolean(propertyExprXPathStr));
         }
         if (eventSenderChecksRootStr != null)
         {

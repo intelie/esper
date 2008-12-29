@@ -192,4 +192,9 @@ public class SimpleProperty extends PropertyBase
     {
         return SchemaUtil.findPropertyMapping(complexProperty, propertyNameAtomic);
     }
+
+    public boolean isDynamic()
+    {
+        return false;
+    }
 }

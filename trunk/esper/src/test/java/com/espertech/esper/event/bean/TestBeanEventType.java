@@ -135,7 +135,7 @@ public class TestBeanEventType extends TestCase
         Class nestedTwo = SupportBeanCombinedProps.NestedLevTwo.class;
 
         // test nested/combined/indexed/mapped properties
-        // PropertyName                 isProperty              getType         hasGetter   getterValue
+        // PropertyName                 isProperty              getXsSimpleType         hasGetter   getterValue
         List<PropTestDesc> tests = new LinkedList<PropTestDesc>();
 
         tests = new LinkedList<PropTestDesc>();

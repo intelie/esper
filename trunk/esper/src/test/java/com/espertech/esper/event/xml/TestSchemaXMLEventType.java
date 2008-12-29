@@ -20,7 +20,7 @@ public class TestSchemaXMLEventType extends TestCase {
 
         URL schemaUrl = TestSchemaXMLEventType.class.getClassLoader().getResource("regression/simpleSchema.xsd");
         ConfigurationEventTypeXMLDOM configNoNS = new ConfigurationEventTypeXMLDOM();
-        configNoNS.setPropertyExprXPath(true);
+        configNoNS.setXPathPropertyExpr(true);
         configNoNS.setSchemaResource(schemaUrl.toString());
         configNoNS.setRootElementName("simpleEvent");
         configNoNS.addXPathProperty("customProp", "count(/ss:simpleEvent/ss:nested3/ss:nested4)", XPathConstants.NUMBER);

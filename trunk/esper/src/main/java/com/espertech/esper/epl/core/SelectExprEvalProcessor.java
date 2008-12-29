@@ -9,9 +9,9 @@
 package com.espertech.esper.epl.core;
 
 import com.espertech.esper.client.EventBean;
+import com.espertech.esper.client.EventPropertyGetter;
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.client.FragmentEventType;
-import com.espertech.esper.client.EventPropertyGetter;
 import com.espertech.esper.epl.expression.*;
 import com.espertech.esper.epl.spec.InsertIntoDesc;
 import com.espertech.esper.epl.spec.SelectClauseExprCompiledSpec;
@@ -208,8 +208,8 @@ public class SelectExprEvalProcessor implements SelectExprProcessor
             }
             else
             {
-                final String fragmentPropertyName = propertyName;
                 ExprEvaluator evaluatorFragment;
+                final EventPropertyGetter getter =  eventTypeStream.getGetter(propertyName);
 
                 // A match was found, we replace the expression
                 evaluatorFragment = new ExprEvaluator() {
@@ -221,8 +221,7 @@ public class SelectExprEvalProcessor implements SelectExprProcessor
                         {
                             return null;
                         }
-                        //TODO: use getter here
-                        return streamEvent.getFragment(fragmentPropertyName);
+                        return getter.getFragment(streamEvent);
                     }
                 };
 

@@ -110,6 +110,21 @@ public class PropertyParser
         return (Tree) r.getTree();
     }
 
+    public static boolean isPropertyDynamic(Tree ast)
+    {
+        for (int i = 0; i < ast.getChildCount(); i++)
+        {
+            int type = ast.getChild(i).getType();
+            if ((type == EsperEPL2GrammarParser.EVENT_PROP_DYNAMIC_SIMPLE) ||
+                (type == EsperEPL2GrammarParser.EVENT_PROP_DYNAMIC_INDEXED) ||
+                (type == EsperEPL2GrammarParser.EVENT_PROP_DYNAMIC_MAPPED))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private static Property makeProperty(Tree child, boolean isRootedInDynamic)
     {
         switch (child.getType()) {

@@ -8,14 +8,14 @@
  **************************************************************************************/
 package com.espertech.esperio.representation.axiom;
 
+import com.espertech.esper.plugin.PlugInEventBeanFactory;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventType;
-import com.espertech.esper.plugin.PlugInEventBeanFactory;
 import org.apache.axiom.om.OMDocument;
 import org.apache.axiom.om.OMElement;
 
-import java.util.Map;
 import java.net.URI;
+import java.util.Map;
 
 /**
  * A event bean factory implementation that understands Apache Axiom OMNode events

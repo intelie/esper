@@ -14,6 +14,7 @@ import com.espertech.esper.event.bean.BeanEventType;
 import com.espertech.esper.event.xml.SchemaElementComplex;
 import com.espertech.esper.event.xml.SchemaItem;
 import com.espertech.esper.event.xml.BaseXMLEventType;
+import com.espertech.esper.event.xml.DOMAttributeAndElementGetter;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventPropertyGetter;
 import com.espertech.esper.client.PropertyAccessException;
@@ -40,6 +41,11 @@ public class DynamicSimpleProperty extends PropertyBase implements DynamicProper
     public EventPropertyGetter getGetter(BeanEventType eventType, EventAdapterService eventAdapterService)
     {
         return new DynamicSimplePropertyGetter(propertyNameAtomic, eventAdapterService);
+    }
+
+    public boolean isDynamic()
+    {
+        return true;
     }
 
     public String[] toPropertyArray()
@@ -88,16 +94,16 @@ public class DynamicSimpleProperty extends PropertyBase implements DynamicProper
 
     public EventPropertyGetter getGetterDOM(SchemaElementComplex complexProperty, EventAdapterService eventAdapterService, BaseXMLEventType eventType, String propertyExpression)
     {
-        return null;  // TODO
+        return new DOMAttributeAndElementGetter(propertyNameAtomic);
     }
 
     public EventPropertyGetter getGetterDOM()
     {
-        return null;  // TODO
+        return new DOMAttributeAndElementGetter(propertyNameAtomic);
     }
 
     public SchemaItem getPropertyTypeSchema(SchemaElementComplex complexProperty, EventAdapterService eventAdapterService)
     {
-        return null;  // TODO
+        return null;    // always returns Node
     }    
 }

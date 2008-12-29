@@ -56,6 +56,11 @@ public class MappedProperty extends PropertyBase
         return new String[] {this.getPropertyNameAtomic()};
     }
 
+    public boolean isDynamic()
+    {
+        return false;
+    }
+
     public EventPropertyGetter getGetter(BeanEventType eventType, EventAdapterService eventAdapterService)
     {
         InternalEventPropDescriptor propertyDesc = eventType.getMappedProperty(propertyNameAtomic);

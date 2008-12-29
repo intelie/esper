@@ -13,9 +13,11 @@ import com.espertech.esper.client.time.TimerControlEvent;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.core.EPServiceProviderSPI;
 import com.espertech.esperio.support.util.SupportUpdateListener;
+import com.espertech.esperio.support.util.ArrayAssertionUtil;
 import junit.framework.TestCase;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.impl.builder.StAXOMBuilder;
+import org.w3c.dom.Node;
 
 import javax.xml.xpath.XPathConstants;
 import java.io.ByteArrayInputStream;
@@ -83,16 +85,18 @@ public class TestAxiom extends TestCase
         EventType eventType = ((EPServiceProviderSPI)epService).getEventAdapterService().getExistsTypeByAlias("TestXMLNoSchemaType");
         assertEquals(5, eventType.getPropertyDescriptors().length);
         assertEquals(5, eventType.getPropertyNames().length);
-        /*
+
         ArrayAssertionUtil.assertEqualsAnyOrder(new Object[] {
-            new EventPropertyDescriptor("string", String.class, false, false, false, false, false),
-            new EventPropertyDescriptor("boolBoxed", Boolean.class, false, false, false, false, false),
-            new EventPropertyDescriptor("intPrimitive", Integer.class, false, false, false, false, false),
-            new EventPropertyDescriptor("longPrimitive", Long.class, false, false, false, false, false),
-            new EventPropertyDescriptor("doublePrimitive", Double.class, false, false, false, false, false),
-            new EventPropertyDescriptor("enumValue", SupportEnum.class, false, false, false, false, true),
+            new EventPropertyDescriptor("element1", Node.class, false, false, false, false, false),
+            new EventPropertyDescriptor("nestedElement", Boolean.class, false, false, false, false, false),
+            new EventPropertyDescriptor("mappedElement", Integer.class, false, false, false, false, false),
+            new EventPropertyDescriptor("indexedElement", Long.class, false, false, false, false, false),
+            new EventPropertyDescriptor("xpathElement1", Double.class, false, false, false, false, false),
+            new EventPropertyDescriptor("xpathCountE21", Double.class, false, false, false, false, true),
+            new EventPropertyDescriptor("xpathAttrString", Double.class, false, false, false, false, true),
+            new EventPropertyDescriptor("xpathAttrNum", Double.class, false, false, false, false, true),
+            new EventPropertyDescriptor("xpathAttrBool", Double.class, false, false, false, false, true),
            }, eventType.getPropertyDescriptors());
-                   */
     }
 
     public void testConfigurationXML() throws Exception

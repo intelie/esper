@@ -131,12 +131,14 @@ public class XSDSchemaMapper
         List<SchemaElementComplex> complexElements = new ArrayList<SchemaElementComplex>();
 
         Short optionalSimplyType = null;
+        String optionalSimplyTypeName = null;
         if (complexActualElement.getSimpleType() != null) {
             XSSimpleTypeDecl simpleType = (XSSimpleTypeDecl) complexActualElement.getSimpleType();
             optionalSimplyType = simpleType.getPrimitiveKind();
+            optionalSimplyTypeName = simpleType.getName();
         }
 
-        SchemaElementComplex complexElement = new SchemaElementComplex(complexElementName, complexElementNamespace, attributes, complexElements, simpleElements, isArray, optionalSimplyType);
+        SchemaElementComplex complexElement = new SchemaElementComplex(complexElementName, complexElementNamespace, attributes, complexElements, simpleElements, isArray, optionalSimplyType, optionalSimplyTypeName);
 
         // add attributes
         XSObjectList attrs = complexActualElement.getAttributeUses();
@@ -146,7 +148,7 @@ public class XSDSchemaMapper
             String namespace = attr.getAttrDeclaration().getNamespace();
             String name = attr.getAttrDeclaration().getName();
             XSSimpleTypeDecl simpleType = (XSSimpleTypeDecl) attr.getAttrDeclaration().getTypeDefinition();
-            attributes.add(new SchemaItemAttribute(namespace, name, simpleType.getPrimitiveKind()));
+            attributes.add(new SchemaItemAttribute(namespace, name, simpleType.getPrimitiveKind(), simpleType.getName()));
         }
 
         if ((complexActualElement.getContentType() == XSComplexTypeDefinition.CONTENTTYPE_ELEMENT) ||
@@ -169,7 +171,7 @@ public class XSDSchemaMapper
 
                         if (decl.getTypeDefinition().getTypeCategory() == XSTypeDefinition.SIMPLE_TYPE) {
                             XSSimpleTypeDecl simpleType = (XSSimpleTypeDecl) decl.getTypeDefinition();
-                            simpleElements.add(new SchemaElementSimple(decl.getName(), decl.getNamespace(), simpleType.getPrimitiveKind(), isArrayFlag));
+                            simpleElements.add(new SchemaElementSimple(decl.getName(), decl.getNamespace(), simpleType.getPrimitiveKind(), simpleType.getName(), isArrayFlag));
                         }
 
                         if (decl.getTypeDefinition().getTypeCategory() == XSTypeDefinition.COMPLEX_TYPE)

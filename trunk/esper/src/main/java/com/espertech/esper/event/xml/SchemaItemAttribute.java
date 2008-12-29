@@ -4,7 +4,8 @@ public class SchemaItemAttribute implements SchemaItem
 {
     private final String namespace;
     private final String name;
-    private final short type;     // Types from XSSimpleType
+    private final short xsSimpleType;     // Types from XSSimpleType
+    private final String typeName;
 
     /**
      * Ctor.
@@ -12,11 +13,12 @@ public class SchemaItemAttribute implements SchemaItem
      * @param name name
      * @param type attribute type
      */
-    public SchemaItemAttribute(String namespace, String name, short type)
+    public SchemaItemAttribute(String namespace, String name, short type, String typeName)
     {
         this.name = name;
         this.namespace = namespace;
-        this.type = type;
+        this.xsSimpleType = type;
+        this.typeName = typeName;
     }
 
     /**
@@ -41,9 +43,14 @@ public class SchemaItemAttribute implements SchemaItem
      * Returns the type.
      * @return type
      */
-    public short getType()
+    public short getXsSimpleType()
     {
-        return type;
+        return xsSimpleType;
+    }
+
+    public String getTypeName()
+    {
+        return typeName;
     }
 
     public String toString()

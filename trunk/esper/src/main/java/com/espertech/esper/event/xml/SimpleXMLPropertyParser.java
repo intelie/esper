@@ -9,7 +9,6 @@
 package com.espertech.esper.event.xml;
 
 import com.espertech.esper.epl.generated.EsperEPL2GrammarParser;
-import com.espertech.esper.event.property.PropertyParser;
 import com.espertech.esper.type.IntValue;
 import com.espertech.esper.type.StringValue;
 import com.espertech.esper.util.ExecutionPathDebugLog;
@@ -34,10 +33,8 @@ public class SimpleXMLPropertyParser
      * or relative props
      * @return xpath expression
      */
-    public static String parse(String propertyName, String rootElementName, String defaultNamespacePrefix, boolean isResolvePropertiesAbsolute)
+    public static String parse(Tree ast, String propertyName, String rootElementName, String defaultNamespacePrefix, boolean isResolvePropertiesAbsolute)
     {
-        Tree ast = PropertyParser.parse(propertyName);
-
         StringBuilder xPathBuf = new StringBuilder();
         xPathBuf.append('/');
         if (isResolvePropertiesAbsolute)
@@ -91,7 +88,8 @@ public class SimpleXMLPropertyParser
             case EsperEPL2GrammarParser.EVENT_PROP_DYNAMIC_INDEXED:
             case EsperEPL2GrammarParser.EVENT_PROP_INDEXED:
                 int index = IntValue.parseString(child.getChild(1).getText());
-                return '/' + prefix + child.getChild(0).getText() + "[position() = " + index + ']';
+                int xPathPosition = index + 1;
+                return '/' + prefix + child.getChild(0).getText() + "[position() = " + xPathPosition + ']';
             default:
                 throw new IllegalStateException("Event property AST node not recognized, type=" + child.getType());
         }

@@ -36,7 +36,7 @@ public class TestNoSchemaXMLEvent extends TestCase
         "  <element4><element41>VAL4-1</element41></element4>\n" +
         "</myevent>";
 
-    public void testSimpleXML() throws Exception
+    public void testSimpleXMLXPathProperties() throws Exception
     {
         Configuration configuration = SupportConfigFactory.getConfiguration();
 
@@ -84,13 +84,7 @@ public class TestNoSchemaXMLEvent extends TestCase
            }, type.getPropertyDescriptors());
 
         String stmt =
-                "select element1," +
-                       "element4.element41 as nestedElement," +
-                       "element2.element21('e21_2') as mappedElement," +
-                       "element2.element21[2] as indexedElement," +
-                       "xpathElement1, xpathCountE21, xpathAttrString, xpathAttrNum, xpathAttrBool, " +
-                       "invalidelement," +
-                       "element3.myattribute as invalidattr, " +
+                "select xpathElement1, xpathCountE21, xpathAttrString, xpathAttrNum, xpathAttrBool," +
                        "stringCastLong," +
                        "stringCastDouble," +
                        "numCastInt " +
@@ -101,17 +95,114 @@ public class TestNoSchemaXMLEvent extends TestCase
 
         // Generate document with the specified in element1 to confirm we have independent events
         sendEvent("EventA");
-        assertData("EventA");
+        assertDataSimpleXPath("EventA");
 
         sendEvent("EventB");
-        assertData("EventB");
+        assertDataSimpleXPath("EventB");
     }
 
-    public void testNestedXML() throws Exception
+    public void testSimpleXMLDOMGetter() throws Exception
+    {
+        Configuration configuration = SupportConfigFactory.getConfiguration();
+
+        ConfigurationEventTypeXMLDOM xmlDOMEventTypeDesc = new ConfigurationEventTypeXMLDOM();
+        xmlDOMEventTypeDesc.setRootElementName("myevent");
+        xmlDOMEventTypeDesc.setXPathPropertyExpr(false);    // <== DOM getter
+        configuration.addEventTypeAlias("TestXMLNoSchemaType", xmlDOMEventTypeDesc);
+
+        epService = EPServiceProviderManager.getProvider("TestNoSchemaXML", configuration);
+        epService.initialize();
+        updateListener = new SupportUpdateListener();
+
+        String stmt =
+                "select element1, invalidelement, " +
+                       "element4.element41 as nestedElement," +
+                       "element2.element21('e21_2') as mappedElement," +
+                       "element2.element21[1] as indexedElement," +
+                       "element3.myattribute as invalidattribute " +
+                       "from TestXMLNoSchemaType.win:length(100)";
+
+        EPStatement joinView = epService.getEPAdministrator().createEPL(stmt);
+        joinView.addListener(updateListener);
+
+        // Generate document with the specified in element1 to confirm we have independent events
+        sendEvent("EventA");
+        assertDataGetter("EventA", false);
+
+        sendEvent("EventB");
+        assertDataGetter("EventB", false);
+    }
+
+    public void testSimpleXMLXPathGetter() throws Exception
+    {
+        Configuration configuration = SupportConfigFactory.getConfiguration();
+
+        ConfigurationEventTypeXMLDOM xmlDOMEventTypeDesc = new ConfigurationEventTypeXMLDOM();
+        xmlDOMEventTypeDesc.setRootElementName("myevent");
+        xmlDOMEventTypeDesc.setXPathPropertyExpr(true);    // <== XPath getter
+        configuration.addEventTypeAlias("TestXMLNoSchemaType", xmlDOMEventTypeDesc);
+
+        epService = EPServiceProviderManager.getProvider("TestNoSchemaXML", configuration);
+        epService.initialize();
+        updateListener = new SupportUpdateListener();
+
+        String stmt =
+                "select element1, invalidelement, " +
+                       "element4.element41 as nestedElement," +
+                       "element2.element21('e21_2') as mappedElement," +
+                       "element2.element21[1] as indexedElement," +
+                       "element3.myattribute as invalidattribute " +
+                       "from TestXMLNoSchemaType.win:length(100)";
+
+        EPStatement joinView = epService.getEPAdministrator().createEPL(stmt);
+        joinView.addListener(updateListener);
+
+        // Generate document with the specified in element1 to confirm we have independent events
+        sendEvent("EventA");
+        assertDataGetter("EventA", true);
+
+        sendEvent("EventB");
+        assertDataGetter("EventB", true);
+    }
+
+    public void testNestedXMLDOMGetter() throws Exception
     {
         Configuration configuration = SupportConfigFactory.getConfiguration();
         ConfigurationEventTypeXMLDOM xmlDOMEventTypeDesc = new ConfigurationEventTypeXMLDOM();
         xmlDOMEventTypeDesc.setRootElementName("a");
+        xmlDOMEventTypeDesc.addXPathProperty("element1", "/a/b/c", XPathConstants.STRING);
+        configuration.addEventTypeAlias("AEvent", xmlDOMEventTypeDesc);
+
+        epService = EPServiceProviderManager.getDefaultProvider(configuration);
+        epService.initialize();
+        updateListener = new SupportUpdateListener();
+
+        String stmt = "select b.c as type, element1, result1 from AEvent";
+        EPStatement joinView = epService.getEPAdministrator().createEPL(stmt);
+        joinView.addListener(updateListener);
+
+        sendXMLEvent("<a><b><c></c></b></a>");
+        EventBean event = updateListener.assertOneGetNewAndReset();
+        assertEquals("", event.get("type"));
+        assertEquals("", event.get("element1"));
+
+        sendXMLEvent("<a><b></b></a>");
+        event = updateListener.assertOneGetNewAndReset();
+        assertEquals(null, event.get("type"));
+        assertEquals("", event.get("element1"));
+
+        sendXMLEvent("<a><b><c>text</c></b></a>");
+        event = updateListener.assertOneGetNewAndReset();
+        assertEquals("text", event.get("type"));
+        assertEquals("text", event.get("element1"));
+    }
+
+    public void testNestedXMLXPathGetter() throws Exception
+    {
+        Configuration configuration = SupportConfigFactory.getConfiguration();
+        ConfigurationEventTypeXMLDOM xmlDOMEventTypeDesc = new ConfigurationEventTypeXMLDOM();
+        xmlDOMEventTypeDesc.setRootElementName("a");
+        xmlDOMEventTypeDesc.setXPathPropertyExpr(true);
         xmlDOMEventTypeDesc.addXPathProperty("element1", "/a/b/c", XPathConstants.STRING);
         configuration.addEventTypeAlias("AEvent", xmlDOMEventTypeDesc);
 
@@ -224,7 +315,8 @@ public class TestNoSchemaXMLEvent extends TestCase
         desc.setDefaultNamespace("http://services.samples/xsd");
         desc.setRootElementNamespace("http://services.samples/xsd");
         desc.addNamespacePrefix("m0", "http://services.samples/xsd");
-        desc.setResolvePropertiesAbsolute(false);
+        desc.setXPathResolvePropertiesAbsolute(false);
+        desc.setXPathPropertyExpr(true);
         configuration.addEventTypeAlias("StockQuote", desc);
 
         epService = EPServiceProviderManager.getDefaultProvider(configuration);
@@ -259,7 +351,8 @@ public class TestNoSchemaXMLEvent extends TestCase
         desc.setDefaultNamespace("http://services.samples/xsd");
         desc.setRootElementNamespace("http://services.samples/xsd");
         desc.addNamespacePrefix("m0", "http://services.samples/xsd");
-        desc.setResolvePropertiesAbsolute(true);
+        desc.setXPathResolvePropertiesAbsolute(true);
+        desc.setXPathPropertyExpr(true);
         configuration.addEventTypeAlias("StockQuote", desc);
 
         epService = EPServiceProviderManager.getDefaultProvider(configuration);
@@ -299,7 +392,22 @@ public class TestNoSchemaXMLEvent extends TestCase
         assertEquals("", event.get("symbol_e"));    // should be empty string as we are doing absolute XPath
     }
 
-    private void assertData(String element1)
+    private void assertDataSimpleXPath(String element1)
+    {
+        assertNotNull(updateListener.getLastNewData());
+        EventBean event = updateListener.getLastNewData()[0];
+
+        assertEquals(element1, event.get("xpathElement1"));
+        assertEquals(2.0, event.get("xpathCountE21"));
+        assertEquals("VAL3", event.get("xpathAttrString"));
+        assertEquals(5d, event.get("xpathAttrNum"));
+        assertEquals(true, event.get("xpathAttrBool"));
+        assertEquals(5L, event.get("stringCastLong"));
+        assertEquals(5d, event.get("stringCastDouble"));
+        assertEquals(5, event.get("numCastInt"));
+    }
+
+    private void assertDataGetter(String element1, boolean isInvalidReturnsEmptyString)
     {
         assertNotNull(updateListener.getLastNewData());
         EventBean event = updateListener.getLastNewData()[0];
@@ -309,18 +417,16 @@ public class TestNoSchemaXMLEvent extends TestCase
         assertEquals("VAL21-2", event.get("mappedElement"));
         assertEquals("VAL21-2", event.get("indexedElement"));
 
-        assertEquals(element1, event.get("xpathElement1"));
-        assertEquals(2.0, event.get("xpathCountE21"));
-        assertEquals("VAL3", event.get("xpathAttrString"));
-        assertEquals(5d, event.get("xpathAttrNum"));
-        assertEquals(true, event.get("xpathAttrBool"));
-
-        assertEquals(5L, event.get("stringCastLong"));
-        assertEquals(5d, event.get("stringCastDouble"));
-        assertEquals(5, event.get("numCastInt"));
-
-        assertEquals("", event.get("invalidelement"));        // properties not found come back as empty string without schema
-        assertEquals("", event.get("invalidattr"));     // attributes not supported when no schema supplied, use XPath
+        if (isInvalidReturnsEmptyString)
+        {
+            assertEquals("", event.get("invalidelement"));
+            assertEquals("", event.get("invalidattribute"));
+        }
+        else
+        {
+            assertEquals(null, event.get("invalidelement"));
+            assertEquals(null, event.get("invalidattribute"));
+        }
     }
 
     private void sendEvent(String value) throws Exception

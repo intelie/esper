@@ -9,11 +9,10 @@
 package com.espertech.esperio.representation.axiom;
 
 import org.apache.axiom.om.OMNode;
-
-import com.espertech.esper.client.EventBean;
-import com.espertech.esper.client.EventPropertyGetter;
 import com.espertech.esper.client.EventType;
+import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.PropertyAccessException;
+import com.espertech.esper.client.EventPropertyGetter;
 
 /**
  * EventBean wrapper for XML documents. Currently only instances of OMNode can
@@ -22,8 +21,8 @@ import com.espertech.esper.client.PropertyAccessException;
  * @author Paul Fremantle
  *
  */
-public class AxiomEventBean implements EventBean {
-
+public class AxiomEventBean implements EventBean
+{
 	private EventType eventType;
 	private OMNode event;
 
@@ -44,7 +43,8 @@ public class AxiomEventBean implements EventBean {
 		return eventType;
 	}
 
-	public Object get(String property) throws PropertyAccessException {
+	public Object get(String property) throws PropertyAccessException
+    {
 		EventPropertyGetter getter = eventType.getGetter(property);
 		if (getter == null) {
 			throw new PropertyAccessException("Property named '" + property
@@ -57,13 +57,8 @@ public class AxiomEventBean implements EventBean {
 		return event;
 	}
 
-    public Object getFragment(String property)
+    public Object getFragment(String propertyExpression) throws PropertyAccessException
     {
-        EventPropertyGetter getter = eventType.getGetter(property);
-        if (getter == null) {
-            throw new PropertyAccessException("Property named '" + property
-                    + "' is not a valid property name for this type");
-        }
-        return getter.getFragment(this);
+        return null;  
     }
 }

@@ -4,16 +4,19 @@ import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventPropertyGetter;
 import com.espertech.esper.client.PropertyAccessException;
 import org.w3c.dom.NodeList;
+import org.w3c.dom.Node;
 
 public class XPathPropertyArrayItemGetter implements EventPropertyGetter
 {
     private final EventPropertyGetter getter;
     private final int index;
+    private final FragmentFactory fragmentFactory;
 
-    public XPathPropertyArrayItemGetter(EventPropertyGetter getter, int index)
+    public XPathPropertyArrayItemGetter(EventPropertyGetter getter, int index, FragmentFactory fragmentFactory)
     {
         this.getter = getter;
         this.index = index;
+        this.fragmentFactory = fragmentFactory;
     }
 
     public Object get(EventBean eventBean) throws PropertyAccessException
@@ -34,11 +37,20 @@ public class XPathPropertyArrayItemGetter implements EventPropertyGetter
 
     public Object getFragment(EventBean eventBean) throws PropertyAccessException
     {
-        return null;  // TODO
+        if (fragmentFactory == null)
+        {
+            return null;
+        }
+        Node result = (Node) get(eventBean);
+        if (result == null)
+        {
+            return null;
+        }
+        return fragmentFactory.getEvent(result);
     }
 
     public boolean isExistsProperty(EventBean eventBean)
     {
-        return false;  // TODO
+        return true; 
     }
 }

@@ -15,7 +15,7 @@ import java.net.URL;
 public class TestXSDSchemaMapper extends TestCase
 {
     /**
-     * TODO
+     * TODO: write docs, Axiom, JSON renderer, XML renderer
      *
      * XPath-Based + No-Schema:
      *   - property expressions compile to XPath
@@ -35,14 +35,6 @@ public class TestXSDSchemaMapper extends TestCase
      *   - allows XPath specified
      *   - transpose XPath result as another defined XML DOM type via config
      *   - transpose automatically the definiton
-     *
-     * ==> add XPath built-in function
-     * ==> Fix index issue [0] -> xpath[1]
-     * ==> Esper-314 add documentation, fix empty property name
-     * ==> Look at QName result translation, type from allTypes.xsd to Java translation
-     * ==> Allow no-schema event type to use DOM accessors
-     * ==> Test compatilibility of different XML-backed events (XMLEventType.equals)
-     * ==> Write JSON and XML event representers
      */
     public void testMap() throws Exception
     {
@@ -72,11 +64,11 @@ public class TestXSDSchemaMapper extends TestCase
 
         assertEquals("attr1", nested1Element.getAttributes().get(0).getName());
         assertEquals(null, nested1Element.getAttributes().get(0).getNamespace());
-        assertEquals(XSSimpleType.PRIMITIVE_STRING, nested1Element.getAttributes().get(0).getType());
+        assertEquals(XSSimpleType.PRIMITIVE_STRING, nested1Element.getAttributes().get(0).getXsSimpleType());
         assertEquals("prop1", nested1Element.getSimpleElements().get(0).getName());
-        assertEquals(XSSimpleType.PRIMITIVE_STRING, nested1Element.getSimpleElements().get(0).getType());
+        assertEquals(XSSimpleType.PRIMITIVE_STRING, nested1Element.getSimpleElements().get(0).getXsSimpleType());
         assertEquals("prop2", nested1Element.getSimpleElements().get(1).getName());
-        assertEquals(XSSimpleType.PRIMITIVE_BOOLEAN, nested1Element.getSimpleElements().get(1).getType());
+        assertEquals(XSSimpleType.PRIMITIVE_BOOLEAN, nested1Element.getSimpleElements().get(1).getXsSimpleType());
 
         SchemaElementComplex nested2Element = nested1Element.getChildren().get(0);
         assertEquals("nested2", nested2Element.getName());
@@ -90,7 +82,7 @@ public class TestXSDSchemaMapper extends TestCase
         SchemaElementSimple simpleProp3 = nested2Element.getSimpleElements().get(0);
         assertEquals("prop3", simpleProp3.getName());
         assertEquals("samples:schemas:simpleSchema", simpleProp3.getNamespace());
-        assertEquals(XSSimpleType.PRIMITIVE_DECIMAL, simpleProp3.getType());
+        assertEquals(XSSimpleType.PRIMITIVE_DECIMAL, simpleProp3.getXsSimpleType());
         assertTrue(simpleProp3.isArray());
 
         SchemaElementComplex prop4Element = component.getChildren().get(1);
@@ -100,7 +92,7 @@ public class TestXSDSchemaMapper extends TestCase
         assertEquals(0, prop4Element.getSimpleElements().size());
         assertEquals(0, prop4Element.getChildren().size());
         assertEquals("attr2", prop4Element.getAttributes().get(0).getName());
-        assertEquals(XSSimpleType.PRIMITIVE_BOOLEAN, prop4Element.getAttributes().get(0).getType());
+        assertEquals(XSSimpleType.PRIMITIVE_BOOLEAN, prop4Element.getAttributes().get(0).getXsSimpleType());
         assertFalse(prop4Element.isArray());
         assertEquals(XSSimpleType.PRIMITIVE_STRING, (short) prop4Element.getOptionalSimpleType());
 
@@ -120,14 +112,14 @@ public class TestXSDSchemaMapper extends TestCase
         assertEquals(1, nested4Element.getSimpleElements().size());
         assertEquals(0, nested4Element.getChildren().size());
         assertEquals("id", nested4Element.getAttributes().get(0).getName());
-        assertEquals(XSSimpleType.PRIMITIVE_STRING, nested4Element.getAttributes().get(0).getType());
+        assertEquals(XSSimpleType.PRIMITIVE_STRING, nested4Element.getAttributes().get(0).getXsSimpleType());
         assertTrue(nested4Element.isArray());
         assertNull(nested4Element.getOptionalSimpleType());
 
         SchemaElementSimple prop5Element = nested4Element.getSimpleElements().get(0);
         assertEquals("prop5", prop5Element.getName());
         assertEquals("samples:schemas:simpleSchema", prop5Element.getNamespace());
-        assertEquals(XSSimpleType.PRIMITIVE_STRING, prop5Element.getType());
+        assertEquals(XSSimpleType.PRIMITIVE_STRING, prop5Element.getXsSimpleType());
         assertTrue(prop5Element.isArray());
     }
 

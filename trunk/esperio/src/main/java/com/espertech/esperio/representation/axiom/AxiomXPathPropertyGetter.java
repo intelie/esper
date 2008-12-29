@@ -8,12 +8,10 @@
  **************************************************************************************/
 package com.espertech.esperio.representation.axiom;
 
-import com.espertech.esper.client.EventBean;
-import com.espertech.esper.client.PropertyAccessException;
-import com.espertech.esper.client.FragmentEventType;
-import com.espertech.esper.client.EventPropertyGetter;
 import com.espertech.esper.util.SimpleTypeParser;
 import com.espertech.esper.util.SimpleTypeParserFactory;
+import com.espertech.esper.client.EventBean;
+import com.espertech.esper.client.PropertyAccessException;
 import org.apache.axiom.om.OMNode;
 import org.apache.axiom.om.xpath.AXIOMXPath;
 import org.apache.commons.logging.Log;
@@ -28,7 +26,7 @@ import javax.xml.xpath.XPathConstants;
  * <p>
  * See {@link AxiomEventRepresentation} for more details.
  */
-public class AxiomXPathPropertyGetter implements EventPropertyGetter
+public class AxiomXPathPropertyGetter implements TypedEventPropertyGetter
 {
     private static final Log log = LogFactory.getLog(AxiomXPathPropertyGetter.class);
     private final AXIOMXPath expression;
@@ -142,13 +140,8 @@ public class AxiomXPathPropertyGetter implements EventPropertyGetter
         return true; // Property always exists as the property is not dynamic
     }
 
-    public Object getFragment(EventBean eventBean)
+    public Object getFragment(EventBean eventBean) throws PropertyAccessException
     {
-        return null; // no providing fragmentable types yet
-    }
-
-    public FragmentEventType getFragmentEventType()
-    {
-        return null; // TODO
+        return null; 
     }
 }

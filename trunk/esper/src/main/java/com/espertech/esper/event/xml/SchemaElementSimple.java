@@ -4,7 +4,8 @@ public class SchemaElementSimple implements SchemaElement
 {
     private final String name;
     private final String namespace;
-    private final short type;     // Types from XSSimpleType
+    private final short xsSimpleType;     // Types from XSSimpleType
+    private final String typeName;
     private final boolean isArray;
 
     /**
@@ -14,12 +15,13 @@ public class SchemaElementSimple implements SchemaElement
      * @param type is the simple element type
      * @param isArray if unbound
      */
-    public SchemaElementSimple(String name, String namespace, short type, boolean isArray)
+    public SchemaElementSimple(String name, String namespace, short type, String typeName, boolean isArray)
     {
         this.name = name;
         this.namespace = namespace;
-        this.type = type;
+        this.xsSimpleType = type;
         this.isArray = isArray;
+        this.typeName = typeName;
     }
 
     /**
@@ -35,9 +37,9 @@ public class SchemaElementSimple implements SchemaElement
      * Returns type.
      * @return type
      */
-    public short getType()
+    public short getXsSimpleType()
     {
-        return type;
+        return xsSimpleType;
     }
 
     public String getNamespace()
@@ -48,6 +50,11 @@ public class SchemaElementSimple implements SchemaElement
     public boolean isArray()
     {
         return isArray;
+    }
+
+    public String getTypeName()
+    {
+        return typeName;
     }
 
     public String toString()

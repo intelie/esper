@@ -55,8 +55,8 @@ public class ConfigurationEventTypeXMLDOM implements MetaDefItem, Serializable
     private Map<String, XPathPropertyDesc> xPathProperties;
     private Map<String, String> namespacePrefixes;
 
-    private boolean isPropertyExprXPath;
-    private boolean isResolvePropertiesAbsolute;
+    private boolean isXPathPropertyExpr;
+    private boolean isXPathResolvePropertiesAbsolute;
     private boolean isEventSenderValidatesRoot;
     private boolean isAutoFragment;
 
@@ -70,8 +70,8 @@ public class ConfigurationEventTypeXMLDOM implements MetaDefItem, Serializable
     {
         xPathProperties = new LinkedHashMap<String, XPathPropertyDesc>();
         namespacePrefixes = new HashMap<String, String>();
-        isResolvePropertiesAbsolute = true;
-        isPropertyExprXPath = false;
+        isXPathResolvePropertiesAbsolute = true;
+        isXPathPropertyExpr = false;
         isEventSenderValidatesRoot = true;
         isAutoFragment = true;
     }
@@ -157,14 +157,14 @@ public class ConfigurationEventTypeXMLDOM implements MetaDefItem, Serializable
         return xPathProperties;
     }
 
-    public boolean isPropertyExprXPath()
+    public boolean isXPathPropertyExpr()
     {
-        return isPropertyExprXPath;
+        return isXPathPropertyExpr;
     }
 
-    public void setPropertyExprXPath(boolean propertyExprXPath)
+    public void setXPathPropertyExpr(boolean XPathPropertyExpr)
     {
-        isPropertyExprXPath = propertyExprXPath;
+        isXPathPropertyExpr = XPathPropertyExpr;
     }
 
     public boolean isEventSenderValidatesRoot()
@@ -272,9 +272,9 @@ public class ConfigurationEventTypeXMLDOM implements MetaDefItem, Serializable
      * Indicates whether properties are compiled into absolute or deep XPath expressions (see setter method for more detail).
      * @return true for absolute properties, false for deep properties
      */
-    public boolean isResolvePropertiesAbsolute()
+    public boolean isXPathResolvePropertiesAbsolute()
     {
-        return isResolvePropertiesAbsolute;
+        return isXPathResolvePropertiesAbsolute;
     }
 
     /**
@@ -286,11 +286,11 @@ public class ConfigurationEventTypeXMLDOM implements MetaDefItem, Serializable
      * When set to false, indicates that when properties are compiled to XPath expressions that the
      * compilation should generate a deep XPath expression such as "//symbol" for the
      * simple symbol property, or "//request/symbol" for a "request.symbol" nested property.
-     * @param resolvePropertiesAbsolute true for absolute XPath for properties (default), false for deep XPath
+     * @param XPathResolvePropertiesAbsolute true for absolute XPath for properties (default), false for deep XPath
      */
-    public void setResolvePropertiesAbsolute(boolean resolvePropertiesAbsolute)
+    public void setXPathResolvePropertiesAbsolute(boolean XPathResolvePropertiesAbsolute)
     {
-        this.isResolvePropertiesAbsolute = resolvePropertiesAbsolute;
+        this.isXPathResolvePropertiesAbsolute = XPathResolvePropertiesAbsolute;
     }
 
     /**

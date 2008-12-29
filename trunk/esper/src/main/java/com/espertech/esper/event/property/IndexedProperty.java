@@ -44,6 +44,11 @@ public class IndexedProperty extends PropertyBase
         this.index = index;
     }
 
+    public boolean isDynamic()
+    {
+        return false;
+    }
+
     public String[] toPropertyArray()
     {
         return new String[] {this.getPropertyNameAtomic()};
@@ -275,7 +280,7 @@ public class IndexedProperty extends PropertyBase
             }
 
             // return the simple as a non-array since an index is provided
-            return new SchemaElementSimple(simple.getName(), simple.getNamespace(), simple.getType(), false);
+            return new SchemaElementSimple(simple.getName(), simple.getNamespace(), simple.getXsSimpleType(), simple.getTypeName(), false);
         }
 
         for (SchemaElementComplex complex : complexProperty.getChildren())
@@ -290,7 +295,7 @@ public class IndexedProperty extends PropertyBase
             }
 
             // return the complex as a non-array since an index is provided
-            return new SchemaElementComplex(complex.getName(), complex.getNamespace(), complex.getAttributes(), complex.getChildren(), complex.getSimpleElements(), false, complex.getOptionalSimpleType());
+            return new SchemaElementComplex(complex.getName(), complex.getNamespace(), complex.getAttributes(), complex.getChildren(), complex.getSimpleElements(), false, complex.getOptionalSimpleType(), complex.getOptionalSimpleTypeName());
         }
 
         return null;

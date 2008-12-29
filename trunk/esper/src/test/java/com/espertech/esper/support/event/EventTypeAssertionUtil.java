@@ -270,10 +270,13 @@ public class EventTypeAssertionUtil
             {
                 EventPropertyGetter getter = eventBean.getEventType().getGetter(propertyName);
                 Object resultGetter = getter.get(eventBean);
-                Assert.assertNotNull(failedMessage, resultGetter);         // expecting non-null values returned
-
                 Object resultGet = eventBean.get(propertyName);
-                if (resultGet instanceof NodeList)
+
+                if ((resultGetter == null) && (resultGet == null))
+                {
+                    // fine
+                }
+                else if (resultGet instanceof NodeList)
                 {
                     Assert.assertEquals(failedMessage, ((NodeList)resultGet).getLength(), ((NodeList)resultGetter).getLength());
                 }
@@ -286,7 +289,10 @@ public class EventTypeAssertionUtil
                     Assert.assertEquals(failedMessage, resultGet, resultGetter);
                 }
 
-                Assert.assertTrue(failedMessage, JavaClassHelper.isSubclassOrImplementsInterface(resultGet.getClass(), properties[i].getPropertyType()));
+                if (resultGet != null)
+                {
+                    Assert.assertTrue(failedMessage, JavaClassHelper.isSubclassOrImplementsInterface(resultGet.getClass(), properties[i].getPropertyType()));
+                }
             }
 
             // fragment

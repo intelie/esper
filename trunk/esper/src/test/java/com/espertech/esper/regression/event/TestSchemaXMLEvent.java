@@ -5,6 +5,8 @@ import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.support.util.ArrayAssertionUtil;
 import com.espertech.esper.support.util.SupportUpdateListener;
 import com.espertech.esper.support.event.EventTypeAssertionUtil;
+import com.espertech.esper.event.xml.XSDSchemaMapper;
+import com.espertech.esper.event.xml.SchemaModel;
 import junit.framework.TestCase;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -64,7 +66,7 @@ public class TestSchemaXMLEvent extends TestCase
             new EventPropertyDescriptor("attrTwoProp", String.class, false, false, false, false, false),
            }, type.getPropertyDescriptors());
 
-        Document eventDoc = SupportXML.sendEvent(epService.getEPRuntime(), "test");
+        Document eventDoc = SupportXML.sendDefaultEvent(epService.getEPRuntime(), "test");
 
         assertNotNull(updateListener.getLastNewData());
         EventBean event = updateListener.getLastNewData()[0];
@@ -135,7 +137,7 @@ public class TestSchemaXMLEvent extends TestCase
             new EventPropertyDescriptor("attrTwoProp", String.class, false, false, false, false, false),
            }, type.getPropertyDescriptors());
 
-        Document eventDoc = SupportXML.sendEvent(epService.getEPRuntime(), "test");
+        Document eventDoc = SupportXML.sendDefaultEvent(epService.getEPRuntime(), "test");
 
         assertNotNull(updateListener.getLastNewData());
         EventBean event = updateListener.getLastNewData()[0];
@@ -269,13 +271,42 @@ public class TestSchemaXMLEvent extends TestCase
         eventTypeMeta.setSchemaResource(schemaUri);
         eventTypeMeta.addNamespacePrefix("ss", "samples:schemas:simpleSchema");
         eventTypeMeta.addXPathProperty("customProp", "count(/ss:simpleEvent/ss:nested3/ss:nested4)", XPathConstants.NUMBER);
-        eventTypeMeta.setPropertyExprXPath(isUseXPathPropertyExpression);
+        eventTypeMeta.setXPathPropertyExpr(isUseXPathPropertyExpression);
         if (additionalXPathProperty != null)
         {
             eventTypeMeta.addXPathProperty(additionalXPathProperty, "count(/ss:simpleEvent/ss:nested3/ss:nested4)", XPathConstants.NUMBER);
         }
         return eventTypeMeta;        
     }
+
+    /**
+     * Comment-in for namespace-aware testing.
+     *
+    public void testNamespace() throws Exception
+    {
+        String xml = "<onens:namespaceEvent xmlns=\"samples:schemas:simpleSchema\" \n" +
+                "  xmlns:onens=\"samples:schemas:testNSOne\" \n" +
+                "  xmlns:twons=\"samples:schemas:testNSTwo\" \n" +
+                "  xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" \n" +
+                "  xsi:schemaLocation=\"samples:schemas:testNSOne namespaceTestSchemaOne.xsd\">\n" +
+                "  <onens:myname onens:val=\"1\"/>\n" +
+                "  <twons:myname twons:val=\"2\"/>\n" +
+                "</onens:namespaceEvent>";
+        Document doc = SupportXML.getDocument(xml);
+        Node node = doc.getDocumentElement().getChildNodes().item(1);
+        System.out.println("local " + node.getLocalName());
+        System.out.println("nsURI " + node.getNamespaceURI());
+        System.out.println("prefix " + node.getPrefix());
+
+        node = doc.getDocumentElement().getChildNodes().item(3);
+        System.out.println("local " + node.getLocalName());
+        System.out.println("nsURI " + node.getNamespaceURI());
+        System.out.println("prefix " + node.getPrefix());
+
+        SchemaModel model = XSDSchemaMapper.loadAndMap("regression/namespaceTestSchemaOne.xsd", 2);
+        System.out.println("local " + node.getLocalName());
+    }
+     */
 
     private static final Log log = LogFactory.getLog(TestSchemaXMLEvent.class);
 }

@@ -88,4 +88,6 @@ public interface Property
      * Return a String-array of atomic property names.
      */
     public String[] toPropertyArray();
+
+    public boolean isDynamic();
 }

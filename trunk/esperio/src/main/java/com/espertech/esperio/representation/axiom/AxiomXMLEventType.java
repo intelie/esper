@@ -9,12 +9,13 @@
 package com.espertech.esperio.representation.axiom;
 
 import com.espertech.esper.client.*;
-import com.espertech.esper.event.EventTypeMetadata;
-import com.espertech.esper.event.EventTypeSPI;
+import com.espertech.esper.event.*;
+import com.espertech.esper.event.property.PropertyParser;
 import com.espertech.esper.event.xml.SimpleXMLPropertyParser;
 import org.apache.axiom.om.OMNode;
 import org.apache.axiom.om.xpath.AXIOMXPath;
 import org.jaxen.JaxenException;
+import org.antlr.runtime.tree.Tree;
 
 import javax.xml.namespace.QName;
 import javax.xml.xpath.XPathConstants;
@@ -22,6 +23,7 @@ import javax.xml.xpath.XPathExpressionException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Apache Axiom event type provides event metadata for Axiom OMDocument events.
@@ -35,30 +37,11 @@ import java.util.Map;
  */
 public class AxiomXMLEventType implements EventTypeSPI
 {
-    // TODO
     private EventTypeMetadata metadata;
     private String defaultNamespacePrefix;
     private ConfigurationEventTypeAxiom config;
     private AxiomXPathNamespaceContext namespaceContext;
-    // private Map<String, TypedEventPropertyGetter> propertyGetterCache;
-    private String[] propertyNames;
-    private EventPropertyDescriptor[] propertyDescriptors;
-    private Map<String, EventPropertyDescriptor> propertyDescriptorMap;
-
-    public Class getPropertyType(String propertyExpression)
-    {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    public EventPropertyGetter getGetter(String propertyExpression)
-    {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
-
-    public Class getUnderlyingType()
-    {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
-    }
+    private Map<String, TypedEventPropertyGetter> propertyGetterCache;
 
     /**
      * Ctor.
@@ -68,7 +51,7 @@ public class AxiomXMLEventType implements EventTypeSPI
     {
         this.metadata = metadata;
         this.config = configurationEventTypeAxiom;
-        // this.propertyGetterCache = new HashMap<String, TypedEventPropertyGetter>();
+        this.propertyGetterCache = new HashMap<String, TypedEventPropertyGetter>();
 
         // Set up a namespace context for XPath expressions
         namespaceContext = new AxiomXPathNamespaceContext();
@@ -96,11 +79,49 @@ public class AxiomXMLEventType implements EventTypeSPI
             }
         }
 
+        // determine XPath properties that are predefined
+        String xpathExpression = null;
+        try {
+            for (ConfigurationEventTypeAxiom.XPathPropertyDesc property : config.getXPathProperties().values())
+            {
+                TypedEventPropertyGetter getter = resolvePropertyGetter(property.getName(), property.getXpath(), property.getType(), property.getOptionalCastToType());
+                propertyGetterCache.put(property.getName(), getter);
+            }
+        }
+        catch (XPathExpressionException ex)
+        {
+            throw new EPException("XPath expression could not be compiled for expression '" + xpathExpression + '\'', ex);
+        }
     }
 
+    public Class getPropertyType(String property) {
+		TypedEventPropertyGetter getter = propertyGetterCache.get(property);
+		if (getter != null)
+			return getter.getResultClass();
+		return String.class;    // all other types are assumed to exist and be of type String
+	}
+
+	public Class getUnderlyingType() {
+		return OMNode.class;
+	}
+
+	public EventPropertyGetter getGetter(String property) {
+		EventPropertyGetter getter = propertyGetterCache.get(property);
+		if (getter != null)
+			return getter;
+        try
+        {
+            return resolveDynamicProperty(property);
+        }
+        catch (XPathExpressionException e)
+        {
+            return null;
+        }
+    }
 
 	public String[] getPropertyNames() {
-		return propertyNames;
+		Set<String> properties = propertyGetterCache.keySet();
+		return properties.toArray(new String[properties.size()]);
 	}
 
 	public boolean isProperty(String property) {
@@ -129,23 +150,47 @@ public class AxiomXMLEventType implements EventTypeSPI
         return metadata;
     }    
 
+    private TypedEventPropertyGetter resolveDynamicProperty(String property) throws XPathExpressionException
+    {
+        // not defined, come up with an XPath
+        Tree ast = PropertyParser.parse(property);
+        String xPathExpr = SimpleXMLPropertyParser.parse(ast, property, config.getRootElementName(), defaultNamespacePrefix, config.isResolvePropertiesAbsolute());
+        return resolvePropertyGetter(property, xPathExpr, XPathConstants.STRING, null);
+    }
+
+    private TypedEventPropertyGetter resolvePropertyGetter(String propertyName, String xPathExpr, QName type, Class optionalCastToType) throws XPathExpressionException
+    {
+        AXIOMXPath axXPath;
+        try
+        {
+            axXPath = new AXIOMXPath(xPathExpr);
+        }
+        catch (JaxenException e)
+        {
+            throw new EPException("Error constructing XPath expression from property name '" + propertyName + '\'', e);
+        }
+
+        axXPath.setNamespaceContext(namespaceContext);
+        return new AxiomXPathPropertyGetter(propertyName, axXPath, type, optionalCastToType);
+    }
+
     public String getName()
     {
         return metadata.getPublicName();
     }
 
-    public EventPropertyDescriptor[] getPropertyDescriptors()
+    public FragmentEventType getFragmentType(String propertyExpression)
     {
-        return propertyDescriptors;
+        return null;  // Does not allow fragments
     }
 
-    public FragmentEventType getFragmentType(String property)
+    public EventPropertyDescriptor[] getPropertyDescriptors()
     {
-        return null; // not providing the capability for fragments
+        return new EventPropertyDescriptor[0];  // TODO
     }
 
     public EventPropertyDescriptor getPropertyDescriptor(String propertyName)
     {
-        return propertyDescriptorMap.get(propertyName);
-    }    
+        return null;  // TODO
+    }
 }

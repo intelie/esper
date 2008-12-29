@@ -1,15 +1,12 @@
 package com.espertech.esper.regression.event;
 
 import com.espertech.esper.client.EPRuntime;
-import junit.framework.TestCase;
-import org.w3c.dom.*;
+import com.espertech.esper.client.EventSender;
+import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.StringReader;
-import java.io.IOException;
-import java.io.StringWriter;
-import java.io.Writer;
 
 public class SupportXML
 {
@@ -41,7 +38,7 @@ public class SupportXML
             "\t</nested3>\n" +
             "</simpleEvent>";
 
-    public static Document sendEvent(EPRuntime runtime, String value) throws Exception
+    public static Document sendDefaultEvent(EPRuntime runtime, String value) throws Exception
     {
         String xml = XML.replaceAll("VAL1", value);
 
@@ -55,6 +52,25 @@ public class SupportXML
         return simpleDoc;
     }
 
+    public static Document sendEvent(EventSender sender, String xml) throws Exception
+    {
+        Document simpleDoc = getDocument(xml);
+        sender.sendEvent(simpleDoc);
+        return simpleDoc;
+    }
+
+    public static Document getDocument() throws Exception
+    {
+        return getDocument(XML);
+    }
+
+    public static Document sendEvent(EPRuntime runtime, String xml) throws Exception
+    {
+        Document simpleDoc = getDocument(xml);
+        runtime.sendEvent(simpleDoc);
+        return simpleDoc;
+    }
+
     public static Document getDocument(String xml) throws Exception
     {
         StringReader reader = new StringReader(xml);
@@ -62,10 +78,5 @@ public class SupportXML
         DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
         builderFactory.setNamespaceAware(true);
         return builderFactory.newDocumentBuilder().parse(source);
-    }
-
-    public static Document getDocument() throws Exception
-    {
-        return getDocument(XML);
     }
 }
