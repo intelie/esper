@@ -20,10 +20,7 @@ import org.antlr.runtime.tree.Tree;
 import javax.xml.namespace.QName;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Apache Axiom event type provides event metadata for Axiom OMDocument events.
@@ -42,6 +39,8 @@ public class AxiomXMLEventType implements EventTypeSPI
     private ConfigurationEventTypeAxiom config;
     private AxiomXPathNamespaceContext namespaceContext;
     private Map<String, TypedEventPropertyGetter> propertyGetterCache;
+    private Map<String, EventPropertyDescriptor> propertyDescriptorsMap;
+    private EventPropertyDescriptor[] propertyDescriptors;
 
     /**
      * Ctor.
@@ -80,18 +79,24 @@ public class AxiomXMLEventType implements EventTypeSPI
         }
 
         // determine XPath properties that are predefined
+        propertyDescriptorsMap = new HashMap<String, EventPropertyDescriptor>();
+        List<EventPropertyDescriptor> descriptors = new ArrayList<EventPropertyDescriptor>();
         String xpathExpression = null;
         try {
             for (ConfigurationEventTypeAxiom.XPathPropertyDesc property : config.getXPathProperties().values())
             {
                 TypedEventPropertyGetter getter = resolvePropertyGetter(property.getName(), property.getXpath(), property.getType(), property.getOptionalCastToType());
                 propertyGetterCache.put(property.getName(), getter);
+                EventPropertyDescriptor desc = new EventPropertyDescriptor(property.getName(), getter.getResultClass(), false, false, false, false, false); 
+                propertyDescriptorsMap.put(property.getName(), desc);
+                descriptors.add(desc);
             }
         }
         catch (XPathExpressionException ex)
         {
             throw new EPException("XPath expression could not be compiled for expression '" + xpathExpression + '\'', ex);
         }
+        propertyDescriptors = descriptors.toArray(new EventPropertyDescriptor[descriptors.size()]); 
     }
 
     public Class getPropertyType(String property) {
@@ -186,11 +191,11 @@ public class AxiomXMLEventType implements EventTypeSPI
 
     public EventPropertyDescriptor[] getPropertyDescriptors()
     {
-        return new EventPropertyDescriptor[0];  // TODO
+        return propertyDescriptors;
     }
 
     public EventPropertyDescriptor getPropertyDescriptor(String propertyName)
     {
-        return null;  // TODO
+        return propertyDescriptorsMap.get(propertyName);
     }
 }

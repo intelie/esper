@@ -1,7 +1,6 @@
 package com.espertech.esperio.support.util;
 
 import com.espertech.esper.client.EventBean;
-import com.espertech.esper.support.event.SupportEventAdapterService;
 import junit.framework.Assert;
 import junit.framework.TestCase;
 import org.apache.commons.logging.Log;
@@ -620,12 +619,6 @@ public class ArrayAssertionUtil
             Object eventProp = pojo.get(name);
             Assert.assertEquals("Error asserting property named '" + name + "'",value,eventProp);
         }
-    }
-
-    public static void assertProps(Object pojo, String[] propertyNames, Object... propertiesThisRow)
-    {
-        EventBean pojoEvent = SupportEventAdapterService.getService().adapterForBean(pojo);
-        assertProps(pojoEvent, propertyNames, propertiesThisRow);
     }
 
     public static void assertEqualsAnyOrder(Iterator<EventBean> iterator, String[] propertyNames, Object[][] propertiesListPerRow)

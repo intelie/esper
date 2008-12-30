@@ -56,6 +56,13 @@
 				</tbody>
 			</tgroup>
 		</table>
+
+		<para>
+			No need to transform events. No need to create Java classes. May better integrate and evolve via XML. Map a common representation. Fastest way of accessing properties, f.e. caching of results.
+		</para>
+		<para>
+			Common: all have support for nested, indexed and mapped properties as below. All allow a deep nesting level and property expressions. All allow fragmenting. Most allow supertypes. All have metadata.
+		</para>
 	</sect1>      
 
 	<sect1 id="eventrep-properties">
