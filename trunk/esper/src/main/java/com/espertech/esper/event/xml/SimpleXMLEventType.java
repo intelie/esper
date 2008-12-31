@@ -18,6 +18,8 @@ import com.espertech.esper.event.EventTypeMetadata;
 import com.espertech.esper.event.property.Property;
 import com.espertech.esper.event.property.PropertyParser;
 import org.antlr.runtime.tree.Tree;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import javax.xml.namespace.QName;
 import javax.xml.xpath.XPath;
@@ -43,6 +45,7 @@ import java.util.Map;
  */
 public class SimpleXMLEventType extends BaseXMLEventType {
 
+    private static final Log log = LogFactory.getLog(SimpleXMLEventType.class);
     private final Map<String, EventPropertyGetter> propertyGetterCache;
     private String defaultNamespacePrefix;
     private final boolean isResolvePropertiesAbsolute;
@@ -125,6 +128,10 @@ public class SimpleXMLEventType extends BaseXMLEventType {
                 xPathExpr = SimpleXMLPropertyParser.parse(ast, propertyExpression,getRootElementName(), defaultNamespacePrefix, isResolvePropertiesAbsolute);
                 XPath xpath = getXPathFactory().newXPath();
                 xpath.setNamespaceContext(namespaceContext);
+                if (log.isInfoEnabled())
+                {
+                    log.info("Compiling XPath expression for property '" + propertyExpression + "' as '" + xPathExpr + "'");
+                }
                 xPathExpression = xpath.compile(xPathExpr);
             }
             catch (XPathExpressionException e)

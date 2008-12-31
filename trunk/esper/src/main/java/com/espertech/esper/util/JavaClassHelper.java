@@ -19,6 +19,7 @@ import java.math.BigInteger;
 import java.math.BigDecimal;
 
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 /**
  * Helper for questions about Java classes such as
@@ -1143,6 +1144,10 @@ public class JavaClassHelper
             return false;
         }
         if (propertyType == Node.class)
+        {
+            return false;
+        }
+        if (propertyType == NodeList.class)
         {
             return false;
         }

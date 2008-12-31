@@ -668,7 +668,7 @@ desc.setXPathPropertyExpr(true);]]></programlisting>
 				</para>
 
 				<para>
-					This configuration setting, when set to true, instructs an <literal>EventSender</literal> to not validate.
+					This configuration setting, when set to false, instructs an <literal>EventSender</literal> to not validate.
 				</para>
 
 				<para>

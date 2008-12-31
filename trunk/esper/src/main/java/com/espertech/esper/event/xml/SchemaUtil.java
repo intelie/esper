@@ -129,16 +129,15 @@ public class SchemaUtil {
 
     public static Class toReturnType(QName resultType, Class optionalCastToType)
     {
-        if (resultType.equals(XPathConstants.NODESET))
-            return NodeList.class;
-        if (resultType.equals(XPathConstants.NODE))
-            return Node.class;
-
         if (optionalCastToType != null)
         {
             return optionalCastToType;
         }
 
+        if (resultType.equals(XPathConstants.NODESET))
+            return NodeList.class;
+        if (resultType.equals(XPathConstants.NODE))
+            return Node.class;
         if (resultType.equals(XPathConstants.BOOLEAN))
             return Boolean.class;
         if (resultType.equals(XPathConstants.NUMBER))

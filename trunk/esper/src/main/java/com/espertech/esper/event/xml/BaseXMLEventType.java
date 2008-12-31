@@ -16,6 +16,8 @@ import com.espertech.esper.event.ExplicitPropertyDescriptor;
 import com.espertech.esper.util.ClassInstantiationException;
 import com.espertech.esper.util.JavaClassHelper;
 import org.w3c.dom.Node;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import javax.xml.xpath.*;
 import java.util.ArrayList;
@@ -27,6 +29,8 @@ import java.util.List;
  * Base class for XML event types.
  */
 public abstract class BaseXMLEventType extends BaseConfigurableEventType {
+
+    private static final Log log = LogFactory.getLog(BaseXMLEventType.class);
 
     private final XPathFactory xPathFactory;
     private final String rootElementName;
@@ -115,6 +119,10 @@ public abstract class BaseXMLEventType extends BaseConfigurableEventType {
                 }
 
                 xpathExpression = property.getXpath();
+                if (log.isInfoEnabled())
+                {
+                    log.info("Compiling XPath expression for property '" + property.getName() + "' as '" + xpathExpression + "'");
+                }
                 XPathExpression expression = xPath.compile(xpathExpression);
 
                 FragmentFactoryXPathPredefinedGetter fragmentFactory = null;
@@ -125,7 +133,7 @@ public abstract class BaseXMLEventType extends BaseConfigurableEventType {
                     isFragment = true;
                 }
                 boolean isArray = false;
-                if (property.getType() == XPathConstants.NODESET)
+                if (property.getType().equals(XPathConstants.NODESET))
                 {
                     isArray = true;
                 }

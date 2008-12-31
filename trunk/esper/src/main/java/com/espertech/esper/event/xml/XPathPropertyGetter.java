@@ -22,6 +22,8 @@ import org.w3c.dom.NodeList;
 import javax.xml.namespace.QName;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathConstants;
+import java.lang.reflect.Array;
 
 /**
  * Getter for properties of DOM xml events.
@@ -37,6 +39,7 @@ public class XPathPropertyGetter implements EventPropertyGetter
 	private final QName resultType;
     private final SimpleTypeParser simpleTypeParser;
     private final Class optionalCastToType;
+    private final boolean isCastToArray;
     private final FragmentFactory fragmentFactory;
 
     /**
@@ -52,6 +55,21 @@ public class XPathPropertyGetter implements EventPropertyGetter
         this.property = propertyName;
 		this.resultType = resultType;
         this.fragmentFactory = fragmentFactory;
+
+        if ((optionalCastToType != null) && (optionalCastToType.isArray()))
+        {
+            isCastToArray = true;
+            if (!resultType.equals(XPathConstants.NODESET))
+            {
+                throw new IllegalArgumentException("Array cast-to types require XPathConstants.NODESET as the XPath result type");
+            }
+            optionalCastToType = optionalCastToType.getComponentType();
+        }
+        else
+        {
+            isCastToArray = false;
+        }
+
         if (optionalCastToType != null)
         {
             simpleTypeParser = SimpleTypeParserFactory.getParser(optionalCastToType);
@@ -98,6 +116,11 @@ public class XPathPropertyGetter implements EventPropertyGetter
             if (result == null)
             {
                 return null;
+            }
+
+            if (isCastToArray)
+            {
+                return castToArray(result);
             }
 
             // string results get parsed
@@ -199,5 +222,36 @@ public class XPathPropertyGetter implements EventPropertyGetter
         catch (XPathExpressionException e) {
             throw new PropertyAccessException("Error getting property " + property,e);
         }
+    }
+
+    private Object castToArray(Object result)
+    {
+        if (!(result instanceof NodeList))
+        {
+            return null;
+        }
+
+        NodeList nodeList = (NodeList) result;
+        Object array = Array.newInstance(optionalCastToType, nodeList.getLength());
+
+        for (int i = 0; i < nodeList.getLength(); i++)
+        {
+            Node item = nodeList.item(i);
+            if (item.getNodeType() != Node.ELEMENT_NODE)
+            {
+                continue;
+            }
+            Object arrayItem = null;
+            try
+            {
+                String textContent = nodeList.item(i).getTextContent();
+                arrayItem = simpleTypeParser.parse(textContent);
+            }
+            catch (Exception ex)
+            {}
+            Array.set(array, i, arrayItem);
+        }
+        
+        return array;
     }
 }

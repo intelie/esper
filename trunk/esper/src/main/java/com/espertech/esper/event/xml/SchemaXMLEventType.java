@@ -21,7 +21,6 @@ import org.apache.commons.logging.LogFactory;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -297,6 +296,10 @@ public class SchemaXMLEventType extends BaseXMLEventType
                 }
 
                 getter = prop.getGetterDOM(schemaModelRoot, this.getEventAdapterService(), this, propertyExpression);
+                if (getter == null)
+                {
+                    return null;
+                }
 
                 Class returnType = SchemaUtil.toReturnType(item);
                 if ((returnType != Node.class) && (returnType != NodeList.class))

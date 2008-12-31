@@ -409,6 +409,14 @@ public class NestedProperty implements Property
                 }
 
                 complexElement = (SchemaElementComplex) childSchemaItem;
+
+                if (complexElement.isArray())
+                {
+                    if ((property instanceof SimpleProperty) || (property instanceof DynamicSimpleProperty))
+                    {
+                        return null;
+                    }
+                }
             }
             
             getters.add(getter);

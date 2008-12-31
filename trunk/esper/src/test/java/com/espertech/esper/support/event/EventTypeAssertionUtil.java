@@ -290,7 +290,7 @@ public class EventTypeAssertionUtil
                 }
 
                 if (resultGet != null)
-                {
+                {                    
                     Assert.assertTrue(failedMessage, JavaClassHelper.isSubclassOrImplementsInterface(resultGet.getClass(), properties[i].getPropertyType()));
                 }
             }

@@ -18,6 +18,8 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.LinkedHashMap;
+import java.util.Arrays;
+import java.lang.reflect.Array;
 
 /**
  * Configuration object for enabling the engine to process events represented as XML DOM document nodes.
@@ -216,6 +218,13 @@ public class ConfigurationEventTypeXMLDOM implements MetaDefItem, Serializable
 
         if (castToType != null)
         {
+            boolean isArray = false;
+            if (castToType.trim().endsWith("[]"))
+            {
+                isArray = true;
+                castToType = castToType.replace("[]", "");
+            }
+
             try
             {
                 castToTypeClass = JavaClassHelper.getClassForSimpleName(castToType);
@@ -223,6 +232,11 @@ public class ConfigurationEventTypeXMLDOM implements MetaDefItem, Serializable
             catch (EventAdapterException ex)
             {
                 throw new ConfigurationException("Invalid cast-to type for xpath expression named '" + name + "': " + ex.getMessage());
+            }
+
+            if (isArray)
+            {
+                castToTypeClass = Array.newInstance(castToTypeClass, 0).getClass();
             }
         }
 

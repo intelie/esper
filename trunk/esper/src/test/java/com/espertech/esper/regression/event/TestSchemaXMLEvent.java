@@ -2,11 +2,9 @@ package com.espertech.esper.regression.event;
 
 import com.espertech.esper.client.*;
 import com.espertech.esper.support.client.SupportConfigFactory;
+import com.espertech.esper.support.event.EventTypeAssertionUtil;
 import com.espertech.esper.support.util.ArrayAssertionUtil;
 import com.espertech.esper.support.util.SupportUpdateListener;
-import com.espertech.esper.support.event.EventTypeAssertionUtil;
-import com.espertech.esper.event.xml.XSDSchemaMapper;
-import com.espertech.esper.event.xml.SchemaModel;
 import junit.framework.TestCase;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
