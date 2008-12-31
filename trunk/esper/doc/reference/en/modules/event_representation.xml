@@ -58,12 +58,67 @@
 		</table>
 
 		<para>
-			No need to transform events. No need to create Java classes. May better integrate and evolve via XML. Map a common representation. Fastest way of accessing properties, f.e. caching of results.
+			Esper provides multiple choices for representing an event. There is no absolute need for you to create new Java classes to represent an event.
 		</para>
+		
 		<para>
-			Common: all have support for nested, indexed and mapped properties as below. All allow a deep nesting level and property expressions. All allow fragmenting. Most allow supertypes. All have metadata.
+			Event representations have the following in common:
 		</para>
-	</sect1>      
+		
+		<itemizedlist spacing="compact">
+			<listitem>
+				<para>
+					All event representations support nested, indexed and mapped properties (aka. property expression), as explained in more detail below. There is no limitation to the nesting level.
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					All event representations provide event type metadata. This includes type metadata for nested properties.
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					All event representations allow transposing the event itself and its event property graph into new events. The term transposing refers to selecting the event itself or event properties that are themselves nestable property graphs, and then querying the event's properties or nested property graphs in further statements. The Apache Axiom event representation is an exception and does not currently allow transposing event properties but does allow transposing the event itself.
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					The Java object and Map representations allow supertypes.
+				</para>
+			</listitem>
+		</itemizedlist>
+
+		<para>
+			The API behavior for all event representations is the same, with minor exceptions noted in this chapter. 
+		</para>
+
+		<para>
+			The benefits of multiple event representations are:
+		</para>
+		<itemizedlist spacing="compact">
+			<listitem>
+				<para>
+					For applications that already have events in one of the supported representations, there is no need to transform events into a Java object before processing.
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					Event representations are exchangable, reducing or eliminating the need to change statements when the event representation changes. 
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					Event representations are interoperable, allowing all event representations to interoperate in same or different statements.
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					The choice makes its possible to consciously trade-off performance, ease-of-use, the ability to evolve and effort needed to import or externalize events and use existing event type metadata. 
+				</para>
+			</listitem>
+		</itemizedlist>
+
+	</sect1>
 
 	<sect1 id="eventrep-properties">
 	   <title>Event Properties</title>
@@ -772,77 +827,395 @@ epService.getEPAdministrator().getConfiguration().
 		<indexterm><primary>XML event representation</primary></indexterm>
 		<indexterm><primary>event</primary><secondary>XML representation</secondary></indexterm>
 		<para>
-			Events can also be represented as <literal>org.w3c.dom.Node</literal> instances and send into the engine via the <literal>sendEvent</literal> method on <literal>EPRuntime</literal>. Please note that configuration is required for allowing the engine to map the event type alias to <literal>Node</literal> element names. See <xref linkend="configuration"/>.
+			Events can be represented as <literal>org.w3c.dom.Node</literal> instances and send into the engine via the <literal>sendEvent</literal> method on <literal>EPRuntime</literal> or via <literal>EventSender</literal>. Please note that configuration is required so the event type name and root element name is known. See <xref linkend="configuration"/>.
 		</para>
 		
 		<para>
-			Esper allows configuring XPath expressions as event properties. You can specify arbitrary XPath functions or expressions and provide a property name by which their result values will be available for use in expressions. For XML documents that follow an XML schema, Esper can load and interrogate your schema and validate event property names and types against the schema information. 
+			When a XML schema document (XSD file) can be made available as part of the configuration, then Esper can read the schema and appropriately present event type metadata and validate statements that use the event type and its properties. See <xref linkend="eventrep-xml-dom-schema"/>.
+		</para>
+
+		<para>
+			When no XML schema document is provided, XML events can still be queried, however property expression return values, types and event type metadata differs. See <xref linkend="eventrep-xml-dom-noschema"/>.
+		</para>
+
+		<para>
+			In all cases Esper allows you to configure explicit XPath expressions as event properties. You can specify arbitrary XPath functions or expressions and provide a property name and type by which result values will be available for use in expressions and subsequent statements. See <xref linkend="eventrep-xml-dom-explicit"/>.
 		</para>
 			
 		<para>
-			Nested, mapped and indexed event properties are also supported in expressions against <literal>org.w3c.dom.Node</literal> events. Thus XML trees can conveniently be
-			interrogated using the existing event property syntax for querying JavaBean objects, JavaBean object graphs or <literal>java.util.Map</literal> events.
-		</para>
-
-		<para>
-			Let's look at how a sample XML document could be queried, given the sample XML below.
+			Nested, mapped and indexed event properties are also supported in expressions against <literal>org.w3c.dom.Node</literal> events. Thus XML trees can conveniently be interrogated using the existing event property expression syntax.
 		</para>
 		
-<programlisting><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+		<para>
+			This section the following XML document as an example:
+		</para>
+	
+		<programlisting><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
 <Sensor>
-	<ID>urn:epc:1:4.16.36<ID>
-	<Observation Command="READ_PALLET_TAGS_ONLY">
-		<ID>00000001<ID>
-		<Tag>
-			<ID>urn:epc:1:2.24.400<ID>
-		</Tag>
-		<Tag>
-			<ID>urn:epc:1:2.24.401<ID>
-		</Tag>
-	</Observation>
+  <ID>urn:epc:1:4.16.36</ID>
+  <Observation Command="READ_PALLET_TAGS_ONLY">
+    <ID>00000001</ID>
+    <Tag>
+      <ID>urn:epc:1:2.24.400</ID>
+    </Tag>
+    <Tag>
+      <ID>urn:epc:1:2.24.401</ID>
+    </Tag>
+  </Observation>
 </Sensor>]]></programlisting>
 
-		<para>
-			To configure the engine for processing Sensor documents, simply configure a <literal>SensorEvent</literal> event type alias for the <literal>Sensor</literal> element name via Configuration. Now the document can be queried as below.
-		</para>
-<programlisting><![CDATA[select ID, Observation.ID, Observation.Command, Observation.Tag[0], countTags
-from SensorEvent.win:time(30 sec)]]></programlisting>
+		<sect2 id="eventrep-xml-dom-schema">
+		   <title>Schema-Provided XML Events</title>
+		   
+		   <para>
+			   If you have an XSD schema document available for your XML events, Esper can interogate the schema. The benefits are:
+		   </para>
 
-		<para>
-			The equivalent XPath expressions to each of the properties are listed below.
-		</para>
-		<itemizedlist spacing="compact">
-			<listitem>
-				<para>
-					The equivalent XPath expression to <literal>Observeration.ID</literal> is <literal>/Sensor/Observation/ID</literal>
-				</para>
-			</listitem>
-			<listitem>
-				<para>
-					The equivalent XPath expression to <literal>Observeration.Command</literal> is <literal>/Sensor/Observation/@Command</literal>
-				</para>
-			</listitem>
-			<listitem>
-				<para>
-					The equivalent XPath expression to <literal>Observeration.Tag[0]</literal> is <literal>/Sensor/Observation/Tag[position() = 1]</literal>
-				</para>
-			</listitem>
-			<listitem>
-				<para>
-					The equivalent XPath expression to <literal>countTags</literal> is <literal>count(/Sensor/Observation/Tag)</literal> for returning a count of tag elements. This assumes the <literal>countTags</literal> property has been configured as an XPath property.
-				</para>
-			</listitem>
-		</itemizedlist>
+		   <itemizedlist spacing="compact">
+				<listitem>
+					<para>
+						New EPL statements that refer to event properties are validated against the types provided in the schema.
+					</para>
+				</listitem>
+				<listitem>
+					<para>
+						Event type metadata becomes available for retrieval.
+					</para>
+				</listitem>
+			</itemizedlist>
 
-		<para>
-			By specifying an event property such below:
-		</para>			
-		<programlisting><![CDATA[nestedElement.mappedElement('key').indexedElement[1]]]></programlisting>
+			<sect3 id="eventrep-xml-dom-schema-start">
+			   <title>Getting Started</title>
 
-		<para>
-			The equivalent XPath expression is as follows:
-		</para>
-		<programlisting><![CDATA[/simpleEvent/nestedElement/mappedElement[@id='key']/indexedElement[position() = 2]]]></programlisting>
+				<para>
+					The engine reads a XSD schema file from an URL you provide. Make sure files imported by the XSD schema file can also be resolved.
+				</para>
+	
+				<para>
+					The configuration accepts a schema URL. This is a sample code snippet to determine a schema URL from a file in classpath:
+				</para>
+	
+				<programlisting><![CDATA[URL schemaURL = this.getClass().getClassLoader().getResource("sensor.xsd");]]></programlisting>
+	
+				<para>
+					Here is a sample use of the runtime configuration API, please see <xref linkend="configuration"/> for further examples.
+				</para>
+	
+				<programlisting><![CDATA[epService = EPServiceProviderManager.getDefaultProvider();
+ConfigurationEventTypeXMLDOM typecfg = new ConfigurationEventTypeXMLDOM();
+typecfg.setRootElementName("Sensor");
+typecfg.setSchemaResource(schemaURL.toString());
+epService.getEPAdministrator().getConfiguration()
+    .addEventTypeAlias("SensorEvent", typecfg);]]></programlisting>
+
+				<para>
+					You must provide a root element name. This name is used to look up the event type for the <literal>sendEvent(org.w3c.Node node)</literal> method. An <literal>EventSender</literal> is a useful alternative method
+					for sending events if the lookup based on the root or document element name is not desired.
+				</para>
+
+				<para>
+					After configuring the event type, you may create statements and send events. Next is a sample statement:
+				</para>
+	
+				<programlisting><![CDATA[select ID, Observation.Command, Observation.ID, 
+  Observation.Tag[0].ID, Observation.Tag[1].ID
+from SensorEvent]]></programlisting>
+	
+				<para>
+					As you can see from the example above, the property expression syntax queries properties in the XML document's elements and attributes.
+				</para>
+	
+				<para>
+					There are multiple ways to obtain a XML DOM document instance from a XML event text. The next code snippet shows how to obtain a XML DOM <literal>org.w3c.Document</literal> instance from a XML string:
+				</para>
+				<programlisting><![CDATA[InputSource source = new InputSource(new StringReader(xml));
+DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
+builderFactory.setNamespaceAware(true);
+Document doc = builderFactory.newDocumentBuilder().parse(source)]]></programlisting>
+	
+				<para>
+					Send the <literal>org.w3c.Node</literal> or <literal>Document</literal> object (the latter implements the Node interface) in:
+				</para>
+				<programlisting><![CDATA[epService.getRuntime().sendEvent(doc);]]></programlisting>
+			</sect3>
+			
+			<sect3 id="eventrep-xml-dom-schema-propertyexpr">
+			   <title>Property Expressions and Namespaces</title>
+
+				<para>
+					By default, property expressions such as <literal>Observation.Tag[0].ID</literal> are evaluated by a fast DOM-walker implementation provided by Esper. This DOM-walker implementation is NOT namespace-aware.
+				</para>
+
+				<para>
+					When matching up the property names with the XSD schema information, the engine determines whether the attribute or element provides values. The algorithm checks attribute names first followed by element names. It takes the first match to the specified property name.
+				</para>
+
+				<para>
+					Should you require namespace-aware traversal of the DOM document, you must set the <literal>xpath-property-expr</literal> configuration option to true (default is false). This flag causes Esper to generate namespace-aware XPath
+					expressions from the property expression. Setting the <literal>xpath-property-expr</literal> requires that you configure namespace prefixes. 
+				</para>
+
+				<para>
+					The below table samples several property expressions and the XPath expression generated for each, without namespace prefixes to keep the example simple:
+				</para>
+				
+				<table frame="topbot">
+					<title>Property Expression to XPath Expression</title>
+					<tgroup cols="2">
+						<colspec colwidth="1.5*"/>
+						<colspec colwidth="1.5*"/>
+						<thead>
+							<row>
+								<entry>Property Expression</entry>
+								<entry>Equivalent XPath</entry>
+							</row>
+						</thead>
+						<tbody>
+							<row>
+								<entry><literal>Observeration.ID</literal></entry>
+								<entry><literal>/Sensor/Observation/ID</literal></entry>
+							</row>
+							<row>
+								<entry><literal>Observeration.Command</literal></entry>
+								<entry><literal>/Sensor/Observation/@Command</literal></entry>
+							</row>
+							<row>
+								<entry><literal>Observeration.Tag[0].ID</literal></entry>
+								<entry><literal>/Sensor/Observation/Tag[position() = 1]/ID</literal></entry>
+							</row>
+						</tbody>
+					</tgroup>
+				</table>
+				
+				<para> 
+					For mapped properties that are specified via the syntax <literal>name('key')</literal>, the algorithm looks for an attribute by name <literal>id</literal> and generates an XPath expression as <literal>mapped[@id='key']</literal>.
+				</para>
+
+				<para> 
+					Finally, here is an example that includes all different types of properties and their XPath expression equivalent in one property expression:
+				</para>
+				<programlisting><![CDATA[select nested.mapped('key').indexed[1].attribute from MyEvent
+// ... and the XPath for this including namespace prefix is...
+/n0:rootelement/n0:nested/n0:mapped[@id='key']/n0:indexed[position() = 2]/@attribute]]></programlisting>
+			</sect3>
+				
+			<sect3 id="eventrep-xml-dom-schema-propertyarray">
+			   <title>Array Properties</title>
+			   
+				<para>
+					All elements that are unbound or have max occurs greater then 1 in the XSD schema are represented as indexed properties and require an array element for resolution.
+				</para>	
+
+				<para>
+					For example, the following is not a valid property expression in the sample Sensor document: <literal>Observeration.Tag.ID</literal>. As no index is provided for <literal>Tag</literal>, such a statement would fail to create.
+				</para>	
+
+				<para>
+					Repeated elements within a parent element in which the repeated element is a simple type also gets represented as an array.
+				</para>	
+
+				<para>
+					Consider the next XML document:
+				</para>	
+
+				<programlisting><![CDATA[<item>
+  <book sku="8800090">
+    <author>Isaac Asimov</author>
+    <author>Robert A Heinlein</author>
+  </book>
+</item>]]></programlisting>
+
+				<para>
+					Here, the result of the expression <literal>book.author</literal> is an array of type String and the result of <literal>book.author[0]</literal> is a String value.
+				</para>
+
+			</sect3>
+
+			<sect3 id="eventrep-xml-dom-schema-propertydynamic">
+			   <title>Dynamic Properties</title>
+			   
+				<para>
+					  Dynamic properties are not validated aginst the XSD schema information and their result value is always <literal>org.w3c.Node</literal>. You may use a user-define function to process dynamic properties returning <literal>Node</literal> are configure explicit properties instead.
+				</para>
+
+				<para>
+					An example dynamic property is <literal>Origin?.ID</literal> which will look for an origin element that contains an ID element or attribute node.
+				</para>
+			</sect3>
+			
+			<sect3 id="eventrep-xml-dom-schema-propertytranspose">
+			   <title>Transposing Properties</title>
+			   
+				<para>
+					When providing an XSD document, the default configuration transposes property values that are themselves complex elements, as defined in the XSD schema, into a stream. This behavior can be controlled via the flag <literal>auto-fragment</literal>.
+				</para>
+				
+				<para>
+					For example, consider the next query:
+				</para>
+				<programlisting><![CDATA[insert into ObservationStream
+select ID, Observation from SensorEvent]]></programlisting>
+
+				<para>
+					The <literal>Observation</literal> as a property of the <literal>SensorEvent</literal> gets itself inserted into a new stream by name <literal>ObservationStream</literal>. The <literal>ObservationStream</literal>
+					thus consists of a string-typed <literal>ID</literal> property and an complex-typed (following the schema definition) property named <literal>Observation</literal>. 
+				</para>
+				<para>
+					A further statement can use this stream to query:
+				</para>
+				<programlisting><![CDATA[select Observation.Command, Observation.Tag[0].ID from ObservationStream]]></programlisting>
+
+				<para>
+					Before continuing the discussion, here is an alternative syntax using the wildcard-select, that is also useful:
+				</para>
+				<programlisting><![CDATA[insert into TagListStream
+select ID, Observation.* from SensorEvent]]></programlisting>
+
+				<para>
+					The new <literal>FurtherStream</literal> has string-typed <literal>ID</literal> property as well as a <literal>Command</literal> property and an array of <literal>Tag</literal> properties that are complex types themselves.
+				</para>
+				<para>
+					Next is a sample statement to query the new stream:
+				</para>
+				<programlisting><![CDATA[select ID, Command, Tag[0].ID from TagListStream]]></programlisting>
+				
+				<para>
+					Please note the following limitations:
+				</para>
+				<itemizedlist spacing="compact">
+					<listitem>
+						<para>
+							When using XPath property expressions via <literal>xpath-property-expr</literal> on transposed Nodes their expression is evaluated as absolute expression, not relative to the <literal>Node</literal> transposed.
+						</para>
+					</listitem>
+					<listitem>
+						<para>
+							Complex elements that have both simple element values and complex child elements are not transposed. This is to ensure their property value is not hidden. Use an explicit XPath expression to transpose such properties.
+						</para>
+					</listitem>
+				</itemizedlist>
+
+				<para>
+					Esper automatically registers a new event type for transposed properties. The type name is the XML event type name and the property names used in the expression. The synposis is is <emphasis>type_name.property_name[.property_name...]</emphasis>. This type name can be looked up for example for <literal>EventSender</literal> or could be created in advance with a different configuration.
+				</para>
+			</sect3>
+
+			<sect3 id="eventrep-xml-dom-eventsender">
+			   <title>Event Sender</title>
+			   
+				<para>
+					An <literal>EventSender</literal> sends events into the engine for a given type, saving a type lookup based on element name.
+				</para>
+
+				<para>
+					This brief example sends an event via <literal>EventSender</literal>:
+				</para>
+				<programlisting><![CDATA[EventSender sender = epRuntime.getEventSender("SensorEvent");
+sender.sendEvent(node);]]></programlisting>
+				
+				<para>
+					The XML DOM event sender checks the root element name before processing the event. Use the <literal>event-sender-validates-root</literal> setting to disable checking. This forces the engine to process XML documents according to any predefined type without validation of the root element name.
+				</para>
+			</sect3>
+
+		</sect2>
+
+		<sect2 id="eventrep-xml-dom-noschema">
+		   <title>No Schema Provided XML Events</title>
+		   
+		   <para>
+			   Without a schema document a XML event may still be queried. However there are important differences in the metadata available without a schema document and therefore the property expression results. These differences are outlined below.
+		   </para>
+
+			<para>
+				All property expressions against a XML type without schema are assumed valid, thereby an property expression compiles. At runtime, property expressions return string-type values or <literal>null</literal> if the expression did not
+				yield a matching element or attribute result.
+			</para>
+
+			<para>
+				Property expressions can be made namespace-aware via the expression rewrite to an XPath expression and the <literal>xpath-property-expr</literal>flag, as has been described earlier.
+			</para>
+
+			<para>
+				When asked for property names or property metadata, a no-schema XML event type returns empty array.
+			</para>
+		</sect2>
+		
+		<sect2 id="eventrep-xml-dom-explicit">
+		   <title>Explicitly-Configured Properties</title>
+		   
+		   <para>
+		     Regardless of whether or not you provide a XSD schema for the XML event type, you can always fall back to configuring explict properties that are backed by XPath expressions.
+		   </para>
+	
+		   <para>
+		     For further documentation on XPath, please consult the XPath standards or other online material. Fast XPath implementation may be used instead of the default Java implementation, such as Jaxen or Apache Axiom, for example.
+		   </para>
+
+			<sect3 id="eventrep-xml-dom-explicit-simple">
+			   <title>Simple Explicit Property</title>
+			   
+				<para>
+					Shown below is an example configuration that adds an explicit property backed by an XPath expression and defines namespace prefixes:
+				</para>
+	
+				<programlisting><![CDATA[epService = EPServiceProviderManager.getDefaultProvider();
+ConfigurationEventTypeXMLDOM typecfg = new ConfigurationEventTypeXMLDOM();
+typecfg.addXPathProperty("countTags", "count(/ss:Sensor/ss:Observation/ss:Tag)", XPathConstants.NUMBER);
+typecfg.addNamespacePrefix("ss", "SensorSchema");
+typecfg.setRootElementName("Sensor");
+epService.getEPAdministrator().getConfiguration()
+    .addEventTypeAlias("SensorEvent", typecfg);]]></programlisting>
+			   
+				<para>
+					The <literal>countTags</literal> property is now available for querying:
+				</para>
+				<programlisting><![CDATA[select countTags from SensorEvent]]></programlisting>
+			</sect3>
+
+			<sect3 id="eventrep-xml-dom-explicit-node">
+			   <title>Node and Nodeset Explicit Property</title>
+			   
+				<para>
+					An explicit property may return <literal>XPathConstants.NODE</literal> or <literal>XPathConstants.NODESET</literal> and can provide the event type name of a pre-configured event type for the property.
+				</para>
+	
+				<para>
+					Next we present the configuration code snippet:
+				</para>
+
+				<programlisting><![CDATA[ConfigurationEventTypeXMLDOM sensorcfg = new ConfigurationEventTypeXMLDOM();
+sensorcfg.addXPathPropertyFragment("TagArray", "//Tag)", XPathConstants.NODESET, "TagEvent");
+sensorcfg.addXPathPropertyFragment("TagOne", "//Tag[position() = 1]", XPathConstants.NODE, "TagEvent");
+sensorcfg.setRootElementName("Sensor");
+sensorcfg.setSchemaResource(schemaURL);
+epAdministrator.getConfiguration()
+    .addEventTypeAlias("SensorEvent", sensorcfg);]]></programlisting>
+			   
+				<para>
+					The <literal>TagEvent</literal> type must be configured in addition. Prefix the root element name with "//" to cause the lookup to search the nested schema elements for the definition of the type.
+				</para>
+
+				<programlisting><![CDATA[ConfigurationEventTypeXMLDOM tagcfg = new ConfigurationEventTypeXMLDOM();
+tagcfg.setRootElementName("//Tag");
+tagcfg.setSchemaResource(schemaURL);
+epAdministrator.getConfiguration()
+    .addEventTypeAlias("TagEvent", tagcfg);]]></programlisting>
+
+				<para>
+					The <literal>TagOne</literal> and <literal>TagArray</literal> properties are now ready for selection and transposing to further streams:
+				</para>
+
+				<programlisting><![CDATA[insert into TagOneStream select TagOne.* from SensorEvent
+// ... select from the new stream ...
+select ID from TagOneStream]]></programlisting>
+
+				<programlisting><![CDATA[insert into TagArrayStream select TagArray as mytags from SensorEvent
+// ... select from the new stream ...
+select mytags[0].ID from TagArrayStream]]></programlisting>
+
+			</sect3>
+		</sect2>
 
 	</sect1>
    
@@ -860,7 +1233,7 @@ such event metadata and event data into one of the built-in event representation
 		</para>
 
 		<para>
-			Further use of a plug-in event representation is to provide a faster or short-cut access path to event data. For example, access to event data stored in an XML format through the Streaming API for XML (StAX) is known to be very efficient. A plug-in event representation can also provide network lookup and dynamic resolution of event type and dynamic sourcing of event instances.
+			Further use of a plug-in event representation is to provide a faster or short-cut access path to event data. For example, access to event data stored in a XML format through the Streaming API for XML (StAX) is known to be very efficient. A plug-in event representation can also provide network lookup and dynamic resolution of event type and dynamic sourcing of event instances.
 		</para>
 		
 		<para>
