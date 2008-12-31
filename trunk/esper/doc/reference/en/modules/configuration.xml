@@ -508,9 +508,9 @@ configuration.addEventTypeAlias("MyXMLNodeEvent", desc);]]></programlisting>
 		  </sect3>
 
 			<sect3 id="config-xml-dom-xpathprop" revision="1">
-				<title>XPath Property</title>
+				<title>Explicit XPath Property</title>
 				<para>
-					 The <literal>xpath-property</literal> element adds event properties to the event type that are computed via an XPath expression.
+					 The <literal>xpath-property</literal> element adds explicitly-names event properties to the event type that are computed via an XPath expression.
 					 In order for the XPath expression to compile, be sure to specify the <literal>default-namespace</literal> attribute and use the 
 					 <literal>namespace-prefix</literal> to declare namespace prefixes.
 				</para>
@@ -534,6 +534,16 @@ configuration.addEventTypeAlias("MyXMLNodeEvent", desc);]]></programlisting>
 					<listitem>
 						<para>
 							boolean
+						</para>
+					</listitem>
+					<listitem>
+						<para>
+							node
+						</para>
+					</listitem>
+					<listitem>
+						<para>
+							nodeset
 						</para>
 					</listitem>
 				</itemizedlist>
@@ -614,6 +624,61 @@ desc.setXPathVariableResolver(MyXPathVariableResolver.class.getName());]]></prog
 						
 		  </sect3>
 
+			<sect3 id="config-xml-dom-autofragment" revision="1">
+				<title>Auto Fragment</title>
+				
+				<para>
+					This option is for use when a XSD schema is provided and determines whether the engine automatically creates an event type when a property expression transposes a property that is a complex type according to the schema.
+				</para>
+
+				<para>
+					An example:
+				</para>
+
+				<programlisting><![CDATA[ConfigurationEventTypeXMLDOM desc = new ConfigurationEventTypeXMLDOM();
+desc.setAutoFragment(false);]]></programlisting>
+						
+		  </sect3>
+		  
+		  <sect3 id="config-xml-dom-xpathpropertyexpr" revision="1">
+				<title>XPath Property Expression</title>
+				
+				<para>
+					By default Esper employs the built-in DOM walker implementation to evaluate XPath expressions, which is not namespace-aware.
+				</para>
+
+				<para>
+					This configuration setting, when set to true, instructs the engine to rewrite property expressions into XPath.
+				</para>
+
+				<para>
+					An example:
+				</para>
+
+				<programlisting><![CDATA[ConfigurationEventTypeXMLDOM desc = new ConfigurationEventTypeXMLDOM();
+desc.setXPathPropertyExpr(true);]]></programlisting>
+						
+		  </sect3>
+
+		  <sect3 id="config-xml-dom-eventsendervalidatesroot" revision="1">
+				<title>Event Sender Setting</title>
+				
+				<para>
+					By default an <literal>EventSender</literal> for a given XML event type validates the root element name for which the type has been declared against the one provided by the <literal>org.w3c.Node</literal> sent into the engine.
+				</para>
+
+				<para>
+					This configuration setting, when set to true, instructs an <literal>EventSender</literal> to not validate.
+				</para>
+
+				<para>
+					An example:
+				</para>
+
+				<programlisting><![CDATA[ConfigurationEventTypeXMLDOM desc = new ConfigurationEventTypeXMLDOM();
+desc.setEventSenderValidatesRoot(false);]]></programlisting>
+						
+		  </sect3>
 		</sect2>
 					
 		<sect2 id="config-plugineventrep" revision="1">
