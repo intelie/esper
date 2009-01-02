@@ -47,9 +47,19 @@ public class EPStatementSyntaxException extends EPStatementException
         }
 
         Token t;
+        Token tBefore = null;
+        Token tAfter = null;
         if (e.index < parser.getTokenStream().size())
         {
             t = parser.getTokenStream().get(e.index);
+            if ((e.index + 1) < parser.getTokenStream().size())
+            {
+                tAfter = parser.getTokenStream().get(e.index + 1);
+            }
+            if (e.index - 1 >= 0)
+            {
+                tBefore = parser.getTokenStream().get(e.index - 1);
+            }
         }
         else
         {
@@ -79,6 +89,21 @@ public class EPStatementSyntaxException extends EPStatementException
         if (keywords.contains(token.toLowerCase()))
         {
             token += " (a reserved keyword)";
+        }
+        else
+        {
+            if ((tBefore != null) &&
+                (tAfter != null) &&
+                (keywords.contains("'" + tBefore.getText().toLowerCase() + "'")) &&
+                (keywords.contains("'" + tAfter.getText().toLowerCase() + "'")))
+            {
+                token += " ('" + tBefore.getText() + "' and '" + tAfter.getText() + "' are a reserved keyword)";
+            }
+            else if ((tBefore != null) &&
+                     (keywords.contains("'" + tBefore.getText().toLowerCase() + "'")))
+            {
+                token += " ('" + tBefore.getText() + "' is a reserved keyword)";
+            }
         }
 
         String message = "Incorrect syntax near " + token + positionInfo + check;

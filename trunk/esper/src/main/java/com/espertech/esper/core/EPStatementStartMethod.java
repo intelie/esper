@@ -748,6 +748,11 @@ public class EPStatementStartMethod
         return new Pair<Viewable, EPStatementStopMethod>(finalView, stopMethod);
     }
 
+    /**
+     * Joins require a remove stream: therefore a view is required for each stream, since all views post a remove stream.
+     * <p>
+     * If a view is polling or unidirectional, it does not require a view.
+     */
     private void verifyJoinViews(List<StreamSpecCompiled> streamSpecs)
             throws ViewProcessingException
     {
