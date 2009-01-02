@@ -18,8 +18,7 @@ options
 @members {
   private static Log log = LogFactory.getLog(EsperEPL2Ast.class);
 
-  // For pattern processing within EPL and for create pattern
-  protected void setIsPatternWalk(boolean isPatternWalk) {};
+  // For pattern processing within EPL
   protected void endPattern() {};
 
   protected void pushStmtContext() {};
@@ -181,8 +180,12 @@ streamExpression
 	:	^(v=STREAM_EXPR (eventFilterExpr | patternInclusionExpression | databaseJoinExpression | methodJoinExpression) (viewListExpr)? (IDENT)? (UNIDIRECTIONAL)? (RETAINUNION|RETAININTERSECTION)? { leaveNode($v); } )
 	;
 
+eventFilterExpr
+	:	^( f=EVENT_FILTER_EXPR IDENT? CLASS_IDENT (valueExpr)* { leaveNode($f); } )
+	;
+	
 patternInclusionExpression
-	:	^(p=PATTERN_INCL_EXPR { setIsPatternWalk(true); } exprChoice { setIsPatternWalk(false); leaveNode($p); } )
+	:	^(p=PATTERN_INCL_EXPR exprChoice { leaveNode($p); } )
 	;
 	
 databaseJoinExpression
@@ -399,14 +402,14 @@ libFunc
 // pattern expression
 //----------------------------------------------------------------------------
 startPatternExpressionRule
-	:	{setIsPatternWalk(true);} exprChoice { endPattern(); end(); }
+	:	exprChoice { endPattern(); end(); }
 	;
 
 exprChoice
 	: 	atomicExpr
 	|	patternOp
 	| 	^( a=EVERY_EXPR exprChoice { leaveNode($a); } )
-	| 	^( n=NOT_EXPR exprChoice { leaveNode($n); } )
+	| 	^( n=PATTERN_NOT_EXPR exprChoice { leaveNode($n); } )
 	| 	^( g=GUARD_EXPR exprChoice IDENT IDENT valueExprWithTime* { leaveNode($g); } )
 	|	^( m=MATCH_UNTIL_EXPR matchUntilRange? exprChoice exprChoice? { leaveNode($m); } )
 	;
@@ -418,14 +421,14 @@ patternOp
 	;
 	
 atomicExpr
-	:	eventFilterExpr
+	:	patternFilterExpr
 	|   	^( ac=OBSERVER_EXPR IDENT IDENT valueExprWithTime* { leaveNode($ac); } )
 	;
 
-eventFilterExpr
-	:	^( f=EVENT_FILTER_EXPR IDENT? CLASS_IDENT (valueExpr)* { leaveNode($f); } )
+patternFilterExpr
+	:	^( f=PATTERN_FILTER_EXPR IDENT? CLASS_IDENT (valueExpr)* { leaveNode($f); } )
 	;
-	
+
 matchUntilRange
 	:	^(MATCH_UNTIL_RANGE_CLOSED matchUntilRangeParam matchUntilRangeParam)
 	| 	^(MATCH_UNTIL_RANGE_BOUNDED matchUntilRangeParam)

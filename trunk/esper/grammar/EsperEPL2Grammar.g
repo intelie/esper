@@ -110,6 +110,8 @@ tokens
    	OBJECT_PARAM_ORDERED_EXPR;
    	FOLLOWED_BY_EXPR;
    	ARRAY_PARAM_LIST;
+   	PATTERN_FILTER_EXPR;
+   	PATTERN_NOT_EXPR;
    	EVENT_FILTER_EXPR;
    	EVENT_FILTER_IDENT;
    	EVENT_FILTER_PARAM;
@@ -1005,8 +1007,11 @@ matchUntilExpression
 	;
 
 qualifyExpression
-	:	(EVERY_EXPR^ | NOT_EXPR^)?
+	:	(e=EVERY_EXPR | n=NOT_EXPR)?
 		guardPostFix
+		-> {e != null}? ^(EVERY_EXPR guardPostFix)
+		-> {n != null}? ^(PATTERN_NOT_EXPR guardPostFix)
+		-> guardPostFix
 	;
 	
 guardPostFix
@@ -1016,7 +1021,7 @@ guardPostFix
 	;
 
 atomicExpression
-	:	observerExpression | eventFilterExpression
+	:	observerExpression | patternFilterExpression
 	;
 		
 observerExpression
@@ -1068,6 +1073,15 @@ eventFilterExpression
     	classIdentifier
        	(LPAREN expressionList? RPAREN)?
        	-> ^(EVENT_FILTER_EXPR $i? classIdentifier expressionList?)
+    ;
+
+patternFilterExpression
+@init  { paraphrases.push("filter specification"); }
+@after { paraphrases.pop(); }
+    :   (i=IDENT EQUALS)?
+    	classIdentifier
+       	(LPAREN expressionList? RPAREN)?
+       	-> ^(PATTERN_FILTER_EXPR $i? classIdentifier expressionList?)
     ;
 
 classIdentifier

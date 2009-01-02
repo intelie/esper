@@ -306,8 +306,9 @@ public class EPAdministratorImpl implements EPAdministrator
         }
         catch (RuntimeException ex)
         {
-            log.error(".createEPL Error validating expression", ex);
-            throw new EPStatementException(ex.getMessage(), eplStatement);
+            String message = "Error in expression";
+            log.debug(message, ex);
+            throw new EPStatementException(getNullableErrortext(message, ex.getMessage()), eplStatement);
         }
 
         if (log.isDebugEnabled())
@@ -341,8 +342,9 @@ public class EPAdministratorImpl implements EPAdministrator
         }
         catch (RuntimeException ex)
         {
-            log.debug(".createPattern Error validating expression", ex);
-            throw new EPStatementException(ex.getMessage(), expression);
+            String message = "Error in expression";
+            log.debug(message, ex);
+            throw new EPStatementException(getNullableErrortext(message, ex.getMessage()), expression);
         }
 
         if (log.isDebugEnabled())
@@ -365,6 +367,18 @@ public class EPAdministratorImpl implements EPAdministrator
         statementSpec.getSelectClauseSpec().getSelectExprList().add(new SelectClauseElementWildcard());
 
         return statementSpec;
+    }
+
+    private static String getNullableErrortext(String msg, String cause)
+    {
+        if (cause == null)
+        {
+            return msg;
+        }
+        else
+        {
+            return msg + ": " + cause;
+        }        
     }
 
     private static Log log = LogFactory.getLog(EPAdministratorImpl.class);

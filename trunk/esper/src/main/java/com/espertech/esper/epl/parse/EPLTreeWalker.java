@@ -47,9 +47,6 @@ public class EPLTreeWalker extends EsperEPL2Ast
     private FilterSpecRaw filterSpec;
     private final List<ViewSpec> viewSpecs = new LinkedList<ViewSpec>();
 
-    // Pattern indicator dictates behavior for some AST nodes
-    private boolean isProcessingPattern;
-
     // AST Walk result
     private List<ExprSubstitutionNode> substitutionParamNodes = new ArrayList<ExprSubstitutionNode>();
     private StatementSpecRaw statementSpec;
@@ -124,19 +121,6 @@ public class EPLTreeWalker extends EsperEPL2Ast
     }
 
     /**
-     * Set to indicate that we are walking a pattern.
-     * @param isPatternWalk is true if walking a pattern
-     */
-    protected void setIsPatternWalk(boolean isPatternWalk)
-    {
-        if (log.isDebugEnabled())
-        {
-            log.debug(".setIsPatternWalk " + isPatternWalk);
-        }
-        isProcessingPattern = isPatternWalk;
-    }
-
-    /**
      * Leave AST node and process it's type and child nodes.
      * @param node is the node to complete
      * @throws ASTWalkException if the node tree walk operation failed
@@ -154,7 +138,10 @@ public class EPLTreeWalker extends EsperEPL2Ast
                 leaveStreamExpr(node);
                 break;
             case EVENT_FILTER_EXPR:
-                leaveFilter(node);
+                leaveStreamFilter(node);
+                break;
+            case PATTERN_FILTER_EXPR:
+                leavePatternFilter(node);
                 break;
             case PATTERN_INCL_EXPR:
                 return;
@@ -224,7 +211,10 @@ public class EPLTreeWalker extends EsperEPL2Ast
                 leaveCoalesce(node);
                 break;
             case NOT_EXPR:
-                leaveNot(node);
+                leaveExprNot(node);
+                break;
+            case PATTERN_NOT_EXPR:
+                leavePatternNot(node);
                 break;
             case SUM:
             case AVG:
@@ -1644,9 +1634,35 @@ public class EPLTreeWalker extends EsperEPL2Ast
         astPatternNodeMap.put(node, everyNode);
     }
 
-    private void leaveFilter(Tree node)
+    private void leaveStreamFilter(Tree node)
     {
-        log.debug(".leaveFilter");
+        log.debug(".leaveStreamFilter");
+
+        int count = 0;
+        Tree startNode = node.getChild(0);
+        if (startNode.getType() == IDENT)
+        {
+            startNode = node.getChild(++count);
+        }
+
+        // Determine event type
+        String eventName = startNode.getText();
+        count++;
+
+        List<ExprNode> exprNodes = getExprNodes(node, count);
+
+        FilterSpecRaw rawFilterSpec = new FilterSpecRaw(eventName, exprNodes);
+        // for event streams we keep the filter spec around for use when the stream definition is completed
+        filterSpec = rawFilterSpec;
+
+        // clear the sub-nodes for the filter since the event property expressions have been processed
+        // by building the spec
+        astExprNodeMap.clear();
+    }
+
+    private void leavePatternFilter(Tree node)
+    {
+        log.debug(".leavePatternFilter");
 
         int count = 0;
         Tree startNode = node.getChild(0);
@@ -1659,25 +1675,13 @@ public class EPLTreeWalker extends EsperEPL2Ast
 
         // Determine event type
         String eventName = startNode.getText();
+        count++;
 
-        Tree currentNode = node.getChild(++count);
         List<ExprNode> exprNodes = getExprNodes(node, count);
 
         FilterSpecRaw rawFilterSpec = new FilterSpecRaw(eventName, exprNodes);
-        if (isProcessingPattern)
-        {
-            EvalFilterNode filterNode = new EvalFilterNode(rawFilterSpec, optionalPatternTagName);
-            astPatternNodeMap.put(node, filterNode);
-        }
-        else
-        {
-            // for event streams we keep the filter spec around for use when the stream definition is completed
-            filterSpec = rawFilterSpec;
-
-            // clear the sub-nodes for the filter since the event property expressions have been processed
-            // by building the spec
-            astExprNodeMap.clear();
-        }
+        EvalFilterNode filterNode = new EvalFilterNode(rawFilterSpec, optionalPatternTagName);
+        astPatternNodeMap.put(node, filterNode);
     }
 
     private void leaveFollowedBy(Tree node)
@@ -1759,20 +1763,18 @@ public class EPLTreeWalker extends EsperEPL2Ast
         astExprNodeMap.put(node, regExpNode);
     }
 
-    private void leaveNot(Tree node)
+    private void leaveExprNot(Tree node)
     {
-        log.debug(".leaveNot");
+        log.debug(".leaveExprNot");
+        ExprNotNode notNode = new ExprNotNode();
+        astExprNodeMap.put(node, notNode);
+    }
 
-        if (isProcessingPattern)
-        {
-            EvalNotNode notNode = new EvalNotNode();
-            astPatternNodeMap.put(node, notNode);
-        }
-        else
-        {
-            ExprNotNode notNode = new ExprNotNode();
-            astExprNodeMap.put(node, notNode);
-        }
+    private void leavePatternNot(Tree node)
+    {
+        log.debug(".leavePatternNot");
+        EvalNotNode notNode = new EvalNotNode();
+        astPatternNodeMap.put(node, notNode);
     }
 
     private void leaveGuard(Tree node) throws ASTWalkException

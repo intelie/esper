@@ -851,8 +851,7 @@ epService.getEPAdministrator().getConfiguration().
 		</para>
 	
 		<programlisting><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
-<Sensor xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-      xsi:noNamespaceSchemaLocation="sensorSchema.xsd">
+<Sensor xmlns="SensorSchema">
   <ID>urn:epc:1:4.16.36</ID>
   <Observation Command="READ_PALLET_TAGS_ONLY">
     <ID>00000001</ID>

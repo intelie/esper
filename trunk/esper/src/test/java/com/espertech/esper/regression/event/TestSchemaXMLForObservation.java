@@ -1,20 +1,14 @@
 package com.espertech.esper.regression.event;
 
-import junit.framework.TestCase;
 import com.espertech.esper.client.*;
-import com.espertech.esper.support.util.SupportUpdateListener;
-import com.espertech.esper.support.util.ArrayAssertionUtil;
-import com.espertech.esper.support.event.EventTypeAssertionUtil;
 import com.espertech.esper.support.client.SupportConfigFactory;
-import org.w3c.dom.Node;
+import com.espertech.esper.support.event.EventTypeAssertionUtil;
+import com.espertech.esper.support.util.ArrayAssertionUtil;
+import com.espertech.esper.support.bean.SupportBean;
+import junit.framework.TestCase;
 import org.w3c.dom.Document;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.xml.sax.InputSource;
 
 import javax.xml.xpath.XPathConstants;
-import javax.xml.parsers.DocumentBuilderFactory;
-import java.io.StringReader;
 
 public class TestSchemaXMLForObservation extends TestCase
 {
@@ -34,7 +28,7 @@ public class TestSchemaXMLForObservation extends TestCase
             "\t\t</Tag>\n" +
             "\t</Observation>\n" +
             "</Sensor>";
-    
+
     public void testObservationExamplePropertyExpression() throws Exception
     {
         ConfigurationEventTypeXMLDOM typecfg = new ConfigurationEventTypeXMLDOM();

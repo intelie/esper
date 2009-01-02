@@ -266,7 +266,7 @@ public class TestAggregationFunctionPlugIn extends TestCase
         }
         catch (EPStatementException ex)
         {
-            assertEquals("Error resolving aggregation: Aggregation class by name 'java.lang.String' does not subclass AggregationSupport [select * from com.espertech.esper.support.bean.SupportBean group by xxx(1)]", ex.getMessage());
+            assertEquals("Error in expression: Error resolving aggregation: Aggregation class by name 'java.lang.String' does not subclass AggregationSupport [select * from com.espertech.esper.support.bean.SupportBean group by xxx(1)]", ex.getMessage());
         }
 
         try
@@ -276,7 +276,7 @@ public class TestAggregationFunctionPlugIn extends TestCase
         }
         catch (EPStatementException ex)
         {
-            assertEquals("Error resolving aggregation: Could not load aggregation class by name 'com.NoSuchClass' [select * from com.espertech.esper.support.bean.SupportBean group by yyy(1)]", ex.getMessage());
+            assertEquals("Error in expression: Error resolving aggregation: Could not load aggregation class by name 'com.NoSuchClass' [select * from com.espertech.esper.support.bean.SupportBean group by yyy(1)]", ex.getMessage());
         }
     }
 
@@ -312,7 +312,7 @@ public class TestAggregationFunctionPlugIn extends TestCase
 
     public void testInvalid()
     {
-        tryInvalid("select xxx(id) from A ", "Unknown method named 'xxx' could not be resolved [select xxx(id) from A ]");
+        tryInvalid("select xxx(id) from A ", "Error in expression: Unknown method named 'xxx' could not be resolved [select xxx(id) from A ]");
     }
 
     private void tryInvalid(String stmtText, String expectedMsg)
