@@ -2565,11 +2565,15 @@ select orderId, orderAmount from
 			</para>
 
 			<para>
-				Alternatively, applications can add the following tag to the SQL statement: <literal>${$ESPER-SAMPLE-WHERE}</literal>. If the tag  exists in the SQL statement, the engine does not perform lexical analysis and simply replaces the 
+				Alternatively, you can add the following tag to the SQL statement: <literal>${$ESPER-SAMPLE-WHERE}</literal>. If the tag  exists in the SQL statement, the engine does not perform lexical analysis and simply replaces the 
 				tag with the SQL <literal>where</literal> clause "where 1=0". Therefore this workaround is applicable to SQL statements that cannot be correctly lexically analyzed. The SQL text after the placeholder is not part of the sample query. For example:
 			</para>
 			<programlisting><![CDATA[select mycol from sql:myDB [
   'select mycol from mytesttable ${$ESPER-SAMPLE-WHERE} where ....'], ...]]></programlisting>
+
+			<para>
+				If your <emphasis>parameterized_sql_query</emphasis> SQL query contains multiple text lines or vendor-specific SQL syntax, generation of the metadata query may fail to produce a valid SQL statement. If you experience an SQL error while fetching metadata, use any of the above workarounds with the Oracle JDBC driver. 
+			</para>
 		</sect2>
 
 	</sect1>
