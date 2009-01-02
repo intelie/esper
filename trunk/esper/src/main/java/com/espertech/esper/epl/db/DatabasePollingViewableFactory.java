@@ -304,6 +304,7 @@ public class DatabasePollingViewableFactory
     protected static String lexSampleSQL(String querySQL)
                 throws ExprValidationException
     {
+        querySQL = querySQL.replaceAll("\\s\\s+|\\n|\\r", " ");
         StringReader reader = new StringReader(querySQL);
         CharStream input;
         try

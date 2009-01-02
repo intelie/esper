@@ -2572,7 +2572,7 @@ select orderId, orderAmount from
   'select mycol from mytesttable ${$ESPER-SAMPLE-WHERE} where ....'], ...]]></programlisting>
 
 			<para>
-				If your <emphasis>parameterized_sql_query</emphasis> SQL query contains multiple text lines or vendor-specific SQL syntax, generation of the metadata query may fail to produce a valid SQL statement. If you experience an SQL error while fetching metadata, use any of the above workarounds with the Oracle JDBC driver. 
+				If your <emphasis>parameterized_sql_query</emphasis> SQL query contains vendor-specific SQL syntax, generation of the metadata query may fail to produce a valid SQL statement. If you experience an SQL error while fetching metadata, use any of the above workarounds with the Oracle JDBC driver. 
 			</para>
 		</sect2>
 
