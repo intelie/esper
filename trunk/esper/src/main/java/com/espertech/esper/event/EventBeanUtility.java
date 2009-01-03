@@ -39,11 +39,11 @@ public class EventBeanUtility
         {
             return null;
         }
+        boolean isIndexed = propertyType.isArray();
         if (propertyType.isArray())
         {
             propertyType = propertyType.getComponentType();
         }
-        boolean isIndexed = propertyType.isArray();
         EventType type = eventAdapterService.getBeanEventTypeFactory().createBeanType(propertyType.getName(), propertyType, false);
         return new FragmentEventType(type, isIndexed, true);
     }
