@@ -2,7 +2,7 @@ package com.espertech.esper.client.util;
 
 import com.espertech.esper.client.EventBean;
 
-public interface JSONRenderer
+public interface JSONEventRenderer
 {
-    public String render(EventBean event);
+    public String render(String title, EventBean event);
 }

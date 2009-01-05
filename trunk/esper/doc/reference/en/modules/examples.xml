@@ -768,54 +768,6 @@ group by ID]]></programlisting>
 		</itemizedlist>
     </sect1>
     
-	<sect1 id="examples-linearroad" revision="2">
-        <title>LinearRoad</title>
-        
-        <para>
-			The Linear Road example is a very incomplete implementation of the Stream Data Management Benchmark [3] by Standford University. 
-        </para>
-
-        <para>
-			Linear Road simulates a toll system for the motor vehicle expressways of a large metropolitan area. The main event in this example is a car location report which the class
-			<literal>com.espertech.esper.example.linearroad.CarLocEvent</literal> represents. Currently the event stream joins are performed by JUnit test classes in the <literal>examples/test</literal> folder. See the <literal>com.espertech.esper.example.linearroad.TestAccidentNotify</literal> and the <literal>TestCarSegmentCount</literal> classes. Please consider this a work in progress.
-        </para>
-        
-		<para>
-			Summary:
-		</para>
-
-		<itemizedlist spacing="compact">
-			<listitem>
-				<para>
-                    Shows more complex joins between event streams.
-                </para>
-			</listitem>
-		</itemizedlist>        
-    </sect1>
     
-	<sect1 id="examples-stocktick-rsi" revision="2">
-        <title>StockTick RSI</title>
-        
-        <para>
-			The RSI gives you the trend for a stock and for more complete explanation, you can visit the link: http://www.stockcharts.com/education/IndicatorAnalysis/indic_RSI.html.
-		</para>
-		
-        <para>
-			After a definite number of stock events, or accumulation period, the first RSI is computed. Then for each subsequent stock event, the RSI calculations use the previous period’s Average Gain and Loss to determine the “smoothed RSI”.
-        </para>
-
-		<para>
-			Summary:
-		</para>
-
-		<itemizedlist spacing="compact">
-			<listitem>
-				<para>
-                    Uses a simple event pattern with a filter which feeds a listener that computes the RSI, which publishes events containing the computed RSI.
-                </para>
-			</listitem>
-		</itemizedlist>        
-    </sect1>
-
 </chapter>
 
