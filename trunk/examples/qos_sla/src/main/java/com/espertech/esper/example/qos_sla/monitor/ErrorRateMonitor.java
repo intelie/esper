@@ -16,7 +16,11 @@ import org.apache.commons.logging.LogFactory;
 
 public class ErrorRateMonitor
 {
-    public ErrorRateMonitor()
+    private ErrorRateMonitor()
+    {
+    }
+
+    public static void start()
     {
         EPAdministrator admin = EPServiceProviderManager.getDefaultProvider().getEPAdministrator();
 

@@ -12,18 +12,18 @@
    </appender>
 
    <!-- 
-   		Modify to DEBUG for more output, or INFO for less output 
-   	-->  
+    Modify to DEBUG for more output, or INFO for less output 
+   -->  
    <logger name="com.espertech.esper.example">
-      <level value="DEBUG"/>
+      <level value="INFO"/>
    </logger>
 
    <!-- 
-   		Disable output for specific listeners via this statement
+    Disable output for specific listeners via this statement
    <logger name="com.espertech.esper.example.transaction.RealtimeSummaryGroupListener">
       <level value="INFO"/>
    </logger>
-   	-->
+   -->
 
    <logger name="com.espertech.esper">
       <level value="WARN"/>

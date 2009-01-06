@@ -17,7 +17,11 @@ import com.espertech.esper.client.EventBean;
 
 public class SpikeAndErrorMonitor
 {
-    public SpikeAndErrorMonitor()
+    private SpikeAndErrorMonitor()
+    {
+    }
+
+    public static void start()
     {
         EPAdministrator admin = EPServiceProviderManager.getDefaultProvider().getEPAdministrator();
 

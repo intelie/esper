@@ -10,7 +10,7 @@ public class TestServiceHealthMonitor extends TestCase
 
     public void setUp()
     {
-        new ServiceHealthMonitor();
+        ServiceHealthMonitor.start();
         runtime = EPServiceProviderManager.getDefaultProvider().getEPRuntime();
     }
 

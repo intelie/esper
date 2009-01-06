@@ -10,4 +10,4 @@
 
 MEMORY_OPTIONS="-Xms128m -Xmx128m -server -XX:+UseParNewGC"
 
-$JAVA_HOME/bin/java $MEMORY_OPTIONS -Dlog4j.configuration=log4j.xml -cp ${CLASSPATH} com.espertech.esper.example.rfid.RFIDMouseDragExample $1 $2 $3
+$JAVA_HOME/bin/java $MEMORY_OPTIONS -Dlog4j.configuration=log4j.xml -cp ${CLASSPATH} com.espertech.esper.example.rfidassetzone.RFIDMouseDragExample $1 $2 $3

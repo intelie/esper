@@ -13,7 +13,7 @@ import com.espertech.esper.example.qos_sla.eventbean.OperationMeasurement;
 
 public class LatencySpikeMonitor
 {
-    private LatencySpikeMonitor() {};
+    private LatencySpikeMonitor() {}
 
     public static void start()
     {

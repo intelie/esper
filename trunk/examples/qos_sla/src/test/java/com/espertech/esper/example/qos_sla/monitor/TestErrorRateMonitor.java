@@ -10,7 +10,7 @@ public class TestErrorRateMonitor extends TestCase
 
     public void setUp()
     {
-        new ErrorRateMonitor();
+        ErrorRateMonitor.start();
         runtime = EPServiceProviderManager.getDefaultProvider().getEPRuntime();
     }
 

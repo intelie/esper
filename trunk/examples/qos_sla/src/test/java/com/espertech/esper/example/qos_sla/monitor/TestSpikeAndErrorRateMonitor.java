@@ -10,7 +10,7 @@ public class TestSpikeAndErrorRateMonitor extends TestCase
 
     public void setUp()
     {
-        new SpikeAndErrorMonitor();
+        SpikeAndErrorMonitor.start();
         runtime = EPServiceProviderManager.getDefaultProvider().getEPRuntime();
     }
 

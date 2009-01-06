@@ -61,7 +61,7 @@ public class TestStockTickerGenerator extends TestCase implements StockTickerReg
 
         final int NUM_EVENTS = 1000;
 
-        List stream = generator.makeEventStream(NUM_EVENTS, 1000, NUM_STOCK_NAMES);
+        List stream = generator.makeEventStream(NUM_EVENTS, 1000, NUM_STOCK_NAMES, 25, 30, 46, 54);
 
         assertTrue(stream.size() == (NUM_STOCK_NAMES * 2 + NUM_EVENTS));
     }

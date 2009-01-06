@@ -16,7 +16,11 @@ import org.apache.commons.logging.LogFactory;
 
 public class ServiceHealthMonitor
 {
-    public ServiceHealthMonitor()
+    private ServiceHealthMonitor()
+    {
+    }
+
+    public static void start()
     {
         EPAdministrator admin = EPServiceProviderManager.getDefaultProvider().getEPAdministrator();
 

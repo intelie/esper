@@ -13,7 +13,11 @@ import com.espertech.esper.example.qos_sla.eventbean.OperationMeasurement;
 
 public class AverageLatencyMonitor
 {
-    public AverageLatencyMonitor()
+    private AverageLatencyMonitor()
+    {
+    }
+
+    public static void start()
     {
         EPAdministrator admin = EPServiceProviderManager.getDefaultProvider().getEPAdministrator();
 

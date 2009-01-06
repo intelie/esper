@@ -14,7 +14,7 @@ public class TestAverageLatencyAlertMonitor extends TestCase
         Configuration config = new Configuration();
         config.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
 
-        new AverageLatencyMonitor();
+        AverageLatencyMonitor.start();
         runtime = EPServiceProviderManager.getDefaultProvider(config).getEPRuntime();
     }
 
