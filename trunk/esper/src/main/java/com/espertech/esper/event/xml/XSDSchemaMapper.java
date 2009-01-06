@@ -15,6 +15,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
+/**
+ * Helper class for mapping a XSD schema model to an internal representation.
+ */
 public class XSDSchemaMapper
 {
     private static final Log log = LogFactory.getLog(XSDSchemaMapper.class);

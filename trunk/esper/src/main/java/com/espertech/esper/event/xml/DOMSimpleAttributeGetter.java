@@ -6,10 +6,17 @@ import com.espertech.esper.client.PropertyAccessException;
 import org.w3c.dom.Node;
 import org.w3c.dom.NamedNodeMap;
 
+/**
+ * Getter for simple attributes in a DOM node.
+ */
 public class DOMSimpleAttributeGetter implements EventPropertyGetter, DOMPropertyGetter
 {
     private final String propertyName;
 
+    /**
+     * Ctor.
+     * @param propertyName property name
+     */
     public DOMSimpleAttributeGetter(String propertyName)
     {
         this.propertyName = propertyName;

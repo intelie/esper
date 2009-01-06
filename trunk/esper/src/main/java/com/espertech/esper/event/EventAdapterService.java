@@ -184,6 +184,7 @@ public interface EventAdapterService
     /**
      * Returns an adapter for the XML DOM document that exposes it's data as event properties for use in statements.
      * @param node is the node to wrap
+     * @param eventType the event type associated with the node
      * @return event wrapper for document
      */
     public EventBean adapterForTypedDOM(Node node, EventType eventType);
@@ -202,6 +203,7 @@ public interface EventAdapterService
      * Adds an XML DOM event type.
      * @param eventTypeAlias is the alias to add the type for
      * @param configurationEventTypeXMLDOM is the XML DOM config info
+     * @param optionalSchemaModel is the object model of the schema, or null in none provided
      * @return event type
      */
     public EventType addXMLDOMType(String eventTypeAlias, ConfigurationEventTypeXMLDOM configurationEventTypeXMLDOM, SchemaModel optionalSchemaModel);
@@ -300,6 +302,4 @@ public interface EventAdapterService
      * @return event type
      */
     public EventType createSemiAnonymousMapType(Map<String, Pair<EventType, String>> taggedEventTypes, Map<String, Pair<EventType, String>> arrayEventTypes, boolean isUsedByChildViews);
-
-    public EventType getXMLDOMType(String rootElementPath);
 }

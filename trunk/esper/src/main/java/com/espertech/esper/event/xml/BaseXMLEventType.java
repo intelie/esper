@@ -45,6 +45,7 @@ public abstract class BaseXMLEventType extends BaseConfigurableEventType {
      * Ctor.
      * @param configurationEventTypeXMLDOM is the XML DOM configuration such as root element and schema names
      * @param metadata event type metadata
+     * @param eventAdapterService for registration and lookup of types
      */
     public BaseXMLEventType(EventTypeMetadata metadata, ConfigurationEventTypeXMLDOM configurationEventTypeXMLDOM, EventAdapterService eventAdapterService)
     {
@@ -101,6 +102,7 @@ public abstract class BaseXMLEventType extends BaseConfigurableEventType {
     /**
      * Set the preconfigured event properties resolved by XPath expression.
      * @param explicitXPathProperties are preconfigured event properties
+     * @param additionalSchemaProperties the explicit properties
      */
     protected void initialize(Collection<ConfigurationEventTypeXMLDOM.XPathPropertyDesc> explicitXPathProperties,
                               List<ExplicitPropertyDescriptor> additionalSchemaProperties)

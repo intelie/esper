@@ -50,6 +50,7 @@ public class SchemaXMLEventType extends BaseXMLEventType
      * @param config - configuration for type
      * @param eventTypeMetadata - event type metadata
      * @param schemaModel - the schema representation
+     * @param eventAdapterService - type lookup and registration
      */
     public SchemaXMLEventType(EventTypeMetadata eventTypeMetadata, ConfigurationEventTypeXMLDOM config, SchemaModel schemaModel, EventAdapterService eventAdapterService)
     {
@@ -157,7 +158,7 @@ public class SchemaXMLEventType extends BaseXMLEventType
         String eventTypeName = eventTypeNameBuilder.toString();
 
         // check if the type exists, use the existing type if found
-        EventType existingType = this.getEventAdapterService().getXMLDOMType(eventTypeName.toString());
+        EventType existingType = this.getEventAdapterService().getExistsTypeByAlias(eventTypeName.toString());
         if (existingType != null)
         {
             return new FragmentEventType(existingType, complex.isArray(), false);
@@ -194,7 +195,7 @@ public class SchemaXMLEventType extends BaseXMLEventType
         return doResolvePropertyType(propertyExpression, false);
     }
 
-    protected Class doResolvePropertyType(String propertyExpression, boolean allowSimpleProperties) {
+    private Class doResolvePropertyType(String propertyExpression, boolean allowSimpleProperties) {
 
         // see if this is an indexed property
         int index = ASTFilterSpecHelper.unescapedIndexOfDot(propertyExpression);

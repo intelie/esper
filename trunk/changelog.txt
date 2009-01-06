@@ -30,6 +30,7 @@ With Esper 3 integer division returns Double values, and Integer division can be
   - Correct problem in index[1] being index 0 array element
   - dynamic properties return Node
 - Removed examples: LinearRoad, RSI, ATM; Added new examples, added Eclipse project
+- Added XML and JSON renderers
   
 Changes in version 2.3
 ------------------------
@@ -473,6 +474,7 @@ This enabled event patterns and EQL to use short event names not requiring makin
 version 0.7.0
 -------------
 Initial alpha version
+
 
 
 

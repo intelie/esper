@@ -11,19 +11,27 @@ package com.espertech.esper.event.xml;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventPropertyGetter;
 import com.espertech.esper.client.PropertyAccessException;
-import com.espertech.esper.event.xml.FragmentFactory;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+/**
+ * DOM getter for Map-property.
+ */
 public class DOMMapGetter implements EventPropertyGetter, DOMPropertyGetter
 {
     private final String propertyMap;
     private final String mapKey;
     private final FragmentFactory fragmentFactory;
 
-    public DOMMapGetter(String propertyMap, String mapKey, FragmentFactory fragmentFactory)
+    /**
+     * Ctor.
+     * @param propertyName property name
+     * @param mapKey key in map
+     * @param fragmentFactory for creating fragments
+     */
+    public DOMMapGetter(String propertyName, String mapKey, FragmentFactory fragmentFactory)
     {
-        this.propertyMap = propertyMap;
+        this.propertyMap = propertyName;
         this.mapKey = mapKey;
         this.fragmentFactory = fragmentFactory;
     }

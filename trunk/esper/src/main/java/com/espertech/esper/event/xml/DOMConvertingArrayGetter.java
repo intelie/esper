@@ -9,12 +9,20 @@ import org.w3c.dom.Node;
 
 import java.lang.reflect.Array;
 
+/**
+ * Getter for converting a Node child nodes into an array.
+ */
 public class DOMConvertingArrayGetter implements EventPropertyGetter
 {
     private final DOMPropertyGetter getter;
     private final Class componentType;
     private final SimpleTypeParser parser;
 
+    /**
+     * Ctor.
+     * @param domPropertyGetter getter
+     * @param returnType component type
+     */
     public DOMConvertingArrayGetter(DOMPropertyGetter domPropertyGetter, Class returnType)
     {
         this.getter = domPropertyGetter;

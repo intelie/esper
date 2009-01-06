@@ -11,19 +11,27 @@ package com.espertech.esper.event.xml;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventPropertyGetter;
 import com.espertech.esper.client.PropertyAccessException;
-import com.espertech.esper.event.xml.FragmentFactory;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+/**
+ * Getter for retrieving a value at a certain index.
+ */
 public class DOMIndexedGetter implements EventPropertyGetter, DOMPropertyGetter
 {
     private final String propertyName;
     private final int index;
     private final FragmentFactory fragmentFactory;
 
-    public DOMIndexedGetter(String propertyMap, int index, FragmentFactory fragmentFactory)
+    /**
+     * Ctor.
+     * @param propertyName property name
+     * @param index index
+     * @param fragmentFactory for creating fragments if required
+     */
+    public DOMIndexedGetter(String propertyName, int index, FragmentFactory fragmentFactory)
     {
-        this.propertyName = propertyMap;
+        this.propertyName = propertyName;
         this.index = index;
         this.fragmentFactory = fragmentFactory;
     }

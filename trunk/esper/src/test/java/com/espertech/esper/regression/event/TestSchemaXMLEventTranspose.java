@@ -143,7 +143,7 @@ public class TestSchemaXMLEventTranspose extends TestCase
             new EventPropertyDescriptor("prop1", String.class, false, false, false, false, false),
             new EventPropertyDescriptor("prop2", Boolean.class, false, false, false, false, false),
             new EventPropertyDescriptor("attr1", String.class, false, false, false, false, false),
-            new EventPropertyDescriptor("prop3", Integer[].class, false, false, false, false, false),
+            new EventPropertyDescriptor("prop3", Integer[].class, false, false, true, false, false),
             new EventPropertyDescriptor("prop3_0", Integer.class, false, false, false, false, false),
             new EventPropertyDescriptor("nested2", Node.class, false, false, false, false, true),
            }, stmtSelect.getEventType().getPropertyDescriptors());

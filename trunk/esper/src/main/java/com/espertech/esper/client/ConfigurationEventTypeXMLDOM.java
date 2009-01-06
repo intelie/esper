@@ -15,11 +15,10 @@ import com.espertech.esper.util.MetaDefItem;
 import javax.xml.namespace.QName;
 import javax.xml.xpath.XPathConstants;
 import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.LinkedHashMap;
-import java.util.Arrays;
 import java.lang.reflect.Array;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * Configuration object for enabling the engine to process events represented as XML DOM document nodes.
@@ -159,31 +158,65 @@ public class ConfigurationEventTypeXMLDOM implements MetaDefItem, Serializable
         return xPathProperties;
     }
 
+    /**
+     * Returns false to indicate that property expressions are evaluated by the DOM-walker
+     * implementation (the default), or true to  indicate that property expressions are rewritten into XPath expressions.
+     * @return indicator how property expressions are evaluated
+     */
     public boolean isXPathPropertyExpr()
     {
         return isXPathPropertyExpr;
     }
 
-    public void setXPathPropertyExpr(boolean XPathPropertyExpr)
+    /**
+     * Set to false to indicate that property expressions are evaluated by the DOM-walker
+     * implementation (the default), or set to true to indicate that property expressions are rewritten into XPath expressions.
+     * @param xPathPropertyExpr indicator how property expressions are evaluated
+     */
+    public void setXPathPropertyExpr(boolean xPathPropertyExpr)
     {
-        isXPathPropertyExpr = XPathPropertyExpr;
+        isXPathPropertyExpr = xPathPropertyExpr;
     }
 
+    /**
+     * Returns true to indicate that an {@link EventSender} returned for this event type validates
+     * the root document element name against the one configured (the default), or false to not validate the root document
+     * element name as configured.
+     * @return true for validation of root document element name by event sender, false for no validation 
+     */
     public boolean isEventSenderValidatesRoot()
     {
         return isEventSenderValidatesRoot;
     }
 
+    /**
+     * Set to true to indicate that an {@link EventSender} returned for this event type validates
+     * the root document element name against the one configured (the default), or false to not validate the root document
+     * element name as configured.
+     * @param eventSenderValidatesRoot true for validation of root document element name by event sender, false for no validation
+     */
     public void setEventSenderValidatesRoot(boolean eventSenderValidatesRoot)
     {
         isEventSenderValidatesRoot = eventSenderValidatesRoot;
     }
 
+    /**
+     * Set to true (the default) to look up or create event types representing fragments of an XML document
+     * automatically upon request for fragment event type information; Or false when only explicit
+     * properties may return fragments.
+     * @return indicator whether to allow splitting-up (fragmenting) properties (nodes) in an document
+     */
     public boolean isAutoFragment()
     {
         return isAutoFragment;
     }
 
+    /**
+     * Set to true (the default) to look up or create event types representing fragments of an XML document 
+     * automatically upon request for fragment event type information; Or false when only explicit
+     * properties may return fragments.
+     * @param autoFragment indicator whether to allow splitting-up (fragmenting) properties (nodes) in an document
+     */
     public void setAutoFragment(boolean autoFragment)
     {
         isAutoFragment = autoFragment;
@@ -244,6 +277,15 @@ public class ConfigurationEventTypeXMLDOM implements MetaDefItem, Serializable
         xPathProperties.put(name, desc);
     }
 
+    /**
+     * Adds an event property for which the engine uses the supplied XPath expression against
+     * a DOM document node to resolve a property value.
+     * @param name of the event property
+     * @param xpath is an arbitrary xpath expression
+     * @param type is a constant obtained from javax.xml.xpath.XPathConstants. Typical values are
+     * XPathConstants.NODE and XPathConstants.NODESET.
+     * @param eventTypeAlias is the name of another event type that represents the XPath nodes
+     */
     public void addXPathPropertyFragment(String name, String xpath, QName type, String eventTypeAlias)
     {
         if ((type != XPathConstants.NODE) && (type != XPathConstants.NODESET))
@@ -437,6 +479,10 @@ public class ConfigurationEventTypeXMLDOM implements MetaDefItem, Serializable
             return optionalCastToType;
         }
 
+        /**
+         * Returns the event type name assigned to the explicit property.
+         * @return type name
+         */
         public String getOptionalEventTypeAlias()
         {
             return optionalEventTypeAlias;

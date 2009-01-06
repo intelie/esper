@@ -10,6 +10,9 @@ import org.apache.commons.logging.LogFactory;
 import java.lang.reflect.Array;
 import java.util.Stack;
 
+/**
+ * Render for the JSON format.
+ */
 public class JSONRendererImpl implements JSONEventRenderer
 {
     private static final Log log = LogFactory.getLog(JSONRendererImpl.class);
@@ -17,6 +20,11 @@ public class JSONRendererImpl implements JSONEventRenderer
     private final static String COMMA_DELIMITER_NEWLINE = "," + NEWLINE;
     private final RendererMeta meta;
 
+    /**
+     * Ctor.
+     * @param eventType type of event(s)
+     * @param options rendering options
+     */
     public JSONRendererImpl(EventType eventType, JSONRenderingOptions options)
     {
         meta = new RendererMeta(eventType, new Stack<EventTypePropertyPair>(), new RendererMetaOptions(options.isPreventLooping(), false));

@@ -1806,4 +1806,89 @@ EPStatement statement = epService.getEPAdministrator().create(prepared);]]></pro
 
   </sect1>
 
+	<sect1 id="api-output-rendering">
+		<title>Event Rendering to XML and JSON</title>
+		
+		<para>
+			Your application may use the built-in XML and JSON formatters to render output events into a readable textual format, such as for integration or debugging purposes. This section introduces the utility classes in the client <literal>util</literal> package for rendering events to strings. Further API information can be found in the JavaDocs.
+		</para>
+
+		<para>
+			The <literal>EventRendererProvider</literal> class provides access to JSON and XML rendering. For repeated rendering of events of the same event type or subtypes, it is recommended to obtain a <literal>JSONEventRenderer</literal> or <literal>XMLEventRenderer</literal> instance and use the <literal>render</literal> method provided by the interface. This allows the renderer implementations to cache event type metadata for fast rendering.
+		</para>
+
+		<para>
+			In this example we show how one may obtain a renderer for repeated rendering of events of the same type, assuming that <literal>statement</literal> is an instance of <literal>EPStatement</literal>:
+		</para>
+		<programlisting><![CDATA[JSONEventRenderer renderer = EventRendererProvider.getJSONRenderer(statement.getEventType());]]></programlisting>
+
+		<para>
+			Assuming that <literal>event</literal> is an instance of <literal>EventBean</literal>, this code snippet renders an event into the JSON format:
+		</para>
+		<programlisting><![CDATA[String jsonEventText = renderer.render("MyEvent", event);]]></programlisting>
+
+		<para>
+			The XML renderer works the same:
+		</para>
+		<programlisting><![CDATA[XMLEventRenderer renderer = EventRendererProvider.getXMLRenderer(statement.getEventType());]]></programlisting>
+
+		<para>
+			...and...
+		</para>
+		<programlisting><![CDATA[String xmlEventText = renderer.render("MyEvent", event);]]></programlisting>
+		
+		<para>
+			If the event type is not known in advance or if you application does not want to obtain a renderer instance per event type for fast rendering, your application can use one of the following methods to render an event to a XML or JSON textual format:
+		</para>
+		<programlisting><![CDATA[String json = EventRendererProvider.renderJSON(event);
+String xml = EventRendererProvider.renderXML(event);]]></programlisting>
+
+		<para>
+			Use the <literal>JSONRenderingOptions</literal> or <literal>XMLRenderingOptions</literal> classes to control how events are rendered.
+		</para>
+				
+		<sect2 id="api-output-rendering-json">
+			<title>JSON Event Rendering Conventions and Options</title>
+			
+			<para>
+				The JSON renderer produces JSON text according to the standard documented at <literal>http://www.json.org</literal>.
+			</para>
+
+			<para>
+				The renderer formats simple properties as well as nested properties and indexed properties according to the JSON string encoding, array encoding and nested object encoding requirements.
+			</para>
+
+			<para>
+				The renderer does not format properties that require an index for access. For example, if your event representation is backed by POJO objects and your getter method is <literal>getValue(int index)</literal>, the indexed property values are not part of the JSON text.
+			</para>
+
+			<para>
+				The renderer does not format properties of type Map (except for the Map event representation) or that require a Map key for access. For example, if your event representation is backed by POJO objects and your getter method is <literal>getValue(String key)</literal>, the mapped property values are not part of the JSON text.
+			</para>
+		</sect2>
+
+		<sect2 id="api-output-rendering-xml">
+			<title>XML Event Rendering Conventions and Options</title>
+			
+			<para>
+				The XML renderer produces well-formed XML text according to the XML standard.
+			</para>
+
+			<para>
+				The renderer can be configured to format simple properties as attributes or as elements. Nested properties and indexed properties are always represented as XML sub-elements to the root or parent element.
+			</para>
+
+			<para>
+				The root element name provided to the XML renderer must be the element name of the root in the XML document and may include namespace instructions.
+			</para>
+
+			<para>
+				The renderer does not format properties that require an index for access. For example, if your event representation is backed by POJO objects and your getter method is <literal>getValue(int index)</literal>, the indexed property values are not part of the XML text.
+			</para>
+
+			<para>
+				The renderer does not format properties of type Map (except for the Map event representation) or that require a Map key for access. For example, if your event representation is backed by POJO objects and your getter method is <literal>getValue(String key)</literal>, the mapped property values are not part of the XML text.
+			</para>
+		</sect2>
+	</sect1>
 </chapter>

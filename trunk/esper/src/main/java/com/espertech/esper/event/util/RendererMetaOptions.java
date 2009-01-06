@@ -1,32 +1,37 @@
 package com.espertech.esper.event.util;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import com.espertech.esper.client.util.JSONRenderingOptions;
-import com.espertech.esper.client.EventType;
-import com.espertech.esper.client.EventPropertyDescriptor;
-import com.espertech.esper.client.EventPropertyGetter;
-import com.espertech.esper.client.FragmentEventType;
-
-import java.util.Stack;
-import java.util.ArrayList;
-
+/**
+ * Options for use by {@link RendererMeta} with rendering metadata.
+ */
 public class RendererMetaOptions
 {
     private final boolean isXMLOutput;
     private final boolean preventLooping;
 
+    /**
+     * Ctor.
+     * @param preventLooping true to prevent looping
+     * @param isXMLOutput true for XML output
+     */
     public RendererMetaOptions(boolean preventLooping, boolean isXMLOutput)
     {
         this.preventLooping = preventLooping;
         this.isXMLOutput = isXMLOutput;
     }
 
+    /**
+     * Returns true to prevent looping.
+     * @return prevent looping indicator
+     */
     public boolean isPreventLooping()
     {
         return preventLooping;
     }
 
+    /**
+     * Returns true for XML output.
+     * @return XML output flag
+     */
     public boolean isXMLOutput()
     {
         return isXMLOutput;

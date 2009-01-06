@@ -3,8 +3,9 @@ package com.espertech.esper.regression.event;
 import com.espertech.esper.client.EPServiceProvider;
 import com.espertech.esper.client.EPServiceProviderManager;
 import com.espertech.esper.client.EPStatement;
-import com.espertech.esper.client.util.EventRendererFactory;
-import com.espertech.esper.event.util.JSONOutputString;
+import com.espertech.esper.client.util.EventRendererProvider;
+import com.espertech.esper.client.util.JSONEventRenderer;
+import com.espertech.esper.event.util.OutputValueRendererJSONString;
 import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.bean.SupportBean_A;
 import com.espertech.esper.support.client.SupportConfigFactory;
@@ -35,11 +36,15 @@ public class TestEventRendererJSON extends TestCase
         EPStatement statement = epService.getEPAdministrator().createEPL("select * from SupportBean");
         epService.getEPRuntime().sendEvent(bean);
         
-        String result = EventRendererFactory.renderJSON("supportBean", statement.iterator().next());
+        String result = EventRendererProvider.renderJSON("supportBean", statement.iterator().next());
 
         //System.out.println(result);
         String expected = "{ \"supportBean\": { \"boolBoxed\": null, \"boolPrimitive\": false, \"byteBoxed\": null, \"bytePrimitive\": 0, \"charBoxed\": null, \"charPrimitive\": \"x\", \"doubleBoxed\": null, \"doublePrimitive\": 0.0, \"enumValue\": null, \"floatBoxed\": null, \"floatPrimitive\": 0.0, \"intBoxed\": 992, \"intPrimitive\": 1, \"longBoxed\": null, \"longPrimitive\": 0, \"shortBoxed\": null, \"shortPrimitive\": 0, \"string\": \"a\\nc\", \"this\": { \"boolBoxed\": null, \"boolPrimitive\": false, \"byteBoxed\": null, \"bytePrimitive\": 0, \"charBoxed\": null, \"charPrimitive\": \"x\", \"doubleBoxed\": null, \"doublePrimitive\": 0.0, \"enumValue\": null, \"floatBoxed\": null, \"floatPrimitive\": 0.0, \"intBoxed\": 992, \"intPrimitive\": 1, \"longBoxed\": null, \"longPrimitive\": 0, \"shortBoxed\": null, \"shortPrimitive\": 0, \"string\": \"a\\nc\" } } }";
         assertEquals(removeNewline(expected), removeNewline(result));
+        
+        JSONEventRenderer renderer = EventRendererProvider.getJSONRenderer(statement.getEventType());
+        String jsonEvent = renderer.render("supportBean", statement.iterator().next());
+        assertEquals(removeNewline(expected), removeNewline(jsonEvent));
     }
 
     public void testMapAndNestedArray()
@@ -71,7 +76,7 @@ public class TestEventRendererJSON extends TestCase
         dataOuter.put("innerarray", new Map[] {dataInner, dataInnerTwo});
         epService.getEPRuntime().sendEvent(dataOuter, "OuterMap");
 
-        String result = EventRendererFactory.renderJSON("outerMap", statement.iterator().next());
+        String result = EventRendererProvider.renderJSON("outerMap", statement.iterator().next());
 
         //System.out.println(result);
         String expected = "{\n" +
@@ -109,7 +114,7 @@ public class TestEventRendererJSON extends TestCase
         for (int i = 0; i < testdata.length; i++)
         {
             StringBuilder buf = new StringBuilder();
-            JSONOutputString.enquote(testdata[i][0], buf);
+            OutputValueRendererJSONString.enquote(testdata[i][0], buf);
             assertEquals(testdata[i][1], buf.toString());
         }
     }

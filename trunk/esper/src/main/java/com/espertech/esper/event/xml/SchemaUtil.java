@@ -11,18 +11,16 @@ package com.espertech.esper.event.xml;
 import com.espertech.esper.client.EPException;
 import com.espertech.esper.client.PropertyAccessException;
 import com.sun.org.apache.xerces.internal.impl.dv.XSSimpleType;
+import org.w3c.dom.*;
 
 import javax.xml.namespace.QName;
 import javax.xml.xpath.XPathConstants;
-
-import org.w3c.dom.*;
-
-import java.lang.reflect.Array;
-import java.io.StringWriter;
 import java.io.IOException;
+import java.io.StringWriter;
 import java.io.Writer;
-import java.util.Map;
+import java.lang.reflect.Array;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Utility class for querying schema information via Xerces implementation classes.
@@ -63,6 +61,11 @@ public class SchemaUtil {
         }        
     }
 
+    /**
+     * Returns the Class-type of the schema item.
+     * @param item to to determine type for
+     * @return type
+     */
     public static Class toReturnType(SchemaItem item)
     {
         if (item instanceof SchemaItemAttribute)
@@ -99,6 +102,12 @@ public class SchemaUtil {
         }
     }
 
+    /**
+     * Returns the type for a give short type and type name.
+     * @param xsType XSSimplyType type
+     * @param typeName type name in XML standard
+     * @return equivalent native type
+     */
     public static Class toReturnType(short xsType, String typeName)
     {
         if (typeName != null)
@@ -127,6 +136,12 @@ public class SchemaUtil {
         }
     }
 
+    /**
+     * Returns the native type based on XPathConstants qname and an optional cast-to type, if provided.
+     * @param resultType qname
+     * @param optionalCastToType null or cast-to type
+     * @return return type
+     */
     public static Class toReturnType(QName resultType, Class optionalCastToType)
     {
         if (optionalCastToType != null)

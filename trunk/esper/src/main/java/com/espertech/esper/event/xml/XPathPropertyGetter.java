@@ -45,9 +45,11 @@ public class XPathPropertyGetter implements EventPropertyGetter
     /**
      * Ctor.
      * @param propertyName is the name of the event property for which this getter gets values
+     * @param expressionText is the property expression itself
      * @param xPathExpression is a compile XPath expression
      * @param resultType is the resulting type
      * @param optionalCastToType if non-null then the return value of the xpath expression is cast to this value
+     * @param fragmentFactory for creating fragments, or null in none to be created
      */
     public XPathPropertyGetter(String propertyName, String expressionText, XPathExpression xPathExpression, QName resultType, Class optionalCastToType, FragmentFactory fragmentFactory) {
 		this.expression = xPathExpression;

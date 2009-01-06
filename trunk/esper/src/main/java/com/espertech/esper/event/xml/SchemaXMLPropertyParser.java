@@ -43,10 +43,22 @@ public class SchemaXMLPropertyParser
      * @param schemaModel is the schema model
      * @param xPathFactory is the xpath factory instance to use
      * @param rootElementName is the name of the root element
+     * @param eventAdapterService for type lookup and creation
+     * @param xmlEventType the resolving type
+     * @param isAllowFragment whether fragmenting is allowed
+     * @param defaultNamespace default namespace
      * @return xpath expression
-     * @throws XPathExpressionException when the XPath expression is invalid
+     * @throws EPException is there are XPath errors
      */
-    public static EventPropertyGetter getXPathResolution(String propertyName, XPathFactory xPathFactory, String rootElementName, String namespace, SchemaModel schemaModel, EventAdapterService eventAdapterService, BaseXMLEventType xmlEventType, boolean isAllowFragment, String defaultNamespace) throws EPException
+    public static EventPropertyGetter getXPathResolution(String propertyName,
+                                                         XPathFactory xPathFactory,
+                                                         String rootElementName,
+                                                         String namespace,
+                                                         SchemaModel schemaModel,
+                                                         EventAdapterService eventAdapterService,
+                                                         BaseXMLEventType xmlEventType,
+                                                         boolean isAllowFragment,
+                                                         String defaultNamespace) throws EPException
     {
         if (log.isDebugEnabled())
         {

@@ -74,11 +74,6 @@ public class EventAdapterServiceImpl implements EventAdapterService
         plugInRepresentations = new HashMap<URI, PlugInEventRepresentation>();
     }
 
-    public EventType getXMLDOMType(String rootElementPath)
-    {
-        return xmldomRootElementNames.get(rootElementPath);
-    }
-
     public EventType[] getAllTypes()
     {
         Collection<EventType> types = aliasToTypeMap.values();

@@ -10,6 +10,9 @@ import org.apache.commons.logging.LogFactory;
 import java.lang.reflect.Array;
 import java.util.Stack;
 
+/**
+ * Renderer for XML-formatted properties.
+ */
 public class XMLRendererImpl implements XMLEventRenderer
 {
     private static final Log log = LogFactory.getLog(XMLRendererImpl.class);
@@ -17,6 +20,11 @@ public class XMLRendererImpl implements XMLEventRenderer
     private final RendererMeta meta;
     private final XMLRenderingOptions options;
 
+    /**
+     * Ctor.
+     * @param eventType type of event to render
+     * @param options rendering options
+     */
     public XMLRendererImpl(EventType eventType, XMLRenderingOptions options)
     {
         meta = new RendererMeta(eventType, new Stack<EventTypePropertyPair>(), new RendererMetaOptions(options.isPreventLooping(), true));
@@ -32,7 +40,7 @@ public class XMLRendererImpl implements XMLEventRenderer
         return renderElementXML(rootElementName, event);
     }
 
-    public String renderElementXML(String rootElementName, EventBean event)
+    private String renderElementXML(String rootElementName, EventBean event)
     {
         StringBuilder buf = new StringBuilder();
 
@@ -53,7 +61,7 @@ public class XMLRendererImpl implements XMLEventRenderer
         return buf.toString();
     }
 
-    public String renderAttributeXML(String rootElementName, EventBean event)
+    private String renderAttributeXML(String rootElementName, EventBean event)
     {
         StringBuilder buf = new StringBuilder();
 
@@ -64,7 +72,7 @@ public class XMLRendererImpl implements XMLEventRenderer
         buf.append(rootElementName);
         renderAttributes(event, buf, meta);
 
-        String inner = renderElements(event, 1, meta);
+        String inner = renderAttElements(event, 1, meta);
 
         if ((inner == null) || (inner.trim().length() == 0))
         {
@@ -77,14 +85,14 @@ public class XMLRendererImpl implements XMLEventRenderer
             buf.append(NEWLINE);
             buf.append(inner);
             buf.append("</");
-            buf.append(rootElementName);
+            buf.append(getFirstWord(rootElementName));
             buf.append('>');
         }
 
         return buf.toString();
     }
 
-    private String renderElements(EventBean event, int level, RendererMeta meta)
+    private String renderAttElements(EventBean event, int level, RendererMeta meta)
     {
         StringBuilder buf = new StringBuilder();
 
@@ -142,7 +150,7 @@ public class XMLRendererImpl implements XMLEventRenderer
                     continue;
                 }
                 EventBean nestedEventBean = (EventBean) value;
-                renderInner(buf, level + 1, nestedEventBean, nestedProp);
+                renderAttInner(buf, level, nestedEventBean, nestedProp);
             }
             else
             {
@@ -157,7 +165,7 @@ public class XMLRendererImpl implements XMLEventRenderer
                 for (int i = 0; i < nestedEventArray.length; i++)
                 {
                     EventBean arrayItem = nestedEventArray[i];
-                    renderInner(buf, level + 1, arrayItem, nestedProp);
+                    renderAttInner(buf, level, arrayItem, nestedProp);
                 }
             }
         }
@@ -276,20 +284,7 @@ public class XMLRendererImpl implements XMLEventRenderer
                     buf.append("null");
                     continue;
                 }
-                EventBean nestedEventBean = (EventBean) value;
-                ident(buf, level);
-                buf.append('<');
-                buf.append(nestedProp.getName());
-                buf.append('>');
-                buf.append(NEWLINE);
-
-                recursiveRender(nestedEventBean, buf, level + 1, nestedProp.getMetadata());
-
-                ident(buf, level);
-                buf.append("</");
-                buf.append(nestedProp.getName());
-                buf.append('>');
-                buf.append(NEWLINE);
+                renderElementFragment((EventBean) value, buf, level, nestedProp);
             }
             else
             {
@@ -304,34 +299,42 @@ public class XMLRendererImpl implements XMLEventRenderer
                 for (int i = 0; i < nestedEventArray.length; i++)
                 {
                     EventBean arrayItem = nestedEventArray[i];
-
-                    ident(buf, level);
-                    buf.append('<');
-                    buf.append(nestedProp.getName());
-                    buf.append('>');
-                    buf.append(NEWLINE);
-
-                    recursiveRender(arrayItem, buf, level + 1, nestedProp.getMetadata());
-
-                    ident(buf, level);
-                    buf.append("</");
-                    buf.append(nestedProp.getName());
-                    buf.append('>');
-                    buf.append(NEWLINE);
+                    if (arrayItem == null)
+                    {
+                        continue;
+                    }
+                    renderElementFragment(arrayItem, buf, level, nestedProp);
                 }
             }
         }
     }
 
-    private void renderInner(StringBuilder buf, int level, EventBean nestedEventBean, NestedGetterPair nestedProp)
+    private static void renderElementFragment(EventBean eventBean, StringBuilder buf, int level, NestedGetterPair nestedProp)
+    {
+        ident(buf, level);
+        buf.append('<');
+        buf.append(nestedProp.getName());
+        buf.append('>');
+        buf.append(NEWLINE);
+
+        recursiveRender(eventBean, buf, level + 1, nestedProp.getMetadata());
+
+        ident(buf, level);
+        buf.append("</");
+        buf.append(nestedProp.getName());
+        buf.append('>');
+        buf.append(NEWLINE);
+    }
+
+    private void renderAttInner(StringBuilder buf, int level, EventBean nestedEventBean, NestedGetterPair nestedProp)
     {
         ident(buf, level);
         buf.append('<');
         buf.append(nestedProp.getName());
 
-        renderAttributes(nestedEventBean, buf, meta);
+        renderAttributes(nestedEventBean, buf, nestedProp.getMetadata());
 
-        String inner = renderElements(nestedEventBean, level + 1, nestedProp.getMetadata());
+        String inner = renderAttElements(nestedEventBean, level + 1, nestedProp.getMetadata());
 
         if ((inner == null) || (inner.trim().length() == 0))
         {
@@ -363,6 +366,6 @@ public class XMLRendererImpl implements XMLEventRenderer
         {
             return rootElementName;
         }
-        return rootElementName.substring(1, index);
+        return rootElementName.substring(0, index);
     }
 }

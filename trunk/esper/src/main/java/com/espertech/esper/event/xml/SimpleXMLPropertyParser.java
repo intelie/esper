@@ -25,7 +25,7 @@ public class SimpleXMLPropertyParser
     /**
      * Return the xPath corresponding to the given property.
      * The propertyName String may be simple, nested, indexed or mapped.
-     *
+     * @param ast is the property tree AST
      * @param propertyName is the property name to parse
      * @param rootElementName is the name of the root element for generating the XPath expression
      * @param defaultNamespacePrefix is the prefix of the default namespace

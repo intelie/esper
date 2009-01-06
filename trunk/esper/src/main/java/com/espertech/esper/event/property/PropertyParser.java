@@ -110,6 +110,11 @@ public class PropertyParser
         return (Tree) r.getTree();
     }
 
+    /**
+     * Returns true if the property is a dynamic property.
+     * @param ast property ast
+     * @return dynamic or not
+     */
     public static boolean isPropertyDynamic(Tree ast)
     {
         for (int i = 0; i < ast.getChildCount(); i++)

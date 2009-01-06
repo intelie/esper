@@ -6,12 +6,21 @@ import com.espertech.esper.client.PropertyAccessException;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.Node;
 
+/**
+ * Getter for XPath explicit properties returning an element in an array. 
+ */
 public class XPathPropertyArrayItemGetter implements EventPropertyGetter
 {
     private final EventPropertyGetter getter;
     private final int index;
     private final FragmentFactory fragmentFactory;
 
+    /**
+     * Ctor.
+     * @param getter property getter returning the parent node
+     * @param index to get item at
+     * @param fragmentFactory for creating fragments, or null if not creating fragments
+     */
     public XPathPropertyArrayItemGetter(EventPropertyGetter getter, int index, FragmentFactory fragmentFactory)
     {
         this.getter = getter;

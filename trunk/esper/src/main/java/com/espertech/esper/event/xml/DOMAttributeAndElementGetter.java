@@ -7,10 +7,17 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.NodeList;
 
+/**
+ * Getter for both attribute and element values, attributes are checked first.
+ */
 public class DOMAttributeAndElementGetter implements EventPropertyGetter, DOMPropertyGetter
 {
     private final String propertyName;
 
+    /**
+     * Ctor.
+     * @param propertyName property name
+     */
     public DOMAttributeAndElementGetter(String propertyName)
     {
         this.propertyName = propertyName;

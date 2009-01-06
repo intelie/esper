@@ -1,5 +1,8 @@
 package com.espertech.esper.event.xml;
 
+/**
+ * Represents an attribute in a schema.
+ */
 public class SchemaItemAttribute implements SchemaItem
 {
     private final String namespace;
@@ -12,6 +15,7 @@ public class SchemaItemAttribute implements SchemaItem
      * @param namespace namespace
      * @param name name
      * @param type attribute type
+     * @param typeName attribute type name
      */
     public SchemaItemAttribute(String namespace, String name, short type, String typeName)
     {
@@ -48,6 +52,10 @@ public class SchemaItemAttribute implements SchemaItem
         return xsSimpleType;
     }
 
+    /**
+     * Returns the type name.
+     * @return type name
+     */
     public String getTypeName()
     {
         return typeName;

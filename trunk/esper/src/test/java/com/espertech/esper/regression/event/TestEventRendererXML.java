@@ -1,20 +1,18 @@
 package com.espertech.esper.regression.event;
 
-import junit.framework.TestCase;
 import com.espertech.esper.client.EPServiceProvider;
 import com.espertech.esper.client.EPServiceProviderManager;
 import com.espertech.esper.client.EPStatement;
-import com.espertech.esper.client.util.EventRendererFactory;
+import com.espertech.esper.client.util.EventRendererProvider;
 import com.espertech.esper.client.util.XMLRenderingOptions;
-import com.espertech.esper.client.util.JSONRenderingOptions;
-import com.espertech.esper.support.client.SupportConfigFactory;
+import com.espertech.esper.event.util.OutputValueRendererXMLString;
 import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.bean.SupportBean_A;
-import com.espertech.esper.event.util.JSONOutputString;
-import com.espertech.esper.event.util.XMLOutputString;
+import com.espertech.esper.support.client.SupportConfigFactory;
+import junit.framework.TestCase;
 
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
 
 public class TestEventRendererXML extends TestCase
 {
@@ -38,7 +36,7 @@ public class TestEventRendererXML extends TestCase
         EPStatement statement = epService.getEPAdministrator().createEPL("select * from SupportBean");
         epService.getEPRuntime().sendEvent(bean);
 
-        String result = EventRendererFactory.renderXML("supportBean", statement.iterator().next());
+        String result = EventRendererProvider.renderXML("supportBean", statement.iterator().next());
         //System.out.println(result);
         String expected = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
                 "<supportBean>\n" +
@@ -67,7 +65,7 @@ public class TestEventRendererXML extends TestCase
                 "</supportBean>";
         assertEquals(removeNewline(expected), removeNewline(result));
 
-        result = EventRendererFactory.renderXML("supportBean", statement.iterator().next(), new XMLRenderingOptions().setDefaultAsAttribute(true));
+        result = EventRendererProvider.renderXML("supportBean", statement.iterator().next(), new XMLRenderingOptions().setDefaultAsAttribute(true));
         System.out.println(result);
         expected = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
                 "<supportBean boolPrimitive=\"false\" bytePrimitive=\"0\" charPrimitive=\"x\" doublePrimitive=\"0.0\" floatPrimitive=\"0.0\" intBoxed=\"992\" intPrimitive=\"1\" longPrimitive=\"0\" shortPrimitive=\"0\" string=\"a\\u000ac\">\n" +
@@ -93,25 +91,67 @@ public class TestEventRendererXML extends TestCase
         EPStatement statement = epService.getEPAdministrator().createEPL("select * from OuterMap");
 
         Map<String, Object> dataInner = new HashMap<String, Object>();
-        dataInner.put("stringarr", new String[] {"a", "b"});
+        dataInner.put("stringarr", new String[] {"a", null});
         dataInner.put("prop1", "");
-        Map<String, Object> dataInnerTwo = new HashMap<String, Object>();
-        dataInnerTwo.put("stringarr", new String[0]);
-        dataInnerTwo.put("prop1", "abcdef");
+        Map<String, Object> dataArrayOne = new HashMap<String, Object>();
+        dataArrayOne.put("stringarr", new String[0]);
+        dataArrayOne.put("prop1", "abcdef");
+        Map<String, Object> dataArrayTwo = new HashMap<String, Object>();
+        dataArrayTwo.put("stringarr", new String[] {"R&R", "a>b"});
+        dataArrayTwo.put("prop1", "");
+        Map<String, Object> dataArrayThree = new HashMap<String, Object>();
+        dataArrayOne.put("stringarr", null);
         Map<String, Object> dataOuter = new HashMap<String, Object>();
         dataOuter.put("prop0", new SupportBean_A("A1"));
         dataOuter.put("intarr", new int[] {1, 2});
         dataOuter.put("innersimple", dataInner);
-        dataOuter.put("innerarray", new Map[] {dataInner, dataInnerTwo});
+        dataOuter.put("innerarray", new Map[] {dataArrayOne, dataArrayTwo, dataArrayThree});
         epService.getEPRuntime().sendEvent(dataOuter, "OuterMap");
 
-        String result = EventRendererFactory.renderXML("outerMap", statement.iterator().next());
+        String result = EventRendererProvider.renderXML("outerMap", statement.iterator().next());
         System.out.println(result);
-        String expected = "";
+        String expected = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                "<outerMap>\n" +
+                "  <intarr>1</intarr>\n" +
+                "  <intarr>2</intarr>\n" +
+                "  <innersimple>\n" +
+                "    <prop1></prop1>\n" +
+                "    <stringarr>a</stringarr>\n" +
+                "  </innersimple>\n" +
+                "  <innerarray>\n" +
+                "    <prop1>abcdef</prop1>\n" +
+                "  </innerarray>\n" +
+                "  <innerarray>\n" +
+                "    <prop1></prop1>\n" +
+                "    <stringarr>R&amp;R</stringarr>\n" +
+                "    <stringarr>a&gt;b</stringarr>\n" +
+                "  </innerarray>\n" +
+                "  <innerarray>\n" +
+                "  </innerarray>\n" +
+                "  <prop0>\n" +
+                "    <id>A1</id>\n" +
+                "  </prop0>\n" +
+                "</outerMap>";
         assertEquals(removeNewline(expected), removeNewline(result));
 
-        result = EventRendererFactory.renderXML("outerMap xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"", statement.iterator().next(), new XMLRenderingOptions().setDefaultAsAttribute(true));
-        //System.out.println(result);
+        result = EventRendererProvider.renderXML("outerMap xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"", statement.iterator().next(), new XMLRenderingOptions().setDefaultAsAttribute(true));
+        System.out.println(result);
+        expected = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                "<outerMap xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n" +
+                "  <intarr>1</intarr>\n" +
+                "  <intarr>2</intarr>\n" +
+                "  <innersimple prop1=\"\">\n" +
+                "    <stringarr>a</stringarr>\n" +
+                "  </innersimple>\n" +
+                "  <innerarray prop1=\"abcdef\"/>\n" +
+                "  <innerarray prop1=\"\">\n" +
+                "    <stringarr>R&amp;R</stringarr>\n" +
+                "    <stringarr>a&gt;b</stringarr>\n" +
+                "  </innerarray>\n" +
+                "  <innerarray/>\n" +
+                "  <prop0 id=\"A1\"/>\n" +
+                "</outerMap>";
+        assertEquals(removeNewline(expected), removeNewline(result));
     }
 
     public static void testEnquote()
@@ -128,7 +168,7 @@ public class TestEventRendererXML extends TestCase
         for (int i = 0; i < testdata.length; i++)
         {
             StringBuilder buf = new StringBuilder();
-            XMLOutputString.xmlEncode(testdata[i][0], buf);
+            OutputValueRendererXMLString.xmlEncode(testdata[i][0], buf);
             assertEquals(testdata[i][1], buf.toString());
         }
     }

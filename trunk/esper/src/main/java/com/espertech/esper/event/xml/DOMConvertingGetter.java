@@ -7,12 +7,21 @@ import com.espertech.esper.util.SimpleTypeParserFactory;
 import com.espertech.esper.util.SimpleTypeParser;
 import org.w3c.dom.Node;
 
+/**
+ * Getter for parsing node content to a desired type.  
+ */
 public class DOMConvertingGetter implements EventPropertyGetter
 {
     private final String propertyExpression;
     private final DOMPropertyGetter getter;
     private final SimpleTypeParser parser;
 
+    /**
+     * Ctor.
+     * @param propertyExpression property name
+     * @param domPropertyGetter getter
+     * @param returnType desired result type
+     */
     public DOMConvertingGetter(String propertyExpression, DOMPropertyGetter domPropertyGetter, Class returnType)
     {
         this.propertyExpression = propertyExpression;

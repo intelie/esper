@@ -1,10 +1,10 @@
 <project>
 	<modelVersion>4.0.0</modelVersion>
 	<name>Esper Examples</name>
+	<groupId>com.espertech</groupId>
 	<artifactId>esper_examples</artifactId>
-	<groupId>com.espertech.esper.examples</groupId>
 	<version>3.0.0</version>
-	<packaging>jar</packaging>
+	<packaging>pom</packaging>
 	<description>Esper CEP ESP engine for Java examples</description>
 	<repositories>
 		<repository>
@@ -12,72 +12,56 @@
 			<url>~/.m2/repository</url>
 		</repository>
 	</repositories>
-	<dependencies>
-		<dependency>
-			<groupId>com.espertech</groupId>
-			<artifactId>esper</artifactId>
-			<version>3.0.0</version>
-		</dependency>
-		<dependency>
-			<groupId>org.antlr</groupId>
-			<artifactId>antlr-runtime</artifactId>
-			<version>3.1.1</version>
-		</dependency>
-		<dependency>
-			<groupId>log4j</groupId>
-			<artifactId>log4j</artifactId>
-			<version>1.2.15</version>
-		</dependency>
-		<dependency>
-			<groupId>commons-logging</groupId>
-			<artifactId>commons-logging</artifactId>
-			<version>1.1.1</version>
-		</dependency>
-		<dependency>
-			<groupId>cglib</groupId>
-			<artifactId>cglib-nodep</artifactId>
-			<version>2.2</version>
-		</dependency>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.4</version>
-		</dependency>
-		<dependency>
-			<groupId>javax.jms</groupId>
-			<artifactId>jms</artifactId>
-			<version>1.1</version>
-		</dependency>
-	</dependencies>
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<configuration>
-					<source>1.5</source>
-					<target>1.5</target>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<configuration>
-					<argLine>-Dlog4j.configuration=../etc/infoonly_log4j.xml</argLine>
-					<argLine>-Xms256m -Xmx256m</argLine>
-					<systemProperties>
-						<property>
-							<name>log4j.configuration</name>
-							<value>log4j_info.xml</value>
-						</property>
-					</systemProperties>
-				</configuration>
-			</plugin>
-		</plugins>
-		<testResources>
-			<testResource>
-				<directory>etc</directory>
-			</testResource>
-		</testResources>
-	</build>
+	<modules>
+		<module>autoid</module>
+		<module>benchmark</module>
+		<module>marketdatafeed</module>
+		<module>matchmaker</module>
+		<module>qos_sla</module>
+		<module>rfidassetzone</module>
+		<module>servershell</module>
+		<module>stockticker</module>
+		<module>terminalsvc</module>
+		<module>terminalsvc-jse</module>
+		<module>transaction</module>		
+	</modules>
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>com.espertech</groupId>
+				<artifactId>esper</artifactId>
+				<version>3.0.0</version>
+			</dependency>
+			<dependency>
+				<groupId>org.antlr</groupId>
+				<artifactId>antlr-runtime</artifactId>
+				<version>3.1.1</version>
+			</dependency>
+			<dependency>
+				<groupId>log4j</groupId>
+				<artifactId>log4j</artifactId>
+				<version>1.2.15</version>
+			</dependency>
+			<dependency>
+				<groupId>commons-logging</groupId>
+				<artifactId>commons-logging</artifactId>
+				<version>1.1.1</version>
+			</dependency>
+			<dependency>
+				<groupId>cglib</groupId>
+				<artifactId>cglib-nodep</artifactId>
+				<version>2.2</version>
+			</dependency>
+			<dependency>
+				<groupId>junit</groupId>
+				<artifactId>junit</artifactId>
+				<version>4.4</version>
+			</dependency>
+			<dependency>
+				<groupId>javax.jms</groupId>
+				<artifactId>jms</artifactId>
+				<version>1.1</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 </project>

@@ -68,6 +68,8 @@ public interface Property
      * Returns the getter-method for use with XML DOM event representations.
      * @param complexProperty a element-within-element type definition
      * @param eventAdapterService for resolving or creating further event types that are property types
+     * @param xmlEventType the event type
+     * @param propertyExpression the full property expression
      * @return getter
      */
     public EventPropertyGetter getGetterDOM(SchemaElementComplex complexProperty, EventAdapterService eventAdapterService, BaseXMLEventType xmlEventType, String propertyExpression);
@@ -86,8 +88,13 @@ public interface Property
 
     /**
      * Return a String-array of atomic property names.
+     * @return array of atomic names in a property expression
      */
     public String[] toPropertyArray();
 
+    /**
+     * Returns true for dynamic properties.
+     * @return false for not-dynamic properties, true for dynamic properties.
+     */
     public boolean isDynamic();
 }

@@ -3,16 +3,24 @@ package com.espertech.esper.event.xml;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventPropertyGetter;
 import com.espertech.esper.client.PropertyAccessException;
-import com.espertech.esper.event.xml.FragmentFactory;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+/**
+ * Getter for a DOM complex element.
+ */
 public class DOMComplexElementGetter implements EventPropertyGetter, DOMPropertyGetter
 {
     private final String propertyName;
     private final FragmentFactory fragmentFactory;
     private final boolean isArray;
 
+    /**
+     * Ctor.
+     * @param propertyName property name
+     * @param fragmentFactory for creating fragments
+     * @param isArray if this is an array property
+     */
     public DOMComplexElementGetter(String propertyName, FragmentFactory fragmentFactory, boolean isArray)
     {
         this.propertyName = propertyName;

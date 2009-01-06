@@ -31,16 +31,25 @@ public abstract class BaseConfigurableEventType implements EventTypeSPI {
     private EventAdapterService eventAdapterService;
     private final EventTypeMetadata metadata;
     private Class underlyngType;
-	protected Map<String,EventPropertyGetter> propertyGetters;
     private EventPropertyDescriptor[] propertyDescriptors;
-    protected Map<String, EventPropertyDescriptor> propertyDescriptorMap;
     private String[] propertyNames;
     private Map<String, Pair<ExplicitPropertyDescriptor, FragmentEventType>> propertyFragmentTypes;
+
+    /**
+     * Getters for each known property.
+     */
+    protected Map<String,EventPropertyGetter> propertyGetters;
+
+    /**
+     * Descriptors for each known property.
+     */
+    protected Map<String, EventPropertyDescriptor> propertyDescriptorMap;
 
     /**
      * Ctor.
      * @param underlyngType is the underlying type returned by the event type
      * @param metadata event type metadata
+     * @param eventAdapterService for dynamic event type creation
      */
     protected BaseConfigurableEventType(EventAdapterService eventAdapterService, EventTypeMetadata metadata, Class underlyngType)
     {
@@ -75,6 +84,10 @@ public abstract class BaseConfigurableEventType implements EventTypeSPI {
         return metadata.getPrimaryName();
     }
 
+    /**
+     * Returns the event adapter service.
+     * @return event adapter service
+     */
     public EventAdapterService getEventAdapterService()
     {
         return eventAdapterService;
@@ -82,6 +95,7 @@ public abstract class BaseConfigurableEventType implements EventTypeSPI {
 
     /**
      * Sets explicit properties using a map of event property name and getter instance for each property.
+     * @param explicitProperties property descriptors for explicit properties
      */
     protected void initialize(List<ExplicitPropertyDescriptor> explicitProperties)
     {

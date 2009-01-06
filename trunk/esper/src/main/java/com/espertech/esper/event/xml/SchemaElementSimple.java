@@ -1,5 +1,8 @@
 package com.espertech.esper.event.xml;
 
+/**
+ * Represents a simple value in a schema.
+ */
 public class SchemaElementSimple implements SchemaElement
 {
     private final String name;
@@ -14,6 +17,7 @@ public class SchemaElementSimple implements SchemaElement
      * @param namespace namespace
      * @param type is the simple element type
      * @param isArray if unbound
+     * @param typeName name of type
      */
     public SchemaElementSimple(String name, String namespace, short type, String typeName, boolean isArray)
     {
@@ -52,6 +56,10 @@ public class SchemaElementSimple implements SchemaElement
         return isArray;
     }
 
+    /**
+     * Returns the type name.
+     * @return type name
+     */
     public String getTypeName()
     {
         return typeName;

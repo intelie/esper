@@ -7,6 +7,9 @@ import org.w3c.dom.Node;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+/**
+ * Fragment factory for use with XPath explicit properties.
+ */
 public class FragmentFactoryXPathPredefinedGetter implements FragmentFactory
 {
     private static final Log log = LogFactory.getLog(FragmentFactoryXPathPredefinedGetter.class);
@@ -17,6 +20,12 @@ public class FragmentFactoryXPathPredefinedGetter implements FragmentFactory
 
     private volatile EventType eventType;
 
+    /**
+     * Ctor.
+     * @param eventAdapterService for event type lookup
+     * @param eventTypeAlias alias to look up
+     * @param propertyName property
+     */
     public FragmentFactoryXPathPredefinedGetter(EventAdapterService eventAdapterService, String eventTypeAlias, String propertyName)
     {
         this.eventAdapterService = eventAdapterService;

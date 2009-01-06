@@ -11,6 +11,9 @@ import java.util.Stack;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+/**
+ * Renderer cache for event type metadata allows fast rendering of a given type of events.
+ */
 public class RendererMeta
 {
     private static final Log log = LogFactory.getLog(RendererMeta.class);
@@ -19,10 +22,16 @@ public class RendererMeta
     private final GetterPair[] indexProperties;
     private final NestedGetterPair[] nestedProperties;
 
-    private static JSONOutput jsonStringOutput = new JSONOutputString();
-    private static JSONOutput xmlStringOutput = new XMLOutputString();
-    private static JSONOutput baseOutput = new JSONOutputBase();
+    private static OutputValueRenderer jsonStringOutput = new OutputValueRendererJSONString();
+    private static OutputValueRenderer xmlStringOutput = new OutputValueRendererXMLString();
+    private static OutputValueRenderer baseOutput = new OutputValueRendererBase();
 
+    /**
+     * Ctor.
+     * @param eventType to render
+     * @param stack the stack of properties to avoid looping
+     * @param options rendering options
+     */
     public RendererMeta(EventType eventType, Stack<EventTypePropertyPair> stack, RendererMetaOptions options)
     {
         ArrayList<GetterPair> gettersSimple = new ArrayList<GetterPair>();
@@ -90,22 +99,34 @@ public class RendererMeta
         nestedProperties = gettersNested.toArray(new NestedGetterPair[gettersNested.size()]);
     }
 
+    /**
+     * Returns simple properties.
+     * @return properties
+     */
     public GetterPair[] getSimpleProperties()
     {
         return simpleProperties;
     }
 
+    /**
+     * Returns index properties.
+     * @return properties
+     */
     public GetterPair[] getIndexProperties()
     {
         return indexProperties;
     }
 
+    /**
+     * Returns nested properties.
+     * @return properties
+     */
     public NestedGetterPair[] getNestedProperties()
     {
         return nestedProperties;
     }
 
-    private JSONOutput getOutput(Class type, RendererMetaOptions options)
+    private OutputValueRenderer getOutput(Class type, RendererMetaOptions options)
     {
         if (type.isArray())
         {

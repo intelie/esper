@@ -8,6 +8,9 @@ import org.w3c.dom.Node;
 
 import java.util.List;
 
+/**
+ * Getter for nested properties in a DOM tree.
+ */
 public class DOMNestedPropertyGetter implements EventPropertyGetter, DOMPropertyGetter
 {
     private final DOMPropertyGetter[] domGetterChain;
@@ -16,6 +19,7 @@ public class DOMNestedPropertyGetter implements EventPropertyGetter, DOMProperty
     /**
      * Ctor.
      * @param getterChain is the chain of getters to retrieve each nested property
+     * @param fragmentFactory for creating fragments
      */
     public DOMNestedPropertyGetter(List<EventPropertyGetter> getterChain, FragmentFactory fragmentFactory)
     {

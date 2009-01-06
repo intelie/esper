@@ -26,6 +26,7 @@ public class SchemaElementComplex implements SchemaElement
      * @param simpleElements the simple elements or empty if none
      * @param isArray if unbound or max>1
      * @param optionalSimpleType if the element does itself have a type
+     * @param optionalSimpleTypeName if the element does itself have a type
      */
     public SchemaElementComplex(String name, String namespace, List<SchemaItemAttribute> attributes, List<SchemaElementComplex> children, List<SchemaElementSimple> simpleElements, boolean isArray, Short optionalSimpleType, String optionalSimpleTypeName)
     {
@@ -91,13 +92,17 @@ public class SchemaElementComplex implements SchemaElement
 
     /**
      * Null if not a simple type declared, or type if declared.
-     * @return
+     * @return simple type name
      */
     public Short getOptionalSimpleType()
     {
         return optionalSimpleType;
     }
 
+    /**
+     * Returns type name if itself has a type.
+     * @return type name
+     */
     public String getOptionalSimpleTypeName()
     {
         return optionalSimpleTypeName;
