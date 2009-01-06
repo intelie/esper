@@ -16,14 +16,18 @@ then
   exit 0
 fi
 
-LIB=../../esper/lib
+LIB=../../../esper/lib
+EXLIB=../../../examples/lib
+IOLIB=../../../esperio/lib
 
 CLASSPATH=.
 CLASSPATH=$CLASSPATH:../target/classes
-CLASSPATH=$CLASSPATH:../../esper-3.0.0.jar
+CLASSPATH=$CLASSPATH:../../../esper-3.0.0.jar
 CLASSPATH=$CLASSPATH:$LIB/cglib-nodep-2.2.jar
 CLASSPATH=$CLASSPATH:$LIB/commons-logging-1.1.1.jar
 CLASSPATH=$CLASSPATH:$LIB/log4j-1.2.15.jar
 CLASSPATH=$CLASSPATH:$LIB/antlr-3.1.1-runtime.jar
+CLASSPATH=$CLASSPATH:$EXLIB/jms.jar
+CLASSPATH=$CLASSPATH:$IOLIB/apache-activemq-4.1.0-incubator.jar
 
 export CLASSPATH="$CLASSPATH"

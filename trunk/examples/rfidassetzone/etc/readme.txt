@@ -25,7 +25,7 @@ Samples description
 ===================
 
 
-The RFID GUI (Swing) Sample
+The RFID Asset Zone GUI (Swing) Sample
 ----------------------------------
 
 	Run "run_rfid_swing.bat" (Windows) or "run_rfid_swing.sh" (Unix) for this example.

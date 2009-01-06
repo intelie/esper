@@ -13,6 +13,8 @@ if not exist "%JAVA_HOME%\bin\java.exe" (
 )
 
 set LIB=..\..\..\esper\lib
+set EXLIB=..\..\..\examples\lib
+set IOLIB=..\..\..\esperio\lib
 
 set CLASSPATH=.
 set CLASSPATH=%CLASSPATH%;..\target\classes
@@ -21,6 +23,8 @@ set CLASSPATH=%CLASSPATH%;%LIB%\cglib-nodep-2.2.jar
 set CLASSPATH=%CLASSPATH%;%LIB%\commons-logging-1.1.1.jar
 set CLASSPATH=%CLASSPATH%;%LIB%\log4j-1.2.15.jar
 set CLASSPATH=%CLASSPATH%;%LIB%\antlr-3.1.1-runtime.jar
+set CLASSPATH=%CLASSPATH%;%EXLIB%\jms.jar
+set CLASSPATH=%CLASSPATH%;%IOLIB%\apache-activemq-4.1.0-incubator.jar
 
 goto EOF
 

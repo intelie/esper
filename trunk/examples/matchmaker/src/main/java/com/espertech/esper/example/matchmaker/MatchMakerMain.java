@@ -9,11 +9,18 @@ import com.espertech.esper.example.matchmaker.eventbean.MobileUserBean;
 import com.espertech.esper.example.matchmaker.eventbean.Gender;
 import com.espertech.esper.example.matchmaker.eventbean.HairColor;
 import com.espertech.esper.example.matchmaker.eventbean.AgeRange;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import java.util.Random;
 
 public class MatchMakerMain
 {
+    private static final Log log = LogFactory.getLog(MatchMakerMain.class);
+
     public static void main(String[] args)
     {
+        log.info("Setting up EPL");
         // This code runs as part of the automated regression test suite; Therefore disable internal timer theading to safe resources
         Configuration config = new Configuration();
         config.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
@@ -24,6 +31,7 @@ public class MatchMakerMain
 
         new MatchMakingMonitor(listener);
 
+        log.info("Sending user information");
         MobileUserBean user_1 = new MobileUserBean(1, 10, 10,
                 Gender.MALE, HairColor.BLONDE, AgeRange.AGE_4,
                 Gender.FEMALE, HairColor.BLACK, AgeRange.AGE_1);
@@ -34,6 +42,7 @@ public class MatchMakerMain
                 Gender.MALE, HairColor.BLONDE, AgeRange.AGE_4);
         epService.getEPRuntime().sendEvent(user_2);
 
+        log.info("Sending some near locations");
         user_1.setLocation(8.99999, 10);
         epService.getEPRuntime().sendEvent(user_1);
 
@@ -70,5 +79,18 @@ public class MatchMakerMain
                 }
             }
         }
-    }    
+        
+        log.info("Sending 100k of random locations");
+        Random random = new Random();
+        for (int i = 0; i < 100000; i++)
+        {
+            int x = 10 + random.nextInt(i) / 100000;
+            int y = 10 + random.nextInt(i) / 100000;
+
+            user_2.setLocation(x, y);
+            epService.getEPRuntime().sendEvent(user_2);
+        }        
+
+        log.info("Done.");
+    }
 }

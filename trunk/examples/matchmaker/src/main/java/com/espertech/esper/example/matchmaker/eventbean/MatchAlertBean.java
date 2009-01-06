@@ -28,4 +28,9 @@ public class MatchAlertBean
     {
         return otherUserId;
     }
+
+    public String toString()
+    {
+        return "User id of self is " + selfUserId + ", user id of other user is " + otherUserId;
+    }
 }
