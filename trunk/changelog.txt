@@ -29,7 +29,7 @@ With Esper 3 integer division returns Double values, and Integer division can be
   - Transposing property expression values and arrays 
   - Correct problem in index[1] being index 0 array element
   - dynamic properties return Node
-- Removed examples: LinearRoad, RSI, ATM; Added new examples, added Eclipse project
+- Removed examples: LinearRoad, RSI, ATM; Added new examples for named window and OHLC, improved doc, restructured directories, added Eclipse projects
 - Added XML and JSON renderers
   
 Changes in version 2.3

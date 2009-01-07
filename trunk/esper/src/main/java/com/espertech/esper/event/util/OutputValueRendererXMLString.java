@@ -13,7 +13,7 @@ public class OutputValueRendererXMLString implements OutputValueRenderer
             return;
         }
 
-        xmlEncode(object.toString(), buf);
+        xmlEncode(object.toString(), buf, true);
     }
 
     /**
@@ -21,7 +21,7 @@ public class OutputValueRendererXMLString implements OutputValueRenderer
      * @param s string to encode
      * @param sb string buffer to populate
      */
-    public static void xmlEncode(String s, StringBuilder sb)
+    public static void xmlEncode(String s, StringBuilder sb, boolean isEncodeSpecialChar)
     {
         if (s == null || s.length() == 0)
         {
@@ -60,7 +60,7 @@ public class OutputValueRendererXMLString implements OutputValueRenderer
             }
             else
             {
-                if (c < ' ')
+                if ((c < ' ') && (isEncodeSpecialChar))
                 {
                     t = "000" + Integer.toHexString(c);
                     sb.append("\\u" + t.substring(t.length() - 4));

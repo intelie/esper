@@ -902,9 +902,6 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
         }
         else if (isWildcard)
         {
-            targetType = statementContext.getEventAdapterService().addWrapperType(typeName, selectFromType, properties, true, false);
-            /*
-            TODO
             if ((selectFromType instanceof MapEventType) && (properties.size() ==0))
             {
                 MapEventType mapType = (MapEventType) selectFromType;
@@ -914,7 +911,6 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
             {
                 targetType = statementContext.getEventAdapterService().addWrapperType(typeName, selectFromType, properties, true, false);
             }
-             */
         }
         else
         {

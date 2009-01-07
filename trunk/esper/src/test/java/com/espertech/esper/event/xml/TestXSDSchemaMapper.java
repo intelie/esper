@@ -14,28 +14,6 @@ import java.net.URL;
 
 public class TestXSDSchemaMapper extends TestCase
 {
-    /**
-     * TODO: write docs, Axiom, JSON renderer, XML renderer
-     *
-     * XPath-Based + No-Schema:
-     *   - property expressions compile to XPath
-     *   - String and unchecked
-     *   - allows XPath specified
-     *   - transpose XPath result as another defined XML DOM type via config
-     *
-     * XPath-Based + Schema:
-     *   - property expressions compile to XPath
-     *   - typesafe and checked
-     *   - allows XPath specified
-     *   - transpose XPath result as another defined XML DOM type via config
-     *   - transpose automatically the definiton
-     *
-     * Getter-Based - Schema
-     *   - property expressions compile to Getter
-     *   - allows XPath specified
-     *   - transpose XPath result as another defined XML DOM type via config
-     *   - transpose automatically the definiton
-     */
     public void testMap() throws Exception
     {
         URL url = ResourceLoader.resolveClassPathOrURLResource("schema", "regression/simpleSchema.xsd");

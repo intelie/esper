@@ -176,7 +176,7 @@
 			</listitem>
 			<listitem>
 				<para>
-                    Now you are ready to run an examples. Some examples require mandatory parameters that are also described in the file "readme.txt" in the "etc" folder.
+                    Now you are ready to run an example. Some examples require mandatory parameters that are also described in the file "readme.txt" in the "etc" folder.
                 </para>
 			</listitem>
 			<listitem>
@@ -188,7 +188,7 @@
 		</orderedlist>
 
 		<para>
-			Each example also provides Ecliipse project <literal>.classpath</literal> and <literal>.project</literal> files. The Eclipse projects expect an <literal>esper_runtime</literal> user library that includes the runtime dependencies.
+			Each example also provides Eclipse project <literal>.classpath</literal> and <literal>.project</literal> files. The Eclipse projects expect an <literal>esper_runtime</literal> user library that includes the runtime dependencies.
 		</para>		
 
 		<para>
@@ -221,7 +221,7 @@
 			A simulator that can be run from the command line is also available for this example.
 			The simulator generates a number of XML documents as specified by a command line argument and
 			prints out the totals per sensor.
-			Run "run_autoid.bat" (Windows) or "run_autoid.sh" (Unix) to start the autoid simulator. 
+			Run "run_autoid.bat" (Windows) or "run_autoid.sh" (Unix) to start the AutoID simulator. 
 			Please see the readme file in the same folder for build instructions and command line parameters.
 		</para>
 
@@ -296,7 +296,7 @@ group by ID]]></programlisting>
 			<title>JMX for Remote Dynamic Statement Management</title>
 
 			<para>
-				The server shell is also a JMX server providing an RMI-based connector. The server shell exposes a JMX MBean that allows remote statement management. The JMX MBean allows to create a statement remotely, and to attach a serializable listener to the statement remotely, and to destroy a statement remotely. 
+				The server shell is also a JMX server providing an RMI-based connector. The server shell exposes a JMX MBean that allows remote statement management. The JMX MBean allows to create a statement remotely, attach a listener to the statement and destroy a statement remotely. 
 			</para>
 
 			<para>
@@ -405,7 +405,7 @@ having cnt < avg(cnt) * 0.75]]></programlisting>
         </para>
 
         <para>
-			The example provides an OHLC view that is hardcoded to 1-minute bars. It consider the timestamp value carried by each event, and not the system time. The cutoff time after which an event is no longer considered for a bar is hardcoded to 5 seconds.
+			The example provides an OHLC view that is hardcoded to 1-minute bars. It considers the timestamp value carried by each event, and not the system time. The cutoff time after which an event is no longer considered for a bar is hardcoded to 5 seconds.
         </para>
 
         <para>
@@ -417,7 +417,7 @@ having cnt < avg(cnt) * 0.75]]></programlisting>
         </para>
 
         <para>
-			The view gracfully handles no-event and late-event scenarios. Interval bounaries are defined by system time, thus event timestamp and system time must roughly be in-sync, unless using external timer events.
+			The view gracefully handles no-event and late-event scenarios. Interval boundaries are defined by system time, thus event timestamp and system time must roughly be in-sync, unless using external timer events.
         </para>
     </sect1>
 
