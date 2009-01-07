@@ -61,7 +61,7 @@ public class TestStockTickerMultithreaded extends TestCase implements StockTicke
         StockTickerEventGenerator generator = new StockTickerEventGenerator();
         LinkedList stream = generator.makeEventStream(numberOfTicksToSend, ratioPriceOutOfLimit, TestStockTickerGenerator.NUM_STOCK_NAMES,
                 StockTickerRegressionConstants.PRICE_LIMIT_PCT_LOWER_LIMIT, StockTickerRegressionConstants.PRICE_LIMIT_PCT_UPPER_LIMIT,
-                StockTickerRegressionConstants.PRICE_LOWER_LIMIT, StockTickerRegressionConstants.PRICE_UPPER_LIMIT);
+                StockTickerRegressionConstants.PRICE_LOWER_LIMIT, StockTickerRegressionConstants.PRICE_UPPER_LIMIT, true);
 
         log.info(".performTest Send limit and initial tick events - singlethreaded");
         for (int i = 0; i < TestStockTickerGenerator.NUM_STOCK_NAMES * 2; i++)

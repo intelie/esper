@@ -11,7 +11,6 @@
 	<property name="dist.dir" value=".."/>
 	<property name="lib.dir" value="lib"/>
 	<property name="src.dir" value="src/main/java"/>
-	<property name="generated.src" value="target/generated-sources/antlr"/>
 	<property name="doc.dir" value="doc"/>
 	<property name="doc.api.dir" value="${doc.dir}/api"/>
 	<property name="dist.api.dir" value="doc/javadoc/api"/>
@@ -53,9 +52,6 @@
 				</script>
 				]]>
 			</footer>
-			<packageset dir="${generated.src}" defaultexcludes="yes">
-				<include name="com/espertech/esper/**"/>
-			</packageset>
 			<packageset dir="${src.dir}" defaultexcludes="yes">
 				<include name="com/espertech/esper/**"/>
 			</packageset>

@@ -5,9 +5,150 @@
         <title>Examples Overview</title>
         
 		<para>
-			This chapter outlines the examples that come with Esper in the <literal>examples/src</literal> folder of the distribution. The code for examples can be found in the <literal>com.espertech.esper.example</literal> packages.
+			This chapter outlines the examples that come with Esper in the <literal>examples</literal> folder of the distribution. Each sample is in a separate folder that contains all files needed by the example, excluding jar files.
 		</para>
     	
+		<para>
+			Here is an overview over the examples in alphabetical order:
+		</para>
+
+		<table frame="topbot">
+			<title>Examples</title>
+			<tgroup cols="2">
+				<colspec colwidth="0.40*"/>
+				<colspec colwidth="1*"/>
+				<thead>
+					<row>
+						<entry>Name</entry>
+						<entry>Description</entry>
+					</row>
+				</thead>
+				<tbody>
+					<row>
+						<entry><xref linkend="examples-autoid"/></entry>
+						<entry>
+							<para>
+								An array of RFID readers sense RFID tags as pallets are coming within the range of one of the readers.
+							</para>
+							<para>
+								Shows the use of an XSD schema and XML event representation. A single statement shows a rolling time window, a where-clause filter on a nested property and a group-by.
+							</para>
+						</entry>
+					</row>
+					<row>
+						<entry><xref linkend="examples-marketdata-monitor"/></entry>
+						<entry>
+							<para>
+								Processes a raw market data feed and reports throughput statistics and detects when the data rate of a feed falls off unexpectedly.
+							</para>
+							<para>
+								Demonstrates a batch time window and a rolling time window with a having-clause. Multi-threaded example with a configurable number of threads and a simulator for generating feed data.
+							</para>
+						</entry>
+					</row>
+					<row>
+						<entry><xref linkend="examples-matchmaker"/></entry>
+						<entry>
+							<para>
+								In the MatchMaker example every mobile user has an X and Y location and the task of the event patterns created by this example is to detect mobile users that are within proximity given a certain range, and for which certain properties match preferences.
+							</para>
+							<para>
+								Dynamically creates and removes event patterns that use range matching based on mobile user events received.
+							</para>
+						</entry>
+					</row>
+					<row>
+						<entry><xref linkend="examples-namedwindowquery"/></entry>
+						<entry>
+							<para>
+								A mini-benchmark that handles temperature sensor events. The sample creates a named window and fills it with a large number of events. It then executes a large number of pre-defined queries as well as fire-and-forget queries and reports times.
+							</para>
+							<para>
+								Study this example if you are interested in named windows, Map event type representation, fire-and-forget queries as well as pre-defined queries via on-select, and the performance aspects.
+							</para>
+						</entry>
+					</row>
+					<row>
+						<entry><xref linkend="examples-ohlcpluginview"/></entry>
+						<entry>
+							<para>
+								A plug-in custom view addressing a problem in the financial space: Computes open-high-low-close bars for minute-intervals of events that may arrive late, based on each event's timestamp.
+							</para>
+							<para>
+								A custom plug-in view based on the extension API can be a convenient and reusable way to express a domain-specific analysis problem as a unit, and this example includes the code for the OHLC view factory and view as well as simulator to test the view.
+							</para>
+						</entry>
+					</row>
+					<row>
+						<entry><xref linkend="performance-kit"/></entry>
+						<entry>
+							<para>
+								A benchmark that is further described in the performance section of this document under performance kit.
+							</para>
+						</entry>
+					</row>
+					<row>
+						<entry><xref linkend="examples-qossla"/></entry>
+						<entry>
+							<para>
+								This example develops some code for measuring quality-of-service levels such as for a service-level agreement (SLA).
+							</para>
+							<para>
+								This example combines patterns with select-statements, shows the use of the timer <literal>'at'</literal> operator and followed-by operator <literal>-&gt;</literal>, and uses the iterator API to poll for current results.
+							</para>
+						</entry>
+					</row>
+					<row>
+						<entry><xref linkend="examples-assets-moving"/></entry>
+						<entry>
+							<para>
+								An example out of the RFID domain processes location report events. The example includes a simple Swing-based GUI for visualization allows moving tags from zone to zone visually. It also a contains comprehensive simulator to generate data for a large number of asset groups and their tracking.
+							</para>
+							<para>
+								The example hooks up statements that aggregate and detect patterns in the aggregated data to determine when an asset group constraint is violated.
+							</para>
+						</entry>
+					</row>
+					<row>
+						<entry><xref linkend="examples-servershell"/></entry>
+						<entry>
+							<para>
+								The server shell is a Java Messaging Service (JMS) -based server and client that send and listens to messages on a JMS destination. It also demonstrates a simple Java Management Extension (JMX) MBean for remote statement management.
+							</para>
+							<para>
+								A single EPL statement computes an average duration for each IP address on a rolling time window and outputs a snapshot every 2 seconds.
+							</para>
+						</entry>
+					</row>
+					<row>
+						<entry><xref linkend="examples-stockticker"/></entry>
+						<entry>
+							<para>
+								An example from the financial domain that features event patterns to filter stock tick events based on price and symbol. The example is designed to provide a high volume of events and includes multithreaded unit test code as well as a simulting data generator.
+							</para>
+							<para>
+								Perhaps this is a good example to learn the API and get started with event patterns. The example dynamically creates and removes event patterns based on price limit events received.
+							</para>
+						</entry>
+					</row>
+					<row>
+						<entry><xref linkend="examples-terminalsvc-J2EE"/></entry>
+						<entry>
+							<para>
+								A J2EE-based self-service terminal managing system in an airport that gets a lot of events from connected terminals.
+							</para>
+							<para>
+								Contains a message-driven bean (EJB-MDB) for use in a J2EE container, a client and a simulator, as well as EPL statements for detecting various conditions. A version that runs outside of a J2EE container is also available.
+							</para>
+						</entry>
+					</row>
+				</tbody>
+			</tgroup>				
+		</table>
+	</sect1>
+
+    <sect1 id="examples-running">
+        <title>Running the Examples</title>
 		<para>
 			In order to compile and run the samples please follow the below instructions:
 		</para>
@@ -20,7 +161,7 @@
 			</listitem>
 			<listitem>
 				<para>
-                    Open a console window and change directory to examples/etc.
+                    Open a console window and change directory to examples/<emphasis>example_name</emphasis>/etc.
                 </para>
 			</listitem>
 			<listitem>
@@ -30,116 +171,70 @@
 			</listitem>
 			<listitem>
 				<para>
-                    Run "compile.bat" (Windows) or "compile.sh" (Unix) to compile the examples.
+                    Run "compile.bat" (Windows) or "compile.sh" (Unix) to compile an example.
                 </para>
 			</listitem>
 			<listitem>
 				<para>
-                    Now you are ready to run the examples. Some examples require mandatory parameters. Further information to running
-                    each example can be found in the "examples/etc" folder in file "readme.txt".
+                    Now you are ready to run an examples. Some examples require mandatory parameters that are also described in the file "readme.txt" in the "etc" folder.
                 </para>
 			</listitem>
 			<listitem>
 				<para>
                     Modify the logger logging level in the "log4j.xml" configuration file 
-                    changing DEBUG to INFO on a class or package level to reduce the volume of text output. 
+                    changing DEBUG to INFO on a class or package level to control the volume of text output. 
                 </para>
 			</listitem>
 		</orderedlist>
 
 		<para>
-			JUnit tests exist for the example code. The JUnit test source code for the examples can be found in the <literal>examples/test</literal> folder. To build and run the example JUnit tests, use the Maven 2 goal <literal>test</literal>. The JUnit test source code can also be helpful in understanding the example and in the use of Esper APIs.
+			Each example also provides Ecliipse project <literal>.classpath</literal> and <literal>.project</literal> files. The Eclipse projects expect an <literal>esper_runtime</literal> user library that includes the runtime dependencies.
+		</para>		
+
+		<para>
+			JUnit tests exist for the example code. The JUnit test source code for the examples can be found in each example's <literal>src/test</literal> folder. To build and run the example JUnit tests, use the Maven 2 goal <literal>test</literal>.
 		</para>		
     </sect1>
 
-    <sect1 id="examples-marketdata-monitor">
-        <title>Market Data Feed Monitor</title>
+    <sect1 id="examples-autoid">
+        <title>AutoID RFID Reader</title>
 
 		<para>
-			This example processes a raw market data feed. It reports throughput statistics and 
-			detects when the data rate of a feed falls off unexpectedly. A rate fall-off may mean that the data is stale and 
-			we want to alert when there is a possible problem with the feed.
+			In this example an array of RFID readers sense RFID tags as pallets are coming within the range of one of the readers. 
+			A reader generates XML documents with observation information such as reader sensor ID, observation time 
+			and tags observed. A statement computes the total number of tags per reader sensor ID within the last 60 seconds.
+		</para>
+    	
+		<para>
+			This example demonstrates how XML documents unmarshalled to <literal>org.w3c.dom.Node</literal> DOM document nodes
+			can natively be processed by the engine without requiring Java object event representations. The example uses an XPath
+			expression for an event property counting the number of tags observed by a sensor. The XML documents follow the AutoID (<literal>http://www.autoid.org/</literal>) organization
+			standard. 
 		</para>
 
 		<para>
-			The classes for this example live in package <literal>com.espertech.esper.example.marketdatafeed</literal>. 
-			Run "run_mktdatafeed.bat" (Windows) or "run_mktdatafeed.sh" (Unix) in the <literal>examples/etc</literal> folder 
-			to start the market data feed simulator. 			
+			The classes for this example can be found in package <literal>com.espertech.esper.example.autoid</literal>.
+			As events are XML documents with no Java object representation, the example does not have event classes.
 		</para>
-		
-        <sect2 id="examples-marketdata-monitor-input">
-        	<title>Input Events</title>
-        
-			<para>
-				The input stream consists of 1 event stream that contains 2 simulated market data feeds. Each individual event in the stream 
-				indicates the feed that supplies the market data, the security symbol and some pricing information:
-			</para>
 
-<programlisting><![CDATA[String symbol;
-FeedEnum feed;
-double bidPrice;
-double askPrice;
-]]></programlisting>
-		</sect2>
-			
-        <sect2 id="examples-marketdata-computing">
-        	<title>Computing Rates Per Feed</title>
+		<para>
+			A simulator that can be run from the command line is also available for this example.
+			The simulator generates a number of XML documents as specified by a command line argument and
+			prints out the totals per sensor.
+			Run "run_autoid.bat" (Windows) or "run_autoid.sh" (Unix) to start the autoid simulator. 
+			Please see the readme file in the same folder for build instructions and command line parameters.
+		</para>
 
-			<para>
-				For the throughput statistics and to detect rapid fall-off we calculate a ticks per second rate for each market data feed. 
-			</para>
+		<para>
+			The code snippet below shows the simple statement to compute the total number of tags per sensor. The statement is created by class 
+			<literal>com.espertech.esper.example.autoid.RFIDTagsPerSensorStmt</literal>.
+		</para>
 
-			<para>
-				We can use an EPL statement that specifies a view onto the market data event stream that batches together 1 second of events. 
-				We specify the feed and a count of events per feed as output values. To make this data available for further processing, we
-				insert output events into the TicksPerSecond event stream:
-			</para>
+<programlisting><![CDATA[select ID as sensorId, sum(countTags) as numTagsPerSensor
+from AutoIdRFIDExample.win:time(60 seconds)
+where Observation[0].Command = 'READ_PALLET_TAGS_ONLY'
+group by ID]]></programlisting>
 
-<programlisting><![CDATA[insert into TicksPerSecond
-select feed, count(*) as cnt 
-  from MarketDataEvent.win:time_batch(1 second) 
- group by feed
-]]></programlisting>
-		</sect2>
-
-        <sect2 id="examples-marketdata-falloff">
-        	<title>Detecting a Fall-off</title>
-
-			<para>
-				We define a rapid fall-off by alerting when the number of ticks per second for any second falls below 75% of the 
-				average number of ticks per second over the last 10 seconds. 
-			</para>
-
-			<para>
-				We can compute the average number of ticks per second over the last 10 seconds simply by using the TicksPerSecond events computed by the
-				prior statement and averaging the last 10 seconds. Next, we compare the current rate with the moving average and
-				filter out any rates that fall below 75% of the average:
-			</para>
-
-<programlisting><![CDATA[select feed, avg(cnt) as avgCnt, cnt as feedCnt 
-  from TicksPerSecond.win:time(10 seconds)
- group by feed 
-having cnt < avg(cnt) * 0.75
-]]></programlisting>
-		</sect2>
-
-        <sect2 id="examples-marketdata-monitor-sim">
-			<title>Event generator</title>
-			<para>
-				The simulator generates market data events for 2 feeds, feed A and feed B. 
-				The first parameter to the simulator is a number of threads. Each thread sends events for each feed in an endless loop.
-				Note that as the Java VM garbage collection kicks in, the example generates rate drop-offs during such pauses.
-			</para>
-
-			<para>
-				The second parameter is a rate drop probability parameter specifies the probability in percent that the simulator drops the rate 
-				for a randomly chosen feed to 60% of the target rate for that second. Thus rate fall-off alerts can be generated.
-			</para>
-
-			<para>
-				The third parameter defines the number of seconds to run the example.
-			</para>
-		</sect2>
     </sect1>
 
     <sect1 id="examples-servershell">
@@ -209,6 +304,121 @@ having cnt < avg(cnt) * 0.75
 				After sending 1000 events, the client then destroys the statement remotely on the server.
 			</para>
 		</sect2>
+    </sect1>
+
+    <sect1 id="examples-marketdata-monitor">
+        <title>Market Data Feed Monitor</title>
+
+		<para>
+			This example processes a raw market data feed. It reports throughput statistics and 
+			detects when the data rate of a feed falls off unexpectedly. A rate fall-off may mean that the data is stale and 
+			we want to alert when there is a possible problem with the feed.
+		</para>
+
+		<para>
+			The classes for this example live in package <literal>com.espertech.esper.example.marketdatafeed</literal>. 
+			Run "run_mktdatafeed.bat" (Windows) or "run_mktdatafeed.sh" (Unix) in the <literal>examples/etc</literal> folder 
+			to start the market data feed simulator. 			
+		</para>
+		
+        <sect2 id="examples-marketdata-monitor-input">
+        	<title>Input Events</title>
+        
+			<para>
+				The input stream consists of 1 event stream that contains 2 simulated market data feeds. Each individual event in the stream 
+				indicates the feed that supplies the market data, the security symbol and some pricing information:
+			</para>
+
+<programlisting><![CDATA[String symbol;
+FeedEnum feed;
+double bidPrice;
+double askPrice;
+]]></programlisting>
+		</sect2>
+			
+        <sect2 id="examples-marketdata-computing">
+        	<title>Computing Rates Per Feed</title>
+
+			<para>
+				For the throughput statistics and to detect rapid fall-off we calculate a ticks per second rate for each market data feed. 
+			</para>
+
+			<para>
+				We can use an EPL statement that specifies a view onto the market data event stream that batches together 1 second of events. 
+				We specify the feed and a count of events per feed as output values. To make this data available for further processing, we
+				insert output events into the TicksPerSecond event stream:
+			</para>
+
+<programlisting><![CDATA[insert into TicksPerSecond
+select feed, count(*) as cnt 
+  from MarketDataEvent.win:time_batch(1 second) 
+ group by feed]]></programlisting>
+		</sect2>
+
+        <sect2 id="examples-marketdata-falloff">
+        	<title>Detecting a Fall-off</title>
+
+			<para>
+				We define a rapid fall-off by alerting when the number of ticks per second for any second falls below 75% of the 
+				average number of ticks per second over the last 10 seconds. 
+			</para>
+
+			<para>
+				We can compute the average number of ticks per second over the last 10 seconds simply by using the TicksPerSecond events computed by the
+				prior statement and averaging the last 10 seconds. Next, we compare the current rate with the moving average and
+				filter out any rates that fall below 75% of the average:
+			</para>
+
+<programlisting><![CDATA[select feed, avg(cnt) as avgCnt, cnt as feedCnt 
+  from TicksPerSecond.win:time(10 seconds)
+ group by feed 
+having cnt < avg(cnt) * 0.75]]></programlisting>
+		</sect2>
+
+        <sect2 id="examples-marketdata-monitor-sim">
+			<title>Event generator</title>
+			<para>
+				The simulator generates market data events for 2 feeds, feed A and feed B. 
+				The first parameter to the simulator is a number of threads. Each thread sends events for each feed in an endless loop.
+				Note that as the Java VM garbage collection kicks in, the example generates rate drop-offs during such pauses.
+			</para>
+
+			<para>
+				The second parameter is a rate drop probability parameter specifies the probability in percent that the simulator drops the rate 
+				for a randomly chosen feed to 60% of the target rate for that second. Thus rate fall-off alerts can be generated.
+			</para>
+
+			<para>
+				The third parameter defines the number of seconds to run the example.
+			</para>
+		</sect2>
+    </sect1>
+
+    <sect1 id="examples-ohlcpluginview">
+        <title>OHLC Plug-in View</title>
+        <para>
+			This example contains a fully-functional custom view based on the extension API that computes OHLC open-high-low-close bars for events that provide a long-typed timestamp and a double-typed value.
+        </para>
+
+        <para>
+			OHLC bar is a problem out of the financial domain. The "Open" refers to the first datapoint and the "Close" to the last datapoint in an interval. The "High" refers to the maximum and the "Low" to the minimum value during each interval. The term "bar" is used to describe each interval results of these 4 values.
+        </para>
+
+        <para>
+			The example provides an OHLC view that is hardcoded to 1-minute bars. It consider the timestamp value carried by each event, and not the system time. The cutoff time after which an event is no longer considered for a bar is hardcoded to 5 seconds.
+        </para>
+
+        <para>
+			The view assumes that events arrive in timestamp order: Each event's timestamp value is equal to or higher then the timestamp value provided by the prior event.
+        </para>
+
+        <para>
+			The view may also be used together with <literal>std:groupby</literal> to group per criteria, such as symbol. In this case the assumption of timestamp order applies per symbol.
+        </para>
+
+        <para>
+			The view gracfully handles no-event and late-event scenarios. Interval bounaries are defined by system time, thus event timestamp and system time must roughly be in-sync, unless using external timer events.
+        </para>
     </sect1>
 
     <sect1 id="examples-transaction-3-event-challenge">
@@ -397,7 +607,7 @@ To make testing easier, standard and to demonstrate how the example works, the e
     </sect1>
 
     <sect1 id="examples-terminalsvc-J2EE">
-        <title>J2EE Self-Service Terminal Management </title>
+        <title>Self-Service Terminal</title>
 
 		<para>
 			The example is about a J2EE-based self-service terminal managing system in an airport that gets a lot of events from connected terminals. The event rate is around 500 events per second. Some events indicate abnormal situations such as 'paper low' or 'terminal out of order'. Other events observe activity as customers use a terminal to check in and print boarding tickets.
@@ -505,7 +715,7 @@ output all every 1 minutes]]></programlisting>
 			</para>
 
 			<para>
-				The complete example code can be found in the "examples/terminalsvc" folder of the distribution. The Java package name is com.espertech.esper.example.terminalsvc.
+				The complete example code can be found in the "examples/terminalsvc" folder of the distribution. The standalone version that does not require a J2EE container is in "examples/terminalsvc-jse".
 			</para>
 			
 			<sect3 id="examples-terminalsvc-j2ee-running">
@@ -593,47 +803,6 @@ select Part.zone from pattern [
 
     </sect1>
 
-    <sect1 id="examples-autoid">
-        <title>AutoID RFID Reader generating XML documents</title>
-
-		<para>
-			In this example an array of RFID readers sense RFID tags as pallets are coming within the range of one of the readers. 
-			A reader generates XML documents with observation information such as reader sensor ID, observation time 
-			and tags observed. A statement computes the total number of tags per reader sensor ID within the last 60 seconds.
-		</para>
-    	
-		<para>
-			This example demonstrates how XML documents unmarshalled to <literal>org.w3c.dom.Node</literal> DOM document nodes
-			can natively be processed by the engine without requiring Java object event representations. The example uses an XPath
-			expression for an event property counting the number of tags observed by a sensor. The XML documents follow the AutoID (<literal>http://www.autoid.org/</literal>) organization
-			standard. 
-		</para>
-
-		<para>
-			The classes for this example can be found in package <literal>com.espertech.esper.example.autoid</literal>.
-			As events are XML documents with no Java object representation, the example does not have event classes.
-		</para>
-
-		<para>
-			A simulator that can be run from the command line is also available for this example.
-			The simulator generates a number of XML documents as specified by a command line argument and
-			prints out the totals per sensor.
-			Run "run_autoid.bat" (Windows) or "run_autoid.sh" (Unix) to start the autoid simulator. 
-			Please see the readme file in the same folder for build instructions and command line parameters.
-		</para>
-
-		<para>
-			The code snippet below shows the simple statement to compute the total number of tags per sensor. The statement is created by class 
-			<literal>com.espertech.esper.example.autoid.RFIDTagsPerSensorStmt</literal>.
-		</para>
-
-<programlisting><![CDATA[select ID as sensorId, sum(countTags) as numTagsPerSensor
-from AutoIdRFIDExample.win:time(60 seconds)
-where Observation[0].Command = 'READ_PALLET_TAGS_ONLY'
-group by ID]]></programlisting>
-
-    </sect1>
-
     <sect1 id="examples-stockticker">
         <title>StockTicker</title>
 
@@ -700,8 +869,17 @@ group by ID]]></programlisting>
 
     </sect1>
     
+    <sect1 id="examples-namedwindowquery">
+        <title>Named Window Query</title>
+
+		<para>
+			This example handles very minimal temperature sensor events which are represented by <literal>java.util.Map</literal>. It creates a named window and fills it with a large number of events. It then executes a large number of pre-defined queries via on-select as well as performs a large number of fire-and-forget queries against the named window, and reports execution times.
+		</para>
+
+    </sect1>
+
 	<sect1 id="examples-qossla" revision="2">
-        <title>QualityOfService</title>
+        <title>Quality of Service</title>
             
         <para>
             This example develops some code for measuring quality-of-service levels such as for a service-level agreement (SLA).
@@ -752,22 +930,21 @@ group by ID]]></programlisting>
 			</listitem>
 			<listitem>
 				<para>
-                    Shows the use of the timer <literal>'at'</literal> operator and followed-by operator <literal>-&gt;</literal> in event patterns
+                    Shows the use of the timer <literal>'at'</literal> operator and followed-by operator <literal>-&gt;</literal> in event patterns.
                 </para>
 			</listitem>
 			<listitem>
 				<para>
-                    Outlines basic EPL statements
+                    Outlines basic EPL statements.
                 </para>
 			</listitem>
 			<listitem>
 				<para>
-                    Shows how to pull data out of EPL statements rather then subscribing to events a statement publishes
+                    Shows how to pull data out of EPL statements rather then subscribing to events a statement publishes.
                 </para>
 			</listitem>
 		</itemizedlist>
-    </sect1>
-    
+    </sect1>    
     
 </chapter>
 

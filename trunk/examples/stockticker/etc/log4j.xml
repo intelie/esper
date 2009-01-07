@@ -13,15 +13,8 @@
 
    <!-- 
    		Modify to DEBUG for more output, or INFO for less output 
-   <logger name="com.espertech.esper.example">
-      <level value="DEBUG"/>
-   </logger>
    	-->  
-
-   <!-- 
-   		Disable output for specific listeners via this statement
-   	-->
-   <logger name="com.espertech.esper.example.transaction.RealtimeSummaryGroupListener">
+   <logger name="com.espertech.esper.example">
       <level value="INFO"/>
    </logger>
 

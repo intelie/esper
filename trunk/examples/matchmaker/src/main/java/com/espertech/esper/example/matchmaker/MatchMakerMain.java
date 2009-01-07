@@ -82,7 +82,7 @@ public class MatchMakerMain
         
         log.info("Sending 100k of random locations");
         Random random = new Random();
-        for (int i = 0; i < 100000; i++)
+        for (int i = 1; i < 100000; i++)
         {
             int x = 10 + random.nextInt(i) / 100000;
             int y = 10 + random.nextInt(i) / 100000;

@@ -16,7 +16,8 @@ public class StockTickerEventGenerator
                                               double priceLimitPctLowerLimit,
                                               double priceLimitPctUpperLimit,
                                               double priceLowerLimit,
-                                              double priceUpperLimit)
+                                              double priceUpperLimit,
+                                              boolean isLastTickOutOfLimit)
     {
         LinkedList<Object> stream = new LinkedList<Object>();
 
@@ -47,7 +48,7 @@ public class StockTickerEventGenerator
             }
 
             // Last tick is out-of-limit as well
-            if (i == (numberOfTicks - 1))
+            if ((i == (numberOfTicks - 1)) && (isLastTickOutOfLimit))
             {
                 tick = new StockTick(tick.getStockSymbol(), 9999);
             }

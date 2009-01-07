@@ -21,15 +21,23 @@ public class SampleStatement
 
     public static void createStatement(EPAdministrator admin)
     {
-        EPStatement statement = admin.createEPL("select istream ipAddress, avg(duration) from SampleEvent.win:time(10 sec) group by ipAddress output every 2 seconds");
+        EPStatement statement = admin.createEPL("select istream ipAddress, avg(duration) from SampleEvent.win:time(10 sec) group by ipAddress output snapshot every 2 seconds order by ipAddress asc");
         statement.addListener(new UpdateListener()
         {
             public void update(EventBean[] newEvents, EventBean[] oldEvents)
             {
+                if (newEvents == null)
+                {
+                    return;
+                }
+                
                 for (int i = 0; i < newEvents.length; i++)
                 {
-                    log.info("IPAddress: " + newEvents[i].get("ipAddress") +
-                         " Avg Duration: " + newEvents[i].get("avg(duration)"));
+                    if (log.isInfoEnabled())
+                    {
+                        log.info("IPAddress: " + newEvents[i].get("ipAddress") +
+                             " Avg Duration: " + newEvents[i].get("avg(duration)"));
+                    }
                 }
             }
         });
