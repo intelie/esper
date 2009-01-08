@@ -27,7 +27,7 @@ public class ValueAddEventServiceImpl implements ValueAddEventService
     /**
      * Map of revision event name and revision compiled specification.
      */
-    protected final Map<String, RevisionSpec> specificationsByRevisionAlias;
+    protected final Map<String, RevisionSpec> specificationsByRevisionName;
 
     /**
      * Map of named window name and processor.
@@ -44,7 +44,7 @@ public class ValueAddEventServiceImpl implements ValueAddEventService
      */
     public ValueAddEventServiceImpl()
     {
-        this.specificationsByRevisionAlias = new HashMap<String, RevisionSpec>();
+        this.specificationsByRevisionName = new HashMap<String, RevisionSpec>();
         this.processorsByNamedWindow = new HashMap<String, ValueAddEventProcessor>();
         variantProcessors = new HashMap<String, ValueAddEventProcessor>();
     }
@@ -77,18 +77,18 @@ public class ValueAddEventServiceImpl implements ValueAddEventService
         }
     }
 
-    public void addRevisionEventType(String revisionEventTypeAlias, ConfigurationRevisionEventType config, EventAdapterService eventAdapterService)
+    public void addRevisionEventType(String revisioneventTypeName, ConfigurationRevisionEventType config, EventAdapterService eventAdapterService)
             throws ConfigurationException
     {
-        RevisionSpec specification = validateRevision(revisionEventTypeAlias, config, eventAdapterService);
-        specificationsByRevisionAlias.put(revisionEventTypeAlias, specification);
+        RevisionSpec specification = validateRevision(revisioneventTypeName, config, eventAdapterService);
+        specificationsByRevisionName.put(revisioneventTypeName, specification);
     }
 
     public void addVariantStream(String variantStreamname, ConfigurationVariantStream variantStreamConfig, EventAdapterService eventAdapterService) throws ConfigurationException
     {
         VariantSpec variantSpec = validateVariantStream(variantStreamname, variantStreamConfig, eventAdapterService);
         VAEVariantProcessor processor = new VAEVariantProcessor(variantSpec);
-        eventAdapterService.addTypeByAlias(variantStreamname, processor.getValueAddEventType());
+        eventAdapterService.addTypeByName(variantStreamname, processor.getValueAddEventType());
         variantProcessors.put(variantStreamname, processor);
     }
 
@@ -103,19 +103,19 @@ public class ValueAddEventServiceImpl implements ValueAddEventService
     {
         if (variantStreamConfig.getTypeVariance() == ConfigurationVariantStream.TypeVariance.PREDEFINED)
         {
-            if (variantStreamConfig.getVariantTypeAliases().isEmpty())
+            if (variantStreamConfig.getVariantTypeNames().isEmpty())
             {
-                throw new ConfigurationException("Invalid variant stream configuration, no event type alias has been added and default type variance requires at least one type, for name '" + variantStreamname + "'");
+                throw new ConfigurationException("Invalid variant stream configuration, no event type name has been added and default type variance requires at least one type, for name '" + variantStreamname + "'");
             }
         }
 
         Set<EventType> types = new LinkedHashSet<EventType>();
-        for (String alias : variantStreamConfig.getVariantTypeAliases())
+        for (String typeName : variantStreamConfig.getVariantTypeNames())
         {
-            EventType type = eventAdapterService.getExistsTypeByAlias(alias);
+            EventType type = eventAdapterService.getExistsTypeByName(typeName);
             if (type == null)
             {
-                throw new ConfigurationException("Event type by name '" + alias + "' could not be found for use in variant stream configuration by name '" + variantStreamname + "'");
+                throw new ConfigurationException("Event type by name '" + typeName + "' could not be found for use in variant stream configuration by name '" + variantStreamname + "'");
             }
             types.add(type);
         }
@@ -124,100 +124,100 @@ public class ValueAddEventServiceImpl implements ValueAddEventService
         return new VariantSpec(variantStreamname, eventTypes, variantStreamConfig.getTypeVariance());
     }
 
-    public EventType createRevisionType(String namedWindowName, String alias, StatementStopService statementStopService, EventAdapterService eventAdapterService)
+    public EventType createRevisionType(String namedWindowName, String name, StatementStopService statementStopService, EventAdapterService eventAdapterService)
     {
-        RevisionSpec spec = specificationsByRevisionAlias.get(alias);
+        RevisionSpec spec = specificationsByRevisionName.get(name);
         ValueAddEventProcessor processor;
         if (spec.getPropertyRevision() == ConfigurationRevisionEventType.PropertyRevision.OVERLAY_DECLARED)
         {
-            processor = new VAERevisionProcessorDeclared(alias, spec, statementStopService, eventAdapterService);
+            processor = new VAERevisionProcessorDeclared(name, spec, statementStopService, eventAdapterService);
         }
         else
         {
-            processor = new VAERevisionProcessorMerge(alias, spec, statementStopService, eventAdapterService);
+            processor = new VAERevisionProcessorMerge(name, spec, statementStopService, eventAdapterService);
         }
 
         processorsByNamedWindow.put(namedWindowName, processor);
         return processor.getValueAddEventType();
     }
 
-    public ValueAddEventProcessor getValueAddProcessor(String alias)
+    public ValueAddEventProcessor getValueAddProcessor(String name)
     {
-        ValueAddEventProcessor proc = processorsByNamedWindow.get(alias);
+        ValueAddEventProcessor proc = processorsByNamedWindow.get(name);
         if (proc != null)
         {
             return proc;
         }
-        return variantProcessors.get(alias);
+        return variantProcessors.get(name);
     }
 
-    public EventType getValueAddUnderlyingType(String alias)
+    public EventType getValueAddUnderlyingType(String name)
     {
-        RevisionSpec spec = specificationsByRevisionAlias.get(alias);
+        RevisionSpec spec = specificationsByRevisionName.get(name);
         return spec.getBaseEventType();
     }
 
-    public boolean isRevisionTypeAlias(String revisionTypeAlias)
+    public boolean isRevisionTypeName(String revisionTypeName)
     {
-        return specificationsByRevisionAlias.containsKey(revisionTypeAlias);
+        return specificationsByRevisionName.containsKey(revisionTypeName);
     }
 
     /**
      * Valiate the revision configuration.
-     * @param revisionEventTypeAlias name of revision types
+     * @param revisioneventTypeName name of revision types
      * @param config configures revision type
      * @param eventAdapterService event adapters
      * @return revision specification
      * @throws ConfigurationException if the configs are invalid
      */
-    protected static RevisionSpec validateRevision(String revisionEventTypeAlias, ConfigurationRevisionEventType config, EventAdapterService eventAdapterService)
+    protected static RevisionSpec validateRevision(String revisioneventTypeName, ConfigurationRevisionEventType config, EventAdapterService eventAdapterService)
             throws ConfigurationException
     {
-        if ((config.getAliasBaseEventTypes() == null) || (config.getAliasBaseEventTypes().size() == 0))
+        if ((config.getNameBaseEventTypes() == null) || (config.getNameBaseEventTypes().size() == 0))
         {
-            throw new ConfigurationException("Required base event type alias is not set in the configuration for revision event type '" + revisionEventTypeAlias + "'");
+            throw new ConfigurationException("Required base event type name is not set in the configuration for revision event type '" + revisioneventTypeName + "'");
         }
 
-        if (config.getAliasBaseEventTypes().size() > 1)
+        if (config.getNameBaseEventTypes().size() > 1)
         {
-            throw new ConfigurationException("Only one base event type alias may be added to revision event type '" + revisionEventTypeAlias + "', multiple base types are not yet supported");
+            throw new ConfigurationException("Only one base event type name may be added to revision event type '" + revisioneventTypeName + "', multiple base types are not yet supported");
         }
 
         // get base types
-        String baseEventTypeAlias = config.getAliasBaseEventTypes().iterator().next();
-        EventType baseEventType = eventAdapterService.getExistsTypeByAlias(baseEventTypeAlias);
+        String baseeventTypeName = config.getNameBaseEventTypes().iterator().next();
+        EventType baseEventType = eventAdapterService.getExistsTypeByName(baseeventTypeName);
         if (baseEventType == null)
         {
-            throw new ConfigurationException("Could not locate event type for alias '" + baseEventTypeAlias + "' in the configuration for revision event type '" + revisionEventTypeAlias + "'");
+            throw new ConfigurationException("Could not locate event type for name '" + baseeventTypeName + "' in the configuration for revision event type '" + revisioneventTypeName + "'");
         }
 
-        // get alias types
-        EventType[] deltaTypes = new EventType[config.getAliasDeltaEventTypes().size()];
-        String[] deltaAliases = new String[config.getAliasDeltaEventTypes().size()];
+        // get name types
+        EventType[] deltaTypes = new EventType[config.getNameDeltaEventTypes().size()];
+        String[] deltaNames = new String[config.getNameDeltaEventTypes().size()];
         int count = 0;
-        for (String deltaAlias : config.getAliasDeltaEventTypes())
+        for (String deltaName : config.getNameDeltaEventTypes())
         {
-            EventType deltaEventType = eventAdapterService.getExistsTypeByAlias(deltaAlias);
+            EventType deltaEventType = eventAdapterService.getExistsTypeByName(deltaName);
             if (deltaEventType == null)
             {
-                throw new ConfigurationException("Could not locate event type for alias '" + deltaAlias + "' in the configuration for revision event type '" + revisionEventTypeAlias + "'");
+                throw new ConfigurationException("Could not locate event type for name '" + deltaName + "' in the configuration for revision event type '" + revisioneventTypeName + "'");
             }
             deltaTypes[count] = deltaEventType;
-            deltaAliases[count] = deltaAlias;
+            deltaNames[count] = deltaName;
             count++;
         }
 
         // the key properties must be set
         if ((config.getKeyPropertyNames() == null) || (config.getKeyPropertyNames().length == 0))
         {
-            throw new ConfigurationException("Required key properties are not set in the configuration for revision event type '" + revisionEventTypeAlias + "'");
+            throw new ConfigurationException("Required key properties are not set in the configuration for revision event type '" + revisioneventTypeName + "'");
         }
 
         // make sure the key properties exist the base type and all delta types
-        checkKeysExist(baseEventType, baseEventTypeAlias, config.getKeyPropertyNames(), revisionEventTypeAlias);
+        checkKeysExist(baseEventType, baseeventTypeName, config.getKeyPropertyNames(), revisioneventTypeName);
         for (int i = 0; i < deltaTypes.length; i++)
         {
-            checkKeysExist(deltaTypes[i], deltaAliases[i], config.getKeyPropertyNames(), revisionEventTypeAlias);
+            checkKeysExist(deltaTypes[i], deltaNames[i], config.getKeyPropertyNames(), revisioneventTypeName);
         }
 
         // key property names shared between base and delta must have the same type
@@ -230,7 +230,7 @@ public class ValueAddEventServiceImpl implements ValueAddEventService
                 Class dtypeProperty = dtype.getPropertyType(key);
                 if ((dtypeProperty != null) && (typeProperty != dtypeProperty))
                 {
-                    throw new ConfigurationException("Key property named '" + key + "' does not have the same type for base and delta types of revision event type '" + revisionEventTypeAlias + "'");
+                    throw new ConfigurationException("Key property named '" + key + "' does not have the same type for base and delta types of revision event type '" + revisioneventTypeName + "'");
                 }
             }
         }
@@ -273,12 +273,12 @@ public class ValueAddEventServiceImpl implements ValueAddEventService
                     Class dtypeProperty = dtype.getPropertyType(changesetProperty);
                     if ((dtypeProperty != null) && (typeProperty != dtypeProperty))
                     {
-                        throw new ConfigurationException("Property named '" + changesetProperty + "' does not have the same type for base and delta types of revision event type '" + revisionEventTypeAlias + "'");
+                        throw new ConfigurationException("Property named '" + changesetProperty + "' does not have the same type for base and delta types of revision event type '" + revisioneventTypeName + "'");
                     }
                 }
             }
 
-            return new RevisionSpec(config.getPropertyRevision(), baseEventType, deltaTypes, deltaAliases, keyPropertyNames, changesetProperties, baseEventOnlyPropertyNames, false, null);
+            return new RevisionSpec(config.getPropertyRevision(), baseEventType, deltaTypes, deltaNames, keyPropertyNames, changesetProperties, baseEventOnlyPropertyNames, false, null);
         }
         else
         {
@@ -317,7 +317,7 @@ public class ValueAddEventServiceImpl implements ValueAddEventService
                     {
                         if ((typeTemp != null) && (dtypeProperty != typeTemp))
                         {
-                            throw new ConfigurationException("Property named '" + property + "' does not have the same type for base and delta types of revision event type '" + revisionEventTypeAlias + "'");
+                            throw new ConfigurationException("Property named '" + property + "' does not have the same type for base and delta types of revision event type '" + revisioneventTypeName + "'");
                         }
 
                     }
@@ -327,11 +327,11 @@ public class ValueAddEventServiceImpl implements ValueAddEventService
             }
 
             // Compile changeset
-            return new RevisionSpec(config.getPropertyRevision(), baseEventType, deltaTypes, deltaAliases, keyPropertyNames, changesetProperties, new String[0], hasContributedByDelta, contributedByDelta);
+            return new RevisionSpec(config.getPropertyRevision(), baseEventType, deltaTypes, deltaNames, keyPropertyNames, changesetProperties, new String[0], hasContributedByDelta, contributedByDelta);
         }
     }
 
-    private static void checkKeysExist(EventType baseEventType, String alias, String[] keyProperties, String revisionEventTypeAlias)
+    private static void checkKeysExist(EventType baseEventType, String name, String[] keyProperties, String revisioneventTypeName)
     {
         String propertyNames[] = baseEventType.getPropertyNames();
         for (String keyProperty : keyProperties)
@@ -348,7 +348,7 @@ public class ValueAddEventServiceImpl implements ValueAddEventService
 
             if (!exists)
             {
-                throw new ConfigurationException("Key property '" + keyProperty + "' as defined in the configuration for revision event type '" + revisionEventTypeAlias + "' does not exists in event type '" + alias + "'");
+                throw new ConfigurationException("Key property '" + keyProperty + "' as defined in the configuration for revision event type '" + revisioneventTypeName + "' does not exists in event type '" + name + "'");
             }
         }
     }

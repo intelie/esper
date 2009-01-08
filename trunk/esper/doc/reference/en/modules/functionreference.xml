@@ -688,7 +688,7 @@ from StockTick.win:time(30 sec)]]></programlisting>
 insert into MyStream select MyLib.convert(other) from MyOtherEvent as other]]></programlisting>
 
 		 <para>
-			 In the example above, assuming the event classes MyEvent and MyOtherEvent are Java classes and not aliases, the static method should have the following footprint:
+			 In the example above, assuming the event classes MyEvent and MyOtherEvent are Java classes, the static method should have the following footprint:
 		 </para> 
 		 <programlisting><![CDATA[public static MyEvent convert(MyOtherEvent otherEvent)]]></programlisting>
 	</sect1>

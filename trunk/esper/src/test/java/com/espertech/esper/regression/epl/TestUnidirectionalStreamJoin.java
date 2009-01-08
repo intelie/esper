@@ -131,7 +131,7 @@ public class TestUnidirectionalStreamJoin extends TestCase
 
     public void testPatternJoin()
     {
-        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("SupportBean", SupportBean.class);
+        epService.getEPAdministrator().getConfiguration().addEventType("SupportBean", SupportBean.class);
         epService.getEPRuntime().sendEvent(new CurrentTimeEvent(1000));
 
         // no iterator allowed
@@ -158,7 +158,7 @@ public class TestUnidirectionalStreamJoin extends TestCase
 
     public void testPatternJoinOutputRate()
     {
-        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("SupportBean", SupportBean.class);
+        epService.getEPAdministrator().getConfiguration().addEventType("SupportBean", SupportBean.class);
         epService.getEPRuntime().sendEvent(new CurrentTimeEvent(1000));
 
         // no iterator allowed

@@ -41,7 +41,7 @@ public class TestConfigurationParser extends TestCase
         assertEquals(4, config.getStreams().size());
         assertEquals("MyEngineURI", config.getStreams().get("OTQuote").getEngineURI());
         assertTrue(config.getStreams().get("OTQuote").isEnabled());
-        assertEquals("OTQuote", config.getStreams().get("OTQuote").getAlias());
+        assertEquals("OTQuote", config.getStreams().get("OTQuote").getTypeName());
 
         // assert masks
         assertEquals(1, config.getSymbolLists().size());

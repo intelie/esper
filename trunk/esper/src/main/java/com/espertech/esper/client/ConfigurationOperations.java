@@ -24,13 +24,13 @@ public interface ConfigurationOperations
      * <p>
      * This setting allows an application to place all it's events into one or more Java packages
      * and then declare these packages via this method. The engine
-     * attempts to resolve an event type alias to a Java class residing in each declared package.
+     * attempts to resolve an event type name to a Java class residing in each declared package.
      * <p>
      * For example, in the statement "select * from MyEvent" the engine attempts to load class "javaPackageName.MyEvent"
      * and if successful, uses that class as the event type.
      * @param packageName is the fully-qualified Java package name of the Java package that event classes reside in
      */
-    public void addEventTypeAutoAlias(String packageName);
+    public void addEventTypeAutoName(String packageName);
 
     /**
      * Adds a plug-in aggregation function given a function name and an aggregation class name.
@@ -58,107 +58,107 @@ public interface ConfigurationOperations
     public void addImport(String importName) throws ConfigurationException;
 
     /**
-     * Checks if an eventTypeAlias has already been registered for that alias name.
+     * Checks if an eventTypeName has already been registered for that name.
      * @since 2.1
-     * @param eventTypeAlias the alias name
+     * @param eventTypeName the name
      * @return true if already registered
      */
-    public boolean isEventTypeAliasExists(String eventTypeAlias);
+    public boolean isEventTypeExists(String eventTypeName);
 
     /**
-     * Add an alias for an event type represented by JavaBean object events.
+     * Add an name for an event type represented by JavaBean object events.
      * <p>
-     * Allows a second alias to be added for the same type.
-     * Does not allow the same alias to be used for different types.
-     * @param eventTypeAlias is the alias for the event type
+     * Allows a second name to be added for the same type.
+     * Does not allow the same name to be used for different types.
+     * @param eventTypeName is the name for the event type
      * @param eventClassName fully-qualified class name of the event type
-     * @throws ConfigurationException if the alias is already in used for a different type
+     * @throws ConfigurationException if the name is already in used for a different type
      */
-    public void addEventTypeAlias(String eventTypeAlias, String eventClassName)
+    public void addEventType(String eventTypeName, String eventClassName)
             throws ConfigurationException;
 
     /**
-     * Add an alias for an event type represented by Java-bean plain-old Java object events.
+     * Add an name for an event type represented by Java-bean plain-old Java object events.
      * <p>
-     * Allows a second alias to be added for the same type.
-     * Does not allow the same alias to be used for different types.
-     * @param eventTypeAlias is the alias for the event type
-     * @param eventClass is the Java event class for which to create the alias
-     * @throws ConfigurationException if the alias is already in used for a different type
+     * Allows a second name to be added for the same type.
+     * Does not allow the same name to be used for different types.
+     * @param eventTypeName is the name for the event type
+     * @param eventClass is the Java event class for which to create the name
+     * @throws ConfigurationException if the name is already in used for a different type
      */
-    public void addEventTypeAlias(String eventTypeAlias, Class eventClass)
+    public void addEventType(String eventTypeName, Class eventClass)
             throws ConfigurationException;
 
     /**
-     * Add an alias for an event type represented by Java-bean plain-old Java object events,
-     * using the simple name of the Java class as the alias.
+     * Add a name for an event type represented by Java-bean plain-old Java object events,
+     * using the simple name of the Java class as the name.
      * <p>
      * For example, if your class is "com.mycompany.MyEvent", then this method
-     * adds the alias "MyEvent" for the class.
+     * adds the name "MyEvent" for the class.
      * <p>
-     * Allows a second alias to be added for the same type.
-     * Does not allow the same alias to be used for different types.
-     * @param eventClass is the Java event class for which to create the alias from the class simple name
-     * @throws ConfigurationException if the alias is already in used for a different type
+     * Allows a second name to be added for the same type.
+     * Does not allow the same name to be used for different types.
+     * @param eventClass is the Java event class for which to create the name from the class simple name
+     * @throws ConfigurationException if the name is already in used for a different type
      */
-    public void addEventTypeAliasSimpleName(Class eventClass);
+    public void addEventType(Class eventClass);
 
     /**
-     * Add an alias for an event type that represents java.util.Map events.
+     * Add an name for an event type that represents java.util.Map events.
      * <p>
-     * Allows a second alias to be added for the same type.
-     * Does not allow the same alias to be used for different types.
-     * @param eventTypeAlias is the alias for the event type
+     * Allows a second name to be added for the same type.
+     * Does not allow the same name to be used for different types.
+     * @param eventTypeName is the name for the event type
      * @param typeMap maps the name of each property in the Map event to the type
      * (fully qualified classname) of its value in Map event instances.
-     * @throws ConfigurationException if the alias is already in used for a different type
+     * @throws ConfigurationException if the name is already in used for a different type
      */
-    public void addEventTypeAlias(String eventTypeAlias, Properties typeMap)
+    public void addEventType(String eventTypeName, Properties typeMap)
             throws ConfigurationException;
 
     /**
-     * Add an alias for an event type that represents java.util.Map events,
+     * Add an name for an event type that represents java.util.Map events,
      * and for which each property may itself be a Map of further properties,
      * with unlimited nesting levels.
      * <p>
      * Each entry in the type mapping must contain the String property name as the key value,
      * and either a Class, or a further Map<String, Object>, or the name
      * of another previously-register Map event type (append [] for array of Map).
-     * @param eventTypeAlias is the alias for the event type
+     * @param eventTypeName is the name for the event type
      * @param typeMap maps the name of each property in the Map event to the type
      * (fully qualified classname) of its value in Map event instances.
-     * @throws ConfigurationException if the alias is already in used for a different type
+     * @throws ConfigurationException if the name is already in used for a different type
      */
-    public void addEventTypeAlias(String eventTypeAlias, Map<String, Object> typeMap)
+    public void addEventType(String eventTypeName, Map<String, Object> typeMap)
             throws ConfigurationException;
 
     /**
-     * Add an alias for an event type that represents java.util.Map events,
+     * Add an name for an event type that represents java.util.Map events,
      * and for which each property may itself be a Map of further properties,
      * with unlimited nesting levels.
      * <p>
      * Each entry in the type mapping must contain the String property name as the key value,
      * and either a Class, or a further Map<String, Object>, or the name
      * of another previously-register Map event type (append [] for array of Map).
-     * @param eventTypeAlias is the alias for the event type
+     * @param eventTypeName is the name for the event type
      * @param typeMap maps the name of each property in the Map event to the type
      * (fully qualified classname) of its value in Map event instances.
-     * @param superTypes is an array of event type alias of further Map types that this
-     * @throws ConfigurationException if the alias is already in used for a different type
+     * @param superTypes is an array of event type name of further Map types that this
+     * @throws ConfigurationException if the name is already in used for a different type
      */
-    public void addEventTypeAlias(String eventTypeAlias, Map<String, Object> typeMap, String[] superTypes)
+    public void addEventType(String eventTypeName, Map<String, Object> typeMap, String[] superTypes)
             throws ConfigurationException;
 
     /**
-     * Add an alias for an event type that represents org.w3c.dom.Node events.
+     * Add an name for an event type that represents org.w3c.dom.Node events.
      * <p>
-     * Allows a second alias to be added for the same type.
-     * Does not allow the same alias to be used for different types.
-     * @param eventTypeAlias is the alias for the event type
+     * Allows a second name to be added for the same type.
+     * Does not allow the same name to be used for different types.
+     * @param eventTypeName is the name for the event type
      * @param xmlDOMEventTypeDesc descriptor containing property and mapping information for XML-DOM events
-     * @throws ConfigurationException if the alias is already in used for a different type
+     * @throws ConfigurationException if the name is already in used for a different type
      */
-    public void addEventTypeAlias(String eventTypeAlias, ConfigurationEventTypeXMLDOM xmlDOMEventTypeDesc)
+    public void addEventType(String eventTypeName, ConfigurationEventTypeXMLDOM xmlDOMEventTypeDesc)
             throws ConfigurationException;
 
     /**
@@ -174,42 +174,42 @@ public interface ConfigurationOperations
     public void addVariable(String variableName, Class type, Object initializationValue) throws ConfigurationException;
 
     /**
-     * Adds an alias for an event type that one of the plug-in event representations resolves to an event type.
+     * Adds an name for an event type that one of the plug-in event representations resolves to an event type.
      * <p>
      * The order of the URIs matters as event representations are asked in turn, to accept the event type.
      * <p>
      * URIs can be child URIs of plug-in event representations and can add additional parameters or fragments
      * for use by the event representation.
-     * @param eventTypeAlias is the alias name of the event type
+     * @param eventTypeName is the name of the event type
      * @param resolutionURIs is URIs that are matched to registered event representations
      * @param initializer is an optional value for parameterizing or configuring the event type
      */
-    public void addPlugInEventType(String eventTypeAlias, URI[] resolutionURIs, Serializable initializer);
+    public void addPlugInEventType(String eventTypeName, URI[] resolutionURIs, Serializable initializer);
 
     /**
      * Sets the URIs that point to plug-in event representations that are given a chance to dynamically resolve an event
-     * type alias to an event type, when a new (unseen) event type alias occurs in a new EPL statement.
+     * type name to an event type, when a new (unseen) event type name occurs in a new EPL statement.
      * <p>
-     * The order of the URIs matters as event representations are asked in turn, to accept the alias.
+     * The order of the URIs matters as event representations are asked in turn, to accept the name.
      * <p>
      * URIs can be child URIs of plug-in event representations and can add additional parameters or fragments
      * for use by the event representation.
-     * @param urisToResolveAlias URIs for resolving the alias
+     * @param urisToResolveName URIs for resolving the name
      */
-    public void setPlugInEventTypeAliasResolutionURIs(URI[] urisToResolveAlias);
+    public void setPlugInEventTypeResolutionURIs(URI[] urisToResolveName);
 
     /**
-     * Adds an revision event type. The alias name of the event type may be used with named windows
+     * Adds an revision event type. The name of the event type may be used with named windows
      * to indicate that updates or new versions of events are processed.
-     * @param revisionEventTypeAlias the alias name of the revision event type
+     * @param revisioneventTypeName the name of the revision event type
      * @param revisionEventTypeConfig the configuration 
      */
-    public void addRevisionEventType(String revisionEventTypeAlias, ConfigurationRevisionEventType revisionEventTypeConfig);
+    public void addRevisionEventType(String revisioneventTypeName, ConfigurationRevisionEventType revisionEventTypeConfig);
 
     /**
      * Adds a new variant stream. Variant streams allow events of disparate types to be treated the same.
      * @param variantStreamName is the name of the variant stream
-     * @param variantStreamConfig the configuration such as variant type aliases and any-type setting
+     * @param variantStreamConfig the configuration such as variant type names and any-type setting
      */
     public void addVariantStream(String variantStreamName, ConfigurationVariantStream variantStreamConfig);
 
@@ -226,11 +226,11 @@ public interface ConfigurationOperations
      * Map event types can only be updated at runtime, at configuration time updates are not allowed.
      * <p>
      * The type Map may list previously declared properties or can also contain only the new properties to be added. 
-     * @param mapEventTypeAlias the name of the map event type to update
+     * @param mapeventTypeName the name of the map event type to update
      * @param typeMap a Map of string property name and type
-     * @throws ConfigurationException if the event type alias could not be found or is not a Map
+     * @throws ConfigurationException if the event type name could not be found or is not a Map
      */
-    public void updateMapEventType(String mapEventTypeAlias, Map<String, Object> typeMap) throws ConfigurationException;
+    public void updateMapEventType(String mapeventTypeName, Map<String, Object> typeMap) throws ConfigurationException;
 
     /**
      * Returns true if a variant stream by the name has been declared, or false if not.
@@ -290,9 +290,9 @@ public interface ConfigurationOperations
     public void setMetricsReportingDisabled() throws ConfigurationException;
 
     /**
-     * Remove an event type by its alias name, returning an indicator whether the event type was found and removed.
+     * Remove an event type by its name, returning an indicator whether the event type was found and removed.
      * <p>
-     * This method deletes the event type by it's alias name from the memory of the engine,
+     * This method deletes the event type by it's name from the memory of the engine,
      * thereby allowing that the name to be reused for a new event type and disallowing new statements
      * that attempt to use the deleted name.
      * <p>
@@ -302,26 +302,26 @@ public interface ConfigurationOperations
      * If using the force flag to remove the type while statements use the type, the exact
      * behavior of the engine depends on the event representation of the deleted event type and is thus
      * not well defined. It is recommended to destroy statements that use the type before removing the type.
-     * Use #getEventTypeAliasUsedBy to obtain a list of statements that use a type.
+     * Use #geteventTypeNameUsedBy to obtain a list of statements that use a type.
      * <p>
      * The method can be used for event types implicitly created for insert-into streams and for named windows. 
      * The method does not remove variant streams and does not remove revision event types.
-     * @param alias the name of the event type to remove
+     * @param name the name of the event type to remove
      * @param force false to include a check that the type is no longer in use, true to force the remove
      * even though there can be one or more statements relying on that type
      * @return indicator whether the event type was found and removed
      * @throws ConfigurationException thrown to indicate that the remove operation failed
      */
-    public boolean removeEventType(String alias, boolean force) throws ConfigurationException;
+    public boolean removeEventType(String name, boolean force) throws ConfigurationException;
 
     /**
      * Return the set of statement names of statements that are in started or stopped state and
-     * that reference the given event type alias.
+     * that reference the given event type name.
      * <p>
      * A reference counts as any mention of the event type in a from-clause, a pattern, a insert-into or
      * as part of on-trigger.
-     * @param eventTypeAlias name of the event type
+     * @param eventTypeName name of the event type
      * @return statement names referencing that type
      */
-    public Set<String> getEventTypeAliasUsedBy(String eventTypeAlias);
+    public Set<String> getEventTypeNameUsedBy(String eventTypeName);
 }

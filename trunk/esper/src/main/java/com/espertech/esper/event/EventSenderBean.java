@@ -74,7 +74,7 @@ public class EventSenderBean implements EventSender
                     {
                         throw new EPException("Event object of type " + event.getClass().getName() +
                                 " does not equal, extend or implement the type " + beanEventType.getUnderlyingType().getName() +
-                                " of event type '" + beanEventType.getAlias() + "'");
+                                " of event type '" + beanEventType.getName() + "'");
                     }
                 }
             }

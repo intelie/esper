@@ -8,14 +8,11 @@ import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.support.util.SupportUpdateListener;
 import junit.framework.TestCase;
 
-import java.util.Map;
-import java.util.Collections;
-
 public class TestPerfGroupedLengthWinWeightAvg extends TestCase
 {
     public void testSensorQuery() throws Exception {
         Configuration config = SupportConfigFactory.getConfiguration();
-        config.addEventTypeAlias("Sensor", Sensor.class);
+        config.addEventType("Sensor", Sensor.class);
         EPServiceProvider epService = EPServiceProviderManager.getProvider("testSensorQuery", config);
 
         boolean useGroup = true;

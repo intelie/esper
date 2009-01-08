@@ -34,7 +34,7 @@ public class TestDatabaseNoJoinIterate extends TestCase
 
     public void testVariablesPoll()
     {
-        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("SupportBean", SupportBean.class);
+        epService.getEPAdministrator().getConfiguration().addEventType("SupportBean", SupportBean.class);
         epService.getEPAdministrator().createEPL("create variable boolean queryvar_bool");
         epService.getEPAdministrator().createEPL("create variable int queryvar_int");
         epService.getEPAdministrator().createEPL("create variable int lower");

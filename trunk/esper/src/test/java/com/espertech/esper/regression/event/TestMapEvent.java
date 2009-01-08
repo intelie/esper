@@ -36,7 +36,7 @@ public class TestMapEvent extends TestCase
         map.put("beanA", SupportBeanComplexProps.makeDefaultBean());
 
         Configuration configuration = SupportConfigFactory.getConfiguration();
-        configuration.addEventTypeAlias("myMapEvent", properties);
+        configuration.addEventType("myMapEvent", properties);
 
         epService = EPServiceProviderManager.getDefaultProvider(configuration);
         epService.initialize();
@@ -44,7 +44,7 @@ public class TestMapEvent extends TestCase
 
     public void testMetadata()
     {
-        EventTypeSPI type = (EventTypeSPI) ((EPServiceProviderSPI)epService).getEventAdapterService().getExistsTypeByAlias("myMapEvent");
+        EventTypeSPI type = (EventTypeSPI) ((EPServiceProviderSPI)epService).getEventAdapterService().getExistsTypeByName("myMapEvent");
         assertEquals(EventTypeMetadata.ApplicationType.MAP, type.getMetadata().getOptionalApplicationType());
         assertEquals(null, type.getMetadata().getOptionalSecondaryNames());
         assertEquals("myMapEvent", type.getMetadata().getPrimaryName());
@@ -68,7 +68,7 @@ public class TestMapEvent extends TestCase
         // test remove type with statement used (no force)
         ConfigurationOperations configOps = epService.getEPAdministrator().getConfiguration();
         EPStatement stmt = epService.getEPAdministrator().createEPL("select myInt from myMapEvent", "stmtOne");
-        ArrayAssertionUtil.assertEqualsExactOrder(new String[] {"stmtOne"}, configOps.getEventTypeAliasUsedBy("myMapEvent").toArray());
+        ArrayAssertionUtil.assertEqualsExactOrder(new String[] {"stmtOne"}, configOps.getEventTypeNameUsedBy("myMapEvent").toArray());
 
         try {
             configOps.removeEventType("myMapEvent", false);
@@ -79,11 +79,11 @@ public class TestMapEvent extends TestCase
 
         // destroy statement and type
         stmt.destroy();
-        assertTrue(configOps.getEventTypeAliasUsedBy("myMapEvent").isEmpty());
-        assertTrue(configOps.isEventTypeAliasExists("myMapEvent"));
+        assertTrue(configOps.getEventTypeNameUsedBy("myMapEvent").isEmpty());
+        assertTrue(configOps.isEventTypeExists("myMapEvent"));
         assertTrue(configOps.removeEventType("myMapEvent", false));
         assertFalse(configOps.removeEventType("myMapEvent", false));    // try double-remove
-        assertFalse(configOps.isEventTypeAliasExists("myMapEvent"));
+        assertFalse(configOps.isEventTypeExists("myMapEvent"));
         try {
             epService.getEPAdministrator().createEPL("select myInt from myMapEvent");
             fail();
@@ -95,13 +95,13 @@ public class TestMapEvent extends TestCase
         // add back the type
         Properties properties = new Properties();
         properties.put("p01", "string");
-        configOps.addEventTypeAlias("myMapEvent", properties);
-        assertTrue(configOps.isEventTypeAliasExists("myMapEvent"));
-        assertTrue(configOps.getEventTypeAliasUsedBy("myMapEvent").isEmpty());
+        configOps.addEventType("myMapEvent", properties);
+        assertTrue(configOps.isEventTypeExists("myMapEvent"));
+        assertTrue(configOps.getEventTypeNameUsedBy("myMapEvent").isEmpty());
 
         // compile
         epService.getEPAdministrator().createEPL("select p01 from myMapEvent", "stmtTwo");
-        ArrayAssertionUtil.assertEqualsExactOrder(new String[] {"stmtTwo"}, configOps.getEventTypeAliasUsedBy("myMapEvent").toArray());
+        ArrayAssertionUtil.assertEqualsExactOrder(new String[] {"stmtTwo"}, configOps.getEventTypeNameUsedBy("myMapEvent").toArray());
         try {
             epService.getEPAdministrator().createEPL("select myInt from myMapEvent");
             fail();
@@ -118,14 +118,14 @@ public class TestMapEvent extends TestCase
             assertTrue(ex.getMessage().contains("myMapEvent"));
         }
         assertTrue(configOps.removeEventType("myMapEvent", true));
-        assertFalse(configOps.isEventTypeAliasExists("myMapEvent"));
-        assertTrue(configOps.getEventTypeAliasUsedBy("myMapEvent").isEmpty());
+        assertFalse(configOps.isEventTypeExists("myMapEvent"));
+        assertTrue(configOps.getEventTypeNameUsedBy("myMapEvent").isEmpty());
 
         // add back the type
         properties = new Properties();
         properties.put("newprop", "string");
-        configOps.addEventTypeAlias("myMapEvent", properties);
-        assertTrue(configOps.isEventTypeAliasExists("myMapEvent"));
+        configOps.addEventType("myMapEvent", properties);
+        assertTrue(configOps.isEventTypeExists("myMapEvent"));
 
         // compile
         epService.getEPAdministrator().createEPL("select newprop from myMapEvent");
@@ -191,7 +191,7 @@ public class TestMapEvent extends TestCase
         properties.put("astring", "string");
 
         Configuration configuration = SupportConfigFactory.getConfiguration();
-        configuration.addEventTypeAlias("MyPrimMapEvent", properties);
+        configuration.addEventType("MyPrimMapEvent", properties);
 
         epService = EPServiceProviderManager.getProvider("testPrimitivesTypes", configuration);
     }
@@ -202,7 +202,7 @@ public class TestMapEvent extends TestCase
         properties.put("astring", "XXXX");
 
         Configuration configuration = SupportConfigFactory.getConfiguration();
-        configuration.addEventTypeAlias("MyInvalidEvent", properties);
+        configuration.addEventType("MyInvalidEvent", properties);
 
         try
         {

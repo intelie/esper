@@ -50,7 +50,7 @@
 			<xs:attribute name="name" type="xs:string" use="required"/>
 			<xs:attribute name="enable" type="xs:boolean" use="required"/>
 			<xs:attribute name="engine-uri" type="xs:string" use="required"/>
-			<xs:attribute name="alias" type="xs:string" use="required"/>
+			<xs:attribute name="type-name" type="xs:string" use="required"/>
 		</xs:complexType>
 	</xs:element>
 	<xs:element name="symbollists">

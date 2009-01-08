@@ -63,6 +63,7 @@ public class ConfigurationEventTypeXMLDOM implements MetaDefItem, Serializable
 
     private String xPathFunctionResolver;
     private String xPathVariableResolver;
+    private static final long serialVersionUID = -7488596902855838072L;
 
     /**
      * Ctor.
@@ -284,15 +285,15 @@ public class ConfigurationEventTypeXMLDOM implements MetaDefItem, Serializable
      * @param xpath is an arbitrary xpath expression
      * @param type is a constant obtained from javax.xml.xpath.XPathConstants. Typical values are
      * XPathConstants.NODE and XPathConstants.NODESET.
-     * @param eventTypeAlias is the name of another event type that represents the XPath nodes
+     * @param eventTypeName is the name of another event type that represents the XPath nodes
      */
-    public void addXPathPropertyFragment(String name, String xpath, QName type, String eventTypeAlias)
+    public void addXPathPropertyFragment(String name, String xpath, QName type, String eventTypeName)
     {
         if ((type != XPathConstants.NODE) && (type != XPathConstants.NODESET))
         {
             throw new IllegalArgumentException("XPath property for fragments requires an Node or Nodeset (XPathConstants.NODE/NODESET) return value for property '" + name + "'");
         }
-        XPathPropertyDesc desc = new XPathPropertyDesc(name, xpath, type, eventTypeAlias);
+        XPathPropertyDesc desc = new XPathPropertyDesc(name, xpath, type, eventTypeName);
         xPathProperties.put(name, desc);
     }
 
@@ -398,7 +399,8 @@ public class ConfigurationEventTypeXMLDOM implements MetaDefItem, Serializable
         private String xpath;
         private QName type;
         private Class optionalCastToType;
-        private String optionalEventTypeAlias;
+        private String optionaleventTypeName;
+        private static final long serialVersionUID = -4141721949296588319L;
 
         /**
          * Ctor.
@@ -433,14 +435,14 @@ public class ConfigurationEventTypeXMLDOM implements MetaDefItem, Serializable
          * @param name is the event property name
          * @param xpath is an arbitrary XPath expression
          * @param type is a javax.xml.xpath.XPathConstants constant
-         * @param eventTypeAlias the name of an event type that represents the fragmented property value
+         * @param eventTypeName the name of an event type that represents the fragmented property value
          */
-        public XPathPropertyDesc(String name, String xpath, QName type, String eventTypeAlias)
+        public XPathPropertyDesc(String name, String xpath, QName type, String eventTypeName)
         {
             this.name = name;
             this.xpath = xpath;
             this.type = type;
-            this.optionalEventTypeAlias = eventTypeAlias;
+            this.optionaleventTypeName = eventTypeName;
         }
 
         /**
@@ -483,9 +485,9 @@ public class ConfigurationEventTypeXMLDOM implements MetaDefItem, Serializable
          * Returns the event type name assigned to the explicit property.
          * @return type name
          */
-        public String getOptionalEventTypeAlias()
+        public String getOptionaleventTypeName()
         {
-            return optionalEventTypeAlias;
+            return optionaleventTypeName;
         }
     }
 

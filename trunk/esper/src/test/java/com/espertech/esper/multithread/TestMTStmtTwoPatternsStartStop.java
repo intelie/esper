@@ -28,7 +28,7 @@ public class TestMTStmtTwoPatternsStartStop extends TestCase
     public void setUp()
     {
         Configuration config = new Configuration();
-        config.addEventTypeAlias("SupportEvent", SupportTradeEvent.class);
+        config.addEventType("SupportEvent", SupportTradeEvent.class);
         
         engine = EPServiceProviderManager.getDefaultProvider(config);
         engine.initialize();

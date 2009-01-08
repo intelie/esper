@@ -27,7 +27,7 @@ public class TestMTInsertIntoTimerConcurrency extends TestCase
         noActionUpdateListener = new NoActionUpdateListener();
 
         Configuration epConfig = new Configuration();
-        epConfig.addEventTypeAliasSimpleName(SupportBean.class);
+        epConfig.addEventType(SupportBean.class);
         epConfig.getEngineDefaults().getThreading().setInsertIntoDispatchLocking(ConfigurationEngineDefaults.Threading.Locking.SUSPEND);
 
         final EPServiceProvider epServiceProvider = EPServiceProviderManager.getDefaultProvider(epConfig);

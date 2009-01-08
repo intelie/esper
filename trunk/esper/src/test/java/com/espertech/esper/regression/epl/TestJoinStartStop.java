@@ -93,8 +93,8 @@ public class TestJoinStartStop extends TestCase
 
     public void testInvalidJoin()
     {
-        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("A", SupportBean_A.class);
-        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("B", SupportBean_B.class);
+        epService.getEPAdministrator().getConfiguration().addEventType("A", SupportBean_A.class);
+        epService.getEPAdministrator().getConfiguration().addEventType("B", SupportBean_B.class);
 
         String invalidJoin = "select * from A, B";
         tryInvalid(invalidJoin,

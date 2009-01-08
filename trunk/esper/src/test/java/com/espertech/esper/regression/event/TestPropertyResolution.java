@@ -3,12 +3,8 @@ package com.espertech.esper.regression.event;
 import com.espertech.esper.client.*;
 import com.espertech.esper.support.bean.*;
 import com.espertech.esper.support.client.SupportConfigFactory;
-import com.espertech.esper.support.event.EventTypeAssertionUtil;
 import com.espertech.esper.support.util.SupportUpdateListener;
 import junit.framework.TestCase;
-
-import java.util.Map;
-import java.util.HashMap;
 
 public class TestPropertyResolution extends TestCase
 {
@@ -124,7 +120,7 @@ public class TestPropertyResolution extends TestCase
     {
         Configuration configuration = SupportConfigFactory.getConfiguration();
         configuration.getEngineDefaults().getEventMeta().setClassPropertyResolutionStyle(Configuration.PropertyResolutionStyle.CASE_INSENSITIVE);
-        configuration.addEventTypeAlias("Bean", SupportBean.class);
+        configuration.addEventType("Bean", SupportBean.class);
 
         tryCaseInsensitive(configuration, "select STRING, INTPRIMITIVE from Bean where STRING='A'", "STRING", "INTPRIMITIVE");
         tryCaseInsensitive(configuration, "select sTrInG, INTprimitIVE from Bean where STRing='A'", "sTrInG", "INTprimitIVE");
@@ -135,7 +131,7 @@ public class TestPropertyResolution extends TestCase
         Configuration configuration = SupportConfigFactory.getConfiguration();
         ConfigurationEventTypeLegacy legacyDef = new ConfigurationEventTypeLegacy();
         legacyDef.setPropertyResolutionStyle(Configuration.PropertyResolutionStyle.CASE_INSENSITIVE);
-        configuration.addEventTypeAlias("Bean", SupportBean.class.getName(), legacyDef);
+        configuration.addEventType("Bean", SupportBean.class.getName(), legacyDef);
 
         tryCaseInsensitive(configuration, "select STRING, INTPRIMITIVE from Bean where STRING='A'", "STRING", "INTPRIMITIVE");
         tryCaseInsensitive(configuration, "select sTrInG, INTprimitIVE from Bean where STRing='A'", "sTrInG", "INTprimitIVE");

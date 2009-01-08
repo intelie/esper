@@ -25,13 +25,13 @@ package com.espertech.esper.plugin;
  * Before use, an implementation of this interface must be registered via configuration. Upon engine initialization,
  * the engine invokes the {@link #init} method passing configuration information.
  * <p>
- * When a plug-in event type alias is registered via configuration (runtime or configuration time), the
+ * When a plug-in event type name is registered via configuration (runtime or configuration time), the
  * engine first asks the implementation whether the type is accepted via {@link #acceptsType}.
  * If accepted, the engine follows with a call to {@link #getTypeHandler} for creating and handling the type.
  * <p>
  * An implementation can participate in dynamic resolution of new (unseen)
- * event type aliases if the application configures the URI of the event representation, or a child URI (parameters possible) via
- * {@link com.espertech.esper.client.ConfigurationOperations#setPlugInEventTypeAliasResolutionURIs(java.net.URI[])}.
+ * event type names if the application configures the URI of the event representation, or a child URI (parameters possible) via
+ * {@link com.espertech.esper.client.ConfigurationOperations#setPlugInEventTypeResolutionURIs(java.net.URI[])}.
  * <p>
  * Last, see {@link com.espertech.esper.client.EPRuntime#getEventSender(java.net.URI[])}. An event sender
  * allows dynamic reflection on an incoming event object. At the time such an event
@@ -50,10 +50,10 @@ public interface PlugInEventRepresentation
     /**
      * Returns true to indicate that the event representation can handle the requested event type.
      * <p>
-     * Called when a new plug-in event type and alias is registered and the its resolution URI matches
+     * Called when a new plug-in event type and name is registered and the its resolution URI matches
      * or is a child URI of the event representation URI.
      * <p>
-     * Also called when a new EPL statement is created with an unseen event type alias
+     * Also called when a new EPL statement is created with an unseen event type name
      * and the URIs for resolution have been configured.
      * @param acceptTypeContext provides the URI specified for resolving the type, and configuration info.
      * @return true to accept the type, false such that another event representation may handle the type request

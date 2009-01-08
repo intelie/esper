@@ -21,10 +21,11 @@ public class OHLCTest extends TestCase
     {
         Configuration config = new Configuration();
         config.getEngineDefaults().getThreading().setInternalTimerEnabled(false);   // external timer for testing
-        config.addEventTypeAlias("OHLCTick", OHLCTick.class);
+        config.addEventType("OHLCTick", OHLCTick.class);
         config.addPlugInView("examples", "ohlcbarminute", OHLCBarPlugInViewFactory.class.getName());
 
         epService = EPServiceProviderManager.getDefaultProvider(config);
+        epService.initialize(); // We initialize as this unit test runs with many other unit tests
 
         // set time as an arbitrary start time
         sendTimer(toTime("9:01:50"));

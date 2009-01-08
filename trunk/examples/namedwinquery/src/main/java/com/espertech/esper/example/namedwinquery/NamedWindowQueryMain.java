@@ -43,7 +43,7 @@ public class NamedWindowQueryMain
         Map<String, Object> definition = new LinkedHashMap<String, Object>();
         definition.put("sensor", String.class);
         definition.put("temperature", double.class);
-        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("SensorEvent", definition);
+        epService.getEPAdministrator().getConfiguration().addEventType("SensorEvent", definition);
 
         // define a named window to hold the last 1000000 (1M) events
         //
@@ -107,7 +107,7 @@ public class NamedWindowQueryMain
         //
         Map<String, Object> definitionQuery = new LinkedHashMap<String, Object>();
         definitionQuery.put("querytemp", double.class);
-        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("SensorQueryEvent", definitionQuery);
+        epService.getEPAdministrator().getConfiguration().addEventType("SensorQueryEvent", definitionQuery);
 
         stmtText = "on SensorQueryEvent select sensor from SensorWindow where temperature = querytemp";
         log.info("Creating on-select statement for named window : " + stmtText);

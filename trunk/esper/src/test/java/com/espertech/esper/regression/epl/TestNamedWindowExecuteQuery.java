@@ -18,8 +18,8 @@ public class TestNamedWindowExecuteQuery extends TestCase
     public void setUp()
     {
         Configuration config = SupportConfigFactory.getConfiguration();
-        config.addEventTypeAlias("SupportBean", SupportBean.class.getName());
-        config.addEventTypeAlias("SupportBean_A", SupportBean_A.class.getName());
+        config.addEventType("SupportBean", SupportBean.class.getName());
+        config.addEventType("SupportBean_A", SupportBean_A.class.getName());
         epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();
 

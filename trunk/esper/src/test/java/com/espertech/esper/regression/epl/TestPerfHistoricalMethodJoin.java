@@ -18,7 +18,7 @@ public class TestPerfHistoricalMethodJoin extends TestCase
     public void setUp()
     {
         Configuration config = SupportConfigFactory.getConfiguration();
-        config.addEventTypeAliasSimpleName(SupportBeanInt.class);
+        config.addEventType(SupportBeanInt.class);
 
         ConfigurationMethodRef configMethod = new ConfigurationMethodRef();
         configMethod.setLRUCache(10);

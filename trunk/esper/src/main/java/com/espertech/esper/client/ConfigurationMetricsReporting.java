@@ -24,6 +24,7 @@ public class ConfigurationMetricsReporting implements Serializable
     private long engineInterval;
     private long statementInterval;
     private Map<String, StmtGroupMetrics> statementGroups;
+    private static final long serialVersionUID = -7265780298667075895L;
 
     /**
      * Ctor.
@@ -166,6 +167,7 @@ public class ConfigurationMetricsReporting implements Serializable
         private long interval;
         private boolean reportInactive;
         private boolean defaultInclude;
+        private static final long serialVersionUID = 5449418752480520879L;
 
         /**
          * Ctor.

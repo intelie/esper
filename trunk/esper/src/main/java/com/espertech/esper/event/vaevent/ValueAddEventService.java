@@ -28,59 +28,59 @@ public interface ValueAddEventService
      * Called at initialization time, verifies configurations provided.
      * @param revisionTypes is the revision types to add
      * @param variantStreams is the variant streams to add
-     * @param eventAdapterService for obtaining event type information for each alias
+     * @param eventAdapterService for obtaining event type information for each name
      */
     public void init(Map<String, ConfigurationRevisionEventType> revisionTypes, Map<String, ConfigurationVariantStream> variantStreams, EventAdapterService eventAdapterService);
 
     /**
      * Adds a new revision event types.
-     * @param alias to add
+     * @param name to add
      * @param config the revision event type configuration
-     * @param eventAdapterService for obtaining event type information for each alias
+     * @param eventAdapterService for obtaining event type information for each name
      */
-    public void addRevisionEventType(String alias, ConfigurationRevisionEventType config, EventAdapterService eventAdapterService);
+    public void addRevisionEventType(String name, ConfigurationRevisionEventType config, EventAdapterService eventAdapterService);
 
     /**
      * Adds a new variant stream.
-     * @param variantEventTypeAlias the alias of the type
+     * @param variantEventTypeName the name of the type
      * @param variantStreamConfig the configs
      * @param eventAdapterService for handling nested events
      * @throws ConfigurationException if the configuration is invalid
      */
-    public void addVariantStream(String variantEventTypeAlias, ConfigurationVariantStream variantStreamConfig, EventAdapterService eventAdapterService)
+    public void addVariantStream(String variantEventTypeName, ConfigurationVariantStream variantStreamConfig, EventAdapterService eventAdapterService)
             throws ConfigurationException;
 
     /**
      * Upon named window creation, and during resolution of type specified as part of a named window create statement,
-     * returns looks up the revision event type alias provided and return the revision event type if found, or null if not found.
-     * @param alias to look up
+     * returns looks up the revision event type name provided and return the revision event type if found, or null if not found.
+     * @param name to look up
      * @return null if not found, of event type
      */
-    public EventType getValueAddUnderlyingType(String alias);
+    public EventType getValueAddUnderlyingType(String name);
 
     /**
      * Upon named window creation, create a unique revision event type that this window processes.
      * @param namedWindowName name of window
-     * @param alias alias to use
+     * @param typeName name to use
      * @param statementStopService for handling stops
      * @param eventAdapterService for event type info
      * @return revision event type
      */
-    public EventType createRevisionType(String namedWindowName, String alias, StatementStopService statementStopService, EventAdapterService eventAdapterService);
+    public EventType createRevisionType(String namedWindowName, String typeName, StatementStopService statementStopService, EventAdapterService eventAdapterService);
 
     /**
-     * Upon named window creation, check if the alias used is a revision event type alias.
-     * @param alias to check
+     * Upon named window creation, check if the name used is a revision event type name.
+     * @param name to check
      * @return true if revision event type, false if not
      */
-    public boolean isRevisionTypeAlias(String alias);
+    public boolean isRevisionTypeName(String name);
 
     /**
      * Gets a value-added event processor.
-     * @param alias of the value-add events
+     * @param name of the value-add events
      * @return processor
      */
-    public ValueAddEventProcessor getValueAddProcessor(String alias);
+    public ValueAddEventProcessor getValueAddProcessor(String name);
 
     /**
      * Returns all event types representing value-add event types.

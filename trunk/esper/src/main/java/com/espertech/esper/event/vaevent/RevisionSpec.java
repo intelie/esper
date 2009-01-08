@@ -22,7 +22,7 @@ public class RevisionSpec
     private final ConfigurationRevisionEventType.PropertyRevision propertyRevision;
     private final EventType baseEventType;
     private final EventType[] deltaTypes;
-    private final String[] deltaAliases;
+    private final String[] deltaNames;
     private final String[] keyPropertyNames;
     private final String[] changesetPropertyNames;
     private final String[] baseEventOnlyPropertyNames;
@@ -34,19 +34,19 @@ public class RevisionSpec
      * @param propertyRevision strategy to use
      * @param baseEventType base type
      * @param deltaTypes delta types
-     * @param deltaAliases aliases of delta types
+     * @param deltaNames names of delta types
      * @param keyPropertyNames names of key properties
      * @param changesetPropertyNames names of properties that change
      * @param baseEventOnlyPropertyNames properties only available on the base event
      * @param deltaTypesAddProperties boolean to indicate delta types add additional properties.
      * @param changesetPropertyDeltaContributed flag for each property indicating whether its contributed only by a delta event
      */
-    public RevisionSpec(ConfigurationRevisionEventType.PropertyRevision propertyRevision, EventType baseEventType, EventType[] deltaTypes, String[] deltaAliases, String[] keyPropertyNames, String[] changesetPropertyNames, String[] baseEventOnlyPropertyNames, boolean deltaTypesAddProperties, boolean[] changesetPropertyDeltaContributed)
+    public RevisionSpec(ConfigurationRevisionEventType.PropertyRevision propertyRevision, EventType baseEventType, EventType[] deltaTypes, String[] deltaNames, String[] keyPropertyNames, String[] changesetPropertyNames, String[] baseEventOnlyPropertyNames, boolean deltaTypesAddProperties, boolean[] changesetPropertyDeltaContributed)
     {
         this.propertyRevision = propertyRevision;
         this.baseEventType = baseEventType;
         this.deltaTypes = deltaTypes;
-        this.deltaAliases = deltaAliases;
+        this.deltaNames = deltaNames;
         this.keyPropertyNames = keyPropertyNames;
         this.changesetPropertyNames = changesetPropertyNames;
         this.baseEventOnlyPropertyNames = baseEventOnlyPropertyNames;
@@ -91,12 +91,12 @@ public class RevisionSpec
     }
 
     /**
-     * Returns aliases for delta events.
-     * @return event type alias names for delta events
+     * Returns names for delta events.
+     * @return event type names for delta events
      */
-    public String[] getDeltaAliases()
+    public String[] getDeltaNames()
     {
-        return deltaAliases;
+        return deltaNames;
     }
 
     /**

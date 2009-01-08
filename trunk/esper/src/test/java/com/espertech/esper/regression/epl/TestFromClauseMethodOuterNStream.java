@@ -17,8 +17,8 @@ public class TestFromClauseMethodOuterNStream extends TestCase
     public void setUp()
     {
         Configuration config = SupportConfigFactory.getConfiguration();
-        config.addEventTypeAliasSimpleName(SupportBeanInt.class);
-        config.addEventTypeAliasSimpleName(SupportBean.class);
+        config.addEventType(SupportBeanInt.class);
+        config.addEventType(SupportBean.class);
         config.addImport(SupportJoinMethods.class.getName());
         config.addVariable("var1", Integer.class, 0);
         config.addVariable("var2", Integer.class, 0);

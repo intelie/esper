@@ -4,7 +4,6 @@ import junit.framework.TestCase;
 import com.espertech.esper.client.*;
 import com.espertech.esper.client.soda.*;
 import com.espertech.esper.client.time.CurrentTimeEvent;
-import com.espertech.esper.client.time.TimerControlEvent;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.support.bean.SupportBeanString;
@@ -73,7 +72,7 @@ public class TestOrderBySimple extends TestCase {
         config.getEngineDefaults().getLanguage().setSortUsingCollator(true);
         epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();
-        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("SupportBean", SupportBean.class.getName());
+        epService.getEPAdministrator().getConfiguration().addEventType("SupportBean", SupportBean.class.getName());
 
         // test order by
         String stmtText = "select string from SupportBean.win:keepall() order by string asc";

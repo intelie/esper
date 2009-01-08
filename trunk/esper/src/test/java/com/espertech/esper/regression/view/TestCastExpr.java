@@ -246,7 +246,7 @@ public class TestCastExpr extends TestCase
         map.put("intBoxed",Integer.class);
 
         Configuration config = new Configuration();
-        config.addEventTypeAlias("TestEvent", map);
+        config.addEventType("TestEvent", map);
 
         epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();

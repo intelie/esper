@@ -21,17 +21,17 @@ import java.util.List;
  */
 public class FilterSpecRaw implements MetaDefItem
 {
-    private String eventTypeAlias;
+    private String eventTypeName;
     private List<ExprNode> filterExpressions;
 
     /**
      * Ctor.
-     * @param eventTypeAlias is the name of the event type
+     * @param eventTypeName is the name of the event type
      * @param filterExpressions is a list of expression nodes representing individual filter expressions
      */
-    public FilterSpecRaw(String eventTypeAlias, List<ExprNode> filterExpressions)
+    public FilterSpecRaw(String eventTypeName, List<ExprNode> filterExpressions)
     {
-        this.eventTypeAlias = eventTypeAlias;
+        this.eventTypeName = eventTypeName;
         this.filterExpressions = filterExpressions;
     }
 
@@ -43,12 +43,12 @@ public class FilterSpecRaw implements MetaDefItem
     }
 
     /**
-     * Returns the event type alias of the events we are looking for.
+     * Returns the event type name of the events we are looking for.
      * @return event name
      */
-    public String getEventTypeAlias()
+    public String geteventTypeName()
     {
-        return eventTypeAlias;
+        return eventTypeName;
     }
 
     /**

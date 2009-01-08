@@ -409,7 +409,7 @@ select insert from MyEvent]]></programlisting>
 			</para>
 
 			<para>
-				In a join statement, using the <literal>select *</literal> syntax selects one event property per stream to hold the event for that stream. The property name is the stream alias name in the <literal>from</literal> clause. 
+				In a join statement, using the <literal>select *</literal> syntax selects one event property per stream to hold the event for that stream. The property name is the stream name in the <literal>from</literal> clause. 
 			</para>
 		</sect2>
 
@@ -471,11 +471,11 @@ from StockTick(symbol='IBM').win:length(100).stat:uni(volume)]]></programlisting
 			</para>
 
 			<para>
-				In case the property name in your <literal>select</literal> or other clauses is not unique considering all joined streams, you will need to use the alias name of the stream as a prefix to the property.
+				In case the property name in your <literal>select</literal> or other clauses is not unique considering all joined streams, you will need to use the name of the stream as a prefix to the property.
 			</para>
 
 			<para>
-				This example is a join between the two streams StockTick and News, respectively named as 'tick' and 'news'. The example selects from the StockTick event the symbol value using the 'tick' stream alias as a prefix:
+				This example is a join between the two streams StockTick and News, respectively named as 'tick' and 'news'. The example selects from the StockTick event the symbol value using the 'tick' stream name as a prefix:
 			</para>
 			<programlisting><![CDATA[select tick.symbol from StockTick.win:time(10) as tick, News.win:time(10) as news]]></programlisting>
 
@@ -487,7 +487,7 @@ from StockTick(symbol='IBM').win:length(100).stat:uni(volume)]]></programlisting
 			<para>
 				The following syntax can also be used to specify what stream's properties to select:
 			</para>
-			<synopsis>select <emphasis>stream_name</emphasis>.* [as <emphasis>alias</emphasis>] from ...</synopsis>
+			<synopsis>select <emphasis>stream_name</emphasis>.* [as <emphasis>name</emphasis>] from ...</synopsis>
 
 			<para>
 				The selection of <literal>tick.*</literal> selects the StockTick stream events only:
@@ -1650,7 +1650,7 @@ order by price, volume</programlisting>
 		
 		<para>
 			Otherwise, any kind of expression that can appear in the <literal>select</literal> clause, 
-			as well as any alias defined in the <literal>select</literal> clause, is also valid in the order by clause.
+			as well as any name defined in the <literal>select</literal> clause, is also valid in the order by clause.
 		</para>		
 		
 		<para>
@@ -2967,16 +2967,16 @@ where asset.assetid = desc.assetid]]></programlisting>
 			<para>
 				The syntax for the <literal>on delete</literal> clause is as follows: 
 			</para>
-			<synopsis>on <emphasis>event_type</emphasis>[<emphasis>(filter_criteria)</emphasis>] [as <emphasis>alias_name</emphasis>]
-delete from <emphasis>window_name</emphasis> [as <emphasis>alias_name</emphasis>]
+			<synopsis>on <emphasis>event_type</emphasis>[<emphasis>(filter_criteria)</emphasis>] [as <emphasis>stream_name</emphasis>]
+delete from <emphasis>window_name</emphasis> [as <emphasis>stream_name</emphasis>]
 [where <emphasis>criteria_expression</emphasis>]</synopsis>
 				
 			<para>
-				The <emphasis>event_type</emphasis> is the name or alias of the type of events that trigger removal from the named window. It is optionally followed by <emphasis>filter_criteria</emphasis> which are filter expressions to apply to arriving events. The optional <literal>as</literal> keyword can be used to assign an alias for use in the <literal>where</literal> clause. Patterns can also be specified in the <literal>on</literal> clause as described in the next section.
+				The <emphasis>event_type</emphasis> is the name of the type of events that trigger removal from the named window. It is optionally followed by <emphasis>filter_criteria</emphasis> which are filter expressions to apply to arriving events. The optional <literal>as</literal> keyword can be used to assign an name for use in the <literal>where</literal> clause. Patterns can also be specified in the <literal>on</literal> clause as described in the next section.
 			</para>
 				
 			<para>
-				The <emphasis>window_name</emphasis> is the name of the named window to delete events from. The <literal>as</literal> keyword is also available to assign an alias to the named window.
+				The <emphasis>window_name</emphasis> is the name of the named window to delete events from. The <literal>as</literal> keyword is also available to assign a name to the named window.
 			</para>
 				
 			<para>
@@ -3005,7 +3005,7 @@ delete from AllOrdersNamedWindow as myNamedWindow
 where myNamedWindow.symbol = myNewOrders.symbol]]></programlisting>
 
 			<para>				
-				In the above sample statement, only if a 'NewOrderEvent' event with a volume greater then zero arrives does the statement trigger. Upon triggering, all events in the named window that have the same value for the symbol property as the triggering 'NewOrderEvent' event are then removed from the named window. The statement also showcases the <literal>as</literal> keyword to assign alias names for use in the <literal>where</literal> expression.
+				In the above sample statement, only if a 'NewOrderEvent' event with a volume greater then zero arrives does the statement trigger. Upon triggering, all events in the named window that have the same value for the symbol property as the triggering 'NewOrderEvent' event are then removed from the named window. The statement also showcases the <literal>as</literal> keyword to assign a name for use in the <literal>where</literal> expression.
 			</para>
 
 			<para>				
@@ -3022,8 +3022,8 @@ where myNamedWindow.symbol = myNewOrders.symbol]]></programlisting>
 				<para>
 					By means of patterns the <literal>on delete</literal> clause and <literal>on select</literal> clause (described below) can look for more complex conditions to occur, possibly involving multiple events or the passing of time. The syntax for <literal>on delete</literal> with a pattern expression is show next:
 				</para>
-				<synopsis>on pattern [<emphasis>pattern_expression</emphasis>] [as <emphasis>alias_name</emphasis>]
-delete from <emphasis>window_name</emphasis> [as <emphasis>alias_name</emphasis>]
+				<synopsis>on pattern [<emphasis>pattern_expression</emphasis>] [as <emphasis>stream_name</emphasis>]
+delete from <emphasis>window_name</emphasis> [as <emphasis>stream_name</emphasis>]
 [where <emphasis>criteria_expression</emphasis>]</synopsis>
 					
 				<para>
@@ -3220,10 +3220,10 @@ select * from AllOrdersNamedWindow.win:time(30 sec)]]></programlisting>
 			<para>
 				The syntax for the <literal>on select</literal> clause is as follows: 
 			</para>
-			<synopsis>on <emphasis>event_type</emphasis>[<emphasis>(filter_criteria)</emphasis>] [as <emphasis>alias_name</emphasis>]
+			<synopsis>on <emphasis>event_type</emphasis>[<emphasis>(filter_criteria)</emphasis>] [as <emphasis>stream_name</emphasis>]
 [insert into <emphasis>insert_into_def</emphasis>]
 select <emphasis>select_list</emphasis>
-from <emphasis>window_name</emphasis> [as <emphasis>alias_name</emphasis>]
+from <emphasis>window_name</emphasis> [as <emphasis>stream_name</emphasis>]
 [where <emphasis>criteria_expression</emphasis>]
 [group by <emphasis>grouping_expression_list</emphasis>]
 [having <emphasis>grouping_search_conditions</emphasis>]
@@ -3231,7 +3231,7 @@ from <emphasis>window_name</emphasis> [as <emphasis>alias_name</emphasis>]
 </synopsis>
 				
 			<para>
-				The <emphasis>event_type</emphasis> is the name or alias of the type of events that trigger the query against the named window. It is optionally followed by <emphasis>filter_criteria</emphasis> which are filter expressions to apply to arriving events. The optional <literal>as</literal> keyword can be used to assign an alias. Patterns can also be specified in the <literal>on</literal> clause, see the samples in <xref linkend="named_delete_pattern"/>.
+				The <emphasis>event_type</emphasis> is the name of the type of events that trigger the query against the named window. It is optionally followed by <emphasis>filter_criteria</emphasis> which are filter expressions to apply to arriving events. The optional <literal>as</literal> keyword can be used to assign an stream name. Patterns can also be specified in the <literal>on</literal> clause, see the samples in <xref linkend="named_delete_pattern"/>.
 			</para>
 				
 			<para>
@@ -3239,7 +3239,7 @@ from <emphasis>window_name</emphasis> [as <emphasis>alias_name</emphasis>]
 			</para>
 
 			<para>
-				The <emphasis>window_name</emphasis> in the <literal>from</literal> clause is the name of the named window to select events from. The <literal>as</literal> keyword is also available to assign an alias to the named window. The <literal>as</literal> keyword is helpful in conjunction with wildcard in the <literal>select</literal> clause to select named window events via the syntax <literal>select alias.* </literal>.
+				The <emphasis>window_name</emphasis> in the <literal>from</literal> clause is the name of the named window to select events from. The <literal>as</literal> keyword is also available to assign a stream name to the named window. The <literal>as</literal> keyword is helpful in conjunction with wildcard in the <literal>select</literal> clause to select named window events via the syntax <literal>select streamname.* </literal>.
 			</para>
 				
 			<para>
@@ -3415,7 +3415,7 @@ select win.* from OrdersNamedWindow as win]]></programlisting>
 			</para>
 			
 			<para>				
-				Assume that an alias <literal>UserProfileRevisions</literal> has been configured to hold profile events, i.e. creation and update events related by user id. This statement creates a named window to hold the last 1 hour of current profiles per user id:
+				Assume that an event type <literal>UserProfileRevisions</literal> has been configured to hold profile events, i.e. creation and update events related by user id. This statement creates a named window to hold the last 1 hour of current profiles per user id:
 			</para>
 			<programlisting><![CDATA[create window UserProfileWindow.win:time(1 hour) select * from UserProfileRevisions
 insert into UserProfileWindow select * from UserProfileCreation
@@ -3563,12 +3563,12 @@ insert into UserProfileWindow select * from UserProfileUpdate]]></programlisting
 			<para>
 				The synopsis for setting variable values is: 
 			</para>
-			<synopsis>on <emphasis>event_type</emphasis>[<emphasis>(filter_criteria)</emphasis>] [as <emphasis>alias_name</emphasis>]
+			<synopsis>on <emphasis>event_type</emphasis>[<emphasis>(filter_criteria)</emphasis>] [as <emphasis>stream_name</emphasis>]
   set <emphasis>variable_name</emphasis> = <emphasis>expression</emphasis> [, <emphasis>variable_name</emphasis> = <emphasis>expression</emphasis> [,...]]
 </synopsis>
 								
 			<para>
-				The <emphasis>event_type</emphasis> is the name or alias of the type of events that trigger the variable assignments. It is optionally followed by <emphasis>filter_criteria</emphasis> which are filter expressions to apply to arriving events. The optional <literal>as</literal> keyword can be used to assign an alias. Patterns can also be specified in the <literal>on</literal> clause.
+				The <emphasis>event_type</emphasis> is the name of the type of events that trigger the variable assignments. It is optionally followed by <emphasis>filter_criteria</emphasis> which are filter expressions to apply to arriving events. The optional <literal>as</literal> keyword can be used to assign an stream name. Patterns can also be specified in the <literal>on</literal> clause.
 			</para>
 			
 			<para>

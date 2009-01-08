@@ -19,7 +19,7 @@ public class TestFromClauseMethod extends TestCase
     public void setUp()
     {
         Configuration config = SupportConfigFactory.getConfiguration();
-        config.addEventTypeAliasSimpleName(SupportBean.class);
+        config.addEventType(SupportBean.class);
         epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();
         listener = new SupportUpdateListener();
@@ -127,7 +127,7 @@ public class TestFromClauseMethod extends TestCase
 
     public void test2JoinHistoricalOnlyDependent()
     {
-        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("SupportBean", SupportBean.class);
+        epService.getEPAdministrator().getConfiguration().addEventType("SupportBean", SupportBean.class);
         epService.getEPAdministrator().createEPL("create variable int lower");
         epService.getEPAdministrator().createEPL("create variable int upper");
         EPStatement setStmt = epService.getEPAdministrator().createEPL("on SupportBean set lower=intPrimitive,upper=intBoxed");
@@ -149,7 +149,7 @@ public class TestFromClauseMethod extends TestCase
 
     public void test2JoinHistoricalOnlyIndependent()
     {
-        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("SupportBean", SupportBean.class);
+        epService.getEPAdministrator().getConfiguration().addEventType("SupportBean", SupportBean.class);
         epService.getEPAdministrator().createEPL("create variable int lower");
         epService.getEPAdministrator().createEPL("create variable int upper");
         epService.getEPAdministrator().createEPL("on SupportBean set lower=intPrimitive,upper=intBoxed");
@@ -219,7 +219,7 @@ public class TestFromClauseMethod extends TestCase
 
     public void testNoJoinIterateVariables()
     {
-        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("SupportBean", SupportBean.class);
+        epService.getEPAdministrator().getConfiguration().addEventType("SupportBean", SupportBean.class);
         epService.getEPAdministrator().createEPL("create variable int lower");
         epService.getEPAdministrator().createEPL("create variable int upper");
         epService.getEPAdministrator().createEPL("on SupportBean set lower=intPrimitive,upper=intBoxed");

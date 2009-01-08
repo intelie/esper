@@ -129,9 +129,9 @@ public abstract class BaseXMLEventType extends BaseConfigurableEventType {
 
                 FragmentFactoryXPathPredefinedGetter fragmentFactory = null;
                 boolean isFragment = false;
-                if (property.getOptionalEventTypeAlias() != null)
+                if (property.getOptionaleventTypeName() != null)
                 {
-                    fragmentFactory = new FragmentFactoryXPathPredefinedGetter(this.getEventAdapterService(), property.getOptionalEventTypeAlias(), property.getName());
+                    fragmentFactory = new FragmentFactoryXPathPredefinedGetter(this.getEventAdapterService(), property.getOptionaleventTypeName(), property.getName());
                     isFragment = true;
                 }
                 boolean isArray = false;
@@ -144,7 +144,7 @@ public abstract class BaseXMLEventType extends BaseConfigurableEventType {
                 Class returnType = SchemaUtil.toReturnType(property.getType(), property.getOptionalCastToType());
                 
                 EventPropertyDescriptor desc = new EventPropertyDescriptor(property.getName(), returnType, false,false,isArray,false,isFragment);
-                ExplicitPropertyDescriptor explicit = new ExplicitPropertyDescriptor(desc, getter, isArray, property.getOptionalEventTypeAlias());
+                ExplicitPropertyDescriptor explicit = new ExplicitPropertyDescriptor(desc, getter, isArray, property.getOptionaleventTypeName());
                 namedProperties.add(explicit);
             }
         }

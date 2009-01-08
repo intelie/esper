@@ -88,9 +88,9 @@ public class ResultSetProcessorFactory
             isUnidirectional |= isUnidirectionalStream[i];
         }
 
-        // Expand any instances of select-clause aliases in the
+        // Expand any instances of select-clause names in the
         // order-by clause with the full expression
-        expandAliases(selectClauseSpec.getSelectExprList(), orderByList);
+        expandColumnNames(selectClauseSpec.getSelectExprList(), orderByList);
 
         // Validate selection expressions, if any (could be wildcard i.e. empty list)
         List<SelectClauseExprCompiledSpec> namedSelectionList = new LinkedList<SelectClauseExprCompiledSpec>();
@@ -131,8 +131,8 @@ public class ResultSetProcessorFactory
             Class propertyType = null;
             for (int i = 0; i < typeService.getStreamNames().length; i++)
             {
-                String streamAlias = streamSelectSpec.getStreamAliasName();
-                if (typeService.getStreamNames()[i].equals(streamAlias))
+                String streamName = streamSelectSpec.getStreamName();
+                if (typeService.getStreamNames()[i].equals(streamName))
                 {
                     streamNum = i;
                     break;
@@ -141,7 +141,7 @@ public class ResultSetProcessorFactory
                 // see if the stream name is known as a nested event type
                 EventType candidateProviderOfFragments = typeService.getEventTypes()[i];
                 // for the native event type we don't need to fragment, we simply use the property itself since all wrappers understand Java objects
-                if (!(candidateProviderOfFragments instanceof NativeEventType) && (candidateProviderOfFragments.getFragmentType(streamAlias) != null))
+                if (!(candidateProviderOfFragments instanceof NativeEventType) && (candidateProviderOfFragments.getFragmentType(streamName) != null))
                 {
                     streamNum = i;
                     isFragmentEvent = true;
@@ -149,14 +149,14 @@ public class ResultSetProcessorFactory
                 }
             }
 
-            // stream alias not found
+            // stream name not found
             if (streamNum == Integer.MIN_VALUE)
             {
                 // see if the stream name specified resolves as a property
                 PropertyResolutionDescriptor desc = null;
                 try
                 {
-                    desc = typeService.resolveByPropertyName(streamSelectSpec.getStreamAliasName());
+                    desc = typeService.resolveByPropertyName(streamSelectSpec.getStreamName());
                 }
                 catch (StreamTypesException e)
                 {
@@ -165,7 +165,7 @@ public class ResultSetProcessorFactory
 
                 if (desc == null)
                 {
-                    throw new ExprValidationException("Stream selector '" + streamSelectSpec.getStreamAliasName() + ".*' does not match any stream alias name in the from clause");
+                    throw new ExprValidationException("Stream selector '" + streamSelectSpec.getStreamName() + ".*' does not match any stream name in the from clause");
                 }
                 isProperty = true;
                 propertyType = desc.getPropertyType();
@@ -512,7 +512,7 @@ public class ResultSetProcessorFactory
         return propertiesGroupBy;
     }
 
-    private static void expandAliases(List<SelectClauseElementCompiled> selectionList, List<OrderByItem> orderByList)
+    private static void expandColumnNames(List<SelectClauseElementCompiled> selectionList, List<OrderByItem> orderByList)
     {
     	for(SelectClauseElementCompiled selectElement : selectionList)
     	{
@@ -523,14 +523,14 @@ public class ResultSetProcessorFactory
             }
             SelectClauseExprCompiledSpec selectExpr = (SelectClauseExprCompiledSpec) selectElement;
 
-            String alias = selectExpr.getAssignedName();
-    		if(alias != null)
+            String name = selectExpr.getAssignedName();
+    		if(name != null)
     		{
     			ExprNode fullExpr = selectExpr.getSelectExpression();
     			for(ListIterator<OrderByItem> iterator = orderByList.listIterator(); iterator.hasNext(); )
     			{
     				OrderByItem orderByElement = iterator.next();
-    				ExprNode swapped = AliasNodeSwapper.swap(orderByElement.getExprNode(), alias, fullExpr);
+    				ExprNode swapped = ColumnNamedNodeSwapper.swap(orderByElement.getExprNode(), name, fullExpr);
     				OrderByItem newOrderByElement = new OrderByItem(swapped, orderByElement.isDescending());
     				iterator.set(newOrderByElement);
     			}

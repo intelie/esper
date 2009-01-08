@@ -52,32 +52,32 @@ public interface EngineImportService
 
     /**
      * Resolves a given class, method and list of parameter types to a static method.
-     * @param classNameAlias is the class name to use
+     * @param className is the class name to use
      * @param methodName is the method name
      * @param paramTypes is parameter types match expression sub-nodes
      * @return method this resolves to
      * @throws EngineImportException if the method cannot be resolved to a visible static method
      */
-    public Method resolveMethod(String classNameAlias, String methodName, Class[] paramTypes) throws EngineImportException;
+    public Method resolveMethod(String className, String methodName, Class[] paramTypes) throws EngineImportException;
 
     /**
      * Resolves a given class name, either fully qualified and simple and imported to a class.
-     * @param classNameAlias is the class name to use
+     * @param className is the class name to use
      * @return class this resolves to
      * @throws EngineImportException if there was an error resolving the class
      */
-    public Class resolveClass(String classNameAlias) throws EngineImportException;
+    public Class resolveClass(String className) throws EngineImportException;
 
     /**
      * Resolves a given class and method name to a static method, expecting the method to exist
      * exactly once and not be overloaded, with any parameters.
-     * @param classNameAlias is the class name to use
+     * @param className is the class name to use
      * @param methodName is the method name
      * @return method this resolves to
      * @throws EngineImportException if the method cannot be resolved to a visible static method, or
      * if the method is overloaded
      */
-    public Method resolveMethod(String classNameAlias, String methodName) throws EngineImportException;
+    public Method resolveMethod(String className, String methodName) throws EngineImportException;
 
     /**
      * Resolves a given method name and list of parameter types to an instance or static method exposed by the given class.

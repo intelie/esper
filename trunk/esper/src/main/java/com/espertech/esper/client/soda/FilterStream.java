@@ -31,23 +31,23 @@ public class FilterStream extends ProjectedStream
 
     /**
      * Creates a stream of events of the given name.
-     * @param eventTypeAlias is the event type name or alias to filter for
+     * @param eventTypeName is the event type name to filter for
      * @return stream
      */
-    public static FilterStream create(String eventTypeAlias)
+    public static FilterStream create(String eventTypeName)
     {
-        return new FilterStream(Filter.create(eventTypeAlias));
+        return new FilterStream(Filter.create(eventTypeName));
     }
 
     /**
-     * Creates a stream of events of the given event type name and names that stream. Example: "select * from MyEventTypeAlias as StreamName".
-     * @param eventTypeAlias is the event type name or alias to filter for
+     * Creates a stream of events of the given event type name and names that stream. Example: "select * from MyeventTypeName as StreamName".
+     * @param eventTypeName is the event type name to filter for
      * @param streamName is an optional stream name
      * @return stream
      */
-    public static FilterStream create(String eventTypeAlias, String streamName)
+    public static FilterStream create(String eventTypeName, String streamName)
     {
-        return new FilterStream(Filter.create(eventTypeAlias), streamName);
+        return new FilterStream(Filter.create(eventTypeName), streamName);
     }
 
     /**
@@ -62,26 +62,26 @@ public class FilterStream extends ProjectedStream
     }
 
     /**
-     * Creates a stream of events of the given event type name and names that stream. Example: "select * from MyEventTypeAlias as StreamName".
-     * @param eventTypeAlias is the event type name or alias to filter for
+     * Creates a stream of events of the given event type name and names that stream. Example: "select * from MyeventTypeName as StreamName".
+     * @param eventTypeName is the event type name to filter for
      * @param filter is the filter expression removing events from the stream
      * @return stream
      */
-    public static FilterStream create(String eventTypeAlias, Expression filter)
+    public static FilterStream create(String eventTypeName, Expression filter)
     {
-        return new FilterStream(Filter.create(eventTypeAlias, filter));
+        return new FilterStream(Filter.create(eventTypeName, filter));
     }
 
     /**
-     * Creates a stream of events of the given event type name and names that stream. Example: "select * from MyEventTypeAlias as StreamName".
-     * @param eventTypeAlias is the event type name or alias to filter for
+     * Creates a stream of events of the given event type name and names that stream. Example: "select * from MyeventTypeName as StreamName".
+     * @param eventTypeName is the event type name to filter for
      * @param filter is the filter expression removing events from the stream
      * @param streamName is an optional stream name
      * @return stream
      */
-    public static FilterStream create(String eventTypeAlias, String streamName, Expression filter)
+    public static FilterStream create(String eventTypeName, String streamName, Expression filter)
     {
-        return new FilterStream(Filter.create(eventTypeAlias, filter), streamName);
+        return new FilterStream(Filter.create(eventTypeName, filter), streamName);
     }
 
     /**

@@ -2,7 +2,6 @@ package com.espertech.esper.regression.view;
 
 import junit.framework.TestCase;
 import com.espertech.esper.client.*;
-import com.espertech.esper.client.time.TimerControlEvent;
 import com.espertech.esper.client.time.CurrentTimeEvent;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.support.bean.SupportBeanString;
@@ -28,8 +27,8 @@ public class TestOutputLimitEventPerGroup extends TestCase
     public void setUp()
     {
         Configuration config = SupportConfigFactory.getConfiguration();
-        config.addEventTypeAlias("MarketData", SupportMarketDataBean.class);
-        config.addEventTypeAlias("SupportBean", SupportBean.class);
+        config.addEventType("MarketData", SupportMarketDataBean.class);
+        config.addEventType("SupportBean", SupportBean.class);
         epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();
         listener = new SupportUpdateListener();

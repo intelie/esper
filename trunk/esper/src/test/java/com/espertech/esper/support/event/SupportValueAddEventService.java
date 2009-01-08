@@ -23,7 +23,7 @@ public class SupportValueAddEventService implements ValueAddEventService
         //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public void addVariantStream(String variantEventTypeAlias, ConfigurationVariantStream variantStreamConfig, EventAdapterService eventAdapterService) throws ConfigurationException
+    public void addVariantStream(String varianteventTypeName, ConfigurationVariantStream variantStreamConfig, EventAdapterService eventAdapterService) throws ConfigurationException
     {
         //To change body of implemented methods use File | Settings | File Templates.
     }
@@ -38,7 +38,7 @@ public class SupportValueAddEventService implements ValueAddEventService
         return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 
-    public boolean isRevisionTypeAlias(String alias)
+    public boolean isRevisionTypeName(String alias)
     {
         return false;  //To change body of implemented methods use File | Settings | File Templates.
     }

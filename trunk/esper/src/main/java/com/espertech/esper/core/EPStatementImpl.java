@@ -18,6 +18,7 @@ import com.espertech.esper.timer.TimeSourceService;
 import com.espertech.esper.view.Viewable;
 
 import java.util.Iterator;
+import java.util.ArrayList;
 
 /**
  * Statement implementation for EPL statements.
@@ -265,6 +266,56 @@ public class EPStatementImpl implements EPStatementSPI
         statementResultService.setUpdateListeners(statementListenerSet);
         statementLifecycleSvc.dispatchStatementLifecycleEvent(
                 new StatementLifecycleEvent(this, StatementLifecycleEvent.LifecycleEventType.LISTENER_ADD, listener));
+    }
+
+    public void addListenerWithReplay(UpdateListener listener)
+    {
+        if (listener == null)
+        {
+            throw new IllegalArgumentException("Null listener reference supplied");
+        }
+
+        if (isDestroyed())
+        {
+            throw new IllegalStateException("Statement is in destroyed state");
+        }
+
+        epStatementHandle.getStatementLock().acquireLock(null);
+        try
+        {
+            // Add listener - listener not receiving events from this statement, as the statement is locked
+            statementListenerSet.addListener(listener);
+            statementResultService.setUpdateListeners(statementListenerSet);
+            statementLifecycleSvc.dispatchStatementLifecycleEvent(
+                    new StatementLifecycleEvent(this, StatementLifecycleEvent.LifecycleEventType.LISTENER_ADD, listener));
+
+            Iterator<EventBean> it = iterator();
+            if (it == null)
+            {
+                listener.update(null, null);
+                return;
+            }
+
+            ArrayList<EventBean> events = new ArrayList<EventBean>();
+            for (; it.hasNext();)
+            {
+                events.add(it.next());
+            }
+
+            if (events.isEmpty())
+            {
+                listener.update(null, null);
+            }
+            else
+            {
+                EventBean[] iteratorResult = events.toArray(new EventBean[events.size()]);
+                listener.update(iteratorResult, null);
+            }
+        }
+        finally
+        {
+            epStatementHandle.getStatementLock().releaseLock(null);
+        }
     }
 
     /**

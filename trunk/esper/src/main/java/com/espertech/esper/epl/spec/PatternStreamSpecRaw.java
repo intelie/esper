@@ -182,7 +182,7 @@ public class PatternStreamSpecRaw extends StreamSpecBase implements StreamSpecRa
                                   boolean isHasChildView)
             throws ExprValidationException
     {
-        String eventName = filterNode.getRawFilterSpec().getEventTypeAlias();
+        String eventName = filterNode.getRawFilterSpec().geteventTypeName();
         EventType eventType = FilterStreamSpecRaw.resolveType(context.getEngineURI(), eventName, context.getEventAdapterService(), context.getPlugInTypeResolutionURIs());
         String optionalTag = filterNode.getEventAsName();
         if (eventType instanceof EventTypeSPI)

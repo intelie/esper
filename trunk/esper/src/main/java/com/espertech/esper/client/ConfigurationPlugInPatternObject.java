@@ -19,6 +19,7 @@ public class ConfigurationPlugInPatternObject implements Serializable
     private String name;
     private String factoryClassName;
     private PatternObjectType patternObjectType;
+    private static final long serialVersionUID = -9206572934368025423L;
 
     /**
      * Ctor.

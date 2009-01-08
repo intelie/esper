@@ -24,7 +24,7 @@ public class StreamTypeServiceImpl implements StreamTypeService
     private final EventType[] eventTypes;
     private final String[] streamNames;
     private final String engineURIQualifier;
-    private final String[] eventTypeAlias;
+    private final String[] eventTypeName;
     private boolean isStreamZeroUnambigous;
     private boolean requireStreamNames;
 
@@ -42,11 +42,11 @@ public class StreamTypeServiceImpl implements StreamTypeService
      * @param eventType a single event type for a single stream
      * @param streamName the stream name of the single stream
      * @param engineURI engine URI
-     * @param eventTypeAlias alias of the event type of the single stream
+     * @param eventTypeName name of the event type of the single stream
      */
-    public StreamTypeServiceImpl (EventType eventType, String streamName, String engineURI, String eventTypeAlias)
+    public StreamTypeServiceImpl (EventType eventType, String streamName, String engineURI, String eventTypeName)
     {
-        this(new EventType[] {eventType}, new String[] {streamName}, engineURI, new String[] {eventTypeAlias});
+        this(new EventType[] {eventType}, new String[] {streamName}, engineURI, new String[] {eventTypeName});
     }
 
     /**
@@ -54,13 +54,13 @@ public class StreamTypeServiceImpl implements StreamTypeService
      * @param eventTypes - array of event types, one for each stream
      * @param streamNames - array of stream names, one for each stream
      * @param engineURI - engine URI
-     * @param eventTypeAlias - alias name of the event type
+     * @param eventTypeName - name of the event type
      */
-    public StreamTypeServiceImpl (EventType[] eventTypes, String[] streamNames, String engineURI, String[] eventTypeAlias)
+    public StreamTypeServiceImpl (EventType[] eventTypes, String[] streamNames, String engineURI, String[] eventTypeName)
     {
         this.eventTypes = eventTypes;
         this.streamNames = streamNames;
-        this.eventTypeAlias = eventTypeAlias;
+        this.eventTypeName = eventTypeName;
 
         if (engineURI == null)
         {
@@ -92,13 +92,13 @@ public class StreamTypeServiceImpl implements StreamTypeService
         this.engineURIQualifier = engineURI;
         eventTypes = new EventType[namesAndTypes.size()] ;
         streamNames = new String[namesAndTypes.size()] ;
-        eventTypeAlias = new String[namesAndTypes.size()] ;
+        eventTypeName = new String[namesAndTypes.size()] ;
         int count = 0;
         for (Map.Entry<String, Pair<EventType, String>> entry : namesAndTypes.entrySet())
         {
             streamNames[count] = entry.getKey();
             eventTypes[count] = entry.getValue().getFirst();
-            eventTypeAlias[count] = entry.getValue().getSecond();
+            eventTypeName[count] = entry.getValue().getSecond();
             count++;
         }
     }
@@ -286,8 +286,8 @@ public class StreamTypeServiceImpl implements StreamTypeService
         EventType streamType = null;
 
         // Stream name resultion examples:
-        // A)  select A1.price from Event.price as A2  => mismatch stream alias, cannot resolve
-        // B)  select Event1.price from Event2.price   => mismatch event type alias, cannot resolve
+        // A)  select A1.price from Event.price as A2  => mismatch stream name, cannot resolve
+        // B)  select Event1.price from Event2.price   => mismatch event type name, cannot resolve
         // C)  select default.Event2.price from Event2.price   => possible prefix of engine name
         for (int i = 0; i < eventTypes.length; i++)
         {
@@ -297,8 +297,8 @@ public class StreamTypeServiceImpl implements StreamTypeService
                 break;
             }
 
-            // If the stream name is the event type alias, that is also acceptable
-            if ((eventTypeAlias[i] != null) && (eventTypeAlias[i].equals(streamName)))
+            // If the stream name is the event type name, that is also acceptable
+            if ((eventTypeName[i] != null) && (eventTypeName[i].equals(streamName)))
             {
                 streamType = eventTypes[i];
                 break;

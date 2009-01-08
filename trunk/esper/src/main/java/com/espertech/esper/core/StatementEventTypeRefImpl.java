@@ -71,17 +71,17 @@ public class StatementEventTypeRefImpl implements StatementEventTypeRef
         }
     }
 
-    public void removeReferencesType(String alias)
+    public void removeReferencesType(String name)
     {
         mapLock.acquireWriteLock();
         try
         {
-            Set<String> statementNames = typeToStmt.remove(alias);
+            Set<String> statementNames = typeToStmt.remove(name);
             if (statementNames != null)
             {
                 for (String statementName : statementNames)
                 {
-                    removeReference(statementName, alias);
+                    removeReference(statementName, name);
                 }
             }
         }
@@ -91,22 +91,22 @@ public class StatementEventTypeRefImpl implements StatementEventTypeRef
         }
     }
 
-    public boolean isInUse(String eventTypeAlias)
+    public boolean isInUse(String eventTypeName)
     {
         mapLock.acquireReadLock();
         try {
-            return typeToStmt.containsKey(eventTypeAlias);
+            return typeToStmt.containsKey(eventTypeName);
         }
         finally {
             mapLock.releaseReadLock();
         }
     }
 
-    public Set<String> getStatementNamesForType(String eventTypeAlias)
+    public Set<String> getStatementNamesForType(String eventTypeName)
     {
         mapLock.acquireReadLock();
         try {
-            Set<String> types = typeToStmt.get(eventTypeAlias);
+            Set<String> types = typeToStmt.get(eventTypeName);
             if (types == null)
             {
                 return Collections.EMPTY_SET;
@@ -118,14 +118,14 @@ public class StatementEventTypeRefImpl implements StatementEventTypeRef
         }
     }
     
-    private void addReference(String statementName, String eventTypeAlias)
+    private void addReference(String statementName, String eventTypeName)
     {
         // add to types
-        Set<String> statements = typeToStmt.get(eventTypeAlias);
+        Set<String> statements = typeToStmt.get(eventTypeName);
         if (statements == null)
         {
             statements = new HashSet<String>();
-            typeToStmt.put(eventTypeAlias, statements);
+            typeToStmt.put(eventTypeName, statements);
         }
         statements.add(statementName);
 
@@ -136,13 +136,13 @@ public class StatementEventTypeRefImpl implements StatementEventTypeRef
             types = new HashSet<String>();
             stmtToType.put(statementName, types);
         }
-        types.add(eventTypeAlias);
+        types.add(eventTypeName);
     }
 
-    private void removeReference(String statementName, String eventTypeAlias)
+    private void removeReference(String statementName, String eventTypeName)
     {
         // remove from types
-        Set<String> statements = typeToStmt.get(eventTypeAlias);
+        Set<String> statements = typeToStmt.get(eventTypeName);
         if (statements != null)
         {
             if (!statements.remove(statementName))
@@ -152,7 +152,7 @@ public class StatementEventTypeRefImpl implements StatementEventTypeRef
 
             if (statements.isEmpty())
             {
-                typeToStmt.remove(eventTypeAlias);
+                typeToStmt.remove(eventTypeName);
             }
         }
 
@@ -160,7 +160,7 @@ public class StatementEventTypeRefImpl implements StatementEventTypeRef
         Set<String> types = stmtToType.get(statementName);
         if (types != null)
         {
-            if (!types.remove(eventTypeAlias))
+            if (!types.remove(eventTypeName))
             {
                 log.info("Failed to find event type '" + statementName + "' in collection");
             }
@@ -173,7 +173,7 @@ public class StatementEventTypeRefImpl implements StatementEventTypeRef
     }
 
     /**
-     * For testing, returns the mapping of event type alias to statement names.
+     * For testing, returns the mapping of event type name to statement names.
      * @return mapping
      */
     protected HashMap<String, Set<String>> getTypeToStmt()
@@ -182,7 +182,7 @@ public class StatementEventTypeRefImpl implements StatementEventTypeRef
     }
 
     /**
-     * For testing, returns the mapping of statement names to event type aliases.
+     * For testing, returns the mapping of statement names to event type names.
      * @return mapping
      */
     protected HashMap<String, Set<String>> getStmtToType()

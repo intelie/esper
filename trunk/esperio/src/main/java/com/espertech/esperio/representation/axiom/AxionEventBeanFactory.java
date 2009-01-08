@@ -29,7 +29,7 @@ public class AxionEventBeanFactory implements PlugInEventBeanFactory
 
     /**
      * Ctor.
-     * @param types the currently known event type aliases and their types
+     * @param types the currently known event type name and their types
      */
     public AxionEventBeanFactory(Map<String, AxiomXMLEventType> types)
     {

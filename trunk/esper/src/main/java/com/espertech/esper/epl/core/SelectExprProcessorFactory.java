@@ -92,7 +92,7 @@ public class SelectExprProcessorFactory
             }
         }
 
-        // Verify the assigned or alias name used is unique
+        // Verify the assigned or name used is unique
         verifyNameUniqueness(selectionList);
 
         // Construct processor
@@ -126,22 +126,22 @@ public class SelectExprProcessorFactory
                 SelectClauseExprCompiledSpec expr = (SelectClauseExprCompiledSpec) element;
                 if (names.contains(expr.getAssignedName()))
                 {
-                    throw new ExprValidationException("Property alias name '" + expr.getAssignedName() + "' appears more then once in select clause");
+                    throw new ExprValidationException("Column name '" + expr.getAssignedName() + "' appears more then once in select clause");
                 }
                 names.add(expr.getAssignedName());
             }
             else if (element instanceof SelectClauseStreamCompiledSpec)
             {
                 SelectClauseStreamCompiledSpec stream = (SelectClauseStreamCompiledSpec) element;
-                if (stream.getOptionalAliasName() == null)
+                if (stream.getOptionalName() == null)
                 {
-                    continue; // ignore no-alias stream selectors
+                    continue; // ignore no-name stream selectors
                 }
-                if (names.contains(stream.getOptionalAliasName()))
+                if (names.contains(stream.getOptionalName()))
                 {
-                    throw new ExprValidationException("Property alias name '" + stream.getOptionalAliasName() + "' appears more then once in select clause");
+                    throw new ExprValidationException("Column name '" + stream.getOptionalName() + "' appears more then once in select clause");
                 }
-                names.add(stream.getOptionalAliasName());
+                names.add(stream.getOptionalName());
             }
         }
     }

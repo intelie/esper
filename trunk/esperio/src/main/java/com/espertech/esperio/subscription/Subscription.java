@@ -29,9 +29,9 @@ public interface Subscription
 
     /**
      * Returns the type name of the event type we are looking for.
-     * @return event type alias
+     * @return event type name
      */
-    public String getEventTypeAlias();
+    public String geteventTypeName();
 
     /**
      * Returns the output adapter this subscription is associated with.

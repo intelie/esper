@@ -18,6 +18,7 @@ public class ConfigurationPlugInView implements Serializable
     private String namespace;
     private String name;
     private String factoryClassName;
+    private static final long serialVersionUID = 7000210715294863718L;
 
     /**
      * Ctor.

@@ -374,7 +374,7 @@ timer:interval(5 min) and not MyEvent]]></programlisting></entry>
 		 <programlisting><![CDATA[every com.mypackage.myevents.RfidEvent]]></programlisting>
 		 
 		 <para>
-			 The example above specifies the fully-qualified Java class name as the event type. Via configuration, the event pattern above can be simplified by using the alias
+			 The example above specifies the fully-qualified Java class name as the event type. Via configuration, the event pattern above can be simplified by using the name
 			 that has been defined for the event type.
 		 </para>
 		 <programlisting><![CDATA[every RfidEvent]]></programlisting>

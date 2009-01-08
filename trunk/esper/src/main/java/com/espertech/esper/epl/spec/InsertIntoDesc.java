@@ -20,18 +20,18 @@ import java.util.LinkedList;
 public class InsertIntoDesc implements MetaDefItem
 {
     private final boolean isIStream;
-    private final String eventTypeAlias;
+    private final String eventTypeName;
     private List<String> columnNames;
 
     /**
      * Ctor.
      * @param isIStream is true if insert (new data) events are fed, or false for remove (old data) events are fed
-     * @param eventTypeAlias is the event type alias name
+     * @param eventTypeName is the event type name
      */
-    public InsertIntoDesc(boolean isIStream, String eventTypeAlias)
+    public InsertIntoDesc(boolean isIStream, String eventTypeName)
     {
         this.isIStream = isIStream;
-        this.eventTypeAlias = eventTypeAlias;
+        this.eventTypeName = eventTypeName;
         columnNames = new LinkedList<String>();
     }
 
@@ -46,11 +46,11 @@ public class InsertIntoDesc implements MetaDefItem
 
     /**
      * Returns name of event type to use for insert-into stream.
-     * @return event type alias name
+     * @return event type name
      */
-    public String getEventTypeAlias()
+    public String getEventTypeName()
     {
-        return eventTypeAlias;
+        return eventTypeName;
     }
 
     /**

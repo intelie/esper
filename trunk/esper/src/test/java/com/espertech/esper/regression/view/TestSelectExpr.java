@@ -25,7 +25,7 @@ public class TestSelectExpr extends TestCase
     {
         testListener = new SupportUpdateListener();
         Configuration config = SupportConfigFactory.getConfiguration();
-        config.addEventTypeAlias("SupportBean", SupportBean.class);
+        config.addEventType("SupportBean", SupportBean.class);
         epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();
     }
@@ -45,7 +45,7 @@ public class TestSelectExpr extends TestCase
     public void testKeywordsAllowed()
     {
         String fields = "count,escape,every,sum,avg,max,min,coalesce,median,stddev,avedev,events,first,last,unidirectional,pattern,sql,metadatasql,prev,prior,weekday,lastweekday,cast,snapshot,variable,window,left,right,full,outer,join";
-        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("Keywords", SupportBeanKeywords.class);
+        epService.getEPAdministrator().getConfiguration().addEventType("Keywords", SupportBeanKeywords.class);
         EPStatement stmt = epService.getEPAdministrator().createEPL("select " + fields + " from Keywords");
         stmt.addListener(testListener);
         epService.getEPRuntime().sendEvent(new SupportBeanKeywords());

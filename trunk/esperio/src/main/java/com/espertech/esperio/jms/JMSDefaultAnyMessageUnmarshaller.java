@@ -64,11 +64,11 @@ public class JMSDefaultAnyMessageUnmarshaller implements JMSMessageUnmarshaller
                 }
 
                 // Get event type
-                String alias = typeProperty.toString();
-                EventType eventType = eventAdapterService.getExistsTypeByAlias(alias);
+                String name = typeProperty.toString();
+                EventType eventType = eventAdapterService.getExistsTypeByName(name);
                 if (eventType == null)
                 {
-                    log.warn(".unmarshal Failed to unmarshal map message, event type alias '" + alias + "' is not a known type");
+                    log.warn(".unmarshal Failed to unmarshal map message, event type name '" + name + "' is not a known type");
                     return null;
                 }
 

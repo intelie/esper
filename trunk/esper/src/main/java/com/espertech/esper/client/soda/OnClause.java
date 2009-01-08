@@ -21,23 +21,23 @@ public abstract class OnClause implements Serializable
     /**
      * Creates an on-delete clause for deleting from a named window.
      * @param windowName is the named window name
-     * @param asNameAlias is the alias name of the named window
+     * @param asName is the as-provided name of the named window
      * @return on-delete clause
      */
-    public static OnDeleteClause createOnDelete(String windowName, String asNameAlias)
+    public static OnDeleteClause createOnDelete(String windowName, String asName)
     {
-        return OnDeleteClause.create(windowName, asNameAlias);
+        return OnDeleteClause.create(windowName, asName);
     }
 
     /**
      * Creates an on-select clause for selecting from a named window.
      * @param windowName is the named window name
-     * @param asNameAlias is the alias name of the named window
+     * @param asName is the as-provided name of the named window
      * @return on-select clause
      */
-    public static OnSelectClause createOnSelect(String windowName, String asNameAlias)
+    public static OnSelectClause createOnSelect(String windowName, String asName)
     {
-        return OnSelectClause.create(windowName, asNameAlias);
+        return OnSelectClause.create(windowName, asName);
     }
 
     /**

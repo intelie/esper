@@ -52,18 +52,18 @@ public class TestNoSchemaXMLEvent extends TestCase
         xmlDOMEventTypeDesc.addXPathProperty("numCastInt", "/myevent/element3/@attrNum", XPathConstants.NUMBER, "int");
         xmlDOMEventTypeDesc.setXPathFunctionResolver(SupportXPathFunctionResolver.class.getName());
         xmlDOMEventTypeDesc.setXPathVariableResolver(SupportXPathVariableResolver.class.getName());
-        configuration.addEventTypeAlias("TestXMLNoSchemaType", xmlDOMEventTypeDesc);
+        configuration.addEventType("TestXMLNoSchemaType", xmlDOMEventTypeDesc);
 
         xmlDOMEventTypeDesc = new ConfigurationEventTypeXMLDOM();
         xmlDOMEventTypeDesc.setRootElementName("my.event2");
-        configuration.addEventTypeAlias("TestXMLWithDots", xmlDOMEventTypeDesc);
+        configuration.addEventType("TestXMLWithDots", xmlDOMEventTypeDesc);
 
         epService = EPServiceProviderManager.getProvider("TestNoSchemaXML", configuration);
         epService.initialize();
         updateListener = new SupportUpdateListener();
 
         // assert type metadata
-        EventTypeSPI type = (EventTypeSPI) ((EPServiceProviderSPI)epService).getEventAdapterService().getExistsTypeByAlias("TestXMLNoSchemaType");
+        EventTypeSPI type = (EventTypeSPI) ((EPServiceProviderSPI)epService).getEventAdapterService().getExistsTypeByName("TestXMLNoSchemaType");
         assertEquals(EventTypeMetadata.ApplicationType.XML, type.getMetadata().getOptionalApplicationType());
         assertEquals(null, type.getMetadata().getOptionalSecondaryNames());
         assertEquals("TestXMLNoSchemaType", type.getMetadata().getPrimaryName());
@@ -108,7 +108,7 @@ public class TestNoSchemaXMLEvent extends TestCase
         ConfigurationEventTypeXMLDOM xmlDOMEventTypeDesc = new ConfigurationEventTypeXMLDOM();
         xmlDOMEventTypeDesc.setRootElementName("myevent");
         xmlDOMEventTypeDesc.setXPathPropertyExpr(false);    // <== DOM getter
-        configuration.addEventTypeAlias("TestXMLNoSchemaType", xmlDOMEventTypeDesc);
+        configuration.addEventType("TestXMLNoSchemaType", xmlDOMEventTypeDesc);
 
         epService = EPServiceProviderManager.getProvider("TestNoSchemaXML", configuration);
         epService.initialize();
@@ -140,7 +140,7 @@ public class TestNoSchemaXMLEvent extends TestCase
         ConfigurationEventTypeXMLDOM xmlDOMEventTypeDesc = new ConfigurationEventTypeXMLDOM();
         xmlDOMEventTypeDesc.setRootElementName("myevent");
         xmlDOMEventTypeDesc.setXPathPropertyExpr(true);    // <== XPath getter
-        configuration.addEventTypeAlias("TestXMLNoSchemaType", xmlDOMEventTypeDesc);
+        configuration.addEventType("TestXMLNoSchemaType", xmlDOMEventTypeDesc);
 
         epService = EPServiceProviderManager.getProvider("TestNoSchemaXML", configuration);
         epService.initialize();
@@ -171,7 +171,7 @@ public class TestNoSchemaXMLEvent extends TestCase
         ConfigurationEventTypeXMLDOM xmlDOMEventTypeDesc = new ConfigurationEventTypeXMLDOM();
         xmlDOMEventTypeDesc.setRootElementName("a");
         xmlDOMEventTypeDesc.addXPathProperty("element1", "/a/b/c", XPathConstants.STRING);
-        configuration.addEventTypeAlias("AEvent", xmlDOMEventTypeDesc);
+        configuration.addEventType("AEvent", xmlDOMEventTypeDesc);
 
         epService = EPServiceProviderManager.getDefaultProvider(configuration);
         epService.initialize();
@@ -204,7 +204,7 @@ public class TestNoSchemaXMLEvent extends TestCase
         xmlDOMEventTypeDesc.setRootElementName("a");
         xmlDOMEventTypeDesc.setXPathPropertyExpr(true);
         xmlDOMEventTypeDesc.addXPathProperty("element1", "/a/b/c", XPathConstants.STRING);
-        configuration.addEventTypeAlias("AEvent", xmlDOMEventTypeDesc);
+        configuration.addEventType("AEvent", xmlDOMEventTypeDesc);
 
         epService = EPServiceProviderManager.getDefaultProvider(configuration);
         epService.initialize();
@@ -235,7 +235,7 @@ public class TestNoSchemaXMLEvent extends TestCase
         Configuration configuration = SupportConfigFactory.getConfiguration();
         ConfigurationEventTypeXMLDOM xmlDOMEventTypeDesc = new ConfigurationEventTypeXMLDOM();
         xmlDOMEventTypeDesc.setRootElementName("myroot");
-        configuration.addEventTypeAlias("AEvent", xmlDOMEventTypeDesc);
+        configuration.addEventType("AEvent", xmlDOMEventTypeDesc);
 
         epService = EPServiceProviderManager.getDefaultProvider(configuration);
         epService.initialize();
@@ -257,7 +257,7 @@ public class TestNoSchemaXMLEvent extends TestCase
         desc.addXPathProperty("event.type", "/event/@type", XPathConstants.STRING);
         desc.addXPathProperty("event.uid", "/event/@uid", XPathConstants.STRING);
         desc.setRootElementName("event");
-        configuration.addEventTypeAlias("MyEvent", desc);
+        configuration.addEventType("MyEvent", desc);
 
         epService = EPServiceProviderManager.getDefaultProvider(configuration);
         epService.initialize();
@@ -281,7 +281,7 @@ public class TestNoSchemaXMLEvent extends TestCase
         desc.addXPathProperty("event.type", "//event/@type", XPathConstants.STRING);
         desc.addXPathProperty("event.uid", "//event/@uid", XPathConstants.STRING);
         desc.setRootElementName("batch-event");
-        configuration.addEventTypeAlias("MyEvent", desc);
+        configuration.addEventType("MyEvent", desc);
 
         epService = EPServiceProviderManager.getDefaultProvider(configuration);
         epService.initialize();
@@ -317,7 +317,7 @@ public class TestNoSchemaXMLEvent extends TestCase
         desc.addNamespacePrefix("m0", "http://services.samples/xsd");
         desc.setXPathResolvePropertiesAbsolute(false);
         desc.setXPathPropertyExpr(true);
-        configuration.addEventTypeAlias("StockQuote", desc);
+        configuration.addEventType("StockQuote", desc);
 
         epService = EPServiceProviderManager.getDefaultProvider(configuration);
         epService.initialize();
@@ -353,7 +353,7 @@ public class TestNoSchemaXMLEvent extends TestCase
         desc.addNamespacePrefix("m0", "http://services.samples/xsd");
         desc.setXPathResolvePropertiesAbsolute(true);
         desc.setXPathPropertyExpr(true);
-        configuration.addEventTypeAlias("StockQuote", desc);
+        configuration.addEventType("StockQuote", desc);
 
         epService = EPServiceProviderManager.getDefaultProvider(configuration);
         epService.initialize();

@@ -25,8 +25,8 @@ public class TestBigNumberSupport extends TestCase
         epService = EPServiceProviderManager.getDefaultProvider(SupportConfigFactory.getConfiguration());
         epService.initialize();
         listener = new SupportUpdateListener();
-        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("SupportBeanNumeric", SupportBeanNumeric.class);
-        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("SupportBean", SupportBean.class);
+        epService.getEPAdministrator().getConfiguration().addEventType("SupportBeanNumeric", SupportBeanNumeric.class);
+        epService.getEPAdministrator().getConfiguration().addEventType("SupportBean", SupportBean.class);
     }
 
     public void testEquals()

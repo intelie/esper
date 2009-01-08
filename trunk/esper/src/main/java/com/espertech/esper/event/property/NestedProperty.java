@@ -219,7 +219,7 @@ public class NestedProperty implements Property
                     nestedName = MapEventType.getPropertyRemoveArray(nestedName);
                 }
 
-                EventType innerType = eventAdapterService.getExistsTypeByAlias(nestedName);
+                EventType innerType = eventAdapterService.getExistsTypeByName(nestedName);
                 if (!(innerType instanceof MapEventType))
                 {
                     return null;
@@ -298,7 +298,7 @@ public class NestedProperty implements Property
                             nestedName = MapEventType.getPropertyRemoveArray(nestedName);
                         }
 
-                        EventType innerType = eventAdapterService.getExistsTypeByAlias(nestedName);
+                        EventType innerType = eventAdapterService.getExistsTypeByName(nestedName);
                         if (!(innerType instanceof MapEventType))
                         {
                             return null;

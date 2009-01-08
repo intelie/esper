@@ -115,7 +115,7 @@ public class VariableServiceImpl implements VariableService
     private final TimeProvider timeProvider;
     private final VariableStateHandler optionalStateHandler;
 
-    private transient int currentVersionNumber;
+    private volatile int currentVersionNumber;
     private int currentVariableNumber;
 
     /**

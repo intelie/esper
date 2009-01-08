@@ -34,9 +34,9 @@ public class TestPlugInEventRepresentation extends TestCase
      * Use case 1: static event type resolution, no event object reflection (static event type assignment)
      * Use case 2: static event type resolution, dynamic event object reflection and event type assignment
      *   a) Register all representations with URI via configuration
-     *   b) Register event type alias and specify the list of URI to use for resolving:
-     *     // at engine initialization time it obtain instances of an EventType for each alias
-     *   c) Create statement using the registered event type alias
+     *   b) Register event type name and specify the list of URI to use for resolving:
+     *     // at engine initialization time it obtain instances of an EventType for each name
+     *   c) Create statement using the registered event type name
      *   d) Get EventSender to send in that specific type of event
      */
     public void testPreConfigStaticTypeResolution() throws Exception
@@ -71,8 +71,8 @@ public class TestPlugInEventRepresentation extends TestCase
     /*
      * Use case 3: dynamic event type resolution
      *   a) Register all representations with URI via configuration
-     *   b) Via configuration, set a list of URIs to use for resolving new event type aliases
-     *   c) Compile statement with an event type alias that is not defined yet, each of the representations are asked to accept, in URI hierarchy order
+     *   b) Via configuration, set a list of URIs to use for resolving new event type names
+     *   c) Compile statement with an event type name that is not defined yet, each of the representations are asked to accept, in URI hierarchy order
      *     admin.createEPL("select a, b, c from MyEventType");
      *    // engine asks each event representation to create an EventType, takes the first valid one
      *   d) Get EventSender to send in that specific type of event, or a URI-list dynamic reflection sender
@@ -84,7 +84,7 @@ public class TestPlugInEventRepresentation extends TestCase
         epService.initialize();
 
         URI[] uriList = new URI[] {new URI("type://properties/test2/myresolver")};
-        epService.getEPAdministrator().getConfiguration().setPlugInEventTypeAliasResolutionURIs(uriList);
+        epService.getEPAdministrator().getConfiguration().setPlugInEventTypeResolutionURIs(uriList);
 
         runAssertionCaseDynamic(epService);
     }
@@ -93,7 +93,7 @@ public class TestPlugInEventRepresentation extends TestCase
     {
         URI[] uriList = new URI[] {new URI("type://properties/test2/myresolver")};
         Configuration configuration = getConfiguration();
-        configuration.setPlugInEventTypeAliasResolutionURIs(uriList);
+        configuration.setPlugInEventTypeResolutionURIs(uriList);
         epService = EPServiceProviderManager.getDefaultProvider(configuration);
         epService.initialize();
 
@@ -135,12 +135,12 @@ public class TestPlugInEventRepresentation extends TestCase
         PlugInEventTypeHandlerContext context = SupportEventRepresentation.getAcceptTypeContext();
         assertEquals(new URI("type://test/support?a=b&c=d"), context.getEventTypeResolutionURI());
         assertEquals("t1", context.getTypeInitializer());
-        assertEquals("TestTypeOne", context.getEventTypeAlias());
+        assertEquals("TestTypeOne", context.getEventTypeName());
 
         context = SupportEventRepresentation.getEventTypeContext();
         assertEquals(new URI("type://test/support?a=b&c=d"), context.getEventTypeResolutionURI());
         assertEquals("t1", context.getTypeInitializer());
-        assertEquals("TestTypeOne", context.getEventTypeAlias());
+        assertEquals("TestTypeOne", context.getEventTypeName());
 
         epService.getEPRuntime().getEventSender(new URI[] {new URI("type://test/support?a=b")});
         PlugInEventBeanReflectorContext contextBean = SupportEventRepresentation.getEventBeanContext();

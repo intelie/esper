@@ -42,7 +42,7 @@ public class VersionedValueList<T>
     private final long millisecondLifetimeOldVersions;
 
     // Hold the current and prior version for no-lock reading
-    private transient CurrentValue<T> currentAndPriorValue;
+    private volatile CurrentValue<T> currentAndPriorValue;
 
     // Holds the older versions
     private ArrayList<VersionedValue<T>> olderVersions;

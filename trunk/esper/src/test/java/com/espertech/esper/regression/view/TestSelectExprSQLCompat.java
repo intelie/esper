@@ -19,7 +19,7 @@ public class TestSelectExprSQLCompat extends TestCase
     {
         testListener = new SupportUpdateListener();
         config = SupportConfigFactory.getConfiguration();
-        config.addEventTypeAlias("SupportBean", SupportBean.class);
+        config.addEventType("SupportBean", SupportBean.class);
     }
 
     public void testQualifiedPropertyNamed()

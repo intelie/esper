@@ -18,8 +18,8 @@ public class TestRowLimit extends TestCase {
     public void setUp()
     {
         Configuration config = SupportConfigFactory.getConfiguration();
-        config.addEventTypeAlias("SupportBean", SupportBean.class);
-        config.addEventTypeAlias("SupportBeanNumeric", SupportBeanNumeric.class);
+        config.addEventType("SupportBean", SupportBean.class);
+        config.addEventType("SupportBeanNumeric", SupportBeanNumeric.class);
         epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();
         listener = new SupportUpdateListener();

@@ -150,7 +150,7 @@ public class SelectExprEvalProcessor implements SelectExprProcessor
         EventType targetType= null;
         if (insertIntoDesc != null)
         {
-            targetType = eventAdapterService.getExistsTypeByAlias(insertIntoDesc.getEventTypeAlias());
+            targetType = eventAdapterService.getExistsTypeByName(insertIntoDesc.getEventTypeName());
         }
 
         // Find if there is any fragment event types:
@@ -272,12 +272,12 @@ public class SelectExprEvalProcessor implements SelectExprProcessor
             selPropertyTypes.put(columnNames[i], expressionReturnType);
         }
 
-        // If we have an alias for this type, add it
+        // If we have an name for this type, add it
         if (insertIntoDesc != null)
         {
             try
             {
-                vaeProcessor = valueAddEventService.getValueAddProcessor(insertIntoDesc.getEventTypeAlias());
+                vaeProcessor = valueAddEventService.getValueAddProcessor(insertIntoDesc.getEventTypeName());
                 if (isUsingWildcard)
                 {
                     if (vaeProcessor != null)
@@ -288,7 +288,7 @@ public class SelectExprEvalProcessor implements SelectExprProcessor
                     }
                     else
                     {
-                        resultEventType = eventAdapterService.addWrapperType(insertIntoDesc.getEventTypeAlias(), eventType, selPropertyTypes, false, true);                        
+                        resultEventType = eventAdapterService.addWrapperType(insertIntoDesc.getEventTypeName(), eventType, selPropertyTypes, false, true);
                     }
                 }
                 else
@@ -296,7 +296,7 @@ public class SelectExprEvalProcessor implements SelectExprProcessor
                     resultEventType = null;
                     if ((columnNames.length == 1) && (insertIntoDesc.getColumnNames().size() == 0))
                     {
-                        EventType existingType = eventAdapterService.getExistsTypeByAlias(insertIntoDesc.getEventTypeAlias());
+                        EventType existingType = eventAdapterService.getExistsTypeByName(insertIntoDesc.getEventTypeName());
                         if (existingType != null)
                         {
                             // check if the existing type and new type are compatible
@@ -321,7 +321,7 @@ public class SelectExprEvalProcessor implements SelectExprProcessor
                         }
                         else
                         {
-                            resultEventType = eventAdapterService.addNestableMapType(insertIntoDesc.getEventTypeAlias(), selPropertyTypes, null, false, false, true);
+                            resultEventType = eventAdapterService.addNestableMapType(insertIntoDesc.getEventTypeName(), selPropertyTypes, null, false, false, true);
                         }
                     }
                     if (vaeProcessor != null)

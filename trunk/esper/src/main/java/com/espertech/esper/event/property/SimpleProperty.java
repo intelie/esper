@@ -95,7 +95,7 @@ public class SimpleProperty extends PropertyBase
                 propertyName = MapEventType.getPropertyRemoveArray(propertyName);
             }
 
-            EventType eventType = eventAdapterService.getExistsTypeByAlias(propertyName);
+            EventType eventType = eventAdapterService.getExistsTypeByName(propertyName);
             if (eventType instanceof MapEventType)
             {
                 if (isArray)

@@ -17,7 +17,7 @@ public class TestPerfTimeWindowMinFilter extends TestCase
     public void setUp()
     {
         Configuration config = SupportConfigFactory.getConfiguration();
-        config.addEventTypeAlias("MD", SupportMarketDataIDBean.class);
+        config.addEventType("MD", SupportMarketDataIDBean.class);
         epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();
     }

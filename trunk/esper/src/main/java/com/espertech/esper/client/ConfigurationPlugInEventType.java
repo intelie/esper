@@ -18,6 +18,7 @@ public class ConfigurationPlugInEventType implements Serializable
 {
     private URI[] eventRepresentationResolutionURIs;
     private Serializable initializer;
+    private static final long serialVersionUID = -3595742117710810293L;
 
     /**
      * Sets the URIs to use to resolve the new event type against the plug-in event representations

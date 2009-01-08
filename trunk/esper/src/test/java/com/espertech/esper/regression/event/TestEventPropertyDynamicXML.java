@@ -56,7 +56,7 @@ public class TestEventPropertyDynamicXML extends TestCase
         desc.setEventSenderValidatesRoot(false);
         desc.addNamespacePrefix("ss", "samples:schemas:simpleSchema");
         desc.setDefaultNamespace("samples:schemas:simpleSchema");
-        configuration.addEventTypeAlias("MyEvent", desc);
+        configuration.addEventType("MyEvent", desc);
 
         epService = EPServiceProviderManager.getDefaultProvider(configuration);
         epService.initialize();
@@ -95,7 +95,7 @@ public class TestEventPropertyDynamicXML extends TestCase
         desc.setEventSenderValidatesRoot(false);
         desc.addNamespacePrefix("ss", "samples:schemas:simpleSchema");
         desc.setDefaultNamespace("samples:schemas:simpleSchema");
-        configuration.addEventTypeAlias("MyEvent", desc);
+        configuration.addEventType("MyEvent", desc);
 
         epService = EPServiceProviderManager.getDefaultProvider(configuration);
         epService.initialize();
@@ -129,7 +129,7 @@ public class TestEventPropertyDynamicXML extends TestCase
         ConfigurationEventTypeXMLDOM desc = new ConfigurationEventTypeXMLDOM();
         desc.setRootElementName("simpleEvent");
         desc.setXPathPropertyExpr(true);
-        configuration.addEventTypeAlias("MyEvent", desc);
+        configuration.addEventType("MyEvent", desc);
 
         epService = EPServiceProviderManager.getDefaultProvider(configuration);
         epService.initialize();
@@ -162,7 +162,7 @@ public class TestEventPropertyDynamicXML extends TestCase
         Configuration configuration = SupportConfigFactory.getConfiguration();
         ConfigurationEventTypeXMLDOM desc = new ConfigurationEventTypeXMLDOM();
         desc.setRootElementName("simpleEvent");
-        configuration.addEventTypeAlias("MyEvent", desc);
+        configuration.addEventType("MyEvent", desc);
 
         epService = EPServiceProviderManager.getDefaultProvider(configuration);
         epService.initialize();

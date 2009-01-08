@@ -19,7 +19,7 @@ public class CSVInputAdapterSpec
 {
 	private boolean usingEngineThread, usingExternalTimer;
 	private String timestampColumn;
-	private String eventTypeAlias;
+	private String eventTypeName;
 	private AdapterInputSource adapterInputSource;
 	private Integer eventsPerSec;
 	private String[] propertyOrder;
@@ -29,12 +29,12 @@ public class CSVInputAdapterSpec
 	/**
 	 * Ctor.
 	 * @param adapterInputSource - the source for the CSV data
-	 * @param eventTypeAlias - the alias for the event type created from the CSV data
+	 * @param eventTypeName - the name for the event type created from the CSV data
 	 */
-	public CSVInputAdapterSpec(AdapterInputSource adapterInputSource, String eventTypeAlias)
+	public CSVInputAdapterSpec(AdapterInputSource adapterInputSource, String eventTypeName)
 	{
 		this.adapterInputSource = adapterInputSource;
-		this.eventTypeAlias = eventTypeAlias;
+		this.eventTypeName = eventTypeName;
 	}
 
 	/**
@@ -141,19 +141,19 @@ public class CSVInputAdapterSpec
 	}
 
 	/**
-	 * @return the eventTypeAlias
+	 * @return the eventTypeName
 	 */
-	public String getEventTypeAlias()
+	public String geteventTypeName()
 	{
-		return eventTypeAlias;
+		return eventTypeName;
 	}
 
 	/**
-	 * @param eventTypeAlias the eventTypeAlias to set
+	 * @param eventTypeName the eventTypeName to set
 	 */
-	public void setEventTypeAlias(String eventTypeAlias)
+	public void seteventTypeName(String eventTypeName)
 	{
-		this.eventTypeAlias = eventTypeAlias;
+		this.eventTypeName = eventTypeName;
 	}
 
 	/**

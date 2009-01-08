@@ -69,7 +69,7 @@ adapter.start();]]></programlisting>
 
         <para>
 			As part of the <literal>stream</literal> configuration your application may list the following stream names: OTQuote, OTMMQuote, OTTrade, OTBBO. 
-			The <literal>alias</literal> attribute assigns an alias to the opentick event types available in EPL statements. 
+			The <literal>type-name</literal> attribute assigns an name to the opentick event types available in EPL statements. 
 			The event representation are the respective opentick API POJO objects: <literal>com.opentick.OTTrade</literal> and <literal>OTMMQuote</literal>, <literal>OTTrade</literal>, <literal>OTBBO</literal>.
         </para>
         

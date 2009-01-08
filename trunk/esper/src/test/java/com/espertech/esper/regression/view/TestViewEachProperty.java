@@ -159,7 +159,7 @@ public class TestViewEachProperty extends TestCase
     public void testJoin()
     {
         String[] fields = "orderEvent.orderdetail.orderId,book.id,book.title,item.amount".split(",");
-        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("OrderEvent", SupportBeanBookOrder.class);
+        epService.getEPAdministrator().getConfiguration().addEventType("OrderEvent", SupportBeanBookOrder.class);
         String stmtText = "select * from " +
                       "OrderEvent orderEvent unidirectional, " +
                       "OrderEvent.std:each(books) book, " +
@@ -185,7 +185,7 @@ public class TestViewEachProperty extends TestCase
 
     public void testJoinCountUnidirectional()
     {
-        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("OrderEvent", SupportBeanBookOrder.class);
+        epService.getEPAdministrator().getConfiguration().addEventType("OrderEvent", SupportBeanBookOrder.class);
         String stmtText = "select count(*) from " +
                       "OrderEvent orderEvent unidirectional, " +
                       "OrderEvent.std:each(books) book, " +
@@ -211,7 +211,7 @@ public class TestViewEachProperty extends TestCase
     public void testJoinCount()
     {
         String[] fields = "count(*)".split(",");
-        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("OrderEvent", SupportBeanBookOrder.class);
+        epService.getEPAdministrator().getConfiguration().addEventType("OrderEvent", SupportBeanBookOrder.class);
         String stmtText = "select count(*) from " +
                       "OrderEvent.std:each(books) book, " +
                       "OrderEvent.std:each(orderdetail.items) item " +
@@ -243,7 +243,7 @@ public class TestViewEachProperty extends TestCase
 
     public void testIRStreamAloneArray()
     {
-        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("OrderEvent", SupportBeanBookOrder.class);
+        epService.getEPAdministrator().getConfiguration().addEventType("OrderEvent", SupportBeanBookOrder.class);
         String stmtText = "select irstream id from OrderEvent.std:each(books)";
 
         EPStatement stmt = epService.getEPAdministrator().createEPL(stmtText);
@@ -264,7 +264,7 @@ public class TestViewEachProperty extends TestCase
 
     public void testIRStreamAloneItem()
     {
-        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("OrderEvent", SupportBeanBookOrder.class);
+        epService.getEPAdministrator().getConfiguration().addEventType("OrderEvent", SupportBeanBookOrder.class);
         String stmtText = "select irstream id from OrderEvent.std:each(books[0])";
 
         EPStatement stmt = epService.getEPAdministrator().createEPL(stmtText);
@@ -286,7 +286,7 @@ public class TestViewEachProperty extends TestCase
     public void testCountAlone()
     {
         String[] fields = "count(*)".split(",");
-        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("OrderEvent", SupportBeanBookOrder.class);
+        epService.getEPAdministrator().getConfiguration().addEventType("OrderEvent", SupportBeanBookOrder.class);
         String stmtText = "select count(*) from OrderEvent.std:each(books)";
 
         EPStatement stmt = epService.getEPAdministrator().createEPL(stmtText);

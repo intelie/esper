@@ -116,7 +116,7 @@ public class OpentickInputAdapter implements InputAdapter, AdapterSPI
             }
 
             String streamName = entry.getKey();
-            String aliasName = entry.getValue().getAlias();
+            String typeName = entry.getValue().getTypeName();
             String engineURI = entry.getValue().getEngineURI();
 
             Pair<Class, Integer> streamTypeInfo = knownStreamNames.get(streamName);
@@ -125,9 +125,9 @@ public class OpentickInputAdapter implements InputAdapter, AdapterSPI
                 throw new EPException("Unknown stream by name '" + streamName + "', valid values are " + knownStreamNames.values());
             }
 
-            // register alias with engine
+            // register name with engine
             EPServiceProvider provider = EPServiceProviderManager.getProvider(engineURI);
-            provider.getEPAdministrator().getConfiguration().addEventTypeAlias(aliasName, streamTypeInfo.getFirst());
+            provider.getEPAdministrator().getConfiguration().addEventType(typeName, streamTypeInfo.getFirst());
 
             String type;
             if (streamTypeInfo.getSecond() == OTConstants.OT_TICK_TYPE_QUOTE)

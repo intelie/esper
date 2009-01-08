@@ -25,8 +25,6 @@ import java.util.List;
  */
 public class Patterns
 {
-    private static final long serialVersionUID = 0L;
-
     /**
      * Pattern-every expression control the lifecycle of the pattern sub-expression.
      * @param inner sub-expression to the every-keyword
@@ -102,24 +100,24 @@ public class Patterns
 
     /**
      * Pattern every-operator and filter in combination, equivalent to the "every MyEvent" syntax.
-     * @param alias is the event type alias name to filter for
+     * @param eventTypeName is the event type name to filter for
      * @return pattern expression
      */
-    public static PatternEveryExpr everyFilter(String alias)
+    public static PatternEveryExpr everyFilter(String eventTypeName)
     {
-        PatternExpr filter = new PatternFilterExpr(Filter.create(alias));
+        PatternExpr filter = new PatternFilterExpr(Filter.create(eventTypeName));
         return new PatternEveryExpr(filter);
     }
 
     /**
      * Pattern every-operator and filter in combination, equivalent to the "every tag=MyEvent" syntax.
-     * @param alias is the event type alias name to filter for
+     * @param eventTypeName is the event type name to filter for
      * @param tagName is the tag name to assign to matching events
      * @return pattern expression
      */
-    public static PatternEveryExpr everyFilter(String alias, String tagName)
+    public static PatternEveryExpr everyFilter(String eventTypeName, String tagName)
     {
-        PatternExpr filter = new PatternFilterExpr(Filter.create(alias), tagName);
+        PatternExpr filter = new PatternFilterExpr(Filter.create(eventTypeName), tagName);
         return new PatternEveryExpr(filter);
     }
 
@@ -148,23 +146,23 @@ public class Patterns
 
     /**
      * Filter expression for use in patterns, equivalent to the simple "MyEvent" syntax.
-     * @param alias is the event type alias name of the events to filter for
+     * @param eventTypeName is the event type name of the events to filter for
      * @return pattern expression
      */
-    public static PatternFilterExpr filter(String alias)
+    public static PatternFilterExpr filter(String eventTypeName)
     {
-        return new PatternFilterExpr(Filter.create(alias));
+        return new PatternFilterExpr(Filter.create(eventTypeName));
     }
 
     /**
      * Filter expression for use in patterns, equivalent to the simple "tag=MyEvent" syntax.
-     * @param alias is the event type alias name of the events to filter for
+     * @param eventTypeName is the event type name of the events to filter for
      * @param tagName is the tag name to assign to matching events
      * @return pattern expression
      */
-    public static PatternFilterExpr filter(String alias, String tagName)
+    public static PatternFilterExpr filter(String eventTypeName, String tagName)
     {
-        return new PatternFilterExpr(Filter.create(alias), tagName);
+        return new PatternFilterExpr(Filter.create(eventTypeName), tagName);
     }
 
     /**
@@ -236,23 +234,23 @@ public class Patterns
 
     /**
      * Pattern not-operator and filter in combination, equivalent to the "not MyEvent" syntax.
-     * @param alias is the event type alias name to filter for
+     * @param eventTypeName is the event type name to filter for
      * @return pattern expression
      */
-    public static PatternNotExpr notFilter(String alias)
+    public static PatternNotExpr notFilter(String eventTypeName)
     {
-        return new PatternNotExpr(new PatternFilterExpr(Filter.create(alias)));
+        return new PatternNotExpr(new PatternFilterExpr(Filter.create(eventTypeName)));
     }
 
     /**
      * Pattern not-operator and filter in combination, equivalent to the "not tag=MyEvent" syntax.
-     * @param alias is the event type alias name to filter for
+     * @param name is the event type name to filter for
      * @param tagName is the tag name to assign to matching events
      * @return pattern expression
      */
-    public static PatternNotExpr notFilter(String alias, String tagName)
+    public static PatternNotExpr notFilter(String name, String tagName)
     {
-        return new PatternNotExpr(new PatternFilterExpr(Filter.create(alias), tagName));
+        return new PatternNotExpr(new PatternFilterExpr(Filter.create(name), tagName));
     }
 
     /**

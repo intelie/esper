@@ -45,7 +45,7 @@ public final class FilterSpecCompiler
      * Factory method for compiling filter expressions into a filter specification
      * for use with filter service.
      * @param eventType is the filtered-out event type
-     * @param eventTypeAlias is the alias name of the event type
+     * @param eventTypeName is the name of the event type
      * @param filterExpessions is a list of filter expressions
      * @param taggedEventTypes is a map of stream names (tags) and event types available
      * @param arrayEventTypes is a map of name tags and event type per tag for repeat-expressions that generate an array of events
@@ -58,7 +58,7 @@ public final class FilterSpecCompiler
      * @throws ExprValidationException if the expression or type validations failed
      */
     public static FilterSpecCompiled makeFilterSpec(EventType eventType,
-                                                    String eventTypeAlias,
+                                                    String eventTypeName,
                                                     List<ExprNode> filterExpessions,
                                                     LinkedHashMap<String, Pair<EventType, String>> taggedEventTypes,
                                                     LinkedHashMap<String, Pair<EventType, String>> arrayEventTypes,
@@ -74,7 +74,7 @@ public final class FilterSpecCompiler
         List<ExprNode> constituents = FilterSpecCompiler.validateAndDecompose(filterExpessions, streamTypeService, methodResolutionService, timeProvider, variableService);
 
         // From the constituents make a filter specification
-        FilterSpecCompiled spec = makeFilterSpec(eventType, eventTypeAlias, constituents, taggedEventTypes, arrayEventTypes, variableService, eventAdapterService);
+        FilterSpecCompiled spec = makeFilterSpec(eventType, eventTypeName, constituents, taggedEventTypes, arrayEventTypes, variableService, eventAdapterService);
         if (log.isDebugEnabled())
         {
             log.debug(".makeFilterSpec spec=" + spec);
@@ -214,7 +214,7 @@ public final class FilterSpecCompiler
     }
 
     private static FilterSpecCompiled makeFilterSpec(EventType eventType,
-                                                     String eventTypeAlias,
+                                                     String eventTypeName,
                                                      List<ExprNode> constituents,
                                                      LinkedHashMap<String, Pair<EventType, String>> taggedEventTypes,
                                                      LinkedHashMap<String, Pair<EventType, String>> arrayEventTypes,
@@ -266,7 +266,7 @@ public final class FilterSpecCompiler
             filterParams.add(param);
         }
 
-        return new FilterSpecCompiled(eventType, eventTypeAlias, filterParams);
+        return new FilterSpecCompiled(eventType, eventTypeName, filterParams);
     }
 
     // consolidate "val != 3 and val != 4 and val != 5"

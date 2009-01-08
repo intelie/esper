@@ -27,7 +27,7 @@ public class TestNamedWindowInsertFrom extends TestCase
     public void setUp()
     {
         Configuration config = SupportConfigFactory.getConfiguration();
-        config.addEventTypeAlias("SupportBean", SupportBean.class);
+        config.addEventType("SupportBean", SupportBean.class);
         epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();
 
@@ -155,7 +155,7 @@ public class TestNamedWindowInsertFrom extends TestCase
     public void testInsertWhereOMStaggered()
     {
         Map<String, Object> dataType = makeMap(new Object[][] {{"a", String.class}, {"b", int.class}});
-        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("MyMap", dataType);
+        epService.getEPAdministrator().getConfiguration().addEventType("MyMap", dataType);
 
         String stmtTextCreateOne = "create window MyWindow.win:keepall() as select a, b from MyMap";
         EPStatement stmtCreateOne = epService.getEPAdministrator().createEPL(stmtTextCreateOne);
@@ -192,13 +192,13 @@ public class TestNamedWindowInsertFrom extends TestCase
 
     public void testVariantStream()
     {
-        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("SupportBean_A", SupportBean_A.class);
-        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("SupportBean_B", SupportBean_B.class);
+        epService.getEPAdministrator().getConfiguration().addEventType("SupportBean_A", SupportBean_A.class);
+        epService.getEPAdministrator().getConfiguration().addEventType("SupportBean_B", SupportBean_B.class);
 
         ConfigurationVariantStream config = new ConfigurationVariantStream();
         //config.setTypeVariance(ConfigurationVariantStream.TypeVariance.ANY);
-        config.addEventTypeAlias("SupportBean_A");
-        config.addEventTypeAlias("SupportBean_B");
+        config.addEventTypeName("SupportBean_A");
+        config.addEventTypeName("SupportBean_B");
         epService.getEPAdministrator().getConfiguration().addVariantStream("VarStream", config);
         epService.getEPAdministrator().createEPL("create window MyWindow.win:keepall() as select * from VarStream");
         EPStatement stmt = epService.getEPAdministrator().createEPL("create window MyWindowTwo.win:keepall() as MyWindow");

@@ -2,16 +2,10 @@ package com.espertech.esper.regression.event;
 
 import com.espertech.esper.client.*;
 import com.espertech.esper.support.client.SupportConfigFactory;
-import com.espertech.esper.support.util.ArrayAssertionUtil;
-import com.espertech.esper.support.util.SupportUpdateListener;
 import com.espertech.esper.support.event.EventTypeAssertionUtil;
 import junit.framework.TestCase;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-
-import javax.xml.xpath.XPathConstants;
 
 public class TestSchemaXMLEventTypes extends TestCase
 {
@@ -26,7 +20,7 @@ public class TestSchemaXMLEventTypes extends TestCase
         eventTypeMeta.setRootElementName("typesEvent");
         String schemaUri = TestSchemaXMLEvent.class.getClassLoader().getResource(CLASSLOADER_SCHEMA_URI).toString();
         eventTypeMeta.setSchemaResource(schemaUri);
-        configuration.addEventTypeAlias("TestTypesEvent", eventTypeMeta);
+        configuration.addEventType("TestTypesEvent", eventTypeMeta);
 
         epService = EPServiceProviderManager.getProvider("TestSchemaXML", configuration);
         epService.initialize();

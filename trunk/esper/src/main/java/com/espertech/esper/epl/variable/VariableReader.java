@@ -22,8 +22,8 @@ public class VariableReader
     private final String variableName;
     private final int variableNumber;
     private final VariableVersionThreadLocal versionThreadLocal;
-    private transient VersionedValueList<Object> versionsHigh;
-    private transient VersionedValueList<Object> versionsLow;
+    private volatile VersionedValueList<Object> versionsHigh;
+    private volatile VersionedValueList<Object> versionsLow;
     private final Class type;
 
     /**

@@ -19,6 +19,7 @@ public class ConfigurationPluginLoader implements Serializable
     private String loaderName;
     private String className;
     private Properties configProperties;
+    private static final long serialVersionUID = 6053550897594738083L;
 
     /**
      * Ctor.

@@ -91,7 +91,7 @@ public class FeedSimMain {
         // Configure engine with event names to make the statements more readable.
         // This could also be done in a configuration file.
         Configuration configuration = new Configuration();
-        configuration.addEventTypeAlias("MarketDataEvent", MarketDataEvent.class.getName());
+        configuration.addEventType("MarketDataEvent", MarketDataEvent.class.getName());
 
         // Get engine instance
         EPServiceProvider epService = EPServiceProviderManager.getProvider("FeedSimMain", configuration);

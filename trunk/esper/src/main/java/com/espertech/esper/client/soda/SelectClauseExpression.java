@@ -69,7 +69,7 @@ public class SelectClauseExpression implements SelectClauseElement
 
     /**
      * Sets the optional "as"-name of the expression, or null if not defined
-     * @param asName column alias or null for selection expression
+     * @param asName column name or null for selection expression
      */
     public void setAsName(String asName)
     {

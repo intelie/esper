@@ -17,7 +17,7 @@ public class TestGroupedTimeWinUniqueSortMinMax extends TestCase {
     private Configuration setup()
     {
         Configuration config = SupportConfigFactory.getConfiguration();
-        config.addEventTypeAlias("Sensor", Sensor.class);
+        config.addEventType("Sensor", Sensor.class);
         return config;
     }
 

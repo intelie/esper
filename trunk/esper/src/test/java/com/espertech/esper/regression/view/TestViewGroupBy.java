@@ -146,7 +146,7 @@ public class TestViewGroupBy extends TestCase
     {
         // further math tests can be found in the view unit test
         EPAdministrator admin = epService.getEPAdministrator();
-        admin.getConfiguration().addEventTypeAlias("Market", SupportMarketDataBean.class);
+        admin.getConfiguration().addEventType("Market", SupportMarketDataBean.class);
         EPStatement statement = admin.createEPL("select * from Market.std:groupby(symbol).win:length(1000000).stat:correl(price, volume)");
         SupportUpdateListener listener = new SupportUpdateListener();
         statement.addListener(listener);
@@ -170,7 +170,7 @@ public class TestViewGroupBy extends TestCase
     {
         // further math tests can be found in the view unit test
         EPAdministrator admin = epService.getEPAdministrator();
-        admin.getConfiguration().addEventTypeAlias("Market", SupportMarketDataBean.class);
+        admin.getConfiguration().addEventType("Market", SupportMarketDataBean.class);
         EPStatement statement = admin.createEPL("select * from Market.std:groupby(symbol).win:length(1000000).stat:linest(price, volume)");
         SupportUpdateListener listener = new SupportUpdateListener();
         statement.addListener(listener);

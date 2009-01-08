@@ -15,7 +15,7 @@ public class TestSubscriberInvalid extends TestCase
     {
         Configuration config = SupportConfigFactory.getConfiguration();
         String pkg = SupportBean.class.getPackage().getName();
-        config.addEventTypeAutoAlias(pkg);
+        config.addEventTypeAutoName(pkg);
         epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();
         epAdmin = epService.getEPAdministrator();

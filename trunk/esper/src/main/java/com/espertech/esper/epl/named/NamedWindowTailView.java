@@ -34,7 +34,7 @@ public class NamedWindowTailView extends ViewSupport implements Iterable<EventBe
     private final EventType eventType;
     private final NamedWindowRootView namedWindowRootView;
     private final NamedWindowService namedWindowService;
-    private transient Map<EPStatementHandle, List<NamedWindowConsumerView>> consumers;  // handles as copy-on-write
+    private volatile Map<EPStatementHandle, List<NamedWindowConsumerView>> consumers;  // handles as copy-on-write
     private final EPStatementHandle createWindowStmtHandle;
     private final StatementResultService statementResultService;
     private final ValueAddEventProcessor revisionProcessor;

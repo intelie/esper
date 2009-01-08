@@ -22,7 +22,7 @@ public class TestAssetZoneMoveStmt extends TestCase
     public void setUp()
     {
         Configuration config = new Configuration();
-        config.addEventTypeAlias("LocationReport", LocationReport.class);
+        config.addEventType("LocationReport", LocationReport.class);
 
         epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();

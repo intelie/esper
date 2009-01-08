@@ -22,8 +22,8 @@ public class TestMTStmtSubquery extends TestCase
     public void setUp()
     {
         Configuration config = SupportConfigFactory.getConfiguration();
-        config.addEventTypeAlias("S0", SupportBean_S0.class);
-        config.addEventTypeAlias("S1", SupportBean_S1.class);
+        config.addEventType("S0", SupportBean_S0.class);
+        config.addEventType("S1", SupportBean_S1.class);
         engine = EPServiceProviderManager.getProvider("TestMTStmtSubquery", config);
     }
 

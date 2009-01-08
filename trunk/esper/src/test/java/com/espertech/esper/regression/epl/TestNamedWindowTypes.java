@@ -28,7 +28,7 @@ public class TestNamedWindowTypes extends TestCase
         types.put("boxed", Long.class);
 
         Configuration config = SupportConfigFactory.getConfiguration();
-        config.addEventTypeAlias("MyMap", types);
+        config.addEventType("MyMap", types);
         epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();
 
@@ -46,9 +46,9 @@ public class TestNamedWindowTypes extends TestCase
         Map<String, Object> outerType = new HashMap<String, Object>();
         outerType.put("one", "T1");
         outerType.put("two", "T2");
-        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("T1", innerTypeOne);
-        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("T2", innerTypeTwo);
-        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("OuterType", outerType);
+        epService.getEPAdministrator().getConfiguration().addEventType("T1", innerTypeOne);
+        epService.getEPAdministrator().getConfiguration().addEventType("T2", innerTypeTwo);
+        epService.getEPAdministrator().getConfiguration().addEventType("OuterType", outerType);
 
         // create window
         String stmtTextCreate = "create window MyWindow.win:keepall() as select one, two from OuterType";
@@ -87,7 +87,7 @@ public class TestNamedWindowTypes extends TestCase
         assertEquals(Long.class, stmtCreate.getEventType().getPropertyType("c"));
 
         // assert type metadata
-        EventTypeSPI type = (EventTypeSPI) ((EPServiceProviderSPI)epService).getEventAdapterService().getExistsTypeByAlias("MyWindow");
+        EventTypeSPI type = (EventTypeSPI) ((EPServiceProviderSPI)epService).getEventAdapterService().getExistsTypeByName("MyWindow");
         assertEquals(null, type.getMetadata().getOptionalApplicationType());
         assertEquals(null, type.getMetadata().getOptionalSecondaryNames());
         assertEquals("MyWindow", type.getMetadata().getPrimaryName());
@@ -207,7 +207,7 @@ public class TestNamedWindowTypes extends TestCase
         stmtCreate.addListener(listenerWindow);
 
         // assert type metadata
-        EventTypeSPI type = (EventTypeSPI) ((EPServiceProviderSPI)epService).getEventAdapterService().getExistsTypeByAlias("MyWindow");
+        EventTypeSPI type = (EventTypeSPI) ((EPServiceProviderSPI)epService).getEventAdapterService().getExistsTypeByName("MyWindow");
         assertEquals(null, type.getMetadata().getOptionalApplicationType());
         assertEquals(null, type.getMetadata().getOptionalSecondaryNames());
         assertEquals("MyWindow", type.getMetadata().getPrimaryName());

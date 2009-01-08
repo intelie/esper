@@ -27,6 +27,7 @@ public class BaseStatisticsBean implements Cloneable, Serializable
     private double sumYSq;
     private double sumXY;
     private long dataPoints;
+    private static final long serialVersionUID = 7985193760056277184L;
 
     private void initialize()
     {

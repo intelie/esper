@@ -281,8 +281,8 @@ public class StatementSpecCompiled
     }
 
     /**
-     * Returns the event type aliases in used by the statement.
-     * @return set of event type alias
+     * Returns the event type name in used by the statement.
+     * @return set of event type name
      */
     public Set<String> getEventTypeReferences()
     {

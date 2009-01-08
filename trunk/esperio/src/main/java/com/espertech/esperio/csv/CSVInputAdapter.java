@@ -38,7 +38,7 @@ public class CSVInputAdapter extends AbstractCoordinatedAdapter implements Input
 	private String[] propertyOrder;
 	private CSVInputAdapterSpec adapterSpec;
 	private Map<String, Object> propertyTypes;
-	private String eventTypeAlias;
+	private String eventTypeName;
 	private long lastTimestamp = 0;
 	private long totalDelay;
 	boolean atEOF = false;
@@ -56,7 +56,7 @@ public class CSVInputAdapter extends AbstractCoordinatedAdapter implements Input
 		super(epService, spec.isUsingEngineThread(), spec.isUsingExternalTimer());
 
 		adapterSpec = spec;
-		eventTypeAlias = adapterSpec.getEventTypeAlias();
+		eventTypeName = adapterSpec.geteventTypeName();
 		eventsPerSec = spec.getEventsPerSec();
 
 		if(epService != null)
@@ -69,11 +69,11 @@ public class CSVInputAdapter extends AbstractCoordinatedAdapter implements Input
 	 * Ctor.
 	 * @param epService - provides the engine runtime and services
 	 * @param adapterInputSource - the source of the CSV file
-	 * @param eventTypeAlias - the alias of the Map event to create from the CSV data
+	 * @param eventTypeName - the type name of the Map event to create from the CSV data
 	 */
-	public CSVInputAdapter(EPServiceProvider epService, AdapterInputSource adapterInputSource, String eventTypeAlias)
+	public CSVInputAdapter(EPServiceProvider epService, AdapterInputSource adapterInputSource, String eventTypeName)
 	{
-		this(epService, new CSVInputAdapterSpec(adapterInputSource, eventTypeAlias));
+		this(epService, new CSVInputAdapterSpec(adapterInputSource, eventTypeName));
 	}
 
 	/**
@@ -88,11 +88,11 @@ public class CSVInputAdapter extends AbstractCoordinatedAdapter implements Input
 	/**
 	 * Ctor for adapters that will be passed to an AdapterCoordinator.
 	 * @param adapterInputSource - the parameters for this adapter
-	 * @param eventTypeAlias - the event type alias name that the input adapter generates events for
+	 * @param eventTypeName - the event type name that the input adapter generates events for
 	 */
-	public CSVInputAdapter(AdapterInputSource adapterInputSource, String eventTypeAlias)
+	public CSVInputAdapter(AdapterInputSource adapterInputSource, String eventTypeName)
 	{
-		this(null, adapterInputSource, eventTypeAlias);
+		this(null, adapterInputSource, eventTypeName);
 	}
 
 
@@ -112,11 +112,11 @@ public class CSVInputAdapter extends AbstractCoordinatedAdapter implements Input
 			{
                 if (beanClass != null)
                 {
-                     return new SendableBeanEvent(newMapEvent(), beanClass, eventTypeAlias, totalDelay, scheduleSlot);
+                     return new SendableBeanEvent(newMapEvent(), beanClass, eventTypeName, totalDelay, scheduleSlot);
                 }
                 else
                 {
-                    return new SendableMapEvent(newMapEvent(), eventTypeAlias, totalDelay, scheduleSlot);
+                    return new SendableMapEvent(newMapEvent(), eventTypeName, totalDelay, scheduleSlot);
                 }
             }
 			else
@@ -215,7 +215,7 @@ public class CSVInputAdapter extends AbstractCoordinatedAdapter implements Input
 
 		String[] firstRow = getFirstRow();
 
-		Map<String, Object> givenPropertyTypes = constructPropertyTypes(spec.getEventTypeAlias(), spec.getPropertyTypes(), spi.getEventAdapterService());
+		Map<String, Object> givenPropertyTypes = constructPropertyTypes(spec.geteventTypeName(), spec.getPropertyTypes(), spi.getEventAdapterService());
 
 		propertyOrder = spec.getPropertyOrder() != null ?
 				spec.getPropertyOrder() :
@@ -230,7 +230,7 @@ public class CSVInputAdapter extends AbstractCoordinatedAdapter implements Input
 		propertyTypes = resolvePropertyTypes(givenPropertyTypes);
 		if(givenPropertyTypes == null)
 		{
-			spi.getEventAdapterService().addNestableMapType(eventTypeAlias, new HashMap<String, Object>(propertyTypes), null, true, false, false);
+			spi.getEventAdapterService().addNestableMapType(eventTypeName, new HashMap<String, Object>(propertyTypes), null, true, false, false);
 		}
 
 		coercer.setPropertyTypes(propertyTypes);
@@ -276,15 +276,15 @@ public class CSVInputAdapter extends AbstractCoordinatedAdapter implements Input
 		return map;
 	}
 
-	private Map<String, Object> constructPropertyTypes(String eventTypeAlias, Map<String, Object> propertyTypesGiven, EventAdapterService eventAdapterService)
+	private Map<String, Object> constructPropertyTypes(String eventTypeName, Map<String, Object> propertyTypesGiven, EventAdapterService eventAdapterService)
 	{
 		Map<String, Object> propertyTypes = new HashMap<String, Object>();
-		EventType eventType = eventAdapterService.getExistsTypeByAlias(eventTypeAlias);
+		EventType eventType = eventAdapterService.getExistsTypeByName(eventTypeName);
 		if(eventType == null)
 		{
 			if(propertyTypesGiven != null)
 			{
-				eventAdapterService.addNestableMapType(eventTypeAlias, new HashMap<String, Object>(propertyTypesGiven), null, true, false, false);
+				eventAdapterService.addNestableMapType(eventTypeName, new HashMap<String, Object>(propertyTypesGiven), null, true, false, false);
 			}
 			return propertyTypesGiven;
 		}
@@ -299,7 +299,7 @@ public class CSVInputAdapter extends AbstractCoordinatedAdapter implements Input
 				return propertyTypesGiven;
 			}
 			else {
-				throw new EPException("Event type " + eventTypeAlias + " has already been declared with a different number of parameters");
+				throw new EPException("Event type " + eventTypeName + " has already been declared with a different number of parameters");
 			}
 		}
 		for(String property : eventType.getPropertyNames())
@@ -314,11 +314,11 @@ public class CSVInputAdapter extends AbstractCoordinatedAdapter implements Input
             }
 			if(propertyTypesGiven != null && propertyTypesGiven.get(property) == null)
 			{
-				throw new EPException("Event type " + eventTypeAlias + "has already been declared with different parameters");
+				throw new EPException("Event type " + eventTypeName + "has already been declared with different parameters");
 			}
 			if(propertyTypesGiven != null && !propertyTypesGiven.get(property).equals(type))
 			{
-				throw new EPException("Event type " + eventTypeAlias + "has already been declared with a different type for property " + property);
+				throw new EPException("Event type " + eventTypeName + "has already been declared with a different type for property " + property);
 			}
             // we can't set read-only properties for bean
             if(!eventType.getUnderlyingType().equals(Map.class)) {
@@ -328,7 +328,7 @@ public class CSVInputAdapter extends AbstractCoordinatedAdapter implements Input
             			continue;
             		}
             		else {
-            			throw new EPException("Event type " + eventTypeAlias + "property " + property + " is read only");
+            			throw new EPException("Event type " + eventTypeName + "property " + property + " is read only");
             		}
             	}
             }
@@ -463,9 +463,9 @@ public class CSVInputAdapter extends AbstractCoordinatedAdapter implements Input
 			throw new IllegalArgumentException("Invalid type of EPServiceProvider");
 		}
 
-		if(adapterSpec.getEventTypeAlias() == null)
+		if(adapterSpec.geteventTypeName() == null)
 		{
-			throw new NullPointerException("eventTypeAlias cannot be null");
+			throw new NullPointerException("eventTypeName cannot be null");
 		}
 
 		if(adapterSpec.getAdapterInputSource() == null)

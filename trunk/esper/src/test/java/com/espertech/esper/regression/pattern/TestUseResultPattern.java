@@ -165,7 +165,7 @@ public class TestUseResultPattern extends TestCase implements SupportBeanConstan
     {
         // Test for ESPER-121
         Configuration config = SupportConfigFactory.getConfiguration();
-        config.addEventTypeAlias("FxTradeEvent", SupportTradeEvent.class
+        config.addEventType("FxTradeEvent", SupportTradeEvent.class
                 .getName());
         EPServiceProvider epService = EPServiceProviderManager.getProvider(
                 "testRFIDZoneEnter", config);

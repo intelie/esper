@@ -55,7 +55,7 @@ public class WrapperEventType implements EventTypeSPI
 
     /**
      * Ctor.
-     * @param typeName is the event type alias name
+     * @param typeName is the event type name
      * @param eventType is the event type of the wrapped events
      * @param properties is the additional properties this wrapper adds
      * @param metadata event type metadata
@@ -110,15 +110,6 @@ public class WrapperEventType implements EventTypeSPI
     public String getName()
     {
         return metadata.getPublicName();
-    }
-
-    /**
-     * Returns the event type alias.
-     * @return event type alias
-     */
-    public String getAlias()
-    {
-        return typeName;
     }
 
     public EventPropertyGetter getGetter(final String property)

@@ -25,6 +25,7 @@ public class LikeUtil implements Serializable
     private int iFirstWildCard;
     private boolean isNull;
     private Character escapeChar;
+    private static final long serialVersionUID = 3226305829536318662L;
 
     /**
      * Ctor.

@@ -16,7 +16,7 @@ public class TestViewPlugin extends TestCase
         testListener = new SupportUpdateListener();
 
         Configuration configuration = SupportConfigFactory.getConfiguration();
-        configuration.addEventTypeAlias("A", SupportMarketDataBean.class);
+        configuration.addEventType("A", SupportMarketDataBean.class);
         configuration.addPlugInView("mynamespace", "trendspotter", MyTrendSpotterViewFactory.class.getName());
         configuration.addPlugInView("mynamespace", "flushedsimple", MyFlushedSimpleViewFactory.class.getName());
         configuration.addPlugInView("mynamespace", "invalid", String.class.getName());

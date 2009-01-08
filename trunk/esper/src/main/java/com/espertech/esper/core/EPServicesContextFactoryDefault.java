@@ -68,7 +68,7 @@ public class EPServicesContextFactoryDefault implements EPServicesContextFactory
         TimeSourceService timeSourceService = makeTimeSource(configSnapshot);
         SchedulingService schedulingService = SchedulingServiceProvider.newService(timeSourceService);
         EngineImportService engineImportService = makeEngineImportService(configSnapshot);
-        EngineSettingsService engineSettingsService = new EngineSettingsService(configSnapshot.getEngineDefaults(), configSnapshot.getPlugInEventTypeAliasResolutionURIs());
+        EngineSettingsService engineSettingsService = new EngineSettingsService(configSnapshot.getEngineDefaults(), configSnapshot.getPlugInEventTypeResolutionURIs());
         DatabaseConfigService databaseConfigService = makeDatabaseRefService(configSnapshot, schedulingService);
 
         PluggableObjectCollection plugInViews = new PluggableObjectCollection();
@@ -169,17 +169,17 @@ public class EPServicesContextFactoryDefault implements EPServicesContextFactory
      */
     protected static void init(EventAdapterService eventAdapterService, ConfigurationInformation configSnapshot)
     {
-        // Extract legacy event type definitions for each event type alias, if supplied.
+        // Extract legacy event type definitions for each event type name, if supplied.
         //
         // We supply this information as setup information to the event adapter service
         // to allow discovery of superclasses and interfaces during event type construction for bean events,
         // such that superclasses and interfaces can use the legacy type definitions.
         Map<String, ConfigurationEventTypeLegacy> classLegacyInfo = new HashMap<String, ConfigurationEventTypeLegacy>();
-        for (Map.Entry<String, String> entry : configSnapshot.getEventTypeAliases().entrySet())
+        for (Map.Entry<String, String> entry : configSnapshot.getEventTypeNames().entrySet())
         {
-            String aliasName = entry.getKey();
+            String typeName = entry.getKey();
             String className = entry.getValue();
-            ConfigurationEventTypeLegacy legacyDef = configSnapshot.getEventTypesLegacy().get(aliasName);
+            ConfigurationEventTypeLegacy legacyDef = configSnapshot.getEventTypesLegacy().get(typeName);
             if (legacyDef != null)
             {
                 classLegacyInfo.put(className, legacyDef);
@@ -187,20 +187,20 @@ public class EPServicesContextFactoryDefault implements EPServicesContextFactory
         }
         eventAdapterService.setClassLegacyConfigs(classLegacyInfo);
         eventAdapterService.setDefaultPropertyResolutionStyle(configSnapshot.getEngineDefaults().getEventMeta().getClassPropertyResolutionStyle());
-        for (String javaPackage : configSnapshot.getEventTypeAutoAliasPackages())
+        for (String javaPackage : configSnapshot.getEventTypeAutoNamePackages())
         {
-            eventAdapterService.addAutoAliasPackage(javaPackage);
+            eventAdapterService.addAutoNamePackage(javaPackage);
         }
 
-        // Add from the configuration the Java event class aliases
-        Map<String, String> javaClassAliases = configSnapshot.getEventTypeAliases();
-        for (Map.Entry<String, String> entry : javaClassAliases.entrySet())
+        // Add from the configuration the Java event class names
+        Map<String, String> javaClassNames = configSnapshot.getEventTypeNames();
+        for (Map.Entry<String, String> entry : javaClassNames.entrySet())
         {
-            // Add Java class alias
+            // Add Java class
             try
             {
-                String aliasName = entry.getKey();
-                eventAdapterService.addBeanType(aliasName, entry.getValue(), false);
+                String typeName = entry.getKey();
+                eventAdapterService.addBeanType(typeName, entry.getValue(), false);
             }
             catch (EventAdapterException ex)
             {
@@ -208,9 +208,9 @@ public class EPServicesContextFactoryDefault implements EPServicesContextFactory
             }
         }
 
-        // Add from the configuration the XML DOM aliases and type def
-        Map<String, ConfigurationEventTypeXMLDOM> xmlDOMAliases = configSnapshot.getEventTypesXMLDOM();
-        for (Map.Entry<String, ConfigurationEventTypeXMLDOM> entry : xmlDOMAliases.entrySet())
+        // Add from the configuration the XML DOM names and type def
+        Map<String, ConfigurationEventTypeXMLDOM> xmlDOMNames = configSnapshot.getEventTypesXMLDOM();
+        for (Map.Entry<String, ConfigurationEventTypeXMLDOM> entry : xmlDOMNames.entrySet())
         {
             SchemaModel schemaModel = null;
             if (entry.getValue().getSchemaResource() != null)
@@ -244,26 +244,26 @@ public class EPServicesContextFactoryDefault implements EPServicesContextFactory
         }
         catch (GraphCircularDependencyException e)
         {
-            throw new ConfigurationException("Error configuring engine, dependency graph between map aliases is circular: " + e.getMessage(), e);
+            throw new ConfigurationException("Error configuring engine, dependency graph between map type names is circular: " + e.getMessage(), e);
         }
 
-        Map<String, Properties> mapAliases = configSnapshot.getEventTypesMapEvents();
-        Map<String, Map<String, Object>> nestableMapAliases = configSnapshot.getEventTypesNestableMapEvents();
-        dependentMapOrder.addAll(mapAliases.keySet());
-        dependentMapOrder.addAll(nestableMapAliases.keySet());
+        Map<String, Properties> mapNames = configSnapshot.getEventTypesMapEvents();
+        Map<String, Map<String, Object>> nestableMapNames = configSnapshot.getEventTypesNestableMapEvents();
+        dependentMapOrder.addAll(mapNames.keySet());
+        dependentMapOrder.addAll(nestableMapNames.keySet());
         try
         {
             for (String mapName : dependentMapOrder)
             {
                 Set<String> superTypes = configSnapshot.getMapSuperTypes().get(mapName);
-                Properties propertiesUnnested = mapAliases.get(mapName);
+                Properties propertiesUnnested = mapNames.get(mapName);
                 if (propertiesUnnested != null)
                 {
                     Map<String, Object> propertyTypes = createPropertyTypes(propertiesUnnested);
                     eventAdapterService.addNestableMapType(mapName, propertyTypes, superTypes, true, false, false);
                 }
 
-                Map<String, Object> propertiesNestable = nestableMapAliases.get(mapName);
+                Map<String, Object> propertiesNestable = nestableMapNames.get(mapName);
                 if (propertiesNestable != null)
                 {
                     eventAdapterService.addNestableMapType(mapName, propertiesNestable, superTypes, true, false, false);
@@ -327,13 +327,13 @@ public class EPServicesContextFactoryDefault implements EPServicesContextFactory
             }
         }
 
-        // Add plug-in event type aliases
-        Map<String, ConfigurationPlugInEventType> plugInAliases = configSnapshot.getPlugInEventTypes();
-        for (Map.Entry<String, ConfigurationPlugInEventType> entry : plugInAliases.entrySet())
+        // Add plug-in event type names
+        Map<String, ConfigurationPlugInEventType> plugInNames = configSnapshot.getPlugInEventTypes();
+        for (Map.Entry<String, ConfigurationPlugInEventType> entry : plugInNames.entrySet())
         {
-            String alias = entry.getKey();
+            String name = entry.getKey();
             ConfigurationPlugInEventType config = entry.getValue();
-            eventAdapterService.addPlugInEventType(alias, config.getEventRepresentationResolutionURIs(), config.getInitializer());
+            eventAdapterService.addPlugInEventType(name, config.getEventRepresentationResolutionURIs(), config.getInitializer());
         }
     }
 

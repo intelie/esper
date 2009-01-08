@@ -171,7 +171,7 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
         ThreadWorkQueue.add(eventBean);
     }
 
-    public void sendEvent(Map map, String eventTypeAlias) throws EPException
+    public void sendEvent(Map map, String eventTypeName) throws EPException
     {
         if (map == null)
         {
@@ -184,11 +184,11 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
         }
 
         // Process event
-        EventBean eventBean = services.getEventAdapterService().adapterForMap(map, eventTypeAlias);
+        EventBean eventBean = services.getEventAdapterService().adapterForMap(map, eventTypeName);
         processEvent(eventBean);
     }
 
-    public void route(Map map, String eventTypeAlias) throws EPException
+    public void route(Map map, String eventTypeName) throws EPException
     {
         if (map == null)
         {
@@ -201,11 +201,11 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
         }
 
         // Process event
-        EventBean event = services.getEventAdapterService().adapterForMap(map, eventTypeAlias);
+        EventBean event = services.getEventAdapterService().adapterForMap(map, eventTypeName);
         ThreadWorkQueue.add(event);
     }
 
-    public long getNumEventsReceived()
+    public long getNumEventsEvaluated()
     {
         return services.getFilterService().getNumEventsEvaluated();
     }
@@ -1020,9 +1020,9 @@ public class EPRuntimeImpl implements EPRuntimeSPI, EPRuntimeEventSender, TimerC
         }
     }
 
-    public EventSender getEventSender(String eventTypeAlias)
+    public EventSender getEventSender(String eventTypeName)
     {
-        return services.getEventAdapterService().getStaticTypeEventSender(this, eventTypeAlias);
+        return services.getEventAdapterService().getStaticTypeEventSender(this, eventTypeName);
     }
 
     public EventSender getEventSender(URI uri[]) throws EventTypeException

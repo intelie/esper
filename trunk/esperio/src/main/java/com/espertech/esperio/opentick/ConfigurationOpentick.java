@@ -303,7 +303,7 @@ public class ConfigurationOpentick
     {
         private boolean enabled;
         private String engineURI;
-        private String alias;
+        private String typeName;
 
         public boolean isEnabled()
         {
@@ -325,14 +325,14 @@ public class ConfigurationOpentick
             this.engineURI = engineURI;
         }
 
-        public String getAlias()
+        public String getTypeName()
         {
-            return alias;
+            return typeName;
         }
 
-        public void setAlias(String alias)
+        public void setTypeName(String typeName)
         {
-            this.alias = alias;
+            this.typeName = typeName;
         }
     }
 

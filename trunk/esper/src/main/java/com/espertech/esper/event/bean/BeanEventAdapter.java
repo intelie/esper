@@ -80,7 +80,7 @@ public class BeanEventAdapter implements BeanEventTypeFactory
      * @param clazz is the class of the Java bean.
      * @return EventType implementation for bean class
      */
-    public final BeanEventType createBeanTypeNoAlias(Class clazz)
+    public final BeanEventType createBeanTypeDefaultName(Class clazz)
     {
         return createBeanType(clazz.getName(), clazz, false);
     }
@@ -91,7 +91,7 @@ public class BeanEventAdapter implements BeanEventTypeFactory
      * @param clazz is the class of the Java bean.
      * @return EventType implementation for bean class
      */
-    public final BeanEventType createBeanType(String alias, Class clazz, boolean isConfigured)
+    public final BeanEventType createBeanType(String name, Class clazz, boolean isConfigured)
     {
         if (clazz == null)
         {
@@ -113,8 +113,8 @@ public class BeanEventAdapter implements BeanEventTypeFactory
             // Check if we have a legacy type definition for this class
             ConfigurationEventTypeLegacy legacyDef = classToLegacyConfigs.get(clazz.getName());
 
-            EventTypeMetadata metadata = EventTypeMetadata.createBeanType(alias, clazz, isConfigured);
-            eventType = new BeanEventType(metadata, clazz, eventAdapterService, legacyDef, alias);
+            EventTypeMetadata metadata = EventTypeMetadata.createBeanType(name, clazz, isConfigured);
+            eventType = new BeanEventType(metadata, clazz, eventAdapterService, legacyDef);
             typesPerJavaBean.put(clazz, eventType);
         }
         catch (RuntimeException ex)

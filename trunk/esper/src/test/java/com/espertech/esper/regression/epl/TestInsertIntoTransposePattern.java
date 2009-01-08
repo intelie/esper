@@ -33,7 +33,7 @@ public class TestInsertIntoTransposePattern extends TestCase
 
     public void testThisAsColumn()
     {
-        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("SupportBean", SupportBean.class);
+        epService.getEPAdministrator().getConfiguration().addEventType("SupportBean", SupportBean.class);
 
         EPStatement stmt = epService.getEPAdministrator().createEPL("create window OneWindow.win:time(1 day) as select string as alertId, this from SupportBean");
         epService.getEPAdministrator().createEPL("insert into OneWindow select '1' as alertId, stream0.quote.this as this " +
@@ -57,8 +57,8 @@ public class TestInsertIntoTransposePattern extends TestCase
 
     public void testTransposePOJOEventPattern()
     {
-        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("AEvent", SupportBean_A.class);
-        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("BEvent", SupportBean_B.class);
+        epService.getEPAdministrator().getConfiguration().addEventType("AEvent", SupportBean_A.class);
+        epService.getEPAdministrator().getConfiguration().addEventType("BEvent", SupportBean_B.class);
 
         String stmtTextOne = "insert into MyStream select a, b from pattern [a=AEvent -> b=BEvent]";
         epService.getEPAdministrator().createEPL(stmtTextOne);
@@ -76,8 +76,8 @@ public class TestInsertIntoTransposePattern extends TestCase
     {
         Map<String, Object> type = makeMap(new Object[][] {{"id", String.class}});
 
-        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("AEvent", type);
-        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("BEvent", type);
+        epService.getEPAdministrator().getConfiguration().addEventType("AEvent", type);
+        epService.getEPAdministrator().getConfiguration().addEventType("BEvent", type);
 
         String stmtTextOne = "insert into MyStream select a, b from pattern [a=AEvent -> b=BEvent]";
         EPStatement stmtOne = epService.getEPAdministrator().createEPL(stmtTextOne);

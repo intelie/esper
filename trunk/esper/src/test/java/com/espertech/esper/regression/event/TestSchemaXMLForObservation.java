@@ -4,7 +4,6 @@ import com.espertech.esper.client.*;
 import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.support.event.EventTypeAssertionUtil;
 import com.espertech.esper.support.util.ArrayAssertionUtil;
-import com.espertech.esper.support.bean.SupportBean;
 import junit.framework.TestCase;
 import org.w3c.dom.Document;
 
@@ -37,7 +36,7 @@ public class TestSchemaXMLForObservation extends TestCase
         typecfg.setSchemaResource(schemaUri);
 
         Configuration configuration = SupportConfigFactory.getConfiguration();
-        configuration.addEventTypeAlias("SensorEvent", typecfg);
+        configuration.addEventType("SensorEvent", typecfg);
 
         epService = EPServiceProviderManager.getDefaultProvider(configuration);
         epService.initialize();
@@ -94,7 +93,7 @@ public class TestSchemaXMLForObservation extends TestCase
         sensorcfg.setSchemaResource(schemaUri);
 
         Configuration configuration = SupportConfigFactory.getConfiguration();
-        configuration.addEventTypeAlias("SensorEvent", sensorcfg);
+        configuration.addEventType("SensorEvent", sensorcfg);
 
         epService = EPServiceProviderManager.getDefaultProvider(configuration);
         epService.initialize();
@@ -102,7 +101,7 @@ public class TestSchemaXMLForObservation extends TestCase
         ConfigurationEventTypeXMLDOM tagcfg = new ConfigurationEventTypeXMLDOM();
         tagcfg.setRootElementName("//Tag");
         tagcfg.setSchemaResource(schemaUri);
-        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("TagEvent", tagcfg);
+        epService.getEPAdministrator().getConfiguration().addEventType("TagEvent", tagcfg);
 
         EPStatement stmtExampleOne = epService.getEPAdministrator().createEPL("select countTags, countTagsInt, idarray, tagArray, tagOne from SensorEvent");
         EPStatement stmtExampleTwo_0 = epService.getEPAdministrator().createEPL("insert into TagOneStream select tagOne.* from SensorEvent");

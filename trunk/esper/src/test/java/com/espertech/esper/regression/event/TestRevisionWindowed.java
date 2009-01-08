@@ -26,26 +26,26 @@ public class TestRevisionWindowed extends TestCase
         Configuration config = SupportConfigFactory.getConfiguration();
 
         // first revision event type
-        config.addEventTypeAlias("SupportBean", SupportBean.class);
-        config.addEventTypeAlias("FullEvent", SupportRevisionFull.class);
-        config.addEventTypeAlias("D1", SupportDeltaOne.class);
-        config.addEventTypeAlias("D5", SupportDeltaFive.class);
+        config.addEventType("SupportBean", SupportBean.class);
+        config.addEventType("FullEvent", SupportRevisionFull.class);
+        config.addEventType("D1", SupportDeltaOne.class);
+        config.addEventType("D5", SupportDeltaFive.class);
 
         ConfigurationRevisionEventType configRev = new ConfigurationRevisionEventType();
         configRev.setKeyPropertyNames(new String[] {"k0"});
-        configRev.addAliasBaseEventType("FullEvent");
-        configRev.addAliasDeltaEventType("D1");
-        configRev.addAliasDeltaEventType("D5");
+        configRev.addNameBaseEventType("FullEvent");
+        configRev.addNameDeltaEventType("D1");
+        configRev.addNameDeltaEventType("D5");
         config.addRevisionEventType("RevisableQuote", configRev);
 
         // second revision event type
-        config.addEventTypeAlias("MyMap", makeMap(
+        config.addEventType("MyMap", makeMap(
                 new Object[][] { {"p5", String.class}, {"p1", String.class}, {"k0", String.class}, {"m0", String.class} }));
         configRev = new ConfigurationRevisionEventType();
         configRev.setKeyPropertyNames(new String[] {"p5", "p1"});
-        configRev.addAliasBaseEventType("MyMap");
-        configRev.addAliasDeltaEventType("D1");
-        configRev.addAliasDeltaEventType("D5");
+        configRev.addNameBaseEventType("MyMap");
+        configRev.addNameDeltaEventType("D1");
+        configRev.addNameDeltaEventType("D5");
         config.addRevisionEventType("RevisableMap", configRev);
 
         epService = EPServiceProviderManager.getDefaultProvider(config);
@@ -55,13 +55,13 @@ public class TestRevisionWindowed extends TestCase
 
     public void testSubclassInterface()
     {
-        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("ISupportRevisionFull", ISupportRevisionFull.class);
-        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("ISupportDeltaFive", ISupportDeltaFive.class);
+        epService.getEPAdministrator().getConfiguration().addEventType("ISupportRevisionFull", ISupportRevisionFull.class);
+        epService.getEPAdministrator().getConfiguration().addEventType("ISupportDeltaFive", ISupportDeltaFive.class);
 
         ConfigurationRevisionEventType config = new ConfigurationRevisionEventType();
-        config.addAliasBaseEventType("ISupportRevisionFull");
+        config.addNameBaseEventType("ISupportRevisionFull");
         config.setKeyPropertyNames(new String[] {"k0"});
-        config.addAliasDeltaEventType("ISupportDeltaFive");
+        config.addNameDeltaEventType("ISupportDeltaFive");
         epService.getEPAdministrator().getConfiguration().addRevisionEventType("MyInterface", config);
 
         stmtCreateWin = epService.getEPAdministrator().createEPL("create window MyInterfaceWindow.win:keepall() as select * from MyInterface");

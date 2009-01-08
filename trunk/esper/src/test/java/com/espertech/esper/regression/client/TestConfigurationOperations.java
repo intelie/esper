@@ -7,7 +7,6 @@ import com.espertech.esper.support.bean.SupportBean_A;
 import com.espertech.esper.support.client.SupportConfigFactory;
 import junit.framework.TestCase;
 
-import java.util.Properties;
 import java.util.Map;
 import java.util.HashMap;
 import java.io.StringReader;
@@ -31,14 +30,14 @@ public class TestConfigurationOperations extends TestCase
         configOps = epService.getEPAdministrator().getConfiguration();
     }
 
-    public void testAutoAliasPackage()
+    public void testAutoNamePackage()
     {
-        configOps.addEventTypeAutoAlias(this.getClass().getPackage().getName());
+        configOps.addEventTypeAutoName(this.getClass().getPackage().getName());
 
-        EPStatement stmt = epService.getEPAdministrator().createEPL("select * from " + MyAutoAliasEventType.class.getSimpleName());
+        EPStatement stmt = epService.getEPAdministrator().createEPL("select * from " + MyAutoNamedEventType.class.getSimpleName());
         stmt.addListener(testListener);
 
-        MyAutoAliasEventType eventOne = new MyAutoAliasEventType(10);
+        MyAutoNamedEventType eventOne = new MyAutoNamedEventType(10);
         epService.getEPRuntime().sendEvent(eventOne);
         assertSame(eventOne, testListener.assertOneGetNewAndReset().getUnderlying());
     }
@@ -46,9 +45,9 @@ public class TestConfigurationOperations extends TestCase
     public void testAutoAliasPackageAmbigous()
     {
         Configuration config = SupportConfigFactory.getConfiguration();
-        config.addEventTypeAutoAlias(this.getClass().getPackage().getName());
-        configOps.addEventTypeAutoAlias(this.getClass().getPackage().getName());
-        configOps.addEventTypeAutoAlias(SupportBean.class.getPackage().getName());
+        config.addEventTypeAutoName(this.getClass().getPackage().getName());
+        configOps.addEventTypeAutoName(this.getClass().getPackage().getName());
+        configOps.addEventTypeAutoName(SupportBean.class.getPackage().getName());
 
         try
         {
@@ -57,7 +56,7 @@ public class TestConfigurationOperations extends TestCase
         }
         catch (Exception ex)
         {
-            assertEquals("Failed to resolve event type: Failed to resolve alias 'SupportAmbigousEventType', the class was ambigously found both in package 'com.espertech.esper.regression.client' and in package 'com.espertech.esper.support.bean' [select * from SupportAmbigousEventType]", ex.getMessage());
+            assertEquals("Failed to resolve event type: Failed to resolve name 'SupportAmbigousEventType', the class was ambigously found both in package 'com.espertech.esper.regression.client' and in package 'com.espertech.esper.support.bean' [select * from SupportAmbigousEventType]", ex.getMessage());
         }
 
         try
@@ -78,7 +77,7 @@ public class TestConfigurationOperations extends TestCase
         // First statement with new name
         ConfigurationEventTypeXMLDOM domConfig = new ConfigurationEventTypeXMLDOM();
         domConfig.setRootElementName("RootAddedDOMOne");
-        configOps.addEventTypeAlias("AddedDOMOne", domConfig);
+        configOps.addEventType("AddedDOMOne", domConfig);
 
         EPStatement stmt = epService.getEPAdministrator().createEPL("select * from AddedDOMOne");
         stmt.addListener(testListener);
@@ -89,12 +88,12 @@ public class TestConfigurationOperations extends TestCase
 
         tryInvalid("AddedMapNameSecond");
 
-        // Second statement using a new alias to the same type, should both receive
+        // Second statement using a new name to the same type, should both receive
         domConfig = new ConfigurationEventTypeXMLDOM();
         domConfig.setRootElementName("RootAddedDOMOne");
-        configOps.addEventTypeAlias("AddedDOMSecond", domConfig);
+        configOps.addEventType("AddedDOMSecond", domConfig);
 
-        configOps.addEventTypeAlias("AddedMapNameSecond", domConfig);
+        configOps.addEventType("AddedMapNameSecond", domConfig);
         SupportUpdateListener testListenerTwo = new SupportUpdateListener();
         stmt = epService.getEPAdministrator().createEPL("select * from AddedMapNameSecond");
         stmt.addListener(testListenerTwo);
@@ -104,17 +103,17 @@ public class TestConfigurationOperations extends TestCase
         assertTrue(testListener.isInvoked());
         assertEquals(eventTwo.getDocumentElement(), testListenerTwo.assertOneGetNewAndReset().getUnderlying());
 
-        // Add the same alias and type again
+        // Add the same name and type again
         domConfig = new ConfigurationEventTypeXMLDOM();
         domConfig.setRootElementName("RootAddedDOMOne");
-        configOps.addEventTypeAlias("AddedDOMSecond", domConfig);
+        configOps.addEventType("AddedDOMSecond", domConfig);
 
-        // Add the same alias and a different type
+        // Add the same name and a different type
         try
         {
             domConfig = new ConfigurationEventTypeXMLDOM();
             domConfig.setRootElementName("RootAddedDOMXXX");
-            configOps.addEventTypeAlias("AddedDOMSecond", domConfig);
+            configOps.addEventType("AddedDOMSecond", domConfig);
             fail();
         }
         catch (ConfigurationException ex)
@@ -130,7 +129,7 @@ public class TestConfigurationOperations extends TestCase
         // First statement with new name
         Map<String, Object> mapProps = new HashMap<String, Object>();
         mapProps.put("prop1", int.class);
-        configOps.addEventTypeAlias("AddedMapOne", mapProps);
+        configOps.addEventType("AddedMapOne", mapProps);
 
         EPStatement stmt = epService.getEPAdministrator().createEPL("select * from AddedMapOne");
         stmt.addListener(testListener);
@@ -142,8 +141,8 @@ public class TestConfigurationOperations extends TestCase
 
         tryInvalid("AddedMapNameSecond");
 
-        // Second statement using a new alias to the same type, should only one receive
-        configOps.addEventTypeAlias("AddedMapNameSecond", mapProps);
+        // Second statement using a new name to the same type, should only one receive
+        configOps.addEventType("AddedMapNameSecond", mapProps);
         SupportUpdateListener testListenerTwo = new SupportUpdateListener();
         stmt = epService.getEPAdministrator().createEPL("select * from AddedMapNameSecond");
         stmt.addListener(testListenerTwo);
@@ -157,13 +156,13 @@ public class TestConfigurationOperations extends TestCase
         // Add the same alias and type again
         mapProps.clear();
         mapProps.put("prop1", int.class);
-        configOps.addEventTypeAlias("AddedNameSecond", mapProps);
+        configOps.addEventType("AddedNameSecond", mapProps);
 
         // Add the same alias and a different type
         try
         {
             mapProps.put("XX", int.class);
-            configOps.addEventTypeAlias("AddedNameSecond", mapProps);
+            configOps.addEventType("AddedNameSecond", mapProps);
             fail();
         }
         catch (ConfigurationException ex)
@@ -179,7 +178,7 @@ public class TestConfigurationOperations extends TestCase
         // First statement with new name
         Map<String, Object> mapProps = new HashMap<String,Object>();
         mapProps.put("prop1", int.class.getName());
-        configOps.addEventTypeAlias("AddedMapOne", mapProps);
+        configOps.addEventType("AddedMapOne", mapProps);
 
         EPStatement stmt = epService.getEPAdministrator().createEPL("select * from AddedMapOne");
         stmt.addListener(testListener);
@@ -192,7 +191,7 @@ public class TestConfigurationOperations extends TestCase
         tryInvalid("AddedMapNameSecond");
 
         // Second statement using a new alias to the same type, should only one receive
-        configOps.addEventTypeAlias("AddedMapNameSecond", mapProps);
+        configOps.addEventType("AddedMapNameSecond", mapProps);
         SupportUpdateListener testListenerTwo = new SupportUpdateListener();
         stmt = epService.getEPAdministrator().createEPL("select * from AddedMapNameSecond");
         stmt.addListener(testListenerTwo);
@@ -206,13 +205,13 @@ public class TestConfigurationOperations extends TestCase
         // Add the same alias and type again
         mapProps.clear();
         mapProps.put("prop1", int.class.getName());
-        configOps.addEventTypeAlias("AddedNameSecond", mapProps);
+        configOps.addEventType("AddedNameSecond", mapProps);
 
         // Add the same alias and a different type
         try
         {
             mapProps.put("XX", int.class.getName());
-            configOps.addEventTypeAlias("AddedNameSecond", mapProps);
+            configOps.addEventType("AddedNameSecond", mapProps);
             fail();
         }
         catch (ConfigurationException ex)
@@ -226,7 +225,7 @@ public class TestConfigurationOperations extends TestCase
         tryInvalid("AddedName");
 
         // First statement with new name
-        configOps.addEventTypeAlias("AddedName", SupportBean.class.getName());
+        configOps.addEventType("AddedName", SupportBean.class.getName());
         EPStatement stmt = epService.getEPAdministrator().createEPL("select * from AddedName");
         stmt.addListener(testListener);
 
@@ -237,7 +236,7 @@ public class TestConfigurationOperations extends TestCase
         tryInvalid("AddedNameSecond");
 
         // Second statement using a new alias to the same type, should both receive
-        configOps.addEventTypeAlias("AddedNameSecond", SupportBean.class.getName());
+        configOps.addEventType("AddedNameSecond", SupportBean.class.getName());
         SupportUpdateListener testListenerTwo = new SupportUpdateListener();
         stmt = epService.getEPAdministrator().createEPL("select * from AddedNameSecond");
         stmt.addListener(testListenerTwo);
@@ -248,12 +247,12 @@ public class TestConfigurationOperations extends TestCase
         assertSame(eventTwo, testListenerTwo.assertOneGetNewAndReset().getUnderlying());
 
         // Add the same alias and type again
-        configOps.addEventTypeAlias("AddedNameSecond", SupportBean.class.getName());
+        configOps.addEventType("AddedNameSecond", SupportBean.class.getName());
 
         // Add the same alias and a different type
         try
         {
-            configOps.addEventTypeAlias("AddedNameSecond", SupportBean_A.class.getName());
+            configOps.addEventType("AddedNameSecond", SupportBean_A.class.getName());
             fail();
         }
         catch (ConfigurationException ex)
@@ -267,8 +266,8 @@ public class TestConfigurationOperations extends TestCase
         tryInvalid("AddedName");
 
         // First statement with new name
-        configOps.addEventTypeAlias("AddedName", SupportBean.class);
-        assertTrue(configOps.isEventTypeAliasExists("AddedName"));
+        configOps.addEventType("AddedName", SupportBean.class);
+        assertTrue(configOps.isEventTypeExists("AddedName"));
         EPStatement stmt = epService.getEPAdministrator().createEPL("select * from AddedName");
         stmt.addListener(testListener);
 
@@ -279,7 +278,7 @@ public class TestConfigurationOperations extends TestCase
         tryInvalid("AddedNameSecond");
 
         // Second statement using a new alias to the same type, should both receive
-        configOps.addEventTypeAlias("AddedNameSecond", SupportBean.class);
+        configOps.addEventType("AddedNameSecond", SupportBean.class);
         SupportUpdateListener testListenerTwo = new SupportUpdateListener();
         stmt = epService.getEPAdministrator().createEPL("select * from AddedNameSecond");
         stmt.addListener(testListenerTwo);
@@ -290,12 +289,12 @@ public class TestConfigurationOperations extends TestCase
         assertSame(eventTwo, testListenerTwo.assertOneGetNewAndReset().getUnderlying());
 
         // Add the same alias and type again
-        configOps.addEventTypeAlias("AddedNameSecond", SupportBean.class);
+        configOps.addEventType("AddedNameSecond", SupportBean.class);
 
         // Add the same alias and a different type
         try
         {
-            configOps.addEventTypeAlias("AddedNameSecond", SupportBean_A.class);
+            configOps.addEventType("AddedNameSecond", SupportBean_A.class);
             fail();
         }
         catch (ConfigurationException ex)

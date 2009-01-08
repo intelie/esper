@@ -82,7 +82,7 @@ public class TestJMSSpringInputAdapter extends TestCase
         Map<String, Object> typeProps = new HashMap<String, Object>();
         typeProps.put("prop1", String.class);
         typeProps.put("prop2", int.class);
-        config.addEventTypeAlias("MyMapType", typeProps);
+        config.addEventType("MyMapType", typeProps);
 
         EPServiceProvider service = EPServiceProviderManager.getProvider(this.getClass().getName() + "_testMap", config);
 

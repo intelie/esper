@@ -38,13 +38,13 @@ public class TestConfiguration extends TestCase
         TestConfigurationParser.assertFileConfig(config);
     }
 
-    public void testAddEventTypeAlias()
+    public void testAddeventTypeName()
     {
-        config.addEventTypeAlias("AEventType", "BClassName");
+        config.addEventType("AEventType", "BClassName");
 
-        assertTrue(config.isEventTypeAliasExists("AEventType"));
-        assertEquals(1, config.getEventTypeAliases().size());
-        assertEquals("BClassName", config.getEventTypeAliases().get("AEventType"));
+        assertTrue(config.isEventTypeExists("AEventType"));
+        assertEquals(1, config.getEventTypeNames().size());
+        assertEquals("BClassName", config.getEventTypeNames().get("AEventType"));
         assertDefaultConfig();
     }
 

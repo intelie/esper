@@ -10,7 +10,7 @@ public class ExplicitPropertyDescriptor
 {
     private final EventPropertyGetter getter;
     private final EventPropertyDescriptor descriptor;
-    private final String optionalFragmentTypeAlias;
+    private final String optionalFragmentTypeName;
     private final boolean isFragmentArray;
 
     /**
@@ -18,14 +18,14 @@ public class ExplicitPropertyDescriptor
      * @param descriptor property descriptor
      * @param getter getter for values
      * @param fragmentArray true if array fragment
-     * @param optionalFragmentTypeAlias null if not a fragment, else fragment type name
+     * @param optionalFragmentTypeName null if not a fragment, else fragment type name
      */
-    public ExplicitPropertyDescriptor(EventPropertyDescriptor descriptor, EventPropertyGetter getter, boolean fragmentArray, String optionalFragmentTypeAlias)
+    public ExplicitPropertyDescriptor(EventPropertyDescriptor descriptor, EventPropertyGetter getter, boolean fragmentArray, String optionalFragmentTypeName)
     {
         this.descriptor = descriptor;
         this.getter = getter;
         isFragmentArray = fragmentArray;
-        this.optionalFragmentTypeAlias = optionalFragmentTypeAlias;
+        this.optionalFragmentTypeName = optionalFragmentTypeName;
     }
 
     /**
@@ -50,9 +50,9 @@ public class ExplicitPropertyDescriptor
      * Returns the fragment event type name, or null if none defined.
      * @return fragment type name
      */
-    public String getOptionalFragmentTypeAlias()
+    public String getOptionalFragmentTypeName()
     {
-        return optionalFragmentTypeAlias;
+        return optionalFragmentTypeName;
     }
 
     /**

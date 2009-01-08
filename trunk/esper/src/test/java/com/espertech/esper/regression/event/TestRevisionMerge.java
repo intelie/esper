@@ -30,14 +30,14 @@ public class TestRevisionMerge extends TestCase
     public void testMergeDeclared()
     {
         Map<String, Object> fullType = makeMap(new Object[][] {{"p1", String.class}, {"p2", String.class}, {"p3", String.class}, {"pf", String.class}});
-        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("FullType", fullType);
+        epService.getEPAdministrator().getConfiguration().addEventType("FullType", fullType);
 
         Map<String, Object> deltaType = makeMap(new Object[][] {{"p1", String.class}, {"p2", String.class}, {"p3", String.class}, {"pd", String.class}});
-        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("DeltaType", deltaType);
+        epService.getEPAdministrator().getConfiguration().addEventType("DeltaType", deltaType);
 
         ConfigurationRevisionEventType revEvent = new ConfigurationRevisionEventType();
-        revEvent.addAliasBaseEventType("FullType");
-        revEvent.addAliasDeltaEventType("DeltaType");
+        revEvent.addNameBaseEventType("FullType");
+        revEvent.addNameDeltaEventType("DeltaType");
         revEvent.setPropertyRevision(ConfigurationRevisionEventType.PropertyRevision.MERGE_DECLARED);
         revEvent.setKeyPropertyNames(new String[] {"p1"});
         epService.getEPAdministrator().getConfiguration().addRevisionEventType("MyExistsRevision", revEvent);
@@ -103,14 +103,14 @@ public class TestRevisionMerge extends TestCase
     public void testMergeNonNull()
     {
         Map<String, Object> fullType = makeMap(new Object[][] {{"p1", String.class}, {"p2", String.class}, {"p3", String.class}, {"pf", String.class}});
-        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("FullType", fullType);
+        epService.getEPAdministrator().getConfiguration().addEventType("FullType", fullType);
 
         Map<String, Object> deltaType = makeMap(new Object[][] {{"p1", String.class}, {"p2", String.class}, {"p3", String.class}, {"pd", String.class}});
-        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("DeltaType", deltaType);
+        epService.getEPAdministrator().getConfiguration().addEventType("DeltaType", deltaType);
 
         ConfigurationRevisionEventType revEvent = new ConfigurationRevisionEventType();
-        revEvent.addAliasBaseEventType("FullType");
-        revEvent.addAliasDeltaEventType("DeltaType");
+        revEvent.addNameBaseEventType("FullType");
+        revEvent.addNameDeltaEventType("DeltaType");
         revEvent.setPropertyRevision(ConfigurationRevisionEventType.PropertyRevision.MERGE_NON_NULL);
         revEvent.setKeyPropertyNames(new String[] {"p1"});
         epService.getEPAdministrator().getConfiguration().addRevisionEventType("MyExistsRevision", revEvent);
@@ -176,14 +176,14 @@ public class TestRevisionMerge extends TestCase
     public void testMergeExists()
     {
         Map<String, Object> fullType = makeMap(new Object[][] {{"p1", String.class}, {"p2", String.class}, {"p3", String.class}, {"pf", String.class}});
-        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("FullType", fullType);
+        epService.getEPAdministrator().getConfiguration().addEventType("FullType", fullType);
 
         Map<String, Object> deltaType = makeMap(new Object[][] {{"p1", String.class}, {"p2", String.class}, {"p3", String.class}, {"pd", String.class}});
-        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("DeltaType", deltaType);
+        epService.getEPAdministrator().getConfiguration().addEventType("DeltaType", deltaType);
 
         ConfigurationRevisionEventType revEvent = new ConfigurationRevisionEventType();
-        revEvent.addAliasBaseEventType("FullType");
-        revEvent.addAliasDeltaEventType("DeltaType");
+        revEvent.addNameBaseEventType("FullType");
+        revEvent.addNameDeltaEventType("DeltaType");
         revEvent.setPropertyRevision(ConfigurationRevisionEventType.PropertyRevision.MERGE_EXISTS);
         revEvent.setKeyPropertyNames(new String[] {"p1"});
         epService.getEPAdministrator().getConfiguration().addRevisionEventType("MyExistsRevision", revEvent);
@@ -248,10 +248,10 @@ public class TestRevisionMerge extends TestCase
 
     public void testNestedPropertiesNoDelta()
     {
-        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("Nested", SupportBeanComplexProps.class);
+        epService.getEPAdministrator().getConfiguration().addEventType("Nested", SupportBeanComplexProps.class);
 
         ConfigurationRevisionEventType revEvent = new ConfigurationRevisionEventType();
-        revEvent.addAliasBaseEventType("Nested");
+        revEvent.addNameBaseEventType("Nested");
         revEvent.setPropertyRevision(ConfigurationRevisionEventType.PropertyRevision.MERGE_DECLARED);
         revEvent.setKeyPropertyNames(new String[] {"simpleProperty"});
         epService.getEPAdministrator().getConfiguration().addRevisionEventType("NestedRevision", revEvent);

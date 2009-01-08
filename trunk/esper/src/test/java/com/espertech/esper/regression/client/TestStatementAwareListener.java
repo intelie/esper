@@ -21,7 +21,7 @@ public class TestStatementAwareListener extends TestCase
     public void setUp()
     {
         Configuration configuration = SupportConfigFactory.getConfiguration();
-        configuration.addEventTypeAlias("Bean", SupportBean.class.getName());
+        configuration.addEventType("Bean", SupportBean.class.getName());
         epService = EPServiceProviderManager.getDefaultProvider(configuration);
         epService.initialize();
 

@@ -16,6 +16,7 @@ import java.io.Serializable;
 public class ConfigurationMethodRef implements Serializable
 {
     private ConfigurationDataCache dataCacheDesc;
+    private static final long serialVersionUID = -9178934436665140004L;
 
     /**
      * Configures a LRU cache of the given size for the method invocation.

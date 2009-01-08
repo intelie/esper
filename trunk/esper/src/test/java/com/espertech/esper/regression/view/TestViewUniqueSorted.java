@@ -35,7 +35,7 @@ public class TestViewUniqueSorted extends TestCase
         config.getEngineDefaults().getViewResources().setAllowMultipleExpiryPolicies(true);
         epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();
-        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("SupportBean", SupportBean.class);
+        epService.getEPAdministrator().getConfiguration().addEventType("SupportBean", SupportBean.class);
     }
 
     public void testExpressionParameter()
@@ -128,7 +128,7 @@ public class TestViewUniqueSorted extends TestCase
 
     public void testReuseUnique()
     {
-        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("SupportBean", SupportBean.class);
+        epService.getEPAdministrator().getConfiguration().addEventType("SupportBean", SupportBean.class);
         EPStatement stmt = epService.getEPAdministrator().createEPL("select irstream * from SupportBean.std:unique(intBoxed)");
         stmt.addListener(testListener);
 

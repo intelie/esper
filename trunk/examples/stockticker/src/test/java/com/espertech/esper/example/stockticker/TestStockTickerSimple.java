@@ -31,8 +31,8 @@ public class TestStockTickerSimple extends TestCase
         listener = new StockTickerResultListener();
 
         Configuration configuration = new Configuration();
-        configuration.addEventTypeAlias("PriceLimit", PriceLimit.class.getName());
-        configuration.addEventTypeAlias("StockTick", StockTick.class.getName());
+        configuration.addEventType("PriceLimit", PriceLimit.class.getName());
+        configuration.addEventType("StockTick", StockTick.class.getName());
 
         epService = EPServiceProviderManager.getProvider("TestStockTickerSimple", configuration);
 

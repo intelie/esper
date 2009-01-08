@@ -25,15 +25,15 @@ public class TestStreamTypeServiceImpl extends TestCase
             SupportEventTypeFactory.createBeanType(SupportBean_A.class),
             SupportEventTypeFactory.createBeanType(SupportMarketDataBean.class)
             };
-        String[] eventTypeAlias = new String[] {"SupportBean", "SupportBean", "SupportBean_A", "SupportMarketDataBean"};
+        String[] eventTypeName = new String[] {"SupportBean", "SupportBean", "SupportBean_A", "SupportMarketDataBean"};
         String[] streamNames = new String[] {"s1", null, "s3", "s4"};
-        serviceRegular = new StreamTypeServiceImpl(eventTypes, streamNames, "default", eventTypeAlias);
+        serviceRegular = new StreamTypeServiceImpl(eventTypes, streamNames, "default", eventTypeName);
 
         // Prepare with stream-zero being unambigous
         LinkedHashMap<String, Pair<EventType, String>> streamTypes = new LinkedHashMap<String, Pair<EventType, String>>();
         for (int i = 0; i < streamNames.length; i++)
         {
-            streamTypes.put(streamNames[i], new Pair<EventType, String>(eventTypes[i], eventTypeAlias[i]));
+            streamTypes.put(streamNames[i], new Pair<EventType, String>(eventTypes[i], eventTypeName[i]));
         }
         serviceStreamZeroUnambigous = new StreamTypeServiceImpl(streamTypes, "default", true, false);
 

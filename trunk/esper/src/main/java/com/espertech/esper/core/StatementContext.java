@@ -346,11 +346,11 @@ public final class StatementContext
 
     /**
      * Add an event type name created during statement start and not available through static analysis.
-     * @param eventTypeAlias to add
+     * @param eventTypeName to add
      */
-    public void addDynamicReferenceEventType(String eventTypeAlias)
+    public void addDynamicReferenceEventType(String eventTypeName)
     {
-        dynamicReferenceEventTypes.add(eventTypeAlias);
+        dynamicReferenceEventTypes.add(eventTypeName);
     }
 
     /**

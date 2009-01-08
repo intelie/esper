@@ -19,8 +19,8 @@ public class DirectSender extends AbstractSender {
 		runtime.sendEvent(beanToSend);
 	}
 
-	public void sendEvent(AbstractSendableEvent event, Map mapToSend, String eventTypeAlias) {
-		runtime.sendEvent(mapToSend, eventTypeAlias);
+	public void sendEvent(AbstractSendableEvent event, Map mapToSend, String eventTypeName) {
+		runtime.sendEvent(mapToSend, eventTypeName);
 	}
 
 	public void onFinish() {

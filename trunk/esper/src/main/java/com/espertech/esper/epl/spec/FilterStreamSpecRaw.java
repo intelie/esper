@@ -70,7 +70,7 @@ public class FilterStreamSpecRaw extends StreamSpecBase implements StreamSpecRaw
             throws ExprValidationException
     {
         // Determine the event type
-        String eventName = rawFilterSpec.getEventTypeAlias();
+        String eventName = rawFilterSpec.geteventTypeName();
 
         // Could be a named window
         if (context.getNamedWindowService().isNamedWindow(eventName))
@@ -87,7 +87,7 @@ public class FilterStreamSpecRaw extends StreamSpecBase implements StreamSpecRaw
 
         EventType eventType = null;
 
-        if (context.getValueAddEventService().isRevisionTypeAlias(eventName))
+        if (context.getValueAddEventService().isRevisionTypeName(eventName))
         {
             eventType = context.getValueAddEventService().getValueAddUnderlyingType(eventName);
             eventTypeReferences.add(((EventTypeSPI) eventType).getMetadata().getPrimaryName());
@@ -113,8 +113,8 @@ public class FilterStreamSpecRaw extends StreamSpecBase implements StreamSpecRaw
     }
 
     /**
-     * Resolves a given event alias to an event type.
-     * @param eventName is the alias to resolve
+     * Resolves a given event name to an event type.
+     * @param eventName is the name to resolve
      * @param eventAdapterService for resolving event types
      * @param engineURI the provider URI
      * @param optionalResolutionURIs is URIs for resolving the event name against plug-inn event representations, if any
@@ -124,7 +124,7 @@ public class FilterStreamSpecRaw extends StreamSpecBase implements StreamSpecRaw
     protected static EventType resolveType(String engineURI, String eventName, EventAdapterService eventAdapterService, URI[] optionalResolutionURIs)
             throws ExprValidationException
     {
-        EventType eventType = eventAdapterService.getExistsTypeByAlias(eventName);
+        EventType eventType = eventAdapterService.getExistsTypeByName(eventName);
 
         // may already be known
         if (eventType != null)
@@ -149,7 +149,7 @@ public class FilterStreamSpecRaw extends StreamSpecBase implements StreamSpecRaw
 
                 if (engineURIQualifier.equals(eventNameURI))
                 {
-                    eventType = eventAdapterService.getExistsTypeByAlias(eventNameRemainder);
+                    eventType = eventAdapterService.getExistsTypeByName(eventNameRemainder);
                 }
             }
         }
@@ -160,7 +160,7 @@ public class FilterStreamSpecRaw extends StreamSpecBase implements StreamSpecRaw
             return eventType;
         }
 
-        // The type is not known yet, attempt to add as a JavaBean type with the same alias
+        // The type is not known yet, attempt to add as a JavaBean type with the same name
         String message = null;
         try
         {
@@ -168,7 +168,7 @@ public class FilterStreamSpecRaw extends StreamSpecBase implements StreamSpecRaw
         }
         catch (EventAdapterException ex)
         {
-            log.info(".resolveType Event type alias '" + eventName + "' not resolved as Java-Class event");
+            log.info(".resolveType Event type name '" + eventName + "' not resolved as Java-Class event");
             message = "Failed to resolve event type: " + ex.getMessage();
         }
 
@@ -179,7 +179,7 @@ public class FilterStreamSpecRaw extends StreamSpecBase implements StreamSpecRaw
         }
         catch (EventAdapterException ex)
         {
-            log.debug(".resolveType Event type alias '" + eventName + "' not resolved by plug-in event representations");
+            log.debug(".resolveType Event type name '" + eventName + "' not resolved by plug-in event representations");
             // remains unresolved
         }
 

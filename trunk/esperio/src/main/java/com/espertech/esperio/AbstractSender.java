@@ -41,9 +41,9 @@ public abstract class AbstractSender {
      * Send an event.
      * @param event wrapper
      * @param mapToSend event object
-     * @param eventTypeAlias alias of event
+     * @param eventTypeName name of event type
      */
-    public abstract void sendEvent(AbstractSendableEvent event, Map mapToSend, String eventTypeAlias);
+    public abstract void sendEvent(AbstractSendableEvent event, Map mapToSend, String eventTypeName);
 
     /**
      * Indicate that sender should stop.

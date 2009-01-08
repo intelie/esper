@@ -16,8 +16,8 @@ public class TestCompositeSelect extends TestCase
     public void testFollowedByFilter()
     {
         Configuration config = SupportConfigFactory.getConfiguration();
-        config.addEventTypeAlias("A", SupportBean_A.class.getName());
-        config.addEventTypeAlias("B", SupportBean_B.class.getName());
+        config.addEventType("A", SupportBean_A.class.getName());
+        config.addEventType("B", SupportBean_B.class.getName());
         EPServiceProvider epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();
 
@@ -43,14 +43,14 @@ public class TestCompositeSelect extends TestCase
         ArrayAssertionUtil.assertEqualsAnyOrder(new Object[] {
             new EventPropertyDescriptor("a", SupportBean_A.class, false, false, false, false, true),
             new EventPropertyDescriptor("b", SupportBean_B.class, false, false, false, false, true)
-           }, ((EPServiceProviderSPI) epService).getEventAdapterService().getExistsTypeByAlias("StreamOne").getPropertyDescriptors());
+           }, ((EPServiceProviderSPI) epService).getEventAdapterService().getExistsTypeByName("StreamOne").getPropertyDescriptors());
     }
 
     public void testFragment()
     {
         Configuration config = SupportConfigFactory.getConfiguration();
-        config.addEventTypeAlias("A", SupportBean_A.class.getName());
-        config.addEventTypeAlias("B", SupportBean_B.class.getName());
+        config.addEventType("A", SupportBean_A.class.getName());
+        config.addEventType("B", SupportBean_B.class.getName());
 
         EPServiceProvider epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();

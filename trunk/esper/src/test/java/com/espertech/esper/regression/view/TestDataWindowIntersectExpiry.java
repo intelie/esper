@@ -506,8 +506,8 @@ public class TestDataWindowIntersectExpiry extends TestCase
 
         epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();
-        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("SupportBean", SupportBean.class);
-        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("SupportBean_S0", SupportBean_S0.class);
-        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("SupportBean_S1", SupportBean_S1.class);
+        epService.getEPAdministrator().getConfiguration().addEventType("SupportBean", SupportBean.class);
+        epService.getEPAdministrator().getConfiguration().addEventType("SupportBean_S0", SupportBean_S0.class);
+        epService.getEPAdministrator().getConfiguration().addEventType("SupportBean_S1", SupportBean_S1.class);
     }
 }

@@ -1,10 +1,10 @@
 package com.espertech.esper.regression.client;
 
-public class MyAutoAliasEventType
+public class MyAutoNamedEventType
 {
     private int id;
 
-    public MyAutoAliasEventType(int id)
+    public MyAutoNamedEventType(int id)
     {
         this.id = id;
     }

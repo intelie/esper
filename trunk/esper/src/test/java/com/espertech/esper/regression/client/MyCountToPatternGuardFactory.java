@@ -37,7 +37,6 @@ public class MyCountToPatternGuardFactory extends GuardFactorySupport
 
         this.numCountToExpr = guardParameters.get(0);
         this.convertor = convertor;
-
     }
 
     public Guard makeGuard(PatternContext context, MatchedEventMap beginState, Quitable quitable, Object stateNodeId, Object guardState)

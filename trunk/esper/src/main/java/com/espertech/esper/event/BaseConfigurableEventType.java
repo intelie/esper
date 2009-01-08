@@ -114,7 +114,7 @@ public abstract class BaseConfigurableEventType implements EventTypeSPI {
             propertyDescriptors[count] = desc;
             propertyDescriptorMap.put(desc.getPropertyName(), desc);
 
-            if (explicit.getOptionalFragmentTypeAlias() != null)
+            if (explicit.getOptionalFragmentTypeName() != null)
             {
                 propertyFragmentTypes.put(explicit.getDescriptor().getPropertyName(), new Pair<ExplicitPropertyDescriptor, FragmentEventType>(explicit, null));
             }
@@ -160,7 +160,7 @@ public abstract class BaseConfigurableEventType implements EventTypeSPI {
         }
 
         // resolve event type
-        EventType existingType = eventAdapterService.getExistsTypeByAlias(pair.getFirst().getOptionalFragmentTypeAlias());
+        EventType existingType = eventAdapterService.getExistsTypeByName(pair.getFirst().getOptionalFragmentTypeName());
         if (!(existingType instanceof BaseConfigurableEventType))
         {
             log.warn("Type configured for fragment event property '" + property + "' by name '" + pair.getFirst() + "' could not be found");

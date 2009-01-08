@@ -19,6 +19,7 @@ public final class Pair<First,Second> implements Serializable
 {
     private First first;
     private Second second;
+    private static final long serialVersionUID = -4168417618011472714L;
 
     /**
      * Construct pair of values.

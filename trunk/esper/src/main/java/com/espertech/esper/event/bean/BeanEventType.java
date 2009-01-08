@@ -9,11 +9,10 @@
 package com.espertech.esper.event.bean;
 
 import com.espertech.esper.client.*;
-import com.espertech.esper.event.property.*;
-import com.espertech.esper.event.bean.PropertyListBuilderFactory;
-import com.espertech.esper.event.bean.PropertyListBuilder;
-import com.espertech.esper.event.bean.PropertyHelper;
 import com.espertech.esper.event.*;
+import com.espertech.esper.event.property.Property;
+import com.espertech.esper.event.property.PropertyParser;
+import com.espertech.esper.event.property.SimpleProperty;
 import com.espertech.esper.util.JavaClassHelper;
 import net.sf.cglib.reflect.FastClass;
 import org.apache.commons.logging.Log;
@@ -30,8 +29,6 @@ public class BeanEventType implements EventTypeSPI, NativeEventType
     private final Class clazz;
     private final EventAdapterService eventAdapterService;
     private final ConfigurationEventTypeLegacy optionalLegacyDef;
-    private final String alias;
-
     private String[] propertyNames;
     private Map<String, SimplePropertyInfo> simpleProperties;
     private Map<String, InternalEventPropDescriptor> mappedPropertyDescriptors;
@@ -53,21 +50,19 @@ public class BeanEventType implements EventTypeSPI, NativeEventType
      * Constructor takes a java bean class as an argument.
      * @param clazz is the class of a java bean or other POJO
      * @param optionalLegacyDef optional configuration supplying legacy event type information
-     * @param alias is the event type alias for the class
+     * @param name is the event type name for the class
      * @param eventAdapterService factory for event beans and event types
      * @param metadata event type metadata
      */
     public BeanEventType(EventTypeMetadata metadata,
                          Class clazz,
                          EventAdapterService eventAdapterService,
-                         ConfigurationEventTypeLegacy optionalLegacyDef,
-                         String alias)
+                         ConfigurationEventTypeLegacy optionalLegacyDef)
     {
         this.metadata = metadata;
         this.clazz = clazz;
         this.eventAdapterService = eventAdapterService;
         this.optionalLegacyDef = optionalLegacyDef;
-        this.alias = alias;
         if (optionalLegacyDef != null)
         {
             this.propertyResolutionStyle = optionalLegacyDef.getPropertyResolutionStyle();
@@ -255,17 +250,6 @@ public class BeanEventType implements EventTypeSPI, NativeEventType
     public Iterator<EventType> getDeepSuperTypes()
     {
         return deepSuperTypes.iterator();
-    }
-
-    /**
-     * Returns the event type alias.
-     * <p>
-     * For classes for which no alias has been defined, the alias is the fully-qualified class name.
-     * @return event type alias
-     */
-    public String getAlias()
-    {
-        return alias;
     }
 
     /**

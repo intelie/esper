@@ -15,32 +15,32 @@ import com.espertech.esper.util.MetaDefItem;
  */
 public class SelectExprElementStreamRawSpec implements MetaDefItem
 {
-    private String streamAliasName;
+    private String streamName;
     private String optionalAsName;
 
     /**
      * Ctor.
-     * @param streamAliasName is the stream alias of the stream to select
-     * @param optionalAsName is the column alias
+     * @param streamName is the stream name of the stream to select
+     * @param optionalAsName is the column name
      */
-    public SelectExprElementStreamRawSpec(String streamAliasName, String optionalAsName)
+    public SelectExprElementStreamRawSpec(String streamName, String optionalAsName)
     {
-        this.streamAliasName = streamAliasName;
+        this.streamName = streamName;
         this.optionalAsName = optionalAsName;
     }
 
     /**
-     * Returns the stream alias (e.g. select streamAlias from MyEvent as streamAlias).
-     * @return alias
+     * Returns the stream name (e.g. select streamName from MyEvent as streamName).
+     * @return name
      */
-    public String getStreamAliasName()
+    public String getStreamName()
     {
-        return streamAliasName;
+        return streamName;
     }
 
      /**
-      * Returns the column alias (e.g. select streamAlias as mycol from MyEvent as streamAlias).
-      * @return alias
+      * Returns the column name.
+      * @return name
       */
     public String getOptionalAsName()
     {

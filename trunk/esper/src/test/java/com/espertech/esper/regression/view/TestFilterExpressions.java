@@ -7,9 +7,6 @@ import com.espertech.esper.support.epl.SupportStaticMethodLib;
 import com.espertech.esper.support.util.SupportUpdateListener;
 import junit.framework.TestCase;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
-
 public class TestFilterExpressions extends TestCase
 {
     private EPServiceProvider epService;
@@ -20,7 +17,7 @@ public class TestFilterExpressions extends TestCase
         listener = new SupportUpdateListener();
 
         Configuration config = SupportConfigFactory.getConfiguration();
-        config.addEventTypeAlias("SupportEvent", SupportTradeEvent.class);
+        config.addEventType("SupportEvent", SupportTradeEvent.class);
 
         epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();

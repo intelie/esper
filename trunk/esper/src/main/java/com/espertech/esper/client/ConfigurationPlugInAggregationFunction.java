@@ -17,6 +17,7 @@ public class ConfigurationPlugInAggregationFunction implements Serializable
 {
     private String name;
     private String functionClassName;
+    private static final long serialVersionUID = 4096734947283212246L;
 
     /**
      * Ctor.

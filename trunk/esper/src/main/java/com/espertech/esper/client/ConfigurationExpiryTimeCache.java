@@ -18,6 +18,7 @@ public class ConfigurationExpiryTimeCache implements ConfigurationDataCache, Ser
     private ConfigurationCacheReferenceType cacheReferenceType;
     private double maxAgeSeconds;
     private double purgeIntervalSeconds;
+    private static final long serialVersionUID = 1213687721462970573L;
 
     /**
      * Ctor.

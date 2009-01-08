@@ -16,20 +16,20 @@ import com.espertech.esper.client.Configuration;
 public interface BeanEventTypeFactory
 {
     /**
-     * Returns the bean event type for a given class assigning the given alias.
-     * @param alias is the alias
+     * Returns the bean event type for a given class assigning the given name.
+     * @param name is the name
      * @param clazz is the class for which to generate an event type
      * @param isConfigured if the class is a configuration value
      * @return is the event type for the class
      */
-    public BeanEventType createBeanType(String alias, Class clazz, boolean isConfigured);
+    public BeanEventType createBeanType(String name, Class clazz, boolean isConfigured);
 
     /**
-     * Returns the bean event type for a given class assigning the given alias.
+     * Returns the bean event type for a given class assigning the given name.
      * @param clazz is the class for which to generate an event type
      * @return is the event type for the class
      */
-    public BeanEventType createBeanTypeNoAlias(Class clazz);
+    public BeanEventType createBeanTypeDefaultName(Class clazz);
 
     /**
      * Returns the default property resolution style.

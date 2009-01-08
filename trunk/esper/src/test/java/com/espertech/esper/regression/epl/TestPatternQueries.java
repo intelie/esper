@@ -6,7 +6,6 @@ import com.espertech.esper.client.EPStatement;
 import com.espertech.esper.client.EPServiceProviderManager;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.soda.*;
-import com.espertech.esper.client.time.TimerControlEvent;
 import com.espertech.esper.client.time.CurrentTimeEvent;
 import com.espertech.esper.support.util.SupportUpdateListener;
 import com.espertech.esper.support.bean.SupportBean_S0;
@@ -30,7 +29,7 @@ public class TestPatternQueries extends TestCase
     public void testWhere_OM() throws Exception
     {
         EPStatementObjectModel model = new EPStatementObjectModel();
-        model.setSelectClause(SelectClause.create().addWithAlias("s0.id", "idS0").addWithAlias("s1.id", "idS1"));
+        model.setSelectClause(SelectClause.create().addWithAsProvidedName("s0.id", "idS0").addWithAsProvidedName("s1.id", "idS1"));
         PatternExpr pattern = Patterns.or()
                 .add(Patterns.everyFilter(SupportBean_S0.class.getName(), "s0"))
                 .add(Patterns.everyFilter(SupportBean_S1.class.getName(), "s1")

@@ -19,20 +19,20 @@ public class PlugInEventTypeHandlerContext
 {
     private final URI eventTypeResolutionURI;
     private final Serializable typeInitializer;
-    private final String eventTypeAlias;
+    private final String eventTypeName;
 
     /**
      * Ctor.
      * @param eventTypeResolutionURI the URI specified for resolving the event type, may be a child URI
      * of the event representation URI and may carry additional parameters
      * @param typeInitializer optional configuration for the type, or null if none supplied
-     * @param eventTypeAlias the name of the event
+     * @param eventTypeName the name of the event
      */
-    public PlugInEventTypeHandlerContext(URI eventTypeResolutionURI, Serializable typeInitializer, String eventTypeAlias)
+    public PlugInEventTypeHandlerContext(URI eventTypeResolutionURI, Serializable typeInitializer, String eventTypeName)
     {
         this.eventTypeResolutionURI = eventTypeResolutionURI;
         this.typeInitializer = typeInitializer;
-        this.eventTypeAlias = eventTypeAlias;
+        this.eventTypeName = eventTypeName;
     }
 
     /**
@@ -57,10 +57,10 @@ public class PlugInEventTypeHandlerContext
 
     /**
      * Returns the name assigned to the event type.
-     * @return alias
+     * @return name
      */
-    public String getEventTypeAlias()
+    public String getEventTypeName()
     {
-        return eventTypeAlias;
+        return eventTypeName;
     }
 }

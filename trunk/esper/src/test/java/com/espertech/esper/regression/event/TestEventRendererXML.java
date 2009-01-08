@@ -32,7 +32,7 @@ public class TestEventRendererXML extends TestCase
         bean.setIntBoxed(992);
         bean.setCharPrimitive('x');
 
-        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("SupportBean", SupportBean.class);
+        epService.getEPAdministrator().getConfiguration().addEventType("SupportBean", SupportBean.class);
         EPStatement statement = epService.getEPAdministrator().createEPL("select * from SupportBean");
         epService.getEPRuntime().sendEvent(bean);
 
@@ -86,8 +86,8 @@ public class TestEventRendererXML extends TestCase
         defInner.put("stringarr", String[].class);
         defInner.put("prop1", String.class);
 
-        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("InnerMap", defInner);
-        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("OuterMap", defOuter);
+        epService.getEPAdministrator().getConfiguration().addEventType("InnerMap", defInner);
+        epService.getEPAdministrator().getConfiguration().addEventType("OuterMap", defOuter);
         EPStatement statement = epService.getEPAdministrator().createEPL("select * from OuterMap");
 
         Map<String, Object> dataInner = new HashMap<String, Object>();
@@ -168,7 +168,7 @@ public class TestEventRendererXML extends TestCase
         for (int i = 0; i < testdata.length; i++)
         {
             StringBuilder buf = new StringBuilder();
-            OutputValueRendererXMLString.xmlEncode(testdata[i][0], buf);
+            OutputValueRendererXMLString.xmlEncode(testdata[i][0], buf, true);
             assertEquals(testdata[i][1], buf.toString());
         }
     }

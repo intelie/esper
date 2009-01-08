@@ -33,22 +33,22 @@ public class TestRevisionDeclared extends TestCase
     {
         Configuration config = SupportConfigFactory.getConfiguration();
 
-        config.addEventTypeAlias("SupportBean", SupportBean.class);
-        config.addEventTypeAlias("FullEvent", SupportRevisionFull.class);
-        config.addEventTypeAlias("D1", SupportDeltaOne.class);
-        config.addEventTypeAlias("D2", SupportDeltaTwo.class);
-        config.addEventTypeAlias("D3", SupportDeltaThree.class);
-        config.addEventTypeAlias("D4", SupportDeltaFour.class);
-        config.addEventTypeAlias("D5", SupportDeltaFive.class);
+        config.addEventType("SupportBean", SupportBean.class);
+        config.addEventType("FullEvent", SupportRevisionFull.class);
+        config.addEventType("D1", SupportDeltaOne.class);
+        config.addEventType("D2", SupportDeltaTwo.class);
+        config.addEventType("D3", SupportDeltaThree.class);
+        config.addEventType("D4", SupportDeltaFour.class);
+        config.addEventType("D5", SupportDeltaFive.class);
 
         ConfigurationRevisionEventType configRev = new ConfigurationRevisionEventType();
         configRev.setKeyPropertyNames(new String[] {"k0"});
-        configRev.addAliasBaseEventType("FullEvent");
-        configRev.addAliasDeltaEventType("D1");
-        configRev.addAliasDeltaEventType("D2");
-        configRev.addAliasDeltaEventType("D3");
-        configRev.addAliasDeltaEventType("D4");
-        configRev.addAliasDeltaEventType("D5");
+        configRev.addNameBaseEventType("FullEvent");
+        configRev.addNameDeltaEventType("D1");
+        configRev.addNameDeltaEventType("D2");
+        configRev.addNameDeltaEventType("D3");
+        configRev.addNameDeltaEventType("D4");
+        configRev.addNameDeltaEventType("D5");
         config.addRevisionEventType("RevisableQuote", configRev);
 
         epService = EPServiceProviderManager.getDefaultProvider(config);
@@ -312,25 +312,25 @@ public class TestRevisionDeclared extends TestCase
     public void testInvalidConfig()
     {
         ConfigurationRevisionEventType config = new ConfigurationRevisionEventType();
-        tryInvalidConfig("abc", config, "Required base event type alias is not set in the configuration for revision event type 'abc'");
+        tryInvalidConfig("abc", config, "Required base event type name is not set in the configuration for revision event type 'abc'");
 
-        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("MyEvent", SupportBean.class);
-        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("MyComplex", SupportBeanComplexProps.class);
-        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("MyTypeChange", SupportBeanTypeChange.class);
+        epService.getEPAdministrator().getConfiguration().addEventType("MyEvent", SupportBean.class);
+        epService.getEPAdministrator().getConfiguration().addEventType("MyComplex", SupportBeanComplexProps.class);
+        epService.getEPAdministrator().getConfiguration().addEventType("MyTypeChange", SupportBeanTypeChange.class);
 
-        config.addAliasBaseEventType("XYZ");
-        tryInvalidConfig("abc", config, "Could not locate event type for alias 'XYZ' in the configuration for revision event type 'abc'");
+        config.addNameBaseEventType("XYZ");
+        tryInvalidConfig("abc", config, "Could not locate event type for name 'XYZ' in the configuration for revision event type 'abc'");
 
-        config.getAliasBaseEventTypes().clear();
-        config.addAliasBaseEventType("MyEvent");
+        config.getNameBaseEventTypes().clear();
+        config.addNameBaseEventType("MyEvent");
         tryInvalidConfig("abc", config, "Required key properties are not set in the configuration for revision event type 'abc'");
 
-        config.addAliasBaseEventType("AEvent");
-        config.addAliasBaseEventType("AEvent");
-        tryInvalidConfig("abc", config, "Only one base event type alias may be added to revision event type 'abc', multiple base types are not yet supported");
+        config.addNameBaseEventType("AEvent");
+        config.addNameBaseEventType("AEvent");
+        tryInvalidConfig("abc", config, "Only one base event type name may be added to revision event type 'abc', multiple base types are not yet supported");
 
-        config.getAliasBaseEventTypes().clear();
-        config.addAliasBaseEventType("MyEvent");
+        config.getNameBaseEventTypes().clear();
+        config.addNameBaseEventType("MyEvent");
         config.setKeyPropertyNames(new String[0]);
         tryInvalidConfig("abc", config, "Required key properties are not set in the configuration for revision event type 'abc'");
 
@@ -338,18 +338,18 @@ public class TestRevisionDeclared extends TestCase
         tryInvalidConfig("abc", config, "Key property 'xyz' as defined in the configuration for revision event type 'abc' does not exists in event type 'MyEvent'");
 
         config.setKeyPropertyNames(new String[] {"intPrimitive"});
-        config.addAliasDeltaEventType("MyComplex");
+        config.addNameDeltaEventType("MyComplex");
         tryInvalidConfig("abc", config, "Key property 'intPrimitive' as defined in the configuration for revision event type 'abc' does not exists in event type 'MyComplex'");
 
-        config.addAliasDeltaEventType("XYZ");
-        tryInvalidConfig("abc", config, "Could not locate event type for alias 'XYZ' in the configuration for revision event type 'abc'");
+        config.addNameDeltaEventType("XYZ");
+        tryInvalidConfig("abc", config, "Could not locate event type for name 'XYZ' in the configuration for revision event type 'abc'");
 
-        config.getAliasDeltaEventTypes().clear();
+        config.getNameDeltaEventTypes().clear();
         config.setKeyPropertyNames(new String[] {"intBoxed"});
-        config.addAliasDeltaEventType("MyTypeChange");  // invalid intPrimitive property type
+        config.addNameDeltaEventType("MyTypeChange");  // invalid intPrimitive property type
         tryInvalidConfig("abc", config, "Property named 'intPrimitive' does not have the same type for base and delta types of revision event type 'abc'");
 
-        config.getAliasDeltaEventTypes().clear();
+        config.getNameDeltaEventTypes().clear();
         epService.getEPAdministrator().getConfiguration().addRevisionEventType("abc", config);
     }
 
@@ -376,11 +376,11 @@ public class TestRevisionDeclared extends TestCase
         }
     }
 
-    private void tryInvalidConfig(String alias, ConfigurationRevisionEventType config, String message)
+    private void tryInvalidConfig(String name, ConfigurationRevisionEventType config, String message)
     {
         try
         {
-            epService.getEPAdministrator().getConfiguration().addRevisionEventType(alias, config);
+            epService.getEPAdministrator().getConfiguration().addRevisionEventType(name, config);
             fail();
         }
         catch (ConfigurationException ex)

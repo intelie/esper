@@ -53,12 +53,12 @@ public class SenderThreadPool extends DirectSender {
     /**
      * Send an event.
      * @param mapToSend event to send
-     * @param eventTypeAlias alias of event
+     * @param eventTypeName name of event type
      */
-    public void sendEvent(final Map mapToSend, final String eventTypeAlias) {
+    public void sendEvent(final Map mapToSend, final String eventTypeName) {
 		executorService.execute(new Runnable() {
 			public void run() {
-				runtime.sendEvent(mapToSend, eventTypeAlias);
+				runtime.sendEvent(mapToSend, eventTypeName);
 			}
 		});
 	}

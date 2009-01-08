@@ -550,7 +550,7 @@ public class StatementSpecMapper
             if (raw instanceof SelectClauseStreamRawSpec)
             {
                 SelectClauseStreamRawSpec streamSpec = (SelectClauseStreamRawSpec) raw;
-                clause.addStreamWildcard(streamSpec.getStreamAliasName(), streamSpec.getOptionalAsName());
+                clause.addStreamWildcard(streamSpec.getStreamName(), streamSpec.getOptionalAsName());
             }
             else if (raw instanceof SelectClauseElementWildcard)
             {
@@ -582,7 +582,7 @@ public class StatementSpecMapper
             s = StreamSelector.RSTREAM_ONLY;
         }
         model.setInsertInto(
-                InsertIntoClause.create(insertIntoDesc.getEventTypeAlias(),
+                InsertIntoClause.create(insertIntoDesc.getEventTypeName(),
                         insertIntoDesc.getColumnNames().toArray(new String[0]), s));
     }
 
@@ -625,8 +625,8 @@ public class StatementSpecMapper
         }
 
         boolean isIStream = insertInto.isIStream();
-        String eventTypeAlias = insertInto.getStreamName();
-        InsertIntoDesc desc = new InsertIntoDesc(isIStream, eventTypeAlias);
+        String eventTypeName = insertInto.getStreamName();
+        InsertIntoDesc desc = new InsertIntoDesc(isIStream, eventTypeName);
 
         for (String name : insertInto.getColumnNames())
         {
@@ -663,7 +663,7 @@ public class StatementSpecMapper
             else if (element instanceof SelectClauseStreamWildcard)
             {
                 SelectClauseStreamWildcard streamWild = (SelectClauseStreamWildcard) element;
-                SelectClauseStreamRawSpec rawElement = new SelectClauseStreamRawSpec(streamWild.getStreamAliasName(), streamWild.getOptionalColumnAlias());
+                SelectClauseStreamRawSpec rawElement = new SelectClauseStreamRawSpec(streamWild.getStreamName(), streamWild.getOptionalColumnName());
                 spec.add(rawElement);
             }
         }
@@ -1553,7 +1553,7 @@ public class StatementSpecMapper
             expr.add(exprNode);
         }
 
-        return new FilterSpecRaw(filter.getEventTypeAlias(), expr);
+        return new FilterSpecRaw(filter.getEventTypeName(), expr);
     }
 
     private static Filter unmapFilter(FilterSpecRaw filter, StatementSpecUnMapContext unmapContext)
@@ -1573,6 +1573,6 @@ public class StatementSpecMapper
             expr = unmapExpressionDeep(filter.getFilterExpressions().get(0), unmapContext);
         }
 
-        return new Filter(filter.getEventTypeAlias(), expr);
+        return new Filter(filter.geteventTypeName(), expr);
     }
 }

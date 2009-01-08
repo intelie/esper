@@ -27,12 +27,12 @@ public class TestVariantStreamDefault extends TestCase
 
     public void testCoercionBoxedTypeMatch()
     {
-        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("SupportBean", SupportBean.class);
-        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("SupportBeanVariantStream", SupportBeanVariantStream.class);
+        epService.getEPAdministrator().getConfiguration().addEventType("SupportBean", SupportBean.class);
+        epService.getEPAdministrator().getConfiguration().addEventType("SupportBeanVariantStream", SupportBeanVariantStream.class);
 
         ConfigurationVariantStream variant = new ConfigurationVariantStream();
-        variant.addEventTypeAlias("SupportBean");
-        variant.addEventTypeAlias("SupportBeanVariantStream");
+        variant.addEventTypeName("SupportBean");
+        variant.addEventTypeName("SupportBeanVariantStream");
         epService.getEPAdministrator().getConfiguration().addVariantStream("MyVariantStream", variant);
 
         EPStatement stmt = epService.getEPAdministrator().createEPL("select * from MyVariantStream");
@@ -101,12 +101,12 @@ public class TestVariantStreamDefault extends TestCase
 
     public void testSuperTypesInterfaces()
     {
-        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("SupportBeanVariantOne", SupportBeanVariantOne.class);
-        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("SupportBeanVariantTwo", SupportBeanVariantTwo.class);
+        epService.getEPAdministrator().getConfiguration().addEventType("SupportBeanVariantOne", SupportBeanVariantOne.class);
+        epService.getEPAdministrator().getConfiguration().addEventType("SupportBeanVariantTwo", SupportBeanVariantTwo.class);
 
         ConfigurationVariantStream variant = new ConfigurationVariantStream();
-        variant.addEventTypeAlias("SupportBeanVariantOne");
-        variant.addEventTypeAlias("SupportBeanVariantTwo");
+        variant.addEventTypeName("SupportBeanVariantOne");
+        variant.addEventTypeName("SupportBeanVariantTwo");
         epService.getEPAdministrator().getConfiguration().addVariantStream("MyVariantStream", variant);
         epService.getEPAdministrator().createEPL("insert into MyVariantStream select * from SupportBeanVariantOne");
         epService.getEPAdministrator().createEPL("insert into MyVariantStream select * from SupportBeanVariantTwo");
@@ -176,12 +176,12 @@ public class TestVariantStreamDefault extends TestCase
 
     public void testNamedWin()
     {
-        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("SupportBean", SupportBean.class);
-        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("SupportBeanVariantStream", SupportBeanVariantStream.class);
+        epService.getEPAdministrator().getConfiguration().addEventType("SupportBean", SupportBean.class);
+        epService.getEPAdministrator().getConfiguration().addEventType("SupportBeanVariantStream", SupportBeanVariantStream.class);
 
         ConfigurationVariantStream variant = new ConfigurationVariantStream();
-        variant.addEventTypeAlias("SupportBeanVariantStream");
-        variant.addEventTypeAlias("SupportBean");
+        variant.addEventTypeName("SupportBeanVariantStream");
+        variant.addEventTypeName("SupportBean");
         epService.getEPAdministrator().getConfiguration().addVariantStream("MyVariantStream", variant);
 
         // test named window
@@ -214,13 +214,13 @@ public class TestVariantStreamDefault extends TestCase
 
     public void testPatternSubquery()
     {
-        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("SupportBean_A", SupportBean_A.class);
-        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("SupportBean", SupportBean.class);
-        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("SupportBeanVariantStream", SupportBeanVariantStream.class);
+        epService.getEPAdministrator().getConfiguration().addEventType("SupportBean_A", SupportBean_A.class);
+        epService.getEPAdministrator().getConfiguration().addEventType("SupportBean", SupportBean.class);
+        epService.getEPAdministrator().getConfiguration().addEventType("SupportBeanVariantStream", SupportBeanVariantStream.class);
 
         ConfigurationVariantStream variant = new ConfigurationVariantStream();
-        variant.addEventTypeAlias("SupportBeanVariantStream");
-        variant.addEventTypeAlias("SupportBean");
+        variant.addEventTypeName("SupportBeanVariantStream");
+        variant.addEventTypeName("SupportBean");
         epService.getEPAdministrator().getConfiguration().addVariantStream("MyVariantStream", variant);
 
         epService.getEPAdministrator().createEPL("insert into MyVariantStream select * from SupportBeanVariantStream");
@@ -254,12 +254,12 @@ public class TestVariantStreamDefault extends TestCase
         Map<String, Object> types = new HashMap<String, Object>();
         types.put("someprop", String.class);
 
-        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("MyEvent", types);
-        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("MySecondEvent", types);
+        epService.getEPAdministrator().getConfiguration().addEventType("MyEvent", types);
+        epService.getEPAdministrator().getConfiguration().addEventType("MySecondEvent", types);
 
         ConfigurationVariantStream variant = new ConfigurationVariantStream();
-        variant.addEventTypeAlias("MyEvent");
-        variant.addEventTypeAlias("MySecondEvent");
+        variant.addEventTypeName("MyEvent");
+        variant.addEventTypeName("MySecondEvent");
         epService.getEPAdministrator().getConfiguration().addVariantStream("MyVariant", variant);
 
         epService.getEPAdministrator().createEPL("insert into MyVariant select * from MyEvent");
@@ -275,12 +275,12 @@ public class TestVariantStreamDefault extends TestCase
 
     public void testInvalidInsertInto()
     {
-        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("SupportBean", SupportBean.class);
-        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("SupportBeanVariantStream", SupportBeanVariantStream.class);
+        epService.getEPAdministrator().getConfiguration().addEventType("SupportBean", SupportBean.class);
+        epService.getEPAdministrator().getConfiguration().addEventType("SupportBeanVariantStream", SupportBeanVariantStream.class);
 
         ConfigurationVariantStream variant = new ConfigurationVariantStream();
-        variant.addEventTypeAlias("SupportBean");
-        variant.addEventTypeAlias("SupportBeanVariantStream");
+        variant.addEventTypeName("SupportBean");
+        variant.addEventTypeName("SupportBeanVariantStream");
         epService.getEPAdministrator().getConfiguration().addVariantStream("MyVariantStream", variant);
 
         try
@@ -307,11 +307,11 @@ public class TestVariantStreamDefault extends TestCase
     public void testInvalidConfig()
     {
         ConfigurationVariantStream config = new ConfigurationVariantStream();
-        tryInvalidConfig("abc", config, "Invalid variant stream configuration, no event type alias has been added and default type variance requires at least one type, for name 'abc'");
+        tryInvalidConfig("abc", config, "Invalid variant stream configuration, no event type name has been added and default type variance requires at least one type, for name 'abc'");
 
-        config.addEventTypeAlias("dummy");
+        config.addEventTypeName("dummy");
         tryInvalidConfig("abc", config, "Event type by name 'dummy' could not be found for use in variant stream configuration by name 'abc'");
-        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("MyEvent", SupportBean.class);
+        epService.getEPAdministrator().getConfiguration().addEventType("MyEvent", SupportBean.class);
     }
 
     private void tryInvalidConfig(String alias, ConfigurationVariantStream config, String message)

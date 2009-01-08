@@ -11,14 +11,71 @@ import com.espertech.esper.support.util.SupportUpdateListener;
 public class TestEPStatement extends TestCase
 {
     private EPServiceProvider epService;
-    private SupportUpdateListener testListener;
+    private SupportUpdateListener listener;
 
     public void setUp()
     {
-        testListener = new SupportUpdateListener();
+        listener = new SupportUpdateListener();
         Configuration config = SupportConfigFactory.getConfiguration();
         epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();
+    }
+
+    public void testListenerWithReplay()
+    {
+        epService.getEPAdministrator().getConfiguration().addEventType("SupportBean", SupportBean.class);
+        EPStatement stmt = epService.getEPAdministrator().createEPL("select * from SupportBean.win:length(2)");
+
+        // test empty statement
+        stmt.addListenerWithReplay(listener);
+        assertTrue(listener.isInvoked());
+        assertEquals(1, listener.getNewDataList().size());
+        assertNull(listener.getNewDataList().get(0));
+        listener.reset();
+
+        epService.getEPRuntime().sendEvent(new SupportBean("E1", 1));
+        assertEquals("E1", listener.assertOneGetNewAndReset().get("string"));
+        stmt.destroy();
+        listener.reset();
+
+        // test 1 event
+        stmt = epService.getEPAdministrator().createEPL("select * from SupportBean.win:length(2)");
+        epService.getEPRuntime().sendEvent(new SupportBean("E1", 1));
+        stmt.addListenerWithReplay(listener);
+        assertEquals("E1", listener.assertOneGetNewAndReset().get("string"));
+        stmt.destroy();
+        listener.reset();
+
+        // test 2 events
+        stmt = epService.getEPAdministrator().createEPL("select * from SupportBean.win:length(2)");
+        epService.getEPRuntime().sendEvent(new SupportBean("E1", 1));
+        epService.getEPRuntime().sendEvent(new SupportBean("E2", 1));
+        stmt.addListenerWithReplay(listener);
+        ArrayAssertionUtil.assertPropsPerRow(listener.getLastNewData(), new String[] {"string"}, new Object[][] {{"E1"}, {"E2"}});
+
+        // test stopped statement and destroyed statement
+        listener.reset();
+        stmt.stop();
+        stmt.removeAllListeners();
+        
+        stmt.addListenerWithReplay(listener);
+        assertTrue(listener.isInvoked());
+        assertEquals(1, listener.getNewDataList().size());
+        assertNull(listener.getNewDataList().get(0));
+        listener.reset();
+
+        // test destroyed
+        listener.reset();
+        stmt.destroy();
+        try
+        {
+            stmt.addListenerWithReplay(listener);
+            fail();
+        }
+        catch (IllegalStateException ex)
+        {
+            //
+        }
     }
 
     public void testStartedDestroy()
@@ -32,9 +89,9 @@ public class TestEPStatement extends TestCase
         assertEquals(false, stmt.isStopped());
         assertEquals(true, stmt.isStarted());
 
-        stmt.addListener(testListener);
+        stmt.addListener(listener);
         sendEvent();
-        testListener.assertOneGetNewAndReset();
+        listener.assertOneGetNewAndReset();
 
         sendTimer(2000);
         stmt.destroy();
@@ -44,7 +101,7 @@ public class TestEPStatement extends TestCase
         assertEquals(false, stmt.isStarted());
 
         sendEvent();
-        assertFalse(testListener.isInvoked());
+        assertFalse(listener.isInvoked());
 
         assertStmtDestroyed(stmt, text);
     }
@@ -58,9 +115,9 @@ public class TestEPStatement extends TestCase
         assertEquals(false, stmt.isStopped());
         assertEquals(true, stmt.isStarted());
         assertEquals(5000l, stmt.getTimeLastStateChange());
-        stmt.addListener(testListener);
+        stmt.addListener(listener);
         sendEvent();
-        testListener.assertOneGetNewAndReset();
+        listener.assertOneGetNewAndReset();
 
         sendTimer(6000);
         stmt.stop();
@@ -70,7 +127,7 @@ public class TestEPStatement extends TestCase
         assertEquals(false, stmt.isStarted());
 
         sendEvent();
-        assertFalse(testListener.isInvoked());
+        assertFalse(listener.isInvoked());
 
         sendTimer(7000);
         stmt.destroy();
@@ -79,7 +136,7 @@ public class TestEPStatement extends TestCase
         assertEquals(false, stmt.isStarted());
         assertEquals(7000l, stmt.getTimeLastStateChange());
         sendEvent();
-        assertFalse(testListener.isInvoked());
+        assertFalse(listener.isInvoked());
 
         assertStmtDestroyed(stmt, text);
     }

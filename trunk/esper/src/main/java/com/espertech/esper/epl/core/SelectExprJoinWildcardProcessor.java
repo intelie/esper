@@ -51,12 +51,12 @@ public class SelectExprJoinWildcardProcessor implements SelectExprProcessor
             eventTypeMap.put(streamNames[i], streamTypes[i]);
         }
 
-        // If we have an alias for this type, add it
+        // If we have an name for this type, add it
         if (insertIntoDesc != null)
         {
         	try
             {
-                resultEventType = eventAdapterService.addNestableMapType(insertIntoDesc.getEventTypeAlias(), eventTypeMap, null, false, false, true);
+                resultEventType = eventAdapterService.addNestableMapType(insertIntoDesc.getEventTypeName(), eventTypeMap, null, false, false, true);
                 selectExprEventTypeRegistry.add(resultEventType);
             }
             catch (EventAdapterException ex)

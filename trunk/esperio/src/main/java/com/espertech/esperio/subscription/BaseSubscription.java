@@ -38,7 +38,7 @@ public abstract class BaseSubscription implements Subscription, FilterHandleCall
     /**
      * The event type of the events we are subscribing for.
      */
-    protected String eventTypeAlias;
+    protected String eventTypeName;
 
     /**
      * The name of the subscription.
@@ -65,18 +65,18 @@ public abstract class BaseSubscription implements Subscription, FilterHandleCall
         return subscriptionName;
     }
 
-    public String getEventTypeAlias()
+    public String geteventTypeName()
     {
-        return eventTypeAlias;
+        return eventTypeName;
     }
 
     /**
      * Set the event type name we are looking for.
-     * @param eventTypeAlias is a type name
+     * @param eventTypeName is a type name
      */
-    public void setEventTypeAlias(String eventTypeAlias)
+    public void seteventTypeName(String eventTypeName)
     {
-        this.eventTypeAlias = eventTypeAlias;
+        this.eventTypeName = eventTypeName;
     }
 
     public OutputAdapter getAdapter()
@@ -93,7 +93,7 @@ public abstract class BaseSubscription implements Subscription, FilterHandleCall
             throw new IllegalArgumentException("Invalid type of EPServiceProvider");
         }
         EPServiceProviderSPI spi = (EPServiceProviderSPI) epService;
-        EventType eventType = spi.getEventAdapterService().getExistsTypeByAlias(eventTypeAlias);
+        EventType eventType = spi.getEventAdapterService().getExistsTypeByName(eventTypeName);
         FilterValueSet fvs = new FilterSpecCompiled(eventType, null, new LinkedList<FilterSpecParam>()).getValueSet(null);
 
         String name = "subscription:" + subscriptionName;

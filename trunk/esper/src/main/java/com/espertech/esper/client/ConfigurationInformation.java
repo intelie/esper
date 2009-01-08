@@ -26,35 +26,35 @@ public interface ConfigurationInformation
     public String getEPServicesContextFactoryClassName();
 
     /**
-     * Returns the mapping of event type alias to Java class name.
-     * @return event type aliases for Java class names
+     * Returns the mapping of event type name to Java class name.
+     * @return event type names for Java class names
      */
-    public Map<String, String> getEventTypeAliases();
+    public Map<String, String> getEventTypeNames();
 
     /**
-     * Returns a map keyed by event type alias name, and values being the definition for the
+     * Returns a map keyed by event type name, and values being the definition for the
      * event type of the property names and types that make up the event.
-     * @return map of event type alias name and definition of event properties
+     * @return map of event type name and definition of event properties
      */
     public Map<String, Properties> getEventTypesMapEvents();
 
     /**
-     * Returns a map keyed by event type alias name, and values being the definition for the
+     * Returns a map keyed by event type name, and values being the definition for the
      * event type of the property names and types that make up the event,
      * for nestable, strongly-typed Map-based event representations. 
-     * @return map of event type alias name and definition of event properties
+     * @return map of event type name and definition of event properties
      */
     public Map<String, Map<String, Object>> getEventTypesNestableMapEvents();
 
     /**
-     * Returns the mapping of event type alias to XML DOM event type information.
-     * @return event type aliases mapping to XML DOM configs
+     * Returns the mapping of event type name to XML DOM event type information.
+     * @return event type name mapping to XML DOM configs
      */
     public Map<String, ConfigurationEventTypeXMLDOM> getEventTypesXMLDOM();
 
     /**
-     * Returns the mapping of event type alias to legacy java event type information.
-     * @return event type aliases mapping to legacy java class configs
+     * Returns the mapping of event type name to legacy java event type information.
+     * @return event type name mapping to legacy java class configs
      */
     public Map<String, ConfigurationEventTypeLegacy> getEventTypesLegacy();
 
@@ -118,13 +118,13 @@ public interface ConfigurationInformation
      * <p>
      * This setting allows an application to place all it's events into one or more Java packages
      * and then declare these packages via this method. The engine
-     * attempts to resolve an event type alias to a Java class residing in each declared package.
+     * attempts to resolve an event type name to a Java class residing in each declared package.
      * <p>
      * For example, in the statement "select * from MyEvent" the engine attempts to load class "javaPackageName.MyEvent"
      * and if successful, uses that class as the event type.
-     * @return set of Java package names to look for events types when encountering a new event type alias
+     * @return set of Java package names to look for events types when encountering a new event type name
      */
-    public Set<String> getEventTypeAutoAliasPackages();
+    public Set<String> getEventTypeAutoNamePackages();
 
     /**
      * Returns a map of plug-in event representation URI and their event representation class and initializer.
@@ -133,41 +133,41 @@ public interface ConfigurationInformation
     public Map<URI, ConfigurationPlugInEventRepresentation> getPlugInEventRepresentation();
 
     /**
-     * Returns a map of event type alias of those event types that will be supplied by a plug-in event representation,
+     * Returns a map of event type name of those event types that will be supplied by a plug-in event representation,
      * and their configuration.
-     * @return map of alias to plug-in event type config
+     * @return map of names to plug-in event type config
      */
     public Map<String, ConfigurationPlugInEventType> getPlugInEventTypes();
 
     /**
      * Returns the URIs that point to plug-in event representations that are given a chance to dynamically resolve an event
-     * type alias to an event type, when a new (unseen) event type alias occurs in a new EPL statement.
+     * type name to an event type, when a new (unseen) event type name occurs in a new EPL statement.
      * <p>
-     * The order of the URIs matters as event representations are asked in turn, to accept the alias.
+     * The order of the URIs matters as event representations are asked in turn, to accept the name.
      * <p>
      * URIs can be child URIs of plug-in event representations and can add additional parameters or fragments
      * for use by the event representation.
-     * @return URIs for resolving an event type alias
+     * @return URIs for resolving an event type name
      */
-    public URI[] getPlugInEventTypeAliasResolutionURIs();
+    public URI[] getPlugInEventTypeResolutionURIs();
 
     /**
-     * Returns a map of revision event type alias and revision event type configuration. Revision event types handle updates (new versions)
+     * Returns a map of revision event type name and revision event type configuration. Revision event types handle updates (new versions)
      * for past events.
-     * @return map of alias and revision event type config
+     * @return map of name and revision event type config
      */
     public Map<String, ConfigurationRevisionEventType> getRevisionEventTypes();
 
     /**
-     * Returns a map of variant stream alias and variant configuration information. Variant streams allows handling
+     * Returns a map of variant stream name and variant configuration information. Variant streams allows handling
      * events of all sorts of different event types the same way.
-     * @return map of alias and variant stream config
+     * @return map of name and variant stream config
      */
     public Map<String, ConfigurationVariantStream> getVariantStreams();
 
     /**
-     * Returns for each Map event type alias the set of supertype event type aliases (Map types only).
-     * @return map of alias to set of supertype aliases
+     * Returns for each Map event type name the set of supertype event type names (Map types only).
+     * @return map of name to set of supertype names
      */
     public Map<String, Set<String>> getMapSuperTypes();
 }

@@ -3,7 +3,6 @@ package com.espertech.esper.regression.pattern;
 import junit.framework.TestCase;
 import com.espertech.esper.client.*;
 import com.espertech.esper.client.time.CurrentTimeEvent;
-import com.espertech.esper.client.time.TimerControlEvent;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.regression.support.*;
 import com.espertech.esper.support.bean.*;
@@ -105,9 +104,9 @@ public class TestFollowedByOperator extends TestCase implements SupportBeanConst
     public void testFollowedByWithNot()
     {
         Configuration config = SupportConfigFactory.getConfiguration();
-        config.addEventTypeAlias("A", SupportBean_A.class.getName());
-        config.addEventTypeAlias("B", SupportBean_B.class.getName());
-        config.addEventTypeAlias("C", SupportBean_C.class.getName());
+        config.addEventType("A", SupportBean_A.class.getName());
+        config.addEventType("B", SupportBean_B.class.getName());
+        config.addEventType("C", SupportBean_C.class.getName());
 
         EPServiceProvider epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();
@@ -162,7 +161,7 @@ public class TestFollowedByOperator extends TestCase implements SupportBeanConst
     public void testFollowedByTimer() throws ParseException
     {
         Configuration config = SupportConfigFactory.getConfiguration();
-        config.addEventTypeAlias("CallEvent", SupportCallEvent.class.getName());
+        config.addEventType("CallEvent", SupportCallEvent.class.getName());
         EPServiceProvider epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();
 
@@ -194,7 +193,7 @@ public class TestFollowedByOperator extends TestCase implements SupportBeanConst
     public void testMemoryRFIDEvent()
     {
         Configuration config = SupportConfigFactory.getConfiguration();
-        config.addEventTypeAlias("LR", SupportRFIDEvent.class.getName());
+        config.addEventType("LR", SupportRFIDEvent.class.getName());
         EPServiceProvider epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();
 
@@ -229,7 +228,7 @@ public class TestFollowedByOperator extends TestCase implements SupportBeanConst
     public void testRFIDZoneExit()
     {
         Configuration config = SupportConfigFactory.getConfiguration();
-        config.addEventTypeAlias("LR", SupportRFIDEvent.class.getName());
+        config.addEventType("LR", SupportRFIDEvent.class.getName());
         EPServiceProvider epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();
 
@@ -274,7 +273,7 @@ public class TestFollowedByOperator extends TestCase implements SupportBeanConst
     public void testRFIDZoneEnter()
     {
         Configuration config = SupportConfigFactory.getConfiguration();
-        config.addEventTypeAlias("LR", SupportRFIDEvent.class.getName());
+        config.addEventType("LR", SupportRFIDEvent.class.getName());
         EPServiceProvider epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();
 

@@ -69,7 +69,7 @@ public class CEPProvider {
                 t.printStackTrace();
                 configuration = new Configuration();
             }
-            configuration.addEventTypeAlias("Market", MarketData.class);
+            configuration.addEventType("Market", MarketData.class);
 
 
             // EsperJMX enablement - if available

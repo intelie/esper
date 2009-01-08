@@ -176,12 +176,12 @@ public class ConfigurationParser
                 String name = element.getAttributes().getNamedItem("name").getTextContent();
                 boolean enable = Boolean.parseBoolean(element.getAttributes().getNamedItem("enable").getTextContent());
                 String engineURI = element.getAttributes().getNamedItem("engine-uri").getTextContent();
-                String alias = element.getAttributes().getNamedItem("alias").getTextContent();
+                String typeName = element.getAttributes().getNamedItem("type-name").getTextContent();
                 
                 ConfigurationOpentick.OpenTickStream stream = new ConfigurationOpentick.OpenTickStream();
                 stream.setEnabled(enable);
                 stream.setEngineURI(engineURI);
-                stream.setAlias(alias);
+                stream.setTypeName(typeName);
                 configuration.addStream(name, stream);
             }
         }

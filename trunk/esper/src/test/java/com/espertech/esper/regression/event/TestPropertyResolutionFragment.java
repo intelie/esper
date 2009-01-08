@@ -28,7 +28,7 @@ public class TestPropertyResolutionFragment extends TestCase
         mapOuter.put("p0int", int.class);
         mapOuter.put("p0intarray", int[].class);
         mapOuter.put("p0map", Map.class);
-        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("TypeRoot", mapOuter);
+        epService.getEPAdministrator().getConfiguration().addEventType("TypeRoot", mapOuter);
 
         EPStatement stmt = epService.getEPAdministrator().createEPL("select * from TypeRoot");
         stmt.addListener(listener);
@@ -60,12 +60,12 @@ public class TestPropertyResolutionFragment extends TestCase
     {
         Map<String, Object> typeLev0 = new HashMap<String, Object>();
         typeLev0.put("p1id", int.class);
-        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("TypeLev0", typeLev0);
+        epService.getEPAdministrator().getConfiguration().addEventType("TypeLev0", typeLev0);
 
         Map<String, Object> mapOuter = new HashMap<String, Object>();
         mapOuter.put("p0simple", "TypeLev0");
         mapOuter.put("p0bean", SupportBeanComplexProps.class);
-        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("TypeRoot", mapOuter);
+        epService.getEPAdministrator().getConfiguration().addEventType("TypeRoot", mapOuter);
 
         EPStatement stmt = epService.getEPAdministrator().createEPL("select *, p0simple.p1id + 1 as plusone, p0bean as mybean from TypeRoot");
         stmt.addListener(listener);
@@ -145,12 +145,12 @@ public class TestPropertyResolutionFragment extends TestCase
     {
         Map<String, Object> typeLev0 = new HashMap<String, Object>();
         typeLev0.put("p1id", int.class);
-        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("TypeLev0", typeLev0);
+        epService.getEPAdministrator().getConfiguration().addEventType("TypeLev0", typeLev0);
 
         Map<String, Object> mapOuter = new HashMap<String, Object>();
         mapOuter.put("p0simple", "TypeLev0");
         mapOuter.put("p0array", "TypeLev0[]");
-        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("TypeRoot", mapOuter);
+        epService.getEPAdministrator().getConfiguration().addEventType("TypeRoot", mapOuter);
 
         EPStatement stmt = epService.getEPAdministrator().createEPL("select * from TypeRoot");
         stmt.addListener(listener);
@@ -197,7 +197,7 @@ public class TestPropertyResolutionFragment extends TestCase
 
         Map<String, Object> mapOuter = new HashMap<String, Object>();
         mapOuter.put("p0simple", typeLev0);
-        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("TypeRoot", mapOuter);
+        epService.getEPAdministrator().getConfiguration().addEventType("TypeRoot", mapOuter);
 
         EPStatement stmt = epService.getEPAdministrator().createEPL("select * from TypeRoot");
         stmt.addListener(listener);
@@ -226,7 +226,7 @@ public class TestPropertyResolutionFragment extends TestCase
     {
         Map<String, Object> typeInner = new HashMap<String, Object>();
         typeInner.put("p2id", int.class);
-        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("TypeInner", typeInner);
+        epService.getEPAdministrator().getConfiguration().addEventType("TypeInner", typeInner);
 
         Map<String, Object> typeMap = new HashMap<String, Object>();
         typeMap.put("id", int.class);
@@ -237,8 +237,8 @@ public class TestPropertyResolutionFragment extends TestCase
         typeMap.put("map", "TypeInner");
         typeMap.put("maparray", "TypeInner[]");
 
-        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("TypeMapOne", typeMap);
-        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("TypeMapTwo", typeMap);
+        epService.getEPAdministrator().getConfiguration().addEventType("TypeMapOne", typeMap);
+        epService.getEPAdministrator().getConfiguration().addEventType("TypeMapTwo", typeMap);
 
         EPStatement stmt = epService.getEPAdministrator().createEPL("select * from pattern[one=TypeMapOne until two=TypeMapTwo]");
         stmt.addListener(listener);
@@ -301,12 +301,12 @@ public class TestPropertyResolutionFragment extends TestCase
         typeLev0.put("p1array", SupportBean[].class);
         typeLev0.put("p1complex", SupportBeanComplexProps.class);
         typeLev0.put("p1complexarray", SupportBeanComplexProps[].class);
-        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("TypeLev0", typeLev0);
+        epService.getEPAdministrator().getConfiguration().addEventType("TypeLev0", typeLev0);
 
         Map<String, Object> mapOuter = new HashMap<String, Object>();
         mapOuter.put("p0simple", "TypeLev0");
         mapOuter.put("p0array", "TypeLev0[]");
-        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("TypeRoot", mapOuter);
+        epService.getEPAdministrator().getConfiguration().addEventType("TypeRoot", mapOuter);
 
         EPStatement stmt = epService.getEPAdministrator().createEPL("select * from TypeRoot");
         stmt.addListener(listener);
@@ -356,17 +356,17 @@ public class TestPropertyResolutionFragment extends TestCase
     {
         Map<String, Object> typeLev1 = new HashMap<String, Object>();
         typeLev1.put("p2id", int.class);
-        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("TypeLev1", typeLev1);
+        epService.getEPAdministrator().getConfiguration().addEventType("TypeLev1", typeLev1);
 
         Map<String, Object> typeLev0 = new HashMap<String, Object>();
         typeLev0.put("p1simple", "TypeLev1");
         typeLev0.put("p1array", "TypeLev1[]");
-        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("TypeLev0", typeLev0);
+        epService.getEPAdministrator().getConfiguration().addEventType("TypeLev0", typeLev0);
 
         Map<String, Object> mapOuter = new HashMap<String, Object>();
         mapOuter.put("p0simple", "TypeLev0");
         mapOuter.put("p0array", "TypeLev0[]");
-        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("TypeRoot", mapOuter);
+        epService.getEPAdministrator().getConfiguration().addEventType("TypeRoot", mapOuter);
 
         EPStatement stmt = epService.getEPAdministrator().createEPL("select * from TypeRoot");
         stmt.addListener(listener);
@@ -427,12 +427,12 @@ public class TestPropertyResolutionFragment extends TestCase
         mapInner.put("p1beanArray", SupportBean[].class);
         mapInner.put("p1innerId", int.class);
         mapInner.put("p1innerMap", mapInnerInner);
-        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("InnerMap", mapInner);
+        epService.getEPAdministrator().getConfiguration().addEventType("InnerMap", mapInner);
 
         Map<String, Object> mapOuter = new HashMap<String, Object>();
         mapOuter.put("p0simple", "InnerMap");
         mapOuter.put("p0array", "InnerMap[]");
-        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("OuterMap", mapOuter);
+        epService.getEPAdministrator().getConfiguration().addEventType("OuterMap", mapOuter);
 
         EPStatement stmt = epService.getEPAdministrator().createEPL("select * from OuterMap");
         stmt.addListener(listener);

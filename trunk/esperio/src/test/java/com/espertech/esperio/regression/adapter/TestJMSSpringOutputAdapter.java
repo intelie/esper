@@ -45,7 +45,7 @@ public class TestJMSSpringOutputAdapter extends TestCase
         Map<String, Object> typeProps = new HashMap<String, Object>();
         typeProps.put("prop1", String.class);
         typeProps.put("prop2", String.class);
-        config.addEventTypeAlias("MyOutputStream", typeProps);
+        config.addEventType("MyOutputStream", typeProps);
 
         // define loader
         Properties props = new Properties();

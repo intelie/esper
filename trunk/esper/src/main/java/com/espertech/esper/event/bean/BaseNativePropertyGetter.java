@@ -67,14 +67,14 @@ public abstract class BaseNativePropertyGetter implements EventPropertyGetter
             if (JavaClassHelper.isFragmentableType(object.getClass().getComponentType()))
             {
                 isArray = true;
-                fragmentEventType = eventAdapterService.getBeanEventTypeFactory().createBeanTypeNoAlias(object.getClass().getComponentType());
+                fragmentEventType = eventAdapterService.getBeanEventTypeFactory().createBeanTypeDefaultName(object.getClass().getComponentType());
             }
         }
         else
         {
             if (JavaClassHelper.isFragmentableType(object.getClass()))
             {
-                fragmentEventType = eventAdapterService.getBeanEventTypeFactory().createBeanTypeNoAlias(object.getClass());
+                fragmentEventType = eventAdapterService.getBeanEventTypeFactory().createBeanTypeDefaultName(object.getClass());
             }
         }
 
@@ -138,7 +138,7 @@ public abstract class BaseNativePropertyGetter implements EventPropertyGetter
         {
             if (JavaClassHelper.isFragmentableType(fragmentClassType))
             {
-                fragmentEventType = eventAdapterService.getBeanEventTypeFactory().createBeanTypeNoAlias(fragmentClassType);
+                fragmentEventType = eventAdapterService.getBeanEventTypeFactory().createBeanTypeDefaultName(fragmentClassType);
             }
             else
             {

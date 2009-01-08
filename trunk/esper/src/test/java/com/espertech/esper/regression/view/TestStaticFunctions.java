@@ -261,7 +261,7 @@ public class TestStaticFunctions extends TestCase
     {
         Configuration configuration = SupportConfigFactory.getConfiguration();
         configuration.addImport(SupportStaticMethodLib.class.getName());
-        configuration.addEventTypeAlias("Temperature", SupportTemperatureBean.class);
+        configuration.addEventType("Temperature", SupportTemperatureBean.class);
         epService = EPServiceProviderManager.getDefaultProvider(configuration);
         epService.initialize();
 
@@ -280,7 +280,7 @@ public class TestStaticFunctions extends TestCase
     {
         Configuration configuration = SupportConfigFactory.getConfiguration();
         configuration.addImport(SupportStaticMethodLib.class.getName());
-        configuration.addEventTypeAlias("Temperature", SupportTemperatureBean.class);
+        configuration.addEventType("Temperature", SupportTemperatureBean.class);
         epService = EPServiceProviderManager.getDefaultProvider(configuration);
         epService.initialize();
 
@@ -302,7 +302,7 @@ public class TestStaticFunctions extends TestCase
     {
         Configuration configuration = SupportConfigFactory.getConfiguration();
         configuration.addImport(SupportStaticMethodLib.class.getName());
-        configuration.addEventTypeAlias("Temperature", SupportTemperatureBean.class);
+        configuration.addEventType("Temperature", SupportTemperatureBean.class);
         epService = EPServiceProviderManager.getDefaultProvider(configuration);
         epService.initialize();
 
@@ -328,7 +328,7 @@ public class TestStaticFunctions extends TestCase
     {
         Configuration configuration = SupportConfigFactory.getConfiguration();
         configuration.addImport(SupportStaticMethodLib.class.getName());
-        configuration.addEventTypeAlias("Temperature", SupportTemperatureBean.class);
+        configuration.addEventType("Temperature", SupportTemperatureBean.class);
         epService = EPServiceProviderManager.getDefaultProvider(configuration);
         epService.initialize();
 

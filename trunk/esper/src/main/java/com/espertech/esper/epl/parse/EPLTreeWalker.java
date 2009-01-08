@@ -952,7 +952,7 @@ public class EPLTreeWalker extends EsperEPL2Ast
 
         String streamName = node.getChild(0).getText();
 
-        // Get alias element name
+        // Get element name
         String optionalName = null;
         if (node.getChildCount() > 1)
         {
@@ -1579,9 +1579,9 @@ public class EPLTreeWalker extends EsperEPL2Ast
             child = node.getChild(++count);
         }
 
-        // alias
-        String eventAliasName = child.getText();
-        InsertIntoDesc insertIntoDesc = new InsertIntoDesc(isIStream, eventAliasName);
+        // type name
+        String eventTypeName = child.getText();
+        InsertIntoDesc insertIntoDesc = new InsertIntoDesc(isIStream, eventTypeName);
 
         // optional columns
         child = node.getChild(++count);

@@ -17,10 +17,10 @@
 		Each stream translates into a "addRtQuoteListener" or equivalent listener on the OT client.
 	-->
 	<streams>
-		<stream name="OTQuote" enable="true" engine-uri="MyEngineURI" alias="OTQuote"/>
-		<stream name="OTMMQuote" enable="true" engine-uri="MyEngineURI" alias="OTMMQuote"/>
-		<stream name="OTTrade" enable="true" engine-uri="MyEngineURI" alias="OTTrade"/>
-		<stream name="OTBBO" enable="true" engine-uri="MyEngineURI" alias="OTBBO"/>
+		<stream name="OTQuote" enable="true" engine-uri="MyEngineURI" type-name="OTQuote"/>
+		<stream name="OTMMQuote" enable="true" engine-uri="MyEngineURI" type-name="OTMMQuote"/>
+		<stream name="OTTrade" enable="true" engine-uri="MyEngineURI" type-name="OTTrade"/>
+		<stream name="OTBBO" enable="true" engine-uri="MyEngineURI" type-name="OTBBO"/>
 	</streams>
 	<!-- List of symbols: Each provides a combination of exchange and symbols. -->
 	<symbollists>

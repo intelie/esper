@@ -178,7 +178,7 @@ IBM,55.5,1000]]></programlisting>
 			</para>
 
 			<para>
-				To use Java objects as events instead of Map-based event types, simply register the alias for the Java class and provide the same alias to the CSV adapter. 
+				To use Java objects as events instead of Map-based event types, simply register the event type name for the Java class and provide the same name to the CSV adapter. 
 			</para>
 
 			<para>

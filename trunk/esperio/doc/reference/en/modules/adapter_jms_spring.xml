@@ -35,7 +35,7 @@
 					</listitem>
 					<listitem>
 						<para>
-							Create EPL statements using the event type alias matching the event objects or the Map-event type aliases received.
+							Create EPL statements using the event type name matching the event objects or the Map-event type names received.
 						</para>
 					</listitem>
 				</orderedlist>
@@ -210,7 +210,7 @@
 			<itemizedlist spacing="compact">
 				<listitem>
 					<para>
-						If the received Message is of type <literal>javax.xml.MapMessage</literal>, extract the event type alias out of the message and send to the engine via <literal>sendEvent(alias, Map)</literal> 
+						If the received Message is of type <literal>javax.xml.MapMessage</literal>, extract the event type name out of the message and send to the engine via <literal>sendEvent(name, Map)</literal> 
 					</para>
 				</listitem>
 				<listitem>
@@ -333,7 +333,7 @@ mapMessage.setObject(InputAdapter.ESPERIO_MAP_EVENT_TYPE, "MyInputEvent");]]></p
 
             <para>
 				The <literal>SpringJMSTemplateOutputAdapter</literal> is configured with a list of subscription instances of type <literal>JMSSubscription</literal> as the sample configuration shows. Each subscription defines 
-				an event type alias that must be configured and used in the <literal>insert-into</literal> syntax of a statement.
+				an event type name that must be configured and used in the <literal>insert-into</literal> syntax of a statement.
 			</para>
 
 			<para>
@@ -342,10 +342,10 @@ mapMessage.setObject(InputAdapter.ESPERIO_MAP_EVENT_TYPE, "MyInputEvent");]]></p
 			<programlisting><![CDATA[insert into MyOutputStream select assetId, zone from RFIDEvent]]></programlisting>		
 
 			<para>
-				The type <literal>MyOutputStream</literal> must be known to an engine instance. The output adapter requires the alias to be configured with the Engine instance, e.g.:
+				The type <literal>MyOutputStream</literal> must be known to an engine instance. The output adapter requires the name to be configured with the Engine instance, e.g.:
 			</para>		
 			<programlisting><![CDATA[<esper-configuration>
-  <event-type alias="MyOutputStream">
+  <event-type name="MyOutputStream">
     <java-util-map>
       <map-property name="assetId" class="String"/>
       <map-property name="zone" class="int"/>

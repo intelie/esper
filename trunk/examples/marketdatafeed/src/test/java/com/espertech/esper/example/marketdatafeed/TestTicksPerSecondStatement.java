@@ -24,7 +24,7 @@ public class TestTicksPerSecondStatement extends TestCase {
 
     public void setUp() {
         Configuration configuration = new Configuration();
-        configuration.addEventTypeAlias("MarketDataEvent", MarketDataEvent.class.getName());
+        configuration.addEventType("MarketDataEvent", MarketDataEvent.class.getName());
 
         epService = EPServiceProviderManager.getProvider("TestTicksPerSecondStatement", configuration);
         epService.initialize();

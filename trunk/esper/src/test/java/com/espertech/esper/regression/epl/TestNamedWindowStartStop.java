@@ -7,7 +7,6 @@ import com.espertech.esper.core.StatementType;
 import com.espertech.esper.epl.named.NamedWindowLifecycleEvent;
 import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.bean.SupportBean_A;
-import com.espertech.esper.support.bean.SupportMarketDataBean;
 import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.support.epl.SupportNamedWindowObserver;
 import com.espertech.esper.support.util.ArrayAssertionUtil;
@@ -162,7 +161,7 @@ public class TestNamedWindowStartStop extends TestCase
 
         // test remove type with statement used (no force)
         EPStatement stmt = epService.getEPAdministrator().createEPL("create window MyWindowEventType.win:keepall() (a int, b string)", "stmtOne");
-        ArrayAssertionUtil.assertEqualsExactOrder(new String[] {"stmtOne"}, configOps.getEventTypeAliasUsedBy("MyWindowEventType").toArray());
+        ArrayAssertionUtil.assertEqualsExactOrder(new String[] {"stmtOne"}, configOps.getEventTypeNameUsedBy("MyWindowEventType").toArray());
 
         try {
             configOps.removeEventType("MyWindowEventType", false);
@@ -173,11 +172,11 @@ public class TestNamedWindowStartStop extends TestCase
 
         // destroy statement and type
         stmt.destroy();
-        assertTrue(configOps.getEventTypeAliasUsedBy("MyWindowEventType").isEmpty());
-        assertTrue(configOps.isEventTypeAliasExists("MyWindowEventType"));
+        assertTrue(configOps.getEventTypeNameUsedBy("MyWindowEventType").isEmpty());
+        assertTrue(configOps.isEventTypeExists("MyWindowEventType"));
         assertTrue(configOps.removeEventType("MyWindowEventType", false));
         assertFalse(configOps.removeEventType("MyWindowEventType", false));    // try double-remove
-        assertFalse(configOps.isEventTypeAliasExists("MyWindowEventType"));
+        assertFalse(configOps.isEventTypeExists("MyWindowEventType"));
         try {
             epService.getEPAdministrator().createEPL("select a from MyWindowEventType");
             fail();
@@ -188,12 +187,12 @@ public class TestNamedWindowStartStop extends TestCase
 
         // add back the type
         stmt = epService.getEPAdministrator().createEPL("create window MyWindowEventType.win:keepall() (c int, d string)", "stmtOne");
-        assertTrue(configOps.isEventTypeAliasExists("MyWindowEventType"));
-        assertFalse(configOps.getEventTypeAliasUsedBy("MyWindowEventType").isEmpty());
+        assertTrue(configOps.isEventTypeExists("MyWindowEventType"));
+        assertFalse(configOps.getEventTypeNameUsedBy("MyWindowEventType").isEmpty());
 
         // compile
         epService.getEPAdministrator().createEPL("select d from MyWindowEventType", "stmtTwo");
-        Object[] usedBy = configOps.getEventTypeAliasUsedBy("MyWindowEventType").toArray();
+        Object[] usedBy = configOps.getEventTypeNameUsedBy("MyWindowEventType").toArray();
         ArrayAssertionUtil.assertEqualsAnyOrder(new String[] {"stmtOne", "stmtTwo"}, usedBy);
         try {
             epService.getEPAdministrator().createEPL("select a from MyWindowEventType");
@@ -211,13 +210,13 @@ public class TestNamedWindowStartStop extends TestCase
             assertTrue(ex.getMessage().contains("MyWindowEventType"));
         }
         assertTrue(configOps.removeEventType("MyWindowEventType", true));
-        assertFalse(configOps.isEventTypeAliasExists("MyWindowEventType"));
-        assertTrue(configOps.getEventTypeAliasUsedBy("MyWindowEventType").isEmpty());
+        assertFalse(configOps.isEventTypeExists("MyWindowEventType"));
+        assertTrue(configOps.getEventTypeNameUsedBy("MyWindowEventType").isEmpty());
 
         // add back the type
         stmt.destroy();
         stmt = epService.getEPAdministrator().createEPL("create window MyWindowEventType.win:keepall() (f int)", "stmtOne");
-        assertTrue(configOps.isEventTypeAliasExists("MyWindowEventType"));
+        assertTrue(configOps.isEventTypeExists("MyWindowEventType"));
 
         // compile
         epService.getEPAdministrator().createEPL("select f from MyWindowEventType");

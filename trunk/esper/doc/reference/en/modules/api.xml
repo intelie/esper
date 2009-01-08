@@ -344,7 +344,7 @@ countStmt.start();]]></programlisting>
 	
 					<para>
 						Alternatively, your <literal>update</literal> method may simply choose to accept <literal>java.util.Map</literal> as a representation for each row. Each column in the <literal>select</literal> clause is 
-						then made an entry in the resulting <literal>Map</literal>. The <literal>Map</literal> keys are the column alias name if supplied, or the expression string itself for columns without an alias.
+						then made an entry in the resulting <literal>Map</literal>. The <literal>Map</literal> keys are the column name if supplied, or the expression string itself for columns without a name.
 					</para>
 					<para>
 						The <literal>update</literal> method for <literal>Map</literal> delivery is:
@@ -503,6 +503,25 @@ statement.addListener(myListener);]]></programlisting>
 				To indicate results the engine invokes this method on <literal>StatementAwareUpdateListener</literal> listeners: <literal>update(EventBean[] newEvents, EventBean[] oldEvents, EPStatement statement, EPServiceProvider epServiceProvider)</literal>
 			</para>		
 
+		  <sect3 id="api-admin-listeners-replay">		
+				<title>Subscription Snapshot  and Atomic Delivery</title>
+				
+				<para>
+					The <literal>addListenerWithReplay</literal> method provided by <literal>EPStatement</literal> makes it possible to send a snapshot of current statement results to a listener when the listener is added.
+				</para>
+					
+				<para>
+					When using the <literal>addListenerWithReplay</literal> method to register a listener, the listener receives current statement results as the first call to the update method of the listener, passing in the newEvents parameter the current statement results as an array of zero or more events. Subsequent calls to the update method of the listener are statement results.   
+				</para>
+					
+				<para>
+					Current statement results are the events returned by the <literal>iterator</literal> or <literal>safeIterator</literal> methods.
+				</para>
+					
+				<para>
+					Delivery is atomic: Events occurring during delivery of current results to the listener are guaranteed to be delivered in a separate call and not lost. The listener implementation should thus minimize long-running or blocking operations to reduce lock times held on statement-level resources.
+				</para>					
+		  </sect3>
 	  </sect2>
 
 	  <sect2 id="api-admin-iterators">		
@@ -642,7 +661,7 @@ finally {
 				</listitem>
 				<listitem>
 					<para>
-						Add auto-aliases for events in a given Java package.
+						Add event types for all event classes in a given Java package, using the simple class name as the event name.
 					</para>
 				</listitem>
 				<listitem>
@@ -707,14 +726,14 @@ runtime.sendEvent(new MarketDataBean('IBM', 75.0));
 			</para>
 			
 			<para>
-				Use the method <literal>getEventSender(String eventTypeAlias) </literal> to obtain an event sender for processing events of the named type:
+				Use the method <literal>getEventSender(String eventTypeName) </literal> to obtain an event sender for processing events of the named type:
 			</para>
 			<programlisting><![CDATA[EventSender sender = epService.getEPRuntime().getEventSender("MyEvent");
 sender.sendEvent(myEvent);]]></programlisting>
 			
 			<para>
 				For events backed by a Java class (JavaBean events), the event sender ensures that the event object equals the underlying class, or implements or extends the underlying class
-				for the given event type alias.
+				for the given event type name.
 			</para>
 			
 			<para>
@@ -722,7 +741,7 @@ sender.sendEvent(myEvent);]]></programlisting>
 			</para>
 			
 			<para>
-				For events backed by a org.w3c.Node (XML DOM events), the event sender checks that the root element name equals the root element name for the event type alias.
+				For events backed by a org.w3c.Node (XML DOM events), the event sender checks that the root element name equals the root element name for the event type.
 			</para>
 
 			<para>
@@ -1362,12 +1381,12 @@ model.setFromClause(FromClause.create(FilterStream.create("com.chipmaker.ReadyEv
 			<itemizedlist spacing="compact">
 				<listitem>
 					<para>
-						Variable names can simply be treated as property names
+						Variable names can simply be treated as property names.
 					</para>
 				</listitem>
 				<listitem>
 					<para>
-						When selecting from named windows, the name of the named window is the event type alias for us in <literal>FilterStream</literal> instances or patterns
+						When selecting from named windows, the name of the named window is the event type name for use in <literal>FilterStream</literal> instances or patterns.
 					</para>
 				</listitem>
 				<listitem>
@@ -1379,28 +1398,6 @@ model.setFromClause(FromClause.create(FilterStream.create("com.chipmaker.ReadyEv
 				</listitem>
 			</itemizedlist>
 			
-			<para>
-				Notes on usage: 
-			</para>			
-			<itemizedlist spacing="compact">
-				<listitem>
-					<para>
-						Variable names can simply be treated as property names
-					</para>
-				</listitem>
-				<listitem>
-					<para>
-						When selecting from named windows, the name of the named window is the event type alias for us in <literal>FilterStream</literal> instances or patterns
-					</para>
-				</listitem>
-				<listitem>
-					<para>
-						To compile an arbitrary sub-expression text into an <literal>Expression</literal> object representation, simply add the expression text to a <literal>where</literal> clause,
-						compile the EPL  string into an object model via the <literal>compileEPL</literal> method on <literal>EPAdministrator</literal>, and obtain the compiled <literal>where</literal> clause expression 
-						object from the <literal>EPStatementObjectModel</literal> via the <literal>getWhereClause</literal> method.
-					</para>
-				</listitem>
-			</itemizedlist>
 		</sect2>
 		
 		<sect2 id="api-soda-building-step2">
@@ -1555,8 +1552,8 @@ EPStatement stmtSet = epService.getEPAdministrator().create(model);]]></programl
 			<programlisting><![CDATA[EPStatementObjectModel model = new EPStatementObjectModel();
 model.setCreateWindow(CreateWindowClause.create("OrdersTimeWindow").addView("win", "time", 30));
 model.setSelectClause(SelectClause.create()
-		.addWithAlias("symbol", "sym")
-		.addWithAlias("volume", "vol")
+		.addWithName("symbol", "sym")
+		.addWithName("volume", "vol")
 		.add("price"));
 model.setFromClause(FromClause.create(FilterStream.create("OrderEvent)));]]></programlisting>
 

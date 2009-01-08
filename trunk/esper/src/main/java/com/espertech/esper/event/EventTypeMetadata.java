@@ -57,37 +57,37 @@ public class EventTypeMetadata
 
     /**
      * Factory for a bean type.
-     * @param alias type name
+     * @param name type name
      * @param clazz java class
      * @param isConfigured whether the class was made known or is discovered
      * @return instance
      */
-    public static EventTypeMetadata createBeanType(String alias, Class clazz, boolean isConfigured)
+    public static EventTypeMetadata createBeanType(String name, Class clazz, boolean isConfigured)
     {
         Set<String> secondaryNames = null;
-        if (alias == null)
+        if (name == null)
         {
-            alias = clazz.getName();
+            name = clazz.getName();
         }
         else
         {
-            if (!alias.equals(clazz.getName()))
+            if (!name.equals(clazz.getName()))
             {
                 secondaryNames = new LinkedHashSet<String>();
                 secondaryNames.add(clazz.getName());
             }
         }
-        return new EventTypeMetadata(alias, secondaryNames, TypeClass.APPLICATION, isConfigured, ApplicationType.CLASS);
+        return new EventTypeMetadata(name, secondaryNames, TypeClass.APPLICATION, isConfigured, ApplicationType.CLASS);
     }
 
     /**
      * Factory for a XML type.
-     * @param alias type name
+     * @param name type name
      * @return instance
      */
-    public static EventTypeMetadata createXMLType(String alias)
+    public static EventTypeMetadata createXMLType(String name)
     {
-        return new EventTypeMetadata(alias, null, TypeClass.APPLICATION, true, ApplicationType.XML);
+        return new EventTypeMetadata(name, null, TypeClass.APPLICATION, true, ApplicationType.XML);
     }
 
     /**
@@ -102,12 +102,12 @@ public class EventTypeMetadata
 
     /**
      * Factory for a wrapper type.
-     * @param eventTypeAlias insert-into of create-window name
+     * @param eventTypeName insert-into of create-window name
      * @param namedWindow true for named window
      * @param insertInto true for insert-into
      * @return instance
      */
-    public static EventTypeMetadata createWrapper(String eventTypeAlias, boolean namedWindow, boolean insertInto)
+    public static EventTypeMetadata createWrapper(String eventTypeName, boolean namedWindow, boolean insertInto)
     {
         TypeClass typeClass;
         if (namedWindow)
@@ -122,18 +122,18 @@ public class EventTypeMetadata
         {
             throw new IllegalStateException("Unknown Wrapper type, cannot create metadata");
         }
-        return new EventTypeMetadata(eventTypeAlias, null, typeClass, false, null);
+        return new EventTypeMetadata(eventTypeName, null, typeClass, false, null);
     }
 
     /**
      * Factory for a map type.
-     * @param alias insert-into of create-window name
+     * @param name insert-into of create-window name
      * @param namedWindow true for named window
      * @param insertInto true for insert-into
      * @param configured whether the made known or is discovered
      * @return instance
      */
-    public static EventTypeMetadata createMapType(String alias, boolean configured, boolean namedWindow, boolean insertInto)
+    public static EventTypeMetadata createMapType(String name, boolean configured, boolean namedWindow, boolean insertInto)
     {
         TypeClass typeClass;
         ApplicationType applicationType = null;
@@ -154,7 +154,7 @@ public class EventTypeMetadata
         {
             typeClass = TypeClass.ANONYMOUS;
         }
-        return new EventTypeMetadata(alias, null, typeClass, configured, applicationType);
+        return new EventTypeMetadata(name, null, typeClass, configured, applicationType);
     }
 
     /**

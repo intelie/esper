@@ -43,7 +43,7 @@ public class TestEPServiceProviderManager extends TestCase
     {
         Configuration configuration = new Configuration();
         configuration.getEngineDefaults().getThreading().setInternalTimerEnabled(false);
-        configuration.addEventTypeAlias("x", "xxx.noclass");
+        configuration.addEventType("x", "xxx.noclass");
 
         try
         {

@@ -82,8 +82,8 @@ public class TestDatabaseJoin extends TestCase
 
     public void testVariables()
     {
-        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("SupportBean", SupportBean.class);
-        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("A", SupportBean_A.class);
+        epService.getEPAdministrator().getConfiguration().addEventType("SupportBean", SupportBean.class);
+        epService.getEPAdministrator().getConfiguration().addEventType("A", SupportBean_A.class);
         epService.getEPAdministrator().createEPL("create variable int queryvar");
         epService.getEPAdministrator().createEPL("on SupportBean set queryvar=intPrimitive");
 

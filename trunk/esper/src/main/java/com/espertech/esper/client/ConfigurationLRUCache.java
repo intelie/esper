@@ -16,6 +16,7 @@ import java.io.Serializable;
 public class ConfigurationLRUCache implements ConfigurationDataCache, Serializable
 {
     private int size;
+    private static final long serialVersionUID = 411347352942362467L;
 
     /**
      * Ctor.

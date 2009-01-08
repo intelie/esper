@@ -20,20 +20,20 @@ import com.espertech.esper.schedule.ScheduleSlot;
 public class SendableMapEvent extends AbstractSendableEvent
 {
 	private final Map<String, Object> mapToSend;
-	private final String eventTypeAlias;
+	private final String eventTypeName;
 
 	/**
 	 * Ctor.
 	 * @param mapToSend - the map to send into the runtime
-	 * @param eventTypeAlias - the event type alias for the map event
+	 * @param eventTypeName - the event type name for the map event
 	 * @param timestamp - the timestamp for this event
 	 * @param scheduleSlot - the schedule slot for the entity that created this event
 	 */
-	public SendableMapEvent(Map<String, Object> mapToSend, String eventTypeAlias, long timestamp, ScheduleSlot scheduleSlot)
+	public SendableMapEvent(Map<String, Object> mapToSend, String eventTypeName, long timestamp, ScheduleSlot scheduleSlot)
 	{
 		super(timestamp, scheduleSlot);
 		this.mapToSend = new HashMap<String, Object>(mapToSend);
-		this.eventTypeAlias = eventTypeAlias;
+		this.eventTypeName = eventTypeName;
 	}
 
 	/* (non-Javadoc)
@@ -41,7 +41,7 @@ public class SendableMapEvent extends AbstractSendableEvent
 	 */
 	public void send(AbstractSender sender)
 	{
-		sender.sendEvent(this, mapToSend, eventTypeAlias);
+		sender.sendEvent(this, mapToSend, eventTypeName);
 	}
 
 	public String toString()

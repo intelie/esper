@@ -49,22 +49,22 @@ public class MethodResolutionServiceImpl implements MethodResolutionService
         }
     }
 
-    public Method resolveMethod(String classNameAlias, String methodName, Class[] paramTypes)
+    public Method resolveMethod(String className, String methodName, Class[] paramTypes)
 			throws EngineImportException
     {
-        return engineImportService.resolveMethod(classNameAlias, methodName, paramTypes);
+        return engineImportService.resolveMethod(className, methodName, paramTypes);
 	}
 
-    public Method resolveMethod(String classNameAlias, String methodName)
+    public Method resolveMethod(String className, String methodName)
 			throws EngineImportException
     {
-        return engineImportService.resolveMethod(classNameAlias, methodName);
+        return engineImportService.resolveMethod(className, methodName);
 	}
 
-    public Class resolveClass(String classNameAlias)
+    public Class resolveClass(String className)
 			throws EngineImportException
     {
-        return engineImportService.resolveClass(classNameAlias);
+        return engineImportService.resolveClass(className);
 	}
 
     public Method resolveMethod(Class clazz, String methodName, Class[] paramTypes) throws EngineImportException

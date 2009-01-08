@@ -45,12 +45,12 @@ public class EPRuntimeUtil
 
             secondsWaitTotal -= numSecThreadSleep;
             secondsUntilReport += numSecThreadSleep;
-            long currNumEventsProcessed = epRuntime.getNumEventsReceived();
+            long currNumEventsProcessed = epRuntime.getNumEventsEvaluated();
 
             if (secondsUntilReport > numSecThreadReport)
             {
                 long numPerSec = (currNumEventsProcessed - lastNumEventsProcessed) / numSecThreadReport;
-                log.info(".awaitCompletion received=" + epRuntime.getNumEventsReceived() +
+                log.info(".awaitCompletion received=" + epRuntime.getNumEventsEvaluated() +
                          "  processed=" + currNumEventsProcessed +
                          "  perSec=" + numPerSec);
                 lastNumEventsProcessed = currNumEventsProcessed;
@@ -58,7 +58,7 @@ public class EPRuntimeUtil
             }
 
             // Completed loop if the total event count has been reached
-            if (epRuntime.getNumEventsReceived() == numEventsExpected)
+            if (epRuntime.getNumEventsEvaluated() == numEventsExpected)
             {
                 endTimeMSec = System.currentTimeMillis();
                 break;
@@ -71,7 +71,7 @@ public class EPRuntimeUtil
             return false;
         }
 
-        long totalUnitsProcessed = epRuntime.getNumEventsReceived();
+        long totalUnitsProcessed = epRuntime.getNumEventsEvaluated();
         long deltaTimeSec = (endTimeMSec - startTimeMSec) / 1000;
 
         long numPerSec = 0;
@@ -86,7 +86,7 @@ public class EPRuntimeUtil
 
         log.info(".awaitCompletion Completed, sec=" + deltaTimeSec + "  avgPerSec=" + numPerSec);
 
-        long numReceived = epRuntime.getNumEventsReceived();
+        long numReceived = epRuntime.getNumEventsEvaluated();
         long numReceivedPerSec = 0;
         if (deltaTimeSec > 0)
         {
@@ -98,7 +98,7 @@ public class EPRuntimeUtil
         }
 
         log.info(".awaitCompletion Runtime reports, numReceived=" + numReceived +
-                 "  numProcessed=" + epRuntime.getNumEventsReceived() +
+                 "  numProcessed=" + epRuntime.getNumEventsEvaluated() +
                  "  perSec=" +  numReceivedPerSec
                  );
 

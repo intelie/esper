@@ -38,18 +38,18 @@ public interface EventAdapterService
 
     /**
      * Adds an event type to the registery available for use, and originating outside as a non-adapter.
-     * @param alias to add an event type under
+     * @param name to add an event type under
      * @param eventType the type to add
-     * @throws EventAdapterException if the alias is already in used by another type
+     * @throws EventAdapterException if the name is already in used by another type
      */
-    public void addTypeByAlias(String alias, EventType eventType) throws EventAdapterException;
+    public void addTypeByName(String name, EventType eventType) throws EventAdapterException;
 
     /**
      * Return the event type for a given event name, or null if none is registered for that name.
-     * @param eventTypeAlias is the event type alias name to return type for
+     * @param eventTypeName is the event type name to return type for
      * @return event type for named event, or null if unknown/unnamed type
      */
-    public EventType getExistsTypeByAlias(String eventTypeAlias);
+    public EventType getExistsTypeByName(String eventTypeName);
 
     /**
      * Return all known event types.
@@ -58,38 +58,38 @@ public interface EventAdapterService
     public EventType[] getAllTypes();
 
     /**
-     * Add an event type with the given alias and a given set of properties,
+     * Add an event type with the given name and a given set of properties,
      * wherein properties may itself be Maps, nested and strongly-typed.
      * <p>
-     * If the alias already exists with the same event property information, returns the
+     * If the name already exists with the same event property information, returns the
      * existing EventType instance.
      * <p>
-     * If the alias already exists with different event property information, throws an exception.
+     * If the name already exists with different event property information, throws an exception.
      * <p>
-     * If the alias does not already exists, adds the alias and constructs a new {@link com.espertech.esper.event.map.MapEventType}.
-     * @param eventTypeAlias is the alias name for the event type
+     * If the name does not already exists, adds the name and constructs a new {@link com.espertech.esper.event.map.MapEventType}.
+     * @param eventTypeName is the name for the event type
      * @param propertyTypes is the names and types of event properties
-     * @param optionalSupertype an optional set of Map event type aliases that are supertypes to the type
+     * @param optionalSupertype an optional set of Map event type names that are supertypes to the type
      * @return event type is the type added
      * @param isConfigured if the type is application-configured
      * @param namedWindow if the type is from a named window
      * @param insertInto if inserting into a stream
-     * @throws EventAdapterException if alias already exists and doesn't match property type info
+     * @throws EventAdapterException if name already exists and doesn't match property type info
      */
-    public EventType addNestableMapType(String eventTypeAlias, Map<String, Object> propertyTypes, Set<String> optionalSupertype, boolean isConfigured, boolean namedWindow, boolean insertInto) throws EventAdapterException;
+    public EventType addNestableMapType(String eventTypeName, Map<String, Object> propertyTypes, Set<String> optionalSupertype, boolean isConfigured, boolean namedWindow, boolean insertInto) throws EventAdapterException;
 
     /**
-     * Add an event type with the given alias and the given underlying event type,
+     * Add an event type with the given name and the given underlying event type,
      * as well as the additional given properties.
-     * @param eventTypeAlias is the alias name for the event type
+     * @param eventTypeName is the name for the event type
      * @param underlyingEventType is the event type for the event type that this wrapper wraps
      * @param propertyTypes is the names and types of any additional properties
      * @param isNamedWindow if the type is from a named window
      * @param isInsertInto if inserting into a stream
      * @return eventType is the type added
-     * @throws EventAdapterException if alias already exists and doesn't match this type's info
+     * @throws EventAdapterException if name already exists and doesn't match this type's info
      */
-    public EventType addWrapperType(String eventTypeAlias, EventType underlyingEventType, Map<String, Object> propertyTypes, boolean isNamedWindow, boolean isInsertInto) throws EventAdapterException;
+    public EventType addWrapperType(String eventTypeName, EventType underlyingEventType, Map<String, Object> propertyTypes, boolean isNamedWindow, boolean isInsertInto) throws EventAdapterException;
 
     /**
      * Creates a new anonymous EventType instance for an event type that contains a map of name value pairs.
@@ -114,39 +114,39 @@ public interface EventAdapterService
     public EventBean adaptorForWrapper(EventBean event, Map<String, Object> properties, EventType eventType);
 
     /**
-     * Add an event type with the given alias and Java fully-qualified class name.
+     * Add an event type with the given name and Java fully-qualified class name.
      * <p>
-     * If the alias already exists with the same class name, returns the existing EventType instance.
+     * If the name already exists with the same class name, returns the existing EventType instance.
      * <p>
-     * If the alias already exists with different class name, throws an exception.
+     * If the name already exists with different class name, throws an exception.
      * <p>
-     * If the alias does not already exists, adds the alias and constructs a new {@link com.espertech.esper.event.bean.BeanEventType}.
+     * If the name does not already exists, adds the name and constructs a new {@link com.espertech.esper.event.bean.BeanEventType}.
      * <p>
-     * Takes into account all event-type-auto-alias-package names supplied and
+     * Takes into account all event-type-auto-package names supplied and
      * attempts to resolve the class name via the packages if the direct resolution failed.
-     * @param eventTypeAlias is the alias name for the event type
+     * @param eventTypeName is the name for the event type
      * @param fullyQualClassName is the fully qualified class name
-     * @param considerAutoAlias whether auto-alias by Java packages should be considered
+     * @param considerAutoName whether auto-name by Java packages should be considered
      * @return event type is the type added
-     * @throws EventAdapterException if alias already exists and doesn't match class names
+     * @throws EventAdapterException if name already exists and doesn't match class names
      */
-    public EventType addBeanType(String eventTypeAlias, String fullyQualClassName, boolean considerAutoAlias) throws EventAdapterException;
+    public EventType addBeanType(String eventTypeName, String fullyQualClassName, boolean considerAutoName) throws EventAdapterException;
 
     /**
-     * Add an event type with the given alias and Java class.
+     * Add an event type with the given name and Java class.
      * <p>
-     * If the alias already exists with the same Class, returns the existing EventType instance.
+     * If the name already exists with the same Class, returns the existing EventType instance.
      * <p>
-     * If the alias already exists with different Class name, throws an exception.
+     * If the name already exists with different Class name, throws an exception.
      * <p>
-     * If the alias does not already exists, adds the alias and constructs a new {@link com.espertech.esper.event.bean.BeanEventType}.
-     * @param eventTypeAlias is the alias name for the event type
+     * If the name does not already exists, adds the name and constructs a new {@link com.espertech.esper.event.bean.BeanEventType}.
+     * @param eventTypeName is the name for the event type
      * @param clazz is the fully Java class
      * @param isConfigured if the class is application-configured
      * @return event type is the type added
-     * @throws EventAdapterException if alias already exists and doesn't match class names
+     * @throws EventAdapterException if name already exists and doesn't match class names
      */
-    public EventType addBeanType(String eventTypeAlias, Class clazz, boolean isConfigured) throws EventAdapterException;
+    public EventType addBeanType(String eventTypeName, Class clazz, boolean isConfigured) throws EventAdapterException;
 
     /**
      * Wrap the native event returning an {@link EventBean}.
@@ -156,15 +156,15 @@ public interface EventAdapterService
     public EventBean adapterForBean(Object event);
 
     /**
-     * Wrap the Map-type event returning an {@link EventBean} using the event type alias name
+     * Wrap the Map-type event returning an {@link EventBean} using the event type name
      * to identify the EventType that the event should carry.
      * @param event to be wrapped
-     * @param eventTypeAlias alias for the event type of the event
+     * @param eventTypeName name for the event type of the event
      * @return event bean wrapping native underlying event
-     * @throws EventAdapterException if the alias has not been declared, or the event cannot be wrapped using that
-     * alias's event type
+     * @throws EventAdapterException if the name has not been declared, or the event cannot be wrapped using that
+     * name's event type
      */
-    public EventBean adapterForMap(Map<String, Object> event, String eventTypeAlias) throws EventAdapterException;
+    public EventBean adapterForMap(Map<String, Object> event, String eventTypeName) throws EventAdapterException;
 
     /**
      * Create an event map bean from a set of event properties (name and value objectes) stored in a Map.
@@ -195,18 +195,18 @@ public interface EventAdapterService
      * @param underlyingEventType is the event type for the event type that this wrapper wraps
      * @param propertyTypes is the names and types of any additional properties
      * @return eventType is the type createdStatement
-     * @throws EventAdapterException if alias already exists and doesn't match this type's info
+     * @throws EventAdapterException if name already exists and doesn't match this type's info
      */
     public EventType createAnonymousWrapperType(EventType underlyingEventType, Map<String, Object> propertyTypes) throws EventAdapterException;
 
     /**
      * Adds an XML DOM event type.
-     * @param eventTypeAlias is the alias to add the type for
+     * @param eventTypeName is the name to add the type for
      * @param configurationEventTypeXMLDOM is the XML DOM config info
      * @param optionalSchemaModel is the object model of the schema, or null in none provided
      * @return event type
      */
-    public EventType addXMLDOMType(String eventTypeAlias, ConfigurationEventTypeXMLDOM configurationEventTypeXMLDOM, SchemaModel optionalSchemaModel);
+    public EventType addXMLDOMType(String eventTypeName, ConfigurationEventTypeXMLDOM configurationEventTypeXMLDOM, SchemaModel optionalSchemaModel);
 
     /**
      * Sets the configured legacy Java class information.
@@ -224,7 +224,7 @@ public interface EventAdapterService
      * Adds a Java package name of a package that Java event classes reside in.
      * @param javaPackageName is the fully-qualified Java package name of the Java package that event classes reside in
      */
-    public void addAutoAliasPackage(String javaPackageName);
+    public void addAutoNamePackage(String javaPackageName);
 
     /**
      * Returns a subset of the functionality of the service specific to creating POJO bean event types.
@@ -241,20 +241,20 @@ public interface EventAdapterService
 
     /**
      * Adds a plug-in event type.
-     * @param alias is the name of the event type
+     * @param name is the name of the event type
      * @param resolutionURIs is the URIs of plug-in event representations, or child URIs of such
      * @param initializer is configs for the type
      * @return type
      */
-    public EventType addPlugInEventType(String alias, URI[] resolutionURIs, Serializable initializer);
+    public EventType addPlugInEventType(String name, URI[] resolutionURIs, Serializable initializer);
 
     /**
      * Returns an event sender for a specific type, only generating events of that type.
      * @param runtimeEventSender the runtime handle for sending the wrapped type
-     * @param eventTypeAlias is the name of the event type to return the sender for
+     * @param eventTypeName is the name of the event type to return the sender for
      * @return event sender that is static, single-type
      */
-    public EventSender getStaticTypeEventSender(EPRuntimeEventSender runtimeEventSender, String eventTypeAlias);
+    public EventSender getStaticTypeEventSender(EPRuntimeEventSender runtimeEventSender, String eventTypeName);
 
     /**
      * Returns an event sender that dynamically decides what the event type for a given object is.
@@ -267,11 +267,11 @@ public interface EventAdapterService
 
     /**
      * Update a given Map  event type.
-     * @param mapEventTypeAlias alias to update
+     * @param mapEventTypeName name to update
      * @param typeMap additional properties to add, nesting allowed
      * @throws EventAdapterException when the type is not found or is not a Map
      */
-    public void updateMapEventType(String mapEventTypeAlias, Map<String, Object> typeMap) throws EventAdapterException;
+    public void updateMapEventType(String mapEventTypeName, Map<String, Object> typeMap) throws EventAdapterException;
 
     /**
      * Casts event type of a list of events to either Wrapper or Map type.
@@ -282,20 +282,20 @@ public interface EventAdapterService
     public EventBean[] typeCast(List<EventBean> events, EventType targetType);
 
     /**
-     * Removes an event type by a given alias indicating by the return value whether the type
+     * Removes an event type by a given name indicating by the return value whether the type
      * was found or not.
      * <p>
      * Does not uncache an existing class loaded by a JVM. Does remove XML root element names.
      * Does not handle value-add event types.
-     * @param alias to remove
+     * @param eventTypeName to remove
      * @return true if found and removed, false if not found
      */
-    public boolean removeType(String alias);
+    public boolean removeType(String eventTypeName);
 
     /**
-     * Creates an anonymous map that has no alias, however in a fail-over scenario
+     * Creates an anonymous map that has no name, however in a fail-over scenario
      * events of this type may be recoverable and therefore the type is only semi-anonymous,
-     * identified by the tags and event type aliases used. 
+     * identified by the tags and event type names used. 
      * @param taggedEventTypes simple type per property name
      * @param arrayEventTypes array type per property name
      * @param isUsedByChildViews if the type is going to be in used by child views

@@ -5,7 +5,6 @@ import com.espertech.esper.core.EPServiceProviderSPI;
 import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.support.event.EventTypeAssertionUtil;
 import com.espertech.esper.support.util.ArrayAssertionUtil;
-import com.espertech.esper.support.util.SupportUpdateListener;
 import junit.framework.TestCase;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -32,15 +31,15 @@ public class TestNoSchemaXMLEventTranspose extends TestCase
         rootMeta.addNamespacePrefix("ss", "samples:schemas:simpleSchema");
         rootMeta.addXPathPropertyFragment("nested1simple", "/ss:simpleEvent/ss:nested1", XPathConstants.NODE, "MyNestedEvent");
         rootMeta.addXPathPropertyFragment("nested4array", "//ss:nested4", XPathConstants.NODESET, "MyNestedArrayEvent");
-        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("MyXMLEvent", rootMeta);
+        epService.getEPAdministrator().getConfiguration().addEventType("MyXMLEvent", rootMeta);
 
         ConfigurationEventTypeXMLDOM metaNested = new ConfigurationEventTypeXMLDOM();
         metaNested.setRootElementName("nested1");
-        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("MyNestedEvent", metaNested);
+        epService.getEPAdministrator().getConfiguration().addEventType("MyNestedEvent", metaNested);
 
         ConfigurationEventTypeXMLDOM metaNestedArray = new ConfigurationEventTypeXMLDOM();
         metaNestedArray.setRootElementName("nested4");
-        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("MyNestedArrayEvent", metaNestedArray);
+        epService.getEPAdministrator().getConfiguration().addEventType("MyNestedArrayEvent", metaNestedArray);
 
         EPStatement stmtInsert = epService.getEPAdministrator().createEPL("insert into Nested3Stream select nested1simple, nested4array from MyXMLEvent");
         EPStatement stmtWildcard = epService.getEPAdministrator().createEPL("select * from MyXMLEvent");
@@ -95,7 +94,7 @@ public class TestNoSchemaXMLEventTranspose extends TestCase
         ConfigurationEventTypeXMLDOM eventTypeMeta = new ConfigurationEventTypeXMLDOM();
         eventTypeMeta.setRootElementName("simpleEvent");
         // eventTypeMeta.setXPathPropertyExpr(false); <== the default
-        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("TestXMLSchemaType", eventTypeMeta);
+        epService.getEPAdministrator().getConfiguration().addEventType("TestXMLSchemaType", eventTypeMeta);
 
         EPStatement stmtInsert = epService.getEPAdministrator().createEPL("insert into MyNestedStream select nested1 from TestXMLSchemaType");
         ArrayAssertionUtil.assertEqualsAnyOrder(new Object[] {
@@ -129,7 +128,7 @@ public class TestNoSchemaXMLEventTranspose extends TestCase
         eventTypeMeta.setSchemaResource(schemaUri);
         eventTypeMeta.setXPathPropertyExpr(true);       // <== note this
         eventTypeMeta.addNamespacePrefix("ss", "samples:schemas:simpleSchema");
-        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("TestXMLSchemaType", eventTypeMeta);
+        epService.getEPAdministrator().getConfiguration().addEventType("TestXMLSchemaType", eventTypeMeta);
 
         // note class not a fragment
         EPStatement stmtInsert = epService.getEPAdministrator().createEPL("insert into MyNestedStream select nested1 from TestXMLSchemaType");
@@ -138,7 +137,7 @@ public class TestNoSchemaXMLEventTranspose extends TestCase
            }, stmtInsert.getEventType().getPropertyDescriptors());
         EventTypeAssertionUtil.assertConsistency(stmtInsert.getEventType());
 
-        EventType type = ((EPServiceProviderSPI)epService).getEventAdapterService().getExistsTypeByAlias("TestXMLSchemaType");
+        EventType type = ((EPServiceProviderSPI)epService).getEventAdapterService().getExistsTypeByName("TestXMLSchemaType");
         EventTypeAssertionUtil.assertConsistency(type);
         assertNull(type.getFragmentType("nested1"));
         assertNull(type.getFragmentType("nested1.nested2"));

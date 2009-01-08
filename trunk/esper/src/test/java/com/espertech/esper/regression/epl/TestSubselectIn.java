@@ -22,9 +22,9 @@ public class TestSubselectIn extends TestCase
     public void setUp()
     {
         Configuration config = SupportConfigFactory.getConfiguration();
-        config.addEventTypeAlias("S0", SupportBean_S0.class);
-        config.addEventTypeAlias("S1", SupportBean_S1.class);
-        config.addEventTypeAlias("S2", SupportBean_S2.class);
+        config.addEventType("S0", SupportBean_S0.class);
+        config.addEventType("S1", SupportBean_S1.class);
+        config.addEventType("S2", SupportBean_S2.class);
         epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();
         listener = new SupportUpdateListener();
@@ -33,7 +33,7 @@ public class TestSubselectIn extends TestCase
     // TODO
     public void testOrderOfEvaluation()
     {
-        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("SupportBean", SupportBean.class);
+        epService.getEPAdministrator().getConfiguration().addEventType("SupportBean", SupportBean.class);
 
         String viewExpr = "insert into NewStream select * from SupportBean(intPrimitive<10) where intPrimitive not in (select intPrimitive from SupportBean.std:unique(intPrimitive))";
         EPStatement stmtOne = epService.getEPAdministrator().createEPL(viewExpr);

@@ -196,8 +196,8 @@ public class TestCSVAdapterUseCases extends TestCase
         tradeProps.put("notional", Double.class);
 
         Configuration config = new Configuration();
-        config.addEventTypeAlias("TradeEvent", tradeProps);
-        config.addEventTypeAlias("PriceEvent", priceProps);
+        config.addEventType("TradeEvent", tradeProps);
+        config.addEventType("PriceEvent", priceProps);
 
         epService = EPServiceProviderManager.getProvider("testCoordinated", config);
         epService.initialize();
@@ -258,14 +258,14 @@ public class TestCSVAdapterUseCases extends TestCase
     {
         Configuration configuration = new Configuration();
     	if (useBean) {
-            configuration.addEventTypeAlias(typeName, ExampleMarketDataBean.class);
+            configuration.addEventType(typeName, ExampleMarketDataBean.class);
     	}
     	else {
             Map<String, Object> eventProperties = new HashMap<String, Object>();
             eventProperties.put("symbol", String.class);
             eventProperties.put("price", double.class);
             eventProperties.put("volume", Integer.class);
-            configuration.addEventTypeAlias(typeName, eventProperties);
+            configuration.addEventType(typeName, eventProperties);
     	}
 
         return configuration;

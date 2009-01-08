@@ -27,6 +27,7 @@ public class ConfigurationEngineDefaults implements Serializable
     private Language language;
     private Expression expression;
     private ConfigurationMetricsReporting metricsReporting;
+    private static final long serialVersionUID = -528835191586154300L;
 
     /**
      * Ctor.
@@ -150,6 +151,7 @@ public class ConfigurationEngineDefaults implements Serializable
 
         private long internalTimerMsecResolution;
         private boolean internalTimerEnabled;
+        private static final long serialVersionUID = 6504606101119059962L;
 
         /**
          * Ctor - sets up defaults.
@@ -361,6 +363,7 @@ public class ConfigurationEngineDefaults implements Serializable
     {
         private boolean shareViews;
         private boolean allowMultipleExpiryPolicies;
+        private static final long serialVersionUID = 2527853225433208362L;
 
         /**
          * Ctor - sets up defaults.
@@ -426,6 +429,7 @@ public class ConfigurationEngineDefaults implements Serializable
     public static class EventMeta implements Serializable
     {
         private Configuration.PropertyResolutionStyle classPropertyResolutionStyle;
+        private static final long serialVersionUID = -6091772368103140370L;
 
         /**
          * Ctor.
@@ -463,6 +467,7 @@ public class ConfigurationEngineDefaults implements Serializable
     {
         private boolean enableExecutionDebug;
         private boolean enableTimerDebug;
+        private static final long serialVersionUID = -8129836306582810327L;
 
         /**
          * Ctor - sets up defaults.
@@ -524,6 +529,7 @@ public class ConfigurationEngineDefaults implements Serializable
     public static class Variables implements Serializable
     {
         private long msecVersionRelease;
+        private static final long serialVersionUID = 8276015152830052323L;
 
         /**
          * Ctor - sets up defaults.
@@ -568,6 +574,7 @@ public class ConfigurationEngineDefaults implements Serializable
     public static class StreamSelection implements Serializable
     {
         private StreamSelector defaultStreamSelector;
+        private static final long serialVersionUID = -7943748323859161674L;
 
         /**
          * Ctor - sets up defaults.
@@ -618,6 +625,7 @@ public class ConfigurationEngineDefaults implements Serializable
     public static class TimeSource implements Serializable
     {
         private TimeSourceType timeSourceType;
+        private static final long serialVersionUID = 2075039404763313824L;
 
         /**
          * Ctor.
@@ -652,6 +660,7 @@ public class ConfigurationEngineDefaults implements Serializable
     public static class Language implements Serializable
     {
         private boolean sortUsingCollator;
+        private static final long serialVersionUID = -6237674558477894392L;
 
         /**
          * Ctor.
@@ -691,6 +700,7 @@ public class ConfigurationEngineDefaults implements Serializable
     {
         private boolean integerDivision;
         private boolean divisionByZeroReturnsNull;
+        private static final long serialVersionUID = 3192205923560011213L;
 
         /**
          * Ctor.

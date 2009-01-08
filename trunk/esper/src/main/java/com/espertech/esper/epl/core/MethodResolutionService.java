@@ -32,32 +32,32 @@ public interface MethodResolutionService
 
     /**
      * Resolves a given class, method and list of parameter types to a static method.
-     * @param classNameAlias is the class name to use
+     * @param className is the class name to use
      * @param methodName is the method name
      * @param paramTypes is parameter types match expression sub-nodes
      * @return method this resolves to
      * @throws EngineImportException if the method cannot be resolved to a visible static method
      */
-    public Method resolveMethod(String classNameAlias, String methodName, Class[] paramTypes) throws EngineImportException;
+    public Method resolveMethod(String className, String methodName, Class[] paramTypes) throws EngineImportException;
 
     /**
      * Resolves a given class and method name to a static method, not allowing overloaded methods
      * and expecting the method to be found exactly once with zero or more parameters.
-     * @param classNameAlias is the class name to use
+     * @param className is the class name to use
      * @param methodName is the method name
      * @return method this resolves to
      * @throws EngineImportException if the method cannot be resolved to a visible static method, or if the method exists more
      * then once with different parameters
      */
-    public Method resolveMethod(String classNameAlias, String methodName) throws EngineImportException;
+    public Method resolveMethod(String className, String methodName) throws EngineImportException;
 
     /**
      * Resolves a given class name, either fully qualified and simple and imported to a class.
-     * @param classNameAlias is the class name to use
+     * @param className is the class name to use
      * @return class this resolves to
      * @throws EngineImportException if there was an error resolving the class
      */
-    public Class resolveClass(String classNameAlias) throws EngineImportException;
+    public Class resolveClass(String className) throws EngineImportException;
 
     /**
      * Returns a plug-in aggregation method for a given configured aggregation function name.

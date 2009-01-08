@@ -41,14 +41,14 @@ public class VAERevisionProcessorDeclared extends VAERevisionProcessorBase imple
 
     /**
      * Ctor.
-     * @param revisionEventTypeAlias alias
+     * @param revisionEventTypeName name
      * @param spec specification
      * @param statementStopService for stop handling
      * @param eventAdapterService for nested property handling
      */
-    public VAERevisionProcessorDeclared(String revisionEventTypeAlias, RevisionSpec spec, StatementStopService statementStopService, EventAdapterService eventAdapterService)
+    public VAERevisionProcessorDeclared(String revisionEventTypeName, RevisionSpec spec, StatementStopService statementStopService, EventAdapterService eventAdapterService)
     {
-        super(spec, revisionEventTypeAlias, eventAdapterService);
+        super(spec, revisionEventTypeName, eventAdapterService);
 
         // on statement stop, remove versions
         statementStopService.addSubscriber(new StatementStopCallback() {
@@ -63,11 +63,11 @@ public class VAERevisionProcessorDeclared extends VAERevisionProcessorBase imple
         this.fullKeyGetters = PropertyUtility.getGetters(baseEventType, spec.getKeyPropertyNames());
 
         // sort non-key properties, removing keys
-        groups = PropertyUtility.analyzeGroups(spec.getChangesetPropertyNames(), spec.getDeltaTypes(), spec.getDeltaAliases());
+        groups = PropertyUtility.analyzeGroups(spec.getChangesetPropertyNames(), spec.getDeltaTypes(), spec.getDeltaNames());
         Map<String, RevisionPropertyTypeDesc> propertyDesc = createPropertyDescriptors(spec, groups);
 
         typeDescriptors = PropertyUtility.getPerType(groups, spec.getChangesetPropertyNames(), spec.getKeyPropertyNames());
-        EventTypeMetadata metadata = EventTypeMetadata.createValueAdd(revisionEventTypeAlias, EventTypeMetadata.TypeClass.REVISION);
+        EventTypeMetadata metadata = EventTypeMetadata.createValueAdd(revisionEventTypeName, EventTypeMetadata.TypeClass.REVISION);
         revisionEventType = new RevisionEventType(metadata, propertyDesc, eventAdapterService);
     }
 
@@ -149,7 +149,7 @@ public class VAERevisionProcessorDeclared extends VAERevisionProcessorBase imple
 
             if (key == null)
             {
-                log.warn("Ignoring event of event type '" + underyingEventType + "' for revision processing type '" + revisionEventTypeAlias);
+                log.warn("Ignoring event of event type '" + underyingEventType + "' for revision processing type '" + revisionEventTypeName);
                 return;
             }
         }

@@ -121,9 +121,9 @@ public class TestOrOperator extends TestCase implements SupportBeanConstants
     private void tryOrAndNot(String pattern)
     {
         Configuration config = SupportConfigFactory.getConfiguration();
-        config.addEventTypeAlias("A", SupportBean_A.class.getName());
-        config.addEventTypeAlias("B", SupportBean_B.class.getName());
-        config.addEventTypeAlias("C", SupportBean_C.class.getName());
+        config.addEventType("A", SupportBean_A.class.getName());
+        config.addEventType("B", SupportBean_B.class.getName());
+        config.addEventType("C", SupportBean_C.class.getName());
         EPServiceProvider epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();
 

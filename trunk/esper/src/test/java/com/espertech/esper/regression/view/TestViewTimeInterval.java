@@ -1,7 +1,6 @@
 package com.espertech.esper.regression.view;
 
 import com.espertech.esper.client.*;
-import com.espertech.esper.client.time.TimerControlEvent;
 import com.espertech.esper.client.time.CurrentTimeEvent;
 import com.espertech.esper.support.util.SupportUpdateListener;
 import com.espertech.esper.support.bean.SupportBean;
@@ -17,7 +16,7 @@ public class TestViewTimeInterval extends TestCase
     {
         epService = EPServiceProviderManager.getDefaultProvider(SupportConfigFactory.getConfiguration());
         epService.initialize();
-        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("SupportBean", SupportBean.class);
+        epService.getEPAdministrator().getConfiguration().addEventType("SupportBean", SupportBean.class);
     }
 
     public void testTimeWindowPreparedStmt()
@@ -43,7 +42,7 @@ public class TestViewTimeInterval extends TestCase
     {
         sendTimer(0);
         String text = "select rstream string from SupportBean.win:time(TIME_WIN)";
-        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("SupportBean", SupportBean.class);
+        epService.getEPAdministrator().getConfiguration().addEventType("SupportBean", SupportBean.class);
 
         epService.getEPAdministrator().getConfiguration().addVariable("TIME_WIN", int.class, 4);
         EPStatement stmtOne = epService.getEPAdministrator().createEPL(text);
@@ -81,7 +80,7 @@ public class TestViewTimeInterval extends TestCase
         sendTimer(0);
         
         String text = "select rstream string from SupportBean.win:time(TIME_WIN milliseconds)";
-        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("SupportBean", SupportBean.class);
+        epService.getEPAdministrator().getConfiguration().addEventType("SupportBean", SupportBean.class);
 
         EPStatement stmtOne = epService.getEPAdministrator().createEPL(text);
         SupportUpdateListener listenerOne = new SupportUpdateListener();

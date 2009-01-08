@@ -23,7 +23,7 @@ public class NamedWindowConsumerStreamSpec extends StreamSpecBase implements Str
     /**
      * Ctor.
      * @param windowName - specifies the name of the named window
-     * @param optionalAsName - an alias or null if none defined
+     * @param optionalAsName - a name or null if none defined
      * @param viewSpecs - is the view specifications
      * @param filterExpressions - the named window filters
      * @param streamSpecOptions - additional options such as unidirectional stream in a join

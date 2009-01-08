@@ -171,7 +171,7 @@ public class TestModifiedWildcardSelect extends TestCase
 		Map<String, Object> typeMap = new HashMap<String, Object>();
 		typeMap.put("int", Integer.class);
 		typeMap.put("string", String.class);
-		configuration.addEventTypeAlias("mapEvent", typeMap);
+		configuration.addEventType("mapEvent", typeMap);
 		epService = EPServiceProviderManager.getProvider("wildcard map event", configuration);
 
 		String text = "select *, string||string as concat from mapEvent.win:length(5)";

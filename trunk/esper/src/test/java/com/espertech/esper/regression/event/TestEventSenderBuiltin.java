@@ -30,8 +30,8 @@ public class TestEventSenderBuiltin extends TestCase
     public void testSenderPOJO() throws Exception
     {
         Configuration configuration = SupportConfigFactory.getConfiguration();
-        configuration.addEventTypeAlias("SupportBean", SupportBean.class);
-        configuration.addEventTypeAlias("Marker", SupportMarkerInterface.class);
+        configuration.addEventType("SupportBean", SupportBean.class);
+        configuration.addEventType("Marker", SupportMarkerInterface.class);
 
         epService = EPServiceProviderManager.getDefaultProvider(configuration);
         epService.initialize();
@@ -76,7 +76,7 @@ public class TestEventSenderBuiltin extends TestCase
     {
         Configuration configuration = SupportConfigFactory.getConfiguration();
         Map<String, Object> myMapType = makeMap(new Object[][] {{"f1", Integer.class}});
-        configuration.addEventTypeAlias("MyMap", myMapType);
+        configuration.addEventType("MyMap", myMapType);
 
         epService = EPServiceProviderManager.getDefaultProvider(configuration);
         epService.initialize();
@@ -109,7 +109,7 @@ public class TestEventSenderBuiltin extends TestCase
         ConfigurationEventTypeXMLDOM typeMeta = new ConfigurationEventTypeXMLDOM();
         typeMeta.setRootElementName("a");
         typeMeta.addXPathProperty("element1", "/a/b/c", XPathConstants.STRING);
-        configuration.addEventTypeAlias("AEvent", typeMeta);
+        configuration.addEventType("AEvent", typeMeta);
 
         epService = EPServiceProviderManager.getDefaultProvider(configuration);
         epService.initialize();
@@ -153,7 +153,7 @@ public class TestEventSenderBuiltin extends TestCase
         typeMeta.setRootElementName("a");
         typeMeta.addXPathProperty("element2", "//c", XPathConstants.STRING);
         typeMeta.setEventSenderValidatesRoot(false);
-        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("BEvent", typeMeta);
+        epService.getEPAdministrator().getConfiguration().addEventType("BEvent", typeMeta);
 
         stmtText = "select element2 from BEvent";
         EPStatement stmtTwo = epService.getEPAdministrator().createEPL(stmtText);
@@ -169,7 +169,7 @@ public class TestEventSenderBuiltin extends TestCase
     public void testInvalid()
     {
         Configuration configuration = SupportConfigFactory.getConfiguration();
-        configuration.addEventTypeAlias("SupportBean", SupportBean.class);
+        configuration.addEventType("SupportBean", SupportBean.class);
         epService = EPServiceProviderManager.getDefaultProvider(configuration);
         epService.initialize();
 

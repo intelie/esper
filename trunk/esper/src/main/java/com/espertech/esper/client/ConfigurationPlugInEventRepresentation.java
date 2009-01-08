@@ -17,6 +17,7 @@ public class ConfigurationPlugInEventRepresentation implements Serializable
 {
     private String eventRepresentationClassName;
     private Serializable initializer;
+    private static final long serialVersionUID = 4548096417918791735L;
 
     /**
      * Returns the class name of the class providing the pluggable event representation.

@@ -31,8 +31,8 @@ public interface OutputAdapter extends Adapter
 
     /**
      * Returns a given subscription by it's name, or null if not found
-     * @param subscriptionAlias is the subscription
+     * @param subscriptionName is the subscription
      * @return subcription or null
      */
-    public Subscription getSubscription(String subscriptionAlias);
+    public Subscription getSubscription(String subscriptionName);
 }

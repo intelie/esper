@@ -11,50 +11,50 @@ package com.espertech.esper.epl.spec;
 import com.espertech.esper.util.MetaDefItem;
 
 /**
- * Mirror class to {@link SelectExprElementStreamRawSpec} but added the stream number for the alias.
+ * Mirror class to {@link SelectExprElementStreamRawSpec} but added the stream number for the name.
  */
 public class SelectExprElementStreamCompiledSpec implements MetaDefItem
 {
-    private final String streamAliasName;
-    private final String optionalAliasName;
+    private final String streamName;
+    private final String optionalName;
     private final int streamNumber;
     private final boolean isTaggedEvent;
 
     /**
      * Ctor.
-     * @param streamAliasName is the stream alias of the stream to select
-     * @param optionalAliasName is the column alias
+     * @param streamName is the stream name of the stream to select
+     * @param optionalColumnName is the column name
      * @param streamNumber is the number of the stream
      * @param isTaggedEvent is true to indicate that we are meaning to select a tagged event in a pattern
      */
-    public SelectExprElementStreamCompiledSpec(String streamAliasName, String optionalAliasName, int streamNumber, boolean isTaggedEvent)
+    public SelectExprElementStreamCompiledSpec(String streamName, String optionalColumnName, int streamNumber, boolean isTaggedEvent)
     {
-        this.streamAliasName = streamAliasName;
-        this.optionalAliasName = optionalAliasName;
+        this.streamName = streamName;
+        this.optionalName = optionalColumnName;
         this.streamNumber = streamNumber;
         this.isTaggedEvent = isTaggedEvent;
     }
 
     /**
-     * Returns the stream alias (e.g. select streamAlias from MyEvent as streamAlias).
-     * @return alias
+     * Returns the stream name.
+     * @return name
      */
-    public String getStreamAliasName()
+    public String getStreamName()
     {
-        return streamAliasName;
+        return streamName;
     }
 
     /**
-     * Returns the column alias (e.g. select streamAlias as mycol from MyEvent as streamAlias).
-     * @return alias
+     * Returns the column name.
+     * @return name
      */
-    public String getOptionalAliasName()
+    public String getOptionalName()
     {
-        return optionalAliasName;
+        return optionalName;
     }
 
     /**
-     * Returns the stream number of the stream for the stream alias.
+     * Returns the stream number of the stream for the stream name.
      * @return stream number
      */
     public int getStreamNumber()

@@ -83,7 +83,7 @@ public abstract class JMSOutputAdapter implements OutputAdapter, AdapterSPI
     public void setSubscriptionMap(Map<String, Subscription> subscriptionMap)
     {
         this.subscriptionMap = subscriptionMap;
-        // In case an alias has not been set for each subscription
+        // In case an name has not been set for each subscription
         Iterator<Map.Entry<String, Subscription>> it =
                 subscriptionMap.entrySet().iterator();
         for (String name : subscriptionMap.keySet())
@@ -93,13 +93,13 @@ public abstract class JMSOutputAdapter implements OutputAdapter, AdapterSPI
         }
     }
 
-    public Subscription getSubscription(String subscriptionAlias)
+    public Subscription getSubscription(String subscriptionName)
     {
-        if (subscriptionAlias == null)
+        if (subscriptionName == null)
         {
             return null;
         }
-        return subscriptionMap.get(subscriptionAlias);
+        return subscriptionMap.get(subscriptionName);
     }
 
     public EPServiceProvider getEPServiceProvider()

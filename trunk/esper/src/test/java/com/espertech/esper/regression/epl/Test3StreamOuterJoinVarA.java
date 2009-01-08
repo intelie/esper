@@ -28,9 +28,9 @@ public class Test3StreamOuterJoinVarA extends TestCase
     public void setUp()
     {
         Configuration config = SupportConfigFactory.getConfiguration();
-        config.addEventTypeAlias("P1", SupportBean_S1.class);
-        config.addEventTypeAlias("P2", SupportBean_S2.class);
-        config.addEventTypeAlias("P3", SupportBean_S3.class);
+        config.addEventType("P1", SupportBean_S1.class);
+        config.addEventType("P2", SupportBean_S2.class);
+        config.addEventType("P3", SupportBean_S3.class);
         epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();
         updateListener = new SupportUpdateListener();
@@ -47,9 +47,9 @@ public class Test3StreamOuterJoinVarA extends TestCase
         Map<String, Object> mapType = new HashMap<String, Object>();
         mapType.put("col1", String.class);
         mapType.put("col2", String.class);
-        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("type1", mapType);
-        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("type2", mapType);
-        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("type3", mapType);
+        epService.getEPAdministrator().getConfiguration().addEventType("type1", mapType);
+        epService.getEPAdministrator().getConfiguration().addEventType("type2", mapType);
+        epService.getEPAdministrator().getConfiguration().addEventType("type3", mapType);
 
         EPStatement stmt = epService.getEPAdministrator().createEPL(stmtText);
         stmt.addListener(updateListener);

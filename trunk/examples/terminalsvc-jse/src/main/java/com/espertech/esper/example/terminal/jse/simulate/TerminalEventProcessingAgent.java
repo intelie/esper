@@ -20,15 +20,15 @@ public class TerminalEventProcessingAgent {
     private final EPServiceProvider esperEngine;
 
     public TerminalEventProcessingAgent(ComplexEventListener complexEventListener) {
-        // Register event class alias for simplicity
+        // Register event class name for simplicity
         Configuration config = new Configuration();
-        config.addEventTypeAlias("Checkin", Checkin.class);
-        config.addEventTypeAlias("Cancelled", Cancelled.class);
-        config.addEventTypeAlias("Completed", Completed.class);
-        config.addEventTypeAlias("Status", Status.class);
-        config.addEventTypeAlias("LowPaper", LowPaper.class);
-        config.addEventTypeAlias("OutOfOrder", OutOfOrder.class);
-        config.addEventTypeAlias("BaseTerminalEvent", BaseTerminalEvent.class);
+        config.addEventType("Checkin", Checkin.class);
+        config.addEventType("Cancelled", Cancelled.class);
+        config.addEventType("Completed", Completed.class);
+        config.addEventType("Status", Status.class);
+        config.addEventType("LowPaper", LowPaper.class);
+        config.addEventType("OutOfOrder", OutOfOrder.class);
+        config.addEventType("BaseTerminalEvent", BaseTerminalEvent.class);
 
         // Get an engine instance
         esperEngine = EPServiceProviderManager.getDefaultProvider(config);

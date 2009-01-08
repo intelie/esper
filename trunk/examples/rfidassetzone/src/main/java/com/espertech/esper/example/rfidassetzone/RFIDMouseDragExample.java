@@ -29,7 +29,7 @@ public class RFIDMouseDragExample extends JFrame
 
         // Setup engine
         Configuration config = new Configuration();
-        config.addEventTypeAlias("LocationReport", LocationReport.class);
+        config.addEventType("LocationReport", LocationReport.class);
 
         EPServiceProvider epService = EPServiceProviderManager.getDefaultProvider(config);
 

@@ -16,9 +16,9 @@ public class TestSubselectAggregation extends TestCase
     public void setUp()
     {
         Configuration config = SupportConfigFactory.getConfiguration();        
-        config.addEventTypeAlias("S0", SupportBean_S0.class);
-        config.addEventTypeAlias("S1", SupportBean_S1.class);
-        config.addEventTypeAlias("MarketData", SupportMarketDataBean.class);
+        config.addEventType("S0", SupportBean_S0.class);
+        config.addEventType("S1", SupportBean_S1.class);
+        config.addEventType("MarketData", SupportMarketDataBean.class);
         epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();
         listener = new SupportUpdateListener();

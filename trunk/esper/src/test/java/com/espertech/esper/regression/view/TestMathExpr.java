@@ -23,7 +23,7 @@ public class TestMathExpr extends TestCase
         Configuration config = SupportConfigFactory.getConfiguration();
         config.getEngineDefaults().getExpression().setIntegerDivision(true);
         config.getEngineDefaults().getExpression().setDivisionByZeroReturnsNull(true);
-        config.addEventTypeAlias("SupportBean", SupportBean.class);
+        config.addEventType("SupportBean", SupportBean.class);
 
         EPServiceProvider epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();
@@ -46,7 +46,7 @@ public class TestMathExpr extends TestCase
     public void testIntDivisionDoubleResultZeroDevision()
     {
         Configuration config = SupportConfigFactory.getConfiguration();
-        config.addEventTypeAlias("SupportBean", SupportBean.class);
+        config.addEventType("SupportBean", SupportBean.class);
 
         EPServiceProvider epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();

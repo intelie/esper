@@ -142,7 +142,7 @@ public class AxiomXMLEventType implements EventTypeSPI
     }
 
     /**
-     * Returns the configuration for the alias.
+     * Returns the configuration for the name.
      * @return configuration details underlying the type
      */
     public ConfigurationEventTypeAxiom getConfig()

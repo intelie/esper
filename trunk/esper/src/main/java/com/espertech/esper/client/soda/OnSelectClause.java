@@ -23,7 +23,7 @@ public class OnSelectClause extends OnClause
     /**
      * Creates an on-select clause.
      * @param windowName is the named window name
-     * @param optionalAsName is the optional alias
+     * @param optionalAsName is the optional name
      * @return on-select clause
      */
     public static OnSelectClause create(String windowName, String optionalAsName)
@@ -34,7 +34,7 @@ public class OnSelectClause extends OnClause
     /**
      * Ctor.
      * @param windowName is the named window name
-     * @param optionalAsName is the alias name of the named window
+     * @param optionalAsName is the name of the named window
      */
     public OnSelectClause(String windowName, String optionalAsName)
     {
@@ -75,8 +75,8 @@ public class OnSelectClause extends OnClause
     }
 
     /**
-     * Returns the as-alias for the named window.
-     * @return alias
+     * Returns the as-provided name for the named window.
+     * @return name
      */
     public String getOptionalAsName()
     {
@@ -84,8 +84,8 @@ public class OnSelectClause extends OnClause
     }
 
     /**
-     * Sets the as-alias for the named window.
-     * @param optionalAsName alias to set for window
+     * Sets the as-provided name for the named window.
+     * @param optionalAsName name to set for window
      */
     public void setOptionalAsName(String optionalAsName)
     {

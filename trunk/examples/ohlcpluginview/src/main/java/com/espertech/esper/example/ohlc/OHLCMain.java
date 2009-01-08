@@ -21,7 +21,7 @@ public class OHLCMain
 
         Configuration config = new Configuration();
         config.getEngineDefaults().getThreading().setInternalTimerEnabled(false);   // external timer for testing
-        config.addEventTypeAlias("OHLCTick", OHLCTick.class);
+        config.addEventType("OHLCTick", OHLCTick.class);
         config.addPlugInView("examples", "ohlcbarminute", OHLCBarPlugInViewFactory.class.getName());
 
         EPServiceProvider epService = EPServiceProviderManager.getDefaultProvider(config);

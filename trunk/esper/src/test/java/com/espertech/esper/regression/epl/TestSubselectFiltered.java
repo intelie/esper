@@ -2,7 +2,6 @@ package com.espertech.esper.regression.epl;
 
 import junit.framework.TestCase;
 import com.espertech.esper.client.soda.*;
-import com.espertech.esper.client.time.TimerControlEvent;
 import com.espertech.esper.client.*;
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.support.bean.*;
@@ -18,14 +17,14 @@ public class TestSubselectFiltered extends TestCase
     public void setUp()
     {
         Configuration config = SupportConfigFactory.getConfiguration();
-        config.addEventTypeAlias("Sensor", SupportSensorEvent.class);
-        config.addEventTypeAlias("MyEvent", SupportBean.class);
-        config.addEventTypeAlias("S0", SupportBean_S0.class);
-        config.addEventTypeAlias("S1", SupportBean_S1.class);
-        config.addEventTypeAlias("S2", SupportBean_S2.class);
-        config.addEventTypeAlias("S3", SupportBean_S3.class);
-        config.addEventTypeAlias("S4", SupportBean_S4.class);
-        config.addEventTypeAlias("S5", SupportBean_S5.class);
+        config.addEventType("Sensor", SupportSensorEvent.class);
+        config.addEventType("MyEvent", SupportBean.class);
+        config.addEventType("S0", SupportBean_S0.class);
+        config.addEventType("S1", SupportBean_S1.class);
+        config.addEventType("S2", SupportBean_S2.class);
+        config.addEventType("S3", SupportBean_S3.class);
+        config.addEventType("S4", SupportBean_S4.class);
+        config.addEventType("S5", SupportBean_S5.class);
         epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();
         listener = new SupportUpdateListener();

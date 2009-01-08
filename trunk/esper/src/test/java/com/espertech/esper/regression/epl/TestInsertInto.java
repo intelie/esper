@@ -224,7 +224,7 @@ public class TestInsertInto extends TestCase
         runAsserts(stmtText, null);
 
         // assert type metadata
-        EventTypeSPI type = (EventTypeSPI) ((EPServiceProviderSPI)epService).getEventAdapterService().getExistsTypeByAlias("Event_1");
+        EventTypeSPI type = (EventTypeSPI) ((EPServiceProviderSPI)epService).getEventAdapterService().getExistsTypeByName("Event_1");
         assertEquals(null, type.getMetadata().getOptionalApplicationType());
         assertEquals(null, type.getMetadata().getOptionalSecondaryNames());
         assertEquals("Event_1", type.getMetadata().getPrimaryName());

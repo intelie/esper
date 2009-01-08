@@ -74,7 +74,7 @@ public class ServerShellMain
         // Initialize engine
         log.info("Getting Esper engine instance");
         Configuration configuration = new Configuration();
-        configuration.addEventTypeAlias("SampleEvent", SampleEvent.class.getName());
+        configuration.addEventType("SampleEvent", SampleEvent.class.getName());
         EPServiceProvider engine = EPServiceProviderManager.getDefaultProvider(configuration);
 
         // Initialize engine

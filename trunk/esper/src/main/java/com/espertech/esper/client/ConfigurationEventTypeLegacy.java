@@ -22,6 +22,7 @@ public class ConfigurationEventTypeLegacy implements Serializable
     private List<LegacyMethodPropDesc> methodProperties;
     private List<LegacyFieldPropDesc> fieldProperties;
     private Configuration.PropertyResolutionStyle propertyResolutionStyle;
+    private static final long serialVersionUID = 3385356145345570222L;
 
     /**
      * Ctor.
@@ -177,6 +178,7 @@ public class ConfigurationEventTypeLegacy implements Serializable
     {
         private String name;
         private String accessorFieldName;
+        private static final long serialVersionUID = 3725953138684324339L;
 
         /**
          * Ctor.
@@ -215,6 +217,7 @@ public class ConfigurationEventTypeLegacy implements Serializable
     {
         private String name;
         private String accessorMethodName;
+        private static final long serialVersionUID = 3510051879181321459L;
 
         /**
          * Ctor.

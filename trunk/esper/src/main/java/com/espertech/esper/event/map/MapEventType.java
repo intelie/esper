@@ -159,7 +159,7 @@ public class MapEventType implements EventTypeSPI
                 if (isArray) {
                     propTypeName = getPropertyRemoveArray(propTypeName);
                 }
-                EventType innerType = eventAdapterService.getExistsTypeByAlias(propTypeName);
+                EventType innerType = eventAdapterService.getExistsTypeByName(propTypeName);
                 return innerType.getUnderlyingType();
             }
             if (!(type instanceof Class))
@@ -213,7 +213,7 @@ public class MapEventType implements EventTypeSPI
                 if (isArray) {
                     propTypeName = getPropertyRemoveArray(propTypeName);
                 }
-                EventType innerType = eventAdapterService.getExistsTypeByAlias(propTypeName);
+                EventType innerType = eventAdapterService.getExistsTypeByName(propTypeName);
                 if (!(innerType instanceof MapEventType))
                 {
                     return null;
@@ -273,7 +273,7 @@ public class MapEventType implements EventTypeSPI
             if (isArray) {
                 nestedName = getPropertyRemoveArray(nestedName);
             }
-            EventType innerType = eventAdapterService.getExistsTypeByAlias(nestedName);
+            EventType innerType = eventAdapterService.getExistsTypeByName(nestedName);
             if (!(innerType instanceof MapEventType))
             {
                 return null;
@@ -343,7 +343,7 @@ public class MapEventType implements EventTypeSPI
                 if (isArray) {
                     nestedTypeName = getPropertyRemoveArray(nestedTypeName);
                 }
-                EventType innerType = eventAdapterService.getExistsTypeByAlias(nestedTypeName);
+                EventType innerType = eventAdapterService.getExistsTypeByName(nestedTypeName);
                 if (!(innerType instanceof MapEventType))
                 {
                     return null;
@@ -411,7 +411,7 @@ public class MapEventType implements EventTypeSPI
                 if (isArray) {
                     nestedTypeName = getPropertyRemoveArray(nestedTypeName);
                 }
-                EventType innerType = eventAdapterService.getExistsTypeByAlias(nestedTypeName);
+                EventType innerType = eventAdapterService.getExistsTypeByName(nestedTypeName);
                 if (!(innerType instanceof MapEventType))
                 {
                     return null;
@@ -539,7 +539,7 @@ public class MapEventType implements EventTypeSPI
             if (isArray) {
                 nestedName = getPropertyRemoveArray(nestedName);
             }
-            EventType innerType = eventAdapterService.getExistsTypeByAlias(nestedName);
+            EventType innerType = eventAdapterService.getExistsTypeByName(nestedName);
             if (!(innerType instanceof MapEventType))
             {
                 return null;
@@ -673,15 +673,6 @@ public class MapEventType implements EventTypeSPI
     public int hashCode()
     {
         return hashCode;
-    }
-
-    /**
-     * Returns the event type alias.
-     * @return event type alias
-     */
-    public String getAlias()
-    {
-        return typeName;
     }
 
     /**
@@ -1040,7 +1031,7 @@ public class MapEventType implements EventTypeSPI
                 }
 
                 // Add EventType itself as a property
-                EventType eventType = eventAdapterService.getExistsTypeByAlias(propertyName);
+                EventType eventType = eventAdapterService.getExistsTypeByName(propertyName);
                 if (!(eventType instanceof MapEventType))
                 {
                     throw new EPException("Nestable map type configuration encountered an unexpected property type name '"
@@ -1128,7 +1119,7 @@ public class MapEventType implements EventTypeSPI
                     return null;
                 }
                 propTypeName = getPropertyRemoveArray(propTypeName);
-                EventType innerType = eventAdapterService.getExistsTypeByAlias(propTypeName);
+                EventType innerType = eventAdapterService.getExistsTypeByName(propTypeName);
                 if (!(innerType instanceof MapEventType))
                 {
                     return null;
@@ -1184,7 +1175,7 @@ public class MapEventType implements EventTypeSPI
                 if (isArray) {
                     propTypeName = getPropertyRemoveArray(propTypeName);
                 }
-                EventType innerType = eventAdapterService.getExistsTypeByAlias(propTypeName);
+                EventType innerType = eventAdapterService.getExistsTypeByName(propTypeName);
                 if (!(innerType instanceof MapEventType))
                 {
                     return null;
@@ -1233,7 +1224,7 @@ public class MapEventType implements EventTypeSPI
             {
                 return null;
             }
-            EventType nestedEventType = eventAdapterService.getBeanEventTypeFactory().createBeanTypeNoAlias(simpleClass);
+            EventType nestedEventType = eventAdapterService.getBeanEventTypeFactory().createBeanTypeDefaultName(simpleClass);
             return nestedEventType.getFragmentType(propertyNested);
         }
         else if (nestedType instanceof EventType)
@@ -1253,7 +1244,7 @@ public class MapEventType implements EventTypeSPI
             if (isArray) {
                 nestedName = getPropertyRemoveArray(nestedName);
             }
-            EventType innerType = eventAdapterService.getExistsTypeByAlias(nestedName);
+            EventType innerType = eventAdapterService.getExistsTypeByName(nestedName);
             if (!(innerType instanceof MapEventType))
             {
                 return null;

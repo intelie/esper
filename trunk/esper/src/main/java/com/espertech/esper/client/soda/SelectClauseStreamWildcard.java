@@ -16,45 +16,40 @@ import java.io.StringWriter;
  * <p>
  * For example:
  * <pre>select streamOne.* from StreamOne as streamOne, StreamTwo as streamTwo</pre>
- * <p>
- * There may also be an alias such that the event ends up in  
- * <p>
- * For example:
- * <pre>select streamOne.* from StreamOne as streamOne, StreamTwo as streamTwo</pre>
  */
 public class SelectClauseStreamWildcard implements SelectClauseElement
 {
-    private String streamAliasName;
-    private String optionalColumnAlias;
+    private String streamName;
+    private String optionalColumnName;
 
     /**
      * Ctor.
-     * @param streamAliasName is the alias name assigned to a stream
-     * @param optionalColumnAlias is the name to assign to the column carrying the streams generated events, or
+     * @param streamName is the name assigned to a stream
+     * @param optionalColumnName is the name to assign to the column carrying the streams generated events, or
      * null if the event should not appear in a column
      */
-    public SelectClauseStreamWildcard(String streamAliasName, String optionalColumnAlias)
+    public SelectClauseStreamWildcard(String streamName, String optionalColumnName)
     {
-        this.streamAliasName = streamAliasName;
-        this.optionalColumnAlias = optionalColumnAlias;
+        this.streamName = streamName;
+        this.optionalColumnName = optionalColumnName;
     }
 
     /**
-     * Returns the stream alias name (e.g. select streamAliasName.* as colAlias from MyStream as streamAliasName)
-     * @return alias
+     * Returns the stream name (e.g. select streamName.* as colName from MyStream as streamName)
+     * @return name
      */
-    public String getStreamAliasName()
+    public String getStreamName()
     {
-        return streamAliasName;
+        return streamName;
     }
 
     /**
-     * Returns the optional column alias name (e.g. select streamAliasName.* as colAlias from MyStream as streamAliasName)
-     * @return alias of column, or null if none defined
+     * Returns the optional column name (e.g. select streamName.* as colName from MyStream as streamName)
+     * @return name of column, or null if none defined
      */
-    public String getOptionalColumnAlias()
+    public String getOptionalColumnName()
     {
-        return optionalColumnAlias;
+        return optionalColumnName;
     }
 
     /**
@@ -63,12 +58,12 @@ public class SelectClauseStreamWildcard implements SelectClauseElement
      */
     public void toEPLElement(StringWriter writer)
     {
-        writer.write(streamAliasName);
+        writer.write(streamName);
         writer.write(".*");
-        if (optionalColumnAlias != null)
+        if (optionalColumnName != null)
         {
             writer.write(" as ");
-            writer.write(optionalColumnAlias);
+            writer.write(optionalColumnName);
         }
     }
 }

@@ -30,7 +30,7 @@ public class TestCSVAdapterUseCasesBean extends TestCSVAdapterUseCases {
     public void testReadWritePropsBean()
     {
         Configuration configuration = new Configuration();
-        configuration.addEventTypeAlias("ReadWrite", ExampleMarketDataBeanReadWrite.class);
+        configuration.addEventType("ReadWrite", ExampleMarketDataBeanReadWrite.class);
 
         epService = EPServiceProviderManager.getProvider("testExistingTypeNoOptions", configuration);
         epService.initialize();

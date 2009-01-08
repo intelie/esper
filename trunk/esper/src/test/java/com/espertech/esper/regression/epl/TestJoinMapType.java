@@ -22,8 +22,8 @@ public class TestJoinMapType extends TestCase
         typeInfo.put("p00", int.class);
         
         Configuration config = SupportConfigFactory.getConfiguration();
-        config.addEventTypeAlias("MapS0", typeInfo);
-        config.addEventTypeAlias("MapS1", typeInfo);
+        config.addEventType("MapS0", typeInfo);
+        config.addEventType("MapS1", typeInfo);
 
         epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();

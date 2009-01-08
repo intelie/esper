@@ -283,7 +283,7 @@ public class TestTimerAtObserver extends TestCase implements SupportBeanConstant
         String expression = "select * from pattern [a=SupportBean -> every timer:at(2*a.intPrimitive,*,*,*,*)]";
 
         Configuration config = SupportConfigFactory.getConfiguration();
-        config.addEventTypeAlias("SupportBean", SupportBean.class.getName());
+        config.addEventType("SupportBean", SupportBean.class.getName());
         EPServiceProvider epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();
 

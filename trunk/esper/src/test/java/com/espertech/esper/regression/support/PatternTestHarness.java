@@ -55,13 +55,13 @@ public class PatternTestHarness implements SupportBeanConstants
     private void runTest(PatternTestStyle testStyle) throws Exception
     {
         Configuration config = SupportConfigFactory.getConfiguration();
-        config.addEventTypeAlias("A", SupportBean_A.class);
-        config.addEventTypeAlias("B", SupportBean_B.class);
-        config.addEventTypeAlias("C", SupportBean_C.class);
-        config.addEventTypeAlias("D", SupportBean_D.class);
-        config.addEventTypeAlias("E", SupportBean_E.class);
-        config.addEventTypeAlias("F", SupportBean_F.class);
-        config.addEventTypeAlias("G", SupportBean_G.class);
+        config.addEventType("A", SupportBean_A.class);
+        config.addEventType("B", SupportBean_B.class);
+        config.addEventType("C", SupportBean_C.class);
+        config.addEventType("D", SupportBean_D.class);
+        config.addEventType("E", SupportBean_E.class);
+        config.addEventType("F", SupportBean_F.class);
+        config.addEventType("G", SupportBean_G.class);
         EPServiceProvider serviceProvider = EPServiceProviderManager.getDefaultProvider(config);
         serviceProvider.initialize();
 

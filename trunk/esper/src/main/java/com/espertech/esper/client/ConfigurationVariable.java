@@ -17,6 +17,7 @@ public class ConfigurationVariable implements Serializable
 {
     private Class type;
     private Object initializationValue;
+    private static final long serialVersionUID = 4273849084807284503L;
 
     /**
      * Returns the variable type.

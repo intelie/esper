@@ -1,6 +1,5 @@
 package com.espertech.esper.example.stockticker;
 
-import com.espertech.esper.client.EPRuntime;
 import com.espertech.esper.client.EPServiceProviderManager;
 import com.espertech.esper.client.Configuration;
 import com.espertech.esper.client.EPServiceProvider;
@@ -10,9 +9,6 @@ import com.espertech.esper.example.stockticker.monitor.StockTickerMonitor;
 import com.espertech.esper.example.stockticker.monitor.StockTickerResultListener;
 
 import java.util.LinkedList;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.LinkedBlockingQueue;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -24,8 +20,8 @@ public class StockTickerMain
     public static void main(String[] args)
     {
         Configuration configuration = new Configuration();
-        configuration.addEventTypeAlias("PriceLimit", PriceLimit.class.getName());
-        configuration.addEventTypeAlias("StockTick", StockTick.class.getName());
+        configuration.addEventType("PriceLimit", PriceLimit.class.getName());
+        configuration.addEventType("StockTick", StockTick.class.getName());
 
         log.info("Setting up EPL");
         EPServiceProvider epService = EPServiceProviderManager.getProvider("StockTicker", configuration);

@@ -23,6 +23,7 @@ import java.util.Properties;
  */
 public class ConfigurationDBRef implements Serializable
 {
+    private static final long serialVersionUID = 2833881768128847540L;
     private ConnectionFactoryDesc connectionFactoryDesc;
     private ConnectionSettings connectionSettings;
     private ConnectionLifecycleEnum connectionLifecycleEnum;
@@ -327,10 +328,11 @@ public class ConfigurationDBRef implements Serializable
      */
     public static class ConnectionSettings implements Serializable
     {
+        private static final long serialVersionUID = 5463131581739739687L;
         private Boolean autoCommit;
         private String catalog;
         private Boolean readOnly;
-        private Integer transactionIsolation;
+        private Integer transactionIsolation;        
 
         /**
          * Returns a boolean indicating auto-commit, or null if not set and default accepted.
@@ -423,7 +425,9 @@ public class ConfigurationDBRef implements Serializable
     /**
      * Marker for different connection factory settings.
      */
-    public interface ConnectionFactoryDesc{}
+    public interface ConnectionFactoryDesc extends Serializable
+    {        
+    }
 
     /**
      * Connection factory settings for using a DataSource.
@@ -432,6 +436,7 @@ public class ConfigurationDBRef implements Serializable
     {
         private String contextLookupName;
         private Properties envProperties;
+        private static final long serialVersionUID = -3528568111362490390L;
 
         /**
          * Ctor.
@@ -473,6 +478,7 @@ public class ConfigurationDBRef implements Serializable
         private String optionalUserName;
         private String optionalPassword;
         private Properties optionalProperties;
+        private static final long serialVersionUID = 9004336438099122203L;
 
         /**
          * Ctor.
@@ -574,6 +580,7 @@ public class ConfigurationDBRef implements Serializable
     {
         private Properties properties;
         private String factoryClassname;
+        private static final long serialVersionUID = 262880601816358807L;
 
         /**
          * Ctor.

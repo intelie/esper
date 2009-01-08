@@ -129,17 +129,17 @@ public class EngineImportServiceImpl implements EngineImportService
         return (AggregationSupport) object;
     }
 
-    public Method resolveMethod(String classNameAlias, String methodName, Class[] paramTypes)
+    public Method resolveMethod(String className, String methodName, Class[] paramTypes)
 			throws EngineImportException
     {
         Class clazz;
         try
         {
-            clazz = resolveClassInternal(classNameAlias);
+            clazz = resolveClassInternal(className);
         }
         catch (ClassNotFoundException e)
         {
-            throw new EngineImportException("Could not load class by name '" + classNameAlias + "' ", e);
+            throw new EngineImportException("Could not load class by name '" + className + "' ", e);
         }
 
         try
@@ -148,21 +148,21 @@ public class EngineImportServiceImpl implements EngineImportService
         }
         catch (NoSuchMethodException e)
         {
-            throw new EngineImportException("Could not find static method named '" + methodName + "' in class '" + classNameAlias + "' ", e);
+            throw new EngineImportException("Could not find static method named '" + methodName + "' in class '" + className + "' ", e);
         }
     }
 
-    public Method resolveMethod(String classNameAlias, String methodName)
+    public Method resolveMethod(String className, String methodName)
 			throws EngineImportException
     {
         Class clazz = null;
         try
         {
-            clazz = resolveClassInternal(classNameAlias);
+            clazz = resolveClassInternal(className);
         }
         catch (ClassNotFoundException e)
         {
-            throw new EngineImportException("Could not load class by name '" + classNameAlias + "' ", e);
+            throw new EngineImportException("Could not load class by name '" + className + "' ", e);
         }
 
         Method methods[] = clazz.getMethods();
@@ -175,7 +175,7 @@ public class EngineImportServiceImpl implements EngineImportService
             {
                 if (methodByName != null)
                 {
-                    throw new EngineImportException("Ambiguous method name: method by name '" + methodName + "' is overloaded in class '" + classNameAlias + "'");
+                    throw new EngineImportException("Ambiguous method name: method by name '" + methodName + "' is overloaded in class '" + className + "'");
                 }
                 int modifiers = method.getModifiers();
                 if (Modifier.isPublic(modifiers) && Modifier.isStatic(modifiers))
@@ -187,22 +187,22 @@ public class EngineImportServiceImpl implements EngineImportService
 
         if (methodByName == null)
         {
-            throw new EngineImportException("Could not find static method named '" + methodName + "' in class '" + classNameAlias + "'");
+            throw new EngineImportException("Could not find static method named '" + methodName + "' in class '" + className + "'");
         }
         return methodByName;
     }
 
-    public Class resolveClass(String classNameAlias)
+    public Class resolveClass(String className)
 			throws EngineImportException
     {
         Class clazz;
         try
         {
-            clazz = resolveClassInternal(classNameAlias);
+            clazz = resolveClassInternal(className);
         }
         catch (ClassNotFoundException e)
         {
-            throw new EngineImportException("Could not load class by name '" + classNameAlias + "' ", e);
+            throw new EngineImportException("Could not load class by name '" + className + "' ", e);
         }
 
         return clazz;

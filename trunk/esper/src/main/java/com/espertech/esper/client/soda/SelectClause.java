@@ -60,14 +60,14 @@ public class SelectClause implements Serializable
     }
 
     /**
-     * Creates a select-clause with a single stream wildcard selector (e.g. select streamAliasName.* from MyStream as streamAliasName)
-     * @param streamAliasName is the alias given to a stream
+     * Creates a select-clause with a single stream wildcard selector (e.g. select streamName.* from MyStream as streamName)
+     * @param streamName is the name given to a stream
      * @return select-clause
      */
-    public static SelectClause createStreamWildcard(String streamAliasName)
+    public static SelectClause createStreamWildcard(String streamName)
     {
         List<SelectClauseElement> selectList = new ArrayList<SelectClauseElement>();
-        selectList.add(new SelectClauseStreamWildcard(streamAliasName, null));
+        selectList.add(new SelectClauseStreamWildcard(streamName, null));
         return new SelectClause(StreamSelector.ISTREAM_ONLY, selectList);
     }
 
@@ -140,7 +140,7 @@ public class SelectClause implements Serializable
      * @param asName is the "as"-asName for the column
      * @return clause
      */
-    public SelectClause addWithAlias(String propertyName, String asName)
+    public SelectClause addWithAsProvidedName(String propertyName, String asName)
     {
         selectList.add(new SelectClauseExpression(new PropertyValueExpression(propertyName), asName));
         return this;
@@ -160,7 +160,7 @@ public class SelectClause implements Serializable
     /**
      * Adds an expression to the select clause and an "as"-asName for the column.
      * @param expression to add
-     * @param asName is the "as"-alias for the column
+     * @param asName is the "as"-provided for the column
      * @return clause
      */
     public SelectClause add(Expression expression, String asName)
@@ -180,7 +180,7 @@ public class SelectClause implements Serializable
 
     /**
      * Returns the list of expressions in the select clause.
-     * @return list of expressions with column aliases
+     * @return list of expressions with column names
      */
     public List<SelectClauseElement> getSelectList()
     {
@@ -188,18 +188,18 @@ public class SelectClause implements Serializable
     }
 
     /**
-     * Adds to the select-clause a stream wildcard selector (e.g. select streamAliasName.* from MyStream as streamAliasName)
-     * @param streamAliasName is the alias given to a stream
+     * Adds to the select-clause a stream wildcard selector (e.g. select streamName.* from MyStream as streamName)
+     * @param streamName is the name given to a stream
      * @return select-clause
      */
-    public SelectClause addStreamWildcard(String streamAliasName)
+    public SelectClause addStreamWildcard(String streamName)
     {
-        selectList.add(new SelectClauseStreamWildcard(streamAliasName, null));
+        selectList.add(new SelectClauseStreamWildcard(streamName, null));
         return this;
     }
 
     /**
-     * Adds to the select-clause a  wildcard selector (e.g. select * from MyStream as streamAliasName)
+     * Adds to the select-clause a  wildcard selector (e.g. select * from MyStream as streamName)
      * @return select-clause
      */
     public SelectClause addWildcard()
@@ -209,14 +209,14 @@ public class SelectClause implements Serializable
     }
 
     /**
-     * Adds to the select-clause a stream wildcard selector with column alias (e.g. select streamAliasName.* as colAlias from MyStream as streamAliasName)
-     * @param streamAliasName is the alias given to a stream
-     * @param columnAlias the alias given to the column
+     * Adds to the select-clause a stream wildcard selector with column name (e.g. select streamName.* as colName from MyStream as streamName)
+     * @param streamName is the name given to a stream
+     * @param columnName the name given to the column
      * @return select-clause
      */
-    public SelectClause addStreamWildcard(String streamAliasName, String columnAlias)
+    public SelectClause addStreamWildcard(String streamName, String columnName)
     {
-        selectList.add(new SelectClauseStreamWildcard(streamAliasName, columnAlias));
+        selectList.add(new SelectClauseStreamWildcard(streamName, columnName));
         return this;
     }
 
@@ -233,7 +233,7 @@ public class SelectClause implements Serializable
 
     /**
      * Sets the list of expressions in the select clause.
-     * @param selectList list of expressions with column aliases
+     * @param selectList list of expressions with column names
      */
     public void setSelectList(List<SelectClauseElement> selectList)
     {

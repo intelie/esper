@@ -31,6 +31,8 @@ With Esper 3 integer division returns Double values, and Integer division can be
   - dynamic properties return Node
 - Removed examples: LinearRoad, RSI, ATM; Added new examples for named window and OHLC, improved doc, restructured directories, added Eclipse projects
 - Added XML and JSON renderers
+- Changes to methods in Configuration and ConfigurationOperations as the term "alias" was replaced by "name"
+- new method on statement addListenerWithReplay
   
 Changes in version 2.3
 ------------------------

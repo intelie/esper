@@ -14,7 +14,7 @@ package com.espertech.esperio;
 public interface InputAdapter extends Adapter
 {
     /**
-     * Use for MapMessage events to indicate the event type alias.
+     * Use for MapMessage events to indicate the event type name.
      */
     public static final String ESPERIO_MAP_EVENT_TYPE = InputAdapter.class.getName() + "_maptype";
 }

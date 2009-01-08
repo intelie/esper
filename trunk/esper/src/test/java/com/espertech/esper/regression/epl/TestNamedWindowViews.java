@@ -30,7 +30,7 @@ public class TestNamedWindowViews extends TestCase
         types.put("value", long.class);
 
         Configuration config = SupportConfigFactory.getConfiguration();
-        config.addEventTypeAlias("MyMap", types);
+        config.addEventType("MyMap", types);
 
         epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();

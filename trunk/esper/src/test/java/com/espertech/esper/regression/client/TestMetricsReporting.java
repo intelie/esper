@@ -410,7 +410,7 @@ public class TestMetricsReporting extends TestCase
 
         configuration.addImport(MyMetricFunctions.class.getName());
 
-        configuration.addEventTypeAlias("SupportBean", SupportBean.class);
+        configuration.addEventType("SupportBean", SupportBean.class);
 
         return configuration;
     }

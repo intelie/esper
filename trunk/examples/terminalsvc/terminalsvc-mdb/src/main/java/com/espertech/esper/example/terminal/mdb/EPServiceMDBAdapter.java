@@ -21,13 +21,13 @@ public class EPServiceMDBAdapter
     public EPServiceMDBAdapter(OutboundSender outboundSender)
     {
         Configuration config = new Configuration();
-        config.addEventTypeAlias("Checkin", Checkin.class);
-        config.addEventTypeAlias("Cancelled", Cancelled.class);
-        config.addEventTypeAlias("Completed", Completed.class);
-        config.addEventTypeAlias("Status", Status.class);
-        config.addEventTypeAlias("LowPaper", LowPaper.class);
-        config.addEventTypeAlias("OutOfOrder", OutOfOrder.class);
-        config.addEventTypeAlias("BaseTerminalEvent", BaseTerminalEvent.class);
+        config.addEventType("Checkin", Checkin.class);
+        config.addEventType("Cancelled", Cancelled.class);
+        config.addEventType("Completed", Completed.class);
+        config.addEventType("Status", Status.class);
+        config.addEventType("LowPaper", LowPaper.class);
+        config.addEventType("OutOfOrder", OutOfOrder.class);
+        config.addEventType("BaseTerminalEvent", BaseTerminalEvent.class);
 
         // Get engine instance - same engine instance for all MDB instances
         epService = EPServiceProviderManager.getDefaultProvider(config);

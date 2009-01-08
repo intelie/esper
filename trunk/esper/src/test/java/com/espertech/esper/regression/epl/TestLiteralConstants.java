@@ -18,7 +18,7 @@ public class TestLiteralConstants extends TestCase
     public void setUp()
     {
         Configuration config = SupportConfigFactory.getConfiguration();
-        config.addEventTypeAlias("SupportBean", SupportBean.class.getName());
+        config.addEventType("SupportBean", SupportBean.class.getName());
         epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();
         updateListener = new SupportUpdateListener();

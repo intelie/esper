@@ -15,7 +15,7 @@ public class TestPatternGuardPlugIn extends TestCase
     {
         Configuration configuration = SupportConfigFactory.getConfiguration();
         configuration.addPlugInPatternGuard("myplugin", "count_to", MyCountToPatternGuardFactory.class.getName());
-        configuration.addEventTypeAlias("Bean", SupportBean.class.getName());
+        configuration.addEventType("Bean", SupportBean.class.getName());
         epService = EPServiceProviderManager.getDefaultProvider(configuration);
         epService.initialize();
 

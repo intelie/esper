@@ -19,7 +19,7 @@ public class OnTriggerWindowDesc extends OnTriggerDesc
     /**
      * Ctor.
      * @param windowName the window name
-     * @param optionalAsName the optional alias
+     * @param optionalAsName the optional name
      * @param isOnDelete true for on-delete and false for on-select
      */
     public OnTriggerWindowDesc(String windowName, String optionalAsName, boolean isOnDelete)
@@ -39,8 +39,8 @@ public class OnTriggerWindowDesc extends OnTriggerDesc
     }
 
     /**
-     * Returns the alias, or null if none defined.
-     * @return alias
+     * Returns the name, or null if none defined.
+     * @return name
      */
     public String getOptionalAsName()
     {

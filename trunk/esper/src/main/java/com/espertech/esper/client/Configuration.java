@@ -33,7 +33,8 @@ import java.util.*;
  */
 public class Configuration implements ConfigurationOperations, ConfigurationInformation, Serializable
 {
-	private static Log log = LogFactory.getLog( Configuration.class );
+    private static final long serialVersionUID = -220881974438617882L;
+    private static Log log = LogFactory.getLog( Configuration.class );
 
     /**
      * Default name of the configuration file.
@@ -46,29 +47,29 @@ public class Configuration implements ConfigurationOperations, ConfigurationInfo
 	protected Map<String, String> eventClasses;
 
     /**
-     * Map of event type alias and XML DOM configuration.
+     * Map of event type name and XML DOM configuration.
      */
 	protected Map<String, ConfigurationEventTypeXMLDOM> eventTypesXMLDOM;
 
     /**
-     * Map of event type alias and Legacy-type event configuration.
+     * Map of event type name and Legacy-type event configuration.
      */
 	protected Map<String, ConfigurationEventTypeLegacy> eventTypesLegacy;
 
 	/**
-	 * The type aliases for events that are backed by java.util.Map,
+	 * The type names for events that are backed by java.util.Map,
      * not containing strongly-typed nested maps.
 	 */
-	protected Map<String, Properties> mapAliases;
+	protected Map<String, Properties> mapNames;
 
     /**
-     * The type aliases for events that are backed by java.util.Map,
+     * The type names for events that are backed by java.util.Map,
      * possibly containing strongly-typed nested maps.
      * <p>
      * Each entrie's value must be either a Class or a Map<String,Object> to
      * define nested maps.
      */
-    protected Map<String, Map<String, Object>> nestableMapAliases;
+    protected Map<String, Map<String, Object>> nestableMapNames;
 
     /**
      * Map event types that are subtypes of one or more Map event types
@@ -123,9 +124,9 @@ public class Configuration implements ConfigurationOperations, ConfigurationInfo
     protected ConfigurationEngineDefaults engineDefaults;
 
     /**
-     * Saves the packages to search to resolve event type aliases.
+     * Saves the packages to search to resolve event type names.
      */
-    protected Set<String> eventTypeAutoAliasPackages;
+    protected Set<String> eventTypeAutoNamePackages;
 
     /**
      * Map of variables.
@@ -148,10 +149,10 @@ public class Configuration implements ConfigurationOperations, ConfigurationInfo
 	protected Map<String, ConfigurationPlugInEventType> plugInEventTypes;
 
     /**
-     * URIs that point to plug-in event representations that are given a chance to dynamically resolve an event type alias to an
+     * URIs that point to plug-in event representations that are given a chance to dynamically resolve an event type name to an
      * event type, as it occurs in a new EPL statement.
      */
-    protected URI[] plugInEventTypeAliasResolutionURIs;
+    protected URI[] plugInEventTypeResolutionURIs;
 
     /**
      * All revision event types which allow updates to past events.
@@ -196,112 +197,111 @@ public class Configuration implements ConfigurationOperations, ConfigurationInfo
     }
 
     /**
-     * Checks if an eventTypeAlias has already been registered for that alias name.
+     * Checks if an event type has already been registered for that name.
      * @since 2.1
-     * @param eventTypeAlias the alias name
+     * @param eventTypeName the name
      * @return true if already registered
      */
-    public boolean isEventTypeAliasExists(String eventTypeAlias) {
-        return eventClasses.containsKey(eventTypeAlias)
-                || mapAliases.containsKey(eventTypeAlias)
-                || nestableMapAliases.containsKey(eventTypeAlias)
-                || eventTypesXMLDOM.containsKey(eventTypeAlias);
+    public boolean isEventTypeExists(String eventTypeName) {
+        return eventClasses.containsKey(eventTypeName)
+                || mapNames.containsKey(eventTypeName)
+                || nestableMapNames.containsKey(eventTypeName)
+                || eventTypesXMLDOM.containsKey(eventTypeName);
         //note: no need to check legacy as they get added as class event type
     }
 
     /**
-     * Add an alias for an event type represented by Java-bean plain-old Java object events.
-     * @param eventTypeAlias is the alias for the event type
+     * Add an name for an event type represented by Java-bean plain-old Java object events.
+     * @param eventTypeName is the name for the event type
      * @param eventClassName fully-qualified class name of the event type
      */
-    public void addEventTypeAlias(String eventTypeAlias, String eventClassName)
+    public void addEventType(String eventTypeName, String eventClassName)
     {
-        eventClasses.put(eventTypeAlias, eventClassName);
+        eventClasses.put(eventTypeName, eventClassName);
     }
 
     /**
-     * Add an alias for an event type represented by Java-bean plain-old Java object events.
-     * @param eventTypeAlias is the alias for the event type
-     * @param eventClass is the Java event class for which to create the alias
+     * Add an name for an event type represented by Java-bean plain-old Java object events.
+     * @param eventTypeName is the name for the event type
+     * @param eventClass is the Java event class for which to add the name
      */
-    public void addEventTypeAlias(String eventTypeAlias, Class eventClass)
+    public void addEventType(String eventTypeName, Class eventClass)
     {
-        addEventTypeAlias(eventTypeAlias, eventClass.getName());
+        addEventType(eventTypeName, eventClass.getName());
     }
 
     /**
-     * Add an alias for an event type represented by Java-bean plain-old Java object events,
-     * and the alias is the simple class name of the class.
-     * @param eventClass is the Java event class for which to create the alias
+     * Add an name for an event type represented by Java-bean plain-old Java object events,
+     * and the name is the simple class name of the class.
+     * @param eventClass is the Java event class for which to add the name
      */
-    public void addEventTypeAliasSimpleName(Class eventClass)
+    public void addEventType(Class eventClass)
     {
-        addEventTypeAlias(eventClass.getSimpleName(), eventClass.getName());
+        addEventType(eventClass.getSimpleName(), eventClass.getName());
     }
 
     /**
-     * Add an alias for an event type that represents java.util.Map events.
+     * Add an name for an event type that represents java.util.Map events.
      * <p>
      * Each entry in the type map is the property name and the fully-qualified
      * Java class name or primitive type name.
-     * @param eventTypeAlias is the alias for the event type
+     * @param eventTypeName is the name for the event type
      * @param typeMap maps the name of each property in the Map event to the type
      * (fully qualified classname) of its value in Map event instances.
      */
-    public void addEventTypeAlias(String eventTypeAlias, Properties typeMap)
+    public void addEventType(String eventTypeName, Properties typeMap)
     {
-    	mapAliases.put(eventTypeAlias, typeMap);
+    	mapNames.put(eventTypeName, typeMap);
     }
 
-    public void addEventTypeAlias(String eventTypeAlias, Map<String, Object> typeMap)
+    public void addEventType(String eventTypeName, Map<String, Object> typeMap)
     {
-        nestableMapAliases.put(eventTypeAlias, typeMap);
+        nestableMapNames.put(eventTypeName, typeMap);
     }
 
-    public void addEventTypeAlias(String eventTypeAlias, Map<String, Object> typeMap, String[] superTypes)
+    public void addEventType(String eventTypeName, Map<String, Object> typeMap, String[] superTypes)
     {
-        nestableMapAliases.put(eventTypeAlias, typeMap);
+        nestableMapNames.put(eventTypeName, typeMap);
         if (superTypes != null)
         {
             for (int i = 0; i < superTypes.length; i++)
             {
-                this.addMapSuperType(eventTypeAlias, superTypes[i]);
+                this.addMapSuperType(eventTypeName, superTypes[i]);
             }
         }
     }
 
     /**
-     * Add, for a given Map event type identified by the first parameter, the event type alias supertype
-     * of a Map supertype.
+     * Add, for a given Map event type identified by the first parameter, the supertype (by its event type name).
      * <p>
      * Each Map event type may have any number of supertypes, each supertype must also be of a Map-type event.
-     * @param mapEventTypeAlias the alias of a Map event type, that is to have a supertype
-     * @param mapSupertypeAlias the alias of a Map event type that is the supertype 
+     * @param mapeventTypeName the name of a Map event type, that is to have a supertype
+     * @param mapSupertypeName the name of a Map event type that is the supertype
      */
-    public void addMapSuperType(String mapEventTypeAlias, String mapSupertypeAlias)
+    public void addMapSuperType(String mapeventTypeName, String mapSupertypeName)
     {
-        Set<String> superTypes = mapSuperTypes.get(mapEventTypeAlias);
+        Set<String> superTypes = mapSuperTypes.get(mapeventTypeName);
         if (superTypes == null)
         {
             superTypes = new HashSet<String>();
-            mapSuperTypes.put(mapEventTypeAlias, superTypes);
+            mapSuperTypes.put(mapeventTypeName, superTypes);
         }
-        superTypes.add(mapSupertypeAlias);
+        superTypes.add(mapSupertypeName);
     }
 
     /**
-     * Add an alias for an event type that represents org.w3c.dom.Node events.
-     * @param eventTypeAlias is the alias for the event type
+     * Add an name for an event type that represents org.w3c.dom.Node events.
+     * @param eventTypeName is the name for the event type
      * @param xmlDOMEventTypeDesc descriptor containing property and mapping information for XML-DOM events
      */
-    public void addEventTypeAlias(String eventTypeAlias, ConfigurationEventTypeXMLDOM xmlDOMEventTypeDesc)
+    public void addEventType(String eventTypeName, ConfigurationEventTypeXMLDOM xmlDOMEventTypeDesc)
     {
-        eventTypesXMLDOM.put(eventTypeAlias, xmlDOMEventTypeDesc);
+        eventTypesXMLDOM.put(eventTypeName, xmlDOMEventTypeDesc);
     }
 
-    public void addRevisionEventType(String revisionEventTypeAlias, ConfigurationRevisionEventType revisionEventTypeConfig)
+    public void addRevisionEventType(String revisioneventTypeName, ConfigurationRevisionEventType revisionEventTypeConfig)
     {
-        revisionEventTypes.put(revisionEventTypeAlias, revisionEventTypeConfig);
+        revisionEventTypes.put(revisioneventTypeName, revisionEventTypeConfig);
     }
 
     /**
@@ -315,15 +315,15 @@ public class Configuration implements ConfigurationOperations, ConfigurationInfo
     }
 
     /**
-     * Add an alias for an event type that represents legacy Java type (non-JavaBean style) events.
-     * @param eventTypeAlias is the alias for the event type
+     * Add an name for an event type that represents legacy Java type (non-JavaBean style) events.
+     * @param eventTypeName is the name for the event type
      * @param eventClass fully-qualified class name of the event type
      * @param legacyEventTypeDesc descriptor containing property and mapping information for Legacy Java type events
      */
-    public void addEventTypeAlias(String eventTypeAlias, String eventClass, ConfigurationEventTypeLegacy legacyEventTypeDesc)
+    public void addEventType(String eventTypeName, String eventClass, ConfigurationEventTypeLegacy legacyEventTypeDesc)
     {
-        eventClasses.put(eventTypeAlias, eventClass);
-        eventTypesLegacy.put(eventTypeAlias, legacyEventTypeDesc);
+        eventClasses.put(eventTypeName, eventClass);
+        eventTypesLegacy.put(eventTypeName, legacyEventTypeDesc);
     }
 
     public void addImport(String autoImport)
@@ -356,19 +356,19 @@ public class Configuration implements ConfigurationOperations, ConfigurationInfo
         this.methodInvocationReferences.put(clazz.getName(), methodInvocationConfig);
     }
 
-    public Map<String, String> getEventTypeAliases()
+    public Map<String, String> getEventTypeNames()
     {
         return eventClasses;
     }
 
     public Map<String, Properties> getEventTypesMapEvents()
     {
-    	return mapAliases;
+    	return mapNames;
     }
 
     public Map<String, Map<String, Object>> getEventTypesNestableMapEvents()
     {
-    	return nestableMapAliases;
+    	return nestableMapNames;
     }
 
     public Map<String, ConfigurationEventTypeXMLDOM> getEventTypesXMLDOM()
@@ -493,9 +493,9 @@ public class Configuration implements ConfigurationOperations, ConfigurationInfo
         plugInPatternObjects.add(entry);
     }
 
-    public void addEventTypeAutoAlias(String packageName)
+    public void addEventTypeAutoName(String packageName)
     {
-        eventTypeAutoAliasPackages.add(packageName);
+        eventTypeAutoNamePackages.add(packageName);
     }
 
     public void addVariable(String variableName, Class type, Object initializationValue)
@@ -535,22 +535,22 @@ public class Configuration implements ConfigurationOperations, ConfigurationInfo
         addPlugInEventRepresentation(eventRepresentationRootURI, eventRepresentationClass.getName(), initializer);
     }
 
-    public void addPlugInEventType(String eventTypeAlias, URI[] resolutionURIs, Serializable initializer)
+    public void addPlugInEventType(String eventTypeName, URI[] resolutionURIs, Serializable initializer)
     {
         ConfigurationPlugInEventType config = new ConfigurationPlugInEventType();
         config.setEventRepresentationResolutionURIs(resolutionURIs);
         config.setInitializer(initializer);
-        plugInEventTypes.put(eventTypeAlias, config);
+        plugInEventTypes.put(eventTypeName, config);
     }
 
-    public void setPlugInEventTypeAliasResolutionURIs(URI[] urisToResolveAlias)
+    public void setPlugInEventTypeResolutionURIs(URI[] urisToResolveName)
     {
-        plugInEventTypeAliasResolutionURIs = urisToResolveAlias;
+        plugInEventTypeResolutionURIs = urisToResolveName;
     }
 
-    public URI[] getPlugInEventTypeAliasResolutionURIs()
+    public URI[] getPlugInEventTypeResolutionURIs()
     {
-        return plugInEventTypeAliasResolutionURIs;
+        return plugInEventTypeResolutionURIs;
     }
 
     public Map<URI, ConfigurationPlugInEventRepresentation> getPlugInEventRepresentation()
@@ -563,9 +563,9 @@ public class Configuration implements ConfigurationOperations, ConfigurationInfo
         return plugInEventTypes;
     }
 
-    public Set<String> getEventTypeAutoAliasPackages()
+    public Set<String> getEventTypeAutoNamePackages()
     {
-        return eventTypeAutoAliasPackages;
+        return eventTypeAutoNamePackages;
     }
 
     public ConfigurationEngineDefaults getEngineDefaults()
@@ -573,9 +573,9 @@ public class Configuration implements ConfigurationOperations, ConfigurationInfo
         return engineDefaults;
     }
 
-    public void addVariantStream(String variantEventTypeAlias, ConfigurationVariantStream variantStreamConfig)
+    public void addVariantStream(String varianteventTypeName, ConfigurationVariantStream variantStreamConfig)
     {
-        variantStreams.put(variantEventTypeAlias, variantStreamConfig);
+        variantStreams.put(varianteventTypeName, variantStreamConfig);
     }
 
     public Map<String, ConfigurationVariantStream> getVariantStreams()
@@ -583,14 +583,14 @@ public class Configuration implements ConfigurationOperations, ConfigurationInfo
         return variantStreams;
     }
 
-    public void updateMapEventType(String mapEventTypeAlias, Map<String, Object> typeMap) throws ConfigurationException
+    public void updateMapEventType(String mapeventTypeName, Map<String, Object> typeMap) throws ConfigurationException
     {
         throw new UnsupportedOperationException("Map type update is only available in runtime configuration");
     }
 
-    public Set<String> getEventTypeAliasUsedBy(String alias)
+    public Set<String> getEventTypeNameUsedBy(String name)
     {
-        throw new UnsupportedOperationException("Get event type by alias is only available in runtime configuration");
+        throw new UnsupportedOperationException("Get event type by name is only available in runtime configuration");
     }
 
     public boolean isVariantStreamExists(String name)
@@ -723,17 +723,17 @@ public class Configuration implements ConfigurationOperations, ConfigurationInfo
         return this;
     }
 
-    public boolean removeEventType(String alias, boolean force) throws ConfigurationException
+    public boolean removeEventType(String eventTypeName, boolean force) throws ConfigurationException
     {
-        eventClasses.remove(alias);
-        eventTypesXMLDOM.remove(alias);
-        eventTypesLegacy.remove(alias);
-        mapAliases.remove(alias);
-        nestableMapAliases.remove(alias);
-        mapSuperTypes.remove(alias);
-        plugInEventTypes.remove(alias);
-        revisionEventTypes.remove(alias);
-        variantStreams.remove(alias);
+        eventClasses.remove(eventTypeName);
+        eventTypesXMLDOM.remove(eventTypeName);
+        eventTypesLegacy.remove(eventTypeName);
+        mapNames.remove(eventTypeName);
+        nestableMapNames.remove(eventTypeName);
+        mapSuperTypes.remove(eventTypeName);
+        plugInEventTypes.remove(eventTypeName);
+        revisionEventTypes.remove(eventTypeName);
+        variantStreams.remove(eventTypeName);
         return true;
     }
 
@@ -806,8 +806,8 @@ public class Configuration implements ConfigurationOperations, ConfigurationInfo
     protected void reset()
     {
         eventClasses = new HashMap<String, String>();
-        mapAliases = new HashMap<String, Properties>();
-        nestableMapAliases = new HashMap<String, Map<String, Object>>();
+        mapNames = new HashMap<String, Properties>();
+        nestableMapNames = new HashMap<String, Map<String, Object>>();
         eventTypesXMLDOM = new HashMap<String, ConfigurationEventTypeXMLDOM>();
         eventTypesLegacy = new HashMap<String, ConfigurationEventTypeLegacy>();
         databaseReferences = new HashMap<String, ConfigurationDBRef>();
@@ -819,7 +819,7 @@ public class Configuration implements ConfigurationOperations, ConfigurationInfo
         plugInAggregationFunctions = new ArrayList<ConfigurationPlugInAggregationFunction>();
         plugInPatternObjects = new ArrayList<ConfigurationPlugInPatternObject>();
         engineDefaults = new ConfigurationEngineDefaults();
-        eventTypeAutoAliasPackages = new LinkedHashSet<String>();
+        eventTypeAutoNamePackages = new LinkedHashSet<String>();
         variables = new HashMap<String, ConfigurationVariable>();
         methodInvocationReferences = new HashMap<String, ConfigurationMethodRef>();
         plugInEventRepresentation = new HashMap<URI, ConfigurationPlugInEventRepresentation>();

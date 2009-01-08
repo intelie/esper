@@ -102,14 +102,14 @@ public class PropertyUtility
      * Analyze multiple event types and determine common property sets that form property groups.
      * @param allProperties property names to look at
      * @param deltaEventTypes all types contributing
-     * @param aliases names of properies
+     * @param names names of properies
      * @return groups
      */
-    public static PropertyGroupDesc[] analyzeGroups(String[] allProperties, EventType[] deltaEventTypes, String[] aliases)
+    public static PropertyGroupDesc[] analyzeGroups(String[] allProperties, EventType[] deltaEventTypes, String[] names)
     {
-        if (deltaEventTypes.length != aliases.length)
+        if (deltaEventTypes.length != names.length)
         {
-            throw new IllegalArgumentException("Delta event type number and alias number of elements don't match");
+            throw new IllegalArgumentException("Delta event type number and name number of elements don't match");
         }
         allProperties = copyAndSort(allProperties);
 
@@ -121,7 +121,7 @@ public class PropertyUtility
             MultiKey<String> props = getPropertiesContributed(deltaEventTypes[i], allProperties);
             if (props.getArray().length == 0)
             {
-                log.warn("Event type alias '" + aliases[i] + "' does not contribute (or override) any properties of the revision event type");
+                log.warn("Event type name '" + names[i] + "' does not contribute (or override) any properties of the revision event type");
                 continue;
             }
 
@@ -137,7 +137,7 @@ public class PropertyUtility
             {
                 typesForGroup = propertyGroup.getTypes();
             }
-            typesForGroup.put(deltaEventTypes[i], aliases[i]);
+            typesForGroup.put(deltaEventTypes[i], names[i]);
         }
 
         Collection<PropertyGroupDesc> out = result.values();

@@ -80,7 +80,7 @@ public class TestAxiom extends TestCase
         sendEvent(epService, "TestXMLNoSchemaType", "EventB");
         assertData("EventB");
 
-        EventType eventType = ((EPServiceProviderSPI)epService).getEventAdapterService().getExistsTypeByAlias("TestXMLNoSchemaType");
+        EventType eventType = ((EPServiceProviderSPI)epService).getEventAdapterService().getExistsTypeByName("TestXMLNoSchemaType");
         assertEquals(5, eventType.getPropertyDescriptors().length);
         assertEquals(5, eventType.getPropertyNames().length);
 

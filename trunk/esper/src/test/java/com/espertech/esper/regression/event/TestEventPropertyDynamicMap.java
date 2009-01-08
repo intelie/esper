@@ -29,7 +29,7 @@ public class TestEventPropertyDynamicMap extends TestCase
     {
         Properties properties = new Properties();
         properties.put("innermap", Map.class.getName());
-        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("MyLevel2", properties);
+        epService.getEPAdministrator().getConfiguration().addEventType("MyLevel2", properties);
 
         String statementText = "select " +
                                "innermap.int? as t0, " +
@@ -83,7 +83,7 @@ public class TestEventPropertyDynamicMap extends TestCase
     {
         Properties properties = new Properties();
         properties.put("innermap", Map.class.getName());
-        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("MyLevel2", properties);
+        epService.getEPAdministrator().getConfiguration().addEventType("MyLevel2", properties);
 
         String statementText = "select " +
                                "exists(innermap.int?) as t0, " +
@@ -137,7 +137,7 @@ public class TestEventPropertyDynamicMap extends TestCase
     {
         Properties properties = new Properties();
         properties.put("innermap", Map.class.getName());
-        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("MyLevel2", properties);
+        epService.getEPAdministrator().getConfiguration().addEventType("MyLevel2", properties);
 
         String statementText = "select innermap.int as t0 from MyLevel2.win:length(5)";
         try

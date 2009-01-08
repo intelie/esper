@@ -27,8 +27,8 @@
         </para>
 
 		<programlisting><![CDATA[Configuration configuration = new Configuration();
-configuration.addEventTypeAlias("PriceLimit", PriceLimit.class.getName());
-configuration.addEventTypeAlias("StockTick", StockTick.class.getName());
+configuration.addEventType("PriceLimit", PriceLimit.class.getName());
+configuration.addEventType("StockTick", StockTick.class.getName());
 configuration.addImport("org.mycompany.mypackage.MyUtility");
 configuration.addImport("org.mycompany.util.*");
 
@@ -40,7 +40,7 @@ EPServiceProvider epService = EPServiceProviderManager.getProvider("sample", con
         </para>
         
         <para>
-			The <literal>ConfigurationOperations</literal> interface provides runtime configuration options. Through this interface applications can, for example, add new event types or aliases at runtime and then create new statements
+			The <literal>ConfigurationOperations</literal> interface provides runtime configuration options. Through this interface applications can, for example, add new event types at runtime and then create new statements
 			that rely on the additional configuration. The <literal>getConfiguration</literal> method on <literal>EPAdministrator</literal> allows access to <literal>ConfigurationOperations</literal>.
         </para>
 
@@ -74,7 +74,7 @@ configuration.configure("myengine.esper.cfg.xml");
 
         <para>
 			Here is an example configuration file.
-            The schema for the configuration file can be found in the <literal>etc</literal> folder and is named <literal>esper-configuration-2-0.xsd</literal>.
+            The schema for the configuration file can be found in the <literal>etc</literal> folder and is named <literal>esper-configuration-3-0.xsd</literal>.
             It is also available online at <literal>http://www.espertech.com/schema/esper/esper-configuration-2.0.xsd</literal> so that IDE can fetch it automatically.
             The namespace used is <literal>http://www.espertech.com/schema/esper</literal>.
         </para>
@@ -84,8 +84,8 @@ configuration.configure("myengine.esper.cfg.xml");
     xsi:schemaLocation="
 http://www.espertech.com/schema/esper
 http://www.espertech.com/schema/esper/esper-configuration-2.0.xsd">
-  <event-type alias="StockTick" class="com.espertech.esper.example.stockticker.event.StockTick"/>
-  <event-type alias="PriceLimit" class="com.espertech.esper.example.stockticker.event.PriceLimit"/>
+  <event-type name="StockTick" class="com.espertech.esper.example.stockticker.event.StockTick"/>
+  <event-type name="PriceLimit" class="com.espertech.esper.example.stockticker.event.PriceLimit"/>
   <auto-import import-name="org.mycompany.mypackage.MyUtility"/>
   <auto-import import-name="org.mycompany.util.*"/>
 </esper-configuration>		
@@ -121,36 +121,36 @@ http://www.espertech.com/schema/esper/esper-configuration-2.0.xsd">
 				<para>
 					The XML configuration for defining the Java packages that contain Java event classes is:
 				</para>
-				<programlisting><![CDATA[<event-type-auto-alias package-name="com.mycompany.order.event"/>]]></programlisting>
+				<programlisting><![CDATA[<event-type-auto-name package-name="com.mycompany.order.event"/>]]></programlisting>
 				
 				<para>
 					The same configuration but using the <literal>Configuration</literal> class:
 				</para>
 				<programlisting><![CDATA[Configuration config = new Configuration();
-config.addEventTypeAutoAlias("com.mycompany.order.event");
+config.addEventTypeAutoName("com.mycompany.order.event");
 // ... or ...
-config.addEventTypeAutoAlias(MyEvent.getPackage().getName());]]></programlisting>
+config.addEventTypeAutoName(MyEvent.getPackage().getName());]]></programlisting>
 
 			</sect3>
 
 			<sect3 id="config-java-event-name" revision="1">
-				<title>Event type alias to Java class mapping</title>
+				<title>Event type name to Java class mapping</title>
 				
 				<para>
-					This configuration item can be used to allow event pattern statements and EPL statements to use an event type alias rather then the fully qualified Java class name. Note that Java Interface classes and abstract classes are also supported as event types via the fully qualified Java class name, and an event type alias can also be defined for such classes.
+					This configuration item can be used to allow event pattern statements and EPL statements to use an event type name rather then the fully qualified Java class name. Note that Java Interface classes and abstract classes are also supported as event types via the fully qualified Java class name, and an event type name can also be defined for such classes.
 				</para>
 				
 				<para>
-					The example pattern statement below first shows a pattern that uses the alias <literal>StockTick</literal>. The second pattern statement is equivalent but specifies the fully-qualified Java class name.
+					The example pattern statement below first shows a pattern that uses the name <literal>StockTick</literal>. The second pattern statement is equivalent but specifies the fully-qualified Java class name.
 				</para>
 
 				<programlisting><![CDATA[every StockTick(symbol='IBM')"]]></programlisting>
 				<programlisting><![CDATA[every com.espertech.esper.example.stockticker.event.StockTick(symbol='IBM')]]></programlisting>
 
 				<para>
-					The event type alias can be listed in the XML configuration file as shown below. The <literal>Configuration</literal> API can also be used to programatically specify an event type alias, as shown in an earlier code snippet.
+					The event type name can be listed in the XML configuration file as shown below. The <literal>Configuration</literal> API can also be used to programatically specify an event type name, as shown in an earlier code snippet.
 				</para>
-				<programlisting><![CDATA[<event-type alias="StockTick" class="com.espertech.esper.example.stockticker.event.StockTick"/>]]></programlisting>
+				<programlisting><![CDATA[<event-type name="StockTick" class="com.espertech.esper.example.stockticker.event.StockTick"/>]]></programlisting>
 				
 			</sect3>
 			
@@ -210,7 +210,7 @@ config.addEventTypeAutoAlias(MyEvent.getPackage().getName());]]></programlisting
 					When configuring an engine instance from a XML configuration file, the XML snippet below demonstrates the use of the <literal>legacy-type</literal> element and the <literal>accessor-style</literal> attribute.
 				</para>
 
-				<programlisting><![CDATA[<event-type alias="MyLegacyEvent" class="com.mycompany.mypackage.MyLegacyEventClass">
+				<programlisting><![CDATA[<event-type name="MyLegacyEvent" class="com.mycompany.mypackage.MyLegacyEventClass">
   <legacy-type accessor-style="public"/>
 </event-type>]]></programlisting>
 
@@ -221,7 +221,7 @@ config.addEventTypeAutoAlias(MyEvent.getPackage().getName());]]></programlisting
 				<programlisting><![CDATA[Configuration configuration = new Configuration();
 ConfigurationEventTypeLegacy legacyDef = new ConfigurationEventTypeLegacy();
 legacyDef.setAccessorStyle(ConfigurationEventTypeLegacy.AccessorStyle.PUBLIC);
-config.addEventTypeAlias("MyLegacyEvent", MyLegacyEventClass.class.getName(), legacyDef);
+config.addEventType("MyLegacyEvent", MyLegacyEventClass.class.getName(), legacyDef);
 
 EPServiceProvider epService = EPServiceProviderManager.getProvider("sample", configuration);
 ]]></programlisting>
@@ -239,7 +239,7 @@ EPServiceProvider epService = EPServiceProviderManager.getProvider("sample", con
 					We can configure properties of events via <literal>method-property</literal> and <literal>field-property</literal> elements, as the next example shows.
 				</para>
 
-				<programlisting><![CDATA[<event-type alias="StockTick" class="com.espertech.esper.example.stockticker.event.StockTickEvent">
+				<programlisting><![CDATA[<event-type name="StockTick" class="com.espertech.esper.example.stockticker.event.StockTickEvent">
 	<legacy-type accessor-style="javabean" code-generation="enabled">
 		<method-property name="price" accessor-method="getCurrentPrice" />
 		<field-property name="volume" accessor-field="volumeField" />
@@ -259,7 +259,7 @@ EPServiceProvider epService = EPServiceProviderManager.getProvider("sample", con
 ConfigurationEventTypeLegacy legacyDef = new ConfigurationEventTypeLegacy();
 legacyDef.addMethodProperty("price", "getCurrentPrice");
 legacyDef.addFieldProperty("volume", "volumeField");
-config.addEventTypeAlias("StockTick", StockTickEvent.class.getName(), legacyDef);]]></programlisting>
+config.addEventType("StockTick", StockTickEvent.class.getName(), legacyDef);]]></programlisting>
 			</sect3>
 
 			<sect3 id="config-java-codegen" revision="1">
@@ -272,7 +272,7 @@ config.addEventTypeAlias("StockTick", StockTickEvent.class.getName(), legacyDef)
 				<para>
 					In the XML configuration, the optional <literal>code-generation</literal> attribute in the <literal>legacy-type</literal> section can be set to <literal>disabled</literal> as shown next.
 				</para>
-				<programlisting><![CDATA[<event-type alias="MyLegacyEvent" class="com.mycompany.package.MyLegacyEventClass">
+				<programlisting><![CDATA[<event-type name="MyLegacyEvent" class="com.mycompany.package.MyLegacyEventClass">
 	<legacy-type accessor-style="javabean" code-generation="disabled" />
 </event-type>
 ]]></programlisting>
@@ -284,7 +284,7 @@ config.addEventTypeAlias("StockTick", StockTickEvent.class.getName(), legacyDef)
 				<programlisting><![CDATA[Configuration configuration = new Configuration();
 ConfigurationEventTypeLegacy legacyDef = new ConfigurationEventTypeLegacy();
 legacyDef.setCodeGeneration(ConfigurationEventTypeLegacy.CodeGeneration.DISABLED);
-config.addEventTypeAlias("MyLegacyEvent", MyLegacyEventClass.class.getName(), legacyDef);]]></programlisting>
+config.addEventType("MyLegacyEvent", MyLegacyEventClass.class.getName(), legacyDef);]]></programlisting>
 
 			</sect3>
 
@@ -332,7 +332,7 @@ config.addEventTypeAlias("MyLegacyEvent", MyLegacyEventClass.class.getName(), le
 				<para>
 					The sample below shows this option in XML configuration, however the setting can also be changed via API:
 				</para>
-				<programlisting><![CDATA[<event-type alias="MyLegacyEvent" class="com.mycompany.package.MyLegacyEventClass">
+				<programlisting><![CDATA[<event-type name="MyLegacyEvent" class="com.mycompany.package.MyLegacyEventClass">
   <legacy-type property-resolution-style="case_insensitive"/>
 </event-type>]]></programlisting>
 
@@ -344,18 +344,18 @@ config.addEventTypeAlias("MyLegacyEvent", MyLegacyEventClass.class.getName(), le
 			<title>Events represented by <literal>java.util.Map</literal></title>
 			
 			<para>
-				The engine can process <literal>java.util.Map</literal> events via the <literal>sendEvent(Map map, String eventTypeAlias)</literal> method on the <literal>EPRuntime</literal> interface. Entries in the Map represent event properties. Keys must be of type <literal>java.util.String</literal> for the engine to be able to look up event property names in pattern or EPL statements. Values can be of any type. JavaBean-style objects as values in a <literal>Map</literal> can be processed by the engine, and strongly-typed nested maps are also supported. Please see the <xref linkend="event_representation"/> section for details on how to use <literal>Map</literal> events with the engine.
+				The engine can process <literal>java.util.Map</literal> events via the <literal>sendEvent(Map map, String eventTypeName)</literal> method on the <literal>EPRuntime</literal> interface. Entries in the Map represent event properties. Keys must be of type <literal>java.util.String</literal> for the engine to be able to look up event property names in pattern or EPL statements. Values can be of any type. JavaBean-style objects as values in a <literal>Map</literal> can be processed by the engine, and strongly-typed nested maps are also supported. Please see the <xref linkend="event_representation"/> section for details on how to use <literal>Map</literal> events with the engine.
 			</para>
 			
 			<para>
-				Via configuration we provide an event type alias name for <literal>Map</literal> events for use in statements, and the event property names and types enabling the engine to validate properties in statements.
+				Via configuration we provide an event type name for <literal>Map</literal> events for use in statements, and the event property names and types enabling the engine to validate properties in statements.
 			</para>
 			
 			<para>
 				The below snippet of XML configuration configures an event named <literal>MyMapEvent</literal>.
 			</para>
 
-			<programlisting><![CDATA[<event-type alias="MyMapEvent">
+			<programlisting><![CDATA[<event-type name="MyMapEvent">
   <java-util-map>
     <map-property name="carId" class="int"/>
     <map-property name="carType" class="string"/>
@@ -375,16 +375,16 @@ config.addEventTypeAlias("MyLegacyEvent", MyLegacyEventClass.class.getName(), le
 				 You can also use the configuration API to configure <literal>Map</literal> event types, as the short code snippet below demonstrates:
 			</para>
 
-			<programlisting><![CDATA[Properties properties = new Properties();
+			<programlisting><![CDATA[Map<String, Object> properties = new Map<String, Object>();
 properties.put("carId", "int");
 properties.put("carType", "string");
 properties.put("assembly", Assembly.class.getName());
 
 Configuration configuration = new Configuration();
-configuration.addEventTypeAlias("MyMapEvent", properties);]]></programlisting>
+configuration.addEventType("MyMapEvent", properties);]]></programlisting>
 
 			<para>
-				 For strongly-typed nested maps (maps-within-maps), the configuration API method <literal>addNestableEventTypeAlias</literal> must be used to define the nested types. The XML configuration does not provide the capability to configure nested maps.
+				 For strongly-typed nested maps (maps-within-maps), the configuration API method <literal>addEventType</literal> can also used to define the nested types. The XML configuration does not provide the capability to configure nested maps.
 			</para>
 
 			<para>
@@ -393,14 +393,14 @@ configuration.addEventTypeAlias("MyMapEvent", properties);]]></programlisting>
 			<programlisting>select carType, assembly.chassisTag, count(assembly.numParts) from MyMapEvent.win:time(60 sec)</programlisting>
 
 			<para>
-				A Map event type may also become a subtype of one or more supertypes that must also be Map event types. The <literal>java-util-map</literal> element provides an optional attribute <literal>supertype-aliases</literal> that accepts a comma-separated list of aliases of Map event types that are supertypes to the type:
+				A Map event type may also become a subtype of one or more supertypes that must also be Map event types. The <literal>java-util-map</literal> element provides an optional attribute <literal>supertype-names</literal> that accepts a comma-separated list of names of Map event types that are supertypes to the type:
 			</para>
-			<programlisting><![CDATA[<event-type alias="AccountUpdate">
-<java-util-map supertype-aliases="BaseUpdate, AccountEvent">
+			<programlisting><![CDATA[<event-type name="AccountUpdate">
+<java-util-map supertype-names="BaseUpdate, AccountEvent">
 ...]]></programlisting>			
 
 			<para>
-				For initialization time configuration, the <literal>addMapSuperType</literal> method can be used to add Map hierarchy information. For runtime configuration, pass the supertype aliases to the <literal>addEventTypeAliasNestable</literal> method in <literal>ConfigurationOperations</literal>.
+				For initialization time configuration, the <literal>addMapSuperType</literal> method can be used to add Map hierarchy information. For runtime configuration, pass the supertype names to the <literal>addEventType</literal> method in <literal>ConfigurationOperations</literal>.
 			</para>
 		</sect2>
 		
@@ -426,9 +426,9 @@ configuration.addEventTypeAlias("MyMapEvent", properties);]]></programlisting>
 			</para>
 
 			<para>
-				In the simplest form, the Esper engine only requires a configuration entry containing the root element name and the event type alias in order to process <literal>org.w3c.dom.Node</literal> events:
+				In the simplest form, the Esper engine only requires a configuration entry containing the root element name and the event type name in order to process <literal>org.w3c.dom.Node</literal> events:
 			</para>
-			<programlisting><![CDATA[<event-type alias="MyXMLNodeEvent">
+			<programlisting><![CDATA[<event-type name="MyXMLNodeEvent">
   <xml-dom root-element-name="myevent" />
 </event-type>]]></programlisting>
 			
@@ -443,13 +443,13 @@ ConfigurationEventTypeXMLDOM desc = new ConfigurationEventTypeXMLDOM();
 desc.setRootElementName("myevent");
 desc.addXPathProperty("name1", "/element/@attribute", XPathConstants.STRING);
 desc.addXPathProperty("name2", "/element/subelement", XPathConstants.NUMBER);
-configuration.addEventTypeAlias("MyXMLNodeEvent", desc);]]></programlisting>
+configuration.addEventType("MyXMLNodeEvent", desc);]]></programlisting>
 
 			<para>
 				 The next example presents configuration options in a sample configuration entry.
 			</para>
 
-			<programlisting><![CDATA[<event-type alias="AutoIdRFIDEvent">
+			<programlisting><![CDATA[<event-type name="AutoIdRFIDEvent">
   <xml-dom root-element-name="Sensor" schema-resource="data/AutoIdPmlCore.xsd" 
        default-namespace="urn:autoid:specification:interchange:PMLCore:xml:schema:1">
     <namespace-prefix prefix="pmlcore" 
@@ -602,7 +602,7 @@ desc.setDefaultNamespace("http://services.samples/xsd");
 desc.setRootElementNamespace("http://services.samples/xsd");
 desc.addNamespacePrefix("m0", "http://services.samples/xsd");
 desc.setResolvePropertiesAbsolute(false);
-configuration.addEventTypeAlias("GetQuote", desc);]]></programlisting>
+configuration.addEventType("GetQuote", desc);]]></programlisting>
 			
 		  </sect3>
 
@@ -733,10 +733,10 @@ configuration.addPlugInEventType("MyEvent", new URI[] {childURI}, null);]]></pro
 				<title>Setting Resolution URIs</title>
 				
 				<para>
-					The engine can invoke your plug-in event representation when an EPL statement is created with an event type alias that the engine has not seen before. Plug-in event representations can resolve such alias to an actual event type. In order to do this, you need to supply a list of resolution URIs. Use the method <literal>setPlugInEventTypeAliasResolutionURIs</literal>, at runtime or at configuration time:
+					The engine can invoke your plug-in event representation when an EPL statement is created with an event type name that the engine has not seen before. Plug-in event representations can resolve such names to an actual event type. In order to do this, you need to supply a list of resolution URIs. Use the method <literal>setPlugInEventTypeNameResolutionURIs</literal>, at runtime or at configuration time:
 				</para>				
 				<programlisting><![CDATA[URI childURI = new URI("type://mycompany/myproject/myname");
-configuration.setPlugInEventTypeAliasResolutionURIs(new URI[] {childURI});]]></programlisting>
+configuration.setPlugInEventTypeNameResolutionURIs(new URI[] {childURI});]]></programlisting>
 
 			</sect3>
 
@@ -1689,12 +1689,12 @@ config.getEngineDefaults().getExpression().setDivisionByZeroReturnsNull(true);]]
 			<itemizedlist spacing="compact">
 				<listitem>
 					<para>
-						An alias of an event type whose events are <emphasis>base</emphasis> events.
+						An name of an event type whose events are <emphasis>base</emphasis> events.
 					</para>
 				</listitem>
 				<listitem>
 					<para>
-						Zero, one or more aliases of event types whose events are <emphasis>delta</emphasis> events.
+						Zero, one or more names of event types whose events are <emphasis>delta</emphasis> events.
 					</para>
 				</listitem>
 				<listitem>
@@ -1712,9 +1712,9 @@ config.getEngineDefaults().getExpression().setDivisionByZeroReturnsNull(true);]]
 			<para>
 				The XML configuration for this setting is shown below:
 			</para>
-				<programlisting><![CDATA[<revision-event-type alias="UserProfileRevisions">
-  <base-event-type alias="ProfileCreation"/>
-  <delta-event-type alias="ProfileUpdate"/>
+				<programlisting><![CDATA[<revision-event-type name="UserProfileRevisions">
+  <base-event-type name="ProfileCreation"/>
+  <delta-event-type name="ProfileUpdate"/>
   <key-property name="userid"/>
 </revision-event-type>]]></programlisting>
 
@@ -1723,13 +1723,13 @@ config.getEngineDefaults().getExpression().setDivisionByZeroReturnsNull(true);]]
 			</para>
 			<programlisting><![CDATA[Configuration config = new Configuration();
 ConfigurationRevisionEventType configRev = new ConfigurationRevisionEventType();
-configRev.setAliasBaseEventType("ProfileCreation");
-configRev.addAliasDeltaEventType("ProfileUpdate");
+configRev.setNameBaseEventType("ProfileCreation");
+configRev.addNameDeltaEventType("ProfileUpdate");
 configRev.setKeyPropertyNames(new String[] {"userid"});
 config.addRevisionEventType("UserProfileRevisions", configRev);]]></programlisting>
 
 			<para>
-				As the configuration provides alias names of base and delta event types, such aliases must be configured for JavaBean, Map or XML events as the previous sections outline.
+				As the configuration provides names of base and delta event types, such names must be configured for JavaBean, Map or XML events as the previous sections outline.
 			</para>
 
 			<para>
@@ -1808,9 +1808,9 @@ config.addRevisionEventType("UserProfileRevisions", configRev);]]></programlisti
 			<para>
 				The following XML configuration defines a variant stream by name <literal>OrderStream</literal> that carries only <literal>PartsOrder</literal> and <literal>ServiceOrder</literal> events:
 			</para>
-			<programlisting><![CDATA[<variant-stream alias="OrderStream">
-  <variant-event-type alias="PartsOrder"/>
-  <variant-event-type alias="ServiceOrder"/>
+			<programlisting><![CDATA[<variant-stream name="OrderStream">
+  <variant-event-type name="PartsOrder"/>
+  <variant-event-type name="ServiceOrder"/>
 </variant-stream>]]></programlisting>
 
 			<para>
@@ -1822,7 +1822,7 @@ variant.setTypeVariance(ConfigurationVariantStream.TypeVariance.ANY);
 config.addVariantStream("OutgoingEvent", variant);]]></programlisting>
 
 			<para>
-				If specifying variant event type aliases, make sure such alias names have been configured for JavaBean, Map or XML events.
+				If specifying variant event type names, make sure such names have been configured for JavaBean, Map or XML events.
 			</para>
 
 		</sect2>

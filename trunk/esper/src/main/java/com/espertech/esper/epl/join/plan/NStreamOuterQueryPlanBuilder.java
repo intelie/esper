@@ -31,7 +31,7 @@ public class NStreamOuterQueryPlanBuilder
     /**
      * Build a query plan based on the stream property relationships indicated in queryGraph.
      * @param queryGraph - navigation info between streams
-     * @param streamNames - stream names or aliases
+     * @param streamNames - stream names
      * @param outerJoinDescList - descriptors for all outer joins
      * @param typesPerStream - event types for each stream
      * @param hasHistorical - indicator if there is one or more historical streams in the join

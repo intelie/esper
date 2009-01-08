@@ -23,55 +23,56 @@ import java.io.Serializable;
  */
 public class ConfigurationRevisionEventType implements Serializable
 {
-    private Set<String> aliasBaseEventTypes;
-    private Set<String> aliasDeltaEventTypes;
+    private Set<String> nameBaseEventTypes;
+    private Set<String> nameDeltaEventTypes;
     private PropertyRevision propertyRevision;
     private String[] keyPropertyNames;
+    private static final long serialVersionUID = 2132650580293017453L;
 
     /**
      * Ctor.
      */
     public ConfigurationRevisionEventType()
     {
-        aliasBaseEventTypes = new HashSet<String>();
-        aliasDeltaEventTypes = new HashSet<String>();
+        nameBaseEventTypes = new HashSet<String>();
+        nameDeltaEventTypes = new HashSet<String>();
         propertyRevision = PropertyRevision.OVERLAY_DECLARED;
     }
 
     /**
-     * Add a base event type by it's alias name.
-     * @param aliasBaseEventType the name of the base event type to add
+     * Add a base event type by it's name.
+     * @param nameBaseEventType the name of the base event type to add
      */
-    public void addAliasBaseEventType(String aliasBaseEventType)
+    public void addNameBaseEventType(String nameBaseEventType)
     {
-        aliasBaseEventTypes.add(aliasBaseEventType);
+        nameBaseEventTypes.add(nameBaseEventType);
     }
 
     /**
-     * Returns the set of event type aliases that are base event types.
-     * @return aliases of base event types
+     * Returns the set of event type names that are base event types.
+     * @return names of base event types
      */
-    public Set<String> getAliasBaseEventTypes()
+    public Set<String> getNameBaseEventTypes()
     {
-        return aliasBaseEventTypes;
+        return nameBaseEventTypes;
     }
 
     /**
      * Returns the set of names of delta event types.
      * @return names of delta event types
      */
-    public Set<String> getAliasDeltaEventTypes()
+    public Set<String> getNameDeltaEventTypes()
     {
-        return aliasDeltaEventTypes;
+        return nameDeltaEventTypes;
     }
 
     /**
-     * Add a delta event type by it's alias name.
-     * @param aliasDeltaEventType the name of the delta event type to add
+     * Add a delta event type by it's name.
+     * @param nameDeltaEventType the name of the delta event type to add
      */
-    public void addAliasDeltaEventType(String aliasDeltaEventType)
+    public void addNameDeltaEventType(String nameDeltaEventType)
     {
-        aliasDeltaEventTypes.add(aliasDeltaEventType);
+        nameDeltaEventTypes.add(nameDeltaEventType);
     }
 
     /**

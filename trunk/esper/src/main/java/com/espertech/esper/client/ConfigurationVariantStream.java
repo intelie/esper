@@ -17,15 +17,16 @@ import java.util.ArrayList;
  */
 public class ConfigurationVariantStream implements Serializable
 {
-    private List<String> variantTypeAliases;
+    private List<String> variantTypeNames;
     private TypeVariance typeVariance;
+    private static final long serialVersionUID = 3147963036149252974L;
 
     /**
      * Ctor.
      */
     public ConfigurationVariantStream()
     {
-        variantTypeAliases = new ArrayList<String>();
+        variantTypeNames = new ArrayList<String>();
         typeVariance = TypeVariance.PREDEFINED;
     }
 
@@ -50,21 +51,21 @@ public class ConfigurationVariantStream implements Serializable
     }
 
     /**
-     * Returns the aliases of event types that a predefined for the variant stream.
+     * Returns the names of event types that a predefined for the variant stream.
      * @return predefined types in the variant stream
      */
-    public List<String> getVariantTypeAliases()
+    public List<String> getVariantTypeNames()
     {
-        return variantTypeAliases;
+        return variantTypeNames;
     }
 
     /**
-     * Adds an aliases of an event types that is one of the predefined event typs allowed for the variant stream.
-     * @param eventTypeAlias name of the event type to allow in the variant stream
+     * Adds names of an event types that is one of the predefined event typs allowed for the variant stream.
+     * @param eventTypeName name of the event type to allow in the variant stream
      */
-    public void addEventTypeAlias(String eventTypeAlias)
+    public void addEventTypeName(String eventTypeName)
     {
-        variantTypeAliases.add(eventTypeAlias);
+        variantTypeNames.add(eventTypeName);
     }
 
     /**

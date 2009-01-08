@@ -32,7 +32,7 @@ public class TestDatabaseNoJoinIteratePerf extends TestCase
 
     public void testVariablesPollPerformanceCache()
     {
-        epService.getEPAdministrator().getConfiguration().addEventTypeAlias("SupportBean", SupportBean.class);
+        epService.getEPAdministrator().getConfiguration().addEventType("SupportBean", SupportBean.class);
         epService.getEPAdministrator().createEPL("create variable boolean queryvar_bool");
         epService.getEPAdministrator().createEPL("create variable int lower");
         epService.getEPAdministrator().createEPL("create variable int upper");

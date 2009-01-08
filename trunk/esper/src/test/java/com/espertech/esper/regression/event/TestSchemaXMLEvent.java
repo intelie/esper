@@ -170,9 +170,9 @@ public class TestSchemaXMLEvent extends TestCase
         ConfigurationOperations configOps = epService.getEPAdministrator().getConfiguration();
 
         // test remove type with statement used (no force)
-        configOps.addEventTypeAlias("MyXMLEvent", getConfigTestType("p01", false));
+        configOps.addEventType("MyXMLEvent", getConfigTestType("p01", false));
         EPStatement stmt = epService.getEPAdministrator().createEPL("select p01 from MyXMLEvent", "stmtOne");
-        ArrayAssertionUtil.assertEqualsExactOrder(new String[] {"stmtOne"}, configOps.getEventTypeAliasUsedBy("MyXMLEvent").toArray());
+        ArrayAssertionUtil.assertEqualsExactOrder(new String[] {"stmtOne"}, configOps.getEventTypeNameUsedBy("MyXMLEvent").toArray());
 
         try {
             configOps.removeEventType("MyXMLEvent", false);
@@ -183,11 +183,11 @@ public class TestSchemaXMLEvent extends TestCase
 
         // destroy statement and type
         stmt.destroy();
-        assertTrue(configOps.getEventTypeAliasUsedBy("MyXMLEvent").isEmpty());
-        assertTrue(configOps.isEventTypeAliasExists("MyXMLEvent"));
+        assertTrue(configOps.getEventTypeNameUsedBy("MyXMLEvent").isEmpty());
+        assertTrue(configOps.isEventTypeExists("MyXMLEvent"));
         assertTrue(configOps.removeEventType("MyXMLEvent", false));
         assertFalse(configOps.removeEventType("MyXMLEvent", false));    // try double-remove
-        assertFalse(configOps.isEventTypeAliasExists("MyXMLEvent"));
+        assertFalse(configOps.isEventTypeExists("MyXMLEvent"));
         try {
             epService.getEPAdministrator().createEPL("select p01 from MyXMLEvent");
             fail();
@@ -197,13 +197,13 @@ public class TestSchemaXMLEvent extends TestCase
         }
 
         // add back the type
-        configOps.addEventTypeAlias("MyXMLEvent", getConfigTestType("p20", false));
-        assertTrue(configOps.isEventTypeAliasExists("MyXMLEvent"));
-        assertTrue(configOps.getEventTypeAliasUsedBy("MyXMLEvent").isEmpty());
+        configOps.addEventType("MyXMLEvent", getConfigTestType("p20", false));
+        assertTrue(configOps.isEventTypeExists("MyXMLEvent"));
+        assertTrue(configOps.getEventTypeNameUsedBy("MyXMLEvent").isEmpty());
 
         // compile
         epService.getEPAdministrator().createEPL("select p20 from MyXMLEvent", "stmtTwo");
-        ArrayAssertionUtil.assertEqualsExactOrder(new String[] {"stmtTwo"}, configOps.getEventTypeAliasUsedBy("MyXMLEvent").toArray());
+        ArrayAssertionUtil.assertEqualsExactOrder(new String[] {"stmtTwo"}, configOps.getEventTypeNameUsedBy("MyXMLEvent").toArray());
         try {
             epService.getEPAdministrator().createEPL("select p01 from MyXMLEvent");
             fail();
@@ -220,12 +220,12 @@ public class TestSchemaXMLEvent extends TestCase
             assertTrue(ex.getMessage().contains("MyXMLEvent"));
         }
         assertTrue(configOps.removeEventType("MyXMLEvent", true));
-        assertFalse(configOps.isEventTypeAliasExists("MyXMLEvent"));
-        assertTrue(configOps.getEventTypeAliasUsedBy("MyXMLEvent").isEmpty());
+        assertFalse(configOps.isEventTypeExists("MyXMLEvent"));
+        assertTrue(configOps.getEventTypeNameUsedBy("MyXMLEvent").isEmpty());
 
         // add back the type
-        configOps.addEventTypeAlias("MyXMLEvent", getConfigTestType("p03", false));
-        assertTrue(configOps.isEventTypeAliasExists("MyXMLEvent"));
+        configOps.addEventType("MyXMLEvent", getConfigTestType("p03", false));
+        assertTrue(configOps.isEventTypeExists("MyXMLEvent"));
 
         // compile
         epService.getEPAdministrator().createEPL("select p03 from MyXMLEvent");
@@ -257,7 +257,7 @@ public class TestSchemaXMLEvent extends TestCase
     private Configuration getConfig(boolean isUseXPathPropertyExpression)
     {
         Configuration configuration = SupportConfigFactory.getConfiguration();
-        configuration.addEventTypeAlias("TestXMLSchemaType", getConfigTestType(null, isUseXPathPropertyExpression));
+        configuration.addEventType("TestXMLSchemaType", getConfigTestType(null, isUseXPathPropertyExpression));
         return configuration;
     }
 
