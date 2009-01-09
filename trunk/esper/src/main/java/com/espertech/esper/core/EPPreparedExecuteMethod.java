@@ -94,7 +94,8 @@ public class EPPreparedExecuteMethod
             {
                 viewablePerStream[i] = processors[i].getTailView();
             }
-            joinComposer = statementContext.getJoinSetComposerFactory().makeComposer(statementSpec.getOuterJoinDescList(), statementSpec.getFilterRootNode(), typesPerStream, namesPerStream, viewablePerStream, SelectClauseStreamSelectorEnum.ISTREAM_ONLY, new boolean[numStreams], new boolean[numStreams], namedWindow);
+            boolean[] falseArray = new boolean[numStreams];
+            joinComposer = statementContext.getJoinSetComposerFactory().makeComposer(statementSpec.getOuterJoinDescList(), statementSpec.getFilterRootNode(), typesPerStream, namesPerStream, viewablePerStream, SelectClauseStreamSelectorEnum.ISTREAM_ONLY, falseArray, falseArray, falseArray, namedWindow);
         }
         else
         {

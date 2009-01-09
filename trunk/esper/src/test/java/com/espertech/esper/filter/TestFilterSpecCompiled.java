@@ -70,7 +70,7 @@ public class TestFilterSpecCompiled extends TestCase
                                     { "intPrimitive", FilterOperator.EQUAL, 2 });
         SimpleNumberCoercer numberCoercer = SimpleNumberCoercerFactory.getCoercer(int.class, Double.class);
         params.add(new FilterSpecParamEventProp("doubleBoxed", FilterOperator.EQUAL, "asName", "doublePrimitive", false, numberCoercer, Double.class));
-        FilterSpecCompiled filterSpec = new FilterSpecCompiled(eventType, "SupportBean", params);
+        FilterSpecCompiled filterSpec = new FilterSpecCompiled(eventType, "SupportBean", params, null);
 
         SupportBean eventBean = new SupportBean();
         eventBean.setDoublePrimitive(999.999);

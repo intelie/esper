@@ -70,7 +70,7 @@ public class FilterStreamSpecRaw extends StreamSpecBase implements StreamSpecRaw
             throws ExprValidationException
     {
         // Determine the event type
-        String eventName = rawFilterSpec.geteventTypeName();
+        String eventName = rawFilterSpec.getEventTypeName();
 
         // Could be a named window
         if (context.getNamedWindowService().isNamedWindow(eventName))
@@ -105,7 +105,7 @@ public class FilterStreamSpecRaw extends StreamSpecBase implements StreamSpecRaw
         // Also decompose all AND super nodes into individual expressions
         StreamTypeService streamTypeService = new StreamTypeServiceImpl(new EventType[] {eventType}, new String[] {"s0"}, context.getEngineURI(), new String[] {eventName});
 
-        FilterSpecCompiled spec = FilterSpecCompiler.makeFilterSpec(eventType, eventName, rawFilterSpec.getFilterExpressions(),
+        FilterSpecCompiled spec = FilterSpecCompiler.makeFilterSpec(eventType, eventName, rawFilterSpec.getFilterExpressions(), rawFilterSpec.getOptionalPropertyEvalSpec(),
                 null, null,  // no tags
                 streamTypeService, context.getMethodResolutionService(), context.getSchedulingService(), context.getVariableService(), context.getEventAdapterService());
 

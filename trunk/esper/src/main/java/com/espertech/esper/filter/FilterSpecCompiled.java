@@ -22,9 +22,10 @@ import java.util.LinkedList;
  */
 public final class FilterSpecCompiled
 {
-    private final EventType eventType;
-    private final String eventTypeName;
+    private final EventType filterForEventType;
+    private final String filterForEventTypeName;
     private final List<FilterSpecParam> parameters;
+    private final PropertyEvaluator optionalPropertyExpressionFilter; // TODO - rename
 
     /**
      * Constructor - validates parameter list against event type, throws exception if invalid
@@ -34,20 +35,22 @@ public final class FilterSpecCompiled
      * @param eventTypeName is the name of the event type
      * @throws IllegalArgumentException if validation invalid
      */
-    public FilterSpecCompiled(EventType eventType, String eventTypeName, List<FilterSpecParam> parameters)
+    public FilterSpecCompiled(EventType eventType, String eventTypeName, List<FilterSpecParam> parameters,
+                              PropertyEvaluator optionalPropertyExpressionFilter)
     {
-        this.eventType = eventType;
-        this.eventTypeName = eventTypeName;
+        this.filterForEventType = eventType;
+        this.filterForEventTypeName = eventTypeName;
         this.parameters = parameters;
+        this.optionalPropertyExpressionFilter = optionalPropertyExpressionFilter;
     }
 
     /**
      * Returns type of event to filter for.
      * @return event type
      */
-    public final EventType getEventType()
+    public final EventType getFilterForEventType()
     {
-        return eventType;
+        return filterForEventType;
     }
 
     /**
@@ -63,9 +66,26 @@ public final class FilterSpecCompiled
      * Returns the event type name.
      * @return event type name
      */
-    public String geteventTypeName()
+    public String getFilterForEventTypeName()
     {
-        return eventTypeName;
+        return filterForEventTypeName;
+    }
+
+    public PropertyEvaluator getOptionalPropertyExpressionFilter()
+    {
+        return optionalPropertyExpressionFilter;
+    }
+
+    public EventType getResultEventType()
+    {
+        if (optionalPropertyExpressionFilter != null)
+        {
+            return optionalPropertyExpressionFilter.getFragmentEventType().getFragmentType();
+        }
+        else
+        {
+            return filterForEventType;
+        }
     }
 
     /**
@@ -87,14 +107,14 @@ public final class FilterSpecCompiled
                     specParam.getFilterOperator(), filterForValue);
             valueList.add(valueParam);
         }
-        return new FilterValueSetImpl(eventType, valueList);
+        return new FilterValueSetImpl(filterForEventType, valueList);
     }
 
     @SuppressWarnings({"StringConcatenationInsideStringBufferAppend"})
     public final String toString()
     {
         StringBuilder buffer = new StringBuilder();
-        buffer.append("FilterSpecCompiled type=" + this.eventType);
+        buffer.append("FilterSpecCompiled type=" + this.filterForEventType);
         buffer.append(" parameters=" + Arrays.toString(parameters.toArray()));
         return buffer.toString();
     }
@@ -113,7 +133,7 @@ public final class FilterSpecCompiled
 
         FilterSpecCompiled other = (FilterSpecCompiled) obj;
 
-        if (this.eventType != other.eventType)
+        if (this.filterForEventType != other.filterForEventType)
         {
             return false;
         }
@@ -137,7 +157,7 @@ public final class FilterSpecCompiled
 
     public int hashCode()
     {
-        int hashCode = eventType.hashCode();
+        int hashCode = filterForEventType.hashCode();
         for (FilterSpecParam param : parameters)
         {
             hashCode = hashCode ^ param.getPropertyName().hashCode();

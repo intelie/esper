@@ -113,6 +113,7 @@ tokens
    	PATTERN_FILTER_EXPR;
    	PATTERN_NOT_EXPR;
    	EVENT_FILTER_EXPR;
+   	EVENT_FILTER_PROPERTY_EXPR;
    	EVENT_FILTER_IDENT;
    	EVENT_FILTER_PARAM;
    	EVENT_FILTER_RANGE;
@@ -1072,8 +1073,18 @@ eventFilterExpression
     :   (i=IDENT EQUALS)?
     	classIdentifier
        	(LPAREN expressionList? RPAREN)?
-       	-> ^(EVENT_FILTER_EXPR $i? classIdentifier expressionList?)
+       	propertyExpression?
+       	-> ^(EVENT_FILTER_EXPR $i? classIdentifier propertyExpression? expressionList?)
     ;
+    
+propertyExpression
+	:	propertyExpressionAtomic (propertyExpressionAtomic)*
+       	-> ^(EVENT_FILTER_PROPERTY_EXPR propertyExpressionAtomic+)
+	;
+
+propertyExpressionAtomic
+	:	LBRACK! eventProperty RBRACK!
+	;
 
 patternFilterExpression
 @init  { paraphrases.push("filter specification"); }

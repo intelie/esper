@@ -26,6 +26,9 @@ public class JoinSetComposerStreamToWinImpl implements JoinSetComposer
     private final int streamNumber;
     private final QueryStrategy queryStrategy;
 
+    private final boolean isResetSelfJoinRepositories;
+    private final boolean[] selfJoinRepositoryResets;
+
     private Set<MultiKey<EventBean>> emptyResults = new LinkedHashSet<MultiKey<EventBean>>();
     private Set<MultiKey<EventBean>> newResults = new LinkedHashSet<MultiKey<EventBean>>();
 
@@ -35,11 +38,19 @@ public class JoinSetComposerStreamToWinImpl implements JoinSetComposer
      * @param streamNumber is the undirectional stream
      * @param queryStrategy is the lookup query strategy for the stream
      */
-    public JoinSetComposerStreamToWinImpl(EventTable[][] repositories, int streamNumber, QueryStrategy queryStrategy)
+    public JoinSetComposerStreamToWinImpl(EventTable[][] repositories, int streamNumber, QueryStrategy queryStrategy, boolean[] selfJoinRepositoryResets)
     {
         this.repositories = repositories;
         this.streamNumber = streamNumber;
         this.queryStrategy = queryStrategy;
+
+        boolean flag = false;
+        for (boolean selfJoinRepositoryReset : selfJoinRepositoryResets)
+        {
+            flag = flag | selfJoinRepositoryReset;
+        }
+        this.isResetSelfJoinRepositories = flag;
+        this.selfJoinRepositoryResets = selfJoinRepositoryResets;
     }
 
     public void init(EventBean[][] eventsPerStream)
@@ -58,9 +69,9 @@ public class JoinSetComposerStreamToWinImpl implements JoinSetComposer
 
     public void destroy()
     {
-        for (int i = 0; i < repositories.length; i++)
+        for (EventTable[] repository : repositories)
         {
-            for (EventTable table : repositories[i])
+            for (EventTable table : repository)
             {
                 table.clear();
             }
@@ -100,6 +111,22 @@ public class JoinSetComposerStreamToWinImpl implements JoinSetComposer
         if (newDataPerStream[streamNumber] != null)
         {
             queryStrategy.lookup(newDataPerStream[streamNumber], newResults);
+        }
+
+        // on self-joins there can be repositories which are temporary for join execution
+        if (isResetSelfJoinRepositories)
+        {
+            for (int i = 0; i < selfJoinRepositoryResets.length; i++)
+            {
+                if (!selfJoinRepositoryResets[i])
+                {
+                    continue;
+                }
+                for (int j = 0; j < repositories[i].length; j++)
+                {
+                    repositories[i][j].clear();
+                }
+            }
         }
 
         return new UniformPair<Set<MultiKey<EventBean>>>(newResults, emptyResults);

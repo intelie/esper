@@ -182,7 +182,7 @@ public class PatternStreamSpecRaw extends StreamSpecBase implements StreamSpecRa
                                   boolean isHasChildView)
             throws ExprValidationException
     {
-        String eventName = filterNode.getRawFilterSpec().geteventTypeName();
+        String eventName = filterNode.getRawFilterSpec().getEventTypeName();
         EventType eventType = FilterStreamSpecRaw.resolveType(context.getEngineURI(), eventName, context.getEventAdapterService(), context.getPlugInTypeResolutionURIs());
         String optionalTag = filterNode.getEventAsName();
         if (eventType instanceof EventTypeSPI)
@@ -264,7 +264,8 @@ public class PatternStreamSpecRaw extends StreamSpecBase implements StreamSpecRa
 
         StreamTypeService streamTypeService = new StreamTypeServiceImpl(filterTypes, context.getEngineURI(), true, false);
         List<ExprNode> exprNodes = filterNode.getRawFilterSpec().getFilterExpressions();
-        FilterSpecCompiled spec = FilterSpecCompiler.makeFilterSpec(eventType, eventName, exprNodes, filterTaggedEventTypes, arrayCompositeEventTypes, streamTypeService, context.getMethodResolutionService(), context.getSchedulingService(), context.getVariableService(), context.getEventAdapterService());
+        // TODO: enable property expression in pattern
+        FilterSpecCompiled spec = FilterSpecCompiler.makeFilterSpec(eventType, eventName, exprNodes, null,  filterTaggedEventTypes, arrayCompositeEventTypes, streamTypeService, context.getMethodResolutionService(), context.getSchedulingService(), context.getVariableService(), context.getEventAdapterService());
         filterNode.setFilterSpec(spec);
     }
 

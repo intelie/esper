@@ -283,7 +283,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
         {
             if (streamSpec instanceof FilterStreamSpecCompiled)
             {
-                EventType type = ((FilterStreamSpecCompiled) streamSpec).getFilterSpec().getEventType();
+                EventType type = ((FilterStreamSpecCompiled) streamSpec).getFilterSpec().getFilterForEventType();
                 filteredTypes.add(type);
                 hasFilterStream = true;
             }
@@ -293,7 +293,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
                 List<EvalFilterNode> filterNodes = evalNodeAnalysisResult.getFilterNodes();
                 for (EvalFilterNode filterNode : filterNodes)
                 {
-                    filteredTypes.add(filterNode.getFilterSpec().getEventType());
+                    filteredTypes.add(filterNode.getFilterSpec().getFilterForEventType());
                 }
             }
         }
@@ -749,8 +749,8 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
                 if (createWindowTypeSpec instanceof FilterStreamSpecCompiled)
                 {
                     FilterStreamSpecCompiled filterStreamSpec = (FilterStreamSpecCompiled) createWindowTypeSpec;
-                    selectFromType = filterStreamSpec.getFilterSpec().getEventType();
-                    selectFromTypeName = filterStreamSpec.getFilterSpec().geteventTypeName();
+                    selectFromType = filterStreamSpec.getFilterSpec().getFilterForEventType();
+                    selectFromTypeName = filterStreamSpec.getFilterSpec().getFilterForEventTypeName();
                 }
                 else
                 {
@@ -775,7 +775,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
                     spec.getCreateWindowDesc().setInsertFromWindow(consumerStreamSpec.getWindowName());
                 }
                 Pair<FilterSpecCompiled, SelectClauseSpecRaw> newFilter = handleCreateWindow(selectFromType, selectFromTypeName, spec, eplStatement, statementContext);
-                eventTypeReferences.add(((EventTypeSPI)newFilter.getFirst().getEventType()).getMetadata().getPrimaryName());
+                eventTypeReferences.add(((EventTypeSPI)newFilter.getFirst().getFilterForEventType()).getMetadata().getPrimaryName());
 
                 // view must be non-empty list
                 if (spec.getCreateWindowDesc().getViewSpecs().isEmpty())
@@ -935,7 +935,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
             }
         }
 
-        FilterSpecCompiled filter = new FilterSpecCompiled(targetType, typeName, new ArrayList<FilterSpecParam>());
+        FilterSpecCompiled filter = new FilterSpecCompiled(targetType, typeName, new ArrayList<FilterSpecParam>(), null);// TODO
         return new Pair<FilterSpecCompiled, SelectClauseSpecRaw>(filter, newSelectClauseSpecRaw);
     }
 

@@ -65,7 +65,7 @@ public abstract class BaseSubscription implements Subscription, FilterHandleCall
         return subscriptionName;
     }
 
-    public String geteventTypeName()
+    public String getEventTypeName()
     {
         return eventTypeName;
     }
@@ -94,7 +94,7 @@ public abstract class BaseSubscription implements Subscription, FilterHandleCall
         }
         EPServiceProviderSPI spi = (EPServiceProviderSPI) epService;
         EventType eventType = spi.getEventAdapterService().getExistsTypeByName(eventTypeName);
-        FilterValueSet fvs = new FilterSpecCompiled(eventType, null, new LinkedList<FilterSpecParam>()).getValueSet(null);
+        FilterValueSet fvs = new FilterSpecCompiled(eventType, null, new LinkedList<FilterSpecParam>(), null).getValueSet(null);
 
         String name = "subscription:" + subscriptionName;
         StatementMetricHandle metricsHandle = spi.getMetricReportingService().getStatementHandle(name, name);

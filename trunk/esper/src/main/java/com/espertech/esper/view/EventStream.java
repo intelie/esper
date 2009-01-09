@@ -16,6 +16,12 @@ import com.espertech.esper.client.EventBean;
 public interface EventStream extends Viewable
 {
     /**
+     * Insert new events onto the stream.
+     * @param events to insert
+     */
+    public void insert(EventBean[] events);
+
+    /**
      * Insert a new event onto the stream.
      * @param event to insert
      */

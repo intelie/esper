@@ -13,8 +13,11 @@ import com.espertech.esper.epl.core.MethodResolutionService;
 import com.espertech.esper.epl.core.StreamTypeService;
 import com.espertech.esper.epl.expression.*;
 import com.espertech.esper.epl.variable.VariableService;
+import com.espertech.esper.epl.spec.PropertyEvalSpec;
 import com.espertech.esper.event.EventAdapterService;
 import com.espertech.esper.client.EventType;
+import com.espertech.esper.client.FragmentEventType;
+import com.espertech.esper.client.EventPropertyGetter;
 import com.espertech.esper.schedule.TimeProvider;
 import com.espertech.esper.type.RelationalOpEnum;
 import com.espertech.esper.util.JavaClassHelper;
@@ -60,6 +63,7 @@ public final class FilterSpecCompiler
     public static FilterSpecCompiled makeFilterSpec(EventType eventType,
                                                     String eventTypeName,
                                                     List<ExprNode> filterExpessions,
+                                                    PropertyEvalSpec optionalPropertyEvalSpec,
                                                     LinkedHashMap<String, Pair<EventType, String>> taggedEventTypes,
                                                     LinkedHashMap<String, Pair<EventType, String>> arrayEventTypes,
                                                     StreamTypeService streamTypeService,
@@ -74,7 +78,7 @@ public final class FilterSpecCompiler
         List<ExprNode> constituents = FilterSpecCompiler.validateAndDecompose(filterExpessions, streamTypeService, methodResolutionService, timeProvider, variableService);
 
         // From the constituents make a filter specification
-        FilterSpecCompiled spec = makeFilterSpec(eventType, eventTypeName, constituents, taggedEventTypes, arrayEventTypes, variableService, eventAdapterService);
+        FilterSpecCompiled spec = makeFilterSpec(eventType, eventTypeName, constituents, optionalPropertyEvalSpec, taggedEventTypes, arrayEventTypes, variableService, eventAdapterService);
         if (log.isDebugEnabled())
         {
             log.debug(".makeFilterSpec spec=" + spec);
@@ -216,6 +220,7 @@ public final class FilterSpecCompiler
     private static FilterSpecCompiled makeFilterSpec(EventType eventType,
                                                      String eventTypeName,
                                                      List<ExprNode> constituents,
+                                                     PropertyEvalSpec optionalPropertyEvalSpec,
                                                      LinkedHashMap<String, Pair<EventType, String>> taggedEventTypes,
                                                      LinkedHashMap<String, Pair<EventType, String>> arrayEventTypes,
                                                      VariableService variableService,
@@ -266,7 +271,13 @@ public final class FilterSpecCompiler
             filterParams.add(param);
         }
 
-        return new FilterSpecCompiled(eventType, eventTypeName, filterParams);
+        PropertyEvaluator optionalPropertyEvaluator = null;
+        if (optionalPropertyEvalSpec != null)
+        {
+            optionalPropertyEvaluator = PropertyEvaluatorFactory.makeEvaluator(optionalPropertyEvalSpec, eventType);
+        }
+
+        return new FilterSpecCompiled(eventType, eventTypeName, filterParams, optionalPropertyEvaluator);
     }
 
     // consolidate "val != 3 and val != 4 and val != 5"

@@ -1553,7 +1553,7 @@ public class StatementSpecMapper
             expr.add(exprNode);
         }
 
-        return new FilterSpecRaw(filter.getEventTypeName(), expr);
+        return new FilterSpecRaw(filter.getEventTypeName(), expr, null); // TODO
     }
 
     private static Filter unmapFilter(FilterSpecRaw filter, StatementSpecUnMapContext unmapContext)
@@ -1573,6 +1573,6 @@ public class StatementSpecMapper
             expr = unmapExpressionDeep(filter.getFilterExpressions().get(0), unmapContext);
         }
 
-        return new Filter(filter.geteventTypeName(), expr);
+        return new Filter(filter.getEventTypeName(), expr);
     }
 }

@@ -481,7 +481,7 @@ public class EPLTreeWalker extends EsperEPL2Ast
         CreateWindowDesc desc = new CreateWindowDesc(windowName, viewSpecs, streamSpecOptions, isInsert, insertWhereExpr);
         statementSpec.setCreateWindowDesc(desc);
 
-        FilterSpecRaw rawFilterSpec = new FilterSpecRaw(eventName, new LinkedList<ExprNode>());
+        FilterSpecRaw rawFilterSpec = new FilterSpecRaw(eventName, new LinkedList<ExprNode>(), null); // TODO
         FilterStreamSpecRaw streamSpec = new FilterStreamSpecRaw(rawFilterSpec, new LinkedList<ViewSpec>(), null, streamSpecOptions);
         statementSpec.getStreamSpecs().add(streamSpec);
     }
@@ -1649,9 +1649,23 @@ public class EPLTreeWalker extends EsperEPL2Ast
         String eventName = startNode.getText();
         count++;
 
+        // get property expression if any
+        PropertyEvalSpec propertyEvalSpec = null;
+        if ((node.getChildCount() > count) && (node.getChild(count).getType() == EVENT_FILTER_PROPERTY_EXPR))
+        {
+            List<String> propertyNames = new ArrayList<String>();
+            Tree rootNode = node.getChild(count);
+            for (int i = 0; i < rootNode.getChildCount(); i++)
+            {
+                propertyNames.add(ASTFilterSpecHelper.getPropertyName(rootNode.getChild(i),0));
+            }            
+            ++count;
+            propertyEvalSpec = new PropertyEvalSpec(propertyNames.toArray(new String[propertyNames.size()]));
+        }
+
         List<ExprNode> exprNodes = getExprNodes(node, count);
 
-        FilterSpecRaw rawFilterSpec = new FilterSpecRaw(eventName, exprNodes);
+        FilterSpecRaw rawFilterSpec = new FilterSpecRaw(eventName, exprNodes, propertyEvalSpec);
         // for event streams we keep the filter spec around for use when the stream definition is completed
         filterSpec = rawFilterSpec;
 
@@ -1679,7 +1693,7 @@ public class EPLTreeWalker extends EsperEPL2Ast
 
         List<ExprNode> exprNodes = getExprNodes(node, count);
 
-        FilterSpecRaw rawFilterSpec = new FilterSpecRaw(eventName, exprNodes);
+        FilterSpecRaw rawFilterSpec = new FilterSpecRaw(eventName, exprNodes, null);    // TODO
         EvalFilterNode filterNode = new EvalFilterNode(rawFilterSpec, optionalPatternTagName);
         astPatternNodeMap.put(node, filterNode);
     }

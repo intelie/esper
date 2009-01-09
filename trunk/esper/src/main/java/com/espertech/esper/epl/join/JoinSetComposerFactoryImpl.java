@@ -52,6 +52,7 @@ public class JoinSetComposerFactoryImpl implements JoinSetComposerFactory
                                                    Viewable[] streamViews,
                                                    SelectClauseStreamSelectorEnum selectStreamSelectorEnum,
                                                    boolean[] isUnidirectional,
+                                                   boolean[] isUnidirectionalNonDriving,
                                                    boolean[] hasChildViews,
                                                    boolean[] isNamedWindow)
             throws ExprValidationException
@@ -193,7 +194,7 @@ public class JoinSetComposerFactoryImpl implements JoinSetComposerFactory
         }
         else
         {
-            return new JoinSetComposerStreamToWinImpl(indexes, unidirectionalStreamNumber, queryStrategies[unidirectionalStreamNumber]);
+            return new JoinSetComposerStreamToWinImpl(indexes, unidirectionalStreamNumber, queryStrategies[unidirectionalStreamNumber], isUnidirectionalNonDriving);
         }
     }
 

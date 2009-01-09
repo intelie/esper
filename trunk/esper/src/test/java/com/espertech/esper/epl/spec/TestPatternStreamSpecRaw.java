@@ -1,9 +1,6 @@
 package com.espertech.esper.epl.spec;
 
 import junit.framework.TestCase;
-import com.espertech.esper.epl.core.MethodResolutionServiceImpl;
-import com.espertech.esper.epl.core.EngineImportServiceImpl;
-import com.espertech.esper.epl.named.NamedWindowServiceImpl;
 import com.espertech.esper.epl.parse.EPLTreeWalker;
 import com.espertech.esper.epl.expression.ExprValidationException;
 import com.espertech.esper.filter.*;
@@ -13,7 +10,6 @@ import com.espertech.esper.pattern.EvalNodeAnalysisResult;
 import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.epl.parse.SupportParserHelper;
 import com.espertech.esper.support.epl.parse.SupportEPLTreeWalkerFactory;
-import com.espertech.esper.support.event.SupportEventAdapterService;
 import com.espertech.esper.support.view.SupportStatementContextFactory;
 
 import java.util.List;
@@ -84,7 +80,7 @@ public class TestPatternStreamSpecRaw extends TestCase
 
         // node 0
         EvalFilterNode filterNode = filters.get(0);
-        assertEquals(SupportBean.class, filterNode.getFilterSpec().getEventType().getUnderlyingType());
+        assertEquals(SupportBean.class, filterNode.getFilterSpec().getFilterForEventType().getUnderlyingType());
         assertEquals(1, filterNode.getFilterSpec().getParameters().size());
         FilterSpecParamExprNode exprParam = (FilterSpecParamExprNode) filterNode.getFilterSpec().getParameters().get(0);   
     }
@@ -107,12 +103,12 @@ public class TestPatternStreamSpecRaw extends TestCase
 
         // node 0
         EvalFilterNode filterNode = filters.get(0);
-        assertEquals(SupportBean.class, filterNode.getFilterSpec().getEventType().getUnderlyingType());
+        assertEquals(SupportBean.class, filterNode.getFilterSpec().getFilterForEventType().getUnderlyingType());
         assertEquals(0, filterNode.getFilterSpec().getParameters().size());
 
         // node 1
         filterNode = filters.get(1);
-        assertEquals(SupportBean.class, filterNode.getFilterSpec().getEventType().getUnderlyingType());
+        assertEquals(SupportBean.class, filterNode.getFilterSpec().getFilterForEventType().getUnderlyingType());
         assertEquals(1, filterNode.getFilterSpec().getParameters().size());
 
         FilterSpecParamIn inlist = (FilterSpecParamIn) filterNode.getFilterSpec().getParameters().get(0);
@@ -147,12 +143,12 @@ public class TestPatternStreamSpecRaw extends TestCase
 
         // node 0
         EvalFilterNode filterNode = filters.get(0);
-        assertEquals(SupportBean.class, filterNode.getFilterSpec().getEventType().getUnderlyingType());
+        assertEquals(SupportBean.class, filterNode.getFilterSpec().getFilterForEventType().getUnderlyingType());
         assertEquals(0, filterNode.getFilterSpec().getParameters().size());
 
         // node 1
         filterNode = filters.get(1);
-        assertEquals(SupportBean.class, filterNode.getFilterSpec().getEventType().getUnderlyingType());
+        assertEquals(SupportBean.class, filterNode.getFilterSpec().getFilterForEventType().getUnderlyingType());
         assertEquals(1, filterNode.getFilterSpec().getParameters().size());
 
         FilterSpecParamRange range = (FilterSpecParamRange) filterNode.getFilterSpec().getParameters().get(0);
@@ -182,7 +178,7 @@ public class TestPatternStreamSpecRaw extends TestCase
 
         // node 0
         EvalFilterNode filterNode = filters.get(0);
-        assertEquals(SupportBean.class, filterNode.getFilterSpec().getEventType().getUnderlyingType());
+        assertEquals(SupportBean.class, filterNode.getFilterSpec().getFilterForEventType().getUnderlyingType());
         assertEquals(1, filterNode.getFilterSpec().getParameters().size());
 
         FilterSpecParamConstant constant = (FilterSpecParamConstant) filterNode.getFilterSpec().getParameters().get(0);
@@ -192,7 +188,7 @@ public class TestPatternStreamSpecRaw extends TestCase
 
         // node 1
         filterNode = filters.get(1);
-        assertEquals(SupportBean.class, filterNode.getFilterSpec().getEventType().getUnderlyingType());
+        assertEquals(SupportBean.class, filterNode.getFilterSpec().getFilterForEventType().getUnderlyingType());
         assertEquals(1, filterNode.getFilterSpec().getParameters().size());
 
         FilterSpecParamEventProp eventprop = (FilterSpecParamEventProp) filterNode.getFilterSpec().getParameters().get(0);

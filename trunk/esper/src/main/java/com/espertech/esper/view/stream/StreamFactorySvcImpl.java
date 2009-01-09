@@ -86,7 +86,7 @@ public class StreamFactorySvcImpl implements StreamFactoryService
      * @param epStatementHandle is the statement resource lock
      * @return newly createdStatement event stream, not reusing existing instances
      */
-    public Pair<EventStream, ManagedLock> createStream(FilterSpecCompiled filterSpec, FilterService filterService, EPStatementHandle epStatementHandle, boolean isJoin)
+    public Pair<EventStream, ManagedLock> createStream(final FilterSpecCompiled filterSpec, FilterService filterService, EPStatementHandle epStatementHandle, boolean isJoin)
     {
         if (log.isDebugEnabled())
         {
@@ -122,16 +122,35 @@ public class StreamFactorySvcImpl implements StreamFactoryService
         }
 
         // New event stream
-        EventType eventType = filterSpec.getEventType();
-        final EventStream eventStream = new ZeroDepthStream(eventType);
+        EventType resultEventType = filterSpec.getResultEventType();
+        final EventStream eventStream = new ZeroDepthStream(resultEventType);
 
-        FilterHandleCallback filterCallback = new FilterHandleCallback()
+        FilterHandleCallback filterCallback;
+        if (filterSpec.getOptionalPropertyExpressionFilter() != null)
         {
-            public void matchFound(EventBean event)
+            filterCallback = new FilterHandleCallback()
             {
-                eventStream.insert(event);
-            }
-        };
+                public void matchFound(EventBean event)
+                {
+                    EventBean[] result = filterSpec.getOptionalPropertyExpressionFilter().getProperty(event);
+                    if (result == null)
+                    {
+                        return;
+                    }
+                    eventStream.insert(result);
+                }
+            };
+        }
+        else
+        {
+            filterCallback = new FilterHandleCallback()
+            {
+                public void matchFound(EventBean event)
+                {
+                    eventStream.insert(event);
+                }
+            };
+        }
         EPStatementHandleCallback handle = new EPStatementHandleCallback(epStatementHandle, filterCallback);
 
         // Store stream for reuse

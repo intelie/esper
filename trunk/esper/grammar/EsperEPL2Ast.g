@@ -181,8 +181,12 @@ streamExpression
 	;
 
 eventFilterExpr
-	:	^( f=EVENT_FILTER_EXPR IDENT? CLASS_IDENT (valueExpr)* { leaveNode($f); } )
+	:	^( f=EVENT_FILTER_EXPR IDENT? CLASS_IDENT propertyExpression? (valueExpr)* { leaveNode($f); } )
 	;
+	
+propertyExpression
+	:	^( EVENT_FILTER_PROPERTY_EXPR eventPropertyExpr+)
+	;	
 	
 patternInclusionExpression
 	:	^(p=PATTERN_INCL_EXPR exprChoice { leaveNode($p); } )

@@ -105,7 +105,7 @@ public class TestEPLTreeWalker extends TestCase
         StatementSpecRaw raw = walker.getStatementSpec();
 
         FilterStreamSpecRaw streamSpec = (FilterStreamSpecRaw) raw.getStreamSpecs().get(0);
-        assertEquals("com.MyClass", streamSpec.getRawFilterSpec().geteventTypeName());
+        assertEquals("com.MyClass", streamSpec.getRawFilterSpec().getEventTypeName());
         assertEquals(0, streamSpec.getRawFilterSpec().getFilterExpressions().size());
         assertEquals("myevent", streamSpec.getOptionalStreamName());
 
@@ -142,7 +142,7 @@ public class TestEPLTreeWalker extends TestCase
         StatementSpecRaw raw = walker.getStatementSpec();
 
         FilterStreamSpecRaw streamSpec = (FilterStreamSpecRaw) raw.getStreamSpecs().get(0);
-        assertEquals("com.MyClass", streamSpec.getRawFilterSpec().geteventTypeName());
+        assertEquals("com.MyClass", streamSpec.getRawFilterSpec().getEventTypeName());
         assertEquals(1, streamSpec.getRawFilterSpec().getFilterExpressions().size());
         assertEquals("myevent", streamSpec.getOptionalStreamName());
 
@@ -201,7 +201,7 @@ public class TestEPLTreeWalker extends TestCase
         StatementSpecRaw raw = walker.getStatementSpec();
 
         FilterStreamSpecRaw streamSpec = (FilterStreamSpecRaw) raw.getStreamSpecs().get(0);
-        assertEquals("com.MyClass", streamSpec.getRawFilterSpec().geteventTypeName());
+        assertEquals("com.MyClass", streamSpec.getRawFilterSpec().getEventTypeName());
         assertEquals(1, streamSpec.getRawFilterSpec().getFilterExpressions().size());
         assertEquals("myevent", streamSpec.getOptionalStreamName());
 
@@ -245,7 +245,7 @@ public class TestEPLTreeWalker extends TestCase
 
         // filter is the event type
         FilterStreamSpecRaw streamSpec = (FilterStreamSpecRaw) raw.getStreamSpecs().get(0);
-        assertEquals("com.MyClass", streamSpec.getRawFilterSpec().geteventTypeName());
+        assertEquals("com.MyClass", streamSpec.getRawFilterSpec().getEventTypeName());
 
         // 2 views
         assertEquals(2, raw.getCreateWindowDesc().getViewSpecs().size());
@@ -341,7 +341,7 @@ public class TestEPLTreeWalker extends TestCase
 
         FilterStreamSpecRaw streamSpec = (FilterStreamSpecRaw) walker.getStatementSpec().getStreamSpecs().get(0);
         assertEquals(2, streamSpec.getViewSpecs().size());
-        assertEquals(SupportBean.class.getName(), streamSpec.getRawFilterSpec().geteventTypeName());
+        assertEquals(SupportBean.class.getName(), streamSpec.getRawFilterSpec().getEventTypeName());
         assertEquals("length", streamSpec.getViewSpecs().get(0).getObjectName());
         assertEquals("lastevent", streamSpec.getViewSpecs().get(1).getObjectName());
         assertEquals("win1", streamSpec.getOptionalStreamName());
@@ -380,7 +380,7 @@ public class TestEPLTreeWalker extends TestCase
 
         FilterStreamSpecRaw streamSpec = (FilterStreamSpecRaw) walker.getStatementSpec().getStreamSpecs().get(2);
         assertEquals(2, streamSpec.getViewSpecs().size());
-        assertEquals(SupportBean.class.getName(), streamSpec.getRawFilterSpec().geteventTypeName());
+        assertEquals(SupportBean.class.getName(), streamSpec.getRawFilterSpec().getEventTypeName());
         assertEquals("length", streamSpec.getViewSpecs().get(0).getObjectName());
         assertEquals("lastevent", streamSpec.getViewSpecs().get(1).getObjectName());
 
@@ -499,7 +499,7 @@ public class TestEPLTreeWalker extends TestCase
         FilterSpecRaw filterSpec = ((FilterStreamSpecRaw) walker.getStatementSpec().getStreamSpecs().get(0)).getRawFilterSpec();
 
         // Check filter spec properties
-        assertEquals(SupportBean.class.getName(), filterSpec.geteventTypeName());
+        assertEquals(SupportBean.class.getName(), filterSpec.getEventTypeName());
         assertEquals(1, filterSpec.getFilterExpressions().size());
 
         // Check views
@@ -1070,7 +1070,7 @@ public class TestEPLTreeWalker extends TestCase
         // check filter
         assertEquals(1, spec.getStreamSpecs().size());
         FilterStreamSpecRaw filter = (FilterStreamSpecRaw) spec.getStreamSpecs().get(0);
-        assertEquals("B", filter.getRawFilterSpec().geteventTypeName());
+        assertEquals("B", filter.getRawFilterSpec().getEventTypeName());
         assertEquals(1, filter.getRawFilterSpec().getFilterExpressions().size());
 
         // check where clause

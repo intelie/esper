@@ -23,16 +23,18 @@ public class FilterSpecRaw implements MetaDefItem
 {
     private String eventTypeName;
     private List<ExprNode> filterExpressions;
+    private PropertyEvalSpec optionalPropertyEvalSpec;
 
     /**
      * Ctor.
      * @param eventTypeName is the name of the event type
      * @param filterExpressions is a list of expression nodes representing individual filter expressions
      */
-    public FilterSpecRaw(String eventTypeName, List<ExprNode> filterExpressions)
+    public FilterSpecRaw(String eventTypeName, List<ExprNode> filterExpressions, PropertyEvalSpec optionalPropertyEvalSpec)
     {
         this.eventTypeName = eventTypeName;
         this.filterExpressions = filterExpressions;
+        this.optionalPropertyEvalSpec = optionalPropertyEvalSpec;
     }
 
     /**
@@ -46,7 +48,7 @@ public class FilterSpecRaw implements MetaDefItem
      * Returns the event type name of the events we are looking for.
      * @return event name
      */
-    public String geteventTypeName()
+    public String getEventTypeName()
     {
         return eventTypeName;
     }
@@ -58,5 +60,10 @@ public class FilterSpecRaw implements MetaDefItem
     public List<ExprNode> getFilterExpressions()
     {
         return filterExpressions;
+    }
+
+    public PropertyEvalSpec getOptionalPropertyEvalSpec()
+    {
+        return optionalPropertyEvalSpec;
     }
 }

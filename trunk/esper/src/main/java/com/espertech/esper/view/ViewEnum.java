@@ -107,11 +107,6 @@ public enum ViewEnum
     GROUP_PROPERTY("std", "groupby", GroupByViewFactory.class, GROUP_MERGE),
 
     /**
-     * Each-property.
-     */
-    EACH_PROPERTY("std", "each", EachPropertyViewFactory.class, null),
-
-    /**
      * Univariate statistics.
      */
     UNIVARIATE_STATISTICS("stat", "uni", UnivariateStatisticsViewFactory.class, null),
