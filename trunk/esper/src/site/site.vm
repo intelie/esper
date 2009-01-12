@@ -315,6 +315,52 @@ behavior: url($relativePath/css/csshover.htc);
 }
 </style>
 <![endif]-->
+<!-- google search widget -->
+<script src="http://www.google.com/jsapi" type="text/javascript"></script>
+<script type="text/javascript">
+//<![CDATA[
+var searchControl;
+
+google.load('search', '1');
+
+function OnComplete(searchControl, searcher) {
+	document.getElementById("left_main").style.visibility = 'hidden';
+}
+	
+function OnLoad() {
+	// Create a search control
+	searchControl = new google.search.SearchControl();
+	searchControl.setSearchCompleteCallback(this, OnComplete);
+			
+	//Esper
+	var siteSearch = new google.search.WebSearch();
+	siteSearch.setUserDefinedLabel("Esper & NEsper");
+	siteSearch.setSiteRestriction("esper.codehaus.org");
+	searchControl.addSearcher(siteSearch);
+
+	//EsperTech
+	var etSearch = new google.search.WebSearch();
+	etSearch.setUserDefinedLabel("EsperTech");
+	etSearch.setSiteRestriction("espertech.com");
+	searchControl.addSearcher(etSearch);
+
+	// Nabble search
+	var mlSearch = new google.search.WebSearch();
+	mlSearch.setUserDefinedLabel("Lists");
+	mlSearch.setSiteRestriction("nabble.com");
+	mlSearch.setQueryAddition("'Esper User list' OR 'Esper Dev list'");
+	searchControl.addSearcher(mlSearch);
+	
+	// draw in tabbed layout mode and split form from results
+	var drawOptions = new google.search.DrawOptions();
+	drawOptions.setDrawMode(google.search.SearchControl.DRAW_MODE_TABBED);
+	drawOptions.setSearchFormRoot(document.getElementById("google_searchForm"));
+	searchControl.draw(document.getElementById("google_searchResult"), drawOptions);
+}
+
+google.setOnLoadCallback(OnLoad, true);
+//]]>
+</script>
   </head>
 <body>
 <div id="top">
@@ -323,12 +369,14 @@ behavior: url($relativePath/css/csshover.htc);
 				<a href="http://www.espertech.com/index.php" title="Home page"><img src="$relativePath/images/home.gif" alt="Home" /></a>
 				<a href="http://www.espertech.com/company/contact.php" title="Contact us"><img src="$relativePath/images/contact.gif" alt="Contact" /></a>
 			</div>
-			<table border="0">
-				<tr><td>
+			<table border="0" width="95%">
+				<tr><td width="203px">
 					<img src="$relativePath/images/espertech_logo_transparent.png"/>
-				</td><td>
+				</td><td width="380px">
 					<h2>Event Stream Intelligence: <small>Esper & NEsper</small></h2>
-				</td></tr>
+				</td>
+				<td><div id="google_searchForm"/></td>
+				</tr>
 			</table>
 	</div>
 </div><!-- top -->
@@ -339,16 +387,14 @@ behavior: url($relativePath/css/csshover.htc);
 #end
 <div id="wrap">
 		<div id="dmenu">
-<ul><li><h2><a href="http://www.espertech.com/index.php" title="Home"><img src="$relativePath/images/home.gif" valign="bottom"/></a></h2></li></ul><ul><li><h2><a>|</a></h2></li></ul><ul><li><h2><a href="http://www.espertech.com/products/">Products</a></h2></li></ul><ul><li><h2><a>|</a></h2></li></ul><ul><li><h2><a href="http://www.espertech.com/support/">Support & Services</a></h2></li></ul><ul><li><h2><a>|</a></h2></li></ul><ul><li><h2><a href="http://www.espertech.com/partners/">Customers & OEMs</a></h2></li></ul><ul><li><h2><a>|</a></h2></li></ul><ul><li><h2><a href="http://www.espertech.com/community/">Community</a></h2>
-	<ul><li><a href="http://www.espertech.com/community/index.php">User Forums</a></li><li><a href="http://www.espertech.com/community/../download/index.php">Products Download</a></li><li><a href="http://esper.codehaus.org" target="_blank">Esper and NEsper at Codehaus</a></li></ul>
-</li></ul><ul><li><h2><a>|</a></h2></li></ul><ul><li><h2><a href="http://www.espertech.com/company/">Company</a></h2></li></ul><ul><li><h2><a>|</a></h2></li></ul><ul><li><h2><a href="http://www.espertech.com/company/contact.php" title="Contact us"><img src="$relativePath/images/contact.gif" valign="bottom"/></a></h2></li></ul><br/>&nbsp;
-		</div>
+<ul><li><h2><a href="http://www.espertech.com/index.php" title="Home"><img src="$relativePath/images/home.gif" valign="bottom"/></a></h2></li></ul><ul><li><h2><a>|</a></h2></li></ul><ul><li><h2><a href="http://www.espertech.com/products/">Products</a></h2>	<ul><li><a href="http://www.espertech.com/products/index.php">Event Processing and CEP platform</a></li><li><a href="http://www.espertech.com/products/esperee.php">Esper Enterprise Edition</a></li><li><a href="http://www.espertech.com/products/esper.php">- Esper</a></li><li><a href="http://www.espertech.com/products/esperstudio.php">- Esper Studio</a></li><li><a href="http://www.espertech.com/products/esperjmx.php">- EsperJMX</a></li><li><a href="http://www.espertech.com/products/esperjdbc.php">- EsperJDBC</a></li><li><a href="http://www.espertech.com/products/esperha.php">EsperHA</a></li><li><a href="http://www.espertech.com/products/technicalspec.php">Technical Specifications</a></li><li><a href="http://www.espertech.com/products/faq.php">FAQ</a></li>	</ul></li></ul><ul><li><h2><a>|</a></h2></li></ul><ul><li><h2><a href="http://www.espertech.com/support/">Support & Services</a></h2>	<ul><li><a href="http://www.espertech.com/support/index.php">Support</a></li><li><a href="http://www.espertech.com/support/services.php">Services</a></li><li><a href="http://www.espertech.com/support/training.php">Training</a></li>	</ul></li></ul><ul><li><h2><a>|</a></h2></li></ul><ul><li><h2><a href="http://www.espertech.com/partners/">Customers & OEMs</a></h2>	<ul><li><a href="http://www.espertech.com/partners/index.php">Become a Partner</a></li><li><a href="http://www.espertech.com/partners/embedded.php">Embed our CEP Engine</a></li><li><a href="http://www.espertech.com/partners/partners.php">Customers, Partners and OEMs</a></li>	</ul></li></ul><ul><li><h2><a>|</a></h2></li></ul><ul><li><h2><a href="http://www.espertech.com/resources/">Resources</a></h2>	<ul><li><a href="http://www.espertech.com/resources/index.php">Demonstrations</a></li><li><a href="http://www.espertech.com/resources/index.php">Data Sheets</a></li><li><a href="http://www.espertech.com/resources/../eventdrivenbi/">Business Objects Labs prototype</a></li>	</ul></li></ul><ul><li><h2><a>|</a></h2></li></ul><ul><li><h2><a href="http://www.espertech.com/community/"><b>Community</b></a></h2>	<ul><li><a href="http://www.espertech.com/community/index.php">User Forums</a></li><li><a href="http://www.espertech.com/community/../download/index.php">Products Download</a></li><li><a href="http://esper.codehaus.org" target="_blank">Esper and NEsper at Codehaus</a></li>	</ul></li></ul><ul><li><h2><a>|</a></h2></li></ul><ul><li><h2><a href="http://www.espertech.com/company/">Company</a></h2>	<ul><li><a href="http://www.espertech.com/company/index.php">Overview</a></li><li><a href="http://www.espertech.com/company/news.php">News</a></li><li><a href="http://www.espertech.com/company/contact.php">Contact us</a></li>	</ul></li></ul><ul><li><h2><a>|</a></h2></li></ul><ul><li><h2><a href="http://www.espertech.com/company/contact.php" title="Contact us"><img src="$relativePath/images/contact.gif" valign="bottom"/></a></h2></li></ul><br/>&nbsp;</div>
 #if ($alignedFileName.equals("index.html"))
 	<div id="pic">
 		<div id="slogan">
 			Where <b>Complex Event Processing meets Open Source</b>: <a href="http://www.espertech.com/products/">Esper & NEsper</a></b><br/>
-			<b>Make no compromise</b> on enterprise readiness: discover <a href="http://www.espertech.com/products/esperha.php">EsperHA</a>, <a href="http://www.espertech.com/products/esperjdbc.php">EsperJDBC</a> and our <a href="http://www.espertech.com/support/">support services</a>.
+			<b>Make no compromise</b> on enterprise readiness: <a href="http://www.espertech.com/products/esperha.php">EsperHA</a>, <a href="http://www.espertech.com/products/esperee.php">Enterprise Edition</a> and <a href="http://www.espertech.com/support/">support services</a>.
 			Embed mainstream CEP in your products and deployments: Learn about our <a href="http://www.espertech.com/partners/embedded.php">licensing options</a>.<br/>
+			<small><a href="http://www.espertech.com/products/" style="color: #A00">Product info</a> | <a href="http://www.espertech.com/partners/partners.php" style="color: #A00">Customers</a> | <a href="http://www.espertech.com/company/contact.php" style="color: #A00">Contact us</a></small>
 		</div>
 	</div>
 #end
@@ -356,15 +402,20 @@ behavior: url($relativePath/css/csshover.htc);
 <div class="content">
 	<div id="main">
 		<div id="left_side">
+			<div id="google_searchResult" style="width:660px;"></div>
+			<div id="left_main">
 		        $bodyContent
+			</div><!-- left_main -->
     		</div><!-- right_side -->
 		<div id="right_side">
 			<a href="$relativePath/index.html"><img src="$relativePath/images/home.gif" alt="Esper and NEsper at Codehaus"/></a>
-		       #mainMenu( $decoration.body.menus )
-		       <h3>&nbsp;</h3>
-		       <a href="http://www.codehaus.org"><img src="$relativePath/images/logos/codehaus-small.gif" alt="" width="100"/></a>
-		       <h3>&nbsp;</h3>
-		       #myPublishDate( $decoration.publishDate $decoration.version )
+			<div id="google_searchFormContainer"/>
+			<div id="google_search"/>
+			#mainMenu( $decoration.body.menus )
+			<h3>&nbsp;</h3>
+			<a href="http://www.codehaus.org"><img src="$relativePath/images/logos/codehaus-small.gif" alt="" width="100"/></a>
+			<h3>&nbsp;</h3>
+			#myPublishDate( $decoration.publishDate $decoration.version )
 		</div>
     	</div><!-- main -->
     	
