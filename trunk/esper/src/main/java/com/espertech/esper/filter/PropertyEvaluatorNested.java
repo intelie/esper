@@ -5,6 +5,7 @@ import com.espertech.esper.client.EventPropertyGetter;
 import com.espertech.esper.client.FragmentEventType;
 import com.espertech.esper.event.EventBeanUtility;
 import com.espertech.esper.collection.ArrayDequeJDK6Backport;
+import com.espertech.esper.epl.expression.ExprNode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +18,7 @@ public class PropertyEvaluatorNested implements PropertyEvaluator
     private final boolean isArrayResult;
     private final int lastLevel;
 
-    public PropertyEvaluatorNested(EventPropertyGetter[] getter, FragmentEventType[] fragmentEventType)
+    public PropertyEvaluatorNested(EventPropertyGetter[] getter, FragmentEventType[] fragmentEventType, ExprNode[] whereClauses)
     {
         this.fragmentEventType = fragmentEventType;
         this.getter = getter;

@@ -114,6 +114,10 @@ tokens
    	PATTERN_NOT_EXPR;
    	EVENT_FILTER_EXPR;
    	EVENT_FILTER_PROPERTY_EXPR;
+   	EVENT_FILTER_PROPERTY_EXPR_ATOM;
+   	PROPERTY_SELECTION_ELEMENT_EXPR;
+   	PROPERTY_SELECTION_STREAM;
+   	PROPERTY_WILDCARD_SELECT;
    	EVENT_FILTER_IDENT;
    	EVENT_FILTER_PARAM;
    	EVENT_FILTER_RANGE;
@@ -1083,7 +1087,26 @@ propertyExpression
 	;
 
 propertyExpressionAtomic
-	:	LBRACK! eventProperty RBRACK!
+	:	LBRACK (SELECT propertySelectionList FROM)? eventProperty (AS IDENT)? (WHERE expression)? RBRACK
+       	-> ^(EVENT_FILTER_PROPERTY_EXPR_ATOM propertySelectionList? eventProperty IDENT? ^(WHERE_EXPR expression?))
+       	;
+	
+propertySelectionList 	
+	:	propertySelectionListElement (COMMA! propertySelectionListElement)*
+	;
+
+propertySelectionListElement
+  @init { String identifier = null; } 
+	:   	s=STAR -> PROPERTY_WILDCARD_SELECT[$s]
+	|	(propertyStreamSelector) => propertyStreamSelector
+	|	expression (AS i=keywordAllowedIdent { identifier = i.getTree().toString(); } )?
+		-> {identifier != null}? ^(PROPERTY_SELECTION_ELEMENT_EXPR expression IDENT[identifier])
+		-> ^(PROPERTY_SELECTION_ELEMENT_EXPR expression)
+	;
+	
+propertyStreamSelector
+	:	s=IDENT DOT STAR (AS i=IDENT)?
+		-> ^(PROPERTY_SELECTION_STREAM $s $i?)
 	;
 
 patternFilterExpression

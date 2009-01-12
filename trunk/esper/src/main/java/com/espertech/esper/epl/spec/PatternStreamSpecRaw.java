@@ -265,7 +265,7 @@ public class PatternStreamSpecRaw extends StreamSpecBase implements StreamSpecRa
         StreamTypeService streamTypeService = new StreamTypeServiceImpl(filterTypes, context.getEngineURI(), true, false);
         List<ExprNode> exprNodes = filterNode.getRawFilterSpec().getFilterExpressions();
         // TODO: enable property expression in pattern
-        FilterSpecCompiled spec = FilterSpecCompiler.makeFilterSpec(eventType, eventName, exprNodes, null,  filterTaggedEventTypes, arrayCompositeEventTypes, streamTypeService, context.getMethodResolutionService(), context.getSchedulingService(), context.getVariableService(), context.getEventAdapterService());
+        FilterSpecCompiled spec = FilterSpecCompiler.makeFilterSpec(eventType, eventName, exprNodes, null,  filterTaggedEventTypes, arrayCompositeEventTypes, streamTypeService, context.getMethodResolutionService(), context.getSchedulingService(), context.getVariableService(), context.getEventAdapterService(), context.getEngineURI(), null);
         filterNode.setFilterSpec(spec);
     }
 

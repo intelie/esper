@@ -1361,6 +1361,86 @@ such event metadata and event data into one of the built-in event representation
 		</para>
 	</sect1>
 
+	<sect1 id="eventrep-coarse">
+	   <title>Coarse-Grained Events</title>
+	   
+		<indexterm><primary>event</primary><secondary>coarse</secondary></indexterm>
+		<indexterm><primary>event</primary><secondary>bulk</secondary></indexterm>
+
+        <para>
+			You application events may consist of fairly comprehensive, coarse-grained structures or documents. For example in business-to-business integration scenarios, XML documents or nested objects events can be rich deeply-nested graphs of event properties.
+        </para>
+
+        <para>
+			Your use case may require you to extract information from a coarse-grained event or to perform bulk operations on the rows in the property graph. This section outlines the options available for handling nesting levels, multiplicity and property relationships.
+        </para>
+
+        <para>
+			As an example event, consider a media order. A media order consists of order items as well as product decriptions. This example shows a sample order event rendered in XML event representation. Note that Map and POJO representation can be considered equivalent for purpose of this example:
+		</para>
+
+		<programlisting><![CDATA[<mediaorder>
+  <orderId>PO200901</orderId>
+  <items>
+    <item>
+      <itemId>100001</itemId>
+      <productId>B001</productId>
+      <amount>10</amount>
+      <price>11.95</price>
+    </item>
+  </items>
+  <books>
+    <book>
+      <bookId>B001</bookId>
+      <author>Orson Scott Card</author>
+      <review>
+        <comment>best book ever</comment>
+        <reviewId>1</reviewId>
+      </review>
+    </book>
+  <books>
+</mediaorder>]]></programlisting>
+
+        <para>
+			As has been discussed in this chapter, the following query utilizes nested property expressions to return the order id and item id of the first order item:
+		</para>
+		<programlisting><![CDATA[select orderDetail.orderId, items.item[0].itemId from MediaOrder]]></programlisting>
+
+        <para>
+			The next query returns each book. That is, it returns one output row for each book and the event may have zero, one or more book rows for each event. The book row contains properties <literal>bookId, author and review</literal>:
+		</para>
+		<programlisting><![CDATA[select * from MediaOrder[books.book]]]></programlisting>
+
+        <para>
+			The next query returns each book only for an event with a given order id:
+		</para>
+		<programlisting><![CDATA[select * from MediaOrder(orderId='PO200901')[books.book]]]></programlisting>
+
+        <para>
+			The next query retains each book unique by book id:
+		</para>
+		<programlisting><![CDATA[select * from MediaOrder[books.book].std:unique(bookId)]]></programlisting>
+
+        <para>
+			This query returns each review of each book, i.e. properties <literal>comment and reviewId</literal>:
+		</para>
+		<programlisting><![CDATA[select * from MediaOrder[books.book][review]]]></programlisting>
+
+        <para>
+			This query joins items to books where book id matches the product id:
+		</para>
+		<programlisting><![CDATA[select * from MediaOrder[books.book], MediaOrder[item] where productId = bookId]]></programlisting>
+
+        <para>
+			This query selects order id, book id as well review detail:
+		</para>
+		<programlisting><![CDATA[select * from MediaOrder[books.book : orderId, bookId][review]]]></programlisting>
+
+        <para>
+			The synopsis:
+		</para>
+		<synopsis><emphasis>property_name</emphasis> [: <emphasis>property_name</emphasis> | * | <emphasis>streamname</emphasis>.* , [...]]</synopsis>
+	</sect1>
 </chapter>
 
 

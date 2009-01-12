@@ -522,6 +522,27 @@ public class TestEPLTreeWalker extends TestCase
         assertEquals(false, ((ExprConstantNode) specTwo.getObjectParameters().get(1)).getValue());
     }
 
+    public void testWalkPropertyExpr() throws Exception
+    {
+        String text = "select * from " + SupportBean.class.getName() + "[a.b][select c,d.*,* from e as f where g]";
+
+        EPLTreeWalker walker = parseAndWalkEPL(text);
+        FilterSpecRaw filterSpec = ((FilterStreamSpecRaw) walker.getStatementSpec().getStreamSpecs().get(0)).getRawFilterSpec();
+        assertEquals(2, filterSpec.getOptionalPropertyEvalSpec().getAtoms().size());
+        assertEquals("a.b", filterSpec.getOptionalPropertyEvalSpec().getAtoms().get(0).getPropertyName());
+        assertEquals(0, filterSpec.getOptionalPropertyEvalSpec().getAtoms().get(0).getOptionalSelectClause().getSelectExprList().size());
+
+        PropertyEvalAtom atomTwo = filterSpec.getOptionalPropertyEvalSpec().getAtoms().get(1);
+        assertEquals("e", atomTwo.getPropertyName());
+        assertEquals("f", atomTwo.getOptionalAsName());
+        assertNotNull(atomTwo.getOptionalWhereClause());
+        List<SelectClauseElementRaw> list = atomTwo.getOptionalSelectClause().getSelectExprList();
+        assertEquals(3, list.size());
+        assertTrue(list.get(0) instanceof SelectClauseExprRawSpec);
+        assertTrue(list.get(1) instanceof SelectClauseStreamRawSpec);
+        assertTrue(list.get(2) instanceof SelectClauseElementWildcard);
+    }
+
     public void testSelectList() throws Exception
     {
         String text = "select intPrimitive, 2 * intBoxed, 5 as myConst, stream0.string as theString from " + SupportBean.class.getName() + "().win:lenght(10) as stream0";

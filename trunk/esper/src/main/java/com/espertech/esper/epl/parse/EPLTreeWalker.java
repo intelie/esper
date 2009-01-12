@@ -10,6 +10,7 @@ package com.espertech.esper.epl.parse;
 
 import com.espertech.esper.antlr.ASTUtil;
 import com.espertech.esper.client.ConfigurationInformation;
+import com.espertech.esper.collection.Pair;
 import com.espertech.esper.collection.UniformPair;
 import com.espertech.esper.epl.agg.AggregationSupport;
 import com.espertech.esper.epl.core.EngineImportException;
@@ -51,6 +52,9 @@ public class EPLTreeWalker extends EsperEPL2Ast
     private List<ExprSubstitutionNode> substitutionParamNodes = new ArrayList<ExprSubstitutionNode>();
     private StatementSpecRaw statementSpec;
     private final Stack<StatementSpecRaw> statementSpecStack;
+
+    private List<SelectClauseElementRaw> propertySelectRaw;
+    private PropertyEvalSpec propertyEvalSpec;
 
     private final EngineImportService engineImportService;
     private final VariableService variableService;
@@ -160,6 +164,18 @@ public class EPLTreeWalker extends EsperEPL2Ast
             case SELECTION_STREAM:
                 leaveSelectionStream(node);
                 break;
+            case PROPERTY_SELECTION_ELEMENT_EXPR:
+                leavePropertySelectionElement(node);
+                break;
+            case PROPERTY_SELECTION_STREAM:
+                leavePropertySelectionStream(node);
+                break;
+            case PROPERTY_WILDCARD_SELECT:
+            	leavePropertyWildcardSelect();
+            	break;
+            case EVENT_FILTER_PROPERTY_EXPR_ATOM:
+            	leavePropertySelectAtom(node);
+            	break;
             case EVENT_PROP_EXPR:
                 leaveEventPropertyExpr(node);
                 break;
@@ -946,6 +962,55 @@ public class EPLTreeWalker extends EsperEPL2Ast
         statementSpec.getSelectClauseSpec().add(new SelectClauseExprRawSpec(exprNode, optionalName));
     }
 
+    private void leavePropertySelectionElement(Tree node) throws ASTWalkException
+    {
+        log.debug(".leavePropertySelectionElement");
+
+        if ((astExprNodeMap.size() > 1) || ((astExprNodeMap.isEmpty())))
+        {
+            throw new ASTWalkException("Unexpected AST tree contains zero or more then 1 child element for root");
+        }
+
+        // Get expression node sub-tree from the AST nodes placed so far
+        ExprNode exprNode = astExprNodeMap.values().iterator().next();
+        astExprNodeMap.clear();
+
+        // Get list element name
+        String optionalName = null;
+        if (node.getChildCount() > 1)
+        {
+            optionalName = node.getChild(1).getText();
+        }
+
+        // Add as selection element
+        if (propertySelectRaw == null)
+        {
+            propertySelectRaw = new ArrayList<SelectClauseElementRaw>();
+        }
+        this.propertySelectRaw.add(new SelectClauseExprRawSpec(exprNode, optionalName));
+    }
+
+    private void leavePropertySelectionStream(Tree node) throws ASTWalkException
+    {
+        log.debug(".leavePropertySelectionStream");
+
+        String streamName = node.getChild(0).getText();
+
+        // Get element name
+        String optionalName = null;
+        if (node.getChildCount() > 1)
+        {
+            optionalName = node.getChild(1).getText();
+        }
+
+        // Add as selection element
+        if (propertySelectRaw == null)
+        {
+            propertySelectRaw = new ArrayList<SelectClauseElementRaw>();
+        }
+        this.propertySelectRaw.add(new SelectClauseStreamRawSpec(streamName, optionalName));
+    }
+
     private void leaveSelectionStream(Tree node) throws ASTWalkException
     {
         log.debug(".leaveSelectionStream");
@@ -967,6 +1032,66 @@ public class EPLTreeWalker extends EsperEPL2Ast
     {
     	log.debug(".leaveWildcardSelect");
         statementSpec.getSelectClauseSpec().add(new SelectClauseElementWildcard());
+    }
+
+    private void leavePropertyWildcardSelect()
+    {
+    	log.debug(".leavePropertyWildcardSelect");
+        if (propertySelectRaw == null)
+        {
+            propertySelectRaw = new ArrayList<SelectClauseElementRaw>();
+        }
+        this.propertySelectRaw.add(new SelectClauseElementWildcard());
+    }
+
+    private void leavePropertySelectAtom(Tree node)
+    {
+    	log.debug(".leavePropertySelectAtom");
+
+        // initialize if not set
+        if (propertyEvalSpec == null)
+        {
+            propertyEvalSpec = new PropertyEvalSpec();
+        }
+
+        // get select clause
+        SelectClauseSpecRaw optionalSelectClause = new SelectClauseSpecRaw();
+        if (propertySelectRaw != null)
+        {
+            optionalSelectClause.getSelectExprList().addAll(propertySelectRaw);
+            propertySelectRaw = null;
+        }
+
+        // get where-clause, if any
+        ExprNode optionalWhereClause = null;
+        for (int i = 0; i < node.getChildCount(); i++)
+        {
+            if (node.getChild(i).getType() == WHERE_EXPR)
+            {
+                optionalWhereClause = this.astExprNodeMap.remove(node.getChild(i).getChild(0));
+            }
+        }
+
+        String propertyName = null;
+        for (int i = 0; i < node.getChildCount(); i++)
+        {
+            if (node.getChild(i).getType() == EVENT_PROP_EXPR)
+            {
+                propertyName = ASTFilterSpecHelper.getPropertyName(node.getChild(i), 0);
+            }
+        }
+
+        String optionalAsName = null;
+        for (int i = 0; i < node.getChildCount(); i++)
+        {
+            if (node.getChild(i).getType() == IDENT)
+            {
+               optionalAsName = node.getChild(i).getText();
+            }
+        }
+
+        PropertyEvalAtom atom = new PropertyEvalAtom(propertyName, optionalAsName, optionalSelectClause, optionalWhereClause);
+        propertyEvalSpec.add(atom);
     }
 
     private void leaveView(Tree node) throws ASTWalkException
@@ -1650,22 +1775,15 @@ public class EPLTreeWalker extends EsperEPL2Ast
         count++;
 
         // get property expression if any
-        PropertyEvalSpec propertyEvalSpec = null;
         if ((node.getChildCount() > count) && (node.getChild(count).getType() == EVENT_FILTER_PROPERTY_EXPR))
         {
-            List<String> propertyNames = new ArrayList<String>();
-            Tree rootNode = node.getChild(count);
-            for (int i = 0; i < rootNode.getChildCount(); i++)
-            {
-                propertyNames.add(ASTFilterSpecHelper.getPropertyName(rootNode.getChild(i),0));
-            }            
             ++count;
-            propertyEvalSpec = new PropertyEvalSpec(propertyNames.toArray(new String[propertyNames.size()]));
         }
 
         List<ExprNode> exprNodes = getExprNodes(node, count);
 
         FilterSpecRaw rawFilterSpec = new FilterSpecRaw(eventName, exprNodes, propertyEvalSpec);
+        propertyEvalSpec = null;
         // for event streams we keep the filter spec around for use when the stream definition is completed
         filterSpec = rawFilterSpec;
 

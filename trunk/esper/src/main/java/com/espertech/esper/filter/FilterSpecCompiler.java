@@ -8,16 +8,14 @@
  **************************************************************************************/
 package com.espertech.esper.filter;
 
+import com.espertech.esper.client.EventType;
 import com.espertech.esper.collection.Pair;
 import com.espertech.esper.epl.core.MethodResolutionService;
 import com.espertech.esper.epl.core.StreamTypeService;
 import com.espertech.esper.epl.expression.*;
-import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.epl.spec.PropertyEvalSpec;
+import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.event.EventAdapterService;
-import com.espertech.esper.client.EventType;
-import com.espertech.esper.client.FragmentEventType;
-import com.espertech.esper.client.EventPropertyGetter;
 import com.espertech.esper.schedule.TimeProvider;
 import com.espertech.esper.type.RelationalOpEnum;
 import com.espertech.esper.util.JavaClassHelper;
@@ -70,7 +68,9 @@ public final class FilterSpecCompiler
                                                     MethodResolutionService methodResolutionService,
                                                     TimeProvider timeProvider,
                                                     VariableService variableService,
-                                                    EventAdapterService eventAdapterService)
+                                                    EventAdapterService eventAdapterService,
+                                                    String engineURI,
+                                                    String optionalStreamName)
             throws ExprValidationException
     {
         // Validate all nodes, make sure each returns a boolean and types are good;
@@ -78,7 +78,58 @@ public final class FilterSpecCompiler
         List<ExprNode> constituents = FilterSpecCompiler.validateAndDecompose(filterExpessions, streamTypeService, methodResolutionService, timeProvider, variableService);
 
         // From the constituents make a filter specification
-        FilterSpecCompiled spec = makeFilterSpec(eventType, eventTypeName, constituents, optionalPropertyEvalSpec, taggedEventTypes, arrayEventTypes, variableService, eventAdapterService);
+        FilterParamExprMap filterParamExprMap = new FilterParamExprMap();
+
+        // Make filter parameter for each expression node, if it can be optimized
+        for (ExprNode constituent : constituents)
+        {
+            FilterSpecParam param = makeFilterParam(constituent);
+            filterParamExprMap.put(constituent, param); // accepts null values as the expression may not be optimized
+        }
+
+        // Consolidate entries as possible, i.e. (a != 5 and a != 6) is (a not in (5,6))
+        // Removes duplicates for same property and same filter operator for filter service index optimizations
+        consolidate(filterParamExprMap);
+
+        // Use all filter parameter and unassigned expressions
+        List<FilterSpecParam> filterParams = new ArrayList<FilterSpecParam>();
+        filterParams.addAll(filterParamExprMap.getFilterParams());
+        List<ExprNode> remainingExprNodes = filterParamExprMap.getUnassignedExpressions();
+
+        // any unoptimized expression nodes are put under one AND
+        ExprNode exprNode = null;
+        if (!remainingExprNodes.isEmpty())
+        {
+            if (remainingExprNodes.size() == 1)
+            {
+                exprNode = remainingExprNodes.get(0);
+            }
+            else
+            {
+                ExprAndNode andNode = new ExprAndNode();
+                for (ExprNode unoptimized : remainingExprNodes)
+                {
+                    andNode.addChildNode(unoptimized);
+                }
+                exprNode = andNode;
+            }
+        }
+
+        // if there are boolean expressions, add
+        if (exprNode != null)
+        {
+            FilterSpecParamExprNode param = new FilterSpecParamExprNode(PROPERTY_NAME_BOOLEAN_EXPRESSION, FilterOperator.BOOLEAN_EXPRESSION, exprNode, taggedEventTypes, arrayEventTypes, variableService, eventAdapterService);
+            filterParams.add(param);
+        }
+
+        PropertyEvaluator optionalPropertyEvaluator = null;
+        if (optionalPropertyEvalSpec != null)
+        {
+            optionalPropertyEvaluator = PropertyEvaluatorFactory.makeEvaluator(optionalPropertyEvalSpec, eventType, optionalStreamName, methodResolutionService, timeProvider, variableService, engineURI);
+        }
+
+        FilterSpecCompiled spec = new FilterSpecCompiled(eventType, eventTypeName, filterParams, optionalPropertyEvaluator);
+
         if (log.isDebugEnabled())
         {
             log.debug(".makeFilterSpec spec=" + spec);
@@ -215,69 +266,6 @@ public final class FilterSpecCompiler
             }
         }
         while(haveConsolidated);
-    }
-
-    private static FilterSpecCompiled makeFilterSpec(EventType eventType,
-                                                     String eventTypeName,
-                                                     List<ExprNode> constituents,
-                                                     PropertyEvalSpec optionalPropertyEvalSpec,
-                                                     LinkedHashMap<String, Pair<EventType, String>> taggedEventTypes,
-                                                     LinkedHashMap<String, Pair<EventType, String>> arrayEventTypes,
-                                                     VariableService variableService,
-                                                     EventAdapterService eventAdapterService)
-            throws ExprValidationException
-    {
-        FilterParamExprMap filterParamExprMap = new FilterParamExprMap();
-
-        // Make filter parameter for each expression node, if it can be optimized
-        for (ExprNode constituent : constituents)
-        {
-            FilterSpecParam param = makeFilterParam(constituent);
-            filterParamExprMap.put(constituent, param); // accepts null values as the expression may not be optimized
-        }
-
-        // Consolidate entries as possible, i.e. (a != 5 and a != 6) is (a not in (5,6))
-        // Removes duplicates for same property and same filter operator for filter service index optimizations
-        consolidate(filterParamExprMap);
-
-        // Use all filter parameter and unassigned expressions
-        List<FilterSpecParam> filterParams = new ArrayList<FilterSpecParam>();
-        filterParams.addAll(filterParamExprMap.getFilterParams());
-        List<ExprNode> remainingExprNodes = filterParamExprMap.getUnassignedExpressions();
-
-        // any unoptimized expression nodes are put under one AND
-        ExprNode exprNode = null;
-        if (!remainingExprNodes.isEmpty())
-        {
-            if (remainingExprNodes.size() == 1)
-            {
-                exprNode = remainingExprNodes.get(0);
-            }
-            else
-            {
-                ExprAndNode andNode = new ExprAndNode();
-                for (ExprNode unoptimized : remainingExprNodes)
-                {
-                    andNode.addChildNode(unoptimized);
-                }
-                exprNode = andNode;
-            }
-        }
-
-        // if there are boolean expressions, add
-        if (exprNode != null)
-        {
-            FilterSpecParamExprNode param = new FilterSpecParamExprNode(PROPERTY_NAME_BOOLEAN_EXPRESSION, FilterOperator.BOOLEAN_EXPRESSION, exprNode, taggedEventTypes, arrayEventTypes, variableService, eventAdapterService);
-            filterParams.add(param);
-        }
-
-        PropertyEvaluator optionalPropertyEvaluator = null;
-        if (optionalPropertyEvalSpec != null)
-        {
-            optionalPropertyEvaluator = PropertyEvaluatorFactory.makeEvaluator(optionalPropertyEvalSpec, eventType);
-        }
-
-        return new FilterSpecCompiled(eventType, eventTypeName, filterParams, optionalPropertyEvaluator);
     }
 
     // consolidate "val != 3 and val != 4 and val != 5"

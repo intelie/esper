@@ -17,6 +17,19 @@ public class OHLCMain
 
     public static void main(String[] args)
     {
+        OHLCMain sample = new OHLCMain();
+        try
+        {
+            sample.run();
+        }
+        catch (RuntimeException ex)
+        {
+            log.error("Unexpected exception :" + ex.getMessage(), ex);
+        }        
+    }
+
+    public void run()
+    {
         log.info("Setting up EPL");
 
         Configuration config = new Configuration();
@@ -37,7 +50,7 @@ public class OHLCMain
         {
             String stmtName = (String) statement[0];
             String expression = (String) statement[1];
-            System.out.println("Creating statement: " + expression);
+            log.info("Creating statement: " + expression);
             EPStatement stmt = epService.getEPAdministrator().createEPL(expression, stmtName);
 
             if (stmtName.equals("S1"))
@@ -78,7 +91,7 @@ public class OHLCMain
         for (int i = 0; i < input.length; i++)
         {
             String timestampArrival = (String) input[i][0];
-            System.out.println("Sending timer event " + timestampArrival);
+            log.info("Sending timer event " + timestampArrival);
             sendTimer(epService, toTime(timestampArrival));
 
             String ticker = (String) input[i][1];
@@ -88,7 +101,7 @@ public class OHLCMain
                 String timestampTick = (String) input[i][3];
                 OHLCTick event = new OHLCTick(ticker, price, toTime(timestampTick));
 
-                System.out.println("Sending event " + event);
+                log.info("Sending event " + event);
                 epService.getEPRuntime().sendEvent(event);
             }
         }

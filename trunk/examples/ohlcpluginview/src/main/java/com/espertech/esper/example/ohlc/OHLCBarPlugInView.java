@@ -17,6 +17,9 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.Iterator;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 /**
  * Custom view to compute minute OHLC bars for double values and based on the event's timestamps.
  * <p>
@@ -30,6 +33,7 @@ import java.util.Iterator;
 public class OHLCBarPlugInView extends ViewSupport implements CloneableView
 {
     private final static int LATE_EVENT_SLACK_SECONDS = 5;
+    private static Log log = LogFactory.getLog(OHLCBarPlugInView.class);
 
     private final StatementContext statementContext;
     private final ScheduleSlot scheduleSlot;
@@ -44,6 +48,7 @@ public class OHLCBarPlugInView extends ViewSupport implements CloneableView
     private Double last;
     private Double max;
     private Double min;
+    private EventBean lastEvent;
 
     public OHLCBarPlugInView(StatementContext statementContext, ExprNode timestampExpression, ExprNode valueExpression)
     {
@@ -180,7 +185,15 @@ public class OHLCBarPlugInView extends ViewSupport implements CloneableView
     {
         OHLCBarValue barValue = new OHLCBarValue(currentTimestampMinute, first, last, max, min);
         EventBean outgoing = statementContext.getEventAdapterService().adapterForBean(barValue);
-        this.updateChildren(new EventBean[] {outgoing}, null);
+        if (lastEvent == null)
+        {
+            this.updateChildren(new EventBean[] {outgoing}, null);
+        }
+        else
+        {
+            this.updateChildren(new EventBean[] {outgoing}, new EventBean[] {lastEvent});            
+        }
+        lastEvent = outgoing;
 
         cutoffTimestampMinute = currentTimestampMinute;
         first = null;

@@ -13,6 +13,7 @@ import com.espertech.esper.epl.agg.AggregationSupport;
 import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.util.MetaDefItem;
 import com.espertech.esper.schedule.TimeProvider;
+import com.espertech.esper.client.EventBean;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 

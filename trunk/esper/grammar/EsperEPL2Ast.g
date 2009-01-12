@@ -118,7 +118,7 @@ createColTypeListElement
 createSelectionListElement
 	:	w=WILDCARD_SELECT { leaveNode($w); }
 	|	^(s=SELECTION_ELEMENT_EXPR (
-	              (eventPropertyExpr (IDENT)?) 
+	              (eventPropertyExpr[true] (IDENT)?) 
 	            | (constant[true] IDENT)
 	              ) { leaveNode($s); } )
 	;
@@ -170,10 +170,10 @@ outerJoin
 	;
 
 outerJoinIdent
-	:	^(tl=LEFT_OUTERJOIN_EXPR eventPropertyExpr eventPropertyExpr (eventPropertyExpr eventPropertyExpr)* { leaveNode($tl); } )
-	|	^(tr=RIGHT_OUTERJOIN_EXPR eventPropertyExpr eventPropertyExpr (eventPropertyExpr eventPropertyExpr)* { leaveNode($tr); } )
-	|	^(tf=FULL_OUTERJOIN_EXPR eventPropertyExpr eventPropertyExpr (eventPropertyExpr eventPropertyExpr)* { leaveNode($tf); } )
-	|	^(i=INNERJOIN_EXPR eventPropertyExpr eventPropertyExpr (eventPropertyExpr eventPropertyExpr)* { leaveNode($i); } )
+	:	^(tl=LEFT_OUTERJOIN_EXPR eventPropertyExpr[true] eventPropertyExpr[true] (eventPropertyExpr[true] eventPropertyExpr[true])* { leaveNode($tl); } )
+	|	^(tr=RIGHT_OUTERJOIN_EXPR eventPropertyExpr[true] eventPropertyExpr[true] (eventPropertyExpr[true] eventPropertyExpr[true])* { leaveNode($tr); } )
+	|	^(tf=FULL_OUTERJOIN_EXPR eventPropertyExpr[true] eventPropertyExpr[true] (eventPropertyExpr[true] eventPropertyExpr[true])* { leaveNode($tf); } )
+	|	^(i=INNERJOIN_EXPR eventPropertyExpr[true] eventPropertyExpr[true] (eventPropertyExpr[true] eventPropertyExpr[true])* { leaveNode($i); } )
 	;
 
 streamExpression
@@ -185,9 +185,19 @@ eventFilterExpr
 	;
 	
 propertyExpression
-	:	^( EVENT_FILTER_PROPERTY_EXPR eventPropertyExpr+)
+	:	^( EVENT_FILTER_PROPERTY_EXPR propertyExpressionAtom*)
 	;	
 	
+propertyExpressionAtom
+	:	^( a=EVENT_FILTER_PROPERTY_EXPR_ATOM propertySelectionListElement* eventPropertyExpr[false] IDENT? ^(WHERE_EXPR valueExpr?) { leaveNode($a); })
+	;	
+	
+propertySelectionListElement
+	:	w=PROPERTY_WILDCARD_SELECT { leaveNode($w); }
+	|	^(e=PROPERTY_SELECTION_ELEMENT_EXPR valueExpr (IDENT)? { leaveNode($e); } )
+	|	^(s=PROPERTY_SELECTION_STREAM IDENT (IDENT)? { leaveNode($s); } )
+	;	
+
 patternInclusionExpression
 	:	^(p=PATTERN_INCL_EXPR exprChoice { leaveNode($p); } )
 	;
@@ -263,7 +273,7 @@ valueExpr
 	: 	constant[true]
 	|	substitution
 	| 	arithmeticExpr 
-	| 	eventPropertyExpr
+	| 	eventPropertyExpr[true]
 	|   	evalExprChoice
 	|	builtinFunc
 	|   	libFunc
@@ -299,19 +309,19 @@ numericParameterList
 	;
 	
 rangeOperator
-	:	^( r=NUMERIC_PARAM_RANGE (constant[true]|eventPropertyExpr|substitution) (constant[true]|eventPropertyExpr|substitution) { leaveNode($r); })
+	:	^( r=NUMERIC_PARAM_RANGE (constant[true]|eventPropertyExpr[true]|substitution) (constant[true]|eventPropertyExpr[true]|substitution) { leaveNode($r); })
 	;
 		
 frequencyOperator
-	:	^( f=NUMERIC_PARAM_FREQUENCY (constant[true]|eventPropertyExpr|substitution) { leaveNode($f); })
+	:	^( f=NUMERIC_PARAM_FREQUENCY (constant[true]|eventPropertyExpr[true]|substitution) { leaveNode($f); })
 	;
 
 lastOperator
-	:	^( l=LAST_OPERATOR (constant[true]|eventPropertyExpr|substitution) { leaveNode($l); })
+	:	^( l=LAST_OPERATOR (constant[true]|eventPropertyExpr[true]|substitution) { leaveNode($l); })
 	;
 
 weekDayOperator
-	:	^( w=WEEKDAY_OPERATOR (constant[true]|eventPropertyExpr|substitution) { leaveNode($w); })
+	:	^( w=WEEKDAY_OPERATOR (constant[true]|eventPropertyExpr[true]|substitution) { leaveNode($w); })
 	;
 	
 subSelectRowExpr
@@ -374,11 +384,11 @@ builtinFunc
 	|	^(f=STDDEV (DISTINCT)? valueExpr) { leaveNode($f); }
 	|	^(f=AVEDEV (DISTINCT)? valueExpr) { leaveNode($f); }
 	| 	^(f=COALESCE valueExpr valueExpr (valueExpr)* ) { leaveNode($f); }
-	| 	^(f=PREVIOUS valueExpr eventPropertyExpr) { leaveNode($f); }
-	| 	^(f=PRIOR c=NUM_INT eventPropertyExpr) {leaveNode($c); leaveNode($f);}
+	| 	^(f=PREVIOUS valueExpr eventPropertyExpr[true]) { leaveNode($f); }
+	| 	^(f=PRIOR c=NUM_INT eventPropertyExpr[true]) {leaveNode($c); leaveNode($f);}
 	| 	^(f=INSTANCEOF valueExpr CLASS_IDENT (CLASS_IDENT)*) { leaveNode($f); }
 	| 	^(f=CAST valueExpr CLASS_IDENT) { leaveNode($f); }
-	| 	^(f=EXISTS eventPropertyExpr) { leaveNode($f); }
+	| 	^(f=EXISTS eventPropertyExpr[true]) { leaveNode($f); }
 	|	^(f=CURRENT_TIMESTAMP {}) { leaveNode($f); }
 	;
 	
@@ -469,11 +479,11 @@ filterAtom
 	|	filterIdentifier;
 	
 filterIdentifier
-	:	^(EVENT_FILTER_IDENT IDENT eventPropertyExpr)
+	:	^(EVENT_FILTER_IDENT IDENT eventPropertyExpr[true])
 	;	
 	
-eventPropertyExpr
-	:	^(p=EVENT_PROP_EXPR eventPropertyAtomic (eventPropertyAtomic)* ) { leaveNode($p); }
+eventPropertyExpr[boolean isLeaveNode]
+	:	^(p=EVENT_PROP_EXPR eventPropertyAtomic (eventPropertyAtomic)* ) { if ($isLeaveNode) leaveNode($p); }
 	;
 	
 eventPropertyAtomic

@@ -3,16 +3,19 @@ package com.espertech.esper.filter;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventPropertyGetter;
 import com.espertech.esper.client.FragmentEventType;
+import com.espertech.esper.epl.expression.ExprNode;
 
 public class PropertyEvaluatorSimple implements PropertyEvaluator
 {
     private final EventPropertyGetter getter;
     private final FragmentEventType fragmentEventType;
+    private final ExprNode filter;
 
-    public PropertyEvaluatorSimple(EventPropertyGetter getter, FragmentEventType fragmentEventType)
+    public PropertyEvaluatorSimple(EventPropertyGetter getter, FragmentEventType fragmentEventType, ExprNode filter)
     {
         this.fragmentEventType = fragmentEventType;
         this.getter = getter;
+        this.filter = filter;
     }
 
     public EventBean[] getProperty(EventBean event)
@@ -23,10 +26,16 @@ public class PropertyEvaluatorSimple implements PropertyEvaluator
 
             if (fragmentEventType.isIndexed())
             {
-                return (EventBean[]) result;
+                EventBean[] rows = (EventBean[]) result;
+                if (filter == null)
+                {
+                    
+                }
+                //return applyWhere((EventBean[]) result);
             }
             else
             {
+                //if (checkWhere())
                 return new EventBean[] {(EventBean) result};
             }
         }
@@ -42,4 +51,11 @@ public class PropertyEvaluatorSimple implements PropertyEvaluator
     {
         return fragmentEventType;
     }
+
+    protected static EventBean[] evaluate(ExprNode filter, EventBean[] incoming, EventBean[] eventsPerStream)
+    {
+        
+    }
+
+
 }
