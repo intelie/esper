@@ -16,6 +16,7 @@ import com.espertech.esper.epl.core.*;
 import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.epl.parse.ASTFilterSpecHelper;
 import com.espertech.esper.schedule.TimeProvider;
+import com.espertech.esper.util.LevenshteinDistance;
 
 /**
  * Represents an stream property identifier in a filter expressiun tree.
@@ -197,7 +198,15 @@ public class ExprIdentNode extends ExprNode
             }
             catch (StreamTypesException ex)
             {
-                throw new ExprValidationException(ex.getMessage());
+                String suggestion = getSuggestion(ex);
+                if (suggestion != null)
+                {
+                    throw new ExprValidationException(ex.getMessage() + suggestion);
+                }
+                else
+                {
+                    throw new ExprValidationException(ex.getMessage());                    
+                }
             }
             catch (PropertyAccessException ex)
             {
@@ -209,6 +218,7 @@ public class ExprIdentNode extends ExprNode
         }
 
         // try to resolve the property name and stream name as it is (ie. stream name as a stream name)
+        StreamTypesException typeExceptionOne;
         try
         {
             propertyInfo = streamTypeService.resolveByStreamAndPropName(streamOrPropertyName, unresolvedPropertyName);
@@ -217,10 +227,11 @@ public class ExprIdentNode extends ExprNode
         }
         catch (StreamTypesException ex)
         {
-            // unhandled
+            typeExceptionOne = ex;
         }
 
         // try to resolve the property name to a nested property 's0.p0'
+        StreamTypesException typeExceptionTwo;
         String propertyNameCandidate = streamOrPropertyName + '.' + unresolvedPropertyName;
         try
         {
@@ -230,11 +241,39 @@ public class ExprIdentNode extends ExprNode
         }
         catch (StreamTypesException ex)
         {
-            // unhandled
+            typeExceptionTwo = ex;
+        }
+
+        String suggestionOne = getSuggestion(typeExceptionOne);
+        String suggestionTwo = getSuggestion(typeExceptionTwo);
+        if (suggestionOne != null)
+        {
+            throw new ExprValidationException(typeExceptionOne.getMessage() + suggestionOne);
+        }
+        if (suggestionTwo != null)
+        {
+            throw new ExprValidationException(typeExceptionTwo.getMessage() + suggestionTwo);
         }
 
         // fail to resolve
         throw new ExprValidationException("Failed to resolve property '" + propertyNameCandidate + "' to a stream or nested property in a stream");
+    }
+
+    private static String getSuggestion(StreamTypesException ex)
+    {
+        if (ex == null)
+        {
+            return null;
+        }
+        if (ex.getOptionalSuggestion() == null)
+        {
+            return null;
+        }
+        if (ex.getOptionalSuggestion().getFirst() > LevenshteinDistance.ACCEPTABLE_DISTANCE)
+        {
+            return null;
+        }
+        return " (did you mean '" + ex.getOptionalSuggestion().getSecond() + "'?)";
     }
 
     public String toString()

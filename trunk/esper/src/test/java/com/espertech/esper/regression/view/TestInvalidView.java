@@ -53,6 +53,16 @@ public class TestInvalidView extends TestCase
     {
         String exceptionText = null;
 
+        // property near to spelling
+        exceptionText = getStatementExceptionView("select INTPRIMITIVE from " + SupportBean.class.getName());
+        assertEquals("Error starting view: Property named 'INTPRIMITIVE' is not valid in any stream (did you mean 'intPrimitive'?) [select INTPRIMITIVE from com.espertech.esper.support.bean.SupportBean]", exceptionText);
+
+        exceptionText = getStatementExceptionView("select s0.intPrimitv from " + SupportBean.class.getName() + " as s0");
+        assertEquals("Error starting view: Property named 'intPrimitv' is not valid in stream 's0' (did you mean 'intPrimitive'?) [select s0.intPrimitv from com.espertech.esper.support.bean.SupportBean as s0]", exceptionText);
+        
+        exceptionText = getStatementExceptionView("select strring from " + SupportBean.class.getName());
+        assertEquals("Error starting view: Property named 'strring' is not valid in any stream (did you mean 'string'?) [select strring from com.espertech.esper.support.bean.SupportBean]", exceptionText);
+
         // aggregation in where clause known
         exceptionText = getStatementExceptionView("select * from " + SupportBean.class.getName() + " where sum(intPrimitive) > 10");
         assertEquals("Aggregation functions not allowed within filters [select * from com.espertech.esper.support.bean.SupportBean where sum(intPrimitive) > 10]", exceptionText);
@@ -188,7 +198,7 @@ public class TestInvalidView extends TestCase
         // insert into column name incorrect
         epService.getEPAdministrator().createEPL("insert into Xyz select 1 as dodi from java.lang.String");
         exceptionText = getStatementExceptionView("select pox from pattern[Xyz(yodo=4)]");
-        assertEquals("Property named 'yodo' is not valid in any stream [select pox from pattern[Xyz(yodo=4)]]", exceptionText);
+        assertEquals("Property named 'yodo' is not valid in any stream (did you mean 'dodi'?) [select pox from pattern[Xyz(yodo=4)]]", exceptionText);
     }
 
     public void testInvalidView()

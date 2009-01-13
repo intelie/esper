@@ -9,9 +9,11 @@
 package com.espertech.esper.epl.core;
 
 import com.espertech.esper.client.EventType;
+import com.espertech.esper.client.EventPropertyDescriptor;
 import com.espertech.esper.collection.Pair;
 import com.espertech.esper.core.EPServiceProviderSPI;
 import com.espertech.esper.epl.parse.ASTFilterSpecHelper;
+import com.espertech.esper.util.LevenshteinDistance;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -123,7 +125,7 @@ public class StreamTypeServiceImpl implements StreamTypeService
         PropertyResolutionDescriptor desc = findByPropertyName(propertyName);
         if ((requireStreamNames) && (desc.getStreamNum() != 0))
         {
-            throw new PropertyNotFoundException("Property named '" + propertyName + "' must be prefixed by a stream name, use the as-clause to name the stream");
+            throw new PropertyNotFoundException("Property named '" + propertyName + "' must be prefixed by a stream name, use the as-clause to name the stream", null);
         }
         return desc;
     }
@@ -225,10 +227,59 @@ public class StreamTypeServiceImpl implements StreamTypeService
 
         if (streamType == null)
         {
-            throw new PropertyNotFoundException("Property named '" + propertyName + "' is not valid in any stream");
+            Pair<Integer, String> possibleMatch = findLevMatch(propertyName);
+            String message = "Property named '" + propertyName + "' is not valid in any stream";
+            throw new PropertyNotFoundException(message, possibleMatch);
         }
 
         return new PropertyResolutionDescriptor(streamNames[foundIndex], eventTypes[foundIndex], propertyName, foundIndex, streamType.getPropertyType(propertyName));
+    }
+
+    private Pair<Integer, String> findLevMatch(String propertyName)
+    {
+        String bestMatch = null;
+        int bestMatchDiff = Integer.MAX_VALUE;
+        for (int i = 0; i < eventTypes.length; i++)
+        {
+            EventPropertyDescriptor[] props = eventTypes[i].getPropertyDescriptors();
+            for (int j = 0; j < props.length; j++)
+            {
+                int diff = LevenshteinDistance.computeLevenshteinDistance(propertyName, props[j].getPropertyName());
+                if (diff < bestMatchDiff)
+                {
+                    bestMatchDiff = diff;
+                    bestMatch = props[j].getPropertyName();
+                }
+            }
+        }
+
+        if (bestMatchDiff < Integer.MAX_VALUE)
+        {
+            return new Pair<Integer, String>(bestMatchDiff, bestMatch);
+        }
+        return null;
+    }
+
+    private Pair<Integer, String> findLevMatch(String propertyName, EventType eventType)
+    {
+        String bestMatch = null;
+        int bestMatchDiff = Integer.MAX_VALUE;
+        EventPropertyDescriptor[] props = eventType.getPropertyDescriptors();
+        for (int j = 0; j < props.length; j++)
+        {
+            int diff = LevenshteinDistance.computeLevenshteinDistance(propertyName, props[j].getPropertyName());
+            if (diff < bestMatchDiff)
+            {
+                bestMatchDiff = diff;
+                bestMatch = props[j].getPropertyName();
+            }
+        }
+
+        if (bestMatchDiff < Integer.MAX_VALUE)
+        {
+            return new Pair<Integer, String>(bestMatchDiff, bestMatch);
+        }
+        return null;
     }
 
     private PropertyResolutionDescriptor findByStreamAndEngineName(String propertyName, String streamName)
@@ -306,16 +357,51 @@ public class StreamTypeServiceImpl implements StreamTypeService
 
             index++;
         }
-
+        
         if (streamType == null)
         {
-            throw new StreamNotFoundException("Stream named " + streamName + " is not defined");
+            // find a near match, textually
+            String bestMatch = null;
+            int bestMatchDiff = Integer.MAX_VALUE;
+
+            for (int i = 0; i < eventTypes.length; i++)
+            {
+                if (streamNames[i] != null)
+                {
+                    int diff = LevenshteinDistance.computeLevenshteinDistance(streamNames[i], streamName);
+                    if (diff < bestMatchDiff)
+                    {
+                        bestMatchDiff = diff;
+                        bestMatch = streamNames[i];
+                    }
+                }
+
+                // If the stream name is the event type name, that is also acceptable
+                if (eventTypeName[i] != null)
+                {
+                    int diff = LevenshteinDistance.computeLevenshteinDistance(eventTypeName[i], streamName);
+                    if (diff < bestMatchDiff)
+                    {
+                        bestMatchDiff = diff;
+                        bestMatch = eventTypeName[i];
+                    }
+                }
+            }
+
+            Pair<Integer, String> suggestion = null;
+            if (bestMatchDiff < Integer.MAX_VALUE)
+            {
+                suggestion = new Pair<Integer, String>(bestMatchDiff, bestMatch);
+            }
+            throw new StreamNotFoundException("Stream named " + streamName + " is not defined", suggestion);
         }
 
         Class propertyType = streamType.getPropertyType(propertyName);
         if (propertyType == null)
         {
-            throw new PropertyNotFoundException("Property named '" + propertyName + "' is not valid in stream " + streamName);
+            Pair<Integer, String> possibleMatch = findLevMatch(propertyName, streamType);
+            String message = "Property named '" + propertyName + "' is not valid in stream '" + streamName + "'";
+            throw new PropertyNotFoundException(message, possibleMatch);
         }
 
         return new PropertyResolutionDescriptor(streamName, streamType, propertyName, index, propertyType);

@@ -345,6 +345,10 @@ public class SupportStaticMethodLib
 
     public static String delimitPipe(String string)
     {
+        if (string == null)
+        {
+            return "|<null>|";
+        }
         return "|" + string + "|";
     }
 

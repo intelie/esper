@@ -8,6 +8,8 @@
  **************************************************************************************/
 package com.espertech.esper.epl.core;
 
+import com.espertech.esper.collection.Pair;
+
 /**
  * Exception to indicate that a stream name could not be resolved.
  */
@@ -17,8 +19,8 @@ public class StreamNotFoundException extends StreamTypesException
      * Ctor.
      * @param msg - message
      */
-    public StreamNotFoundException(String msg)
+    public StreamNotFoundException(String msg, Pair<Integer, String> suggestion)
     {
-        super(msg);
+        super(msg, suggestion);
     }
 }

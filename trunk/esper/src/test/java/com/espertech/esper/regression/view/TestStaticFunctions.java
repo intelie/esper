@@ -46,6 +46,16 @@ public class TestStaticFunctions extends TestCase
         assertFalse(listener.isInvoked());
         epService.getEPRuntime().sendEvent(new SupportBean("a", 0));
         assertTrue(listener.isInvoked());
+
+        stmt.destroy();
+        statementText = "select * from pattern [myevent=" + SupportBean.class.getName() + "(" +
+                className + ".delimitPipe(null) = '|<null>|')]";
+        stmt = epService.getEPAdministrator().createEPL(statementText);
+        listener = new SupportUpdateListener();
+        stmt.addListener(listener);
+
+        epService.getEPRuntime().sendEvent(new SupportBean("a", 0));
+        assertTrue(listener.isInvoked());
     }
 
 	public void testRuntimeException()

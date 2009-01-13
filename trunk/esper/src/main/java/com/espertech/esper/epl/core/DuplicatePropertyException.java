@@ -19,6 +19,6 @@ public class DuplicatePropertyException extends StreamTypesException
      */
     public DuplicatePropertyException(String msg)
     {
-        super(msg);
+        super(msg, null);
     }
 }

@@ -287,7 +287,11 @@ public class MethodResolver
 		}
 		else
 		{
-			return declarationType.isAssignableFrom(invocationType);
+            if (invocationType == null)
+            {
+                return !declarationType.isPrimitive();
+            }
+            return declarationType.isAssignableFrom(invocationType);
 		}
 
 	}

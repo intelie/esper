@@ -8,17 +8,27 @@
  **************************************************************************************/
 package com.espertech.esper.epl.core;
 
+import com.espertech.esper.collection.Pair;
+
 /**
  * Base class for stream and property name resolution errors.
  */
 public abstract class StreamTypesException extends Exception
 {
+    private final Pair<Integer, String> optionalSuggestion;
+
     /**
      * Ctor.
-     * @param msg - message
+     * @param message - message
      */
-    public StreamTypesException(String msg)
+    public StreamTypesException(String message, Pair<Integer, String> suggestion)
     {
-        super(msg);
+        super(message);
+        this.optionalSuggestion = suggestion;
+    }
+
+    public Pair<Integer, String> getOptionalSuggestion()
+    {
+        return optionalSuggestion;
     }
 }

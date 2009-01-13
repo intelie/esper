@@ -46,7 +46,15 @@ public class EPStatementException extends EPException
     }
 
     public String getMessage() {
-        StringBuilder msg = new StringBuilder(super.getMessage());
+        StringBuilder msg;
+        if (super.getMessage() != null)
+        {
+            msg = new StringBuilder(super.getMessage());
+        }
+        else
+        {
+            msg = new StringBuilder("Unexpected exception");
+        }
         if (expression != null)
         {
             msg.append(" [");

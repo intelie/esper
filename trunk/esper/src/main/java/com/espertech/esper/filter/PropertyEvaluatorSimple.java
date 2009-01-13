@@ -51,11 +51,4 @@ public class PropertyEvaluatorSimple implements PropertyEvaluator
     {
         return fragmentEventType;
     }
-
-    protected static EventBean[] evaluate(ExprNode filter, EventBean[] incoming, EventBean[] eventsPerStream)
-    {
-        
-    }
-
-
 }
