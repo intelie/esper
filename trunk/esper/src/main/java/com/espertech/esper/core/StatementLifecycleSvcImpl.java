@@ -15,10 +15,9 @@ import com.espertech.esper.epl.core.StreamTypeServiceImpl;
 import com.espertech.esper.epl.expression.*;
 import com.espertech.esper.epl.named.NamedWindowService;
 import com.espertech.esper.epl.spec.*;
-import com.espertech.esper.client.EventType;
-import com.espertech.esper.event.map.MapEventType;
 import com.espertech.esper.event.EventTypeSPI;
 import com.espertech.esper.event.NativeEventType;
+import com.espertech.esper.event.map.MapEventType;
 import com.espertech.esper.filter.FilterSpecCompiled;
 import com.espertech.esper.filter.FilterSpecParam;
 import com.espertech.esper.pattern.EvalFilterNode;
@@ -768,12 +767,12 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
                     if (spec.getCreateWindowDesc().getInsertFilter() != null)
                     {
                         ExprNode insertIntoFilter = spec.getCreateWindowDesc().getInsertFilter();
-                        String checkMinimal = insertIntoFilter.isMinimalExpression();
+                        String checkMinimal = ExprNodeUtility.isMinimalExpression(insertIntoFilter);
                         if (checkMinimal != null)
                         {
                             throw new ExprValidationException("Create window where-clause may not have " + checkMinimal);
                         }
-                        StreamTypeService streamTypeService = new StreamTypeServiceImpl(selectFromType, selectFromTypeName, statementContext.getEngineURI(), selectFromTypeName);
+                        StreamTypeService streamTypeService = new StreamTypeServiceImpl(selectFromType, selectFromTypeName, statementContext.getEngineURI());
                         ExprNode insertFilter = spec.getCreateWindowDesc().getInsertFilter().getValidatedSubtree(streamTypeService, statementContext.getMethodResolutionService(), null, statementContext.getSchedulingService(), statementContext.getVariableService());
                         spec.getCreateWindowDesc().setInsertFilter(insertFilter);
                     }
@@ -942,14 +941,14 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
             }
         }
 
-        FilterSpecCompiled filter = new FilterSpecCompiled(targetType, typeName, new ArrayList<FilterSpecParam>(), null);// TODO
+        FilterSpecCompiled filter = new FilterSpecCompiled(targetType, typeName, new ArrayList<FilterSpecParam>(), null);
         return new Pair<FilterSpecCompiled, SelectClauseSpecRaw>(filter, newSelectClauseSpecRaw);
     }
 
     private static List<NamedWindowSelectedProps> compileLimitedSelect(SelectClauseSpecRaw spec, String eplStatement, EventType singleType, String selectFromTypeName, String engineURI)
     {
         List<NamedWindowSelectedProps> selectProps = new LinkedList<NamedWindowSelectedProps>();
-        StreamTypeService streams = new StreamTypeServiceImpl(new EventType[] {singleType}, new String[] {"stream_0"}, engineURI, new String[] {selectFromTypeName});
+        StreamTypeService streams = new StreamTypeServiceImpl(new EventType[] {singleType}, new String[] {"stream_0"}, engineURI);
 
         for (SelectClauseElementRaw raw : spec.getSelectExprList())
         {

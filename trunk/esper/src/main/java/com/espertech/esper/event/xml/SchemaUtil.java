@@ -319,6 +319,11 @@ public class SchemaUtil {
         return null;
     }
 
+    /**
+     * Serialize the given node.
+     * @param doc node to serialize
+     * @return serialized node string
+     */
     public static String serialize(Node doc)
     {
         StringWriter writer = new StringWriter();

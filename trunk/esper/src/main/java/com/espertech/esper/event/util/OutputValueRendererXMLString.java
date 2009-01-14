@@ -20,6 +20,7 @@ public class OutputValueRendererXMLString implements OutputValueRenderer
      * XML-Encode the passed string.
      * @param s string to encode
      * @param sb string buffer to populate
+     * @param isEncodeSpecialChar true for encoding of special characters below ' ', false for leaving special chars
      */
     public static void xmlEncode(String s, StringBuilder sb, boolean isEncodeSpecialChar)
     {

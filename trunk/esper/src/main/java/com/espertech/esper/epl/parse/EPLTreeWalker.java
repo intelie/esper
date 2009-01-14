@@ -497,7 +497,7 @@ public class EPLTreeWalker extends EsperEPL2Ast
         CreateWindowDesc desc = new CreateWindowDesc(windowName, viewSpecs, streamSpecOptions, isInsert, insertWhereExpr);
         statementSpec.setCreateWindowDesc(desc);
 
-        FilterSpecRaw rawFilterSpec = new FilterSpecRaw(eventName, new LinkedList<ExprNode>(), null); // TODO
+        FilterSpecRaw rawFilterSpec = new FilterSpecRaw(eventName, new LinkedList<ExprNode>(), null);
         FilterStreamSpecRaw streamSpec = new FilterStreamSpecRaw(rawFilterSpec, new LinkedList<ViewSpec>(), null, streamSpecOptions);
         statementSpec.getStreamSpecs().add(streamSpec);
     }
@@ -1809,9 +1809,16 @@ public class EPLTreeWalker extends EsperEPL2Ast
         String eventName = startNode.getText();
         count++;
 
+        // get property expression if any
+        if ((node.getChildCount() > count) && (node.getChild(count).getType() == EVENT_FILTER_PROPERTY_EXPR))
+        {
+            ++count;
+        }
+
         List<ExprNode> exprNodes = getExprNodes(node, count);
 
-        FilterSpecRaw rawFilterSpec = new FilterSpecRaw(eventName, exprNodes, null);    // TODO
+        FilterSpecRaw rawFilterSpec = new FilterSpecRaw(eventName, exprNodes, propertyEvalSpec);
+        propertyEvalSpec = null;
         EvalFilterNode filterNode = new EvalFilterNode(rawFilterSpec, optionalPatternTagName);
         astPatternNodeMap.put(node, filterNode);
     }

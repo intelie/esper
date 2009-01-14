@@ -366,14 +366,14 @@ public class SupportExprNodeFactory
     public static void validate1StreamBean(ExprNode topNode) throws Exception
     {
         EventType eventType = SupportEventTypeFactory.createBeanType(SupportBean.class);
-        StreamTypeService streamTypeService = new StreamTypeServiceImpl(eventType, "s0", "uri", eventType.getName());
+        StreamTypeService streamTypeService = new StreamTypeServiceImpl(eventType, "s0", "uri");
         topNode.getValidatedSubtree(streamTypeService, null, null, null, null);
     }
 
     public static void validate1StreamMD(ExprNode topNode) throws Exception
     {
         EventType eventType = SupportEventTypeFactory.createBeanType(SupportMarketDataBean.class);
-        StreamTypeService streamTypeService = new StreamTypeServiceImpl(eventType, "s0", "uri", eventType.getName());
+        StreamTypeService streamTypeService = new StreamTypeServiceImpl(eventType, "s0", "uri");
         topNode.getValidatedSubtree(streamTypeService, null, null, null, null);
     }
 }

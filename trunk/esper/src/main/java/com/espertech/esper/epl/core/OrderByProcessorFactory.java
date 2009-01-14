@@ -12,6 +12,7 @@ import com.espertech.esper.epl.agg.AggregationService;
 import com.espertech.esper.epl.expression.ExprAggregateNode;
 import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.epl.expression.ExprValidationException;
+import com.espertech.esper.epl.expression.ExprNodeUtility;
 import com.espertech.esper.epl.spec.OrderByItem;
 import com.espertech.esper.epl.spec.RowLimitSpec;
 import com.espertech.esper.epl.spec.SelectClauseExprCompiledSpec;
@@ -118,7 +119,7 @@ public class OrderByProcessorFactory {
 			boolean inSelect = false;
 			for(ExprAggregateNode selectAgg : selectAggNodes)
 			{
-				if(ExprNode.deepEquals(selectAgg, orderAgg))
+				if(ExprNodeUtility.deepEquals(selectAgg, orderAgg))
 				{
 					inSelect = true;
 					break;

@@ -14,6 +14,7 @@ import com.espertech.esper.view.*;
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.epl.core.ViewResourceCallback;
 import com.espertech.esper.epl.expression.ExprNode;
+import com.espertech.esper.epl.expression.ExprNodeUtility;
 import com.espertech.esper.core.StatementContext;
 import com.espertech.esper.util.JavaClassHelper;
 
@@ -82,7 +83,7 @@ public class UnivariateStatisticsViewFactory implements ViewFactory
         }
 
         UnivariateStatisticsView other = (UnivariateStatisticsView) view;
-        if (!ExprNode.deepEquals(other.getFieldExpression(), fieldExpression))
+        if (!ExprNodeUtility.deepEquals(other.getFieldExpression(), fieldExpression))
         {
             return false;
         }

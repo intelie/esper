@@ -14,6 +14,7 @@ import com.espertech.esper.view.*;
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.epl.core.ViewResourceCallback;
 import com.espertech.esper.epl.expression.ExprNode;
+import com.espertech.esper.epl.expression.ExprNodeUtility;
 import com.espertech.esper.core.StatementContext;
 import com.espertech.esper.util.JavaClassHelper;
 
@@ -86,8 +87,8 @@ public class RegressionLinestViewFactory implements ViewFactory
         }
 
         RegressionLinestView myView = (RegressionLinestView) view;
-        if ((!ExprNode.deepEquals(myView.getExpressionX(), expressionX)) ||
-            (!ExprNode.deepEquals(myView.getExpressionY(), expressionY)))
+        if ((!ExprNodeUtility.deepEquals(myView.getExpressionX(), expressionX)) ||
+            (!ExprNodeUtility.deepEquals(myView.getExpressionY(), expressionY)))
         {
             return false;
         }

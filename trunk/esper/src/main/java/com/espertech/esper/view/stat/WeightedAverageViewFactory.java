@@ -11,6 +11,7 @@ package com.espertech.esper.view.stat;
 import com.espertech.esper.core.StatementContext;
 import com.espertech.esper.epl.core.ViewResourceCallback;
 import com.espertech.esper.epl.expression.ExprNode;
+import com.espertech.esper.epl.expression.ExprNodeUtility;
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.util.JavaClassHelper;
 import com.espertech.esper.view.*;
@@ -87,8 +88,8 @@ public class WeightedAverageViewFactory implements ViewFactory
         }
 
         WeightedAverageView myView = (WeightedAverageView) view;
-        if ((!ExprNode.deepEquals(fieldNameWeight, myView.getFieldNameWeight())) ||
-            (!ExprNode.deepEquals(fieldNameX, myView.getFieldNameX())) )
+        if ((!ExprNodeUtility.deepEquals(fieldNameWeight, myView.getFieldNameWeight())) ||
+            (!ExprNodeUtility.deepEquals(fieldNameX, myView.getFieldNameX())) )
         {
             return false;
         }

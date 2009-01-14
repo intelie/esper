@@ -10,6 +10,7 @@ package com.espertech.esper.filter;
 
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.pattern.MatchedEventMap;
+import com.espertech.esper.epl.property.PropertyEvaluator;
 
 import java.util.List;
 import java.util.Arrays;
@@ -25,7 +26,7 @@ public final class FilterSpecCompiled
     private final EventType filterForEventType;
     private final String filterForEventTypeName;
     private final List<FilterSpecParam> parameters;
-    private final PropertyEvaluator optionalPropertyExpressionFilter; // TODO - rename
+    private final PropertyEvaluator optionalPropertyEvaluator;
 
     /**
      * Constructor - validates parameter list against event type, throws exception if invalid
@@ -33,15 +34,16 @@ public final class FilterSpecCompiled
      * @param eventType is the event type
      * @param parameters is a list of filter parameters
      * @param eventTypeName is the name of the event type
+     * @param optionalPropertyEvaluator optional if evaluating properties returned by filtered events
      * @throws IllegalArgumentException if validation invalid
      */
     public FilterSpecCompiled(EventType eventType, String eventTypeName, List<FilterSpecParam> parameters,
-                              PropertyEvaluator optionalPropertyExpressionFilter)
+                              PropertyEvaluator optionalPropertyEvaluator)
     {
         this.filterForEventType = eventType;
         this.filterForEventTypeName = eventTypeName;
         this.parameters = parameters;
-        this.optionalPropertyExpressionFilter = optionalPropertyExpressionFilter;
+        this.optionalPropertyEvaluator = optionalPropertyEvaluator;
     }
 
     /**
@@ -71,16 +73,24 @@ public final class FilterSpecCompiled
         return filterForEventTypeName;
     }
 
-    public PropertyEvaluator getOptionalPropertyExpressionFilter()
+    /**
+     * Return the evaluator for property value if any is attached, or none if none attached.
+     * @return property evaluator
+     */
+    public PropertyEvaluator getOptionalPropertyEvaluator()
     {
-        return optionalPropertyExpressionFilter;
+        return optionalPropertyEvaluator;
     }
 
+    /**
+     * Returns the result event type of the filter specification.
+     * @return event type
+     */
     public EventType getResultEventType()
     {
-        if (optionalPropertyExpressionFilter != null)
+        if (optionalPropertyEvaluator != null)
         {
-            return optionalPropertyExpressionFilter.getFragmentEventType().getFragmentType();
+            return optionalPropertyEvaluator.getFragmentEventType();
         }
         else
         {

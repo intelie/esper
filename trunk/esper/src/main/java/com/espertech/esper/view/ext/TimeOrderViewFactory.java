@@ -12,6 +12,7 @@ import com.espertech.esper.core.StatementContext;
 import com.espertech.esper.epl.core.ViewResourceCallback;
 import com.espertech.esper.epl.named.RemoveStreamViewCapability;
 import com.espertech.esper.epl.expression.ExprNode;
+import com.espertech.esper.epl.expression.ExprNodeUtility;
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.util.JavaClassHelper;
 import com.espertech.esper.view.*;
@@ -161,7 +162,7 @@ public class TimeOrderViewFactory implements DataWindowViewFactory
 
         TimeOrderView other = (TimeOrderView) view;
         if ((other.getIntervalSize() != intervalSize) ||
-            (!ExprNode.deepEquals(other.getTimestampExpression(), timestampExpression)))
+            (!ExprNodeUtility.deepEquals(other.getTimestampExpression(), timestampExpression)))
         {
             return false;
         }

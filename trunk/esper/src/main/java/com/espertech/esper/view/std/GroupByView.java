@@ -14,6 +14,7 @@ import com.espertech.esper.collection.MultiKey;
 import com.espertech.esper.collection.Pair;
 import com.espertech.esper.core.StatementContext;
 import com.espertech.esper.epl.expression.ExprNode;
+import com.espertech.esper.epl.expression.ExprNodeUtility;
 import com.espertech.esper.event.EventBeanUtility;
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.util.ExecutionPathDebugLog;
@@ -267,7 +268,7 @@ public final class GroupByView extends ViewSupport implements CloneableView
             if (subView instanceof MergeView)
             {
                 MergeView mergeView = (MergeView) subView;
-                if (ExprNode.deepEquals(mergeView.getGroupFieldNames(), criteriaExpressions))
+                if (ExprNodeUtility.deepEquals(mergeView.getGroupFieldNames(), criteriaExpressions))
                 {
                     // We found our merge view - install a new data merge view on top of it
                     AddPropertyValueView mergeDataView = new AddPropertyValueView(statementContext, propertyNames, groupByValues, mergeView.getEventType());

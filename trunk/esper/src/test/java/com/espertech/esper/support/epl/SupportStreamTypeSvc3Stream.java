@@ -14,7 +14,7 @@ public class SupportStreamTypeSvc3Stream implements StreamTypeService
 
     public SupportStreamTypeSvc3Stream()
     {
-        impl = new StreamTypeServiceImpl(getEventTypes(), getStreamNames(), "default", geteventTypeNamees());
+        impl = new StreamTypeServiceImpl(getEventTypes(), getStreamNames(), "default");
     }
 
     public PropertyResolutionDescriptor resolveByPropertyName(String propertyName) throws DuplicatePropertyException, PropertyNotFoundException

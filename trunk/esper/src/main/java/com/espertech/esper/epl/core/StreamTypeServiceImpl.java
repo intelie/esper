@@ -26,7 +26,6 @@ public class StreamTypeServiceImpl implements StreamTypeService
     private final EventType[] eventTypes;
     private final String[] streamNames;
     private final String engineURIQualifier;
-    private final String[] eventTypeName;
     private boolean isStreamZeroUnambigous;
     private boolean requireStreamNames;
 
@@ -36,7 +35,7 @@ public class StreamTypeServiceImpl implements StreamTypeService
      */
     public StreamTypeServiceImpl (String engineURI)
     {
-        this(new EventType[0], new String[0], engineURI, new String[0]);
+        this(new EventType[0], new String[0], engineURI);
     }
 
     /**
@@ -44,11 +43,10 @@ public class StreamTypeServiceImpl implements StreamTypeService
      * @param eventType a single event type for a single stream
      * @param streamName the stream name of the single stream
      * @param engineURI engine URI
-     * @param eventTypeName name of the event type of the single stream
      */
-    public StreamTypeServiceImpl (EventType eventType, String streamName, String engineURI, String eventTypeName)
+    public StreamTypeServiceImpl (EventType eventType, String streamName, String engineURI)
     {
-        this(new EventType[] {eventType}, new String[] {streamName}, engineURI, new String[] {eventTypeName});
+        this(new EventType[] {eventType}, new String[] {streamName}, engineURI);
     }
 
     /**
@@ -56,13 +54,11 @@ public class StreamTypeServiceImpl implements StreamTypeService
      * @param eventTypes - array of event types, one for each stream
      * @param streamNames - array of stream names, one for each stream
      * @param engineURI - engine URI
-     * @param eventTypeName - name of the event type
      */
-    public StreamTypeServiceImpl (EventType[] eventTypes, String[] streamNames, String engineURI, String[] eventTypeName)
+    public StreamTypeServiceImpl (EventType[] eventTypes, String[] streamNames, String engineURI)
     {
         this.eventTypes = eventTypes;
         this.streamNames = streamNames;
-        this.eventTypeName = eventTypeName;
 
         if (engineURI == null)
         {
@@ -94,13 +90,11 @@ public class StreamTypeServiceImpl implements StreamTypeService
         this.engineURIQualifier = engineURI;
         eventTypes = new EventType[namesAndTypes.size()] ;
         streamNames = new String[namesAndTypes.size()] ;
-        eventTypeName = new String[namesAndTypes.size()] ;
         int count = 0;
         for (Map.Entry<String, Pair<EventType, String>> entry : namesAndTypes.entrySet())
         {
             streamNames[count] = entry.getKey();
             eventTypes[count] = entry.getValue().getFirst();
-            eventTypeName[count] = entry.getValue().getSecond();
             count++;
         }
     }
@@ -349,7 +343,7 @@ public class StreamTypeServiceImpl implements StreamTypeService
             }
 
             // If the stream name is the event type name, that is also acceptable
-            if ((eventTypeName[i] != null) && (eventTypeName[i].equals(streamName)))
+            if ((eventTypes[i].getName() != null) && (eventTypes[i].getName().equals(streamName)))
             {
                 streamType = eventTypes[i];
                 break;
@@ -377,13 +371,13 @@ public class StreamTypeServiceImpl implements StreamTypeService
                 }
 
                 // If the stream name is the event type name, that is also acceptable
-                if (eventTypeName[i] != null)
+                if (eventTypes[i].getName() != null)
                 {
-                    int diff = LevenshteinDistance.computeLevenshteinDistance(eventTypeName[i], streamName);
+                    int diff = LevenshteinDistance.computeLevenshteinDistance(eventTypes[i].getName(), streamName);
                     if (diff < bestMatchDiff)
                     {
                         bestMatchDiff = diff;
-                        bestMatch = eventTypeName[i];
+                        bestMatch = eventTypes[i].getName();
                     }
                 }
             }

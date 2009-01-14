@@ -266,6 +266,10 @@ public class MapEventType implements EventTypeSPI
             EventType innerType = (EventType) nestedType;
             return innerType.getPropertyType(propertyNested);
         }
+        else if (nestedType instanceof EventType[])
+        {
+            return null;    // requires indexed property
+        }
         else if (nestedType instanceof String)
         {
             String nestedName = nestedType.toString();

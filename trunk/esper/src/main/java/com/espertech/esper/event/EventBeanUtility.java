@@ -28,6 +28,33 @@ import java.util.*;
 public class EventBeanUtility
 {
     /**
+     * Resizes an array of events to a new size.
+     * <p>
+     * Returns the same array reference if the size is the same.
+     * @param oldArray array to resize
+     * @param newSize new array size
+     * @return resized array
+     */
+    public static EventBean[] resizeArray(EventBean[] oldArray, int newSize)
+    {
+        if (oldArray == null)
+        {
+            return null;
+        }
+        if (oldArray.length == newSize)
+        {
+            return oldArray;
+        }
+        EventBean[] newArray = new EventBean[newSize];
+        int preserveLength = Math.min(oldArray.length, newSize);
+        if (preserveLength > 0)
+        {
+            System.arraycopy(oldArray, 0, newArray, 0, preserveLength);
+        }
+        return newArray;
+    }
+
+    /**
      * Creates a fragment event type for the class.
      * @param propertyType type of property
      * @param eventAdapterService factory for event beans and event types

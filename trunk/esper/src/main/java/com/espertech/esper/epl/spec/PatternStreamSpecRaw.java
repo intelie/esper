@@ -8,6 +8,7 @@
  **************************************************************************************/
 package com.espertech.esper.epl.spec;
 
+import com.espertech.esper.client.EventType;
 import com.espertech.esper.collection.Pair;
 import com.espertech.esper.core.StatementContext;
 import com.espertech.esper.epl.core.MethodResolutionService;
@@ -17,8 +18,9 @@ import com.espertech.esper.epl.core.ViewResourceDelegate;
 import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.epl.expression.ExprValidationException;
 import com.espertech.esper.epl.variable.VariableService;
+import com.espertech.esper.epl.property.PropertyEvaluatorFactory;
+import com.espertech.esper.epl.property.PropertyEvaluator;
 import com.espertech.esper.event.EventAdapterService;
-import com.espertech.esper.client.EventType;
 import com.espertech.esper.event.EventTypeSPI;
 import com.espertech.esper.filter.FilterSpecCompiled;
 import com.espertech.esper.filter.FilterSpecCompiler;
@@ -100,7 +102,7 @@ public class PatternStreamSpecRaw extends StreamSpecBase implements StreamSpecRa
         {
             if (activeNode instanceof EvalFilterNode)
             {
-                handleFilterNode((EvalFilterNode) activeNode, context, eventTypeReferences, matchUntilArrayTags, taggedEventTypes, arrayEventTypes, !this.getViewSpecs().isEmpty());
+                handleFilterNode((EvalFilterNode) activeNode, context, eventTypeReferences, matchUntilArrayTags, taggedEventTypes, arrayEventTypes);
             }
 
             if (activeNode instanceof EvalObserverNode)
@@ -178,16 +180,26 @@ public class PatternStreamSpecRaw extends StreamSpecBase implements StreamSpecRa
                                   Set<String> eventTypeReferences,
                                   Set<String> matchUntilArrayTags,
                                   LinkedHashMap<String, Pair<EventType, String>> taggedEventTypes,
-                                  LinkedHashMap<String, Pair<EventType, String>> arrayEventTypes,
-                                  boolean isHasChildView)
+                                  LinkedHashMap<String, Pair<EventType, String>> arrayEventTypes)
             throws ExprValidationException
     {
         String eventName = filterNode.getRawFilterSpec().getEventTypeName();
-        EventType eventType = FilterStreamSpecRaw.resolveType(context.getEngineURI(), eventName, context.getEventAdapterService(), context.getPlugInTypeResolutionURIs());
+        EventType resolvedEventType = FilterStreamSpecRaw.resolveType(context.getEngineURI(), eventName, context.getEventAdapterService(), context.getPlugInTypeResolutionURIs());
+        EventType finalEventType = resolvedEventType;
         String optionalTag = filterNode.getEventAsName();
-        if (eventType instanceof EventTypeSPI)
+        boolean isPropertyEvaluation = false;
+
+        // obtain property event type, if final event type is properties
+        if (filterNode.getRawFilterSpec().getOptionalPropertyEvalSpec() != null)
         {
-            eventTypeReferences.add(((EventTypeSPI) eventType).getMetadata().getPrimaryName());
+            PropertyEvaluator optionalPropertyEvaluator = PropertyEvaluatorFactory.makeEvaluator(filterNode.getRawFilterSpec().getOptionalPropertyEvalSpec(), resolvedEventType, filterNode.getEventAsName(), context.getEventAdapterService(), context.getMethodResolutionService(), context.getSchedulingService(), context.getVariableService(), context.getEngineURI());
+            finalEventType = optionalPropertyEvaluator.getFragmentEventType();
+            isPropertyEvaluation = true;
+        }
+
+        if (finalEventType instanceof EventTypeSPI)
+        {
+            eventTypeReferences.add(((EventTypeSPI) finalEventType).getMetadata().getPrimaryName());
         }
 
         // If a tag was supplied for the type, the tags must stay with this type, i.e. a=BeanA -> b=BeanA -> a=BeanB is a no
@@ -208,14 +220,15 @@ public class PatternStreamSpecRaw extends StreamSpecBase implements StreamSpecRa
                             "' used in the repeat-until operator cannot also appear in other filter expressions");
                 }
             }
-            if ((existingType != null) && (existingType != eventType))
+            if ((existingType != null) && (existingType != finalEventType))
             {
                 throw new ExprValidationException("Tag '" + optionalTag + "' for event '" + eventName +
                         "' has already been declared for events of type " + existingType.getUnderlyingType().getName());
             }
-            pair = new Pair<EventType, String>(eventType, eventName);
+            pair = new Pair<EventType, String>(finalEventType, eventName);
 
-            if (matchUntilArrayTags.contains(optionalTag))
+            // add tagged type
+            if (matchUntilArrayTags.contains(optionalTag) || isPropertyEvaluation)
             {
                 arrayEventTypes.put(optionalTag, pair);
             }
@@ -236,7 +249,7 @@ public class PatternStreamSpecRaw extends StreamSpecBase implements StreamSpecRa
             selfStreamName = "s_" + UuidGenerator.generate();
         }
         LinkedHashMap<String, Pair<EventType, String>> filterTypes = new LinkedHashMap<String, Pair<EventType, String>>();
-        Pair<EventType, String> typePair = new Pair<EventType, String>(eventType, eventName);
+        Pair<EventType, String> typePair = new Pair<EventType, String>(finalEventType, eventName);
         filterTypes.put(selfStreamName, typePair);
         filterTypes.putAll(taggedEventTypes);
 
@@ -264,8 +277,8 @@ public class PatternStreamSpecRaw extends StreamSpecBase implements StreamSpecRa
 
         StreamTypeService streamTypeService = new StreamTypeServiceImpl(filterTypes, context.getEngineURI(), true, false);
         List<ExprNode> exprNodes = filterNode.getRawFilterSpec().getFilterExpressions();
-        // TODO: enable property expression in pattern
-        FilterSpecCompiled spec = FilterSpecCompiler.makeFilterSpec(eventType, eventName, exprNodes, null,  filterTaggedEventTypes, arrayCompositeEventTypes, streamTypeService, context.getMethodResolutionService(), context.getSchedulingService(), context.getVariableService(), context.getEventAdapterService(), context.getEngineURI(), null);
+
+        FilterSpecCompiled spec = FilterSpecCompiler.makeFilterSpec(resolvedEventType, eventName, exprNodes, filterNode.getRawFilterSpec().getOptionalPropertyEvalSpec(),  filterTaggedEventTypes, arrayCompositeEventTypes, streamTypeService, context.getMethodResolutionService(), context.getSchedulingService(), context.getVariableService(), context.getEventAdapterService(), context.getEngineURI(), null);
         filterNode.setFilterSpec(spec);
     }
 

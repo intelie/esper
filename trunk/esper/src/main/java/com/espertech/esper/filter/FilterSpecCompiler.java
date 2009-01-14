@@ -15,6 +15,8 @@ import com.espertech.esper.epl.core.StreamTypeService;
 import com.espertech.esper.epl.expression.*;
 import com.espertech.esper.epl.spec.PropertyEvalSpec;
 import com.espertech.esper.epl.variable.VariableService;
+import com.espertech.esper.epl.property.PropertyEvaluator;
+import com.espertech.esper.epl.property.PropertyEvaluatorFactory;
 import com.espertech.esper.event.EventAdapterService;
 import com.espertech.esper.schedule.TimeProvider;
 import com.espertech.esper.type.RelationalOpEnum;
@@ -55,6 +57,9 @@ public final class FilterSpecCompiler
      * @param timeProvider - provides engine current time
      * @param variableService - provides access to variables
      * @param eventAdapterService - for event type and bean generation
+     * @param optionalStreamName - the stream name, if provided
+     * @param engineURI - the engine uri
+     * @param optionalPropertyEvalSpec - specification for evaluating properties
      * @return compiled filter specification
      * @throws ExprValidationException if the expression or type validations failed
      */
@@ -125,7 +130,7 @@ public final class FilterSpecCompiler
         PropertyEvaluator optionalPropertyEvaluator = null;
         if (optionalPropertyEvalSpec != null)
         {
-            optionalPropertyEvaluator = PropertyEvaluatorFactory.makeEvaluator(optionalPropertyEvalSpec, eventType, optionalStreamName, methodResolutionService, timeProvider, variableService, engineURI);
+            optionalPropertyEvaluator = PropertyEvaluatorFactory.makeEvaluator(optionalPropertyEvalSpec, eventType, optionalStreamName, eventAdapterService, methodResolutionService, timeProvider, variableService, engineURI);
         }
 
         FilterSpecCompiled spec = new FilterSpecCompiled(eventType, eventTypeName, filterParams, optionalPropertyEvaluator);

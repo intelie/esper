@@ -29,6 +29,7 @@ public class FilterSpecRaw implements MetaDefItem
      * Ctor.
      * @param eventTypeName is the name of the event type
      * @param filterExpressions is a list of expression nodes representing individual filter expressions
+     * @param optionalPropertyEvalSpec specification for a property select
      */
     public FilterSpecRaw(String eventTypeName, List<ExprNode> filterExpressions, PropertyEvalSpec optionalPropertyEvalSpec)
     {
@@ -62,6 +63,10 @@ public class FilterSpecRaw implements MetaDefItem
         return filterExpressions;
     }
 
+    /**
+     * Returns the property evaluation specification, if any, or null if no properties evaluated.
+     * @return property eval spec
+     */
     public PropertyEvalSpec getOptionalPropertyEvalSpec()
     {
         return optionalPropertyEvalSpec;

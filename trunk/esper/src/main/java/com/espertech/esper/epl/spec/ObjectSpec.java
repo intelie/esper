@@ -10,6 +10,7 @@ package com.espertech.esper.epl.spec;
 
 import com.espertech.esper.util.MetaDefItem;
 import com.espertech.esper.epl.expression.ExprNode;
+import com.espertech.esper.epl.expression.ExprNodeUtility;
 
 import java.util.List;
 
@@ -102,7 +103,7 @@ public abstract class ObjectSpec implements MetaDefItem
             ExprNode otherParam = other.objectParameters.get(index);
             index++;
 
-            if (!ExprNode.deepEquals(thisParam, otherParam))
+            if (!ExprNodeUtility.deepEquals(thisParam, otherParam))
             {
                 return false;
             }

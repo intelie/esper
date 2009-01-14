@@ -440,7 +440,7 @@ atomicExpr
 	;
 
 patternFilterExpr
-	:	^( f=PATTERN_FILTER_EXPR IDENT? CLASS_IDENT (valueExpr)* { leaveNode($f); } )
+	:	^( f=PATTERN_FILTER_EXPR IDENT? CLASS_IDENT propertyExpression? (valueExpr)* { leaveNode($f); } )
 	;
 
 matchUntilRange

@@ -66,7 +66,6 @@ public class TestFilterPropertySimple extends TestCase
      *
       */
 
-    // TODO: document unidirectional and aggregation state
 
     public void setUp()
     {
@@ -229,6 +228,15 @@ public class TestFilterPropertySimple extends TestCase
         listener.reset();
         ArrayAssertionUtil.assertEqualsExactOrder(stmtOne.iterator(), "bookId".split(","), new Object[][] {{"10031"}, {"10032"}});
         ArrayAssertionUtil.assertEqualsExactOrder(stmtTwo.iterator(), "val".split(","), new Object[][] {{"Orson Scott Card"}});
+
+        // add where clause
+        stmtOne.destroy();
+        stmtTwo.destroy();
+        stmtOne = epService.getEPAdministrator().createEPL("select bookId from OrderEvent[books where author='Orson Scott Card']");
+        stmtOne.addListener(listener);
+        epService.getEPRuntime().sendEvent(makeEventOne());
+        ArrayAssertionUtil.assertPropsPerRow(listener.getLastNewData(), "bookId".split(","), new Object[][] {{"10020"}});
+        listener.reset();
     }
 
     public void testIRStreamArrayItem()
@@ -291,7 +299,7 @@ public class TestFilterPropertySimple extends TestCase
 
     public static OrderBean makeEventFour()
     {
-        Order order = new Order("PO200903",
+        Order order = new Order("PO200904",
                 new OrderItem[0]);
         return new OrderBean(order, new BookDesc[] {
                 new BookDesc("10031", "Foundation 2", "Isaac Asimov",
@@ -305,7 +313,7 @@ public class TestFilterPropertySimple extends TestCase
     private static BookDesc[] getBookDesc()
     {
         return new BookDesc[] {
-                new BookDesc("10020", "Ender's Game", "Orson Scott Card",
+                new BookDesc("10020", "Enders Game", "Orson Scott Card",
                         new Review[] {
                                 new Review(1, "best book ever"),
                                 new Review(2, "good science fiction")

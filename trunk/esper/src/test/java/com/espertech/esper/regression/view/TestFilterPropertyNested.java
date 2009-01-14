@@ -1,22 +1,26 @@
 package com.espertech.esper.regression.view;
 
-import junit.framework.TestCase;
-import com.espertech.esper.client.*;
-import com.espertech.esper.client.util.XMLEventRenderer;
-import com.espertech.esper.client.util.EventRendererProvider;
-import com.espertech.esper.support.util.SupportUpdateListener;
-import com.espertech.esper.support.util.ArrayAssertionUtil;
+import com.espertech.esper.client.EPServiceProvider;
+import com.espertech.esper.client.EPServiceProviderManager;
+import com.espertech.esper.client.EPStatement;
+import com.espertech.esper.client.EPStatementException;
 import com.espertech.esper.support.bean.bookexample.OrderBean;
 import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.client.SupportConfigFactory;
-import com.espertech.esper.support.event.SupportEventAdapterService;
-import com.espertech.esper.event.util.XMLRendererImpl;
-import com.espertech.esper.event.util.OutputValueRendererXMLString;
+import com.espertech.esper.support.util.ArrayAssertionUtil;
+import com.espertech.esper.support.util.SupportUpdateListener;
+import junit.framework.TestCase;
 
 public class TestFilterPropertyNested extends TestCase
 {
     private EPServiceProvider epService;
     private SupportUpdateListener listener;
+
+    // TODO: test within property select: subselect, aggregation, previous
+    // TODO: test statement object model
+    // TODO: test join with implied unidirectional
+    // TODO: document unidirectional and aggregation state
+    // TODO: test pattern filter expression
 
     public void setUp()
     {
@@ -25,14 +29,7 @@ public class TestFilterPropertyNested extends TestCase
         listener = new SupportUpdateListener();
     }
 
-    public void testIt()
-    {
-        epService.getEPAdministrator().getConfiguration().addEventType("SupportBean", SupportBean.class);
-        String stmt = "select * from SupportBean(string='MSFT').win:length(2) having prev(0,intPrimitive) > 1.03*prev(count(*) - 1,intPrimitive)";
-        epService.getEPAdministrator().createEPL(stmt);
-    }
-
-    public void testMultiplicitySimple()
+    public void testSimple()
     {
         String[] fields = "reviewId".split(",");
         epService.getEPAdministrator().getConfiguration().addEventType("OrderEvent", OrderBean.class);
@@ -50,12 +47,13 @@ public class TestFilterPropertyNested extends TestCase
         listener.reset();
     }
 
-    public void testMultiplicityWhere()
+    public void testWhere()
     {
         String[] fields = "reviewId".split(",");
         epService.getEPAdministrator().getConfiguration().addEventType("OrderEvent", OrderBean.class);
 
-        String stmtText = "select reviewId from OrderEvent[books where title = 'Ender\\'s Game'][reviews] bookReviews order by reviewId asc";
+        // try where in root
+        String stmtText = "select reviewId from OrderEvent[books where title = 'Enders Game'][reviews] bookReviews order by reviewId asc";
         EPStatement stmt = epService.getEPAdministrator().createEPL(stmtText);
         stmt.addListener(listener);
 
@@ -63,32 +61,29 @@ public class TestFilterPropertyNested extends TestCase
         ArrayAssertionUtil.assertPropsPerRow(listener.getLastNewData(), fields, new Object[][] {{1}, {2}});
         listener.reset();
 
+        // try where in different levels
+        stmt.destroy();
+        stmtText = "select reviewId from OrderEvent[books where title = 'Enders Game'][reviews where reviewId in (1, 10)] bookReviews order by reviewId asc";
+        stmt = epService.getEPAdministrator().createEPL(stmtText);
+        stmt.addListener(listener);
+
+        epService.getEPRuntime().sendEvent(TestFilterPropertySimple.makeEventOne());
+        ArrayAssertionUtil.assertPropsPerRow(listener.getLastNewData(), fields, new Object[][] {{1}});
+        listener.reset();
+
+        // try where in combination
+        stmt.destroy();
+        stmtText = "select reviewId from OrderEvent[books as bc][reviews as rw where rw.reviewId in (1, 10) and bc.title = 'Enders Game'] bookReviews order by reviewId asc";
+        stmt = epService.getEPAdministrator().createEPL(stmtText);
+        stmt.addListener(listener);
+
+        epService.getEPRuntime().sendEvent(TestFilterPropertySimple.makeEventOne());
+        ArrayAssertionUtil.assertPropsPerRow(listener.getLastNewData(), fields, new Object[][] {{1}});
+        listener.reset();
         assertFalse(listener.isInvoked());
     }
 
-    // select * from OrderEvent[books as book][reviews as review]
-    // ==> Underlying OrderEvent + book property + review property
-    //     bad: resulting event as the underlying is inconsistent
-
-    // select * from OrderEvent[books][reviews]
-    // ==> Underlying is review
-    //     good: consistent         bad: where to get book and order properties
-
-    // select orderId, bookId from OrderEvent[books][reviews]
-    // (1) Copy selected properties to the result type or all properties if so desired "reviews:OrderEvent.*,books.*"
-    // (2) Make the higher fragments a property of the result type: "reviews: OrderEvent as order, books as book"
-    // (4) Inspect all expressions in the EPL and dynamically decide which properties to copy and replace the expression
-    // (5) New event type: hierarchical event type, just has an int-pointer to the inner property index of the individual types making up the hierarchy.
-    // ==> copy properties or make event a property of another event and/or make one of them an underlying event
-
-    // Syntax:
-    //      [property : property as name]
-    //     select * from OrderEvent[select orderId, bookId from book[select * from review]]
-    //      or
-    //     select * from OrderEvent(select * from (OrderEvent.book (se[select * from review]]
-    // ==> OrderEvent[book: orderId, bookId][review]
-
-    public void testMultiplicityColumnSelect()
+    public void testColumnSelect()
     {
         //Object eventObject = TestFilterPropertySimple.makeEventOne();
         //EventBean event = SupportEventAdapterService.getService().adapterForBean(eventObject);
@@ -97,21 +92,110 @@ public class TestFilterPropertyNested extends TestCase
         //OutputValueRendererXMLString.xmlEncode(xml, builder, false);
         //System.out.println(xml);
 
-        String[] fields = "orderId, bookId, reviewId".split(",");
         epService.getEPAdministrator().getConfiguration().addEventType("OrderEvent", OrderBean.class);
 
-        // Resolve each property against each source and then against each fragment: multiple matches are an error.
-        // Create wrapper type: Implicitly make the last fragment the underlying type, add the properties to the wrapper as listed.
-        String stmtText = "select * from OrderEvent[books: bookId, orderDetail.orderId as orderId][reviews:*] bookReviews order by reviewId asc";
+        // columns supplied
+        String stmtText = "select * from OrderEvent[select bookId, orderdetail.orderId as orderId from books][select reviewId from reviews] bookReviews order by reviewId asc";
+        EPStatement stmt = epService.getEPAdministrator().createEPL(stmtText);
+        stmt.addListener(listener);
+        runAssertion();
+        stmt.destroy();
+
+        // stream wildcards identify fragments
+        stmtText = "select orderFrag.orderdetail.orderId as orderId, bookFrag.bookId as bookId, reviewFrag.reviewId as reviewId " +
+          "from OrderEvent[books as book][select myorder.* as orderFrag, book.* as bookFrag, review.* as reviewFrag from reviews as review] as myorder";
+        stmt = epService.getEPAdministrator().createEPL(stmtText);
+        stmt.addListener(listener);
+        runAssertion();
+        stmt.destroy();
+
+        // one event type dedicated as underlying
+        stmtText = "select orderdetail.orderId as orderId, bookFrag.bookId as bookId, reviewFrag.reviewId as reviewId " +
+          "from OrderEvent[books as book][select myorder.*, book.* as bookFrag, review.* as reviewFrag from reviews as review] as myorder";
+        stmt = epService.getEPAdministrator().createEPL(stmtText);
+        stmt.addListener(listener);
+        runAssertion();
+        stmt.destroy();
+
+        // wildcard unnamed as underlying
+        stmtText = "select orderFrag.orderdetail.orderId as orderId, bookId, reviewId " +
+          "from OrderEvent[select * from books][select myorder.* as orderFrag, reviewId from reviews as review] as myorder";
+        stmt = epService.getEPAdministrator().createEPL(stmtText);
+        stmt.addListener(listener);
+        runAssertion();
+        stmt.destroy();
+
+        // wildcard named as underlying
+        stmtText = "select orderFrag.orderdetail.orderId as orderId, bookFrag.bookId as bookId, reviewFrag.reviewId as reviewId " +
+          "from OrderEvent[select * from books as bookFrag][select myorder.* as orderFrag, review.* as reviewFrag from reviews as review] as myorder";
+        stmt = epService.getEPAdministrator().createEPL(stmtText);
+        stmt.addListener(listener);
+        runAssertion();
+        stmt.destroy();
+    }
+
+    public void testPatternSelect()
+    {
+        epService.getEPAdministrator().getConfiguration().addEventType("OrderEvent", OrderBean.class);
+        epService.getEPAdministrator().getConfiguration().addEventType("SupportBean", SupportBean.class);
+
+        EPStatement stmt = epService.getEPAdministrator().createEPL("select * from pattern [" +
+                "every r=OrderEvent[books][reviews] -> SupportBean(intPrimitive = r[0].reviewId)]");
+        stmt.addListener(listener);
+
+        epService.getEPRuntime().sendEvent(TestFilterPropertySimple.makeEventOne());
+        epService.getEPRuntime().sendEvent(TestFilterPropertySimple.makeEventFour());
+
+        epService.getEPRuntime().sendEvent(new SupportBean("E1", 1));
+        assertTrue(listener.getAndClearIsInvoked());
+
+        epService.getEPRuntime().sendEvent(new SupportBean("E2", -1));
+        assertFalse(listener.getAndClearIsInvoked());
+
+        epService.getEPRuntime().sendEvent(new SupportBean("E2", 201));
+        assertTrue(listener.getAndClearIsInvoked());
+    }
+
+    public void testSubSelect()
+    {
+        epService.getEPAdministrator().getConfiguration().addEventType("OrderEvent", OrderBean.class);
+        epService.getEPAdministrator().getConfiguration().addEventType("SupportBean", SupportBean.class);
+
+        EPStatement stmt = epService.getEPAdministrator().createEPL("select string from SupportBean s0 where " +
+                "exists (select * from OrderEvent[books][reviews].std:unique(reviewId) where reviewId = s0.intPrimitive)");
+        stmt.addListener(listener);
+
+        epService.getEPRuntime().sendEvent(TestFilterPropertySimple.makeEventOne());
+        epService.getEPRuntime().sendEvent(TestFilterPropertySimple.makeEventFour());
+
+        epService.getEPRuntime().sendEvent(new SupportBean("E1", 1));
+        assertTrue(listener.getAndClearIsInvoked());
+
+        epService.getEPRuntime().sendEvent(new SupportBean("E2", -1));
+        assertFalse(listener.getAndClearIsInvoked());
+
+        epService.getEPRuntime().sendEvent(new SupportBean("E2", 201));
+        assertTrue(listener.getAndClearIsInvoked());
+    }
+
+    public void testUnderlyingSelect()
+    {
+        String[] fields = "orderId,bookId,reviewId".split(",");
+        epService.getEPAdministrator().getConfiguration().addEventType("OrderEvent", OrderBean.class);
+
+        String stmtText = "select orderdetail.orderId as orderId, bookFrag.bookId as bookId, reviewFrag.reviewId as reviewId " +
+        //String stmtText = "select * " +
+          "from OrderEvent[books as book][select myorder.*, book.* as bookFrag, review.* as reviewFrag from reviews as review] as myorder";
         EPStatement stmt = epService.getEPAdministrator().createEPL(stmtText);
         stmt.addListener(listener);
 
         epService.getEPRuntime().sendEvent(TestFilterPropertySimple.makeEventOne());
-        ArrayAssertionUtil.assertPropsPerRow(listener.getLastNewData(), fields, new Object[][] {{1}, {2}, {10}});
+        ArrayAssertionUtil.assertPropsPerRow(listener.getLastNewData(), fields, new Object[][] {
+                {"PO200901", "10020", 1}, {"PO200901", "10020", 2}, {"PO200901", "10021", 10}});
         listener.reset();
 
         epService.getEPRuntime().sendEvent(TestFilterPropertySimple.makeEventFour());
-        ArrayAssertionUtil.assertPropsPerRow(listener.getLastNewData(), fields, new Object[][] {{201}});
+        ArrayAssertionUtil.assertPropsPerRow(listener.getLastNewData(), fields, new Object[][] {{"PO200904", "10031", 201}});
         listener.reset();
     }
 
@@ -119,11 +203,37 @@ public class TestFilterPropertyNested extends TestCase
     {
         epService.getEPAdministrator().getConfiguration().addEventType("OrderEvent", OrderBean.class);
 
+        tryInvalid("select bookId from OrderEvent[select * from books][select * from reviews]",
+                   "A column name must be supplied for all but one stream if multiple streams are selected via the stream.* notation [select bookId from OrderEvent[select * from books][select * from reviews]]");
+
+        tryInvalid("select bookId from OrderEvent[select abc from books][reviews]",
+                   "Property named 'abc' is not valid in any stream [select bookId from OrderEvent[select abc from books][reviews]]");
+
+        tryInvalid("select bookId from OrderEvent[books][reviews]",
+                   "Error starting view: Property named 'bookId' is not valid in any stream [select bookId from OrderEvent[books][reviews]]");
+
+        tryInvalid("select orderId from OrderEvent[books]",
+                   "Error starting view: Property named 'orderId' is not valid in any stream [select orderId from OrderEvent[books]]");
+
         tryInvalid("select * from OrderEvent[books where abc=1]",
-                   "");
+                   "Property named 'abc' is not valid in any stream [select * from OrderEvent[books where abc=1]]");
 
         tryInvalid("select * from OrderEvent[abc]",
                    "Property expression 'abc' against type 'OrderEvent' does not return a fragmentable property value [select * from OrderEvent[abc]]");
+    }
+
+    private void runAssertion()
+    {
+        String[] fields = "orderId,bookId,reviewId".split(",");
+
+        epService.getEPRuntime().sendEvent(TestFilterPropertySimple.makeEventOne());
+        ArrayAssertionUtil.assertPropsPerRow(listener.getLastNewData(), fields, new Object[][] {
+                {"PO200901", "10020", 1}, {"PO200901", "10020", 2}, {"PO200901", "10021", 10}});
+        listener.reset();
+
+        epService.getEPRuntime().sendEvent(TestFilterPropertySimple.makeEventFour());
+        ArrayAssertionUtil.assertPropsPerRow(listener.getLastNewData(), fields, new Object[][] {{"PO200904", "10031", 201}});
+        listener.reset();
     }
 
     private void tryInvalid(String text, String message)

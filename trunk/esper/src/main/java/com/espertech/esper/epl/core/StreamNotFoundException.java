@@ -18,6 +18,7 @@ public class StreamNotFoundException extends StreamTypesException
     /**
      * Ctor.
      * @param msg - message
+     * @param suggestion - optional suggestion for a matching name
      */
     public StreamNotFoundException(String msg, Pair<Integer, String> suggestion)
     {

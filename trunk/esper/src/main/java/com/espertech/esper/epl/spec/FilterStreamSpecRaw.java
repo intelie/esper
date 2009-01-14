@@ -76,7 +76,7 @@ public class FilterStreamSpecRaw extends StreamSpecBase implements StreamSpecRaw
         if (context.getNamedWindowService().isNamedWindow(eventName))
         {
             EventType namedWindowType = context.getNamedWindowService().getProcessor(eventName).getTailView().getEventType();
-            StreamTypeService streamTypeService = new StreamTypeServiceImpl(new EventType[] {namedWindowType}, new String[] {"s0"}, context.getEngineURI(), new String[] {eventName});
+            StreamTypeService streamTypeService = new StreamTypeServiceImpl(new EventType[] {namedWindowType}, new String[] {"s0"}, context.getEngineURI());
 
             List<ExprNode> validatedNodes = FilterSpecCompiler.validateDisallowSubquery(rawFilterSpec.getFilterExpressions(),
                 streamTypeService, context.getMethodResolutionService(), context.getSchedulingService(), context.getVariableService());
@@ -103,7 +103,7 @@ public class FilterStreamSpecRaw extends StreamSpecBase implements StreamSpecRaw
 
         // Validate all nodes, make sure each returns a boolean and types are good;
         // Also decompose all AND super nodes into individual expressions
-        StreamTypeService streamTypeService = new StreamTypeServiceImpl(new EventType[] {eventType}, new String[] {"s0"}, context.getEngineURI(), new String[] {eventName});
+        StreamTypeService streamTypeService = new StreamTypeServiceImpl(new EventType[] {eventType}, new String[] {"s0"}, context.getEngineURI());
 
         FilterSpecCompiled spec = FilterSpecCompiler.makeFilterSpec(eventType, eventName, rawFilterSpec.getFilterExpressions(), rawFilterSpec.getOptionalPropertyEvalSpec(),
                 null, null,  // no tags

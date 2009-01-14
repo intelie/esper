@@ -1115,7 +1115,8 @@ patternFilterExpression
     :   (i=IDENT EQUALS)?
     	classIdentifier
        	(LPAREN expressionList? RPAREN)?
-       	-> ^(PATTERN_FILTER_EXPR $i? classIdentifier expressionList?)
+       	propertyExpression?
+       	-> ^(PATTERN_FILTER_EXPR $i? classIdentifier propertyExpression? expressionList?)
     ;
 
 classIdentifier

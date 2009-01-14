@@ -1,9 +1,23 @@
 package com.espertech.esper.util;
 
+/**
+ * Utility for string comparison based on the Levenshtein algo. 
+ */
 public class LevenshteinDistance
 {
+    /**
+     * Make 3 characters an acceptable distance for reporting.
+     */
     public final static int ACCEPTABLE_DISTANCE = 3;
 
+    /**
+     * Compute the distance between two strins using the Levenshtein algorithm,
+     * including a case-insensitive string comparison.
+     * @param str1 first string
+     * @param str2 second string
+     * @return distance or zero if case-insensitive string comparison found equal strings
+     * or Integer.MAX_VALUE for invalid comparison because of null values.
+     */
     public static int computeLevenshteinDistance(CharSequence str1, CharSequence str2)
     {
         if ((str1 == null) || (str2 == null))

@@ -11,6 +11,7 @@ package com.espertech.esper.view.std;
 import com.espertech.esper.core.StatementContext;
 import com.espertech.esper.epl.core.ViewResourceCallback;
 import com.espertech.esper.epl.expression.ExprNode;
+import com.espertech.esper.epl.expression.ExprNodeUtility;
 import com.espertech.esper.epl.named.RemoveStreamViewCapability;
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.view.*;
@@ -88,7 +89,7 @@ public class FirstUniqueByPropertyViewFactory implements DataWindowViewFactory
         }
 
         FirstUniqueByPropertyView myView = (FirstUniqueByPropertyView) view;
-        if (!ExprNode.deepEquals(criteriaExpressions, myView.getUniqueCriteria()))
+        if (!ExprNodeUtility.deepEquals(criteriaExpressions, myView.getUniqueCriteria()))
         {
             return false;
         }

@@ -271,6 +271,7 @@ public class TestEPLParser extends TestCase
         assertIsValid(preFill + "[select *, abc, a.b from myprop as orderId where a=s][mythirdprop].win:keepall()");
         assertIsValid(preFill + "[xyz][select *, abc, a.b from myprop].win:keepall()");
         assertIsValid(preFill + "[xyz][myprop where a=x].win:keepall()");
+        assertIsValid("select * from A where (select * from B[myprop])");
 
         assertIsValid("select max(intPrimitive, intBoxed) from " + className + "().std:win(20)");
         assertIsValid("select max(intPrimitive, intBoxed, longBoxed) from " + className + "().std:win(20)");

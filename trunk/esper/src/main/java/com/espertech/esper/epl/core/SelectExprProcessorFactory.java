@@ -52,10 +52,16 @@ public class SelectExprProcessorFactory
         throws ExprValidationException
     {
         SelectExprProcessor synthetic = getProcessorInternal(selectionList, isUsingWildcard, insertIntoDesc, typeService, eventAdapterService, valueAddEventService, selectExprEventTypeRegistry);
-        BindProcessor bindProcessor = new BindProcessor(selectionList, typeService.getEventTypes(), typeService.getStreamNames());
-        statementResultService.setSelectClause(bindProcessor.getExpressionTypes(), bindProcessor.getColumnNamesAssigned());
-        
-        return new SelectExprResultProcessor(statementResultService, synthetic, bindProcessor);        
+
+        // Handle binding as an optional service
+        if (statementResultService != null)
+        {
+            BindProcessor bindProcessor = new BindProcessor(selectionList, typeService.getEventTypes(), typeService.getStreamNames());
+            statementResultService.setSelectClause(bindProcessor.getExpressionTypes(), bindProcessor.getColumnNamesAssigned());
+            return new SelectExprResultProcessor(statementResultService, synthetic, bindProcessor);
+        }
+
+        return synthetic;        
     }
 
     private static SelectExprProcessor getProcessorInternal(

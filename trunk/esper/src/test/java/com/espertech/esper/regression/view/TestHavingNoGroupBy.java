@@ -99,6 +99,23 @@ public class TestHavingNoGroupBy extends TestCase
         runNoAggregationJoin("where");
     }
 
+    public void testSubstreamSelectHaving()
+    {
+        epService.getEPAdministrator().getConfiguration().addEventType("SupportBean", SupportBean.class);
+        String stmtText = "insert into MyStream select quote.* from SupportBean.win:length(14) quote having avg(intPrimitive) >= 3\n";
+        EPStatement stmt = epService.getEPAdministrator().createEPL(stmtText);
+        stmt.addListener(testListener);
+
+        epService.getEPRuntime().sendEvent(new SupportBean("abc", 2));
+        assertFalse(testListener.isInvoked());
+        epService.getEPRuntime().sendEvent(new SupportBean("abc", 2));
+        assertFalse(testListener.isInvoked());
+        epService.getEPRuntime().sendEvent(new SupportBean("abc", 3));
+        assertFalse(testListener.isInvoked());
+        epService.getEPRuntime().sendEvent(new SupportBean("abc", 5));
+        assertTrue(testListener.isInvoked());
+    }
+
     private void runNoAggregationJoin(String filterClause)
     {
         String viewExpr = "select irstream a.price as aPrice, b.price as bPrice, Math.max(a.price, b.price) - Math.min(a.price, b.price) as spread " +

@@ -50,7 +50,6 @@ public class BeanEventType implements EventTypeSPI, NativeEventType
      * Constructor takes a java bean class as an argument.
      * @param clazz is the class of a java bean or other POJO
      * @param optionalLegacyDef optional configuration supplying legacy event type information
-     * @param name is the event type name for the class
      * @param eventAdapterService factory for event beans and event types
      * @param metadata event type metadata
      */

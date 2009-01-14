@@ -118,6 +118,7 @@ public class ResultSetProcessorFactory
         boolean isUsingWildcard = selectClauseSpec.isUsingWildcard();
 
         // Validate stream selections, if any (such as stream.*)
+        boolean isUsingStreamSelect = false;
         for (SelectClauseElementCompiled compiled : selectClauseSpec.getSelectExprList())
         {
             if (!(compiled instanceof SelectClauseStreamCompiledSpec))
@@ -129,6 +130,7 @@ public class ResultSetProcessorFactory
             boolean isFragmentEvent = false;
             boolean isProperty = false;
             Class propertyType = null;
+            isUsingStreamSelect = true;
             for (int i = 0; i < typeService.getStreamNames().length; i++)
             {
                 String streamName = streamSelectSpec.getStreamName();
@@ -345,7 +347,7 @@ public class ResultSetProcessorFactory
             // (3)
             // There is no group-by clause and there are aggregate functions with event properties in the select clause (aggregation case)
             // or having class, and all event properties are aggregated (all properties are under aggregation functions).
-            if ((nonAggregatedProps.isEmpty()) && (!isUsingWildcard))
+            if ((nonAggregatedProps.isEmpty()) && (!isUsingWildcard) && (!isUsingStreamSelect))
             {
                 log.debug(".getProcessor Using ResultSetProcessorRowForAll");
                 return new ResultSetProcessorRowForAll(selectExprProcessor, aggregationService, orderByProcessor, optionalHavingNode, isSelectRStream, isUnidirectional);

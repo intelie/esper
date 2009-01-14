@@ -12,6 +12,7 @@ import com.espertech.esper.core.StatementContext;
 import com.espertech.esper.epl.core.ViewResourceCallback;
 import com.espertech.esper.epl.expression.ExprNode;
 import com.espertech.esper.epl.expression.ExprOrderedExpr;
+import com.espertech.esper.epl.expression.ExprNodeUtility;
 import com.espertech.esper.epl.named.RemoveStreamViewCapability;
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.view.*;
@@ -166,7 +167,7 @@ public class SortWindowViewFactory implements DataWindowViewFactory
         SortWindowView other = (SortWindowView) view;
         if ((other.getSortWindowSize() != sortWindowSize) ||
             (!compare(other.getIsDescendingValues(), isDescendingValues)) ||
-            (!ExprNode.deepEquals(other.getSortCriteriaExpressions(), sortCriteriaExpressions)) )
+            (!ExprNodeUtility.deepEquals(other.getSortCriteriaExpressions(), sortCriteriaExpressions)) )
         {
             return false;
         }

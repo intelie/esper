@@ -18,6 +18,7 @@ public class PropertyNotFoundException extends StreamTypesException
     /**
      * Ctor.
      * @param msg - message
+     * @param nearestMatchSuggestion - optional suggestion for a matching name
      */
     public PropertyNotFoundException(String msg, Pair<Integer, String> nearestMatchSuggestion)
     {

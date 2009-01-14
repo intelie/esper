@@ -101,7 +101,7 @@ public abstract class ViewFactorySupport implements ViewFactory
     {
         List<ExprNode> results = new ArrayList<ExprNode>();
         int expressionNumber = 0;
-        StreamTypeService streamTypeService = new StreamTypeServiceImpl(eventType, null, statementContext.getEngineURI(), eventType.getName());
+        StreamTypeService streamTypeService = new StreamTypeServiceImpl(eventType, null, statementContext.getEngineURI());
         for (ExprNode expr : expressions)
         {
             ExprNode validated = validateExpr(statementContext, expr, streamTypeService, expressionNumber);

@@ -103,10 +103,26 @@ public final class EvalFilterStateNode extends EvalStateNode implements FilterHa
 
         MatchedEventMap passUp = beginState.shallowCopy();
 
-        // Add event itself to the match event structure if a tag was provided
-        if (evalFilterNode.getEventAsName() != null)
+        if (evalFilterNode.getFilterSpec().getOptionalPropertyEvaluator() != null)
         {
-            passUp.add(evalFilterNode.getEventAsName(), event);
+            EventBean[] propertyEvents = evalFilterNode.getFilterSpec().getOptionalPropertyEvaluator().getProperty(event);
+            if (propertyEvents == null)
+            {
+                return; // no results, ignore match
+            }
+            // Add event itself to the match event structure if a tag was provided
+            if (evalFilterNode.getEventAsName() != null)
+            {
+                passUp.add(evalFilterNode.getEventAsName(), propertyEvents);
+            }
+        }
+        else
+        {
+            // Add event itself to the match event structure if a tag was provided
+            if (evalFilterNode.getEventAsName() != null)
+            {
+                passUp.add(evalFilterNode.getEventAsName(), event);
+            }
         }
 
         // Explanation for the type cast...

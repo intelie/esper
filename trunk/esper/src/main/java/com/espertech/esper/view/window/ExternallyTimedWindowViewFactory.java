@@ -11,6 +11,7 @@ package com.espertech.esper.view.window;
 import com.espertech.esper.epl.core.ViewResourceCallback;
 import com.espertech.esper.epl.named.RemoveStreamViewCapability;
 import com.espertech.esper.epl.expression.ExprNode;
+import com.espertech.esper.epl.expression.ExprNodeUtility;
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.util.JavaClassHelper;
 import com.espertech.esper.view.*;
@@ -155,7 +156,7 @@ public class ExternallyTimedWindowViewFactory implements DataWindowViewFactory
 
         ExternallyTimedWindowView myView = (ExternallyTimedWindowView) view;
         if ((myView.getMillisecondsBeforeExpiry() != millisecondsBeforeExpiry) ||
-            (!ExprNode.deepEquals(myView.getTimestampExpression(), timestampExpression)))
+            (!ExprNodeUtility.deepEquals(myView.getTimestampExpression(), timestampExpression)))
         {
             return false;
         }

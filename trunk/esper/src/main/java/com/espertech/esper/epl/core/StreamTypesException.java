@@ -20,6 +20,7 @@ public abstract class StreamTypesException extends Exception
     /**
      * Ctor.
      * @param message - message
+     * @param suggestion - optional suggestion for a matching name
      */
     public StreamTypesException(String message, Pair<Integer, String> suggestion)
     {
@@ -27,6 +28,10 @@ public abstract class StreamTypesException extends Exception
         this.optionalSuggestion = suggestion;
     }
 
+    /**
+     * Returns the optional suggestion for a matching name.
+     * @return suggested match
+     */
     public Pair<Integer, String> getOptionalSuggestion()
     {
         return optionalSuggestion;

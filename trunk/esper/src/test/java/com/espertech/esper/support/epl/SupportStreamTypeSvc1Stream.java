@@ -13,7 +13,7 @@ public class SupportStreamTypeSvc1Stream implements StreamTypeService
 
     public SupportStreamTypeSvc1Stream()
     {
-        impl = new StreamTypeServiceImpl(getEventTypes(), getStreamNames(), "default", new String[] {"SupportBean"});
+        impl = new StreamTypeServiceImpl(getEventTypes(), getStreamNames(), "default");
     }
 
     public PropertyResolutionDescriptor resolveByPropertyName(String propertyName) throws DuplicatePropertyException, PropertyNotFoundException

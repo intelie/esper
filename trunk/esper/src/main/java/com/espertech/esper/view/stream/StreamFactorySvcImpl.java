@@ -126,13 +126,13 @@ public class StreamFactorySvcImpl implements StreamFactoryService
         final EventStream eventStream = new ZeroDepthStream(resultEventType);
 
         FilterHandleCallback filterCallback;
-        if (filterSpec.getOptionalPropertyExpressionFilter() != null)
+        if (filterSpec.getOptionalPropertyEvaluator() != null)
         {
             filterCallback = new FilterHandleCallback()
             {
                 public void matchFound(EventBean event)
                 {
-                    EventBean[] result = filterSpec.getOptionalPropertyExpressionFilter().getProperty(event);
+                    EventBean[] result = filterSpec.getOptionalPropertyEvaluator().getProperty(event);
                     if (result == null)
                     {
                         return;

@@ -12,6 +12,7 @@ import com.espertech.esper.view.*;
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.epl.core.ViewResourceCallback;
 import com.espertech.esper.epl.expression.ExprNode;
+import com.espertech.esper.epl.expression.ExprNodeUtility;
 import com.espertech.esper.core.StatementContext;
 
 import java.util.List;
@@ -144,7 +145,7 @@ public class GroupByViewFactory implements ViewFactory
         }
 
         GroupByView myView = (GroupByView) view;
-        if (!ExprNode.deepEquals(myView.getCriteriaExpressions(), criteriaExpressions))
+        if (!ExprNodeUtility.deepEquals(myView.getCriteriaExpressions(), criteriaExpressions))
         {
             return false;
         }

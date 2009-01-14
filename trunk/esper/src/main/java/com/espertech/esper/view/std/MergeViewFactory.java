@@ -11,6 +11,7 @@ package com.espertech.esper.view.std;
 import com.espertech.esper.core.StatementContext;
 import com.espertech.esper.epl.core.ViewResourceCallback;
 import com.espertech.esper.epl.expression.ExprNode;
+import com.espertech.esper.epl.expression.ExprNodeUtility;
 import com.espertech.esper.client.EventType;
 import com.espertech.esper.view.*;
 
@@ -46,7 +47,7 @@ public class MergeViewFactory implements ViewFactory
                 continue;
             }
             GroupByViewFactory candidateGroupByView = (GroupByViewFactory) parentView;
-            if (ExprNode.deepEquals(candidateGroupByView.getCriteriaExpressions(), unvalidated))
+            if (ExprNodeUtility.deepEquals(candidateGroupByView.getCriteriaExpressions(), unvalidated))
             {
                 groupByViewFactory = candidateGroupByView;
             }
@@ -129,7 +130,7 @@ public class MergeViewFactory implements ViewFactory
         }
 
         MergeView myView = (MergeView) view;
-        if (!ExprNode.deepEquals(myView.getGroupFieldNames(), criteriaExpressions))
+        if (!ExprNodeUtility.deepEquals(myView.getGroupFieldNames(), criteriaExpressions))
         {
             return false;
         }

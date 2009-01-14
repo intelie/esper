@@ -315,6 +315,8 @@ public class TestMatchUntilExpr extends TestCase implements SupportBeanConstants
         EPServiceProvider epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();
 
+        /*
+        TODO
         String stmt ="select * from pattern [a=A until b=B -> c=C(id = ('C' || a[0].id || a[1].id || b.id))]";
         SupportUpdateListener listener = new SupportUpdateListener();
         EPStatement statement = epService.getEPAdministrator().createEPL(stmt);
@@ -340,6 +342,22 @@ public class TestMatchUntilExpr extends TestCase implements SupportBeanConstants
         assertNull(event.get("a[2]"));
         assertSame(eventB1, event.get("b"));
         assertSame(eventC1, event.get("c"));
+
+        statement.destroy();
+         */
+        String stmt ="select * from pattern [a=A until b=B -> c=SupportBean(string = a[1].id)]";
+        SupportUpdateListener listener = new SupportUpdateListener();
+        EPStatement statement = epService.getEPAdministrator().createEPL(stmt);
+        statement.addListener(listener);
+
+        epService.getEPRuntime().sendEvent(new SupportBean_A("A1"));
+        epService.getEPRuntime().sendEvent(new SupportBean_A("A2"));
+        epService.getEPRuntime().sendEvent(new SupportBean_B("B1"));
+        epService.getEPRuntime().sendEvent(new SupportBean("A2", 10));
+        assertFalse(listener.isInvoked());
+
+        EventBean event = listener.assertOneGetNewAndReset();
+        assertEquals(10, event.get("c.intPrimitive"));
     }
 
     public void testInvalid()

@@ -12,6 +12,7 @@ import com.espertech.esper.epl.core.MethodResolutionService;
 import com.espertech.esper.epl.expression.ExprAggregateNode;
 import com.espertech.esper.epl.expression.ExprEvaluator;
 import com.espertech.esper.epl.expression.ExprNode;
+import com.espertech.esper.epl.expression.ExprNodeUtility;
 import com.espertech.esper.client.EventBean;
 
 import java.util.*;
@@ -171,7 +172,7 @@ public class AggregationServiceFactory
         for (Map.Entry<ExprAggregateNode, List<ExprAggregateNode>> entry : equivalencyList.entrySet())
         {
             ExprAggregateNode aggNode = entry.getKey();
-            if (ExprNode.deepEquals(aggNode, aggNodeToAdd))
+            if (ExprNodeUtility.deepEquals(aggNode, aggNodeToAdd))
             {
                 List<ExprAggregateNode> equivalentAggregators = entry.getValue();
                 if (equivalentAggregators == null)
