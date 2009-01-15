@@ -45,4 +45,9 @@ public class PropertyEvaluatorSelect implements PropertyEvaluator
     {
         return selectExprProcessor.getResultEventType();
     }
+
+    public boolean compareTo(PropertyEvaluator otherFilterPropertyEval)
+    {
+        return false;
+    }
 }

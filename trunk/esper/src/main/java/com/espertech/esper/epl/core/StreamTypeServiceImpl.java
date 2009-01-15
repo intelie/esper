@@ -387,7 +387,7 @@ public class StreamTypeServiceImpl implements StreamTypeService
             {
                 suggestion = new Pair<Integer, String>(bestMatchDiff, bestMatch);
             }
-            throw new StreamNotFoundException("Stream named " + streamName + " is not defined", suggestion);
+            throw new StreamNotFoundException("Failed to find a stream named '" + streamName + "'", suggestion);
         }
 
         Class propertyType = streamType.getPropertyType(propertyName);

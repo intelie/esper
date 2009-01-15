@@ -121,7 +121,8 @@ public class TestSelectExprStreamSelector extends TestCase
         assertFalse(testListener.isInvoked());
 
         Object event = sendMarketEvent("E1");
-        assertSame(event, testListener.assertOneGetNewAndReset().get("s1stream"));
+        EventBean outevent = testListener.assertOneGetNewAndReset();
+        assertSame(event, outevent.get("s1stream"));
     }
 
     public void testNoJoinWildcardNoAlias()
@@ -243,7 +244,8 @@ public class TestSelectExprStreamSelector extends TestCase
         String[] fields = new String[] {"intPrimitive", "sym", "string", "s0stream", "s1stream"};
         EventBean received = testListener.assertOneGetNewAndReset();
         ArrayAssertionUtil.assertProps(received, fields, new Object[] {13, "E2", "E1", eventOne, eventTwo});
-        assertSame(eventOne, ((Map)received.getUnderlying()).get("s0stream"));
+        EventBean event = (EventBean) ((Map)received.getUnderlying()).get("s0stream");
+        assertSame(eventOne, event.getUnderlying());
     }
 
     public void testNoJoinNoAliasWithProperties()

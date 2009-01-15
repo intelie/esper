@@ -6,6 +6,7 @@ import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.bean.SupportBean_A;
 import com.espertech.esper.support.bean.SupportMarketDataBean;
 import com.espertech.esper.support.event.SupportEventTypeFactory;
+import com.espertech.esper.support.event.SupportEventAdapterService;
 import com.espertech.esper.collection.Pair;
 
 import java.util.LinkedHashMap;
@@ -18,6 +19,8 @@ public class TestStreamTypeServiceImpl extends TestCase
 
     public void setUp()
     {
+        SupportEventAdapterService.reset();
+        
         // Prepare regualar test service
         EventType[] eventTypes = new EventType[] {
             SupportEventTypeFactory.createBeanType(SupportBean.class),

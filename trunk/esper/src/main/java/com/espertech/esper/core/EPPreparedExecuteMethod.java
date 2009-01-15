@@ -62,9 +62,9 @@ public class EPPreparedExecuteMethod
         int numStreams = statementSpec.getStreamSpecs().size();
         EventType[] typesPerStream = new EventType[numStreams];
         String[] namesPerStream = new String[numStreams];
-        boolean[] namedWindow = new boolean[numStreams];
-        Arrays.fill(namedWindow, true);
         processors = new NamedWindowProcessor[numStreams];
+        StreamJoinAnalysisResult streamJoinAnalysisResult = new StreamJoinAnalysisResult(numStreams);
+        Arrays.fill(streamJoinAnalysisResult.getNamedWindow(), true);
 
         for (int i = 0; i < numStreams; i++)
         {
@@ -95,7 +95,7 @@ public class EPPreparedExecuteMethod
                 viewablePerStream[i] = processors[i].getTailView();
             }
             boolean[] falseArray = new boolean[numStreams];
-            joinComposer = statementContext.getJoinSetComposerFactory().makeComposer(statementSpec.getOuterJoinDescList(), statementSpec.getFilterRootNode(), typesPerStream, namesPerStream, viewablePerStream, SelectClauseStreamSelectorEnum.ISTREAM_ONLY, falseArray, falseArray, falseArray, namedWindow);
+            joinComposer = statementContext.getJoinSetComposerFactory().makeComposer(statementSpec.getOuterJoinDescList(), statementSpec.getFilterRootNode(), typesPerStream, namesPerStream, viewablePerStream, SelectClauseStreamSelectorEnum.ISTREAM_ONLY, streamJoinAnalysisResult);
         }
         else
         {

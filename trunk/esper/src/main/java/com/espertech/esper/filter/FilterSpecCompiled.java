@@ -142,7 +142,29 @@ public final class FilterSpecCompiled
         }
 
         FilterSpecCompiled other = (FilterSpecCompiled) obj;
+        if (!equalsTypeAndFilter(other))
+        {
+            return false;
+        }
 
+        if ((this.optionalPropertyEvaluator == null) && (other.optionalPropertyEvaluator == null))
+        {
+            return true;
+        }       
+        if ((this.optionalPropertyEvaluator != null) && (other.optionalPropertyEvaluator == null))
+        {
+            return false;
+        }
+        if ((this.optionalPropertyEvaluator == null) && (other.optionalPropertyEvaluator != null))
+        {
+            return false;
+        }
+
+        return this.optionalPropertyEvaluator.compareTo(other.optionalPropertyEvaluator);
+    }
+
+    public boolean equalsTypeAndFilter(FilterSpecCompiled other)
+    {
         if (this.filterForEventType != other.filterForEventType)
         {
             return false;

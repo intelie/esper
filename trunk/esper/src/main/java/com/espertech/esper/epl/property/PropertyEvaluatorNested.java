@@ -160,4 +160,9 @@ public class PropertyEvaluatorNested implements PropertyEvaluator
     {
         return fragmentEventType[lastLevel].getFragmentType();
     }
+
+    public boolean compareTo(PropertyEvaluator otherEval)
+    {
+        return false;
+    }
 }

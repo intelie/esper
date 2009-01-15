@@ -179,7 +179,7 @@ public class WrapperEventType implements EventTypeSPI
                     }
                     DecoratingEventBean wrapperEvent = (DecoratingEventBean) event;
                     Map map = wrapperEvent.getDecoratingProperties();
-                    return underlyingMapType.getValue(property, map);
+                    return mapGetter.get(eventAdapterService.adaptorForTypedMap(map, underlyingMapType));
                 }
 
                 public boolean isExistsProperty(EventBean eventBean)

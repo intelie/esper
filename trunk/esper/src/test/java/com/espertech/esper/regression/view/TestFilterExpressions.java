@@ -706,17 +706,17 @@ public class TestFilterExpressions extends TestCase
                 "Implicit conversion from datatype 'SupportEnum' to 'String' is not allowed [select * from com.espertech.esper.support.bean.SupportBeanWithEnum(string=com.espertech.esper.support.bean.SupportEnum.ENUM_VALUE_1)]");
 
         tryInvalid("select * from " + SupportBeanWithEnum.class.getName() + "(supportEnum=A.b)",
-                "Failed to resolve property 'A.b' to a stream or nested property in a stream [select * from com.espertech.esper.support.bean.SupportBeanWithEnum(supportEnum=A.b)]");
+                "Failed to find a stream named 'A' (did you mean 's0'?) [select * from com.espertech.esper.support.bean.SupportBeanWithEnum(supportEnum=A.b)]");
 
         tryInvalid("select * from pattern [a=" + SupportBean.class.getName() + " -> b=" +
                 SupportBean.class.getName() + "(doubleBoxed not in (doubleBoxed, x.intBoxed, 9))]",
-                "Failed to resolve property 'x.intBoxed' to a stream or nested property in a stream [select * from pattern [a=com.espertech.esper.support.bean.SupportBean -> b=com.espertech.esper.support.bean.SupportBean(doubleBoxed not in (doubleBoxed, x.intBoxed, 9))]]");
+                "Failed to find a stream named 'x' (did you mean 'b'?) [select * from pattern [a=com.espertech.esper.support.bean.SupportBean -> b=com.espertech.esper.support.bean.SupportBean(doubleBoxed not in (doubleBoxed, x.intBoxed, 9))]]");
 
         tryInvalid("select * from pattern [a=" + SupportBean.class.getName()
-                + " -> b=" + SupportBean.class.getName() + "(c.intPrimitive=a.intPrimitive)"
+                + " -> b=" + SupportBean.class.getName() + "(cluedo.intPrimitive=a.intPrimitive)"
                 + " -> c=" + SupportBean.class.getName()
                 + "]",
-                "Failed to resolve property 'c.intPrimitive' to a stream or nested property in a stream [select * from pattern [a=com.espertech.esper.support.bean.SupportBean -> b=com.espertech.esper.support.bean.SupportBean(c.intPrimitive=a.intPrimitive) -> c=com.espertech.esper.support.bean.SupportBean]]");
+                "Failed to resolve property 'cluedo.intPrimitive' to a stream or nested property in a stream [select * from pattern [a=com.espertech.esper.support.bean.SupportBean -> b=com.espertech.esper.support.bean.SupportBean(cluedo.intPrimitive=a.intPrimitive) -> c=com.espertech.esper.support.bean.SupportBean]]");
     }
 
     private void tryInvalid(String text, String expectedMsg)

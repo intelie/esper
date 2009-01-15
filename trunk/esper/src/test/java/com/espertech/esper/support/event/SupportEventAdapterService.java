@@ -12,6 +12,10 @@ public class SupportEventAdapterService
         eventAdapterService = new EventAdapterServiceImpl();
     }
 
+    public static void reset()
+    {
+        eventAdapterService = new EventAdapterServiceImpl();
+    }
     public static EventAdapterService getService()
     {
         return eventAdapterService;

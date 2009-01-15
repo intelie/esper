@@ -40,6 +40,7 @@ import com.espertech.esper.epl.view.OutputConditionExpression;
 import com.espertech.esper.epl.view.OutputProcessView;
 import com.espertech.esper.epl.view.OutputProcessViewFactory;
 import com.espertech.esper.event.vaevent.ValueAddEventProcessor;
+import com.espertech.esper.filter.FilterSpecCompiled;
 import com.espertech.esper.pattern.EvalRootNode;
 import com.espertech.esper.pattern.PatternContext;
 import com.espertech.esper.pattern.PatternMatchCallback;
@@ -49,7 +50,6 @@ import com.espertech.esper.util.ManagedLock;
 import com.espertech.esper.util.StopCallback;
 import com.espertech.esper.view.*;
 import com.espertech.esper.view.internal.BufferView;
-import com.espertech.esper.filter.FilterSpecCompiled;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -483,18 +483,14 @@ public class EPStatementStartMethod
         // Create streams and views
         Viewable[] eventStreamParentViewable = new Viewable[numStreams];
         ViewFactoryChain[] unmaterializedViewChain = new ViewFactoryChain[numStreams];
-        boolean[] isUnidirectional = new boolean[numStreams];
-        boolean[] hasChildViews = new boolean[numStreams];
-        boolean[] isNamedWindow = new boolean[numStreams];
         String[] eventTypeNamees = new String[numStreams];
+
         // verify for joins that required views are present
-        boolean[] isUnidirectionalNonDriving = verifyJoinViews(statementSpec.getStreamSpecs());
+        StreamJoinAnalysisResult joinAnalysisResult = verifyJoinViews(statementSpec.getStreamSpecs());
 
         for (int i = 0; i < statementSpec.getStreamSpecs().size(); i++)
         {
             StreamSpecCompiled streamSpec = statementSpec.getStreamSpecs().get(i);
-            isUnidirectional[i] = streamSpec.getOptions().isUnidirectional();
-            hasChildViews[i] = !streamSpec.getViewSpecs().isEmpty();
 
             // Create view factories and parent view based on a filter specification
             if (streamSpec instanceof FilterStreamSpecCompiled)
@@ -576,7 +572,7 @@ public class EPStatementStartMethod
                 NamedWindowConsumerView consumerView = processor.addConsumer(namedSpec.getFilterExpressions(), statementContext.getEpStatementHandle(), statementContext.getStatementStopService());
                 eventStreamParentViewable[i] = consumerView;
                 unmaterializedViewChain[i] = services.getViewService().createFactories(i, consumerView.getEventType(), namedSpec.getViewSpecs(), namedSpec.getOptions(), statementContext);
-                isNamedWindow[i] = true;
+                joinAnalysisResult.setNamedWindow(i);
                 eventTypeNamees[i] = namedSpec.getWindowName();
 
                 // Consumers to named windows cannot declare a data window view onto the named window to avoid duplicate remove streams
@@ -676,7 +672,7 @@ public class EPStatementStartMethod
         // Construct a processor for results posted by views and joins, which takes care of aggregation if required.
         // May return null if we don't need to post-process results posted by views or joins.
         ResultSetProcessor resultSetProcessor = ResultSetProcessorFactory.getProcessor(
-                statementSpec, statementContext, typeService, viewResourceDelegate, isUnidirectional);
+                statementSpec, statementContext, typeService, viewResourceDelegate, joinAnalysisResult.getUnidirectionalInd());
 
         // Validate where-clause filter tree, outer join clause and output limit expression
         validateNodes(statementSpec, statementContext, typeService, viewResourceDelegate);
@@ -697,7 +693,7 @@ public class EPStatementStartMethod
         }
         else
         {
-            Pair<Viewable, JoinPreloadMethod> pair = handleJoin(streamNames, streamEventTypes, streamViews, resultSetProcessor, statementSpec.getSelectStreamSelectorEnum(), statementContext, stopCallbacks, isUnidirectional, isUnidirectionalNonDriving, hasChildViews, isNamedWindow);
+            Pair<Viewable, JoinPreloadMethod> pair = handleJoin(streamNames, streamEventTypes, streamViews, resultSetProcessor, statementSpec.getSelectStreamSelectorEnum(), statementContext, stopCallbacks, joinAnalysisResult);
             finalView = pair.getFirst();
             joinPreloadMethod = pair.getSecond();
         }
@@ -753,13 +749,31 @@ public class EPStatementStartMethod
      * <p>
      * If a view is polling or unidirectional, it does not require a view.
      */
-    private boolean[] verifyJoinViews(List<StreamSpecCompiled> streamSpecs)
+    private StreamJoinAnalysisResult verifyJoinViews(List<StreamSpecCompiled> streamSpecs)
             throws ViewProcessingException
     {
-        boolean[] isUnidirectionalNonDriving = new boolean[streamSpecs.size()];
+        StreamJoinAnalysisResult analysisResult = new StreamJoinAnalysisResult(streamSpecs.size());
         if (streamSpecs.size() < 2)
         {
-            return isUnidirectionalNonDriving;
+            return analysisResult;
+        }
+
+        // inspect unidirection indicator and named window flags 
+        for (int i = 0; i < statementSpec.getStreamSpecs().size(); i++)
+        {
+            StreamSpecCompiled streamSpec = statementSpec.getStreamSpecs().get(i);
+            if (streamSpec.getOptions().isUnidirectional())
+            {
+                analysisResult.setUnidirectionalInd(i);
+            }
+            if (!streamSpec.getViewSpecs().isEmpty())
+            {
+                analysisResult.setHasChildViews(i);
+            }
+            if (streamSpec instanceof NamedWindowConsumerStreamSpec)
+            {
+                analysisResult.setNamedWindow(i);
+            }
         }
 
         // count streams that provide data, excluding streams that poll data (DB and method)
@@ -775,22 +789,29 @@ public class EPStatementStartMethod
             countProviderNonpolling++;
         }
 
-        // allow no data window when a stream is alone in providing new data
+        // if there is only one stream providing data, the analysis is done 
         if (countProviderNonpolling == 1)
         {
-            return isUnidirectionalNonDriving;
+            return analysisResult;
         }
+        // there are multiple driving streams, verify the presence of a view for insert/remove stream
 
         // validation of join views works differently for unidirectional as there can be self-joins that don't require a view 
         FilterSpecCompiled unidirectionalFilterSpec = null;
+        FilterSpecCompiled firstFilterSpec = null;
         for (StreamSpecCompiled streamSpec : statementSpec.getStreamSpecs())
         {
-            if ((streamSpec.getOptions().isUnidirectional()) && (streamSpec instanceof FilterStreamSpecCompiled))
+            if (!(streamSpec instanceof FilterStreamSpecCompiled))
             {
-                unidirectionalFilterSpec = ((FilterStreamSpecCompiled) streamSpec).getFilterSpec();
+                continue;
+            }
+            
+            firstFilterSpec = ((FilterStreamSpecCompiled) streamSpec).getFilterSpec();
+            if (streamSpec.getOptions().isUnidirectional())
+            {
+                unidirectionalFilterSpec = firstFilterSpec;
             }
         }
-
 
         // weed out filter and pattern streams that don't have a view in a join
         for (int i = 0; i < statementSpec.getStreamSpecs().size(); i++)
@@ -818,9 +839,9 @@ public class EPStatementStartMethod
             // allow a self-join without a child view, in that the filter spec is the same as the unidirection's stream filter
             if ((unidirectionalFilterSpec != null) &&
                 (streamSpec instanceof FilterStreamSpecCompiled) &&
-                (((FilterStreamSpecCompiled) streamSpec).getFilterSpec().equals(unidirectionalFilterSpec)))
+                (((FilterStreamSpecCompiled) streamSpec).getFilterSpec().equalsTypeAndFilter(unidirectionalFilterSpec)))
             {
-                isUnidirectionalNonDriving[i] = true;
+                analysisResult.setUnidirectionalNonDriving(i);
                 continue;
             }
             if ((streamSpec instanceof FilterStreamSpecCompiled) ||
@@ -830,7 +851,7 @@ public class EPStatementStartMethod
             }
         }
 
-        return isUnidirectionalNonDriving;
+        return analysisResult;
     }
 
     private Pair<Viewable, JoinPreloadMethod> handleJoin(String[] streamNames,
@@ -840,14 +861,11 @@ public class EPStatementStartMethod
                                                          SelectClauseStreamSelectorEnum selectStreamSelectorEnum,
                                                          StatementContext statementContext,
                                                          List<StopCallback> stopCallbacks,
-                                                         boolean[] isUnidirectional,
-                                                         boolean[] isUnidirectionalNonDriving,
-                                                         boolean[] hasChildViews,
-                                                         boolean[] isNamedWindow)
+                                                         StreamJoinAnalysisResult joinAnalysisResult)
             throws ExprValidationException
     {
         // Handle joins
-        final JoinSetComposer composer = statementContext.getJoinSetComposerFactory().makeComposer(statementSpec.getOuterJoinDescList(), statementSpec.getFilterRootNode(), streamTypes, streamNames, streamViews, selectStreamSelectorEnum, isUnidirectional, isUnidirectionalNonDriving, hasChildViews, isNamedWindow);
+        final JoinSetComposer composer = statementContext.getJoinSetComposerFactory().makeComposer(statementSpec.getOuterJoinDescList(), statementSpec.getFilterRootNode(), streamTypes, streamNames, streamViews, selectStreamSelectorEnum, joinAnalysisResult);
 
         stopCallbacks.add(new StopCallback(){
             public void stop()

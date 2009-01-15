@@ -22,6 +22,7 @@ import com.espertech.esper.type.OuterJoinType;
 import com.espertech.esper.util.JavaClassHelper;
 import com.espertech.esper.view.HistoricalEventViewable;
 import com.espertech.esper.view.Viewable;
+import com.espertech.esper.core.StreamJoinAnalysisResult;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -51,10 +52,7 @@ public class JoinSetComposerFactoryImpl implements JoinSetComposerFactory
                                                    String[] streamNames,
                                                    Viewable[] streamViews,
                                                    SelectClauseStreamSelectorEnum selectStreamSelectorEnum,
-                                                   boolean[] isUnidirectional,
-                                                   boolean[] isUnidirectionalNonDriving,
-                                                   boolean[] hasChildViews,
-                                                   boolean[] isNamedWindow)
+                                                   StreamJoinAnalysisResult streamJoinAnalysisResult)
             throws ExprValidationException
     {
         // Determine if there is a historical stream, and what dependencies exist
@@ -83,9 +81,9 @@ public class JoinSetComposerFactoryImpl implements JoinSetComposerFactory
 
         // Determine if any stream has a unidirectional keyword
         int unidirectionalStreamNumber = -1;
-        for (int i = 0; i < isUnidirectional.length; i++)
+        for (int i = 0; i < streamJoinAnalysisResult.getNumStreams(); i++)
         {
-            if (isUnidirectional[i])
+            if (streamJoinAnalysisResult.getUnidirectionalInd()[i])
             {
                 if (unidirectionalStreamNumber != -1)
                 {
@@ -94,7 +92,7 @@ public class JoinSetComposerFactoryImpl implements JoinSetComposerFactory
                 unidirectionalStreamNumber = i;
             }
         }
-        if ((unidirectionalStreamNumber != -1) && (hasChildViews[unidirectionalStreamNumber]))
+        if ((unidirectionalStreamNumber != -1) && (streamJoinAnalysisResult.getHasChildViews()[unidirectionalStreamNumber]))
         {
             throw new ExprValidationException("The unidirectional keyword requires that no views are declared onto the stream");
         }
@@ -194,7 +192,7 @@ public class JoinSetComposerFactoryImpl implements JoinSetComposerFactory
         }
         else
         {
-            return new JoinSetComposerStreamToWinImpl(indexes, unidirectionalStreamNumber, queryStrategies[unidirectionalStreamNumber], isUnidirectionalNonDriving);
+            return new JoinSetComposerStreamToWinImpl(indexes, unidirectionalStreamNumber, queryStrategies[unidirectionalStreamNumber], streamJoinAnalysisResult.getUnidirectionalNonDriving());
         }
     }
 

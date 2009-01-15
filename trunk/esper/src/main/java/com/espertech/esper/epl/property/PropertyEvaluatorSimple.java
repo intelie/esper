@@ -72,4 +72,36 @@ public class PropertyEvaluatorSimple implements PropertyEvaluator
     {
         return fragmentEventType.getFragmentType();
     }
+
+    public String getPropertyName()
+    {
+        return propertyName;
+    }
+
+    public ExprNode getFilter()
+    {
+        return filter;
+    }
+
+    public boolean compareTo(PropertyEvaluator otherEval)
+    {
+        if (!(otherEval instanceof PropertyEvaluatorSimple))
+        {
+            return false;
+        }
+        PropertyEvaluatorSimple other = (PropertyEvaluatorSimple) otherEval;
+        if (!other.getPropertyName().equals(this.getPropertyName()))
+        {
+            return false;
+        }
+        if ((other.getFilter() == null) && (this.getFilter() == null))
+        {
+            return true;
+        }
+        if ((other.getFilter() != null) && (this.getFilter() != null))
+        {
+            return (ExprNodeUtility.deepEquals(other.getFilter(), this.getFilter()));
+        }
+        return false;
+    }
 }

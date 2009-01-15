@@ -38,6 +38,7 @@ public class OHLCMain
         config.addPlugInView("examples", "ohlcbarminute", OHLCBarPlugInViewFactory.class.getName());
 
         EPServiceProvider epService = EPServiceProviderManager.getDefaultProvider(config);
+        epService.initialize();     // Since running in a unit test may use the same engine many times
 
         // set time as an arbitrary start time
         sendTimer(epService, toTime("9:01:50"));

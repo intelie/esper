@@ -20,4 +20,6 @@ public interface PropertyEvaluator
      * @return result event type
      */
     public EventType getFragmentEventType();
+
+    public boolean compareTo(PropertyEvaluator otherFilterPropertyEval);
 }

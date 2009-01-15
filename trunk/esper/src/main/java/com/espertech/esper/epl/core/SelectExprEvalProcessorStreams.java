@@ -228,8 +228,7 @@ public class SelectExprEvalProcessorStreams implements SelectExprProcessor
         for (SelectClauseStreamCompiledSpec element : namedStreams)
         {
             EventType eventTypeStream = typeService.getEventTypes()[element.getStreamNumber()];
-            Class expressionReturnType = eventTypeStream.getUnderlyingType();
-            selPropertyTypes.put(columnNames[count], expressionReturnType);
+            selPropertyTypes.put(columnNames[count], eventTypeStream);
             count++;
         }
         if (isUsingWildcard && typeService.getEventTypes().length > 1)
@@ -237,8 +236,7 @@ public class SelectExprEvalProcessorStreams implements SelectExprProcessor
             for (int i = 0; i < typeService.getEventTypes().length; i++)
             {
                 EventType eventTypeStream = typeService.getEventTypes()[i];
-                Class expressionReturnType = eventTypeStream.getUnderlyingType();
-                selPropertyTypes.put(columnNames[count], expressionReturnType);
+                selPropertyTypes.put(columnNames[count], eventTypeStream);
                 count++;
             }
         }
@@ -296,16 +294,15 @@ public class SelectExprEvalProcessorStreams implements SelectExprProcessor
         }
         for (SelectClauseStreamCompiledSpec element : namedStreams)
         {
-            Object value = eventsPerStream[element.getStreamNumber()].getUnderlying();
-            props.put(columnNames[count], value);
+            EventBean event = eventsPerStream[element.getStreamNumber()];
+            props.put(columnNames[count], event);
             count++;
         }
         if (isUsingWildcard && eventsPerStream.length > 1)
         {
             for (EventBean anEventsPerStream : eventsPerStream)
             {
-                Object value = anEventsPerStream.getUnderlying();
-                props.put(columnNames[count], value);
+                props.put(columnNames[count], anEventsPerStream);
                 count++;
             }
         }

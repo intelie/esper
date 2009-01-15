@@ -1373,7 +1373,7 @@ such event metadata and event data into one of the built-in event representation
 
         <para>
 			To extract information from a coarse-grained event or to perform bulk operations on the rows of the property graph in an event, Esper provides a convenient syntax: 
-			When specifying a filter expression in a pattern or in a <literal>select</literal> clause, it may contain a property selection syntax, as further described in <xref linkend="epl-from-clause-filter-propertyselect"/>.
+			When specifying a filter expression in a pattern or in a <literal>select</literal> clause, it may contain a property selection syntax, as further described in <xref linkend="epl-propertyselect"/>.
 		</para>
 
 	</sect1>

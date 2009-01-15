@@ -12,61 +12,6 @@ public class TestFilterPropertySimple extends TestCase
     private EPServiceProvider epService;
     private SupportUpdateListener listener;
 
-    /**
-     *
-     * An order document has multiple order items and a list of books and musicCDs.
-     * The product id correlates, based on the product type, to either book or musicCD.
-     *
-     * Syntax:
-     *      ==> Simple property select: from property_name [as alias]
-     *              from books                           // means take all books, one row per book
-     *              from books[0].notes                 // take all notes from first book
-     *              from [cds]                          // alternative syntax
-     *              from [cds:*]                        // alternative syntax
-     *              from books as mybook                // apply alias mybook
-     *     
-     *      ==> Property sub-select: from [property_name: column, column]
-     *              from [cds: cdid, notes] as cd       // for each musiccd select cdid and notes as cd
-     *              from [cds: OrderEvent.id, cdid, notes] as cd       // columns can contain parent columns
-     *              from [cds: OrderEvent.*, cdid as idcd, notes] as cd      // columns can use wildcard and alias
-     *              from [cds][notes: *.*, notes] as cd      // *.* includes all parent records
-     *      ==> Property-in-property select:
-     *              from [books][notes] as booknotes         // means take all books, and for each book take all notes
-     * 
-     *      ==> Parenthesis means union, i.e.:
-     *              from (books, cds) as prop12        // means all prop1 and prop2 properties which must have a common supertype
-     *              from (books, cds)[notes] as notes   // means all names properties for prop1 and prop2
-     *              from ([books: bookid][notes], [cds:cdid][notes]) as notes    // means take all books notes and all cd notes, equivalent to above
-     *
-     * Examples:
-     *   (1) Give me the notes for the first order item
-     *         on OrderEvent select * from orderitems[0] as item0, (books, cds) as product
-     *         where item0.productId = products.id
-     *       => Populates two properties: "item0" with the order detail, "product" with the product detail
-     *       => Note that this is a form of duck-typing, as we only know that the product has an id but don't know what the product actually is
-     *
-     * Lets say we want to book id and each from-entry as an individual event:
-     *   on OrderEvent select * from ([books as book],[cds as cd]) [notes.note as note]
-     *      => Returns a line per note for each book
-     *      => Wrapper with OrderEvent as the underlying event and that contains "book" and that contains "note" as a property
-     *              { book =
-     *                  { id=10045,
-     *                    note= {...}}}
-     *
-     *   on OrderEvent select * from [book[0].notes as note]
-     *      => Returns a line per "note"
-     *      => Wrapper with OrderEvent as the underlying event and that contains "note" as a property
-     *              { note= {...}}}
-     *
-     *   on OrderEvent select * from [book as book][notes.note as note] as notes, [orderdetail.items] as item
-     *                          where notes.book.id = items.id
-     *      => Returns a line per "note"
-     *      => Wrapper with OrderEvent as the underlying event and that contains "note" as a property
-     *              { note= {...}}}
-     *
-      */
-
-
     public void setUp()
     {
         epService = EPServiceProviderManager.getDefaultProvider(SupportConfigFactory.getConfiguration());
@@ -89,7 +34,7 @@ public class TestFilterPropertySimple extends TestCase
 
         epService.getEPRuntime().sendEvent(makeEventOne());
         assertEquals(3, listener.getLastNewData().length);
-        ArrayAssertionUtil.assertPropsPerRow(listener.getLastNewData(), fields, new Object[][] {{"PO200901", "10020", "Ender's Game", 10}, {"PO200901", "10020", "Ender's Game", 30}, {"PO200901", "10021", "Foundation 1", 25}});
+        ArrayAssertionUtil.assertPropsPerRow(listener.getLastNewData(), fields, new Object[][] {{"PO200901", "10020", "Enders Game", 10}, {"PO200901", "10020", "Enders Game", 30}, {"PO200901", "10021", "Foundation 1", 25}});
         listener.reset();
 
         epService.getEPRuntime().sendEvent(makeEventTwo());

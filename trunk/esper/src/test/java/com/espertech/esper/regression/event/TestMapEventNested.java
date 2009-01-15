@@ -213,7 +213,7 @@ public class TestMapEventNested extends TestCase
         }
         catch (EPStatementException ex)
         {
-            assertEquals("Error starting view: Property named 'suba' is not valid in any stream [select suba from Sub1Event]",ex.getMessage());
+            assertEquals("Error starting view: Property named 'suba' is not valid in any stream (did you mean 'sub1'?) [select suba from Sub1Event]",ex.getMessage());
         }
 
         // try supertype not exists
