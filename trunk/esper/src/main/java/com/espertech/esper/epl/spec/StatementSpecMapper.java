@@ -543,6 +543,12 @@ public class StatementSpecMapper
 
     private static void unmapSelect(SelectClauseSpecRaw selectClauseSpec, SelectClauseStreamSelectorEnum selectStreamSelectorEnum, EPStatementObjectModel model, StatementSpecUnMapContext unmapContext)
     {
+        SelectClause clause = unmapSelectInternal(selectClauseSpec, selectStreamSelectorEnum, unmapContext);
+        model.setSelectClause(clause);
+    }
+
+    private static SelectClause unmapSelectInternal(SelectClauseSpecRaw selectClauseSpec, SelectClauseStreamSelectorEnum selectStreamSelectorEnum, StatementSpecUnMapContext unmapContext)
+    {
         SelectClause clause = SelectClause.create();
         clause.setStreamSelector(SelectClauseStreamSelectorEnum.mapFromSODA(selectStreamSelectorEnum));
         for (SelectClauseElementRaw raw : selectClauseSpec.getSelectExprList())
@@ -567,7 +573,7 @@ public class StatementSpecMapper
                 throw new IllegalStateException("Unexpected select clause element typed " + raw.getClass().getName());
             }
         }
-        model.setSelectClause(clause);
+        return clause;
     }
 
     private static void unmapInsertInto(InsertIntoDesc insertIntoDesc, EPStatementObjectModel model)
@@ -642,10 +648,14 @@ public class StatementSpecMapper
         {
             return;
         }
-        SelectClauseSpecRaw spec = new SelectClauseSpecRaw();
+        SelectClauseSpecRaw spec = mapSelectRaw(selectClause, mapContext);
         raw.setSelectStreamDirEnum(SelectClauseStreamSelectorEnum.mapFromSODA(selectClause.getStreamSelector()));
         raw.setSelectClauseSpec(spec);
+    }
 
+    private static SelectClauseSpecRaw mapSelectRaw(SelectClause selectClause, StatementSpecMapContext mapContext)
+    {
+        SelectClauseSpecRaw spec = new SelectClauseSpecRaw();
         for (SelectClauseElement element : selectClause.getSelectList())
         {
             if (element instanceof SelectClauseWildcard)
@@ -667,15 +677,7 @@ public class StatementSpecMapper
                 spec.add(rawElement);
             }
         }
-    }
-
-    private static Expression unmapExpressionDeepOptional(ExprNode exprNode, StatementSpecUnMapContext unmapContext)
-    {
-        if (exprNode == null)
-        {
-            return null;
-        }
-        return unmapExpressionDeep(exprNode, unmapContext);
+        return spec;
     }
 
     private static Expression unmapExpressionDeep(ExprNode exprNode, StatementSpecUnMapContext unmapContext)
@@ -1553,7 +1555,29 @@ public class StatementSpecMapper
             expr.add(exprNode);
         }
 
-        return new FilterSpecRaw(filter.getEventTypeName(), expr, null); // TODO
+        PropertyEvalSpec evalSpec = null;
+        if (filter.getOptionalPropertySelects() != null)
+        {
+            evalSpec = new PropertyEvalSpec();
+            for (PropertySelect propertySelect : filter.getOptionalPropertySelects())
+            {
+                SelectClauseSpecRaw selectSpec = null;
+                if (propertySelect.getSelectClause() != null)
+                {
+                    selectSpec = mapSelectRaw(propertySelect.getSelectClause(), mapContext);
+                }
+
+                ExprNode exprNodeWhere = null;
+                if (propertySelect.getWhereClause() != null)
+                {
+                    exprNodeWhere = mapExpressionDeep(propertySelect.getWhereClause(), mapContext);
+                }
+
+                evalSpec.add(new PropertyEvalAtom(propertySelect.getPropertyName(), propertySelect.getPropertyAsName(), selectSpec, exprNodeWhere));
+            }
+        }
+
+        return new FilterSpecRaw(filter.getEventTypeName(), expr, evalSpec);
     }
 
     private static Filter unmapFilter(FilterSpecRaw filter, StatementSpecUnMapContext unmapContext)
@@ -1573,6 +1597,29 @@ public class StatementSpecMapper
             expr = unmapExpressionDeep(filter.getFilterExpressions().get(0), unmapContext);
         }
 
-        return new Filter(filter.getEventTypeName(), expr);
+        Filter filterDef = new Filter(filter.getEventTypeName(), expr);
+
+        if (filter.getOptionalPropertyEvalSpec() != null)
+        {
+            List<PropertySelect> propertySelects = new ArrayList<PropertySelect>();
+            for (PropertyEvalAtom atom : filter.getOptionalPropertyEvalSpec().getAtoms())
+            {
+                SelectClause selectClause = null;
+                if (atom.getOptionalSelectClause() != null)
+                {
+                    selectClause = unmapSelectInternal(atom.getOptionalSelectClause(), SelectClauseStreamSelectorEnum.ISTREAM_ONLY, unmapContext);
+                }
+
+                Expression filterExpression = null;
+                if (atom.getOptionalWhereClause() != null)
+                {
+                    filterExpression = unmapExpressionDeep(atom.getOptionalWhereClause(), unmapContext);
+                }
+
+                propertySelects.add(new PropertySelect(atom.getPropertyName(), atom.getOptionalAsName(), selectClause, filterExpression));
+            }
+            filterDef.setOptionalPropertySelects(propertySelects);
+        }
+        return filterDef;
     }
 }

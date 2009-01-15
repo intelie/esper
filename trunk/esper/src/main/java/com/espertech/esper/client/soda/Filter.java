@@ -10,6 +10,7 @@ package com.espertech.esper.client.soda;
 
 import java.io.Serializable;
 import java.io.StringWriter;
+import java.util.List;
 
 /**
  * Filter defines the event type to be filtered for, and an optional expression that returns true if
@@ -21,6 +22,7 @@ public class Filter implements Serializable
 
     private String eventTypeName;
     private Expression filter;
+    private List<PropertySelect> optionalPropertySelects;
 
     /**
      * Creates a filter to the given named event type.
@@ -99,6 +101,16 @@ public class Filter implements Serializable
         this.filter = filter;
     }
 
+    public List<PropertySelect> getOptionalPropertySelects()
+    {
+        return optionalPropertySelects;
+    }
+
+    public void setOptionalPropertySelects(List<PropertySelect> optionalPropertySelects)
+    {
+        this.optionalPropertySelects = optionalPropertySelects;
+    }
+
     /**
      * Returns a textual representation of the filter.
      * @param writer to output to
@@ -111,6 +123,15 @@ public class Filter implements Serializable
             writer.write('(');
             filter.toEPL(writer);
             writer.write(')');
+        }
+        if (optionalPropertySelects != null)
+        {
+            for (PropertySelect propertySelect : optionalPropertySelects)
+            {
+                writer.write('[');
+                propertySelect.toEPL(writer);
+                writer.write(']');
+            }
         }
     }
 }

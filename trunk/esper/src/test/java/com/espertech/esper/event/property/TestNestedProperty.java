@@ -43,8 +43,8 @@ public class TestNestedProperty extends TestCase
 
     public void testGetPropertyType()
     {
-        assertEquals(String.class, nested[0].getPropertyType((BeanEventType)event.getEventType()));
-        assertEquals(String.class, nested[1].getPropertyType((BeanEventType)event.getEventType()));
+        assertEquals(String.class, nested[0].getPropertyType((BeanEventType)event.getEventType(), SupportEventAdapterService.getService()));
+        assertEquals(String.class, nested[1].getPropertyType((BeanEventType)event.getEventType(), SupportEventAdapterService.getService()));
     }
 
     private NestedProperty makeProperty(String[] propertyNames)
@@ -54,6 +54,6 @@ public class TestNestedProperty extends TestCase
         {
             properties.add(new SimpleProperty(prop));
         }
-        return new NestedProperty(properties, SupportEventAdapterService.getService());
+        return new NestedProperty(properties);
     }
 }

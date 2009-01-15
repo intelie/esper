@@ -39,7 +39,7 @@ public class TestSimpleProperty extends TestCase
 
     public void testGetPropertyType()
     {
-        assertEquals(String.class, prop.getPropertyType(eventType));
+        assertEquals(String.class, prop.getPropertyType(eventType, SupportEventAdapterService.getService()));
 
         assertNull(invalidDummy.getGetter(eventType, SupportEventAdapterService.getService()));
         assertNull(invalidPropMap.getGetter(eventType, SupportEventAdapterService.getService()));

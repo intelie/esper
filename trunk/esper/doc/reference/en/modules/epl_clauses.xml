@@ -676,8 +676,24 @@ select default.MyEvent.myProperty from MyEvent</programlisting>
 				For filter-based event streams, the event stream definition <emphasis>stream_def</emphasis> as shown in the <literal>from</literal> clause syntax consists of an event type, optional filter expressions and an optional list of views that derive data from a stream. The syntax for a filter-based event stream is as below:
 			</para>
 	
-			<synopsis><emphasis>event_type</emphasis> [(<emphasis>filter_criteria</emphasis>)] [.<emphasis>view_spec</emphasis>] [.<emphasis>view_spec</emphasis>] [...]</synopsis>
+			<synopsis><emphasis>event_stream_name</emphasis> [(<emphasis>filter_criteria</emphasis>)] [<emphasis>property_selection</emphasis>] [.<emphasis>view_spec</emphasis>] [.<emphasis>view_spec</emphasis>] [...]</synopsis>
 	
+			<para>
+			  The <emphasis>event_stream_name</emphasis> is either the name of an event type or name of an event stream populated by an <literal>insert into</literal> statement.
+			</para>
+			
+			<para>
+			  The <emphasis>filter_criteria</emphasis> is optional and consists of a list of expressions filtering the events of the event stream, within parenthesis after the event stream name.
+			</para>
+
+			<para>
+			  The <emphasis>property_selection</emphasis> is optional and is for use with coarse-grained events that have properties that are themselves one or more events, see <xref linkend="epl-propertyselect"/> for the synopsis and examples.
+			</para>
+			
+			<para>
+			  The <emphasis>view_spec</emphasis> are optional view specifications, which are combinable definitions for retaining events and for deriving information from events.
+			</para>
+
 			<para>
 				The following EPL statement shows event type, filter criteria and views combined in one statement. It selects all event properties for the last 100 events of IBM stock ticks for volume. In the example, the event type is the fully qualified Java class name <literal>org.esper.example.StockTick</literal>. The expression filters for events where the property <literal>symbol</literal> has a value of "IBM". The optional view specifications for deriving data from the StockTick events are a length window and a view for computing statistics on volume. The name for the event stream is "volumeStats".
 			</para>
@@ -689,7 +705,7 @@ select default.MyEvent.myProperty from MyEvent</programlisting>
 			</para>
 
 			<sect3 id="epl-filter-event-type" >
-			   <title>Specifying an event type</title>
+			   <title>Specifying an Event Type</title>
 
 				<para>
 					The simplest form of filter is a filter for events of a given type without any conditions on the event property values. This filter matches any event of that type regardless of the event's properties. The example below is such a filter. 
@@ -708,7 +724,7 @@ select default.MyEvent.myProperty from MyEvent</programlisting>
 			</sect3>
 		
 			<sect3 id="epl-filter-criteria" >
-			   <title>Specifying filter criteria</title>
+			   <title>Specifying Filter Criteria</title>
 				<para>
 					The filtering criteria to filter for events with certain event property values are placed within parenthesis after the event type name:
 				 </para>
@@ -871,7 +887,6 @@ select * from RfidEvent(zone=1 and category=10)]]></programlisting>
 					</listitem>
 				</itemizedlist>
 			</sect3>
-
 		</sect2>
 		
         <sect2 id="epl-from-clause-patterns" >
@@ -3637,5 +3652,179 @@ having sum(price) > var_threshold]]></programlisting>
 			</para>
 		</sect2>
 
+		<sect2 id="epl-propertyselect">
+           <title>Property Selection</title>
+           
+			<para>
+				A filter expression in a pattern or a <literal>select</literal> clause or sub-select may contain an optional property selection syntax, for use when event contain properties that are themselves events. This section provides the synopsis and examples.
+			</para>
+
+			<para>
+				This syntax is for use when application events are coarse-grained structures and you need to perform bulk operations on the rows of the property graph in an event.
+			</para>
+	
+			<para>
+				To review, in the <literal>from</literal> clause a <emphasis>property_selection</emphasis> may appears after the event stream name and filter criteria, and before any view specifications:
+			</para>
+			<synopsis><emphasis>event_stream_name</emphasis> [(<emphasis>filter_criteria</emphasis>)] [<emphasis>property_selection</emphasis>] [.<emphasis>view_spec</emphasis>] [...]</synopsis>
+
+			<para>
+				The synopsis for <emphasis>property_selection</emphasis> is as follows:
+			</para>
+			<synopsis>[select <emphasis>select_expressions</emphasis> from] <emphasis>property_expression</emphasis> [where <emphasis>filter_expression</emphasis>] [<emphasis>property_selection</emphasis>] [...]</synopsis>
+
+			<para>
+				The <literal>select</literal> clause and <emphasis>select_expressions</emphasis> are optional and may be used to select specific properties.
+			</para>
+
+			<para>
+				The <emphasis>property_expression</emphasis> is required and must be a fragment, i.e. a property that can itself be represented as an event by the underlying event representation, i.e. not a simple value.
+			</para>
+
+			<para>
+				The <literal>where</literal> clause and <emphasis>filter_expression</emphasis> is optional and may be used to filter out properties.
+			</para>
+
+			<para>
+				As an example event, consider a media order. A media order consists of order items as well as product decriptions. A media order event can be represented as an object model (POJO event representation), or a structure of nested Maps (Map event representation) or an XML document (XML DOM or Axiom event representation) or other custom plug-in event representation.
+			</para>
+	
+			<para>
+				To illustrate, the below shows a sample media order event in XML event representation. Also, an XML event type can optionallu be strongly-typed with an explicit XML XSD schema that we don't show here. Note that Map and POJO representation can be considered equivalent for the purpose of this example:
+			</para>
+	
+			<para>
+				Let us now assume that we have declared the event type <literal>MediaOrder</literal> as being represented by the root node <literal>&lt;mediaorder&gt;</literal> of such XML snip:
+			</para>
+
+		<programlisting><![CDATA[<mediaorder>
+  <orderId>PO200901</orderId>
+  <items>
+    <item>
+      <itemId>100001</itemId>
+      <productId>B001</productId>
+      <amount>10</amount>
+      <price>11.95</price>
+    </item>
+  </items>
+  <books>
+    <book>
+      <bookId>B001</bookId>
+      <author>Orson Scott Card</author>
+      <review>
+        <comment>best book ever</comment>
+        <reviewId>1</reviewId>
+      </review>
+    </book>
+    <book>
+      <bookId>B002</bookId>
+      <author>Isaac Asimov</author>
+    </book>
+  <books>
+</mediaorder>]]></programlisting>
+
+			<para>
+				To review property expressions for nested properties, this example query returns the order id and item id of the first order item:
+			</para>
+			<programlisting><![CDATA[select orderDetail.orderId, items.item[0].itemId from MediaOrder]]></programlisting>
+	
+			<para>
+				The next query utilizes the property selection syntax to return each book:
+			</para>
+			<programlisting><![CDATA[select * from MediaOrder[books.book]]]></programlisting>
+	
+			<para>
+				The result of the above query is one event per book out of all books.
+			</para>
+	
+			<para>
+				Note that as the engine delivers to listeners multiple results in one call, therefore listeners to the above statement can expect a single invocation passing all book events.
+			</para>
+			
+			<para>
+				 To better illustrate the position of the property selection syntax in an overall statement, consider the next query:
+			</para>
+			<programlisting><![CDATA[select * from MediaOrder(orderId='PO200901')[books.book]]]></programlisting>
+	
+			<para>
+				The above query the returns each book only for a orders with a given order id.
+			</para>
+
+			<para>
+				A view specification occurs after the property selection: 
+			</para>
+			<programlisting><![CDATA[select count(*) from MediaOrder[books.book].std:unique(bookId)]]></programlisting>
+			
+			<para>
+				The sample above counts each book unique by book id.
+			</para>
+	
+			<para>
+				Propery selection can be staggered like this: 
+			</para>
+			<programlisting><![CDATA[select * from MediaOrder[books.book][review]]]></programlisting>
+	
+			<para>
+				Listeners to the query above receive a row for each review of each book. 
+			</para>
+			
+			<para>
+				This query joins items to books where book id matches the product id:
+			</para>
+			<programlisting><![CDATA[select * from MediaOrder[books.book], MediaOrder[items.item] where productId = bookId]]></programlisting>
+	
+			<para>
+				Since the property selection syntax is part of the filter expression, it may occur in patterns and sub-selects, for example:
+			</para>
+			<programlisting><![CDATA[select * from pattern [c=Cancel -> o=MediaOrder(orderId = c.orderId)[books.book]]]></programlisting>
+		
+			<para>
+				When used in a pattern the property selection returns an array of events for each match, similar to the match-until clause in patterns. The above statement returns, in the <literal>c</literal> tag, the
+				array of book events.
+			</para>
+
+			<sect3 id="epl-propertyselect-where" revision="1">
+				<title>Select Clause</title>
+				<para>
+					The optional <literal>select</literal> clause serves to select properties or computed values. The select clause for each property selection 
+					can only query properties of the current and 
+				</para>
+	
+				<para>
+					The next query uses the <literal>select</literal> clause to keep the book id for each review:
+				</para>
+				<programlisting><![CDATA[select * from MediaOrder[select bookId from books.book ][review]]]></programlisting>
+		
+				<para>
+					Listeners to the statement above receive an event for each review of each book and also receive the <literal>bookId</literal> of the book.
+				</para>
+			</sect3>
+		
+			<sect3 id="epl-propertyselect-where" revision="1">
+				<title>Where Clause</title>
+				<para>
+					An optional <literal>where</literal> clause may be used to filter out properties at the same level the where-clause occurs.
+				</para>
+				
+				<para>
+					This query demonstrates the <literal>where</literal> clause:
+				</para>
+				<programlisting><![CDATA[select * from MediaOrder[books.book where author = 'Heinlein'][review]]]></programlisting>
+		
+				<para>
+					The above statement returns the reviews rows of each book in which the author is the given value. The where-clause filters out books that don't meet the condition.
+				</para>
+			</sect3>
+
+
+			<para>
+				
+			</para>
+			<programlisting><![CDATA[select * from MediaOrder[books.book where author = 'Heinlein'][review]]]></programlisting>
+	
+			<para>
+				The above statement returns the reviews rows of each book in which the author is the given value. The where-clause filters each book.
+			</para>
+		</sect2>		
 	</sect1>
 </chapter>

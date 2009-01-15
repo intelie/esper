@@ -53,7 +53,7 @@ public class DynamicSimpleProperty extends PropertyBase implements DynamicProper
         return new String[] {this.getPropertyNameAtomic()};
     }
 
-    public Class getPropertyType(BeanEventType eventType)
+    public Class getPropertyType(BeanEventType eventType, EventAdapterService eventAdapterService)
     {
         return Object.class;
     }

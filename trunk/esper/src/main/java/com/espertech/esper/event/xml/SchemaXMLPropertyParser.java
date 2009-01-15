@@ -80,7 +80,7 @@ public class SchemaXMLPropertyParser
         }
 
         Tree ast = PropertyParser.parse(propertyName);        
-        Property property = PropertyParser.parse(propertyName, eventAdapterService, false);
+        Property property = PropertyParser.parse(propertyName, false);
         boolean isDynamic = property.isDynamic();
 
         SchemaElementComplex rootComplexElement = SchemaUtil.findRootElement(schemaModel, namespace, rootElementName);

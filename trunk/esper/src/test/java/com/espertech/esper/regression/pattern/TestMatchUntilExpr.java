@@ -315,8 +315,6 @@ public class TestMatchUntilExpr extends TestCase implements SupportBeanConstants
         EPServiceProvider epService = EPServiceProviderManager.getDefaultProvider(config);
         epService.initialize();
 
-        /*
-        TODO
         String stmt ="select * from pattern [a=A until b=B -> c=C(id = ('C' || a[0].id || a[1].id || b.id))]";
         SupportUpdateListener listener = new SupportUpdateListener();
         EPStatement statement = epService.getEPAdministrator().createEPL(stmt);
@@ -342,22 +340,84 @@ public class TestMatchUntilExpr extends TestCase implements SupportBeanConstants
         assertNull(event.get("a[2]"));
         assertSame(eventB1, event.get("b"));
         assertSame(eventC1, event.get("c"));
-
         statement.destroy();
-         */
-        String stmt ="select * from pattern [a=A until b=B -> c=SupportBean(string = a[1].id)]";
-        SupportUpdateListener listener = new SupportUpdateListener();
-        EPStatement statement = epService.getEPAdministrator().createEPL(stmt);
+
+        // Test equals-optimization with array event
+        stmt ="select * from pattern [a=A until b=B -> c=SupportBean(string = a[1].id)]";
+        listener = new SupportUpdateListener();
+        statement = epService.getEPAdministrator().createEPL(stmt);
         statement.addListener(listener);
 
         epService.getEPRuntime().sendEvent(new SupportBean_A("A1"));
         epService.getEPRuntime().sendEvent(new SupportBean_A("A2"));
         epService.getEPRuntime().sendEvent(new SupportBean_B("B1"));
-        epService.getEPRuntime().sendEvent(new SupportBean("A2", 10));
+
+        epService.getEPRuntime().sendEvent(new SupportBean("A3", 20));
         assertFalse(listener.isInvoked());
 
-        EventBean event = listener.assertOneGetNewAndReset();
+        epService.getEPRuntime().sendEvent(new SupportBean("A2", 10));
+        event = listener.assertOneGetNewAndReset();
         assertEquals(10, event.get("c.intPrimitive"));
+        statement.destroy();
+
+        // Test in-optimization
+        stmt ="select * from pattern [a=A until b=B -> c=SupportBean(string in(a[2].id))]";
+        listener = new SupportUpdateListener();
+        statement = epService.getEPAdministrator().createEPL(stmt);
+        statement.addListener(listener);
+
+        epService.getEPRuntime().sendEvent(new SupportBean_A("A1"));
+        epService.getEPRuntime().sendEvent(new SupportBean_A("A2"));
+        epService.getEPRuntime().sendEvent(new SupportBean_A("A3"));
+        epService.getEPRuntime().sendEvent(new SupportBean_B("B1"));
+
+        epService.getEPRuntime().sendEvent(new SupportBean("A2", 20));
+        assertFalse(listener.isInvoked());
+
+        epService.getEPRuntime().sendEvent(new SupportBean("A3", 5));
+        event = listener.assertOneGetNewAndReset();
+        assertEquals(5, event.get("c.intPrimitive"));
+        statement.destroy();
+
+        // Test not-in-optimization
+        stmt ="select * from pattern [a=A until b=B -> c=SupportBean(string!=a[0].id and string!=a[1].id and string!=a[2].id)]";
+        listener = new SupportUpdateListener();
+        statement = epService.getEPAdministrator().createEPL(stmt);
+        statement.addListener(listener);
+
+        epService.getEPRuntime().sendEvent(new SupportBean_A("A1"));
+        epService.getEPRuntime().sendEvent(new SupportBean_A("A2"));
+        epService.getEPRuntime().sendEvent(new SupportBean_A("A3"));
+        epService.getEPRuntime().sendEvent(new SupportBean_B("B1"));
+
+        epService.getEPRuntime().sendEvent(new SupportBean("A2", 20));
+        assertFalse(listener.isInvoked());
+        epService.getEPRuntime().sendEvent(new SupportBean("A1", 20));
+        assertFalse(listener.isInvoked());
+
+        epService.getEPRuntime().sendEvent(new SupportBean("A6", 5));
+        event = listener.assertOneGetNewAndReset();
+        assertEquals(5, event.get("c.intPrimitive"));
+        statement.destroy();
+
+        // Test range-optimization
+        stmt ="select * from pattern [a=SupportBean(string like 'A%') until b=SupportBean(string like 'B%') -> c=SupportBean(intPrimitive between a[0].intPrimitive and a[1].intPrimitive)]";
+        listener = new SupportUpdateListener();
+        statement = epService.getEPAdministrator().createEPL(stmt);
+        statement.addListener(listener);
+
+        epService.getEPRuntime().sendEvent(new SupportBean("A1", 5));
+        epService.getEPRuntime().sendEvent(new SupportBean("A2", 8));
+        epService.getEPRuntime().sendEvent(new SupportBean("B1", -1));
+
+        epService.getEPRuntime().sendEvent(new SupportBean("E1", 20));
+        assertFalse(listener.isInvoked());
+        epService.getEPRuntime().sendEvent(new SupportBean("E2", 3));
+        assertFalse(listener.isInvoked());
+
+        epService.getEPRuntime().sendEvent(new SupportBean("E3", 5));
+        event = listener.assertOneGetNewAndReset();
+        assertEquals(5, event.get("c.intPrimitive"));
     }
 
     public void testInvalid()

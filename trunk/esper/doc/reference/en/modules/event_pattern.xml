@@ -455,7 +455,7 @@ RfidEvent(zone=1 and category=10)]]></programlisting>
 		</para>
 		
 		<para>
-			For more information on filters please see <xref linkend="epl-from-clause-filter"/>.
+			For more information on filters please see <xref linkend="epl-from-clause-filter"/>. Property selection on filters in patterns is further described in <xref linkend="epl-propertyselect"/>.
 		</para>
 
 		<para>

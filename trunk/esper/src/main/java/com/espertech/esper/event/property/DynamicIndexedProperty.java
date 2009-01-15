@@ -56,7 +56,7 @@ public class DynamicIndexedProperty extends PropertyBase implements DynamicPrope
         return new DynamicIndexedPropertyGetter(propertyNameAtomic, index, eventAdapterService);
     }
 
-    public Class getPropertyType(BeanEventType eventType)
+    public Class getPropertyType(BeanEventType eventType, EventAdapterService eventAdapterService)
     {
         return Object.class;
     }

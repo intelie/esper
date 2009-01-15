@@ -134,8 +134,20 @@ public class FromClause implements Serializable
      */
     public void toEPL(StringWriter writer)
     {
+        toEPLOptions(writer, true);
+    }
+
+    /**
+     * Renders the from-clause in textual representation.
+     * @param writer to output to
+     */
+    protected void toEPLOptions(StringWriter writer, boolean includeFrom)
+    {
         String delimiter = "";
-        writer.write("from ");
+        if (includeFrom)
+        {
+            writer.write("from ");
+        }
 
         if (outerJoinQualifiers.size() == 0)
         {
@@ -187,7 +199,6 @@ public class FromClause implements Serializable
             }
         }
     }
-
     /**
      * Returns the outer join descriptors, if this is an outer join, or an empty list if
      * none of the streams are outer joined.

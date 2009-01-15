@@ -30,7 +30,7 @@ public interface Property
      * @param eventType is the event type representing the JavaBean
      * @return property type class
      */
-    public Class getPropertyType(BeanEventType eventType);
+    public Class getPropertyType(BeanEventType eventType, EventAdapterService eventAdapterService);
 
     /**
      * Returns value getter for the property of an event of the given event type.

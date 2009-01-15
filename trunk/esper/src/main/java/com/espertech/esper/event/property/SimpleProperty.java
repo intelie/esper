@@ -57,7 +57,7 @@ public class SimpleProperty extends PropertyBase
         return eventType.getGetter(propertyNameAtomic);
     }
 
-    public Class getPropertyType(BeanEventType eventType)
+    public Class getPropertyType(BeanEventType eventType, EventAdapterService eventAdapterService)
     {
         InternalEventPropDescriptor propertyDesc = eventType.getSimpleProperty(propertyNameAtomic);
         if (propertyDesc == null)

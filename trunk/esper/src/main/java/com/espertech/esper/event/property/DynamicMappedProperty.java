@@ -56,7 +56,7 @@ public class DynamicMappedProperty extends PropertyBase implements DynamicProper
         return new DynamicMappedPropertyGetter(propertyNameAtomic, key, eventAdapterService);
     }
 
-    public Class getPropertyType(BeanEventType eventType)
+    public Class getPropertyType(BeanEventType eventType, EventAdapterService eventAdapterService)
     {
         return Object.class;
     }

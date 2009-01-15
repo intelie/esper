@@ -17,7 +17,6 @@ import com.espertech.esper.event.bean.NestedPropertyGetter;
 import com.espertech.esper.event.map.MapEventType;
 import com.espertech.esper.event.map.MapNestedPropertyGetter;
 import com.espertech.esper.event.xml.*;
-import com.espertech.esper.event.xml.DOMNestedPropertyGetter;
 
 import java.io.StringWriter;
 import java.util.*;
@@ -36,17 +35,14 @@ import java.util.*;
 public class NestedProperty implements Property
 {
     private List<Property> properties;
-    private EventAdapterService eventAdapterService;
 
     /**
      * Ctor.
      * @param properties is the list of Property instances representing each nesting level
-     * @param eventAdapterService is the cache and factory for event bean types and event wrappers
      */
-    public NestedProperty(List<Property> properties, EventAdapterService eventAdapterService)
+    public NestedProperty(List<Property> properties)
     {
         this.properties = properties;
-        this.eventAdapterService = eventAdapterService;
     }
 
     /**
@@ -87,7 +83,7 @@ public class NestedProperty implements Property
 
             if (it.hasNext())
             {
-                Class clazz = property.getPropertyType(eventType);
+                Class clazz = property.getPropertyType(eventType, eventAdapterService);
                 if (clazz == null)
                 {
                     // if the property is not valid, return null
@@ -107,18 +103,18 @@ public class NestedProperty implements Property
             getters.add(getter);
         }
 
-        Class finalPropertyType = lastProperty.getPropertyType(eventType);
+        Class finalPropertyType = lastProperty.getPropertyType(eventType, eventAdapterService);
         return new NestedPropertyGetter(getters, eventAdapterService,finalPropertyType);
     }
 
-    public Class getPropertyType(BeanEventType eventType)
+    public Class getPropertyType(BeanEventType eventType, EventAdapterService eventAdapterService)
     {
         Class result = null;
 
         for (Iterator<Property> it = properties.iterator(); it.hasNext();)
         {
             Property property = it.next();
-            result = property.getPropertyType(eventType);
+            result = property.getPropertyType(eventType, eventAdapterService);
 
             if (result == null)
             {

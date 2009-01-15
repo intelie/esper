@@ -6,6 +6,7 @@ import com.espertech.esper.client.FragmentEventType;
 import com.espertech.esper.epl.core.*;
 import com.espertech.esper.epl.expression.ExprValidationException;
 import com.espertech.esper.epl.expression.ExprNode;
+import com.espertech.esper.epl.expression.ExprNodeUtility;
 import com.espertech.esper.epl.spec.*;
 import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.schedule.TimeProvider;
@@ -120,6 +121,12 @@ public class PropertyEvaluatorFactory
                             resultName = exprCompiled.toExpressionString();
                         }
                         cumulativeSelectClause.add(new SelectClauseExprCompiledSpec(exprCompiled, resultName));
+
+                        String isMinimal = ExprNodeUtility.isMinimalExpression(exprCompiled);
+                        if (isMinimal != null)
+                        {
+                            throw new ExprValidationException("Expression in a property-selection may not utilize " + isMinimal);
+                        }
                     }
                     else if (raw instanceof SelectClauseElementWildcard)
                     {

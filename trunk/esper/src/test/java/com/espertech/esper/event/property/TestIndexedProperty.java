@@ -45,11 +45,11 @@ public class TestIndexedProperty extends TestCase
         Class[] expected = new Class[] {int.class, int.class, int.class, int.class};
         for (int i = 0; i < indexed.length; i++)
         {
-            assertEquals(expected[i], indexed[i].getPropertyType(eventType));
+            assertEquals(expected[i], indexed[i].getPropertyType(eventType, SupportEventAdapterService.getService()));
         }
 
         // try invalid case
         IndexedProperty ind = new IndexedProperty("dummy", 0);
-        assertNull(ind.getPropertyType(eventType));
+        assertNull(ind.getPropertyType(eventType, SupportEventAdapterService.getService()));
     }
 }

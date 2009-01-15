@@ -83,7 +83,7 @@ public class MappedProperty extends PropertyBase
         }
     }
 
-    public Class getPropertyType(BeanEventType eventType)
+    public Class getPropertyType(BeanEventType eventType, EventAdapterService eventAdapterService)
     {
         InternalEventPropDescriptor propertyDesc = eventType.getMappedProperty(propertyNameAtomic);
         if (propertyDesc == null)

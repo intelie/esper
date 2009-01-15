@@ -93,13 +93,13 @@ public class BeanEventType implements EventTypeSPI, NativeEventType
             return simpleProp.getClazz();
         }
 
-        Property prop = PropertyParser.parse(propertyName, eventAdapterService, false);
+        Property prop = PropertyParser.parse(propertyName, false);
         if (prop instanceof SimpleProperty)
         {
             // there is no such property since it wasn't in simplePropertyTypes
             return null;
         }
-        return prop.getPropertyType(this);
+        return prop.getPropertyType(this, eventAdapterService);
     }
 
     public boolean isProperty(String propertyName)
@@ -141,7 +141,7 @@ public class BeanEventType implements EventTypeSPI, NativeEventType
             return getter;
         }
 
-        Property prop = PropertyParser.parse(propertyName, eventAdapterService, false);
+        Property prop = PropertyParser.parse(propertyName, false);
         if (prop instanceof SimpleProperty)
         {
             // there is no such property since it wasn't in simplePropertyGetters

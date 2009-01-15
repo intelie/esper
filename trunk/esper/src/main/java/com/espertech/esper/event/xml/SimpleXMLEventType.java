@@ -109,7 +109,7 @@ public class SimpleXMLEventType extends BaseXMLEventType {
 
         if (!this.getConfigurationEventTypeXMLDOM().isXPathPropertyExpr())
         {
-            Property prop = PropertyParser.parse(propertyExpression, this.getEventAdapterService(), false);
+            Property prop = PropertyParser.parse(propertyExpression, false);
             getter = prop.getGetterDOM();
             if (!prop.isDynamic())
             {

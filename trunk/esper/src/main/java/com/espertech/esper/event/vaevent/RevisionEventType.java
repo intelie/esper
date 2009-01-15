@@ -82,7 +82,7 @@ public class RevisionEventType implements EventTypeSPI
         int index = ASTFilterSpecHelper.unescapedIndexOfDot(propertyName);
         if (index == -1)
         {
-            Property prop = PropertyParser.parse(propertyName, eventAdapterService, false);
+            Property prop = PropertyParser.parse(propertyName, false);
             if (prop instanceof SimpleProperty)
             {
                 // there is no such property since it wasn't found earlier

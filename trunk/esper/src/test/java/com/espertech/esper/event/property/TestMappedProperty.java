@@ -43,13 +43,13 @@ public class TestMappedProperty extends TestCase
         Class[] expected = new Class[] {String.class, String.class};
         for (int i = 0; i < mapped.length; i++)
         {
-            assertEquals(expected[i], mapped[i].getPropertyType(eventType));
+            assertEquals(expected[i], mapped[i].getPropertyType(eventType, SupportEventAdapterService.getService()));
         }
 
         // try invalid case
         MappedProperty mpd = new MappedProperty("dummy", "dummy");
-        assertNull(mpd.getPropertyType(eventType));
+        assertNull(mpd.getPropertyType(eventType, SupportEventAdapterService.getService()));
         mpd = new MappedProperty("mapProperty", "dummy");
-        assertNull(mpd.getPropertyType(eventType));
+        assertNull(mpd.getPropertyType(eventType, SupportEventAdapterService.getService()));
     }
 }

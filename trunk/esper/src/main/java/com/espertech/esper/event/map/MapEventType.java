@@ -137,7 +137,7 @@ public class MapEventType implements EventTypeSPI
             }
 
             // parse, can be an indexed property
-            Property property = PropertyParser.parse(propertyName, eventAdapterService, false);
+            Property property = PropertyParser.parse(propertyName, false);
             if (!(property instanceof IndexedProperty))
             {
                 return null;
@@ -195,7 +195,7 @@ public class MapEventType implements EventTypeSPI
         if (nestedType == null)
         {
             // parse, can be an indexed property
-            Property property = PropertyParser.parse(propertyMap, eventAdapterService, false);
+            Property property = PropertyParser.parse(propertyMap, false);
             if (!(property instanceof IndexedProperty))
             {
                 return null;
@@ -246,12 +246,12 @@ public class MapEventType implements EventTypeSPI
         // If there is a map value in the map, return the Object value if this is a dynamic property
         if (nestedType == Map.class)
         {
-            Property prop = PropertyParser.parse(propertyNested, eventAdapterService, isRootedDynamic);
+            Property prop = PropertyParser.parse(propertyNested, isRootedDynamic);
             return prop.getPropertyTypeMap(null, eventAdapterService);   // we don't have a definition of the nested props
         }
         else if (nestedType instanceof Map)
         {
-            Property prop = PropertyParser.parse(propertyNested, eventAdapterService, isRootedDynamic);
+            Property prop = PropertyParser.parse(propertyNested, isRootedDynamic);
             Map nestedTypes = (Map) nestedType;
             return prop.getPropertyTypeMap(nestedTypes, eventAdapterService);
         }
@@ -317,7 +317,7 @@ public class MapEventType implements EventTypeSPI
         int index = ASTFilterSpecHelper.unescapedIndexOfDot(propertyName);
         if (index == -1)
         {
-            Property prop = PropertyParser.parse(propertyName, eventAdapterService, false);
+            Property prop = PropertyParser.parse(propertyName, false);
             if (prop instanceof DynamicProperty)
             {
                 EventPropertyGetter getterDyn = prop.getGetterMap((Map)null, eventAdapterService);
@@ -397,7 +397,7 @@ public class MapEventType implements EventTypeSPI
         if (nestedType == null)
         {
             // parse, can be an indexed property
-            Property property = PropertyParser.parse(propertyMap, eventAdapterService, false);
+            Property property = PropertyParser.parse(propertyMap, false);
             if (!(property instanceof IndexedProperty))
             {
                 return null;
@@ -473,7 +473,7 @@ public class MapEventType implements EventTypeSPI
         // The map contains another map, we resolve the property dynamically
         if (nestedType == Map.class)
         {
-            Property prop = PropertyParser.parse(propertyNested, eventAdapterService, isRootedDynamic);
+            Property prop = PropertyParser.parse(propertyNested, isRootedDynamic);
             EventPropertyGetter getterNestedMap = prop.getGetterMap((Map)null, eventAdapterService);
             if (getterNestedMap == null)
             {
@@ -485,7 +485,7 @@ public class MapEventType implements EventTypeSPI
         }
         else if (nestedType instanceof Map)
         {
-            Property prop = PropertyParser.parse(propertyNested, eventAdapterService, isRootedDynamic);
+            Property prop = PropertyParser.parse(propertyNested, isRootedDynamic);
             Map nestedTypes = (Map) nestedType;
             EventPropertyGetter getterNestedMap = prop.getGetterMap(nestedTypes, eventAdapterService);
             if (getterNestedMap == null)
@@ -1099,7 +1099,7 @@ public class MapEventType implements EventTypeSPI
             }
 
             // parse, can be an indexed property
-            Property property = PropertyParser.parse(propertyName, eventAdapterService, false);
+            Property property = PropertyParser.parse(propertyName, false);
             if (!(property instanceof IndexedProperty))
             {
                 return null;
@@ -1161,7 +1161,7 @@ public class MapEventType implements EventTypeSPI
         if (nestedType == null)
         {
             // parse, can be an indexed property
-            Property property = PropertyParser.parse(propertyMap, eventAdapterService, false);
+            Property property = PropertyParser.parse(propertyMap, false);
             if (!(property instanceof IndexedProperty))
             {
                 return null;

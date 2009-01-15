@@ -58,8 +58,6 @@ public class EPStatementObjectModel implements Serializable
     private OrderByClause orderByClause;
     private RowLimitClause rowLimitClause;
 
-    private List<SubstitutionParameterExpression> substitutions = new ArrayList<SubstitutionParameterExpression>();
-
     /**
      * Ctor.
      */

@@ -114,7 +114,7 @@ public class IndexedProperty extends PropertyBase
         return null;
     }
 
-    public Class getPropertyType(BeanEventType eventType)
+    public Class getPropertyType(BeanEventType eventType, EventAdapterService eventAdapterService)
     {
         InternalEventPropDescriptor descriptor = eventType.getIndexedProperty(propertyNameAtomic);
         if (descriptor != null)
@@ -299,5 +299,13 @@ public class IndexedProperty extends PropertyBase
         }
 
         return null;
+    }
+
+    public static Integer getIndex(String propertyName)
+    {
+        int start = propertyName.indexOf('[');
+        int end = propertyName.indexOf(']');
+        String indexStr = propertyName.substring(start, end);
+        return Integer.parseInt(indexStr);
     }
 }

@@ -137,7 +137,7 @@ public class SchemaXMLEventType extends BaseXMLEventType
             return null;
         }
 
-        Property prop = PropertyParser.parse(property, this.getEventAdapterService(), false);
+        Property prop = PropertyParser.parse(property, false);
 
         SchemaItem item = prop.getPropertyTypeSchema(schemaModelRoot, this.getEventAdapterService());
         if ((item == null) || (!canFragment(item)))
@@ -202,7 +202,7 @@ public class SchemaXMLEventType extends BaseXMLEventType
         if ((!allowSimpleProperties) && (index == -1))
         {
             // parse, can be an indexed property
-            Property property = PropertyParser.parse(propertyExpression, this.getEventAdapterService(), false);
+            Property property = PropertyParser.parse(propertyExpression, false);
             if (!property.isDynamic())
             {
                 if (!(property instanceof IndexedProperty))
@@ -219,7 +219,7 @@ public class SchemaXMLEventType extends BaseXMLEventType
             }
         }
 
-        Property prop = PropertyParser.parse(propertyExpression, this.getEventAdapterService(), false);
+        Property prop = PropertyParser.parse(propertyExpression, false);
         if (prop.isDynamic())
         {
             return Node.class;
@@ -252,7 +252,7 @@ public class SchemaXMLEventType extends BaseXMLEventType
             if (index == -1)
             {
                 // parse, can be an indexed property
-                Property property = PropertyParser.parse(propertyExpression, this.getEventAdapterService(), false);
+                Property property = PropertyParser.parse(propertyExpression, false);
                 if (!property.isDynamic())
                 {
                     if (!(property instanceof IndexedProperty))
@@ -285,7 +285,7 @@ public class SchemaXMLEventType extends BaseXMLEventType
 
         if (!isPropertyExpressionXPath)
         {
-            Property prop = PropertyParser.parse(propertyExpression, this.getEventAdapterService(), false);
+            Property prop = PropertyParser.parse(propertyExpression, false);
             boolean isDynamic = prop.isDynamic();
 
             if (!isDynamic)

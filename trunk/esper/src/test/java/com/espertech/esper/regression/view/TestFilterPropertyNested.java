@@ -4,6 +4,7 @@ import com.espertech.esper.client.EPServiceProvider;
 import com.espertech.esper.client.EPServiceProviderManager;
 import com.espertech.esper.client.EPStatement;
 import com.espertech.esper.client.EPStatementException;
+import com.espertech.esper.client.soda.EPStatementObjectModel;
 import com.espertech.esper.support.bean.bookexample.OrderBean;
 import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.client.SupportConfigFactory;
@@ -15,12 +16,6 @@ public class TestFilterPropertyNested extends TestCase
 {
     private EPServiceProvider epService;
     private SupportUpdateListener listener;
-
-    // TODO: test within property select: subselect, aggregation, previous
-    // TODO: test statement object model
-    // TODO: test join with implied unidirectional
-    // TODO: document unidirectional and aggregation state
-    // TODO: test pattern filter expression
 
     public void setUp()
     {
@@ -132,6 +127,16 @@ public class TestFilterPropertyNested extends TestCase
         stmt.addListener(listener);
         runAssertion();
         stmt.destroy();
+
+        // object model
+        stmtText = "select orderFrag.orderdetail.orderId as orderId, bookId, reviewId " +
+          "from OrderEvent[select * from books][select myorder.* as orderFrag, reviewId from reviews as review] as myorder";
+        EPStatementObjectModel model = epService.getEPAdministrator().compileEPL(stmtText);
+        assertEquals(stmtText, model.toEPL());
+        stmt = epService.getEPAdministrator().create(model, stmtText);
+        stmt.addListener(listener);
+        runAssertion();
+        stmt.destroy();
     }
 
     public void testPatternSelect()
@@ -202,6 +207,15 @@ public class TestFilterPropertyNested extends TestCase
     public void testInvalid()
     {
         epService.getEPAdministrator().getConfiguration().addEventType("OrderEvent", OrderBean.class);
+
+        tryInvalid("select bookId from OrderEvent[select count(*) from books]",
+                   "Expression in a property-selection may not utilize an aggregation function [select bookId from OrderEvent[select count(*) from books]]");
+
+        tryInvalid("select bookId from OrderEvent[select bookId, (select abc from review.std:lastevent()) from books]",
+                   "Expression in a property-selection may not utilize a subselect [select bookId from OrderEvent[select bookId, (select abc from review.std:lastevent()) from books]]");
+
+        tryInvalid("select bookId from OrderEvent[select prev(1, bookId) from books]",
+                   "Previous function cannot be used in this context [select bookId from OrderEvent[select prev(1, bookId) from books]]");
 
         tryInvalid("select bookId from OrderEvent[select * from books][select * from reviews]",
                    "A column name must be supplied for all but one stream if multiple streams are selected via the stream.* notation [select bookId from OrderEvent[select * from books][select * from reviews]]");
