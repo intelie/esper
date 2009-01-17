@@ -15,6 +15,8 @@ import com.espertech.esper.client.EventBean;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.Arrays;
+import java.lang.reflect.Array;
 
 /**
  * Implements the function to determine a join result for a unidirectional stream-to-window joins,
@@ -39,19 +41,27 @@ public class JoinSetComposerStreamToWinImpl implements JoinSetComposer
      * @param queryStrategy is the lookup query strategy for the stream
      * @param selfJoinRepositoryResets indicators for any stream's table that reset after strategy executon
      */
-    public JoinSetComposerStreamToWinImpl(EventTable[][] repositories, int streamNumber, QueryStrategy queryStrategy, boolean[] selfJoinRepositoryResets)
+    public JoinSetComposerStreamToWinImpl(EventTable[][] repositories, boolean isPureSelfJoin, int streamNumber, QueryStrategy queryStrategy, boolean[] selfJoinRepositoryResets)
     {
         this.repositories = repositories;
         this.streamNumber = streamNumber;
         this.queryStrategy = queryStrategy;
 
-        boolean flag = false;
-        for (boolean selfJoinRepositoryReset : selfJoinRepositoryResets)
-        {
-            flag = flag | selfJoinRepositoryReset;
-        }
-        this.isResetSelfJoinRepositories = flag;
         this.selfJoinRepositoryResets = selfJoinRepositoryResets;
+        if (isPureSelfJoin)
+        {
+            isResetSelfJoinRepositories = true;
+            Arrays.fill(selfJoinRepositoryResets, true);
+        }
+        else
+        {
+            boolean flag = false;
+            for (boolean selfJoinRepositoryReset : selfJoinRepositoryResets)
+            {
+                flag = flag | selfJoinRepositoryReset;
+            }
+            this.isResetSelfJoinRepositories = flag;
+        }
     }
 
     public void init(EventBean[][] eventsPerStream)

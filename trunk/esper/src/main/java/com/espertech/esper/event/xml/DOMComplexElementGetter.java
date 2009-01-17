@@ -68,7 +68,16 @@ public class DOMComplexElementGetter implements EventPropertyGetter, DOMProperty
             {
                 continue;
             }
-            if (childNode.getLocalName().equals(propertyName))
+
+            if (childNode.getLocalName() != null)
+            {
+                if (propertyName.equals(childNode.getLocalName()))
+                {
+                    return childNode;
+                }
+                continue;
+            }
+            if (propertyName.equals(childNode.getNodeName()))
             {
                 return childNode;
             }
@@ -104,7 +113,16 @@ public class DOMComplexElementGetter implements EventPropertyGetter, DOMProperty
             {
                 continue;
             }
-            if (childNode.getLocalName().equals(propertyName))
+            
+            if (childNode.getLocalName() != null)
+            {
+                if (propertyName.equals(childNode.getLocalName()))
+                {
+                    nodes[realized++] = childNode;
+                }
+                continue;
+            }
+            if (childNode.getNodeName().equals(propertyName))
             {
                 nodes[realized++] = childNode;
             }

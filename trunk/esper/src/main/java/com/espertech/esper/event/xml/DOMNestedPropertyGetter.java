@@ -3,7 +3,6 @@ package com.espertech.esper.event.xml;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.client.EventPropertyGetter;
 import com.espertech.esper.client.PropertyAccessException;
-import com.espertech.esper.event.xml.FragmentFactory;
 import org.w3c.dom.Node;
 
 import java.util.List;

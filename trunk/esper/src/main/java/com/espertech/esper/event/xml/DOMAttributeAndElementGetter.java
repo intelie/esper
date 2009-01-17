@@ -43,7 +43,15 @@ public class DOMAttributeAndElementGetter implements EventPropertyGetter, DOMPro
         for (int i = 0; i < namedNodeMap.getLength(); i++)
         {
             Node attrNode = namedNodeMap.item(i);
-            if (attrNode.getLocalName().equals(propertyName))
+            if (attrNode.getLocalName() != null)
+            {
+                if (propertyName.equals(attrNode.getLocalName()))
+                {
+                    return attrNode;
+                }
+                continue;
+            }
+            if (propertyName.equals(attrNode.getNodeName()))
             {
                 return attrNode;
             }
@@ -57,7 +65,15 @@ public class DOMAttributeAndElementGetter implements EventPropertyGetter, DOMPro
             {
                 continue;
             }
-            if (childNode.getLocalName().equals(propertyName))
+            if (childNode.getLocalName() != null)
+            {
+                if (propertyName.equals(childNode.getLocalName()))
+                {
+                    return childNode;
+                }
+                continue;
+            }
+            if (childNode.getNodeName().equals(propertyName))
             {
                 return childNode;
             }

@@ -644,7 +644,7 @@ select default.MyEvent.myProperty from MyEvent</programlisting>
 		<indexterm><primary>from clause</primary></indexterm>
 		<indexterm><primary>EPL</primary><secondary>from clause</secondary></indexterm>
 		<para>
-			The <literal>from</literal> clause is required in all EPL statements. It specifies one or more event streams or named windows. Each event stream or named window can optionally be given a name by means of the <literal>as</literal> syntax.
+			The <literal>from</literal> clause is required in all EPL statements. It specifies one or more event streams or named windows. Each event stream or named window can optionally be given a name by means of the <literal>as</literal> keyword.
 		</para>
 		<synopsis>from <emphasis>stream_def</emphasis> [as <emphasis>name</emphasis>] [unidirectional] [retain-union | retain-intersection] 
     [, <emphasis>stream_def</emphasis> [as <emphasis>stream_name</emphasis>]] [, ...]</synopsis>
@@ -673,13 +673,13 @@ select default.MyEvent.myProperty from MyEvent</programlisting>
            <title>Filter-based Event Streams</title>
 
 			<para>
-				For filter-based event streams, the event stream definition <emphasis>stream_def</emphasis> as shown in the <literal>from</literal> clause syntax consists of an event type, optional filter expressions and an optional list of views that derive data from a stream. The syntax for a filter-based event stream is as below:
+				The <emphasis>stream_def</emphasis> syntax for a filter-based event stream is as below:
 			</para>
 	
 			<synopsis><emphasis>event_stream_name</emphasis> [(<emphasis>filter_criteria</emphasis>)] [<emphasis>property_selection</emphasis>] [.<emphasis>view_spec</emphasis>] [.<emphasis>view_spec</emphasis>] [...]</synopsis>
 	
 			<para>
-			  The <emphasis>event_stream_name</emphasis> is either the name of an event type or name of an event stream populated by an <literal>insert into</literal> statement.
+			  The <emphasis>event_stream_name</emphasis> is either the name of an event type or name of an event stream populated by an <literal>insert into</literal> statement or the name of a named window.
 			</para>
 			
 			<para>
@@ -2034,7 +2034,7 @@ from PurchaseOrder.std:lastevent() as order, ServiceEvent:std:lastevent() as ser
 		</para>
 
 		<para>
-			In a join and outer join, your statement must declare a data window view or other view onto each stream. Streams that are marked as unidirectional and named windows as well as database or methods in a join are an exception and do not require a view to be specified.
+			In a join and outer join, your statement must declare a data window view or other view onto each stream. Streams that are marked as unidirectional and named windows as well as database or methods in a join are an exception and do not require a view to be specified. If you are joining an event to itself via property selection, views also do not need to be specified.
 		</para>
 
 		<para>
@@ -2046,6 +2046,7 @@ from PurchaseOrder.std:lastevent() as order, ServiceEvent:std:lastevent() as ser
 		<para>
 			The above example employed the special keep-all view that retains all events.
 		</para>
+
     </sect1>
 
     <sect1 id="epl-outerjoin">
@@ -2149,6 +2150,15 @@ from PurchaseOrder.std:lastevent() as order, ServiceEvent:std:lastevent() as ser
 			For example, consider a use case that requires us to join stock tick events (TickEvent) and news events (NewsEvent). The <literal>unidirectional</literal> keyword allows to generate results only when TickEvent events arrive, and not when NewsEvent arrive or leave the 10-second time window:
 		</para>
 		<programlisting><![CDATA[select * from TickEvent unidirectional, NewsEvent.win:time(10 sec) 
+where tick.symbol = news.symbol]]></programlisting>
+
+		<para>
+			Aggregation functions in a <literal>unidirectional</literal> join aggregate within the context of each unidirectional event evaluation and are not cumulative.
+		</para>
+		<para>
+			The count function in the next query returns, for each TickEvent, the number of matching NewEvent events:
+		</para>
+		<programlisting><![CDATA[select count(*) from TickEvent unidirectional, NewsEvent.win:time(10 sec) 
 where tick.symbol = news.symbol]]></programlisting>
 
 		<para>
@@ -3657,7 +3667,7 @@ having sum(price) > var_threshold]]></programlisting>
 	   <title>Property Selection</title>
 	   
 		<para>
-			Property selection is for use when an event contains properties that are themselves events, such as when application events are coarse-grained structures and you need to perform bulk operations on the rows of the property graph in an event.
+			Property selection is for use when an event contains properties that are themselves events. For example when application events are coarse-grained structures and you need to perform bulk operations on the rows of the property graph in an event.
 		</para>
 
 		<para>
@@ -3690,7 +3700,7 @@ having sum(price) > var_threshold]]></programlisting>
 		</para>
 
 		<para>
-			As an example event, consider a media order. A media order consists of order items as well as product decriptions. A media order event can be represented as an object graph (POJO event representation), or a structure of nested Maps (Map event representation) or a XML document (XML DOM or Axiom event representation) or other custom plug-in event representation.
+			As an example event, consider a media order. A media order consists of order items as well as product descriptions. A media order event can be represented as an object graph (POJO event representation), or a structure of nested Maps (Map event representation) or a XML document (XML DOM or Axiom event representation) or other custom plug-in event representation.
 		</para>
 
 		<para>
@@ -3714,7 +3724,7 @@ having sum(price) > var_threshold]]></programlisting>
   <books>
     <book>
       <bookId>B001</bookId>
-      <author>Orson Scott Card</author>
+      <author>Heinlein</author>
       <review>
         <reviewId>1</reviewId>
         <comment>best book ever</comment>
@@ -3728,34 +3738,25 @@ having sum(price) > var_threshold]]></programlisting>
 </mediaorder>]]></programlisting>
 
 		<para>
-			To review property expressions for nested properties, this example query returns the order id as well as the item id of the very first order item (index 0):
-		</para>
-		<programlisting><![CDATA[select orderId, items.item[0].itemId from MediaOrder]]></programlisting>
-
-		<para>
 			The next query utilizes the property selection syntax to return each book:
 		</para>
 		<programlisting><![CDATA[select * from MediaOrder[books.book]]]></programlisting>
 
 		<para>
-			The result of the above query is one event per book out of all books.
+			The result of the above query is one event per book. Output events contain only the book properties and not any of the order-level properties.
 		</para>
 
 		<para>
-			Note that as the engine delivers to listeners multiple results in one call, therefore listeners to the above statement can expect a single invocation passing all book events.
+			Note that, when using listeners, the engine delivers multiple results in one invocation of each listener. Therefore listeners to the above statement can expect a single invocation passing all book events within one media order event as an array.
 		</para>
 		
 		<para>
-			 To better illustrate the position of the property selection syntax in a statement, consider the next query:
+			 To better illustrate the position of the property selection syntax in a statement, consider the next two queries:
 		</para>
 		<programlisting><![CDATA[select * from MediaOrder(orderId='PO200901')[books.book]]]></programlisting>
 
 		<para>
-			The above query the returns each book only for a orders with a given order id.
-		</para>
-
-		<para>
-			A view specification occurs after the property selection: 
+			The above query the returns each book only for media orders with a given order id. This query illustrates a property selection and a view: 
 		</para>
 		<programlisting><![CDATA[select count(*) from MediaOrder[books.book].std:unique(bookId)]]></programlisting>
 		
@@ -3764,12 +3765,16 @@ having sum(price) > var_threshold]]></programlisting>
 		</para>
 
 		<para>
-			Propery selection can be staggered like this: 
+			Property selection can be staggered. When staggering multiple property selections the staggered property selection is relative to its parent.
+		</para>
+
+		<para>
+			This example demonstrates staggering property selections by selecting each review of each book:
 		</para>
 		<programlisting><![CDATA[select * from MediaOrder[books.book][review]]]></programlisting>
 
 		<para>
-			Listeners to the query above receive a row for each review of each book. 
+			Listeners to the query above receive a row for each review of each book. Output events contain only the review properties and not the book or media order properties.
 		</para>
 		
 		<para>
@@ -3777,58 +3782,79 @@ having sum(price) > var_threshold]]></programlisting>
 		</para>
 
 		<para>
-			A pattern example, and assuming that a <literal>Cancel</literal> event type has been defined that also holds an order id, the example is:
+			A pattern example is below. The example assumes that a <literal>Cancel</literal> event type has been defined that also has an <literal>orderId</literal> property:
 		</para>
-		<programlisting>select * from pattern [c=Cancel -&gt; orders=MediaOrder(orderId = c.orderId)[books.book] ]</programlisting>
+		<programlisting>select * from pattern [c=Cancel -&gt; books=MediaOrder(orderId = c.orderId)[books.book] ]</programlisting>
 	
 		<para>
-			When used in a pattern the property selection returns an array of events for each match, similar to the match-until clause in patterns. The above statement returns, in the <literal>orders</literal> property, an
+			When used in a pattern, a filter with a property selection returns an array of events, similar to the match-until clause in patterns. The above statement returns, in the <literal>books</literal> property, an
 			array of book events.
 		</para>
 
+		<para>
+			Please note these limitations:
+		</para>
+		<orderedlist spacing="compact">
+			<listitem>
+				<para>
+					Sub-selects, aggregation functions and the <literal>prev</literal> and <literal>prior</literal> operators are not available in property selection.
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					Expressions in the <literal>select</literal> and <literal>where</literal> clause of a property selection can only reference properties relative to the current event and property.
+				</para>
+			</listitem>
+		</orderedlist>
+
 		<sect2 id="epl-propertyselect-select" revision="1">
-			<title>Property Selection</title>
+			<title>Select Clause in a Property Selection</title>
+
 			<para>
-				The optional <literal>select</literal> clause serves to select properties or computed values.
+				 The optional <literal>select</literal> clause provides control over which fields are available in output events. The expressions in the select clause apply only to the properties available underneath the property in the <literal>from</literal> clause, and the properties of the enclosing event.
 			</para>
 
 			<para>
-				The next query has a <literal>select</literal> clause that selects the order id and book id of each book under which to return each review:
-			</para>
-			<programlisting><![CDATA[select * from MediaOrder[select orderId, bookId from books.book][review]]]></programlisting>
-	
-			<para>
-				Listeners to the statement above receive an event for each review of each book and also receive the <literal>bookId</literal> of the book and the <literal>orderId</literal> of the order.
+				 When no <literal>select</literal> is specified, only the properties underneath the selected property are available in output events.
 			</para>
 
 			<para>
-				 The select clause provides control over which fields are in the output events. The select clause works as previously described, however applies to the property in the <literal>from</literal> clause:
+				 In summary, the <literal>select</literal> clause may contain:
 			</para>
 
 			<orderedlist spacing="compact">
 				<listitem>
 					<para>
-						The wildcard (<literal>*</literal>) provides all properties that exist under the property in the <literal>from</literal> clause.
+						Any expressions, wherein properties are resolved relative to the property in the <literal>from</literal> clause.
 					</para>
 				</listitem>
 				<listitem>
 					<para>
-						The <emphasis>name</emphasis><literal>.*</literal> syntax is a column wildcard that provides all properties that exist under a property in the <literal>from</literal> part and that has been named via <literal>as</literal>.
+						Use the wildcard (<literal>*</literal>) to provide all properties that exist under the property in the <literal>from</literal> clause.
 					</para>
 				</listitem>
 				<listitem>
 					<para>
-						The <emphasis>expression</emphasis><literal> as </literal> <emphasis>name</emphasis> syntax is a column rename that assigns a name to a column.
+						Use the <emphasis>property_alias</emphasis><literal>.*</literal> syntax to provide all properties that exist under a property in the <literal>from</literal> clause.
 					</para>
 				</listitem>
 			</orderedlist>
 
 			<para>
-				 As has been discussed as part of the <literal>select</literal> clause, the wildcard (<literal>*</literal>) and <literal>name.*</literal> do not copy properties for performance reasons. The wildcard syntax instead specifies the underlying type that additional properties can be added to. Only one wildcard (<literal>*</literal>) and <literal>name.*</literal> (unless used with a column rename) may therefore occur in the select clause.
+				The next query's <literal>select</literal> clause selects each review for each book, and the order id as well as the book id of each book:
+			</para>
+			<programlisting><![CDATA[select * from MediaOrder[select orderId, bookId from books.book][select * from review]]]></programlisting>
+	
+			<para>
+				Listeners to the statement above receive an event for each review of each book. Each output event has all properties of the review row, and in addition the <literal>bookId</literal> of each book and the <literal>orderId</literal> of the order.
 			</para>
 
 			<para>
-				All the following queries produce an output events for each review of each book. The queries illustrate the options available to control the fields in the output event.
+				 As has been discussed as part of the <literal>select</literal> clause, the wildcard (<literal>*</literal>) and <emphasis>property_alias</emphasis><literal>.*</literal> do not copy properties for performance reasons. The wildcard syntax instead specifies the underlying type, and additional properties are added onto that underlying type if required. Only one wildcard (<literal>*</literal>) and <emphasis>property_alias</emphasis><literal>.*</literal> (unless used with a column rename) may therefore occur in the <literal>select</literal> clause list of expressions.
+			</para>
+
+			<para>
+				All the following queries produce an output event for each review of each book. The next sample queries illustrate the options available to control the fields of output events.
 			</para>
 
 			<para>
@@ -3847,7 +3873,7 @@ select orderId, bookId from MediaOrder[books.book][review]]]></programlisting>
 			</para>
 			<programlisting><![CDATA[select orderId, bookId from MediaOrder[books.book][select orderId, bookId from review]
 //... equivalent to ...
-select * from MediaOrder[books.book][select orderId, bookId from review]]]></programlisting>
+select * from MediaOrder[select orderId, bookId from books.book][review]]]></programlisting>
 
 			<para>
 				This variation produces output events that have all properties of each book and only <literal>reviewId</literal> and <literal>comment</literal> for each review:
@@ -3863,7 +3889,7 @@ select * from MediaOrder[books.book as book][select book.*, reviewId, comment fr
     [select mediaOrder.*, bookId, reviewId from review] as mediaOrder]]></programlisting>
 
 			<para>
-				This EPL produces output events in with 3 columns: a column named <literal>mediaOrder</literal> that is the order itself, a column named <literal>book</literal> that is the book itself and a column named <literal>review</literal> that is the review:
+				This EPL produces output events with 3 columns: a column named <literal>mediaOrder</literal> that is the order itself, a column named <literal>book</literal> for each book and a column named <literal>review</literal> that holds each review:
 			</para>
 			<programlisting><![CDATA[insert into ReviewStream select * from MediaOrder[books.book as book]
   [select mo.* as mediaOrder, book.* as book, review.* as review from review as review] as mo
@@ -3872,35 +3898,144 @@ select mediaOrder.orderId, book.bookId, review.reviewId from ReviewStream]]></pr
 		</sect2>
 	
 		<sect2 id="epl-propertyselect-where" revision="1">
-			<title>Property Filtering</title>
+			<title>Where Clause in a Property Selection</title>
 			<para>
-				An optional <literal>where</literal> clause may be used to filter out properties at the same level that the where-clause occurs.
+				The optional <literal>where</literal> clause may be used to filter out properties at the same level that the where-clause occurs.
 			</para>
 			
 			<para>
-				This query demonstrates the <literal>where</literal> clause:
+				The properties in the filter expression must be relative to the property in the <literal>from</literal> clause or the enclosing event.
 			</para>
-			<programlisting><![CDATA[select * from MediaOrder[books.book where author = 'Heinlein'][review]]]></programlisting>
+
+			<para>
+				This query outputs all books with a given author:
+			</para>
+			<programlisting><![CDATA[select * from MediaOrder[books.book where author = 'Heinlein']]]></programlisting>
 	
 			<para>
-				The above statement returns the reviews of each book in which the author is the given value. The where-clause filters out books that don't meet the condition.
+				This query outputs each review of each book where a review comment contains the word 'good':
 			</para>
+			<programlisting><![CDATA[select * from MediaOrder[books.book][review where comment like 'good']]]></programlisting>
+	
 		</sect2>
 
 		<sect2 id="epl-propertyselect-join" revision="1">
-			<title>Joins Examples</title>
+			<title>Property Selection and Joins</title>
 			<para>
-				This section discusses joining the results of a property selection within the same event and also across other events or to the results of a database lookup or method invocation.
+				This section discusses property selection in joins.
 			</para>
 
 			<para>
-				When joining within the same events, you may consider to use the <literal>unidirectional</literal> keyword to control whether aggregation state is cumulative or within the context of that event only.
+				When joining within the same event it is not required that views are specified. Recall, in a join or outer join there must be views specified that hold the data to be joined. For self-joins, no views are required and the join
+				executes against the data returned by the same event.
+			</para>
+			
+			<para>
+				This query inner-joins items to books where book id matches the product id:
+			</para>
+			<programlisting><![CDATA[select book.bookId, item.itemId 
+from MediaOrder[books.book] as book, 
+      MediaOrder[items.item] as item 
+where productId = bookId]]></programlisting>
+
+			<para>
+				Query results for the above query when sending the media order event as shown earlier are:
+			</para>
+
+			<informaltable frame="topbot">
+				<tgroup cols="2">
+					<colspec colwidth="1*"/>
+					<colspec colwidth="1*"/>
+					<thead>
+						<row>
+							<entry>book.bookId</entry>
+							<entry>item.itemId</entry>
+						</row>
+					</thead>
+					<tbody>
+						<row>
+							<entry>B001</entry>
+							<entry>100001</entry>
+						</row>
+					</tbody>
+				</tgroup>				
+			</informaltable>
+
+			<para>
+				The next example query is a left outer join. It returns all books and their items, and for books without item it returns the book and a <literal>null</literal> value:
+			</para>
+
+			<programlisting><![CDATA[select book.bookId, item.itemId 
+from MediaOrder[books.book] as book 
+  left outer join 
+    MediaOrder[items.item] as item 
+  on productId = bookId]]></programlisting>
+
+			<para>
+				Query results for the above query when sending the media order event as shown earlier are:
+			</para>
+
+			<informaltable frame="topbot">
+				<tgroup cols="2">
+					<colspec colwidth="1*"/>
+					<colspec colwidth="1*"/>
+					<thead>
+						<row>
+							<entry>book.bookId</entry>
+							<entry>item.itemId</entry>
+						</row>
+					</thead>
+					<tbody>
+						<row>
+							<entry>B001</entry>
+							<entry>100001</entry>
+						</row>
+						<row>
+							<entry>B002</entry>
+							<entry>null</entry>
+						</row>
+					</tbody>
+				</tgroup>				
+			</informaltable>
+
+			<para>
+				A full outer join combines the results of both left and right outer joins. The joined table will contain all records from both tables, and fill in <literal>null</literal> values for missing matches on either side.
 			</para>
 
 			<para>
-				This query joins items to books where book id matches the product id:
+				This example query is a full outer join, returning all books as well as all items, and filling in <literal>null</literal> values for book id or item id if no match is found:
 			</para>
-			<programlisting><![CDATA[select * from MediaOrder[books.book], MediaOrder[items.item] where productId = bookId]]></programlisting>
+			
+			<programlisting><![CDATA[select orderId, book.bookId,item.itemId 
+from MediaOrder[books.book] as book 
+  full outer join 
+     MediaOrder[select orderId, * from items.item] as item 
+  on productId = bookId 
+order by bookId, item.itemId asc
+]]></programlisting>
+
+			<para>
+				As in all other continuous queries, aggregation results are cumulative from the time the statement was created.
+			</para>
+			
+			<para>
+				The following query counts the cumulative number of items in which the product id matches a book id:
+			</para>
+
+			<programlisting><![CDATA[select count(*) 
+from MediaOrder[books.book] as book, 
+      MediaOrder[items.item] as item 
+where productId = bookId]]></programlisting>
+
+			<para>
+				The <literal>unidirectional</literal> keyword in a join indicates to the query engine that aggregation state is not cumulative. The next query counts the number of items in which the product id matches a book id for each event:
+			</para>
+			
+			<programlisting><![CDATA[select count(*) 
+from MediaOrder[books.book] as book unidirectional, 
+      MediaOrder[items.item] as item 
+where productId = bookId]]></programlisting>
+
 		</sect2>
 
 	</sect1>

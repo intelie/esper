@@ -38,7 +38,15 @@ public class DOMSimpleAttributeGetter implements EventPropertyGetter, DOMPropert
         for (int i = 0; i < namedNodeMap.getLength(); i++)
         {
             Node attrNode = namedNodeMap.item(i);
-            if (attrNode.getLocalName().equals(propertyName))
+            if (attrNode.getLocalName() != null)
+            {
+                if (propertyName.equals(attrNode.getLocalName()))
+                {
+                    return attrNode;
+                }
+                continue;
+            }
+            if (propertyName.equals(attrNode.getNodeName()))
             {
                 return attrNode;
             }

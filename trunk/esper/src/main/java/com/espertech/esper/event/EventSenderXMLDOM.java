@@ -29,6 +29,7 @@ public class EventSenderXMLDOM implements EventSender
     private final EPRuntimeEventSender runtimeEventSender;
     private final BaseXMLEventType baseXMLEventType;
     private final boolean validateRootElement;
+    private String getNodeName;
 
     /**
      * Ctor.
@@ -70,15 +71,15 @@ public class EventSenderXMLDOM implements EventSender
 
         if (validateRootElement)
         {
-            String rootElementName = namedNode.getLocalName();
-            if (rootElementName == null)
+            getNodeName = namedNode.getLocalName();
+            if (getNodeName == null)
             {
-                rootElementName = namedNode.getNodeName();
+                getNodeName = namedNode.getNodeName();
             }
 
-            if (!rootElementName.equals(baseXMLEventType.getRootElementName()))
+            if (!getNodeName.equals(baseXMLEventType.getRootElementName()))
             {
-                throw new EPException("Unexpected root element name '" + rootElementName + "' encountered, expected a root element name of '" + baseXMLEventType.getRootElementName() + "'");
+                throw new EPException("Unexpected root element name '" + getNodeName + "' encountered, expected a root element name of '" + baseXMLEventType.getRootElementName() + "'");
             }
         }
 

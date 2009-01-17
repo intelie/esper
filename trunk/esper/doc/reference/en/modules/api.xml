@@ -573,6 +573,10 @@ finally {
 			</para>
 
 			<para>
+				Consider using the <literal>on-select</literal> clause and a named window if your application requires iterating over a partial result set or requires indexed access for fast iteration; Note that <literal>on-select</literal> requires that you sent a trigger event, which may contain the key values for indexed access.
+			</para>
+
+			<para>
 				Esper places the following restrictions on the pull API and usage of the <literal>safeIterator</literal> and <literal>iterator</literal> methods:
 			</para>
 	

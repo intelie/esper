@@ -750,7 +750,7 @@ public class EPStatementStartMethod
      * If a view is polling or unidirectional, it does not require a view.
      */
     private StreamJoinAnalysisResult verifyJoinViews(List<StreamSpecCompiled> streamSpecs)
-            throws ViewProcessingException
+            throws ExprValidationException
     {
         StreamJoinAnalysisResult analysisResult = new StreamJoinAnalysisResult(streamSpecs.size());
         if (streamSpecs.size() < 2)
@@ -758,13 +758,21 @@ public class EPStatementStartMethod
             return analysisResult;
         }
 
-        // inspect unidirection indicator and named window flags 
+        // Determine if any stream has a unidirectional keyword
+
+        // inspect unidirection indicator and named window flags
+        int unidirectionalStreamNumber = -1;
         for (int i = 0; i < statementSpec.getStreamSpecs().size(); i++)
         {
             StreamSpecCompiled streamSpec = statementSpec.getStreamSpecs().get(i);
             if (streamSpec.getOptions().isUnidirectional())
             {
                 analysisResult.setUnidirectionalInd(i);
+                if (unidirectionalStreamNumber != -1)
+                {
+                    throw new ExprValidationException("The unidirectional keyword can only apply to one stream in a join");
+                }
+                unidirectionalStreamNumber = i;
             }
             if (!streamSpec.getViewSpecs().isEmpty())
             {
@@ -775,6 +783,11 @@ public class EPStatementStartMethod
                 analysisResult.setNamedWindow(i);
             }
         }
+        if ((unidirectionalStreamNumber != -1) && (analysisResult.getHasChildViews()[unidirectionalStreamNumber]))
+        {
+            throw new ExprValidationException("The unidirectional keyword requires that no views are declared onto the stream");
+        }
+        analysisResult.setUnidirectionalStreamNumber(unidirectionalStreamNumber);
 
         // count streams that provide data, excluding streams that poll data (DB and method)
         int countProviderNonpolling = 0;
@@ -796,21 +809,41 @@ public class EPStatementStartMethod
         }
         // there are multiple driving streams, verify the presence of a view for insert/remove stream
 
-        // validation of join views works differently for unidirectional as there can be self-joins that don't require a view 
+        // validation of join views works differently for unidirectional as there can be self-joins that don't require a view
+        // see if this is a self-join in which all streams are filters and filter specification is the same. 
         FilterSpecCompiled unidirectionalFilterSpec = null;
-        FilterSpecCompiled firstFilterSpec = null;
+        FilterSpecCompiled lastFilterSpec = null;
+        boolean pureSelfJoin = true;
         for (StreamSpecCompiled streamSpec : statementSpec.getStreamSpecs())
         {
             if (!(streamSpec instanceof FilterStreamSpecCompiled))
             {
+                pureSelfJoin = false;
                 continue;
             }
-            
-            firstFilterSpec = ((FilterStreamSpecCompiled) streamSpec).getFilterSpec();
+
+            FilterSpecCompiled filterSpec = ((FilterStreamSpecCompiled) streamSpec).getFilterSpec();
+            if ((lastFilterSpec != null) && (!lastFilterSpec.equalsTypeAndFilter(filterSpec)))
+            {
+                pureSelfJoin = false;
+            }
+            if (!streamSpec.getViewSpecs().isEmpty())
+            {
+                pureSelfJoin = false;
+            }
+            lastFilterSpec = filterSpec;
+
             if (streamSpec.getOptions().isUnidirectional())
             {
-                unidirectionalFilterSpec = firstFilterSpec;
+                unidirectionalFilterSpec = filterSpec;
             }
+        }        
+
+        // self-join without views and not unidirectional
+        if ((pureSelfJoin) && (unidirectionalFilterSpec == null))
+        {
+            analysisResult.setPureSelfJoin(true);
+            return analysisResult;
         }
 
         // weed out filter and pattern streams that don't have a view in a join
@@ -847,7 +880,7 @@ public class EPStatementStartMethod
             if ((streamSpec instanceof FilterStreamSpecCompiled) ||
                 (streamSpec instanceof PatternStreamSpecCompiled))
             {
-                throw new ViewProcessingException("Joins require that at least one view is specified for each stream, no view was specified for " + name);
+                throw new ExprValidationException("Joins require that at least one view is specified for each stream, no view was specified for " + name);
             }
         }
 

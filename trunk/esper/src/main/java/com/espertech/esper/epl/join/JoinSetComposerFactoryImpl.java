@@ -79,24 +79,6 @@ public class JoinSetComposerFactoryImpl implements JoinSetComposerFactory
             return makeComposerHistorical2Stream(outerJoinDescList, optionalFilterNode, streamTypes, streamViews);
         }
 
-        // Determine if any stream has a unidirectional keyword
-        int unidirectionalStreamNumber = -1;
-        for (int i = 0; i < streamJoinAnalysisResult.getNumStreams(); i++)
-        {
-            if (streamJoinAnalysisResult.getUnidirectionalInd()[i])
-            {
-                if (unidirectionalStreamNumber != -1)
-                {
-                    throw new ExprValidationException("The unidirectional keyword can only apply to one stream in a join");
-                }
-                unidirectionalStreamNumber = i;
-            }
-        }
-        if ((unidirectionalStreamNumber != -1) && (streamJoinAnalysisResult.getHasChildViews()[unidirectionalStreamNumber]))
-        {
-            throw new ExprValidationException("The unidirectional keyword requires that no views are declared onto the stream");
-        }
-
         // Query graph for graph relationships between streams/historicals
         // For outer joins the query graph will just contain outer join relationships
         QueryGraph queryGraph = new QueryGraph(streamTypes.length);
@@ -178,8 +160,9 @@ public class JoinSetComposerFactoryImpl implements JoinSetComposerFactory
             queryStrategies[i] = new ExecNodeQueryStrategy(i, streamTypes.length, executionNode);
         }
 
-        // If all streams have views, normal business is a query plan for each stream
-        if (unidirectionalStreamNumber == -1)
+        // If this is not unidirectional and not a self-join (excluding self-outer-join)
+        if ((!streamJoinAnalysisResult.isUnidirectional()) &&
+            (!streamJoinAnalysisResult.isPureSelfJoin() || !outerJoinDescList.isEmpty()))
         {
             if (hasHistorical)
             {
@@ -187,12 +170,25 @@ public class JoinSetComposerFactoryImpl implements JoinSetComposerFactory
             }
             else
             {
-                return new JoinSetComposerImpl(indexes, queryStrategies);
+                return new JoinSetComposerImpl(indexes, queryStrategies, streamJoinAnalysisResult.isPureSelfJoin());
             }
         }
         else
         {
-            return new JoinSetComposerStreamToWinImpl(indexes, unidirectionalStreamNumber, queryStrategies[unidirectionalStreamNumber], streamJoinAnalysisResult.getUnidirectionalNonDriving());
+            QueryStrategy driver;
+            int unidirectionalStream;
+            if (streamJoinAnalysisResult.getUnidirectionalStreamNumber() != -1)
+            {
+                unidirectionalStream = streamJoinAnalysisResult.getUnidirectionalStreamNumber();
+                driver = queryStrategies[unidirectionalStream];
+            }
+            else
+            {
+                unidirectionalStream = 0;
+                driver = queryStrategies[0];
+            }
+            return new JoinSetComposerStreamToWinImpl(indexes, streamJoinAnalysisResult.isPureSelfJoin(),
+                    unidirectionalStream, driver, streamJoinAnalysisResult.getUnidirectionalNonDriving());
         }
     }
 

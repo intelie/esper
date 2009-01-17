@@ -2,11 +2,22 @@ package com.espertech.esper.regression.event;
 
 import com.espertech.esper.client.EPRuntime;
 import com.espertech.esper.client.EventSender;
+import com.espertech.esper.client.EPException;
 import org.w3c.dom.Document;
+import org.w3c.dom.ls.DOMImplementationLS;
+import org.w3c.dom.ls.LSSerializer;
+import org.w3c.dom.bootstrap.DOMImplementationRegistry;
 import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
 import java.io.StringReader;
+import java.io.InputStream;
+import java.io.IOException;
 
 public class SupportXML
 {
@@ -78,5 +89,58 @@ public class SupportXML
         DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
         builderFactory.setNamespaceAware(true);
         return builderFactory.newDocumentBuilder().parse(source);
+    }
+
+    public static Document getDocument(InputStream stream) throws EPException
+    {
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder builder;
+
+        Document document = null;
+
+        try
+        {
+            builder = factory.newDocumentBuilder();
+            document = builder.parse(stream);
+        }
+        catch (ParserConfigurationException ex)
+        {
+            throw new EPException("Could not get a DOM parser", ex);
+        }
+        catch (SAXException ex)
+        {
+            throw new EPException("Could not parse", ex);
+        }
+        catch (IOException ex)
+        {
+            throw new EPException("Could not read", ex);
+        }
+        finally {
+            try {
+                stream.close();
+            }
+            catch (IOException ioe) {
+                throw new RuntimeException(ioe);
+            }
+        }
+
+        return document;
+    }
+
+    public static String serialize(Document doc) throws TransformerException
+    {
+        javax.xml.transform.TransformerFactory transformerFactory =
+        javax.xml.transform.TransformerFactory.newInstance ();
+        javax.xml.transform.Transformer transformer =
+        transformerFactory.newTransformer();
+
+        transformer.setOutputProperty(javax.xml.transform. OutputKeys.INDENT,"yes");
+        transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount","4");
+
+        java.io.StringWriter xmlout = new java.io.StringWriter();
+        javax.xml.transform.stream.StreamResult result = new
+        javax.xml.transform.stream.StreamResult(xmlout);
+        transformer.transform(new javax.xml.transform.dom.DOMSource(doc),result);
+        return xmlout.getBuffer().toString();
     }
 }

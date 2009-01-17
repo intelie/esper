@@ -66,7 +66,14 @@ public class DOMIndexedGetter implements EventPropertyGetter, DOMPropertyGetter
             {
                 continue;
             }
-            if (!(childNode.getLocalName().equals(propertyName)))
+
+            String elementName = childNode.getLocalName();
+            if (elementName == null)
+            {
+                elementName = childNode.getNodeName();
+            }
+
+            if (!(propertyName.equals(elementName)))
             {
                 continue;
             }

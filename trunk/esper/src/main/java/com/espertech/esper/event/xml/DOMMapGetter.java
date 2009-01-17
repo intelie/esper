@@ -66,7 +66,7 @@ public class DOMMapGetter implements EventPropertyGetter, DOMPropertyGetter
             {
                 continue;
             }
-            if (!(childNode.getLocalName().equals(propertyMap)))
+            if (!(childNode.getNodeName().equals(propertyMap)))
             {
                 continue;
             }
@@ -115,7 +115,14 @@ public class DOMMapGetter implements EventPropertyGetter, DOMPropertyGetter
             {
                 continue;
             }
-            if (!(childNode.getLocalName().equals(propertyMap)))
+
+            String elementName = childNode.getLocalName();
+            if (elementName == null)
+            {
+                elementName = childNode.getNodeName();
+            }
+
+            if (!(propertyMap.equals(elementName)))
             {
                 continue;
             }

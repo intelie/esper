@@ -1368,7 +1368,7 @@ such event metadata and event data into one of the built-in event representation
 		<indexterm><primary>event</primary><secondary>bulk</secondary></indexterm>
 
         <para>
-			Your application events may consist of fairly comprehensive, coarse-grained structures or documents. For example in business-to-business integration scenarios, XML documents or nested objects events can be rich deeply-nested graphs of event properties.
+			Your application events may consist of fairly comprehensive, coarse-grained structures or documents. For example in business-to-business integration scenarios, XML documents or other event objects can be rich deeply-nested graphs of event properties.
         </para>
 
         <para>

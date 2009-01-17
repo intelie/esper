@@ -33,6 +33,7 @@ With Esper 3 integer division returns Double values, and Integer division can be
 - Added XML and JSON renderers
 - Changes to methods in Configuration and ConfigurationOperations as the term "alias" was replaced by "name"
 - new method on statement addListenerWithReplay
+- property selection
   
 Changes in version 2.3
 ------------------------
