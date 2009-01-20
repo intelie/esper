@@ -54,6 +54,8 @@ tokens
 	HAVING='having';
 	DISTINCT='distinct';
 	ALL='all';
+	ANY='any';
+	SOME='some';
 	OUTPUT='output';
 	EVENTS='events';
 	FIRST='first';
@@ -139,6 +141,8 @@ tokens
    	EVAL_OR_EXPR;
    	EVAL_EQUALS_EXPR;
    	EVAL_NOTEQUALS_EXPR;
+   	EVAL_EQUALS_GROUP_EXPR;
+   	EVAL_NOTEQUALS_GROUP_EXPR;
    	EVAL_IDENT;
    	SELECTION_EXPR;
    	SELECTION_ELEMENT_EXPR;
@@ -375,6 +379,8 @@ tokens
 	parserTokenParaphases.put(HAVING, "'having'");
 	parserTokenParaphases.put(DISTINCT, "'distinct'");
 	parserTokenParaphases.put(ALL, "'all'");
+	parserTokenParaphases.put(ANY, "'any'");
+	parserTokenParaphases.put(SOME, "'some'");
 	parserTokenParaphases.put(OUTPUT, "'output'");
 	parserTokenParaphases.put(EVENTS, "'events'");
 	parserTokenParaphases.put(FIRST, "'first'");
@@ -808,9 +814,16 @@ evalEqualsExpression
 	      |  isnot=IS NOT_EXPR
 	      |  sqlne=SQL_NE
 	      |  ne=NOT_EQUAL
-	     ) evalRelationalExpression)*	     
-	    -> {$eq != null || $is != null}? ^(EVAL_EQUALS_EXPR evalRelationalExpression+)
-	    -> {$isnot != null || $sqlne != null || $ne != null}? ^(EVAL_NOTEQUALS_EXPR evalRelationalExpression+)
+	     ) 
+	       (
+	       	evalRelationalExpression
+	       	|  (a=ANY | a=SOME | a=ALL) ( (LPAREN expressionList? RPAREN) | subSelectExpression )
+	       )
+	     )*	     
+	    -> {$a == null && ($eq != null || $is != null)}? ^(EVAL_EQUALS_EXPR evalRelationalExpression+)
+	    -> {$a != null && ($eq != null || $is != null)}? ^(EVAL_EQUALS_GROUP_EXPR $a expressionList? subSelectExpression?)
+	    -> {$a == null && ($isnot != null || $sqlne != null || $ne != null)}? ^(EVAL_NOTEQUALS_EXPR evalRelationalExpression+)
+	    -> {$a != null && ($isnot != null || $sqlne != null || $ne != null)}? ^(EVAL_NOTEQUALS_GROUP_EXPR $a expressionList? subSelectExpression?)
 	    -> evalRelationalExpression+
 	;
 
@@ -819,9 +832,15 @@ evalRelationalExpression
 		( 
 			( 
 			  ( 
-			    (r=LT|r=GT|r=LE|r=GE) concatenationExpr
+			    (r=LT|r=GT|r=LE|r=GE) 
+			    	(
+			    	  concatenationExpr
+			    	  | (g=ANY | g=SOME | g=ALL) ( (LPAREN expressionList? RPAREN) | subSelectExpression )
+			    	)
+			    	
 			  )*
-			  -> {$r != null}? ^({adaptor.create($r)} concatenationExpr+)
+			  -> {$g == null && $r != null}? ^({adaptor.create($r)} concatenationExpr+)
+			  -> {$g != null && $r != null}? ^({adaptor.create($r)} $g expressionList? subSelectExpression)
 			  -> concatenationExpr+
 			)  
 			| (n=NOT_EXPR)? 

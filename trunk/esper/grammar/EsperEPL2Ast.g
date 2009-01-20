@@ -254,10 +254,18 @@ crontabLimitParameterSet
 	;
 
 relationalExpr
-	: 	^(n=LT valueExpr valueExpr) { leaveNode($n); }
-	| 	^(n=GT valueExpr valueExpr) { leaveNode($n); }
-	| 	^(n=LE valueExpr valueExpr) { leaveNode($n); }
-	|	^(n=GE valueExpr valueExpr) { leaveNode($n); }
+	: 	^(n=LT relationalExprValue { leaveNode($n); } )
+	| 	^(n=GT relationalExprValue { leaveNode($n); } )
+	| 	^(n=LE relationalExprValue { leaveNode($n); } )
+	|	^(n=GE relationalExprValue { leaveNode($n); } )
+	;
+
+relationalExprValue 
+	:	(
+		  valueExpr valueExpr
+		  | 
+		   (ANY|SOME|ALL) valueExpr*
+		)
 	;
 
 evalExprChoice
@@ -265,6 +273,8 @@ evalExprChoice
 	|	^(ja=EVAL_AND_EXPR valueExpr valueExpr (valueExpr)* { leaveNode($ja); } )
 	|	^(je=EVAL_EQUALS_EXPR valueExpr valueExpr { leaveNode($je); } )
 	|	^(jne=EVAL_NOTEQUALS_EXPR valueExpr valueExpr { leaveNode($jne); } )
+	|	^(jge=EVAL_EQUALS_GROUP_EXPR (ANY|SOME|ALL) valueExpr* { leaveNode($jge); } )
+	|	^(jgne=EVAL_NOTEQUALS_GROUP_EXPR (ANY|SOME|ALL) valueExpr* { leaveNode($jgne); } )
 	|	^(n=NOT_EXPR valueExpr { leaveNode($n); } )
 	|	r=relationalExpr
 	;

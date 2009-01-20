@@ -120,8 +120,6 @@ public class TestFilterPropertyExample extends TestCase
         ArrayAssertionUtil.assertPropsPerRow(listenerTwelve.getLastNewData(), "reviewId".split(","), new Object[][] {{"1"}});
     }
 
-    // TODO: document unidirectional is 
-    // review from-clause changes in doc; view requirements and poperty selection join chapter     
     public void testJoinSelfJoin()
     {
         String stmtText = "select book.bookId,item.itemId from MediaOrder[books.book] as book, MediaOrder[items.item] as item where productId = bookId order by bookId, item.itemId asc";

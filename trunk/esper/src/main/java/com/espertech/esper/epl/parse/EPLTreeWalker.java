@@ -189,6 +189,10 @@ public class EPLTreeWalker extends EsperEPL2Ast
             case EVAL_NOTEQUALS_EXPR:
                 leaveEqualsExpr(node);
                 break;
+            case EVAL_EQUALS_GROUP_EXPR:
+            case EVAL_NOTEQUALS_GROUP_EXPR:
+                leaveEqualsGroupExpr(node);
+                break;
             case WHERE_EXPR:
                 leaveWhereClause();
                 break;
@@ -1333,6 +1337,26 @@ public class EPLTreeWalker extends EsperEPL2Ast
 
         ExprEqualsNode identNode = new ExprEqualsNode(isNot);
         astExprNodeMap.put(node, identNode);
+    }
+
+    private void leaveEqualsGroupExpr(Tree node)
+    {
+        log.debug(".leaveEqualsGroupExpr");
+
+        boolean isNot = false;
+        if (node.getType() == EVAL_NOTEQUALS_GROUP_EXPR)
+        {
+            isNot = true;
+        }
+
+        boolean isAll = false;
+        if (node.getChild(0).getType() == ALL)
+        {
+            isAll = true;
+        }
+
+        ExprEqualsGroupNode groupNode = new ExprEqualsGroupNode(isNot, isAll);
+        astExprNodeMap.put(node, groupNode);
     }
 
     private void leaveJoinAndExpr(Tree node)

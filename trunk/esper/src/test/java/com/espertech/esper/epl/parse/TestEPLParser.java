@@ -13,7 +13,7 @@ public class TestEPLParser extends TestCase
     public void testDisplayAST() throws Exception
     {
         String className = SupportBean.class.getName();
-        String expression = "select * from A.win:time(VAR days)";
+        String expression = "select * from A where exp > ANY (select a from B)";
 
         log.debug(".testDisplayAST parsing: " + expression);
         Tree ast = parse(expression);
@@ -250,7 +250,7 @@ public class TestEPLParser extends TestCase
         assertIsValid(preFill + "().win:lenght(4)");
         assertIsValid(preFill + "().win:lenght(\"\",5)");
         assertIsValid(preFill + "().win:lenght(10.9,1E30,-4.4,\"\",5)");
-        assertIsValid(preFill + "().win:lenght(4).n:c(3.3, -3.3).n:some(\"price\")");
+        assertIsValid(preFill + "().win:lenght(4).n:c(3.3, -3.3).n:other(\"price\")");
         assertIsValid(preFill + "().win:lenght().n:c().n:da().n:e().n:f().n:g().n:xh(2.0)");
         assertIsValid(preFill + "().win:lenght({\"s\"})");
         assertIsValid(preFill + "().win:lenght({\"a\",\"b\"})");
@@ -630,6 +630,16 @@ public class TestEPLParser extends TestCase
         assertIsValid("select count from A limit myvar,myvar2");
         assertIsValid("select count from A limit myvar offset myvar2");
         assertIsValid("select count from A limit -1");
+
+        // any, some, all
+        assertIsValid("select * from A where 1 = ANY (1, exp, 3)");
+        assertIsValid("select * from A where 1 = SOME ({1,2,3}, myvar, 2*2)");
+        assertIsValid("select * from A where exp = ALL ()");
+        assertIsValid("select * from A where 1 != ALL (select a from B)");
+        assertIsValid("select * from A where 1 = SOME (select a from B)");
+        assertIsValid("select * from A where exp > ANY (select a from B)");
+        assertIsValid("select * from A where 1 <= ANY (select a from B)");
+        assertIsValid("select * from A where {1,2,3} > ALL (1,2,3)");
     }
 
     public void testBitWiseCases() throws Exception
