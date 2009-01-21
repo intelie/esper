@@ -192,6 +192,7 @@ tokens
 	IN_RANGE;
 	NOT_IN_RANGE;
 	SUBSELECT_EXPR;
+	SUBSELECT_GROUP_EXPR;
 	EXISTS_SUBSELECT_EXPR;
 	IN_SUBSELECT_EXPR;
 	NOT_IN_SUBSELECT_EXPR;
@@ -817,13 +818,13 @@ evalEqualsExpression
 	     ) 
 	       (
 	       	evalRelationalExpression
-	       	|  (a=ANY | a=SOME | a=ALL) ( (LPAREN expressionList? RPAREN) | subSelectExpression )
+	       	|  (a=ANY | a=SOME | a=ALL) ( (LPAREN expressionList? RPAREN) | subSelectGroupExpression )
 	       )
 	     )*	     
 	    -> {$a == null && ($eq != null || $is != null)}? ^(EVAL_EQUALS_EXPR evalRelationalExpression+)
-	    -> {$a != null && ($eq != null || $is != null)}? ^(EVAL_EQUALS_GROUP_EXPR $a expressionList? subSelectExpression?)
+	    -> {$a != null && ($eq != null || $is != null)}? ^(EVAL_EQUALS_GROUP_EXPR evalRelationalExpression $a expressionList? subSelectGroupExpression?)
 	    -> {$a == null && ($isnot != null || $sqlne != null || $ne != null)}? ^(EVAL_NOTEQUALS_EXPR evalRelationalExpression+)
-	    -> {$a != null && ($isnot != null || $sqlne != null || $ne != null)}? ^(EVAL_NOTEQUALS_GROUP_EXPR $a expressionList? subSelectExpression?)
+	    -> {$a != null && ($isnot != null || $sqlne != null || $ne != null)}? ^(EVAL_NOTEQUALS_GROUP_EXPR evalRelationalExpression $a expressionList? subSelectGroupExpression?)
 	    -> evalRelationalExpression+
 	;
 
@@ -835,12 +836,12 @@ evalRelationalExpression
 			    (r=LT|r=GT|r=LE|r=GE) 
 			    	(
 			    	  concatenationExpr
-			    	  | (g=ANY | g=SOME | g=ALL) ( (LPAREN expressionList? RPAREN) | subSelectExpression )
+			    	  | (g=ANY | g=SOME | g=ALL) ( (LPAREN expressionList? RPAREN) | subSelectGroupExpression )
 			    	)
 			    	
 			  )*
 			  -> {$g == null && $r != null}? ^({adaptor.create($r)} concatenationExpr+)
-			  -> {$g != null && $r != null}? ^({adaptor.create($r)} $g expressionList? subSelectExpression)
+			  -> {$g != null && $r != null}? ^({adaptor.create($r)} concatenationExpr $g expressionList? subSelectGroupExpression)
 			  -> concatenationExpr+
 			)  
 			| (n=NOT_EXPR)? 
@@ -910,6 +911,11 @@ unaryExpression
 subSelectExpression 
 	:	subQueryExpr
 		-> ^(SUBSELECT_EXPR subQueryExpr)
+	;
+
+subSelectGroupExpression 
+	:	subQueryExpr
+		-> ^(SUBSELECT_GROUP_EXPR subQueryExpr)
 	;
 
 existsSubSelectExpression 

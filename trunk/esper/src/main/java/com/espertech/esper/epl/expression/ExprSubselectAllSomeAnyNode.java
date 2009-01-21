@@ -15,56 +15,48 @@ import com.espertech.esper.epl.core.ViewResourceDelegate;
 import com.espertech.esper.epl.spec.StatementSpecRaw;
 import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.schedule.TimeProvider;
+import com.espertech.esper.type.RelationalOpEnum;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import java.util.Set;
 
 /**
  * Represents a subselect in an expression tree.
  */
-public class ExprSubselectInNode extends ExprSubselectNode
+public class ExprSubselectAllSomeAnyNode extends ExprSubselectNode
 {
-    private boolean isNotIn;
-    private SubselectEvalStrategy subselectEvalStrategy;
+    private static final Log log = LogFactory.getLog(ExprSubselectInNode.class);
+    private final boolean isNot;
+    private final boolean isAll;
+    private final RelationalOpEnum relationalOp;
+
+    private SubselectEvalStrategy evalStrategy;
 
     /**
      * Ctor.
      * @param statementSpec is the lookup statement spec from the parser, unvalidated
      */
-    public ExprSubselectInNode(StatementSpecRaw statementSpec)
+    public ExprSubselectAllSomeAnyNode(StatementSpecRaw statementSpec, boolean not, boolean all, RelationalOpEnum relationalOpEnum)
     {
         super(statementSpec);
+        isNot = not;
+        isAll = all;
+        this.relationalOp = relationalOpEnum;
     }
-
+    
     public Class getType()
     {
         return Boolean.class;
     }
 
-    /**
-     * Indicate that this is a not-in lookup.
-     * @param notIn is true for not-in, or false for regular 'in'
-     */
-    public void setNotIn(boolean notIn)
-    {
-        isNotIn = notIn;
-    }
-
-    /**
-     * Returns true for not-in, or false for in.
-     * @return true for not-in
-     */
-    public boolean isNotIn()
-    {
-        return isNotIn;
-    }
-
     public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService) throws ExprValidationException
     {
-        subselectEvalStrategy = SubselectEvalStrategyFactory.createStrategy(this, isNotIn, false, null);
+        evalStrategy = SubselectEvalStrategyFactory.createStrategy(this, isNot, isAll, relationalOp);
     }
 
     public Object evaluate(EventBean[] eventsPerStream, boolean isNewData, Set<EventBean> matchingEvents)
     {
-        return subselectEvalStrategy.evaluate(eventsPerStream, isNewData, matchingEvents);
+        return evalStrategy.evaluate(eventsPerStream, isNewData, matchingEvents);
     }
 }

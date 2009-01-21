@@ -85,6 +85,10 @@ public enum RelationalOpEnum
         computers.put(new MultiKey<Object>(new Object[] {String.class, GE}), new GEStringComputer());
         computers.put(new MultiKey<Object>(new Object[] {String.class, LT}), new LTStringComputer());
         computers.put(new MultiKey<Object>(new Object[] {String.class, LE}), new LEStringComputer());
+        computers.put(new MultiKey<Object>(new Object[] {Integer.class, GT}), new GTIntegerComputer());
+        computers.put(new MultiKey<Object>(new Object[] {Integer.class, GE}), new GEIntegerComputer());
+        computers.put(new MultiKey<Object>(new Object[] {Integer.class, LT}), new LTIntegerComputer());
+        computers.put(new MultiKey<Object>(new Object[] {Integer.class, LE}), new LEIntegerComputer());
         computers.put(new MultiKey<Object>(new Object[] {Long.class, GT}), new GTLongComputer());
         computers.put(new MultiKey<Object>(new Object[] {Long.class, GE}), new GELongComputer());
         computers.put(new MultiKey<Object>(new Object[] {Long.class, LT}), new LTLongComputer());
@@ -113,6 +117,7 @@ public enum RelationalOpEnum
     public RelationalOpEnum.Computer getComputer(Class coercedType, Class typeOne, Class typeTwo)
     {
         if ( (coercedType != Double.class) &&
+             (coercedType != Integer.class) &&
              (coercedType != Long.class) &&
              (coercedType != String.class) &&
              (coercedType != BigDecimal.class) &&
@@ -290,6 +295,55 @@ public enum RelationalOpEnum
             Number s1 = (Number) objOne;
             Number s2 = (Number) objTwo;
             return s1.longValue() <= s2.longValue();
+        }
+    }
+
+    /**
+     * Computer for relational op compare.
+     */
+    public static class GTIntegerComputer implements Computer
+    {
+        public boolean compare(Object objOne, Object objTwo)
+        {
+            Number s1 = (Number) objOne;
+            Number s2 = (Number) objTwo;
+            return s1.intValue() > s2.intValue();
+        }
+    }
+    /**
+     * Computer for relational op compare.
+     */
+    public static class GEIntegerComputer implements Computer
+    {
+        public boolean compare(Object objOne, Object objTwo)
+        {
+            Number s1 = (Number) objOne;
+            Number s2 = (Number) objTwo;
+            return s1.intValue() >= s2.intValue();
+        }
+    }
+    /**
+     * Computer for relational op compare.
+     */
+    public static class LTIntegerComputer implements Computer
+    {
+        public boolean compare(Object objOne, Object objTwo)
+        {
+            Number s1 = (Number) objOne;
+            Number s2 = (Number) objTwo;
+            return s1.intValue() < s2.intValue();
+        }
+    }
+    /**
+     * Computer for relational op compare.
+     */
+    public static class LEIntegerComputer implements Computer
+    {
+        public boolean compare(Object objOne, Object objTwo)
+        {
+            Number s1 = (Number) objOne;
+            Number s2 = (Number) objTwo;
+            return s1.intValue() <= s2.intValue();
         }
     }
 

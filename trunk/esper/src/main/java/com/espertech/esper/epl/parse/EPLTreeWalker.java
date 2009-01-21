@@ -10,7 +10,6 @@ package com.espertech.esper.epl.parse;
 
 import com.espertech.esper.antlr.ASTUtil;
 import com.espertech.esper.client.ConfigurationInformation;
-import com.espertech.esper.collection.Pair;
 import com.espertech.esper.collection.UniformPair;
 import com.espertech.esper.epl.agg.AggregationSupport;
 import com.espertech.esper.epl.core.EngineImportException;
@@ -1350,13 +1349,22 @@ public class EPLTreeWalker extends EsperEPL2Ast
         }
 
         boolean isAll = false;
-        if (node.getChild(0).getType() == ALL)
+        if (node.getChild(1).getType() == ALL)
         {
             isAll = true;
         }
 
-        ExprEqualsGroupNode groupNode = new ExprEqualsGroupNode(isNot, isAll);
-        astExprNodeMap.put(node, groupNode);
+        if ((node.getChildCount() > 2) && (node.getChild(2).getType() == SUBSELECT_GROUP_EXPR))
+        {
+            StatementSpecRaw currentSpec = popStacks();
+            ExprSubselectAllSomeAnyNode subselectNode = new ExprSubselectAllSomeAnyNode(currentSpec, isNot, isAll, null);
+            astExprNodeMap.put(node, subselectNode);               
+        }
+        else
+        {
+            ExprEqualsGroupNode groupNode = new ExprEqualsGroupNode(isNot, isAll);
+            astExprNodeMap.put(node, groupNode);
+        }
     }
 
     private void leaveJoinAndExpr(Tree node)
@@ -1546,8 +1554,28 @@ public class EPLTreeWalker extends EsperEPL2Ast
                 throw new IllegalArgumentException("Node type " + node.getType() + " not a recognized relational op node type");
         }
 
-        ExprRelationalOpNode mathNode = new ExprRelationalOpNode(relationalOpEnum);
-        astExprNodeMap.put(node, mathNode);
+        boolean isAll = false;
+        boolean isAny = false;
+        if (node.getChild(1).getType() == ALL)
+        {
+            isAll = true;
+        }
+        if (node.getChild(1).getType() == ANY)
+        {
+            isAny = true;
+        }
+
+        if ((isAll || isAny) && (node.getChildCount() > 2) && (node.getChild(2).getType() == SUBSELECT_GROUP_EXPR))
+        {
+            StatementSpecRaw currentSpec = popStacks();
+            ExprSubselectAllSomeAnyNode subselectNode = new ExprSubselectAllSomeAnyNode(currentSpec, false, isAll, relationalOpEnum);
+            astExprNodeMap.put(node, subselectNode);
+        }
+        else
+        {
+            ExprRelationalOpNode mathNode = new ExprRelationalOpNode(relationalOpEnum);
+            astExprNodeMap.put(node, mathNode);
+        }
     }
 
     private void leaveBitWise(Tree node)

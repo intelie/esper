@@ -361,8 +361,8 @@ public class TestJavaClassHelper extends TestCase
         assertEquals(Double.class, JavaClassHelper.getArithmaticCoercionType(byte.class, double.class));
         assertEquals(Long.class, JavaClassHelper.getArithmaticCoercionType(byte.class, long.class));
         assertEquals(Long.class, JavaClassHelper.getArithmaticCoercionType(byte.class, long.class));
-        assertEquals(Float.class, JavaClassHelper.getArithmaticCoercionType(float.class, long.class));
-        assertEquals(Float.class, JavaClassHelper.getArithmaticCoercionType(byte.class, float.class));
+        assertEquals(Double.class, JavaClassHelper.getArithmaticCoercionType(float.class, long.class));
+        assertEquals(Double.class, JavaClassHelper.getArithmaticCoercionType(byte.class, float.class));
         assertEquals(Integer.class, JavaClassHelper.getArithmaticCoercionType(byte.class, int.class));
         assertEquals(Integer.class, JavaClassHelper.getArithmaticCoercionType(Integer.class, int.class));
         assertEquals(BigDecimal.class, JavaClassHelper.getArithmaticCoercionType(Integer.class, BigDecimal.class));
@@ -426,11 +426,11 @@ public class TestJavaClassHelper extends TestCase
 
         assertEquals(Double.class, JavaClassHelper.getCompareToCoercionType(int.class, float.class));
         assertEquals(Double.class, JavaClassHelper.getCompareToCoercionType(double.class, byte.class));
-        assertEquals(Double.class, JavaClassHelper.getCompareToCoercionType(float.class, float.class));
+        assertEquals(Float.class, JavaClassHelper.getCompareToCoercionType(float.class, float.class));
         assertEquals(Double.class, JavaClassHelper.getCompareToCoercionType(float.class, Double.class));
 
-        assertEquals(Long.class, JavaClassHelper.getCompareToCoercionType(int.class, int.class));
-        assertEquals(Long.class, JavaClassHelper.getCompareToCoercionType(Short.class, Integer.class));
+        assertEquals(Integer.class, JavaClassHelper.getCompareToCoercionType(int.class, int.class));
+        assertEquals(Integer.class, JavaClassHelper.getCompareToCoercionType(Short.class, Integer.class));
 
         assertEquals(BigDecimal.class, JavaClassHelper.getCompareToCoercionType(BigDecimal.class, int.class));
         assertEquals(BigDecimal.class, JavaClassHelper.getCompareToCoercionType(Double.class, BigDecimal.class));
@@ -657,8 +657,8 @@ public class TestJavaClassHelper extends TestCase
         assertEquals(Double.class, JavaClassHelper.getCommonCoercionType(new Class[] {double.class, byte.class}));
         assertEquals(Double.class, JavaClassHelper.getCommonCoercionType(new Class[] {double.class, byte.class, null}));
         assertEquals(Float.class, JavaClassHelper.getCommonCoercionType(new Class[] {float.class, float.class}));
-        assertEquals(Float.class, JavaClassHelper.getCommonCoercionType(new Class[] {float.class, int.class}));
-        assertEquals(Float.class, JavaClassHelper.getCommonCoercionType(new Class[] {Integer.class, int.class, Float.class}));
+        assertEquals(Double.class, JavaClassHelper.getCommonCoercionType(new Class[] {float.class, int.class}));
+        assertEquals(Double.class, JavaClassHelper.getCommonCoercionType(new Class[] {Integer.class, int.class, Float.class}));
         assertEquals(Long.class, JavaClassHelper.getCommonCoercionType(new Class[] {Integer.class, int.class, long.class}));
         assertEquals(Long.class, JavaClassHelper.getCommonCoercionType(new Class[] {long.class, int.class}));
         assertEquals(Long.class, JavaClassHelper.getCommonCoercionType(new Class[] {long.class, int.class, int.class, int.class, byte.class, short.class}));

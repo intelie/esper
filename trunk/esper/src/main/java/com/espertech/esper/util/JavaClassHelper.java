@@ -37,6 +37,10 @@ public class JavaClassHelper
      */
     public static Class getBoxedType(Class clazz)
     {
+        if (!clazz.isPrimitive())
+        {
+            return clazz;
+        }
         if (clazz == boolean.class)
         {
             return Boolean.class;
@@ -285,7 +289,10 @@ public class JavaClassHelper
         {
             throw new CoercionException("Cannot coerce types " + typeOne.getName() + " and " + typeTwo.getName());
         }
-
+        if (boxedOne == boxedTwo)
+        {
+            return boxedOne;
+        }
         if ((boxedOne == BigDecimal.class) || (boxedTwo == BigDecimal.class))
         {
             return BigDecimal.class;
@@ -303,9 +310,13 @@ public class JavaClassHelper
         {
             return Double.class;
         }
-        if ((boxedOne == Float.class) || (boxedTwo == Float.class))
+        if ((boxedOne == Float.class) && (!isFloatingPointClass(typeTwo)))
         {
-            return Float.class;
+            return Double.class;
+        }
+        if ((boxedTwo == Float.class) && (!isFloatingPointClass(typeOne)))
+        {
+            return Double.class;
         }
         if ((boxedOne == Long.class) || (boxedTwo == Long.class))
         {
@@ -427,24 +438,7 @@ public class JavaClassHelper
             throw new IllegalArgumentException("Types cannot be compared: " +
                     typeOne.getName() + " and " + typeTwo.getName());
         }
-        if ((typeOne == BigDecimal.class) || (typeTwo == BigDecimal.class))
-        {
-            return BigDecimal.class;
-        }
-        if ((isFloatingPointClass(typeOne) && (typeTwo == BigInteger.class)) ||
-            (isFloatingPointClass(typeTwo) && (typeOne == BigInteger.class)))
-        {
-            return BigDecimal.class;
-        }
-        if (isFloatingPointClass(typeOne) || isFloatingPointClass(typeTwo))
-        {
-            return Double.class;
-        }
-        if ((typeOne == BigInteger.class) || (typeTwo == BigInteger.class))
-        {
-            return BigInteger.class;
-        }
-        return Long.class;
+        return getArithmaticCoercionType(typeOne, typeTwo);
     }
 
     /**

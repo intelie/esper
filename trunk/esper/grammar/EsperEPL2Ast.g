@@ -262,9 +262,11 @@ relationalExpr
 
 relationalExprValue 
 	:	(
-		  valueExpr valueExpr
-		  | 
-		   (ANY|SOME|ALL) valueExpr*
+		  valueExpr 
+		  	( valueExpr
+		  	| 
+		  	(ANY|SOME|ALL) (valueExpr* | subSelectGroupExpr)
+		  	)
 		)
 	;
 
@@ -273,8 +275,8 @@ evalExprChoice
 	|	^(ja=EVAL_AND_EXPR valueExpr valueExpr (valueExpr)* { leaveNode($ja); } )
 	|	^(je=EVAL_EQUALS_EXPR valueExpr valueExpr { leaveNode($je); } )
 	|	^(jne=EVAL_NOTEQUALS_EXPR valueExpr valueExpr { leaveNode($jne); } )
-	|	^(jge=EVAL_EQUALS_GROUP_EXPR (ANY|SOME|ALL) valueExpr* { leaveNode($jge); } )
-	|	^(jgne=EVAL_NOTEQUALS_GROUP_EXPR (ANY|SOME|ALL) valueExpr* { leaveNode($jgne); } )
+	|	^(jge=EVAL_EQUALS_GROUP_EXPR valueExpr (ANY|SOME|ALL) (valueExpr* | subSelectGroupExpr) { leaveNode($jge); } )
+	|	^(jgne=EVAL_NOTEQUALS_GROUP_EXPR valueExpr (ANY|SOME|ALL) (valueExpr* | subSelectGroupExpr) { leaveNode($jgne); } )
 	|	^(n=NOT_EXPR valueExpr { leaveNode($n); } )
 	|	r=relationalExpr
 	;
@@ -334,6 +336,10 @@ weekDayOperator
 	:	^( w=WEEKDAY_OPERATOR (constant[true]|eventPropertyExpr[true]|substitution) { leaveNode($w); })
 	;
 	
+subSelectGroupExpr
+	:	{pushStmtContext();} ^(s=SUBSELECT_GROUP_EXPR subQueryExpr) 	// no need to leave the node since the statement is pulled where needed
+	;
+
 subSelectRowExpr
 	:	{pushStmtContext();} ^(s=SUBSELECT_EXPR subQueryExpr) {leaveNode($s);}
 	;
