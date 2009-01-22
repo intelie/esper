@@ -433,7 +433,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
             stmtIdToDescMap.remove(statementId);
             stmtNameToIdMap.remove(statement.getName());
             stmtNameToStmtMap.remove(statement.getName());
-            log.debug(".start Error starting view", ex);
+            log.debug(".start Error starting statement", ex);
             throw ex;
         }
         catch (ExprValidationException ex)
@@ -441,7 +441,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
             stmtIdToDescMap.remove(statementId);
             stmtNameToIdMap.remove(statement.getName());
             stmtNameToStmtMap.remove(statement.getName());
-            log.debug(".start Error starting view", ex);
+            log.debug(".start Error starting statement", ex);
             throw new EPStatementException("Error starting view: " + ex.getMessage(), statement.getText());
         }
         catch (ViewProcessingException ex)

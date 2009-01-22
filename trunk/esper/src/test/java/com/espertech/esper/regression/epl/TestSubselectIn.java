@@ -1,14 +1,8 @@
 package com.espertech.esper.regression.epl;
 
-import com.espertech.esper.client.Configuration;
-import com.espertech.esper.client.EPServiceProvider;
-import com.espertech.esper.client.EPServiceProviderManager;
-import com.espertech.esper.client.EPStatement;
+import com.espertech.esper.client.*;
 import com.espertech.esper.client.soda.*;
-import com.espertech.esper.support.bean.SupportBean;
-import com.espertech.esper.support.bean.SupportBean_S0;
-import com.espertech.esper.support.bean.SupportBean_S1;
-import com.espertech.esper.support.bean.SupportBean_S2;
+import com.espertech.esper.support.bean.*;
 import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.support.util.SupportUpdateListener;
 import com.espertech.esper.util.SerializableObjectCopier;
@@ -357,6 +351,23 @@ public class TestSubselectIn extends TestCase
 
         sendBean("A", null, 97l);
         assertEquals(97L, listener.assertOneGetNewAndReset().get("longBoxed"));
+    }
+
+    public void testInvalid()
+    {
+        epService.getEPAdministrator().getConfiguration().addEventType("SupportBean", SupportBean.class);
+        epService.getEPAdministrator().getConfiguration().addEventType("ArrayBean", SupportBeanArrayCollMap.class);
+        try
+        {
+            String stmtText = "select " +
+                          "intArr in (select intPrimitive from SupportBean.win:keepall()) as r1 from ArrayBean";
+            epService.getEPAdministrator().createEPL(stmtText);
+            fail();
+        }
+        catch (EPStatementException ex)
+        {
+            assertEquals("Error starting view: Group comparison is not allowed for the IN-keyword, use the ANY, SOME or ALL keywords [select intArr in (select intPrimitive from SupportBean.win:keepall()) as r1 from ArrayBean]", ex.getMessage());
+        }
     }
 
     private void sendBean(String string, Integer intBoxed, Long longBoxed)

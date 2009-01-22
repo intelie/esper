@@ -1,11 +1,3 @@
-/**************************************************************************************
- * Copyright (C) 2008 EsperTech, Inc. All rights reserved.                            *
- * http://esper.codehaus.org                                                          *
- * http://www.espertech.com                                                           *
- * ---------------------------------------------------------------------------------- *
- * The software in this package is published under the terms of the GPL license       *
- * a copy of which has been included with this distribution in the license.txt file.  *
- **************************************************************************************/
 package com.espertech.esper.epl.expression;
 
 import com.espertech.esper.client.EventBean;
@@ -16,7 +8,7 @@ import java.util.Set;
 /**
  * Represents a in-subselect evaluation strategy.
  */
-public class SubselectEvalStrategyEqualsAll implements SubselectEvalStrategy
+public class SubselectEvalStrategyEqualsAny implements SubselectEvalStrategy
 {
     private final boolean isNot;
     private final boolean mustCoerce;
@@ -25,7 +17,7 @@ public class SubselectEvalStrategyEqualsAll implements SubselectEvalStrategy
     private final ExprNode filterExpr;
     private final ExprNode selectClauseExpr;
 
-    public SubselectEvalStrategyEqualsAll(boolean notIn, boolean mustCoerce, Class coercionType, ExprNode valueExpr, ExprNode selectClauseExpr, ExprNode filterExpr)
+    public SubselectEvalStrategyEqualsAny(boolean notIn, boolean mustCoerce, Class coercionType, ExprNode valueExpr, ExprNode selectClauseExpr, ExprNode filterExpr)
     {
         isNot = notIn;
         this.mustCoerce = mustCoerce;
@@ -37,13 +29,13 @@ public class SubselectEvalStrategyEqualsAll implements SubselectEvalStrategy
 
     public Object evaluate(EventBean[] eventsPerStream, boolean isNewData, Set<EventBean> matchingEvents)
     {
-        // Evaluate the child expression
-        Object leftResult = valueExpr.evaluate(eventsPerStream, isNewData);
-
         if ((matchingEvents == null) || (matchingEvents.size() == 0))
         {
-            return true;
+            return false;
         }
+
+        // Evaluate the child expression
+        Object leftResult = valueExpr.evaluate(eventsPerStream, isNewData);
 
         // Evaluation event-per-stream
         EventBean[] events = new EventBean[eventsPerStream.length + 1];
@@ -56,16 +48,6 @@ public class SubselectEvalStrategyEqualsAll implements SubselectEvalStrategy
             {
                 events[0] = event;
 
-                // Eval filter expression
-                if (filterExpr != null)
-                {
-                    Boolean pass = (Boolean) filterExpr.evaluate(events, true);
-                    if ((pass == null) || (!pass))
-                    {
-                        continue;
-                    }
-                }
-
                 Object rightResult;
                 if (selectClauseExpr != null)
                 {
@@ -76,46 +58,6 @@ public class SubselectEvalStrategyEqualsAll implements SubselectEvalStrategy
                     rightResult = events[0].getUnderlying();
                 }
 
-                if (leftResult == null)
-                {
-                    if (rightResult != null)
-                    {
-                        return null;
-                    }
-                    continue;
-                }
-                if (rightResult == null)
-                {
-                    return false;
-                }
-
-                if (!mustCoerce)
-                {
-                    if (leftResult.equals(rightResult))
-                    {
-                        return false;
-                    }
-                }
-                else
-                {
-                    Number left = JavaClassHelper.coerceBoxed((Number) leftResult, coercionType);
-                    Number right = JavaClassHelper.coerceBoxed((Number) rightResult, coercionType);
-                    if (left.equals(right))
-                    {
-                        return false;
-                    }
-                }
-            }
-
-            return true;
-        }
-        else
-        {
-            // Evaluate each select until we have a match
-            for (EventBean event : matchingEvents)
-            {
-                events[0] = event;
-
                 // Eval filter expression
                 if (filterExpr != null)
                 {
@@ -124,16 +66,6 @@ public class SubselectEvalStrategyEqualsAll implements SubselectEvalStrategy
                     {
                         continue;
                     }
-                }
-
-                Object rightResult;
-                if (selectClauseExpr != null)
-                {
-                    rightResult = selectClauseExpr.evaluate(events, true);
-                }
-                else
-                {
-                    rightResult = events[0].getUnderlying();
                 }
 
                 if (leftResult == null)
@@ -142,18 +74,18 @@ public class SubselectEvalStrategyEqualsAll implements SubselectEvalStrategy
                     {
                         continue;
                     }
-                    return false;
+                    return true;
                 }
                 if (rightResult == null)
                 {
-                    return false;
+                    continue;
                 }
 
                 if (!mustCoerce)
                 {
                     if (!leftResult.equals(rightResult))
                     {
-                        return false;
+                        return true;
                     }
                 }
                 else
@@ -162,12 +94,72 @@ public class SubselectEvalStrategyEqualsAll implements SubselectEvalStrategy
                     Number right = JavaClassHelper.coerceBoxed((Number) rightResult, coercionType);
                     if (!left.equals(right))
                     {
-                        return false;
+                        return true;
                     }
                 }
             }
 
-            return true;
+            return false;
+        }
+        else
+        {
+            // Evaluate each select until we have a match
+            for (EventBean event : matchingEvents)
+            {
+                events[0] = event;
+
+                Object rightResult;
+                if (selectClauseExpr != null)
+                {
+                    rightResult = selectClauseExpr.evaluate(events, true);
+                }
+                else
+                {
+                    rightResult = events[0].getUnderlying();
+                }
+
+                // Eval filter expression
+                if (filterExpr != null)
+                {
+                    Boolean pass = (Boolean) filterExpr.evaluate(events, true);
+                    if ((pass == null) || (!pass))
+                    {
+                        continue;
+                    }
+                }
+
+                if (leftResult == null)
+                {
+                    if (rightResult == null)
+                    {
+                        return true;
+                    }
+                    continue;
+                }
+                if (rightResult == null)
+                {
+                    continue;
+                }
+
+                if (!mustCoerce)
+                {
+                    if (leftResult.equals(rightResult))
+                    {
+                        return true;
+                    }
+                }
+                else
+                {
+                    Number left = JavaClassHelper.coerceBoxed((Number) leftResult, coercionType);
+                    Number right = JavaClassHelper.coerceBoxed((Number) rightResult, coercionType);
+                    if (left.equals(right))
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
         }
     }
 }

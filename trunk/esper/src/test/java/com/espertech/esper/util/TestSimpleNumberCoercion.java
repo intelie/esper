@@ -9,6 +9,7 @@ public class TestSimpleNumberCoercion extends TestCase
 {
     public void testGetCoercer()
     {
+        assertEquals(1d, SimpleNumberCoercerFactory.getCoercer(null, Double.class).coerceBoxed(1d));
         assertEquals(1d, SimpleNumberCoercerFactory.getCoercer(Double.class, Double.class).coerceBoxed(1d));
         assertEquals(5d, SimpleNumberCoercerFactory.getCoercer(Integer.class, Double.class).coerceBoxed(5));
         assertEquals(6d, SimpleNumberCoercerFactory.getCoercer(Byte.class, Double.class).coerceBoxed((byte) 6));

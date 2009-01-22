@@ -1,4 +1,4 @@
-// $ANTLR 3.1.1 EsperEPL2Grammar.g 2009-01-20 13:14:02
+// $ANTLR 3.1.1 EsperEPL2Grammar.g 2009-01-21 08:30:14
 
   package com.espertech.esper.epl.generated;
 

@@ -58,7 +58,13 @@ public class ExprInNode extends ExprNode
             throw new ExprValidationException("The IN operator requires at least 2 child expressions");
         }
 
-        List<Class> comparedTypes = new LinkedList<Class>();
+        Class typeOne = this.getChildNodes().get(0).getType();
+        if ((typeOne.isArray()) || (JavaClassHelper.isImplementsInterface(typeOne, Collection.class)) || (JavaClassHelper.isImplementsInterface(typeOne, Map.class)))
+        {
+            throw new ExprValidationException("Group comparison is not allowed for the IN-keyword, use the ANY, SOME or ALL keywords");
+        }
+
+        List<Class> comparedTypes = new ArrayList<Class>();
         for (int i = 0; i < this.getChildNodes().size(); i++)
         {
             Class propType = this.getChildNodes().get(i).getType();

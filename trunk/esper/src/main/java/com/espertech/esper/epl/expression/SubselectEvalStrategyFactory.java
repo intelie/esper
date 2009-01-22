@@ -11,11 +11,15 @@ package com.espertech.esper.epl.expression;
 import com.espertech.esper.util.JavaClassHelper;
 import com.espertech.esper.type.RelationalOpEnum;
 
+import java.util.Collection;
+import java.util.Map;
+
 public class SubselectEvalStrategyFactory
 {
     public static SubselectEvalStrategy createStrategy(ExprSubselectNode subselectExpression,
                                                        boolean isNot,
                                                        boolean isAll,
+                                                       boolean isAny,
                                                        RelationalOpEnum relationalOp) throws ExprValidationException
     {
         if (subselectExpression.getChildNodes().size() != 1)
@@ -26,6 +30,13 @@ public class SubselectEvalStrategyFactory
 
         // Must be the same boxed type returned by expressions under this
         Class typeOne = JavaClassHelper.getBoxedType(subselectExpression.getChildNodes().get(0).getType());
+
+        // collections, array or map not supported
+        if ((typeOne.isArray()) || (JavaClassHelper.isImplementsInterface(typeOne, Collection.class)) || (JavaClassHelper.isImplementsInterface(typeOne, Map.class)))
+        {
+            throw new ExprValidationException("Collection or array comparison is not allowed for the IN, ANY, SOME or ALL keywords");
+        }
+
         Class typeTwo;
         if (subselectExpression.getSelectClause() != null)
         {
@@ -56,11 +67,17 @@ public class SubselectEvalStrategyFactory
 
             Class compareType = JavaClassHelper.getCompareToCoercionType(typeOne, typeTwo);
             RelationalOpEnum.Computer computer = relationalOp.getComputer(compareType, typeOne, typeTwo);
+
+            if (isAny)
+            {
+                return new SubselectEvalStrategyRelOpAny(computer, valueExpr, subselectExpression.getSelectClause(), subselectExpression.getFilterExpr());
+            }
             return new SubselectEvalStrategyRelOpAll(computer, valueExpr, subselectExpression.getSelectClause(), subselectExpression.getFilterExpr());
         }
 
         // Get the common type such as Bool, String or Double and Long
         Class coercionType;
+        boolean mustCoerce;
         try
         {
             coercionType = JavaClassHelper.getCompareToCoercionType(typeOne, typeTwo);
@@ -75,7 +92,6 @@ public class SubselectEvalStrategyFactory
         }
 
         // Check if we need to coerce
-        boolean mustCoerce;
         if ((coercionType == JavaClassHelper.getBoxedType(typeOne)) &&
             (coercionType == JavaClassHelper.getBoxedType(typeTwo)))
         {
@@ -93,6 +109,10 @@ public class SubselectEvalStrategyFactory
         if (isAll)
         {
             return new SubselectEvalStrategyEqualsAll(isNot, mustCoerce, coercionType, valueExpr, subselectExpression.getSelectClause(), subselectExpression.getFilterExpr());
+        }
+        else if (isAny)
+        {
+            return new SubselectEvalStrategyEqualsAny(isNot, mustCoerce, coercionType, valueExpr, subselectExpression.getSelectClause(), subselectExpression.getFilterExpr());
         }
         else
         {

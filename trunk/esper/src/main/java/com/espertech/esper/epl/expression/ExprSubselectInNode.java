@@ -60,7 +60,7 @@ public class ExprSubselectInNode extends ExprSubselectNode
 
     public void validate(StreamTypeService streamTypeService, MethodResolutionService methodResolutionService, ViewResourceDelegate viewResourceDelegate, TimeProvider timeProvider, VariableService variableService) throws ExprValidationException
     {
-        subselectEvalStrategy = SubselectEvalStrategyFactory.createStrategy(this, isNotIn, false, null);
+        subselectEvalStrategy = SubselectEvalStrategyFactory.createStrategy(this, isNotIn, false, false, null);
     }
 
     public Object evaluate(EventBean[] eventsPerStream, boolean isNewData, Set<EventBean> matchingEvents)

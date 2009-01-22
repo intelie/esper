@@ -97,6 +97,46 @@ public class SupportBeanArrayCollMap
         return objectArr;
     }
 
+    public void setIntArr(int[] intArr)
+    {
+        this.intArr = intArr;
+    }
+
+    public void setIntCol(Collection<Integer> intCol)
+    {
+        this.intCol = intCol;
+    }
+
+    public void setIntMap(Map<Integer, String> intMap)
+    {
+        this.intMap = intMap;
+    }
+
+    public void setLongArr(Long[] longArr)
+    {
+        this.longArr = longArr;
+    }
+
+    public void setLongBoxed(Long longBoxed)
+    {
+        this.longBoxed = longBoxed;
+    }
+
+    public void setLongCol(Collection<Long> longCol)
+    {
+        this.longCol = longCol;
+    }
+
+    public void setLongMap(Map<Long, String> longMap)
+    {
+        this.longMap = longMap;
+    }
+
+    public void setObjectArr(Object[] objectArr)
+    {
+        this.objectArr = objectArr;
+    }
+
     private static HashMap<Long, String> convertMap(Long[] longArr)
     {
         if (longArr == null)

@@ -841,7 +841,7 @@ evalRelationalExpression
 			    	
 			  )*
 			  -> {$g == null && $r != null}? ^({adaptor.create($r)} concatenationExpr+)
-			  -> {$g != null && $r != null}? ^({adaptor.create($r)} concatenationExpr $g expressionList? subSelectGroupExpression)
+			  -> {$g != null && $r != null}? ^({adaptor.create($r)} concatenationExpr $g expressionList? subSelectGroupExpression?)
 			  -> concatenationExpr+
 			)  
 			| (n=NOT_EXPR)? 

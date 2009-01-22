@@ -1362,7 +1362,7 @@ public class EPLTreeWalker extends EsperEPL2Ast
         }
         else
         {
-            ExprEqualsGroupNode groupNode = new ExprEqualsGroupNode(isNot, isAll);
+            ExprEqualsAllAnyNode groupNode = new ExprEqualsAllAnyNode(isNot, isAll);
             astExprNodeMap.put(node, groupNode);
         }
     }
@@ -1560,22 +1560,30 @@ public class EPLTreeWalker extends EsperEPL2Ast
         {
             isAll = true;
         }
-        if (node.getChild(1).getType() == ANY)
+        if ((node.getChild(1).getType() == ANY) || (node.getChild(1).getType() == SOME))
         {
             isAny = true;
         }
 
-        if ((isAll || isAny) && (node.getChildCount() > 2) && (node.getChild(2).getType() == SUBSELECT_GROUP_EXPR))
+        ExprNode result;
+        if (isAll || isAny)
         {
-            StatementSpecRaw currentSpec = popStacks();
-            ExprSubselectAllSomeAnyNode subselectNode = new ExprSubselectAllSomeAnyNode(currentSpec, false, isAll, relationalOpEnum);
-            astExprNodeMap.put(node, subselectNode);
+            if ((node.getChildCount() > 2) && (node.getChild(2).getType() == SUBSELECT_GROUP_EXPR))
+            {
+                StatementSpecRaw currentSpec = popStacks();
+                result = new ExprSubselectAllSomeAnyNode(currentSpec, false, isAll, relationalOpEnum);
+            }
+            else
+            {
+                result = new ExprRelationalOpAllAnyNode(relationalOpEnum, isAll);
+            }
         }
         else
         {
-            ExprRelationalOpNode mathNode = new ExprRelationalOpNode(relationalOpEnum);
-            astExprNodeMap.put(node, mathNode);
+            result = new ExprRelationalOpNode(relationalOpEnum);
         }
+        
+        astExprNodeMap.put(node, result);
     }
 
     private void leaveBitWise(Tree node)

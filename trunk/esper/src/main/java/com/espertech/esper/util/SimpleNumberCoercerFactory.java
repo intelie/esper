@@ -63,7 +63,7 @@ public class SimpleNumberCoercerFactory
 
     /**
      * Returns a coercer/widener/narrower to a result number type from a given type.
-     * @param fromType to widen/narrow
+     * @param fromType to widen/narrow, can be null to indicate that no shortcut-coercer is used
      * @param resultBoxedType type to widen/narrow to
      * @return widener/narrower
      */

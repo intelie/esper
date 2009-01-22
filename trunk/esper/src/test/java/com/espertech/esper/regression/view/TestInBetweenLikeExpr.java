@@ -382,6 +382,22 @@ public class TestInBetweenLikeExpr extends TestCase
         selectTestCase.stop();
     }
 
+    public void testInvalid()
+    {
+        epService.getEPAdministrator().getConfiguration().addEventType("SupportBean", SupportBean.class);
+        epService.getEPAdministrator().getConfiguration().addEventType("ArrayBean", SupportBeanArrayCollMap.class);
+        try
+        {
+            String stmtText = "select intArr in (1, 2, 3) as r1 from ArrayBean";
+            epService.getEPAdministrator().createEPL(stmtText);
+            fail();
+        }
+        catch (EPStatementException ex)
+        {
+            assertEquals("Error starting view: Group comparison is not allowed for the IN-keyword, use the ANY, SOME or ALL keywords [select intArr in (1, 2, 3) as r1 from ArrayBean]", ex.getMessage());
+        }
+    }
+
     private void sendAndAssert(Integer intBoxed, Float floatBoxed, double doublePrimitive, boolean result)
     {
         SupportBean bean = new SupportBean();
