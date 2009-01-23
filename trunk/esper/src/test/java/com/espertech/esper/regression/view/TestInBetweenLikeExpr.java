@@ -3,9 +3,7 @@ package com.espertech.esper.regression.view;
 import junit.framework.TestCase;
 import com.espertech.esper.client.*;
 import com.espertech.esper.client.soda.*;
-import com.espertech.esper.support.bean.SupportBean;
-import com.espertech.esper.support.bean.SupportBeanComplexProps;
-import com.espertech.esper.support.bean.SupportBeanArrayCollMap;
+import com.espertech.esper.support.bean.*;
 import com.espertech.esper.support.client.SupportConfigFactory;
 import com.espertech.esper.support.util.SupportUpdateListener;
 import com.espertech.esper.support.util.ArrayAssertionUtil;
@@ -23,6 +21,25 @@ public class TestInBetweenLikeExpr extends TestCase
         testListenerTwo = new SupportUpdateListener();
         epService = EPServiceProviderManager.getDefaultProvider(SupportConfigFactory.getConfiguration());
         epService.initialize();
+    }
+
+    public void testObjectIn()
+    {
+        epService.getEPAdministrator().getConfiguration().addEventType("ArrayBean", SupportBeanArrayCollMap.class);
+        String stmtText = "select s0.anyObject in (objectArr) as value from ArrayBean s0";
+
+        EPStatement stmt = epService.getEPAdministrator().createEPL(stmtText);
+        stmt.addListener(listener);
+
+        SupportBean_S1 s1 = new SupportBean_S1(100);
+        SupportBeanArrayCollMap arrayBean = new SupportBeanArrayCollMap(s1);
+        arrayBean.setObjectArr(new Object[] {null, "a", false, s1});
+        epService.getEPRuntime().sendEvent(arrayBean);
+        assertEquals(true, listener.assertOneGetNewAndReset().get("value"));
+
+        arrayBean.setAnyObject(null);
+        epService.getEPRuntime().sendEvent(arrayBean);
+        assertEquals(false, listener.assertOneGetNewAndReset().get("value"));
     }
 
     public void testInArraySubstitution()

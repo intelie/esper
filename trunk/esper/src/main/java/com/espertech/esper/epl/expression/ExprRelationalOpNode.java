@@ -89,11 +89,15 @@ public class ExprRelationalOpNode extends ExprNode
     public Object evaluate(EventBean[] eventsPerStream, boolean isNewData)
     {
         Object valueLeft = this.getChildNodes().get(0).evaluate(eventsPerStream, isNewData);
-        Object valueRight = this.getChildNodes().get(1).evaluate(eventsPerStream, isNewData);
-
-        if ((valueLeft == null) || (valueRight == null))
+        if (valueLeft == null)
         {
-            return false;
+            return null;
+        }
+        
+        Object valueRight = this.getChildNodes().get(1).evaluate(eventsPerStream, isNewData);
+        if (valueRight == null)
+        {
+            return null;
         }
 
         return computer.compare(valueLeft, valueRight);

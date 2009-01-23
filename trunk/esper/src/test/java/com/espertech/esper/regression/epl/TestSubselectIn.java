@@ -180,6 +180,27 @@ public class TestSubselectIn extends TestCase
         assertEquals(true, listener.assertOneGetNewAndReset().get("value"));
     }
 
+    public void testInWildcard()
+    {
+        epService.getEPAdministrator().getConfiguration().addEventType("ArrayBean", SupportBeanArrayCollMap.class);
+        String stmtText = "select s0.anyObject in (select * from S1.win:length(1000)) as value from ArrayBean s0";
+
+        EPStatement stmt = epService.getEPAdministrator().createEPL(stmtText);
+        stmt.addListener(listener);
+
+        SupportBean_S1 s1 = new SupportBean_S1(100);
+        SupportBeanArrayCollMap arrayBean = new SupportBeanArrayCollMap(s1);
+        epService.getEPRuntime().sendEvent(s1);
+        epService.getEPRuntime().sendEvent(arrayBean);
+        assertEquals(true, listener.assertOneGetNewAndReset().get("value"));
+
+        SupportBean_S2 s2 = new SupportBean_S2(100);
+        arrayBean.setAnyObject(s2);
+        epService.getEPRuntime().sendEvent(s2);
+        epService.getEPRuntime().sendEvent(arrayBean);
+        assertEquals(false, listener.assertOneGetNewAndReset().get("value"));
+    }
+
     public void testInNullable()
     {
         String stmtText = "select id from S0 as s0 where p00 in (select p10 from S1.win:length(1000))";
@@ -366,7 +387,7 @@ public class TestSubselectIn extends TestCase
         }
         catch (EPStatementException ex)
         {
-            assertEquals("Error starting view: Group comparison is not allowed for the IN-keyword, use the ANY, SOME or ALL keywords [select intArr in (select intPrimitive from SupportBean.win:keepall()) as r1 from ArrayBean]", ex.getMessage());
+            assertEquals("Error starting view: Collection or array comparison is not allowed for the IN, ANY, SOME or ALL keywords [select intArr in (select intPrimitive from SupportBean.win:keepall()) as r1 from ArrayBean]", ex.getMessage());
         }
     }
 

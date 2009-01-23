@@ -44,7 +44,22 @@ public class ExprSubselectAllSomeAnyNode extends ExprSubselectNode
         isAll = all;
         this.relationalOp = relationalOpEnum;
     }
-    
+
+    public boolean isNot()
+    {
+        return isNot;
+    }
+
+    public boolean isAll()
+    {
+        return isAll;
+    }
+
+    public RelationalOpEnum getRelationalOp()
+    {
+        return relationalOp;
+    }
+
     public Class getType()
     {
         return Boolean.class;

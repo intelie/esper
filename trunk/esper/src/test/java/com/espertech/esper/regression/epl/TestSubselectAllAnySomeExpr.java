@@ -4,6 +4,7 @@ import com.espertech.esper.client.EPServiceProvider;
 import com.espertech.esper.client.EPServiceProviderManager;
 import com.espertech.esper.client.EPStatement;
 import com.espertech.esper.client.EPStatementException;
+import com.espertech.esper.client.soda.EPStatementObjectModel;
 import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.bean.SupportBeanArrayCollMap;
 import com.espertech.esper.support.client.SupportConfigFactory;
@@ -27,14 +28,7 @@ public class TestSubselectAllAnySomeExpr extends TestCase
     }
 
     // TODO:
-    // - test IN with (select *) and (null in)
-    // - test filter optimization removing filter expression entirely
-    // - review null values and their return result
-    // - test subselect with where-clause
-    // - test coercion subselect result
     // - test OM
-    // - test BigDec and BigInt
-    // - test null value returned by a boolean expression and NOT not handling it
     // replace "error starting view" with "error starting statement".
     // - look at entity SQL, expose Collections methods
     //
@@ -62,7 +56,7 @@ public class TestSubselectAllAnySomeExpr extends TestCase
         stmt.addListener(listener);
 
         epService.getEPRuntime().sendEvent(new SupportBean("E1", 1));
-        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {false, false, false, false});
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {true, true, true, true});
 
         epService.getEPRuntime().sendEvent(new SupportBean("S1", 1));
 
@@ -95,6 +89,49 @@ public class TestSubselectAllAnySomeExpr extends TestCase
         {
             assertEquals("Error starting view: Collection or array comparison is not allowed for the IN, ANY, SOME or ALL keywords [select intArr > all (select intPrimitive from SupportBean.win:keepall()) from ArrayBean]", ex.getMessage());
         }
+        
+        // test OM
+        EPStatementObjectModel model = epService.getEPAdministrator().compileEPL(stmtText);
+        assertEquals(stmtText, model.toEPL());
+        EPStatement stmtModel = epService.getEPAdministrator().create(model);
+    }
+
+    public void testRelationalOpNullOrNoRows()
+    {
+        String[] fields = "vall,vany".split(",");
+        String stmtText = "select " +
+            "intBoxed >= all (select doubleBoxed from SupportBean(string like 'S%').win:keepall()) as vall, " +
+            "intBoxed >= any (select doubleBoxed from SupportBean(string like 'S%').win:keepall()) as vany " +
+            " from SupportBean(string like 'E%')";
+        EPStatement stmt = epService.getEPAdministrator().createEPL(stmtText);
+        stmt.addListener(listener);
+
+        // subs is empty
+        // select  null >= all (select val from subs), null >= any (select val from subs)
+        sendEvent("E1", null, null);
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {true, false});
+
+        // select  1 >= all (select val from subs), 1 >= any (select val from subs)
+        sendEvent("E2", 1, null);
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {true, false});
+
+        // subs is {null}
+        sendEvent("S1", null, null);
+
+        sendEvent("E3", null, null);
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {null, null});
+        sendEvent("E4", 1, null);
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {null, null});
+
+        // subs is {null, 1}
+        sendEvent("S2", null, 1d);
+
+        sendEvent("E5", null, null);
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {null, null});
+        sendEvent("E6", 1, null);
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {null, true});
+        sendEvent("E7", 0, null);
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {false, false});
     }
 
     public void testRelationalOpSome()
@@ -201,6 +238,47 @@ public class TestSubselectAllAnySomeExpr extends TestCase
         ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {false, false, true, true});
     }
 
+    public void testEqualsInNullOrNoRows()
+    {
+        String[] fields = "eall,eany,neall,neany,isin".split(",");
+        String stmtText = "select " +
+            "intBoxed = all (select doubleBoxed from SupportBean(string like 'S%').win:keepall()) as eall, " +
+            "intBoxed = any (select doubleBoxed from SupportBean(string like 'S%').win:keepall()) as eany, " +
+            "intBoxed != all (select doubleBoxed from SupportBean(string like 'S%').win:keepall()) as neall, " +
+            "intBoxed != any (select doubleBoxed from SupportBean(string like 'S%').win:keepall()) as neany, " +
+            "intBoxed in (select doubleBoxed from SupportBean(string like 'S%').win:keepall()) as isin " +
+            " from SupportBean(string like 'E%')";
+        EPStatement stmt = epService.getEPAdministrator().createEPL(stmtText);
+        stmt.addListener(listener);
+
+        // subs is empty
+        // select  null = all (select val from subs), null = any (select val from subs), null != all (select val from subs), null != any (select val from subs), null in (select val from subs) 
+        sendEvent("E1", null, null);
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {true, false, true, false, false});
+
+        // select  1 = all (select val from subs), 1 = any (select val from subs), 1 != all (select val from subs), 1 != any (select val from subs), 1 in (select val from subs)
+        sendEvent("E2", 1, null);
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {true, false, true, false, false});
+
+        // subs is {null}
+        sendEvent("S1", null, null);
+
+        sendEvent("E3", null, null);
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {null, null, null, null, null});
+        sendEvent("E4", 1, null);
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {null, null, null, null, null});
+
+        // subs is {null, 1}
+        sendEvent("S2", null, 1d);
+
+        sendEvent("E5", null, null);
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {null, null, null, null, null});
+        sendEvent("E6", 1, null);
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {null, true, false, null, true});
+        sendEvent("E7", 0, null);
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {false, null,  null, true, null});
+    }
+
     public void testInvalid()
     {
         try
@@ -213,5 +291,13 @@ public class TestSubselectAllAnySomeExpr extends TestCase
         {
             assertEquals("Error starting view: Collection or array comparison is not allowed for the IN, ANY, SOME or ALL keywords [select intArr = all (select intPrimitive from SupportBean.win:keepall()) as r1 from ArrayBean]", ex.getMessage());
         }
+    }
+
+    private void sendEvent(String string, Integer intBoxed, Double doubleBoxed)
+    {
+        SupportBean bean = new SupportBean(string, -1);
+        bean.setIntBoxed(intBoxed);
+        bean.setDoubleBoxed(doubleBoxed);
+        epService.getEPRuntime().sendEvent(bean);
     }
 }

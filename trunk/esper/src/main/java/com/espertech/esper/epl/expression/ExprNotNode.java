@@ -48,8 +48,11 @@ public class ExprNotNode extends ExprNode
 
     public Object evaluate(EventBean[] eventsPerStream, boolean isNewData)
     {
-        Boolean evaluated = (Boolean) this.getChildNodes().get(0).evaluate(eventsPerStream, isNewData);
-
+        Boolean evaluated = (Boolean) this.getChildNodes().get(0).evaluate(eventsPerStream, isNewData);        
+        if (evaluated == null)
+        {
+            return null;
+        }
         return !evaluated;
     }
 

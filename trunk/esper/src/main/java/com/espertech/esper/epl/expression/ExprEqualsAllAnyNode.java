@@ -8,8 +8,8 @@ import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.schedule.TimeProvider;
 import com.espertech.esper.util.CoercionException;
 import com.espertech.esper.util.JavaClassHelper;
-import com.espertech.esper.util.SimpleNumberCoercerFactory;
 import com.espertech.esper.util.SimpleNumberCoercer;
+import com.espertech.esper.util.SimpleNumberCoercerFactory;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -28,8 +28,6 @@ public class ExprEqualsAllAnyNode extends ExprNode
     private boolean mustCoerce;
     private SimpleNumberCoercer coercer;
     private boolean hasCollectionOrArray;
-
-    // TODO: render correctly and equals
     
     /**
      * Ctor.
@@ -78,7 +76,12 @@ public class ExprEqualsAllAnyNode extends ExprNode
         for (int i = 0; i < this.getChildNodes().size() - 1; i++)
         {
             Class propType = this.getChildNodes().get(i + 1).getType();
-            if ((propType.isArray() || JavaClassHelper.isImplementsInterface(propType, Collection.class)))
+            if (propType.isArray())
+            {
+                hasCollectionOrArray = true;
+                comparedTypes.add(propType.getComponentType());
+            }
+            else if (JavaClassHelper.isImplementsInterface(propType, Collection.class))
             {
                 hasCollectionOrArray = true;
             }
@@ -109,7 +112,10 @@ public class ExprEqualsAllAnyNode extends ExprNode
                     mustCoerce = true;
                 }
             }
-            coercer = SimpleNumberCoercerFactory.getCoercer(null, JavaClassHelper.getBoxedType(coercionType));
+            if (mustCoerce)
+            {
+                coercer = SimpleNumberCoercerFactory.getCoercer(null, JavaClassHelper.getBoxedType(coercionType));
+            }
         }
 
     }
@@ -126,180 +132,54 @@ public class ExprEqualsAllAnyNode extends ExprNode
 
     public Object evaluate(EventBean[] eventsPerStream, boolean isNewData)
     {
+        Object leftResult = this.getChildNodes().get(0).evaluate(eventsPerStream, isNewData);
+        if ((mustCoerce) && (leftResult != null))
+        {
+            leftResult = coercer.coerceBoxed((Number) leftResult);
+        }
+
         if (hasCollectionOrArray)
         {
             if (isAll)
             {
-                return compareAllColl(eventsPerStream, isNewData);
+                return compareAllColl(leftResult, eventsPerStream, isNewData);
             }
             else
             {
-                return compareAnyColl(eventsPerStream, isNewData);
+                return compareAnyColl(leftResult, eventsPerStream, isNewData);
             }
         }
         else
         {
             if (isAll)
             {
-                return compareAll(eventsPerStream, isNewData);
+                return compareAll(leftResult, eventsPerStream, isNewData);
             }
             else
             {
-                return compareAny(eventsPerStream, isNewData);
+                return compareAny(leftResult, eventsPerStream, isNewData);
             }
         }
     }
 
-    private Object compareAll(EventBean[] eventsPerStream, boolean isNewData)
+    private Object compareAll(Object leftResult, EventBean[] eventsPerStream, boolean isNewData)
     {
-        Object leftResult = this.getChildNodes().get(0).evaluate(eventsPerStream, isNewData);
-        if (mustCoerce)
-        {
-            leftResult = coercer.coerceBoxed()
-        }
-
-
-        if (this.getChildNodes().size() == 1)
-        {
-            return true;
-        }
-
         if (isNot)
         {
             int len = this.getChildNodes().size() - 1;
-            for (int i = 1; i <= len; i++)
+            if ((len > 0) && (leftResult == null))
             {
-                Object rightResult = this.getChildNodes().get(i).evaluate(eventsPerStream, isNewData);
-
-                if (leftResult == null)
-                {
-                    if (rightResult == null)
-                    {
-                        continue;
-                    }
-                    return false;
-                }
-                if (rightResult == null)
-                {
-                    continue;
-                }
-
-                if (!mustCoerce)
-                {
-                    if (leftResult.equals(rightResult))
-                    {
-                        return false;
-                    }
-                }
-                else
-                {
-                    Number left = coercer.JavaClassHelper.coerceBoxed((Number) leftResult, coercionType);
-                    Number right = JavaClassHelper.coerceBoxed((Number) rightResult, coercionType);
-                    if (left.equals(right))
-                    {
-                        return false;
-                    }
-                }
+                return null;
             }
-
-            return true;
-        }
-        else
-        {
-            int len = this.getChildNodes().size() - 1;
+            boolean hasNonNullRow = false;
+            boolean hasNullRow = false;
             for (int i = 1; i <= len; i++)
             {
                 Object rightResult = this.getChildNodes().get(i).evaluate(eventsPerStream, isNewData);
 
-                if (leftResult == null)
+                if (rightResult != null)
                 {
-                    if (rightResult == null)
-                    {
-                        continue;
-                    }
-                    return false;
-                }
-                if (rightResult == null)
-                {
-                    continue;
-                }
-
-                if (!mustCoerce)
-                {
-                    if (!leftResult.equals(rightResult))
-                    {
-                        return false;
-                    }
-                }
-                else
-                {
-                    Number left = JavaClassHelper.coerceBoxed((Number) leftResult, coercionType);
-                    Number right = JavaClassHelper.coerceBoxed((Number) rightResult, coercionType);
-                    if (!left.equals(right))
-                    {
-                        return false;
-                    }
-                }
-            }
-
-            return true;
-        }
-    }
-
-    private Object compareAllColl(EventBean[] eventsPerStream, boolean isNewData)
-    {
-        Object leftResult = this.getChildNodes().get(0).evaluate(eventsPerStream, isNewData);
-
-        if (this.getChildNodes().size() == 1)
-        {
-            return true;
-        }
-
-        if (isNot)
-        {
-            int len = this.getChildNodes().size() - 1;
-            for (int i = 1; i <= len; i++)
-            {
-                Object rightResult = this.getChildNodes().get(i).evaluate(eventsPerStream, isNewData);
-
-                if (leftResult == null)
-                {
-                    if (rightResult == null)
-                    {
-                        continue;
-                    }
-                    return false;
-                }
-                if (rightResult == null)
-                {
-                    continue;
-                }
-
-                if (rightResult instanceof Collection)
-                {
-                    Collection coll = (Collection) rightResult;
-                    for (Object item : coll)
-                    {
-                        if (leftResult.equals(item))
-                        {
-                            return false;
-                        }
-                    }
-                }
-                else if (rightResult.getClass().isArray())
-                {
-                    int arrayLength = Array.getLength(rightResult);
-                    for (int index = 0; index < arrayLength; index++)
-                    {
-                        Object item = Array.get(rightResult, index);
-                        if (leftResult.equals(item))
-                        {
-                            return false;
-                        }
-                    }
-                }
-                else
-                {
+                    hasNonNullRow = true;
                     if (!mustCoerce)
                     {
                         if (leftResult.equals(rightResult))
@@ -309,56 +189,8 @@ public class ExprEqualsAllAnyNode extends ExprNode
                     }
                     else
                     {
-                        Number left = JavaClassHelper.coerceBoxed((Number) leftResult, coercionType);
-                        Number right = JavaClassHelper.coerceBoxed((Number) rightResult, coercionType);
-                        if (left.equals(right))
-                        {
-                            return false;
-                        }
-                    }
-                }
-            }
-
-            return true;
-        }
-        else
-        {
-            int len = this.getChildNodes().size() - 1;
-            for (int i = 1; i <= len; i++)
-            {
-                Object rightResult = this.getChildNodes().get(i).evaluate(eventsPerStream, isNewData);
-
-                if (leftResult == null)
-                {
-                    if (rightResult == null)
-                    {
-                        continue;
-                    }
-                    return false;
-                }
-                if (rightResult == null)
-                {
-                    continue;
-                }
-
-                if (rightResult instanceof Collection)
-                {
-                    Collection coll = (Collection) rightResult;
-                    for (Object item : coll)
-                    {
-                        if (!leftResult.equals(item))
-                        {
-                            return false;
-                        }
-                    }
-                }
-                else if (rightResult.getClass().isArray())
-                {
-                    int arrayLength = Array.getLength(rightResult);
-                    for (int index = 0; index < arrayLength; index++)
-                    {
-                        Object item = Array.get(rightResult, index);
-                        if (!leftResult.equals(item))
+                        Number right = coercer.coerceBoxed((Number) rightResult);
+                        if (leftResult.equals(right))
                         {
                             return false;
                         }
@@ -366,6 +198,32 @@ public class ExprEqualsAllAnyNode extends ExprNode
                 }
                 else
                 {
+                    hasNullRow = true;
+                }
+            }
+
+            if ((!hasNonNullRow) || (hasNullRow))
+            {
+                return null;
+            }
+            return true;
+        }
+        else
+        {
+            int len = this.getChildNodes().size() - 1;
+            if ((len > 0) && (leftResult == null))
+            {
+                return null;
+            }
+            boolean hasNonNullRow = false;
+            boolean hasNullRow = false;
+            for (int i = 1; i <= len; i++)
+            {
+                Object rightResult = this.getChildNodes().get(i).evaluate(eventsPerStream, isNewData);
+
+                if (rightResult != null)
+                {
+                    hasNonNullRow = true;
                     if (!mustCoerce)
                     {
                         if (!leftResult.equals(rightResult))
@@ -375,9 +233,111 @@ public class ExprEqualsAllAnyNode extends ExprNode
                     }
                     else
                     {
-                        Number left = JavaClassHelper.coerceBoxed((Number) leftResult, coercionType);
-                        Number right = JavaClassHelper.coerceBoxed((Number) rightResult, coercionType);
-                        if (!left.equals(right))
+                        Number right = coercer.coerceBoxed((Number) rightResult);
+                        if (!leftResult.equals(right))
+                        {
+                            return false;
+                        }
+                    }
+                }
+                else
+                {
+                    hasNullRow = true;
+                }
+            }
+
+            if ((!hasNonNullRow) || (hasNullRow))
+            {
+                return null;
+            }
+            return true;
+        }
+    }
+
+    private Object compareAllColl(Object leftResult, EventBean[] eventsPerStream, boolean isNewData)
+    {
+        if (isNot)
+        {
+            int len = this.getChildNodes().size() - 1;
+            boolean hasNonNullRow = false;
+            boolean hasNullRow = false;
+            for (int i = 1; i <= len; i++)
+            {
+                Object rightResult = this.getChildNodes().get(i).evaluate(eventsPerStream, isNewData);
+
+                if (rightResult == null)
+                {
+                    hasNullRow = true;
+                    continue;
+                }
+
+                if (rightResult instanceof Collection)
+                {
+                    if (leftResult == null)
+                    {
+                        return null;
+                    }
+                    Collection coll = (Collection) rightResult;
+                    if (coll.contains(leftResult))
+                    {
+                        return false;
+                    }
+                    hasNonNullRow = true;
+                }
+                else if (rightResult.getClass().isArray())
+                {
+                    int arrayLength = Array.getLength(rightResult);
+                    for (int index = 0; index < arrayLength; index++)
+                    {
+                        Object item = Array.get(rightResult, index);
+                        if (item == null)
+                        {
+                            hasNullRow = true;
+                            continue;
+                        }
+                        if (leftResult == null)
+                        {
+                            return null;
+                        }                        
+                        hasNonNullRow = true;
+                        if (!mustCoerce)
+                        {
+                            if (leftResult.equals(item))
+                            {
+                                return false;
+                            }
+                        }
+                        else
+                        {
+                            if (!(item instanceof Number))
+                            {
+                                continue;
+                            }
+                            Number right = coercer.coerceBoxed((Number) item);
+                            if (leftResult.equals(right))
+                            {
+                                return false;
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    if (leftResult == null)
+                    {
+                        return null;
+                    }
+                    if (!mustCoerce)
+                    {
+                        if (leftResult.equals(rightResult))
+                        {
+                            return false;
+                        }
+                    }
+                    else
+                    {
+                        Number right = coercer.coerceBoxed((Number) rightResult);
+                        if (leftResult.equals(right))
                         {
                             return false;
                         }
@@ -385,26 +345,116 @@ public class ExprEqualsAllAnyNode extends ExprNode
                 }
             }
 
+            if ((!hasNonNullRow) || (hasNullRow))
+            {
+                return null;
+            }
+            return true;
+        }
+        else
+        {
+            int len = this.getChildNodes().size() - 1;
+            boolean hasNonNullRow = false;
+            boolean hasNullRow = false;
+            for (int i = 1; i <= len; i++)
+            {
+                Object rightResult = this.getChildNodes().get(i).evaluate(eventsPerStream, isNewData);
+
+                if (rightResult == null)
+                {
+                    hasNullRow = true;
+                    continue;
+                }
+
+                if (rightResult instanceof Collection)
+                {
+                    hasNonNullRow = true;
+                    if (leftResult == null)
+                    {
+                        return null;
+                    }
+                    Collection coll = (Collection) rightResult;
+                    if (!coll.contains(leftResult))
+                    {
+                        return false;
+                    }
+                }
+                else if (rightResult.getClass().isArray())
+                {
+                    int arrayLength = Array.getLength(rightResult);
+                    for (int index = 0; index < arrayLength; index++)
+                    {
+                        Object item = Array.get(rightResult, index);
+                        if (item == null)
+                        {
+                            hasNullRow = true;
+                            continue;
+                        }
+                        if (leftResult == null)
+                        {
+                            return null;
+                        }
+                        hasNonNullRow = true;
+                        if (!mustCoerce)
+                        {
+                            if (!leftResult.equals(item))
+                            {
+                                return false;
+                            }
+                        }
+                        else
+                        {
+                            if (!(item instanceof Number))
+                            {
+                                continue;
+                            }
+                            Number right = coercer.coerceBoxed((Number) item);
+                            if (!leftResult.equals(right))
+                            {
+                                return false;
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    if (leftResult == null)
+                    {
+                        return null;
+                    }
+                    if (!mustCoerce)
+                    {
+                        if (!leftResult.equals(rightResult))
+                        {
+                            return false;
+                        }
+                    }
+                    else
+                    {
+                        Number right = coercer.coerceBoxed((Number) rightResult);
+                        if (!leftResult.equals(right))
+                        {
+                            return false;
+                        }
+                    }
+                }
+            }
+
+            if ((!hasNonNullRow) || (hasNullRow))
+            {
+                return null;
+            }
             return true;
         }
     }
 
-    private Object compareAny(EventBean[] eventsPerStream, boolean isNewData)
+    private Object compareAny(Object leftResult, EventBean[] eventsPerStream, boolean isNewData)
     {
-        Object leftResult = this.getChildNodes().get(0).evaluate(eventsPerStream, isNewData);
-
-        if (this.getChildNodes().size() == 1)
-        {
-            if (leftResult == null)
-            {
-                return !isNot;
-            }
-            return isNot;
-        }
-
         // Return true on the first not-equal.
         if (isNot)
         {
+            boolean hasNonNullRow = false;
+            boolean hasNullRow = false;
             int len = this.getChildNodes().size() - 1;
             for (int i = 1; i <= len; i++)
             {
@@ -412,17 +462,15 @@ public class ExprEqualsAllAnyNode extends ExprNode
 
                 if (leftResult == null)
                 {
-                    if (rightResult == null)
-                    {
-                        return false;
-                    }
-                    continue;
+                    return null;
                 }
                 if (rightResult == null)
                 {
+                    hasNullRow = true;
                     continue;
                 }
 
+                hasNonNullRow = true;
                 if (!mustCoerce)
                 {
                     if (!leftResult.equals(rightResult))
@@ -432,38 +480,41 @@ public class ExprEqualsAllAnyNode extends ExprNode
                 }
                 else
                 {
-                    Number left = JavaClassHelper.coerceBoxed((Number) leftResult, coercionType);
-                    Number right = JavaClassHelper.coerceBoxed((Number) rightResult, coercionType);
-                    if (!left.equals(right))
+                    Number right = coercer.coerceBoxed((Number) rightResult);
+                    if (!leftResult.equals(right))
                     {
                         return true;
                     }
                 }
             }
 
+            if ((!hasNonNullRow) || (hasNullRow))
+            {
+                return null;
+            }
             return false;
         }
         // Return true on the first equal.
         else
         {
             int len = this.getChildNodes().size() - 1;
+            boolean hasNonNullRow = false;
+            boolean hasNullRow = false;
             for (int i = 1; i <= len; i++)
             {
                 Object rightResult = this.getChildNodes().get(i).evaluate(eventsPerStream, isNewData);
 
                 if (leftResult == null)
                 {
-                    if (rightResult == null)
-                    {
-                        return true;
-                    }
-                    continue;
+                    return null;
                 }
                 if (rightResult == null)
                 {
+                    hasNullRow = true;
                     continue;
                 }
 
+                hasNonNullRow = true;
                 if (!mustCoerce)
                 {
                     if (leftResult.equals(rightResult))
@@ -473,78 +524,98 @@ public class ExprEqualsAllAnyNode extends ExprNode
                 }
                 else
                 {
-                    Number left = JavaClassHelper.coerceBoxed((Number) leftResult, coercionType);
-                    Number right = JavaClassHelper.coerceBoxed((Number) rightResult, coercionType);
-                    if (left.equals(right))
+                    Number right = coercer.coerceBoxed((Number) rightResult);
+                    if (leftResult.equals(right))
                     {
                         return true;
                     }
                 }
             }
 
+            if ((!hasNonNullRow) || (hasNullRow))
+            {
+                return null;
+            }
             return false;
         }
     }
 
-    private Object compareAnyColl(EventBean[] eventsPerStream, boolean isNewData)
+    private Object compareAnyColl(Object leftResult, EventBean[] eventsPerStream, boolean isNewData)
     {
-        Object leftResult = this.getChildNodes().get(0).evaluate(eventsPerStream, isNewData);
-
-        if (this.getChildNodes().size() == 1)
-        {
-            if (leftResult == null)
-            {
-                return !isNot;
-            }
-            return isNot;
-        }
-
         // Return true on the first not-equal.
         if (isNot)
         {
             int len = this.getChildNodes().size() - 1;
+            boolean hasNonNullRow = false;
+            boolean hasNullRow = false;
             for (int i = 1; i <= len; i++)
             {
                 Object rightResult = this.getChildNodes().get(i).evaluate(eventsPerStream, isNewData);
 
-                if (leftResult == null)
-                {
-                    if (rightResult == null)
-                    {
-                        return false;
-                    }
-                    continue;
-                }
                 if (rightResult == null)
                 {
+                    hasNullRow = true;
                     continue;
                 }
 
                 if (rightResult instanceof Collection)
                 {
-                    Collection coll = (Collection) rightResult;
-                    for (Object item : coll)
+                    if (leftResult == null)
                     {
-                        if (!leftResult.equals(item))
-                        {
-                            return true;
-                        }
+                        return null;
                     }
+                    Collection coll = (Collection) rightResult;
+                    if (!coll.contains(leftResult))
+                    {
+                        return true;
+                    }
+                    hasNonNullRow = true;
                 }
                 else if (rightResult.getClass().isArray())
                 {
                     int arrayLength = Array.getLength(rightResult);
+                    if ((arrayLength > 0) && (leftResult == null))
+                    {
+                        return null;
+                    }
+
                     for (int index = 0; index < arrayLength; index++)
                     {
                         Object item = Array.get(rightResult, index);
-                        if (!leftResult.equals(item))
+                        if (item == null)
                         {
-                            return true;
+                            hasNullRow = true;
+                            continue;
+                        }
+                        hasNonNullRow = true;
+                        if (!mustCoerce)
+                        {
+                            if (!leftResult.equals(item))
+                            {
+                                return true;
+                            }
+                        }
+                        else
+                        {
+                            if (!(item instanceof Number))
+                            {
+                                continue;
+                            }
+                            Number right = coercer.coerceBoxed((Number) item);
+                            if (!leftResult.equals(right))
+                            {
+                                return true;
+                            }
                         }
                     }
                 }
                 else
                 {
+                    if (leftResult == null)
+                    {
+                        return null;
+                    }
+                    hasNonNullRow = true;
                     if (!mustCoerce)
                     {
                         if (!leftResult.equals(rightResult))
@@ -554,9 +625,8 @@ public class ExprEqualsAllAnyNode extends ExprNode
                     }
                     else
                     {
-                        Number left = JavaClassHelper.coerceBoxed((Number) leftResult, coercionType);
-                        Number right = JavaClassHelper.coerceBoxed((Number) rightResult, coercionType);
-                        if (!left.equals(right))
+                        Number right = coercer.coerceBoxed((Number) rightResult);
+                        if (!leftResult.equals(right))
                         {
                             return true;
                         }
@@ -564,54 +634,84 @@ public class ExprEqualsAllAnyNode extends ExprNode
                 }
             }
 
+            if ((!hasNonNullRow) || (hasNullRow))
+            {
+                return null;
+            }
             return false;
         }
         // Return true on the first equal.
         else
         {
             int len = this.getChildNodes().size() - 1;
+            boolean hasNonNullRow = false;
+            boolean hasNullRow = false;
             for (int i = 1; i <= len; i++)
             {
                 Object rightResult = this.getChildNodes().get(i).evaluate(eventsPerStream, isNewData);
 
-                if (leftResult == null)
-                {
-                    if (rightResult == null)
-                    {
-                        return true;
-                    }
-                    continue;
-                }
                 if (rightResult == null)
                 {
+                    hasNonNullRow = true;
                     continue;
                 }
-
                 if (rightResult instanceof Collection)
                 {
-                    Collection coll = (Collection) rightResult;
-                    for (Object item : coll)
+                    if (leftResult == null)
                     {
-                        if (leftResult.equals(item))
-                        {
-                            return true;
-                        }
+                        return null;
+                    }
+                    hasNonNullRow = true;
+                    Collection coll = (Collection) rightResult;
+                    if (coll.contains(leftResult))
+                    {
+                        return true;
                     }
                 }
                 else if (rightResult.getClass().isArray())
                 {
                     int arrayLength = Array.getLength(rightResult);
+                    if ((arrayLength > 0) && (leftResult == null))
+                    {
+                        return null;
+                    }
                     for (int index = 0; index < arrayLength; index++)
                     {
                         Object item = Array.get(rightResult, index);
-                        if (leftResult.equals(item))
+                        if (item == null)
                         {
-                            return true;
+                            hasNullRow = true;
+                            continue;
+                        }
+                        hasNonNullRow = true;
+                        if (!mustCoerce)
+                        {
+                            if (leftResult.equals(item))
+                            {
+                                return true;
+                            }
+                        }
+                        else
+                        {
+                            if (!(item instanceof Number))
+                            {
+                                continue;
+                            }
+                            Number right = coercer.coerceBoxed((Number) item);
+                            if (leftResult.equals(right))
+                            {
+                                return true;
+                            }
                         }
                     }
                 }
                 else
                 {
+                    if (leftResult == null)
+                    {
+                        return null;
+                    }
+                    hasNonNullRow = true;
                     if (!mustCoerce)
                     {
                         if (leftResult.equals(rightResult))
@@ -621,9 +721,8 @@ public class ExprEqualsAllAnyNode extends ExprNode
                     }
                     else
                     {
-                        Number left = JavaClassHelper.coerceBoxed((Number) leftResult, coercionType);
-                        Number right = JavaClassHelper.coerceBoxed((Number) rightResult, coercionType);
-                        if (left.equals(right))
+                        Number right = coercer.coerceBoxed((Number) rightResult);
+                        if (leftResult.equals(right))
                         {
                             return true;
                         }
@@ -631,6 +730,10 @@ public class ExprEqualsAllAnyNode extends ExprNode
                 }
             }
 
+            if ((!hasNonNullRow) || (hasNullRow))
+            {
+                return null;
+            }
             return false;
         }
     }
@@ -640,8 +743,38 @@ public class ExprEqualsAllAnyNode extends ExprNode
         StringBuilder buffer = new StringBuilder();
 
         buffer.append(this.getChildNodes().get(0).toExpressionString());
-        buffer.append(" = ");
-        buffer.append(this.getChildNodes().get(1).toExpressionString());
+        if (isAll)
+        {
+            if (isNot)
+            {
+                buffer.append(" != all");
+            }
+            else
+            {
+                buffer.append(" = all");
+            }
+        }
+        else
+        {
+            if (isNot)
+            {
+                buffer.append(" != any");
+            }
+            else
+            {
+                buffer.append(" = any");
+            }
+        }
+        buffer.append("(");
+
+        String delimiter = ""; 
+        for (int i = 0; i < this.getChildNodes().size()-1; i++)
+        {
+            buffer.append(delimiter);
+            buffer.append(this.getChildNodes().get(i + 1).toExpressionString());
+            delimiter = ",";
+        }
+        buffer.append(")");
 
         return buffer.toString();
     }
@@ -654,6 +787,6 @@ public class ExprEqualsAllAnyNode extends ExprNode
         }
 
         ExprEqualsAllAnyNode other = (ExprEqualsAllAnyNode) node;
-        return other.isNot == this.isNot;
+        return (other.isNot == this.isNot) && (other.isAll == this.isAll);
     }
 }

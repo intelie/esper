@@ -9,7 +9,8 @@
 package com.espertech.esper.epl.expression;
 
 import com.espertech.esper.client.EventBean;
-import com.espertech.esper.util.JavaClassHelper;
+import com.espertech.esper.util.SimpleNumberCoercer;
+import com.espertech.esper.util.SimpleNumberCoercerFactory;
 
 import java.util.Set;
 
@@ -20,7 +21,7 @@ public class SubselectEvalStrategyEqualsIn implements SubselectEvalStrategy
 {
     private final boolean isNotIn;
     private final boolean mustCoerce;
-    private final Class coercionType;
+    private final SimpleNumberCoercer coercer;
     private final ExprNode valueExpr;
     private final ExprNode filterExpr;
     private final ExprNode selectClauseExpr;
@@ -29,7 +30,14 @@ public class SubselectEvalStrategyEqualsIn implements SubselectEvalStrategy
     {
         isNotIn = notIn;
         this.mustCoerce = mustCoerce;
-        this.coercionType = coercionType;
+        if (mustCoerce)
+        {
+            coercer = SimpleNumberCoercerFactory.getCoercer(null, coercionType);
+        }
+        else
+        {
+            coercer = null;
+        }
         this.valueExpr = valueExpr;
         this.filterExpr = filterExpr;
         this.selectClauseExpr = selectClauseExpr;
@@ -55,7 +63,14 @@ public class SubselectEvalStrategyEqualsIn implements SubselectEvalStrategy
 
         if (filterExpr == null)
         {
+            if (leftResult == null)
+            {
+                return null;
+            }
+
             // Evaluate each select until we have a match
+            boolean hasNonNullRow = false;
+            boolean hasNullRow = false;
             for (EventBean event : matchingEvents)
             {
                 events[0] = event;
@@ -70,41 +85,42 @@ public class SubselectEvalStrategyEqualsIn implements SubselectEvalStrategy
                     rightResult = events[0].getUnderlying();
                 }
 
-                if (leftResult == null)
+                if (rightResult != null)
                 {
-                    if (rightResult == null)
+                    hasNonNullRow = true;
+                    if (!mustCoerce)
                     {
-                        return !isNotIn;
+                        if (leftResult.equals(rightResult))
+                        {
+                            return !isNotIn;
+                        }
                     }
-                    continue;
-                }
-                if (rightResult == null)
-                {
-                    continue;
-                }
-
-                if (!mustCoerce)
-                {
-                    if (leftResult.equals(rightResult))
+                    else
                     {
-                        return !isNotIn;
+                        Number left = coercer.coerceBoxed((Number) leftResult);
+                        Number right = coercer.coerceBoxed((Number) rightResult);
+                        if (left.equals(right))
+                        {
+                            return !isNotIn;
+                        }
                     }
                 }
                 else
                 {
-                    Number left = JavaClassHelper.coerceBoxed((Number) leftResult, coercionType);
-                    Number right = JavaClassHelper.coerceBoxed((Number) rightResult, coercionType);
-                    if (left.equals(right))
-                    {
-                        return !isNotIn;
-                    }
+                    hasNullRow = true;
                 }
             }
 
+            if ((!hasNonNullRow) || (hasNullRow))
+            {
+                return null;
+            }
             return isNotIn;
         }
 
         // Filter and check each row.
+        boolean hasNonNullRow = false;
+        boolean hasNullRow = false;
         for (EventBean subselectEvent : matchingEvents)
         {
             // Prepare filter expression event list
@@ -115,6 +131,10 @@ public class SubselectEvalStrategyEqualsIn implements SubselectEvalStrategy
             if ((pass == null) || (!pass))
             {
                 continue;
+            }
+            if (leftResult == null)
+            {
+                return null;
             }
 
             Object rightResult;
@@ -135,26 +155,35 @@ public class SubselectEvalStrategyEqualsIn implements SubselectEvalStrategy
                 }
                 continue;
             }
-            if (rightResult == null)
+            if (rightResult != null)
             {
-                continue;
-            }
-            if (!mustCoerce)
-            {
-                if (leftResult.equals(rightResult))
+                hasNonNullRow = true;
+                if (!mustCoerce)
                 {
-                    return !isNotIn;
+                    if (leftResult.equals(rightResult))
+                    {
+                        return !isNotIn;
+                    }
+                }
+                else
+                {
+                    Number left = coercer.coerceBoxed((Number) leftResult);
+                    Number right = coercer.coerceBoxed((Number) rightResult);
+                    if (left.equals(right))
+                    {
+                        return !isNotIn;
+                    }
                 }
             }
             else
             {
-                Number left = JavaClassHelper.coerceBoxed((Number) leftResult, coercionType);
-                Number right = JavaClassHelper.coerceBoxed((Number) rightResult, coercionType);
-                if (left.equals(right))
-                {
-                    return !isNotIn;
-                }
+                hasNullRow = true;
             }
+        }
+
+        if ((!hasNonNullRow) || (hasNullRow))
+        {
+            return null;
         }
 
         return isNotIn;

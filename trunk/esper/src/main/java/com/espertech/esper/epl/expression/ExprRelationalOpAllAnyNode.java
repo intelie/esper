@@ -124,67 +124,161 @@ public class ExprRelationalOpAllAnyNode extends ExprNode
 
         if (hasCollectionOrArray)
         {
+            boolean hasNonNullRow = false;
+            boolean hasRows = false;
             for (int i = 1; i <= len; i++)
             {
                 Object valueRight = this.getChildNodes().get(i).evaluate(eventsPerStream, isNewData);
 
-                if ((valueLeft == null) || (valueRight == null))
+                if (valueRight == null)
                 {
-                    return false;
+                    continue;
                 }
 
                 if (valueRight instanceof Collection)
                 {
                     Collection coll = (Collection) valueRight;
+                    hasRows = true;
                     for (Object item : coll)
                     {
                         if (!(item instanceof Number))
                         {
+                            if (isAll && item == null)
+                            {
+                                return null;
+                            }
                             continue;
                         }
-                        if (isAll)
+                        hasNonNullRow = true;
+                        if (valueLeft != null)
                         {
-                            if (!computer.compare(valueLeft, item))
+                            if (isAll)
                             {
-                                return false;
+                                if (!computer.compare(valueLeft, item))
+                                {
+                                    return false;
+                                }
                             }
-                        }
-                        else
-                        {
-                            if (computer.compare(valueLeft, item))
+                            else
                             {
-                                return true;
+                                if (computer.compare(valueLeft, item))
+                                {
+                                    return true;
+                                }
                             }
                         }
                     }
                 }
                 else if (valueRight.getClass().isArray())
                 {
+                    hasRows = true;
                     int arrayLength = Array.getLength(valueRight);
                     for (int index = 0; index < arrayLength; index++)
                     {
                         Object item = Array.get(valueRight, index);
-                        if (isAll)
+                        if (item == null)
                         {
-                            if (!computer.compare(valueLeft, item))
+                            if (isAll)
                             {
-                                return false;
+                                return null;
                             }
+                            continue;
                         }
-                        else
+                        hasNonNullRow = true;
+                        if (valueLeft != null)
                         {
-                            if (computer.compare(valueLeft, item))
+                            if (isAll)
                             {
-                                return true;
+                                if (!computer.compare(valueLeft, item))
+                                {
+                                    return false;
+                                }
+                            }
+                            else
+                            {
+                                if (computer.compare(valueLeft, item))
+                                {
+                                    return true;
+                                }
                             }
                         }
                     }
                 }
                 else if (!(valueRight instanceof Number))
                 {
+                    if (isAll && valueRight == null)
+                    {
+                        return null;
+                    }
                     continue;
                 }
                 else
+                {
+                    hasNonNullRow = true;
+                    if (isAll)
+                    {
+                        if (!computer.compare(valueLeft, valueRight))
+                        {
+                            return false;
+                        }
+                    }
+                    else
+                    {
+                        if (computer.compare(valueLeft, valueRight))
+                        {
+                            return true;
+                        }
+                    }
+                }
+            }
+
+            if (isAll)
+            {
+                if (!hasRows)
+                {
+                    return true;
+                }
+                if ((!hasNonNullRow) || (valueLeft == null))
+                {
+                    return null;
+                }
+                return true;
+            }
+            else
+            {
+                if (!hasRows)
+                {
+                    return false;
+                }
+                if ((!hasNonNullRow) || (valueLeft == null))
+                {
+                    return null;
+                }
+                return false;
+            }
+        }
+        else
+        {
+            boolean hasNonNullRow = false;
+            boolean hasRows = false;
+            for (int i = 1; i <= len; i++)
+            {
+                Object valueRight = this.getChildNodes().get(i).evaluate(eventsPerStream, isNewData);
+                hasRows = true;
+
+                if (valueRight != null)
+                {
+                    hasNonNullRow = true;
+                }
+                else
+                {
+                    if (isAll)
+                    {
+                        return null;
+                    }
+                }
+
+                if ((valueRight != null) && (valueLeft != null))
                 {
                     if (isAll)
                     {
@@ -203,54 +297,65 @@ public class ExprRelationalOpAllAnyNode extends ExprNode
                 }
             }
 
-            return isAll;
-        }
-        else
-        {
-            for (int i = 1; i <= len; i++)
+            if (isAll)
             {
-                Object valueRight = this.getChildNodes().get(i).evaluate(eventsPerStream, isNewData);
-
-                if ((valueLeft == null) || (valueRight == null))
+                if (!hasRows)
+                {
+                    return true;
+                }
+                if ((!hasNonNullRow) || (valueLeft == null))
+                {
+                    return null;
+                }
+                return true;
+            }
+            else
+            {
+                if (!hasRows)
                 {
                     return false;
                 }
-
-                if (isAll)
+                if ((!hasNonNullRow) || (valueLeft == null))
                 {
-                    if (!computer.compare(valueLeft, valueRight))
-                    {
-                        return false;
-                    }
+                    return null;
                 }
-                else
-                {
-                    if (computer.compare(valueLeft, valueRight))
-                    {
-                        return true;
-                    }
-                }
+                return false;
             }
-
-            return isAll;
         }
     }
 
     public String toExpressionString()
     {
-        // TODO
         StringBuilder buffer = new StringBuilder();
 
         buffer.append(this.getChildNodes().get(0).toExpressionString());
+        buffer.append(" ");
         buffer.append(relationalOpEnum.getExpressionText());
-        buffer.append(this.getChildNodes().get(1).toExpressionString());
+        buffer.append(" ");
+        if (isAll)
+        {
+            buffer.append("all");
+        }
+        else
+        {
+            buffer.append("any");
+        }
 
+        buffer.append("(");
+        String delimiter = "";
+        
+        for (int i = 0; i < this.getChildNodes().size()-1; i++)
+        {
+            buffer.append(delimiter);
+            buffer.append(this.getChildNodes().get(i + 1).toExpressionString());
+            delimiter = ",";
+        }
+        buffer.append(")");
         return buffer.toString();
     }
 
     public boolean equalsNode(ExprNode node)
     {
-        // TODO
         if (!(node instanceof ExprRelationalOpAllAnyNode))
         {
             return false;
@@ -258,7 +363,8 @@ public class ExprRelationalOpAllAnyNode extends ExprNode
 
         ExprRelationalOpAllAnyNode other = (ExprRelationalOpAllAnyNode) node;
 
-        if (other.relationalOpEnum != this.relationalOpEnum)
+        if ((other.relationalOpEnum != this.relationalOpEnum) ||
+            (other.isAll != this.isAll))
         {
             return false;
         }

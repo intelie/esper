@@ -444,6 +444,9 @@ public class TestJavaClassHelper extends TestCase
         assertEquals(BigInteger.class, JavaClassHelper.getCompareToCoercionType(short.class, BigInteger.class));
         assertEquals(BigInteger.class, JavaClassHelper.getCompareToCoercionType(Integer.class, BigInteger.class));
 
+        assertEquals(SupportBean.class, JavaClassHelper.getCompareToCoercionType(SupportBean.class, SupportBean.class));
+        assertEquals(Object.class, JavaClassHelper.getCompareToCoercionType(SupportBean.class, SupportBean_A.class));
+
         tryInvalidGetRelational(Boolean.class, BigInteger.class);
         tryInvalidGetRelational(String.class, BigDecimal.class);
         tryInvalidGetRelational(String.class, int.class);
@@ -624,7 +627,7 @@ public class TestJavaClassHelper extends TestCase
             JavaClassHelper.getCompareToCoercionType(classOne, classTwo);
             fail();
         }
-        catch (IllegalArgumentException ex)
+        catch (CoercionException ex)
         {
             // Expected
         }
@@ -674,6 +677,7 @@ public class TestJavaClassHelper extends TestCase
         assertEquals(SupportBean.class, JavaClassHelper.getCommonCoercionType(new Class[] {null, SupportBean.class}));
         assertEquals(SupportBean.class, JavaClassHelper.getCommonCoercionType(new Class[] {null, null, SupportBean.class}));
         assertEquals(SupportBean.class, JavaClassHelper.getCommonCoercionType(new Class[] {SupportBean.class, null, SupportBean.class, SupportBean.class}));
+        assertEquals(Object.class, JavaClassHelper.getCommonCoercionType(new Class[] {SupportBean.class, SupportBean_A.class, null, SupportBean.class, SupportBean.class}));
 
         tryInvalidGetCommonCoercionType(new Class[] {String.class, Boolean.class});
         tryInvalidGetCommonCoercionType(new Class[] {String.class, String.class, Boolean.class});

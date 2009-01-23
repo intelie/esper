@@ -1,7 +1,8 @@
 package com.espertech.esper.epl.expression;
 
 import com.espertech.esper.client.EventBean;
-import com.espertech.esper.util.JavaClassHelper;
+import com.espertech.esper.util.SimpleNumberCoercer;
+import com.espertech.esper.util.SimpleNumberCoercerFactory;
 
 import java.util.Set;
 
@@ -12,7 +13,7 @@ public class SubselectEvalStrategyEqualsAny implements SubselectEvalStrategy
 {
     private final boolean isNot;
     private final boolean mustCoerce;
-    private final Class coercionType;
+    private final SimpleNumberCoercer coercer;
     private final ExprNode valueExpr;
     private final ExprNode filterExpr;
     private final ExprNode selectClauseExpr;
@@ -21,7 +22,14 @@ public class SubselectEvalStrategyEqualsAny implements SubselectEvalStrategy
     {
         isNot = notIn;
         this.mustCoerce = mustCoerce;
-        this.coercionType = coercionType;
+        if (mustCoerce)
+        {
+            coercer = SimpleNumberCoercerFactory.getCoercer(null, coercionType);
+        }
+        else
+        {
+            coercer = null;
+        }
         this.valueExpr = valueExpr;
         this.filterExpr = filterExpr;
         this.selectClauseExpr = selectClauseExpr;
@@ -44,6 +52,8 @@ public class SubselectEvalStrategyEqualsAny implements SubselectEvalStrategy
         if (isNot)
         {
             // Evaluate each select until we have a match
+            boolean hasNonNullRow = false;
+            boolean hasNullRow = false;
             for (EventBean event : matchingEvents)
             {
                 events[0] = event;
@@ -67,36 +77,40 @@ public class SubselectEvalStrategyEqualsAny implements SubselectEvalStrategy
                         continue;
                     }
                 }
-
                 if (leftResult == null)
                 {
-                    if (rightResult == null)
-                    {
-                        continue;
-                    }
-                    return true;
-                }
-                if (rightResult == null)
-                {
-                    continue;
+                    return null;
                 }
 
-                if (!mustCoerce)
+                if (rightResult != null)
                 {
-                    if (!leftResult.equals(rightResult))
+                    hasNonNullRow = true;
+                    if (!mustCoerce)
                     {
-                        return true;
+                        if (!leftResult.equals(rightResult))
+                        {
+                            return true;
+                        }
+                    }
+                    else
+                    {
+                        Number left = coercer.coerceBoxed((Number) leftResult);
+                        Number right = coercer.coerceBoxed((Number) rightResult);
+                        if (!left.equals(right))
+                        {
+                            return true;
+                        }
                     }
                 }
                 else
                 {
-                    Number left = JavaClassHelper.coerceBoxed((Number) leftResult, coercionType);
-                    Number right = JavaClassHelper.coerceBoxed((Number) rightResult, coercionType);
-                    if (!left.equals(right))
-                    {
-                        return true;
-                    }
+                    hasNullRow = true;
                 }
+            }
+
+            if ((!hasNonNullRow) || (hasNullRow))
+            {
+                return null;
             }
 
             return false;
@@ -104,6 +118,8 @@ public class SubselectEvalStrategyEqualsAny implements SubselectEvalStrategy
         else
         {
             // Evaluate each select until we have a match
+            boolean hasNonNullRow = false;
+            boolean hasNullRow = false;
             for (EventBean event : matchingEvents)
             {
                 events[0] = event;
@@ -127,36 +143,40 @@ public class SubselectEvalStrategyEqualsAny implements SubselectEvalStrategy
                         continue;
                     }
                 }
-
                 if (leftResult == null)
                 {
-                    if (rightResult == null)
-                    {
-                        return true;
-                    }
-                    continue;
-                }
-                if (rightResult == null)
-                {
-                    continue;
+                    return null;
                 }
 
-                if (!mustCoerce)
+                if (rightResult != null)
                 {
-                    if (leftResult.equals(rightResult))
+                    hasNonNullRow = true;
+                    if (!mustCoerce)
                     {
-                        return true;
+                        if (leftResult.equals(rightResult))
+                        {
+                            return true;
+                        }
+                    }
+                    else
+                    {
+                        Number left = coercer.coerceBoxed((Number) leftResult);
+                        Number right = coercer.coerceBoxed((Number) rightResult);
+                        if (left.equals(right))
+                        {
+                            return true;
+                        }
                     }
                 }
                 else
                 {
-                    Number left = JavaClassHelper.coerceBoxed((Number) leftResult, coercionType);
-                    Number right = JavaClassHelper.coerceBoxed((Number) rightResult, coercionType);
-                    if (left.equals(right))
-                    {
-                        return true;
-                    }
+                    hasNullRow = true;
                 }
+            }
+
+            if ((!hasNonNullRow) || (hasNullRow))
+            {
+                return null;
             }
 
             return false;

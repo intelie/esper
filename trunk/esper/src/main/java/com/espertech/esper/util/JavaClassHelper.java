@@ -37,6 +37,10 @@ public class JavaClassHelper
      */
     public static Class getBoxedType(Class clazz)
     {
+        if (clazz == null)
+        {
+            return clazz;
+        }
         if (!clazz.isPrimitive())
         {
             return clazz;
@@ -422,20 +426,28 @@ public class JavaClassHelper
      * @return One of Long.class, Double.class or String.class
      * @throws IllegalArgumentException if the types cannot be compared
      */
-    public static Class getCompareToCoercionType(Class typeOne, Class typeTwo)
+    public static Class getCompareToCoercionType(Class typeOne, Class typeTwo) throws CoercionException
     {
         if ((typeOne == String.class) && (typeTwo == String.class))
         {
             return String.class;
         }
-        if (  ((typeOne == boolean.class) || ((typeOne == Boolean.class))) &&
-              ((typeTwo == boolean.class) || ((typeTwo == Boolean.class))) )
+        if ( ((typeOne == boolean.class) || ((typeOne == Boolean.class))) &&
+             ((typeTwo == boolean.class) || ((typeTwo == Boolean.class))) )
         {
             return Boolean.class;
         }
+        if (!isJavaBuiltinDataType(typeOne) && (!isJavaBuiltinDataType(typeTwo)))
+        {
+            if (typeOne != typeTwo)
+            {
+                return Object.class;
+            }
+            return typeOne;
+        }
         if (!isNumeric(typeOne) || !isNumeric(typeTwo))
         {
-            throw new IllegalArgumentException("Types cannot be compared: " +
+            throw new CoercionException("Types cannot be compared: " +
                     typeOne.getName() + " and " + typeTwo.getName());
         }
         return getArithmaticCoercionType(typeOne, typeTwo);
@@ -695,31 +707,50 @@ public class JavaClassHelper
         // Check if all char
         if (types[0] == Character.class)
         {
-            for (int i = 0; i < types.length; i++)
+            for (Class type : types)
             {
-                if (types[i] != Character.class)
+                if (type != Character.class)
                 {
-                    throw new CoercionException("Cannot coerce to Boolean type " + types[i].getName());
+                    throw new CoercionException("Cannot coerce to Boolean type " + type.getName());
                 }
             }
             return Character.class;
         }
 
         // Check if all the same non-Java builtin type, i.e. Java beans etc.
-        if (!isJavaBuiltinDataType(types[0]))
+        boolean isAllBuiltinTypes = true;
+        boolean isAllNumeric = true;
+        for (Class type : types)
         {
-            for (int i = 0; i < types.length; i++)
+            if (isNumeric(type))
             {
-                if (types[i] != types[0])
+                continue;
+            }
+            else if (!isJavaBuiltinDataType(type))
+            {
+                isAllBuiltinTypes = false;
+            }
+        }
+
+        // handle all built-in types
+        if (!isAllBuiltinTypes)
+        {
+            for (Class type : types)
+            {
+                if (isJavaBuiltinDataType(type))
                 {
-                    throw new CoercionException("Cannot coerce to type " + types[0].getName());
+                    throw new CoercionException("Cannot coerce to " + types[0].getName() + " type " + type.getName());
+                }
+                if (type != types[0])
+                {
+                    return Object.class;
                 }
             }
             return types[0];
         }
 
-        // Test for numeric
-        if (!isNumeric(types[0]))
+        // test for numeric
+        if (!isAllNumeric)
         {
             throw new CoercionException("Cannot coerce to numeric type " + types[0].getName());
         }

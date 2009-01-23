@@ -1087,6 +1087,22 @@ public class StatementSpecMapper
             unmapContext.addAll(unmapped.getIndexedParams());
             return new SubqueryExistsExpression(unmapped.getObjectModel());
         }
+        else if (expr instanceof ExprSubselectAllSomeAnyNode)
+        {
+            ExprSubselectAllSomeAnyNode sub = (ExprSubselectAllSomeAnyNode) expr;
+            StatementSpecUnMapResult unmapped = unmap(sub.getStatementSpecRaw());
+            unmapContext.addAll(unmapped.getIndexedParams());
+            String operator = "=";
+            if (sub.isNot())
+            {
+                operator = "!=";
+            }
+            if (sub.getRelationalOp() != null)
+            {
+                operator = sub.getRelationalOp().toString();
+            }
+            return new SubqueryQualifiedExpression(unmapped.getObjectModel(), sub.isNot() ? "!=" : "=", sub.isAll());
+        }
         else if (expr instanceof ExprCountNode)
         {
             ExprCountNode sub = (ExprCountNode) expr;

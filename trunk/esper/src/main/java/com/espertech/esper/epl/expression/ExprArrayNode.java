@@ -8,25 +8,28 @@
  **************************************************************************************/
 package com.espertech.esper.epl.expression;
 
-import com.espertech.esper.epl.core.StreamTypeService;
+import com.espertech.esper.client.EventBean;
 import com.espertech.esper.epl.core.MethodResolutionService;
+import com.espertech.esper.epl.core.StreamTypeService;
 import com.espertech.esper.epl.core.ViewResourceDelegate;
 import com.espertech.esper.epl.variable.VariableService;
-import com.espertech.esper.client.EventBean;
-import com.espertech.esper.util.JavaClassHelper;
-import com.espertech.esper.util.CoercionException;
 import com.espertech.esper.schedule.TimeProvider;
+import com.espertech.esper.util.CoercionException;
+import com.espertech.esper.util.JavaClassHelper;
+import com.espertech.esper.util.SimpleNumberCoercer;
+import com.espertech.esper.util.SimpleNumberCoercerFactory;
 
-import java.util.List;
-import java.util.LinkedList;
 import java.lang.reflect.Array;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Represents an array in a filter expressiun tree.
  */
 public class ExprArrayNode extends ExprNode
 {
-    private Class coercionType;
+    private Class arrayReturnType;
+    private SimpleNumberCoercer coercer;
     private boolean mustCoerce;
     private int length;
     private Object constantResult;
@@ -45,7 +48,7 @@ public class ExprArrayNode extends ExprNode
         // Can be an empty array with no content
         if (this.getChildNodes().size() == 0)
         {
-            coercionType = Object.class;
+            arrayReturnType = Object.class;
             constantResult = new Object[0];
             return;
         }
@@ -58,18 +61,22 @@ public class ExprArrayNode extends ExprNode
 
         // Determine common denominator type
         try {
-            coercionType = JavaClassHelper.getCommonCoercionType(comparedTypes.toArray(new Class[0]));
+            arrayReturnType = JavaClassHelper.getCommonCoercionType(comparedTypes.toArray(new Class[comparedTypes.size()]));
 
             // Determine if we need to coerce numbers when one type doesn't match any other type
-            if (JavaClassHelper.isNumeric(coercionType))
+            if (JavaClassHelper.isNumeric(arrayReturnType))
             {
                 mustCoerce = false;
                 for (Class comparedType : comparedTypes)
                 {
-                    if (comparedType != coercionType)
+                    if (comparedType != arrayReturnType)
                     {
                         mustCoerce = true;
                     }
+                }
+                if (mustCoerce)
+                {
+                    coercer = SimpleNumberCoercerFactory.getCoercer(null, arrayReturnType);
                 }
             }
         }
@@ -78,9 +85,9 @@ public class ExprArrayNode extends ExprNode
             // expected, such as mixing String and int values, or Java classes (not boxed) and primitives
             // use Object[] in such cases
         }
-        if (coercionType == null)
+        if (arrayReturnType == null)
         {
-            coercionType = Object.class;
+            arrayReturnType = Object.class;
         }
 
         // Determine if we are dealing with constants only
@@ -99,7 +106,7 @@ public class ExprArrayNode extends ExprNode
         // Copy constants into array and coerce, if required
         if (results != null)
         {
-            constantResult = Array.newInstance(coercionType, length);
+            constantResult = Array.newInstance(arrayReturnType, length);
             for (int i = 0; i < length; i++)
             {
                 if (mustCoerce)
@@ -107,7 +114,7 @@ public class ExprArrayNode extends ExprNode
                     Number boxed = (Number) results[i];
                     if (boxed != null)
                     {
-                        Object coercedResult = JavaClassHelper.coerceBoxed(boxed, coercionType);
+                        Object coercedResult = coercer.coerceBoxed(boxed);
                         Array.set(constantResult, i, coercedResult);
                     }
                 }
@@ -126,7 +133,7 @@ public class ExprArrayNode extends ExprNode
 
     public Class getType()
     {
-        return Array.newInstance(coercionType, 0).getClass();
+        return Array.newInstance(arrayReturnType, 0).getClass();
     }
 
     public Object evaluate(EventBean[] eventsPerStream, boolean isNewData)
@@ -136,7 +143,7 @@ public class ExprArrayNode extends ExprNode
             return constantResult;
         }
 
-        Object array = Array.newInstance(coercionType, length);
+        Object array = Array.newInstance(arrayReturnType, length);
 
         if (length == 0)
         {
@@ -152,7 +159,7 @@ public class ExprArrayNode extends ExprNode
                 if (mustCoerce)
                 {
                     Number boxed = (Number) result;
-                    Object coercedResult = JavaClassHelper.coerceBoxed(boxed, coercionType);
+                    Object coercedResult = coercer.coerceBoxed(boxed);
                     Array.set(array, index, coercedResult);
                 }
                 else

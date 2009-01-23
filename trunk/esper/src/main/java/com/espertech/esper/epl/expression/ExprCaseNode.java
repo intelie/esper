@@ -17,6 +17,8 @@ import com.espertech.esper.client.EventBean;
 import com.espertech.esper.schedule.TimeProvider;
 import com.espertech.esper.util.CoercionException;
 import com.espertech.esper.util.JavaClassHelper;
+import com.espertech.esper.util.SimpleNumberCoercerFactory;
+import com.espertech.esper.util.SimpleNumberCoercer;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -32,8 +34,8 @@ public class ExprCaseNode extends ExprNode
     private ExprNode optionalElseExprNode;
     private Class resultType;
     private boolean isNumericResult;
-    private Class coercionType;
     private boolean mustCoerce;
+    private SimpleNumberCoercer coercer;
 
     /**
      * Ctor.
@@ -213,7 +215,7 @@ public class ExprCaseNode extends ExprNode
 
         // Determine common denominator type
         try {
-            coercionType = JavaClassHelper.getCommonCoercionType(comparedTypes.toArray(new Class[comparedTypes.size()]));
+            Class coercionType = JavaClassHelper.getCommonCoercionType(comparedTypes.toArray(new Class[comparedTypes.size()]));
 
             // Determine if we need to coerce numbers when one type doesn't match any other type
             if (JavaClassHelper.isNumeric(coercionType))
@@ -225,6 +227,10 @@ public class ExprCaseNode extends ExprNode
                     {
                         mustCoerce = true;
                     }
+                }
+                if (mustCoerce)
+                {
+                    coercer = SimpleNumberCoercerFactory.getCoercer(null, coercionType);
                 }
             }
         }
@@ -324,8 +330,8 @@ public class ExprCaseNode extends ExprNode
         }
         else
         {
-            Number left = JavaClassHelper.coerceBoxed((Number) leftResult, coercionType);
-            Number right = JavaClassHelper.coerceBoxed((Number) rightResult, coercionType);
+            Number left = coercer.coerceBoxed((Number) leftResult);
+            Number right = coercer.coerceBoxed((Number) rightResult);
             return left.equals(right);
         }
     }

@@ -15,6 +15,8 @@ import com.espertech.esper.epl.variable.VariableService;
 import com.espertech.esper.client.EventBean;
 import com.espertech.esper.util.JavaClassHelper;
 import com.espertech.esper.util.CoercionException;
+import com.espertech.esper.util.SimpleNumberCoercerFactory;
+import com.espertech.esper.util.SimpleNumberCoercer;
 import com.espertech.esper.schedule.TimeProvider;
 
 import java.util.*;
@@ -27,11 +29,11 @@ public class ExprInNode extends ExprNode
 {
     private final boolean isNotIn;
 
-    private Class coercionType;
     private boolean mustCoerce;
     private boolean hasCollection;
     private boolean[] isMap;
     private boolean[] isCollection;
+    private SimpleNumberCoercer coercer;
 
     /**
      * Ctor.
@@ -102,7 +104,7 @@ public class ExprInNode extends ExprNode
 
         // Determine common denominator type
         try {
-            coercionType = JavaClassHelper.getCommonCoercionType(comparedTypes.toArray(new Class[comparedTypes.size()]));
+            Class coercionType = JavaClassHelper.getCommonCoercionType(comparedTypes.toArray(new Class[comparedTypes.size()]));
 
             // Determine if we need to coerce numbers when one type doesn't match any other type
             if (JavaClassHelper.isNumeric(coercionType))
@@ -116,6 +118,11 @@ public class ExprInNode extends ExprNode
                         break;
                     }
                 }
+
+                if (mustCoerce)
+                {
+                    coercer = SimpleNumberCoercerFactory.getCoercer(null, coercionType);
+                }
             }
         }
         catch (CoercionException ex)
@@ -127,15 +134,6 @@ public class ExprInNode extends ExprNode
     public Class getType()
     {
         return Boolean.class;
-    }
-
-    /**
-     * Returns the coercion type to use if coercion is required.
-     * @return coercion type
-     */
-    public Class getCoercionType()
-    {
-        return coercionType;
     }
 
     public Object evaluate(EventBean[] eventsPerStream, boolean isNewData)
@@ -152,37 +150,73 @@ public class ExprInNode extends ExprNode
             {
                 if (inPropResult != null)
                 {
-                    inPropResult = JavaClassHelper.coerceBoxed((Number) inPropResult, coercionType);
+                    inPropResult = coercer.coerceBoxed((Number) inPropResult);
                 }
             }
 
             // handle value-by-value compare
+            boolean hasNonNullRow = false;
+            boolean hasNullRow = false;
             do
             {
                 ExprNode inSetValueExpr = it.next();
                 Object subExprResult = inSetValueExpr.evaluate(eventsPerStream, isNewData);
 
-                if (compare(inPropResult, subExprResult)) {
-                    matched = true;
-                    break;
+                if (subExprResult == null)
+                {
+                    hasNullRow = true;
+                }
+                else
+                {
+                    hasNonNullRow = true;
+                    if (compare(inPropResult, subExprResult)) {
+                        matched = true;
+                        break;
+                    }
                 }
             }
             while (it.hasNext());
+
+            if (!matched)
+            {
+                if ((!hasNonNullRow) || (hasNullRow))
+                {
+                    return null;
+                }
+            }
         }
         else
         {
             int index = 1;  // right-side nodes start at 1
+            boolean hasNonNullRow = false;
+            boolean hasNullRow = false;
             do
             {
                 ExprNode inSetValueExpr = it.next();
                 Object subExprResult = inSetValueExpr.evaluate(eventsPerStream, isNewData);
-                if (compareCollectionable(inPropResult, subExprResult, index)) {
-                    matched = true;
-                    break;
+
+                if (subExprResult == null)
+                {
+                    hasNullRow = true;
                 }
-                index++;
+                else
+                {
+                    if (compareCollectionable(inPropResult, subExprResult, index)) {
+                        matched = true;
+                        break;
+                    }
+                    index++;
+                }
             }
             while (it.hasNext());
+
+            if (!matched)
+            {
+                if ((!hasNonNullRow) || (hasNullRow))
+                {
+                    return null;
+                }
+            }            
         }
 
         if (isNotIn)
@@ -254,7 +288,7 @@ public class ExprInNode extends ExprNode
         }
         else
         {
-            Number right = JavaClassHelper.coerceBoxed((Number) rightResult, coercionType);
+            Number right = coercer.coerceBoxed((Number) rightResult);
             return leftResult.equals(right);
         }
     }
@@ -274,7 +308,7 @@ public class ExprInNode extends ExprNode
         {
             if (mustCoerce)
             {
-                leftResult = JavaClassHelper.coerceBoxed((Number) leftResult, coercionType);
+                leftResult = coercer.coerceBoxed((Number) leftResult);
             }
             for (int i = 0; i < Array.getLength(rightResult); i++)
             {
@@ -285,7 +319,7 @@ public class ExprInNode extends ExprNode
                 }
                 if (mustCoerce && (value != null) && (value instanceof Number))
                 {
-                    Number right = JavaClassHelper.coerceBoxed((Number) value, coercionType);
+                    Number right = coercer.coerceBoxed((Number) value);
                     if (leftResult.equals(right))
                     {
                         return true;
@@ -308,8 +342,8 @@ public class ExprInNode extends ExprNode
         {
             if (mustCoerce)
             {
-                leftResult = JavaClassHelper.coerceBoxed((Number) leftResult, coercionType);
-                rightResult = JavaClassHelper.coerceBoxed((Number) rightResult, coercionType);
+                leftResult = coercer.coerceBoxed((Number) leftResult);
+                rightResult = coercer.coerceBoxed((Number) rightResult);
             }
             return leftResult.equals(rightResult);
         }

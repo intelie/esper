@@ -92,18 +92,14 @@ public class SubselectEvalStrategyFactory
         }
 
         // Check if we need to coerce
-        if ((coercionType == JavaClassHelper.getBoxedType(typeOne)) &&
-            (coercionType == JavaClassHelper.getBoxedType(typeTwo)))
+        mustCoerce = false;
+        if ((coercionType != JavaClassHelper.getBoxedType(typeOne)) ||
+            (coercionType != JavaClassHelper.getBoxedType(typeTwo)))
         {
-            mustCoerce = false;
-        }
-        else
-        {
-            if (!JavaClassHelper.isNumeric(coercionType))
+            if (JavaClassHelper.isNumeric(coercionType))
             {
-                throw new IllegalStateException("Coercion type " + coercionType + " not numeric");
+                mustCoerce = true;
             }
-            mustCoerce = true;
         }
 
         if (isAll)
