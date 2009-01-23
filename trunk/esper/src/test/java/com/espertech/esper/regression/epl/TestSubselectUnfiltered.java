@@ -155,10 +155,10 @@ public class TestSubselectUnfiltered extends TestCase {
     public void testInvalidSubselect()
     {
         tryInvalid("select (select id from S1) from S0",
-                   "Error starting view: Subqueries require one or more views to limit the stream, consider declaring a length or time window [select (select id from S1) from S0]");
+                   "Error starting statement: Subqueries require one or more views to limit the stream, consider declaring a length or time window [select (select id from S1) from S0]");
 
         tryInvalid("select (select dummy from S1.std:lastevent()) as idS1 from S0",
-                   "Error starting view: Property named 'dummy' is not valid in any stream [select (select dummy from S1.std:lastevent()) as idS1 from S0]");
+                   "Error starting statement: Property named 'dummy' is not valid in any stream [select (select dummy from S1.std:lastevent()) as idS1 from S0]");
 
         tryInvalid("select (select id, id from S1) as idS1 from S0",
                    "Incorrect syntax near ',' expecting 'from' but found a comma ',' at line 1 column 17, please check the subquery within the select clause [select (select id, id from S1) as idS1 from S0]");
@@ -170,28 +170,28 @@ public class TestSubselectUnfiltered extends TestCase {
                    "Incorrect syntax near 'id' at line 1 column 51, please check the subquery within the select clause near reserved keyword 'from' [select (select (select id from S1.std:lastevent()) id from S1.std:lastevent()) as idS1 from S0]");
 
         tryInvalid("select (select id from S1.std:lastevent() where (sum(id) = 5)) as idS1 from S0",
-                   "Error starting view: Aggregation functions are not supported within subquery filters, consider using insert-into instead [select (select id from S1.std:lastevent() where (sum(id) = 5)) as idS1 from S0]");
+                   "Error starting statement: Aggregation functions are not supported within subquery filters, consider using insert-into instead [select (select id from S1.std:lastevent() where (sum(id) = 5)) as idS1 from S0]");
 
         tryInvalid("select * from S0(id=5 and (select id from S1))",
                    "Subselects not allowed within filters [select * from S0(id=5 and (select id from S1))]");
 
         tryInvalid("select * from S0 group by id + (select id from S1)",
-                   "Error starting view: Subselects not allowed within group-by [select * from S0 group by id + (select id from S1)]");
+                   "Error starting statement: Subselects not allowed within group-by [select * from S0 group by id + (select id from S1)]");
 
         tryInvalid("select * from S0 group by id having (select id from S1)",
-                   "Error starting view: Subselects not allowed within having-clause [select * from S0 group by id having (select id from S1)]");
+                   "Error starting statement: Subselects not allowed within having-clause [select * from S0 group by id having (select id from S1)]");
 
         tryInvalid("select * from S0 order by (select id from S1) asc",
-                   "Error starting view: Subselects not allowed within order-by clause [select * from S0 order by (select id from S1) asc]");
+                   "Error starting statement: Subselects not allowed within order-by clause [select * from S0 order by (select id from S1) asc]");
 
         tryInvalid("select (select id from S1.std:lastevent() where 'a') from S0",
-                   "Error starting view: Subselect filter expression must return a boolean value [select (select id from S1.std:lastevent() where 'a') from S0]");
+                   "Error starting statement: Subselect filter expression must return a boolean value [select (select id from S1.std:lastevent() where 'a') from S0]");
 
         tryInvalid("select (select id from S1.std:lastevent() where id = p00) from S0",
-                   "Error starting view: Property named 'p00' must be prefixed by a stream name, use the as-clause to name the stream [select (select id from S1.std:lastevent() where id = p00) from S0]");
+                   "Error starting statement: Property named 'p00' must be prefixed by a stream name, use the as-clause to name the stream [select (select id from S1.std:lastevent() where id = p00) from S0]");
 
         tryInvalid("select id in (select * from S1.win:length(1000)) as value from S0",
-                   "Error starting view: Implicit conversion from datatype 'SupportBean_S1' to 'Integer' is not allowed [select id in (select * from S1.win:length(1000)) as value from S0]");
+                   "Error starting statement: Implicit conversion from datatype 'SupportBean_S1' to 'Integer' is not allowed [select id in (select * from S1.win:length(1000)) as value from S0]");
     }
 
     public void testUnfilteredStreamPrior_OM() throws Exception

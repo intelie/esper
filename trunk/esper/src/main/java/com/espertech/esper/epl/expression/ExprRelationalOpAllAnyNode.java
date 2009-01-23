@@ -42,6 +42,11 @@ public class ExprRelationalOpAllAnyNode extends ExprNode
         return false;
     }
 
+    public boolean isAll()
+    {
+        return isAll;
+    }
+
     /**
      * Returns the type of relational op used.
      * @return enum with relational op type

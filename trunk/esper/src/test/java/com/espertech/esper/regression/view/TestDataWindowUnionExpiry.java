@@ -427,16 +427,16 @@ public class TestDataWindowUnionExpiry extends TestCase
         String text = null;
 
         text = "select * from SupportBean.std:unique(string).std:unique(intPrimitive).stat:uni(intPrimitive) retain-union";
-        tryInvalid(text, "Error starting view: Retain keywords require that only data windows views are specified [select * from SupportBean.std:unique(string).std:unique(intPrimitive).stat:uni(intPrimitive) retain-union]");
+        tryInvalid(text, "Error starting statement: Retain keywords require that only data windows views are specified [select * from SupportBean.std:unique(string).std:unique(intPrimitive).stat:uni(intPrimitive) retain-union]");
 
         text = "select string from SupportBean.std:groupby(string).std:groupby(intPrimitive).std:unique(string).std:unique(intPrimitive) retain-union";
-        tryInvalid(text, "Error starting view: Multiple group-by views are not allowed in conjuntion with retain keywords [select string from SupportBean.std:groupby(string).std:groupby(intPrimitive).std:unique(string).std:unique(intPrimitive) retain-union]");
+        tryInvalid(text, "Error starting statement: Multiple group-by views are not allowed in conjuntion with retain keywords [select string from SupportBean.std:groupby(string).std:groupby(intPrimitive).std:unique(string).std:unique(intPrimitive) retain-union]");
 
         text = "select string from SupportBean.std:unique(string).std:unique(intPrimitive)";
-        tryInvalid(text, "Error starting view: Multiple data window views are not allowed by default configuration, please use one of the retain keywords or the change configuration [select string from SupportBean.std:unique(string).std:unique(intPrimitive)]");
+        tryInvalid(text, "Error starting statement: Multiple data window views are not allowed by default configuration, please use one of the retain keywords or the change configuration [select string from SupportBean.std:unique(string).std:unique(intPrimitive)]");
 
         text = "select string from SupportBean.std:groupby(string).std:unique(string).std:merge(string) retain-union";
-        tryInvalid(text, "Error starting view: Error attaching view to parent view: Group by view for this merge view could not be found among parent views [select string from SupportBean.std:groupby(string).std:unique(string).std:merge(string) retain-union]");
+        tryInvalid(text, "Error starting statement: Error attaching view to parent view: Group by view for this merge view could not be found among parent views [select string from SupportBean.std:groupby(string).std:unique(string).std:merge(string) retain-union]");
     }
 
     public void testValidLegacy()

@@ -41,7 +41,7 @@ public class TestSelectExprStreamSelector extends TestCase
         }
         catch (Exception ex)
         {
-            assertEquals("Error starting view: The property wildcard syntax must be used without column name [select simpleProperty.* as a from com.espertech.esper.support.bean.SupportBeanComplexProps as s0]", ex.getMessage());
+            assertEquals("Error starting statement: The property wildcard syntax must be used without column name [select simpleProperty.* as a from com.espertech.esper.support.bean.SupportBeanComplexProps as s0]", ex.getMessage());
         }
     }
 
@@ -392,16 +392,16 @@ public class TestSelectExprStreamSelector extends TestCase
     public void testInvalidSelect()
     {
         tryInvalid("select string.* as string, string from " + SupportBean.class.getName() + ".win:length(3) as string",
-                   "Error starting view: Column name 'string' appears more then once in select clause [select string.* as string, string from com.espertech.esper.support.bean.SupportBean.win:length(3) as string]");
+                   "Error starting statement: Column name 'string' appears more then once in select clause [select string.* as string, string from com.espertech.esper.support.bean.SupportBean.win:length(3) as string]");
 
         tryInvalid("select s1.* as abc from " + SupportBean.class.getName() + ".win:length(3) as s0",
-                   "Error starting view: Stream selector 's1.*' does not match any stream name in the from clause [select s1.* as abc from com.espertech.esper.support.bean.SupportBean.win:length(3) as s0]");
+                   "Error starting statement: Stream selector 's1.*' does not match any stream name in the from clause [select s1.* as abc from com.espertech.esper.support.bean.SupportBean.win:length(3) as s0]");
 
         tryInvalid("select s0.* as abc, s0.* as abc from " + SupportBean.class.getName() + ".win:length(3) as s0",
-                   "Error starting view: Column name 'abc' appears more then once in select clause [select s0.* as abc, s0.* as abc from com.espertech.esper.support.bean.SupportBean.win:length(3) as s0]");
+                   "Error starting statement: Column name 'abc' appears more then once in select clause [select s0.* as abc, s0.* as abc from com.espertech.esper.support.bean.SupportBean.win:length(3) as s0]");
 
         tryInvalid("select s0.*, s1.* from " + SupportBean.class.getName() + ".win:keepall() as s0, " + SupportBean.class.getName() + ".win:keepall() as s1",
-                   "Error starting view: A column name must be supplied for all but one stream if multiple streams are selected via the stream.* notation [select s0.*, s1.* from com.espertech.esper.support.bean.SupportBean.win:keepall() as s0, com.espertech.esper.support.bean.SupportBean.win:keepall() as s1]");
+                   "Error starting statement: A column name must be supplied for all but one stream if multiple streams are selected via the stream.* notation [select s0.*, s1.* from com.espertech.esper.support.bean.SupportBean.win:keepall() as s0, com.espertech.esper.support.bean.SupportBean.win:keepall() as s1]");
     }
 
     private void tryInvalid(String clause, String message)

@@ -117,7 +117,6 @@ public class ExprEqualsAllAnyNode extends ExprNode
                 coercer = SimpleNumberCoercerFactory.getCoercer(null, JavaClassHelper.getBoxedType(coercionType));
             }
         }
-
     }
 
     public boolean isConstantResult()
@@ -498,16 +497,16 @@ public class ExprEqualsAllAnyNode extends ExprNode
         else
         {
             int len = this.getChildNodes().size() - 1;
+            if ((len > 0) && (leftResult == null))
+            {
+                return null;
+            }
             boolean hasNonNullRow = false;
             boolean hasNullRow = false;
             for (int i = 1; i <= len; i++)
             {
                 Object rightResult = this.getChildNodes().get(i).evaluate(eventsPerStream, isNewData);
 
-                if (leftResult == null)
-                {
-                    return null;
-                }
                 if (rightResult == null)
                 {
                     hasNullRow = true;

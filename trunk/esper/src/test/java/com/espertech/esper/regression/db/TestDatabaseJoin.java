@@ -199,7 +199,7 @@ public class TestDatabaseJoin extends TestCase
         }
         catch (EPStatementException ex)
         {
-            assertEquals("Error starting view: Error in statement 'select mychar,, from mytesttable where ', failed to obtain result metadata, consider turning off metadata interrogation via configuration, please check the statement, reason: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ' from mytesttable where' at line 1 [select myvarchar from  sql:MyDB ['select mychar,, from mytesttable where '] as s0,com.espertech.esper.support.bean.SupportBeanComplexProps as s1]", ex.getMessage());
+            assertEquals("Error starting statement: Error in statement 'select mychar,, from mytesttable where ', failed to obtain result metadata, consider turning off metadata interrogation via configuration, please check the statement, reason: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ' from mytesttable where' at line 1 [select myvarchar from  sql:MyDB ['select mychar,, from mytesttable where '] as s0,com.espertech.esper.support.bean.SupportBeanComplexProps as s1]", ex.getMessage());
         }
     }
 
@@ -217,7 +217,7 @@ public class TestDatabaseJoin extends TestCase
         }
         catch (EPStatementException ex)
         {
-            assertEquals("Error starting view: Circular dependency detected between historical streams [select s0.myvarchar as s0Name, s1.mychar as s1Name from sql:MyDB ['select myvarchar from mytesttable where ${mychar} = mytesttable.mybigint'] as s0, sql:MyDB ['select mychar from mytesttable where ${myvarchar} = mytesttable.mybigint']  as s1]", ex.getMessage());
+            assertEquals("Error starting statement: Circular dependency detected between historical streams [select s0.myvarchar as s0Name, s1.mychar as s1Name from sql:MyDB ['select myvarchar from mytesttable where ${mychar} = mytesttable.mybigint'] as s0, sql:MyDB ['select mychar from mytesttable where ${myvarchar} = mytesttable.mybigint']  as s1]", ex.getMessage());
         }
     }
 
@@ -234,7 +234,7 @@ public class TestDatabaseJoin extends TestCase
         }
         catch (EPStatementException ex)
         {
-            assertEquals("Error starting view: Property 's1.xxx[0]' failed to resolve, reason: Property named 'xxx[0]' is not valid in stream 's1' [select myvarchar from  sql:MyDB ['select mychar from mytesttable where ${s1.xxx[0]} = mytesttable.mybigint'] as s0,com.espertech.esper.support.bean.SupportBeanComplexProps as s1]", ex.getMessage());
+            assertEquals("Error starting statement: Property 's1.xxx[0]' failed to resolve, reason: Property named 'xxx[0]' is not valid in stream 's1' [select myvarchar from  sql:MyDB ['select mychar from mytesttable where ${s1.xxx[0]} = mytesttable.mybigint'] as s0,com.espertech.esper.support.bean.SupportBeanComplexProps as s1]", ex.getMessage());
         }
     }
 
@@ -251,7 +251,7 @@ public class TestDatabaseJoin extends TestCase
         }
         catch (EPStatementException ex)
         {
-            assertEquals("Error starting view: Invalid property 'myvarchar' resolves to the historical data itself [select myvarchar from  sql:MyDB ['select myvarchar from mytesttable where ${myvarchar} = mytesttable.mybigint'] as s0,com.espertech.esper.support.bean.SupportBeanComplexProps as s1]", ex.getMessage());
+            assertEquals("Error starting statement: Invalid property 'myvarchar' resolves to the historical data itself [select myvarchar from  sql:MyDB ['select myvarchar from mytesttable where ${myvarchar} = mytesttable.mybigint'] as s0,com.espertech.esper.support.bean.SupportBeanComplexProps as s1]", ex.getMessage());
         }
     }
 
@@ -267,7 +267,7 @@ public class TestDatabaseJoin extends TestCase
         }
         catch (EPStatementException ex)
         {
-            assertEquals("Error starting view: Invalid property 'mybigint' resolves to the historical data itself [select myvarchar as s0Name from sql:MyDB ['select myvarchar, mybigint from mytesttable where ${mybigint} = myint'] as s0]", ex.getMessage());
+            assertEquals("Error starting statement: Invalid property 'mybigint' resolves to the historical data itself [select myvarchar as s0Name from sql:MyDB ['select myvarchar, mybigint from mytesttable where ${mybigint} = myint'] as s0]", ex.getMessage());
         }
     }
 
@@ -284,7 +284,7 @@ public class TestDatabaseJoin extends TestCase
         }
         catch (EPStatementException ex)
         {
-            assertEquals("Error starting view: Historical data joins do not allow views onto the data, view 'win:time' is not valid in this context [select myvarchar as s0Name from sql:MyDB ['select myvarchar from mytesttable where ${intPrimitive} = mytesttable.myint'].win:time(30 sec) as s0, com.espertech.esper.support.bean.SupportBean as s1]", ex.getMessage());
+            assertEquals("Error starting statement: Historical data joins do not allow views onto the data, view 'win:time' is not valid in this context [select myvarchar as s0Name from sql:MyDB ['select myvarchar from mytesttable where ${intPrimitive} = mytesttable.myint'].win:time(30 sec) as s0, com.espertech.esper.support.bean.SupportBean as s1]", ex.getMessage());
         }
     }
 

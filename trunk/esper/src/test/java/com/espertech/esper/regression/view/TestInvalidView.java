@@ -55,13 +55,13 @@ public class TestInvalidView extends TestCase
 
         // property near to spelling
         exceptionText = getStatementExceptionView("select INTPRIMITIVE from " + SupportBean.class.getName());
-        assertEquals("Error starting view: Property named 'INTPRIMITIVE' is not valid in any stream (did you mean 'intPrimitive'?) [select INTPRIMITIVE from com.espertech.esper.support.bean.SupportBean]", exceptionText);
+        assertEquals("Error starting statement: Property named 'INTPRIMITIVE' is not valid in any stream (did you mean 'intPrimitive'?) [select INTPRIMITIVE from com.espertech.esper.support.bean.SupportBean]", exceptionText);
 
         exceptionText = getStatementExceptionView("select s0.intPrimitv from " + SupportBean.class.getName() + " as s0");
-        assertEquals("Error starting view: Property named 'intPrimitv' is not valid in stream 's0' (did you mean 'intPrimitive'?) [select s0.intPrimitv from com.espertech.esper.support.bean.SupportBean as s0]", exceptionText);
+        assertEquals("Error starting statement: Property named 'intPrimitv' is not valid in stream 's0' (did you mean 'intPrimitive'?) [select s0.intPrimitv from com.espertech.esper.support.bean.SupportBean as s0]", exceptionText);
         
         exceptionText = getStatementExceptionView("select strring from " + SupportBean.class.getName());
-        assertEquals("Error starting view: Property named 'strring' is not valid in any stream (did you mean 'string'?) [select strring from com.espertech.esper.support.bean.SupportBean]", exceptionText);
+        assertEquals("Error starting statement: Property named 'strring' is not valid in any stream (did you mean 'string'?) [select strring from com.espertech.esper.support.bean.SupportBean]", exceptionText);
 
         // aggregation in where clause known
         exceptionText = getStatementExceptionView("select * from " + SupportBean.class.getName() + " where sum(intPrimitive) > 10");
@@ -73,7 +73,7 @@ public class TestInvalidView extends TestCase
 
         // invalid view
         exceptionText = getStatementExceptionView("select * from " + EVENT_NUM + ".dummy:dummy(10)");
-        assertEquals("Error starting view: View name 'dummy:dummy' is not a known view name [select * from com.espertech.esper.support.bean.SupportBean_N.dummy:dummy(10)]", exceptionText);
+        assertEquals("Error starting statement: View name 'dummy:dummy' is not a known view name [select * from com.espertech.esper.support.bean.SupportBean_N.dummy:dummy(10)]", exceptionText);
 
         // keyword used
         exceptionText = getSyntaxExceptionView("select order from " + SupportBean.class.getName());
@@ -81,7 +81,7 @@ public class TestInvalidView extends TestCase
 
         // invalid view parameter
         exceptionText = getStatementExceptionView("select * from " + EVENT_NUM + ".win:length('s')");
-        assertEquals("Error starting view: Error in view 'win:length', Length window view requires a single integer-type parameter [select * from com.espertech.esper.support.bean.SupportBean_N.win:length('s')]", exceptionText);
+        assertEquals("Error starting statement: Error in view 'win:length', Length window view requires a single integer-type parameter [select * from com.espertech.esper.support.bean.SupportBean_N.win:length('s')]", exceptionText);
 
         // where-clause relational op has invalid type
         exceptionText = getStatementExceptionView("select * from " + EVENT_ALLTYPES + ".win:length(1) where string > 5");
@@ -93,43 +93,43 @@ public class TestInvalidView extends TestCase
 
         // invalid numerical expression
         exceptionText = getStatementExceptionView("select 2 * 's' from " + EVENT_ALLTYPES + ".win:length(1)");
-        assertEquals("Error starting view: Implicit conversion from datatype 'String' to numeric is not allowed [select 2 * 's' from com.espertech.esper.support.bean.SupportBean.win:length(1)]", exceptionText);
+        assertEquals("Error starting statement: Implicit conversion from datatype 'String' to numeric is not allowed [select 2 * 's' from com.espertech.esper.support.bean.SupportBean.win:length(1)]", exceptionText);
 
         // invalid property in select
         exceptionText = getStatementExceptionView("select a[2].m('a') from " + EVENT_ALLTYPES + ".win:length(1)");
-        assertEquals("Error starting view: Property named 'a[2].m('a')' is not valid in any stream [select a[2].m('a') from com.espertech.esper.support.bean.SupportBean.win:length(1)]", exceptionText);
+        assertEquals("Error starting statement: Property named 'a[2].m('a')' is not valid in any stream [select a[2].m('a') from com.espertech.esper.support.bean.SupportBean.win:length(1)]", exceptionText);
 
         // select clause uses same "as" name twice
         exceptionText = getStatementExceptionView("select 2 as m, 2 as m from " + EVENT_ALLTYPES + ".win:length(1)");
-        assertEquals("Error starting view: Column name 'm' appears more then once in select clause [select 2 as m, 2 as m from com.espertech.esper.support.bean.SupportBean.win:length(1)]", exceptionText);
+        assertEquals("Error starting statement: Column name 'm' appears more then once in select clause [select 2 as m, 2 as m from com.espertech.esper.support.bean.SupportBean.win:length(1)]", exceptionText);
 
         // class in method invocation not found
         exceptionText = getStatementExceptionView("select unknownClass.method() from " + EVENT_NUM + ".win:length(10)");
-        assertEquals("Error starting view: Could not load class by name 'unknownClass'  [select unknownClass.method() from com.espertech.esper.support.bean.SupportBean_N.win:length(10)]", exceptionText);
+        assertEquals("Error starting statement: Could not load class by name 'unknownClass'  [select unknownClass.method() from com.espertech.esper.support.bean.SupportBean_N.win:length(10)]", exceptionText);
 
         // method not found
         exceptionText = getStatementExceptionView("select Math.unknownMethod() from " + EVENT_NUM + ".win:length(10)");
-        assertEquals("Error starting view: Could not find static method named 'unknownMethod' in class 'Math'  [select Math.unknownMethod() from com.espertech.esper.support.bean.SupportBean_N.win:length(10)]", exceptionText);
+        assertEquals("Error starting statement: Could not find static method named 'unknownMethod' in class 'Math'  [select Math.unknownMethod() from com.espertech.esper.support.bean.SupportBean_N.win:length(10)]", exceptionText);
 
         // invalid property in group-by
         exceptionText = getStatementExceptionView("select intPrimitive from " + EVENT_ALLTYPES + ".win:length(1) group by xxx");
-        assertEquals("Error starting view: Property named 'xxx' is not valid in any stream [select intPrimitive from com.espertech.esper.support.bean.SupportBean.win:length(1) group by xxx]", exceptionText);
+        assertEquals("Error starting statement: Property named 'xxx' is not valid in any stream [select intPrimitive from com.espertech.esper.support.bean.SupportBean.win:length(1) group by xxx]", exceptionText);
 
         // group-by not specifying a property
         exceptionText = getStatementExceptionView("select intPrimitive from " + EVENT_ALLTYPES + ".win:length(1) group by 5");
-        assertEquals("Error starting view: Group-by expressions must refer to property names [select intPrimitive from com.espertech.esper.support.bean.SupportBean.win:length(1) group by 5]", exceptionText);
+        assertEquals("Error starting statement: Group-by expressions must refer to property names [select intPrimitive from com.espertech.esper.support.bean.SupportBean.win:length(1) group by 5]", exceptionText);
 
         // group-by specifying aggregates
         exceptionText = getStatementExceptionView("select intPrimitive from " + EVENT_ALLTYPES + ".win:length(1) group by sum(intPrimitive)");
-        assertEquals("Error starting view: Group-by expressions cannot contain aggregate functions [select intPrimitive from com.espertech.esper.support.bean.SupportBean.win:length(1) group by sum(intPrimitive)]", exceptionText);
+        assertEquals("Error starting statement: Group-by expressions cannot contain aggregate functions [select intPrimitive from com.espertech.esper.support.bean.SupportBean.win:length(1) group by sum(intPrimitive)]", exceptionText);
 
         // invalid property in having clause
         exceptionText = getStatementExceptionView("select 2 * 's' from " + EVENT_ALLTYPES + ".win:length(1) group by intPrimitive having xxx > 5");
-        assertEquals("Error starting view: Implicit conversion from datatype 'String' to numeric is not allowed [select 2 * 's' from com.espertech.esper.support.bean.SupportBean.win:length(1) group by intPrimitive having xxx > 5]", exceptionText);
+        assertEquals("Error starting statement: Implicit conversion from datatype 'String' to numeric is not allowed [select 2 * 's' from com.espertech.esper.support.bean.SupportBean.win:length(1) group by intPrimitive having xxx > 5]", exceptionText);
 
         // invalid having clause - not a symbol in the group-by (non-aggregate)
         exceptionText = getStatementExceptionView("select sum(intPrimitive) from " + EVENT_ALLTYPES + ".win:length(1) group by intBoxed having doubleBoxed > 5");
-        assertEquals("Error starting view: Non-aggregated property 'doubleBoxed' in the HAVING clause must occur in the group-by clause [select sum(intPrimitive) from com.espertech.esper.support.bean.SupportBean.win:length(1) group by intBoxed having doubleBoxed > 5]", exceptionText);
+        assertEquals("Error starting statement: Non-aggregated property 'doubleBoxed' in the HAVING clause must occur in the group-by clause [select sum(intPrimitive) from com.espertech.esper.support.bean.SupportBean.win:length(1) group by intBoxed having doubleBoxed > 5]", exceptionText);
 
         // invalid outer join - not a symbol
         exceptionText = getStatementExceptionView("select * from " + EVENT_ALLTYPES + ".win:length(1) as aStr " +
@@ -161,35 +161,35 @@ public class TestInvalidView extends TestCase
 
         // invalid order by
         exceptionText = getStatementExceptionView("select * from " + EVENT_NUM + ".win:length(1) as aStr order by X");
-        assertEquals("Error starting view: Property named 'X' is not valid in any stream [select * from com.espertech.esper.support.bean.SupportBean_N.win:length(1) as aStr order by X]", exceptionText);
+        assertEquals("Error starting statement: Property named 'X' is not valid in any stream [select * from com.espertech.esper.support.bean.SupportBean_N.win:length(1) as aStr order by X]", exceptionText);
 
         // insert into with wildcard - not allowed
         exceptionText = getStatementExceptionView("insert into Google (a, b) select * from " + EVENT_NUM + ".win:length(1) as aStr");
-        assertEquals("Error starting view: Wildcard not allowed when insert-into specifies column order [insert into Google (a, b) select * from com.espertech.esper.support.bean.SupportBean_N.win:length(1) as aStr]", exceptionText);
+        assertEquals("Error starting statement: Wildcard not allowed when insert-into specifies column order [insert into Google (a, b) select * from com.espertech.esper.support.bean.SupportBean_N.win:length(1) as aStr]", exceptionText);
 
         // insert into with duplicate column names
         exceptionText = getStatementExceptionView("insert into Google (a, b, a) select boolBoxed, boolPrimitive, intBoxed from " + EVENT_NUM + ".win:length(1) as aStr");
-        assertEquals("Error starting view: Property name 'a' appears more then once in insert-into clause [insert into Google (a, b, a) select boolBoxed, boolPrimitive, intBoxed from com.espertech.esper.support.bean.SupportBean_N.win:length(1) as aStr]", exceptionText);
+        assertEquals("Error starting statement: Property name 'a' appears more then once in insert-into clause [insert into Google (a, b, a) select boolBoxed, boolPrimitive, intBoxed from com.espertech.esper.support.bean.SupportBean_N.win:length(1) as aStr]", exceptionText);
 
         // insert into mismatches selected columns
         exceptionText = getStatementExceptionView("insert into Google (a, b, c) select boolBoxed, boolPrimitive from " + EVENT_NUM + ".win:length(1) as aStr");
-        assertEquals("Error starting view: Number of supplied values in the select clause does not match insert-into clause [insert into Google (a, b, c) select boolBoxed, boolPrimitive from com.espertech.esper.support.bean.SupportBean_N.win:length(1) as aStr]", exceptionText);
+        assertEquals("Error starting statement: Number of supplied values in the select clause does not match insert-into clause [insert into Google (a, b, c) select boolBoxed, boolPrimitive from com.espertech.esper.support.bean.SupportBean_N.win:length(1) as aStr]", exceptionText);
 
         // mismatched type on coalesce columns
         exceptionText = getStatementExceptionView("select coalesce(boolBoxed, string) from " + SupportBean.class.getName() + ".win:length(1) as aStr");
-        assertEquals("Error starting view: Implicit conversion not allowed: Cannot coerce to Boolean type java.lang.String [select coalesce(boolBoxed, string) from com.espertech.esper.support.bean.SupportBean.win:length(1) as aStr]", exceptionText);
+        assertEquals("Error starting statement: Implicit conversion not allowed: Cannot coerce to Boolean type java.lang.String [select coalesce(boolBoxed, string) from com.espertech.esper.support.bean.SupportBean.win:length(1) as aStr]", exceptionText);
 
         // mismatched case compare type
         exceptionText = getStatementExceptionView("select case boolPrimitive when 1 then true end from " + SupportBean.class.getName() + ".win:length(1) as aStr");
-        assertEquals("Error starting view: Implicit conversion not allowed: Cannot coerce to Boolean type java.lang.Integer [select case boolPrimitive when 1 then true end from com.espertech.esper.support.bean.SupportBean.win:length(1) as aStr]", exceptionText);
+        assertEquals("Error starting statement: Implicit conversion not allowed: Cannot coerce to Boolean type java.lang.Integer [select case boolPrimitive when 1 then true end from com.espertech.esper.support.bean.SupportBean.win:length(1) as aStr]", exceptionText);
 
         // mismatched case result type
         exceptionText = getStatementExceptionView("select case when 1=2 then 1 when 1=3 then true end from " + SupportBean.class.getName() + ".win:length(1) as aStr");
-        assertEquals("Error starting view: Implicit conversion not allowed: Cannot coerce types java.lang.Integer and java.lang.Boolean [select case when 1=2 then 1 when 1=3 then true end from com.espertech.esper.support.bean.SupportBean.win:length(1) as aStr]", exceptionText);
+        assertEquals("Error starting statement: Implicit conversion not allowed: Cannot coerce types java.lang.Integer and java.lang.Boolean [select case when 1=2 then 1 when 1=3 then true end from com.espertech.esper.support.bean.SupportBean.win:length(1) as aStr]", exceptionText);
 
         // case expression not returning bool
         exceptionText = getStatementExceptionView("select case when 3 then 1 end from " + SupportBean.class.getName() + ".win:length(1) as aStr");
-        assertEquals("Error starting view: Case node 'when' expressions must return a boolean value [select case when 3 then 1 end from com.espertech.esper.support.bean.SupportBean.win:length(1) as aStr]", exceptionText);
+        assertEquals("Error starting statement: Case node 'when' expressions must return a boolean value [select case when 3 then 1 end from com.espertech.esper.support.bean.SupportBean.win:length(1) as aStr]", exceptionText);
 
         // function not known
         exceptionText = getStatementExceptionView("select gogglex(1) from " + EVENT_NUM + ".win:length(1)");

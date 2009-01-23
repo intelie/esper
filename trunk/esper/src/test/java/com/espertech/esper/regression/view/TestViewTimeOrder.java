@@ -251,13 +251,13 @@ public class TestViewTimeOrder extends TestCase
 
     public void testInvalid()
     {
-        assertEquals("Error starting view: Error attaching view to event stream: Invalid parameter expression 0: Property named 'bump' is not valid in any stream [select * from com.espertech.esper.support.bean.SupportBeanTimestamp.ext:time_order(bump, 10 sec)]",
+        assertEquals("Error starting statement: Error attaching view to event stream: Invalid parameter expression 0: Property named 'bump' is not valid in any stream [select * from com.espertech.esper.support.bean.SupportBeanTimestamp.ext:time_order(bump, 10 sec)]",
                     tryInvalid("select * from " + SupportBeanTimestamp.class.getName() + ".ext:time_order(bump, 10 sec)"));
 
-        assertEquals("Error starting view: Error attaching view to event stream: Time order view requires the expression supplying timestamp values, and a numeric or time period parameter for interval size [select * from com.espertech.esper.support.bean.SupportBeanTimestamp.ext:time_order(10 sec)]",
+        assertEquals("Error starting statement: Error attaching view to event stream: Time order view requires the expression supplying timestamp values, and a numeric or time period parameter for interval size [select * from com.espertech.esper.support.bean.SupportBeanTimestamp.ext:time_order(10 sec)]",
                     tryInvalid("select * from " + SupportBeanTimestamp.class.getName() + ".ext:time_order(10 sec)"));
 
-        assertEquals("Error starting view: Error attaching view to event stream: Invalid parameter expression 1: Property named 'abc' is not valid in any stream (did you mean 'id'?) [select * from com.espertech.esper.support.bean.SupportBeanTimestamp.ext:time_order(timestamp, abc)]",
+        assertEquals("Error starting statement: Error attaching view to event stream: Invalid parameter expression 1: Property named 'abc' is not valid in any stream (did you mean 'id'?) [select * from com.espertech.esper.support.bean.SupportBeanTimestamp.ext:time_order(timestamp, abc)]",
                     tryInvalid("select * from " + SupportBeanTimestamp.class.getName() + ".ext:time_order(timestamp, abc)"));
     }
 

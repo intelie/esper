@@ -98,7 +98,7 @@ public class TestInsertIntoTransposeStream extends TestCase
         }
         catch (Exception ex)
         {
-            assertEquals("Error starting view: Failed to resolve property 'inneritem.nestedValue' to a stream or nested property in a stream [select inneritem.nestedValue as result from MyStream]", ex.getMessage());
+            assertEquals("Error starting statement: Failed to resolve property 'inneritem.nestedValue' to a stream or nested property in a stream [select inneritem.nestedValue as result from MyStream]", ex.getMessage());
         }
     }
 

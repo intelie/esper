@@ -387,7 +387,7 @@ public class TestSubselectIn extends TestCase
         }
         catch (EPStatementException ex)
         {
-            assertEquals("Error starting view: Collection or array comparison is not allowed for the IN, ANY, SOME or ALL keywords [select intArr in (select intPrimitive from SupportBean.win:keepall()) as r1 from ArrayBean]", ex.getMessage());
+            assertEquals("Error starting statement: Collection or array comparison is not allowed for the IN, ANY, SOME or ALL keywords [select intArr in (select intPrimitive from SupportBean.win:keepall()) as r1 from ArrayBean]", ex.getMessage());
         }
     }
 

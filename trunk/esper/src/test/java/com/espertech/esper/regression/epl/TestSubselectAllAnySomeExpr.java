@@ -28,8 +28,6 @@ public class TestSubselectAllAnySomeExpr extends TestCase
     }
 
     // TODO:
-    // - test OM
-    // replace "error starting view" with "error starting statement".
     // - look at entity SQL, expose Collections methods
     //
     // Collections.unionSet(expression, ...expression)
@@ -47,11 +45,11 @@ public class TestSubselectAllAnySomeExpr extends TestCase
     {
         String[] fields = "g,ge,l,le".split(",");
         String stmtText = "select " +
-            "intPrimitive > all (select intPrimitive from SupportBean(string like 'S%').win:keepall()) as g, " +
-            "intPrimitive >= all (select intPrimitive from SupportBean(string like 'S%').win:keepall()) as ge, " +
-            "intPrimitive < all (select intPrimitive from SupportBean(string like 'S%').win:keepall()) as l, " +
-            "intPrimitive <= all (select intPrimitive from SupportBean(string like 'S%').win:keepall()) as le " +
-            " from SupportBean(string like 'E%')";
+            "intPrimitive > all (select intPrimitive from SupportBean((string like \"S%\")).win:keepall()) as g, " +
+            "intPrimitive >= all (select intPrimitive from SupportBean((string like \"S%\")).win:keepall()) as ge, " +
+            "intPrimitive < all (select intPrimitive from SupportBean((string like \"S%\")).win:keepall()) as l, " +
+            "intPrimitive <= all (select intPrimitive from SupportBean((string like \"S%\")).win:keepall()) as le " +
+            "from SupportBean((string like \"E%\"))";
         EPStatement stmt = epService.getEPAdministrator().createEPL(stmtText);
         stmt.addListener(listener);
 
@@ -87,13 +85,17 @@ public class TestSubselectAllAnySomeExpr extends TestCase
         }
         catch (EPStatementException ex)
         {
-            assertEquals("Error starting view: Collection or array comparison is not allowed for the IN, ANY, SOME or ALL keywords [select intArr > all (select intPrimitive from SupportBean.win:keepall()) from ArrayBean]", ex.getMessage());
+            assertEquals("Error starting statement: Collection or array comparison is not allowed for the IN, ANY, SOME or ALL keywords [select intArr > all (select intPrimitive from SupportBean.win:keepall()) from ArrayBean]", ex.getMessage());
         }
         
         // test OM
+        stmt.destroy();
         EPStatementObjectModel model = epService.getEPAdministrator().compileEPL(stmtText);
         assertEquals(stmtText, model.toEPL());
-        EPStatement stmtModel = epService.getEPAdministrator().create(model);
+        stmt = epService.getEPAdministrator().create(model);
+        stmt.addListener(listener);
+        epService.getEPRuntime().sendEvent(new SupportBean("E1", 1));
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {true, true, true, true});
     }
 
     public void testRelationalOpNullOrNoRows()
@@ -289,7 +291,7 @@ public class TestSubselectAllAnySomeExpr extends TestCase
         }
         catch (EPStatementException ex)
         {
-            assertEquals("Error starting view: Collection or array comparison is not allowed for the IN, ANY, SOME or ALL keywords [select intArr = all (select intPrimitive from SupportBean.win:keepall()) as r1 from ArrayBean]", ex.getMessage());
+            assertEquals("Error starting statement: Collection or array comparison is not allowed for the IN, ANY, SOME or ALL keywords [select intArr = all (select intPrimitive from SupportBean.win:keepall()) as r1 from ArrayBean]", ex.getMessage());
         }
     }
 

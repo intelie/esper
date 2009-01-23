@@ -362,7 +362,7 @@ public class TestRevisionDeclared extends TestCase
         }
         catch (EPStatementException ex)
         {
-            assertEquals("Error starting view: Selected event type is not a valid base or delta event type of revision event type 'RevisableQuote' [insert into RevQuote select * from com.espertech.esper.support.bean.SupportBean]", ex.getMessage());
+            assertEquals("Error starting statement: Selected event type is not a valid base or delta event type of revision event type 'RevisableQuote' [insert into RevQuote select * from com.espertech.esper.support.bean.SupportBean]", ex.getMessage());
         }
 
         try
@@ -372,7 +372,7 @@ public class TestRevisionDeclared extends TestCase
         }
         catch (EPStatementException ex)
         {
-            assertEquals("Error starting view: Selected event type is not a valid base or delta event type of revision event type 'RevisableQuote' [insert into RevQuote select intPrimitive as k0 from com.espertech.esper.support.bean.SupportBean]", ex.getMessage());
+            assertEquals("Error starting statement: Selected event type is not a valid base or delta event type of revision event type 'RevisableQuote' [insert into RevQuote select intPrimitive as k0 from com.espertech.esper.support.bean.SupportBean]", ex.getMessage());
         }
     }
 

@@ -388,13 +388,13 @@ public class TestUnidirectionalStreamJoin extends TestCase
                           "full outer join " +
                           SupportMarketDataBean.class.getName() + ".win:keepall() unidirectional " +
                           "on string = symbol";
-        tryInvalid(text, "Error starting view: The unidirectional keyword can only apply to one stream in a join [select * from com.espertech.esper.support.bean.SupportBean unidirectional full outer join com.espertech.esper.support.bean.SupportMarketDataBean.win:keepall() unidirectional on string = symbol]");
+        tryInvalid(text, "Error starting statement: The unidirectional keyword can only apply to one stream in a join [select * from com.espertech.esper.support.bean.SupportBean unidirectional full outer join com.espertech.esper.support.bean.SupportMarketDataBean.win:keepall() unidirectional on string = symbol]");
 
         text = "select * from " + SupportBean.class.getName() + ".win:length(2) unidirectional " +
                           "full outer join " +
                           SupportMarketDataBean.class.getName() + ".win:keepall()" +
                           "on string = symbol";
-        tryInvalid(text, "Error starting view: The unidirectional keyword requires that no views are declared onto the stream [select * from com.espertech.esper.support.bean.SupportBean.win:length(2) unidirectional full outer join com.espertech.esper.support.bean.SupportMarketDataBean.win:keepall()on string = symbol]");
+        tryInvalid(text, "Error starting statement: The unidirectional keyword requires that no views are declared onto the stream [select * from com.espertech.esper.support.bean.SupportBean.win:length(2) unidirectional full outer join com.espertech.esper.support.bean.SupportMarketDataBean.win:keepall()on string = symbol]");
     }
 
     private void tryInvalid(String text, String message)

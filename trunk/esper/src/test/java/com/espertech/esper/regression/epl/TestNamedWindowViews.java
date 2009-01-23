@@ -1685,7 +1685,7 @@ public class TestNamedWindowViews extends TestCase
 
     public void testInvalidNoDataWindow()
     {
-        assertEquals("Error starting view: Named windows require one or more child views that are data window views [create window MyWindow.std:groupby(value).stat:uni(value) as MyMap]",
+        assertEquals("Error starting statement: Named windows require one or more child views that are data window views [create window MyWindow.std:groupby(value).stat:uni(value) as MyMap]",
                      tryInvalid("create window MyWindow.std:groupby(value).stat:uni(value) as MyMap"));
         assertEquals("Named windows require one or more child views that are data window views [create window MyWindow as MyMap]",
                      tryInvalid("create window MyWindow as MyMap"));
@@ -1703,7 +1703,7 @@ public class TestNamedWindowViews extends TestCase
         }
         catch (EPException ex)
         {
-            assertEquals("Error starting view: A named window by name 'MyWindow' has already been created [create window MyWindow.win:keepall() as MyMap]", ex.getMessage());
+            assertEquals("Error starting statement: A named window by name 'MyWindow' has already been created [create window MyWindow.win:keepall() as MyMap]", ex.getMessage());
         }
     }
 
@@ -1717,7 +1717,7 @@ public class TestNamedWindowViews extends TestCase
         }
         catch (EPException ex)
         {
-            assertEquals("Error starting view: Consuming statements to a named window cannot declare a data window view onto the named window [select key, value as value from MyWindow.win:time(10 sec)]", ex.getMessage());
+            assertEquals("Error starting statement: Consuming statements to a named window cannot declare a data window view onto the named window [select key, value as value from MyWindow.win:time(10 sec)]", ex.getMessage());
         }
     }
 

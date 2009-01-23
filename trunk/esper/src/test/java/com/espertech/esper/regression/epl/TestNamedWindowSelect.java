@@ -126,7 +126,7 @@ public class TestNamedWindowSelect extends TestCase
                    "Named window 'DUMMY' has not been declared [on com.espertech.esper.support.bean.SupportBean_A insert into MyStream select * from DUMMY]");
 
         tryInvalid("on " + SupportBean_A.class.getName() + " select prev(1, string) from MyWindow",
-                   "Error starting view: Previous function cannot be used in this context [on com.espertech.esper.support.bean.SupportBean_A select prev(1, string) from MyWindow]");
+                   "Error starting statement: Previous function cannot be used in this context [on com.espertech.esper.support.bean.SupportBean_A select prev(1, string) from MyWindow]");
     }
 
     private void tryInvalid(String text, String message)

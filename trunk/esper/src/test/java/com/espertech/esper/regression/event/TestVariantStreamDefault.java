@@ -78,7 +78,7 @@ public class TestVariantStreamDefault extends TestCase
         }
         catch (EPStatementException ex)
         {
-            assertEquals("Error starting view: Property named 'charBoxed' is not valid in any stream [select charBoxed from MyVariantStream]", ex.getMessage());
+            assertEquals("Error starting statement: Property named 'charBoxed' is not valid in any stream [select charBoxed from MyVariantStream]", ex.getMessage());
         }
 
         // try dynamic property: should exists but not show up as a declared property
@@ -290,7 +290,7 @@ public class TestVariantStreamDefault extends TestCase
         }
         catch (EPStatementException ex)
         {
-            assertEquals("Error starting view: Selected event type is not a valid event type of the variant stream 'MyVariantStream' [insert into MyVariantStream select * from com.espertech.esper.support.bean.SupportBean_A]", ex.getMessage());
+            assertEquals("Error starting statement: Selected event type is not a valid event type of the variant stream 'MyVariantStream' [insert into MyVariantStream select * from com.espertech.esper.support.bean.SupportBean_A]", ex.getMessage());
         }
 
         try
@@ -300,7 +300,7 @@ public class TestVariantStreamDefault extends TestCase
         }
         catch (EPStatementException ex)
         {
-            assertEquals("Error starting view: Selected event type is not a valid event type of the variant stream 'MyVariantStream' [insert into MyVariantStream select intPrimitive as k0 from com.espertech.esper.support.bean.SupportBean]", ex.getMessage());
+            assertEquals("Error starting statement: Selected event type is not a valid event type of the variant stream 'MyVariantStream' [insert into MyVariantStream select intPrimitive as k0 from com.espertech.esper.support.bean.SupportBean]", ex.getMessage());
         }
     }
 

@@ -74,7 +74,7 @@ public class TestSchemaXMLForObservation extends TestCase
         }
         catch (EPStatementException ex)
         {
-            assertEquals("Error starting view: Failed to resolve property 'Observation.Tag.ID' to a stream or nested property in a stream [select Observation.Tag.ID from SensorEvent]", ex.getMessage());
+            assertEquals("Error starting statement: Failed to resolve property 'Observation.Tag.ID' to a stream or nested property in a stream [select Observation.Tag.ID from SensorEvent]", ex.getMessage());
         }
     }
 

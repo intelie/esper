@@ -797,6 +797,25 @@ public class StatementSpecMapper
             StatementSpecRaw rawSubselect = map(sub.getModel(), mapContext);
             return new ExprSubselectExistsNode(rawSubselect);
         }
+        else if (expr instanceof SubqueryQualifiedExpression)
+        {
+            SubqueryQualifiedExpression sub = (SubqueryQualifiedExpression) expr;
+            StatementSpecRaw rawSubselect = map(sub.getModel(), mapContext);
+            boolean isNot = false;
+            RelationalOpEnum relop = null;
+            if (sub.getOperator().equals("!="))
+            {
+                isNot = true;
+            }
+            if (sub.getOperator().equals("="))
+            {
+            }
+            else
+            {
+                relop = RelationalOpEnum.parse(sub.getOperator());
+            }
+            return new ExprSubselectAllSomeAnyNode(rawSubselect, isNot, sub.isAll(), relop);
+        }
         else if (expr instanceof CountStarProjectionExpression)
         {
             return new ExprCountNode(false);
@@ -929,6 +948,18 @@ public class StatementSpecMapper
         {
             TimePeriodExpression tpe = (TimePeriodExpression) expr;
             return new ExprTimePeriod(tpe.isHasDays(), tpe.isHasHours(), tpe.isHasMinutes(), tpe.isHasSeconds(), tpe.isHasMilliseconds());
+        }
+        else if (expr instanceof CompareListExpression)
+        {
+            CompareListExpression exp = (CompareListExpression) expr;
+            if ((exp.getOperator().equals("=")) || (exp.getOperator().equals("!=")))
+            {
+                return new ExprEqualsAllAnyNode((exp.getOperator().equals("!=")), exp.isAll());
+            }
+            else
+            {
+                return new ExprRelationalOpAllAnyNode(RelationalOpEnum.parse(exp.getOperator()), exp.isAll());
+            }
         }
         else if (expr instanceof SubstitutionParameterExpression)
         {
@@ -1099,9 +1130,9 @@ public class StatementSpecMapper
             }
             if (sub.getRelationalOp() != null)
             {
-                operator = sub.getRelationalOp().toString();
+                operator = sub.getRelationalOp().getExpressionText();
             }
-            return new SubqueryQualifiedExpression(unmapped.getObjectModel(), sub.isNot() ? "!=" : "=", sub.isAll());
+            return new SubqueryQualifiedExpression(unmapped.getObjectModel(), operator, sub.isAll());
         }
         else if (expr instanceof ExprCountNode)
         {
@@ -1278,6 +1309,17 @@ public class StatementSpecMapper
         {
             ExprOrderedExpr order = (ExprOrderedExpr) expr;
             return new OrderedObjectParamExpression(order.isDescending());
+        }
+        else if (expr instanceof ExprEqualsAllAnyNode)
+        {
+            ExprEqualsAllAnyNode node = (ExprEqualsAllAnyNode) expr;
+            String operator = node.isNot() ? "!=" : "=";
+            return new CompareListExpression(node.isAll(), operator);
+        }
+        else if (expr instanceof ExprRelationalOpAllAnyNode)
+        {
+            ExprRelationalOpAllAnyNode node = (ExprRelationalOpAllAnyNode) expr;
+            return new CompareListExpression(node.isAll(), node.getRelationalOpEnum().getExpressionText());
         }
         else if (expr instanceof ExprNumberSetCronParam)
         {

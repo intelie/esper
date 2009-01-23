@@ -48,7 +48,7 @@ public class TestViewGroupBy extends TestCase
         }
         catch (EPStatementException ex)
         {
-            assertEquals("Error starting view: Invalid use of the 'std:groupby' view, the view requires one or more child views to group, or consider using the group-by clause [select avg(price), symbol from com.espertech.esper.support.bean.SupportMarketDataBean.win:length(100).std:groupby(symbol)]", ex.getMessage());
+            assertEquals("Error starting statement: Invalid use of the 'std:groupby' view, the view requires one or more child views to group, or consider using the group-by clause [select avg(price), symbol from com.espertech.esper.support.bean.SupportMarketDataBean.win:length(100).std:groupby(symbol)]", ex.getMessage());
         }
     }
 

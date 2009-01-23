@@ -384,7 +384,7 @@ public class TestFromClauseMethodOuterNStream extends TestCase
                     " left outer join " +
                     "method:SupportJoinMethods.fetchVal('H1', 1) as h1 " +
                     " on h0.index = h1.index";
-        tryInvalid(expression, "Error starting view: Historical stream 1 parameter dependency originating in stream 2 cannot or may not be satisfied by the join [select * from SupportBeanInt.std:lastevent() as s0  left outer join method:SupportJoinMethods.fetchVal(h1.val, 1) as h0  on s0.p00 = h0.index  left outer join method:SupportJoinMethods.fetchVal('H1', 1) as h1  on h0.index = h1.index]");
+        tryInvalid(expression, "Error starting statement: Historical stream 1 parameter dependency originating in stream 2 cannot or may not be satisfied by the join [select * from SupportBeanInt.std:lastevent() as s0  left outer join method:SupportJoinMethods.fetchVal(h1.val, 1) as h0  on s0.p00 = h0.index  left outer join method:SupportJoinMethods.fetchVal('H1', 1) as h1  on h0.index = h1.index]");
 
         // Optimization conflict : required streams are always executed before optional streams
         //              S0
@@ -398,7 +398,7 @@ public class TestFromClauseMethodOuterNStream extends TestCase
                     " left outer join " +
                     "method:SupportJoinMethods.fetchVal(h0.val, 1) as h1 " +
                     " on s0.p00 = h1.index";
-        tryInvalid(expression, "Error starting view: Historical stream 2 parameter dependency originating in stream 1 cannot or may not be satisfied by the join [select * from SupportBeanInt.std:lastevent() as s0  full outer join method:SupportJoinMethods.fetchVal('x', 1) as h0  on s0.p00 = h0.index  left outer join method:SupportJoinMethods.fetchVal(h0.val, 1) as h1  on s0.p00 = h1.index]");
+        tryInvalid(expression, "Error starting statement: Historical stream 2 parameter dependency originating in stream 1 cannot or may not be satisfied by the join [select * from SupportBeanInt.std:lastevent() as s0  full outer join method:SupportJoinMethods.fetchVal('x', 1) as h0  on s0.p00 = h0.index  left outer join method:SupportJoinMethods.fetchVal(h0.val, 1) as h1  on s0.p00 = h1.index]");
     }
 
     public void test2Stream1HistStarSubordinateLeftRight()

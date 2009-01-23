@@ -250,7 +250,7 @@ public class TestSchemaXMLEvent extends TestCase
         }
         catch (EPStatementException ex)
         {
-            assertEquals("Error starting view: Property named 'element1' is not valid in any stream [select element1 from TestXMLSchemaType.win:length(100)]", ex.getMessage());
+            assertEquals("Error starting statement: Property named 'element1' is not valid in any stream [select element1 from TestXMLSchemaType.win:length(100)]", ex.getMessage());
         }
     }
 

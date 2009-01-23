@@ -39,7 +39,7 @@ public class TestInBetweenLikeExpr extends TestCase
 
         arrayBean.setAnyObject(null);
         epService.getEPRuntime().sendEvent(arrayBean);
-        assertEquals(false, listener.assertOneGetNewAndReset().get("value"));
+        assertNull(listener.assertOneGetNewAndReset().get("value"));
     }
 
     public void testInArraySubstitution()
@@ -329,7 +329,7 @@ public class TestInBetweenLikeExpr extends TestCase
         sendAndAssert(1, 1, 3, 4L, true);
         sendAndAssert(1, 3, 1, 4L, true);
         sendAndAssert(1, 3, 7, 1L, true);
-        sendAndAssert(1, 3, 7, null, false);
+        sendAndAssert(1, 3, 7, null, null);
         sendAndAssert(1, 1, null, null, true);
         sendAndAssert(1, 0, null, 1L, true);
 
@@ -411,7 +411,7 @@ public class TestInBetweenLikeExpr extends TestCase
         }
         catch (EPStatementException ex)
         {
-            assertEquals("Error starting view: Group comparison is not allowed for the IN-keyword, use the ANY, SOME or ALL keywords [select intArr in (1, 2, 3) as r1 from ArrayBean]", ex.getMessage());
+            assertEquals("Error starting statement: Collection or array comparison is not allowed for the IN, ANY, SOME or ALL keywords [select intArr in (1, 2, 3) as r1 from ArrayBean]", ex.getMessage());
         }
     }
 
@@ -428,7 +428,7 @@ public class TestInBetweenLikeExpr extends TestCase
         assertEquals(result, event.get("result"));
     }
 
-    private void sendAndAssert(int intPrimitive, int shortBoxed, Integer intBoxed, Long longBoxed, boolean result)
+    private void sendAndAssert(int intPrimitive, int shortBoxed, Integer intBoxed, Long longBoxed, Boolean result)
     {
         SupportBean bean = new SupportBean();
         bean.setIntPrimitive(intPrimitive);

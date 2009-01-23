@@ -194,7 +194,7 @@ public class TestNamedWindowSubquery extends TestCase
         }
         catch (EPException ex)
         {
-            assertEquals("Error starting view: Consuming statements to a named window cannot declare a data window view onto the named window [select (select string from MyWindow.std:lastevent()) from MyWindow]", ex.getMessage());
+            assertEquals("Error starting statement: Consuming statements to a named window cannot declare a data window view onto the named window [select (select string from MyWindow.std:lastevent()) from MyWindow]", ex.getMessage());
         }
     }
 

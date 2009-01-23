@@ -98,15 +98,15 @@ public class TestJoinStartStop extends TestCase
 
         String invalidJoin = "select * from A, B";
         tryInvalid(invalidJoin,
-                "Error starting view: Joins require that at least one view is specified for each stream, no view was specified for A [select * from A, B]");
+                "Error starting statement: Joins require that at least one view is specified for each stream, no view was specified for A [select * from A, B]");
 
         invalidJoin = "select * from A.win:time(5 min), B";
         tryInvalid(invalidJoin,
-                "Error starting view: Joins require that at least one view is specified for each stream, no view was specified for B [select * from A.win:time(5 min), B]");
+                "Error starting statement: Joins require that at least one view is specified for each stream, no view was specified for B [select * from A.win:time(5 min), B]");
 
         invalidJoin = "select * from A.win:time(5 min), pattern[A->B]";
         tryInvalid(invalidJoin,
-                "Error starting view: Joins require that at least one view is specified for each stream, no view was specified for pattern event stream [select * from A.win:time(5 min), pattern[A->B]]");
+                "Error starting statement: Joins require that at least one view is specified for each stream, no view was specified for pattern event stream [select * from A.win:time(5 min), pattern[A->B]]");
     }
 
     private void tryInvalid(String invalidJoin, String message)

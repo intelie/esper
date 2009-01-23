@@ -224,10 +224,10 @@ public class TestFilterPropertyNested extends TestCase
                    "Property named 'abc' is not valid in any stream [select bookId from OrderEvent[select abc from books][reviews]]");
 
         tryInvalid("select bookId from OrderEvent[books][reviews]",
-                   "Error starting view: Property named 'bookId' is not valid in any stream [select bookId from OrderEvent[books][reviews]]");
+                   "Error starting statement: Property named 'bookId' is not valid in any stream [select bookId from OrderEvent[books][reviews]]");
 
         tryInvalid("select orderId from OrderEvent[books]",
-                   "Error starting view: Property named 'orderId' is not valid in any stream [select orderId from OrderEvent[books]]");
+                   "Error starting statement: Property named 'orderId' is not valid in any stream [select orderId from OrderEvent[books]]");
 
         tryInvalid("select * from OrderEvent[books where abc=1]",
                    "Property named 'abc' is not valid in any stream [select * from OrderEvent[books where abc=1]]");

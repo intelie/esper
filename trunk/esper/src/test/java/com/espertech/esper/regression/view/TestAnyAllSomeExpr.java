@@ -4,6 +4,7 @@ import com.espertech.esper.client.EPServiceProvider;
 import com.espertech.esper.client.EPServiceProviderManager;
 import com.espertech.esper.client.EPStatement;
 import com.espertech.esper.client.EPStatementException;
+import com.espertech.esper.client.soda.EPStatementObjectModel;
 import com.espertech.esper.support.bean.SupportBean;
 import com.espertech.esper.support.bean.SupportBeanArrayCollMap;
 import com.espertech.esper.support.client.SupportConfigFactory;
@@ -36,7 +37,7 @@ public class TestAnyAllSomeExpr extends TestCase
                           "intPrimitive != all (1, intBoxed) as neq, " +
                           "intPrimitive <> all (1, intBoxed) as sqlneq, " +
                           "not intPrimitive = all (1, intBoxed) as nneq " +
-                          " from SupportBean(string like 'E%')";
+                          "from SupportBean((string like \"E%\"))";
         EPStatement stmt = epService.getEPAdministrator().createEPL(stmtText);
         stmt.addListener(listener);
 
@@ -54,6 +55,22 @@ public class TestAnyAllSomeExpr extends TestCase
                 {false, false, false, true}, // 2, 2
                 {false, true, true, true}    // 2, 1
                 };
+
+        for (int i = 0; i < testdata.length; i++)
+        {
+            SupportBean bean = new SupportBean("E", testdata[i][0]);
+            bean.setIntBoxed(testdata[i][1]);
+            epService.getEPRuntime().sendEvent(bean);
+            //System.out.println("line " + i);
+            ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, result[i]);
+        }
+        
+        // test OM
+        stmt.destroy();
+        EPStatementObjectModel model = epService.getEPAdministrator().compileEPL(stmtText);
+        assertEquals(stmtText.replace("<>", "!="), model.toEPL());
+        stmt = epService.getEPAdministrator().create(model);
+        stmt.addListener(listener);
 
         for (int i = 0; i < testdata.length; i++)
         {
@@ -146,6 +163,19 @@ public class TestAnyAllSomeExpr extends TestCase
         arrayBean.setLongBoxed(3L);
         epService.getEPRuntime().sendEvent(arrayBean);
         ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {false, true});
+
+        // test OM
+        stmt.destroy();
+        EPStatementObjectModel model = epService.getEPAdministrator().compileEPL(stmtText);
+        assertEquals(stmtText.replace("<>", "!="), model.toEPL());
+        stmt = epService.getEPAdministrator().create(model);
+        stmt.addListener(listener);
+
+        arrayBean = new SupportBeanArrayCollMap(new int[] {1, 2});
+        arrayBean.setIntCol(Arrays.asList(1, 2));
+        arrayBean.setLongBoxed(3L);
+        epService.getEPRuntime().sendEvent(arrayBean);
+        ArrayAssertionUtil.assertProps(listener.assertOneGetNewAndReset(), fields, new Object[] {true, true});
     }
 
     public void testRelationalOpNullOrNoRows()
@@ -384,7 +414,7 @@ public class TestAnyAllSomeExpr extends TestCase
         }
         catch (EPStatementException ex)
         {
-            assertEquals("Error starting view: Collection or array comparison is not allowed for the IN, ANY, SOME or ALL keywords [select intArr = all (1, 2, 3) as r1 from ArrayBean]", ex.getMessage());
+            assertEquals("Error starting statement: Collection or array comparison is not allowed for the IN, ANY, SOME or ALL keywords [select intArr = all (1, 2, 3) as r1 from ArrayBean]", ex.getMessage());
         }
 
         try
@@ -395,7 +425,7 @@ public class TestAnyAllSomeExpr extends TestCase
         }
         catch (EPStatementException ex)
         {
-            assertEquals("Error starting view: Collection or array comparison is not allowed for the IN, ANY, SOME or ALL keywords [select intArr > all (1, 2, 3) as r1 from ArrayBean]", ex.getMessage());
+            assertEquals("Error starting statement: Collection or array comparison is not allowed for the IN, ANY, SOME or ALL keywords [select intArr > all (1, 2, 3) as r1 from ArrayBean]", ex.getMessage());
         }
     }
 

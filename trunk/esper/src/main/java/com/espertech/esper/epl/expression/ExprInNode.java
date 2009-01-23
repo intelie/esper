@@ -8,19 +8,19 @@
  **************************************************************************************/
 package com.espertech.esper.epl.expression;
 
-import com.espertech.esper.epl.core.StreamTypeService;
+import com.espertech.esper.client.EventBean;
 import com.espertech.esper.epl.core.MethodResolutionService;
+import com.espertech.esper.epl.core.StreamTypeService;
 import com.espertech.esper.epl.core.ViewResourceDelegate;
 import com.espertech.esper.epl.variable.VariableService;
-import com.espertech.esper.client.EventBean;
-import com.espertech.esper.util.JavaClassHelper;
-import com.espertech.esper.util.CoercionException;
-import com.espertech.esper.util.SimpleNumberCoercerFactory;
-import com.espertech.esper.util.SimpleNumberCoercer;
 import com.espertech.esper.schedule.TimeProvider;
+import com.espertech.esper.util.CoercionException;
+import com.espertech.esper.util.JavaClassHelper;
+import com.espertech.esper.util.SimpleNumberCoercer;
+import com.espertech.esper.util.SimpleNumberCoercerFactory;
 
-import java.util.*;
 import java.lang.reflect.Array;
+import java.util.*;
 
 /**
  * Represents the in-clause (set check) function in an expression tree.
@@ -30,9 +30,7 @@ public class ExprInNode extends ExprNode
     private final boolean isNotIn;
 
     private boolean mustCoerce;
-    private boolean hasCollection;
-    private boolean[] isMap;
-    private boolean[] isCollection;
+    private boolean hasCollectionOrArray;
     private SimpleNumberCoercer coercer;
 
     /**
@@ -60,41 +58,33 @@ public class ExprInNode extends ExprNode
             throw new ExprValidationException("The IN operator requires at least 2 child expressions");
         }
 
-        Class typeOne = this.getChildNodes().get(0).getType();
+        // Must be the same boxed type returned by expressions under this
+        Class typeOne = JavaClassHelper.getBoxedType(this.getChildNodes().get(0).getType());
+
+        // collections, array or map not supported
         if ((typeOne.isArray()) || (JavaClassHelper.isImplementsInterface(typeOne, Collection.class)) || (JavaClassHelper.isImplementsInterface(typeOne, Map.class)))
         {
-            throw new ExprValidationException("Group comparison is not allowed for the IN-keyword, use the ANY, SOME or ALL keywords");
+            throw new ExprValidationException("Collection or array comparison is not allowed for the IN, ANY, SOME or ALL keywords");
         }
 
         List<Class> comparedTypes = new ArrayList<Class>();
-        for (int i = 0; i < this.getChildNodes().size(); i++)
+        comparedTypes.add(typeOne);
+        hasCollectionOrArray = false;
+        for (int i = 0; i < this.getChildNodes().size() - 1; i++)
         {
-            Class propType = this.getChildNodes().get(i).getType();
-            if ((propType != null) && (propType.isArray()))
+            Class propType = this.getChildNodes().get(i + 1).getType();
+            if (propType.isArray())
             {
-                hasCollection = true;
-                if (propType.getComponentType() != Object.class)
-                {
-                    comparedTypes.add(propType.getComponentType());
-                }
+                hasCollectionOrArray = true;
+                comparedTypes.add(propType.getComponentType());
             }
-            else if ((propType != null) && (JavaClassHelper.isImplementsInterface(propType, Collection.class)))
+            else if (JavaClassHelper.isImplementsInterface(propType, Collection.class))
             {
-                hasCollection = true;
-                if (isCollection == null)
-                {
-                    isCollection = new boolean[this.getChildNodes().size()];
-                }
-                isCollection[i] = true;
+                hasCollectionOrArray = true;
             }
-            else if ((propType != null) && (JavaClassHelper.isImplementsInterface(propType, Map.class)))
+            else if (JavaClassHelper.isImplementsInterface(propType, Map.class))
             {
-                hasCollection = true;
-                if (isMap == null)
-                {
-                    isMap = new boolean[this.getChildNodes().size()];
-                }
-                isMap[i] = true;
+                hasCollectionOrArray = true;
             }
             else
             {
@@ -103,31 +93,30 @@ public class ExprInNode extends ExprNode
         }
 
         // Determine common denominator type
+        Class coercionType;
         try {
-            Class coercionType = JavaClassHelper.getCommonCoercionType(comparedTypes.toArray(new Class[comparedTypes.size()]));
-
-            // Determine if we need to coerce numbers when one type doesn't match any other type
-            if (JavaClassHelper.isNumeric(coercionType))
-            {
-                mustCoerce = false;
-                for (Class comparedType : comparedTypes)
-                {
-                    if (JavaClassHelper.getBoxedType(comparedType) != JavaClassHelper.getBoxedType(coercionType))
-                    {
-                        mustCoerce = true;
-                        break;
-                    }
-                }
-
-                if (mustCoerce)
-                {
-                    coercer = SimpleNumberCoercerFactory.getCoercer(null, coercionType);
-                }
-            }
+            coercionType = JavaClassHelper.getCommonCoercionType(comparedTypes.toArray(new Class[comparedTypes.size()]));
         }
         catch (CoercionException ex)
         {
             throw new ExprValidationException("Implicit conversion not allowed: " + ex.getMessage());
+        }
+
+        // Check if we need to coerce
+        mustCoerce = false;
+        if (JavaClassHelper.isNumeric(coercionType))
+        {
+            for (Class compareType : comparedTypes)
+            {
+                if (coercionType != JavaClassHelper.getBoxedType(compareType))
+                {
+                    mustCoerce = true;
+                }
+            }
+            if (mustCoerce)
+            {
+                coercer = SimpleNumberCoercerFactory.getCoercer(null, JavaClassHelper.getBoxedType(coercionType));
+            }
         }
     }
 
@@ -138,13 +127,15 @@ public class ExprInNode extends ExprNode
 
     public Object evaluate(EventBean[] eventsPerStream, boolean isNewData)
     {
-        // Evaluate first child which is the base value to compare to
-        Iterator<ExprNode> it = this.getChildNodes().iterator();
-        Object inPropResult = it.next().evaluate(eventsPerStream, isNewData);
+        Object inPropResult = this.getChildNodes().get(0).evaluate(eventsPerStream, isNewData);
 
-        boolean matched = false;
-        if (!hasCollection)
+        if (!hasCollectionOrArray)
         {
+            if ((mustCoerce) && (inPropResult != null))
+            {
+                inPropResult = coercer.coerceBoxed((Number) inPropResult);
+            }
+
             // coerce upfront when comparing single values, coerce later when comparing against collections
             if (mustCoerce)
             {
@@ -154,76 +145,157 @@ public class ExprInNode extends ExprNode
                 }
             }
 
-            // handle value-by-value compare
+            int len = this.getChildNodes().size() - 1;
+            if ((len > 0) && (inPropResult == null))
+            {
+                return null;
+            }
             boolean hasNonNullRow = false;
             boolean hasNullRow = false;
-            do
+            for (int i = 1; i <= len; i++)
             {
-                ExprNode inSetValueExpr = it.next();
-                Object subExprResult = inSetValueExpr.evaluate(eventsPerStream, isNewData);
+                Object rightResult = this.getChildNodes().get(i).evaluate(eventsPerStream, isNewData);
 
-                if (subExprResult == null)
+                if (rightResult == null)
                 {
                     hasNullRow = true;
+                    continue;
+                }
+
+                hasNonNullRow = true;
+                if (!mustCoerce)
+                {
+                    if (rightResult.equals(inPropResult))
+                    {
+                        return !isNotIn;
+                    }
                 }
                 else
                 {
-                    hasNonNullRow = true;
-                    if (compare(inPropResult, subExprResult)) {
-                        matched = true;
-                        break;
+                    Number right = coercer.coerceBoxed((Number) rightResult);
+                    if (right.equals(inPropResult))
+                    {
+                        return !isNotIn;
                     }
                 }
             }
-            while (it.hasNext());
 
-            if (!matched)
+            if ((!hasNonNullRow) || (hasNullRow))
             {
-                if ((!hasNonNullRow) || (hasNullRow))
-                {
-                    return null;
-                }
+                return null;
             }
+            return isNotIn;
         }
         else
         {
-            int index = 1;  // right-side nodes start at 1
+            int len = this.getChildNodes().size() - 1;
             boolean hasNonNullRow = false;
             boolean hasNullRow = false;
-            do
+            for (int i = 1; i <= len; i++)
             {
-                ExprNode inSetValueExpr = it.next();
-                Object subExprResult = inSetValueExpr.evaluate(eventsPerStream, isNewData);
+                Object rightResult = this.getChildNodes().get(i).evaluate(eventsPerStream, isNewData);
 
-                if (subExprResult == null)
+                if (rightResult == null)
                 {
-                    hasNullRow = true;
+                    hasNonNullRow = true;
+                    continue;
+                }
+                if (rightResult instanceof Collection)
+                {
+                    if (inPropResult == null)
+                    {
+                        return null;
+                    }
+                    hasNonNullRow = true;
+                    Collection coll = (Collection) rightResult;
+                    if (coll.contains(inPropResult))
+                    {
+                        return !isNotIn;
+                    }
+                }
+                else if (rightResult instanceof Map)
+                {
+                    if (inPropResult == null)
+                    {
+                        return null;
+                    }
+                    hasNonNullRow = true;
+                    Map coll = (Map) rightResult;
+                    if (coll.containsKey(inPropResult))
+                    {
+                        return !isNotIn;
+                    }
+                }
+                else if (rightResult.getClass().isArray())
+                {
+                    int arrayLength = Array.getLength(rightResult);
+                    if ((arrayLength > 0) && (inPropResult == null))
+                    {
+                        return null;
+                    }
+                    for (int index = 0; index < arrayLength; index++)
+                    {
+                        Object item = Array.get(rightResult, index);
+                        if (item == null)
+                        {
+                            hasNullRow = true;
+                            continue;
+                        }
+                        hasNonNullRow = true;
+                        if (!mustCoerce)
+                        {
+                            if (inPropResult.equals(item))
+                            {
+                                return !isNotIn;
+                            }
+                        }
+                        else
+                        {
+                            if (!(item instanceof Number))
+                            {
+                                continue;
+                            }
+                            Number left = coercer.coerceBoxed((Number) inPropResult);
+                            Number right = coercer.coerceBoxed((Number) item);
+                            if (left.equals(right))
+                            {
+                                return !isNotIn;
+                            }
+                        }
+                    }
                 }
                 else
                 {
-                    if (compareCollectionable(inPropResult, subExprResult, index)) {
-                        matched = true;
-                        break;
+                    if (inPropResult == null)
+                    {
+                        return null;
                     }
-                    index++;
+                    hasNonNullRow = true;
+                    if (!mustCoerce)
+                    {
+                        if (inPropResult.equals(rightResult))
+                        {
+                            return !isNotIn;
+                        }
+                    }
+                    else
+                    {
+                        Number left = coercer.coerceBoxed((Number) inPropResult);
+                        Number right = coercer.coerceBoxed((Number) rightResult);
+                        if (left.equals(right))
+                        {
+                            return !isNotIn;
+                        }
+                    }
                 }
             }
-            while (it.hasNext());
 
-            if (!matched)
+            if ((!hasNonNullRow) || (hasNullRow))
             {
-                if ((!hasNonNullRow) || (hasNullRow))
-                {
-                    return null;
-                }
-            }            
+                return null;
+            }
+            return isNotIn;
         }
-
-        if (isNotIn)
-        {
-            return !matched;
-        }
-        return matched;
     }
 
     public boolean isConstantResult()
@@ -269,84 +341,5 @@ public class ExprInNode extends ExprNode
 
         buffer.append(')');
         return buffer.toString();
-    }
-
-    private boolean compare(Object leftResult, Object rightResult)
-    {
-        if (leftResult == null)
-        {
-            return (rightResult == null);
-        }
-        if (rightResult == null)
-        {
-            return false;
-        }
-
-        if (!mustCoerce)
-        {
-            return leftResult.equals(rightResult);
-        }
-        else
-        {
-            Number right = coercer.coerceBoxed((Number) rightResult);
-            return leftResult.equals(right);
-        }
-    }
-
-    private boolean compareCollectionable(Object leftResult, Object rightResult, int index)
-    {
-        if (leftResult == null)
-        {
-            return (rightResult == null);
-        }
-        if (rightResult == null)
-        {
-            return false;
-        }
-
-        if (rightResult.getClass().isArray())
-        {
-            if (mustCoerce)
-            {
-                leftResult = coercer.coerceBoxed((Number) leftResult);
-            }
-            for (int i = 0; i < Array.getLength(rightResult); i++)
-            {
-                Object value = Array.get(rightResult, i);
-                if ((value != null) && (leftResult.equals(value)))
-                {
-                    return true;
-                }
-                if (mustCoerce && (value != null) && (value instanceof Number))
-                {
-                    Number right = coercer.coerceBoxed((Number) value);
-                    if (leftResult.equals(right))
-                    {
-                        return true;
-                    }
-                }
-            }
-            return false;
-        }
-        else if (isMap != null && isMap[index])
-        {
-            Map map = (Map) rightResult;
-            return map.containsKey(leftResult);
-        }
-        else if (isCollection != null && isCollection[index])
-        {
-            Collection coll = (Collection) rightResult;
-            return coll.contains(leftResult);
-        }
-        else
-        {
-            if (mustCoerce)
-            {
-                leftResult = coercer.coerceBoxed((Number) leftResult);
-                rightResult = coercer.coerceBoxed((Number) rightResult);
-            }
-            return leftResult.equals(rightResult);
-        }
-
     }
 }

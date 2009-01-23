@@ -11,10 +11,7 @@ package com.espertech.esper.util;
 import com.espertech.esper.event.EventAdapterException;
 import com.espertech.esper.type.*;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-import java.util.Map;
+import java.util.*;
 import java.math.BigInteger;
 import java.math.BigDecimal;
 
@@ -653,7 +650,7 @@ public class JavaClassHelper
         }
 
         // Reduce to non-null types
-        List<Class> nonNullTypes = new LinkedList<Class>();
+        List<Class> nonNullTypes = new ArrayList<Class>();
         for (int i = 0; i < types.length; i++)
         {
             if (types[i] != null)
@@ -661,7 +658,7 @@ public class JavaClassHelper
                 nonNullTypes.add(types[i]);
             }
         }
-        types = nonNullTypes.toArray(new Class[0]);
+        types = nonNullTypes.toArray(new Class[nonNullTypes.size()]);
 
         if (types.length == 0)
         {

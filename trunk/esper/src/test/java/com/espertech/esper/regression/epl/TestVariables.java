@@ -642,16 +642,16 @@ public class TestVariables extends TestCase
         epService.getEPAdministrator().getConfiguration().addVariable("var3", int.class, 1);
 
         tryInvalidSet("on " + SupportBean.class.getName() + " set dummy = 100",
-                      "Error starting view: Variable by name 'dummy' has not been created or configured [on com.espertech.esper.support.bean.SupportBean set dummy = 100]");
+                      "Error starting statement: Variable by name 'dummy' has not been created or configured [on com.espertech.esper.support.bean.SupportBean set dummy = 100]");
 
         tryInvalidSet("on " + SupportBean.class.getName() + " set var1 = 1",
-                      "Error starting view: Variable 'var1' of declared type 'java.lang.String' cannot be assigned a value of type 'java.lang.Integer' [on com.espertech.esper.support.bean.SupportBean set var1 = 1]");
+                      "Error starting statement: Variable 'var1' of declared type 'java.lang.String' cannot be assigned a value of type 'java.lang.Integer' [on com.espertech.esper.support.bean.SupportBean set var1 = 1]");
 
         tryInvalidSet("on " + SupportBean.class.getName() + " set var3 = 'abc'",
-                      "Error starting view: Variable 'var3' of declared type 'java.lang.Integer' cannot be assigned a value of type 'java.lang.String' [on com.espertech.esper.support.bean.SupportBean set var3 = 'abc']");
+                      "Error starting statement: Variable 'var3' of declared type 'java.lang.Integer' cannot be assigned a value of type 'java.lang.String' [on com.espertech.esper.support.bean.SupportBean set var3 = 'abc']");
 
         tryInvalidSet("on " + SupportBean.class.getName() + " set var3 = doublePrimitive",
-                      "Error starting view: Variable 'var3' of declared type 'java.lang.Integer' cannot be assigned a value of type 'double' [on com.espertech.esper.support.bean.SupportBean set var3 = doublePrimitive]");
+                      "Error starting statement: Variable 'var3' of declared type 'java.lang.Integer' cannot be assigned a value of type 'double' [on com.espertech.esper.support.bean.SupportBean set var3 = doublePrimitive]");
 
         tryInvalidSet("on " + SupportBean.class.getName() + " set var2 = 'false'", null);
         tryInvalidSet("on " + SupportBean.class.getName() + " set var3 = 1.1", null);

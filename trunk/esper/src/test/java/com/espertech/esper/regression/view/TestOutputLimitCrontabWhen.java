@@ -351,7 +351,7 @@ public class TestOutputLimitCrontabWhen extends TestCase
                    "Error validating expression: The when-trigger expression in the OUTPUT WHEN clause must return a boolean-type value [select * from MarketData output when myvardummy]");
 
         tryInvalid("select * from MarketData output when true then set myvardummy = 'b'",
-                   "Error starting view: Variable 'myvardummy' of declared type 'java.lang.Integer' cannot be assigned a value of type 'java.lang.String' [select * from MarketData output when true then set myvardummy = 'b']");
+                   "Error starting statement: Variable 'myvardummy' of declared type 'java.lang.Integer' cannot be assigned a value of type 'java.lang.String' [select * from MarketData output when true then set myvardummy = 'b']");
 
         tryInvalid("select * from MarketData output when true then set myvardummy = sum(myvardummy)",
                    "Error validating expression: An aggregate function may not appear in a OUTPUT LIMIT clause [select * from MarketData output when true then set myvardummy = sum(myvardummy)]");

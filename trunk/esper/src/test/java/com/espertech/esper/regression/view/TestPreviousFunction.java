@@ -655,7 +655,7 @@ public class TestPreviousFunction extends TestCase
     {
         tryInvalid("select prev(0, average) " +
                 "from " + SupportMarketDataBean.class.getName() + ".win:length(100).stat:uni(price)",
-                "Error starting view: Previous function requires a single data window view onto the stream [select prev(0, average) from com.espertech.esper.support.bean.SupportMarketDataBean.win:length(100).stat:uni(price)]");
+                "Error starting statement: Previous function requires a single data window view onto the stream [select prev(0, average) from com.espertech.esper.support.bean.SupportMarketDataBean.win:length(100).stat:uni(price)]");
     }
 
     private void tryInvalid(String statement, String expectedError)

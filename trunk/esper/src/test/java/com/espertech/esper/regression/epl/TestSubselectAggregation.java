@@ -179,16 +179,16 @@ public class TestSubselectAggregation extends TestCase
         tryInvalid("", "Unexpected end of input []");
 
         String stmtText = "select (select sum(id) from S1.win:length(3) as s1 where s1.id < s0.id) as value from S0 as s0";
-        tryInvalid(stmtText, "Error starting view: Subselect filter expression cannot be a correlated expression when aggregating properties via aggregation function [select (select sum(id) from S1.win:length(3) as s1 where s1.id < s0.id) as value from S0 as s0]");
+        tryInvalid(stmtText, "Error starting statement: Subselect filter expression cannot be a correlated expression when aggregating properties via aggregation function [select (select sum(id) from S1.win:length(3) as s1 where s1.id < s0.id) as value from S0 as s0]");
 
         stmtText = "select (select sum(s0.id) from S1.win:length(3) as s1) as value from S0 as s0";
-        tryInvalid(stmtText, "Error starting view: Subselect aggregation function cannot aggregate across correlated properties [select (select sum(s0.id) from S1.win:length(3) as s1) as value from S0 as s0]");
+        tryInvalid(stmtText, "Error starting statement: Subselect aggregation function cannot aggregate across correlated properties [select (select sum(s0.id) from S1.win:length(3) as s1) as value from S0 as s0]");
 
         stmtText = "select (select s1.id + sum(s1.id) from S1.win:length(3) as s1) as value from S0 as s0";
-        tryInvalid(stmtText, "Error starting view: Subselect properties must all be within aggregation functions [select (select s1.id + sum(s1.id) from S1.win:length(3) as s1) as value from S0 as s0]");
+        tryInvalid(stmtText, "Error starting statement: Subselect properties must all be within aggregation functions [select (select s1.id + sum(s1.id) from S1.win:length(3) as s1) as value from S0 as s0]");
 
         stmtText = "select (select sum(s0.id + s1.id) from S1.win:length(3) as s1) as value from S0 as s0";
-        tryInvalid(stmtText, "Error starting view: Subselect aggregation function cannot aggregate across correlated properties [select (select sum(s0.id + s1.id) from S1.win:length(3) as s1) as value from S0 as s0]");
+        tryInvalid(stmtText, "Error starting statement: Subselect aggregation function cannot aggregate across correlated properties [select (select sum(s0.id + s1.id) from S1.win:length(3) as s1) as value from S0 as s0]");
     }
 
     private void tryInvalid(String stmtText, String message)

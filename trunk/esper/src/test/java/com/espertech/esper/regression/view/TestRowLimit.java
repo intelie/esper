@@ -273,13 +273,13 @@ public class TestRowLimit extends TestCase {
     {
         epService.getEPAdministrator().createEPL("create variable string myrows = 'abc'");
         tryInvalid("select * from SupportBean limit myrows",
-                   "Error starting view: Limit clause requires a variable of numeric type [select * from SupportBean limit myrows]");
+                   "Error starting statement: Limit clause requires a variable of numeric type [select * from SupportBean limit myrows]");
         tryInvalid("select * from SupportBean limit 1, myrows",
-                   "Error starting view: Limit clause requires a variable of numeric type [select * from SupportBean limit 1, myrows]");
+                   "Error starting statement: Limit clause requires a variable of numeric type [select * from SupportBean limit 1, myrows]");
         tryInvalid("select * from SupportBean limit dummy",
-                   "Error starting view: Limit clause variable by name 'dummy' has not been declared [select * from SupportBean limit dummy]");
+                   "Error starting statement: Limit clause variable by name 'dummy' has not been declared [select * from SupportBean limit dummy]");
         tryInvalid("select * from SupportBean limit 1,dummy",
-                   "Error starting view: Limit clause variable by name 'dummy' has not been declared [select * from SupportBean limit 1,dummy]");
+                   "Error starting statement: Limit clause variable by name 'dummy' has not been declared [select * from SupportBean limit 1,dummy]");
     }
 
     private void sendTimer(long timeInMSec)

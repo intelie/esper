@@ -9,6 +9,7 @@
 package com.espertech.esper.epl.expression;
 
 import com.espertech.esper.util.JavaClassHelper;
+import com.espertech.esper.util.CoercionException;
 import com.espertech.esper.type.RelationalOpEnum;
 
 import java.util.Collection;
@@ -82,7 +83,7 @@ public class SubselectEvalStrategyFactory
         {
             coercionType = JavaClassHelper.getCompareToCoercionType(typeOne, typeTwo);
         }
-        catch (IllegalArgumentException ex)
+        catch (CoercionException ex)
         {
             throw new ExprValidationException("Implicit conversion from datatype '" +
                     typeTwo.getSimpleName() +

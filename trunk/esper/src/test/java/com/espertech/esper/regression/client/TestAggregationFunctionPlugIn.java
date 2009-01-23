@@ -237,7 +237,7 @@ public class TestAggregationFunctionPlugIn extends TestCase
         }
         catch (EPStatementException ex)
         {
-            assertEquals("Error starting view: Plug-in aggregation function 'concat' failed validation: Invalid node type: java.lang.Integer [select * from com.espertech.esper.support.bean.SupportBean group by concat(1)]", ex.getMessage());
+            assertEquals("Error starting statement: Plug-in aggregation function 'concat' failed validation: Invalid node type: java.lang.Integer [select * from com.espertech.esper.support.bean.SupportBean group by concat(1)]", ex.getMessage());
         }
 
         try
@@ -247,7 +247,7 @@ public class TestAggregationFunctionPlugIn extends TestCase
         }
         catch (EPStatementException ex)
         {
-            assertEquals("Error starting view: Group-by expressions must refer to property names [select * from com.espertech.esper.support.bean.SupportBean group by concat(1, 1)]", ex.getMessage());
+            assertEquals("Error starting statement: Group-by expressions must refer to property names [select * from com.espertech.esper.support.bean.SupportBean group by concat(1, 1)]", ex.getMessage());
         }
     }
 

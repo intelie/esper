@@ -442,15 +442,15 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
             stmtNameToIdMap.remove(statement.getName());
             stmtNameToStmtMap.remove(statement.getName());
             log.debug(".start Error starting statement", ex);
-            throw new EPStatementException("Error starting view: " + ex.getMessage(), statement.getText());
+            throw new EPStatementException("Error starting statement: " + ex.getMessage(), statement.getText());
         }
         catch (ViewProcessingException ex)
         {
             stmtIdToDescMap.remove(statementId);
             stmtNameToIdMap.remove(statement.getName());
             stmtNameToStmtMap.remove(statement.getName());
-            log.debug(".start Error starting view", ex);
-            throw new EPStatementException("Error starting view: " + ex.getMessage(), statement.getText());
+            log.debug(".start Error starting statement", ex);
+            throw new EPStatementException("Error starting statement: " + ex.getMessage(), statement.getText());
         }
 
         // add statically typed event type references: those in the from clause; Dynamic (created) types collected by statement context and added on start
@@ -741,7 +741,7 @@ public class StatementLifecycleSvcImpl implements StatementLifecycleSvc
         {
             String text = "Unexpected error compiling statement";
             log.error(text, ex);
-            throw new EPStatementException(text + ":" + ex.getClass().getName() + ":" + ex.getMessage(), eplStatement);
+            throw new EPStatementException(text + ": " + ex.getClass().getName() + ":" + ex.getMessage(), eplStatement);
         }
 
         // for create window statements, we switch the filter to a new event type
